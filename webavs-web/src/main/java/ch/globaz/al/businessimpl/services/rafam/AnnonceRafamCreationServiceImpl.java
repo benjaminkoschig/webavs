@@ -552,7 +552,7 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
         DroitBusinessService dbs = ALServiceLocator.getDroitBusinessService();
         List<RafamFamilyAllowanceType> list = new ArrayList<RafamFamilyAllowanceType>();
 
-        if (!dbs.isMontantForceZero(droit.getDroitModel())) {
+        if (!dbs.isMontantForceZero(droit.getDroitModel()) || forAnnulation) {
 
             // ADC (code 30)
             if (ALCSDossier.STATUT_CS.equals(dossier.getStatut())
