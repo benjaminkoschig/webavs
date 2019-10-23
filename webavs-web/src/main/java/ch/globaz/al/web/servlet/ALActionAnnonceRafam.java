@@ -1,6 +1,5 @@
 package ch.globaz.al.web.servlet;
 
-import globaz.al.helpers.rafam.ALAnnonceRafamHelper;
 import globaz.al.vb.rafam.ALAnnonceRafamEDViewBean;
 import globaz.al.vb.rafam.ALAnnonceRafamViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -83,20 +82,12 @@ public class ALActionAnnonceRafam extends ALAbstractDefaultAction {
     @Override
     protected String _getDestExecuterEchec(HttpSession session, HttpServletRequest request,
                                            HttpServletResponse response, FWViewBeanInterface viewBean) {
-        if ((viewBean instanceof ALAnnonceRafamViewBean)
-                && (ALActionAnnonceRafam.validerAnnonce.equals(getAction().getActionPart()) || ALActionAnnonceRafam.suspendreAnnonce
-                .equals(getAction().getActionPart()))) {
-            StringBuffer url = new StringBuffer();
-            url.append("/").append(getAction().getApplicationPart()).append("?userAction=")
-                    .append(getAction().getApplicationPart());
-            url.append("rafam.annonceRafam.afficher&selectedId=").append(((ALAnnonceRafamViewBean) viewBean).getId());
-            return url.toString();
-        } else if ((viewBean instanceof ALAnnonceRafamViewBean)
+         if ((viewBean instanceof ALAnnonceRafamViewBean)
                 && ALActionAnnonceRafam.synchroniserEnfantAvecUPI.equals(getAction().getActionPart())) {
             StringBuffer url = new StringBuffer();
             url.append("/").append(getAction().getApplicationPart()).append("?userAction=")
                     .append(getAction().getApplicationPart());
-            url.append("rafam.annonceRafam.afficher&selectedId=").append(((ALAnnonceRafamViewBean) viewBean).getId());
+            url.append(".rafam.annonceRafam.afficher&selectedId=").append(((ALAnnonceRafamViewBean) viewBean).getId());
             return url.toString();
         } else if ((viewBean instanceof ALAnnonceRafamViewBean)
                 && ALActionAnnonceRafam.creer68c.equals(getAction().getActionPart())) {
@@ -122,25 +113,15 @@ public class ALActionAnnonceRafam extends ALAbstractDefaultAction {
                     .append(getAction().getApplicationPart());
             url.append(".rafam.annonceRafamED.chercher");
             return url.toString();
-        }
-        if ((viewBean instanceof ALAnnonceRafamViewBean)
-                && ALActionAnnonceRafam.validerAnnonce.equals(getAction().getActionPart())) {
-            StringBuffer url = new StringBuffer();
-            url.append("/").append(getAction().getApplicationPart()).append("?userAction=")
-                    .append(getAction().getApplicationPart());
-            url.append("rafam.annonceRafam.chercher");
-            return url.toString();
         } else if ((viewBean instanceof ALAnnonceRafamViewBean)
                 && ALActionAnnonceRafam.synchroniserEnfantAvecUPI.equals(getAction().getActionPart())) {
             StringBuffer url = new StringBuffer();
             url.append("/").append(getAction().getApplicationPart()).append("?userAction=")
                     .append(getAction().getApplicationPart());
-            url.append("rafam.annonceRafam.chercher");
+            url.append(".rafam.annonceRafam.chercher");
             return url.toString();
         } else if ((viewBean instanceof ALAnnonceRafamViewBean) && "creer68c".equals(getAction().getActionPart())) {
             return "/al?userAction=back";
-        } else if (viewBean instanceof ALAnnonceRafamViewBean && ALAnnonceRafamHelper.archiver.equals(getAction().getActionPart())) {
-            return "al.rafam.annonceRafam.lister";
         } else {
             return super._getDestExecuterSucces(session, request, response, viewBean);
         }

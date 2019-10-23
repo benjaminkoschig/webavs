@@ -55,6 +55,7 @@
 <%@ include file="/theme/detail/javascripts.jspf" %>
 <%-- tpl:insert attribute="zoneScripts" --%>
 <%@page import="globaz.fweb.util.JavascriptEncoder"%>
+<%@page import="globaz.jade.client.util.JadeUtil"%>
 <%@page import="globaz.jade.client.util.JadeStringUtil"%>
 
 <%@page import="globaz.al.vb.rafam.ALAnnonceRafamViewBean"%>
@@ -64,6 +65,12 @@
 
 
 
+<%@page import="globaz.jade.client.util.JadeDateUtil"%>
+<%@page import="ch.globaz.al.business.models.dossier.DossierComplexModel"%>
+<%@page import="ch.globaz.al.business.constantes.ALCSDossier"%>
+<%@page import="ch.globaz.al.business.services.ALServiceLocator"%>
+<%@page import="ch.globaz.al.business.constantes.ALCSDroit"%>
+<%@page import="ch.globaz.naos.business.service.AffiliationService"%>
 <script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/alRoot/util_webaf.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/alRoot/ajax_webaf.js"></script>
@@ -113,48 +120,45 @@ function init(){
 }
 
 function validerAnnonce(){
-	var req = "<%=servletContext + mainServletPath%>?userAction=al.rafam.annonceRafam.validerAnnonce&id=<%=viewBean.getId()%>";
+	var req = "<%=servletContext + mainServletPath%>?userAction=al.rafam.annonceRafam.validerAnnonce&id=<%=viewBean.getId()%>&_s_push=no";
 	var ajaxQuery = new AjaxQuery(req);
 
 	ajaxQuery.noResultCallback = alert;
 	ajaxQuery.noResultCallbackParams = new Array("fini");
 	ajaxQuery.launch();
 
-    document.forms[0].elements('userAction').value="al.rafam.annonceRafam.afficher";
-    document.forms[0].submit();
+    document.location.href=url+"?userAction=al.rafam.annonceRafam.afficher&id=<%=viewBean.getId()%>&_s_push=no";
 }
 
 function suspendreAnnonce(){
-	var req = "<%=servletContext + mainServletPath%>?userAction=al.rafam.annonceRafam.suspendreAnnonce&id=<%=viewBean.getId()%>";
+	var req = "<%=servletContext + mainServletPath%>?userAction=al.rafam.annonceRafam.suspendreAnnonce&id=<%=viewBean.getId()%>&_s_push=no";
 	var ajaxQuery = new AjaxQuery(req);
 
 	ajaxQuery.noResultCallback = alert;
 	ajaxQuery.noResultCallbackParams = new Array("fini");
 	ajaxQuery.launch();
 
-    document.forms[0].elements('userAction').value="al.rafam.annonceRafam.afficher";
-    document.forms[0].submit();
+    document.location.href=url+"?userAction=al.rafam.annonceRafam.afficher&id=<%=viewBean.getId()%>&_s_push=no";
 }
 function archive(){
-    var req = "<%=servletContext + mainServletPath%>?userAction=al.rafam.annonceRafam.archiver&id=<%=viewBean.getId()%>";
+    var req = "<%=servletContext + mainServletPath%>?userAction=al.rafam.annonceRafam.archiver&id=<%=viewBean.getId()%>&_s_push=no";
     var ajaxQuery = new AjaxQuery(req);
 
     ajaxQuery.noResultCallback = alert;
     ajaxQuery.noResultCallbackParams = new Array("fini");
     ajaxQuery.launch();
-    document.forms[0].elements('userAction').value="al.rafam.annonceRafam.afficher";
-    document.forms[0].submit();
+
+    document.location.href=url+"?userAction=al.rafam.annonceRafam.afficher&id=<%=viewBean.getId()%>&_s_push=no";
 }
 
 function desarchive() {
-    var req = "<%=servletContext + mainServletPath%>?userAction=al.rafam.annonceRafam.desarchiver&id=<%=viewBean.getId()%>";
+    var req = "<%=servletContext + mainServletPath%>?userAction=al.rafam.annonceRafam.desarchiver&id=<%=viewBean.getId()%>&_s_push=no";
     var ajaxQuery = new AjaxQuery(req);
 
     ajaxQuery.noResultCallback = alert;
     ajaxQuery.noResultCallbackParams = new Array("fini");
     ajaxQuery.launch();
-    document.forms[0].elements('userAction').value="al.rafam.annonceRafam.afficher";
-    document.forms[0].submit();
+    document.location.href=url+"?userAction=al.rafam.annonceRafam.afficher&id=<%=viewBean.getId()%>&_s_push=no";
 }
 
 </script>
