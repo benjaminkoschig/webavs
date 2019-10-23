@@ -1,9 +1,13 @@
 package ch.globaz.al.businessimpl.services.rafam;
 
-import ch.globaz.al.business.constantes.enumerations.RafamTypeAnnonce;
+import ch.globaz.al.business.constantes.*;
+import ch.globaz.al.business.constantes.enumerations.*;
 import ch.globaz.al.business.models.adi.AdiEnfantMoisComplexModel;
 import ch.globaz.al.business.models.adi.AdiEnfantMoisModel;
 import ch.globaz.al.business.models.adi.DecompteAdiModel;
+import ch.globaz.al.business.models.droit.CalculBusinessModel;
+import ch.globaz.al.business.models.droit.EnfantModel;
+import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.domaine.Periode;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
@@ -24,12 +28,6 @@ import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.AllowanceType;
 import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.BeneficiaryType;
 import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.ChildAllowanceType;
 import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.ChildType;
-import ch.globaz.al.business.constantes.ALCSDossier;
-import ch.globaz.al.business.constantes.ALCSDroit;
-import ch.globaz.al.business.constantes.ALConstRafam;
-import ch.globaz.al.business.constantes.enumerations.RafamEtatAnnonce;
-import ch.globaz.al.business.constantes.enumerations.RafamEvDeclencheur;
-import ch.globaz.al.business.constantes.enumerations.RafamFamilyAllowanceType;
 import ch.globaz.al.business.exceptions.model.annonces.rafam.ALAnnonceRafamException;
 import ch.globaz.al.business.models.dossier.DossierComplexModel;
 import ch.globaz.al.business.models.dossier.DossierComplexSearchModel;
@@ -187,7 +185,7 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
         search = ALServiceLocator.getDroitComplexModelService().search(search);
 
         for (int i = 0; i < search.getSize(); i++) {
-            this.creerAnnonces(evDecl, dossier, (DroitComplexModel) search.getSearchResults()[i]);
+            this.creerAnnoncesSelonPrecedent(evDecl, dossier, (DroitComplexModel) search.getSearchResults()[i]);
         }
     }
 
@@ -217,6 +215,31 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
 
         this.creerAnnonces(evDecl,
                 ALServiceLocator.getDossierComplexModelService().read(droit.getDroitModel().getIdDossier()), droit);
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * ch.globaz.al.business.services.rafam.AnnonceRafamCreationService#creerAnnonces(ch.globaz.al.business.constantes
+     * .enumerations.RafamEvDeclencheur, ch.globaz.al.business.models.droit.DroitComplexModel)
+     */
+    @Override
+    public void creerAnnoncesSelonPrecedent(RafamEvDeclencheur evDecl, DossierComplexModel dossier, DroitComplexModel droit) throws JadeApplicationException,
+            JadePersistenceException {
+
+        if(dossier == null) {
+            dossier = ALServiceLocator.getDossierComplexModelService().read(droit.getDroitModel().getIdDossier());
+        }
+
+        if(ALCSDossier.STATUT_IS.equals(dossier.getDossierModel().getStatut())){
+            return;
+        }
+
+        String montantAfter = getMontantCalcule(dossier, droit);
+
+        genererAnnonceSelonPrecedant(evDecl, dossier, droit, montantAfter);
+
     }
 
 
@@ -756,5 +779,82 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
         }
 
         return ALImplServiceLocator.getAnnonceRafamBusinessService().setEtat(annonce, RafamEtatAnnonce.VALIDE);
+    }
+
+
+    private String getMontantCalcule(DossierComplexModel dossierComplexModel, DroitComplexModel droit) throws JadeApplicationException, JadePersistenceException {
+
+        String dateCalcul = droit.getDroitModel().getDebutDroit();
+        ArrayList<CalculBusinessModel> droitsList = new ArrayList<>();
+
+        // Chargement des droits calculés
+        try {
+            ArrayList<CalculBusinessModel> droitsListTemp = ALServiceLocator.getCalculBusinessService().getCalcul(dossierComplexModel, dateCalcul);
+            for(CalculBusinessModel calcul : droitsListTemp) {
+                if(calcul.getDroit().getId().equals(droit.getId())
+                        && !ALCSTarif.CATEGORIE_SUP_HORLO.equals(calcul.getTarif())) {
+                    droitsList.add(calcul);
+                }
+            }
+        } catch (JadeApplicationException e) {
+            boolean calculError = true;
+            String calculErrorMessage = e.getMessage();
+        }
+
+        String montantTotal = null;
+
+        // Montant total calculé
+        if (droitsList.size() > 0) {
+            montantTotal = (ALServiceLocator.getCalculBusinessService().getTotal(dossierComplexModel.getDossierModel(),
+                    droitsList, dossierComplexModel.getDossierModel().getUniteCalcul(), "1", false, dateCalcul)).get(
+                    ALConstCalcul.TOTAL_EFFECTIF).toString();
+        }
+
+        return montantTotal;
+    }
+
+    private void genererAnnonceSelonPrecedant(RafamEvDeclencheur evDecl,
+                                              DossierComplexModel dossier,
+                                              DroitComplexModel droit,
+                                              String montantAfter ) throws JadeApplicationException, JadePersistenceException {
+
+        List<RafamFamilyAllowanceType> types = ALServiceLocator.getAnnonceRafamCreationService().getTypesAllocationForAnnulation(dossier.getDossierModel(), droit);
+
+        AnnonceRafamModel lastAnnonce = ALImplServiceLocator.getAnnoncesRafamSearchService().getLastActive(droit.getId(),types.get(0));
+        AnnonceRafamSearchModel annoncesATranmettre = ALImplServiceLocator.getAnnoncesRafamSearchService()
+                .loadAnnoncesToSendForDroit(droit.getId());
+        boolean hasAnnoncesATranmettre = annoncesATranmettre.getSize() > 0;
+
+        Montant montAfter = new Montant(montantAfter);
+
+        if(montAfter.isZero()) {
+            if (RafamTypeAction.ANNULATION.equals(lastAnnonce.getTypeAnnonce())) {
+                if(hasAnnoncesATranmettre) {
+                    ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(droit.getId());
+                }
+            } else { //RafamTypeAction.CREATION + RafamTypeAction.MODIFICATION
+                ALServiceLocator.getAnnonceRafamCreationService().creerAnnonces(RafamEvDeclencheur.ANNULATION, droit);
+            }
+            // Test si annonce naissance
+            if(hasAllocationNaissance(droit)) {
+                ALServiceLocator.getAnnonceRafamCreationService().creerAnnoncesNaissanceOnly(RafamEvDeclencheur.CREATION, droit);
+            }
+        } else {
+            if (RafamTypeAction.ANNULATION.equals(lastAnnonce.getTypeAnnonce())) {
+                if(hasAnnoncesATranmettre) {
+                    ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(droit.getId());
+                }
+                ALServiceLocator.getAnnonceRafamCreationService().creerAnnonces(RafamEvDeclencheur.CREATION, droit);
+            } else { //RafamTypeAction.CREATION + RafamTypeAction.MODIFICATION
+                ALServiceLocator.getAnnonceRafamCreationService().creerAnnonces(evDecl, droit);
+            }
+        }
+
+    }
+
+    private boolean hasAllocationNaissance(DroitComplexModel droit) {
+        EnfantModel entant = droit.getEnfantComplexModel().getEnfantModel();
+        Montant montNaissance = new Montant(entant.getMontantAllocationNaissanceFixe());
+        return !montNaissance.isZero() && !entant.getAllocationNaissanceVersee();
     }
 }
