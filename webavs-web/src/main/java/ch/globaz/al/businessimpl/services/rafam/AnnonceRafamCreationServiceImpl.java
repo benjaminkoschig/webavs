@@ -316,10 +316,20 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
 
 
             for (RafamFamilyAllowanceType type : types) {
+                // S190502_010 : traiter uniquement les primes naissances
                 if(primeNaisanceOnly && !((RafamFamilyAllowanceType.ADOPTION.equals(type)
                         || RafamFamilyAllowanceType.NAISSANCE.equals(type)
                         || RafamFamilyAllowanceType.DIFFERENCE_ADOPTION.equals(type)
                         || RafamFamilyAllowanceType.DIFFERENCE_NAISSANCE.equals(type))) ) {
+                    continue;
+                }
+                // S190502_010 : ne pas annuler les primes naissances si déjà versées lors de l'annulation d'un montant mensuel à 0
+                if(RafamEvDeclencheur.ANNULATION.equals(evDecl)
+                    && (RafamFamilyAllowanceType.ADOPTION.equals(type)
+                        || RafamFamilyAllowanceType.NAISSANCE.equals(type)
+                        || RafamFamilyAllowanceType.DIFFERENCE_ADOPTION.equals(type)
+                        || RafamFamilyAllowanceType.DIFFERENCE_NAISSANCE.equals(type))
+                    && droit.getEnfantComplexModel().getEnfantModel().getAllocationNaissanceVersee()) {
                     continue;
                 }
                 if (JadeThread.logMessagesFromLevel(JadeBusinessMessageLevels.ERROR) == null) {
