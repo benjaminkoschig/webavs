@@ -287,6 +287,10 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                     chargerAdresseCourrierEtTitreTiers(unTiersBeneficiaire);
                     if (JadeStringUtil.isBlank(unTiersBeneficiaire.getAdresseCourrierFormatee())) {
                         unTiersBeneficiaire.setAdresseCourrierFormatee(getAdressePaiementFormatee(unTiersBeneficiaire));
+                        if(uneFamille.getTiersRequerant().getIdTiers().equals(unTiersBeneficiaire.getIdTiers())
+                                && JadeStringUtil.isBlank(uneFamille.getTiersRequerant().getAdresseCourrierFormatee())) {
+                            uneFamille.getTiersRequerant().setAdresseCourrierFormatee(unTiersBeneficiaire.getAdresseCourrierFormatee());
+                        }
                     }
                 }
             }
@@ -947,7 +951,12 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
             mapFamilleOrphelins.put(rente.getIdTiersAdressePaiement(), nouvelleFamille);
         } else {
             // Si plusieurs enfants orphelins avec même adresse de paiement, ajout dans la même attestation
-            mapFamilleOrphelins.get(rente.getIdTiersAdressePaiement()).getMapTiersBeneficiaire().put(newTiers.getIdTiers(), newTiers);
+            if(mapFamilleOrphelins.get(rente.getIdTiersAdressePaiement()).getMapTiersBeneficiaire().get(newTiers.getIdTiers()) == null) {
+                mapFamilleOrphelins.get(rente.getIdTiersAdressePaiement()).getMapTiersBeneficiaire().put(newTiers.getIdTiers(), newTiers);
+            } else {
+                // tiers déjà présent ajout de la rente
+                mapFamilleOrphelins.get(rente.getIdTiersAdressePaiement()).getMapTiersBeneficiaire().get(newTiers.getIdTiers()).getMapRentes().put(rente.getIdRenteAccordee(), rente);
+            }
         }
     }
 
