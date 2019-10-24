@@ -329,6 +329,7 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
                         || RafamFamilyAllowanceType.NAISSANCE.equals(type)
                         || RafamFamilyAllowanceType.DIFFERENCE_ADOPTION.equals(type)
                         || RafamFamilyAllowanceType.DIFFERENCE_NAISSANCE.equals(type))
+                    && !ALCSDroit.NAISSANCE_TYPE_AUCUNE.equals(droit.getEnfantComplexModel().getEnfantModel().getTypeAllocationNaissance())
                     && droit.getEnfantComplexModel().getEnfantModel().getAllocationNaissanceVersee()) {
                     continue;
                 }
