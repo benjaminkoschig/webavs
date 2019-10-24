@@ -37,6 +37,7 @@ import globaz.jade.context.JadeContext;
 import globaz.jade.context.JadeContextImplementation;
 import globaz.jade.context.JadeThreadActivator;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
+import globaz.pyxis.adresse.datasource.TIAbstractAdresseDataSource;
 import globaz.pyxis.adresse.datasource.TIAdressePaiementDataSource;
 import globaz.pyxis.adresse.formater.TIAdresseFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
@@ -427,6 +428,8 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                     idTiersAdressePaiement, REApplication.CS_DOMAINE_ADRESSE_CORVUS, null, null);
             TIAdressePaiementDataSource dataSource = new TIAdressePaiementDataSource();
             dataSource.load(adressePaiement);
+            String titreFromAdresse = dataSource.getData().get(TIAbstractAdresseDataSource.ADRESSE_VAR_TITRE);
+            unTiersBeneficiaire.setTitreTiers(titreFromAdresse);
             return new TIAdresseFormater().format(dataSource);
         } catch (Exception e) {
             e.printStackTrace();
