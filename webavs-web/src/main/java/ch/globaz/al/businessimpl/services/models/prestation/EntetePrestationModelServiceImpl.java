@@ -94,7 +94,8 @@ public class EntetePrestationModelServiceImpl extends ALAbstractBusinessServiceI
         EntetePrestationModelChecker.validateForDelete(entetePrestModel);
 
         // suppression des annonces RAFAM ADI A transmettre avant suppression de l'entête
-        if (ALCSPrestation.STATUT_ADI.equals(entetePrestModel.getStatut())) {
+        if (ALCSPrestation.STATUT_ADI.equals(entetePrestModel.getStatut())
+                && !ALCSPrestation.ETAT_TMP.equals(entetePrestModel.getEtatPrestation())) {
             deleteRAFAMForIdEntete(entetePrestModel.getIdEntete());
         }
 

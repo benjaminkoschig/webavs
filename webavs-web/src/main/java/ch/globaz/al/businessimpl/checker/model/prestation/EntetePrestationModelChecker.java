@@ -382,7 +382,8 @@ public abstract class EntetePrestationModelChecker extends ALAbstractChecker {
         }
 
         // Vérifie si les annonces des prestations ADI ont été envoyées
-        if (ALCSPrestation.STATUT_ADI.equals(entetePrestationModel.getStatut())) {
+        if (ALCSPrestation.STATUT_ADI.equals(entetePrestationModel.getStatut())
+            && !ALCSPrestation.ETAT_TMP.equals(entetePrestationModel.getEtatPrestation())) {
             DetailPrestationSearchModel search = new DetailPrestationSearchModel();
             search.setForIdEntetePrestation(entetePrestationModel.getIdEntete());
             search = (DetailPrestationSearchModel) JadePersistenceManager.search(search);
