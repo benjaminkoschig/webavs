@@ -1080,6 +1080,9 @@ public class DossierBusinessServiceImpl extends ALAbstractBusinessServiceImpl im
         }
 
         journaliserChangementEtat(dossier, etatDossierAvantModif, remarqueJournalisation);
+
+        ALServiceLocator.getAnnonceRafamCreationService().supprimeAnnonceSiModificationStatut(dossier);
+
         dossier = ALServiceLocator.getDossierComplexModelService().update(dossier);
 
         ALServiceLocator.getAnnonceRafamCreationService().creerAnnonces(RafamEvDeclencheur.MODIF_DOSSIER, dossier);

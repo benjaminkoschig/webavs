@@ -13,6 +13,7 @@ import ch.globaz.al.business.constantes.enumerations.RafamEvDeclencheur;
 import ch.globaz.al.business.models.dossier.DossierComplexModel;
 import ch.globaz.al.business.models.droit.DroitComplexModel;
 import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 import java.util.List;
 
@@ -234,4 +235,6 @@ public interface AnnonceRafamCreationService extends JadeApplicationService {
 
     public void creerAnnoncesSelonPrecedent(RafamEvDeclencheur evDecl, DossierComplexModel dossier, DroitComplexModel droit) throws JadeApplicationException,
             JadePersistenceException;
+
+    public void supprimeAnnonceSiModificationStatut(DossierComplexModel dossier) throws JadeApplicationException, JadePersistenceException;
 }

@@ -868,4 +868,23 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
         Montant montNaissance = new Montant(entant.getMontantAllocationNaissanceFixe());
         return !montNaissance.isZero() && !entant.getAllocationNaissanceVersee();
     }
+
+    public void supprimeAnnonceSiModificationStatut(DossierComplexModel dossier) throws JadeApplicationException, JadePersistenceException {
+        if(!ALCSDossier.STATUT_IS.equals(dossier.getDossierModel().getStatut())) {
+            return;
+        }
+        DossierComplexModel oldDossier = ALServiceLocator.getDossierComplexModelService().read(dossier.getId());
+
+        if(!ALCSDossier.STATUT_IS.equals(oldDossier.getDossierModel().getStatut())) {
+            DroitComplexSearchModel search = new DroitComplexSearchModel();
+            search.setForIdDossier(dossier.getId());
+
+            List<String> types = new ArrayList<>();
+            search = ALServiceLocator.getDroitComplexModelService().search(search);
+
+            for (int i = 0; i < search.getSize(); i++) {
+                ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(((DroitComplexModel) search.getSearchResults()[i]).getId());
+            }
+        }
+    }
 }
