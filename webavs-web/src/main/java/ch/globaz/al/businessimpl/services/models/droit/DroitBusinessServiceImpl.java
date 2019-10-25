@@ -824,7 +824,7 @@ public class DroitBusinessServiceImpl implements DroitBusinessService {
                     if (JadeDateUtil.isDateBefore(newDroit.getDebutDroit(), newDroit.getFinDroitForcee())) {
                         newDroit = ALImplServiceLocator.getDroitModelService().create(newDroit);
 
-                        ALServiceLocator.getAnnonceRafamCreationService().creerAnnonces(RafamEvDeclencheur.CREATION,
+                        ALServiceLocator.getAnnonceRafamCreationService().creerAnnoncesSelonPrecedent(RafamEvDeclencheur.CREATION, null,
                                 ALServiceLocator.getDroitComplexModelService().read(newDroit.getIdDroit()));
 
                         // on modifie la date du début de validité du droitModel
@@ -846,16 +846,16 @@ public class DroitBusinessServiceImpl implements DroitBusinessService {
                         droitModel.setDroitModel(ALImplServiceLocator.getDroitModelService().create(
                                 droitModel.getDroitModel()));
 
-                        ALServiceLocator.getAnnonceRafamCreationService().creerAnnonces(
-                                RafamEvDeclencheur.CREATION,
+                        ALServiceLocator.getAnnonceRafamCreationService().creerAnnoncesSelonPrecedent(
+                                RafamEvDeclencheur.CREATION, null,
                                 ALServiceLocator.getDroitComplexModelService().read(
                                         droitModel.getDroitModel().getIdDroit()));
                     } else {
                         droitModel.setDroitModel(ALImplServiceLocator.getDroitModelService().update(
                                 droitModel.getDroitModel()));
                         // ev Decl création car cas de modification d'un droit qui vient d'être créé
-                        ALServiceLocator.getAnnonceRafamCreationService().creerAnnonces(
-                                RafamEvDeclencheur.CREATION,
+                        ALServiceLocator.getAnnonceRafamCreationService().creerAnnoncesSelonPrecedent(
+                                RafamEvDeclencheur.CREATION, null,
                                 ALServiceLocator.getDroitComplexModelService().read(
                                         droitModel.getDroitModel().getIdDroit()));
                     }
