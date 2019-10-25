@@ -353,7 +353,7 @@ public class DroitBusinessServiceImpl implements DroitBusinessService {
             droit = ALServiceLocator.getDroitComplexModelService().create(droit);
         }
         if (!droit.getDroitModel().isNew()) {
-            ALServiceLocator.getAnnonceRafamCreationService().creerAnnonces(RafamEvDeclencheur.CREATION, droit);
+            ALServiceLocator.getAnnonceRafamCreationService().creerAnnoncesSelonPrecedent(RafamEvDeclencheur.CREATION, null, droit);
 
             // propagation pour la FPV
             if (ALConstCaisse.CAISSE_FPV.equals(ALServiceLocator.getParametersServices().getNomCaisse())) {
