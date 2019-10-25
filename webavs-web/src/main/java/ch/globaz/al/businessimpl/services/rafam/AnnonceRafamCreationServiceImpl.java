@@ -117,7 +117,7 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
         searchDroits = (DroitComplexSearchModel) JadePersistenceManager.search(searchDroits);
 
         for (int i = 0; i < searchDroits.getSize(); i++) {
-            this.creerAnnonces(RafamEvDeclencheur.MODIF_ENFANT, (DroitComplexModel) searchDroits.getSearchResults()[i]);
+            this.creerAnnoncesSelonPrecedent(RafamEvDeclencheur.MODIF_ENFANT, null, (DroitComplexModel) searchDroits.getSearchResults()[i]);
         }
 
         /*
