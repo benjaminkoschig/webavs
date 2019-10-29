@@ -514,7 +514,11 @@ public class PRTiersHelper {
 
             if (list.size() == 1) {
                 test = (TIAbstractAdresseData) list.iterator().next();
-                titre = test.getTitre_adr();
+                if(!JadeStringUtil.isBlankOrZero(test.getTitre_adr())){
+                    titre = test.getTitre_adr();
+                } else {
+                    titre = test.getTitre_tiers();
+                }
             }
 
         } catch (Exception ex) {
