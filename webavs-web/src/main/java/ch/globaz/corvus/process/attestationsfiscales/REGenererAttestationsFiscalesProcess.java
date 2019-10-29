@@ -692,6 +692,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
         manager.setForAnnee(annee);
         manager.setForNssA(getNssA());
         manager.setForNssDe(getNssDe());
+        manager.setOrderByDateDecisionDesc(true);
         manager.find(BManager.SIZE_NOLIMIT);
 
         List<REDonneesPourAttestationsFiscales> attestationValides = new ArrayList<REDonneesPourAttestationsFiscales>();

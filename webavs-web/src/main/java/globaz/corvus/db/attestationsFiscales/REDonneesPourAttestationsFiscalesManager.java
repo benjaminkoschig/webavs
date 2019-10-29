@@ -29,6 +29,7 @@ public class REDonneesPourAttestationsFiscalesManager extends BManager {
     private boolean isTiersBeneficiaire;
     private String forNssA;
     private String forNssDe;
+    private Boolean isOrderByDateDecisionDesc = false;
 
     public REDonneesPourAttestationsFiscalesManager() {
         super();
@@ -54,6 +55,11 @@ public class REDonneesPourAttestationsFiscalesManager extends BManager {
                 .append(ITITiersDefTable.DESIGNATION_1).append(",");
         sql.append(REDonneesPourAttestationsFiscales.ALIAS_TABLE_TIERS_BASE_CALCUL).append(".")
                 .append(ITITiersDefTable.DESIGNATION_2);
+
+        if(isOrderByDateDecisionDesc){
+            sql.append(",").append(REDecisionEntity.TABLE_NAME_DECISIONS).append(".")
+                    .append(REDecisionEntity.FIELDNAME_DATE_DECISION).append(" DESC");
+        }
 
         return sql.toString();
     }
@@ -204,5 +210,13 @@ public class REDonneesPourAttestationsFiscalesManager extends BManager {
 
     public void setIsTiersBeneficiaire(boolean isTiersBeneficiaire) {
         this.isTiersBeneficiaire = isTiersBeneficiaire;
+    }
+
+    public Boolean getOrderByDateDecisionDesc() {
+        return isOrderByDateDecisionDesc;
+    }
+
+    public void setOrderByDateDecisionDesc(Boolean orderByDateDecisionDesc) {
+        isOrderByDateDecisionDesc = orderByDateDecisionDesc;
     }
 }
