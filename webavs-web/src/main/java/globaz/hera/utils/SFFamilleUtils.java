@@ -1,5 +1,8 @@
 package globaz.hera.utils;
 
+import ch.globaz.common.domaine.Adresse;
+import ch.globaz.orion.ws.service.adresse.AdresseLoaderManager;
+import ch.globaz.pegasus.businessimpl.services.adresse.TIAdresseLoaderManager;
 import globaz.corvus.application.REApplication;
 import globaz.globall.api.BISession;
 import globaz.globall.api.BITransaction;
@@ -19,10 +22,16 @@ import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import globaz.pyxis.db.adressecourrier.TIAdresse;
+import globaz.pyxis.db.adressecourrier.TIAdresseData;
 import org.apache.commons.lang.StringUtils;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static ch.globaz.al.businessimpl.rafam.handlers.AnnoncesChangeChecker.isDateFinDroitExpire;
 
 /**
  * Utilitaire pour récupérer des info multiples sur les familles ou relations familiales (tel que le conjoint actuel, ou
@@ -400,6 +409,7 @@ public class SFFamilleUtils {
         return familles;
     }
 
+
     /**
      * Permet de récupérer le tiers éligible pour le transfert d'une rente.
      * Les règles sont les suivantes :
@@ -415,22 +425,81 @@ public class SFFamilleUtils {
      */
     public static PRTiersWrapper getTiersTransfert(BSession session, String idTiers) throws Exception {
         PRTiersWrapper conjoint = getConjointActuel(session, ISFSituationFamiliale.CS_DOMAINE_STANDARD, idTiers);
-        if (Objects.nonNull(conjoint) && StringUtils.isNotEmpty(PRTiersHelper.getTiersAdresseParId(session,conjoint.getIdTiers()).getProperty(PRTiersWrapper.PROPERTY_ID_ADRESSE))) {
+
+        if (Objects.nonNull(conjoint) && isAdresseActive(session, conjoint.getIdTiers())) {
             return conjoint;
         } else {
             Set<PRTiersWrapper> enfants = getEnfantsDuTiers(session, idTiers);
             List<PRTiersWrapper> enfantsVivants = enfants.stream().filter(e -> StringUtils.isEmpty(e.getDateDeces())).sorted(Comparator.comparing(PRTiersWrapper::getDateNaissance).reversed()).collect(Collectors.toList());
-            if (!enfantsVivants.isEmpty() && StringUtils.isNotEmpty(PRTiersHelper.getTiersAdresseParId(session,enfantsVivants.get(0).getIdTiers()).getProperty(PRTiersWrapper.PROPERTY_ID_ADRESSE))) {
+
+            if (!enfantsVivants.isEmpty() && isAdresseActive(session, enfantsVivants.get(0).getIdTiers())) {
                 return enfantsVivants.get(0);
             } else {
                 List<PRTiersWrapper> exConjoints = getExConjointsTiers(session, ISFSituationFamiliale.CS_DOMAINE_STANDARD, idTiers);
                 List<PRTiersWrapper> exConjointsAlive = exConjoints.stream().filter(e -> StringUtils.isEmpty(e.getDateDeces())).collect(Collectors.toList());
-                if (!exConjointsAlive.isEmpty() && StringUtils.isNotEmpty(PRTiersHelper.getTiersAdresseParId(session,exConjointsAlive.get(0).getIdTiers()).getProperty(PRTiersWrapper.PROPERTY_ID_ADRESSE))) {
+
+                if (!exConjointsAlive.isEmpty() && isAdresseActive(session, exConjointsAlive.get(0).getIdTiers())) {
                     return exConjointsAlive.get(0);
                 }
             }
         }
-        return null;
+        if (Objects.nonNull(conjoint)) {
+            throw new Exception("Pas d'adresse connue pour le tiers - NSS : " + conjoint.getNSS()
+                    + " - Nom : " + conjoint.getNom() + " - Prénom : " + conjoint.getPrenom());
+        } else {
+            throw new Exception("Aucun Tiers éligible à la rente n'a été trouvé.");
+        }
+
+    }
+
+    /**
+     *
+     *  Vérification s'il existe une adresse valide pour un tiers. Il est posisble que l'adresse existe mais qu'elle ne soit plus valable
+     *
+     * @param session
+     * @param idTiers
+     * @return
+     */
+    private static boolean isAdresseActive(BSession session, String idTiers) throws Exception {
+
+        TIAdresseData adresseData = new TIAdresseData();
+
+        if (StringUtils.isNotEmpty(PRTiersHelper.getTiersAdresseParId(session,idTiers).getProperty(PRTiersWrapper.PROPERTY_ID_ADRESSE))) {
+            adresseData = findAdresseForIdAdresse(session, PRTiersHelper.getTiersAdresseParId(session,idTiers).getProperty(PRTiersWrapper.PROPERTY_ID_ADRESSE));
+            if (StringUtils.isNotEmpty(adresseData.getDateFinRelation())) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+                LocalDate dateFinDroit = LocalDate.parse(adresseData.getDateFinRelation(), formatter);
+                return !dateFinDroit.isBefore(LocalDate.now());
+            }
+            return true;
+
+        }
+        return false;
+    }
+
+    /**
+     *
+     * Recherche de l'adresse par son Id
+     *
+     *
+     * @param session
+     * @param idAdresse
+     * @return
+     */
+    public static TIAdresseData findAdresseForIdAdresse(BSession session, String idAdresse) throws Exception{
+        TIAdresseLoaderManager mgrAdresse = new TIAdresseLoaderManager();
+
+        mgrAdresse.setSession(session);
+        mgrAdresse.setForIdAdresse(idAdresse);
+        try {
+            mgrAdresse.find(BManager.SIZE_NOLIMIT);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Impossible de charger les adresses avec le manager ->TIAdresseLoaderManager ",
+                    e);
+        }
+
+        return (TIAdresseData) mgrAdresse.getEntity(0);
     }
 
     /**
@@ -507,6 +576,7 @@ public class SFFamilleUtils {
         }
         System.out.println("End...");
     }
+
 
 
 }
