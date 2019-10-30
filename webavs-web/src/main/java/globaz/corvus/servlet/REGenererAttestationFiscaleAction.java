@@ -801,11 +801,11 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
     private void sortRentes() {
         // On récupère toutes les infos nécessaires au tri.
         List<RERentesToCompare> rentes = new ArrayList<>();
-        for (int i = 0 ; i < assure.size() ; i++) {
-            String key = String.valueOf(i);
+        for(String key : assure.keySet()){
             RERentesToCompare eachRentes = new RERentesToCompare(assure.get(key), periode.get(key), montant.get(key), libelleRente.get(key), codePrestation.get(key));
             rentes.add(eachRentes);
         }
+
         // On trie les rentes.
         Collections.sort(rentes);
 
