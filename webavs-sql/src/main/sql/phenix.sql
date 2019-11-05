@@ -21,7 +21,7 @@ insert into SCHEMA.FWCOUP(pcosid,plaide,pcouid,pcolut, pspy)values (623003,'D','
 insert into SCHEMA.FWCOUP(pcosid,plaide,pcouid,pcolut, pspy)values (623003,'F','NP','Non portail',(replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user));
 insert into SCHEMA.FWCOUP(pcosid,plaide,pcouid,pcolut, pspy)values (623003,'I','NP','Non portail',(replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user));
 
-INSERT INTO SCHEMA.CPCANTOP (SPINDE,SPTPAR,SPCCAN,SPCPAR,SPDDEB,PSPY,SPTGAF) VALUES ((SELECT COALESCE(MAX(SPINDE)+1,0) FROM SCHEMA.CPCANTOP),650001,505021,640001,0,'20180901120000globazf   ',602001);
+INSERT INTO SCHEMA.CPCANTOP (SPINDE,SPTPAR,SPCCAN,SPCPAR,SPDDEB,PSPY,SPTGAF) VALUES ((SELECT COALESCE(MAX(SPINDE)+1,0) FROM SCHEMA.CPCANTOP),650001,505021,640001,0,'20191105120000globazf   ',602001);
 UPDATE SCHEMA.FWINCP SET PINCVA = (SELECT COALESCE(MAX(SPINDE),0) FROM SCHEMA.CPCANTOP) WHERE PINCID = 'CPCANTOP';
 
 -- PCA-584 - WEBAVS
