@@ -57,7 +57,7 @@ public class REDonneesPourAttestationsFiscalesManager extends BManager {
                 .append(ITITiersDefTable.DESIGNATION_2);
 
         if(isOrderByDateDecisionDesc){
-            sql.append(",").append(REDecisionEntity.TABLE_NAME_DECISIONS).append(".")
+            sql.append(",").append(_getCollection() + REDecisionEntity.TABLE_NAME_DECISIONS).append(".")
                     .append(REDecisionEntity.FIELDNAME_DATE_DECISION).append(" DESC");
         }
 
