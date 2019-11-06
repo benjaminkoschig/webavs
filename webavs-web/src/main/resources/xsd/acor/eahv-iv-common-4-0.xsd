@@ -18,12 +18,12 @@
 			Aus diesen Grund ist bereits ein reportHeader und ein eventReport definiert.
 		</xs:documentation>
 	</xs:annotation>
-	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0010-f/5" schemaLocation="eCH-0010-5-0f.xsd"/>
-    <xs:import namespace="http://www.ech.ch/xmlns/eCH-0011-f/7" schemaLocation="eCH-0011-7-0f.xsd"/>
-	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044-f/4" schemaLocation="eCH-0044-4-1f.xsd"/>
-    <xs:import namespace="http://www.ech.ch/xmlns/eCH-0046-f/3" schemaLocation="eCH-0046-3-0f.xsd"/>
-    <xs:import namespace="http://www.ech.ch/xmlns/eCH-0058/4" schemaLocation="eCH-0058-4-0.xsd" />
-    <xs:import namespace="http://www.ech.ch/xmlns/eCH-0097/1" schemaLocation="eCH-0097-1-0f.xsd"/>
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0010-f/5" schemaLocation="./eCH-0010-5-0f.xsd"/>
+    <xs:import namespace="http://www.ech.ch/xmlns/eCH-0011-f/7" schemaLocation="./eCH-0011-7-0f.xsd"/>
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044-f/4" schemaLocation="./eCH-0044-4-1f.xsd"/>
+    <xs:import namespace="http://www.ech.ch/xmlns/eCH-0046-f/3" schemaLocation="./eCH-0046-3-0f.xsd"/>
+    <xs:import namespace="http://www.ech.ch/xmlns/eCH-0058/4" schemaLocation="./eCH-0058-4-0.xsd" />
+    <xs:import namespace="http://www.ech.ch/xmlns/eCH-0097/1" schemaLocation="./eCH-0097-1-0f.xsd"/>
     
 	<xs:simpleType name="vatNumberType">
 		<xs:annotation>
