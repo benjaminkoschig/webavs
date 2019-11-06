@@ -206,7 +206,7 @@ public class SingleDemandeRenseignementAgenceCommunaleAVSBuilder extends Abstrac
 
         // Salutations
         data.addData("SALUTATIONS", babelPageGardeDoc.getTextes(1).getTexte(4).getDescription() + " " + titreTiers
-                + " " + babelPageGardeDoc.getTextes(1).getTexte(5));
+                + " " + babelPageGardeDoc.getTextes(1).getTexte(5).getDescription());
 
         // signature
         buildSignatures(data);
