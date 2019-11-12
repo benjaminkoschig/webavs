@@ -795,7 +795,17 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
 
     private String getMontantCalcule(DossierComplexModel dossierComplexModel, DroitComplexModel droit) throws JadeApplicationException, JadePersistenceException {
 
-        String dateCalcul = droit.getDroitModel().getDebutDroit();
+        String dateDebut =  droit.getDroitModel().getDebutDroit();
+        String dateFin =  droit.getDroitModel().getFinDroitForcee();
+        Date dateDuJour = new Date();
+        String dateCalcul = JadeDateUtil.getGlobazFormattedDate(dateDuJour);
+        if(!JadeStringUtil.isEmpty(dateDebut)
+            && JadeDateUtil.getGlobazDate(dateDebut).after(dateDuJour)) {
+            dateCalcul = dateDebut;
+        } else if(!JadeStringUtil.isEmpty(dateFin)
+            && JadeDateUtil.getGlobazDate(dateFin).before(dateDuJour)) {
+            dateCalcul = dateFin;
+        }
         ArrayList<CalculBusinessModel> droitsList = new ArrayList<>();
 
         // Chargement des droits calculés
