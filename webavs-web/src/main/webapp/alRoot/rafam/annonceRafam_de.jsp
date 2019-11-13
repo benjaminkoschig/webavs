@@ -111,7 +111,6 @@ function del() {
 }
 
 function init(){
-    document.getElementById("btnDel").style.display = 'none';
     if (<%=RafamEtatAnnonce.ARCHIVE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(viewBean.getAnnonce().getAnnonceRafamModel().getEtat()))%>) {
         document.getElementById("btnArchive").style.display = 'none';
     } else {
@@ -563,7 +562,7 @@ document.getElementById("btnUpd").style.visibility="hidden";
 document.getElementById("btnVal").style.visibility="hidden";
 document.getElementById("btnCan").style.visibility="hidden";
 <% if(!viewBean.canDelete()) {%>
-document.getElementById("btnDel").style.visibility="hidden";
+document.getElementById("btnDel").style.display = 'none';
 <%}%>
 </script>
 <%-- /tpl:insert --%>
