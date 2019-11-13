@@ -430,7 +430,7 @@ public class SFFamilleUtils {
             return conjoint;
         } else {
             Set<PRTiersWrapper> enfants = getEnfantsDuTiers(session, idTiers);
-            List<PRTiersWrapper> enfantsVivants = enfants.stream().filter(e -> StringUtils.isEmpty(e.getDateDeces())).sorted(Comparator.comparing(PRTiersWrapper::getDateNaissance).reversed()).collect(Collectors.toList());
+            List<PRTiersWrapper> enfantsVivants = enfants.stream().filter(e -> StringUtils.isEmpty(e.getDateDeces())).sorted(Comparator.comparing(PRTiersWrapper::getDateNaissanceYYYYMMDD).reversed()).collect(Collectors.toList());
 
             if (!enfantsVivants.isEmpty() && isAdresseActive(session, enfantsVivants.get(0).getIdTiers())) {
                 return enfantsVivants.get(0);

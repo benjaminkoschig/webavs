@@ -7,8 +7,10 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
 
+import ch.globaz.common.domaine.Date;
 import globaz.globall.db.BSession;
 import globaz.globall.shared.GlobazValueObject;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.pyxis.db.tiers.TITiersViewBean;
 import org.apache.commons.lang.StringUtils;
 
@@ -188,6 +190,9 @@ public class PRTiersWrapper implements Serializable, Comparable<PRTiersWrapper> 
 
     public String getDateNaissance() {
         return getProperty(PRTiersWrapper.PROPERTY_DATE_NAISSANCE);
+    }
+    public String getDateNaissanceYYYYMMDD(){
+        return new Date(getProperty(PRTiersWrapper.PROPERTY_DATE_NAISSANCE)).getValue();
     }
 
     public String getDescription(BSession session) {
