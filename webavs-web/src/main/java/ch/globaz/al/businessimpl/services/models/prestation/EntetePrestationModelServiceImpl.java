@@ -1,7 +1,13 @@
 package ch.globaz.al.businessimpl.services.models.prestation;
 
+import ch.globaz.al.business.constantes.enumerations.RafamEtatAnnonce;
 import ch.globaz.al.business.exceptions.model.prestation.ALDetailPrestationModelException;
 import ch.globaz.al.business.models.prestation.DetailPrestationModel;
+import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
+import ch.globaz.al.business.models.rafam.AnnonceRafamSearchModel;
+import ch.globaz.al.business.services.rafam.AnnoncesRafamSearchService;
+import ch.globaz.common.domaine.Date;
+import ch.globaz.common.domaine.Periode;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
@@ -19,6 +25,7 @@ import ch.globaz.al.businessimpl.checker.model.prestation.EntetePrestationModelC
 import ch.globaz.al.businessimpl.services.ALAbstractBusinessServiceImpl;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -146,8 +153,27 @@ public class EntetePrestationModelServiceImpl extends ALAbstractBusinessServiceI
         }
 
         for (String idDroit : listIdDroit) {
-            ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(idDroit);
+            AnnonceRafamSearchModel rafamModel = ALImplServiceLocator.getAnnoncesRafamSearchService()
+                    .loadAnnoncesToSendForDroit(idDroit);
+            for(JadeAbstractModel model : rafamModel.getSearchResults()) {
+                AnnonceRafamModel annonce = (AnnonceRafamModel) model;
+                if(hasPrestationForAnnonce(search, annonce)) {
+                    ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSentForRecordNumber(annonce.getRecordNumber());
+                }
+            }
         }
+    }
+
+    private boolean hasPrestationForAnnonce(DetailPrestationSearchModel search, AnnonceRafamModel annonce) {
+        for (JadeAbstractModel abstractEnteteModel : search.getSearchResults()) {
+            DetailPrestationModel detail = (DetailPrestationModel) abstractEnteteModel;
+            String dateToTest = new Date(detail.getPeriodeValidite()).getSwissValue();
+            if (annonce.getIdDroit().equals(detail.getIdDroit())
+                && new Periode(annonce.getDebutDroit(), annonce.getEcheanceDroit()).isDateDansLaPeriode(dateToTest)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /*

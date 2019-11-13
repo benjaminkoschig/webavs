@@ -495,10 +495,10 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
         List<AnnonceRafamModel> annonceDejaAnnulee = new ArrayList<>();
 
         for(AnnonceRafamModel annonce : annonces){
-            if(!debDate.after(JadeDateUtil.getGlobazDate(annonce.getEcheanceDroit()))
-                    && !finDate.before(JadeDateUtil.getGlobazDate(annonce.getDebutDroit()))
-                    && !RafamTypeAnnonce._68C_ANNULATION.equals(RafamTypeAnnonce.getRafamTypeAnnonce(annonce.getTypeAnnonce()))
-                    && isEtatActive(RafamEtatAnnonce.getRafamEtatAnnonceCS(annonce.getEtat()))) {
+            if(!RafamTypeAnnonce._68C_ANNULATION.equals(RafamTypeAnnonce.getRafamTypeAnnonce(annonce.getTypeAnnonce()))
+                && isEtatActive(RafamEtatAnnonce.getRafamEtatAnnonceCS(annonce.getEtat()))
+                    && !debDate.after(JadeDateUtil.getGlobazDate(annonce.getEcheanceDroit()))
+                    && !finDate.before(JadeDateUtil.getGlobazDate(annonce.getDebutDroit()))) {
                 ALServiceLocator.getAnnonceRafamCreationService().create68cForAnnonce(annonce);
                 annonceDejaAnnulee.add(annonce);
             }

@@ -452,7 +452,6 @@ public class DecompteAdiBusinessServiceImpl implements DecompteAdiBusinessServic
         Map<String, List<AdiEnfantMoisComplexModel>> adiParDroit = getAdiParDroit(listAdi);
 
         for(String idDroit : adiParDroit.keySet()) {
-            ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(idDroit);
             ALServiceLocator.getAnnonceRafamCreationService().creerAnnoncesADI(adiParDroit.get(idDroit));
         }
 

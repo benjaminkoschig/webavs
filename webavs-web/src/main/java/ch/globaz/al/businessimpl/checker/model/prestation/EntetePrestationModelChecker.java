@@ -5,6 +5,8 @@ import ch.globaz.al.business.models.prestation.DetailPrestationModel;
 import ch.globaz.al.business.models.prestation.DetailPrestationSearchModel;
 import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
 import ch.globaz.al.business.models.rafam.AnnonceRafamSearchModel;
+import ch.globaz.common.domaine.Date;
+import ch.globaz.common.domaine.Periode;
 import globaz.jade.client.util.JadeCodesSystemsUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
@@ -397,13 +399,13 @@ public abstract class EntetePrestationModelChecker extends ALAbstractChecker {
             }
 
             for (String idDroit : listIdDroit) {
-                AnnonceRafamSearchModel annonceSearch = ALImplServiceLocator.getAnnoncesRafamSearchService().loadAnnoncesForDroit(idDroit);
+                AnnonceRafamSearchModel rafamModel = ALImplServiceLocator.getAnnoncesRafamSearchService()
+                        .loadAnnoncesToSendForDroit(idDroit);
                 // Si une annonce est à l'état A_TRANSMETTRE pour le droit alors l'annonce n'a pas été envoyée
                 boolean aTransmettre = false;
-                for(JadeAbstractModel abstractModel : annonceSearch.getSearchResults()) {
+                for(JadeAbstractModel abstractModel : rafamModel.getSearchResults()) {
                     AnnonceRafamModel annonce = (AnnonceRafamModel) abstractModel;
-                    if(annonce.getEtat() != null
-                            &&RafamEtatAnnonce.A_TRANSMETTRE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(annonce.getEtat()))){
+                    if(hasPrestationForAnnonce(search, annonce)) {
                         aTransmettre = true;
                     }
                 }
@@ -413,6 +415,18 @@ public abstract class EntetePrestationModelChecker extends ALAbstractChecker {
                 }
             }
         }
+    }
+
+    private static boolean hasPrestationForAnnonce(DetailPrestationSearchModel search, AnnonceRafamModel annonce) {
+        for (JadeAbstractModel abstractEnteteModel : search.getSearchResults()) {
+            DetailPrestationModel detail = (DetailPrestationModel) abstractEnteteModel;
+            String dateToTest = new Date(detail.getPeriodeValidite()).getSwissValue();
+            if (annonce.getIdDroit().equals(detail.getIdDroit())
+                    && new Periode(annonce.getDebutDroit(), annonce.getEcheanceDroit()).isDateDansLaPeriode(dateToTest)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
