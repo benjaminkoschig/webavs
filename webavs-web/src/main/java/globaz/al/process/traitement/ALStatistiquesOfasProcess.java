@@ -1606,15 +1606,15 @@ public class ALStatistiquesOfasProcess extends BProcess {
     private String getSqlCantons(String numeroCaisse) {
         String sql = "";
         sql = " SELECT " + " trim(pcouid) AS " + ALStatistiquesOfasProcess.REQUETE_CANTONS + " FROM " + " ( "
-                + " SELECT " + " csCan.PCOUID " + " FROM schema.aldetpre det LEFT OUTER "
+                + " SELECT " + " cs.PCOUID " + " FROM schema.aldetpre det LEFT OUTER "
                 + " JOIN schema.alentpre ent ON ent.mid = det.mid LEFT OUTER "
                 + " JOIN schema.aldos dos ON dos.eid = ent.eid LEFT OUTER "
                 + " JOIN schema.aldroit dro ON dro.fid = det.fid LEFT OUTER "
                 + " JOIN schema.alenfant enf ON enf.cid = dro.cid LEFT OUTER "
                 + " JOIN schema.titierp ti ON ti.htitie = enf.htitie LEFT OUTER "
                 + " JOIN schema.alalloc alloc ON alloc.bid = dos.bid LEFT OUTER "
-                + " JOIN schema.titierp tia on tia.htitie=alloc.htitie left outer "
-                + " join schema.fwcoup csCan on (ent.CSCANT = csCan.PCOSID and csCan.PLAIDE = 'F') "
+                + " JOIN schema.titierp tia on tia.htitie=alloc.htitie "
+                + addJointureCaisse()
                 + " inner join schema.alparam param on param.pparva = det.numcpt " + " WHERE " + " ( " + " ( " + " ( "
                 + " mdvc BETWEEN " + getStartDate(true) + " AND " + getEndDate(true) + " AND ent.cstatu <> 61230003 "
                 + " ) " + " OR (nvalid BETWEEN " + getStartDate(false) + " AND " + getEndDate(false)
@@ -1625,7 +1625,7 @@ public class ALStatistiquesOfasProcess extends BProcess {
         if (!JadeStringUtil.isBlank(numeroCaisse)) {
             sql += " AND ( ppacdi like 'rubrique.multicaisse." + numeroCaisse + ".%' ) ";
         }
-        sql += " ) " + " group by csCan.PCOUID " + " ) as REQUEST " + " group by PCOUID ";
+        sql += " ) " + " group by cs.PCOUID " + " ) as REQUEST " + " group by PCOUID ";
 
         sql = replaceSchemaInSqlQuery(sql);
         return sql;
