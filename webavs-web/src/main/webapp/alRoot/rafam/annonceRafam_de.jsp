@@ -111,10 +111,12 @@ function del() {
 }
 
 function init(){
-    if (<%=RafamEtatAnnonce.ARCHIVE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(viewBean.getAnnonce().getAnnonceRafamModel().getEtat()))%>) {
-        document.getElementById("btnArchive").style.display = 'none';
-    } else {
-        document.getElementById("btnDesarchive").style.display = 'none';
+    if(<%=isErreur208OR209%>){
+        if (<%=RafamEtatAnnonce.ARCHIVE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(viewBean.getAnnonce().getAnnonceRafamModel().getEtat()))%>) {
+            document.getElementById("btnArchive").style.display = 'none';
+        } else {
+            document.getElementById("btnDesarchive").style.display = 'none';
+        }
     }
 }
 
