@@ -233,6 +233,9 @@ public interface AnnonceRafamCreationService extends JadeApplicationService {
     public void creerAnnoncesNaissanceOnly(RafamEvDeclencheur evDecl, DroitComplexModel droit) throws JadeApplicationException,
             JadePersistenceException;
 
+    public void creerAnnoncesNotNaissance(RafamEvDeclencheur evDecl, DroitComplexModel droit) throws JadeApplicationException,
+            JadePersistenceException;
+
     public void creerAnnoncesSelonPrecedent(RafamEvDeclencheur evDecl, DossierComplexModel dossier, DroitComplexModel droit) throws JadeApplicationException,
             JadePersistenceException;
 
