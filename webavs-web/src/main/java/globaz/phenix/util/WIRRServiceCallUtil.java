@@ -13,7 +13,9 @@ import javax.net.ssl.SSLContext;
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
+
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wirrch.admin.bsv.xmlns.ebsv_2028_000101._1.Delivery;
@@ -100,9 +102,14 @@ public class WIRRServiceCallUtil {
                 sc.init(kmf.getKeyManagers(), null, null);
 
                 BindingProvider bindingProvider = (BindingProvider) port;
+
+                // Si la propriété ide.webservice.url.endpoint existe on surcharge l'adresse du endpoint
+                String endpoint = CommonProperties.WIRR_ENDPOINT_ADDRESS.getValue();
+                if (StringUtils.isNotEmpty(endpoint)) {
+                    bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,  endpoint);
+                }
                 bindingProvider.getRequestContext().put(SSL_SOCKET_FACTORY_JAX_WS_RI, sc.getSocketFactory());
                 bindingProvider.getRequestContext().put(SSL_SOCKET_FACTORY_ORACLE_JDK, sc.getSocketFactory());
-
             }
 
             Delivery requestDelivery = WIRRServiceMappingUtil.convertWirrDataBeanToRequestDelivery(wirrDataBean);
