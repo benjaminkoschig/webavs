@@ -7,7 +7,7 @@
 	</parent>
 
 	<artifactId>webavs-parent</artifactId>
-	<version>1.24.0-SNAPSHOT</version>
+	<version>1.23.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>WebAVS Parent</name>
 	<description>WebAVS system</description>
@@ -34,7 +34,7 @@
 		<!-- SCM ATTRIBUTES -->
 		<scm.path>webavs-repos</scm.path>
 		<scm.branch>1.23.0</scm.branch>
-		<scm.tags>${scm.protocol}://${scm.base}/tags</scm.tags>
+		<scm.tags>${scm.protocol}://${scm.base}/tags/webavs/</scm.tags>
 		<scm.url>${scm.protocol}://${scm.base}/branches/${scm.branch}/</scm.url>
 		<scm.weburl>http://${scm.base}/${scm.branch}/webavs-parent</scm.weburl>
 		<release.tagFormat>webavs/@{project.version}</release.tagFormat>
@@ -408,7 +408,7 @@
 			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>globaz-services</artifactId>
-				<version>1.0.6-2</version>
+				<version>1.0.6-3</version>
 				<exclusions>
 					<!--log4j is replaced with log4j-over-slf4j-->
 					<exclusion>
