@@ -174,6 +174,12 @@
     <logger name="globaz.jade.properties.JadePropertiesService" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
+    <logger name="globaz.jade.service.provider.JadeExportClient" level="OFF" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="globaz.jade.service.provider.JadeExportClient" level="WARN" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
 
     <!--    <logger name="globaz.apg" level="WARN" additivity="false">-->
 <!--        <appender-ref ref="STDOUT" />-->
