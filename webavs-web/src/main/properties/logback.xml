@@ -1,14 +1,11 @@
 <configuration>
 
-
 	<!-- Définition du dossier contenant les fichiers de logs -->
 	<property name="logFolderPath" value="D:/workspaces/avs/trunk/"/>
-	
-	
+
 	<!--  Configuration du nombre de jours pour l'historisation des fichiers de logs -->
 	<property name="fileHistory" value="10"/>
-	
-	
+
 	<!-- Configuration du logger responsable de récupérer les sortie console -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender" additivity="false">
         <encoder>
@@ -16,63 +13,50 @@
         </encoder>
     </appender>
 
-
 	<!-- Configuration du logger -->
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logFolderPath}webavs.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- daily rollover -->
-            <fileNamePattern>webavs.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>${fileHistory}</maxHistory>
-        </rollingPolicy>
-        <encoder>
-            <pattern><![CDATA[%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n]]></pattern>
-        </encoder>
-    </appender>
-    
-    
-    
+<!--    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+<!--        <file>${logFolderPath}webavs.log</file>-->
+<!--        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
+<!--            &lt;!&ndash; daily rollover &ndash;&gt;-->
+<!--            <fileNamePattern>webavs.%d{yyyy-MM-dd}.log</fileNamePattern>-->
+<!--            <maxHistory>${fileHistory}</maxHistory>-->
+<!--        </rollingPolicy>-->
+<!--        <encoder>-->
+<!--            <pattern><![CDATA[%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n]]></pattern>-->
+<!--        </encoder>-->
+<!--    </appender>-->
+
     <!--  Configuration des niveaux de log : TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF-->
     <!-- Configuration du niveau de log pour toutes les API/Produits Globaz -->
     <logger name="ch.globaz" level="INFO" additivity="false">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </logger>
     <logger name="globaz" level="INFO" additivity="false">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </logger>
     <logger name="globaz.jade.common" level="OFF" additivity="true">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </logger>
     <logger name="globaz.jade.service.castor" level="OFF" additivity="true">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </logger>
     <logger name="globaz.jade.service.provider" level="OFF" additivity="true">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </logger>
     <logger name="globaz.jade.smtp" level="OFF" additivity="true">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </logger>
     <logger name="globaz.jade.fs.JadeFsFacade" level="OFF" additivity="true">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </logger>
     <logger name="globaz.jade.job.server.JadeJobQueue" level="INFO" additivity="true">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </logger>
     <logger name="globaz.jade.publish.server.JadePublishQueue" level="INFO" additivity="true">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </logger>
     <logger name="globaz.jade.publish.server.JadePublishServer" level="INFO" additivity="true">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </logger>
     <logger name="globaz.jade.publish.process.JadePublishProcessPublishing" level="INFO" additivity="true">
         <appender-ref ref="STDOUT" />
@@ -80,82 +64,72 @@
     </logger>
     <logger name="globaz.jade.publish.server.JadePublishExecutionThread" level="OFF" additivity="true">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </logger>
     <logger name="globaz.jade.context.JadeThreadActivator" level="OFF" additivity="true">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </logger>
     <logger name="org.springframework.beans.TypeConverterDelegate" level="OFF" additivity="true">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </logger>
 
     <logger name="globaz.apg.process.APGenererStatsOFASProcess" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </logger>
 
     <logger name="globaz.jade.service.provider.socket.JadeExportServer" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </logger>
 
     <logger name="globaz.jade.sedex.SedexReceptionPass" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </logger>
 
     <logger name="globaz.jade.sedex.SedexReceptionPass" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </logger>
 
     <logger name="globaz.globall.db.BApplication" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </logger>
 
     <logger name="globaz.jade.service.provider.local.JadeExportClient" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </logger>
 
     <logger name="globaz.jade.persistence.mapping" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </logger>
 
     <logger name="globaz.globall.db.BEntity" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </logger>
 
     <logger name="globaz.jade.ged.adapter.airs" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </logger>
+<!--AFFICHAGE DES REQUETES SQL-->
+<!--    <logger name="globaz.jade.jdbc.JadeJdbcStatement" level="OFF" additivity="false">-->
+<!--        <appender-ref ref="STDOUT" />-->
+<!--    </logger>-->
+<!--    <logger name="globaz.jade.jdbc.JadeJdbcStatement" level="WARN" additivity="false">-->
+<!--        <appender-ref ref="STDOUT" />-->
+<!--    </logger>-->
+<!--    <logger name="globaz.jade.jdbc.JadeJdbcStatement" level="ERROR" additivity="false">-->
+<!--        <appender-ref ref="STDOUT" />-->
+<!--    </logger>-->
 
     <!--    <logger name="globaz.apg" level="WARN" additivity="false">-->
 <!--        <appender-ref ref="STDOUT" />-->
-<!--        <appender-ref ref="FILE" />-->
 <!--    </logger>-->
 <!--    <logger name="globaz.apg" level="INFO" additivity="false">-->
 <!--        <appender-ref ref="STDOUT" />-->
-<!--        <appender-ref ref="FILE" />-->
 <!--    </logger>-->
 <!--    <logger name="globaz.apg" level="DEBUG" additivity="false">-->
 <!--        <appender-ref ref="STDOUT" />-->
-<!--        <appender-ref ref="FILE" />-->
 <!--    </logger>-->
 
     <!-- Configuration du niveau de log pour toutes les API/Produits externes (root logger)-->        
     <root level="WARN" additivity="false">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </root>
-    
-    
-
-
 </configuration>
