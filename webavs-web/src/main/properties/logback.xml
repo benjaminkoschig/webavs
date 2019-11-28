@@ -71,102 +71,107 @@
     <logger name="org.springframework.beans.TypeConverterDelegate" level="OFF" additivity="true">
         <appender-ref ref="STDOUT" />
     </logger>
-
     <logger name="globaz.apg.process.APGenererStatsOFASProcess" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-
     <logger name="globaz.jade.service.provider.socket.JadeExportServer" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-
     <logger name="globaz.jade.sedex.SedexReceptionPass" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-
     <logger name="globaz.jade.sedex.SedexReceptionPass" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-
     <logger name="globaz.globall.db.BApplication" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-
     <logger name="globaz.jade.service.provider.local.JadeExportClient" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-
     <logger name="globaz.jade.persistence.mapping" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-
     <logger name="globaz.globall.db.BEntity" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-
     <logger name="globaz.jade.ged.adapter.airs" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
+    <logger name="globaz.jade.persistence.util.JadePersistenceUtil" level="OFF" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="globaz.jade.persistence.util.JadePersistenceUtil" level="ERROR" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
 <!--AFFICHAGE DES REQUETES SQL-->
-<!--    <logger name="globaz.jade.jdbc.JadeJdbcStatement" level="OFF" additivity="false">-->
-<!--        <appender-ref ref="STDOUT" />-->
-<!--    </logger>-->
-<!--    <logger name="globaz.jade.jdbc.JadeJdbcStatement" level="WARN" additivity="false">-->
-<!--        <appender-ref ref="STDOUT" />-->
-<!--    </logger>-->
-<!--    <logger name="globaz.jade.jdbc.JadeJdbcStatement" level="ERROR" additivity="false">-->
-<!--        <appender-ref ref="STDOUT" />-->
-<!--    </logger>-->
-
+    <logger name="globaz.jade.jdbc.JadeJdbcStatement" level="OFF" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="globaz.jade.jdbc.JadeJdbcStatement" level="WARN" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="globaz.jade.jdbc.JadeJdbcStatement" level="ERROR" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
     <logger name="globaz.jade.persistence.JadePersistenceManager" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-
     <logger name="globaz.jade.persistence.JadePersistenceManager" level="WARN" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-
     <logger name="globaz.jade.persistence.JadePersistenceManager" level="ERROR" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-
     <logger name="globaz.jade.publish.server.JadePublishServer" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-
     <logger name="globaz.jade.publish.server.JadePublishServer" level="WARN" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-
     <logger name="globaz.jade.ged.message.JadeGedDocument" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-
     <logger name="globaz.jade.ged.message.JadeGedDocument" level="WARN" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-
     <logger name="globaz.jade.daemon.daemons.JadeDaemonRunDaily" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-
     <logger name="globaz.jade.ged.target.JadeGedAdapterTarget" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-
     <logger name="globaz.jade.ged.target.JadeGedAdapterTarget" level="WARN" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-
     <logger name="globaz.jade.publish.provider.print.JadePublishResourceImpl" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-
     <logger name="globaz.jade.properties.JadePropertiesService" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-
     <logger name="globaz.jade.properties.JadePropertiesService" level="ERROR" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="globaz.jade.properties.JadePropertiesService" level="ERROR" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="globaz.jade.common.JadeSystemSnapshotThread" level="OFF" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="globaz.jade.common.JadeSystemSnapshotThread" level="WARN" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="ch.globaz.vulpecula.ws.handlers.MyProdisHandler" level="OFF" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="ch.globaz.vulpecula.ws.handlers.MyProdisHandler" level="ERROR" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="globaz.jade.persistence.mapping.JadeModelMappingProvider" level="OFF" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="globaz.jade.properties.JadePropertiesService" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
 
