@@ -147,13 +147,16 @@
     <logger name="globaz.jade.ged.target.JadeGedAdapterTarget" level="WARN" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-    <logger name="globaz.jade.publish.provider.print.JadePublishResourceImpl" level="OFF" additivity="false">
+    <logger name="globaz.jade.publish.provider.pdfimage.JadePublishResourceImpl" level="OFF" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="globaz.jade.publish.provider.pdfproperty.JadePublishResourceImpl" level="OFF" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="globaz.jade.publish.provider.pdftext.JadePublishResourceImpl" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
     <logger name="globaz.jade.properties.JadePropertiesService" level="OFF" additivity="false">
-        <appender-ref ref="STDOUT" />
-    </logger>
-    <logger name="globaz.jade.properties.JadePropertiesService" level="ERROR" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
     <logger name="globaz.jade.properties.JadePropertiesService" level="ERROR" additivity="false">
@@ -174,9 +177,32 @@
     <logger name="globaz.jade.persistence.mapping.JadeModelMappingProvider" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-    <logger name="globaz.jade.properties.JadePropertiesService" level="OFF" additivity="false">
+    <logger name="globaz.jade.fs.service.jsch.JadeFsService" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
+    <logger name="globaz.jade.fs.service.jsch.JadeFsService" level="WARN" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="globaz.jade.fs.service.jsch.JadeFsService" level="ERROR" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="globaz.jade.fs.service.ftp4.JadeFsService" level="OFF" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="globaz.jade.fs.service.ftp4.JadeFsService" level="WARN" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="globaz.jade.fs.service.ftp4.JadeFsService" level="ERROR" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <!-- TODO Revoir la classe / la gestion de l'exception -->
+    <logger name="globaz.globall.db.BSystemInfo" level="OFF" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <!-- TODO Revoir la classe / la gestion de l'exception -->
+<!--    <logger name="globaz.framework.printing.itext.FWIDocumentManager" level="OFF" additivity="false">-->
+<!--        <appender-ref ref="STDOUT" />-->
+<!--    </logger>-->
 
     <!--    <logger name="globaz.apg" level="WARN" additivity="false">-->
 <!--        <appender-ref ref="STDOUT" />-->
