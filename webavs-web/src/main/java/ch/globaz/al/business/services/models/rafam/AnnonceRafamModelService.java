@@ -47,6 +47,8 @@ public interface AnnonceRafamModelService extends JadeApplicationService {
      */
     public AnnonceRafamModel create(AnnonceRafamModel model) throws JadeApplicationException, JadePersistenceException;
 
+    public AnnonceRafamModel create(AnnonceRafamModel model, AnnonceRafamModel annonceOrigine) throws JadeApplicationException, JadePersistenceException;
+
     /**
      * Supprime <code>model</code> de la persistance
      * 

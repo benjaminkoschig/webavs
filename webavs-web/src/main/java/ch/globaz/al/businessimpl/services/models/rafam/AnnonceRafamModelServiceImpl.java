@@ -16,6 +16,7 @@ import ch.globaz.al.business.services.models.rafam.AnnonceRafamModelService;
 import ch.globaz.al.businessimpl.checker.model.rafam.AnnonceRafamModelChecker;
 import ch.globaz.al.businessimpl.services.ALAbstractBusinessServiceImpl;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import ch.globaz.common.domaine.Periode;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.exception.JadeApplicationException;
@@ -54,6 +55,17 @@ public class AnnonceRafamModelServiceImpl extends ALAbstractBusinessServiceImpl 
      */
     @Override
     public AnnonceRafamModel create(AnnonceRafamModel model) throws JadeApplicationException, JadePersistenceException {
+        return create(model, null);
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see ch.globaz.al.business.services.models.rafam.AnnoncesRafamModelService
+     * #create(ch.globaz.al.business.models.rafam.AnnoncesRafamModel)
+     */
+    @Override
+    public AnnonceRafamModel create(AnnonceRafamModel model, AnnonceRafamModel annonceOrigine) throws JadeApplicationException, JadePersistenceException {
 
         if (model == null) {
             throw new ALDossierModelException("Unable to add model (dossierModel) - the model passed is null!");
@@ -66,8 +78,15 @@ public class AnnonceRafamModelServiceImpl extends ALAbstractBusinessServiceImpl 
         } else {
 
             AnnonceRafamModel lastAnnonce = null;
-            lastAnnonce = ALImplServiceLocator.getAnnoncesRafamSearchService().getLastActive(model.getIdDroit(),
-                    RafamFamilyAllowanceType.getFamilyAllowanceType(model.getGenrePrestation()));
+
+            if(RafamFamilyAllowanceType.ADI.equals(RafamFamilyAllowanceType.getFamilyAllowanceType(model.getGenrePrestation()))
+                && annonceOrigine != null){
+                lastAnnonce = ALImplServiceLocator.getAnnoncesRafamSearchService().getLastActive(model.getIdDroit(),
+                        RafamFamilyAllowanceType.getFamilyAllowanceType(model.getGenrePrestation()), new Periode(annonceOrigine.getDebutDroit(), annonceOrigine.getEcheanceDroit()));
+            } else {
+                lastAnnonce = ALImplServiceLocator.getAnnoncesRafamSearchService().getLastActive(model.getIdDroit(),
+                        RafamFamilyAllowanceType.getFamilyAllowanceType(model.getGenrePrestation()));
+            }
 
             String lastAnnonceErreurRecordNumber = lastAnnonce.getRecordNumber();
 

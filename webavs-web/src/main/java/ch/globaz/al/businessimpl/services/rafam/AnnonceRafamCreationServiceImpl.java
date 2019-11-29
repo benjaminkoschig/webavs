@@ -89,7 +89,7 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
                     annonce.getRecordNumber());
 
             return ALServiceLocator.getAnnonceRafamModelService().create(
-                    ALImplServiceLocator.getInitAnnoncesRafamService().initAnnonce68c(annonce));
+                    ALImplServiceLocator.getInitAnnoncesRafamService().initAnnonce68c(annonce), annonce);
         }
     }
 
@@ -468,6 +468,14 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
 
     private TreeMap<Periode, Boolean> createPeriodes(List<AdiEnfantMoisComplexModel> listAdi) {
 
+        Collections.sort(listAdi, new Comparator<AdiEnfantMoisComplexModel>() {
+            @Override
+            public int compare(AdiEnfantMoisComplexModel a1, AdiEnfantMoisComplexModel a2) {
+                Date a2Mois = JadeDateUtil.getGlobazDate(JadeDateUtil.getFirstDateOfMonth(a2.getAdiEnfantMoisModel().getMoisPeriode()));
+                Date a1Mois = JadeDateUtil.getGlobazDate(JadeDateUtil.getFirstDateOfMonth(a1.getAdiEnfantMoisModel().getMoisPeriode()));
+                return a1Mois.compareTo(a2Mois);
+            }
+        });
         TreeMap<Periode, Boolean> periodes = new TreeMap<>();
         List<Periode> periodesZero = new ArrayList<>();
         List<Periode> periodesAdi = new ArrayList<>();
@@ -507,12 +515,25 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
             annonces.add((AnnonceRafamModel) abstractModel);
         }
 
+        annonces = getLastAnnonceFromRecordNumber(annonces);
+
         for (Periode periode : periodes.keySet()) {
             droitComplexModel.getDroitModel().setDebutDroit("01."+periode.getDateDebut());
             droitComplexModel.getDroitModel().setFinDroitForcee(JadeDateUtil.getLastDateOfMonth(periode.getDateFin()));
 
             annonces = genererAnnonceSelonAnnoncePrecedante(droitComplexModel, annonces, periode, periodes.get(periode));
         }
+    }
+
+    private List<AnnonceRafamModel> getLastAnnonceFromRecordNumber(List<AnnonceRafamModel> annonces) {
+        Map<String, AnnonceRafamModel> mapAnnonces = new HashMap<>();
+        for(AnnonceRafamModel annonce : annonces){
+            if(mapAnnonces.get(annonce.getRecordNumber()) == null
+                || Integer.valueOf(mapAnnonces.get(annonce.getRecordNumber()).getId()) < Integer.valueOf(annonce.getId())) {
+                mapAnnonces.put(annonce.getRecordNumber(), annonce);
+            }
+        }
+        return new ArrayList(mapAnnonces.values());
     }
 
     private List<AnnonceRafamModel> genererAnnonceSelonAnnoncePrecedante(

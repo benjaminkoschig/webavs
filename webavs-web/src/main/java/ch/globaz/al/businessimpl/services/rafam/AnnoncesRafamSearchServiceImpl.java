@@ -1,5 +1,6 @@
 package ch.globaz.al.businessimpl.services.rafam;
 
+import ch.globaz.common.domaine.Periode;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.exception.JadeApplicationException;
@@ -182,7 +183,7 @@ public class AnnoncesRafamSearchServiceImpl extends ALAbstractBusinessServiceImp
      * ch.globaz.al.business.constantes.enumerations.RafamFamilyAllowanceType)
      */
     @Override
-    public AnnonceRafamModel getLastActive(String idDroit, RafamFamilyAllowanceType type)
+    public AnnonceRafamModel getLastActive(String idDroit, RafamFamilyAllowanceType type, Periode periode)
             throws JadeApplicationException, JadePersistenceException {
 
         if (type == null) {
@@ -201,8 +202,21 @@ public class AnnoncesRafamSearchServiceImpl extends ALAbstractBusinessServiceImp
         etats.add(RafamEtatAnnonce.VALIDE.getCS());
         etats.add(RafamEtatAnnonce.ARCHIVE.getCS());
 
-        return this.getLastActive(idDroit, type, etats);
+        return this.getLastActive(idDroit, type, etats, periode);
 
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see ch.globaz.al.business.services.rafam.AnnoncesRafamSearchService#getLastActive(java.lang.String,
+     * ch.globaz.al.business.constantes.enumerations.RafamFamilyAllowanceType)
+     */
+    @Override
+    public AnnonceRafamModel getLastActive(String idDroit, RafamFamilyAllowanceType type)
+            throws JadeApplicationException, JadePersistenceException {
+
+        return this.getLastActive(idDroit, type, null);
     }
 
     /*
@@ -212,7 +226,7 @@ public class AnnoncesRafamSearchServiceImpl extends ALAbstractBusinessServiceImp
      * ch.globaz.al.business.constantes.enumerations.RafamFamilyAllowanceType, java.util.ArrayList)
      */
     @Override
-    public AnnonceRafamModel getLastActive(String idDroit, RafamFamilyAllowanceType type, ArrayList<String> etats)
+    public AnnonceRafamModel getLastActive(String idDroit, RafamFamilyAllowanceType type, ArrayList<String> etats, Periode periode)
             throws JadeApplicationException, JadePersistenceException {
 
         if (type == null) {
@@ -249,6 +263,13 @@ public class AnnoncesRafamSearchServiceImpl extends ALAbstractBusinessServiceImp
         for (int i = 0; i < search.getSize(); i++) {
 
             AnnonceRafamModel annonce68ab = (AnnonceRafamModel) search.getSearchResults()[i];
+
+            if(periode != null) {
+                Periode periodeToCompare = new Periode(annonce68ab.getDebutDroit(), annonce68ab.getEcheanceDroit());
+                if(!Periode.ComparaisonDePeriode.LES_PERIODES_SE_CHEVAUCHENT.equals(periodeToCompare.comparerChevauchement(periode))){
+                    continue;
+                }
+            }
 
             if (!processedRecordNumbers.contains(annonce68ab.getRecordNumber())) {
 

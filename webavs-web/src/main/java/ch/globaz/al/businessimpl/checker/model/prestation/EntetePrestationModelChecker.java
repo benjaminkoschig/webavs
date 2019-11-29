@@ -398,20 +398,22 @@ public abstract class EntetePrestationModelChecker extends ALAbstractChecker {
                 }
             }
 
+            String enteteCreationSpy = entetePrestationModel.getCreationSpy().substring(0, 8);
+
             for (String idDroit : listIdDroit) {
                 AnnonceRafamSearchModel rafamModel = ALImplServiceLocator.getAnnoncesRafamSearchService()
-                        .loadAnnoncesToSendForDroit(idDroit);
-                // Si une annonce est à l'état A_TRANSMETTRE pour le droit alors l'annonce n'a pas été envoyée
-                boolean aTransmettre = false;
+                        .loadAnnoncesForDroit(idDroit);
+
                 for(JadeAbstractModel abstractModel : rafamModel.getSearchResults()) {
                     AnnonceRafamModel annonce = (AnnonceRafamModel) abstractModel;
-                    if(hasPrestationForAnnonce(search, annonce)) {
-                        aTransmettre = true;
+                    String annnonceCreationSpy = annonce.getCreationSpy().substring(0, 8);
+
+                    if(annnonceCreationSpy.equals(enteteCreationSpy)
+                            && !RafamEtatAnnonce.A_TRANSMETTRE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(annonce.getEtat()))
+                            && hasPrestationForAnnonce(search, annonce)) {
+                        JadeThread.logError(EntetePrestationModelChecker.class.getName(),
+                                "al.prestation.entetePrestationModel.idEntete.deleteIntegrity.adi.rafam.envoyee");
                     }
-                }
-                if(!aTransmettre) {
-                    JadeThread.logError(EntetePrestationModelChecker.class.getName(),
-                            "al.prestation.entetePrestationModel.idEntete.deleteIntegrity.adi.rafam.envoyee");
                 }
             }
         }

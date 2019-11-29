@@ -685,7 +685,7 @@ public class DroitBusinessServiceImpl implements DroitBusinessService {
         // prestation générée dans les annonces "enregistrées"
         for (RafamFamilyAllowanceType currentType : typeDroitsCreated) {
             annoncesForDroit.add(ALImplServiceLocator.getAnnoncesRafamSearchService().getLastActive(idDroit,
-                    currentType, etats));
+                    currentType, etats, null));
         }
 
         return annoncesForDroit;

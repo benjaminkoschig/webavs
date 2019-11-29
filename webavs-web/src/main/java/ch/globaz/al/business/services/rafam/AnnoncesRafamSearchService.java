@@ -1,5 +1,6 @@
 package ch.globaz.al.business.services.rafam;
 
+import ch.globaz.common.domaine.Periode;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
@@ -141,6 +142,9 @@ public interface AnnoncesRafamSearchService extends JadeApplicationService {
     public AnnonceRafamModel getLastActive(String idDroit, RafamFamilyAllowanceType type)
             throws JadeApplicationException, JadePersistenceException;
 
+    public AnnonceRafamModel getLastActive(String idDroit, RafamFamilyAllowanceType type, Periode periode)
+            throws JadeApplicationException, JadePersistenceException;
+
     /**
      * Recherche l'annonce active pour un droit et un type de droit, dans l'un des états fourni dans la liste
      * 
@@ -182,7 +186,7 @@ public interface AnnoncesRafamSearchService extends JadeApplicationService {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    public AnnonceRafamModel getLastActive(String idDroit, RafamFamilyAllowanceType type, ArrayList<String> etats)
+    public AnnonceRafamModel getLastActive(String idDroit, RafamFamilyAllowanceType type, ArrayList<String> etats, Periode periode)
             throws JadeApplicationException, JadePersistenceException;
 
     /**
