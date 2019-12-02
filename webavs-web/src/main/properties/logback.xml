@@ -49,19 +49,6 @@
     <logger name="globaz.jade.fs.JadeFsFacade" level="OFF" additivity="true">
         <appender-ref ref="STDOUT" />
     </logger>
-    <logger name="globaz.jade.job.server.JadeJobQueue" level="INFO" additivity="true">
-        <appender-ref ref="STDOUT" />
-    </logger>
-    <logger name="globaz.jade.publish.server.JadePublishQueue" level="INFO" additivity="true">
-        <appender-ref ref="STDOUT" />
-    </logger>
-    <logger name="globaz.jade.publish.server.JadePublishServer" level="INFO" additivity="true">
-        <appender-ref ref="STDOUT" />
-    </logger>
-    <logger name="globaz.jade.publish.process.JadePublishProcessPublishing" level="INFO" additivity="true">
-        <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
-    </logger>
     <logger name="globaz.jade.publish.server.JadePublishExecutionThread" level="OFF" additivity="true">
         <appender-ref ref="STDOUT" />
     </logger>
@@ -196,10 +183,16 @@
     <logger name="globaz.jade.fs.service.ftp4.JadeFsService" level="ERROR" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-    <!-- TODO Revoir la classe / la gestion de l'exception -->
-    <logger name="globaz.globall.db.BSystemInfo" level="OFF" additivity="false">
+    <logger name="globaz.framework.security.FWSecurityLoginManager" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
+    <logger name="globaz.framework.security.FWSecurityLoginManager" level="WARN" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <!-- TODO Revoir la classe / la gestion de l'exception -->
+<!--    <logger name="globaz.globall.db.BSystemInfo" level="OFF" additivity="false">-->
+<!--        <appender-ref ref="STDOUT" />-->
+<!--    </logger>-->
     <!-- TODO Revoir la classe / la gestion de l'exception -->
 <!--    <logger name="globaz.framework.printing.itext.FWIDocumentManager" level="OFF" additivity="false">-->
 <!--        <appender-ref ref="STDOUT" />-->
