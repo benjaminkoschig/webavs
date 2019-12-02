@@ -559,6 +559,10 @@
 					<artifactId>jaxb-impl</artifactId>
 					<groupId>com.sun.xml.bind</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>commons-logging</artifactId>
+					<groupId>commons-logging</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
