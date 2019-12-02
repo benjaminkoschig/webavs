@@ -2,6 +2,7 @@ package globaz.pavo.process;
 
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.commons.nss.NSUtil;
+import globaz.draco.application.DSApplication;
 import globaz.draco.db.declaration.DSDeclarationListViewBean;
 import globaz.draco.db.declaration.DSDeclarationViewBean;
 import globaz.draco.db.inscriptions.DSDeclarationListeManager;
@@ -102,6 +103,7 @@ public class CIImportPucs4Process extends BProcess {
 
     private DeclarationSalaire declarationSalaire;
     private CIApplication appCI;
+    private DSApplication application;
 
     private String filename = "";
     private Map<String, Map<String, String>> mapAnneeMapTotalParCanton = new HashMap<String, Map<String, String>>();
@@ -132,6 +134,7 @@ public class CIImportPucs4Process extends BProcess {
     private boolean modeInscription = true;
     private boolean isErrorMontant = false;
     private boolean result = true;
+    private Boolean valideRemiseAZero = false;
     private String titreLog;
     private String numAffilieBase = "";
     private String Type = "";
@@ -923,7 +926,14 @@ public class CIImportPucs4Process extends BProcess {
                                 insc.setSoumis(false);
                             }
 
-                            insc.add(getTransaction());
+                            // Si le montantAVS et montantAF est null, alors, nous ne faisons pas l'inscription.
+                            if (valideRemiseAZero && JadeStringUtil.isBlankOrZero(montantCAF.getValue())
+                                    && JadeStringUtil.isBlankOrZero(montantAVS.getValue())) {
+                                errors.add(getSession().getLabel("MSG_REVENU_A_ZERO"));
+                                nbrInscriptionsErreur++;
+                            } else {
+                                insc.add(getTransaction());
+                            }
 
                             boolean differenceAc = false;
                             if (!DeclarationSalaireProvenance.fromValueWithOutException(provenance).isDan()
@@ -1710,6 +1720,10 @@ public class CIImportPucs4Process extends BProcess {
 
     private void initProcess() throws Exception {
         appCI = (CIApplication) GlobazServer.getCurrentSystem().getApplication(CIApplication.DEFAULT_APPLICATION_PAVO);
+
+
+        application = (DSApplication) globaz.globall.db.GlobazServer.getCurrentSystem().getApplication(DSApplication.DEFAULT_APPLICATION_DRACO);
+        valideRemiseAZero = application.isRemiseAZeroDAN();
 
         if (JadeStringUtil.isBlankOrZero(dateReceptionForced) && declarationSalaire.getTransmissionDate() != null) {
             dateReceptionForced = declarationSalaire.getTransmissionDate().getSwissValue();

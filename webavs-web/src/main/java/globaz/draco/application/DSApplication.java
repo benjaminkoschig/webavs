@@ -51,6 +51,7 @@ public class DSApplication extends globaz.globall.db.BApplication {
     public final static String TEXTE_CATEGORIE_PERSONNEL_IT = "texteCategoriePersonnelIt";
     public final static String TRI_AGENCE_COMMUNALE = "wantTriAgenceCom";
     public final static String VALIDATION_SPY_COMPLEMENT = "validationSpyComplement";
+    public final static String EXCLURE_IMPORT_LIGNE_A_ZERO = "exclure.importation.ligne.a.zero";
     public final static String COMPLEMENT_USER_VALIDATION_DS = "ValideDS";
     private IFormatData affileFormater = null;
     private BIApplication appMusca = null;
@@ -324,5 +325,9 @@ public class DSApplication extends globaz.globall.db.BApplication {
 
     public boolean wantTriAgenceComm() {
         return Boolean.valueOf(this.getProperty(DSApplication.TRI_AGENCE_COMMUNALE, "false").trim()).booleanValue();
+    }
+
+    public boolean isRemiseAZeroDAN() {
+        return Boolean.valueOf(this.getProperty(DSApplication.EXCLURE_IMPORT_LIGNE_A_ZERO, "false").trim()).booleanValue();
     }
 }
