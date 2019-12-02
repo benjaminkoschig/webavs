@@ -126,6 +126,7 @@
     <logger name="globaz.jade.persistence.JadePersistenceManager" level="ERROR" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
+<!--    -->
     <logger name="globaz.jade.publish.server.JadePublishServer" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
