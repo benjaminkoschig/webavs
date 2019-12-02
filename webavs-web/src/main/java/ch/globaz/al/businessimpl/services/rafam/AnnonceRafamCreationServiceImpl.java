@@ -353,8 +353,7 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
                     continue;
                 }
                 if(isPrimeNaissance(type)) {
-                    if (droit.getEnfantComplexModel().getEnfantModel().getAllocationNaissanceVersee()
-                        || JadeStringUtil.isBlankOrZero(droit.getEnfantComplexModel().getEnfantModel().getMontantAllocationNaissanceFixe())){
+                    if (droit.getEnfantComplexModel().getEnfantModel().getAllocationNaissanceVersee()){
                         continue;
                     }
                 }
