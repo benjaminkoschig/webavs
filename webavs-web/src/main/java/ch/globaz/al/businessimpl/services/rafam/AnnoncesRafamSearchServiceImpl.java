@@ -286,7 +286,7 @@ public class AnnoncesRafamSearchServiceImpl extends ALAbstractBusinessServiceImp
                 if (search68c.getSize() == 0) {
                     if (last68ab == null) {
                         last68ab = annonce68ab;
-                    } else {
+                    } else if(!RafamFamilyAllowanceType.ADI.equals(type)){
                         throw new ALAnnonceRafamException(
                                 "AnnoncesRafamSearchServiceImpl#getLastActive : Plusieurs annonces actives ont été trouvées pour le droit "
                                         + annonce68ab.getIdDroit());
