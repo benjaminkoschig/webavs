@@ -226,7 +226,7 @@ public class RECalculACORDemandeRenteAction extends PRDefaultAction {
 
         mainDispatcher.dispatch(viewBean, getAction());
 
-        if (viewBean.getMsgType().equals(FWViewBeanInterface.ERROR)) {
+        if (viewBean.getMsgType().equals(FWViewBeanInterface.ERROR) || viewBean.getMsgType().equals(FWViewBeanInterface.WARNING)) {
             forward(getRelativeURL(request, session) + RECalculACORDemandeRenteAction.VERS_ECRAN_DE, request, response);
         } else {
             goSendRedirectWithoutParameters(this.getUserActionURL(request,

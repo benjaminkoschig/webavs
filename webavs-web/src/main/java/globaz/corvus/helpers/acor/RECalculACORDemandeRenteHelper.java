@@ -77,6 +77,7 @@ import globaz.corvus.vb.acor.RECalculACORDemandeRenteViewBean;
 import globaz.corvus.vb.annonces.REAnnoncePonctuelleViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
+import globaz.framework.util.FWMessageFormat;
 import globaz.globall.api.BISession;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BManager;
@@ -689,7 +690,9 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
     final int CAS_RECALCUL_DEMANDE_VALIDEE = 2;
 
-    private final Map<String, String> mapDemandeReset = new HashMap<String, String>();
+    private final Map<String, String> mapDemandeReset = new HashMap<>();
+
+    private final Set<String> rentesWithoutBte = new HashSet<>();
 
     /**
      * DOCUMENT ME!
@@ -1618,7 +1621,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
             if (!JadeStringUtil.isEmpty(caViewbean.getContenuFeuilleCalculXML())) {
                 fCalcul = unmarshalXml(caViewbean.getContenuFeuilleCalculXML());
             }
-            if(fCalcul != null && fCalcul.getEvenement() != null){
+            if (fCalcul != null && fCalcul.getEvenement() != null) {
                 // On analyse filtre les évènements de la feuille de calcul pour ne garder que ceux qui possèdent une base de calcul dont la décision n'est pas vide.
                 filterEvents = fCalcul.getEvenement().stream().filter(evenement -> !evenement.getBasesCalcul().stream().filter(basesCalcul -> !basesCalcul.getDecision().isEmpty()).collect(Collectors.toList()).isEmpty()).collect(Collectors.toList());
             }
@@ -1862,11 +1865,24 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
         } finally {
             BSessionUtil.stopUsingContext(this);
         }
+        if (!rentesWithoutBte.isEmpty()) {
+            Iterator<String> iterator = rentesWithoutBte.iterator();
+            StringBuilder allNumber = new StringBuilder();
+            while (iterator.hasNext()) {
+                allNumber.append(iterator.next());
+                if (iterator.hasNext()) {
+                    allNumber.append(", ");
+                } else {
+                    allNumber.append(".");
+                }
+            }
+            viewBean.setMessage( FWMessageFormat.format(session.getLabel("JSP_BTE_MANUEL"), allNumber.toString()));
+            viewBean.setMsgType(FWViewBeanInterface.WARNING);
+        }
         if (!JadeStringUtil.isBlank(message)) {
             viewBean.setMessage(message);
             viewBean.setMsgType(FWViewBeanInterface.ERROR);
         }
-
         return viewBean;
     }
 
@@ -2221,10 +2237,14 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                     String an1 = null;
                     String an2 = null;
                     String an4 = null;
-                    if (Objects.nonNull(eachBaseCalcul.getBaseRam()) && Objects.nonNull(eachBaseCalcul.getBaseRam().getBte())) {
-                        an1 = String.valueOf(eachBaseCalcul.getBaseRam().getBte().getAn1());
-                        an2 = String.valueOf(eachBaseCalcul.getBaseRam().getBte().getAn2());
-                        an4 = String.valueOf(eachBaseCalcul.getBaseRam().getBte().getAn4());
+                    FCalcul.Evenement.BasesCalcul.BaseRam.Bte bte = null;
+                    if (Objects.nonNull(eachBaseCalcul.getBaseRam())) {
+                        bte = eachBaseCalcul.getBaseRam().getBte();
+                    }
+                    if (Objects.nonNull(bte)) {
+                        an1 = String.valueOf(bte.getAn1());
+                        an2 = String.valueOf(bte.getAn2());
+                        an4 = String.valueOf(bte.getAn4());
                     }
                     String tauxReductionAnticipation = null;
                     if (Objects.nonNull(eachBaseCalcul.getAnticipation()) && !eachBaseCalcul.getAnticipation().getTranche().isEmpty())
@@ -2240,6 +2260,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                                 String nss = eachPrestation.getBeneficiaire();
                                 String ddAAAAMMJJ = String.valueOf(eachPrestation.getRente().getDebutDroit());
 
+                                boolean baseCalculSimFound = false;
                                 for (RERenteAccordee eachRA : raManager.getContainerAsList()) {
                                     PRAssert.notIsNew(eachRA, null);
 
@@ -2260,6 +2281,22 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                                         if (Objects.nonNull(tauxReductionAnticipation)) {
                                             eachRA.setTauxReductionAnticipation(tauxReductionAnticipation);
                                             eachRA.update(transaction);
+                                        }
+
+                                        if (Objects.isNull(eachBaseCalcul.getAnalysePeriodes()) && isAnDecimalNonNull(bte) && !baseCalculSimFound) {
+                                            REBasesCalcul baseCalculSim = getBaseCalculSim(session, transaction, eachRA);
+                                            if (!JadeStringUtil.isBlankOrZero(baseCalculSim.getNombreAnneeBTE1()) || !JadeStringUtil.isBlankOrZero(baseCalculSim.getNombreAnneeBTE2()) || !JadeStringUtil.isBlankOrZero(baseCalculSim.getNombreAnneeBTE4())) {
+                                                an1 = baseCalculSim.getNombreAnneeBTE1();
+                                                an2 = baseCalculSim.getNombreAnneeBTE2();
+                                                an4 = baseCalculSim.getNombreAnneeBTE4();
+                                                rentesWithoutBte.remove(eachRA.getId());
+                                                baseCalculSimFound = true;
+                                            } else {
+                                                an1 = StringUtils.EMPTY;
+                                                an2 = StringUtils.EMPTY;
+                                                an4 = StringUtils.EMPTY;
+                                                rentesWithoutBte.add(eachRA.getId());
+                                            }
                                         }
 
                                         if (!JadeStringUtil.isBlankOrZero(an1) || !JadeStringUtil.isBlankOrZero(an2) || !JadeStringUtil.isBlankOrZero(an4)) {
@@ -2286,8 +2323,40 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
         }
     }
 
-    private void doMigrationBasesCalculRentesAccordee(final BSession session, final BTransaction transaction,
-                                                      final List<Long> rentesAccordees, final RECalculACORDemandeRenteViewBean viewBean) throws Exception {
+    private boolean isAnDecimalNonNull(FCalcul.Evenement.BasesCalcul.BaseRam.Bte bte) {
+        if (Objects.nonNull(bte) && Objects.nonNull(bte.getAnDecimal())) {
+            return bte.getAnDecimal() != 0.0;
+        }
+        return false;
+    }
+
+    private REBasesCalcul getBaseCalculSim(final BSession session, final BTransaction transaction, RERenteAccordee eachRA) throws Exception {
+        RERenteAccordeeManager raManager = new RERenteAccordeeManager();
+        raManager.setSession(session);
+        raManager.setForCodesPrestationsIn(eachRA.getCodePrestation());
+        raManager.setForCsEtatIn(IREPrestationAccordee.CS_ETAT_VALIDE + ", " + IREPrestationAccordee.CS_ETAT_PARTIEL + ", " + IREPrestationAccordee.CS_ETAT_DIMINUE);
+        raManager.setForIdTiersBeneficiaire(eachRA.getIdTiersBeneficiaire());
+        raManager.find(transaction, BManager.SIZE_NOLIMIT);
+
+        String idBaseCalculSim = StringUtils.EMPTY;
+        String dateFinDroitRente = StringUtils.EMPTY;
+        for (RERenteAccordee eachRente : raManager.getContainerAsList()) {
+            if (eachRente.getDateFinDroit().isEmpty()) {
+                idBaseCalculSim = eachRente.getIdBaseCalcul();
+                break;
+            } else {
+                if (dateFinDroitRente.compareTo(eachRente.getDateFinDroit()) < 0) {
+                    dateFinDroitRente = eachRente.getDateFinDroit();
+                    idBaseCalculSim = eachRente.getIdBaseCalcul();
+                }
+            }
+        }
+        REBasesCalcul baseCalculSim = new REBasesCalcul();
+        baseCalculSim.setIdBasesCalcul(idBaseCalculSim);
+        baseCalculSim.setSession(session);
+        baseCalculSim.retrieve(transaction);
+
+        return baseCalculSim;
     }
 
     private void doTraitementCIAdd(final BSession session, final BITransaction transaction, final KeyAP k,
