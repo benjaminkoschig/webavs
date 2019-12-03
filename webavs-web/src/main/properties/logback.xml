@@ -94,7 +94,7 @@
     <logger name="globaz.jade.persistence.util.JadePersistenceUtil" level="ERROR" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-<!--AFFICHAGE DES REQUETES SQL-->
+<!--AFFICHAGE DES REQUETES SQL - Commenter pour debug-->
     <logger name="globaz.jade.jdbc.JadeJdbcStatement" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
@@ -113,7 +113,7 @@
     <logger name="globaz.jade.persistence.JadePersistenceManager" level="ERROR" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
-<!--    -->
+<!--  End of affichage des requetes  -->
     <logger name="globaz.jade.publish.server.JadePublishServer" level="OFF" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
@@ -190,9 +190,9 @@
         <appender-ref ref="STDOUT" />
     </logger>
     <!-- TODO Revoir la classe / la gestion de l'exception -->
-<!--    <logger name="globaz.globall.db.BSystemInfo" level="OFF" additivity="false">-->
-<!--        <appender-ref ref="STDOUT" />-->
-<!--    </logger>-->
+    <logger name="globaz.globall.db.BSystemInfo" level="OFF" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
     <!-- TODO Revoir la classe / la gestion de l'exception -->
 <!--    <logger name="globaz.framework.printing.itext.FWIDocumentManager" level="OFF" additivity="false">-->
 <!--        <appender-ref ref="STDOUT" />-->
