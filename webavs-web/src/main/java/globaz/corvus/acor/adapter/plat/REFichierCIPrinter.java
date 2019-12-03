@@ -343,9 +343,8 @@ public class REFichierCIPrinter extends PRAbstractFichierPlatPrinter {
         this.writeEntier(writer, inscription.getProvenance());
 
         // 15. Champ spécial
-        this.writeChampVide(writer);
+        this.writeChampVideSansFinDeChamp(writer);
 
-        this.writeFinChamp(writer);
     }
 
     @Override
@@ -404,12 +403,11 @@ public class REFichierCIPrinter extends PRAbstractFichierPlatPrinter {
         // BZ 4574 si code cas special vide ou 00 ne rien mettre sinon mettre le
         // code cas special
         if (JadeStringUtil.isEmpty(inscription.getCodeSpecial()) || "00".equals(inscription.getCodeSpecial())) {
-            this.writeChampVide(writer);
+            this.writeChampVideSansFinDeChamp(writer);
         } else {
-            this.writeEntier(writer, inscription.getCodeSpecial());
+            this.writeEntierSansFinDeChamp(writer, inscription.getCodeSpecial());
         }
 
-        this.writeFinChamp(writer);
     }
 
 }

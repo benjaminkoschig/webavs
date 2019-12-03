@@ -45,7 +45,7 @@ public interface PRFichierACORPrinter {
     /**
      * Ecrit une ligne du contenu du fichier dans le stringBuffer.
      * 
-     * @param StringBuffer
+     * @param cmd
      *            le buffer dans lequel écrire
      * 
      * @throws PRACORException

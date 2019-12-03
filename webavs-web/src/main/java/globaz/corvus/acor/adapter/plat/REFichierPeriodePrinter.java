@@ -238,19 +238,6 @@ public class REFichierPeriodePrinter extends PRAbstractFichierPlatPrinter {
         // 2. type de periode
         this.writeAVS(writer, getTypePeriode(periode));
 
-        String propFormatPeriodeIJ = null;
-        try {
-            BIApplication ijApplication = GlobazSystem.getApplication(IJApplication.DEFAULT_APPLICATION_IJ);
-            propFormatPeriodeIJ = ijApplication.getProperty(IJApplication.PROPERTY_PERIODE_IJ_FORMAT_AAAMM);
-        } catch (Exception e) {
-            throw new PRACORException(e.toString(), e);
-        }
-
-        boolean propValue = false;
-        if (!JadeStringUtil.isEmpty(propFormatPeriodeIJ)) {
-            propValue = Boolean.valueOf(propFormatPeriodeIJ);
-        }
-
         if (ISFSituationFamiliale.CS_TYPE_PERIODE_IJ.equals(periode.getType())) {
             // si version AAAAMM
             if (isFormatPeriodeAAAAMM()) {
@@ -321,7 +308,6 @@ public class REFichierPeriodePrinter extends PRAbstractFichierPlatPrinter {
                         break;
                 }
             }
-            // String p = periode.getNoAvsDetenteurBTE();
 
         }
         if (isNSS) {
@@ -330,10 +316,7 @@ public class REFichierPeriodePrinter extends PRAbstractFichierPlatPrinter {
             this.writeChaine(writer, toWrite);
         }
 
-        this.writeChaine(writer, getSession().getCode(periode.getPays()));
-
-        this.writeFinChamp(writer);
-
+        this.writeChaineSansFinDeChamp(writer, getSession().getCode(periode.getPays()));
     }
 
     @Override
@@ -438,8 +421,6 @@ public class REFichierPeriodePrinter extends PRAbstractFichierPlatPrinter {
             this.writeChaine(writer, toWrite);
         }
 
-        this.writeChaine(writer, getSession().getCode(periode.getPays()));
-
-        this.writeFinChamp(writer);
+        this.writeChaineSansFinDeChamp(writer, getSession().getCode(periode.getPays()));
     }
 }

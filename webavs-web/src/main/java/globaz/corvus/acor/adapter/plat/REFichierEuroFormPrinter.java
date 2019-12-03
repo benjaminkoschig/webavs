@@ -10,8 +10,10 @@ import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
+import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.PRACORException;
 import globaz.prestation.acor.PRFichierACORPrinter;
+import globaz.prestation.acor.plat.PRAbstractFichierPlatPrinter;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
@@ -22,41 +24,43 @@ import globaz.pyxis.db.adressecourrier.TIPaysManager;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.tiers.TITiers;
 import globaz.pyxis.util.TIAdresseResolver;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
 import ch.globaz.common.domaine.Date;
 import ch.globaz.hera.business.constantes.ISFMembreFamille;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * <H1>Description</H1>
- * 
+ *
  * @author vre
  */
-public class REFichierEuroFormPrinter implements PRFichierACORPrinter {
-    
+public class REFichierEuroFormPrinter extends PRAbstractFichierPlatPrinter {
+
     private static final String IS_WANT_ADRESSE_COURRIER = "isWantAdresseCourrier";
 
-    private static final String FIELD_DEPARATOR = "\t";
-
-    private REACORDemandeAdapter adapter;
-    private String fileName;
     private boolean writed = false;
 
     public REFichierEuroFormPrinter(REACORDemandeAdapter adapter, String fileName) {
-        this.adapter = adapter;
-        this.fileName = fileName;
+        super(adapter, fileName);
+    }
+
+    private REACORDemandeAdapter adapter() {
+        return (REACORDemandeAdapter) parent;
     }
 
     @Override
     public void printLigne(StringBuffer buffer) throws PRACORException {
         try {
-            if (adapter.isDemandeSurvivant()) {
-                String idTiers = rechercherLeTiers(adapter.idTiersAssure());
+            if (adapter().isDemandeSurvivant()) {
+                String idTiers = rechercherLeTiers(adapter().idTiersAssure());
                 writeData(idTiers, buffer);
             } else {
-                writeData(adapter.idTiersAssure(), buffer);
+                writeData(adapter().idTiersAssure(), buffer);
             }
         } catch (Exception e) {
             throw new PRACORException(e.toString(), e);
@@ -100,7 +104,7 @@ public class REFichierEuroFormPrinter implements PRFichierACORPrinter {
 
     /**
      * Recherche les membres de la famille du tiers requérant
-     * 
+     *
      * @param idTiersRequerant
      * @return
      * @throws Exception
@@ -108,7 +112,7 @@ public class REFichierEuroFormPrinter implements PRFichierACORPrinter {
     protected ISFMembreFamilleRequerant[] getToutesLesMembresFamilles(String idTiersRequerant) throws Exception {
         // On recherche la sit famille du tiers requérant
         globaz.hera.api.ISFSituationFamiliale sf = SFSituationFamilialeFactory.getSituationFamiliale(
-                adapter.getSession(), ISFSituationFamiliale.CS_DOMAINE_STANDARD, idTiersRequerant);
+                adapter().getSession(), ISFSituationFamiliale.CS_DOMAINE_STANDARD, idTiersRequerant);
 
         // On récupère tous les membres de la famille
         ISFMembreFamilleRequerant[] membresFamille = sf.getMembresFamilleRequerant(idTiersRequerant);
@@ -120,12 +124,12 @@ public class REFichierEuroFormPrinter implements PRFichierACORPrinter {
         try {
             TITiers t = new TITiers();
             t.setIdTiers(idTiers);
-            t.setSession(adapter.getSession());
-            
-            TIAdresseDataSource adresse;            
+            t.setSession(adapter().getSession());
+
+            TIAdresseDataSource adresse;
             String prop = getWantAdresseCourrierProperties();
 
-            if("true".equals(prop)) {
+            if ("true".equals(prop)) {
                 adresse = t.getAdresseAsDataSource(IPTConstantesExternes.TIERS_ADRESSE_TYPE_COURRIER,
                         IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, JACalendar.todayJJsMMsAAAA(), true);
             } else {
@@ -134,25 +138,25 @@ public class REFichierEuroFormPrinter implements PRFichierACORPrinter {
             }
 
             // Informations sur du tiers
-            PRTiersWrapper tiers = PRTiersHelper.getTiersById(adapter.getSession(), idTiers);
+            PRTiersWrapper tiers = PRTiersHelper.getTiersById(adapter().getSession(), idTiers);
             // Informations sur le domicile
-            TIAdressePaiementData adressePaiement = PRTiersHelper.getAdressePaiementData(adapter.getSession(), adapter
-                    .getSession().getCurrentThreadTransaction(), idTiers,
+            TIAdressePaiementData adressePaiement = PRTiersHelper.getAdressePaiementData(adapter().getSession(), adapter()
+                            .getSession().getCurrentThreadTransaction(), idTiers,
                     IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, "", JACalendar.todayJJsMMsAAAA());
 
             // Writing des données
-            StringBuilder sb = writeDataToBuffer(tiers, adresse, adressePaiement);
+            StringBuffer sb = writeDataToBuffer(tiers, adresse, adressePaiement);
             buffer.append(sb.toString());
         } catch (Exception e) {
             JadeLogger.error(this, e);
         }
     }
-    
+
     private String getWantAdresseCourrierProperties() {
         String prop = null;
         try {
-            BSession session = adapter.getSession();
-            if("corvus".equalsIgnoreCase(session.getApplicationId())) {
+            BSession session = adapter().getSession();
+            if ("corvus".equalsIgnoreCase(session.getApplicationId())) {
                 prop = session.getApplication().getProperty(IS_WANT_ADRESSE_COURRIER);
             } else {
                 prop = null;
@@ -163,134 +167,109 @@ public class REFichierEuroFormPrinter implements PRFichierACORPrinter {
         return prop;
     }
 
-    private StringBuilder writeDataToBuffer(PRTiersWrapper tiers, TIAdresseDataSource adresse,
-            TIAdressePaiementData adressePaiement) throws Exception {
+    private StringBuffer writeDataToBuffer(PRTiersWrapper tiers, TIAdresseDataSource adresse,
+                                           TIAdressePaiementData adressePaiement) throws Exception {
 
-        StringBuilder data = new StringBuilder();
-        // NSS
+        StringBuffer data = new StringBuffer();
+        // 1. NSS
         if (tiers != null) {
-            data.append(putValue(tiers.getNSS()));
+            this.writeChaine(data, tiers.getNSS());
+        } else {
+            this.writeChampVide(data);
         }
         // Adresse domicile
         if (adresse != null) {
-            String rueEtNumero = manageValue(adresse.rue);
-            rueEtNumero += " ";
-            rueEtNumero += manageValue(adresse.numeroRue);
+            // 2. Numéro et rue
+            StringBuilder nomRue = new StringBuilder();
+            nomRue.append(adresse.rue).append(PRACORConst.CA_CHAINE_VIDE);
+            nomRue.append(adresse.numeroRue);
+            this.writeChaine(data, nomRue.toString().trim());
 
-            data.append(putValue(rueEtNumero));
-            data.append(putValue(adresse.localiteNom));
-            data.append(putValue(adresse.localiteNpa));
+            // 3. Localite
+            this.writeChaine(data, adresse.localiteNom);
+            // 4. Code postal
+            this.writeChaine(data, adresse.localiteNpa);
 
-            // Récupération du code pays
-            String codePays = "";
+            // 5. Récupération du code pays
+            String codePays = StringUtils.EMPTY;
             if (!JadeStringUtil.isBlankOrZero(adresse.paysIso)) {
                 TIPaysManager paysManager = new TIPaysManager();
-                paysManager.setSession(adapter.getSession());
+                paysManager.setSession(adapter().getSession());
                 paysManager.setForCodeIso(adresse.paysIso);
                 paysManager.find(BManager.SIZE_NOLIMIT);
                 if (!paysManager.getContainer().isEmpty()) {
                     codePays = ((TIPays) paysManager.getContainer().get(0)).getCodeCentrale();
                 }
             }
-
-            data.append(putValue(codePays));
+            this.writeChaine(data, codePays);
         }
         // Si pas d'adresse on insère des tabulations pour éviter un décalage dans Acor
         else {
-            data.append(" " + FIELD_DEPARATOR);
-            data.append(" " + FIELD_DEPARATOR);
-            data.append(" " + FIELD_DEPARATOR);
-            data.append(" " + FIELD_DEPARATOR);
+            this.writeChampVide(data);
+            this.writeChampVide(data);
+            this.writeChampVide(data);
+            this.writeChampVide(data);
         }
 
         // Adresse paiement du tiers
         if (adressePaiement != null) {
-            String nomPrenom = manageValue(adressePaiement.getNomTiers1());
-            nomPrenom += " ";
-            nomPrenom += manageValue(adressePaiement.getNomTiers2());
-            nomPrenom = nomPrenom.trim();
-
-            data.append(putValue(nomPrenom));
+            // 6. Nom du tiers
+            StringBuilder nomTiers = new StringBuilder();
+            nomTiers.append(adressePaiement.getNomTiers1()).append(PRACORConst.CA_CHAINE_VIDE);
+            nomTiers.append(adressePaiement.getNomTiers2());
+            this.writeChaine(data, nomTiers.toString().trim());
 
             String idTiersBanque = adressePaiement.getIdTiersBanque();
             TIAbstractAdresseData banque = null;
             if (!JadeStringUtil.isBlankOrZero(idTiersBanque)) {
-                banque = TIAdresseResolver.dataSourceAdr(adapter.getSession(), idTiersBanque,
+                banque = TIAdresseResolver.dataSourceAdr(adapter().getSession(), idTiersBanque,
                         IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE,
                         IConstantes.CS_AVOIR_ADRESSE_DOMICILE, "", JACalendar.todayJJsMMsAAAA(), true);
             }
 
             // Adresse de la banque
             if (banque != null) {
-                String nomBanque = manageValue(banque.getDesignation1_tiers());
-                nomBanque += " ";
-                nomBanque += manageValue(banque.getDesignation2_tiers());
-                nomBanque += " ";
-                nomBanque += manageValue(banque.getDesignation3_tiers());
-                nomBanque += " ";
-                nomBanque += manageValue(banque.getDesignation4_tiers());
-                nomBanque += " ";
-                nomBanque = nomBanque.trim();
+                // 7. Nom banque
+                StringBuilder banqueDesignation = new StringBuilder();
+                banqueDesignation.append(banque.getDesignation1_tiers()).append(PRACORConst.CA_CHAINE_VIDE);
+                banqueDesignation.append(banque.getDesignation2_tiers()).append(PRACORConst.CA_CHAINE_VIDE);
+                banqueDesignation.append(banque.getDesignation3_tiers()).append(PRACORConst.CA_CHAINE_VIDE);
+                banqueDesignation.append(banque.getDesignation4_tiers());
+                this.writeChaine(data, banqueDesignation.toString().trim());
 
-                data.append(putValue(nomBanque));
+                // 8. Numéro et rue
+                StringBuilder banqueAdresse = new StringBuilder();
+                banqueAdresse.append(banque.getRue()).append(PRACORConst.CA_CHAINE_VIDE);
+                banqueAdresse.append(banque.getNumero());
+                this.writeChaine(data,banqueAdresse.toString().trim());
 
-                String rueEtNumero = manageValue(banque.getRue());
-                rueEtNumero += " ";
-                rueEtNumero += manageValue(banque.getNumero());
-                rueEtNumero = rueEtNumero.trim();
-
-                data.append(putValue(rueEtNumero));
-                data.append(putValue(banque.getLocalite()));
-                data.append(putValue(banque.getNpa()));
-                data.append(putValue(banque.getIdPays()));
+                // 9. Localité
+                this.writeChaine(data,banque.getLocalite());
+                // 10. Code postal
+                this.writeChaine(data,banque.getNpa());
+                // 11. Code pays
+                this.writeChaine(data,banque.getIdPays());
             } else {
-                data.append(FIELD_DEPARATOR);
-                data.append(FIELD_DEPARATOR);
-                data.append(FIELD_DEPARATOR);
-                data.append(FIELD_DEPARATOR);
-                data.append(FIELD_DEPARATOR);
+                this.writeChampVide(data);
+                this.writeChampVide(data);
+                this.writeChampVide(data);
+                this.writeChampVide(data);
+                this.writeChampVide(data);
             }
 
-            data.append(putValue(adressePaiement.getSwift()));
+            // 12. swift
+            this.writeChaine(data, adressePaiement.getSwift());
             // Apparemment pour récupérer l'IBAN il ne faut pas utiliser la méthode getIban() mais getCompte()... ->
             // trop facile sinon
-            data.append(putValue(adressePaiement.getCompte()));
+            // 13. IBAN
+            this.writeChaine(data, adressePaiement.getCompte());
         }
         return data;
-    }
-
-    /**
-     * Gère le cas ou la valeur serait null ou une chaîne vide ET ajoute le caractère de séparation des champs
-     * 
-     * @param value
-     * @return @return la chaîne de caractère si non null, sinon une chaîne vide avec le caractère de séparation de
-     *         champs
-     */
-    private String putValue(String value) {
-        return manageValue(value) + FIELD_DEPARATOR;
-    }
-
-    /**
-     * Gère le cas ou la valeur serait null ou une chaîne vide
-     * 
-     * @param value La valeur à gérer
-     * @return la chaîne de caractère si non null, sinon une chaîne vide
-     */
-    private String manageValue(String value) {
-        // Permet de supprimer les double quotes " dans les données
-        String valueSansdoubleQuote = value.replaceAll("\"", "");
-
-        return JadeStringUtil.isBlank(valueSansdoubleQuote) ? "" : valueSansdoubleQuote;
     }
 
     @Override
     public void dispose() {
         // WTF ??
-    }
-
-    @Override
-    public String getNomFichier() {
-        return fileName;
     }
 
     @Override

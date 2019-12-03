@@ -448,7 +448,7 @@ public class REFichierAssuresPrinter extends PRAbstractFichierAssuresPrinter {
             // de la famille.
             // Pour le conjoint inconnu, on force sa date de naissance au
             // 01.01.1970
-            String dn = null;
+            String dn;
             if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU.equals(membre.getIdMembreFamille())) {
                 dn = "01.01.1970";
             } else {
@@ -492,7 +492,7 @@ public class REFichierAssuresPrinter extends PRAbstractFichierAssuresPrinter {
         // 6. etat civil de l'assuré (code RR)
         this.writeEntier(cmd, PRACORConst.csEtatCivilHeraToAcorForRentes(getSession(), csEtatCivil));
 
-        String nat = "";
+        String nat;
         // 7. code du pays de nationalité de l'assuré (code OFAS)
         if (!JadeStringUtil.isIntegerEmpty(csNationalite)) {
             nat = PRACORConst.csEtatToAcor(csNationalite);

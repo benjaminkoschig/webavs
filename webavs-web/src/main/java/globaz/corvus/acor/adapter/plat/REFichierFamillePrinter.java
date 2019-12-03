@@ -410,9 +410,8 @@ public class REFichierFamillePrinter extends PRAbstractFichierPlatPrinter {
         this.writeBoolean(writer, false);
 
         // 7. demi-rente de couple demandee
-        this.writeBoolean(writer, true);
+        this.writeBooleanSansFinDeChamp(writer, true);
 
-        ligne = null;
     }
 
     @Override
@@ -448,9 +447,7 @@ public class REFichierFamillePrinter extends PRAbstractFichierPlatPrinter {
         this.writeBoolean(writer, false);
 
         // 7. demi-rente de couple demandee
-        this.writeBoolean(writer, true);
-
-        ligne = null;
+        this.writeBooleanSansFinDeChamp(writer, true);
 
     }
 
