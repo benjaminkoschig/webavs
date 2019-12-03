@@ -107,6 +107,14 @@ public class REListeExcelAttestationsFiscalesNonSorties extends ExcelAbstractDoc
         if (REAttestationsFiscalesUtils.hasSeulementDecisionEnDecembre(uneFamille, anneeAsInteger)) {
             return "X";
         }
+        try{
+            if(REAttestationsFiscalesUtils.hasDecisionRetroDateCourantAndDecisionCourantDateRetro(uneFamille,getSession(),anneeAsInteger)){
+                return "X";
+            }
+        }catch (Exception e){
+            JadeLogger.debug(this, e.getMessage());
+        }
+
         return "";
     }
 

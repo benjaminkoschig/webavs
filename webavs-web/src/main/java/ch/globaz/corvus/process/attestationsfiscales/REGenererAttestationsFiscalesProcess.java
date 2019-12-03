@@ -13,8 +13,10 @@ import globaz.corvus.api.basescalcul.IREPrestationDue;
 import globaz.corvus.application.REApplication;
 import globaz.corvus.db.attestationsFiscales.REDonneesPourAttestationsFiscales;
 import globaz.corvus.db.attestationsFiscales.REDonneesPourAttestationsFiscalesManager;
+import globaz.corvus.db.rentesaccordees.REDecisionJointDemandeRenteManager;
 import globaz.corvus.db.rentesaccordees.REPrestationDue;
 import globaz.corvus.db.rentesaccordees.REPrestationsDuesManager;
+import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDuesJoinDecisionsManager;
 import globaz.corvus.excel.REListeExcelAttestationsFiscalesNonSorties;
 import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.topaz.REAttestationsFiscalesOO;
@@ -118,7 +120,10 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
             codesSystemesGenresRentes = codeSystemeService.getFamilleCodeSysteme("REGENRPRST");
 
             List<REFamillePourAttestationsFiscales> familles = recupererEtAgregerLesDonness();
+
+
             for (REFamillePourAttestationsFiscales uneFamille : familles) {
+
 
                 // Les familles avec que des rentes API sont écartées dans un lot spécifique -> pas d'attestation pour
                 // ces gens la !
@@ -154,7 +159,10 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                     famillesSansLot.add(uneFamille);
                     continue;
                 }
-
+                if (REAttestationsFiscalesUtils.hasDecisionRetroDateCourantAndDecisionCourantDateRetro(uneFamille, getSession(),getAnneeAsInteger())) {
+                    famillesSansLot.add(uneFamille);
+                    continue;
+                }
                 // Les lots 1 à 4 ne contiennent pas de rétroactif
                 if (analyseurLot1.isFamilleDansLot(uneFamille)) {
                     uneFamille.setHasRetroactif(false);

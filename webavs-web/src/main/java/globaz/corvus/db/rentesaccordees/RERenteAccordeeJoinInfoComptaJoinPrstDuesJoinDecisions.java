@@ -84,6 +84,7 @@ public class RERenteAccordeeJoinInfoComptaJoinPrstDuesJoinDecisions extends RERe
 
     private String idDecision = "";
     private String csTypeDecision = "";
+    private String dateDecision = "";
 
     public String getCsTypeDecision() {
         return csTypeDecision;
@@ -107,6 +108,7 @@ public class RERenteAccordeeJoinInfoComptaJoinPrstDuesJoinDecisions extends RERe
 
         idDecision = statement.dbReadNumeric(REDecisionEntity.FIELDNAME_ID_DECISION);
         csTypeDecision = statement.dbReadNumeric(REDecisionEntity.FIELDNAME_TYPE_DECISION);
+        dateDecision = statement.dbReadDateAMJ(REDecisionEntity.FIELDNAME_DATE_DECISION);
     }
 
     /**
@@ -140,5 +142,11 @@ public class RERenteAccordeeJoinInfoComptaJoinPrstDuesJoinDecisions extends RERe
     public void setIdDecision(String idDecision) {
         this.idDecision = idDecision;
     }
+    public String getDateDecision() {
+        return dateDecision;
+    }
 
+    public void setDateDecision(String dateDecision) {
+        this.dateDecision = dateDecision;
+    }
 }

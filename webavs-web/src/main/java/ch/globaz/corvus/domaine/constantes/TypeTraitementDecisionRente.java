@@ -66,4 +66,7 @@ public enum TypeTraitementDecisionRente {
     public Integer getCodeSysteme() {
         return codeSysteme;
     }
+    public String getCodeSystemAsString(){
+        return String.valueOf(codeSysteme);
+    }
 }

@@ -7,8 +7,12 @@ import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import ch.globaz.corvus.domaine.constantes.TypeDecisionRente;
+import ch.globaz.corvus.domaine.constantes.TypeTraitementDecisionRente;
 import globaz.corvus.db.attestationsFiscales.REAttestationFiscaleRentAccordOrdreVerse;
 import globaz.corvus.db.attestationsFiscales.REAttestationFiscaleRentAccordOrdreVerseManager;
+import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDuesJoinDecisions;
+import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDuesJoinDecisionsManager;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import org.apache.commons.lang.StringUtils;
@@ -840,5 +844,37 @@ public class REAttestationsFiscalesUtils {
             return LocalDate.parse("01." + dateFinDroit, formatter);
         }
         return LocalDate.of(annee.getYear(), Month.DECEMBER, 31);
+    }
+
+    public static boolean hasDecisionRetroDateCourantAndDecisionCourantDateRetro(REFamillePourAttestationsFiscales famille, BSession session,int anneeAsInteger) throws Exception {
+        boolean hasDecisionTypeRetroDateDecisionCourant = false;
+        boolean hasDecisionTypeCourantDateDecisionRetro= false;
+        Calendar calendar = new GregorianCalendar();
+        Date dateDecision;
+        for (RERentePourAttestationsFiscales uneRente : famille.getRentesDeLaFamille()) {
+            RERenteAccordeeJoinInfoComptaJoinPrstDuesJoinDecisionsManager manager = new RERenteAccordeeJoinInfoComptaJoinPrstDuesJoinDecisionsManager();
+            manager.setForIdRenteAccordee(uneRente.getIdRenteAccordee());
+            manager.setSession(session);
+            manager.find(BManager.SIZE_NOLIMIT);
+            if (manager.size() >= 2) {
+                for (int i = 0; i < manager.size(); i++) {
+                    RERenteAccordeeJoinInfoComptaJoinPrstDuesJoinDecisions renteDecision = (RERenteAccordeeJoinInfoComptaJoinPrstDuesJoinDecisions) manager
+                            .get(i);
+                    if(JadeDateUtil.isGlobazDate(renteDecision.getDateDecision())){
+                        calendar.setTime(JadeDateUtil.getGlobazDate(renteDecision.getDateDecision()));
+                        if(TypeTraitementDecisionRente.RETRO.getCodeSystemAsString().equals(renteDecision.getCsTypeDecision()) && calendar.get(Calendar.YEAR) == anneeAsInteger){
+                            hasDecisionTypeRetroDateDecisionCourant  = true;
+                        }
+                        if(TypeTraitementDecisionRente.COURANT.getCodeSystemAsString().equals(renteDecision.getCsTypeDecision())  &&calendar.get(Calendar.YEAR) < anneeAsInteger){
+                            hasDecisionTypeCourantDateDecisionRetro  = true;
+                        }
+                    }
+                }
+                return hasDecisionTypeRetroDateDecisionCourant && hasDecisionTypeCourantDateDecisionRetro;
+            }
+
+        }
+
+        return false;
     }
 }
