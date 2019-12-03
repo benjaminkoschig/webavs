@@ -71,7 +71,7 @@
 
     function checkWarningMessages() {
         warningObj = new Object();
-        warningObj.text = "<%=viewBean.getMessage()%>";
+        warningObj.text = "<%=globaz.framework.util.FWTextFormatter.slash(globaz.framework.util.FWTextFormatter.newLineToBr(viewBean.getMessage()), '\"')%>";
         if (warningObj.text != "") {
             showModalDialog('<%=servletContext%>/warningModalDlg.jsp', warningObj, 'dialogHeight:20;dialogWidth:25;status:no;resizable:no');
         }
