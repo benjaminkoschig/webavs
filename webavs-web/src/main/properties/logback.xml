@@ -194,19 +194,9 @@
         <appender-ref ref="STDOUT" />
     </logger>
     <!-- TODO Revoir la classe / la gestion de l'exception -->
-<!--    <logger name="globaz.framework.printing.itext.FWIDocumentManager" level="OFF" additivity="false">-->
-<!--        <appender-ref ref="STDOUT" />-->
-<!--    </logger>-->
-
-    <!--    <logger name="globaz.apg" level="WARN" additivity="false">-->
-<!--        <appender-ref ref="STDOUT" />-->
-<!--    </logger>-->
-<!--    <logger name="globaz.apg" level="INFO" additivity="false">-->
-<!--        <appender-ref ref="STDOUT" />-->
-<!--    </logger>-->
-<!--    <logger name="globaz.apg" level="DEBUG" additivity="false">-->
-<!--        <appender-ref ref="STDOUT" />-->
-<!--    </logger>-->
+    <logger name="globaz.framework.printing.itext.FWIDocumentManager" level="OFF" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
 
     <!-- Configuration du niveau de log pour toutes les API/Produits externes (root logger)-->        
     <root level="WARN" additivity="false">
