@@ -5,6 +5,9 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
 import ch.globaz.al.business.models.prestation.EntetePrestationModel;
 import ch.globaz.al.business.models.prestation.EntetePrestationSearchModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+
+import java.util.List;
 
 /**
  * Service de gestion de persistance des données des en-tête de prestation
@@ -116,4 +119,13 @@ public interface EntetePrestationModelService extends JadeApplicationService {
      */
     public EntetePrestationModel update(EntetePrestationModel entetePrestModel) throws JadeApplicationException,
             JadePersistenceException;
+
+    /**
+     * Métohde permettant de rechercher les prestations comptabilisées d'un dossier pour une période donnée
+     *
+     * @param idDossier L'ID du dossier contenant les prestations
+     * @param periode La période de la prestation (MM.yyyy)
+     * @return Le modèle de recherche contentant les prestations d'une période donné d'un dossier
+     */
+    public List<EntetePrestationModel> searchEntetesPrestationsComptabilisees(String idDossier, String periode) throws JadeApplicationException, JadePersistenceException;
 }

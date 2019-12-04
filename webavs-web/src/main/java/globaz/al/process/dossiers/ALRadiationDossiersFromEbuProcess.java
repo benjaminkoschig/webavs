@@ -1,5 +1,9 @@
 package globaz.al.process.dossiers;
 
+import ch.globaz.al.business.constantes.ALCSPrestation;
+import ch.globaz.al.business.models.prestation.EntetePrestationModel;
+import ch.globaz.al.business.models.prestation.EntetePrestationSearchModel;
+import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import globaz.al.process.ALAbsrtactProcess;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -11,9 +15,13 @@ import globaz.jade.log.JadeLogger;
 import globaz.jade.log.business.JadeBusinessMessage;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
 import globaz.jade.print.server.JadePrintDocumentContainer;
+
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+
 import ch.globaz.al.business.constantes.ALCSCopie;
 import ch.globaz.al.business.constantes.ALCSDossier;
 import ch.globaz.al.business.models.dossier.DossierComplexModel;
@@ -21,6 +29,7 @@ import ch.globaz.al.business.models.dossier.DossierModel;
 import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.business.services.affiliation.RadiationAffilieService;
 import ch.globaz.al.business.services.decision.DecisionBuilderService;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 public class ALRadiationDossiersFromEbuProcess extends ALAbsrtactProcess {
 
@@ -267,7 +276,7 @@ public class ALRadiationDossiersFromEbuProcess extends ALAbsrtactProcess {
 
     private void generationRestitutionPrestation(DossierComplexModel dossier) throws JadePersistenceException,
             JadeApplicationException {
-        if (JadeDateUtil.isDateMonthYearBefore(JadeDateUtil.convertDateMonthYear(dateRadiation), periode)) {
+        if (isGeneratadRestitutionPrestationNeeded(dossier)) {
             RadiationAffilieService serviceRadiation = ALServiceLocator.getRadiationAffilieService();
             serviceRadiation.genererPrestationForDossier(dossier, false, true);
         }
@@ -281,4 +290,46 @@ public class ALRadiationDossiersFromEbuProcess extends ALAbsrtactProcess {
         texteLibreCertificat = texteLibre;
     }
 
+    /**
+     * Méthode permettant de déterminer si des prestations / restitutions doivent être générées pour ce dossier selon certaines conditions
+     * Dont la date de radiation et période de la récap ainsi que les prestations comptabilisées du dossier
+     *
+     * @param dossier
+     * @return Vrai si des prestations / restitutions doivent être générées
+     * @throws JadeApplicationException
+     * @throws JadePersistenceException
+     */
+    private boolean isGeneratadRestitutionPrestationNeeded(DossierComplexModel dossier) throws JadeApplicationException, JadePersistenceException {
+        return JadeDateUtil.isDateMonthYearBefore(JadeDateUtil.convertDateMonthYear(dateRadiation), periode) ||
+                (isRadiationPeriodeSameMonth(dateRadiation) && hasPrestationsComptabilises(dossier));
+
+    }
+
+    /**
+     * Méthode permettant de vérifier si le dossier possède déjà des prestations comptabilisées pour une période donnée
+     * Ce test a dû être rajouté suite au point PCA-584 car il doit être possible de clôturer des récap (et donc radier des dossier)
+     * même après avoir lancer la génération des prestations provenant de la gestion des processus du module AF
+     *
+     * @param dossier
+     * @return
+     * @throws JadeApplicationException
+     * @throws JadePersistenceException
+     */
+    private boolean hasPrestationsComptabilises(DossierComplexModel dossier) throws JadeApplicationException, JadePersistenceException {
+            List<EntetePrestationModel> prestations = ALServiceLocator.getEntetePrestationModelService().searchEntetesPrestationsComptabilisees(dossier.getId(), periode);
+            return !prestations.isEmpty();
+    }
+
+    /**
+     * Méthode permettant de tester si deux date ont un mois et une année identique (MM.yyyy)
+     * Ce test a dû être rajouté suite au point PCA-584 car seul les dossiers qui sont radiés pour le même mois de la récap
+     * doivent être impacté
+     *
+     * @param dateRadiation
+     * @return Vrai si le mois et l'année de la date de radiation est la même que la période
+     */
+    private boolean isRadiationPeriodeSameMonth(String dateRadiation) {
+        ch.globaz.common.domaine.Date radiation = new ch.globaz.common.domaine.Date(dateRadiation);
+        return radiation.equalsByMonthYear(new ch.globaz.common.domaine.Date(periode));
+    }
 }

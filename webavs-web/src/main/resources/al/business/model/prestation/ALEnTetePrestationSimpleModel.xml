@@ -88,6 +88,16 @@
 			    </search-group>	
 			</search-group>
 		</search-definition>
+		<search-definition name="prestationExistanteSelonEtat">
+			<search-group operator="AND">
+				<search-field name="forIdDossier" field-ref="idDossier" operation="EQUALS"/>
+				<search-field name="forEtat" field-ref="etatPrestation" operation="EQUALS"/>
+				<search-group operator="AND">
+					<search-field name="forPeriode" field-ref="periodeDe" operation="LESS_OR_EQUALS"/>
+					<search-field name="forPeriode" field-ref="periodeA" operation="GREATER_OR_EQUALS"/>
+				</search-group>
+			</search-group>
+		</search-definition>
 		<search-definition name="prestationExistantePositive">
 			<search-group operator="AND">
 				<search-field name="forIdDossier" field-ref="idDossier" operation="EQUALS"/>

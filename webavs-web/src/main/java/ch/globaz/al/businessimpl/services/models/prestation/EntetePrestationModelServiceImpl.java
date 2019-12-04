@@ -1,11 +1,9 @@
 package ch.globaz.al.businessimpl.services.models.prestation;
 
-import ch.globaz.al.business.constantes.enumerations.RafamEtatAnnonce;
 import ch.globaz.al.business.exceptions.model.prestation.ALDetailPrestationModelException;
 import ch.globaz.al.business.models.prestation.DetailPrestationModel;
 import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
 import ch.globaz.al.business.models.rafam.AnnonceRafamSearchModel;
-import ch.globaz.al.business.services.rafam.AnnoncesRafamSearchService;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Periode;
 import globaz.jade.client.util.JadeNumericUtil;
@@ -25,7 +23,6 @@ import ch.globaz.al.businessimpl.checker.model.prestation.EntetePrestationModelC
 import ch.globaz.al.businessimpl.services.ALAbstractBusinessServiceImpl;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import globaz.jade.persistence.model.JadeAbstractModel;
-import globaz.jade.persistence.model.JadeAbstractSearchModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -264,5 +261,20 @@ public class EntetePrestationModelServiceImpl extends ALAbstractBusinessServiceI
 
         // ajoute la mise à jour dans la persistence et le retourne
         return (EntetePrestationModel) JadePersistenceManager.update(enTetePrestModel);
+    }
+
+    @Override
+    public List<EntetePrestationModel> searchEntetesPrestationsComptabilisees(String idDossier, String periode) throws JadeApplicationException, JadePersistenceException {
+        List<EntetePrestationModel> entetesPrestations = new ArrayList<>();
+        EntetePrestationSearchModel searchPrest = new EntetePrestationSearchModel();
+        searchPrest.setForIdDossier(idDossier);
+        searchPrest.setForPeriode(periode);
+        searchPrest.setForEtat(ALCSPrestation.ETAT_CO);
+        searchPrest.setWhereKey("prestationExistanteSelonEtat");
+        searchPrest = ALServiceLocator.getEntetePrestationModelService().search(searchPrest);
+        for (int j = 0; j < searchPrest.getSize(); j++) {
+            entetesPrestations.add((EntetePrestationModel) searchPrest.getSearchResults()[j]);
+        }
+        return entetesPrestations;
     }
 }

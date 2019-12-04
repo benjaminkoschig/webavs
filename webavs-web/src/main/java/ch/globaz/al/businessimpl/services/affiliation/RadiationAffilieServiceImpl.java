@@ -34,6 +34,7 @@ import ch.globaz.al.business.services.models.dossier.DossierBusinessService;
 import ch.globaz.al.business.services.models.droit.DroitModelService;
 import ch.globaz.al.businessimpl.services.ALAbstractBusinessServiceImpl;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import org.apache.commons.lang.StringUtils;
 
 public class RadiationAffilieServiceImpl extends ALAbstractBusinessServiceImpl implements RadiationAffilieService {
 
@@ -152,7 +153,7 @@ public class RadiationAffilieServiceImpl extends ALAbstractBusinessServiceImpl i
             int nbMonthToAdd = 1;
             // Si la génération provient du module E-Business, les prestations doivent être générées depuis le mois concerné
             // Notamment si la date de radiation est durant le mois et non le dernier jour du mois (restit au prorata)
-            if(isFromEbu){
+            if(isFromEbu && !isDateRadiationLastDayOfMonth(dossier.getDossierModel().getFinValidite())){
                 nbMonthToAdd = 0;
             }
             String debutPeriode = JadeDateUtil.convertDateMonthYear(JadeDateUtil.addMonths(
@@ -185,6 +186,17 @@ public class RadiationAffilieServiceImpl extends ALAbstractBusinessServiceImpl i
             return new DetailPrestationComplexSearchModel();
         }
 
+    }
+
+    /**
+     * Méthode permettant de vérifier si la date passée en paramètre est le dernier jour du mois
+     * Point PCA-602, si la radiation est le dernier jour du mois, pas besoin de créer de restit pour ce mois-là
+     *
+     * @param finValidite
+     * @return Vrai si la date (dd.MM.yyyy) est le dernier jour du mois
+     */
+    private boolean isDateRadiationLastDayOfMonth(String finValidite) {
+        return StringUtils.equals(finValidite, JadeDateUtil.getLastDateOfMonth(finValidite));
     }
 
     @Override
