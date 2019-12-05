@@ -1390,7 +1390,7 @@ public class AFApercuReleve extends BEntity {
             manager.filtrerPeriodicites(true);
         }
 
-        manager.find();
+        manager.find(BManager.SIZE_NOLIMIT);
 
         clearCotisationList();
         FWCurrency totalCotisation = new FWCurrency(0.0);
