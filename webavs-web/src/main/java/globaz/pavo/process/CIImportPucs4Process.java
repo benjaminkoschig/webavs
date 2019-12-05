@@ -1069,7 +1069,7 @@ public class CIImportPucs4Process extends BProcess {
                         montantInscriptionsNegatives, hNbrInscriptionsTotalControle, nbrInscriptionsTotalControle,
                         hMontantTotalControle, montantTotalControle, key);
             }
-            if(JadeStringUtil.isBlankOrZero(montantAVS.getValue())) {
+            if(valideRemiseAZero && JadeStringUtil.isBlankOrZero(montantAVS.getValue())) {
                 Long value = (Long) hNbrInscriptionsErreur.get(key);
                 hNbrInscriptionsErreur.put(key, new Long(value.longValue() + nbrInscriptionsErreur));
                 totalErreur = totalErreur + nbrInscriptionsErreur;
