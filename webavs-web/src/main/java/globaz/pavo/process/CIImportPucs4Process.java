@@ -57,15 +57,9 @@ import globaz.webavs.common.CommonExcelmlContainer;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
+
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
@@ -1070,6 +1064,9 @@ public class CIImportPucs4Process extends BProcess {
                         hMontantTotalControle, montantTotalControle, key);
             }
             if(valideRemiseAZero && JadeStringUtil.isBlankOrZero(montantAVS.getValue())) {
+                if (Objects.isNull(hNbrInscriptionsErreur.get(key))) {
+                    hNbrInscriptionsErreur.put(key, new Long(0L));
+                }
                 Long value = (Long) hNbrInscriptionsErreur.get(key);
                 hNbrInscriptionsErreur.put(key, new Long(value.longValue() + nbrInscriptionsErreur));
                 totalErreur = totalErreur + nbrInscriptionsErreur;
