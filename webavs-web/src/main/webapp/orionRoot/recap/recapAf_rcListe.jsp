@@ -47,7 +47,9 @@
 		<td></td>
 		<TD class="mtd" width="">
 			<%
-				if(recap.getControleManuelle() != null  && recap.getControleManuelle() && recap.getStatut().equals(StatutRecapAfWebAvsEnum.A_TRAITER)){
+				if(recap.getControleManuelle() != null  && recap.getControleManuelle()
+						&& (StatutRecapAfWebAvsEnum.GENEREE.equals(recap.getStatut()) || StatutRecapAfWebAvsEnum.TRAITEE.equals(recap.getStatut())
+							|| StatutRecapAfWebAvsEnum.AUCUN_CHANGEMENT.equals(recap.getStatut()))){
 			%>
 				<ct:menuPopup menu="orion-optionsrecapitulationsaf" detailLabelId="MENU_OPTION_DETAIL" detailLink="<%=detailLink + recap.getIdRecap()%>">
 					<ct:menuParam key="selectedId" value="<%=recap.getIdRecap().toString()%>"/>
