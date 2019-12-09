@@ -190,8 +190,8 @@ public class CO00ARappelPaiementCapCgas extends CODocumentManager {
            LOG.error("A error occured while retrieving the address of the addressee.", e);
         }
         try {
-            super.setParametres(COParameter.P_ADRESSE, getBvr().getAdresseBVR());
-            super.setParametres(COParameter.P_ADRESSECOPY, getBvr().getAdresseBVR());
+            super.setParametres(COParameter.P_ADRESSE, getBvr().getAdresse());
+            super.setParametres(COParameter.P_ADRESSECOPY, getBvr().getAdresse());
             super.setParametres(COParameter.P_COMPTE, getBvr().getNumeroCC());// numéro CC
             super.setParametres(COParameter.P_VERSE, getBvr().getLigneReference() + "\n" + adresseDebiteur);
             super.setParametres(COParameter.P_PAR, adresseDebiteur);

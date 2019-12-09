@@ -41,7 +41,7 @@ public class DocumentDecompteBVR extends VulpeculaDocumentManager<DecompteContai
     /**
      * Constructeur, on l'on passe les décomptes que l'on désire imprimer
      * 
-     * @param decomptes List<Decompte>
+     * @param decompteContainer List<Decompte>
      * @throws Exception
      */
     public DocumentDecompteBVR(final DecompteContainer decompteContainer) throws Exception {

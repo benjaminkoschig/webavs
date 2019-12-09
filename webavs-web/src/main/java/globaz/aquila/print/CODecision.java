@@ -253,8 +253,8 @@ public class CODecision extends CODocumentManager {
             super.setParametres(COParameter.P_FRANC + "_X", CODecision.MONTANT_DEFAUT);
             super.setParametres(COParameter.P_CENTIME + "_X", CODecision.CENT_DEFAUT);
 
-            super.setParametres(COParameter.P_ADRESSE, getBvr().getAdresseBVR());
-            super.setParametres(COParameter.P_ADRESSECOPY, getBvr().getAdresseBVR());
+            super.setParametres(COParameter.P_ADRESSE, getBvr().getAdresse());
+            super.setParametres(COParameter.P_ADRESSECOPY, getBvr().getAdresse());
             super.setParametres(COParameter.P_COMPTE, getBvr().getNumeroCC());// numéro
             // CC
             super.setParametres(COParameter.P_VERSE, getBvr().getLigneReference() + "\n" + adresseDebiteur);
@@ -273,7 +273,7 @@ public class CODecision extends CODocumentManager {
     /**
      * corps du doc
      * 
-     * @param body
+     * @param key
      * @throws Exception
      */
     private void initCorpsDoc(Object key) throws Exception {

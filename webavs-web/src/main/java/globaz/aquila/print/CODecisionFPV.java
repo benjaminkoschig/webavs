@@ -215,8 +215,8 @@ public class CODecisionFPV extends CODocumentManager {
             super.setParametres(COParameter.P_FRANC + "_X", CODecisionFPV.MONTANT_DEFAUT);
             super.setParametres(COParameter.P_CENTIME + "_X", CODecisionFPV.CENT_DEFAUT);
 
-            super.setParametres(COParameter.P_ADRESSE, getBvr().getAdresseBVR());
-            super.setParametres(COParameter.P_ADRESSECOPY, getBvr().getAdresseBVR());
+            super.setParametres(COParameter.P_ADRESSE, getBvr().getAdresse());
+            super.setParametres(COParameter.P_ADRESSECOPY, getBvr().getAdresse());
             super.setParametres(COParameter.P_COMPTE, getBvr().getNumeroCC());// numéro
             // CC
             super.setParametres(COParameter.P_VERSE, getBvr().getLigneReference() + "\n" + adresseDebiteur);

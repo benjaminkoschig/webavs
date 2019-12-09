@@ -191,8 +191,8 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
             getBvr().setSession(getSession());
             getBvr().setBVR(echeance);
 
-            this.setParametres(CAILettrePlanRecouvParam.P_ADRESSE, getBvr().getAdresseBVR());
-            this.setParametres(CAILettrePlanRecouvParam.P_ADRESSECOPY, getBvr().getAdresseBVR());
+            this.setParametres(CAILettrePlanRecouvParam.P_ADRESSE, getBvr().getAdresse());
+            this.setParametres(CAILettrePlanRecouvParam.P_ADRESSECOPY, getBvr().getAdresse());
             this.setParametres(CAILettrePlanRecouvParam.P_COMPTE, getBvr().getNumeroCC());
 
             this.setParametres(CAILettrePlanRecouvParam.P_VERSE, getBvr().getLigneReference() + "\n" + adresseDebiteur);
@@ -324,7 +324,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
     }
 
     /**
-     * @param string
+     * @param d
      *            La nouvelle valeur de la propriété
      */
     public void setCumulSolde(double d) {
@@ -350,7 +350,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
     }
 
     /**
-     * @param string
+     * @param langueDoc
      *            La nouvelle valeur de la propriété
      */
     public void setLangueDocument(String langueDoc) {
@@ -371,7 +371,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
     }
 
     /**
-     * @param string
+     * @param planRecouvrement
      *            La nouvelle valeur de la propriété
      */
     public void setPlanRecouvrement(CAPlanRecouvrement planRecouvrement) {

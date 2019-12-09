@@ -351,7 +351,7 @@ public class CASommation extends CADocumentContentieux {
      * Insérez la description de la méthode ici. Date de création : (07.05.2003 13:06:03)
      * 
      * @return java.lang.String
-     * @param param
+     * @param textString
      *            java.lang.String
      * @param delim
      *            java.lang.String
@@ -385,7 +385,7 @@ public class CASommation extends CADocumentContentieux {
     /**
      * Insérez la description de la méthode ici. Date de création : (12.06.2002 10:50:40)
      * 
-     * @param modePervisionnel
+     * @param booleen
      *            boolean
      */
     @Override

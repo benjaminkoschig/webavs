@@ -1,8 +1,5 @@
 package globaz.osiris.db.utils;
 
-import globaz.babel.api.ICTDocument;
-import globaz.babel.api.ICTListeTextes;
-import globaz.babel.api.ICTTexte;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
@@ -11,7 +8,6 @@ import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.musca.application.FAApplication;
 import globaz.musca.db.facturation.FAEnteteFacture;
-import globaz.musca.itext.FAImpressionFacturation;
 import globaz.osiris.api.APISection;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.access.recouvrement.CAEcheancePlan;
@@ -20,20 +16,14 @@ import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CACompteAnnexeManager;
 import globaz.osiris.db.comptes.CASection;
 import globaz.osiris.parser.IntReferenceBVRParser;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * @author sel Créé le : 6 déc. 06
  */
-public class CAReferenceBVR {
+public class CAReferenceBVR extends AbstractCAReference{
     // Variables nécessaire pour récupérer le noAdhérent dans le catalogue de
     // texte
-    private static Map documents = null;
     public static final String IDENTIFIANT_REF_IDCOMPTEANNEXE = "99";
-    private static final String DOMAINE_FACTURATION = FAImpressionFacturation.DOMAINE_FACTURATION;
-
     private static final String ERROR_MONTANT_NEGATIF = "Error : Montant négatif !";
     private static int lengthIdRole = Integer.MIN_VALUE;
     private static int lengthRefDebiteur = Integer.MIN_VALUE;
@@ -43,20 +33,14 @@ public class CAReferenceBVR {
     private static final int MAX_LENGTH_REFERENCE = 26; // +1 du modulo de contrôle = les 27 positions
 
     public static final String OCRB_NON_FACTURABLE = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
-    public static final String REFERENCE_NON_FACTURABLE = "XXXXXXXXXXXXXXXXX";
-    private static final String RETOUR_LIGNE = "\n";
-    private static final String TEXTE_INTROUVABLE = "[TEXTE INTROUVABLE]";
-
-    private static final String TYPE_FACTURE = FAImpressionFacturation.TYPE_FACTURE;
 
     private Boolean forcerBV = false;
-    private String ligneReference = CAReferenceBVR.REFERENCE_NON_FACTURABLE;
 
     private String ocrb = CAReferenceBVR.OCRB_NON_FACTURABLE;
     private BSession session = null;
 
     /**
-     * @param session
+     *
      *            nécessaire pour aller chercher le no d'adhérent et le no de compte dans le catalogue de textes de
      *            MUSCA.
      * @throws Exception
@@ -64,90 +48,6 @@ public class CAReferenceBVR {
      */
     public CAReferenceBVR() {
         super();
-    }
-
-    /**
-     * Récupère les textes pour un niveau
-     * 
-     * @param niveau
-     * @param out
-     * @param paraSep
-     */
-    protected void dumpNiveau(int niveau, StringBuffer out, String paraSep) {
-        try {
-            for (Iterator paraIter = this.getCurrentDocument().getTextes(niveau).iterator(); paraIter.hasNext();) {
-                if (out.length() > 0) {
-                    out.append(paraSep);
-                }
-                out.append(((ICTTexte) paraIter.next()).getDescription());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            out.append(CAReferenceBVR.TEXTE_INTROUVABLE);
-        }
-    }
-
-    /**
-     * Récupère les textes pour un niveau et une langue
-     * 
-     * @param niveau
-     * @param out
-     * @param paraSep
-     * @param langueIso
-     */
-    protected void dumpNiveau(int niveau, StringBuffer out, String paraSep, String langueIso) {
-        try {
-            for (Iterator paraIter = this.getCurrentDocument(getSession(), langueIso).getTextes(niveau).iterator(); paraIter
-                    .hasNext();) {
-                if (out.length() > 0) {
-                    out.append(paraSep);
-                }
-                out.append(((ICTTexte) paraIter.next()).getDescription());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            out.append(CAReferenceBVR.TEXTE_INTROUVABLE);
-        }
-    }
-
-    /**
-     * Retourne l'adresse pour le BVR (va rechercher dans le catalogue de textes MUSCA)
-     * 
-     * @return
-     */
-    public String getAdresseBVR() {
-        StringBuffer adresse = new StringBuffer("");
-        try {
-            // va rechercher les textes qui sont au niveau 1
-            if (this.getCurrentDocument() == null) {
-                adresse.append(CAReferenceBVR.TEXTE_INTROUVABLE);
-            } else {
-                this.dumpNiveau(1, adresse, CAReferenceBVR.RETOUR_LIGNE);
-            }
-        } catch (Exception e3) {
-            adresse.append(CAReferenceBVR.TEXTE_INTROUVABLE);
-        }
-        return adresse.toString();
-    }
-
-    /**
-     * Retourne l'adresse pour le BVR (va rechercher dans le catalogue de textes MUSCA)
-     * 
-     * @return
-     */
-    public String getAdresseBVR(String langueIso) {
-        StringBuffer adresse = new StringBuffer("");
-        try {
-            // va rechercher les textes qui sont au niveau 1
-            if (this.getCurrentDocument(getSession(), langueIso) == null) {
-                adresse.append(CAReferenceBVR.TEXTE_INTROUVABLE);
-            } else {
-                this.dumpNiveau(1, adresse, CAReferenceBVR.RETOUR_LIGNE, langueIso);
-            }
-        } catch (Exception e3) {
-            adresse.append(CAReferenceBVR.TEXTE_INTROUVABLE);
-        }
-        return adresse.toString();
     }
 
     /**
@@ -272,79 +172,6 @@ public class CAReferenceBVR {
     }
 
     /**
-     * Renvoie la liste des textes pour la langue de la session courante.
-     * 
-     * @return la liste des textes pour la langue de la session courante, null si elle n'a pas été trouvée
-     * @throws Exception
-     *             en cas d'erreur
-     */
-    public ICTDocument getCurrentDocument() throws Exception {
-        if ((getSession() == null) || (JadeStringUtil.isBlank(getSession().getIdLangueISO()))) {
-            return null;
-        }
-        ICTDocument document = (ICTDocument) getDocuments().get(getSession().getIdLangueISO());
-        if (document == null) {
-            ICTDocument apiDocument = (ICTDocument) getSession().getAPIFor(ICTDocument.class);
-            apiDocument.setISession(getSession());
-            apiDocument.setCsDomaine(CAReferenceBVR.DOMAINE_FACTURATION);
-            apiDocument.setCsTypeDocument(CAReferenceBVR.TYPE_FACTURE);
-            apiDocument.setDefault(new Boolean(true));
-            // document.setCodeIsoLangue(plan.getCompteAnnexe().getTiers().getLangueISO());
-            // //"FR"
-            apiDocument.setActif(new Boolean(true));
-            ICTDocument[] docs = apiDocument.load();
-            if ((docs != null) && (docs.length > 0)) {
-                document = docs[0];
-                getDocuments().put(getSession().getIdLangueISO(), document);
-            }
-        }
-        return document;
-    }
-
-    /**
-     * Renvoie la liste des textes pour la langue de la session courante.
-     * 
-     * @return la liste des textes pour la langue de la session courante, null si elle n'a pas été trouvée
-     * @throws Exception
-     *             en cas d'erreur
-     */
-    public ICTDocument getCurrentDocument(BSession session, String langueIso) throws Exception {
-        if ((session == null) || (JadeStringUtil.isBlank(langueIso))) {
-            return null;
-        }
-        ICTDocument document = (ICTDocument) getDocuments().get(langueIso);
-        if (document == null) {
-            ICTDocument apiDocument = (ICTDocument) session.getAPIFor(ICTDocument.class);
-            apiDocument.setISession(session);
-            apiDocument.setCsDomaine(CAReferenceBVR.DOMAINE_FACTURATION);
-            apiDocument.setCsTypeDocument(CAReferenceBVR.TYPE_FACTURE);
-            apiDocument.setDefault(new Boolean(true));
-            // document.setCodeIsoLangue(plan.getCompteAnnexe().getTiers().getLangueISO());
-            // //"FR"
-            apiDocument.setCodeIsoLangue(langueIso);
-            apiDocument.setActif(new Boolean(true));
-            ICTDocument[] docs = apiDocument.load();
-            if ((docs != null) && (docs.length > 0)) {
-                document = docs[0];
-                getDocuments().put(langueIso, document);
-            }
-        }
-        return document;
-    }
-
-    /**
-     * Renvoie la table des textes par langue.
-     * 
-     * @return la table des textes par langue.
-     */
-    public Map getDocuments() {
-        if (CAReferenceBVR.documents == null) {
-            CAReferenceBVR.documents = new HashMap();
-        }
-        return CAReferenceBVR.documents;
-    }
-
-    /**
      * @return the forcerBV
      */
     public Boolean getForcerBV() {
@@ -400,13 +227,6 @@ public class CAReferenceBVR {
     }
 
     /**
-     * @return the ligneReference
-     */
-    public String getLigneReference() {
-        return ligneReference;
-    }
-
-    /**
      * Va chercher le numéro de l'adherent dans Babel
      * 
      * @author: sel Créé le : 28 nov. 06
@@ -416,19 +236,6 @@ public class CAReferenceBVR {
     public String getNoAdherent() throws Exception {
         String res = "";
         res = getTexteBabel(2, 2);
-        return res;
-    }
-
-    /**
-     * Va chercher le numéro du compte dans Babel
-     * 
-     * @author: sel Créé le : 28 nov. 06
-     * @return le N° du compte (ex: 01-12345-1)
-     * @throws Exception
-     */
-    public String getNumeroCC() throws Exception {
-        String res = "";
-        res = getTexteBabel(2, 1);
         return res;
     }
 
@@ -464,34 +271,14 @@ public class CAReferenceBVR {
         try {
             // va rechercher les textes qui sont au niveau 1
             if (this.getCurrentDocument(session, langueIso) == null) {
-                text.append(CAReferenceBVR.TEXTE_INTROUVABLE);
+                text.append(TEXTE_INTROUVABLE);
             } else {
-                this.dumpNiveau(3, text, CAReferenceBVR.RETOUR_LIGNE, langueIso);
+                this.dumpNiveau(3, text, RETOUR_LIGNE, langueIso);
             }
         } catch (Exception e3) {
-            text.append(CAReferenceBVR.TEXTE_INTROUVABLE);
+            text.append(TEXTE_INTROUVABLE);
         }
         return text.toString();
-    }
-
-    /**
-     * Récupère les textes du catalogue de texte
-     * 
-     * @author: sel Créé le : 28 nov. 06
-     * @param niveau
-     * @param position
-     * @return texte
-     * @throws Exception
-     */
-    private String getTexteBabel(int niveau, int position) throws Exception {
-        StringBuffer resString = new StringBuffer("");
-        if (this.getCurrentDocument() == null) {
-            resString.append(CAReferenceBVR.TEXTE_INTROUVABLE);
-        } else {
-            ICTListeTextes listeTextes = this.getCurrentDocument().getTextes(niveau);
-            resString.append(listeTextes.getTexte(position));
-        }
-        return resString.toString();
     }
 
     /**
@@ -608,7 +395,7 @@ public class CAReferenceBVR {
             setLigneReference(bvr.get_ligneReference());
             setOcrb(bvr.get_ocrb());
         } else {
-            throw new Exception(CAReferenceBVR.ERROR_MONTANT_NEGATIF);
+            throw new Exception(ERROR_MONTANT_NEGATIF);
         }
     }
 
@@ -721,13 +508,6 @@ public class CAReferenceBVR {
         this.forcerBV = forcerBV;
     }
 
-    /**
-     * @param ligneReference
-     *            the ligneReference to set
-     */
-    public void setLigneReference(String ligneReference) {
-        this.ligneReference = ligneReference;
-    }
 
     /**
      * @param ocrb
@@ -737,11 +517,5 @@ public class CAReferenceBVR {
         this.ocrb = ocrb;
     }
 
-    /**
-     * @param session
-     *            the session to set
-     */
-    public void setSession(BSession session) {
-        this.session = session;
-    }
+
 }

@@ -251,8 +251,8 @@ public class CO04ReceptionPaiement extends CODocumentManager {
             super.setParametres(COParameter.P_OCR + "_X", CO04ReceptionPaiement.OCRB_DEFAUT);
             super.setParametres(COParameter.P_FRANC + "_X", CO04ReceptionPaiement.MONTANT_DEFAUT);
             super.setParametres(COParameter.P_CENTIME + "_X", CO04ReceptionPaiement.CENT_DEFAUT);
-            super.setParametres(COParameter.P_ADRESSE, bvr.getAdresseBVR());
-            super.setParametres(COParameter.P_ADRESSECOPY, bvr.getAdresseBVR());
+            super.setParametres(COParameter.P_ADRESSE, bvr.getAdresse());
+            super.setParametres(COParameter.P_ADRESSECOPY, bvr.getAdresse());
             super.setParametres(COParameter.P_COMPTE, bvr.getNumeroCC());// numéro
             // CC
             super.setParametres(COParameter.P_VERSE, bvr.getLigneReference() + "\n" + adresseDebiteur);

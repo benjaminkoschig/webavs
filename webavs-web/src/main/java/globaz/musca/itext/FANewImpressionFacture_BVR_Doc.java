@@ -184,9 +184,9 @@ public class FANewImpressionFacture_BVR_Doc extends FAImpressionFacturation {
                 getBvr().setBVR(currentDataSource.getEnteteFacture(), isFactureAvecMontantMinime(), reporterMontant);
             }
             super.setParametres(FAImpressionFacture_Param.P_ADRESSE,
-                    getBvr().getAdresseBVR(currentDataSource.getEnteteFacture().getISOLangueTiers()));
+                    getBvr().getAdresse(currentDataSource.getEnteteFacture().getISOLangueTiers()));
             super.setParametres(FAImpressionFacture_Param.P_ADRESSECOPY,
-                    getBvr().getAdresseBVR(currentDataSource.getEnteteFacture().getISOLangueTiers()));
+                    getBvr().getAdresse(currentDataSource.getEnteteFacture().getISOLangueTiers()));
             super.setParametres(FAImpressionFacture_Param.P_COMPTE, getBvr().getNumeroCC());
             super.setParametres(FAImpressionFacture_Param.P_VERSE, getBvr().getLigneReference() + "\n"
                     + adresseDebiteur);

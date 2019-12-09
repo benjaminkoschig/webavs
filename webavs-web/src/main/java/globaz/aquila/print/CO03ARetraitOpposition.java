@@ -148,7 +148,7 @@ public class CO03ARetraitOpposition extends CODocumentManager {
         this.setParametres(ICaisseReportHelper.PARAM_HEADER_DONNEES, getDonnees());
 
         getBvr().setSession(getSession());
-        this.setParametres(COParameter.ADRESSECAISSE, getBvr().getAdresseBVR());
+        this.setParametres(COParameter.ADRESSECAISSE, getBvr().getAdresse());
         // no de compte
         body.setLength(0);
         body.append(getCatalogueTextesUtil().texte(getParent(), 1, 1));

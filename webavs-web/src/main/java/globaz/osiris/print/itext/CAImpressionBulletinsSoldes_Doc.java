@@ -676,8 +676,8 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
             getBvr().setForcerBV(getForcerBV());
             getBvr().setBVR(sectionCourante.getSection(), _getMontantApresCompensation(), isFactureMontantReport());
 
-            super.setParametres(CAImpressionBulletinsSoldes_Param.P_ADRESSE, getBvr().getAdresseBVR());
-            super.setParametres(CAImpressionBulletinsSoldes_Param.P_ADRESSECOPY, getBvr().getAdresseBVR());
+            super.setParametres(CAImpressionBulletinsSoldes_Param.P_ADRESSE, getBvr().getAdresse());
+            super.setParametres(CAImpressionBulletinsSoldes_Param.P_ADRESSECOPY, getBvr().getAdresse());
             super.setParametres(CAImpressionBulletinsSoldes_Param.P_COMPTE, getBvr().getNumeroCC());
 
             super.setParametres(CAImpressionBulletinsSoldes_Param.P_VERSE, getBvr().getLigneReference() + "\n"
