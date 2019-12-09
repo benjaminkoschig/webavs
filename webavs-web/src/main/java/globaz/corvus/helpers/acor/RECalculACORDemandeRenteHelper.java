@@ -1876,7 +1876,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                     allNumber.append(".");
                 }
             }
-            viewBean.setMessage( FWMessageFormat.format(session.getLabel("JSP_BTE_MANUEL"), allNumber.toString()));
+            viewBean.setMessage(FWMessageFormat.format(session.getLabel("JSP_BTE_MANUEL"), allNumber.toString()));
             viewBean.setMsgType(FWViewBeanInterface.WARNING);
         }
         if (!JadeStringUtil.isBlank(message)) {
@@ -2285,13 +2285,16 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
                                         if (Objects.isNull(eachBaseCalcul.getAnalysePeriodes()) && isAnDecimalNonNull(bte) && !baseCalculSimFound) {
                                             REBasesCalcul baseCalculSim = getBaseCalculSim(session, transaction, eachRA);
+                                            // Si les nb BTE de la base de calcul similaire sont non nuls, on set leur valeur.
                                             if (!JadeStringUtil.isBlankOrZero(baseCalculSim.getNombreAnneeBTE1()) || !JadeStringUtil.isBlankOrZero(baseCalculSim.getNombreAnneeBTE2()) || !JadeStringUtil.isBlankOrZero(baseCalculSim.getNombreAnneeBTE4())) {
                                                 an1 = baseCalculSim.getNombreAnneeBTE1();
                                                 an2 = baseCalculSim.getNombreAnneeBTE2();
                                                 an4 = baseCalculSim.getNombreAnneeBTE4();
                                                 rentesWithoutBte.remove(eachRA.getId());
                                                 baseCalculSimFound = true;
-                                            } else {
+                                            }
+                                            // Sinon, on set leur valeur à vide et on ajoute l'id de la rente calculée à une liste pour prévenir l'utilisateur.
+                                            else {
                                                 an1 = StringUtils.EMPTY;
                                                 an2 = StringUtils.EMPTY;
                                                 an4 = StringUtils.EMPTY;
@@ -2330,6 +2333,16 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
         return false;
     }
 
+    /**
+     * Permet de récupérer la base de calcul similaire à celle de la rente calculée : même code prestation, même tiers bénéficiaire et état "en cours".
+     * On contrôle également sur les dates de droit pour récupérer la dernière rente.
+     *
+     * @param session
+     * @param transaction
+     * @param eachRA : la rente calculée
+     * @return la base de calcul similaire à celle de la rente calculée.
+     * @throws Exception
+     */
     private REBasesCalcul getBaseCalculSim(final BSession session, final BTransaction transaction, RERenteAccordee eachRA) throws Exception {
         RERenteAccordeeManager raManager = new RERenteAccordeeManager();
         raManager.setSession(session);
@@ -2341,13 +2354,18 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
         String idBaseCalculSim = StringUtils.EMPTY;
         String dateFinDroitRente = StringUtils.EMPTY;
         for (RERenteAccordee eachRente : raManager.getContainerAsList()) {
-            if (eachRente.getDateFinDroit().isEmpty()) {
-                idBaseCalculSim = eachRente.getIdBaseCalcul();
-                break;
-            } else {
-                if (dateFinDroitRente.compareTo(eachRente.getDateFinDroit()) < 0) {
-                    dateFinDroitRente = eachRente.getDateFinDroit();
+            // On contrôle si la date de début de rente est bien antérieure à celle que l'on calcule.
+            if (eachRente.getDateDebutDroit().compareTo(eachRA.getDateDebutDroit()) < 0) {
+                // Si la date de fin de rente est vide, il s'agit de la dernière rente similaire.
+                if (eachRente.getDateFinDroit().isEmpty()) {
                     idBaseCalculSim = eachRente.getIdBaseCalcul();
+                    break;
+                } else {
+                    // Sinon, on récupère la rente dont la date de fin est la plus récente.
+                    if (dateFinDroitRente.compareTo(eachRente.getDateFinDroit()) < 0) {
+                        dateFinDroitRente = eachRente.getDateFinDroit();
+                        idBaseCalculSim = eachRente.getIdBaseCalcul();
+                    }
                 }
             }
         }
