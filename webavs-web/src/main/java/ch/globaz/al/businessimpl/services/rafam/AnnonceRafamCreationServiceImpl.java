@@ -517,12 +517,11 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
         annonces = getLastAnnonceFromRecordNumber(annonces);
 
         for (Periode periode : periodes.keySet()) {
-            droitComplexModel.getDroitModel().setDebutDroit("01."+periode.getDateDebut());
-            droitComplexModel.getDroitModel().setFinDroitForcee(JadeDateUtil.getLastDateOfMonth(periode.getDateFin()));
-
             annonces = genererAnnonceSelonAnnoncePrecedante(droitComplexModel, annonces, periode, periodes.get(periode));
         }
     }
+
+
 
     private List<AnnonceRafamModel> getLastAnnonceFromRecordNumber(List<AnnonceRafamModel> annonces) {
         Map<String, AnnonceRafamModel> mapAnnonces = new HashMap<>();
@@ -541,8 +540,23 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
             Periode periode,
             boolean isZero ) throws JadeApplicationException, JadePersistenceException {
 
-        Date debDate = JadeDateUtil.getGlobazDate(droit.getDroitModel().getDebutDroit());
-        Date finDate = JadeDateUtil.getGlobazDate(droit.getDroitModel().getFinDroitForcee());
+        Date debutPeriode = JadeDateUtil.getGlobazDate(JadeDateUtil.getFirstDateOfMonth(periode.getDateDebut()));
+        Date finPeriode = JadeDateUtil.getGlobazDate(JadeDateUtil.getLastDateOfMonth(periode.getDateFin()));
+        Date debutDroit = JadeDateUtil.getGlobazDate(droit.getDroitModel().getDebutDroit());
+        Date finDroit = JadeDateUtil.getGlobazDate(droit.getDroitModel().getFinDroitForcee());
+        Date debDate = debutPeriode;
+        Date finDate = finPeriode;
+
+        if(debutDroit.after(debutPeriode)) {
+            debDate = debutDroit;
+        } else {
+            droit.getDroitModel().setDebutDroit(JadeDateUtil.getGlobazFormattedDate(debutPeriode));
+        }
+        if(finDroit.before(finPeriode)) {
+            finDate = finDroit;
+        } else {
+            droit.getDroitModel().setFinDroitForcee(JadeDateUtil.getGlobazFormattedDate(finPeriode));
+        }
 
         List<AnnonceRafamModel> annonceDejaAnnulee = new ArrayList<>();
 
