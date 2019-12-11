@@ -9,7 +9,7 @@
 	<!-- Configuration du logger responsable de récupérer les sortie console -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender" additivity="false">
         <encoder>
-            <pattern><![CDATA[%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n]]></pattern>
+            <pattern><![CDATA[%d{dd.MM.yy HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n]]></pattern>
         </encoder>
     </appender>
 
@@ -181,6 +181,15 @@
         <appender-ref ref="STDOUT" />
     </logger>
     <logger name="globaz.jade.fs.service.ftp4.JadeFsService" level="ERROR" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="globaz.jade.fs.service.jdbc.JadeFsService" level="OFF" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="globaz.jade.fs.service.jdbc.JadeFsService" level="WARN" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="globaz.jade.fs.service.jdbc.JadeFsService" level="ERROR" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
     <logger name="globaz.framework.security.FWSecurityLoginManager" level="OFF" additivity="false">
