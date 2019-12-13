@@ -9,7 +9,7 @@
 	<!-- Configuration du logger responsable de récupérer les sortie console -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender" additivity="false">
         <encoder>
-            <pattern><![CDATA[%d{dd.MM.yy HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n]]></pattern>
+            <pattern><![CDATA[%d{dd.MM.yyyyy HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n]]></pattern>
         </encoder>
     </appender>
 
