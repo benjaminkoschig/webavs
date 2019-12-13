@@ -1626,7 +1626,11 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                 filterEvents = fCalcul.getEvenement().stream().filter(evenement -> !evenement.getBasesCalcul().stream().filter(basesCalcul -> !basesCalcul.getDecision().isEmpty()).collect(Collectors.toList()).isEmpty()).collect(Collectors.toList());
             }
 
-            if ((fCalcul == null) || (filterEvents.isEmpty())) {
+            // K191213_001, suite à l'incident I191211_020
+            // Passage dans le IF si c'est une 10ème révision mais qu'il n'y a pas de décisions dans le f_calcul.xml
+            // Si on se trouve dans une 10ème révision et qu'il y a des décisions, on fait le calcul normalement
+            // Pour une 9ème révision, le f_calcul.xml sera vide donc on passe dans tous les cas dans le else et on fait le traitement normalement
+            if ((fCalcul != null) && (filterEvents.isEmpty())) {
                 // Dans ce cas de figure, il n'y a rien à remonter.
                 // On contrôle l'arrivée d'un ci additionnel pour le requérant
                 // ainsi que ces conjoints et ex-conjoints !!!!
