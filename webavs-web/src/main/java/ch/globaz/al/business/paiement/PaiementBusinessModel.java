@@ -84,6 +84,16 @@ public class PaiementBusinessModel implements Comparable<Object> {
     private BigDecimal soldeInitial = null;
 
     /**
+     * Montant impôt à la source
+     */
+    private BigDecimal montantIS = null;
+
+    /**
+     * numéro de la rubrique IS
+     */
+    private String rubriqueIS = null;
+
+    /**
      * Constructeur
      * 
      * @param idDossier
@@ -360,5 +370,35 @@ public class PaiementBusinessModel implements Comparable<Object> {
 
     public void setSolde(BigDecimal solde) {
         this.solde = solde;
+    }
+
+    public void setRubriqueIS(String rubriqueIS) {
+        this.rubriqueIS = rubriqueIS;
+    }
+
+    /**
+     * @return the rubriqueIS
+     */
+    public String getRubriqueIS() {
+        return rubriqueIS;
+    }
+
+    /**
+     *  @param montantIS
+     *            montantIS à ajouter
+     */
+    public void addMontantIS(BigDecimal montantIS) {
+        if(this.montantIS == null) {
+            this.montantIS = new BigDecimal("0");
+        }
+        this.montantIS = this.montantIS.add(montantIS);
+        solde = solde.add(montantIS);
+    }
+
+    /**
+     * @return the montantIS
+     */
+    public BigDecimal getMontantIS() {
+        return montantIS;
     }
 }

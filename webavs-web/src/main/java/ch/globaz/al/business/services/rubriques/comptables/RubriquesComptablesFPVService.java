@@ -10,9 +10,9 @@ public interface RubriquesComptablesFPVService extends RubriquesComptablesServic
     /**
      * pour forcer le canton de l'affilié, à utiliser uniquement pour les JUnit ou en ayant conscience des conséquences
      */
-    public String forceCantonAffilie = null;
+    String forceCantonAffilie = null;
     /**
      * pour forcer la CAF, à utiliser uniquement pour les JUnit ou en ayant conscience des conséquences
      */
-    public String forceCodeCAF = null;
+    String forceCodeCAF = null;
 }

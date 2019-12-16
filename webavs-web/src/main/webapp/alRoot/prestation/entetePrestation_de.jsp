@@ -2,6 +2,7 @@
 <%@page import="java.util.HashMap"%>
 <%@page import="ch.globaz.al.business.constantes.*"%>
 <%@page import="globaz.al.vb.prestation.ALEntetePrestationViewBean"%>
+<%@page import="ch.globaz.al.properties.ALProperties"%>
 <%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib uri="/WEB-INF/nss.tld" prefix="nss" %>
@@ -37,6 +38,7 @@
 <%@page import="globaz.jade.client.util.JadeStringUtil"%>
 <%@page import="globaz.jade.client.util.JadeNumericUtil"%>
 <%@page import="globaz.helios.translation.CodeSystem"%>
+<%@ page import="ch.globaz.al.properties.ALProperties" %>
 <script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/alRoot/util_webaf.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/alRoot/ajax_webaf.js"></script>
@@ -192,6 +194,14 @@ function callbackFillInputAjax(){
                 						<td><input type="text" class="readonly date" value="0.00" disabled="disabled"/></td> 					
                 					</tr>
                 				
+								<% if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()
+										&& !JadeStringUtil.isBlankOrZero(currentDetailPrestation.getDetailPrestationModel().getMontantIS())) {%>
+								<tr>
+										<td class="label"><ct:FWLabel key="AL0007_CALCUL_IMPOT_SOURCE"/></td>
+										<td></td>
+										<td><input type="text" class="readonly date" value="<%=currentDetailPrestation.getDetailPrestationModel().getMontantIS() %>" disabled="disabled"/></td>
+									</tr>
+								<% } %>
                 			</table>
 
                 			<table style="float:left;width:65%;">
@@ -222,6 +232,15 @@ function callbackFillInputAjax(){
                 					<td class="label"></td>
                 					<td>
                 				</tr>
+								<% if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()
+									&& !JadeStringUtil.isBlank(currentDetailPrestation.getDetailPrestationModel().getNumeroCompteIS())) {%>
+								<tr>
+									<td class="label"><ct:FWLabel key="AL0007_DONNEES_RUBRIQUE_IS"/></td>
+									<td><input type="text" class="readonly" value="<%=currentDetailPrestation.getDetailPrestationModel().getNumeroCompteIS() %>" disabled="disabled"/></td>
+									<td class="label"></td>
+									<td>
+								</tr>
+								<% } %>
                 			</table>
                 	
                 		

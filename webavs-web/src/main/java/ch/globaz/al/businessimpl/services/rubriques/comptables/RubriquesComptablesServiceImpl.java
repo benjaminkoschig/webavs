@@ -218,6 +218,11 @@ public class RubriquesComptablesServiceImpl extends ALAbstractBusinessServiceImp
         }
     }
 
+    @Override
+    public String getRubriqueForIS(DossierModel dossier, DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
+        return null;
+    }
+
     /**
      * Récupère la rubrique indépendant
      * 

@@ -1,7 +1,9 @@
 package ch.globaz.al.businessimpl.generation.prestations;
 
+import ch.globaz.al.properties.ALProperties;
 import globaz.jade.client.util.JadeCodesSystemsUtil;
 import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.business.JadeBusinessMessage;
@@ -122,6 +124,12 @@ public abstract class GenPrestationAbstract implements GenPrestation {
         detail.setPeriodeValidite(oldPrest.getPeriodeValidite());
 
         detail.setTarifForce(oldPrest.getTarifForce());
+
+        if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()
+            && !JadeStringUtil.isBlankOrZero(oldPrest.getMontantIS()) ) {
+            detail.setMontantIS(new BigDecimal(oldPrest.getMontantIS()).negate().toString());
+            detail.setNumeroCompteIS(oldPrest.getNumeroCompteIS());
+        }
 
         context.getContextDossier().addDetailPrestation(detail,
                 ALServiceLocator.getDroitComplexModelService().read(oldPrest.getIdDroit()));
@@ -302,6 +310,10 @@ public abstract class GenPrestationAbstract implements GenPrestation {
         detail.setTarifForce(new Boolean(droitCalcule.isTarifForce()));
         // Le numéro de compte est défini dans ContextPrestation, il est
         // nécessaire de connaître l'en-tête pour déterminer la rubrique
+
+        if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
+            detail.setMontantIS(droitCalcule.getCalculResultMontantIS());
+        }
         return detail;
     }
 

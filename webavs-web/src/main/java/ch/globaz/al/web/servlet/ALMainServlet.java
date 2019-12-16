@@ -50,7 +50,7 @@ public class ALMainServlet extends FWJadeServlet {
     /**
      * (non-Javadoc)
      * 
-     * @see globaz.framework.servlets.FWServlet#customize(globaz.framework.utils. urls.FWUrlsStack)
+     * @see globaz.framework.servlets.FWServlet#customize(globaz.framework.utils.urls.FWUrlsStack)
      */
     @Override
     protected void customize(FWUrlsStack stack) {
@@ -167,6 +167,7 @@ public class ALMainServlet extends FWJadeServlet {
         registerActionMapping("al.ged", ALActionGed.class);
         registerActionMapping("al.adi", ALActionAdi.class);
         registerActionMapping("al.envois", ALActionEnvois.class);
+        registerActionMapping("al.impotsource", ALAbstractDefaultAction.class);
 
         registerActionMapping("al.radiationauto", ALActionRadiationAutomatiqueDossiers.class);
         registerActionMapping("al.radiationaffilie", ALActionRadiationAffilie.class);

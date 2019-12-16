@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model-mapping>
-	<simple-model className="ch.globaz.vulpecula.business.models.is.TauxImpositionSimpleModel">
-		<table name="PT_TAUX_IMPOSITION" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true" />
+	<simple-model className="ch.globaz.al.impotsource.models.TauxImpositionSimpleModel">
+		<table name="ALTAUXIMP" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true" />
 		<fields>
 			<primary-key name="id" column="ID" comment="Id de l'absence" />
 			<field name="periodeDebut" column="PERIODE_DEBUT" type="DATE" comment="lien sur la ligne du decompte" />

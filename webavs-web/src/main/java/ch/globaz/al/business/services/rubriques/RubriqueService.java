@@ -16,23 +16,30 @@ import ch.globaz.al.business.models.prestation.EntetePrestationModel;
 public interface RubriqueService extends JadeApplicationService {
     /**
      * Recherche le numéro de la rubrique comptable en fonction des paramètres passés à la méthode
-     * 
-     * @param dossier
-     *            Dossier pour lequel la rubrique doit être déterminée
-     * @param entete
-     *            En-tête pour laquelle la rubrique doit être déterminée
-     * @param detail
-     *            Détail de la prestation pour laquelle la rubrique doit être déterminée
-     * @param date
-     *            Date pour laquelle la rubrique doit être déterminée
-     * 
+     *
+     * @param dossier Dossier pour lequel la rubrique doit être déterminée
+     * @param entete  En-tête pour laquelle la rubrique doit être déterminée
+     * @param detail  Détail de la prestation pour laquelle la rubrique doit être déterminée
+     * @param date    Date pour laquelle la rubrique doit être déterminée
      * @return numéro de la rubrique définie en fonction des paramètres
-     * @throws JadePersistenceException
-     *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
-     *             faire
-     * @throws JadeApplicationException
-     *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
+     * @throws JadePersistenceException Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
+     *                                  faire
+     * @throws JadeApplicationException Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    public String getRubriqueComptable(DossierModel dossier, EntetePrestationModel entete,
-            DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException;
+    String getRubriqueComptable(DossierModel dossier, EntetePrestationModel entete,
+                                DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException;
+
+    /**
+     * Recherche les rubriques liés aux inpôts à la source.
+     *
+     * @param dossier Dossier pour lequel la rubrique doit être déterminée
+     * @param detail  Détail de la prestation pour laquelle la rubrique doit être déterminée
+     * @param date    Date pour laquelle la rubrique doit être déterminée
+     * @return le numéro de la rubrique en fonction
+     * @throws JadePersistenceException Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
+     *                                  faire
+     * @throws JadeApplicationException Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
+     */
+    String getRubriqueForIS(DossierModel dossier,
+                            DetailPrestationModel detail, String date) throws JadePersistenceException, JadeApplicationException;
 }

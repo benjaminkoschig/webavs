@@ -2,6 +2,7 @@ package ch.globaz.al.businessimpl.services.paiement;
 
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import java.math.BigDecimal;
@@ -86,6 +87,9 @@ public class ProtocoleRecapitulatifPaiementDirectServiceImpl extends AbstractPro
             if (search.getSize() == 1) {
                 colonnesPaiement.addData("col_presta_alloc_familliale",
                         ((ParameterModel) search.getSearchResults()[0]).getDesignationParametre());
+            } else if (search.getSize() > 1 && !JadeStringUtil.isBlank(lignePaiement.getNumeroCompte())) {
+                colonnesPaiement.addData("col_presta_alloc_familliale",
+                        ((ParameterModel) search.getSearchResults()[search.getSize()-1]).getDesignationParametre());
             }
 
             colonnesPaiement.addData("col_debit",

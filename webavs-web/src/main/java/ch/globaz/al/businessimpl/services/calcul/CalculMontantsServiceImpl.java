@@ -1,5 +1,11 @@
 package ch.globaz.al.businessimpl.services.calcul;
 
+import ch.globaz.al.business.services.ALRepositoryLocator;
+import ch.globaz.al.businessimpl.calcul.modes.CalculImpotSource;
+import ch.globaz.al.impotsource.domain.TauxImpositions;
+import ch.globaz.al.impotsource.persistence.TauxImpositionRepository;
+import ch.globaz.al.properties.ALProperties;
+import ch.globaz.naos.business.data.AssuranceInfo;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
@@ -358,6 +364,8 @@ public class CalculMontantsServiceImpl extends ALAbstractBusinessServiceImpl imp
         BigDecimal total = new BigDecimal("0.00");
         BigDecimal totalBase = new BigDecimal("0");
         BigDecimal montantUnite = new BigDecimal("0.00");
+        BigDecimal totalBrutIS = new BigDecimal("0");
+        BigDecimal totalIS = new BigDecimal("0.00");
 
         // nombre d'unitées et taux
         BigDecimal nb = new BigDecimal("0.01").multiply(new BigDecimal(dossier.getTauxVersement())
@@ -365,6 +373,11 @@ public class CalculMontantsServiceImpl extends ALAbstractBusinessServiceImpl imp
         BigDecimal nbNAIS = new BigDecimal("1.00");
 
         ArrayList<Integer> indexPrest = new ArrayList<Integer>();
+
+        TauxImpositions tauxGroupByCanton = null;
+
+        TauxImpositionRepository tauxImpositionRepository = ALRepositoryLocator
+                .getTauxImpositionRepository();
 
         if (nb.compareTo(new BigDecimal("0")) != 0) {
             // parcours des droits
@@ -424,6 +437,13 @@ public class CalculMontantsServiceImpl extends ALAbstractBusinessServiceImpl imp
                 if ((Double.parseDouble(calculDroit.getCalculResultMontantEffectif()) > 0) && !isNaissance(type)) {
                     indexPrest.add(i);
                 }
+
+                if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()
+                        && !JadeStringUtil.isBlankOrZero(calculDroit.getCalculResultMontantIS())) {
+                    AssuranceInfo infos = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier, date);
+                    CalculImpotSource.computeISforDroit(calculDroit, calculDroit.getCalculResultMontantEffectif()
+                            , tauxGroupByCanton, tauxImpositionRepository, infos.getCanton(), date);
+                }
             }
 
             totalBase = JANumberFormatter.round(totalBrut, 0.05, 2, JANumberFormatter.NEAR).add(totalBrutNAIS);
@@ -451,6 +471,13 @@ public class CalculMontantsServiceImpl extends ALAbstractBusinessServiceImpl imp
                     }
 
                     (droitsCalcules.get(indexPrest.get(i))).setCalculResultMontantEffectif(newMontPrest.toString());
+
+                    if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()
+                            && !JadeStringUtil.isBlankOrZero(droitsCalcules.get(indexPrest.get(i)).getCalculResultMontantIS())) {
+                        AssuranceInfo infos = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier, date);
+                        CalculImpotSource.computeISforDroit(droitsCalcules.get(indexPrest.get(i)), droitsCalcules.get(indexPrest.get(i)).getCalculResultMontantEffectif()
+                                , tauxGroupByCanton, tauxImpositionRepository, infos.getCanton(), date);
+                    }
                 }
             }
 

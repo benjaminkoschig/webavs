@@ -3,7 +3,7 @@ package ch.globaz.vulpecula.util;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import ch.globaz.vulpecula.business.models.is.EntetePrestationComplexModel;
-import ch.globaz.vulpecula.domain.models.is.TauxImpositionNotFoundException;
+import ch.globaz.al.exception.TauxImpositionNotFoundException;
 
 public final class ExceptionsUtil {
     private ExceptionsUtil() {

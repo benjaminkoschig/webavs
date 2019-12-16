@@ -21,6 +21,9 @@
 			<select-field name="dateVersement" field-ref="entetePrestationModel.dateVersComp"/>
 			<select-field name="tarifForce" field-ref="detailPrestationModel.tarifForce"/>
 			<select-field name="idRecap" field-ref="entetePrestationModel.idRecap"/>
+			<select-field name="montantIS" field-ref="detailPrestationModel.montantIS" />
+			<select-field name="numeroCompteIS" field-ref="detailPrestationModel.numeroCompteIS"/>
+
 		</select-fields>
 		<root-model name="detailPrestationModel" model-ref="ch.globaz.al.business.models.prestation.DetailPrestationModel" select-fields="false"/>	
 		<linked-model name="entetePrestationModel" model-ref="ch.globaz.al.business.models.prestation.EntetePrestationModel" join-type="INNER" select-fields="false">

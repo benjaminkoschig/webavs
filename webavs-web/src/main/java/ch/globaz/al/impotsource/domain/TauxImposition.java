@@ -1,15 +1,16 @@
-package ch.globaz.vulpecula.domain.models.is;
+package ch.globaz.al.impotsource.domain;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import ch.globaz.common.domaine.repository.DomainEntity;
 import ch.globaz.specifications.Specification;
 import ch.globaz.specifications.UnsatisfiedSpecificationException;
+import ch.globaz.al.impotsource.utils.TICantonRequis;
 import ch.globaz.vulpecula.domain.models.common.Date;
-import ch.globaz.vulpecula.domain.models.common.DomainEntity;
 import ch.globaz.vulpecula.domain.models.common.Periode;
 import ch.globaz.vulpecula.domain.models.common.Taux;
-import ch.globaz.vulpecula.domain.specifications.is.TICantonRequis;
 import com.google.common.base.Function;
 import com.google.common.collect.Multimaps;
 

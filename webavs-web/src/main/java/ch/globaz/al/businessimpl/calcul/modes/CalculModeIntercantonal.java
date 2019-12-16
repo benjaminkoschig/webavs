@@ -1,5 +1,6 @@
 package ch.globaz.al.businessimpl.calcul.modes;
 
+import ch.globaz.al.properties.ALProperties;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
@@ -58,6 +59,7 @@ public class CalculModeIntercantonal extends CalculModeAbstract {
         }
 
         double diff = 0.0;
+        double diffIS = 0.0;
         int j = 0;
         boolean found = false;
 
@@ -95,6 +97,10 @@ public class CalculModeIntercantonal extends CalculModeAbstract {
                                 && JadeNumericUtil.isNumericPositif(droitAllocataire.getDroit().getDroitModel()
                                         .getMontantForce())) {
                             diff = Double.parseDouble(droitAllocataire.getCalculResultMontantBase());
+                            if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()
+                                && !JadeStringUtil.isEmpty(droitAllocataire.getCalculResultMontantIS())) {
+                                diffIS = Double.parseDouble(droitAllocataire.getCalculResultMontantIS());
+                            }
                             // NAIS ou ACCE forcé
                         } else if ((ALCSDroit.TYPE_NAIS.equals(droitAllocataire.getType()) || ALCSDroit.TYPE_ACCE
                                 .equals(droitAllocataire.getType()))
@@ -106,6 +112,12 @@ public class CalculModeIntercantonal extends CalculModeAbstract {
                         } else {
                             diff = Double.parseDouble(droitAllocataire.getCalculResultMontantBase())
                                     - Double.parseDouble(droitAutreParent.getCalculResultMontantBase());
+                            if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()
+                                    && !JadeStringUtil.isEmpty(droitAllocataire.getCalculResultMontantIS())
+                                    && !JadeStringUtil.isEmpty(droitAutreParent.getCalculResultMontantIS())) {
+                                diffIS = Double.parseDouble(droitAllocataire.getCalculResultMontantIS())
+                                        - Double.parseDouble(droitAutreParent.getCalculResultMontantIS());
+                            }
                         }
 
                         droitAllocataire.setMontantAutreParent(droitAutreParent.getCalculResultMontantBase());
@@ -117,6 +129,14 @@ public class CalculModeIntercantonal extends CalculModeAbstract {
                         } else {
                             droitAllocataire.setCalculResultMontantBase("0.0");
                             droitAllocataire.setCalculResultMontantEffectif("0.0");
+                        }
+
+                        if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
+                            if (diffIS >= 0.0) {
+                                droitAllocataire.setCalculResultMontantIS(String.valueOf(diffIS));
+                            } else {
+                                droitAllocataire.setCalculResultMontantIS("0.0");
+                            }
                         }
 
                         // on retire le droit de la liste, on en aura plus

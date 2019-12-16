@@ -1,4 +1,4 @@
-package ch.globaz.vulpecula.domain.models.is;
+package ch.globaz.al.impotsource.domain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ public enum TypeImposition {
     }
 
     public static TypeImposition fromValue(String value) {
-        Integer valueAsInt = null;
+        Integer valueAsInt;
         try {
             valueAsInt = Integer.parseInt(value);
         } catch (NumberFormatException e) {
@@ -35,7 +35,7 @@ public enum TypeImposition {
     }
 
     public static List<String> getList() {
-        List<String> types = new ArrayList<String>();
+        List<String> types = new ArrayList<>();
         for (TypeImposition t : TypeImposition.values()) {
             types.add(String.valueOf(t.value));
         }

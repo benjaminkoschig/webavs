@@ -1,27 +1,21 @@
-package ch.globaz.vulpecula.repositoriesjade.is.converters;
+package ch.globaz.al.impotsource.persistence;
 
-import globaz.jade.persistence.model.JadeAbstractSearchModel;
-import globaz.jade.persistence.model.JadeComplexModel;
-import ch.globaz.vulpecula.business.models.is.TauxImpositionSearchSimpleModel;
-import ch.globaz.vulpecula.business.models.is.TauxImpositionSimpleModel;
+import ch.globaz.al.impotsource.models.TauxImpositionSearchSimpleModel;
+import ch.globaz.al.impotsource.models.TauxImpositionSimpleModel;
+import ch.globaz.al.impotsource.domain.TauxImposition;
+import ch.globaz.al.impotsource.domain.TypeImposition;
+import ch.globaz.common.persistence.DomaineConverterJade;
+import ch.globaz.common.persistence.DomaineJadeAbstractSearchModel;
 import ch.globaz.vulpecula.domain.models.common.Periode;
 import ch.globaz.vulpecula.domain.models.common.Taux;
-import ch.globaz.vulpecula.domain.models.is.TauxImposition;
-import ch.globaz.vulpecula.domain.models.is.TypeImposition;
-import ch.globaz.vulpecula.repositoriesjade.decompte.DomaineConverterJade;
 
 public class TauxImpositionConverter implements
-        DomaineConverterJade<TauxImposition, JadeComplexModel, TauxImpositionSimpleModel> {
+        DomaineConverterJade<TauxImposition, TauxImpositionSimpleModel> {
 
     private static final TauxImpositionConverter INSTANCE = new TauxImpositionConverter();
 
     public static TauxImpositionConverter getInstance() {
         return INSTANCE;
-    }
-
-    @Override
-    public TauxImposition convertToDomain(JadeComplexModel model) {
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -53,7 +47,7 @@ public class TauxImpositionConverter implements
     }
 
     @Override
-    public JadeAbstractSearchModel getSearchSimpleModel() {
+    public DomaineJadeAbstractSearchModel getSearchModel() {
         return new TauxImpositionSearchSimpleModel();
     }
 

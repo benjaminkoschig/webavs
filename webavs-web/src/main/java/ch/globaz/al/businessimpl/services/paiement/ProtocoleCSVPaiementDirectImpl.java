@@ -1,5 +1,7 @@
 package ch.globaz.al.businessimpl.services.paiement;
 
+import ch.globaz.al.properties.ALProperties;
+import ch.globaz.common.properties.PropertiesException;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadeApplicationException;
@@ -90,7 +92,7 @@ public class ProtocoleCSVPaiementDirectImpl extends ALAbstractBusinessServiceImp
      * @param listePaiement
      * @return
      */
-    private StringBuilder buildListeAllocataires(Collection<PaiementBusinessModel> listePaiement) {
+    private StringBuilder buildListeAllocataires(Collection<PaiementBusinessModel> listePaiement) throws ALPaiementPrestationException {
 
         StringBuilder csv = new StringBuilder();
         StringBuilder csvPaiements = new StringBuilder();
@@ -103,21 +105,33 @@ public class ProtocoleCSVPaiementDirectImpl extends ALAbstractBusinessServiceImp
 
         for (PaiementBusinessModel paiement : listePaiement) {
 
-            StringBuffer ligne = new StringBuffer();
-            ligne.append(paiement.getNomAllocataire()).append(" - ").append(paiement.getNssAllocataire()).append(";");
-            ligne.append(paiement.getSoldeInitial().toPlainString()).append(";");
-            ligne.append(paiement.getDebit().toPlainString()).append(";");
-            ligne.append(paiement.getCredit().toPlainString()).append(";");
-            ligne.append(paiement.getNouveauSolde().toPlainString()).append(";");
-            ligne.append(paiement.getOrdreVersement().toPlainString()).append("\n");
+            BigDecimal credit = paiement.getCredit();
+            BigDecimal debit = paiement.getDebit();
+
+            try {
+                if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()
+                        && paiement.getMontantIS() != null
+                        && paiement.getMontantIS().compareTo(BigDecimal.ZERO) != 0) {
+                    BigDecimal montantIS = paiement.getMontantIS();
+                    if(montantIS.compareTo(BigDecimal.ZERO) > 0) {
+                        credit = credit.add(montantIS);
+                    } else {
+                        debit = debit.add(montantIS);
+                    }
+                }
+            } catch (PropertiesException e) {
+                throw new ALPaiementPrestationException("ProtocoleCSVPaiementDirectImpl#buildListeAllocataires : propriété 'impôt à la source' manquante");
+            }
+
+            StringBuffer ligne = getLine(paiement, debit, credit);
 
             if (paiement.isRestitution()) {
                 csvRestitutions.append(ligne);
-                totalDebitRestitution = totalDebitRestitution.add(paiement.getDebit());
+                totalDebitRestitution = totalDebitRestitution.add(debit);
             } else {
                 csvPaiements.append(ligne);
-                totalCreditVersement = totalCreditVersement.add(paiement.getCredit());
-                totalDebitVersement = totalDebitVersement.add(paiement.getDebit());
+                totalCreditVersement = totalCreditVersement.add(credit);
+                totalDebitVersement = totalDebitVersement.add(debit);
                 totalOrdreVersement = totalOrdreVersement.add(paiement.getOrdreVersement());
             }
         }
@@ -143,6 +157,17 @@ public class ProtocoleCSVPaiementDirectImpl extends ALAbstractBusinessServiceImp
                 .append(";;").append(totalOrdreVersement).append("\n\n");
 
         return csv;
+    }
+
+    private StringBuffer getLine(PaiementBusinessModel paiement, BigDecimal debit, BigDecimal credit) {
+        StringBuffer ligne = new StringBuffer();
+        ligne.append(paiement.getNomAllocataire()).append(" - ").append(paiement.getNssAllocataire()).append(";");
+        ligne.append(paiement.getSoldeInitial().toPlainString()).append(";");
+        ligne.append(debit.toPlainString()).append(";");
+        ligne.append(credit.toPlainString()).append(";");
+        ligne.append(paiement.getNouveauSolde().toPlainString()).append(";");
+        ligne.append(paiement.getOrdreVersement().toPlainString()).append("\n");
+        return ligne;
     }
 
     /*

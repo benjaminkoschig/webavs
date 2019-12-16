@@ -1,5 +1,6 @@
 package ch.globaz.al.businessimpl.generation.prestations;
 
+import ch.globaz.al.properties.ALProperties;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
@@ -72,6 +73,13 @@ public class GenPrestationForcee extends GenPrestationAbstract {
                     .getContextDossier().getDossier().getDossierModel(), "01."
                     + context.getContextDossier().getCurrentPeriode());
 
+            ArrayList<String> repartitionIS = null;
+            if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
+                repartitionIS = repartirMontant(String.valueOf(getNextMontant()), calcul, context
+                        .getContextDossier().getDossier().getDossierModel(), "01."
+                        + context.getContextDossier().getCurrentPeriode());
+            }
+
             for (int i = 0; i < calcul.size(); i++) {
 
                 CalculBusinessModel droitCalcule = calcul.get(i);
@@ -81,6 +89,9 @@ public class GenPrestationForcee extends GenPrestationAbstract {
                     droitCalcule.setCalculResultMontantEffectif(montant);
                     droitCalcule.setTarifForce(false);
                     droitCalcule.setTarif(droitCalcule.getTarif());
+                    if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
+                        droitCalcule.setCalculResultMontantIS(repartitionIS.get(i));
+                    }
                     addDetailPrestation(context, droitCalcule);
                 }
             }

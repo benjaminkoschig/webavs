@@ -25,4 +25,13 @@ public class RubriqueServiceImpl extends ALAbstractBusinessServiceImpl implement
         return (ALImplServiceLocator.getRubriqueComptableService(RubriqueComptableServiceFactory
                 .getServiceRubriqueComptable(date))).getRubriqueComptable(dossier, entete, detail, date);
     }
+
+    @Override
+    public String getRubriqueForIS(DossierModel dossier,
+                                   DetailPrestationModel detail, String date) throws JadePersistenceException, JadeApplicationException {
+        return (ALImplServiceLocator.getRubriqueComptableService(RubriqueComptableServiceFactory
+                .getServiceRubriqueComptable(date))).getRubriqueForIS(dossier, detail, date);
+    }
+
+
 }

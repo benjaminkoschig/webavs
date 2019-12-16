@@ -1,4 +1,4 @@
-package ch.globaz.vulpecula.business.models.is;
+package ch.globaz.al.impotsource.models;
 
 import globaz.jade.persistence.model.JadeSimpleModel;
 

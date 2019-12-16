@@ -1,10 +1,12 @@
-package ch.globaz.vulpecula.domain.models.is;
+package ch.globaz.al.impotsource.domain;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+
+import ch.globaz.al.exception.TauxImpositionNotFoundException;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.Taux;
 import com.google.common.base.Function;

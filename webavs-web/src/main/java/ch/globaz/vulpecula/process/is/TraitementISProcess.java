@@ -1,5 +1,8 @@
 package ch.globaz.vulpecula.process.is;
 
+import ch.globaz.al.business.services.ALRepositoryLocator;
+import ch.globaz.vulpecula.domain.models.common.Montant;
+import ch.globaz.vulpecula.domain.models.common.Taux;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcessLauncher;
 import globaz.globall.db.BSessionUtil;
@@ -39,13 +42,11 @@ import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.business.services.is.ImpotSourceService;
 import ch.globaz.vulpecula.businessimpl.services.is.PrestationGroupee;
 import ch.globaz.vulpecula.domain.models.common.Date;
-import ch.globaz.vulpecula.domain.models.common.Montant;
-import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.is.HistoriqueProcessusAf;
-import ch.globaz.vulpecula.domain.models.is.TauxImpositionNotFoundException;
-import ch.globaz.vulpecula.domain.models.is.TauxImpositions;
-import ch.globaz.vulpecula.domain.models.is.TypeImposition;
-import ch.globaz.vulpecula.domain.repositories.is.TauxImpositionRepository;
+import ch.globaz.al.exception.TauxImpositionNotFoundException;
+import ch.globaz.al.impotsource.domain.TauxImpositions;
+import ch.globaz.al.impotsource.domain.TypeImposition;
+import ch.globaz.al.impotsource.persistence.TauxImpositionRepository;
 import ch.globaz.vulpecula.external.BProcessWithContext;
 import ch.globaz.vulpecula.external.models.pyxis.Adresse;
 import ch.globaz.vulpecula.util.ExceptionsUtil;
@@ -64,7 +65,7 @@ public class TraitementISProcess extends BProcessWithContext {
 
     private ImpotSourceService impotSourceService = VulpeculaServiceLocator.getImpotSourceService();
 
-    private TauxImpositionRepository tauxImpositionRepository = VulpeculaRepositoryLocator
+    private TauxImpositionRepository tauxImpositionRepository = ALRepositoryLocator
             .getTauxImpositionRepository();
 
     // Lock static permettant de garantir que seul un processus peut être lancé en parralèle

@@ -1,14 +1,14 @@
 package ch.globaz.al.businessimpl.services.adiDecomptes;
 
-import ch.globaz.al.business.constantes.enumerations.*;
+import ch.globaz.al.business.constantes.*;
 import ch.globaz.al.business.models.adi.*;
-import ch.globaz.al.business.models.droit.DroitComplexModel;
-import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
-import ch.globaz.al.business.models.rafam.AnnonceRafamSearchModel;
-import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
-import ch.globaz.common.domaine.Montant;
-import ch.globaz.common.domaine.Periode;
-import globaz.al.vb.rafam.ALAnnonceRafamViewBean;
+import ch.globaz.al.business.services.ALRepositoryLocator;
+import ch.globaz.al.businessimpl.calcul.modes.CalculImpotSource;
+import ch.globaz.al.properties.ALProperties;
+import ch.globaz.naos.business.data.AssuranceInfo;
+import ch.globaz.al.impotsource.domain.TauxImpositions;
+import ch.globaz.al.impotsource.domain.TypeImposition;
+import ch.globaz.al.impotsource.persistence.TauxImpositionRepository;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -16,15 +16,11 @@ import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
-import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 import java.util.*;
 import java.util.Map.Entry;
-import ch.globaz.al.business.constantes.ALCSAffilie;
-import ch.globaz.al.business.constantes.ALCSPrestation;
-import ch.globaz.al.business.constantes.ALCSTarif;
-import ch.globaz.al.business.constantes.ALConstParametres;
+
 import ch.globaz.al.business.constantes.enumerations.generation.prestations.Bonification;
 import ch.globaz.al.business.exceptions.business.ALPrestationBusinessException;
 import ch.globaz.al.business.exceptions.model.adi.ALDecompteAdiModelException;
@@ -407,9 +403,29 @@ public class DecompteAdiBusinessServiceImpl implements DecompteAdiBusinessServic
                 periodeDebutTraitement = "01.".concat(periodeTraitement.substring(3));
             }
         }
+
+        DossierComplexModel dossierComplex = ALServiceLocator.getDossierComplexModelService().read(decompte.getIdDossier());
+
+        if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()
+                && dossier.getRetenueImpot()
+                && !ALCSDossier.PAIEMENT_INDIRECT.equals(CalculImpotSource.getPaiementMode(dossierComplex, JadeDateUtil.getFirstDateOfMonth(periodeTraitement)))) {
+            TauxImpositionRepository tauxImpositionRepository = ALRepositoryLocator.getTauxImpositionRepository();
+            TauxImpositions tauxGroupByCanton = tauxImpositionRepository.findAll(TypeImposition.IMPOT_SOURCE);
+
+            for(String period : listeCalculAdiEnfant.keySet()) {
+                String date = JadeDateUtil.getFirstDateOfMonth(period);
+                AssuranceInfo infos = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier, date);
+                for(CalculBusinessModel calcul:listeCalculAdiEnfant.get(period)) {
+                    CalculImpotSource.computeISforDroit(calcul, calcul.getCalculResultMontantEffectif()
+                            , tauxGroupByCanton, tauxImpositionRepository, infos.getCanton(), date);
+                }
+            }
+
+        }
+
         // génération des prestations différentes que suppléement horloger
         ALServiceLocator.getGenerationDossierService().generationDossierADI(
-                ALServiceLocator.getDossierComplexModelService().read(decompte.getIdDossier()),
+                dossierComplex,
                 decompte.getPeriodeDebut(), decompte.getPeriodeFin(), periodeDebutTraitement, periodeTraitement,
                 listeCalculAdiEnfant, numFacture, numProcessus);
 

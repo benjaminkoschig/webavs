@@ -1,12 +1,12 @@
-package ch.globaz.vulpecula.businessimpl.services.is;
+package ch.globaz.al.businessimpl.services.impotsource;
 
+import ch.globaz.al.business.services.impotsource.TauxImpositionService;
+import ch.globaz.al.impotsource.persistence.TauxImpositionRepository;
 import ch.globaz.specifications.Specification;
 import ch.globaz.specifications.UnsatisfiedSpecificationException;
-import ch.globaz.vulpecula.business.services.is.TauxImpositionService;
-import ch.globaz.vulpecula.domain.models.is.TauxImposition;
-import ch.globaz.vulpecula.domain.models.is.TauxImpositions;
-import ch.globaz.vulpecula.domain.repositories.is.TauxImpositionRepository;
-import ch.globaz.vulpecula.domain.specifications.is.TIPeriodesChevauchantes;
+import ch.globaz.al.impotsource.domain.TauxImposition;
+import ch.globaz.al.impotsource.domain.TauxImpositions;
+import ch.globaz.al.impotsource.utils.TIPeriodesChevauchantes;
 
 public class TauxImpositionServiceImpl implements TauxImpositionService {
 

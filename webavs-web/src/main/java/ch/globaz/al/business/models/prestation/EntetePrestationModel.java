@@ -121,6 +121,10 @@ public class EntetePrestationModel extends JadeSimpleModel {
      * @see ch.globaz.al.business.constantes.ALCSDossier#GROUP_UNITE_CALCUL
      */
     private String unite = null;
+    /**
+     * Montant total Impôt à la source
+     */
+    private String montantTotalIS = null;
 
     /**
      * @return the bonification
@@ -251,6 +255,15 @@ public class EntetePrestationModel extends JadeSimpleModel {
      */
     public String getMontantTotalFormatte() {
         return JANumberFormatter.fmt(montantTotal, true, true, false, 2);
+    }
+
+    /**
+     * Montant total de l'impôt à la source des prestations liés à l'en-tête
+     *
+     * @return the montantTotalIS
+     */
+    public String getMontantTotalIS() {
+        return montantTotalIS;
     }
 
     /**
@@ -462,6 +475,14 @@ public class EntetePrestationModel extends JadeSimpleModel {
      */
     public void setMontantTotal(String montantTotal) {
         this.montantTotal = montantTotal;
+    }
+
+    /**
+     * @param montantTotalIS
+     *            the montantTotalIS to set
+     */
+    public void setMontantTotalIS(String montantTotalIS) {
+        this.montantTotalIS = montantTotalIS;
     }
 
     /**

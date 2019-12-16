@@ -1,5 +1,6 @@
 package ch.globaz.al.businessimpl.generation.prestations.context;
 
+import ch.globaz.al.properties.ALProperties;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
@@ -148,6 +149,18 @@ public class ContextPrestation {
         detail.setNumeroCompte(ALImplServiceLocator.getRubriqueService()
                 .getRubriqueComptable(contextDossier.getDossier().getDossierModel(), entete, detail,
                         "01." + contextDossier.getDebutPeriode()));
+
+        if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue() && !JadeStringUtil.isBlankOrZero(detail.getMontantIS())) {
+            String date = "01." + contextDossier.getDebutPeriode();
+            String idExterneIS = ALImplServiceLocator.getRubriqueService().getRubriqueForIS(contextDossier.getDossier().getDossierModel(), detail,
+                    "01." + contextDossier.getDebutPeriode());
+            detail.setNumeroCompteIS(idExterneIS);
+            if(JadeStringUtil.isBlank(entete.getMontantTotalIS())) {
+                entete.setMontantTotalIS("0");
+            }
+            entete.setMontantTotalIS((new BigDecimal(entete.getMontantTotalIS()).add(new BigDecimal(detail.getMontantIS())))
+                    .toPlainString());
+        }
 
         @SuppressWarnings("rawtypes")
         ArrayList list = new ArrayList(2);

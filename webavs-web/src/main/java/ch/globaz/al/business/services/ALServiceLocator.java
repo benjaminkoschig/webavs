@@ -1,5 +1,6 @@
 package ch.globaz.al.business.services;
 
+import static ch.globaz.al.business.services.ALRepositoryLocator.*;
 import ch.globaz.al.business.exceptions.decision.ALDecisionException;
 import ch.globaz.al.business.services.adi.CalculAdiBusinessService;
 import ch.globaz.al.business.services.adiDecomptes.AdiDecomptesService;
@@ -98,6 +99,9 @@ import ch.globaz.al.business.services.rafam.sedex.ExportAnnoncesRafamService;
 import ch.globaz.al.business.services.recapitulatifs.RecapitulatifEntrepriseImpressionService;
 import ch.globaz.al.business.services.tarif.TarifBusinessService;
 import ch.globaz.al.business.services.tucana.TucanaBusinessService;
+import ch.globaz.al.business.services.impotsource.TauxImpositionService;
+import ch.globaz.al.business.services.impotsource.TauxImpositionServiceCRUD;
+import ch.globaz.al.businessimpl.services.impotsource.TauxImpositionServiceImpl;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.service.provider.JadeApplicationServiceLocator;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
@@ -1317,6 +1321,21 @@ public abstract class ALServiceLocator {
     public static TucanaBusinessService getTucanaBusinessService() throws JadeApplicationServiceNotAvailableException {
         return (TucanaBusinessService) JadeApplicationServiceLocator.getInstance()
                 .getServiceImpl(TucanaBusinessService.class);
+    }
+
+    public static TauxImpositionService getTauxImpositionService() {
+        return TauxImpositionServiceHolder.INSTANCE;
+    }
+
+    public static TauxImpositionServiceCRUD getTauxImpositionServiceCRUD()
+            throws JadeApplicationServiceNotAvailableException {
+        return (TauxImpositionServiceCRUD) JadeApplicationServiceLocator.getInstance().getServiceImpl(
+                TauxImpositionServiceCRUD.class);
+    }
+
+    private static class TauxImpositionServiceHolder {
+        public static final TauxImpositionService INSTANCE = new TauxImpositionServiceImpl(
+                getTauxImpositionRepository());
     }
 
 }

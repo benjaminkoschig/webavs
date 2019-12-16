@@ -1,5 +1,7 @@
 package ch.globaz.al.businessimpl.services.paiement;
 
+import ch.globaz.al.properties.ALProperties;
+import ch.globaz.common.domaine.Montant;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
@@ -247,6 +249,32 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
 
             // mise à jour listes
             rubriques.put(rubr.getNumeroCompte(), rubr);
+
+            // impôt à la source
+
+            if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()
+                && !JadeStringUtil.isBlank(line.getMontantIS())
+                && !"0.00".equals(line.getMontantIS()) ) {
+                BigDecimal montantIS = new BigDecimal(line.getMontantIS()).negate();
+                prest.addMontantIS(montantIS);
+                prest.setRubriqueIS(line.getNumeroCompteIS());
+                solde = prest.getNouveauSolde();
+
+                // rubrique
+                PaiementRecapitulatifBusinessModel rubrIS = rubriques.get(line.getNumeroCompteIS());
+                if (rubrIS == null) {
+                    rubrIS = new PaiementRecapitulatifBusinessModel(line.getNumeroCompteIS());
+                    rubriques.put(rubrIS.getNumeroCompte(), rubrIS);
+                }
+                // mise à jour rubrique
+                if (montantIS.compareTo(BigDecimal.ZERO) > 0) {
+                    rubrIS.addCredit(montantIS);
+                } else {
+                    rubrIS.addDebit(montantIS);
+                }
+                rubr.addOrdreVersement(montantIS);
+            }
+
             prestations.put(key, prest);
             currentNSS = line.getNssAllocataire();
         }
@@ -435,6 +463,12 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
                 ecrituresRestitution.put(keyEcriture, ecriture);
             }
 
+            if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()
+                && !JadeStringUtil.isBlankOrZero(restit.getMontantIS())) {
+                totalAF = totalAF.add(new BigDecimal(restit.getMontantIS()).negate());
+                addEcritureImpotSource(jc, restit, ca, section, jc.getJournalModel().getDateValeurCG(), ecritures);
+            }
+
             idsEntete.add(restit.getIdEntete());
         }
 
@@ -524,6 +558,13 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
                         "Allocation familiale du " + jc.getJournalModel().getDateValeurCG() + " Allocataire : "
                                 + ca.getDescription());
                 ordres.put(keyOrdre, ordre);
+            }
+
+            if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()
+                    && !JadeStringUtil.isBlankOrZero(credit.getMontantIS())) {
+                totalAF = totalAF.add(new BigDecimal(credit.getMontantIS()).negate());
+                addEcritureImpotSource(jc, credit, ca, section, jc.getJournalModel().getDateValeurCG(), ecritures);
+                addOvImpotSource(ordre, credit.getMontantIS());
             }
 
             idsEntete.add(credit.getIdEntete());
@@ -1141,5 +1182,42 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
         }
 
         return genererPaiement(dateComptable, loadPrestationsPrepareesByNumProcessus(idProcessus), logger);
+    }
+
+    private void addEcritureImpotSource(JournalConteneur jc, PaiementPrestationComplexModel prest, CompteAnnexeSimpleModel compteAnnexe,
+                                        SectionSimpleModel section, String date, HashMap<String,EcritureSimpleModel> ecritures) {
+
+        String codeDebitCredit;
+        if (new Montant(prest.getMontantIS()).isPositive()) {
+            codeDebitCredit = APIEcriture.DEBIT;
+        } else {
+            codeDebitCredit = APIEcriture.CREDIT;
+        }
+
+        String keyEcriture = codeDebitCredit + "_" + compteAnnexe.getIdCompteAnnexe() + "_" + section.getId() + "_"
+                + prest.getNumeroCompteIS();
+        EcritureSimpleModel ecriture = null;
+        if (ecritures.containsKey(keyEcriture)) {
+            ecriture = ecritures.get(keyEcriture);
+            BigDecimal montantIS = new BigDecimal(prest.getMontantIS());
+            ecriture.setMontant(((new BigDecimal(ecriture.getMontant())).add(montantIS)).toPlainString());
+            ecritures.put(keyEcriture, ecriture);
+        } else {
+            ecriture = new EcritureSimpleModel();
+            ecriture.setCodeDebitCredit(codeDebitCredit);
+            ecriture.setIdCompteAnnexe(compteAnnexe.getIdCompteAnnexe());
+            ecriture.setIdSection(section.getIdSection());
+            ecriture.setDate(date);
+            ecriture.setIdCompte(prest.getNumeroCompteIS());
+            ecriture.setMontant(prest.getMontantIS());
+            ecritures.put(keyEcriture, ecriture);
+        }
+
+    }
+
+    private void addOvImpotSource(OrdreVersementComplexModel ordre, String montant) {
+        BigDecimal montantIS = new BigDecimal(montant).negate();
+        BigDecimal montantOv = new BigDecimal(ordre.getOperation().getMontant()).add(montantIS);
+        ordre.getOperation().setMontant(montantOv.toPlainString());
     }
 }

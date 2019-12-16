@@ -419,12 +419,6 @@
 									<parameter name="userAction" value="vulpecula.registre.qualification.afficher"/>
 								</action>
 							</node>
-							<node>
-								<label refId="MENU_PT_TAUX_IMPOSITION" />
-								<action command="/vulpecula" responseTarget="fr_main">
-									<parameter name="userAction" value="vulpecula.is.tauxImposition.afficher"/>
-								</action>						
-							</node>
 						</nodes>
 					</node>
 					<node id="catalogue_texte">

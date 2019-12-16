@@ -12,6 +12,8 @@
 			<select-field name="nomAllocataire" field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designation1"/>
 			<select-field name="prenomAllocataire" field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designation2"/>
 			<select-field name="numeroFacture" field-ref="recapEntrepriseModel.numeroFacture" />
+			<select-field name="montantIS" field-ref="detailPrestationModel.montantIS" />
+			<select-field name="numeroCompteIS" field-ref="detailPrestationModel.numeroCompteIS"/>
 		</select-fields>
 		
 		<linked-model name="allocataireComplexModel" model-ref="ch.globaz.al.business.models.allocataire.AllocataireComplexModel" join-type="LEFT_OUTER" select-fields="false">

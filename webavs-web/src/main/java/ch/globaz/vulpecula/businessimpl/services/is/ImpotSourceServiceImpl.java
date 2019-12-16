@@ -1,5 +1,7 @@
 package ch.globaz.vulpecula.businessimpl.services.is;
 
+import ch.globaz.al.business.services.ALRepositoryLocator;
+import ch.globaz.vulpecula.domain.models.common.*;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
@@ -24,14 +26,9 @@ import ch.globaz.vulpecula.business.models.is.EntetePrestationComplexModel;
 import ch.globaz.vulpecula.business.models.is.EntetePrestationSearchComplexModel;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.business.services.is.ImpotSourceService;
-import ch.globaz.vulpecula.domain.models.common.Annee;
-import ch.globaz.vulpecula.domain.models.common.Date;
-import ch.globaz.vulpecula.domain.models.common.Montant;
-import ch.globaz.vulpecula.domain.models.common.Periode;
-import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.is.DetailPrestationAF;
-import ch.globaz.vulpecula.domain.models.is.TauxImpositionNotFoundException;
-import ch.globaz.vulpecula.domain.models.is.TauxImpositions;
+import ch.globaz.al.exception.TauxImpositionNotFoundException;
+import ch.globaz.al.impotsource.domain.TauxImpositions;
 import ch.globaz.vulpecula.external.models.pyxis.Adresse;
 import ch.globaz.vulpecula.external.models.pyxis.CodeLangue;
 import ch.globaz.vulpecula.repositoriesjade.RepositoryJade;
@@ -72,7 +69,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
         // si la liste n'est pas vide, on fait fructifier le contenu des objets
         if (detailPrestationsAFList != null && !detailPrestationsAFList.isEmpty()) {
             detailPrestationsAFList = resolveCaisseAFAndCantonAffilie(detailPrestationsAFList);
-            TauxImpositions tauxImpositions = VulpeculaRepositoryLocator.getTauxImpositionRepository().findAll();
+            TauxImpositions tauxImpositions = ALRepositoryLocator.getTauxImpositionRepository().findAll();
             calculImpotSourceForAllPrestations(detailPrestationsAFList, tauxImpositions);
         }
         Map<String, Collection<DetailPrestationAF>> prestationsGroupedByCaisseAF = groupByCaisseAFForPrestationsDetaillees(detailPrestationsAFList);
@@ -192,7 +189,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
 
     @Override
     public List<PrestationGroupee> getPrestationsForAllocNonIS(Annee annee) {
-        TauxImpositions tauxImpositions = VulpeculaRepositoryLocator.getTauxImpositionRepository().findAll();
+        TauxImpositions tauxImpositions = ALRepositoryLocator.getTauxImpositionRepository().findAll();
         List<EntetePrestationComplexModel> prestations = getPrestationsDirectsNonIS(annee.getFirstDayOfYear(),
                 annee.getLastDayOfYear());
         Map<String, List<PrestationGroupee>> mapPrestations;
@@ -219,7 +216,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
     @Override
     public Map<String, Collection<PrestationGroupee>> getPrestationsForAllocIS(String canton, String caisseAF,
             Annee annee) throws TauxImpositionNotFoundException {
-        TauxImpositions tauxImpositions = VulpeculaRepositoryLocator.getTauxImpositionRepository().findAll();
+        TauxImpositions tauxImpositions = ALRepositoryLocator.getTauxImpositionRepository().findAll();
         List<EntetePrestationComplexModel> prestations = getPrestationsIS(canton, caisseAF, annee);
         Map<String, List<PrestationGroupee>> prestationGroupees = grouperPrestations(prestations, tauxImpositions);
         List<PrestationGroupee> prestationsMergees = mergeMap(prestationGroupees);
@@ -229,7 +226,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
     @Override
     public List<PrestationGroupee> getPrestationsForAllocIS(String idAllocataire, Date dateDebut, Date dateFin)
             throws TauxImpositionNotFoundException {
-        TauxImpositions tauxImpositions = VulpeculaRepositoryLocator.getTauxImpositionRepository().findAll();
+        TauxImpositions tauxImpositions = ALRepositoryLocator.getTauxImpositionRepository().findAll();
         List<EntetePrestationComplexModel> prestations = getPrestationsIS(idAllocataire, dateDebut, dateFin);
         Map<String, List<PrestationGroupee>> prestationGroupees = grouperPrestations(prestations, tauxImpositions);
         return mergeMap(prestationGroupees);
@@ -475,7 +472,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
 
     private Map<String, PrestationGroupee> createMapPrestationsGroupees(Date dateDebut, Date dateFin,
             Map<String, Collection<EntetePrestationComplexModel>> prestationsGroupByCaisseAF) {
-        TauxImpositions tauxImpositions = VulpeculaRepositoryLocator.getTauxImpositionRepository().findAll();
+        TauxImpositions tauxImpositions = ALRepositoryLocator.getTauxImpositionRepository().findAll();
 
         Map<String, PrestationGroupee> prestationsGroupees = new HashMap<String, PrestationGroupee>();
 

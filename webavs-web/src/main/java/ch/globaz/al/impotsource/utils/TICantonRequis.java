@@ -1,8 +1,8 @@
-package ch.globaz.vulpecula.domain.specifications.is;
+package ch.globaz.al.impotsource.utils;
 
 import ch.globaz.specifications.AbstractSpecification;
 import ch.globaz.specifications.SpecificationMessage;
-import ch.globaz.vulpecula.domain.models.is.TauxImposition;
+import ch.globaz.al.impotsource.domain.TauxImposition;
 
 public class TICantonRequis extends AbstractSpecification<TauxImposition> {
 

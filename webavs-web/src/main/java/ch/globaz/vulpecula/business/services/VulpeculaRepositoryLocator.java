@@ -19,7 +19,6 @@ import ch.globaz.vulpecula.domain.repositories.ebusiness.NouveauTravailleurRepos
 import ch.globaz.vulpecula.domain.repositories.ebusiness.SynchronisationRepository;
 import ch.globaz.vulpecula.domain.repositories.ebusiness.SynchronisationTravailleurEbuRepository;
 import ch.globaz.vulpecula.domain.repositories.is.HistoriqueProcessusAfRepository;
-import ch.globaz.vulpecula.domain.repositories.is.TauxImpositionRepository;
 import ch.globaz.vulpecula.domain.repositories.postetravail.AdhesionCotisationPosteTravailRepository;
 import ch.globaz.vulpecula.domain.repositories.postetravail.EmployeurRepository;
 import ch.globaz.vulpecula.domain.repositories.postetravail.OccupationRepository;
@@ -71,7 +70,6 @@ import ch.globaz.vulpecula.repositoriesjade.decompte.ebusiness.NouveauTravailleu
 import ch.globaz.vulpecula.repositoriesjade.ebusiness.SynchronisationRepositoryJade;
 import ch.globaz.vulpecula.repositoriesjade.ebusiness.SynchronisationTravailleurEbuRepositoryJade;
 import ch.globaz.vulpecula.repositoriesjade.is.HistoriqueProcessusAfRepositoryJade;
-import ch.globaz.vulpecula.repositoriesjade.is.TauxImpositionRepositoryJade;
 import ch.globaz.vulpecula.repositoriesjade.postetravail.AdhesionCotisationPosteTravailRepositoryJade;
 import ch.globaz.vulpecula.repositoriesjade.postetravail.EmployeurRepositoryJade;
 import ch.globaz.vulpecula.repositoriesjade.postetravail.OccupationRepositoryJade;
@@ -355,10 +353,6 @@ public final class VulpeculaRepositoryLocator {
         return CotisationAssociationProfessionnelleRepositoryHolder.INSTANCE;
     }
 
-    public static TauxImpositionRepository getTauxImpositionRepository() {
-        return TauxImpositionRepositoryHolder.INSTANCE;
-    }
-
     public static SuiviCaisseMaladieRepository getSuiviCaisseMaladieRepository() {
         return SuiviCaisseMaladieRepositoryHolder.INSTANCE;
     }
@@ -503,10 +497,6 @@ public final class VulpeculaRepositoryLocator {
 
     private static class CotisationAssociationProfessionnelleRepositoryHolder {
         private static final CotisationAssociationProfessionnelleRepository INSTANCE = new CotisationAssociationProfessionnelleRepositoryJade();
-    }
-
-    private static class TauxImpositionRepositoryHolder {
-        private static final TauxImpositionRepository INSTANCE = new TauxImpositionRepositoryJade();
     }
 
     private static class HistoriqueProcessusAfRepositoryHolder {

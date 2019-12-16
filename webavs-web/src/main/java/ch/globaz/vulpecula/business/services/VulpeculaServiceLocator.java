@@ -27,8 +27,6 @@ import ch.globaz.vulpecula.business.services.ebusiness.NouveauTravailleurService
 import ch.globaz.vulpecula.business.services.employeur.EmployeurService;
 import ch.globaz.vulpecula.business.services.is.ImpotSourceService;
 import ch.globaz.vulpecula.business.services.is.ProcessusAFService;
-import ch.globaz.vulpecula.business.services.is.TauxImpositionService;
-import ch.globaz.vulpecula.business.services.is.TauxImpositionServiceCRUD;
 import ch.globaz.vulpecula.business.services.postetravail.PosteTravailService;
 import ch.globaz.vulpecula.business.services.postetravail.PosteTravailServiceCRUD;
 import ch.globaz.vulpecula.business.services.properties.PropertiesService;
@@ -56,7 +54,6 @@ import ch.globaz.vulpecula.businessimpl.services.ebusiness.NouveauTravailleurSer
 import ch.globaz.vulpecula.businessimpl.services.employeur.EmployeurServiceImpl;
 import ch.globaz.vulpecula.businessimpl.services.is.ImpotSourceServiceImpl;
 import ch.globaz.vulpecula.businessimpl.services.is.ProcessusAFServiceImpl;
-import ch.globaz.vulpecula.businessimpl.services.is.TauxImpositionServiceImpl;
 import ch.globaz.vulpecula.businessimpl.services.postetravail.PosteTravailServiceImpl;
 import ch.globaz.vulpecula.businessimpl.services.properties.PropertiesServiceImpl;
 import ch.globaz.vulpecula.businessimpl.services.qualification.QualificationServiceImpl;
@@ -167,10 +164,6 @@ public class VulpeculaServiceLocator {
         return ProcessusAFServiceHolder.INSTANCE;
     }
 
-    public static TauxImpositionService getTauxImpositionService() {
-        return TauxImpositionServiceHolder.INSTANCE;
-    }
-
     public static SuiviCaisseMaladieService getSuiviCaisseMaladieService() {
         return SuiviCaisseMaladieHolder.INSTANCE;
     }
@@ -258,12 +251,6 @@ public class VulpeculaServiceLocator {
             throws JadeApplicationServiceNotAvailableException {
         return (CotisationAssociationProfessionnelleCRUDService) JadeApplicationServiceLocator.getInstance()
                 .getServiceImpl(CotisationAssociationProfessionnelleCRUDService.class);
-    }
-
-    public static TauxImpositionServiceCRUD getTauxImpositionServiceCRUD()
-            throws JadeApplicationServiceNotAvailableException {
-        return (TauxImpositionServiceCRUD) JadeApplicationServiceLocator.getInstance().getServiceImpl(
-                TauxImpositionServiceCRUD.class);
     }
 
     public static ReferenceRubriqueServiceCRUD getReferenceRubriqueServiceCRUD()
@@ -378,11 +365,6 @@ public class VulpeculaServiceLocator {
 
     private static class ProcessusAFServiceHolder {
         public static final ProcessusAFService INSTANCE = new ProcessusAFServiceImpl();
-    }
-
-    private static class TauxImpositionServiceHolder {
-        public static final TauxImpositionService INSTANCE = new TauxImpositionServiceImpl(
-                getTauxImpositionRepository());
     }
 
     private static class SuiviCaisseMaladieHolder {

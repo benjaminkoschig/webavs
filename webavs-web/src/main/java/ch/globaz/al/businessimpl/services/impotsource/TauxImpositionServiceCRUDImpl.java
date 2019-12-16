@@ -1,11 +1,11 @@
-package ch.globaz.vulpecula.businessimpl.services.is;
+package ch.globaz.al.businessimpl.services.impotsource;
 
+import ch.globaz.al.business.services.impotsource.TauxImpositionServiceCRUD;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
-import ch.globaz.vulpecula.business.models.is.TauxImpositionSearchSimpleModel;
-import ch.globaz.vulpecula.business.models.is.TauxImpositionSimpleModel;
-import ch.globaz.vulpecula.business.services.is.TauxImpositionServiceCRUD;
+import ch.globaz.al.impotsource.models.TauxImpositionSearchSimpleModel;
+import ch.globaz.al.impotsource.models.TauxImpositionSimpleModel;
 
 public class TauxImpositionServiceCRUDImpl implements TauxImpositionServiceCRUD {
 

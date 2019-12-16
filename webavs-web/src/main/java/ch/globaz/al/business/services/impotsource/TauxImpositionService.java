@@ -1,7 +1,7 @@
-package ch.globaz.vulpecula.business.services.is;
+package ch.globaz.al.business.services.impotsource;
 
 import ch.globaz.specifications.UnsatisfiedSpecificationException;
-import ch.globaz.vulpecula.domain.models.is.TauxImposition;
+import ch.globaz.al.impotsource.domain.TauxImposition;
 
 public interface TauxImpositionService {
     TauxImposition create(TauxImposition tauxImposition) throws UnsatisfiedSpecificationException;

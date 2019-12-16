@@ -12,7 +12,7 @@ import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.businessimpl.services.is.PrestationGroupee;
 import ch.globaz.vulpecula.documents.DocumentConstants;
 import ch.globaz.vulpecula.domain.models.common.Annee;
-import ch.globaz.vulpecula.domain.models.is.TauxImpositionNotFoundException;
+import ch.globaz.al.exception.TauxImpositionNotFoundException;
 import ch.globaz.vulpecula.external.BProcessWithContext;
 import ch.globaz.vulpecula.util.ExceptionsUtil;
 

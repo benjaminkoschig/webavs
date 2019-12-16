@@ -9,7 +9,7 @@ import ch.globaz.vulpecula.businessimpl.services.is.PrestationGroupee;
 import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.is.DetailPrestationAF;
-import ch.globaz.vulpecula.domain.models.is.TauxImpositionNotFoundException;
+import ch.globaz.al.exception.TauxImpositionNotFoundException;
 
 public interface ImpotSourceService {
     /**

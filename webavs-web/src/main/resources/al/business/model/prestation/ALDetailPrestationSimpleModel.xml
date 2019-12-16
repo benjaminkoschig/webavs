@@ -20,6 +20,8 @@
 			<field name="numeroCompte" column="NUMCPT" type="STRING" dataType="VARCHAR(20)" mandatory="false" comment="Numéro de compte"/>
 			<field name="ageEnfant" column="NAGENF" type="NUMERIC" dataType="NUMERIC(2,0)" mandatory="false" comment="Age de l'enfant pour la période de la prestation"/>
 			<field name="rang" column="NRANG" type="NUMERIC" dataType="NUMERIC(2,0)" mandatory="true" comment="Rang de l'enfant au moment de la génération" />
+			<field name="montantIS" column="NMOIMS" type="NUMERIC" dataType="NUMERIC(8,2)" mandatory="false" comment="Montant de l'impôt à la source" />
+			<field name="numeroCompteIS" column="NUMCIS" type="STRING" dataType="VARCHAR(20)" mandatory="false" comment="Numéro de compte impôt à la source"/>
 		</fields>
 		<search-definition>
 			<search-group operator="AND">

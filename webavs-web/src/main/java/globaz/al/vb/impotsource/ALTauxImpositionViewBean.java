@@ -1,9 +1,9 @@
-package globaz.vulpecula.vb.is;
+package globaz.al.vb.impotsource;
 
 import globaz.globall.db.BSpy;
 import ch.globaz.common.vb.BJadeSearchObjectELViewBean;
 
-public class PTTauxImpositionViewBean extends BJadeSearchObjectELViewBean {
+public class ALTauxImpositionViewBean extends BJadeSearchObjectELViewBean {
     @Override
     public String getId() {
         return null;

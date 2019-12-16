@@ -1,15 +1,15 @@
-package globaz.vulpecula.vb.is;
+package globaz.al.vb.impotsource;
 
+import ch.globaz.al.business.services.ALServiceLocator;
 import globaz.framework.bean.JadeAbstractAjaxCrudFindViewBean;
 import globaz.jade.service.provider.application.JadeCrudService;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import ch.globaz.vulpecula.business.models.is.TauxImpositionSearchSimpleModel;
-import ch.globaz.vulpecula.business.models.is.TauxImpositionSimpleModel;
-import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
-import ch.globaz.vulpecula.domain.models.is.TauxImposition;
-import ch.globaz.vulpecula.repositoriesjade.is.converters.TauxImpositionConverter;
+import ch.globaz.al.impotsource.models.TauxImpositionSearchSimpleModel;
+import ch.globaz.al.impotsource.models.TauxImpositionSimpleModel;
+import ch.globaz.al.impotsource.domain.TauxImposition;
+import ch.globaz.al.impotsource.persistence.TauxImpositionConverter;
 
-public class PTTauxImpositionAjaxViewBean extends
+public class ALTauxImpositionAjaxViewBean extends
         JadeAbstractAjaxCrudFindViewBean<TauxImpositionSimpleModel, TauxImpositionSearchSimpleModel> {
     private static final long serialVersionUID = -3753494825638691444L;
 
@@ -33,7 +33,7 @@ public class PTTauxImpositionAjaxViewBean extends
     @Override
     public JadeCrudService<TauxImpositionSimpleModel, TauxImpositionSearchSimpleModel> getService()
             throws JadeApplicationServiceNotAvailableException {
-        return VulpeculaServiceLocator.getTauxImpositionServiceCRUD();
+        return ALServiceLocator.getTauxImpositionServiceCRUD();
     }
 
     @Override
@@ -49,12 +49,12 @@ public class PTTauxImpositionAjaxViewBean extends
     @Override
     public void add() throws Exception {
         TauxImposition tauxImposition = TauxImpositionConverter.getInstance().convertToDomain(currentEntity);
-        VulpeculaServiceLocator.getTauxImpositionService().create(tauxImposition);
+        ALServiceLocator.getTauxImpositionService().create(tauxImposition);
     }
 
     @Override
     public void update() throws Exception {
         TauxImposition tauxImposition = TauxImpositionConverter.getInstance().convertToDomain(currentEntity);
-        VulpeculaServiceLocator.getTauxImpositionService().update(tauxImposition);
+        ALServiceLocator.getTauxImpositionService().update(tauxImposition);
     }
 }

@@ -21,7 +21,7 @@ import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.congepaye.CongePaye;
 import ch.globaz.vulpecula.domain.models.decompte.DecompteSalaire;
-import ch.globaz.vulpecula.domain.models.is.TauxImpositionNotFoundException;
+import ch.globaz.al.exception.TauxImpositionNotFoundException;
 import ch.globaz.vulpecula.domain.models.postetravail.Employeur;
 import ch.globaz.vulpecula.domain.models.postetravail.PosteTravail;
 import ch.globaz.vulpecula.domain.models.postetravail.Travailleur;

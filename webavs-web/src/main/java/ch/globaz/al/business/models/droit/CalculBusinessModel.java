@@ -41,6 +41,11 @@ public class CalculBusinessModel implements Comparable<Object> {
      */
     private String calculResultMontantEffectifCanton = null;
     /**
+     * Montant Impot à la source
+     */
+    private String calculResultMontantIS = null;
+
+    /**
      * Droit lié à la prestation
      */
     private DroitComplexModel droit = null;
@@ -218,6 +223,13 @@ public class CalculBusinessModel implements Comparable<Object> {
      */
     public String getCalculResultMontantEffectifCanton() {
         return calculResultMontantEffectifCanton;
+    }
+
+    /**
+     * @return the calculResultMontantIS
+     */
+    public String getCalculResultMontantIS() {
+        return calculResultMontantIS;
     }
 
     /**
@@ -399,6 +411,14 @@ public class CalculBusinessModel implements Comparable<Object> {
      */
     public void setCalculResultMontantEffectifCanton(String calculResultMontantEffectifCanton) {
         this.calculResultMontantEffectifCanton = calculResultMontantEffectifCanton;
+    }
+
+    /**
+     * @param calculResultMontantIS
+     *            the calculResultMontantIS to set
+     */
+    public void setCalculResultMontantIS(String calculResultMontantIS) {
+        this.calculResultMontantIS = calculResultMontantIS;
     }
 
     /**

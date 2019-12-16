@@ -81,6 +81,15 @@ public class DetailPrestationModel extends JadeSimpleModel {
      * Type du détail de la prestation
      */
     private String typePrestation = null;
+    /**
+     * Montant impôt à la source
+     */
+    private String montantIS = null;
+    /**
+     * Numéro du compte pour l'impôt à la source
+     */
+    private String numeroCompteIS = null;
+    /**
 
     /**
      * @return the ageEnfant
@@ -202,6 +211,19 @@ public class DetailPrestationModel extends JadeSimpleModel {
      */
     public String getTypePrestation() {
         return typePrestation;
+    }
+
+    /**
+     * @return the montantIS
+     */
+    public String getMontantIS() {
+        return montantIS;
+    }
+    /**
+     * @return the numeroCompteIS
+     */
+    public String getNumeroCompteIS() {
+        return numeroCompteIS;
     }
 
     /**
@@ -342,4 +364,21 @@ public class DetailPrestationModel extends JadeSimpleModel {
     public void setTypePrestation(String typePrestation) {
         this.typePrestation = typePrestation;
     }
+
+    /**
+     * @param montantIS
+     *            the montantIS to set
+     */
+    public void setMontantIS(String montantIS) {
+        this.montantIS = montantIS;
+    }
+
+    /**
+     * @param numeroCompteIS
+     *            the numeroCompteIS to set
+     */
+    public void setNumeroCompteIS(String numeroCompteIS) {
+        this.numeroCompteIS = numeroCompteIS;
+    }
+
 }

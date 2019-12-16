@@ -44,7 +44,7 @@ import ch.globaz.vulpecula.domain.models.common.Periode;
 import ch.globaz.vulpecula.domain.models.common.PeriodeMensuelle;
 import ch.globaz.vulpecula.domain.models.decompte.Decompte;
 import ch.globaz.vulpecula.domain.models.decompte.TypeDecompte;
-import ch.globaz.vulpecula.domain.models.is.TauxImpositionNotFoundException;
+import ch.globaz.al.exception.TauxImpositionNotFoundException;
 import ch.globaz.vulpecula.domain.models.postetravail.Employeur;
 import ch.globaz.vulpecula.repositoriesjade.RepositoryJade;
 

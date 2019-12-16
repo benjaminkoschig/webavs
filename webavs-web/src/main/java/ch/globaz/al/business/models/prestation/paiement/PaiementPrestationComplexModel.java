@@ -56,6 +56,16 @@ public class PaiementPrestationComplexModel extends CompensationPaiementPrestati
     private String prenomAllocataire = null;
 
     /**
+     * Montant Impôt à la source de la prestation
+     */
+    private String montantIS = null;
+
+    /**
+     * Numéro de rubrique comptable IS
+     */
+    private String numeroCompteIS = null;
+
+    /**
      * @return the bonificationRecap
      */
     public String getBonificationRecap() {
@@ -113,6 +123,20 @@ public class PaiementPrestationComplexModel extends CompensationPaiementPrestati
      */
     public String getPrenomAllocataire() {
         return prenomAllocataire;
+    }
+
+    /**
+     * @return the montantIS
+     */
+    public String getMontantIS() {
+        return montantIS;
+    }
+
+    /**
+     * @return the numeroCompteIS
+     */
+    public String getNumeroCompteIS() {
+        return numeroCompteIS;
     }
 
     /**
@@ -181,5 +205,21 @@ public class PaiementPrestationComplexModel extends CompensationPaiementPrestati
      */
     public void setPrenomAllocataire(String prenomAllocataire) {
         this.prenomAllocataire = prenomAllocataire;
+    }
+
+    /**
+     * @param montantIS
+     *            the montantIS to set
+     */
+    public void setMontantIS(String montantIS) {
+        this.montantIS = montantIS;
+    }
+
+    /**
+     * @param numeroCompteIS
+     *            the numeroCompteIS to set
+     */
+    public void setNumeroCompteIS(String numeroCompteIS) {
+        this.numeroCompteIS = numeroCompteIS;
     }
 }

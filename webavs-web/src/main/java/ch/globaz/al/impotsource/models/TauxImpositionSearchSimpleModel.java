@@ -1,26 +1,17 @@
-package ch.globaz.vulpecula.business.models.is;
+package ch.globaz.al.impotsource.models;
 
-import globaz.jade.persistence.model.JadeSearchSimpleModel;
-import ch.globaz.vulpecula.domain.models.is.TypeImposition;
+import ch.globaz.al.impotsource.domain.TypeImposition;
+import ch.globaz.common.persistence.DomaineJadeAbstractSearchModel;
 
-public class TauxImpositionSearchSimpleModel extends JadeSearchSimpleModel {
+public class TauxImpositionSearchSimpleModel extends DomaineJadeAbstractSearchModel {
     private static final long serialVersionUID = 296951735253843848L;
 
-    private String forId;
     private String forCanton;
     private String forTypeImposition;
 
     @Override
     public Class<TauxImpositionSimpleModel> whichModelClass() {
         return TauxImpositionSimpleModel.class;
-    }
-
-    public String getForId() {
-        return forId;
-    }
-
-    public void setForId(String forId) {
-        this.forId = forId;
     }
 
     public String getForCanton() {

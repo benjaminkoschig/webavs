@@ -1,5 +1,6 @@
-package ch.globaz.vulpecula.domain.models.is;
+package ch.globaz.al.impotsource.domain;
 
+import ch.globaz.al.impotsource.domain.TauxImposition;
 import org.junit.Before;
 import org.junit.Test;
 import ch.globaz.specifications.UnsatisfiedSpecificationException;

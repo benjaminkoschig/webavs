@@ -36,6 +36,13 @@ public enum ALProperties implements IProperties {
         public boolean isValidValue(final String propertyValue) {
             return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
         }
+    },
+    IMPOT_A_LA_SOURCE("impotsource.utilise",
+            "Indique que la caisse gère l'impôt à la source directement depuis WebAF") {
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
+        }
     };
 
     private String description;

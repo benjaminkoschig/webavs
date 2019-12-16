@@ -147,4 +147,21 @@ public class RubriquesComptablesFPVServiceImpl extends RubriquesComptablesServic
 
     }
 
+    @Override
+    public String getRubriqueForIS(DossierModel dossier, DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
+        String canton = getCanton(dossier, detail, date);
+        String codeCaisse = getCodeCAF(dossier, date);
+        StringBuilder rubrique = new StringBuilder();
+
+        if (ALCSDossier.ACTIVITE_INDEPENDANT.equals(dossier.getActiviteAllocataire())) {
+            rubrique.append(ALConstRubriques.RUBRIQUE_CAISSE_INDEPENDANT_IMPOT_SOURCE);
+        } else if (ALCSDossier.ACTIVITE_SALARIE.equals(dossier.getActiviteAllocataire())) {
+            rubrique.append(ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_IMPOT_SOURCE);
+        } else {
+            return rubrique.toString();
+        }
+        rubrique.replace(21,30, codeCaisse);
+        rubrique.append(".").append(canton);
+        return getRubrique(date,rubrique.toString().toLowerCase());
+    }
 }

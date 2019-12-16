@@ -1,4 +1,4 @@
-package ch.globaz.vulpecula.domain.models.is;
+package ch.globaz.al.exception;
 
 import ch.globaz.vulpecula.domain.models.common.Date;
 

@@ -1,5 +1,9 @@
 package ch.globaz.al.businessimpl.calcul.modes;
 
+import ch.globaz.al.business.services.ALRepositoryLocator;
+import ch.globaz.al.impotsource.persistence.TauxImpositionRepository;
+import ch.globaz.al.properties.ALProperties;
+import ch.globaz.al.impotsource.domain.TauxImpositions;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -54,7 +58,7 @@ public abstract class CalculModeAbstract implements CalculMode {
     /**
      * Liste contenant les droits calculé
      */
-    protected ArrayList<CalculBusinessModel> droitsCalcules = new ArrayList<CalculBusinessModel>();
+    protected ArrayList<CalculBusinessModel> droitsCalcules = new ArrayList<>();
     /**
      * Mode de calcul
      */
@@ -65,6 +69,10 @@ public abstract class CalculModeAbstract implements CalculMode {
      */
     protected int nombre = 0;
 
+    protected TauxImpositions tauxGroupByCanton;
+
+    protected TauxImpositionRepository tauxImpositionRepository = ALRepositoryLocator
+            .getTauxImpositionRepository();
     /**
      * Il n'est pas possible de savoir si un critère de nombre doit être utilisé pour déterminer un montant avant que le
      * calcul ne soit effectivement exécuté. Ce flag permet de demander au calcul de s'exécuter une seconde fois si un
@@ -413,7 +421,7 @@ public abstract class CalculModeAbstract implements CalculMode {
             throw new ALCalculException("CalculModeAbstract#getCategoriesList : " + dateCalcul + " is not a valid date");
         }
 
-        HashSet<String> set = new HashSet<String>();
+        HashSet<String> set = new HashSet<>();
 
         // ajout de la catégorie forcée si nécessaire
         if (!setCategoriesForceesList(dossier, droitModel, set)) {
@@ -730,7 +738,11 @@ public abstract class CalculModeAbstract implements CalculMode {
 
         // parcours des droits
         for (int i = 0; i < droits.getSize(); i++) {
-            computeDroit(dossier, (DroitComplexModel) droits.getSearchResults()[i], dateCalcul, typeResident);
+            DroitComplexModel eachDroit = (DroitComplexModel) droits.getSearchResults()[i];
+            computeDroit(dossier, eachDroit, dateCalcul, typeResident);
+            if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
+                CalculImpotSource.computeIS(droitsCalcules, tauxGroupByCanton, tauxImpositionRepository, dossier, eachDroit, dateCalcul);
+            }
         }
     }
 

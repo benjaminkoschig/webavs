@@ -26,7 +26,7 @@ import ch.globaz.vulpecula.external.models.pyxis.Administration;
 import ch.globaz.vulpecula.repositoriesjade.RepositoryJade;
 import ch.globaz.vulpecula.util.RubriqueUtil;
 
-public class RubriquesComptablesBMSServiceImpl implements RubriquesComptablesBMSService {
+public class RubriquesComptablesBMSServiceImpl extends RubriquesComptablesServiceImpl implements RubriquesComptablesBMSService {
     public static final String SEPARATOR = ".";
 
     public static final String RUBRIQUE_MULTICAISSE = "rubrique.multicaisse";
@@ -46,8 +46,29 @@ public class RubriquesComptablesBMSServiceImpl implements RubriquesComptablesBMS
 
     @Override
     public String getRubriqueComptable(DossierModel dossier, EntetePrestationModel entete,
-            DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
+                                       DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
         return getRubriqueFor(dossier, entete, detail, date);
+    }
+
+    @Override
+    public String getRubriqueForIS(DossierModel dossier, DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
+        return getRubriqueForIS(getCodeCAF(dossier, date), date);
+    }
+
+    /**
+     * Retourne le code de la caisse AF à laquelle l'affiliation adhère (plan-caisse)
+     *
+     * @param dossier Dossier pour lequel le canton de l'affilié doit être récupéré
+     * @param date    Date pour laquelle effectuer la récupération
+     * @return Code de la caisse prof de l'affiliation
+     * @throws JadePersistenceException Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
+     *                                  faire
+     * @throws JadeApplicationException Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
+     */
+    private String getCodeCAF(DossierModel dossier, String date) throws JadeApplicationException,
+            JadePersistenceException {
+        AssuranceInfo assurance = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier, date);
+        return assurance.getCodeCaisseProf();
     }
 
     public static Collection<String> getIdRubriquesAFIS() {
@@ -92,7 +113,7 @@ public class RubriquesComptablesBMSServiceImpl implements RubriquesComptablesBMS
     }
 
     public static String getRubriqueForIS(String caisseAF, String date)
-            throws JadeApplicationServiceNotAvailableException, JadeApplicationException, JadePersistenceException {
+            throws JadeApplicationException, JadePersistenceException {
         StringBuilder sb = new StringBuilder();
         sb.append(RUBRIQUE_MULTICAISSE);
         sb.append(SEPARATOR);
@@ -104,7 +125,7 @@ public class RubriquesComptablesBMSServiceImpl implements RubriquesComptablesBMS
     }
 
     public static String getRubriqueFor(DossierModel dossier, EntetePrestationModel entete,
-            DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
+                                         DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
         AssuranceInfo infos = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier, date);
         String caisseAF = infos.getCodeCaisseProf();
         String rubrique = getRubriqueFor(entete.getBonification(), caisseAF, dossier.getActiviteAllocataire(),
@@ -114,7 +135,7 @@ public class RubriquesComptablesBMSServiceImpl implements RubriquesComptablesBMS
     }
 
     public static String getRubriqueFor(String bonification, String caisseAF, String activiteAllocataire,
-            String typeDroit, String statut, String date) {
+                                         String typeDroit, String statut, String date) {
         StringBuilder sb = new StringBuilder();
         sb.append(RUBRIQUE_MULTICAISSE);
         sb.append(SEPARATOR);
