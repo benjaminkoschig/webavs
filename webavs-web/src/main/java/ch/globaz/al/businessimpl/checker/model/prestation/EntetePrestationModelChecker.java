@@ -1,6 +1,7 @@
 package ch.globaz.al.businessimpl.checker.model.prestation;
 
 import ch.globaz.al.business.constantes.enumerations.RafamEtatAnnonce;
+import ch.globaz.al.business.constantes.enumerations.RafamTypeAnnonce;
 import ch.globaz.al.business.models.prestation.DetailPrestationModel;
 import ch.globaz.al.business.models.prestation.DetailPrestationSearchModel;
 import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
@@ -27,9 +28,13 @@ import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.al.utils.ALImportUtils;
 import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * contrôle la validité des données de EntetePrestation
@@ -410,13 +415,26 @@ public abstract class EntetePrestationModelChecker extends ALAbstractChecker {
 
                     if(annnonceCreationSpy.equals(enteteCreationSpy)
                             && !RafamEtatAnnonce.A_TRANSMETTRE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(annonce.getEtat()))
-                            && hasPrestationForAnnonce(search, annonce)) {
+                            && !RafamTypeAnnonce._68C_ANNULATION.equals(RafamTypeAnnonce.getRafamTypeAnnonce(annonce.getTypeAnnonce()))
+                            && hasPrestationForAnnonce(search, annonce)
+                            && !hasAnnonceAnnulation(annonce, annnonceCreationSpy)) {
                         JadeThread.logError(EntetePrestationModelChecker.class.getName(),
                                 "al.prestation.entetePrestationModel.idEntete.deleteIntegrity.adi.rafam.envoyee");
+
                     }
                 }
             }
         }
+    }
+
+    private static boolean hasAnnonceAnnulation(AnnonceRafamModel annonce, String creationSpy) throws JadeApplicationException, JadePersistenceException {
+        AnnonceRafamModel rafamModel = ALImplServiceLocator.getAnnoncesRafamSearchService().getLastAnnonceForRecordNumber(annonce.getRecordNumber());
+        if(rafamModel.getId()!= annonce.getId()
+                && RafamTypeAnnonce._68C_ANNULATION.equals(RafamTypeAnnonce.getRafamTypeAnnonce(rafamModel.getTypeAnnonce()))
+                && RafamEtatAnnonce.VALIDE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(rafamModel.getEtat()))) {
+            return true;
+        }
+        return false;
     }
 
     private static boolean hasPrestationForAnnonce(DetailPrestationSearchModel search, AnnonceRafamModel annonce) {
