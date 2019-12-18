@@ -61,6 +61,7 @@ public class AFApplication extends BApplication {
     /** Le nom de la propriété qui permet de calculer le taux par palier ou non */
     public static final String PROPERTY_IS_TAUX_PAR_PALIER = "isTauxParPalier";
     public static final String PROPERTY_MODIFIER_TAG_AMATGENEVOISE = "modifierTagAmatGenevoise";
+    public static final String PROPERTY_AFFICHE_TAUX_PAR_PALIER = "afficheTauxParPalier";
 
     public static final String PROPERTY_NO_DOCUMENT_DS_RADIATION = "modelDsRadiation";
     public final static String PROPERTY_QUITTANCE_PCG_CONTROLE_NBRE_QUITTANCES = "quittancePcgControleNbre";
@@ -558,6 +559,14 @@ public class AFApplication extends BApplication {
 
     public boolean isTauxParPalier() {
         if ("true".equalsIgnoreCase(this.getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER, "false"))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean afficheTauxParParlier() {
+        if ("true".equalsIgnoreCase(this.getProperty(AFApplication.PROPERTY_AFFICHE_TAUX_PAR_PALIER, "false"))) {
             return true;
         } else {
             return false;

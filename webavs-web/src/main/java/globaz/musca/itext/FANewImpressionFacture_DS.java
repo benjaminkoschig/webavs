@@ -2,6 +2,7 @@ package globaz.musca.itext;
 
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BManager;
+import globaz.globall.db.GlobazServer;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.musca.db.facturation.FAAfact;
@@ -10,14 +11,16 @@ import globaz.musca.db.facturation.FAOrdreRegroupement;
 import globaz.musca.db.facturation.FAOrdreRegroupementManager;
 import globaz.musca.translation.CodeSystem;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
+
+import globaz.naos.application.AFApplication;
 import net.sf.jasperreports.engine.JRException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FANewImpressionFacture_DS implements net.sf.jasperreports.engine.JRDataSource {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FANewImpressionFacture_DS.class);
 
     private static final String CODE_SYS_BONIFICATION = "913001";
     private static final String CODE_SYS_COMPENSATION = "913002";
@@ -38,16 +41,29 @@ public class FANewImpressionFacture_DS implements net.sf.jasperreports.engine.JR
     private ArrayList stock = null;
     private double totaux = 0;
 
+    // Application NAOS
+    private AFApplication app = null;
+
     public FANewImpressionFacture_DS(ArrayList _container, FAEnteteFacture _enteteFacture) {
         super();
         container = _container;
         enteteFacture = _enteteFacture;
+        try {
+            app = (AFApplication) GlobazServer.getCurrentSystem().getApplication(AFApplication.DEFAULT_APPLICATION_NAOS);
+        } catch (Exception e) {
+            LOG.error("Erreur à la création de app {}", e);
+        }
     }
 
     public FANewImpressionFacture_DS(FAEnteteFacture _enteteFacture) {
         super();
         enteteFacture = _enteteFacture;
         container = new ArrayList();
+        try {
+            app = (AFApplication) GlobazServer.getCurrentSystem().getApplication(AFApplication.DEFAULT_APPLICATION_NAOS);
+        } catch (Exception e) {
+            LOG.error("Erreur à la création de app {}", e);
+        }
     }
 
     public void catHasChange() throws Exception {
@@ -66,7 +82,7 @@ public class FANewImpressionFacture_DS implements net.sf.jasperreports.engine.JR
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#clone()
      */
     @Override
@@ -298,7 +314,7 @@ public class FANewImpressionFacture_DS implements net.sf.jasperreports.engine.JR
         }
         if (jrField.getName().equals("COL_5")) {
             if (enCours.size() > 1) {
-                if (afficherMasse && ((FAAfact) enCours.get(0)).getAffichtaux().booleanValue()) {
+                if (afficherMasse && isAfficheTaux()) {
                     BigDecimal taux = new BigDecimal(((FAAfact) enCours.get(0)).getTauxFacture());
                     for (int i = 1; i < enCours.size(); i++) {
                         taux = taux.add(new BigDecimal(((FAAfact) enCours.get(i)).getTauxFacture()));
@@ -312,7 +328,7 @@ public class FANewImpressionFacture_DS implements net.sf.jasperreports.engine.JR
                 return "";
             } else {
                 if (!JadeStringUtil.isBlank(((FAAfact) enCours.get(0)).getTauxFacture())
-                        && ((FAAfact) enCours.get(0)).getAffichtaux().booleanValue()) {
+                        && isAfficheTaux()) {
                     if (((FAAfact) enCours.get(0)).getTauxFacture().equals("0.00")) {
                         return "";
                     } else {
@@ -635,7 +651,7 @@ public class FANewImpressionFacture_DS implements net.sf.jasperreports.engine.JR
         }
         if (jrField.getName().equals("COL_5")) {
             if (enCours.size() > 1) {
-                if (afficherMasse && ((FAAfact) enCours.get(0)).getAffichtaux().booleanValue()) {
+                if (afficherMasse && isAfficheTaux()) {
                     BigDecimal taux = new BigDecimal(((FAAfact) enCours.get(0)).getTauxFacture());
                     for (int i = 1; i < enCours.size(); i++) {
                         if (!((FAAfact) enCours.get(i)).getTauxFacture().equals("")
@@ -652,7 +668,7 @@ public class FANewImpressionFacture_DS implements net.sf.jasperreports.engine.JR
                 return "";
             } else {
                 if (!JadeStringUtil.isBlank(((FAAfact) enCours.get(0)).getTauxFacture())
-                        && ((FAAfact) enCours.get(0)).getAffichtaux().booleanValue()) {
+                        && isAfficheTaux()) {
                     if (((FAAfact) enCours.get(0)).getTauxFacture().equals("0.00")) {
                         return "";
                     } else {
@@ -842,4 +858,14 @@ public class FANewImpressionFacture_DS implements net.sf.jasperreports.engine.JR
         }
     }
 
+    /**
+     * Méthode qui permet d'afficher un taux en fonction d'un paramètre activé
+     * WEBAVS-7173 : Affichage du taux moyen
+     *
+     * @return Boolean
+     */
+
+    private Boolean isAfficheTaux() {
+        return ((FAAfact) enCours.get(0)).getAffichtaux().booleanValue() || ((app.afficheTauxParParlier()) && !Objects.isNull(((FAAfact) enCours.get(0)).getTauxFacture()));
+    }
 }

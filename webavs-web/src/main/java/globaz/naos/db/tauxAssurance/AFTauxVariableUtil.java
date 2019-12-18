@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Iterator;
 
+
 /**
  * Classe utilitaire de gestion de taux par palier afin d'optimiser et de simplifier le calcul
  * 
@@ -142,6 +143,7 @@ public class AFTauxVariableUtil {
     private AFTauxVariableUtil(String assuraneId) throws Exception {
         assuranceId = assuraneId;
         app = (AFApplication) GlobazServer.getCurrentSystem().getApplication(AFApplication.DEFAULT_APPLICATION_NAOS);
+        //isAfficheTauxMoyen = "true".equals(globaz.jade.properties.JadePropertiesService.getInstance().getProperty("common.isTauxContributionFraisAdministration"));
     }
 
     /**
@@ -151,7 +153,7 @@ public class AFTauxVariableUtil {
      *            la session à utiliser
      * @param masse
      *            la masse salariale
-     * @param période
+     * @param periode
      *            la période à facturer
      * @return la calcul du taux variable
      * @throws Exception
@@ -196,7 +198,7 @@ public class AFTauxVariableUtil {
     /**
      * Recherche le calcul du taux variable pour la période et le taux donné
      * 
-     * @param période
+     * @param periode
      *            la période à facturer
      * @param taux
      *            le taux utilisé
@@ -233,7 +235,7 @@ public class AFTauxVariableUtil {
      * 
      * @param session
      *            la session à utiliser
-     * @param période
+     * @param periode
      *            la période à facturer
      * @param taux
      *            le taux donné
@@ -269,7 +271,7 @@ public class AFTauxVariableUtil {
      *            la session à utiliser
      * @param masse
      *            la masse salariale
-     * @param période
+     * @param periode
      *            la période à facturer
      * @return le montant de la cotisation
      * @exception Exception
@@ -293,7 +295,7 @@ public class AFTauxVariableUtil {
      *            la session à utiliser
      * @param masse
      *            la masse salariale
-     * @param période
+     * @param periode
      *            la période à facturer
      * @param taux
      *            le taux utilisé
@@ -320,7 +322,7 @@ public class AFTauxVariableUtil {
      * 
      * @param masse
      *            la masse salariale
-     * @param période
+     * @param periode
      *            la période à facturer
      * @param taux
      *            le taux utilisé
@@ -353,7 +355,7 @@ public class AFTauxVariableUtil {
      *            la session à utiliser
      * @param masse
      *            la masse salariale
-     * @param période
+     * @param periode
      *            la période à facturer
      * @return le taux de cotisation (palier)
      * @exception Exception
@@ -400,7 +402,7 @@ public class AFTauxVariableUtil {
      *            la session à utiliser
      * @param idAffiliation
      *            l'affiliation concernée
-     * @param période
+     * @param periode
      *            la période à facturer, utile si recherche du taux par défaut
      * @return le dernier taux moyen calculé
      * @exception Exception
