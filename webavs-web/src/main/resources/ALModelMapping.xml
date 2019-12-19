@@ -116,10 +116,8 @@
 	 
 	 <!-- ch.globaz.al.business.models.envoi -->
 	 <model-mapping import="al/business/model/envoi/ALEnvoiPackage.xml"/>
-	 
+
+	<!-- ch.globaz.al.business.model.impotsource -->
+	<model-mapping import="al/business/model/impotsource/tauxImpositionSimpleModel.xml"/>
 	
-	 
-
-
-	 
 </model-mapping>
