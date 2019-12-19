@@ -322,7 +322,8 @@ public class FANewImpressionFacture_DS implements net.sf.jasperreports.engine.JR
                     if (taux.equals("0.00")) {
                         return "";
                     } else {
-                        return taux.toString();
+                        return app.afficheTauxParParlier() ? taux.setScale(2, BigDecimal.ROUND_HALF_UP).toString()
+                                : taux.toString();
                     }
                 }
                 return "";
@@ -662,7 +663,8 @@ public class FANewImpressionFacture_DS implements net.sf.jasperreports.engine.JR
                     if (taux.equals("0.00")) {
                         return "";
                     } else {
-                        return taux.toString();
+                        return app.afficheTauxParParlier() ? taux.setScale(2, BigDecimal.ROUND_HALF_UP).toString()
+                                : taux.toString();
                     }
                 }
                 return "";

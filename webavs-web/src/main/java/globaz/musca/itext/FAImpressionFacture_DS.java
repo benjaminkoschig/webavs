@@ -258,7 +258,8 @@ public class FAImpressionFacture_DS implements net.sf.jasperreports.engine.JRDat
                     if (taux.equals("0.00")) {
                         return "";
                     } else {
-                        return taux.toString();
+                        return app.afficheTauxParParlier() ? taux.setScale(2, BigDecimal.ROUND_HALF_UP).toString()
+                                : taux.toString();
                     }
                 }
                 return "";
@@ -517,7 +518,8 @@ public class FAImpressionFacture_DS implements net.sf.jasperreports.engine.JRDat
                     if (taux.equals("0.00")) {
                         return "";
                     } else {
-                        return taux.toString();
+                        return app.afficheTauxParParlier() ? taux.setScale(2, BigDecimal.ROUND_HALF_UP).toString()
+                                : taux.toString();
                     }
                 }
                 return "";
@@ -614,7 +616,7 @@ public class FAImpressionFacture_DS implements net.sf.jasperreports.engine.JRDat
      */
 
     private Boolean isAfficheTaux() {
-        return ((FAAfact) enCours.get(0)).getAffichtaux().booleanValue() || (app.afficheTauxParParlier()) && !Objects.isNull(((FAAfact) enCours.get(0)).getTauxFacture());
+        return ((FAAfact) enCours.get(0)).getAffichtaux().booleanValue() || ((app.afficheTauxParParlier()) && !Objects.isNull(((FAAfact) enCours.get(0)).getTauxFacture()));
     }
 
 }
