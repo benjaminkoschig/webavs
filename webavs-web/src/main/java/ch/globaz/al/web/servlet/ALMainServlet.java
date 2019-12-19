@@ -16,24 +16,33 @@ import globaz.fx.common.application.servlet.NaviRules;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSession;
 import globaz.jade.log.JadeLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Main Servlet de l'application WEB@AF
- * 
+ *
  * @author VYJ
  */
 public class ALMainServlet extends FWJadeServlet {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
-    /** Nom du menu WEBAF */
+    private static final Logger LOG = LoggerFactory.getLogger(ALMainServlet.class);
+
+    /**
+     * Nom du menu WEBAF
+     */
     private static final String MENU_MAIN_AL = "menuWEBAF";
 
-    /** Noeuds du menu désactivés en mode droit "Lecture seule" */
-    private static final List<String> nodesDisabledReadingMode = new ArrayList<String>();
+    /**
+     * Noeuds du menu désactivés en mode droit "Lecture seule"
+     */
+    private static final List<String> nodesDisabledReadingMode = new ArrayList<>();
+
     static {
         ALMainServlet.nodesDisabledReadingMode.add("Nouveau");
     }
@@ -96,6 +105,16 @@ public class ALMainServlet extends FWJadeServlet {
         FWRemoveActionsEndingWith remRule = new FWRemoveActionsEndingWith(listeInterdits);
         stack.addRule(remRule);
         initializeFPV();
+
+        // On contrôle si la propriété "impôt à la source" est activée.
+        try {
+            if (!((ALApplication) GlobazSystem
+                    .getApplication(ALApplication.DEFAULT_APPLICATION_WEBAF)).hasImpotSourceActive()) {
+                FWMenuBlackBox.ensureNodeDoesntExist("TauxImpot", "menuWEBAF");
+            }
+        } catch (Exception e) {
+            LOG.error("Une erreur est intervenue lors du contrôle sur le menu 'Taux d'imposition'.",e);
+        }
 
     }
 

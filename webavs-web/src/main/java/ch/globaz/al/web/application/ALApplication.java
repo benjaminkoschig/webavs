@@ -25,6 +25,7 @@ public class ALApplication extends BApplication {
     public static final String APPLICATION_PREFIX = "AL";
     public static final String DEFAULT_APPLICATION_ROOT = "alRoot";
     public static final String DEFAULT_APPLICATION_WEBAF = "AL";
+    public static final String PROPERTY_IMPOT_SOURCE = "impotsource.utilise";
 
     /**
      * @throws Exception
@@ -88,4 +89,12 @@ public class ALApplication extends BApplication {
     public String getNoCaisse() {
         return this.getProperty(CommonProperties.KEY_NO_CAISSE_FORMATE);
     }
+
+    /**
+     * @return true si le menu "taux d'impôt" doit être activé.
+     */
+    public boolean hasImpotSourceActive() {
+        return  Boolean.parseBoolean(this.getProperty(PROPERTY_IMPOT_SOURCE).trim());
+    }
+
 }

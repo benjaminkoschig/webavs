@@ -243,7 +243,7 @@
 		  					<parameter name="userAction" value="al.parametres.formules.chercher" /> 
 		  				</action>							
 	  				</node>
-					<node>
+					<node id="TauxImpot">
 						<label refId="MENU_TAUX_IMPOSITION" />
 						<action command="/al" responseTarget="fr_main">
 							<parameter name="userAction" value="al.impotsource.tauxImposition.afficher"/>
