@@ -1,38 +1,18 @@
 package ch.globaz.al.businessimpl.services.rafam;
 
-import ch.globaz.al.business.constantes.*;
-import ch.globaz.al.business.constantes.enumerations.*;
-import ch.globaz.al.business.models.adi.AdiEnfantMoisComplexModel;
-import ch.globaz.al.business.models.adi.AdiEnfantMoisModel;
-import ch.globaz.al.business.models.adi.DecompteAdiModel;
-import ch.globaz.al.business.models.droit.CalculBusinessModel;
-import ch.globaz.al.business.models.droit.EnfantModel;
-import ch.globaz.common.domaine.Montant;
-import ch.globaz.common.domaine.Periode;
-import ch.globaz.eavs.utils.StringUtils;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeNumericUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.log.JadeLogger;
-import globaz.jade.log.business.JadeBusinessMessageLevels;
-import globaz.jade.persistence.JadePersistenceManager;
-import globaz.jade.persistence.model.JadeAbstractModel;
-import globaz.jade.persistence.model.JadeAbstractSearchModel;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-
-import java.util.*;
-
 import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.AllowanceType;
 import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.BeneficiaryType;
 import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.ChildAllowanceType;
 import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.ChildType;
+import ch.globaz.al.business.constantes.*;
+import ch.globaz.al.business.constantes.enumerations.*;
 import ch.globaz.al.business.exceptions.model.annonces.rafam.ALAnnonceRafamException;
+import ch.globaz.al.business.models.adi.AdiEnfantMoisComplexModel;
+import ch.globaz.al.business.models.adi.AdiEnfantMoisModel;
 import ch.globaz.al.business.models.dossier.DossierComplexModel;
 import ch.globaz.al.business.models.dossier.DossierComplexSearchModel;
 import ch.globaz.al.business.models.dossier.DossierModel;
+import ch.globaz.al.business.models.droit.CalculBusinessModel;
 import ch.globaz.al.business.models.droit.DroitComplexModel;
 import ch.globaz.al.business.models.droit.DroitComplexSearchModel;
 import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
@@ -49,6 +29,22 @@ import ch.globaz.al.businessimpl.rafam.handlers.AnnonceHandlerFactory;
 import ch.globaz.al.businessimpl.services.ALAbstractBusinessServiceImpl;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.al.utils.ALRafamUtils;
+import ch.globaz.common.domaine.Montant;
+import ch.globaz.common.domaine.Periode;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.log.JadeLogger;
+import globaz.jade.log.business.JadeBusinessMessageLevels;
+import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+
+import java.util.*;
 
 /**
  * Implémentation du service de création d'annonces RAFAM
@@ -308,7 +304,7 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
     }
 
     private void creerAnnonces(RafamEvDeclencheur evDecl, RafamEtatAnnonce etat, DossierComplexModel dossier,
-            DroitComplexModel droit, boolean deletePrevious, boolean primeNaisanceOnly, boolean montantOnly) throws JadeApplicationException, JadePersistenceException {
+                               DroitComplexModel droit, boolean deletePrevious, boolean primeNaisanceOnly, boolean montantOnly) throws JadeApplicationException, JadePersistenceException {
 
         if (evDecl == null) {
             throw new ALAnnonceRafamException("AnnonceRafamBusinessServiceImpl#creerAnnonces : evDecl is null");
@@ -879,7 +875,7 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
         try {
             ArrayList<CalculBusinessModel> droitsListTemp = ALServiceLocator.getCalculBusinessService().getCalcul(dossierComplexModel, dateCalcul);
             for(CalculBusinessModel calcul : droitsListTemp) {
-                if(calcul.getDroit().getId().equals(droit.getId())
+                if(calcul.getDroit() != null && calcul.getDroit().getId().equals(droit.getId())
                         && !ALCSTarif.CATEGORIE_SUP_HORLO.equals(calcul.getTarif())) {
                     droitsList.add(calcul);
                     if(ALCSDroit.TYPE_NAIS.equals(calcul.getType())
@@ -923,30 +919,32 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
 
         List<RafamFamilyAllowanceType> types = ALServiceLocator.getAnnonceRafamCreationService().getTypesAllocationForAnnulation(dossier.getDossierModel(), droit);
 
-        AnnonceRafamModel lastAnnonce = ALImplServiceLocator.getAnnoncesRafamSearchService().getLastActive(droit.getId(),types.get(0));
+        if(!types.isEmpty()) {
+            AnnonceRafamModel lastAnnonce = ALImplServiceLocator.getAnnoncesRafamSearchService().getLastActive(droit.getId(), types.get(0));
 
-        Montant montAfter = new Montant(montants.get(0));
-        Montant montNaissaceAfter = new Montant(montants.get(1));
+            Montant montAfter = new Montant(montants.get(0));
+            Montant montNaissaceAfter = new Montant(montants.get(1));
 
-        if(montAfter.isZero()) {
-            if (RafamTypeAction.ANNULATION.equals(lastAnnonce.getTypeAnnonce())) {
-                ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(droit.getId());
-            } else { //RafamTypeAction.CREATION + RafamTypeAction.MODIFICATION
-                ALServiceLocator.getAnnonceRafamCreationService().creerAnnonces(RafamEvDeclencheur.ANNULATION, droit);
-            }
-            // Test si annonce naissance
-            if(hasAllocationNaissance(droit) && !montNaissaceAfter.isZero()) {
-                ALServiceLocator.getAnnonceRafamCreationService().creerAnnoncesNaissanceOnly(RafamEvDeclencheur.CREATION, droit);
-            }
-        } else {
-            ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(droit.getId());
-            if (RafamTypeAction.ANNULATION.equals(lastAnnonce.getTypeAnnonce())) {
-                evDecl = RafamEvDeclencheur.CREATION;
-            }
-            if(hasAllocationNaissance(droit) && montNaissaceAfter.isZero()) {
-                ALServiceLocator.getAnnonceRafamCreationService().creerAnnoncesNotNaissance(evDecl, droit);
+            if (montAfter.isZero()) {
+                if (RafamTypeAction.ANNULATION.equals(lastAnnonce.getTypeAnnonce())) {
+                    ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(droit.getId());
+                } else { //RafamTypeAction.CREATION + RafamTypeAction.MODIFICATION
+                    ALServiceLocator.getAnnonceRafamCreationService().creerAnnonces(RafamEvDeclencheur.ANNULATION, droit);
+                }
+                // Test si annonce naissance
+                if (hasAllocationNaissance(droit) && !montNaissaceAfter.isZero()) {
+                    ALServiceLocator.getAnnonceRafamCreationService().creerAnnoncesNaissanceOnly(RafamEvDeclencheur.CREATION, droit);
+                }
             } else {
-                ALServiceLocator.getAnnonceRafamCreationService().creerAnnonces(evDecl, droit);
+                ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(droit.getId());
+                if (RafamTypeAction.ANNULATION.equals(lastAnnonce.getTypeAnnonce())) {
+                    evDecl = RafamEvDeclencheur.CREATION;
+                }
+                if (hasAllocationNaissance(droit) && montNaissaceAfter.isZero()) {
+                    ALServiceLocator.getAnnonceRafamCreationService().creerAnnoncesNotNaissance(evDecl, droit);
+                } else {
+                    ALServiceLocator.getAnnonceRafamCreationService().creerAnnonces(evDecl, droit);
+                }
             }
         }
     }

@@ -3,6 +3,7 @@ package ch.globaz.al.business.models.droit;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.context.JadeThread;
 import globaz.jade.i18n.JadeI18n;
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -40,11 +41,6 @@ public class CalculBusinessModel implements Comparable<Object> {
      * Montant effectif selon le tarif du canton
      */
     private String calculResultMontantEffectifCanton = null;
-    /**
-     * Montant Impot à la source
-     */
-    private String calculResultMontantIS = null;
-
     /**
      * Droit lié à la prestation
      */
@@ -223,13 +219,6 @@ public class CalculBusinessModel implements Comparable<Object> {
      */
     public String getCalculResultMontantEffectifCanton() {
         return calculResultMontantEffectifCanton;
-    }
-
-    /**
-     * @return the calculResultMontantIS
-     */
-    public String getCalculResultMontantIS() {
-        return calculResultMontantIS;
     }
 
     /**
@@ -414,20 +403,12 @@ public class CalculBusinessModel implements Comparable<Object> {
     }
 
     /**
-     * @param calculResultMontantIS
-     *            the calculResultMontantIS to set
-     */
-    public void setCalculResultMontantIS(String calculResultMontantIS) {
-        this.calculResultMontantIS = calculResultMontantIS;
-    }
-
-    /**
      * @param droit
      *            the droit to set
      */
     public void setDroit(DroitComplexModel droit) {
         this.droit = droit;
-        if (!droit.getTiersBeneficiaireModel().isNew()) {
+        if (droit != null && !droit.getTiersBeneficiaireModel().isNew()) {
             addMessageWarning(JadeI18n.getInstance().getMessage(JadeThread.currentLanguage(),
                     "al.calcul.droit.info.beneficiaire"));
         }
