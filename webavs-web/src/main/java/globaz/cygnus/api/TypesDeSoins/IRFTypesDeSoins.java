@@ -91,6 +91,7 @@ public interface IRFTypesDeSoins {
     public static final String st_3_LOMBOSTAT_ORTHOPEDIQUE = "66000205";
     public static final String st_3_LUNETTES_VERRES_DE_CONTACT = "66000208";
     public static final String st_3_MINERVE = "66000207";
+    public static final String st_3_SECUTEL = "66000507";
     public static final String st_4_RETOUCHES_COUTEUSES_DE_CHAUSSURES = "66000210";
     public static final String st_5_APPAREIL_ACOUSTIQUE = "66000211";
     public static final String st_5_APPAREIL_ORTHOPHONIQUE = "66000216";

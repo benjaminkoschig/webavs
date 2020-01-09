@@ -35,6 +35,7 @@ public interface IRFCatalogueTexte {
     public static final String CS_GROUPE_TYPES_DOCUMENTS = "RFTYPEDOCUMS";
     public static final String CS_LETTRE_ENTETE = "66001442";
     public static final String CS_LISTE_RECAPITULATIVE_AVASAD = "66001452";
+    public static final String CS_LISTE_RECAPITULATIVE_SECUTEL = "66001452";
     public static final String CS_LIT_ELECTRIQUE_QUESTIONNAIRE_CCJU = "66001447";
     public static final String CS_MEDECIN_FACTURE_ETRANGER = "66001427";
     public static final String CS_MOYENS_AUX_ANNEXE_BON_ACHAT_ACCUSE_RECPETION_BENEFICIARE_PC = "66001417";

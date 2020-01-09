@@ -301,10 +301,164 @@
 		<property name="urlProperties" value="cygnus?cygnus.process.importationAvasad.afficher" />
 
 		<property name="steps">
+	<map>
+		<entry key="creationDemandesStep1">
+			<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+				<property name="classNameStep" value="globaz.cygnus.process.importationAvasad.creationDemandesStep1.RFImportDemandesCmsCreation" />
+				<property name="hasRollback" value="true" />
+				<property name="nbThread" value="1" />
+				<property name="order" value="1" />
+				<property name="isOptional" value="true" />
+				<property name="description">
+					<map>
+						<entry key="FR" value="Importation des demandes CMS" />
+						<entry key="DE" value="[de]Importation des demandes CMS" />
+						<entry key="IT" value="[it]Importation des demandes CMS" />
+					</map>
+				</property>
+			</bean>
+		</entry>
+		<entry key="preparationDecisionStep2">
+			<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+				<property name="classNameStep" value="globaz.cygnus.process.importationAvasad.preparationDecisionStep2.RFImportDemandesCmsPreparerDecision" />
+				<property name="hasRollback" value="true" />
+				<property name="nbThread" value="1" />
+				<property name="order" value="2" />
+				<property name="isOptional" value="true" />
+				<property name="description">
+					<map>
+						<entry key="FR" value="Préparation des décisions" />
+						<entry key="DE" value="[de]Préparation des décisions" />
+						<entry key="IT" value="[it]Préparation des décisions" />
+					</map>
+				</property>
+			</bean>
+		</entry>
+		<entry key="validationDecisionStep3">
+			<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+				<property name="classNameStep" value="globaz.cygnus.process.importationAvasad.validationDecisionStep3.RFImportDemandesCmsValiderDecision" />
+				<property name="hasRollback" value="true" />
+				<property name="nbThread" value="1" />
+				<property name="order" value="3" />
+				<property name="isOptional" value="true" />
+				<property name="description">
+					<map>
+						<entry key="FR" value="Validation des décisions" />
+						<entry key="DE" value="[de]Validation des décisions" />
+						<entry key="IT" value="[it]Validationdes décisions" />
+					</map>
+				</property>
+			</bean>
+		</entry>
+		<entry key="miseAJourFichierSourceStep4">
+			<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+				<property name="classNameStep" value="globaz.cygnus.process.importationAvasad.miseAJourFichierSourceStep4.RFImportDemandesCmsMajFichierSource" />
+				<property name="hasRollback" value="true" />
+				<property name="nbThread" value="1" />
+				<property name="order" value="4" />
+				<property name="isOptional" value="true" />
+				<property name="description">
+					<map>
+						<entry key="FR" value="Mise à jour du fichier source" />
+						<entry key="DE" value="[de]Mise à jour du fichier source" />
+						<entry key="IT" value="[it]Mise à jour du fichier source" />
+					</map>
+				</property>
+			</bean>
+		</entry>
+	</map>
+</property>
+</bean>
+	<!--  Fin du processus de traitement des importations AVASAD (demandes CMS)-->
+
+	<!--  Processus de traitement des importations Secutel (demandes CMS)-->
+	<bean id="Cygnus.import.secutel"
+		  class="ch.globaz.jade.process.business.conf.JadeProcessDefinitionBean">
+		<property name="classNamePopulation" value="globaz.cygnus.process.importationSecutel.RFImportDemandesCmsPopulation" />
+		<property name="description">
+			<map>
+				<entry key="FR">
+					<value>
+						<![CDATA[<h1>Importation SECUTEL</h1>
+
+						   ]]>
+					</value>
+				</entry>
+			</map>
+		</property>
+
+
+		<property name="displayValue">
+			<map>
+				<entry key="1">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessDisplayValue">
+						<property name="libelle" value="Ma valeur" />
+						<property name="keyValue" value="value1" />
+						<property name="displayInCSV" value="false" />
+						<property name="displayInHtml" value="false" />
+						<property name="width" value="140px" />
+						<property name="search" value="true" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+
+
+
+		<property name="displayTable">
+			<map>
+				<entry key="DESIGNATION">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessDisplayColumn">
+						<property name="libelle" value="RF_IMPORT_SECUTEL_PROCESS_DESCRIPTION" />
+						<property name="width" value="140px" />
+						<property name="display" value="true" />
+						<property name="search" value="true" />
+					</bean>
+				</entry>
+				<entry key="DATE_DEBUT_EXECUTION">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessDisplayColumn">
+						<property name="display" value="true" />
+					</bean>
+				</entry>
+				<entry key="DATE_FIN_EXECUTION">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessDisplayColumn">
+						<property name="display" value="true" />
+					</bean>
+				</entry>
+				<entry key="NB_ENTITE_ETAPE_COURANTE">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessDisplayColumn">
+						<property name="display" value="false" />
+					</bean>
+				</entry>
+				<entry key="ETAPE_XY">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessDisplayColumn">
+						<property name="display" value="false" />
+					</bean>
+				</entry>
+				<entry key="ETAT">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessDisplayColumn">
+						<property name="display" value="true" />
+					</bean>
+				</entry>
+				<entry key="DELETE">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessDisplayColumn">
+						<property name="display" value="true" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+
+		<!--  lien pour entites dans applis -->
+		<property name="urlEntite" value="" />
+
+		<!--  jsp pour passer param -->
+		<property name="urlProperties" value="cygnus?cygnus.process.importationSecutel.afficher" />
+
+		<property name="steps">
 			<map>
 				<entry key="creationDemandesStep1">
 					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
-						<property name="classNameStep" value="globaz.cygnus.process.importationAvasad.creationDemandesStep1.RFImportDemandesCmsCreation" />
+						<property name="classNameStep" value="globaz.cygnus.process.importationSecutel.creationDemandesStep1.RFImportDemandesCmsCreation" />
 						<property name="hasRollback" value="true" />
 						<property name="nbThread" value="1" />
 						<property name="order" value="1" />
@@ -320,7 +474,7 @@
 				</entry>
 				<entry key="preparationDecisionStep2">
 					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
-						<property name="classNameStep" value="globaz.cygnus.process.importationAvasad.preparationDecisionStep2.RFImportDemandesCmsPreparerDecision" />
+						<property name="classNameStep" value="globaz.cygnus.process.importationSecutel.preparationDecisionStep2.RFImportDemandesCmsPreparerDecision" />
 						<property name="hasRollback" value="true" />
 						<property name="nbThread" value="1" />
 						<property name="order" value="2" />
@@ -336,7 +490,7 @@
 				</entry>
 				<entry key="validationDecisionStep3">
 					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
-						<property name="classNameStep" value="globaz.cygnus.process.importationAvasad.validationDecisionStep3.RFImportDemandesCmsValiderDecision" />
+						<property name="classNameStep" value="globaz.cygnus.process.importationSecutel.validationDecisionStep3.RFImportDemandesCmsValiderDecision" />
 						<property name="hasRollback" value="true" />
 						<property name="nbThread" value="1" />
 						<property name="order" value="3" />
@@ -352,7 +506,7 @@
 				</entry>
 				<entry key="miseAJourFichierSourceStep4">
 					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
-						<property name="classNameStep" value="globaz.cygnus.process.importationAvasad.miseAJourFichierSourceStep4.RFImportDemandesCmsMajFichierSource" />
+						<property name="classNameStep" value="globaz.cygnus.process.importationSecutel.miseAJourFichierSourceStep4.RFImportDemandesCmsMajFichierSource" />
 						<property name="hasRollback" value="true" />
 						<property name="nbThread" value="1" />
 						<property name="order" value="4" />
@@ -369,6 +523,6 @@
 			</map>
 		</property>
 	</bean>
-	<!--  Fin du processus de traitement des importations AVASAD (demandes CMS)-->
+	<!--  Fin du processus de traitement des importations Secutel (demandes CMS)-->
 	
 </beans>

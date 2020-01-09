@@ -107,6 +107,13 @@
 							<parameter name="keyProcess" value="Cygnus.import.avasad" /> 													
 						</action>
 					</node>
+					<node>
+						<label refId="MENU_IMPORTATION_SECUTEL"/>
+						<action command="/fx" responseTarget="fr_main">
+							<parameter name="userAction" value="fx.process.jadeProcessList.afficher" />
+							<parameter name="keyProcess" value="Cygnus.import.secutel" />
+						</action>
+					</node>
 				    <node>
 						<label refId="MENU_ADAPTATIONS_JOURNALIERE"/>
 						<action command="/cygnus" responseTarget="fr_main">
