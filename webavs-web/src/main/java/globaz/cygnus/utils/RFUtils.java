@@ -293,6 +293,23 @@ public class RFUtils {
 
     }
 
+    /**
+     *
+     * Ajoute une ligne dans le log des importations Secutel
+     *
+     * @param typeDeMessage
+     * @param numeroLigne
+     * @param nss
+     * @param msgErreur
+     * @param logsList
+     */
+    public static void ajouterLogImportationsSecutel(int typeDeMessage, String numeroLigne, String nss,
+                                                    String msgErreur, List<String[]> logsList) {
+
+        logsList.add(new String[] { Integer.valueOf(typeDeMessage).toString(), numeroLigne, nss, msgErreur });
+
+    }
+
     public static boolean containsIdArrayList(String idCopie, ArrayList<String> idSuppressionCopieArray) {
         for (int i = 0; i < idSuppressionCopieArray.size(); i++) {
             if (idCopie.equals(idSuppressionCopieArray.get(i))) {

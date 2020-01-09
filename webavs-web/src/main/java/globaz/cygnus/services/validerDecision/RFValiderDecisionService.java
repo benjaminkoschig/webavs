@@ -49,7 +49,7 @@ public class RFValiderDecisionService extends RFValiderDecisionMiseAJourEntities
                 isDecisionValide);
     }
 
-    protected JadePrintDocumentContainer getDocumentDecisionOoAvasad(BSession session, String emailAdress,
+    protected JadePrintDocumentContainer getDocumentDecisionOo(BSession session, String emailAdress,
             ArrayList<RFDecisionDocumentData> decisionArray, StringBuffer PDFDecisionURL, String dateSurDocument,
             DocumentData docData, boolean miseEnGed, boolean isSimulation, String idLot, boolean isDecisionValide,
             AbstractJadeJob process, FWMemoryLog memoryLog, boolean isAvasad) throws Exception {

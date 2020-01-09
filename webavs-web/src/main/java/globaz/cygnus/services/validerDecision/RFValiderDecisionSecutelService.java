@@ -1,12 +1,13 @@
 package globaz.cygnus.services.validerDecision;
 
+import ch.globaz.topaz.datajuicer.DocumentData;
 import globaz.cygnus.api.decisions.IRFDecisions;
 import globaz.cygnus.db.decisions.RFCopieDecision;
 import globaz.cygnus.db.decisions.RFDecision;
 import globaz.cygnus.db.decisions.RFDecisionJointDemandeJointMotifRefusJointTiersValidationManager;
 import globaz.cygnus.db.demandes.RFDemande;
 import globaz.cygnus.db.motifsDeRefus.RFAssMotifsRefusDemande;
-import globaz.cygnus.process.RFValiderDecisionAvasadProcess;
+import globaz.cygnus.process.RFValiderDecisionSecutelProcess;
 import globaz.cygnus.utils.RFPropertiesUtils;
 import globaz.framework.util.FWMemoryLog;
 import globaz.framework.util.FWMessage;
@@ -14,12 +15,12 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.print.server.JadePrintDocumentContainer;
+
 import java.util.ArrayList;
-import ch.globaz.topaz.datajuicer.DocumentData;
 
-public class RFValiderDecisionAvasadService extends RFValiderDecisionService {
+public class RFValiderDecisionSecutelService extends RFValiderDecisionService {
 
-    private void chercherDecisionsAvasad(
+    private void chercherDecisionsSecutel(
             RFDecisionJointDemandeJointMotifRefusJointTiersValidationManager decisionJointTiersManager,
             String idGestionnaire, String idExecutionProcess, BSession session) throws Exception {
 
@@ -62,13 +63,13 @@ public class RFValiderDecisionAvasadService extends RFValiderDecisionService {
     public JadePrintDocumentContainer genererDecisionDocument(String dateSurDocument, DocumentData docData,
             String emailAdress, String idGestionnaire, boolean isMiseEnGed, boolean isSimulation,
             FWMemoryLog memoryLog, StringBuffer pdfDecisionURL, ArrayList<RFDecisionDocumentData> decisionArray,
-            RFValiderDecisionAvasadProcess process, String idExecutionProcess, BSession session,
+            RFValiderDecisionSecutelProcess process, String idExecutionProcess, BSession session,
             BTransaction transaction) throws Exception {
 
         // TopazSystem.getInstance().getDocBuilder().setOpenedDocumentsVisible(true);
 
         RFDecisionJointDemandeJointMotifRefusJointTiersValidationManager decisionJointTiersManager = new RFDecisionJointDemandeJointMotifRefusJointTiersValidationManager();
-        chercherDecisionsAvasad(decisionJointTiersManager, idGestionnaire, idExecutionProcess, session);
+        chercherDecisionsSecutel(decisionJointTiersManager, idGestionnaire, idExecutionProcess, session);
 
         if (decisionJointTiersManager.size() <= 0) {
             throw new Exception(session.getLabel("PROCESS_VALIDER_DECISION_BODY_MAIL_AUCUNE_DECISION"));
@@ -84,7 +85,7 @@ public class RFValiderDecisionAvasadService extends RFValiderDecisionService {
     public void recupererDecisions(String idGestionnaire, String idExecutionProcess, BSession session,
             ArrayList<RFDecisionDocumentData> decisionArray) throws Exception {
         RFDecisionJointDemandeJointMotifRefusJointTiersValidationManager decisionJointTiersManager = new RFDecisionJointDemandeJointMotifRefusJointTiersValidationManager();
-        chercherDecisionsAvasad(decisionJointTiersManager, idGestionnaire, idExecutionProcess, session);
+        chercherDecisionsSecutel(decisionJointTiersManager, idGestionnaire, idExecutionProcess, session);
 
         if (decisionJointTiersManager.size() <= 0) {
             throw new Exception(session.getLabel("PROCESS_VALIDER_DECISION_BODY_MAIL_AUCUNE_DECISION"));
@@ -94,7 +95,7 @@ public class RFValiderDecisionAvasadService extends RFValiderDecisionService {
     }
 
     public void logErreurs(String emailAdresse, FWMemoryLog memoryLog, Exception e,
-            RFValiderDecisionAvasadProcess process, BSession session, BTransaction transaction) {
+                           RFValiderDecisionSecutelProcess process, BSession session, BTransaction transaction) {
 
         JadeLogger.error(process, e.toString());
         e.printStackTrace();
