@@ -1,6 +1,9 @@
 package ch.globaz.vulpecula.business.services.is;
 
+import ch.globaz.common.properties.PropertiesException;
 import globaz.vulpecula.business.exception.VulpeculaException;
+
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +70,7 @@ public interface ImpotSourceService {
      * @throws TauxImpositionNotFoundException
      */
     List<PrestationGroupee> getPrestationsForAllocIS(String idAllocataire, Date dateDebut, Date dateFin)
-            throws TauxImpositionNotFoundException;
+            throws TauxImpositionNotFoundException, PropertiesException;
 
     /**
      * Retourne les prestations AF pour les allocataires qui ne sont pas imposés à la source, soit des prestations en
@@ -76,7 +79,7 @@ public interface ImpotSourceService {
      * @param annee Année à laquelle sélectionner les prestations
      * @return Liste de prestations
      */
-    List<PrestationGroupee> getPrestationsForAllocNonIS(Annee annee);
+    List<PrestationGroupee> getPrestationsForAllocNonIS(Annee annee) throws PropertiesException;
 
     /**
      * Retourne les prestations AF liés à un processus AF.
@@ -84,7 +87,7 @@ public interface ImpotSourceService {
      * @param idProcessus Id du processus aF
      * @return Liste de prestations
      */
-    List<EntetePrestationComplexModel> getEntetesPrestationsIS(String idProcessus);
+    List<EntetePrestationComplexModel> getEntetesPrestationsIS(String idProcessus) throws PropertiesException;
 
     /**
      * Retourne toutes les prestations relatives à un processus AF.
@@ -112,7 +115,7 @@ public interface ImpotSourceService {
      * @throws TauxImpositionNotFoundException
      */
     Map<String, Collection<PrestationGroupee>> getPrestationsForAllocIS(String canton, String caisseAF, Annee annee)
-            throws TauxImpositionNotFoundException;
+            throws TauxImpositionNotFoundException, PropertiesException;
 
     /**
      * Retourne les prestations AF pour les allocataires qui ne sont pas imposés à la source, soit des prestations en
@@ -121,5 +124,9 @@ public interface ImpotSourceService {
      * @param annee Année à laquelle sélectionner les prestations (BASE SUR LA DATE DE COMPTABILISATION)
      * @return Liste de prestations
      */
-    Map<String, PrestationGroupee> getPrestationsForAllocISGroupByCaisseAF(Annee annee, String canton);
+    Map<String, PrestationGroupee> getPrestationsForAllocISGroupByCaisseAF(Annee annee, String canton) throws PropertiesException;
+
+    Map<String, BigDecimal> getMontantISCaisseAFComptaAux(List<String> caisses, Annee annee) throws Exception;
+
+    List<String> getListDossierNonPrise();
 }

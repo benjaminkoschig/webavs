@@ -20,8 +20,8 @@
 			<select-field name="retenueImpot" field-ref="dossierModel.retenueImpot" />
 			<select-field name="periodeDe" field-ref="entetePrestationModel.periodeDe" />
 			<select-field name="periodeA" field-ref="entetePrestationModel.periodeA" />
-			<select-field name="typeFacturation" field-ref="employeurSimpleModel.typeFacturation" />
-			<select-field name="referencePermis" field-ref="travailleurSimpleModel.referencePermis" />
+<!--			<select-field name="typeFacturation" field-ref="employeurSimpleModel.typeFacturation" />-->
+<!--			<select-field name="referencePermis" field-ref="travailleurSimpleModel.referencePermis" />-->
 			<select-field name="raisonSociale" field-ref="affiliationSimpleModel.raisonSociale" />
 			<select-field name="langue" field-ref="tiersSimpleModel.langue" />
 			<select-field name="idJournal" field-ref="entetePrestationModel.idJournal" />
@@ -30,6 +30,7 @@
 			<select-field name="numFactureRecap" field-ref="recapitulatifEntrepriseModel.numeroFacture" />
 			<select-field name="bonification" field-ref="entetePrestationModel.bonification" />
 			<select-field name="cantonAllocataire" field-ref="allocataireModel.cantonResidence" />
+			<select-field name="montantTotalIS" field-ref="entetePrestationModel.montantTotalIS" />
 		</select-fields>
 		
 		<root-model name="entetePrestationModel"
@@ -83,17 +84,17 @@
 			</join-group>
 		</linked-model>
 		
-		<linked-model name="employeurSimpleModel"
-			model-ref="ch.globaz.vulpecula.business.models.employeur.EmployeurSimpleModel"
-			join-type="INNER"
-			select-fields="false">
-			<join-group operator="AND">
-				<join-field
-					name="idEmployeur"
-					operation="EQUALS"
-					field-ref="affiliationSimpleModel.affiliationId" />
-			</join-group>
-		</linked-model>
+<!--		<linked-model name="employeurSimpleModel"-->
+<!--			model-ref="ch.globaz.vulpecula.business.models.employeur.EmployeurSimpleModel"-->
+<!--			join-type="INNER"-->
+<!--			select-fields="false">-->
+<!--			<join-group operator="AND">-->
+<!--				<join-field-->
+<!--					name="idEmployeur"-->
+<!--					operation="EQUALS"-->
+<!--					field-ref="affiliationSimpleModel.affiliationId" />-->
+<!--			</join-group>-->
+<!--		</linked-model>-->
 			
 		<linked-model name="recapitulatifEntrepriseModel"
 			model-ref="ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseModel"
@@ -131,17 +132,17 @@
 			</join-group>			
 		</linked-model>
 		
-		<linked-model name="travailleurSimpleModel"
-			model-ref="ch.globaz.vulpecula.business.models.travailleur.TravailleurSimpleModel"
-			join-type="INNER"
-			select-fields="false">
-			<join-group operator="AND">
-				<join-field
-					name="idTiers"
-					operation="EQUALS"
-					field-ref="allocataireModel.idTiersAllocataire" />
-			</join-group>			
-		</linked-model>
+<!--		<linked-model name="travailleurSimpleModel"-->
+<!--			model-ref="ch.globaz.vulpecula.business.models.travailleur.TravailleurSimpleModel"-->
+<!--			join-type="INNER"-->
+<!--			select-fields="false">-->
+<!--			<join-group operator="AND">-->
+<!--				<join-field-->
+<!--					name="idTiers"-->
+<!--					operation="EQUALS"-->
+<!--					field-ref="allocataireModel.idTiersAllocataire" />-->
+<!--			</join-group>			-->
+<!--		</linked-model>-->
 		
 		<search-definition>
 				<search-group operator="AND">
@@ -155,6 +156,7 @@
 					<search-field name="forPeriodeDeAfterOrEquals" field-ref="entetePrestationModel.periodeDe" operation="GREATER_OR_EQUALS" />
 					<search-field name="forPeriodeABeforeOrEquals" field-ref="entetePrestationModel.periodeA" operation="LESS_OR_EQUALS" />
 					<search-field name="forIsRetenueImpot" field-ref="dossierModel.retenueImpot" operation="EQUALS" />
+					<search-field name="forIsRetenueImpotSomme" field-ref="entetePrestationModel.montantTotalIS" operation="NOT_EQUALS"/>
 					<search-field name="forEtat" field-ref="entetePrestationModel.etatPrestation" operation="EQUALS" />
 					<search-field name="forBonification" field-ref="entetePrestationModel.bonification" operation="EQUALS" />
 					<search-field name="forPeriodeDeBeforeOrEquals" field-ref="entetePrestationModel.periodeDe" operation="LESS_OR_EQUALS" />
@@ -162,7 +164,28 @@
 					<search-field name="forAffiliationId" field-ref="affiliationSimpleModel.affiliationId" operation="EQUALS" />
  				</search-group>
 		</search-definition>
-		
+
+		<search-definition name="fromDateForNotImpotSource">
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="entetePrestationModel.idEntete" operation="EQUALS"/>
+				<search-field name="forIdProcessus" field-ref="recapitulatifEntrepriseModel.idProcessusPeriodique" operation="EQUALS"/>
+				<search-field name="forIdAllocataire" field-ref="allocataireModel.idAllocataire" operation="EQUALS" />
+				<search-field name="forIdDossier" field-ref="dossierModel.idDossier" operation="EQUALS" />
+				<search-field name="forDateComptabilisationBeforeOrEquals" field-ref="entetePrestationModel.dateVersComp" operation="LESS_OR_EQUALS" />
+				<search-field name="forDateComptabilisationAfterOrEquals" field-ref="entetePrestationModel.dateVersComp" operation="GREATER_OR_EQUALS" />
+				<search-field name="forCantonResidence" field-ref="allocataireModel.cantonResidence" operation="EQUALS" />
+				<search-field name="forPeriodeDeAfterOrEquals" field-ref="entetePrestationModel.periodeDe" operation="GREATER_OR_EQUALS" />
+				<search-field name="forPeriodeABeforeOrEquals" field-ref="entetePrestationModel.periodeA" operation="LESS_OR_EQUALS" />
+				<search-field name="forIsRetenueImpot" field-ref="dossierModel.retenueImpot" operation="EQUALS" />
+				<search-field name="forNotRetenueImpotSomme" field-ref="entetePrestationModel.montantTotalIS" operation="NULL"/>
+				<search-field name="forEtat" field-ref="entetePrestationModel.etatPrestation" operation="EQUALS" />
+				<search-field name="forBonification" field-ref="entetePrestationModel.bonification" operation="EQUALS" />
+				<search-field name="forPeriodeDeBeforeOrEquals" field-ref="entetePrestationModel.periodeDe" operation="LESS_OR_EQUALS" />
+				<search-field name="forPeriodeDeAfterOrEquals" field-ref="entetePrestationModel.periodeDe" operation="GREATER_OR_EQUALS" />
+				<search-field name="forAffiliationId" field-ref="affiliationSimpleModel.affiliationId" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+
 		<order-by name="default">
 			<order-field field-ref="periodeDe" order="ASC" />
 		</order-by>

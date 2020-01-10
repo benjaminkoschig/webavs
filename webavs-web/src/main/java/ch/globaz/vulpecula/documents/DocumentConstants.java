@@ -127,10 +127,6 @@ public final class DocumentConstants {
     public static final String LISTES_AF_RETENUES_DOC_NAME = "LR_retenues_et_commissions_par_CAF";
     public static final String LISTES_AF_RETENUES = "0019PPT";
 
-    public static final String LISTES_AF_RETENUES_PAR_CAF_NAME = "Impots retenus par CAF";
-    public static final String LISTES_AF_RETENUES_PAR_CAF_DOC_NAME = "Impots_retenus_par_CAF";
-    public static final String LISTES_AF_RETENUES_PAR_CAF = "0020PPT";
-
     public static final String ATTESTATION_AF_TEMPLATE = "PT_ATTESTATION_AF";
     public static final String ATTESTATION_AF_CT_NAME = "Attestation AF IS";
     public static final String ATTESTATION_AF_TYPE_NUMBER = "0021PPT";

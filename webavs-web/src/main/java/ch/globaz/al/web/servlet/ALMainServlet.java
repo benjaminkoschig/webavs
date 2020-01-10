@@ -111,6 +111,7 @@ public class ALMainServlet extends FWJadeServlet {
             if (!((ALApplication) GlobazSystem
                     .getApplication(ALApplication.DEFAULT_APPLICATION_WEBAF)).hasImpotSourceActive()) {
                 FWMenuBlackBox.ensureNodeDoesntExist("TauxImpot", "menuWEBAF");
+                FWMenuBlackBox.ensureNodeDoesntExist("ListeIS","menuWEBAF");
             }
         } catch (Exception e) {
             LOG.error("Une erreur est intervenue lors du contrôle sur le menu 'Taux d'imposition'.",e);

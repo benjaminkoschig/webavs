@@ -163,12 +163,6 @@
 							</action>
 						</node>
 						<node>
-							<label refId="MENU_PT_LISTES_IS"/>
-							<action command="/vulpecula" responseTarget="fr_main">
-								<parameter name="userAction" value="vulpecula.is.listeIS.afficher"/>
-							</action>
-						</node>
-						<node>
 							<label refId="MENU_PT_ATTESTATIONS_AF" />
 							<action command="/vulpecula" responseTarget="fr_main">
 								<parameter name="userAction" value="vulpecula.is.attestationsAF.afficher"/>

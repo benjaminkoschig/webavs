@@ -1,7 +1,7 @@
 package ch.globaz.vulpecula.business.models.is;
 
-import globaz.jade.persistence.model.JadeComplexModel;
 import ch.globaz.al.business.models.prestation.EntetePrestationModel;
+import globaz.jade.persistence.model.JadeComplexModel;
 
 public class EntetePrestationComplexModel extends JadeComplexModel {
     private static final long serialVersionUID = -4307493889847851996L;
@@ -10,6 +10,7 @@ public class EntetePrestationComplexModel extends JadeComplexModel {
     private String idTiers;
     private String idTiersAffilie;
     private String idDossier;
+    private String idAssurance;
     private String titre;
     private String nom;
     private String prenom;
@@ -34,6 +35,7 @@ public class EntetePrestationComplexModel extends JadeComplexModel {
     private String bonification;
     private String cantonAllocataire;
     private EntetePrestationModel simpleModel;
+    private String montantTotalIS;
 
     /**
      * Ces attributs ne sont pas récupérés depuis la base de données, ils sont settés grâce au service d'affiliation.
@@ -313,6 +315,22 @@ public class EntetePrestationComplexModel extends JadeComplexModel {
 
     public void setSimpleModel(EntetePrestationModel simpleModel) {
         this.simpleModel = simpleModel;
+    }
+
+    public String getIdAssurance() {
+        return idAssurance;
+    }
+
+    public void setIdAssurance(String idAssurance) {
+        this.idAssurance = idAssurance;
+    }
+
+    public String getMontantTotalIS() {
+        return montantTotalIS;
+    }
+
+    public void setMontantTotalIS(String montantTotalIS) {
+        this.montantTotalIS = montantTotalIS;
     }
 
 }

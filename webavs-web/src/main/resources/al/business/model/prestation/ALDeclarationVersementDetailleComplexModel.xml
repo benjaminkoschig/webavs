@@ -16,6 +16,7 @@
 			<select-field name="tiersBeneficiaire" field-ref="detailPrestationModel.idTiersBeneficiaire"/>
 			<select-field name="idDossier" field-ref="droitComplexModel.droitModel.idDossier"/>
 			<select-field name="attestationAlloc" field-ref="droitComplexModel.droitModel.attestationAlloc"/>
+			<select-field name="montantIS" field-ref="detailPrestationModel.montantIS"/>
 		</select-fields>
 
 		<root-model name="detailPrestationModel" model-ref="ch.globaz.al.business.models.prestation.DetailPrestationModel" select-fields="false"/>

@@ -10,6 +10,7 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +18,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+
 import ch.globaz.al.business.constantes.ALCSDeclarationVersement;
 import ch.globaz.al.business.constantes.ALCSPrestation;
 import ch.globaz.al.business.constantes.ALConstDeclarationVersement;
@@ -34,26 +36,23 @@ import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.topaz.datajuicer.Collection;
 import ch.globaz.topaz.datajuicer.DataList;
 import ch.globaz.topaz.datajuicer.DocumentData;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Classe d'implémentation du service
- * 
+ *
  * @author PTA
- * 
  */
 public abstract class DeclarationVersementGlobalAbstractServiceImpl extends DeclarationVersementAbstractServiceImpl
         implements DeclarationVersementService {
 
     /**
      * Méthode calculant les montants
-     * 
-     * @param montantTotal
-     *            montant Total
-     * @param montant
-     *            à ajouter au montant total
+     *
+     * @param montantTotal montant Total
+     * @param montant      à ajouter au montant total
      * @return montantTotal
-     * @throws JadeApplicationException
-     *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
+     * @throws JadeApplicationException Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
     protected String calculMontant(String montantTotal, String montant) throws JadeApplicationException {
 
@@ -80,24 +79,42 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
     }
 
     /**
-     * 
-     * @param idDossier
-     *            identifiant du dossier
-     * @param dateDebut
-     *            date du début
-     * @param dateFin
-     *            date du la fin
-     * @param dateImpression
-     *            date à figurer sur le document
+     * Méthode calculant les montants
+     *
+     * @param montantTotal montant Total
+     * @param montantIS    montant à retirer au total
+     * @return montantTotal
+     * @throws JadeApplicationException Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
+     */
+    protected String calculMontantIS(String montantTotal, Double montantIS) throws JadeApplicationException {
+
+        // contrôle des paramètres
+        if (!JadeNumericUtil.isNumeric(montantTotal)) {
+            throw new ALDeclarationVersementException("DeclarationVersementAbstractServiceImpl#calculMontant: "
+                    + montantTotal + " is not a numreric value");
+        }
+
+        double montantTotalRecap = JadeStringUtil.parseDouble(montantTotal, 0.00d) - montantIS;
+
+        // Format décimal 2 chiffres après la virgule
+        DecimalFormat df = new DecimalFormat("0.00");
+        montantTotal = String.valueOf(df.format(montantTotalRecap));
+
+        return montantTotal;
+    }
+
+    /**
+     * @param idDossier      identifiant du dossier
+     * @param dateDebut      date du début
+     * @param dateFin        date du la fin
+     * @param dateImpression date à figurer sur le document
      * @return DocumentData
-     * @throws JadeApplicationException
-     *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
-     * @throws JadePersistenceException
-     *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
-     *             faire
+     * @throws JadeApplicationException Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
+     * @throws JadePersistenceException Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
+     *                                  faire
      */
     protected DocumentData getDeclarationVersement(String idDossier, String dateDebut, String dateFin,
-            String dateImpression, HashSet<String> typeBoni, String langueDocument, Boolean textImpot)
+                                                   String dateImpression, HashSet<String> typeBoni, String langueDocument, Boolean textImpot)
             throws JadePersistenceException, JadeApplicationException {
 
         // vérification des paramètres
@@ -133,23 +150,17 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
     }
 
     /**
-     * @param idDossier
-     *            identifiant du dossier
-     * @param dateDebut
-     *            date de début
-     * @param dateFin
-     *            date de fin
-     * @param typeBoni
-     *            type de bonification
+     * @param idDossier identifiant du dossier
+     * @param dateDebut date de début
+     * @param dateFin   date de fin
+     * @param typeBoni  type de bonification
      * @return DetailPrestationGenComplexSearchModel
-     * @throws JadeApplicationException
-     *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
-     * @throws JadePersistenceException
-     *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
-     *             faire Recherche sur les types de bonification
+     * @throws JadeApplicationException Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
+     * @throws JadePersistenceException Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
+     *                                  faire Recherche sur les types de bonification
      */
     protected DetailPrestationGenComplexSearchModel getDetailsPrestations(String idDossier, String dateDebut,
-            String dateFin, HashSet<String> typeBoni) throws JadeApplicationException, JadePersistenceException {
+                                                                          String dateFin, HashSet<String> typeBoni) throws JadeApplicationException, JadePersistenceException {
         // contrôle des paramètres
         if (idDossier == null) {
             throw new ALDeclarationVersementException(
@@ -186,18 +197,15 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
 
     /**
      * Méthode qui permet de récupérer les différents totaux pour les paiment direct
-     * 
-     * @param allocataire
-     * 
-     * @param presta
-     *            les prestation permettant de récupérer les données
+     *
+     * @param attestDecla
+     * @param idTiersAllocataire
      * @return HashMap
-     * @throws JadeApplicationException
-     *             levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
+     * @throws JadeApplicationException levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
     protected HashMap<String, String> getTotauxPaiementDirect(
-    /* DetailPrestationGenComplexSearchModel presta */ArrayList<DeclarationVersementDetailleComplexModel> attestDecla,
-            String idTiersAllocataire) throws JadeApplicationException {
+            /* DetailPrestationGenComplexSearchModel presta */ArrayList<DeclarationVersementDetailleComplexModel> attestDecla,
+                                                              String idTiersAllocataire) throws JadeApplicationException {
         // contrôle des paramètres
         if (/* presta */attestDecla == null) {
             throw new ALDeclarationVersementException(
@@ -207,6 +215,7 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
         HashMap<String, String> totaux = new HashMap<String, String>();
         String montantRetroactif = "0.00";
         String montantAnneeVersement = "0.00";
+        double montantTotalIS = 0.0d;
         for (int i = 0; i < attestDecla.size(); i++) {
             DeclarationVersementDetailleComplexModel declarationVersementLigne = attestDecla.get(i);
 
@@ -225,13 +234,18 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
 
             }
 
+            if (StringUtils.isNotEmpty(declarationVersementLigne.getMontantIS())) {
+                montantTotalIS += Double.parseDouble(declarationVersementLigne.getMontantIS());
+            }
+
         }
-        // }
 
         String montantTotal = calculMontant(montantAnneeVersement, montantRetroactif);
+        montantTotal = calculMontantIS(montantTotal, montantTotalIS);
 
         totaux.put(ALConstDeclarationVersement.TOTAL_RETROACTIF, montantRetroactif);
         totaux.put(ALConstDeclarationVersement.TOTAL_ANNEE, montantAnneeVersement);
+        totaux.put(ALConstDeclarationVersement.TOTAL_IS, String.valueOf(montantTotalIS));
         totaux.put(ALConstDeclarationVersement.TOTAL, montantTotal);
 
         return totaux;
@@ -239,17 +253,15 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
 
     /**
      * Méthode qui permet de récupérer les différents totaux pour paiements indirect
-     * 
-     * @param presta
-     *            les prestation permettant de récupérer les données
+     *
+     * @param presta les prestation permettant de récupérer les données
      * @return HashMap
-     * @throws JadeApplicationException
-     *             levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
+     * @throws JadeApplicationException levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
 
     protected HashMap<String, String> getTotauxPaiementsIndirects(
-    /* DetailPrestationGenComplexSearchModel */ArrayList<DeclarationVersementDetailleComplexModel> presta,
-            String idTiersAllocataire) throws JadeApplicationException {
+            /* DetailPrestationGenComplexSearchModel */ArrayList<DeclarationVersementDetailleComplexModel> presta,
+                                                       String idTiersAllocataire) throws JadeApplicationException {
         // contrôle des paramètres
         if (presta == null) {
             throw new ALDeclarationVersementException(
@@ -260,7 +272,8 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
         String montantRetroactif = "0.00";
         String montantAnneeVersement = "0.00";
         for (int i = 0; i < presta./* getSize() */size(); i++) {
-            /* DetailPrestationGenComplexModel */DeclarationVersementDetailleComplexModel declarationVersementLigne = presta
+            /* DetailPrestationGenComplexModel */
+            DeclarationVersementDetailleComplexModel declarationVersementLigne = presta
                     .get/* SearchResults()[i] */(i);
 
             // si le tiers bénéficiaire est 0 ou si le tiers bénéficiaire est égal ou tiers allocataire
@@ -268,8 +281,8 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
             if (JadeNumericUtil.isEmptyOrZero(declarationVersementLigne
                     ./* getIdTiersBeneficiaire() */getTiersBeneficiaire())
                     || JadeStringUtil.equals(
-                            declarationVersementLigne./* getIdTiersBeneficiaire() */getTiersBeneficiaire(),
-                            idTiersAllocataire, false)) {
+                    declarationVersementLigne./* getIdTiersBeneficiaire() */getTiersBeneficiaire(),
+                    idTiersAllocataire, false)) {
                 if (!JadeStringUtil.equals(
                         JadeStringUtil.substring(declarationVersementLigne./* getPeriodeValidite() */getPeriode(), 3),
                         (JadeStringUtil.substring(declarationVersementLigne.getDateVersement(), 6)), false)) {
@@ -299,13 +312,11 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
 
     /**
      * Initialise le document global
-     * 
+     *
      * @return DocumentData
-     * @throws JadeApplicationException
-     *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
-     * @throws JadePersistenceException
-     *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
-     *             faire
+     * @throws JadeApplicationException Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
+     * @throws JadePersistenceException Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
+     *                                  faire
      */
     protected DocumentData initDocument() throws JadeApplicationException, JadePersistenceException {
         DocumentData document = new DocumentData();
@@ -317,8 +328,9 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
 
     /**
      * Métohde qui retourne les données nécessaires à la création d'une déclaration de versement
-     * 
-     * @param detailPresta
+     *
+     * @param detailPrestaSearch
+     * @param dossier
      * @return
      * @throws JadePersistenceException
      * @throws JadeApplicationException
@@ -345,7 +357,7 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
             // précédent et l'attestation ne va pas à l'alloc ou si l'attestation va à l'alloc comme le précédent
             if ((i == 0)
                     || (JadeStringUtil.equals(idTiersBeneficiaire, detailPresta.getIdTiersBeneficiaire(), false)
-                            && attesAlloc.equals(idDroitAttesAlloc) && !attesAlloc)
+                    && attesAlloc.equals(idDroitAttesAlloc) && !attesAlloc)
                     || (attesAlloc.equals(idDroitAttesAlloc) && attesAlloc)) {
                 listTempPresta.add(detailPresta);
             } else {
@@ -380,7 +392,7 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.al.businessimpl.documents.AbstractDocument#setIdDocument(ch .globaz.topaz.datajuicer.DocumentData)
      */
     @Override
@@ -396,27 +408,20 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
 
     /**
      * Méthode qui charge le tableau dans le document
-     * 
-     * @param document
-     *            auquel il faut ajouter le tableau
-     * @param idDossier
-     *            identifiant du dossier
-     * @param dateDebut
-     *            date du début
-     * @param dateFin
-     *            date de fin
-     * @param typeBoni
-     *            type de bonification(direct ou indirect)
-     * @throws JadeApplicationException
-     *             Exception levée si l'un des paramètres n'est pas valide
-     * @throws JadePersistenceException
-     *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
-     *             faire
+     *
+     * @param document  auquel il faut ajouter le tableau
+     * @param idDossier identifiant du dossier
+     * @param dateDebut date du début
+     * @param dateFin   date de fin
+     * @param typeBoni  type de bonification(direct ou indirect)
+     * @throws JadeApplicationException Exception levée si l'un des paramètres n'est pas valide
+     * @throws JadePersistenceException Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
+     *                                  faire
      */
     protected void setTable(DocumentData document, String idDossier, String idTiersBeneneficiaire,
-            String idTiersAllocataire, String dateDebut, String dateFin, HashSet<String> typeBoni,
-            ArrayList<DeclarationVersementDetailleComplexModel> attestDecla, String typeDeclaration,
-            String langueDocument, AllocataireComplexModel allocataire) throws JadeApplicationException,
+                            String idTiersAllocataire, String dateDebut, String dateFin, HashSet<String> typeBoni,
+                            ArrayList<DeclarationVersementDetailleComplexModel> attestDecla, String typeDeclaration,
+                            String langueDocument, AllocataireComplexModel allocataire) throws JadeApplicationException,
             JadePersistenceException {
         // contrôle des paramètres
 
@@ -493,7 +498,7 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
         DataList ligneAnneeCour = new DataList("colonneMontantAnnee");
 
         // année de versement
-        String[] anneeVers = { anneeVersement };
+        String[] anneeVers = {anneeVersement};
 
         ligneAnneeCour.addData("col_montant_annee_label",
                 this.getText("al.declarationVersement.prestation.anneeCourante", langueDocument, anneeVers));
@@ -504,6 +509,19 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
         ligneAnneeCour.addData("col_montant_annee",
                 JANumberFormatter.fmt(totaux.get(ALConstDeclarationVersement.TOTAL_ANNEE), true, true, false, 2));
 
+        // Impôt source
+        DataList ligneImpotSource = new DataList("colonneMontantIS");
+
+        ligneImpotSource.addData("col_montant_IS_label",
+                this.getText("al.declarationVersement.prestation.impotSource", langueDocument));
+
+        ligneImpotSource.addData("col_monnaie_label",
+                this.getText("al.declarationVersement.montant.devise", langueDocument));
+
+        ligneImpotSource.addData("col_montant_IS",
+                JANumberFormatter.fmt(totaux.get(ALConstDeclarationVersement.TOTAL_IS), true, true, false, 2));
+
+        // Ligne total
         DataList ligneTotal = new DataList("colonneMontantTotal");
 
         ligneTotal.addData("col_montantTotal_Label",
@@ -515,6 +533,9 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
 
         tableauVersement.add(ligneAnneePrec);
         tableauVersement.add(ligneAnneeCour);
+        if (JadeStringUtil.equals(typeDeclaration, ALCSDeclarationVersement.DECLA_VERS_DIR_IMP_SOURCE, false)) {
+            tableauVersement.add(ligneImpotSource);
+        }
         tableauVersement.add(ligneTotal);
 
         document.add(tableauVersement);
@@ -523,7 +544,7 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
     /**
      * Cette méthode va ajouter les ANS aux totaux. Uniquement si la propriété "vulpecula.comptesANS" existe !
      * (Spécifique BMS)
-     * 
+     *
      * @param dateDebut
      * @param dateFin
      * @param allocataire
@@ -532,7 +553,7 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
      * @throws ALDeclarationVersementException
      */
     private HashMap<String, String> recuperationANS(String dateDebut, String dateFin,
-            AllocataireComplexModel allocataire, HashMap<String, String> totaux) throws ALDeclarationVersementException {
+                                                    AllocataireComplexModel allocataire, HashMap<String, String> totaux) throws ALDeclarationVersementException {
         try {
             String comptesANS = JadePropertiesService.getInstance().getProperty("vulpecula.comptesANS");
             if (comptesANS != null && !JadeStringUtil.isBlankOrZero(comptesANS)) {
@@ -547,7 +568,7 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
 
                 allocationSupplNaissanceCAManager.find();
 
-                for (Iterator it = allocationSupplNaissanceCAManager.getContainer().iterator(); it.hasNext();) {
+                for (Iterator it = allocationSupplNaissanceCAManager.getContainer().iterator(); it.hasNext(); ) {
                     AllocationSupplNaissanceCA allocationSupplNaissanceCA = (AllocationSupplNaissanceCA) it.next();
                     String montant = allocationSupplNaissanceCA.getMontant();
 

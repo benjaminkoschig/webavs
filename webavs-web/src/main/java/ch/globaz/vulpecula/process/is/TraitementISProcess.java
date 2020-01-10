@@ -1,8 +1,12 @@
 package ch.globaz.vulpecula.process.is;
 
 import ch.globaz.al.business.services.ALRepositoryLocator;
-import ch.globaz.vulpecula.domain.models.common.Montant;
-import ch.globaz.vulpecula.domain.models.common.Taux;
+import ch.globaz.al.exception.TauxImpositionNotFoundException;
+import ch.globaz.al.impotsource.domain.TauxImpositions;
+import ch.globaz.al.impotsource.domain.TypeImposition;
+import ch.globaz.al.impotsource.persistence.TauxImpositionRepository;
+import ch.globaz.al.impotsource.process.ListeISRetenuesProcess;
+import ch.globaz.common.properties.PropertiesException;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcessLauncher;
 import globaz.globall.db.BSessionUtil;
@@ -42,11 +46,9 @@ import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.business.services.is.ImpotSourceService;
 import ch.globaz.vulpecula.businessimpl.services.is.PrestationGroupee;
 import ch.globaz.vulpecula.domain.models.common.Date;
+import ch.globaz.vulpecula.domain.models.common.Montant;
+import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.is.HistoriqueProcessusAf;
-import ch.globaz.al.exception.TauxImpositionNotFoundException;
-import ch.globaz.al.impotsource.domain.TauxImpositions;
-import ch.globaz.al.impotsource.domain.TypeImposition;
-import ch.globaz.al.impotsource.persistence.TauxImpositionRepository;
 import ch.globaz.vulpecula.external.BProcessWithContext;
 import ch.globaz.vulpecula.external.models.pyxis.Adresse;
 import ch.globaz.vulpecula.util.ExceptionsUtil;
@@ -187,6 +189,9 @@ public class TraitementISProcess extends BProcessWithContext {
                 montantPrestation, Montant.ZERO, entete.getLibelleCaisseAF(), entete.getCodeCaisseAF(),
                 entete.getTitre(), entete.getRaisonSociale(), entete.getLangue(), new Date(entete.getPeriodeDe()),
                 new Date(entete.getPeriodeA()), Date.now());
+
+        prestation.setCantonResidence(entete.getCantonResidence());
+
         addPrestationToMap(prestation);
 
         adapterOV(compteAnnexe, entete.getIdJournal(), impots.negate(), annee);
@@ -266,7 +271,7 @@ public class TraitementISProcess extends BProcessWithContext {
                 numAvs, true);
     }
 
-    private void retrieve() {
+    private void retrieve() throws PropertiesException {
         entetesPaiementsDirects = impotSourceService.getEntetesPrestationsIS(idProcessusDirect);
         tauxGroupByCanton = tauxImpositionRepository.findAll(TypeImposition.IMPOT_SOURCE);
     }
@@ -294,4 +299,5 @@ public class TraitementISProcess extends BProcessWithContext {
     public void setIdProcessusDirect(String idProcessusDirect) {
         this.idProcessusDirect = idProcessusDirect;
     }
+
 }

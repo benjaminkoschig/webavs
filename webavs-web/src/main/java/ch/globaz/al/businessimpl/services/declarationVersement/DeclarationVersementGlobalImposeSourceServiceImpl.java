@@ -116,10 +116,11 @@ public class DeclarationVersementGlobalImposeSourceServiceImpl extends Declarati
             setInfos(document, dossier, dateDebut, dateFin, langueDocument);
 
             // recherche l'identifiant du tiers affillié
-            String idTiersAffilie = AFBusinessServiceLocator.getAffiliationService().findIdTiersForNumeroAffilie(
-                    dossier.getDossierModel().getNumeroAffilie());
+
+            String idTiersAllocataire = ALImplServiceLocator.getAllocataireModelService().read( dossier.getDossierModel().getIdAllocataire()).getIdTiersAllocataire();
+
             try {
-                this.addDateAdresse(document, dateImpression, idTiersAffilie, langueDocument, dossier.getDossierModel()
+                this.addDateAdresse(document, dateImpression, idTiersAllocataire, langueDocument, dossier.getDossierModel()
                         .getNumeroAffilie());
             } catch (ALDocumentAddressException e) {
                 logger.getErrorsLogger(idDossier, "Dossier #" + idDossier).addMessage(

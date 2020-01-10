@@ -14,8 +14,6 @@ public class PTConstants {
     public static final String CS_GROUPE_GENRE_SALAIRE = "PTGENRESAL";
     public static final String CS_GROUPE_TYPE_FACTURATION = "PTTYPFACT";
     public static final String CS_GROUPE_QUALIFICATION = "PTQUALIFIC";
-    public static final String CS_GROUPE_CANTONS_AF = "ALCANTON";
-    public static final String CS_GROUPE_LISTES_AF = "PTLISTAF";
     public static final String CS_GROUP_ETAT_TO = "PTETATTAX";
     public static final String CS_GROUPE_CODES_REFERENCES = "OSIREFRUB";
     public static final String CS_GROUPE_TYPE_DECOMPTES = "PTTYPEDECO";

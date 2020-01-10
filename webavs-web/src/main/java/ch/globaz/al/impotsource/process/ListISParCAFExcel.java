@@ -1,22 +1,28 @@
-package ch.globaz.vulpecula.process.is;
+package ch.globaz.al.impotsource.process;
 
 import globaz.globall.db.BSession;
+
+import java.math.BigDecimal;
 import java.util.Map;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import ch.globaz.vulpecula.businessimpl.services.is.PrestationGroupee;
-import ch.globaz.vulpecula.documents.DocumentConstants;
 import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.external.api.poi.AbstractListExcel;
 
 public class ListISParCAFExcel extends AbstractListExcel {
-    private final int COL_CAISSE_AF = 0;
-    private final int COL_MONTANT_AF = 1;
-    private final int COL_RETENUE = 2;
-    private final int COL_FRAIS = 3;
-    private final int COL_MONTANT_NET = 4;
+    private static final int COL_CAISSE_AF = 0;
+    private static final int COL_MONTANT_AF = 1;
+    private static final int COL_RETENUE = 2;
+    private static final int COL_FRAIS = 3;
+    private static final int COL_MONTANT_NET = 4;
+    private static final int COL_MONTANT_IS_COMPTA = 5;
+    private static final int COL_MONTANT_DIFF_IS = 6;
+
+    private static final String LISTES_AF_RETENUES = "0019PPT";
 
     private Map<String, PrestationGroupee> prestationsAImprimer;
+    private Map<String, BigDecimal> listeComptaAux;
 
     private Annee annee;
     private String canton;
@@ -36,12 +42,16 @@ public class ListISParCAFExcel extends AbstractListExcel {
             Montant montantRetenue = prestation.getImpots();
             Montant montantFrais = prestation.getFrais();
             Montant montantNet = montantRetenue.substract(montantFrais);
+            Montant montantComptaAux = new Montant(listeComptaAux.get(prestation.getCodeCaisseAF()));
+            Montant montantDiff = montantComptaAux.substract(montantRetenue);
             createRow();
             createCell(prestation.getLibelleCaisseAF(), getStyleListLeft());
             createCell(Double.parseDouble(montantPrestation.getValueNormalisee()), getStyleMontant());
             createCell(Double.parseDouble(montantRetenue.getValueNormalisee()), getStyleMontant());
             createCell(Double.parseDouble(montantFrais.getValueNormalisee()), getStyleMontant());
             createCell(Double.parseDouble(montantNet.getValueNormalisee()), getStyleMontant());
+            createCell(Double.parseDouble(montantComptaAux.getValueNormalisee()), getStyleMontant());
+            createCell(Double.parseDouble(montantDiff.getValueNormalisee()), getStyleMontant());
         }
     }
 
@@ -52,6 +62,8 @@ public class ListISParCAFExcel extends AbstractListExcel {
         sheet.setColumnWidth((short) COL_RETENUE, AbstractListExcel.COLUMN_WIDTH_DATE);
         sheet.setColumnWidth((short) COL_FRAIS, AbstractListExcel.COLUMN_WIDTH_4500);
         sheet.setColumnWidth((short) COL_MONTANT_NET, AbstractListExcel.COLUMN_WIDTH_5500);
+        sheet.setColumnWidth((short) COL_MONTANT_IS_COMPTA, AbstractListExcel.COLUMN_WIDTH_5500);
+        sheet.setColumnWidth((short) COL_MONTANT_DIFF_IS, AbstractListExcel.COLUMN_WIDTH_5500);
         initPage(false);
     }
 
@@ -74,11 +86,13 @@ public class ListISParCAFExcel extends AbstractListExcel {
         createCell(getLabel("LISTE_AF_RETENUE"), getStyleGris25PourcentGras());
         createCell(getLabel("LISTE_AF_FRAIS_%"), getStyleGris25PourcentGras());
         createCell(getLabel("LISTE_AF_MONTANT_NET"), getStyleGris25PourcentGras());
+        createCell(getLabel("LISTE_AF_MONTANT_IS_COMPTA"), getStyleGris25PourcentGras());
+        createCell(getLabel("LISTE_AF_DIFF_IS"), getStyleGris25PourcentGras());
     }
 
     @Override
     public String getNumeroInforom() {
-        return DocumentConstants.LISTES_AF_RETENUES;
+        return LISTES_AF_RETENUES;
     }
 
     public void setPrestationsAImprimer(Map<String, PrestationGroupee> prestationsAImprimer) {
@@ -97,4 +111,11 @@ public class ListISParCAFExcel extends AbstractListExcel {
         this.canton = canton;
     }
 
+    public Map<String, BigDecimal> getListeComptaAux() {
+        return listeComptaAux;
+    }
+
+    public void setListeComptaAux(Map<String, BigDecimal> listeComptaAux) {
+        this.listeComptaAux = listeComptaAux;
+    }
 }

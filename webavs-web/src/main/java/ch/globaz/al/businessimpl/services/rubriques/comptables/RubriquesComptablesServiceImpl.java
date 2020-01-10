@@ -24,6 +24,8 @@ import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.naos.business.data.AssuranceInfo;
 import ch.globaz.param.business.service.ParamServiceLocator;
 
+import java.util.List;
+
 /**
  * Implémentation du service générique permettant de récupérer une rubrique comptable
  * 
@@ -220,6 +222,11 @@ public class RubriquesComptablesServiceImpl extends ALAbstractBusinessServiceImp
 
     @Override
     public String getRubriqueForIS(DossierModel dossier, DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
+        return null;
+    }
+
+    @Override
+    public List<String> getAllRubriquesForIS(String caisse, String date) throws JadeApplicationException, JadePersistenceException {
         return null;
     }
 

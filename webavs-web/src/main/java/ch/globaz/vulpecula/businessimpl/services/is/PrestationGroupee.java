@@ -1,5 +1,6 @@
 package ch.globaz.vulpecula.businessimpl.services.is;
 
+import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
 import java.io.Serializable;
 import ch.globaz.vulpecula.business.models.is.EntetePrestationComplexModel;
@@ -13,12 +14,14 @@ public class PrestationGroupee implements Serializable {
 
     private String nss;
     private String idTiersBeneficiaire;
+    private String idAssurance;
     private String titre;
     private String nom;
     private String prenom;
     private Date dateNaissance;
     private String npa;
     private String localite;
+    private String localiteAffilie;
     private Date debutVersement;
     private Date finVersement;
     private CodeLangue langue;
@@ -107,6 +110,10 @@ public class PrestationGroupee implements Serializable {
 
     public Montant getMontantPrestations() {
         return montantPrestations;
+    }
+
+    public String getMontantPrestationsFormatte() {
+        return JANumberFormatter.fmt(montantPrestations.getValue(), true, true, false, 2);
     }
 
     public void setMontantPrestations(Montant montantPrestations) {
@@ -255,6 +262,22 @@ public class PrestationGroupee implements Serializable {
     }
 
     public void setIdTiersBeneficiaire(String nssTiersBeneficiaire) {
-        this.idTiersBeneficiaire = nssTiersBeneficiaire;
+        idTiersBeneficiaire = nssTiersBeneficiaire;
+    }
+
+    public String getLocaliteAffilie() {
+        return localiteAffilie;
+    }
+
+    public void setLocaliteAffilie(String localiteAffilie) {
+        this.localiteAffilie = localiteAffilie;
+    }
+
+    public String getIdAssurance() {
+        return idAssurance;
+    }
+
+    public void setIdAssurance(String idAssurance) {
+        this.idAssurance = idAssurance;
     }
 }

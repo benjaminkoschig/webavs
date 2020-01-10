@@ -1,5 +1,6 @@
-package ch.globaz.vulpecula.process.is;
+package ch.globaz.al.impotsource.process;
 
+import ch.globaz.vulpecula.util.CodeSystemUtil;
 import globaz.globall.db.BSession;
 import java.util.Collection;
 import java.util.Map;
@@ -11,7 +12,6 @@ import ch.globaz.vulpecula.documents.DocumentConstants;
 import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.external.api.poi.AbstractListExcel;
 import ch.globaz.vulpecula.util.CodeSystem;
-import ch.globaz.vulpecula.util.CodeSystemUtil;
 
 public class ListISRetenuesExcel extends AbstractListExcel {
     private final int COL_REF_PERMIS = 0;
@@ -47,8 +47,9 @@ public class ListISRetenuesExcel extends AbstractListExcel {
     @Override
     public void createContent() {
         for (Map.Entry<String, Collection<PrestationGroupee>> entry : prestationsAImprimer.entrySet()) {
-            createNewSheet(entry.getKey());
-            createCriteres(entry.getKey());
+            PrestationGroupee firstPrestation = entry.getValue().iterator().next();
+            createNewSheet(firstPrestation.getLibelleCaisseAF());
+            createCriteres(firstPrestation.getLibelleCaisseAF());
             createRow();
             createRow();
             createEntetes();

@@ -1,11 +1,8 @@
 package ch.globaz.al.businessimpl.services.rubriques.comptables;
 
+import ch.globaz.al.business.constantes.*;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
-import ch.globaz.al.business.constantes.ALCSDossier;
-import ch.globaz.al.business.constantes.ALCSDroit;
-import ch.globaz.al.business.constantes.ALCSPrestation;
-import ch.globaz.al.business.constantes.ALConstRubriques;
 import ch.globaz.al.business.models.dossier.DossierModel;
 import ch.globaz.al.business.models.prestation.DetailPrestationModel;
 import ch.globaz.al.business.models.prestation.EntetePrestationModel;
@@ -13,30 +10,32 @@ import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.business.services.rubriques.comptables.RubriquesComptablesFPVService;
 import ch.globaz.naos.business.data.AssuranceInfo;
 import ch.globaz.param.business.exceptions.ParamException;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implémentation du service spécifique permettant de récupérer une rubrique comptable pour la FPV
- * 
+ *
  * @author gmo
- * 
  */
 public class RubriquesComptablesFPVServiceImpl extends RubriquesComptablesServiceImpl implements
         RubriquesComptablesFPVService {
 
+    private static final String[] ALL_CANTONS = {"ag", "ai", "ar", "be", "bl", "bs", "fr", "ge", "gl", "gr", "ju", "lu", "ne", "nw", "ow", "sg", "sh", "so", "sz", "tg", "ti", "ur", "vd", "vs", "zg", "zh"};
+    private static final String[] PREMIERE_CAISSE_CANTONS = {"vd", "be", "ne", "zh"};
+    private static final String[] DEUXIEME_CAISSE_CANTONS = {"vd", "zh"};
+
     /**
      * Retourne le code de la caisse AF à laquelle l'affiliation adhère (plan-caisse)
-     * 
-     * @param dossier
-     *            Dossier pour lequel le canton de l'affilié doit être récupéré
-     * @param date
-     *            Date pour laquelle effectuer la récupération
+     *
+     * @param dossier Dossier pour lequel le canton de l'affilié doit être récupéré
+     * @param date    Date pour laquelle effectuer la récupération
      * @return Code de la caisse prof de l'affiliation
-     * 
-     * @throws JadePersistenceException
-     *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
-     *             faire
-     * @throws JadeApplicationException
-     *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
+     * @throws JadePersistenceException Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
+     *                                  faire
+     * @throws JadeApplicationException Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
     private String getCodeCAF(DossierModel dossier, String date) throws JadeApplicationException,
             JadePersistenceException {
@@ -50,7 +49,7 @@ public class RubriquesComptablesFPVServiceImpl extends RubriquesComptablesServic
 
     @Override
     protected String getRubriqueIndependant(DossierModel dossier, EntetePrestationModel entete,
-            DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
+                                            DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
 
         String codeCaisse = getCodeCAF(dossier, date);
         String canton = getCanton(dossier, detail, date);
@@ -86,7 +85,7 @@ public class RubriquesComptablesFPVServiceImpl extends RubriquesComptablesServic
 
     @Override
     protected String getRubriqueRestitution(DossierModel dossier, EntetePrestationModel entete,
-            DetailPrestationModel detail, String date) throws JadePersistenceException, JadeApplicationException {
+                                            DetailPrestationModel detail, String date) throws JadePersistenceException, JadeApplicationException {
 
         String canton = getCanton(dossier, detail, date);
         String codeCaisse = getCodeCAF(dossier, date);
@@ -125,7 +124,7 @@ public class RubriquesComptablesFPVServiceImpl extends RubriquesComptablesServic
 
     @Override
     protected String getRubriqueSalarie(DossierModel dossier, EntetePrestationModel entete,
-            DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
+                                        DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
         String canton = getCanton(dossier, detail, date);
         String codeCaisse = getCodeCAF(dossier, date);
         String rubrique = "";
@@ -160,8 +159,84 @@ public class RubriquesComptablesFPVServiceImpl extends RubriquesComptablesServic
         } else {
             return rubrique.toString();
         }
-        rubrique.replace(21,30, codeCaisse);
-        rubrique.append(".").append(canton);
-        return getRubrique(date,rubrique.toString().toLowerCase());
+        rubrique.replace(21, 30, codeCaisse);
+        if (ALCSDossier.ACTIVITE_SALARIE.equals(dossier.getActiviteAllocataire()) || StringUtils.equals(codeCaisse, "20")) {
+            rubrique.append(".").append(canton);
+        }
+        return getRubrique(date, rubrique.toString().toLowerCase());
+    }
+
+    @Override
+    public List<String> getAllRubriquesForIS(String caisse, String date) throws JadeApplicationException, JadePersistenceException {
+        List<String> rubriques = new ArrayList<>();
+
+        // Récupération des rubriques indépendantes
+        StringBuilder rubrique = new StringBuilder();
+        switch (caisse) {
+            case "2":
+            case "6":
+                break;
+            case "20":
+                for (String eachCanton : ALL_CANTONS) {
+                    addRubriqueIndependant(caisse, date, rubriques, eachCanton);
+                }
+                break;
+            default:
+                rubrique.append(ALConstRubriques.RUBRIQUE_CAISSE_INDEPENDANT_IMPOT_SOURCE);
+                rubrique.replace(21, 30, caisse);
+                String independantRubrique = getRubrique(date, rubrique.toString().toLowerCase());
+                if (StringUtils.isNotEmpty(independantRubrique)) {
+                    rubriques.add(independantRubrique);
+                }
+                break;
+        }
+
+
+        // Récupération des rubriques salariées
+        switch (caisse) {
+            case "1":
+                for (String eachCanton : PREMIERE_CAISSE_CANTONS) {
+                    addRubriqueSalarie(caisse, date, rubriques, eachCanton);
+                }
+                break;
+            case "2":
+                for (String eachCanton : DEUXIEME_CAISSE_CANTONS) {
+                    addRubriqueSalarie(caisse, date, rubriques, eachCanton);
+                }
+                break;
+            case "20":
+                for (String eachCanton : ALL_CANTONS) {
+                    addRubriqueSalarie(caisse, date, rubriques, eachCanton);
+                }
+                break;
+            default:
+                addRubriqueSalarie(caisse, date, rubriques, "vd");
+                break;
+        }
+        return rubriques;
+    }
+
+    private void addRubriqueSalarie(String caisse, String date, List<String> rubriques, String eachCanton) throws JadePersistenceException, JadeApplicationException {
+        StringBuilder rubrique;
+        rubrique = new StringBuilder();
+        rubrique.append(ALConstRubriques.RUBRIQUE_CAISSE_SALARIE_IMPOT_SOURCE);
+        rubrique.replace(21, 30, caisse);
+        rubrique.append(".").append(eachCanton);
+        String salarieRubrique = getRubrique(date, rubrique.toString().toLowerCase());
+        if (StringUtils.isNotEmpty(salarieRubrique)) {
+            rubriques.add(salarieRubrique);
+        }
+    }
+
+    private void addRubriqueIndependant(String caisse, String date, List<String> rubriques, String eachCanton) throws JadePersistenceException, JadeApplicationException {
+        StringBuilder rubrique;
+        rubrique = new StringBuilder();
+        rubrique.append(ALConstRubriques.RUBRIQUE_CAISSE_INDEPENDANT_IMPOT_SOURCE);
+        rubrique.replace(21, 30, caisse);
+        rubrique.append(".").append(eachCanton);
+        String salarieRubrique = getRubrique(date, rubrique.toString().toLowerCase());
+        if (StringUtils.isNotEmpty(salarieRubrique)) {
+            rubriques.add(salarieRubrique);
+        }
     }
 }

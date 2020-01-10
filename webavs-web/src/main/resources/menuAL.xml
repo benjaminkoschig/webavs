@@ -170,6 +170,12 @@
   									<parameter name="userAction" value="al.envois.envois.chercher"/>
   								</action>
   							</node>
+							<node id="ListeIS">
+								<label refId="MENU_LISTES_IS"/>
+								<action command="/al" responseTarget="fr_main">
+									<parameter name="userAction" value="al.impotsource.listeIS.afficher"/>
+								</action>
+							</node>
   							
   						</nodes>
   					</node>

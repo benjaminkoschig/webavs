@@ -15,6 +15,8 @@ public class EntetePrestationSearchComplexModel extends JadeSearchComplexModel {
     private String forPeriodeDeAfterOrEquals;
     private String forPeriodeABeforeOrEquals;
     private Boolean forIsRetenueImpot;
+    private String forIsRetenueImpotSomme;
+    private String forNotRetenueImpotSomme;
     private String forEtat;
     private String forBonification;
     private String forPeriodeDeBeforeOrEquals;
@@ -122,6 +124,22 @@ public class EntetePrestationSearchComplexModel extends JadeSearchComplexModel {
 
     public void setForIsRetenueImpot(Boolean forIsRetenueImpot) {
         this.forIsRetenueImpot = forIsRetenueImpot;
+    }
+
+    public String getForIsRetenueImpotSomme() {
+        return forIsRetenueImpotSomme;
+    }
+
+    public void setForIsRetenueImpotSomme(String forIsRetenueImpotSomme) {
+        this.forIsRetenueImpotSomme = forIsRetenueImpotSomme;
+    }
+
+    public String getForNotRetenueImpotSomme() {
+        return forNotRetenueImpotSomme;
+    }
+
+    public void setForNotRetenueImpotSomme(String forNotRetenueImpotSomme) {
+        this.forNotRetenueImpotSomme = forNotRetenueImpotSomme;
     }
 
     public String getForEtat() {

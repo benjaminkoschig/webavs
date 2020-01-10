@@ -1,23 +1,23 @@
-package globaz.vulpecula.helpers.is;
+package globaz.al.helpers.impotsource;
 
+import ch.globaz.al.impotsource.domain.TypeListeAF;
+import ch.globaz.vulpecula.domain.models.common.Annee;
+import ch.globaz.al.impotsource.process.ListeISRetenuesProcess;
+import ch.globaz.al.impotsource.process.ListeISParCAFProcess;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWHelper;
 import globaz.globall.api.BISession;
 import globaz.globall.db.BProcessLauncher;
-import globaz.vulpecula.vb.is.PTListeISViewBean;
+import globaz.al.vb.impotsource.ALListeISViewBean;
 import ch.globaz.exceptions.ExceptionMessage;
 import ch.globaz.exceptions.GlobazTechnicalException;
-import ch.globaz.vulpecula.domain.models.common.Annee;
-import ch.globaz.vulpecula.domain.models.is.TypeListeAF;
-import ch.globaz.vulpecula.process.is.ListeISParCAFProcess;
-import ch.globaz.vulpecula.process.is.ListeISRetenuesProcess;
 
-public class PTListeISHelper extends FWHelper {
+public class ALListeISHelper extends FWHelper {
     @Override
     protected void _start(FWViewBeanInterface viewBean, FWAction action, BISession session) {
         try {
-            PTListeISViewBean vb = (PTListeISViewBean) viewBean;
+            ALListeISViewBean vb = (ALListeISViewBean) viewBean;
             TypeListeAF typeListe = TypeListeAF.fromValue(vb.getTypeListe());
             Annee annee = new Annee(vb.getAnnee());
             String canton = vb.getCanton();

@@ -1,5 +1,8 @@
-package ch.globaz.vulpecula.process.is;
+package ch.globaz.al.impotsource.process;
 
+import ch.globaz.al.business.services.ALRepositoryLocator;
+import ch.globaz.al.business.services.ALServiceLocator;
+import ch.globaz.common.properties.PropertiesException;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeStringUtil;
@@ -7,8 +10,6 @@ import globaz.jade.publish.document.JadePublishDocumentInfoProvider;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
-import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
-import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.businessimpl.services.is.PrestationGroupee;
 import ch.globaz.vulpecula.documents.DocumentConstants;
 import ch.globaz.vulpecula.domain.models.common.Annee;
@@ -55,13 +56,16 @@ public class ListeISRetenuesProcess extends BProcessWithContext {
 
     private void retrieve() {
         try {
-            prestationsAImprimer = VulpeculaServiceLocator.getImpotSourceService().getPrestationsForAllocIS(canton,
+            prestationsAImprimer = ALServiceLocator.getImpotSourceService().getPrestationsForAllocIS(canton,
                     caisseAF, annee);
         } catch (TauxImpositionNotFoundException e) {
             getTransaction().addErrors(ExceptionsUtil.translateException(e));
+        } catch (PropertiesException e) {
+            getTransaction().addErrors(e.getMessage());
         }
+
         if (!JadeStringUtil.isEmpty(caisseAF)) {
-            libelleCaisseAF = VulpeculaRepositoryLocator.getAdministrationRepository().findById(caisseAF)
+            libelleCaisseAF = ALRepositoryLocator.getAdministrationRepository().findById(caisseAF)
                     .getDesignation1();
         }
     }

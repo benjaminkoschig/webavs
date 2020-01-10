@@ -1,5 +1,6 @@
 <%-- ******************************************************************* Directives de page ****************************************************************** --%>
 <%@ page language="java" contentType="text/html;charset=ISO-8859-1" %>
+<%@ page import="ch.globaz.al.properties.ALProperties" %>
 
 <%-- ******************************************************************* Insertion header ******************************************************************** --%>
 <%@ include file="/theme/detail_el/header.jspf" %>
@@ -78,6 +79,7 @@ $(function () {
 				<td><label for="email"><ct:FWLabel key="JSP_EMAIL"/></label></td>
 				<td><input id="email" type="text" name="email" value="${viewBean.email}" /></td>
 			</tr>
+			<%if(!ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {%>
 			<tr>
 				<td><label for="processusPaiementsDirects"><ct:FWLabel key="JSP_PROCESSUS_AF_PAIEMENTS_DIRECTS"/></label></td>
 				<td><input id="processusPaiementsDirects" data-g-autocomplete="
@@ -99,6 +101,7 @@ $(function () {
 					<input id="idProcessusPaiementDirect" name="idProcessusPaiementDirect" type="hidden" />
 				</td>
 			</tr>
+			<% } %>
 			<tr>
 				<td><label for="processusPaiementsIndirects"><ct:FWLabel key="JSP_PROCESSUS_AF_PAIEMENTS_INDIRECTS"/></label></td>
 				<td><input id="processusPaiementsIndirects" data-g-autocomplete="

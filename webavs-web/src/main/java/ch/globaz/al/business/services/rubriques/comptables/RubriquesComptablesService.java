@@ -7,6 +7,8 @@ import ch.globaz.al.business.models.dossier.DossierModel;
 import ch.globaz.al.business.models.prestation.DetailPrestationModel;
 import ch.globaz.al.business.models.prestation.EntetePrestationModel;
 
+import java.util.List;
+
 /**
  * Service générique permettant de récupérer une rubrique comptable
  * 
@@ -55,4 +57,20 @@ public interface RubriquesComptablesService extends JadeApplicationService {
      */
     String getRubriqueForIS(DossierModel dossier,
                                 DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException;
+
+    /**
+     * Recherche les rubriques liés aux inpôts à la source.
+     *
+     * @param caisse
+     *            Caisse pour laquelle on cherche la rubrique
+     * @param date
+     *            Date pour laquelle la rubrique doit être déterminée
+     * @return les rubriques pour impot rattaché à cette caisse
+     * @throws JadePersistenceException
+     *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
+     *             faire
+     * @throws JadeApplicationException
+     *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
+     */
+    List<String> getAllRubriquesForIS(String caisse, String date) throws JadeApplicationException, JadePersistenceException;
 }

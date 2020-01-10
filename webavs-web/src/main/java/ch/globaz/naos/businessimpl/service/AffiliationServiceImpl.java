@@ -148,6 +148,8 @@ public class AffiliationServiceImpl implements AffiliationService {
         infoResult.setIdTiersAffiliation(data.getAffiliation().getIdTiers());
 
         infoResult.setLibelleCourt(data.getAssurance().getAssuranceLibelleCourtFr());
+        infoResult.setLibelleLong(data.getAssurance().getAssuranceLibelleFr());
+        infoResult.setIdAssurance(data.getAssurance().getAssuranceId());
     }
 
     @Override
@@ -497,8 +499,8 @@ public class AffiliationServiceImpl implements AffiliationService {
             infoResult.setCanton(dataWithCotiAF.getAssurance().getAssuranceCanton());
             _getInfosAF(infoResult, dataWithCotiAF);
             // Affiliation vérification le type (maison mère, succursale, normal)
-            AffiliationSimpleModel maisonMere = AFBusinessServiceLocator.getAffiliationService().findMaisonMere(
-                    dataWithCotiAF.getAffiliation().getAffilieNumero());
+            AffiliationSimpleModel maisonMere = AFBusinessServiceLocator.getAffiliationService()
+                    .findMaisonMere(dataWithCotiAF.getAffiliation().getAffilieNumero());
             // pas une succursale tester la masse salariale si facturé par accompte,
             // sinon ok
             if ((maisonMere == null) && !dataWithCotiAF.getAffiliation().getReleveParitaire()) {

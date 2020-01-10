@@ -69,6 +69,19 @@ public class DeclarationVersementDetailleComplexModel extends JadeComplexModel {
      */
     private String statutPrestation = null;
 
+    /**
+     * Montant des Impôts à la source.
+     */
+    private String montantIS = null;
+
+    public String getMontantIS() {
+        return montantIS;
+    }
+
+    public void setMontantIS(String montantIS) {
+        this.montantIS = montantIS;
+    }
+
     public String getStatutPrestation() {
         return statutPrestation;
     }

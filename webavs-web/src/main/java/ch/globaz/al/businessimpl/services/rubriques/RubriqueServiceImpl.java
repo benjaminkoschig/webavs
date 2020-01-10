@@ -10,6 +10,8 @@ import ch.globaz.al.businessimpl.services.ALAbstractBusinessServiceImpl;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.al.businessimpl.services.rubriques.comptables.RubriqueComptableServiceFactory;
 
+import java.util.List;
+
 /**
  * Implémentation du service permettant la récupération de rubriques (comptable ou autre
  * 
@@ -31,6 +33,13 @@ public class RubriqueServiceImpl extends ALAbstractBusinessServiceImpl implement
                                    DetailPrestationModel detail, String date) throws JadePersistenceException, JadeApplicationException {
         return (ALImplServiceLocator.getRubriqueComptableService(RubriqueComptableServiceFactory
                 .getServiceRubriqueComptable(date))).getRubriqueForIS(dossier, detail, date);
+    }
+
+    @Override
+    public List<String> getAllRubriquesForIS(String caisse,
+                                             String date) throws JadePersistenceException, JadeApplicationException {
+        return (ALImplServiceLocator.getRubriqueComptableService(RubriqueComptableServiceFactory
+                .getServiceRubriqueComptable(date))).getAllRubriquesForIS(caisse, date);
     }
 
 

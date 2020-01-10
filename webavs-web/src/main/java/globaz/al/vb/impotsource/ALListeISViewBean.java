@@ -1,16 +1,17 @@
-package globaz.vulpecula.vb.is;
+package globaz.al.vb.impotsource;
 
-import globaz.vulpecula.vb.listes.PTListeProcessViewBean;
-import java.util.List;
-import ch.globaz.al.business.constantes.ALCSCantons;
-import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
+import ch.globaz.al.business.services.ALRepositoryLocator;
 import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.external.models.pyxis.Administration;
 import ch.globaz.vulpecula.util.CodeSystem;
 import ch.globaz.vulpecula.util.CodeSystemUtil;
-import ch.globaz.vulpecula.web.servlet.PTConstants;
+import globaz.vulpecula.vb.listes.PTListeProcessViewBean;
+import java.util.List;
+import ch.globaz.al.business.constantes.ALCSCantons;
 
-public class PTListeISViewBean extends PTListeProcessViewBean {
+public class ALListeISViewBean extends PTListeProcessViewBean {
+    private static final String CS_GROUPE_CANTONS_AF = "ALCANTON";
+    private static final String CS_GROUPE_LISTES_AF = "PTLISTAF";
     private List<CodeSystem> cantons;
     private List<CodeSystem> listes;
     private List<Administration> caissesAF;
@@ -22,9 +23,9 @@ public class PTListeISViewBean extends PTListeProcessViewBean {
 
     @Override
     public void retrieve() throws Exception {
-        cantons = CodeSystemUtil.getCodesSystemesForFamille(PTConstants.CS_GROUPE_CANTONS_AF);
-        listes = CodeSystemUtil.getCodesSystemesForFamille(PTConstants.CS_GROUPE_LISTES_AF);
-        caissesAF = VulpeculaRepositoryLocator.getAdministrationRepository().findAllCaissesAF();
+        cantons = CodeSystemUtil.getCodesSystemesForFamille(CS_GROUPE_CANTONS_AF);
+        listes = CodeSystemUtil.getCodesSystemesForFamille(CS_GROUPE_LISTES_AF);
+        caissesAF = ALRepositoryLocator.getAdministrationRepository().findAllCaissesAF();
     }
 
     public List<CodeSystem> getCantons() {

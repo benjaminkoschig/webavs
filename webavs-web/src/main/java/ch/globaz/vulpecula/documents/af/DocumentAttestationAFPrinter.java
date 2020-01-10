@@ -1,5 +1,6 @@
 package ch.globaz.vulpecula.documents.af;
 
+import ch.globaz.common.properties.PropertiesException;
 import globaz.framework.printing.itext.FWIDocumentManager;
 import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.businessimpl.services.is.PrestationGroupee;
@@ -74,6 +75,8 @@ public class DocumentAttestationAFPrinter extends DocumentPrinter<PrestationGrou
                     new Date(dateDebut), dateFinLastDay.getLastDayOfMonth()));
         } catch (TauxImpositionNotFoundException e) {
             getTransaction().addErrors(ExceptionsUtil.translateException(e));
+        } catch (PropertiesException e) {
+            getTransaction().addErrors(e.getMessage());
         }
     }
 }

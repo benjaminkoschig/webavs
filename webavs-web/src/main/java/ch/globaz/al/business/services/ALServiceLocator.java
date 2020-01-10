@@ -102,6 +102,8 @@ import ch.globaz.al.business.services.tucana.TucanaBusinessService;
 import ch.globaz.al.business.services.impotsource.TauxImpositionService;
 import ch.globaz.al.business.services.impotsource.TauxImpositionServiceCRUD;
 import ch.globaz.al.businessimpl.services.impotsource.TauxImpositionServiceImpl;
+import ch.globaz.vulpecula.business.services.is.ImpotSourceService;
+import ch.globaz.vulpecula.businessimpl.services.is.ImpotSourceServiceImpl;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.service.provider.JadeApplicationServiceLocator;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
@@ -1336,6 +1338,14 @@ public abstract class ALServiceLocator {
     private static class TauxImpositionServiceHolder {
         public static final TauxImpositionService INSTANCE = new TauxImpositionServiceImpl(
                 getTauxImpositionRepository());
+    }
+
+    public static ImpotSourceService getImpotSourceService() {
+        return ImpotSourceServiceHolder.INSTANCE;
+    }
+
+    private static class ImpotSourceServiceHolder {
+        public static final ImpotSourceService INSTANCE = new ImpotSourceServiceImpl();
     }
 
 }

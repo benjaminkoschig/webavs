@@ -17,11 +17,13 @@ public class AssuranceInfo {
     private String designationAbrege;
     private String genreAffiliation;
     private String idAffiliation;
+    private String idAssurance;
     private String idCotisation;
     private String idTiersAffiliation;
     private String idTiersCaisseProf;
     private String langue;
     private String libelleCourt;
+    private String libelleLong;
     private String numeroAffilie;
     private String periodicitieAffiliation;
     private String periodicitieCotisation;
@@ -206,6 +208,22 @@ public class AssuranceInfo {
 
     public void setWarningsContainer(List<String> warningsContainer) {
         this.warningsContainer = warningsContainer;
+    }
+
+    public String getLibelleLong() {
+        return libelleLong;
+    }
+
+    public void setLibelleLong(String libelleLong) {
+        this.libelleLong = libelleLong;
+    }
+
+    public String getIdAssurance() {
+        return idAssurance;
+    }
+
+    public void setIdAssurance(String idAssurance) {
+        this.idAssurance = idAssurance;
     }
 
 }

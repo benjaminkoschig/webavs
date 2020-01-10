@@ -1,11 +1,12 @@
 package ch.globaz.vulpecula.documents.af;
 
-import globaz.framework.printing.itext.FWIDocumentManager;
+import java.util.List;
 import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.businessimpl.services.is.PrestationGroupee;
 import ch.globaz.vulpecula.documents.DocumentConstants;
 import ch.globaz.vulpecula.documents.catalog.DocumentPrinter;
 import ch.globaz.vulpecula.domain.models.common.Annee;
+import globaz.framework.printing.itext.FWIDocumentManager;
 
 public class DocumentAttestationAFPourFiscPrinter extends DocumentPrinter<PrestationGroupee> {
     private static final long serialVersionUID = 3721912632239314835L;
@@ -14,6 +15,11 @@ public class DocumentAttestationAFPourFiscPrinter extends DocumentPrinter<Presta
 
     public DocumentAttestationAFPourFiscPrinter() {
         super();
+    }
+
+    @Override
+    public String getMessageNoElements() {
+        return getSession().getLabel("EMAIL_PAS_ELEMENTS");
     }
 
     public DocumentAttestationAFPourFiscPrinter(Annee annee) {
@@ -45,6 +51,13 @@ public class DocumentAttestationAFPourFiscPrinter extends DocumentPrinter<Presta
 
     @Override
     public void retrieve() {
-        setElements(VulpeculaServiceLocator.getImpotSourceService().getPrestationsForAllocNonIS(annee));
+        try {
+            List<PrestationGroupee> list = VulpeculaServiceLocator.getImpotSourceService()
+                    .getPrestationsForAllocNonIS(annee);
+            setElements(list);
+        } catch (Exception e) {
+            getTransaction().addErrors(e.getMessage());
+        }
     }
+
 }

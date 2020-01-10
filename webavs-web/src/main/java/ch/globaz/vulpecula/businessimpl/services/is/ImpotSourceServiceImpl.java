@@ -1,11 +1,21 @@
 package ch.globaz.vulpecula.businessimpl.services.is;
 
 import ch.globaz.al.business.services.ALRepositoryLocator;
+import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import ch.globaz.al.properties.ALProperties;
+import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.vulpecula.domain.models.common.*;
+import globaz.globall.db.BManager;
+import globaz.globall.db.BSessionUtil;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import globaz.osiris.db.recaprubriques.CARecapRubriquesExcel;
+import globaz.osiris.db.recaprubriques.CARecapRubriquesExcelManager;
+import globaz.osiris.external.IntRole;
 import globaz.vulpecula.business.exception.VulpeculaException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -24,7 +34,6 @@ import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.naos.business.data.AssuranceInfo;
 import ch.globaz.vulpecula.business.models.is.EntetePrestationComplexModel;
 import ch.globaz.vulpecula.business.models.is.EntetePrestationSearchComplexModel;
-import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.business.services.is.ImpotSourceService;
 import ch.globaz.vulpecula.domain.models.is.DetailPrestationAF;
 import ch.globaz.al.exception.TauxImpositionNotFoundException;
@@ -40,12 +49,17 @@ import com.google.common.collect.Multimaps;
 public class ImpotSourceServiceImpl implements ImpotSourceService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+    public static List<String> listDossierNonCalcule;
 
     @Override
-    public List<EntetePrestationComplexModel> getEntetesPrestationsIS(String idProcessus) {
+    public List<EntetePrestationComplexModel> getEntetesPrestationsIS(String idProcessus)  throws PropertiesException{
         EntetePrestationSearchComplexModel searchModel = new EntetePrestationSearchComplexModel();
         searchModel.setForIdProcessus(idProcessus);
-        searchModel.setForIsRetenueImpot(true);
+        if(!ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
+            searchModel.setForIsRetenueImpot(true);
+        } else {
+            searchModel.setForIsRetenueImpotSomme("0");
+        }
         List<EntetePrestationComplexModel> prestations = RepositoryJade.searchForAndFetch(searchModel);
         return findCaisseAFAndCantonAffilie(prestations);
     }
@@ -72,7 +86,8 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
             TauxImpositions tauxImpositions = ALRepositoryLocator.getTauxImpositionRepository().findAll();
             calculImpotSourceForAllPrestations(detailPrestationsAFList, tauxImpositions);
         }
-        Map<String, Collection<DetailPrestationAF>> prestationsGroupedByCaisseAF = groupByCaisseAFForPrestationsDetaillees(detailPrestationsAFList);
+        Map<String, Collection<DetailPrestationAF>> prestationsGroupedByCaisseAF = groupByCaisseAFForPrestationsDetaillees(
+                detailPrestationsAFList);
         return prestationsGroupedByCaisseAF;
     }
 
@@ -111,11 +126,8 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
                 .append(" LEFT JOIN SCHEMA.PT_TRAVAILLEURS PT_TRAVAILLEURS1 ON (ALALLOC1.HTITIE=PT_TRAVAILLEURS1.ID_TITIERP)")
                 .append(" INNER JOIN SCHEMA.ALDETPRE ALDETPRE1 ON (ALDETPRE1.MID = ALENTPRE1.MID)")
                 .append(" LEFT JOIN WEBAVSS.TITIERP TITIERP2 ON (ALDETPRE1.HTITIE = TITIERP2.HTITIE)")
-                .append(" WHERE ( ALENTPRE1.MDVC<=")
-                .append(dateFin.getValue())
-                .append(" AND ALENTPRE1.MDVC>=")
-                .append(dateDebut.getValue())
-                .append(")")
+                .append(" WHERE ( ALENTPRE1.MDVC<=").append(dateFin.getValue()).append(" AND ALENTPRE1.MDVC>=")
+                .append(dateDebut.getValue()).append(")")
                 // a l'état comptabilisées
                 .append(" AND ALENTPRE1.CSETAT = 61170001")
                 .append(" GROUP BY ALDETPRE1.HTITIE, ALENTPRE1.MPERD, ALDOS1.CSCAAL, TITIERP1.HTTTTI, TITIERP1.HTLDE2, TIPAVSP1.HXNAVS, TIPERSP1.HPDNAI,")
@@ -188,13 +200,13 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
     }
 
     @Override
-    public List<PrestationGroupee> getPrestationsForAllocNonIS(Annee annee) {
+    public List<PrestationGroupee> getPrestationsForAllocNonIS(Annee annee) throws PropertiesException {
         TauxImpositions tauxImpositions = ALRepositoryLocator.getTauxImpositionRepository().findAll();
         List<EntetePrestationComplexModel> prestations = getPrestationsDirectsNonIS(annee.getFirstDayOfYear(),
                 annee.getLastDayOfYear());
         Map<String, List<PrestationGroupee>> mapPrestations;
         try {
-            mapPrestations = grouperPrestations(prestations, tauxImpositions);
+            mapPrestations = grouperPrestationsByBenef(prestations, tauxImpositions);
         } catch (TauxImpositionNotFoundException e) {
             // On ne devrait normalement pas se présenter dans ce cas car les non IS ne disposent pas d'impôts à la
             // source.
@@ -204,10 +216,11 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
     }
 
     @Override
-    public Map<String, PrestationGroupee> getPrestationsForAllocISGroupByCaisseAF(Annee annee, String canton) {
+    public Map<String, PrestationGroupee> getPrestationsForAllocISGroupByCaisseAF(Annee annee, String canton) throws PropertiesException {
         List<EntetePrestationComplexModel> prestationsAF = getPrestationsISParCAF(annee.getFirstDayOfYear(),
                 annee.getLastDayOfYear(), canton);
-        Map<String, Collection<EntetePrestationComplexModel>> prestationsGroupByCaisseAF = groupByCaisseAF(prestationsAF);
+        Map<String, Collection<EntetePrestationComplexModel>> prestationsGroupByCaisseAF = groupByCaisseAF(
+                prestationsAF);
         return createMapPrestationsGroupees(annee.getFirstDayOfYear(), annee.getLastDayOfYear(),
                 prestationsGroupByCaisseAF);
 
@@ -215,21 +228,37 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
 
     @Override
     public Map<String, Collection<PrestationGroupee>> getPrestationsForAllocIS(String canton, String caisseAF,
-            Annee annee) throws TauxImpositionNotFoundException {
+            Annee annee) throws TauxImpositionNotFoundException, PropertiesException {
         TauxImpositions tauxImpositions = ALRepositoryLocator.getTauxImpositionRepository().findAll();
         List<EntetePrestationComplexModel> prestations = getPrestationsIS(canton, caisseAF, annee);
         Map<String, List<PrestationGroupee>> prestationGroupees = grouperPrestations(prestations, tauxImpositions);
         List<PrestationGroupee> prestationsMergees = mergeMap(prestationGroupees);
-        return groupByLibelleCaisseAF(prestationsMergees);
+        return groupByCaisseAFWithIDAssurance(prestationsMergees);
     }
 
     @Override
     public List<PrestationGroupee> getPrestationsForAllocIS(String idAllocataire, Date dateDebut, Date dateFin)
-            throws TauxImpositionNotFoundException {
+            throws TauxImpositionNotFoundException, PropertiesException {
         TauxImpositions tauxImpositions = ALRepositoryLocator.getTauxImpositionRepository().findAll();
-        List<EntetePrestationComplexModel> prestations = getPrestationsIS(idAllocataire, dateDebut, dateFin);
+        List<EntetePrestationComplexModel> prestations;
+        if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
+            prestations = filtrePrestationWithIS(getPrestations(idAllocataire, dateDebut, dateFin));
+        } else {
+            prestations = getPrestationsIS(idAllocataire, dateDebut, dateFin);
+        }
+
         Map<String, List<PrestationGroupee>> prestationGroupees = grouperPrestations(prestations, tauxImpositions);
         return mergeMap(prestationGroupees);
+    }
+
+    List<EntetePrestationComplexModel> filtrePrestationWithIS(List<EntetePrestationComplexModel>  list) {
+        List<EntetePrestationComplexModel> prestations = new ArrayList<>();
+        for(EntetePrestationComplexModel prestation : list) {
+            if(!JadeStringUtil.isBlankOrZero(prestation.getMontantTotalIS())){
+                prestations.add(prestation);
+            }
+        }
+        return prestations;
     }
 
     private List<PrestationGroupee> mergeMap(Map<String, List<PrestationGroupee>> mapPrestations) {
@@ -238,6 +267,39 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
             prestations.addAll(entry.getValue());
         }
         return prestations;
+    }
+
+    @Override
+    public Map<String, BigDecimal> getMontantISCaisseAFComptaAux(List<String> caisses, Annee annee) throws Exception {
+        Map<String, BigDecimal> mapMontantISComptaAux = new HashMap<>();
+        for(String caisse: caisses) {
+            List<String> rubriques = ALImplServiceLocator.getRubriqueService().getAllRubriquesForIS(caisse, annee.getFirstDayOfYear().getSwissValue());
+            BigDecimal prestationsISByCaisse =  BigDecimal.ZERO;
+            for (String eachRubrique : rubriques) {
+                prestationsISByCaisse.add(getPrestationISByRubrique(eachRubrique, annee));
+            }
+            mapMontantISComptaAux.put(caisse, prestationsISByCaisse);
+        }
+        return mapMontantISComptaAux;
+
+    }
+
+    private BigDecimal getPrestationISByRubrique(String rubrique, Annee annee) throws Exception {
+        CARecapRubriquesExcelManager manager = new CARecapRubriquesExcelManager();
+        manager.setSession(BSessionUtil.getSessionFromThreadContext());
+        manager.setFromIdExterne(rubrique);
+        manager.setFromDateValeur(JadeDateUtil.getYMDDate(JadeDateUtil.getGlobazDate(annee.getFirstDayOfYear().getSwissValue())));
+        manager.setToDateValeur(JadeDateUtil.getYMDDate(JadeDateUtil.getGlobazDate(annee.getLastDayOfYear().getSwissValue())));
+        manager.setForSelectionRole(IntRole.ROLE_AF);
+        manager.find(BManager.SIZE_NOLIMIT);
+
+        BigDecimal montantTotal = BigDecimal.ZERO;
+        for (int i = 0; i < manager.size(); i++) {
+            CARecapRubriquesExcel recap = (CARecapRubriquesExcel) manager.get(i);
+            montantTotal = montantTotal.add(new BigDecimal(recap.getSumMontant()));
+        }
+
+        return montantTotal;
     }
 
     /**
@@ -288,7 +350,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
      * @throws TauxImpositionNotFoundException
      */
     private Map<String, List<PrestationGroupee>> grouperPrestations(List<EntetePrestationComplexModel> prestations,
-            TauxImpositions tauxImpositions) throws TauxImpositionNotFoundException {
+            TauxImpositions tauxImpositions) throws TauxImpositionNotFoundException, PropertiesException {
         Map<String, List<PrestationGroupee>> entetesPrestations = new HashMap<String, List<PrestationGroupee>>();
 
         // On groupe les cotisations par dossiers
@@ -299,14 +361,18 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
 
             List<PrestationGroupee> liste = new ArrayList<PrestationGroupee>();
             List<Montant> montantTotal = new ArrayList<Montant>();
+            List<Montant> montantTotalIS = new ArrayList<>();
+            boolean hasImpotSource = ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue();
+
             Date dateDebut = null;
             Date dateFin = null;
 
             for (int i = 0; i < prestationsGroupees.size(); i++) {
                 EntetePrestationComplexModel entetePrestation = prestationsGroupees.get(i);
-                Periode periodePrestation = new Periode(entetePrestation.getPeriodeDe(), entetePrestation.getPeriodeA());
+                Periode periodePrestation = new Periode(entetePrestation.getPeriodeDe(),
+                        entetePrestation.getPeriodeA());
                 Adresse adresse = getAdresseForAttestation(prestationsGroupees.get(i));
-                if (ALCSPrestation.BONI_INDIRECT.equals(entetePrestation.getBonification())) {
+                if (!hasImpotSource && ALCSPrestation.BONI_INDIRECT.equals(entetePrestation.getBonification())) {
                     break;
                 }
 
@@ -314,11 +380,13 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
                     dateDebut = periodePrestation.getDateDebut();
                     dateFin = periodePrestation.getDateFin();
                     montantTotal.add(new Montant(entetePrestation.getMontantTotal()));
+                    addMontantIS(montantTotalIS, entetePrestation, tauxImpositions, dateDebut, hasImpotSource);
                     if (i == prestationsGroupees.size() - 1) {
-                        PrestationGroupee prestationGroupee = createPrestationGroupee(entetePrestation,
-                                tauxImpositions, adresse, montantTotal, dateDebut, dateFin);
+                        PrestationGroupee prestationGroupee = createPrestationGroupee(entetePrestation, tauxImpositions,
+                                adresse, montantTotal, montantTotalIS, dateDebut, dateFin);
                         prestationGroupee.setCantonResidence(entetePrestation.getCantonAllocataire());
                         prestationGroupee.setIdTiersBeneficiaire(getIdTiersBeneficiaire(entetePrestation));
+                        prestationGroupee.setIdAssurance(entetePrestation.getIdAssurance());
                         liste.add(prestationGroupee);
                     }
                     continue;
@@ -329,23 +397,27 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
                         || dateFin.isMemeMois(periodePrestation.getDateDebut())) {
                     dateFin = periodePrestation.getDateFin();
                     montantTotal.add(new Montant(entetePrestation.getMontantTotal()));
+                    addMontantIS(montantTotalIS, entetePrestation, tauxImpositions, dateDebut, hasImpotSource);
                 } else {
                     PrestationGroupee prestationGroupee = createPrestationGroupee(entetePrestation, tauxImpositions,
-                            adresse, montantTotal, dateDebut, dateFin);
+                            adresse, montantTotal, montantTotalIS, dateDebut, dateFin);
                     prestationGroupee.setCantonResidence(entetePrestation.getCantonAllocataire());
                     prestationGroupee.setIdTiersBeneficiaire(getIdTiersBeneficiaire(entetePrestation));
+                    prestationGroupee.setIdAssurance(entetePrestation.getIdAssurance());
                     liste.add(prestationGroupee);
-
                     montantTotal = new ArrayList<Montant>();
                     montantTotal.add(new Montant(entetePrestation.getMontantTotal()));
+                    montantTotalIS = new ArrayList<Montant>();
+                    addMontantIS(montantTotalIS, entetePrestation, tauxImpositions, dateDebut, hasImpotSource);
                     dateDebut = periodePrestation.getDateDebut();
                     dateFin = periodePrestation.getDateFin();
                 }
                 if (i == prestationsGroupees.size() - 1) {
                     PrestationGroupee prestationGroupee = createPrestationGroupee(entetePrestation, tauxImpositions,
-                            adresse, montantTotal, dateDebut, dateFin);
+                            adresse, montantTotal, montantTotalIS, dateDebut, dateFin);
                     prestationGroupee.setCantonResidence(entetePrestation.getCantonAllocataire());
                     prestationGroupee.setIdTiersBeneficiaire(getIdTiersBeneficiaire(entetePrestation));
+                    prestationGroupee.setIdAssurance(entetePrestation.getIdAssurance());
                     liste.add(prestationGroupee);
                 }
             }
@@ -353,6 +425,249 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
             entetesPrestations.put(entry.getKey(), liste);
         }
         return entetesPrestations;
+    }
+
+    private void addMontantIS (List<Montant> montantTotalIS, EntetePrestationComplexModel entetePrestation,
+                               TauxImpositions tauxImpositions, Date dateDebut, boolean hasImpotSource) throws TauxImpositionNotFoundException {
+        if(hasImpotSource) {
+            if(!JadeStringUtil.isBlankOrZero(entetePrestation.getMontantTotalIS())) {
+                montantTotalIS.add(new Montant(entetePrestation.getMontantTotalIS()));
+            }
+        } else {
+            Montant montant = new Montant(entetePrestation.getMontantTotal());
+            montantTotalIS.add(new Montant(montant
+                                .multiply(tauxImpositions.getTauxImpotSource(
+                                    entetePrestation.getCantonResidence(), dateDebut))
+                            .normalize().doubleValue()));
+        }
+    }
+
+    private PrestationGroupee createPrestationGroupee(EntetePrestationComplexModel entetePrestationComplexModel,
+            TauxImpositions tauxImpositions, Adresse adresse, List<Montant> montantTotal, List<Montant> montantTotalIS, Date dateDebut, Date dateFin)
+            throws TauxImpositionNotFoundException, PropertiesException {
+        PrestationGroupee entetePrestation = new PrestationGroupee();
+        entetePrestation.setNss(entetePrestationComplexModel.getNumAvsActuel());
+        entetePrestation.setNom(entetePrestationComplexModel.getNom());
+        entetePrestation.setPrenom(entetePrestationComplexModel.getPrenom());
+        entetePrestation.setDateNaissance(new Date(entetePrestationComplexModel.getDateNaissance()));
+        entetePrestation.setReferencePermis(entetePrestationComplexModel.getReferencePermis());
+        entetePrestation.setDebutVersement(dateDebut);
+        entetePrestation.setFinVersement(dateFin);
+        entetePrestation.setMontantPrestations(getSommeMontant(montantTotal));
+
+        if(!montantTotalIS.isEmpty()) {
+            entetePrestation.setImpots(getSommeMontant(montantTotalIS));
+        } else if (entetePrestationComplexModel.getRetenueImpot()) {
+            Montant impot = Montant.ZERO;
+            for (Montant montant : montantTotal) {
+                impot = impot
+                        .add(montant
+                                .multiply(tauxImpositions.getTauxImpotSource(
+                                        entetePrestationComplexModel.getCantonResidence(), dateDebut))
+                                .normalize().doubleValue());
+            }
+            entetePrestation.setImpots(impot);
+
+        } else {
+            entetePrestation.setImpots(Montant.ZERO);
+        }
+        entetePrestation.setLibelleCaisseAF(entetePrestationComplexModel.getLibelleCaisseAF());
+        entetePrestation.setCodeCaisseAF(entetePrestationComplexModel.getCodeCaisseAF());
+        if (adresse != null) {
+            entetePrestation.setNpa(adresse.getNpa());
+            entetePrestation.setLocalite(adresse.getLocalite());
+            entetePrestation.setAdresseFormattee(adresse.getAdresseFormatte());
+        }
+        entetePrestation.setTitre(entetePrestationComplexModel.getTitre());
+        entetePrestation.setRaisonSociale(entetePrestationComplexModel.getRaisonSociale());
+        if (!JadeStringUtil.isEmpty(entetePrestationComplexModel.getLangue())) {
+            entetePrestation.setLangue(CodeLangue.fromValue(entetePrestationComplexModel.getLangue()));
+        }
+        return entetePrestation;
+    }
+
+    /**
+     * @BMS POBMS-623 - AF: Attestation incorrecte en cas de multiples bénéficiaire.
+     *
+     */
+    private Map<String, List<PrestationGroupee>> grouperPrestationsByBenef(
+            List<EntetePrestationComplexModel> prestations, TauxImpositions tauxImpositions)
+            throws TauxImpositionNotFoundException {
+        boolean isDebut = false;
+        EntetePrestationComplexModel entetePrestation = null;
+        Periode periodePrestation = null;
+        Map<String, List<PrestationGroupee>> entetesPrestations = new HashMap<String, List<PrestationGroupee>>();
+        HashMap<String, List<DetailPrestationComplexModel>> listDetailPourUnePrestation;
+
+        Map<String, Collection<EntetePrestationComplexModel>> prestationsGroupByDossier = groupByIdDossier(prestations);
+        listDossierNonCalcule = new ArrayList<>();
+        try {
+            for (Map.Entry<String, Collection<EntetePrestationComplexModel>> entry : prestationsGroupByDossier
+                    .entrySet()) {
+                List<EntetePrestationComplexModel> prestationsGroupees = orderByPeriode(entry.getValue());
+                HashMap<String, List<PrestationGroupee>> listePrestationParIdBenef = new HashMap<>();
+                Date dateDebut = null;
+                Date dateFin = null;
+                List<Montant> montantTotal = new ArrayList<Montant>();
+
+                /**
+                 * Méthode pour debug les adresses NULL
+                 */
+                // checkIdBenefNull(prestationsGroupees);
+
+                for (int i = 0; i < prestationsGroupees.size(); i++) {
+                    initList(listePrestationParIdBenef, prestationsGroupees.get(i));
+                }
+                for (String idBenef : listePrestationParIdBenef.keySet()) {
+                    Adresse adresse = null;
+                    Adresse adresseAffilie = null;
+                    String idDossier = prestationsGroupees.get(0).getIdDossier();
+                    isDebut = true;
+                    adresse = getAdresseById(idBenef);
+                    for (int i = 0; i < prestationsGroupees.size(); i++) {
+                        entetePrestation = prestationsGroupees.get(i);
+                        if (ALCSPrestation.BONI_INDIRECT.equals(entetePrestation.getBonification())) {
+                            break;
+                        }
+                        adresseAffilie = getAdresseAffilieById(entetePrestation.getIdTiersAffilie());
+                        periodePrestation = new Periode(entetePrestation.getPeriodeDe(),
+                                entetePrestation.getPeriodeA());
+                        listDetailPourUnePrestation = getListDetailPrestation(entetePrestation);
+
+                        // Si premier de la liste
+                        if (isDebut && listDetailPourUnePrestation.containsKey(idBenef)) {
+                            montantTotal = new ArrayList<Montant>();
+                            montantTotal.add(getMontantDetailLieIdTier(listDetailPourUnePrestation.get(idBenef)));
+                            dateDebut = periodePrestation.getDateDebut();
+                            dateFin = periodePrestation.getDateFin();
+                            // S'il s'agit du seul de la liste, on créé la presta groupée
+                            if (i == prestationsGroupees.size() - 1) {
+                                PrestationGroupee prestationGroupee = createPrestationGroupee(entetePrestation,
+                                        tauxImpositions, adresse, adresseAffilie, montantTotal, dateDebut, dateFin);
+                                prestationGroupee.setIdTiersBeneficiaire(
+                                        getIdTiersBenef(entetePrestation.getIdTiers(), idBenef));
+                                prestationGroupee.setCantonResidence(entetePrestation.getCantonAllocataire());
+                                listePrestationParIdBenef.get(idBenef).add(prestationGroupee);
+                            }
+                            isDebut = false;
+                            // Sinon, on va vérifier s'il s'agit du période continue
+                        } else if (listDetailPourUnePrestation.containsKey(idBenef) && periodePrestation != null) {
+                            // Condition pour que la période soit continue
+                            if (periodePrestation.getDateDebut().isMemeMois(dateDebut)
+                                    || periodePrestation.getDateDebut().suitMois(dateFin)
+                                    || dateFin.isMemeMois(periodePrestation.getDateDebut())) {
+                                dateFin = periodePrestation.getDateFin();
+                                montantTotal.add(getMontantDetailLieIdTier(listDetailPourUnePrestation.get(idBenef)));
+                            } else {
+                                // S'il ne s'agit pas d'une période continue, on créé une presta groupée, et on en ouvre
+                                // une
+                                // avec la nouvelle presta
+
+                                PrestationGroupee prestationGroupee = createPrestationGroupee(entetePrestation,
+                                        tauxImpositions, adresse, adresseAffilie, montantTotal, dateDebut, dateFin);
+                                prestationGroupee.setIdTiersBeneficiaire(
+                                        getIdTiersBenef(entetePrestation.getIdTiers(), idBenef));
+                                prestationGroupee.setCantonResidence(entetePrestation.getCantonAllocataire());
+                                listePrestationParIdBenef.get(idBenef).add(prestationGroupee);
+
+                                montantTotal = new ArrayList<Montant>();
+                                montantTotal.add(getMontantDetailLieIdTier(listDetailPourUnePrestation.get(idBenef)));
+                                dateDebut = periodePrestation.getDateDebut();
+                                dateFin = periodePrestation.getDateFin();
+                            }
+
+                            // Création de la presta groupée si la liste est terminée
+                            if (i == prestationsGroupees.size() - 1) {
+                                PrestationGroupee prestationGroupee = createPrestationGroupee(entetePrestation,
+                                        tauxImpositions, adresse, adresseAffilie, montantTotal, dateDebut, dateFin);
+                                prestationGroupee.setIdTiersBeneficiaire(
+                                        getIdTiersBenef(entetePrestation.getIdTiers(), idBenef));
+                                prestationGroupee.setCantonResidence(entetePrestation.getCantonAllocataire());
+                                listePrestationParIdBenef.get(idBenef).add(prestationGroupee);
+                            }
+                        } else {
+                            if (i == prestationsGroupees.size() - 1) {
+                                PrestationGroupee prestationGroupee = createPrestationGroupee(entetePrestation,
+                                        tauxImpositions, adresse, adresseAffilie, montantTotal, dateDebut, dateFin);
+                                prestationGroupee.setIdTiersBeneficiaire(
+                                        getIdTiersBenef(entetePrestation.getIdTiers(), idBenef));
+                                prestationGroupee.setCantonResidence(entetePrestation.getCantonAllocataire());
+                                listePrestationParIdBenef.get(idBenef).add(prestationGroupee);
+                            }
+                        }
+
+                    }
+                    entetesPrestations.put(idBenef, listePrestationParIdBenef.get(idBenef));
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage() + " " + entetePrestation.getIdDossier());
+        }
+        return entetesPrestations;
+    }
+
+    private Montant getMontantDetailLieIdTier(List<DetailPrestationComplexModel> list) {
+        Montant montant = Montant.ZERO;
+
+        for (DetailPrestationComplexModel detailPrestation : list) {
+            montant = montant.add(new Montant(detailPrestation.getDetailPrestationModel().getMontant()));
+        }
+
+        return montant;
+    }
+
+    private HashMap<String, List<DetailPrestationComplexModel>> getListDetailPrestation(
+            EntetePrestationComplexModel entetePrestation) {
+        DetailPrestationComplexSearchModel searchModel = new DetailPrestationComplexSearchModel();
+        searchModel.setForIdEntete(entetePrestation.getId());
+        try {
+            searchModel = ALServiceLocator.getDetailPrestationComplexModelService().search(searchModel);
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            LOGGER.error(e.getMessage());
+        } catch (JadeApplicationException e) {
+            LOGGER.error(e.getMessage());
+        } catch (JadePersistenceException e) {
+            LOGGER.error(e.getMessage());
+        }
+        HashMap<String, List<DetailPrestationComplexModel>> listDetailParIdBenef = new HashMap<>();
+
+        for (JadeAbstractModel model : searchModel.getSearchResults()) {
+            DetailPrestationComplexModel details = (DetailPrestationComplexModel) model;
+            String idBenef = details.getDetailPrestationModel().getIdTiersBeneficiaire();
+            if (JadeStringUtil.isBlankOrZero(idBenef)) {
+                idBenef = entetePrestation.getIdTiers();
+            }
+            if (listDetailParIdBenef.containsKey(idBenef)) {
+                listDetailParIdBenef.get(idBenef).add(details);
+            } else {
+                listDetailParIdBenef.put(idBenef, new ArrayList<DetailPrestationComplexModel>());
+                listDetailParIdBenef.get(idBenef).add(details);
+            }
+        }
+        return listDetailParIdBenef;
+    }
+
+    private void initList(HashMap<String, List<PrestationGroupee>> liste,
+            EntetePrestationComplexModel entetePrestationComplexModel) {
+        DetailPrestationComplexSearchModel searchModel = new DetailPrestationComplexSearchModel();
+        searchModel.setForIdEntete(entetePrestationComplexModel.getId());
+        try {
+            searchModel = ALServiceLocator.getDetailPrestationComplexModelService().search(searchModel);
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            LOGGER.error(e.getMessage());
+        } catch (JadeApplicationException e) {
+            LOGGER.error(e.getMessage());
+        } catch (JadePersistenceException e) {
+            LOGGER.error(e.getMessage());
+        }
+        for (JadeAbstractModel model : searchModel.getSearchResults()) {
+            DetailPrestationComplexModel details = (DetailPrestationComplexModel) model;
+            if (!liste.containsKey(details.getDetailPrestationModel().getIdTiersBeneficiaire())) {
+                liste.put(details.getDetailPrestationModel().getIdTiersBeneficiaire(),
+                        new ArrayList<PrestationGroupee>());
+            }
+
+        }
     }
 
     private String getIdTiersBeneficiaire(EntetePrestationComplexModel entetePrestation) {
@@ -390,9 +705,19 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
         }
         DetailPrestationComplexModel details = (DetailPrestationComplexModel) searchModel.getSearchResults()[0];
 
-        return VulpeculaRepositoryLocator.getAdresseRepository().findAdressePrioriteCourrierByIdTiers(
-                findTiersForAdresse(entetePrestation.getIdTiers(), details.getDetailPrestationModel()
-                        .getIdTiersBeneficiaire()));
+        return ALRepositoryLocator.getAdresseRepository()
+                .findAdressePrioriteCourrierByIdTiers(findTiersForAdresse(entetePrestation.getIdTiers(),
+                        details.getDetailPrestationModel().getIdTiersBeneficiaire()));
+    }
+
+    private Adresse getAdresseById(String idTiersBeneficiaire) {
+
+        return ALRepositoryLocator.getAdresseRepository()
+                .findAdressePrioriteCourrierByIdTiers(idTiersBeneficiaire);
+    }
+
+    private Adresse getAdresseAffilieById(String idTiers) {
+        return ALRepositoryLocator.getAdresseRepository().findAdresseDomicileByIdTiers(idTiers);
     }
 
     private String findTiersForAdresse(String idTiersAllocataire, String idTiersBeneficiaire) {
@@ -401,6 +726,17 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
         }
         return idTiersBeneficiaire;
 
+    }
+
+    private String getIdTiersBenef(String idTiersAllocataire, String idTiersBeneficiaire) {
+        if (JadeStringUtil.isBlankOrZero(idTiersBeneficiaire)) {
+            return idTiersAllocataire;
+        } else {
+            if (idTiersAllocataire.trim().equals(idTiersBeneficiaire.trim())) {
+                return idTiersAllocataire;
+            }
+            return idTiersBeneficiaire;
+        }
     }
 
     /**
@@ -417,8 +753,8 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
      * @throws TauxImpositionNotFoundException
      */
     private PrestationGroupee createPrestationGroupee(EntetePrestationComplexModel entetePrestationComplexModel,
-            TauxImpositions tauxImpositions, Adresse adresse, List<Montant> montantTotal, Date dateDebut, Date dateFin)
-            throws TauxImpositionNotFoundException {
+            TauxImpositions tauxImpositions, Adresse adresse, Adresse adresseAffilie, List<Montant> montantTotal,
+            Date dateDebut, Date dateFin) throws TauxImpositionNotFoundException {
         PrestationGroupee entetePrestation = new PrestationGroupee();
         entetePrestation.setNss(entetePrestationComplexModel.getNumAvsActuel());
         entetePrestation.setNom(entetePrestationComplexModel.getNom());
@@ -431,10 +767,11 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
         if (entetePrestationComplexModel.getRetenueImpot()) {
             Montant impot = Montant.ZERO;
             for (Montant montant : montantTotal) {
-                impot = impot.add(montant
-                        .multiply(
-                                tauxImpositions.getTauxImpotSource(entetePrestationComplexModel.getCantonResidence(),
-                                        dateDebut)).normalize().doubleValue());
+                impot = impot
+                        .add(montant
+                                .multiply(tauxImpositions.getTauxImpotSource(
+                                        entetePrestationComplexModel.getCantonResidence(), dateDebut))
+                                .normalize().doubleValue());
             }
             entetePrestation.setImpots(impot);
         } else {
@@ -451,6 +788,9 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
         entetePrestation.setRaisonSociale(entetePrestationComplexModel.getRaisonSociale());
         if (!JadeStringUtil.isEmpty(entetePrestationComplexModel.getLangue())) {
             entetePrestation.setLangue(CodeLangue.fromValue(entetePrestationComplexModel.getLangue()));
+        }
+        if (adresseAffilie != null) {
+            entetePrestation.setLocaliteAffilie(adresseAffilie.getLocalite());
         }
         return entetePrestation;
     }
@@ -471,17 +811,17 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
     }
 
     private Map<String, PrestationGroupee> createMapPrestationsGroupees(Date dateDebut, Date dateFin,
-            Map<String, Collection<EntetePrestationComplexModel>> prestationsGroupByCaisseAF) {
+            Map<String, Collection<EntetePrestationComplexModel>> prestationsGroupByCaisseAF) throws PropertiesException {
         TauxImpositions tauxImpositions = ALRepositoryLocator.getTauxImpositionRepository().findAll();
 
-        Map<String, PrestationGroupee> prestationsGroupees = new HashMap<String, PrestationGroupee>();
+        Map<String, PrestationGroupee> prestationsGroupees = new HashMap<>();
 
         for (Map.Entry<String, Collection<EntetePrestationComplexModel>> entry : prestationsGroupByCaisseAF.entrySet()) {
-            List<EntetePrestationComplexModel> prestations = new ArrayList<EntetePrestationComplexModel>(
+            List<EntetePrestationComplexModel> prestations = new ArrayList<>(
                     entry.getValue());
             EntetePrestationComplexModel prestationComplexModel = prestations.get(0);
 
-            Adresse adresse = VulpeculaRepositoryLocator.getAdresseRepository().findAdressePrioriteCourrierByIdTiers(
+            Adresse adresse = ALRepositoryLocator.getAdresseRepository().findAdressePrioriteCourrierByIdTiers(
                     prestationComplexModel.getIdTiers());
 
             Montant montantTotal = calculMontantTotal(entry.getValue());
@@ -498,13 +838,13 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
 
     private List<EntetePrestationComplexModel> orderByPeriode(
             Collection<EntetePrestationComplexModel> prestationsAOrdrer) {
-        List<EntetePrestationComplexModel> prestationsGroupees = new ArrayList<EntetePrestationComplexModel>(
+        List<EntetePrestationComplexModel> prestationsGroupees = new ArrayList<>(
                 prestationsAOrdrer);
         Collections.sort(prestationsGroupees, new Comparator<EntetePrestationComplexModel>() {
             @Override
             public int compare(EntetePrestationComplexModel prestation1, EntetePrestationComplexModel prestation2) {
-                return new Periode(prestation1.getPeriodeDe(), prestation1.getPeriodeA()).compareTo(new Periode(
-                        prestation2.getPeriodeDe(), prestation2.getPeriodeA()));
+                return new Periode(prestation1.getPeriodeDe(), prestation1.getPeriodeA())
+                        .compareTo(new Periode(prestation2.getPeriodeDe(), prestation2.getPeriodeA()));
             }
         });
         return prestationsGroupees;
@@ -537,7 +877,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
         Function<EntetePrestationComplexModel, String> funcGroupLibelleCaisseAF = new Function<EntetePrestationComplexModel, String>() {
             @Override
             public String apply(EntetePrestationComplexModel entetePrestationComplexModel) {
-                return entetePrestationComplexModel.getLibelleCaisseAF();
+                return entetePrestationComplexModel.getIdAssurance();
             }
         };
         return Multimaps.index(prestations, funcGroupLibelleCaisseAF).asMap();
@@ -564,13 +904,24 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
 
     /**
      * Groupe un ensemble de prestation groupées par caisseAF.
-     * 
+     *
      */
     private Map<String, Collection<PrestationGroupee>> groupByLibelleCaisseAF(Collection<PrestationGroupee> prestations) {
         Function<PrestationGroupee, String> funcGroupLibelleCaisseAF = new Function<PrestationGroupee, String>() {
             @Override
             public String apply(PrestationGroupee prestationGroupee) {
                 return prestationGroupee.getLibelleCaisseAF();
+            }
+        };
+        return Multimaps.index(prestations, funcGroupLibelleCaisseAF).asMap();
+    }
+
+    private Map<String, Collection<PrestationGroupee>> groupByCaisseAFWithIDAssurance(
+            Collection<PrestationGroupee> prestations) {
+        Function<PrestationGroupee, String> funcGroupLibelleCaisseAF = new Function<PrestationGroupee, String>() {
+            @Override
+            public String apply(PrestationGroupee prestationGroupee) {
+                return prestationGroupee.getIdAssurance();
             }
         };
         return Multimaps.index(prestations, funcGroupLibelleCaisseAF).asMap();
@@ -602,22 +953,31 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
      * @param tauxImpositions
      * @return Montant des impots
      */
-    private Montant calculImpots(Collection<EntetePrestationComplexModel> prestations, TauxImpositions tauxImpositions) {
+    private Montant calculImpots(Collection<EntetePrestationComplexModel> prestations, TauxImpositions tauxImpositions) throws PropertiesException {
         // Si la liste des opérations est null, c'est qu'il n'y a pas d'opérations et donc que le montant est égal à 0.
         if (prestations == null) {
             return Montant.ZERO;
         }
+        Boolean impotSource = ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue();
 
         Montant impot = Montant.ZERO;
         for (EntetePrestationComplexModel prestation : prestations) {
-            Taux taux = null;
-            try {
-                taux = tauxImpositions.getTauxImpotSource(prestation.getCantonResidence(),
-                        new Date(prestation.getPeriodeDe()));
-            } catch (TauxImpositionNotFoundException ex) {
-                ExceptionsUtil.translateAndThrowUncheckedException(ex);
+
+            if(impotSource) {
+                if(!JadeStringUtil.isBlankOrZero(prestation.getMontantTotalIS())){
+                    impot = impot.add(new Montant(prestation.getMontantTotalIS()));
+                }
+            } else {
+
+                Taux taux = null;
+                try {
+                    taux = tauxImpositions.getTauxImpotSource(prestation.getCantonResidence(),
+                            new Date(prestation.getPeriodeDe()));
+                } catch (TauxImpositionNotFoundException ex) {
+                    ExceptionsUtil.translateAndThrowUncheckedException(ex);
+                }
+                impot = impot.add(new Montant(prestation.getMontantTotal()).multiply(taux).normalize());
             }
-            impot = impot.add(new Montant(prestation.getMontantTotal()).multiply(taux).normalize());
         }
         return impot;
     }
@@ -671,8 +1031,8 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
             Taux tauxIS = null;
 
             try {
-                tauxFrais = tauxImpositions.getTauxComissionPerception(prestation.getCantonResidence(), new Date(
-                        prestation.getPeriodeDe()));
+                tauxFrais = tauxImpositions.getTauxComissionPerception(prestation.getCantonResidence(),
+                        new Date(prestation.getPeriodeDe()));
                 tauxIS = tauxImpositions.getTauxImpotSource(prestation.getCantonResidence(),
                         new Date(prestation.getPeriodeDe()));
             } catch (TauxImpositionNotFoundException ex) {
@@ -692,16 +1052,22 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
      * @param dateFin Date de fin à laquelle prendre les prestations
      * @return Liste des prestations
      */
-    private List<EntetePrestationComplexModel> getPrestationsISParCAF(Date dateDebut, Date dateFin, String canton) {
+    private List<EntetePrestationComplexModel> getPrestationsISParCAF(Date dateDebut, Date dateFin, String canton) throws PropertiesException {
         EntetePrestationSearchComplexModel searchModel = new EntetePrestationSearchComplexModel();
         searchModel.setForDateComptabilisationAfterOrEquals(dateDebut);
         searchModel.setForDateComptabilisationBeforeOrEquals(dateFin);
         searchModel.setForEtat(ALCSPrestation.ETAT_CO);
+        if(!ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
         searchModel.setForIsRetenueImpot(true);
-        // searchModel.setForBonification(ALCSPrestation.BONI_DIRECT);
+        } else {
+            searchModel.setForIsRetenueImpotSomme("0");
+        }
         searchModel.setForCantonResidence(canton);
         List<EntetePrestationComplexModel> prestations = RepositoryJade.searchForAndFetch(searchModel);
+        if(!ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
         prestations = sortAndExcludePaiementIndirect(prestations);
+        }
+
         return findCaisseAFAndCantonAffilie(prestations);
     }
 
@@ -714,14 +1080,37 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
      * @param dateFin Date de fin à laquelle prendre les prestations
      * @return Liste des prestations
      */
-    private List<EntetePrestationComplexModel> getPrestationsIS(String idAllocataire, Date dateDebut, Date dateFin) {
+    private List<EntetePrestationComplexModel> getPrestationsIS(String idAllocataire, Date dateDebut, Date dateFin) throws PropertiesException {
         EntetePrestationSearchComplexModel searchModel = new EntetePrestationSearchComplexModel();
         searchModel.setForIdAllocataire(idAllocataire);
         searchModel.setForDateComptabilisationAfterOrEquals(dateDebut);
         searchModel.setForDateComptabilisationBeforeOrEquals(dateFin);
         searchModel.setForEtat(ALCSPrestation.ETAT_CO);
+        if(!ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
         searchModel.setForIsRetenueImpot(true);
+        } else {
+            searchModel.setForIsRetenueImpotSomme("0");
+        }
         // searchModel.setForBonification(ALCSPrestation.BONI_DIRECT);
+        List<EntetePrestationComplexModel> prestations = RepositoryJade.searchForAndFetch(searchModel);
+        return findCaisseAFAndCantonAffilie(prestations);
+    }
+
+    /**
+     * Retourne l'ensemble des prestations comptabilisées relatives à un allocataire (optionnel) imposée à la source.
+     * Seules les prestations en bonification "DIRECT" sont retournées.
+     *
+     * @param idAllocataire String représentant l'id d'un allocataire
+     * @param dateDebut Date de début à laquelle prendre les prestations
+     * @param dateFin Date de fin à laquelle prendre les prestations
+     * @return Liste des prestations
+     */
+    private List<EntetePrestationComplexModel> getPrestations(String idAllocataire, Date dateDebut, Date dateFin) {
+        EntetePrestationSearchComplexModel searchModel = new EntetePrestationSearchComplexModel();
+        searchModel.setForIdAllocataire(idAllocataire);
+        searchModel.setForDateComptabilisationAfterOrEquals(dateDebut);
+        searchModel.setForDateComptabilisationBeforeOrEquals(dateFin);
+        searchModel.setForEtat(ALCSPrestation.ETAT_CO);
         List<EntetePrestationComplexModel> prestations = RepositoryJade.searchForAndFetch(searchModel);
         return findCaisseAFAndCantonAffilie(prestations);
     }
@@ -733,12 +1122,16 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
      * @param dateFin Date de fin à laquelle prendre les prestations
      * @return Liste des prestations
      */
-    private List<EntetePrestationComplexModel> getPrestationsDirectsNonIS(Date dateDebut, Date dateFin) {
+    private List<EntetePrestationComplexModel> getPrestationsDirectsNonIS(Date dateDebut, Date dateFin) throws PropertiesException {
         EntetePrestationSearchComplexModel searchModel = new EntetePrestationSearchComplexModel();
         searchModel.setForDateComptabilisationAfterOrEquals(dateDebut);
         searchModel.setForDateComptabilisationBeforeOrEquals(dateFin);
         searchModel.setForEtat(ALCSPrestation.ETAT_CO);
+        if(!ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
         searchModel.setForIsRetenueImpot(false);
+        } else {
+            searchModel.setWhereKey("fromDateForNotImpotSource");
+        }
 
         List<EntetePrestationComplexModel> prestations = RepositoryJade.searchForAndFetch(searchModel);
         return findCaisseAFAndCantonAffilie(prestations);
@@ -755,15 +1148,22 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
      * @param annee Année pour la recherche des écritures
      * @return Liste des prestations
      */
-    private List<EntetePrestationComplexModel> getPrestationsIS(String canton, String caisseAF, Annee annee) {
+    private List<EntetePrestationComplexModel> getPrestationsIS(String canton, String caisseAF, Annee annee) throws PropertiesException {
         EntetePrestationSearchComplexModel searchModel = new EntetePrestationSearchComplexModel();
         searchModel.setForDateComptabilisationAfterOrEquals(annee.getFirstDayOfYear());
         searchModel.setForDateComptabilisationBeforeOrEquals(annee.getLastDayOfYear());
         searchModel.setForCantonResidence(canton);
         searchModel.setForEtat(ALCSPrestation.ETAT_CO);
+        if(!ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
         searchModel.setForIsRetenueImpot(true);
+        } else {
+            searchModel.setForIsRetenueImpotSomme("0");
+        }
+
         List<EntetePrestationComplexModel> prestations = RepositoryJade.searchForAndFetch(searchModel);
+        if(!ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
         prestations = sortAndExcludePaiementIndirect(prestations);
+        }
         return findCaisseAFAndCantonAffilie(prestations, caisseAF);
     }
 
@@ -793,6 +1193,27 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
     }
 
     /**
+     * Permet de trier la liste des prestations passée en paramètre et de retirer les objets dont le type de paiement
+     * est "INDIRECT"
+     *
+     * @param listPrestations
+     * @return une liste des prestations dont le type de paiement indirect est retiré.
+     */
+    private List<EntetePrestationComplexModel> sortImpotSourceAndExcludePaiementIndirect(
+            List<EntetePrestationComplexModel> listPrestations) {
+        List<EntetePrestationComplexModel> finalPrestationsList = new ArrayList<EntetePrestationComplexModel>();
+        for (EntetePrestationComplexModel prestation : listPrestations) {
+
+            if (!prestation.getBonification().equals(ALCSPrestation.BONI_INDIRECT)
+                    && !JadeStringUtil.isBlankOrZero(prestation.getMontantTotalIS())) {
+
+                finalPrestationsList.add(prestation);
+            }
+        }
+        return finalPrestationsList;
+    }
+
+    /**
      * Recherche la caisse AF d'une prestation et ne retourne que les prestations qui contiennent la caisse AF passé en
      * paramètre. Si celle-ci est null, toutes les caisses AF sont retournées.
      * 
@@ -808,8 +1229,9 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
         for (EntetePrestationComplexModel prestation : prestations) {
             AssuranceInfo assuranceInfo = caisseAFProvider.get(prestation.getNumeroAffilie(),
                     prestation.getActiviteAllocataire(), new Date(prestation.getPeriodeDe()));
-            prestation.setLibelleCaisseAF(assuranceInfo.getLibelleCourt());
+            prestation.setLibelleCaisseAF(assuranceInfo.getLibelleLong());
             prestation.setCodeCaisseAF(assuranceInfo.getCodeCaisseProf());
+            prestation.setIdAssurance(assuranceInfo.getIdAssurance());
             // XXX BUG codeCaisseAF contient l'idTiersAdministration
             if (JadeStringUtil.isEmpty(codeCaisseAF) || assuranceInfo.getIdTiersCaisseProf().equals(codeCaisseAF)) {
                 prestationsFiltrees.add(prestation);
@@ -833,12 +1255,17 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
         for (DetailPrestationAF prestation : prestations) {
             AssuranceInfo assuranceInfo = caisseAFProvider.get(prestation.getNumeroAffilie(),
                     prestation.getActiviteAllocataire(), new Date(prestation.getPeriodeDebut()));
-            prestation.setLibelleCaisseAF(assuranceInfo.getLibelleCourt());
+            prestation.setLibelleCaisseAF(assuranceInfo.getLibelleLong());
             prestation.setCodeCaisseAF(assuranceInfo.getCodeCaisseProf());
             prestation.setCantonResidence(assuranceInfo.getCanton());
             prestationsFiltrees.add(prestation);
         }
         return prestationsFiltrees;
+    }
+
+    @Override
+    public List<String> getListDossierNonPrise() {
+        return listDossierNonCalcule;
     }
 
 }

@@ -1,4 +1,4 @@
-package ch.globaz.vulpecula.domain.models.is;
+package ch.globaz.al.impotsource.domain;
 
 import ch.globaz.exceptions.ExceptionMessage;
 import ch.globaz.exceptions.GlobazTechnicalException;

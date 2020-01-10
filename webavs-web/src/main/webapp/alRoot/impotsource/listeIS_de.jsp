@@ -6,8 +6,8 @@
 
 <%--  *********************************************************** Paramétrage global de la page ************************************************************** --%>
 <%-- labels n° ecran et titre --%>
-<c:set var="idEcran" value="PPT4002"/>
-<c:set var="labelTitreEcran" value="LISTE_IMPOT_SOURCE"/>
+<c:set var="idEcran" value="AL0037"/>
+<c:set var="labelTitreEcran" value="AL0037_TITLE"/>
 
 <%-- visibiltés des boutons --%>
 <c:set var="bButtonNew" value="false" scope="page" />
@@ -16,12 +16,11 @@
 <c:set var="bButtonDelete" value="false" scope="page"/>
 <c:set var="bButtonUpdate" value="false" scope="page" />
 
-<c:set var="userActionListe" value="vulpecula.listes" />
+<c:set var="userActionListe" value="al.listes" />
 <ct:checkRight var="hasCreateRightOnListes" element="${userActionListe}" crud="c" />
 
 <%--  ********************************************************************** JS CSS ***************************************************************************--%>
 <%@ include file="/theme/detail_el/javascripts.jspf" %>
-<script type="text/javascript" src="${rootPath}/scripts/vulpeculaUtils.js"></script>
 <script type="text/javascript" src="${rootPath}/scripts/utils/jquery.noty.packaged.min.js"></script>
 
 <%--  *************************************************************** Script propre à la page **************************************************************** --%>
@@ -53,7 +52,7 @@ function postInit() {
 $(function () {
 	$('#launch').click(function () {
 		$(this).prop('disabled', true);
-		document.forms[0].elements('userAction').value="vulpecula.is.listeIS.executer";
+		document.forms[0].elements('userAction').value="al.impotsource.listeIS.executer";
 		document.forms[0].submit();
 	});
 })
@@ -75,14 +74,14 @@ $(function () {
 	<div>
 		<table>
 			<tr>
-				<td><ct:FWLabel key="JSP_EMAIL"/></td>
+				<td><ct:FWLabel key="AL0037_EMAIL"/></td>
 				<td><input id="email" type="text" name="email" value="${viewBean.email}" /></td>
 			</tr>		
 			<tr>
-				<td><ct:FWLabel key="JSP_CAISSE_AF"/></td>
+				<td><ct:FWLabel key="AL0037_CAISSE_AF"/></td>
 				<td>
 					<select name="caisseAF">
-						<option value=""><ct:FWLabel key="JSP_TOUTES"/></option>
+						<option value=""><ct:FWLabel key="AL0037_TOUTES"/></option>
 						<c:forEach var="caisseAF" items="${viewBean.caissesAF}">
 							<c:choose>
 								<c:when test="${viewBean.caisseAF==caisseAF.id}">
@@ -97,10 +96,10 @@ $(function () {
 				</td>
 			</tr>		
 			<tr>				
-				<td><ct:FWLabel key="JSP_CANTON"/></td>
+				<td><ct:FWLabel key="AL0037_CANTON"/></td>
 				<td>
 					<select name="canton">
-						<option value=""><ct:FWLabel key="JSP_TOUS"/></option>
+						<option value=""><ct:FWLabel key="AL0037_TOUS"/></option>
 						<c:forEach var="canton" items="${viewBean.cantons}">
 							<c:choose>
 								<c:when test="${viewBean.canton==canton.id || (empty viewBean.canton && canton.id==viewBean.cantonDefaut)}">
@@ -115,7 +114,7 @@ $(function () {
 				</td>
 			</tr>
 			<tr>
-				<td><ct:FWLabel key="JSP_PERIODE_ANNEE"/></td>
+				<td><ct:FWLabel key="AL0037_PERIODE_ANNEE"/></td>
 				<td>
 					<c:choose>
 						<c:when test="${not empty viewBean.annee}">
@@ -128,10 +127,10 @@ $(function () {
 				</td>
 			</tr>		
 			<tr>				
-				<td><ct:FWLabel key="JSP_TYPE_DE_LISTE"/></td>
+				<td><ct:FWLabel key="AL0037_TYPE_DE_LISTE"/></td>
 				<td>
 					<select name="typeListe">
-						<option value="0"><ct:FWLabel key="JSP_TOUS"/></option>
+						<option value="0"><ct:FWLabel key="AL0037_TOUS"/></option>
 						<c:forEach var="liste" items="${viewBean.listes}">
 							<c:choose>
 								<c:when test="${liste.id==viewBean.typeListe}">
@@ -150,7 +149,7 @@ $(function () {
 			<tr>
 				<td style="text-align: center;" colspan="4">
 					<br />
-					<input id="launch" type="button" name="launch" value='<ct:FWLabel key="JSP_LANCER"/>'/>
+					<input id="launch" type="button" name="launch" value='<ct:FWLabel key="AL0037_LANCER"/>'/>
 				</td>
 			</tr>
 			</c:if>
@@ -163,7 +162,7 @@ $(function () {
 	</div>
 </c:if>
 
-<ct:menuChange displayId="menu" menuId="vulpecula-menuprincipal" showTab="menu" />
+<ct:menuChange displayId="menu" menuId="menuWEBAF" showTab="menu" />
 <%--  **************************************************************** Fin Corps de la page ******************************************************************* --%>
 <%@ include file="/theme/detail_el/bodyButtons.jspf" %>
 				
