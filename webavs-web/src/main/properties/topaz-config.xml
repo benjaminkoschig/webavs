@@ -191,6 +191,10 @@
 	<when attribute="idProcess" operator="eq" value="RFRecapitulationImportationAvasadOO">
 		<doc-id action="set">cygnus/tableaux/_CCVD/avasad/recapAvasad</doc-id>
 	</when>
+
+	<when attribute="idProcess" operator="eq" value="RFRecapitulationImportationSecutelOO">
+		<doc-id action="set">cygnus/tableaux/_CCVD/secutel/recapSecutel</doc-id>
+	</when>
 			
 	<!-- gestion des lettres d'en tête pour copies et annexes -->
 	<when attribute="idProcess" operator="eq" value="RFMLettreEnTeteOO">
@@ -1087,6 +1091,22 @@
 		<doc-id action="nodoc"></doc-id>
 	</when>
 	</doc-selection>
+
+	<!-- gestion des liste détaillées de la récap Secutel -->
+	<doc-selection id="recapSecutelListeCasTraite">
+		<when attribute="isTableauListeCasTraitesSecutel" operator="eq" value="STANDARD">
+			<doc-id action="set">cygnus/tableaux/_CCVD/secutel/recapSecutelListeCasTraite</doc-id>
+		</when>
+	</doc-selection>
+	<doc-selection id="recapSecutelListeCasRejete">
+		<when attribute="isTableauListeCasRejetesSecutel" operator="eq" value="STANDARD">
+			<doc-id action="set">cygnus/tableaux/_CCVD/secutel/recapSecutelListeCasRejete</doc-id>
+		</when>
+		<when attribute="isTableauListeCasRejetesSecutel" operator="eq" value="NONE">
+			<doc-id action="nodoc"></doc-id>
+		</when>
+	</doc-selection>
+
 <!-- ********************************************** FIN CYGNUS RFM ********************************************** -->
 
 <!-- ################################################################################################################ -->
