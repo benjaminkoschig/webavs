@@ -512,8 +512,14 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
 
         annonces = getLastAnnonceFromRecordNumber(annonces);
 
+        String debutDroit = droitComplexModel.getDroitModel().getDebutDroit();
+        String debutFin = droitComplexModel.getDroitModel().getFinDroitForcee();
+
         for (Periode periode : periodes.keySet()) {
             annonces = genererAnnonceSelonAnnoncePrecedante(droitComplexModel, annonces, periode, periodes.get(periode));
+
+            droitComplexModel.getDroitModel().setDebutDroit(debutDroit);
+            droitComplexModel.getDroitModel().setFinDroitForcee(debutFin);
         }
     }
 
