@@ -6,8 +6,8 @@
  */
 package globaz.aquila.print;
 
+import com.google.gson.JsonObject;
 import globaz.aquila.api.ICOEtape;
-import globaz.aquila.api.ICOSequenceConstante;
 import globaz.aquila.service.cataloguetxt.COCatalogueTextesService;
 import globaz.aquila.service.taxes.COTaxe;
 import globaz.framework.printing.itext.exception.FWIException;
@@ -21,6 +21,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.pdf.JadePdfUtil;
 import globaz.osiris.api.APISection;
 import globaz.osiris.db.utils.CAReferenceBVR;
+import globaz.osiris.db.utils.GenerationQRCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -171,6 +172,7 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
     public void beforeExecuteReport() throws FWIException {
         super.beforeExecuteReport();
         setTemplateFile(CO00CSommationPaiementCapCgas.TEMPLATE_NAME);
+        //setTemplateFile("CO_00C_SOMMATION_AF_QR_CODE");
         setDocumentTitle(getSession().getLabel("AQUILA_SOMMATION"));
         setNumeroReferenceInforom(CO00CSommationPaiementCapCgas.NUMERO_REFERENCE_INFOROM);
     }
@@ -232,6 +234,52 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
 
         // -- BVR
         initBVR(montantTotal);
+
+//        initQRCode(montantTotal);
+    }
+
+    private void initQRCode(FWCurrency montantTotal) {
+        JsonObject qrData = new JsonObject();
+
+        qrData.addProperty("Header", "Section de paiement");
+        qrData.addProperty("QRType", "SPC");
+        qrData.addProperty("Version", "0200");
+        qrData.addProperty("Coding", "1");
+
+        qrData.addProperty("CdtrInf", "Compte / Payable à");
+        qrData.addProperty("IBAN", "iban test");
+
+        super.setParametres("QR_CODE_PATH", new GenerationQRCode().generateSwissQrCode(""));
+        super.setParametres("Titre_1", "Récépisé");
+        super.setParametres("Titre_2", "Section paiement");
+        super.setParametres("Point_depot", "point de dépôt");
+        super.setParametres("Info_supp", "Nom AV1");
+        super.setParametres("Monnaie_titre_1", "Monnaie");
+        super.setParametres("Monnaie_1", "CHF");
+        super.setParametres("Monnaie_titre_2", "Monnaie");
+        super.setParametres("Monnaie_2", "CHF");
+        super.setParametres("Montant_titre_1", "Montant");
+//        super.setParametres("Montant_1", montantTotal.toString());
+        super.setParametres("Montant_titre_2", "Montant");
+//        super.setParametres("Montant_2", montantTotal.toString());
+
+        super.setParametres("P_SUBREPORT_ZONE_INDICATIONS",getImporter().getImportPath() + "QR_CODE_ZONE_INDICATIONS.jasper");
+        super.setParametres("Compte_titre", "Compte / Payable à");
+        super.setParametres("Compte", "TEST COMPTE\nTEST COMPTE 2\nTEST COMPTE 3");
+//        super.setParametres("Ref_titre", "Référence");
+//        super.setParametres("Ref_2", "TEST REF");
+        super.setParametres("Payable_titre", "Payable par");
+//        super.setParametres("Payable", "TEST PAYABLE");
+//        super.setParametres("Info_add_titre", "informations additionnelles");
+//        super.setParametres("Info_add", "TEST INFO\nTEST INFO 2\nTEST INFO 3");
+
+        super.setParametres("P_SUBREPORT_RECEPISE", getImporter().getImportPath() + "QR_CODE_RECEPISE.jasper");
+//        super.setParametres("Compte_titre_1", "Compte / Payable à");
+//        super.setParametres("Compte_1", "TEST COMPTE\nTEST COMPTE 2\nTEST COMPTE 3");
+//        super.setParametres("Ref_titre_1", "Référence");
+//        super.setParametres("Ref_1", "TEST REF dasd ");
+//        super.setParametres("Payable_titre_1", "Payable par");
+//        super.setParametres("Payable_1", "TEST PAYABLE \nTEST PAYABLE 2");
     }
 
     /**
