@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c006="http://www.bsv.admin.ch/xmlns/ebsv-c006/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c006/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX NombreEnfants-types.xsd -->
+	<xs:simpleType name="AnzahlKinder_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Anzahl Kinder eines Versichertens</xs:documentation>
+			<xs:documentation xml:lang="fr">Nombre d'enfant(s) d'un assuré/bénéficiaire</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedByte">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="20"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

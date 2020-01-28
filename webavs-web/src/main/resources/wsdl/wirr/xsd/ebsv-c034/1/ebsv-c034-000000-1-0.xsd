@@ -1,0 +1,1056 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c001="http://www.bsv.admin.ch/xmlns/ebsv-c001/1" xmlns:ebsv-c007="http://www.bsv.admin.ch/xmlns/ebsv-c007/1" xmlns:ebsv-c008="http://www.bsv.admin.ch/xmlns/ebsv-c008/1" xmlns:ebsv-c010="http://www.bsv.admin.ch/xmlns/ebsv-c010/1" xmlns:ebsv-c014="http://www.bsv.admin.ch/xmlns/ebsv-c014/1" xmlns:ebsv-c015="http://www.bsv.admin.ch/xmlns/ebsv-c015/1" xmlns:ebsv-c016="http://www.bsv.admin.ch/xmlns/ebsv-c016/1" xmlns:ebsv-c020="http://www.bsv.admin.ch/xmlns/ebsv-c020/1" xmlns:ebsv-c021="http://www.bsv.admin.ch/xmlns/ebsv-c021/1" xmlns:ebsv-c023="http://www.bsv.admin.ch/xmlns/ebsv-c023/1" xmlns:ebsv-c034="http://www.bsv.admin.ch/xmlns/ebsv-c034/0" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c034/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX annoncesAI-types.xsd -->
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c001/1" schemaLocation="../../ebsv-c001/1/ebsv-c001-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c007/1" schemaLocation="../../ebsv-c007/1/ebsv-c007-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c008/1" schemaLocation="../../ebsv-c008/1/ebsv-c008-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c010/1" schemaLocation="../../ebsv-c010/1/ebsv-c010-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c014/1" schemaLocation="../../ebsv-c014/1/ebsv-c014-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c015/1" schemaLocation="../../ebsv-c015/1/ebsv-c015-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c016/1" schemaLocation="../../ebsv-c016/1/ebsv-c016-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c020/1" schemaLocation="../../ebsv-c020/1/ebsv-c020-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c021/1" schemaLocation="../../ebsv-c021/1/ebsv-c021-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c023/1" schemaLocation="../../ebsv-c023/1/ebsv-c023-000000-1-0.xsd"/>
+	<xs:complexType name="IVVerfuegungMeldung_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr">
+				Décisions et communications concernant les mesures individuelles. Code application 72
+			</xs:documentation>
+			<xs:documentation xml:lang="de">
+				Verfügungen/Mitteilungen über individuelle Massnahmen. Code Anwendungsgebiet 72
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CodeZustaendigeIVStelle" type="ebsv-c016:IVStelle_strongType"/>
+			<xs:element name="ElfstelligeNrVerfuegung" type="ebsv-c020:VerfuegungNummer_Type" minOccurs="0"/>
+			<xs:element name="Versichertennummer" type="ebsv-c001:Versichertennummer11oder13Stellen_Type" minOccurs="0"/>
+			<xs:element name="DatumVerfuegung" type="ebsv-c007:AHVDatumJMT_Type" minOccurs="0"/>
+			<xs:element name="DatumAnmeldung" type="ebsv-c007:AHVDatumJMT_Type" minOccurs="0"/>
+			<xs:element name="WohnortVersichertePerson" minOccurs="0">
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="SchluesselzahlStaat" type="ebsv-c008:LandNrBSV_weakType"/>
+						<xs:element name="InlandPLZ" type="ebsv-c010:PLZ_Type"/>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="NummerLeistungenLeistungserbringer" type="ebsv-c014:Short3stellig_Type" minOccurs="0"/>
+			<xs:element name="VisumIVStelle" type="ebsv-c014:VisumIVStelle_Type" minOccurs="0"/>
+			<xs:element name="Gebrechenscode" type="ebsv-c014:Short3stellig_Type" minOccurs="0"/>
+			<xs:element name="Funktionsausfallcode" type="ebsv-c014:Short3stellig_Type" minOccurs="0"/>
+			<xs:element name="Leistungscode" type="ebsv-c014:Short3stellig_Type" minOccurs="0"/>
+			<xs:element name="LeistungGemaessTarif" type="ebsv-c014:String10stellig_Type" minOccurs="0"/>
+			<xs:element name="NIF" type="ebsv-c021:NIF_weakType" minOccurs="0"/>
+			<xs:element name="GueltigAb" type="ebsv-c007:AHVDatumJMT_Type" minOccurs="0"/>
+			<xs:element name="GueltigBis" type="ebsv-c007:AHVDatumJMT_Type" minOccurs="0"/>
+			<xs:element name="Hoechstgrenze" type="ebsv-c015:BetragFRRP7_Type" minOccurs="0"/>
+			<xs:element name="CodeGueltigkeitInBezugAufLeistung" type="ebsv-c014:Short3stellig_Type" minOccurs="0"/>
+			<xs:element name="StatusVerfuegung" type="ebsv-c014:Short3stellig_Type" minOccurs="0"/>
+			<xs:element name="Grundsatzentscheid" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">Grundsatzentscheid (5.IV-Revision)
+TRUE,1 = Verfügung mit Grundsatzentscheid
+FALSE,0 = Normale Verfügung</xs:documentation>
+					<xs:documentation xml:lang="fr">Décision de principe (5e révision AI)
+TRUE,1  = Décision de principe
+FALSE,0 = Décision normale</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="IVVerfuegungRueckMeldung_Type">
+		<xs:sequence>
+			<xs:element name="CodeZustaendigeIVStelle">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="ebsv-c016:IVStelle_strongType">
+							<xs:attribute name="Fehler" type="xs:string"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ElfstelligeNrVerfuegung" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="ebsv-c020:VerfuegungNummer_Type">
+							<xs:attribute name="Fehler" type="xs:string"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Versichertennummer" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="ebsv-c001:Versichertennummer11oder13Stellen_Type">
+							<xs:attribute name="Fehler" type="xs:string"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="DatumVerfuegung" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="ebsv-c007:AHVDatumJMT_Type">
+							<xs:attribute name="Fehler" type="xs:string"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="DatumAnmeldung" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="ebsv-c007:AHVDatumJMT_Type">
+							<xs:attribute name="Fehler" type="xs:string"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="WohnortVersichertePerson" minOccurs="0">
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="SchluesselzahlStaat" type="ebsv-c008:LandNrBSV_weakType"/>
+						<xs:element name="InlandPLZ" type="ebsv-c010:PLZ_Type"/>
+					</xs:choice>
+					<xs:attribute name="Fehler" type="xs:string"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="NummerLeistungenLeistungserbringer" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="ebsv-c014:Short3stellig_Type">
+							<xs:attribute name="Fehler" type="xs:string"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="VisumIVStelle" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="ebsv-c014:VisumIVStelle_Type">
+							<xs:attribute name="Fehler" type="xs:string"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Gebrechenscode" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="ebsv-c014:Short3stellig_Type">
+							<xs:attribute name="Fehler" type="xs:string"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Funktionsausfallcode" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="ebsv-c014:Short3stellig_Type">
+							<xs:attribute name="Fehler" type="xs:string"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Leistungscode" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="ebsv-c014:Short3stellig_Type">
+							<xs:attribute name="Fehler" type="xs:string"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="LeistungGemaessTarif" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="ebsv-c014:String10stellig_Type">
+							<xs:attribute name="Fehler" type="xs:string"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="NIF" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="ebsv-c021:NIF_weakType">
+							<xs:attribute name="Fehler" type="xs:string"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GueltigAb" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="ebsv-c007:AHVDatumJMT_Type">
+							<xs:attribute name="Fehler" type="xs:string"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GueltigBis" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="ebsv-c007:AHVDatumJMT_Type">
+							<xs:attribute name="Fehler" type="xs:string"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Hoechstgrenze" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="ebsv-c015:BetragFRRP7_Type">
+							<xs:attribute name="Fehler" type="xs:string"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="CodeGueltigkeitInBezugAufLeistung" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="ebsv-c014:Short3stellig_Type">
+							<xs:attribute name="Fehler" type="xs:string"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="StatusVerfuegung" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="ebsv-c014:Short3stellig_Type">
+							<xs:attribute name="Fehler" type="xs:string"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Grundsatzentscheid" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">Grundsatzentscheid (5.IV-Revision)
+TRUE,1 = Verfügung mit Grundsatzentscheid
+FALSE,0 = Normale Verfügung</xs:documentation>
+					<xs:documentation xml:lang="fr">Décision de principe (5e révision AI)
+TRUE,1  = Décision de principe
+FALSE,0 = Décision normale</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:boolean">
+							<xs:attribute name="Fehler" type="xs:string"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Verarbeitungscode">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="registriert"/>
+						<xs:enumeration value="blockiert"/>
+						<xs:enumeration value="deblockiert"/>
+						<xs:enumeration value="bereitsRegistriert"/>
+						<xs:enumeration value="geloescht"/>
+						<xs:enumeration value="bereitsGeloescht"/>
+						<xs:enumeration value="fehlerhaft"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Empfangsdatum" type="xs:date"/>
+		</xs:sequence>
+		<xs:attribute name="Fehler" type="xs:string"/>
+	</xs:complexType>
+	<xs:complexType name="IVAnmeldungMeldung_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr">
+				Annonce de demande dans le domaine des mesures individuelles. Code application 73
+			</xs:documentation>
+			<xs:documentation xml:lang="de">
+				Anmeldungen. Code Anwendungsgebiet 73
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CodeZustaendigeIVStelle" type="ebsv-c016:IVStelle_strongType"/>
+			<xs:element name="Versichertennummer" type="ebsv-c001:Versichertennummer11oder13Stellen_Type" minOccurs="0"/>
+			<xs:element name="DatumAnmeldung" type="ebsv-c007:AHVDatumJMT_Type" minOccurs="0"/>
+			<xs:element name="WohnortVersichertePerson" minOccurs="0">
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="SchluesselzahlStaat" type="ebsv-c008:LandNrBSV_weakType"/>
+						<xs:element name="InlandPLZ" type="ebsv-c010:PLZ_Type"/>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Versicherung" type="ebsv-c014:String1stellig_Type" minOccurs="0"/>
+			<xs:element name="Formular" type="ebsv-c014:String1stellig_Type" minOccurs="0"/>
+			<xs:element name="AnmeldungErstmalig" type="ebsv-c014:String1stellig_Type" minOccurs="0"/>
+			<xs:element name="ALVTaggelder" type="ebsv-c014:String1stellig_Type" minOccurs="0"/>
+			<xs:element name="MeldendeInstanz" type="ebsv-c014:Short2stellig_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">Meldende Instanz (5.IV-Revision)</xs:documentation>
+					<xs:documentation xml:lang="fr">Institution de communication (5e révision AI)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Eingliederungsplan" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">Eingliederungsplan (5.IV-Revision)</xs:documentation>
+					<xs:documentation xml:lang="fr">Plan de réadaptation (5e révision AI)</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="MassnahmenFruehintervention" type="xs:boolean">
+							<xs:annotation>
+								<xs:documentation xml:lang="de">FALSE,0 = nein
+TRUE,1  = ja</xs:documentation>
+								<xs:documentation xml:lang="fr">FALSE,0 = non
+TRUE,1  = oui</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Integrationsmassnahmen" type="xs:boolean"/>
+						<xs:element name="Berufsberatung" type="xs:boolean"/>
+						<xs:element name="ErstmaligeBeruflicheAusbildung" type="xs:boolean"/>
+						<xs:element name="Umschulung" type="xs:boolean"/>
+						<xs:element name="Arbeitsvermittlung" type="xs:boolean"/>
+						<xs:element name="Kapitalhilfe" type="xs:boolean"/>
+						<xs:element name="Hilfsmittel" type="xs:boolean"/>
+						<xs:element name="Hilflosenentschaedigung" type="xs:boolean"/>
+						<xs:element name="Rente" type="xs:boolean"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Anmeldungsformular" type="ebsv-c014:UnsignedByte1stellig_Type" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="IVBeschlussMeldung_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr">
+				Prononcés concernant les rentes ou les allocations pour impotent. Code application 74
+			</xs:documentation>
+			<xs:documentation xml:lang="de">
+				Beschlüsse betreffend Renten oder Hilflosenentschädigungen. Code Anwendungsgebiet 74
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CodeZustaendigeIVStelle" type="ebsv-c016:IVStelle_strongType"/>
+			<xs:element name="Versichertennummer" type="ebsv-c001:Versichertennummer11oder13Stellen_Type" minOccurs="0"/>
+			<xs:element name="DatumBeschluss" type="ebsv-c007:AHVDatumJMT_Type" minOccurs="0"/>
+			<xs:element name="DatumAnmeldung" type="ebsv-c007:AHVDatumJMT_Type" minOccurs="0"/>
+			<xs:element name="WohnortVersichertePerson" minOccurs="0">
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="SchluesselzahlStaat" type="ebsv-c008:LandNrBSV_weakType"/>
+						<xs:element name="InlandPLZ" type="ebsv-c010:PLZ_Type"/>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Gebrechenscode" type="ebsv-c014:Short3stellig_Type" minOccurs="0"/>
+			<xs:element name="Funktionsausfallcode" type="ebsv-c014:UnsignedByte2stellig_Type" minOccurs="0"/>
+			<xs:element name="Revisionscode" type="ebsv-c014:UnsignedByte1stellig_Type" minOccurs="0"/>
+			<xs:element name="IVGrad" type="ebsv-c014:Short3stellig_Type" minOccurs="0"/>
+			<xs:element name="HEGrad" type="ebsv-c014:UnsignedByte1stellig_Type" minOccurs="0"/>
+			<xs:element name="Invaliditaetsbemessung" type="ebsv-c014:UnsignedByte1stellig_Type" minOccurs="0"/>
+			<xs:element name="Beitragsart" type="ebsv-c014:Short2stellig_Type" minOccurs="0"/>
+			<xs:element name="AnspruchsbeginnNeueLeistung" type="ebsv-c007:AHVDatumJM_Type" minOccurs="0"/>
+			<xs:element name="AnspruchsbeginnErsteLeistung" type="ebsv-c007:AHVDatumJM_Type" minOccurs="0"/>
+			<xs:element name="NummerZustaendigeAKELStelle" type="ebsv-c016:IrgendeineZweigstelle_weakType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="IVAblehnungMeldung_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr">
+				Annonce dans le domaine des mesures individuelles. Code application 75
+			</xs:documentation>
+			<xs:documentation xml:lang="de">
+				Ablehnungen. Code Anwendungsgebiet 75
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CodeZustaendigeIVStelle" type="ebsv-c016:IVStelle_strongType"/>
+			<xs:element name="Versichertennummer" type="ebsv-c001:Versichertennummer11oder13Stellen_Type" minOccurs="0"/>
+			<xs:element name="DatumVerfuegung" type="ebsv-c007:AHVDatumJMT_Type" minOccurs="0"/>
+			<xs:element name="DatumAnmeldung" type="ebsv-c007:AHVDatumJMT_Type" minOccurs="0"/>
+			<xs:element name="WohnortVersichertePerson" minOccurs="0">
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="SchluesselzahlStaat" type="ebsv-c008:LandNrBSV_weakType"/>
+						<xs:element name="InlandPLZ" type="ebsv-c010:PLZ_Type"/>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Ablehnungscode" type="ebsv-c014:String2stellig_Type" minOccurs="0" maxOccurs="5"/>
+			<xs:element name="Grundsatzentscheid" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">Grundsatzentscheid (5.IV-Revision)
+TRUE,1 = Verfügung mit Grundsatzentscheid
+FALSE,0 = Normale Verfügung</xs:documentation>
+					<xs:documentation xml:lang="fr">Décision de principe (5e révision AI)
+TRUE,1  = Décision de principe
+FALSE,0 = Décision normale</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="IVBranchenTaetigkeitenMeldung_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr">
+				Branches/Activités. Code application 76
+			</xs:documentation>
+			<xs:documentation xml:lang="de">
+				Branchen/Tätigkeiten. Code Anwendungsgebiet 76
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CodeZustaendigeIVStelle" type="ebsv-c016:IVStelle_strongType"/>
+			<xs:element name="Versichertennummer" type="ebsv-c001:Versichertennummer11oder13Stellen_Type" minOccurs="0"/>
+			<xs:element name="DatumAnmeldung" type="ebsv-c007:AHVDatumJMT_Type" minOccurs="0"/>
+			<xs:element name="WohnortVersichertePerson" minOccurs="0">
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="SchluesselzahlStaat" type="ebsv-c008:LandNrBSV_weakType"/>
+						<xs:element name="InlandPLZ" type="ebsv-c010:PLZ_Type"/>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Branchencode" type="ebsv-c014:String2stellig_Type" minOccurs="0"/>
+			<xs:element name="Funktionscode" type="ebsv-c014:String2stellig_Type" minOccurs="0"/>
+			<xs:element name="CodeAusgeuebterBeruf" type="ebsv-c014:String2stellig_Type" minOccurs="0"/>
+			<xs:element name="CodeHoechsteAusbildung" type="ebsv-c014:String2stellig_Type" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="IVIntegrationsmassnahmenMeldung_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr">Annonce pour le monitoring statistique des mesures de réinsertion (introduite par le 5e RAI): code application 77</xs:documentation>
+			<xs:documentation xml:lang="de">Meldung an die ZAS für das statistische Monitoring der Integrationsmassnahmen.
+Eingeführt mit der 5.IV-Revision (Anwendungsbereich 77)</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CodeZustaendigeIVStelle" type="ebsv-c016:IVStelle_strongType"/>
+			<xs:element name="ElfstelligeNrVerfuegung" type="ebsv-c020:VerfuegungNummer_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">Mitteilungs-/Verfuegungsnummer JJJJNNNNNNP</xs:documentation>
+					<xs:documentation xml:lang="fr">Mitteilungs-/Verfuegungsnummer JJJJNNNNNNP</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Versichertennummer" type="ebsv-c001:Versichertennummer11oder13Stellen_Type" minOccurs="0"/>
+			<xs:element name="DatumAnmeldung" type="ebsv-c007:AHVDatumJMT_Type" minOccurs="0"/>
+			<xs:element name="WohnortVersichertePerson" minOccurs="0">
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="SchluesselzahlStaat" type="ebsv-c008:LandNrBSV_weakType"/>
+						<xs:element name="InlandPLZ" type="ebsv-c010:PLZ_Type"/>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="NummerLeistungenLeistungserbringer" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">NIF 7-stellig</xs:documentation>
+					<xs:documentation xml:lang="fr">Numéro de prestation ou du fournisseur de prestation</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:unsignedInt">
+						<xs:minInclusive value="0"/>
+						<xs:maxInclusive value="9999999"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="VisumIVStelle" type="ebsv-c014:VisumIVStelle_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">Visum Sachbearbeiter IV-Stelle</xs:documentation>
+					<xs:documentation xml:lang="fr">Visa du collaborateur de l'office AI</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Gebrechenscode" type="ebsv-c023:Gebrechensschluessel_numWeakType" minOccurs="0"/>
+			<xs:element name="Funktionsausfallcode" type="ebsv-c023:IVFunktionsausfall_numWeakType" minOccurs="0"/>
+			<xs:element name="Branchencode" type="ebsv-c014:String2stellig_Type" minOccurs="0"/>
+			<xs:element name="Funktionscode" type="ebsv-c014:String2stellig_Type" minOccurs="0"/>
+			<xs:element name="CodeAusgeuebterBeruf" type="ebsv-c014:String2stellig_Type" minOccurs="0"/>
+			<xs:element name="CodeHoechsteAusbildung" type="ebsv-c014:String2stellig_Type" minOccurs="0"/>
+			<xs:element name="Betrag" type="ebsv-c015:BetragFR4_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">Preis pro Tag (IM, EAG) oder pro Monat (EZ)</xs:documentation>
+					<xs:documentation xml:lang="fr">Prix par jour (MR, CEPH) ou mois (AIT)
+</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ArtMassnahme">
+				<xs:complexType>
+					<xs:choice>
+						<xs:annotation>
+							<xs:documentation xml:lang="de">Choice gemäss Leistungscode</xs:documentation>
+							<xs:documentation xml:lang="fr">Sélection selon le code de la prestation</xs:documentation>
+						</xs:annotation>
+						<xs:element name="Integrationsmassnahme" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation xml:lang="de">IM (Leistungscode = 581- 584 und 587)
+MR (code de la prestation = 581- 584 et 587)</xs:documentation>
+								<xs:documentation xml:lang="fr">MR (code de la prestation = 581... 584 et 587)</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Leistungscode" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="de">581 = Belastbarkeitstraining
+...
+584 = Zeitueberbrueckung
+587 = Beitrag an Arbeitgeber bei Beschäftigung im Betrieb</xs:documentation>
+											<xs:documentation xml:lang="fr">581 = Entraînement à l'endurance
+. . .
+584 = Travail de transition
+
+587 = Contribution à l'employeur en cas de maintien en emploi  dans l'entreprise  </xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="ebsv-c014:Short3stellig_Type">
+												<xs:enumeration value="581"/>
+												<xs:enumeration value="582"/>
+												<xs:enumeration value="583"/>
+												<xs:enumeration value="584"/>
+												<xs:enumeration value="587"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="ArtVerfuegung" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="de">Art der Mitteilung/Verfügung
+1 = Erste Mitteilung/Verfügung der besagten Massnahme
+2 = Verlängerung / Wiederholung der besagten Massnahme</xs:documentation>
+											<xs:documentation xml:lang="fr">Type de communication/décision:
+1=1re communication/décision pour la mesure concernée
+2=prolongation/répétition de la mesure</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:short">
+												<xs:minInclusive value="1"/>
+												<xs:maxInclusive value="2"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="DatumAbbruchErwerbstaetigkeit" type="xs:date" minOccurs="0"/>
+									<xs:element name="BeginnMassnahme">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="ArbeitsfaehigkeitProzent" minOccurs="0">
+													<xs:simpleType>
+														<xs:restriction base="xs:unsignedByte">
+															<xs:minInclusive value="0"/>
+															<xs:maxInclusive value="100"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="PraesenzProzent" minOccurs="0">
+													<xs:simpleType>
+														<xs:restriction base="xs:unsignedByte">
+															<xs:minInclusive value="0"/>
+															<xs:maxInclusive value="100"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="GeplantesDatumBeginnMassnahme" minOccurs="0">
+													<xs:simpleType>
+														<xs:restriction base="xs:date">
+															<xs:minInclusive value="2007-01-01"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="DatumBeginnMassnahme" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation xml:lang="de">Massnahme oder Leistung</xs:documentation>
+														<xs:documentation xml:lang="fr">Mesure ou prestation</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:date">
+															<xs:minInclusive value="2007-01-01"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="EndeMassnahme">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="ArbeitsfaehigkeitProzent" minOccurs="0">
+													<xs:simpleType>
+														<xs:restriction base="xs:unsignedByte">
+															<xs:minInclusive value="0"/>
+															<xs:maxInclusive value="100"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="PraesenzProzent" minOccurs="0">
+													<xs:simpleType>
+														<xs:restriction base="xs:unsignedByte">
+															<xs:minInclusive value="0"/>
+															<xs:maxInclusive value="100"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="GeplantesDatumEndeMassnahme" minOccurs="0">
+													<xs:simpleType>
+														<xs:restriction base="xs:date">
+															<xs:minInclusive value="2007-01-01"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="DatumEndeMassnahme" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation xml:lang="de">Massnahme oder Leistung</xs:documentation>
+														<xs:documentation xml:lang="fr">Mesure ou prestation</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:date">
+															<xs:minInclusive value="2007-01-01"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="Taggeld" type="ebsv-c014:Short3stellig_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="de">Taggeld gemaess Berechnung AK</xs:documentation>
+											<xs:documentation xml:lang="fr">Indemnité journalière selon la caisse de compensation</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="GrundEndeIM" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="de">1 = Abbruch
+2 = Rente
+3 = Stellenantritt
+4 = Zuweisung zu berufliche Massnahme
+5 = Andere IM/Verlängerung
+6 = Vermittelbarkeit gegeben, aber z.Z. ohne Stelle
+7 = Mitwirkungspflicht verletzt, Abschluss des Verfahrens
+8 = Ablehnung weitere Massnahmen, weil Teilziel nicht erreicht
+9 = Anderer (Tod, Ausland)</xs:documentation>
+											<xs:documentation xml:lang="fr">Motif de la fin de la mesure:
+1 = Interruption
+2 = Rente
+3 = Emploi
+4 = Passage aux mesures d'ordre professionnel
+5 = Autre MR / Prolongation
+6 Placement possible mais sans emploi pour l'instant
+7 Non-respect de l'obligation de collaborer, fin de la procédure
+8 Refus d'autres mesures parce qu'objectif partiel non atteint
+9 Autre (décès, départ à l'étranger) </xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:unsignedByte">
+												<xs:minInclusive value="1"/>
+												<xs:maxInclusive value="9"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="InfoStellenantritt" type="xs:boolean" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="de">Rentenausschliessend ?
+TRUE,0  = ja
+FALSE,1 = nein</xs:documentation>
+											<xs:documentation xml:lang="fr">Rente exclue ?
+TRUE,0  = oui
+FALSE,1 = non</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="BeschaeftigungsgradProzent" minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:unsignedByte">
+												<xs:minInclusive value="0"/>
+												<xs:maxInclusive value="100"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="GrundBeschaeftigunsgradKleiner100" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="de">1 = freiwillig
+2 = behinderugnsbedingt
+3 = arbeitsbedingt</xs:documentation>
+											<xs:documentation xml:lang="fr">Motif du taux d'occupation plus petit que 100%
+1 = volontaire
+2 = lié au handicap
+3 = lié au travail</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:unsignedByte">
+												<xs:minInclusive value="1"/>
+												<xs:maxInclusive value="3"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="AnzahlAbrechnungstageMassnahme" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="de">Berechnungsfeld: Anzahl der abrechnungsrelevanten Tage der mitgeteilten Massnahme. </xs:documentation>
+											<xs:documentation xml:lang="fr">Nombre de jours à prendre en compte pour la facturation de la mesure octroyée</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="ebsv-c014:Short3stellig_Type">
+												<xs:maxInclusive value="999"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="DauerIM" type="ebsv-c014:Short3stellig_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="de">Die Summe der Dauer aller IM-Massnahmen (für Leistungscode = 581,582,583,584, 587, ohne 588). Die Summe darf 230 Tage nicht übersteigen.</xs:documentation>
+											<xs:documentation xml:lang="fr">Durée des mesures AI pour toutes les mesures réalisées jusqu'ici avec les codes 581, 582,583,584 et 587 (sans 588).
+La durée totale des MR ne doit pas dépasser 230 jours.</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="Einarbeitungszuschuss" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation xml:lang="de">EZ (Leistungscode = 545)
+AIT (code de la prestation = 545)</xs:documentation>
+								<xs:documentation xml:lang="fr">AIT (code de la prestation = 545)</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Leistungscode">
+										<xs:simpleType>
+											<xs:restriction base="ebsv-c014:Short3stellig_Type">
+												<xs:minInclusive value="545"/>
+												<xs:maxInclusive value="545"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="DatumBeginnMassnahme" minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:date">
+												<xs:minInclusive value="2007-01-01"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="DatumEndeMassnahme" minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:date">
+												<xs:minInclusive value="2007-01-01"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="Rentenausschluss" type="xs:boolean" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="de">rentenausschliessend (bei Beginn EZ) ?
+TRUE,0  = ja
+FALSE,1 = nein</xs:documentation>
+											<xs:documentation xml:lang="fr">Rente exclue ?
+TRUE,0  = oui
+FALSE,1 = non</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="GrundEndeEZ" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="de">1 = Beendigung Arbeitsverhältnis durch Arbeitgeber nicht aus gesundheitlichen Gründen (während oder bei Ablauf EZ)
+2 = Beendigung Arbeitsverhältnis infolge Verletzung der Mitwirkungspflicht der VP (während oder bei Ablauf EZ)
+3 = Beendigung Arbeitsverhältnis aus gesundheitlichen Gründen durch Arbeitgeber
+4 = Ablauf EZ (Etappe oder nach max. 230 Tagen)
+5 = unbefristete Festanstellung
+6 = Rente
+7 = Anderer (Tod, Ausland)
+</xs:documentation>
+											<xs:documentation xml:lang="fr">Motif de la fin de l'AIT:
+1 Cessation des rapports de travail par l'employeur pour
+   des raisons autres que des raisons de santé (pendant ou à la fin de  l'AIT)
+2 Cessation des rapports de travail pour non-respect de
+   l'obligation de collaborer (pendant ou à la fin de l'AIT)
+3 Cessation des rapports de travail par l'employeur pour raisons de santé
+4 Fin AIT (d'une étape ou maximum de 230 jours atteint)
+5 Contrat à durée indéterminée
+6 Rente
+7 Autre (décès, départ à l'étranger)</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:unsignedByte">
+												<xs:minInclusive value="1"/>
+												<xs:maxInclusive value="7"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="AnzahlBeitragstageEZ" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="de">Berechnungsfeld: Anzahl Beitragstage (max. 180 Tage / VP)</xs:documentation>
+											<xs:documentation xml:lang="fr">Nombre de jours de contributions (180 jours au maximum)</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="ebsv-c014:Short3stellig_Type">
+												<xs:maxInclusive value="999"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="EffektivAuszubezahlenderEZ" type="ebsv-c015:BetragFR5_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="de">Effektiv auszubezahlender Einarbeitungszuschuss</xs:documentation>
+											<xs:documentation xml:lang="fr">Allocation d'initiation au travail à payer effectivment:</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="EntschaedigungArbeitgeber" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation xml:lang="de">EAG (Leistungscode = 551)
+CEPH (code de la prestation = 551)</xs:documentation>
+								<xs:documentation xml:lang="fr">CEPH (code de la prestation = 551)</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Leistungscode">
+										<xs:simpleType>
+											<xs:restriction base="ebsv-c014:Short3stellig_Type">
+												<xs:minInclusive value="551"/>
+												<xs:maxInclusive value="551"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="DatumTatsaechlicherStellenantritt" type="xs:date" minOccurs="0"/>
+									<xs:element name="DatumStellenaustritt" type="xs:date" minOccurs="0"/>
+									<xs:element name="GrundStellenaustritt" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="de">1 = Beendigung Arbeitsverhältnis durch Arbeitgeber wegen vorbestehender Krankheit
+2 = Beendigung Arbeitsverhältnis durch Arbeitgeber aus anderen Gründen
+3 = Beendigung Arbeitsverhältnis durch VP
+4 = Anderer (Tod, Ausland)
+</xs:documentation>
+											<xs:documentation xml:lang="fr">Motif de la perte d'emploi:
+1 Cessation des rapports de travail par l'employeur en raison
+   de la maladie préexistante
+2 Cessation des rapports de travail par l'employeur pour d'autres
+    motifs
+3 Cessation des rapports de travail par la personne assurée
+4 Autre (décès, départ à l'étranger)</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:unsignedByte">
+												<xs:minInclusive value="0"/>
+												<xs:maxInclusive value="4"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="AnzahlAbrechnungsrelevanteAbsenztageEAG" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="de">Anzahl abrechnungsrelevante Absenzentage</xs:documentation>
+											<xs:documentation xml:lang="fr">Nombre de jours d'absence pertinents pour le décompte</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="ebsv-c014:Short3stellig_Type">
+												<xs:maxInclusive value="999"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="KumulierteDatenVP">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">auf der Basis aller bisherigen Massnahmen für die versicherte Person</xs:documentation>
+					<xs:documentation xml:lang="fr">sur la base de toutes mesures octroyées à la personne assurée jusqu'à présent</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="KumulierteAbsenzenVP">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="ZaehlerAbsenzen">
+										<xs:annotation>
+											<xs:documentation xml:lang="de">Anzahl aller Absenzen: bei jeder Absenz der versicherten Person wird der Zaehler um 1 erhöht.
+(Absenzen des Leistungscodes 540 sind nicht eingeschlossen.)</xs:documentation>
+											<xs:documentation xml:lang="fr">Compteur du nombre d'absences
+(sans les absences du code de prestations 540)</xs:documentation>
+										</xs:annotation>
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="ZaehlerAbsenzengrund1" type="ebsv-c014:Short2stellig_Type" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation xml:lang="de">Absenzengrund = 1: Krankheit/Unfall (anrechenbar)</xs:documentation>
+														<xs:documentation xml:lang="fr">Motif = 1: Krankheit/Unfall (anrechenbar)</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element name="ZaehlerAbsenzengrund2" type="ebsv-c014:Short2stellig_Type" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation xml:lang="de">Absenzengrund = 2: Krankheit/Unfall (nicht anrechenbar). Andere Versicherung bezahlt Arbeitsausfall</xs:documentation>
+														<xs:documentation xml:lang="fr">Motif = 2: Krankheit/Unfall (nicht anrechenbar). Andere Versicherung bezahlt Arbeitsausfall</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element name="ZaehlerAbsenzengrund3" type="ebsv-c014:Short2stellig_Type" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation xml:lang="de">Absenzengrund = 3: Anderer Grund (anrechenbar)</xs:documentation>
+														<xs:documentation xml:lang="fr">Motif = 3: Anderer Grund (anrechenbar)</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element name="ZaehlerAbsenzengrund4" type="ebsv-c014:Short2stellig_Type" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation xml:lang="de">Absenzengrund = 4: Anderer Grund (nicht anrechenbar)</xs:documentation>
+														<xs:documentation xml:lang="fr">Motif = 4: Anderer Grund (nicht anrechenbar)</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element name="ZaehlerAbsenzengrund5" type="ebsv-c014:Short2stellig_Type" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation xml:lang="de">Absenzengrund = 5: Urlaub/Militär (anrechenbar)</xs:documentation>
+														<xs:documentation xml:lang="fr">Motif = 5: Urlaub/Militär (anrechenbar)</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="SummeAbsenzen">
+										<xs:annotation>
+											<xs:documentation xml:lang="de">Summe aller Absenztage der versicherten Person. (Absenzen des Leistungscode 540 sind nicht eingeschlossen.)</xs:documentation>
+											<xs:documentation xml:lang="fr">Compteurs de la somme des jours d'absence.
+(sans les absences du code de prestations 54</xs:documentation>
+										</xs:annotation>
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="SummeAbsenzengrund1" type="ebsv-c014:Short3stellig_Type" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation xml:lang="de">Absenzengrund = 1: Krankheit/Unfall (anrechenbar)</xs:documentation>
+														<xs:documentation xml:lang="fr">Motif = 1: Krankheit/Unfall (anrechenbar)</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element name="SummeAbsenzengrund2" type="ebsv-c014:Short3stellig_Type" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation xml:lang="de">Absenzengrund = 2: Krankheit/Unfall (nicht anrechenbar). Andere Versicherung bezahlt Arbeitsausfall</xs:documentation>
+														<xs:documentation xml:lang="fr">Motif = 2: Krankheit/Unfall (nicht anrechenbar). Andere Versicherung bezahlt Arbeitsausfall</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element name="SummeAbsenzengrund3" type="ebsv-c014:Short3stellig_Type" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation xml:lang="de">Absenzengrund = 3: Anderer Grund (anrechenbar)</xs:documentation>
+														<xs:documentation xml:lang="fr">Motif = 3: Anderer Grund (anrechenbar)</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element name="SummeAbsenzengrund4" type="ebsv-c014:Short3stellig_Type" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation xml:lang="de">Absenzengrund = 4: Anderer Grund (nicht anrechenbar)</xs:documentation>
+														<xs:documentation xml:lang="fr">Motif = 4: Anderer Grund (nicht anrechenbar)</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element name="SummeAbsenzengrund5" type="ebsv-c014:Short3stellig_Type" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation xml:lang="de">Absenzengrund = 5: Urlaub/Militär (anrechenbar)</xs:documentation>
+														<xs:documentation xml:lang="fr">Motif = 5: Urlaub/Militär (anrechenbar)</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="KumulierteKostenVP" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation xml:lang="de">Die kumulierten Kosten werden nicht von den IV-Stellen übermittelt, sondern vierteljährlich von der ZAS mittels der Versichertendaten in den Zentralregistern nachgeführt.</xs:documentation>
+								<xs:documentation xml:lang="fr">Les coûts cumulés ne sont pas communiquées par les offices AI mais calculés 4 fois par an par la CdC, par le biais des autres données de la personne assurée stockées dans les registres centraux.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="TotalKostenIM">
+										<xs:annotation>
+											<xs:documentation xml:lang="de">IM</xs:documentation>
+											<xs:documentation xml:lang="fr">MR</xs:documentation>
+										</xs:annotation>
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="KostenBelastbarkeitstraining">
+													<xs:annotation>
+														<xs:documentation xml:lang="de">Leistungscode = 581</xs:documentation>
+														<xs:documentation xml:lang="fr">code de la prestation = 581</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:unsignedInt">
+															<xs:minInclusive value="0"/>
+															<xs:maxInclusive value="999999"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="KostenAufbautraining">
+													<xs:annotation>
+														<xs:documentation xml:lang="de">Leistungscode = 582</xs:documentation>
+														<xs:documentation xml:lang="fr">code de la prestation = 582</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:unsignedInt">
+															<xs:minInclusive value="0"/>
+															<xs:maxInclusive value="999999"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="KostenWISA">
+													<xs:annotation>
+														<xs:documentation xml:lang="de">Leistungscode = 583</xs:documentation>
+														<xs:documentation xml:lang="fr">code de la prestation = 583</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:unsignedInt">
+															<xs:minInclusive value="0"/>
+															<xs:maxInclusive value="999999"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="KostenIMBetrieb">
+													<xs:annotation>
+														<xs:documentation xml:lang="de">Leistungscode = 587 + 588</xs:documentation>
+														<xs:documentation xml:lang="fr">code de la prestation = 587 + 588</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:unsignedInt">
+															<xs:minInclusive value="0"/>
+															<xs:maxInclusive value="999999"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="TotalKostenTaggeld">
+										<xs:annotation>
+											<xs:documentation xml:lang="de">Summe der Kosten Taggeld VP im Zusammenhang mit Leistungscodices 581, 582, 583, 584, 587</xs:documentation>
+											<xs:documentation xml:lang="fr">Coût total des indemnités journalières (en lien avec les codes de prestations 581, 582, 583, 584, 587)</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:unsignedInt">
+												<xs:minInclusive value="0"/>
+												<xs:maxInclusive value="999999"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="TotalKostenEZ_EAG">
+										<xs:annotation>
+											<xs:documentation xml:lang="de">EZ + EAG</xs:documentation>
+											<xs:documentation xml:lang="fr">AIT + CEPH</xs:documentation>
+										</xs:annotation>
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="TotalKostenEZ">
+													<xs:annotation>
+														<xs:documentation xml:lang="de">Total Kosten Einarbeitungszuschüsse (Leistungscode = 545)</xs:documentation>
+														<xs:documentation xml:lang="fr">Coût total des allocations d'initiation au travail AIT (somme des coûts avec code de prestations 545) </xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:unsignedInt">
+															<xs:minInclusive value="0"/>
+															<xs:maxInclusive value="999999"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="TotalKostenEAG">
+													<xs:annotation>
+														<xs:documentation xml:lang="de">Total Kosten Entschädigung an Arbeitgeber für Beitragserhöhung bei Anstellung Behinderter (Leistungscode = 551)</xs:documentation>
+														<xs:documentation xml:lang="fr">Coût total des contributions à l'employeur pour augmentation des cotisations en cas d'engagement de personnes handicapées CEPH (somme des coûts des contributions à l'employeur avec un code de prestation = 551) </xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:unsignedInt">
+															<xs:minInclusive value="0"/>
+															<xs:maxInclusive value="999999"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c007="http://www.bsv.admin.ch/xmlns/ebsv-c007/1" xmlns:ebsv-c016="http://www.bsv.admin.ch/xmlns/ebsv-c016/1" xmlns:ebsv-c032="http://www.bsv.admin.ch/xmlns/ebsv-c032/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c032/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX annoncesCACICommon.xsd -->
+	<xs:include schemaLocation="../../ebsv-c032/1/ebsv-c032-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c007/1" schemaLocation="../../ebsv-c007/1/ebsv-c007-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c016/1" schemaLocation="../../ebsv-c016/1/ebsv-c016-000000-1-0.xsd"/>
+	<xs:element name="CHWohnsitzCode" type="ebsv-c032:CHWohnsitzCode_Type"/>
+	<xs:element name="Abschlussdatum" type="ebsv-c007:AHVDatumJM_Type">
+		<xs:annotation>
+			<xs:documentation>Date de clôture du CI</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="KasseZweigstelleAuftraggebend" type="ebsv-c016:IrgendeineZweigstelle_weakType">
+		<xs:annotation>
+			<xs:documentation>Caisse-agence commettante</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="KasseZweigstelleIKFuehrend" type="ebsv-c016:IrgendeineZweigstelle_weakType">
+		<xs:annotation>
+			<xs:documentation>Caisse-agence tenant le CI</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="WohnsitzDauer" type="ebsv-c007:AHVPeriodeJM_Type"/>
+	<xs:element name="SplittingPeriode" type="ebsv-c032:SplittingPeriode_Type"/>
+	<xs:element name="IKEroeffnungsdatum" type="ebsv-c007:AHVDatumJM_Type">
+		<xs:annotation>
+			<xs:documentation>Date ouverture CI</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>

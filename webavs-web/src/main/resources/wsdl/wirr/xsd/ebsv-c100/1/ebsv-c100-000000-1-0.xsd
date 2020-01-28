@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Naef (OFIT) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c100="http://www.bsv.admin.ch/xmlns/ebsv-c100/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c100/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<xs:simpleType name="partnerIdCategoryType">
+		<xs:restriction base="xs:token">
+			<xs:pattern value="([a-zA-Z]|[0-9]|[_\./\-]){1,20}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="partnerIdType">
+		<xs:restriction base="xs:token">
+			<xs:pattern value="([a-zA-Z]|[0-9]|[_\./\-]){1,36}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="partnerIdAKZsType">
+		<xs:restriction base="ebsv-c100:partnerIdType">
+			<xs:pattern value="[0-1][0-9]{5}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="partnerIdentificationType">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr">Identification des caisses/agences AVS, offices AI, offices PC, caisses de chômages, ....</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="partnerIdCategory" type="ebsv-c100:partnerIdCategoryType"/>
+			<xs:element name="partnerId" type="ebsv-c100:partnerIdType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="kasseZweigstelleType">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr">Identification des caisses/agences AVS</xs:documentation>
+			<xs:documentation xml:lang="de">Identifikation der AHV Kassen/Zweigstellen.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="ebsv-c100:partnerIdentificationType">
+				<xs:sequence>
+					<xs:element name="partnerIdCategory">
+						<xs:simpleType>
+							<xs:restriction base="ebsv-c100:partnerIdCategoryType">
+								<xs:enumeration value="CH.ADMIN.BSV.STD"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+					<xs:element name="partnerId" type="ebsv-c100:partnerIdAKZsType">
+						<xs:annotation>
+							<xs:documentation>format: number, 6 positions, with leading zero</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

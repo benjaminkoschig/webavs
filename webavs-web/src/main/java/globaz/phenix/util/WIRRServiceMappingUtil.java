@@ -24,7 +24,7 @@ public class WIRRServiceMappingUtil {
     public static final String MANUFACTURER = "Globaz SA";
     public static final String PRODUCT = "Webavs";
     public static final String PRODUCT_VERSION = "1.17.01";
-    public static final String RECIPIENT_ID = "sedex://T6-599000-1";
+    public static final String RECIPIENT_ID = "6-599000-1";
     public static final String MESSAGE_TYPE = "2028";
     public static final String MESSAGE_SUBTYPE = "000101";
     public static final String ACTION = "5";
@@ -39,6 +39,8 @@ public class WIRRServiceMappingUtil {
     public static final String ERROR_REASON_DETAILED_WRONG_VALUE_IN_PARTNERID_TAG = "310";
     public static final String ERROR_REASON_DETAILED_SENDERID_DONT_MATCH_PARTNERID = "320";
     public static final String ERROR_REASON_DETAILED_UNEXCEPTED_ERROR = "10";
+    public static final String TEST_PREFIX = "T";
+    public static final String SEDEX_PREFIX = "sedex://";
 
     public static final Delivery convertWirrDataBeanToRequestDelivery(WIRRDataBean wirrDataBean) throws Exception {
 
@@ -47,16 +49,24 @@ public class WIRRServiceMappingUtil {
         sendingApplicationType.setProduct(PRODUCT);
         sendingApplicationType.setProductVersion(PRODUCT_VERSION);
 
+        String senderId = CommonProperties.WIRRWEBSERVICE_SEDEX_SENDER_ID.getValue();
+        String recipientId;
+
         HeaderRequestType header = new HeaderRequestType();
-        header.setSenderId("sedex://" + CommonProperties.WIRRWEBSERVICE_SEDEX_SENDER_ID.getValue());
-        header.getRecipientId().add(RECIPIENT_ID);
+        if (senderId.startsWith(TEST_PREFIX)) {
+            header.setTestDeliveryFlag(true);
+            recipientId = TEST_PREFIX + RECIPIENT_ID;
+        } else {
+            header.setTestDeliveryFlag(false);
+            recipientId = RECIPIENT_ID;
+        }
+        header.setSenderId(SEDEX_PREFIX + senderId);
+        header.getRecipientId().add(SEDEX_PREFIX + recipientId);
         header.setDeclarationLocalReference(DECLARATION_LOCAL_REFERENCE);
         header.setMessageId(JadeUUIDGenerator.createStringUUID());
         header.setMessageType(MESSAGE_TYPE);
         header.setSubMessageType(MESSAGE_SUBTYPE);
-
         header.setMessageDate(convertDateJJMMAAAAtoXMLDateGregorian(JACalendar.todayJJsMMsAAAA()));
-
         header.setSendingApplication(sendingApplicationType);
         header.setAction(ACTION);
 

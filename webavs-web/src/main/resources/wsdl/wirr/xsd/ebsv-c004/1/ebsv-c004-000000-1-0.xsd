@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c004="http://www.bsv.admin.ch/xmlns/ebsv-c004/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c004/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX EtatCivil-types.xsd -->
+	<xs:simpleType name="ZivilstandNr_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Zivilstand : 1=ledig 2=verheir. 3=witw. 4=gescheid.  5=getrennt 6=eingetragene Partnerschaft gleichgeschlechtlicher Paare 7=gerichtlich aufgelöste Partnerschaft gleichgeschlechtlicher Paare 8=durch Tod aufgelöste Partnerschaft gleichgeschlechtlicher Paare 9=richterlich getrennte Partnerschaft gleichgeschlechtlicher Paare (nur bei rentenberechtigten eingetragenen Partnerschaften, bei denen die Plafonierung entfällt)</xs:documentation>
+			<xs:documentation xml:lang="fr">Etat civil : 1=célib. 2=marié(e) 3=veuf/veuve 4=divorcé(e) 5=séparé 6=partenariat enregistré entre personnes du même sexe 7=partenariat dissous judiciairement entre personnes du même sexe 8=partenariat dissous par décès entre personnes du même sexe 9=séparé(e) par décision judiciaire (uniquement pour ayants droit - d’un partenariat entre personnes du même sexe - aux prestations dont le plafonnement du montant ne doit pas être appliqué) </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedByte">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ZivilstandIVTaggelder5Rev_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Zivilstand : 1=ledig 2=verheir. 3=witw. 4=geschied. 6=eingetragene Partnerschaft gleichgeschlechtlicher Paare 7=gerichtlich aufgelöste Partnerschaft gleichgeschlechtlicher Paare 8=durch Tod aufgelöste Partnerschaft gleichgeschlechtlicher Paare</xs:documentation>
+			<xs:documentation xml:lang="fr">Etat civil : 1=célib. 2=marié(e) 3=veuf/veuve 4=divorcé(e) 6=partenariat enregistré entre personnes du même sexe 7=partenariat dissous judiciairement entre personnes du même sexe 8=partenariat dissous par décès entre personnes du même sexe</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedByte">
+			<xs:enumeration value="1"/>
+			<xs:enumeration value="2"/>
+			<xs:enumeration value="3"/>
+			<xs:enumeration value="4"/>
+			<xs:enumeration value="6"/>
+			<xs:enumeration value="7"/>
+			<xs:enumeration value="8"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ZivilstandIVTaggelderNr_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Zivilstand : 1=ledig 2=verheir. 3=witw. 4=gescheid.</xs:documentation>
+			<xs:documentation xml:lang="fr">Etat civil : 1=célib. 2=marié(e) 3=veuf/veuve 4=divorcé(e)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedByte">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="9"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

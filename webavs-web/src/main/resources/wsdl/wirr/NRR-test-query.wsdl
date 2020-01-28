@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions 
+  xmlns="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:soapbind="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+  xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://ws.admin.ch/zas/regcent/NRR/0" 
+  xmlns:ebsv-2028-000101="http://www.bsv.admin.ch/xmlns/ebsv-2028-000101/1"
+  xmlns:ebsv-2028-000102="http://www.bsv.admin.ch/xmlns/ebsv-2028-000102/1"
+  xmlns:nrr-ws="http://ws.admin.ch/zas/regcent/NRR/0"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <documentation>
+    This WSDL definition describes the NRR query Web Service interface.
+    The interface is supposed to be compliant to the WS-I Basic Profile 1.1
+    for interoperable Web Services (cf. http://www.ws-i.org/Profiles/BasicProfile-1.1.html). 
+	2012-12-23 (DBN, ELCA) - creation
+  </documentation>
+  
+  <types>
+    <xs:schema elementFormDefault="qualified">
+      <xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-2028-000101/1" schemaLocation="xsd/ebsv-2028-000101/1/ebsv-2028-000101-1-0.xsd"/>
+      <xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-2028-000102/1" schemaLocation="xsd/ebsv-2028-000102/1/ebsv-2028-000102-1-0.xsd"/>
+    </xs:schema>
+  </types>
+  
+  <message name="deliveryRequestMsg">
+    <part name="body" element="ebsv-2028-000101:delivery"/>
+  </message> 
+  
+  <message name="deliveryResponseMsg">
+    <part name="body" element="ebsv-2028-000102:delivery"/>
+  </message> 
+  
+  <portType name="NRRQueryServicePortType"> 
+    <operation name="searchData">
+      <input message="nrr-ws:deliveryRequestMsg"/>
+      <output message="nrr-ws:deliveryResponseMsg"/>
+    </operation> 
+  </portType>
+  
+  <binding name="NRRQueryServiceBinding" type="nrr-ws:NRRQueryServicePortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+    <operation name="searchData">
+      <soap:operation soapAction="http://soap.nrr.admin.ch"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>   
+    
+  </binding>
+  
+  <service name="NRRQueryService">
+    <port name="NRRQueryServicePort" binding="nrr-ws:NRRQueryServiceBinding">
+      <soap:address location="https://ws.rr-a.zas.admin.ch:443/wirr_cc/NRRQueryService"/>
+    </port>
+  </service>
+</definitions>

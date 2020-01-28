@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c013="http://www.bsv.admin.ch/xmlns/ebsv-c013/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c013/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX LocaliteNaissance-types.xsd -->
+	<xs:simpleType name="Geburtsort_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Geburtsort</xs:documentation>
+			<xs:documentation xml:lang="fr">lieu de naissance</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="40"/>
+			<xs:pattern value=""/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c018="http://www.bsv.admin.ch/xmlns/ebsv-c018/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c018/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX typesCI-types.xsd -->
+	<xs:simpleType name="SchluesselzahlStornoeintrag_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Schlüsselzahl für Stornoeintragung</xs:documentation>
+			<xs:documentation xml:lang="fr">Code extourne</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedByte">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SchluesselzahlBeitragsart_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Schlüsselzahl für Beitragsart</xs:documentation>
+			<xs:documentation xml:lang="fr">Code du genre de cotisation</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedByte">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="BetreuungsgutschriftBruchteil_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Bruchteil der Betreuungsgutschrift (02=1/2, 03=1/3 usw.)</xs:documentation>
+			<xs:documentation xml:lang="fr">Part aux bonifications d'assistance</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedShort">
+			<xs:maxInclusive value="99"/>
+			<xs:minInclusive value="00"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="BesondereSchluesselzahlSplitPer_Type">
+		<xs:restriction base="xs:unsignedByte">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="3"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="BesondereSchluesselzahlIK_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">eine besondere Schlüsselzahl (IK)  (e.g. MZR Anwendungsgebiet 38, Feld 18)</xs:documentation>
+			<xs:documentation xml:lang="fr">code particulier (par ex. ARC code applic. 38, champ 18)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedByte">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="5"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SonderfallcodeIK_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Sonderfallcode im IK-Bereich</xs:documentation>
+			<xs:documentation xml:lang="fr">code spécial (par ex. ARC code applic. 38, champ 20)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedByte">
+			<xs:enumeration value="1"/>
+			<xs:enumeration value="2"/>
+			<xs:enumeration value="3"/>
+			<xs:enumeration value="11"/>
+			<xs:enumeration value="12"/>
+			<xs:enumeration value="13"/>
+			<xs:enumeration value="14"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

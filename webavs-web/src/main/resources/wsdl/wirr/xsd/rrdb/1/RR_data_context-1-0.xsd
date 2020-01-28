@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Naef (OFIT) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.zas.admin.ch/RC/RR" targetNamespace="http://www.zas.admin.ch/RC/RR" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<xs:annotation>
+		<xs:documentation xml:lang="fr">Description de la base de données du registre central des rentes
+          $Id: RR_data_context-1-0.xsd 2012-03-08 09:34:00Z naef $
+        </xs:documentation>
+	</xs:annotation>
+	<xs:simpleType name="S_TYPE_Type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="RENTE"/>
+			<xs:enumeration value="IF"/>
+			<xs:enumeration value="TRF"/>
+			<xs:enumeration value="RBT"/>
+			<xs:enumeration value="PC"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="B_REFUGIE_Type">
+		<xs:restriction base="xs:short">
+			<xs:enumeration value="0"/>
+			<xs:enumeration value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="L_CD_ECHELLE_REN_Type">
+		<xs:restriction base="xs:short">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="44"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="L_DUREE_AJOURN_Type">
+		<xs:restriction base="xs:short">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="500"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="L_DUREE_ANTICIP_Type">
+		<xs:restriction base="xs:short">
+			<xs:maxInclusive value="3"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="S_TYPE_MUTATION_Type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="AUGMENTATION"/>
+			<xs:enumeration value="DIMINUTION"/>
+			<xs:enumeration value="MODIFICATION"/>
+			<xs:enumeration value="RETROACTIF"/>
+			<xs:enumeration value="ADAPTATION"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="TNRPOOLType">
+		<xs:sequence>
+			<xs:element name="S_ID_TNRPOOL" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Id technique</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="S_IR_TNRPREST" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Id pour jointure avec TNRPREST</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="L_IR_ORDER_NO" type="xs:short" minOccurs="0"/>
+			<xs:element name="S_IR_TNRPOOL" type="xs:string" minOccurs="0"/>
+			<xs:element name="L_NO_SEQUENCE" type="xs:long" minOccurs="0"/>
+			<xs:element name="D_LOT_CAISSE" type="xs:date"/>
+			<xs:element name="L_IR_TNNCCAISAGC" type="xs:integer" minOccurs="0"/>
+			<xs:element name="S_REF_INT_CAISSE" type="xs:string" minOccurs="0"/>
+			<xs:element name="L_NANNONCE" type="xs:integer" minOccurs="0"/>
+			<xs:element name="D_MOIS_RAPPORT" type="xs:date"/>
+			<xs:element name="L_IR_TNRCVCODAPP" type="xs:short"/>
+			<xs:element name="L_IR_TNRCVMUTAT" type="xs:short" minOccurs="0"/>
+			<xs:element name="L_IR_TNRGANNONCE" type="xs:short" minOccurs="0"/>
+			<xs:element name="L_NAS_NOUVEAU" type="xs:long" minOccurs="0"/>
+			<xs:element name="S_XML" type="xs:string"/>
+			<xs:element name="DB_XML_VERSION" type="xs:float"/>
+			<xs:element name="L_IR_TNRCVVSTAT" type="xs:short"/>
+			<xs:element name="L_IR_TNRCVTSTAT" type="xs:short" minOccurs="0"/>
+			<xs:element name="D_REPONSE" type="xs:date" minOccurs="0"/>
+			<xs:element name="S_VISA_CREAT" type="xs:token"/>
+			<xs:element name="TS_CREATION" type="xs:dateTime"/>
+			<xs:element name="S_VISA_MUTAT" type="xs:token" minOccurs="0"/>
+			<xs:element name="TS_MUTATION" type="xs:dateTime" minOccurs="0"/>
+			<xs:element name="L_CPT_MUTATION" type="xs:integer"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TNRERREURType">
+		<xs:sequence>
+			<xs:element name="S_ID_TNRERREUR" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Id technique</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="S_IR_TNRPREST" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Id pour jointure avec TNRPREST</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="L_IR_ORDER_NO" type="xs:short"/>
+			<xs:element name="L_IR_TNRCVTYPERR" type="xs:short"/>
+			<xs:element name="S_CHAMP" type="xs:token" minOccurs="0"/>
+			<xs:element name="S_MESSAGE" type="xs:string"/>
+			<xs:element name="S_IR_OBJET" type="xs:string" minOccurs="0"/>
+			<xs:element name="L_IR_ORDER_NO_OBJ" type="xs:short" minOccurs="0"/>
+			<xs:element name="S_VISA_CREAT" type="xs:token"/>
+			<xs:element name="TS_CREATION" type="xs:dateTime"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="dataBase_RR">
+		<xs:annotation>
+			<xs:documentation>Contenu de la base de données</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="TNNIDASSURE" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Ligne de la table TNNIDASSURE</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="ID_ASSURE" type="xs:long"/>
+							<xs:element name="ID_ASSURE_UNIQUE" type="xs:long"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="TNNEVTIDAS1" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="ID_EVT" type="xs:int"/>
+							<xs:element name="FK_TYP" type="xs:short"/>
+							<xs:element name="FK_CODE" type="xs:short"/>
+							<xs:element name="DATE" type="xs:dateTime" minOccurs="0"/>
+							<xs:element name="RESPONSABLE" type="xs:int"/>
+							<xs:element name="FK_ID_ASSURE" type="xs:long"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="prestation" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:annotation>
+								<xs:documentation>La jointure se faire sur S_ID_TNRPREST</xs:documentation>
+							</xs:annotation>
+							<xs:element name="TNRPREST">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="S_ID_TNRPREST" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Id pour jointure avec les détails de la prestation</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="S_IR_TNRPREST" type="xs:string" minOccurs="0"/>
+										<xs:element name="B_FA" type="xs:short"/>
+										<xs:element name="L_NAS" type="xs:long"/>
+										<xs:element name="L_IR_TNNCCAISAGC" type="xs:integer"/>
+										<xs:element name="L_IR_TNRCVGPREST" type="xs:short" minOccurs="0"/>
+										<xs:element name="L_NO_REVISION" minOccurs="0">
+											<xs:simpleType>
+												<xs:restriction base="xs:short">
+													<xs:enumeration value="9"/>
+													<xs:enumeration value="10"/>
+													<xs:enumeration value="11"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="S_TYPE" type="S_TYPE_Type"/>
+										<xs:element name="B_SIGNAL_BCR" type="xs:short"/>
+										<xs:element name="S_ANNOTATION_BCR" type="xs:string" minOccurs="0"/>
+										<xs:element name="B_SURASS_PLAF" type="xs:short"/>
+										<xs:element name="L_ORD_ID_LASTADP" type="xs:short" minOccurs="0"/>
+										<xs:element name="S_VISA_CREAT" type="xs:token"/>
+										<xs:element name="TS_CREATION" type="xs:dateTime"/>
+										<xs:element name="S_VISA_MUTAT" type="xs:token" minOccurs="0"/>
+										<xs:element name="TS_MUTATION" type="xs:dateTime" minOccurs="0"/>
+										<xs:element name="L_CPT_MUTATION" type="xs:integer"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:choice>
+								<xs:annotation>
+									<xs:documentation>Contrainte: exactement un élément avec L_IR_TNRCVSTATUT = 1</xs:documentation>
+								</xs:annotation>
+								<xs:element name="rente" maxOccurs="unbounded">
+									<xs:annotation>
+										<xs:documentation>Contrainte: exactement un élément avec TNRP9ou10.L_IR_TNRCVSTATUT = 1 ou 2</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:choice>
+												<xs:element name="TNRP9">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="S_ID_TNRPREST" type="xs:string">
+																<xs:annotation>
+																	<xs:documentation>Id pour jointure avec TNRPREST</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="L_ID_ORDER_NO" type="xs:short"/>
+															<xs:element name="L_IR_TNRCVSTATUT" type="xs:short"/>
+															<xs:element name="D_DEBUT_DROIT" type="xs:date" minOccurs="0"/>
+															<xs:element name="L_NAS1" type="xs:long" minOccurs="0"/>
+															<xs:element name="L_NAS2" type="xs:long" minOccurs="0"/>
+															<xs:element name="L_NASF" type="xs:long" minOccurs="0"/>
+															<xs:element name="L_NASP" type="xs:long" minOccurs="0"/>
+															<xs:element name="L_IR_TAACVECIVIL" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_IR_TNNCNAT" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_IR_TAACVCANTON" type="xs:short" minOccurs="0"/>
+															<xs:element name="B_REFUGIE" type="B_REFUGIE_Type" minOccurs="0"/>
+															<xs:element name="L_IR_TNRCVGDAPI" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_CD_OFF_AI" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_CD_INFIRM" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_CD_ATT_FCT" type="xs:short" minOccurs="0"/>
+															<xs:element name="D_SURVEN_AI" type="xs:date" minOccurs="0"/>
+															<xs:element name="L_CD_OFF_AI_EP" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_CD_INFIRM_EP" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_CD_ATT_FCT_EP" type="xs:short" minOccurs="0"/>
+															<xs:element name="D_SURVEN_AI_EP" type="xs:date" minOccurs="0"/>
+															<xs:element name="L_CD_ECHELLE_REN" type="L_CD_ECHELLE_REN_Type" minOccurs="0"/>
+															<xs:element name="L_COTIS_ECHELLE" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_COTIS_ECHELLE1" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_COTIS_ECHELLE2" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_APPOINT1" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_APPOINT2" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_COTIS_CLAS_AGE" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_COTIS_RAM" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_ANNEE_NIVEAU" type="xs:long" minOccurs="0"/>
+															<xs:element name="L_DUREE_AJOURN" type="L_DUREE_AJOURN_Type" minOccurs="0"/>
+															<xs:element name="D_REVOC_AJOURN" type="xs:date" minOccurs="0"/>
+															<xs:element name="L_P_DEGRE_INV" type="xs:short" minOccurs="0"/>
+															<xs:element name="B_INV_AV_25" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_CD_TIERS" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_EDUC" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_P_DEGRE_INV_EP" type="xs:short" minOccurs="0"/>
+															<xs:element name="B_INV_AV_25_EP" type="xs:short" minOccurs="0"/>
+															<xs:element name="B_LIM_EO" type="xs:short" minOccurs="0"/>
+															<xs:element name="B_MIN_EO" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_COEFF_FL" type="xs:integer" minOccurs="0"/>
+															<xs:element name="LM_PRESTATION" type="xs:integer" minOccurs="0"/>
+															<xs:element name="LM_RAM" type="xs:integer" minOccurs="0"/>
+															<xs:element name="L_IR_TNRCVRECORD" type="xs:short"/>
+															<xs:element name="L_CD_FRAC_RENTE" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_RED_FAUTEGRAVE" type="xs:short" minOccurs="0"/>
+															<xs:element name="D_FIN_DROIT" type="xs:date" minOccurs="0"/>
+															<xs:element name="D_ETAT_REGISTRE" type="xs:date" minOccurs="0"/>
+															<xs:element name="D_ANNONCE_CAISSE" type="xs:date" minOccurs="0"/>
+															<xs:element name="L_IR_TNRCVRAISDM" type="xs:short" minOccurs="0"/>
+															<xs:element name="D_MUTATION" type="xs:date" minOccurs="0"/>
+															<xs:element name="B_JOUR_DMUT" type="xs:short" minOccurs="0"/>
+															<xs:element name="S_TYPE_MUTATION" type="xs:string" minOccurs="0"/>
+															<xs:element name="S_COMMENT" type="xs:string" minOccurs="0"/>
+															<xs:element name="LM_BASE" type="xs:integer" minOccurs="0"/>
+															<xs:element name="L_CD_ECHEL_CALC" type="xs:short" minOccurs="0"/>
+															<xs:element name="LM_PLAF" type="xs:integer" minOccurs="0"/>
+															<xs:element name="LM_RED_SURASS" type="xs:integer" minOccurs="0"/>
+															<xs:element name="S_HISTORIQUE" type="xs:string" minOccurs="0"/>
+															<xs:element name="LM_SUPPL_AJOURN" type="xs:integer" minOccurs="0"/>
+															<xs:element name="LM_RAM_SANS_BONI" type="xs:integer" minOccurs="0"/>
+															<xs:element name="LM_BONIF" type="xs:integer" minOccurs="0"/>
+															<xs:element name="L_IR_TNRCVCASS_1" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_IR_TNRCVCASS_2" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_IR_TNRCVCASS_3" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_IR_TNRCVCASS_4" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_IR_TNRCVCASS_5" type="xs:short" minOccurs="0"/>
+															<xs:element name="LM_RO_REMPLACE_EO" type="xs:integer" minOccurs="0"/>
+															<xs:element name="S_VISA_CREAT" type="xs:token"/>
+															<xs:element name="TS_CREATION" type="xs:dateTime"/>
+															<xs:element name="S_VISA_MUTAT" type="xs:token" minOccurs="0"/>
+															<xs:element name="TS_MUTATION" type="xs:dateTime" minOccurs="0"/>
+															<xs:element name="L_CPT_MUTATION" type="xs:integer"/>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+												<xs:element name="TNRP10">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="S_ID_TNRPREST" type="xs:string">
+																<xs:annotation>
+																	<xs:documentation>Id pour jointure avec TNRPREST</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="L_ID_ORDER_NO" type="xs:short"/>
+															<xs:element name="L_IR_TNRCVSTATUT" type="xs:short"/>
+															<xs:element name="D_DEBUT_DROIT" type="xs:date" minOccurs="0"/>
+															<xs:element name="L_NAS1" type="xs:long" minOccurs="0"/>
+															<xs:element name="L_NAS2" type="xs:long" minOccurs="0"/>
+															<xs:element name="L_NASF" type="xs:long" minOccurs="0"/>
+															<xs:element name="L_NASP" type="xs:long" minOccurs="0"/>
+															<xs:element name="L_IR_TAACVECIVIL" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_IR_TNNCNAT" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_IR_TAACVCANTON" type="xs:short" minOccurs="0"/>
+															<xs:element name="B_REFUGIE" type="B_REFUGIE_Type" minOccurs="0"/>
+															<xs:element name="L_IR_TNRCVGDAPI" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_CD_OFF_AI" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_CD_INFIRM" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_CD_ATT_FCT" type="xs:short" minOccurs="0"/>
+															<xs:element name="D_SURVEN_AI" type="xs:date" minOccurs="0"/>
+															<xs:element name="L_CD_ECHELLE_REN" type="L_CD_ECHELLE_REN_Type" minOccurs="0"/>
+															<xs:element name="L_COTIS_ECHELLE" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_COTIS_ECHELLE1" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_COTIS_ECHELLE2" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_APPOINT1" type="L_CD_ECHELLE_REN_Type" minOccurs="0"/>
+															<xs:element name="L_APPOINT2" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_COTIS_CLAS_AGE" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_COTIS_RAM" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_ANNEE_NIVEAU" type="xs:long" minOccurs="0"/>
+															<xs:element name="L_DUREE_AJOURN" type="L_DUREE_AJOURN_Type" minOccurs="0"/>
+															<xs:element name="D_REVOC_AJOURN" type="xs:date" minOccurs="0"/>
+															<xs:element name="L_P_DEGRE_INV" type="xs:short" minOccurs="0"/>
+															<xs:element name="B_INV_AV_25" type="xs:short" minOccurs="0"/>
+															<xs:element name="B_SPLIT" type="xs:short" minOccurs="0"/>
+															<xs:element name="DB_BONIF_EDU" type="xs:float" minOccurs="0"/>
+															<xs:element name="DB_BONIF_ASS" type="xs:float" minOccurs="0"/>
+															<xs:element name="DB_BONIF_TRANS" type="xs:float" minOccurs="0"/>
+															<xs:element name="L_DUREE_ANTICIP" type="L_DUREE_ANTICIP_Type" minOccurs="0"/>
+															<xs:element name="D_ANTICIP" type="xs:date" minOccurs="0"/>
+															<xs:element name="LM_PRESTATION" type="xs:integer" minOccurs="0"/>
+															<xs:element name="LM_RAM" type="xs:integer" minOccurs="0"/>
+															<xs:element name="L_IR_TNRCVRECORD" type="xs:short"/>
+															<xs:element name="L_CD_FRAC_RENTE" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_RED_FAUTEGRAVE" type="xs:short" minOccurs="0"/>
+															<xs:element name="D_FIN_DROIT" type="xs:date" minOccurs="0"/>
+															<xs:element name="D_ETAT_REGISTRE" type="xs:date" minOccurs="0"/>
+															<xs:element name="D_ANNONCE_CAISSE" type="xs:date" minOccurs="0"/>
+															<xs:element name="L_IR_TNRCVRAISDM" type="xs:short" minOccurs="0"/>
+															<xs:element name="D_MUTATION" type="xs:date" minOccurs="0"/>
+															<xs:element name="B_JOUR_DMUT" type="xs:short" minOccurs="0"/>
+															<xs:element name="S_TYPE_MUTATION" type="xs:string" minOccurs="0"/>
+															<xs:element name="S_COMMENT" type="xs:string" minOccurs="0"/>
+															<xs:element name="LM_BASE" type="xs:integer" minOccurs="0"/>
+															<xs:element name="L_CD_ECHEL_CALC" type="xs:short" minOccurs="0"/>
+															<xs:element name="LM_PLAF" type="xs:integer" minOccurs="0"/>
+															<xs:element name="LM_RED_SURASS" type="xs:integer" minOccurs="0"/>
+															<xs:element name="S_HISTORIQUE" type="xs:string" minOccurs="0"/>
+															<xs:element name="LM_SUPPL_AJOURN" type="xs:integer" minOccurs="0"/>
+															<xs:element name="LM_REDUC_ANTICIP" type="xs:integer" minOccurs="0"/>
+															<xs:element name="B_SURVIV_INVALID" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_IR_TNRCVCASS_1" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_IR_TNRCVCASS_2" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_IR_TNRCVCASS_3" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_IR_TNRCVCASS_4" type="xs:short" minOccurs="0"/>
+															<xs:element name="L_IR_TNRCVCASS_5" type="xs:short" minOccurs="0"/>
+															<xs:element name="LM_IF" type="xs:integer" minOccurs="0"/>
+															<xs:element name="LM_VALIND" type="xs:integer" minOccurs="0"/>
+															<xs:element name="S_VISA_CREAT" type="xs:string"/>
+															<xs:element name="TS_CREATION" type="xs:dateTime"/>
+															<xs:element name="S_VISA_MUTAT" type="xs:string" minOccurs="0"/>
+															<xs:element name="TS_MUTATION" type="xs:dateTime" minOccurs="0"/>
+															<xs:element name="L_CPT_MUTATION" type="xs:integer"/>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+											</xs:choice>
+											<xs:element name="TNRPOOL" type="TNRPOOLType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>cardinalité 0 = prestation corrigée manuellement ou prestation créée de toute pièce ou purgée. Cardinalité 1 = prestation annoncée. </xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:sequence minOccurs="0" maxOccurs="unbounded">
+												<xs:element name="TNRERREUR" type="TNRERREURType" minOccurs="0"/>
+											</xs:sequence>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="RBT" maxOccurs="unbounded">
+									<xs:annotation>
+										<xs:documentation>Contrainte: exactement un élément avec TNRRBT.L_IR_TNRCVSTATUT = 1 ou 2</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="TNRRBT">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="S_ID_TNRPREST" type="xs:string">
+															<xs:annotation>
+																<xs:documentation>Id pour jointure avec TNRPREST</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="L_ID_ORDER_NO" type="xs:short"/>
+														<xs:element name="L_IR_TNRCVSTATUT" type="xs:short"/>
+														<xs:element name="D_DEBUT_DROIT" type="xs:date"/>
+														<xs:element name="L_IR_TNNCNAT" type="xs:short"/>
+														<xs:element name="L_IR_TAACVCANTON" type="xs:short" minOccurs="0"/>
+														<xs:element name="L_IR_TNRCVRECORD" type="xs:short"/>
+														<xs:element name="D_ETAT_REGISTRE" type="xs:date" minOccurs="0"/>
+														<xs:element name="D_MUTATION" type="xs:date" minOccurs="0"/>
+														<xs:element name="B_JOUR_DMUT" type="xs:short" minOccurs="0"/>
+														<xs:element name="S_TYPE_MUTATION" type="xs:string" minOccurs="0"/>
+														<xs:element name="DM_TRSF" type="xs:float" minOccurs="0"/>
+														<xs:element name="S_VISA_CREAT" type="xs:string"/>
+														<xs:element name="TS_CREATION" type="xs:dateTime"/>
+														<xs:element name="S_VISA_MUTAT" type="xs:string" minOccurs="0"/>
+														<xs:element name="TS_MUTATION" type="xs:dateTime" minOccurs="0"/>
+														<xs:element name="L_CPT_MUTATION" type="xs:integer"/>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="TNRPOOL" type="TNRPOOLType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>cardinalité 0 = prestation corrigée manuellement ou prestation créée de toute pièce ou purgée. Cardinalité 1 = prestation annoncée. </xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:sequence minOccurs="0" maxOccurs="unbounded">
+												<xs:element name="TNRERREUR" type="TNRERREURType" minOccurs="0"/>
+											</xs:sequence>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="PC" maxOccurs="unbounded">
+									<xs:annotation>
+										<xs:documentation>Contrainte: exactement un élément avec TNRPC.L_IR_TNRCVSTATUT = 1 ou 2</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="TNRPC">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="S_ID_TNRPREST" type="xs:string">
+															<xs:annotation>
+																<xs:documentation>Id pour jointure avec TNRPREST</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="L_ID_ORDER_NO" type="xs:short"/>
+														<xs:element name="L_IR_TNRCVSTATUT" type="xs:short"/>
+														<xs:element name="D_DEBUT_DROIT" type="xs:date" minOccurs="0"/>
+														<xs:element name="L_NAS1" type="xs:long" minOccurs="0"/>
+														<xs:element name="L_NAS2" type="xs:long" minOccurs="0"/>
+														<xs:element name="L_IR_TAACVECIVIL" type="xs:short" minOccurs="0"/>
+														<xs:element name="L_IR_TNNCNAT" type="xs:short" minOccurs="0"/>
+														<xs:element name="L_IR_TAACVCANTON" type="xs:short" minOccurs="0"/>
+														<xs:element name="B_REFUGIE" type="B_REFUGIE_Type" minOccurs="0"/>
+														<xs:element name="L_P_DEGRE_INV" type="xs:short" minOccurs="0"/>
+														<xs:element name="L_IR_TNRCVRECORD" type="xs:short"/>
+														<xs:element name="D_FIN_DROIT" type="xs:date" minOccurs="0"/>
+														<xs:element name="D_ETAT_REGISTRE" type="xs:date" minOccurs="0"/>
+														<xs:element name="D_ANNONCE_CAISSE" type="xs:date" minOccurs="0"/>
+														<xs:element name="L_IR_TNRCVRAISDM" type="xs:short" minOccurs="0"/>
+														<xs:element name="D_MUTATION" type="xs:date" minOccurs="0"/>
+														<xs:element name="B_JOUR_DMUT" type="xs:short" minOccurs="0"/>
+														<xs:element name="S_TYPE_MUTATION" type="xs:string" minOccurs="0"/>
+														<xs:element name="S_VISA_CREAT" type="xs:string"/>
+														<xs:element name="TS_CREATION" type="xs:dateTime"/>
+														<xs:element name="S_VISA_MUTAT" type="xs:string" minOccurs="0"/>
+														<xs:element name="TS_MUTATION" type="xs:dateTime" minOccurs="0"/>
+														<xs:element name="L_CPT_MUTATION" type="xs:integer"/>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="TNRPOOL" type="TNRPOOLType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>cardinalité 0 = prestation corrigée manuellement ou prestation créée de toute pièce ou purgée. Cardinalité 1 = prestation annoncée. </xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:sequence minOccurs="0" maxOccurs="unbounded">
+												<xs:element name="TNRERREUR" type="TNRERREURType" minOccurs="0"/>
+											</xs:sequence>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:choice>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

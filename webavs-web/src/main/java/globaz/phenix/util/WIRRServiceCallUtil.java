@@ -26,7 +26,6 @@ public class WIRRServiceCallUtil {
 
     private static final String SSL_SOCKET_FACTORY_ORACLE_JDK = "com.sun.xml.ws.transport.https.client.SSLSocketFactory";
     private static final String SSL_SOCKET_FACTORY_JAX_WS_RI = "com.sun.xml.internal.ws.transport.https.client.SSLSocketFactory";
-    private static final String WIRR_WSDL_RESOURCE_PATH = "wsdl/wirr_wsdl.xml";
     private static final Logger logger = LoggerFactory.getLogger(WIRRServiceCallUtil.class);
 
     private static final void logCallWIRR(BSession session, Delivery requestDelivery) {
@@ -73,7 +72,7 @@ public class WIRRServiceCallUtil {
         try {
             // init service
             ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-            URL wsdlLocation = classloader.getResource(WIRR_WSDL_RESOURCE_PATH);
+            URL wsdlLocation = classloader.getResource(CommonProperties.WIRR_WSDL_RESOURCE_PATH.getValue());
             Service service = Service.create(wsdlLocation,
                     new QName(CommonProperties.WIRRWEBSERVICE_NAMESPACE.getValue(),
                             CommonProperties.WIRRWEBSERVICE_NAME.getValue()));

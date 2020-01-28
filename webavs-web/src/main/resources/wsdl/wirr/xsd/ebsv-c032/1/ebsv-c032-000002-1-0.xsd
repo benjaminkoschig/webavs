@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c001="http://www.bsv.admin.ch/xmlns/ebsv-c001/1" xmlns:ebsv-c007="http://www.bsv.admin.ch/xmlns/ebsv-c007/1" xmlns:ebsv-c016="http://www.bsv.admin.ch/xmlns/ebsv-c016/1" xmlns:ebsv-c026="http://www.bsv.admin.ch/xmlns/ebsv-c026/1" xmlns:ebsv-c027="http://www.bsv.admin.ch/xmlns/ebsv-c027/1" xmlns:ebsv-c028="http://www.bsv.admin.ch/xmlns/ebsv-c028/1" xmlns:ebsv-c029="http://www.bsv.admin.ch/xmlns/ebsv-c029/1" xmlns:ebsv-c030="http://www.bsv.admin.ch/xmlns/ebsv-c030/1" xmlns:ebsv-c032="http://www.bsv.admin.ch/xmlns/ebsv-c032/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c032/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX annonceRA-types.xsd -->
+	<xs:include schemaLocation="../../ebsv-c032/1/ebsv-c032-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c001/1" schemaLocation="../../ebsv-c001/1/ebsv-c001-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c007/1" schemaLocation="../../ebsv-c007/1/ebsv-c007-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c016/1" schemaLocation="../../ebsv-c016/1/ebsv-c016-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c026/1" schemaLocation="../../ebsv-c026/1/ebsv-c026-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c027/1" schemaLocation="../../ebsv-c027/1/ebsv-c027-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c028/1" schemaLocation="../../ebsv-c028/1/ebsv-c028-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c029/1" schemaLocation="../../ebsv-c029/1/ebsv-c029-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c030/1" schemaLocation="../../ebsv-c030/1/ebsv-c030-000000-1-0.xsd"/>
+	<xs:complexType name="TKopfMeldung">
+		<xs:sequence>
+			<xs:element name="ListeFolgerecordNr" type="ebsv-c032:ListeFolgerecordNr_Type" minOccurs="0"/>
+			<xs:element name="KasseZweigstelle" type="ebsv-c016:IrgendeineZweigstelle_weakType"/>
+			<xs:element name="KasseneigenerHinweis" type="ebsv-c030:KasseneigenerHinweis_Type"/>
+			<xs:element name="Meldungsnummer" type="ebsv-c029:Meldungsnummer_Type" nillable="true"/>
+			<xs:element name="MZRSchluesselzahl" type="ebsv-c028:MZRSchluesselzahl_weakType" nillable="true"/>
+			<xs:element name="Auftragsdatum" type="ebsv-c007:AHVDatumJMT_Type" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TBasisMeldungOhneId">
+		<xs:complexContent>
+			<xs:extension base="ebsv-c032:TKopfMeldung">
+				<xs:sequence>
+					<xs:element name="VersichertenAngaben" type="ebsv-c032:TVersicherteAngabenVoll"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="TBasisMeldungMitId">
+		<xs:complexContent>
+			<xs:extension base="ebsv-c032:TKopfMeldung">
+				<xs:sequence>
+					<xs:element name="Versichertennummer" type="ebsv-c001:Versichertennummer11oder13Stellen_Type">
+						<xs:annotation>
+							<xs:documentation>
+								Si NAVS, alors 11 positions (DCA/CI
+								annexe2)
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="VersichertenAngaben" type="ebsv-c032:TVersicherteAngabenFakultativ" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="TBasisMeldungMitFakId">
+		<xs:complexContent>
+			<xs:extension base="ebsv-c032:TKopfMeldung">
+				<xs:sequence>
+					<xs:element name="Versichertennummer" type="ebsv-c001:Versichertennummer11oder13Stellen_Type"/>
+					<xs:element name="VersichertenAngaben" type="ebsv-c032:TVersicherteAngabenFakultativ" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ListeFolgerecordNr_Type">
+		<xs:annotation>
+			<xs:documentation>
+				Liste des codes enregistrement
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="FolgerecordNr" type="ebsv-c027:FolgerecordNr_Type" nillable="true" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LeistungsberechtigtePerson_Type">
+		<xs:annotation>
+			<xs:documentation>Ayant droit</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="IstDerAnspruchgeber">
+				<xs:annotation>
+					<xs:documentation>
+						L'ayant droit est le donneur de droit
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:int">
+						<xs:maxInclusive value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Versichertennummer" type="ebsv-c001:Versichertennummer11oder13Stellen_Type" minOccurs="0"/>
+			<xs:element name="VersichertenAngaben" type="ebsv-c032:TVersicherteAngabenFakultativ" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="VAIKMeldungNeuerVersicherter_Type">
+		<xs:annotation>
+			<xs:documentation>
+				Code application 11: nouvel assuré
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ebsv-c032:TBasisMeldungOhneId"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="VAIKMeldungAenderungVersichertenDaten_Type">
+		<xs:annotation>
+			<xs:documentation>
+				Code application 11: changement des données de l'assuré
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ebsv-c032:TBasisMeldungOhneId">
+				<xs:sequence maxOccurs="3">
+					<xs:element name="Versichertennummer" type="ebsv-c001:Versichertennummer11oder13Stellen_Type"/>
+					<xs:element name="FruehereVersichertenAngaben" type="ebsv-c032:TVersicherteAngabenFakultativ" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="VAIKMeldungVerkettungVersichertenNr_Type">
+		<xs:annotation>
+			<xs:documentation>
+				Code application 11: changement du chaînage des
+				identificateurs d'assuré
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ebsv-c032:TKopfMeldung">
+				<xs:sequence minOccurs="2" maxOccurs="unbounded">
+					<xs:element name="Versichertennummer" type="ebsv-c001:Versichertennummer11oder13Stellen_Type"/>
+					<xs:element name="VersichertenAngaben" type="ebsv-c032:TVersicherteAngabenFakultativ" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="VAIKMeldungVAErsatz_Type">
+		<xs:annotation>
+			<xs:documentation>
+				Code application 11: réimpression CA
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ebsv-c032:TBasisMeldungMitFakId"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="VAIKMeldungIKEroeffnung_Type">
+		<xs:annotation>
+			<xs:documentation>
+				Code application 11: ouverture de CI
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ebsv-c032:TBasisMeldungMitFakId"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="VAIKMeldungZIK_Type">
+		<xs:annotation>
+			<xs:documentation>
+				Code application 11: RCI
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ebsv-c032:TBasisMeldungMitId">
+				<xs:sequence>
+					<xs:element name="LeistungsberechtigtePerson" type="ebsv-c032:LeistungsberechtigtePerson_Type"/>
+					<xs:element name="Abschlussdatum" type="ebsv-c007:AHVDatumJM_Type"/>
+					<xs:element name="CHWohnsitzCode" type="ebsv-c032:CHWohnsitzCode_Type" minOccurs="0"/>
+					<xs:element name="WohnsitzDauer" type="ebsv-c007:AHVPeriodeJM_Type" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="VAIKMeldungZIKRueckgaengigmachung_Type">
+		<xs:annotation>
+			<xs:documentation>
+				Code application 11: révocation RCI
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ebsv-c032:TBasisMeldungMitId">
+				<xs:sequence>
+					<xs:element name="Abschlussdatum" type="ebsv-c007:AHVDatumJM_Type"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="VAIKMeldungIKKopieAuszug_Type">
+		<xs:annotation>
+			<xs:documentation>
+				Code application 11: copie ou extrait de CI
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ebsv-c032:TBasisMeldungMitId">
+				<xs:sequence>
+					<xs:element name="temporaer" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="LeistungsberechtigtePerson" type="ebsv-c032:LeistungsberechtigtePerson_Type"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="CHWohnsitzCode" type="ebsv-c032:CHWohnsitzCode_Type" minOccurs="0"/>
+					<xs:element name="WohnsitzDauer" type="ebsv-c007:AHVPeriodeJM_Type" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="VAIKMeldungSplitting_Type">
+		<xs:annotation>
+			<xs:documentation>
+				Code application 11: splitting
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ebsv-c032:TKopfMeldung">
+				<xs:sequence>
+					<xs:element name="Versichertennummer" type="ebsv-c001:Versichertennummer11oder13Stellen_Type"/>
+					<xs:element name="VNrEhepartner" type="ebsv-c001:Versichertennummer11oder13Stellen_Type"/>
+					<xs:element name="SplittingPeriode" type="ebsv-c032:SplittingPeriode_Type" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="VAIKMeldungSplittingRueckgaengigmachung_Type">
+		<xs:annotation>
+			<xs:documentation>
+				Code application 11: révocation splitting
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ebsv-c032:TKopfMeldung">
+				<xs:sequence>
+					<xs:element name="Versichertennummer" type="ebsv-c001:Versichertennummer11oder13Stellen_Type"/>
+					<xs:element name="VNrEhepartner" type="ebsv-c001:Versichertennummer11oder13Stellen_Type"/>
+					<xs:element name="SplittingPeriode" type="ebsv-c032:SplittingPeriode_Type" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="VAIKMeldungKassenWechsel_Type">
+		<xs:annotation>
+			<xs:documentation>
+				Code application 11: changement de caissse
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ebsv-c032:TKopfMeldung">
+				<xs:sequence>
+					<xs:element name="Versichertennummer" type="ebsv-c001:Versichertennummer11oder13Stellen_Type"/>
+					<xs:element name="KasseZweigstelleNeu" type="ebsv-c016:IrgendeineZweigstelle_weakType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="VAIKMeldungEintrittAHVIV_Type">
+		<xs:annotation>
+			<xs:documentation>
+				Code application 11: entrée dans l'AVS/AI d'un assuré
+				déjà dans le registre central des assurés
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ebsv-c032:TKopfMeldung">
+				<xs:sequence>
+					<xs:element name="Versichertennummer" type="ebsv-c001:Versichertennummer11oder13Stellen_Type"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="VAIKMeldungAustauschReferenzNummer_Type">
+		<xs:annotation>
+			<xs:documentation>Code application 11: remplacement du NAVS de référence par un NAVS dans l'historique</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ebsv-c032:TKopfMeldung">
+				<xs:sequence>
+					<xs:element name="Versichertennummer" type="ebsv-c001:Versichertennummer11oder13Stellen_Type"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

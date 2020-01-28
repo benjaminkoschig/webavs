@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c027="http://www.bsv.admin.ch/xmlns/ebsv-c027/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c027/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX CodeEnregistrement-types.xsd -->
+	<xs:simpleType name="FolgerecordNr_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">MZR : Code Folgerecord</xs:documentation>
+			<xs:documentation xml:lang="fr">ARC : code enregistrement</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedShort">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="999"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

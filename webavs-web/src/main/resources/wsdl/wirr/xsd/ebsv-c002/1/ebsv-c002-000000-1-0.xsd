@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c002="http://www.bsv.admin.ch/xmlns/ebsv-c002/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c002/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX DateNaissanceDeces-types.xsd -->
+	<xs:simpleType name="Geburtstag_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Genaues Geburtsdatum : JJJJ-MM-TT</xs:documentation>
+			<xs:documentation xml:lang="fr">Date de naissance au jour : AAAA-MM-JJ</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:date">
+			<xs:minInclusive value="1848-01-01"/>
+			<xs:maxInclusive value="2048-12-31"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Todestag_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Genaues Ablebensdatum : JJJJ-MM-TT</xs:documentation>
+			<xs:documentation xml:lang="fr">Date de décès au jour : AAAA-MM-JJ</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:date">
+			<xs:minInclusive value="1948-01-01"/>
+			<xs:maxInclusive value="2048-12-31"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Geburtsjahr_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Genaues Geburtsjahr : JJJJ</xs:documentation>
+			<xs:documentation xml:lang="fr">Année de naissance : AAAA</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:gYear">
+			<xs:minInclusive value="1848"/>
+			<xs:maxInclusive value="2048"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Todessjahr_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Genaues Ablebensjahr : JJJJ</xs:documentation>
+			<xs:documentation xml:lang="fr">Année de décès : AAAA</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:gYear">
+			<xs:minInclusive value="1948"/>
+			<xs:maxInclusive value="2048"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Geburtsmonat_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Genauer Geburtsmonat : MM-JJJJ</xs:documentation>
+			<xs:documentation xml:lang="fr">Date de naissance au mois : AAAA-MM</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:gYearMonth">
+			<xs:minInclusive value="1848-01"/>
+			<xs:maxInclusive value="2048-12"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Todessmonat_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Genauer Ablebensmonat : MM-JJJJ</xs:documentation>
+			<xs:documentation xml:lang="fr">Date de décès au mois : AAAA-MM</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:gYearMonth">
+			<xs:minInclusive value="1948-01"/>
+			<xs:maxInclusive value="2048-12"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Datumgenauigkeit_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Tatsächlicher Genauigkeitsstand eines komplettes Datum (JJJJ-MM-TT) : Tag, Monat oder Jahr</xs:documentation>
+			<xs:documentation xml:lang="fr">Précision effective d'une date complète : au jour, au mois ou à l'année</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Tag"/>
+			<xs:enumeration value="Monat"/>
+			<xs:enumeration value="Jahr"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="Geburtsdatum_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Geburtsdatum (JJJJ-MM-TT)</xs:documentation>
+			<xs:documentation xml:lang="fr">Date de naissance : AAAA-MM-JJ</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="ebsv-c002:Geburtstag_Type">
+				<xs:attribute name="Datumgenauigkeit" type="ebsv-c002:Datumgenauigkeit_Type" use="optional" form="qualified"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="Todesdatum_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Date de naissance (AAAA-MM-JJ)</xs:documentation>
+			<xs:documentation xml:lang="fr">Date de décès : AAAA-MM-JJ</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="ebsv-c002:Todestag_Type">
+				<xs:attribute name="Datumgenauigkeit" type="ebsv-c002:Datumgenauigkeit_Type" use="optional" form="qualified"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+</xs:schema>

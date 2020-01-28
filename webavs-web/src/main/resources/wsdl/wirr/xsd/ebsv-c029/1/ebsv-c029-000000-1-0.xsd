@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c029="http://www.bsv.admin.ch/xmlns/ebsv-c029/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c029/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX NumeroAnnonce-types.xsd -->
+	<xs:simpleType name="Meldungsnummer_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">MZR : Nummer der MZR</xs:documentation>
+			<xs:documentation xml:lang="fr">Numéro d'une annonce</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedInt">
+			<xs:maxInclusive value="999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

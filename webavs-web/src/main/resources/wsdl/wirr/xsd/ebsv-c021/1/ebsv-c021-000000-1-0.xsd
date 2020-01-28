@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c021="http://www.bsv.admin.ch/xmlns/ebsv-c021/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c021/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX NIF-types.xsd -->
+	<xs:simpleType name="NIF_weakType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Weite Codifizierung der Abrechnungsnummer eines IV-Sachleistunglieferantes</xs:documentation>
+			<xs:documentation xml:lang="fr">Numéro d'Identification de Fournisseur (de prestation en nature AI) (typage faible, défaut)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedInt">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="9999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

@@ -1,0 +1,558 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Naef (OFIT) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-2028-000102="http://www.bsv.admin.ch/xmlns/ebsv-2028-000102/1" xmlns:ebsv-2028-000000="http://www.bsv.admin.ch/xmlns/ebsv-2028-000000/1" xmlns:ebsv-c001="http://www.bsv.admin.ch/xmlns/ebsv-c001/1" xmlns:ebsv-c004="http://www.bsv.admin.ch/xmlns/ebsv-c004/1" xmlns:ebsv-c007="http://www.bsv.admin.ch/xmlns/ebsv-c007/1" xmlns:ebsv-c011="http://www.bsv.admin.ch/xmlns/ebsv-c011/1" xmlns:ebsv-c015="http://www.bsv.admin.ch/xmlns/ebsv-c015/1" xmlns:ebsv-c016="http://www.bsv.admin.ch/xmlns/ebsv-c016/1" xmlns:ebsv-c020="http://www.bsv.admin.ch/xmlns/ebsv-c020/1" xmlns:ebsv-c023="http://www.bsv.admin.ch/xmlns/ebsv-c023/1" xmlns:ebsv-c024="http://www.bsv.admin.ch/xmlns/ebsv-c024/1" xmlns:ebsv-c025="http://www.bsv.admin.ch/xmlns/ebsv-c025/1" xmlns:ebsv-c029="http://www.bsv.admin.ch/xmlns/ebsv-c029/1" xmlns:ebsv-c030="http://www.bsv.admin.ch/xmlns/ebsv-c030/1" xmlns:ebsv-c031="http://www.bsv.admin.ch/xmlns/ebsv-c031/1" xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/2" xmlns:eCH-0058="http://www.ech.ch/xmlns/eCH-0058/4" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-2028-000102/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">Response to a query on the central pension register of the swiss social security. It is based on eCH-0058 and TRAX.
+		  Version 1.0
+          $Id: ebsv-2028-000102-1-0.xsd 2012-02-28 15:30:00Z naef $
+        </xs:documentation>
+	</xs:annotation>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-2028-000000/1" schemaLocation="../../ebsv-2028-000000/1/ebsv-2028-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c001/1" schemaLocation="../../ebsv-c001/1/ebsv-c001-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c004/1" schemaLocation="../../ebsv-c004/1/ebsv-c004-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c007/1" schemaLocation="../../ebsv-c007/1/ebsv-c007-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c011/1" schemaLocation="../../ebsv-c011/1/ebsv-c011-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c015/1" schemaLocation="../../ebsv-c015/1/ebsv-c015-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c016/1" schemaLocation="../../ebsv-c016/1/ebsv-c016-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c020/1" schemaLocation="../../ebsv-c020/1/ebsv-c020-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c023/1" schemaLocation="../../ebsv-c023/1/ebsv-c023-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c024/1" schemaLocation="../../ebsv-c024/1/ebsv-c024-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c025/1" schemaLocation="../../ebsv-c025/1/ebsv-c025-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c029/1" schemaLocation="../../ebsv-c029/1/ebsv-c029-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c030/1" schemaLocation="../../ebsv-c030/1/ebsv-c030-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c031/1" schemaLocation="../../ebsv-c031/1/ebsv-c031-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/2" schemaLocation="../../eCH-0044/2/eCH-0044-2-0.xsd"/>
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0058/4" schemaLocation="../../ebsv-2028-000001/1/ebsv-2028-000001-1-0.xsd"/>
+	<xs:complexType name="OrdentlicheRente10Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr">Rente ordinaire de la 10e révision</xs:documentation>
+			<xs:documentation xml:lang="de">Ordentliche Rente der 10. Revision</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="ebsv-c016:IrgendeineZweigstelle_weakType"/>
+			<xs:element name="LeistungsberechtigtePerson" type="ebsv-c031:RRLeistungsberechtigtePersonAusl_Type"/>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Leistungsart" type="ebsv-c025:OrdentlicheRente10_strongType"/>
+						<xs:element name="Anspruchsbeginn" type="ebsv-c007:AHVDatumJM_Type"/>
+						<xs:element name="Anspruchsende" type="ebsv-c007:AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="ebsv-c023:Mutationscode_Type" minOccurs="0"/>
+						<xs:element name="Monatsbetrag" type="ebsv-c015:BetragFR_Type"/>
+						<xs:element name="Berechnungsgrundlagen" nillable="true">
+							<xs:annotation>
+								<xs:documentation xml:lang="fr">Le cas où l'attribut contient un nil="true" est réservé pour les rentes doubles accordées aux enfants trouvés.</xs:documentation>
+								<xs:documentation xml:lang="de">Das Attribut nil kann nur auf "true" im Falle einer Vollweisenrente für ein gefundenes Kind gesetzt werden.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Niveaujahr" type="ebsv-c007:AHVDatumJ_Type"/>
+									<xs:element name="SkalaBerechnung" type="ebsv-c031:SkalaBerechnung_Type"/>
+									<xs:element name="DJEBeschreibung" type="ebsv-c031:DJE10Beschreibung_Type"/>
+									<xs:element name="Gutschriften" type="ebsv-c031:Gutschriften10_Type"/>
+									<xs:element name="hauptIVDaten" type="ebsv-c031:IVDaten10_shortType" minOccurs="0"/>
+									<xs:element name="FlexiblesRentenAlter" minOccurs="0">
+										<xs:complexType>
+											<xs:choice maxOccurs="2">
+												<xs:annotation>
+													<xs:documentation xml:lang="fr">La cardinalité 2 n'est possible qu'en présence simultanée des SonderfallcodeRente 81 et 93. La rente 10e anticipée hérite alors de l'ajournement de la rente 9e du conjoint. L'anticipation est affichée avant l'ajournement.</xs:documentation>
+													<xs:documentation xml:lang="de">Die Kardinalität 2 ist nur möglich im Falle einer gleichzeitigen Anwesenheit der SonderfallcodeRente 81 und 93. Die vorbezogene 10er Rente erbt vom Aufschub der 9er Rente des Ehegatten. Der Vorbezug wird vor dem Aufschub angezeigt.</xs:documentation>
+												</xs:annotation>
+												<xs:element name="Rentenvorbezug" type="ebsv-c031:Rentenvorbezug_Type"/>
+												<xs:element name="Rentenaufschub" type="ebsv-c031:Rentenaufschub_Type"/>
+											</xs:choice>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="SonderfallcodeRente" type="ebsv-c023:SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+						<xs:element name="KuerzungSelbstverschulden" type="ebsv-c023:KuerzungSelbstverschulden_Type" minOccurs="0"/>
+						<xs:element name="IstInvaliderHinterlassener" type="xs:boolean" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="ebsv-c007:AHVDatumJM_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="pensionType">
+		<xs:annotation>
+			<xs:documentation>Description of a pension</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="lastUpdateTimestamp" type="xs:dateTime"/>
+			<xs:element name="warningOnPension" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Not implemented in version V1.0, placeholder for backward compatibility of the next version.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:short"/>
+				</xs:simpleType>
+			</xs:element>
+			<xs:choice>
+				<xs:element name="OrdentlicheRente9">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="KasseZweigstelle" type="ebsv-c016:IrgendeineZweigstelle_weakType"/>
+							<xs:element name="LeistungsberechtigtePerson" type="ebsv-c031:RRLeistungsberechtigtePersonAusl_Type"/>
+							<xs:element name="Leistungsbeschreibung">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Leistungsart" type="ebsv-c024:OrdentlicheRente9PlusWitwenabfindung_strongType"/>
+										<xs:element name="Anspruchsbeginn" type="ebsv-c007:AHVDatumJM_Type"/>
+										<xs:element name="Anspruchsende" type="ebsv-c007:AHVDatumJM_Type" minOccurs="0"/>
+										<xs:element name="Mutationscode" type="ebsv-c023:Mutationscode_Type" minOccurs="0"/>
+										<xs:element name="Monatsbetrag" type="ebsv-c015:BetragFR_Type"/>
+										<xs:element name="Berechnungsgrundlagen">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="Niveaujahr" type="ebsv-c007:AHVDatumJ_Type"/>
+													<xs:element name="SkalaBerechnung" type="ebsv-c031:SkalaBerechnung_Type"/>
+													<xs:element name="DJEBeschreibung" type="ebsv-c031:DJE9Beschreibung_Type"/>
+													<xs:element name="Gutschriften" type="ebsv-c031:Gutschriften9_Type"/>
+													<xs:element name="hauptIVDaten" type="ebsv-c031:IVDaten9_shortType" minOccurs="0"/>
+													<xs:element name="hauptIVDatenEhefrau" type="ebsv-c031:IVDaten9_shortType" minOccurs="0"/>
+													<xs:element name="FlexiblesRentenAlter" minOccurs="0">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="Rentenaufschub" type="ebsv-c031:Rentenaufschub_Type"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="SonderfallcodeRente" type="ebsv-c023:SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+										<xs:element name="KuerzungSelbstverschulden" type="ebsv-c023:KuerzungSelbstverschulden_Type" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Berichtsmonat" type="ebsv-c007:AHVDatumJM_Type"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="OrdentlicheRente10" type="ebsv-2028-000102:OrdentlicheRente10Type"/>
+				<xs:element name="AusserordentlicheRente9">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="KasseZweigstelle" type="ebsv-c016:IrgendeineZweigstelle_weakType"/>
+							<xs:element name="LeistungsberechtigtePerson" type="ebsv-c031:RRLeistungsberechtigtePersonAusl_Type"/>
+							<xs:element name="Leistungsbeschreibung">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Leistungsart" type="ebsv-c024:AusserordentlicheRente9PlusWitwenabfindung_strongType"/>
+										<xs:element name="Anspruchsbeginn" type="ebsv-c007:AHVDatumJM_Type"/>
+										<xs:element name="Anspruchsende" type="ebsv-c007:AHVDatumJM_Type" minOccurs="0"/>
+										<xs:element name="Mutationscode" type="ebsv-c023:Mutationscode_Type" minOccurs="0"/>
+										<xs:element name="Monatsbetrag" type="ebsv-c015:BetragFR_Type"/>
+										<xs:element name="MonatsbetragErsetzteOrdentlicheRente" type="ebsv-c015:BetragFR_Type" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>
+                                    mensualité de la RO remplacée en raison du minimum garanti;
+                                </xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="Berechnungsgrundlagen">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="Niveaujahr" type="ebsv-c007:AHVDatumJ_Type" minOccurs="0"/>
+													<xs:element name="EinkommensgrenzenCode" type="ebsv-c024:EinkommensgrenzenCode_Type">
+														<xs:annotation>
+															<xs:documentation>
+                                                REO soumise aux limites de revenu: oui/non ?
+                                            </xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="MinimalgarantieCode" type="ebsv-c024:MinimalgarantieCode_Type">
+														<xs:annotation>
+															<xs:documentation>
+                                                REO en tant que minimum garanti: oui/non ?
+                                            </xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="SkalaBerechnung" type="ebsv-c031:SkalaBerechnung_Type" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>dans le cas de minimum garanti</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="DJEBeschreibung" type="ebsv-c031:DJE9Beschreibung_Type" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>dans le cas de minimum garanti</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="Gutschriften" type="ebsv-c031:Gutschriften9_Type" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>dans le cas de minimum garanti</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="hauptIVDaten" type="ebsv-c031:IVDaten9_shortType" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>AI</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="hauptIVDatenEhefrau" type="ebsv-c031:IVDaten9_shortType" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>le cas échéant</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="SonderfallcodeRente" type="ebsv-c023:SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+										<xs:element name="KuerzungSelbstverschulden" type="ebsv-c023:KuerzungSelbstverschulden_Type" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Berichtsmonat" type="ebsv-c007:AHVDatumJM_Type"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="AusserordentlicheRente10">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="KasseZweigstelle" type="ebsv-c016:IrgendeineZweigstelle_weakType"/>
+							<xs:element name="LeistungsberechtigtePerson" type="ebsv-c031:RRLeistungsberechtigtePersonAusl_Type">
+								<xs:annotation>
+									<xs:documentation>
+                        Données conernant l'ayant droit valables au début du mois de rapport ou du mois de fin de droit
+                        à la prestation
+                    </xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Leistungsbeschreibung">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Leistungsart" type="ebsv-c025:AusserordentlicheRente10_strongType"/>
+										<xs:element name="Anspruchsbeginn" type="ebsv-c007:AHVDatumJM_Type"/>
+										<xs:element name="Anspruchsende" type="ebsv-c007:AHVDatumJM_Type" minOccurs="0"/>
+										<xs:element name="Mutationscode" type="ebsv-c023:Mutationscode_Type" minOccurs="0"/>
+										<xs:element name="Monatsbetrag" type="ebsv-c015:BetragFR_Type"/>
+										<xs:element name="Berechnungsgrundlagen">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="Niveaujahr" type="ebsv-c007:AHVDatumJ_Type" minOccurs="0"/>
+													<xs:element name="hauptIVDaten" type="ebsv-c031:IVDaten10_shortType" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="SonderfallcodeRente" type="ebsv-c023:SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+										<xs:element name="KuerzungSelbstverschulden" type="ebsv-c023:KuerzungSelbstverschulden_Type" minOccurs="0"/>
+										<xs:element name="IstInvaliderHinterlassener" type="xs:boolean" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Berichtsmonat" type="ebsv-c007:AHVDatumJM_Type"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Hilflosenentschaedigung9">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="KasseZweigstelle" type="ebsv-c016:IrgendeineZweigstelle_weakType"/>
+							<xs:element name="LeistungsberechtigtePerson" type="ebsv-c031:RRLeistungsberechtigtePersonAusl_Type"/>
+							<xs:element name="Leistungsbeschreibung">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Leistungsart" type="ebsv-c024:Hilflosenentschaedigungen9_strongType"/>
+										<xs:element name="Anspruchsbeginn" type="ebsv-c007:AHVDatumJM_Type"/>
+										<xs:element name="Anspruchsende" type="ebsv-c007:AHVDatumJM_Type" minOccurs="0"/>
+										<xs:element name="Mutationscode" type="ebsv-c023:Mutationscode_Type" minOccurs="0"/>
+										<xs:element name="Monatsbetrag" type="ebsv-c015:BetragFR_Type"/>
+										<xs:element name="Berechnungsgrundlagen">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="hauptIVDaten" type="ebsv-c031:IVDatenHE9_shortType" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>données AI en cas de API</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="SonderfallcodeRente" type="ebsv-c023:SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Berichtsmonat" type="ebsv-c007:AHVDatumJM_Type"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Hilflosenentschaedigung10">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="KasseZweigstelle" type="ebsv-c016:IrgendeineZweigstelle_weakType"/>
+							<xs:element name="LeistungsberechtigtePerson" type="ebsv-c031:RRLeistungsberechtigtePersonAusl_Type"/>
+							<xs:element name="Leistungsbeschreibung">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Leistungsart" type="ebsv-c025:Hilflosenentschaedigung10_strongType"/>
+										<xs:element name="Anspruchsbeginn" type="ebsv-c007:AHVDatumJM_Type"/>
+										<xs:element name="Anspruchsende" type="ebsv-c007:AHVDatumJM_Type" minOccurs="0"/>
+										<xs:element name="Mutationscode" type="ebsv-c023:Mutationscode_Type" minOccurs="0"/>
+										<xs:element name="Monatsbetrag" type="ebsv-c015:BetragFR_Type"/>
+										<xs:element name="Berechnungsgrundlagen">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="hauptIVDaten" type="ebsv-c031:IVDatenHE_shortType" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>données AI en cas d'API</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="SonderfallcodeRente" type="ebsv-c023:SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Berichtsmonat" type="ebsv-c007:AHVDatumJM_Type"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="EinmaligeKapitalabfindung10">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="AbfindungsBetrag" type="ebsv-c015:BetragFR6_Type" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation xml:lang="fr">CSC (27.2): montant de l'indemnité forfaitaire</xs:documentation>
+									<xs:documentation xml:lang="de">SAK (27.2): Betrag der Abfindung</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="AbfindungBarwert" type="ebsv-c015:BetragFR5_Type" minOccurs="0" maxOccurs="0">
+								<xs:annotation>
+									<xs:documentation xml:lang="fr">CSC (27.2): valeur actuelle de l'indemnité forfaitaire</xs:documentation>
+									<xs:documentation xml:lang="de">SAK (27.2): Barwert der Abfindung</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="OrdentlicheRente10" type="ebsv-2028-000102:OrdentlicheRente10Type"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="RueckerstattungUeberweisung">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="KasseZweigstelle" type="ebsv-c016:IrgendeineZweigstelle_weakType"/>
+							<xs:element name="LeistungsberechtigtePerson">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Versichertennummer" type="ebsv-c001:Versichertennummer11oder13Stellen_Type"/>
+										<xs:element name="WohnkantonStaat" type="ebsv-c011:WohnkantonStaatBSV_weakType"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Leistungsbeschreibung">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="DatumRueckerstattungUeberweisung" type="ebsv-c007:AHVDatumJM_Type"/>
+										<xs:element name="Betrag" type="ebsv-c015:BetragFRRP6_Type">
+											<xs:annotation>
+												<xs:documentation>FFFFFF.CC </xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="Mutationscode">
+											<xs:annotation>
+												<xs:documentation xml:lang="fr">R=remboursement   T=transfert</xs:documentation>
+												<xs:documentation xml:lang="de">R=Rückerstattung T=Überweisung</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="R"/>
+													<xs:enumeration value="T"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Berichtsmonat" type="ebsv-c007:AHVDatumJM_Type"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="ELFallOhneAnspruchAufRente">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="ELStelleZweigstelle" type="ebsv-c016:IrgendeineZweigstelle_weakType"/>
+							<xs:element name="LeistungsberechtigtePerson" type="ebsv-c031:RRLeistungsberechtigtePersonAuslEL_Type"/>
+							<xs:element name="Leistungsbeschreibung">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Anspruchsbeginn" type="ebsv-c007:AHVDatumJM_Type" minOccurs="0"/>
+										<xs:element name="Anspruchsende" type="ebsv-c007:AHVDatumJM_Type" minOccurs="0"/>
+										<xs:element name="Mutationscode" type="ebsv-c023:Mutationscode_Type" minOccurs="0"/>
+										<xs:element name="Invaliditaetsgrad" type="ebsv-c020:Invaliditaetsgrad_weakType" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Berichtsmonat" type="ebsv-c007:AHVDatumJM_Type" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="delivery">
+		<xs:annotation>
+			<xs:documentation>Response with eCH-0058 header</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="header" type="eCH-0058:headerResponseType">
+					<xs:annotation>
+						<xs:documentation>eCH-0058 header restricted in order to fit exactly to the needs of this response.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="content">
+					<xs:complexType>
+						<xs:choice>
+							<xs:element name="positiveResponse">
+								<xs:annotation>
+									<xs:documentation>The query could correctly be executed</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="echoRequest" type="ebsv-2028-000000:requestType">
+											<xs:annotation>
+												<xs:documentation>echo of the Request in the input</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="timestamp" type="xs:dateTime">
+											<xs:annotation>
+												<xs:documentation>timestamp of the generation of the response</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="globalWarning" minOccurs="0" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>Is present if the response should be interpreted with special care.</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:short">
+													<xs:enumeration value="1"/>
+													<xs:enumeration value="2"/>
+													<xs:enumeration value="3"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:choice>
+											<xs:element name="listOfPensions">
+												<xs:annotation>
+													<xs:documentation>List of pensions linked to the input parameters. </xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence minOccurs="0" maxOccurs="unbounded">
+														<xs:element name="pension" type="ebsv-2028-000102:pensionType"/>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="listOfAnnouncements">
+												<xs:annotation>
+													<xs:documentation>List of annoucements linked to the input parameters. </xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence minOccurs="0" maxOccurs="unbounded">
+														<xs:element name="announcement">
+															<xs:complexType>
+																<xs:sequence>
+																	<xs:element name="lastUpdateTimestamp" type="xs:dateTime"/>
+																	<xs:element name="Meldungsnummer" type="ebsv-c029:Meldungsnummer_Type"/>
+																	<xs:element name="KasseneigenerHinweis" type="ebsv-c030:KasseneigenerHinweis_Type" minOccurs="0"/>
+																	<xs:element name="Maegelanzeige" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation xml:lang="en">Notice of error. The absence of this element means that there is not (yet) a notice of error.</xs:documentation>
+																			<xs:documentation xml:lang="fr">Avis d'erreur. L'absence de cet élément signifie qu'il n'y a pas (encore) d'avis d'erreur.</xs:documentation>
+																		</xs:annotation>
+																		<xs:complexType>
+																			<xs:sequence maxOccurs="unbounded">
+																				<xs:element name="FehlerBeschreibung">
+																					<xs:simpleType>
+																						<xs:restriction base="xs:string">
+																							<xs:minLength value="1"/>
+																							<xs:maxLength value="500"/>
+																						</xs:restriction>
+																					</xs:simpleType>
+																				</xs:element>
+																			</xs:sequence>
+																		</xs:complexType>
+																	</xs:element>
+																	<xs:element name="Status">
+																		<xs:annotation>
+																			<xs:documentation xml:lang="en">0=announcement plausible by itself, compatibility with RR (pension register) has not been tested at this stage, 1=announcement incompatible with a pension in the RR, 2=refused announcement, 3=canceled announcement.</xs:documentation>
+																			<xs:documentation xml:lang="fr">0=annonce plausible prise isolément, la compatibilité avec RR n'a pas encore été testée à ce stade, 1=annonce incompatible avec une prestation dans le RR, 2=annonce refusée, 3=annonce supprimée</xs:documentation>
+																		</xs:annotation>
+																		<xs:simpleType>
+																			<xs:restriction base="xs:short">
+																				<xs:enumeration value="0"/>
+																				<xs:enumeration value="1"/>
+																				<xs:enumeration value="2"/>
+																				<xs:enumeration value="3"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:element>
+																	<xs:element name="pension" type="ebsv-2028-000102:pensionType"/>
+																</xs:sequence>
+															</xs:complexType>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:choice>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="negativeReport">
+								<xs:annotation>
+									<xs:documentation>An error occured</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="echoRequest" type="ebsv-2028-000000:requestType" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>echo of the Request in input if valid against XSD</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="timestamp" type="xs:dateTime">
+											<xs:annotation>
+												<xs:documentation>timestamp of the generation of the response</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="reason">
+											<xs:annotation>
+												<xs:documentation xml:lang="en">The reason for refusing is: 1 = not valid against XSD or an other formal reason (wrong control number of ahvn for instance), or 3 = not valid against UPI data, or 10 = service (database) not available.</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:short">
+													<xs:enumeration value="1"/>
+													<xs:enumeration value="3"/>
+													<xs:enumeration value="10"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="detailedReason" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation xml:lang="en">detailed error code</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="50"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="comment" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation xml:lang="en">Free form comment.</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="5000"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:choice>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c001="http://www.bsv.admin.ch/xmlns/ebsv-c001/1" xmlns:ebsv-c002="http://www.bsv.admin.ch/xmlns/ebsv-c002/1" xmlns:ebsv-c003="http://www.bsv.admin.ch/xmlns/ebsv-c003/1" xmlns:ebsv-c005="http://www.bsv.admin.ch/xmlns/ebsv-c005/1" xmlns:ebsv-c007="http://www.bsv.admin.ch/xmlns/ebsv-c007/1" xmlns:ebsv-c008="http://www.bsv.admin.ch/xmlns/ebsv-c008/1" xmlns:ebsv-c011="http://www.bsv.admin.ch/xmlns/ebsv-c011/1" xmlns:ebsv-c014="http://www.bsv.admin.ch/xmlns/ebsv-c014/1" xmlns:ebsv-c016="http://www.bsv.admin.ch/xmlns/ebsv-c016/1" xmlns:ebsv-c018="http://www.bsv.admin.ch/xmlns/ebsv-c018/1" xmlns:ebsv-c032="http://www.bsv.admin.ch/xmlns/ebsv-c032/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c032/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX annoncesCACICommon-types.xsd -->
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c001/1" schemaLocation="../../ebsv-c001/1/ebsv-c001-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c002/1" schemaLocation="../../ebsv-c002/1/ebsv-c002-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c003/1" schemaLocation="../../ebsv-c003/1/ebsv-c003-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c005/1" schemaLocation="../../ebsv-c005/1/ebsv-c005-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c007/1" schemaLocation="../../ebsv-c007/1/ebsv-c007-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c008/1" schemaLocation="../../ebsv-c008/1/ebsv-c008-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c011/1" schemaLocation="../../ebsv-c011/1/ebsv-c011-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c014/1" schemaLocation="../../ebsv-c014/1/ebsv-c014-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c016/1" schemaLocation="../../ebsv-c016/1/ebsv-c016-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c018/1" schemaLocation="../../ebsv-c018/1/ebsv-c018-000000-1-0.xsd"/>
+	<xs:complexType name="TVersicherteAngabenVoll">
+		<xs:sequence>
+			<xs:element name="Namen" type="ebsv-c005:NameVorname_Type" nillable="true"/>
+			<xs:element name="Vornamen" type="ebsv-c005:NameVorname_Type" nillable="true"/>
+			<xs:element name="Geschlecht" type="ebsv-c003:Geschlecht_numType" nillable="true"/>
+			<xs:element name="Geburtsdatum" type="ebsv-c002:Geburtsdatum_Type" nillable="true"/>
+			<xs:element name="Heimatstaat" type="ebsv-c008:LandNrBSV_weakType" nillable="true"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TVersicherteAngabenFakultativ">
+		<xs:sequence>
+			<xs:element name="Namen" type="ebsv-c005:NameVorname_Type" nillable="true" minOccurs="0"/>
+			<xs:element name="Vornamen" type="ebsv-c005:NameVorname_Type" nillable="true" minOccurs="0"/>
+			<xs:element name="Geschlecht" type="ebsv-c003:Geschlecht_numType" nillable="true" minOccurs="0"/>
+			<xs:element name="Geburtsdatum" type="ebsv-c002:Geburtsdatum_Type" nillable="true" minOccurs="0"/>
+			<xs:element name="Heimatstaat" type="ebsv-c008:LandNrBSV_weakType" nillable="true" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TVersicherteAngabenFakultativ_WeakName">
+		<xs:sequence>
+			<xs:element name="Namen" type="ebsv-c005:NameVorname_WeakType" nillable="true" minOccurs="0"/>
+			<xs:element name="Vornamen" type="ebsv-c005:NameVorname_WeakType" nillable="true" minOccurs="0"/>
+			<xs:element name="Geschlecht" type="ebsv-c003:Geschlecht_numType" nillable="true" minOccurs="0"/>
+			<xs:element name="Geburtsdatum" type="ebsv-c002:Geburtsdatum_Type" nillable="true" minOccurs="0"/>
+			<xs:element name="Heimatstaat" type="ebsv-c008:LandNrBSV_weakType" nillable="true" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TVersicherteAngabenSemiFakultativ">
+		<xs:sequence>
+			<xs:element name="Namen" type="ebsv-c005:NameVorname_Type" nillable="true"/>
+			<xs:element name="Vornamen" type="ebsv-c005:NameVorname_Type" nillable="true"/>
+			<xs:element name="Geschlecht" type="ebsv-c003:Geschlecht_numType" nillable="true" minOccurs="0"/>
+			<xs:element name="Geburtsdatum" type="ebsv-c002:Geburtsdatum_Type" nillable="true" minOccurs="0"/>
+			<xs:element name="Heimatstaat" type="ebsv-c008:LandNrBSV_weakType" nillable="true"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="CHWohnsitzCode_Type">
+		<xs:restriction base="xs:unsignedByte">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="3"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="AKAbrechnungsNr_Type">
+		<xs:annotation>
+			<xs:documentation>Abrechnungsnummer eines AK-Mitgliedes</xs:documentation>
+			<xs:documentation>Numéro d'affilié (d'un employeur auprès d'une caisse)</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="ebsv-c014:String11stellig_Type ebsv-c001:Versichertennummer13Stellen_Type"/>
+	</xs:simpleType>
+	<xs:complexType name="SplittingPeriode_Type">
+		<xs:sequence>
+			<xs:element name="BesondereSchluesselzahlSplitPer" type="ebsv-c018:BesondereSchluesselzahlSplitPer_Type" minOccurs="0"/>
+			<xs:element name="Anfangsjahr" type="ebsv-c007:AHVDatumJ_Type"/>
+			<xs:element name="Endjahr" type="ebsv-c007:AHVDatumJ_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

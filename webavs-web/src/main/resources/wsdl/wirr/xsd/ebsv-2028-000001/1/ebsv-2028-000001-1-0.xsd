@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Naef (OFIT) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:eCH-0058="http://www.ech.ch/xmlns/eCH-0058/4" targetNamespace="http://www.ech.ch/xmlns/eCH-0058/4" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<xs:annotation>
+		<xs:documentation xml:lang="en"> Request/Response to query the central pension register of the swiss social security. Common part for eCH-005 header restriction.
+		  Version 1.0
+          $Id: ebsv-2028-000001-1-0.xsd 2012-02-23 18:50:00Z naef $
+        </xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="../../eCH-0058/4/eCH-0058-4-0.xsd"/>
+	<xs:simpleType name="participantIdCENT_Type">
+		<xs:restriction base="eCH-0058:participantIdType">
+			<xs:enumeration value="sedex://T6-599000-1"/>
+			<xs:enumeration value="sedex://6-599000-1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="messageType2028Type">
+		<xs:restriction base="eCH-0058:messageTypeType">
+			<xs:enumeration value="2028"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="actionReqType">
+		<xs:restriction base="eCH-0058:actionType">
+			<xs:enumeration value="5"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="actionResType">
+		<xs:restriction base="eCH-0058:actionType">
+			<xs:enumeration value="6"/>
+			<xs:enumeration value="8"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="responseExpectedReqType">
+		<xs:restriction base="eCH-0058:responseExpectedType">
+			<xs:pattern value="false"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="responseExpectedResType">
+		<xs:restriction base="eCH-0058:responseExpectedType">
+			<xs:pattern value="false"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="businessCaseClosedReqType">
+		<xs:restriction base="eCH-0058:businessCaseClosedType">
+			<xs:pattern value="false"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="businessCaseClosedResType">
+		<xs:restriction base="eCH-0058:businessCaseClosedType">
+			<xs:pattern value="true"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="headerRequestType">
+		<xs:annotation>
+			<xs:documentation> eCH-0058 header restricted to the needs of this request</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="eCH-0058:headerType">
+				<xs:sequence>
+					<xs:element name="senderId" type="eCH-0058:participantIdType"/>
+					<xs:element name="declarationLocalReference" type="eCH-0058:declarationLocalReferenceType" minOccurs="0"/>
+					<xs:element name="recipientId" type="eCH-0058:participantIdCENT_Type"/>
+					<xs:element name="messageId" type="eCH-0058:messageIdType"/>
+					<xs:element name="businessProcessId" type="eCH-0058:businessProcessIdType" minOccurs="0"/>
+					<xs:element name="ourBusinessReferenceId" type="eCH-0058:businessReferenceIdType" minOccurs="0"/>
+					<xs:element name="uniqueIdBusinessTransaction" type="eCH-0058:uniqueIdBusinessTransactionType" minOccurs="0"/>
+					<xs:element name="messageType" type="eCH-0058:messageType2028Type"/>
+					<xs:element name="subMessageType">
+						<xs:simpleType>
+							<xs:restriction base="eCH-0058:subMessageTypeType">
+								<xs:enumeration value="000101"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+					<xs:element name="sendingApplication" type="eCH-0058:sendingApplicationType"/>
+					<xs:element name="messageDate" type="eCH-0058:messageDateType"/>
+					<xs:element name="action" type="eCH-0058:actionReqType"/>
+					<xs:element name="testDeliveryFlag" type="eCH-0058:testDeliveryFlagType"/>
+					<xs:element name="responseExpected" type="eCH-0058:responseExpectedReqType" minOccurs="0"/>
+					<xs:element name="businessCaseClosed" type="eCH-0058:businessCaseClosedReqType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="headerResponseType">
+		<xs:annotation>
+			<xs:documentation> eCH-0058 header restricted to the needs of this response</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="eCH-0058:headerType">
+				<xs:sequence>
+					<xs:element name="senderId" type="eCH-0058:participantIdCENT_Type"/>
+					<xs:element name="recipientId" type="eCH-0058:participantIdType"/>
+					<xs:element name="messageId" type="eCH-0058:messageIdType"/>
+					<xs:element name="referenceMessageId" type="eCH-0058:messageIdType"/>
+					<xs:element name="businessProcessId" type="eCH-0058:businessProcessIdType" minOccurs="0"/>
+					<xs:element name="yourBusinessReferenceId" type="eCH-0058:businessReferenceIdType" minOccurs="0"/>
+					<xs:element name="uniqueIdBusinessTransaction" type="eCH-0058:uniqueIdBusinessTransactionType" minOccurs="0"/>
+					<xs:element name="messageType" type="eCH-0058:messageType2028Type"/>
+					<xs:element name="subMessageType">
+						<xs:simpleType>
+							<xs:restriction base="eCH-0058:subMessageTypeType">
+								<xs:enumeration value="000102"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+					<xs:element name="sendingApplication" type="eCH-0058:sendingApplicationType"/>
+					<xs:element name="messageDate" type="eCH-0058:messageDateType"/>
+					<xs:element name="action" type="eCH-0058:actionResType"/>
+					<xs:element name="testDeliveryFlag" type="eCH-0058:testDeliveryFlagType"/>
+					<xs:element name="responseExpected" type="eCH-0058:responseExpectedResType" minOccurs="0"/>
+					<xs:element name="businessCaseClosed" type="eCH-0058:businessCaseClosedResType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

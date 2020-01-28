@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c012="http://www.bsv.admin.ch/xmlns/ebsv-c012/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c012/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX Langue-types.xsd -->
+	<xs:simpleType name="Sprache_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Sprache im AHV-Gebiet</xs:documentation>
+			<xs:documentation xml:lang="fr">langue (dans le domaine AVS)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="français"/>
+			<xs:enumeration value="Deutsch"/>
+			<xs:enumeration value="italiano"/>
+			<xs:enumeration value="english"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Sprache2B_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">2-Buchstaben Sprachecode im AHV-Gebiet</xs:documentation>
+			<xs:documentation xml:lang="fr">code de langue (dans le domaine AVS)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="fr"/>
+			<xs:enumeration value="de"/>
+			<xs:enumeration value="it"/>
+			<xs:enumeration value="en"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

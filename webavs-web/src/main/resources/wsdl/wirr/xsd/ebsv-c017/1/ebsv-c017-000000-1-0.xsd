@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c017="http://www.bsv.admin.ch/xmlns/ebsv-c017/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c017/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX Compta-types.xsd -->
+	<xs:simpleType name="Kontonummer_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Kontonummer für Buchhaltungsmeldungen</xs:documentation>
+			<xs:documentation xml:lang="fr">Numéro de compte pour annonces comptables</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:totalDigits value="7"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Rubriknummer_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Rubriknummer für Rentenrekapitulation</xs:documentation>
+			<xs:documentation xml:lang="fr">Numéro de rubrique pour récapitulation des rentes</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:totalDigits value="6"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="VorzeichenCode_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Vorzeichen für Beträge 0=Soll 1=Haben</xs:documentation>
+			<xs:documentation xml:lang="fr">Code valeur pour montant 0=doit 1=avoir</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:enumeration value="0"/>
+			<xs:enumeration value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

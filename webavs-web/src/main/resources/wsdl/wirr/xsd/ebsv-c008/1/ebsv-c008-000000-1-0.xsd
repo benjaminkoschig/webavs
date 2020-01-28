@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c008="http://www.bsv.admin.ch/xmlns/ebsv-c008/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c008/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX PaysNationalite-types.xsd -->
+	<xs:simpleType name="LandNrBSV_weakType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Weite Codifizierung der Länder/Nationalitäten (nach BSV Coden) (default type)</xs:documentation>
+			<xs:documentation xml:lang="fr">Codification OFAS des pays (typage faible, défaut)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedShort">
+			<xs:minInclusive value="100"/>
+			<xs:maxInclusive value="999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LandNrBSV_strongType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Strenge Codifizierung der Länder/Nationalitäten (nach BSV Coden)</xs:documentation>
+			<xs:documentation xml:lang="fr">Codification OFAS des pays (typage fort)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="ebsv-c008:LandNrBSV_weakType"/>
+	</xs:simpleType>
+</xs:schema>

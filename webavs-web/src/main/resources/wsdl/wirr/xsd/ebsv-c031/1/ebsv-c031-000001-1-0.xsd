@@ -1,0 +1,645 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Naef (OFIT) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c001="http://www.bsv.admin.ch/xmlns/ebsv-c001/1" xmlns:ebsv-c004="http://www.bsv.admin.ch/xmlns/ebsv-c004/1" xmlns:ebsv-c005="http://www.bsv.admin.ch/xmlns/ebsv-c005/1" xmlns:ebsv-c007="http://www.bsv.admin.ch/xmlns/ebsv-c007/1" xmlns:ebsv-c011="http://www.bsv.admin.ch/xmlns/ebsv-c011/1" xmlns:ebsv-c015="http://www.bsv.admin.ch/xmlns/ebsv-c015/1" xmlns:ebsv-c016="http://www.bsv.admin.ch/xmlns/ebsv-c016/1" xmlns:ebsv-c023="http://www.bsv.admin.ch/xmlns/ebsv-c023/1" xmlns:ebsv-c029="http://www.bsv.admin.ch/xmlns/ebsv-c029/1" xmlns:ebsv-c030="http://www.bsv.admin.ch/xmlns/ebsv-c030/1" xmlns:ebsv-c031="http://www.bsv.admin.ch/xmlns/ebsv-c031/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c031/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX annonceRente.xsd -->
+	<xs:include schemaLocation="../../ebsv-c031/1/ebsv-c031-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c001/1" schemaLocation="../../ebsv-c001/1/ebsv-c001-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c004/1" schemaLocation="../../ebsv-c004/1/ebsv-c004-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c005/1" schemaLocation="../../ebsv-c005/1/ebsv-c005-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c007/1" schemaLocation="../../ebsv-c007/1/ebsv-c007-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c011/1" schemaLocation="../../ebsv-c011/1/ebsv-c011-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c015/1" schemaLocation="../../ebsv-c015/1/ebsv-c015-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c016/1" schemaLocation="../../ebsv-c016/1/ebsv-c016-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c023/1" schemaLocation="../../ebsv-c023/1/ebsv-c023-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c029/1" schemaLocation="../../ebsv-c029/1/ebsv-c029-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c030/1" schemaLocation="../../ebsv-c030/1/ebsv-c030-000000-1-0.xsd"/>
+	<!-- Annonce selon 9ème révision ============================================================== -->
+	<xs:complexType name="RRMeldung9_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr">annonce 9e: code d'application IN (41,42,43)</xs:documentation>
+			<xs:documentation xml:lang="de">Meldung 9.Revision: Anwendungsgebiet IN (41,42,43)</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:element name="OrdentlicheRente">
+				<xs:annotation>
+					<xs:documentation>
+                        rente ordinaire: genre de prestation IN (10,11,12,13,14,15,16,33,34,35,36, 50,51,52,53,54,55,56)
+                    </xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="Zuwachsmeldung" type="ebsv-c031:ZuwachsmeldungO9_Type">
+							<xs:annotation>
+								<xs:documentation>code d'application = 41</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Abgangsmeldung" type="ebsv-c031:Abgangsmeldung_Type">
+							<xs:annotation>
+								<xs:documentation>code d'application = 42</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Aenderungsmeldung" type="ebsv-c031:AenderungsmeldungO9_Type">
+							<xs:annotation>
+								<xs:documentation>code d'application = 43</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="AusserordentlicheRente">
+				<xs:annotation>
+					<xs:documentation>
+                        rente extraordinaire: genre de prestation IN (20,21,22,23,24,25,26,43,44,45,46,
+                        70,71,72,73,74,75,76)
+                    </xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="Zuwachsmeldung" type="ebsv-c031:ZuwachsmeldungAO9_Type">
+							<xs:annotation>
+								<xs:documentation>code d'application = 41</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Abgangsmeldung" type="ebsv-c031:Abgangsmeldung_Type">
+							<xs:annotation>
+								<xs:documentation>code d'application = 42</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Aenderungsmeldung" type="ebsv-c031:AenderungsmeldungAO9_Type">
+							<xs:annotation>
+								<xs:documentation>code d'application = 43</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Hilflosenentschaedigung">
+				<xs:annotation>
+					<xs:documentation>rente API: genre de prestation IN (91,92,93,95,96,97)</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="Zuwachsmeldung" type="ebsv-c031:ZuwachsmeldungHE9_Type">
+							<xs:annotation>
+								<xs:documentation>code d'application = 44: augmentation</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Abgangsmeldung" type="ebsv-c031:Abgangsmeldung_Type">
+							<xs:annotation>
+								<xs:documentation>code d'application = 45: diminution</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Aenderungsmeldung" type="ebsv-c031:AenderungsmeldungHE9_Type">
+							<xs:annotation>
+								<xs:documentation>code d'application = 46: modification ponctuelle</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	<!-- Annonce selon 10ème révision ========================================================== -->
+	<xs:complexType name="RRMeldung10_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr">annonce 10e: code d'application IN (44,45,46)</xs:documentation>
+			<xs:documentation xml:lang="de">Meldung 10.Revision: Anwendungsgebiet IN (44,45,46)</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:element name="OrdentlicheRente">
+				<xs:annotation>
+					<xs:documentation>
+                        rente ordinaire: genre de prestation IN (10,13,14,15,16,33,34,35,36, 50,53,54,55,56)
+                    </xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="Zuwachsmeldung" type="ebsv-c031:ZuwachsmeldungO10_Type">
+							<xs:annotation>
+								<xs:documentation>code d'application = 44: Augmentation</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Abgangsmeldung" type="ebsv-c031:Abgangsmeldung_Type">
+							<xs:annotation>
+								<xs:documentation>code d'application = 45: Diminution</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Aenderungsmeldung" type="ebsv-c031:AenderungsmeldungO10_Type">
+							<xs:annotation>
+								<xs:documentation>code d'application = 46: modification ponctuelle</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="AusserordentlicheRente">
+				<xs:annotation>
+					<xs:documentation>
+                        rente extraordinaire: genre de prestation IN (20,23,24,25,26,45,70,73,74,75)
+                    </xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="Zuwachsmeldung" type="ebsv-c031:ZuwachsmeldungAO10_Type">
+							<xs:annotation>
+								<xs:documentation>code d'application = 44</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Abgangsmeldung" type="ebsv-c031:Abgangsmeldung_Type">
+							<xs:annotation>
+								<xs:documentation>code d'application = 45</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Aenderungsmeldung" type="ebsv-c031:AenderungsmeldungAO10_Type">
+							<xs:annotation>
+								<xs:documentation>code d'application = 46</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Hilflosenentschaedigung">
+				<xs:annotation>
+					<xs:documentation>
+                        rente API: genre de prestation IN (81,82,83,84,85,86,87,88,89,91,92,93,95,96,97)
+                    </xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="Zuwachsmeldung" type="ebsv-c031:ZuwachsmeldungHE10_Type">
+							<xs:annotation>
+								<xs:documentation>code d'application = 44: augmentation</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Abgangsmeldung" type="ebsv-c031:Abgangsmeldung_Type">
+							<xs:annotation>
+								<xs:documentation>code d'application = 45: diminution</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Aenderungsmeldung" type="ebsv-c031:AenderungsmeldungHE10_Type">
+							<xs:annotation>
+								<xs:documentation>code d'application = 46: modification ponctuelle</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	<!-- Annonce de remboursement/transfert ================================================-->
+	<xs:complexType name="RRMeldungRueckerstattungUeberweisung_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr"> code application = 47</xs:documentation>
+			<xs:documentation xml:lang="de">Anwendungsgebiet 47</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="ebsv-c016:IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" type="ebsv-c029:Meldungsnummer_Type"/>
+			<xs:element name="KasseneigenerHinweis" type="ebsv-c030:KasseneigenerHinweis_Type" minOccurs="0"/>
+			<xs:element name="LeistungsberechtigtePerson">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Versichertennummer" type="ebsv-c001:Versichertennummer11oder13Stellen_Type"/>
+						<xs:element name="WohnkantonStaat" type="ebsv-c011:WohnkantonStaatBSV_weakType"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="DatumRueckerstattungUeberweisung" type="ebsv-c007:AHVDatumJM_Type"/>
+						<xs:element name="Betrag" type="ebsv-c015:BetragFRRP6_Type">
+							<xs:annotation>
+								<xs:documentation>FFFFFF.CC </xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Mutationscode">
+							<xs:annotation>
+								<xs:documentation xml:lang="fr">R=remboursement   T=transfert</xs:documentation>
+								<xs:documentation xml:lang="de">R=Rückerstattung T=Überweisung</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="R"/>
+									<xs:enumeration value="T"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="ebsv-c007:AHVDatumJM_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- Réponse de la centrale aux caisses ====================================================== -->
+	<xs:complexType name="RRRueckmeldung_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr">
+                Réponse de la Centrale aux Caisses après traitement d'une annonce (9e + 10e révision, code
+                d'application: 50)
+            </xs:documentation>
+			<xs:documentation xml:lang="de">
+                Rückmeldung der ZAS an die AK nach Verarbeitung der Meldung (9. und 10.Revision, Anwendungsgebiet = 50)
+            </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="ebsv-c016:IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" type="ebsv-c029:Meldungsnummer_Type"/>
+			<xs:element name="KasseneigenerHinweis" type="ebsv-c030:KasseneigenerHinweis_Type" minOccurs="0"/>
+			<xs:element name="LeistungsberechtigtePerson">
+				<xs:annotation>
+					<xs:documentation>Données conernant l'ayant droit à la prestation</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Versichertennummer" type="ebsv-c001:Versichertennummer11oder13Stellen_Type">
+							<xs:annotation>
+								<xs:documentation xml:lang="fr">Numéro d'assuré de l'ayant droit</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="NeueVersichertennummer" type="ebsv-c001:Versichertennummer11oder13Stellen_Type" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation xml:lang="fr">
+                                    Nouveau numéro d'assuré de l'ayant droit à la prestation
+                                </xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="FamilienAngehoerige" type="ebsv-c031:FamilienAngehoerige_Type"/>
+						<xs:element name="Zivilstand" type="ebsv-c004:ZivilstandNr_Type" minOccurs="0"/>
+						<xs:element name="WohnkantonStaat" type="ebsv-c011:WohnkantonStaatBSV_weakType" minOccurs="0"/>
+						<xs:element name="istFluechtling" type="xs:boolean" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Leistungsart" type="ebsv-c023:Leistungsart_alle_Revisionen_strongType"/>
+						<xs:element name="Anspruchsbeginn" type="ebsv-c007:AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Monatsbetrag" type="ebsv-c015:BetragFR_Type" minOccurs="0"/>
+						<xs:element name="MonatsbetragErsetzteOrdentlicheRente" type="ebsv-c015:BetragFR_Type" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>
+                                    Mensualité de la rente ordinaire remplacée en francs (9e révision)
+                                </xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Anspruchsende" type="ebsv-c007:AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="ebsv-c023:Mutationscode_Type" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="ebsv-c007:AHVDatumJM_Type"/>
+			<xs:element name="AntwortZAS">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Verarbeitungscode">
+							<xs:annotation>
+								<xs:documentation>code de traitement: 0 = traité</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:unsignedByte">
+									<xs:minInclusive value="0"/>
+									<xs:maxInclusive value="2"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="Meldungsart">
+							<xs:simpleType>
+								<xs:restriction base="xs:unsignedByte">
+									<xs:minInclusive value="0"/>
+									<xs:maxInclusive value="4"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- Etat des rentes selon 9ème révision ================================================= -->
+	<xs:complexType name="RRBestandesmeldung9_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr">
+                annonce de l'état des rentes de la CdC aux Caisses dans le but d'établir la concordance (code
+                d'application = 51; 9e révision)
+            </xs:documentation>
+			<xs:documentation xml:lang="de">
+                Bestandesmeldung der ZAS an die AK zwecks Übereinstimmungskontrolle (9.Revision. Anwendungsgebiet = 51)
+            </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="OrdentlicheRente" type="ebsv-c031:RRBestandesmeldungO9_Type"/>
+				<xs:element name="AusserordentlicheRente" type="ebsv-c031:RRBestandesmeldungAO9_Type"/>
+				<xs:element name="Hilflosenentschaedigung" type="ebsv-c031:RRBestandesmeldungHE9_Type">
+					<xs:annotation>
+						<xs:documentation>API</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+			<xs:element name="ZusaetzlicheAngabenZAS">
+				<xs:annotation>
+					<xs:documentation>données supplémentaires (fournies par la CdC)</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Namensangaben" type="ebsv-c005:NameUndVorname_Type"/>
+						<xs:element name="Heimatstaat" type="ebsv-c011:WohnkantonStaatBSV_weakType"/>
+						<xs:element name="BruchteilRente">
+							<xs:simpleType>
+								<xs:restriction base="xs:unsignedByte">
+									<xs:minInclusive value="0"/>
+									<xs:maxInclusive value="4"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="BisherigeWerte" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation xml:lang="fr">Valeurs anciennes lors de la conversion des rentes</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="DurchschnittlichesJahreseinkommen" type="ebsv-c015:BetragFR_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="fr">Ancien revenu annuel moyen déterminant</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="MonatsbetragErsetzteOrdentlicheRente" type="ebsv-c015:BetragFR_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="fr">Ancienne RO remplacée      </xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="Monatsbetrag" type="ebsv-c015:BetragFR_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="fr">Ancien montant mensuel</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="SonderfallcodeRente" type="ebsv-c023:SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5">
+										<xs:annotation>
+											<xs:documentation xml:lang="fr">Anciens cas spéciaux</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="DJEohneErziehungsgutschrift" type="ebsv-c015:BetragFR_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="fr">Ancien revenu annuel moyen sans bonifications pour tâches éducatives</xs:documentation>
+											<xs:documentation/>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="AngerechneteErziehungsgutschrift" type="ebsv-c015:BetragFR_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="fr">Anciennes bonifications pour tâches éducatives moyennes prises en compte</xs:documentation>
+											<xs:documentation>en francs</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="Aufschubszuschlag" type="ebsv-c015:BetragFR_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="fr">Ancien supplément d'ajournement</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="BemerkungenZAS" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation xml:lang="fr">Observations de la Centrale lors de la conversion des rentes</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:minLength value="0"/>
+									<xs:maxLength value="10"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- Etat des rentes selon 10ème révision ================================================= -->
+	<xs:complexType name="RRBestandesmeldung10_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr">
+                annonce de l'état des rentes de la CdC aux Caisses dans le but d'établir la concordance (code
+                d'application = 53; 10e révision)
+            </xs:documentation>
+			<xs:documentation xml:lang="de">
+                Bestandesmeldung der ZAS an die AK zwecks Übereinstimmungskontrolle (10.Revision. Anwendungsgebiet = 53)
+            </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="OrdentlicheRente" type="ebsv-c031:RRBestandesmeldungO10_Type"/>
+				<xs:element name="AusserordentlicheRente" type="ebsv-c031:RRBestandesmeldungAO10_Type"/>
+				<xs:element name="Hilflosenentschaedigung" type="ebsv-c031:RRBestandesmeldungHE10_Type">
+					<xs:annotation>
+						<xs:documentation>API</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+			<xs:element name="ZusaetzlicheAngabenZAS">
+				<xs:annotation>
+					<xs:documentation>données supplémentaires (fournies par la CdC)</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Namensangaben" type="ebsv-c005:NameUndVorname_Type">
+							<xs:annotation>
+								<xs:documentation>Etat nominatif</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Heimatstaat" type="ebsv-c011:WohnkantonStaatBSV_weakType">
+							<xs:annotation>
+								<xs:documentation>Etat d'origine</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="BruchteilRente">
+							<xs:annotation>
+								<xs:documentation>fraction de la rente</xs:documentation>
+								<xs:documentation>fraction de la rente</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:unsignedByte">
+									<xs:minInclusive value="0"/>
+									<xs:maxInclusive value="4"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="BisherigeWerte" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation xml:lang="fr">Valeurs anciennes lors de la conversion des rentes</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="DurchschnittlichesJahreseinkommen" type="ebsv-c015:BetragFR_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="fr">Ancien revenu annuel moyen déterminant </xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="Aufschubszuschlag" type="ebsv-c015:BetragFR_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="fr">Ancien supplément d'ajournement</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="Vorbezugsreduktion" type="ebsv-c015:BetragFR_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="fr">Ancienne réduction pour anticipation</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="Monatsbetrag" type="ebsv-c015:BetragFR_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="fr">Ancien montant mensuel</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="SonderfallcodeRente" type="ebsv-c023:SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5">
+										<xs:annotation>
+											<xs:documentation xml:lang="fr">Anciens cas spéciaux</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="BemerkungenZAS" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation xml:lang="fr">Observations de la Centrale lors de la conversion des rentes</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:minLength value="0"/>
+									<xs:maxLength value="10"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- Annonce cas de décès aux caisses ================================================= -->
+	<xs:complexType name="RRTodesfallmeldung_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr">
+                Cas de décès annoncés par la Centrale aux Caisses (code d'application: 52)
+            </xs:documentation>
+			<xs:documentation xml:lang="de">
+                Todesfallmeldung der ZAS an die AK (Anwendungsgebiet = 52)
+            </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="ebsv-c016:IrgendeineZweigstelle_weakType"/>
+			<xs:element name="VerstorbenePerson">
+				<xs:annotation>
+					<xs:documentation>Indications sur le défunt</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Versichertennummer8stellig" type="ebsv-c001:Versichertennummer8Stellen_Type"/>
+						<xs:element name="Namensangaben" type="ebsv-c005:NameUndVorname_Type"/>
+						<xs:element name="Geburtsdatum">
+							<xs:annotation>
+								<xs:documentation xml:lang="de">Geburtsdatum. Alle bekannten Elemente (Jahr, Monat, Tag) müssen angegeben werden.</xs:documentation>
+								<xs:documentation xml:lang="fr">Date de naissance. A indiquer avec la meilleure précision connue.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:choice>
+									<xs:element name="Geburtsdatum_JJJJMMTT">
+										<xs:annotation>
+											<xs:documentation xml:lang="de">Das vollständige Geburtsdatum ist bekannt.
+</xs:documentation>
+											<xs:documentation xml:lang="fr">La date de naissance complète est connue.</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:date">
+												<xs:minInclusive value="1848-01-01"/>
+												<xs:maxInclusive value="2048-12-31"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="Geburtsdatum_JJJJMM">
+										<xs:annotation>
+											<xs:documentation xml:lang="de">Monat und Jahr des Geburtsdatums sind bekannt.</xs:documentation>
+											<xs:documentation>L'année et le mois de la date de naissance sont connus.</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:gYearMonth">
+												<xs:minInclusive value="1848-01"/>
+												<xs:maxInclusive value="2048-12"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="Geburtsdatum_JJJJ">
+										<xs:annotation>
+											<xs:documentation xml:lang="de">Nur das Geburtsjahr ist bekannt.</xs:documentation>
+											<xs:documentation xml:lang="fr">Uniquement l'année de naissance est connue.</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:gYear">
+												<xs:minInclusive value="1848"/>
+												<xs:maxInclusive value="2048"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+								</xs:choice>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="Heimatort">
+							<xs:annotation>
+								<xs:documentation>facultatif ?</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:minLength value="0"/>
+									<xs:maxLength value="12"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="Wohnort">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="15"/>
+									<xs:minLength value="0"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="Todesdatum_MMJJ" type="ebsv-c007:AHVDatumJM_Type"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="MoeglicherweiseBetroffeneLeistungsberechtigtePerson" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>
+                        Indications sur les personnes qui peuvent être l'ayant droit à la prestation
+                    </xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="KasseZweigstelle" type="ebsv-c016:IrgendeineZweigstelle_weakType">
+							<xs:annotation>
+								<xs:documentation>Caisse qui paie la prestation</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Versichertennummer" type="ebsv-c001:Versichertennummer11oder13Stellen_Type"/>
+						<xs:element name="Vnr1Ergaenzend" type="ebsv-c001:Versichertennummer11oder13Stellen_Type" minOccurs="0"/>
+						<xs:element name="Namensangaben" type="ebsv-c005:NameUndVorname_Type"/>
+						<xs:element name="Leistungsart" type="ebsv-c023:Leistungsart_alle_Revisionen_strongType">
+							<xs:annotation>
+								<xs:documentation/>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Hinweis">
+							<xs:annotation>
+								<xs:documentation>0 = keiner 1 = Leistung schon als Abgang gemeldet</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:unsignedByte">
+									<xs:minInclusive value="0"/>
+									<xs:maxInclusive value="1"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

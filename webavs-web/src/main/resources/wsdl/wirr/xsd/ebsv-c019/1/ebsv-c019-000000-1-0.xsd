@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c019="http://www.bsv.admin.ch/xmlns/ebsv-c019/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c019/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX BrancheEco-types.xsd -->
+	<xs:simpleType name="Erwerbszweig_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Erwerbszweig</xs:documentation>
+			<xs:documentation>Code de branche économique</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedInt">
+			<xs:totalDigits value="4"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

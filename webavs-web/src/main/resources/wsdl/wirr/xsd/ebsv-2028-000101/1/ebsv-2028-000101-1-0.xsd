@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Naef (OFIT) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-2028-000101="http://www.bsv.admin.ch/xmlns/ebsv-2028-000101/1" xmlns:ebsv-2028-000000="http://www.bsv.admin.ch/xmlns/ebsv-2028-000000/1" xmlns:eCH-0058="http://www.ech.ch/xmlns/eCH-0058/4" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-2028-000101/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">Query on the central pension register of the swiss social security. It is based on eCH-0058.
+		  Version 1.0
+          $Id: ebsv-2028-000101-1-0.xsd 2012-02-23 18:40:00Z naef $
+        </xs:documentation>
+	</xs:annotation>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-2028-000000/1" schemaLocation="../../ebsv-2028-000000/1/ebsv-2028-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0058/4" schemaLocation="../../ebsv-2028-000001/1/ebsv-2028-000001-1-0.xsd"/>
+	<xs:element name="delivery">
+		<xs:annotation>
+			<xs:documentation>Request with eCH-0058 header</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="header" type="eCH-0058:headerRequestType">
+					<xs:annotation>
+						<xs:documentation>eCH-0058 header restricted in order to fit exactly to the needs of this request.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="content">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="request" type="ebsv-2028-000000:requestType"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

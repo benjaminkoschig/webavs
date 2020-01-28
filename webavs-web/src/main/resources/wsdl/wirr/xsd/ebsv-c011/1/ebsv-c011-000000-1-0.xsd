@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c011="http://www.bsv.admin.ch/xmlns/ebsv-c011/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c011/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX Lieux-types.xsd -->
+	<xs:simpleType name="LandNrBSV_weakType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Weite Codifizierung der Länder/Nationalitäten (nach BSV Coden) (default type)</xs:documentation>
+			<xs:documentation xml:lang="fr">Codification OFAS des pays (typage faible, défaut)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedShort">
+			<xs:minInclusive value="100"/>
+			<xs:maxInclusive value="999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="KantonNrBSV_weakType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Weite Codifizierung der Kantone (nach BSV Coden) (default type)</xs:documentation>
+			<xs:documentation xml:lang="fr">Codification OFAS des cantons (typage faible, défaut)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedShort">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="50"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LandNrBSV_strongType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">(to be implemented) Strenge Codifizierung der Länder/Nationalitäten (nach BSV Coden)</xs:documentation>
+			<xs:documentation xml:lang="fr">Codification OFAS des pays (typage fort)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="ebsv-c011:LandNrBSV_weakType"/>
+	</xs:simpleType>
+	<xs:simpleType name="Kanton2B_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">2-Buchstaben Kantonscoden (AG,AI,usw.) (+LIechtenstein)</xs:documentation>
+			<xs:documentation xml:lang="fr">Code canton sur 2 positions, + LI(echtenstein)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:length value="2"/>
+			<xs:enumeration value="AG"/>
+			<xs:enumeration value="AI"/>
+			<xs:enumeration value="AR"/>
+			<xs:enumeration value="BE"/>
+			<xs:enumeration value="BL"/>
+			<xs:enumeration value="BS"/>
+			<xs:enumeration value="FR"/>
+			<xs:enumeration value="GE"/>
+			<xs:enumeration value="GL"/>
+			<xs:enumeration value="GR"/>
+			<xs:enumeration value="JU"/>
+			<xs:enumeration value="LU"/>
+			<xs:enumeration value="NE"/>
+			<xs:enumeration value="NW"/>
+			<xs:enumeration value="OW"/>
+			<xs:enumeration value="SG"/>
+			<xs:enumeration value="SH"/>
+			<xs:enumeration value="SO"/>
+			<xs:enumeration value="SZ"/>
+			<xs:enumeration value="TI"/>
+			<xs:enumeration value="TG"/>
+			<xs:enumeration value="UR"/>
+			<xs:enumeration value="VD"/>
+			<xs:enumeration value="VS"/>
+			<xs:enumeration value="ZG"/>
+			<xs:enumeration value="ZH"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="KantonNrBSV_StrongType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Strenge Codifizierung der Kantone (nach BSV Coden)</xs:documentation>
+			<xs:documentation xml:lang="fr">Codification OFAS des cantons (typage fort)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="ebsv-c011:KantonNrBSV_weakType">
+			<xs:enumeration value="1"/>
+			<xs:enumeration value="2"/>
+			<xs:enumeration value="3"/>
+			<xs:enumeration value="4"/>
+			<xs:enumeration value="5"/>
+			<xs:enumeration value="6"/>
+			<xs:enumeration value="7"/>
+			<xs:enumeration value="8"/>
+			<xs:enumeration value="9"/>
+			<xs:enumeration value="10"/>
+			<xs:enumeration value="11"/>
+			<xs:enumeration value="12"/>
+			<xs:enumeration value="13"/>
+			<xs:enumeration value="14"/>
+			<xs:enumeration value="15"/>
+			<xs:enumeration value="16"/>
+			<xs:enumeration value="17"/>
+			<xs:enumeration value="18"/>
+			<xs:enumeration value="19"/>
+			<xs:enumeration value="20"/>
+			<xs:enumeration value="21"/>
+			<xs:enumeration value="22"/>
+			<xs:enumeration value="23"/>
+			<xs:enumeration value="24"/>
+			<xs:enumeration value="25"/>
+			<xs:enumeration value="50"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="WohnkantonStaat_weakType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Wohnort (2-Buchstaben Kantonscode in der Schweiz, oder BSV-Schlüsselzahl im Ausland)</xs:documentation>
+			<xs:documentation xml:lang="fr">Lieu de résidence (canton pour la Suisse, ou code-pays OFAS pour l'étranger)</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="ebsv-c011:LandNrBSV_weakType ebsv-c011:Kanton2B_Type"/>
+	</xs:simpleType>
+	<xs:simpleType name="WohnkantonStaatBSV_weakType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Wohnort (2-Buchstaben Kantonscode in der Schweiz, oder BSV-Schlüsselzahl im Ausland)</xs:documentation>
+			<xs:documentation xml:lang="fr">Lieu de résidence (canton pour la Suisse, ou code-pays OFAS pour l'étranger)</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="ebsv-c011:LandNrBSV_weakType ebsv-c011:KantonNrBSV_StrongType"/>
+	</xs:simpleType>
+</xs:schema>

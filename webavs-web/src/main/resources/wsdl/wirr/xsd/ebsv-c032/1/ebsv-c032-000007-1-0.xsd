@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c001="http://www.bsv.admin.ch/xmlns/ebsv-c001/1" xmlns:ebsv-c016="http://www.bsv.admin.ch/xmlns/ebsv-c016/1" xmlns:ebsv-c032="http://www.bsv.admin.ch/xmlns/ebsv-c032/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c032/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX annonceCIComplement-types.xsd -->
+	<xs:include schemaLocation="../../ebsv-c032/1/ebsv-c032-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c001/1" schemaLocation="../../ebsv-c001/1/ebsv-c001-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c016/1" schemaLocation="../../ebsv-c016/1/ebsv-c016-000000-1-0.xsd"/>
+	<xs:complexType name="IKErgaenzungsanzeige_Type">
+		<xs:annotation>
+			<xs:documentation>Code application 23: CI de complément</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelleIKFuehrend" type="ebsv-c016:IrgendeineZweigstelle_weakType"/>
+			<xs:element name="VersichertenNrErgaenzt" type="ebsv-c001:Versichertennummer11oder13Stellen_Type">
+				<xs:annotation>
+					<xs:documentation>Ergänzte AHVN (11 Stellen) oder Versichertennummer unter der eine Änderung der Versichertendaten eingetragen wurde</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VNrErgaenzend" type="ebsv-c001:Versichertennummer8bis10Stellen_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>AHVN im alten (vor 1972) Format, d.h. weniger als 11 Stellen</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Versichertennummer" type="ebsv-c001:Versichertennummer11oder13Stellen_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Ursprünglich frühere Versichertennummer, ab Einführung der 13 Stelligen Versichertennummer die Neue 13 Stellige Versichertennummer </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VersichertenAngaben" type="ebsv-c032:TVersicherteAngabenSemiFakultativ"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

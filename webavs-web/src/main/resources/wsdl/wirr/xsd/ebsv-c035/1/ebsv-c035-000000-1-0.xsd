@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c001="http://www.bsv.admin.ch/xmlns/ebsv-c001/1" xmlns:ebsv-c004="http://www.bsv.admin.ch/xmlns/ebsv-c004/1" xmlns:ebsv-c007="http://www.bsv.admin.ch/xmlns/ebsv-c007/1" xmlns:ebsv-c011="http://www.bsv.admin.ch/xmlns/ebsv-c011/1" xmlns:ebsv-c014="http://www.bsv.admin.ch/xmlns/ebsv-c014/1" xmlns:ebsv-c015="http://www.bsv.admin.ch/xmlns/ebsv-c015/1" xmlns:ebsv-c016="http://www.bsv.admin.ch/xmlns/ebsv-c016/1" xmlns:ebsv-c020="http://www.bsv.admin.ch/xmlns/ebsv-c020/1" xmlns:ebsv-c022="http://www.bsv.admin.ch/xmlns/ebsv-c022/1" xmlns:ebsv-c023="http://www.bsv.admin.ch/xmlns/ebsv-c023/1" xmlns:ebsv-c035="http://www.bsv.admin.ch/xmlns/ebsv-c035/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c035/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX annoncesPC-types.xsd -->
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c001/1" schemaLocation="../../ebsv-c001/1/ebsv-c001-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c004/1" schemaLocation="../../ebsv-c004/1/ebsv-c004-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c007/1" schemaLocation="../../ebsv-c007/1/ebsv-c007-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c011/1" schemaLocation="../../ebsv-c011/1/ebsv-c011-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c014/1" schemaLocation="../../ebsv-c014/1/ebsv-c014-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c015/1" schemaLocation="../../ebsv-c015/1/ebsv-c015-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c016/1" schemaLocation="../../ebsv-c016/1/ebsv-c016-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c020/1" schemaLocation="../../ebsv-c020/1/ebsv-c020-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c022/1" schemaLocation="../../ebsv-c022/1/ebsv-c022-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c023/1" schemaLocation="../../ebsv-c023/1/ebsv-c023-000000-1-0.xsd"/>
+	<xs:complexType name="ELMeldung_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr">
+				Annonce de cas PC avec droit aux prestations AVS/AI. Code application 61
+			</xs:documentation>
+			<xs:documentation xml:lang="de">
+				Meldung des EL-Fälle mit Anspruch auf AHV/IV-Leistungen. Code Anwendungsgebiet 61
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ELStelleZweigstelle" type="ebsv-c016:IrgendeineZweigstelle_weakType"/>
+			<xs:element name="InternerHinweisELStelle" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="20"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Versichertennummer" type="ebsv-c001:Versichertennummer11oder13Stellen_Type" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ELRueckMeldung_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr">
+				Annonce de cas PC avec droit aux prestations AVS/AI, réponse de la centrale.
+				Code application 61
+			</xs:documentation>
+			<xs:documentation xml:lang="de">
+				Meldung des EL-Fälle mit Anspruch auf AHV/IV-Leistungen, Rückmeldung der ZAS.
+				Code Anwendungsgebiet 61
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ELStelleZweigstelle" type="ebsv-c016:IrgendeineZweigstelle_weakType"/>
+			<xs:element name="NummerLeistungsauszahlendeAKZweigstelle" type="ebsv-c016:IrgendeineZweigstelle_weakType" minOccurs="0"/>
+			<xs:element name="InternerHinweisELStelle" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="20"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="VNrLeistungsberechtigtePerson" type="ebsv-c001:Versichertennummer11oder13Stellen_Type" minOccurs="0"/>
+			<xs:element name="VNr1Ergaenzend" type="ebsv-c023:VersichertennummerErgaenzend_Type" minOccurs="0"/>
+			<xs:element name="Zivilstand" type="ebsv-c004:ZivilstandNr_Type" minOccurs="0"/>
+			<xs:element name="Fluechtling" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="WohnkantonStaat" type="ebsv-c011:WohnkantonStaatBSV_weakType" minOccurs="0"/>
+			<xs:element name="Anspruchsbeginn" type="ebsv-c007:AHVDatumJM_Type" minOccurs="0"/>
+			<xs:element name="AnspruchsEnde" type="ebsv-c007:AHVDatumJM_Type" minOccurs="0"/>
+			<xs:element name="Berichtsmonat" type="ebsv-c007:AHVDatumJM_Type" minOccurs="0"/>
+			<xs:element name="Mutationscode" type="ebsv-c023:Mutationscode_Type" minOccurs="0"/>
+			<xs:element name="ZustaendigeIVStelle" type="ebsv-c016:IVStelle_strongType" minOccurs="0"/>
+			<xs:element name="Invaliditaetsgrad" type="ebsv-c020:Invaliditaetsgrad_weakType" minOccurs="0"/>
+			<xs:element name="Gebrechensschluessel" type="ebsv-c014:UnsignedInt5stellig_Type" minOccurs="0"/>
+			<xs:element name="InvalideHinterlassene" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="Leistungsart" type="ebsv-c023:Leistungsart_alle_Revisionen_strongType" minOccurs="0"/>
+			<xs:element name="BruchteilRente" type="ebsv-c022:IVRentenbruchteil_Type" minOccurs="0"/>
+			<xs:element name="MonatsbetragNeu" type="ebsv-c015:BetragFR5MitNull_Type" minOccurs="0"/>
+			<xs:element name="MonatsbetragAlt" type="ebsv-c015:BetragFR5MitNull_Type" minOccurs="0"/>
+			<xs:element name="BemerkungenZAS" type="xs:string" minOccurs="0"/>
+			<xs:element name="Verarbeitungscode" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">
+						0 = Fall im Rentenregister gefunden
+						1 = Versichertennummer falsch
+						2 = Fall im Rentenregister nicht gefunden
+					</xs:documentation>
+					<xs:documentation xml:lang="fr">
+						0 = Cas trouvé dans le registre des rentes
+						1 = Numéro d'assuré erroné
+						2 = Cas inconnu dans le registre des rentes
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="0"/>
+						<xs:enumeration value="1"/>
+						<xs:enumeration value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ELFaelleOhneAnspruchZuwachsMeldung_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr">
+				Annonce d'augmentation de cas PC sans droit aux prestations AVS/AI.
+				Code application 63.
+			</xs:documentation>
+			<xs:documentation xml:lang="de">
+				Zuwachsmeldung von EL-Fälle ohne Anspruch auf AHV/IV-Leistungen.
+				Code Anwendungsgebiet 63.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ebsv-c035:ELFaelleOhneAnspruchMeldung_Type"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ELFaelleOhneAnspruchAbgangsMeldung_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr">
+				Annonce de diminution de cas PC sans droit aux prestations AVS/AI.
+				Code application 64.
+			</xs:documentation>
+			<xs:documentation xml:lang="de">
+				Abgangssmeldung von EL-Fälle ohne Anspruch auf AHV/IV-Leistungen.
+				Code Anwendungsgebiet 64.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ebsv-c035:ELFaelleOhneAnspruchMeldung_Type"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ELFaelleOhneAnspruchMeldung_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr">
+				Annonce d'augmentation ou de diminution de cas PC sans droit aux prestations AVS/AI.
+				Code application 63 ou 64.
+			</xs:documentation>
+			<xs:documentation xml:lang="de">
+				Zuwachs- oder Abgangsmeldung von EL-Fälle ohne Anspruch auf AHV/IV-Leistungen.
+				Code Anwendungsgebiet 63 oder 64.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ELStelleZweigstelle" type="ebsv-c016:IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:integer">
+						<xs:minInclusive value="1"/>
+						<xs:maxInclusive value="999999"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="InternerHinweisELStelle" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="20"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="VNrLeistungsberechtigtePerson" type="ebsv-c001:Versichertennummer11oder13Stellen_Type" minOccurs="0"/>
+			<xs:element name="VNr1Ergaenzend" type="ebsv-c001:Versichertennummer11oder13Stellen_Type" minOccurs="0"/>
+			<xs:element name="Zivilstand" type="ebsv-c004:ZivilstandNr_Type" minOccurs="0"/>
+			<xs:element name="Fluechtling" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="Wohnkanton" type="ebsv-c011:KantonNrBSV_StrongType" minOccurs="0"/>
+			<xs:element name="Anspruchsbeginn" type="ebsv-c007:AHVDatumJM_Type" minOccurs="0"/>
+			<xs:element name="AnspruchsEnde" type="ebsv-c007:AHVDatumJM_Type" minOccurs="0"/>
+			<xs:element name="Berichtsmonat" type="ebsv-c007:AHVDatumJM_Type" minOccurs="0"/>
+			<xs:element name="Mutationscode" type="ebsv-c023:Mutationscode_Type" minOccurs="0"/>
+			<xs:element name="Invaliditaetsgrad" type="ebsv-c020:Invaliditaetsgrad_weakType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

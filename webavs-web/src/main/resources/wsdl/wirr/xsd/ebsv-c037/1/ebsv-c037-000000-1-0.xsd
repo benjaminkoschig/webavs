@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c016="http://www.bsv.admin.ch/xmlns/ebsv-c016/1" xmlns:ebsv-c037="http://www.bsv.admin.ch/xmlns/ebsv-c037/0" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c037/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX assuranceMilitaire-types.xsd -->
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c016/1" schemaLocation="../../ebsv-c016/1/ebsv-c016-000000-1-0.xsd"/>
+	<xs:complexType name="MilitaerVersicherungsMeldung_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr">
+				Annonces de l'Assurance Militaire aux caisses cantonales par l'entremise de la Centrale.
+				Code application 91
+			</xs:documentation>
+			<xs:documentation xml:lang="de">
+				Meldungen der Militärvericherung an die kantonalen AK über die ZAS.
+				Code Anwendungsgebiet 91
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Wohnsitzkanton" type="ebsv-c016:KantBundAGKasse_weakType" minOccurs="0"/>
+			<xs:element name="Informationen" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

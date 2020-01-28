@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c003="http://www.bsv.admin.ch/xmlns/ebsv-c003/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c003/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX Sexe-types.xsd -->
+	<xs:simpleType name="Geschlecht_numType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Geschlecht : 1=männlich, 2=weiblich</xs:documentation>
+			<xs:documentation xml:lang="fr">sexe : 1=masculin 2=féminin</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedByte">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c022="http://www.bsv.admin.ch/xmlns/ebsv-c022/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c022/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX FractionRente-types.xsd -->
+	<xs:simpleType name="IVRentenbruchteil_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Bruchteil der IV-Rente (1=100%, 2=50%, 3=75%, 4=25%)</xs:documentation>
+			<xs:documentation xml:lang="fr">Fraction de rente AI (1=100%, 2=50%, 3=75%, 4=25%)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedByte">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="4"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

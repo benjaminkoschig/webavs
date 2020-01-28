@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Naef (OFIT) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-2028-000000="http://www.bsv.admin.ch/xmlns/ebsv-2028-000000/1" xmlns:ebsv-c100="http://www.bsv.admin.ch/xmlns/ebsv-c100/1" xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/2" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-2028-000000/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<xs:annotation>
+		<xs:documentation xml:lang="en"> Request/Response to query the central pension register of the swiss social security. Common part with namespace ebsv-2028-000000.
+		  Version 1.0
+          $Id: ebsv-2028-000000-1-0.xsd 2012-04-03 18:43:00Z naef $
+        </xs:documentation>
+	</xs:annotation>
+	<xs:import namespace="http://www.bsv.admin.ch/xmlns/ebsv-c100/1" schemaLocation="../../ebsv-c100/1/ebsv-c100-000000-1-0.xsd"/>
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/2" schemaLocation="../../eCH-0044/2/eCH-0044-2-0.xsd"/>
+	<xs:complexType name="searchPerPersonType">
+		<xs:sequence>
+			<xs:element name="vn" type="eCH-0044:vnType">
+				<xs:annotation>
+					<xs:documentation xml:lang="fr">NAVS / AHVN</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="searchDepthVn">
+				<xs:annotation>
+					<xs:documentation xml:lang="fr">Paramètre indiquant, où le NAVS de la personne doit figurer dans les rentes retournées : 0 = uniquement dans le champ indiquant l’ayant droit, 1 = sous l’ayant droit ou sous le 1er numéro complémentaire, 2 = sous l’ayant droit ou sous le 1er ou le 2e numéro complémentaire</xs:documentation>
+					<xs:documentation xml:lang="de">Parameter der angibt wo die AHVN der Person in der zurückgegebenen Renten vorhanden sein muss: 0 = im Feld das die rentenberechtigte Person angibt, 1 = im Feld das die rentenberechtigte Person angibt oder im Feld der 1. ergänzenden Versichertennummer = im Feld das die rentenberechtigte Person angibt oder im Feld der 1. oder 2. ergänzenden Versichertennummer.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:unsignedShort">
+						<xs:enumeration value="0"/>
+						<xs:enumeration value="1"/>
+						<xs:enumeration value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="searchPerPersonAndPensionTypeType">
+		<xs:complexContent>
+			<xs:extension base="ebsv-2028-000000:searchPerPersonType">
+				<xs:sequence>
+					<xs:element name="searchDepthPension">
+						<xs:annotation>
+							<xs:documentation xml:lang="fr">Paramètre indiquant le type de prestation à retourner : 0 = retourner uniquement les rentres actives et les allocations pour impotent (API) actives qui ne sont pas en file d’attente, 1 = retourner toutes les rentes et API qui ne sont pas en file d’attente (actives ou non), 2 = retourner toutes les prestations qui ne sont pas en file d’attente (les rentes, les API, indem-nité forfaitaire (IF), transfert, remboursement, les prestations complémentaires (PC)).</xs:documentation>
+							<xs:documentation xml:lang="de">Parameter der die zurückzugebene Leistungsart definiert: 0 = nur die aktiven Renten und die aktiven Hilflosenentschädigungen (HE) die nicht in der Warteschlange sind, 1 = alle Renten und HE die nicht in der Warteschlange sind (aktive oder nicht aktive), 2 = alle Leistungen die nicht in der Warteschlange sind (Renten, HE, einmalige Kapitalabfindungen, Beitragsüberweisungen, Rückvergütungen, Zusatzleistungen). </xs:documentation>
+						</xs:annotation>
+						<xs:simpleType>
+							<xs:restriction base="xs:unsignedShort">
+								<xs:enumeration value="0"/>
+								<xs:enumeration value="1"/>
+								<xs:enumeration value="2"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="requestType">
+		<xs:choice>
+			<xs:element name="pensionsInRegister" type="ebsv-2028-000000:searchPerPersonAndPensionTypeType">
+				<xs:annotation>
+					<xs:documentation>Requests a list of pensions in the RR (pension register).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="announcementsInWaitingQueueOrSuppressed">
+				<xs:annotation>
+					<xs:documentation>Requests a list of announcements to the RR (pension register). These announcements are either in the waiting queue (not yet definitively processed) or suppressed.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:choice>
+							<xs:element name="perPerson" type="ebsv-2028-000000:searchPerPersonType"/>
+							<xs:element name="perOffice">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="office" type="ebsv-c100:kasseZweigstelleType">
+											<xs:annotation>
+												<xs:documentation xml:lang="fr">Identification de la caisse/agence AVS</xs:documentation>
+												<xs:documentation xml:lang="de">Identifikation der AHV Kasse/Zweigstelle.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="sendAlsoPlausibleAnnouncements" type="xs:boolean" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation xml:lang="fr">Pour éviter que le service retourne une trop grande quantité de prestations, par défaut, les annonces plausibles ne sont pas retournées. Si le flag sendAlsoPlausibleAnnouncements est présent, alors les prestations plausibles sont également retournées.</xs:documentation>
+												<xs:documentation xml:lang="de">Um zu vermeiden, dass der Service eine zu grosse Anzahl Meldungen zurückgibt, werden standardmässig die plausiblen Meldungen nicht zurückgegeben. Wenn der Flag SendAlsoPlausibleAnNouncements vorhanden ist, werden die plausiblen Meldungen zurückgegeben.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:choice>
+						<xs:element name="suppressedAfter" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation xml:lang="fr">Date indiquant que la réponse contiendra: 1) les annonces supprimées après cette date et 2) toutes les annonces en file d'attente qui ne sont pas supprimées (l'élément suppressedAfter est ignoré pour ce cas là). Cette date ne peut pas être inférieure de 13 mois à la date courante. La valeur par défaut est la date courante moins un mois (p.e. si la date courante est le 05.01.2012 alors suppressedAfter = 05.12.2011, si la date courante est le 31.03.2012, alors suppressedAfter = 29.02.2012).</xs:documentation>
+								<xs:documentation xml:lang="de">Datum das angibt, dass die Antwort folgende Meldungen beinhalten soll: 1) die Meldungen die nach diesem Datum gelöscht worden sind und 2) alle Meldungen die in der Warteschlange sind und nicht gelöscht wurden (das Element suppressedAfter ist in diesem Fall ignoriert). Dieses Datum kann nicht mehr als 13 Monate zurückliegen. Der Standardwert ist das aktuelle Datum minus einen Monat (z.B. wenn das aktuelle Datum 05.01.2012 ist, dann suppressedAfter = 05.12.2011, wenn das aktuelle Datum 31.03.2012 ist, dann suppressedAfter = 29.02.2012.</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:date">
+									<xs:minInclusive value="2009-01-01"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+</xs:schema>

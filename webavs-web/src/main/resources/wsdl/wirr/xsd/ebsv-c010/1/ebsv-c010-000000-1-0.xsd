@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c010="http://www.bsv.admin.ch/xmlns/ebsv-c010/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c010/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX Npa-types.xsd -->
+	<xs:simpleType name="PLZ_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Schweizerische PLZ</xs:documentation>
+			<xs:documentation xml:lang="fr">Numéro postal d'acheminement suisse (4 positions numériques)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedInt">
+			<xs:totalDigits value="4"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PLZ_Kompl_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Komplementäre schweizerische PLZ</xs:documentation>
+			<xs:documentation xml:lang="fr">Numéro postal complémentaire d'acheminement suisse (2 positions numériques)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedInt">
+			<xs:totalDigits value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

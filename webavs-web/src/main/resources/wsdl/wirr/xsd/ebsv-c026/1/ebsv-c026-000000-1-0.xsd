@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c026="http://www.bsv.admin.ch/xmlns/ebsv-c026/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c026/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX CodesApplication-types.xsd -->
+	<xs:simpleType name="MZRApplcode_weakType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">MZR : weite Codifizierung eines Anwendungsgebietcodes (default)</xs:documentation>
+			<xs:documentation xml:lang="fr">ARC : code application (typage faible, défaut)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:length value="2"/>
+			<xs:pattern value="\d[\dABCDEFG]"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

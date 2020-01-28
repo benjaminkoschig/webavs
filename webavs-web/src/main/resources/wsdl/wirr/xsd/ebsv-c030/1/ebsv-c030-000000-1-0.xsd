@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebsv-c030="http://www.bsv.admin.ch/xmlns/ebsv-c030/1" targetNamespace="http://www.bsv.admin.ch/xmlns/ebsv-c030/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!-- Ce fichier est issu du fichier TRAX annonceCommon-types.xsd -->
+	<xs:simpleType name="KasseneigenerHinweis_Type">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="20"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IdMeldung_Type">
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>
