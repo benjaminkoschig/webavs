@@ -8,6 +8,7 @@ public class AnnonceCalculationElements {
     
     private static final String XSD_RENTCATEGORY_ANNUAL_GROSS = "ANNUAL_GROSS";
     private static final String XSD_RENTCATEGORY_RENTAL_VALUE = "RENTAL_VALUE";
+    private static final String XSD_RENTCATEGORY_NO_RENTE = "NO_RENT";
 
     protected Montant otherWealth;
     protected Montant divestedWealth;
@@ -88,10 +89,11 @@ public class AnnonceCalculationElements {
             housingOwner = false;
         }
 
-        if (!grossRental.isZero() || !selfInhabitedPropertyDeductible.isZero() || !rentGrossTotalPart.isZero() || !maxRent.isZero()) {
+        if (!grossRental.isZero() || !selfInhabitedPropertyDeductible.isZero() || !rentGrossTotalPart.isZero()) {
             rent = true;
         } else {
-            rent = false;
+            rentCategory = XSD_RENTCATEGORY_NO_RENTE;
+            rent = true;
         }
         
     }
