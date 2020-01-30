@@ -37,7 +37,7 @@ public class CAReferenceBVR extends AbstractCAReference{
     private Boolean forcerBV = false;
 
     private String ocrb = CAReferenceBVR.OCRB_NON_FACTURABLE;
-    private BSession session = null;
+
 
     /**
      *
@@ -254,12 +254,6 @@ public class CAReferenceBVR extends AbstractCAReference{
         return removeNotLetterNotDigit(getLigneReference());
     }
 
-    /**
-     * @return the session
-     */
-    public BSession getSession() {
-        return session;
-    }
 
     /**
      * Retourne l'adresse pour le BVR (va rechercher dans le catalogue de textes MUSCA)
