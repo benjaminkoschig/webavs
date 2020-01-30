@@ -525,15 +525,23 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
 
 
 
-    private List<AnnonceRafamModel> getLastAnnonceFromRecordNumber(List<AnnonceRafamModel> annonces) {
+    private List<AnnonceRafamModel> getLastAnnonceFromRecordNumber(List<AnnonceRafamModel> annonces) throws JadeApplicationException {
         Map<String, AnnonceRafamModel> mapAnnonces = new HashMap<>();
         for(AnnonceRafamModel annonce : annonces){
-            if(mapAnnonces.get(annonce.getRecordNumber()) == null
-                || Integer.valueOf(mapAnnonces.get(annonce.getRecordNumber()).getId()) < Integer.valueOf(annonce.getId())) {
+            if(is68(annonce)
+                && !isPrimeNaissance(RafamFamilyAllowanceType.getFamilyAllowanceType(annonce.getGenrePrestation()))
+                && (mapAnnonces.get(annonce.getRecordNumber()) == null
+                || Integer.valueOf(mapAnnonces.get(annonce.getRecordNumber()).getId()) < Integer.valueOf(annonce.getId()))) {
                 mapAnnonces.put(annonce.getRecordNumber(), annonce);
             }
         }
         return new ArrayList(mapAnnonces.values());
+    }
+
+    private boolean is68(AnnonceRafamModel annonce) {
+        return RafamTypeAnnonce._68A_CREATION.getCode().equals(annonce.getTypeAnnonce())
+                || RafamTypeAnnonce._68B_MUTATION.getCode().equals(annonce.getTypeAnnonce())
+                || RafamTypeAnnonce._68C_ANNULATION.getCode().equals(annonce.getTypeAnnonce());
     }
 
     private List<AnnonceRafamModel> genererAnnonceSelonAnnoncePrecedante(
