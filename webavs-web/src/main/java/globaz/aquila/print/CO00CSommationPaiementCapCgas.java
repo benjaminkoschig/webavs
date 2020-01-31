@@ -171,8 +171,8 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
     @Override
     public void beforeExecuteReport() throws FWIException {
         super.beforeExecuteReport();
-        setTemplateFile(CO00CSommationPaiementCapCgas.TEMPLATE_NAME);
-//        setTemplateFile("CO_00C_SOMMATION_AF_QR_CODE");
+//        setTemplateFile(CO00CSommationPaiementCapCgas.TEMPLATE_NAME);
+        setTemplateFile("CO_00C_SOMMATION_AF_QR_CODE");
         setDocumentTitle(getSession().getLabel("AQUILA_SOMMATION"));
         setNumeroReferenceInforom(CO00CSommationPaiementCapCgas.NUMERO_REFERENCE_INFOROM);
     }
@@ -233,25 +233,25 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
         initTexteDetail(getParent());
 
         // -- BVR
-        initBVR(montantTotal);
+//        initBVR(montantTotal);
 
-//        initQRCode(montantTotal);
+        initQRCode(montantTotal);
     }
 
     private void initQRCode(FWCurrency montantTotal) {
         super.setParametres("P_SUBREPORT_QR_FACTURE",getImporter().getImportPath() + "QR_FACTURE_TEMPLATE.jasper");
         super.setParametres("P_QR_CODE_PATH", new GenerationQRCode().generateSwissQrCode(""));
-        super.setParametres("P_TITRE_1", "Récépisé");
-        super.setParametres("P_TITRE_2", "Section paiement");
-        super.setParametres("P_POINT_DEPOT", "point de dépôt");
-        super.setParametres("P_INFO_SUPP", "Nom AV1");
-        super.setParametres("P_MONNAIE_TITRE_1", "Monnaie");
+        super.setParametres("P_TITRE_1", getSession().getLabel("QR_RECEPICE"));
+        super.setParametres("P_TITRE_2", getSession().getLabel("QR_SECTION_PAIEMENT"));
+        super.setParametres("P_POINT_DEPOT", getSession().getLabel("QR_POINT_DEPOT"));
+        super.setParametres("P_INFO_SUPP", getSession().getLabel("QR_NOM_AV1"));
+        super.setParametres("P_MONNAIE_TITRE_1", getSession().getLabel("QR_MONNAIE"));
         super.setParametres("P_MONNAIE_1", "CHF");
-        super.setParametres("P_MONNAIE_TITRE_2", "Monnaie");
+        super.setParametres("P_MONNAIE_TITRE_2", getSession().getLabel("QR_MONNAIE"));
         super.setParametres("P_MONNAIE_2", "CHF");
-        super.setParametres("P_MONTANT_TITRE_1", "Montant");
+        super.setParametres("P_MONTANT_TITRE_1", getSession().getLabel("MONTANT"));
         super.setParametres("P_MONTANT_1", montantTotal.toString());
-        super.setParametres("P_MONTANT_TITRE_2", "Montant");
+        super.setParametres("P_MONTANT_TITRE_2", getSession().getLabel("MONTANT"));
         super.setParametres("P_MONTANT_2", montantTotal.toString());
 
         super.setParametres("P_SUBREPORT_ZONE_INDICATIONS",getImporter().getImportPath() + "QR_CODE_ZONE_INDICATIONS.jasper");

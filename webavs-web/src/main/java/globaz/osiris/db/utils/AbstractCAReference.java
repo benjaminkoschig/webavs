@@ -27,7 +27,6 @@ public abstract class AbstractCAReference {
     private static Map documents;
     private boolean isQRFacture;
 
-
     public AbstractCAReference(){
         ligneReference = AbstractCAReference.REFERENCE_NON_FACTURABLE;
         session = null;
@@ -254,5 +253,13 @@ public abstract class AbstractCAReference {
             resString.append(listeTextes.getTexte(position));
         }
         return resString.toString();
+    }
+
+    public boolean isQRFacture() {
+        return isQRFacture;
+    }
+
+    public void setQRFacture(boolean QRFacture) {
+        isQRFacture = QRFacture;
     }
 }

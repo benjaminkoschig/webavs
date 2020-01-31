@@ -41,44 +41,10 @@ public class GenerationQRCode {
 
     private static final int QR_CODE_EDGE_SIDE_PX = SWISS_CROSS_EDGE_SIDE_PX / SWISS_CROSS_EDGE_SIDE_MM * QR_CODE_EDGE_SIDE_MM;
 
-    private static final String PAYLOAD_1 = "SPC\r\n" +
-            "0200\r\n" +
-            "1\r\n" +
-            "CH4431999123000889012\r\n" +
-            "S\r\n" +
-            "Robert Schneider AG\r\n" +
-            "Via Casa Postale\r\n" +
-            "1268/2/22\r\n" +
-            "2501\r\n" +
-            "Biel\r\n" +
-            "CH\r\n" +
-            "\r\n" +
-            "\r\n" +
-            "\r\n" +
-            "\r\n" +
-            "\r\n" +
-            "\r\n" +
-            "\r\n" +
-            "123949.75\r\n" +
-            "CHF\r\n" +
-            "S\r\n"+
-            "Pia-Maria Rutschmann-Schnyder\r\n" +
-            "Grosse Marktgasse\r\n" +
-            "28/5\r\n" +
-            "9400\r\n" +
-            "Rorschach\r\n" +
-            "CH\r\n" +
-            "QRR\r\n" +
-            "210000000003139471430009017\r\n" +
-            "Beachten sie unsere Sonderangebotswoche bis 23.02.2017!\r\n" +
-            "EPD\r\n" +
-            "//S1/10/10201409/11/181105/40/0:30\r\n" +
-            "eBill/B/41010560425610173";
-
     public String generateSwissQrCode(String payload) {
 
         // generate the qr code from the payload.
-        BufferedImage qrCodeImage = generateQrCodeImage(PAYLOAD_1);
+        BufferedImage qrCodeImage = generateQrCodeImage(payload);
         String qrCodePath;
         try {
             // overlay the qr code with a Swiss Cross
