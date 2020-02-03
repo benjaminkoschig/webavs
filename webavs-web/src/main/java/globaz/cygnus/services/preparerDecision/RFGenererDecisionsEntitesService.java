@@ -4,6 +4,7 @@
 package globaz.cygnus.services.preparerDecision;
 
 import globaz.cygnus.api.TypesDeSoins.IRFCodeTypesDeSoins;
+import globaz.cygnus.api.TypesDeSoins.IRFTypesDeSoins;
 import globaz.cygnus.db.qds.RFQdPrincipaleJointDossier;
 import globaz.cygnus.db.qds.RFQdPrincipaleJointDossierManager;
 import globaz.cygnus.services.RFRetrieveNumeroDecisionService;
@@ -149,6 +150,7 @@ public class RFGenererDecisionsEntitesService {
         nouvelleDecision.setIdGestionnaire(processusGestionnaire);
         nouvelleDecision.setCodeTypeDeSoin(demandeCourante.getCodeTypeDeSoin());
         nouvelleDecision.setCodeSousTypeDeSoin(demandeCourante.getCodeSousTypeDeSoin());
+        nouvelleDecision.setIdSousTypeDeSoin(demandeCourante.getCsSousTypeDeSoin());
         nouvelleDecision.setIdExecutionProcess(idExecutionProcess);
 
         if (!JadeStringUtil.isBlankOrZero(demandeCourante.getIdQdPrincipale())) {
@@ -192,8 +194,8 @@ public class RFGenererDecisionsEntitesService {
 
     }
 
-    private boolean isCodeTypeDeSoinDecisionUnique(String codeTypeDeSoinDecision, String codeSousTypeDeSoinDecision,
-            String codeSousTypeDeSoinDemandeCourante, String codeTypeDeSoinDemandeCourante) {
+    private boolean isCodeTypeDeSoinDecisionUnique(String codeTypeDeSoinDecision, String codeSousTypeDeSoinDecision, String idSousTypeDeSoinDecision,
+            String codeSousTypeDeSoinDemandeCourante, String codeTypeDeSoinDemandeCourante, String idSousTypeDeSoinDemandeCourante) {
         // Si le code type de soin de la décision est égale à celui de la demande courante (mis à part pour le code
         // 12, attention au 12.7) on ajoute la demande à la nouvelle décision. Ce premier test permet d'ajouter une
         // demande unique à
@@ -225,11 +227,11 @@ public class RFGenererDecisionsEntitesService {
         // Sinon on test si la demande est unique
         if (!isMemeDecisionSelonCodesDecisionCourante) {
             // Si la décision à un code unique on ne peut plus lui ajouter d'autres demandes
-            if (isCodeTypeDeSoinUnique(codeTypeDeSoinDecision, codeSousTypeDeSoinDecision)) {
+            if (isCodeTypeDeSoinUnique(codeTypeDeSoinDecision, codeSousTypeDeSoinDecision, idSousTypeDeSoinDecision)) {
                 return false;
             } else {
                 // Sinon on regarde si la demande à un code unique
-                if (isCodeTypeDeSoinUnique(codeTypeDeSoinDemandeCourante, codeSousTypeDeSoinDemandeCourante)) {
+                if (isCodeTypeDeSoinUnique(codeTypeDeSoinDemandeCourante, codeSousTypeDeSoinDemandeCourante, idSousTypeDeSoinDemandeCourante)) {
                     return false;
                 } else {
                     return true;
@@ -247,13 +249,11 @@ public class RFGenererDecisionsEntitesService {
      * @param CodeSousTypeDeSoin
      * @return
      */
-    private boolean isCodeTypeDeSoinUnique(String codeTypeDeSoin, String CodeSousTypeDeSoin) {
+    private boolean isCodeTypeDeSoinUnique(String codeTypeDeSoin, String CodeSousTypeDeSoin, String idSousTypeDeSoin) {
 
         return (codeTypeDeSoin.equals(IRFCodeTypesDeSoins.TYPE_15_FRAIS_DE_TRAITEMENT_DENTAIRE)
                 || (codeTypeDeSoin.equals(IRFCodeTypesDeSoins.TYPE_12_STRUCTURE_ET_SEJOURS) && CodeSousTypeDeSoin
-                        .equals(IRFCodeTypesDeSoins.SOUS_TYPE_12_7_AIDE_AU_MENAGE_PAR_AIDE_PRIVEE)) || (codeTypeDeSoin
-                .equals(IRFCodeTypesDeSoins.TYPE_13_MAINTIEN_A_DOMICILE) && CodeSousTypeDeSoin
-                .equals(IRFCodeTypesDeSoins.SOUS_TYPE_13_6_AIDE_AU_MENAGE_AVANCE)));
+                        .equals(IRFCodeTypesDeSoins.SOUS_TYPE_12_7_AIDE_AU_MENAGE_PAR_AIDE_PRIVEE)) || idSousTypeDeSoin.equals(IRFTypesDeSoins.st_13_AIDE_AU_MENAGE_AVANCES));
 
     }
 
@@ -275,8 +275,8 @@ public class RFGenererDecisionsEntitesService {
                         PRDateFormater.convertDate_JJxMMxAAAA_to_AAAA(demandeCourante.getDateDemande()))
                 &&
 
-                isCodeTypeDeSoinDecisionUnique(decision.getCodeTypeDeSoin(), decision.getCodeSousTypeDeSoin(),
-                        demandeCourante.getCodeSousTypeDeSoin(), demandeCourante.getCodeTypeDeSoin()) &&
+                isCodeTypeDeSoinDecisionUnique(decision.getCodeTypeDeSoin(), decision.getCodeSousTypeDeSoin(), decision.getIdSousTypeDeSoin(),
+                        demandeCourante.getCodeSousTypeDeSoin(), demandeCourante.getCodeTypeDeSoin(), demandeCourante.getCsSousTypeDeSoin()) &&
 
                 isMemeQd(demandeCourante, decision) && isPaiementMensuel(demandeCourante, decision));
 

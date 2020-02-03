@@ -18,6 +18,7 @@
 <%@ page import="globaz.cygnus.api.demandes.IRFDemande" %>
 <%@ page import="globaz.framework.util.FWCurrency" %>
 <%@ page import="globaz.cygnus.api.TypesDeSoins.IRFCodeTypesDeSoins" %>
+<%@ page import="globaz.cygnus.api.TypesDeSoins.IRFTypesDeSoins" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%@ page isELIgnored ="false" %>
 <meta HTTP-EQUIV="Pragma" CONTENT="no-cache">
@@ -783,7 +784,7 @@
 							</td>
 							<td colspan="3" rowspan="6">
 <%
-	if (!viewBean.getCodeSousTypeDeSoinList().equals(IRFCodeTypesDeSoins.SOUS_TYPE_13_6_AIDE_AU_MENAGE_AVANCE)) {
+	if (!viewBean.getIdSousTypeDeSoin().equals(IRFTypesDeSoins.st_13_AIDE_AU_MENAGE_AVANCES)) {
 %>								<div data-g-adresse="service:findAdressePaiement, 
 													initThreadContext: true">
 									<input	id="idAdressePaiementDemande" 

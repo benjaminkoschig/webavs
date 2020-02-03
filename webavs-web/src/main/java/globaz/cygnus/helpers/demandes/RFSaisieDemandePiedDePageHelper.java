@@ -2,6 +2,7 @@ package globaz.cygnus.helpers.demandes;
 
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.cygnus.api.TypesDeSoins.IRFCodeTypesDeSoins;
+import globaz.cygnus.api.TypesDeSoins.IRFTypesDeSoins;
 import globaz.cygnus.api.demandes.IRFDemande;
 import globaz.cygnus.api.dossiers.IRFDossiers;
 import globaz.cygnus.db.contributions.RFContributionsAssistanceAI;
@@ -763,8 +764,7 @@ public class RFSaisieDemandePiedDePageHelper extends PRAbstractHelper {
             vb.setCsEtat(IRFDemande.ENREGISTRE);
 
             // Recherche de l'adresse paiement de l'assuré
-            if (vb.getCodeTypeDeSoinList().equals(IRFCodeTypesDeSoins.TYPE_13_MAINTIEN_A_DOMICILE)
-                    && vb.getCodeSousTypeDeSoinList().equals(IRFCodeTypesDeSoins.SOUS_TYPE_13_6_AIDE_AU_MENAGE_AVANCE)
+            if (vb.getIdSousTypeDeSoin().equals((IRFTypesDeSoins.st_13_AIDE_AU_MENAGE_AVANCES))
                     && RFPropertiesUtils.remonterAdressePaiementFournisseurSAS()) {
                 String idTiersSas = RFPropertiesUtils.getIdTiersAvanceSas();
                 vb.setIdAdressePaiementDemande(idTiersSas);

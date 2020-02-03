@@ -19,6 +19,7 @@ public class RFDecisionData {
     private String anneeQD = "";
     private String codeSousTypeDeSoin = "";
     private String codeTypeDeSoin = "";
+    private String idSousTypeDeSoin = "";
     private String dateDebutRetro = "";
     private String dateDernierPaiementRente = "";
     private String dateFinRetro = "";
@@ -337,4 +338,11 @@ public class RFDecisionData {
         this.bordereauAccompagnement = bordereauAccompagnement;
     }
 
+    public String getIdSousTypeDeSoin() {
+        return idSousTypeDeSoin;
+    }
+
+    public void setIdSousTypeDeSoin(String idSousTypeDeSoin) {
+        this.idSousTypeDeSoin = idSousTypeDeSoin;
+    }
 }
