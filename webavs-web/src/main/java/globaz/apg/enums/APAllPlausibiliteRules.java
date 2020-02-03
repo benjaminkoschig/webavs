@@ -68,7 +68,6 @@ public enum APAllPlausibiliteRules {
     R_503(true, 503),
     R_504(true, 504),
     R_505(true, 505),
-    R_506(true, 506),
     R_507(true, 507),
     R_508(true, 508),
     R_509(true, 509),

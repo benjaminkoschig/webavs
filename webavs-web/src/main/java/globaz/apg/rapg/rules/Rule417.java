@@ -1,7 +1,8 @@
 package globaz.apg.rapg.rules;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.droits.APDroitAPGJointTiers;
 import globaz.apg.db.droits.APDroitAPGJointTiersManager;
@@ -9,6 +10,8 @@ import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.exceptions.APRuleExecutionException;
 import globaz.apg.interfaces.APDroitAvecParent;
 import globaz.apg.pojo.APChampsAnnonce;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadePeriodWrapper;
 import globaz.jade.client.util.JadeStringUtil;
 
 /**
@@ -23,6 +26,7 @@ import globaz.jade.client.util.JadeStringUtil;
 public class Rule417 extends Rule {
 
     private static final int NB_JOUR_MAX = 42;
+    private static final int NB_PERIODE_MAX = 3;
 
     /**
      * @param errorCode
@@ -55,13 +59,9 @@ public class Rule417 extends Rule {
             String nss = champsAnnonce.getInsurant();
             validNotEmpty(nss, "NSS");
 
-            List<String> forIn = new ArrayList<String>();
-            forIn.add(APGenreServiceAPG.InterruptionAvantEcoleSousOfficier.getCodeSysteme());
-            forIn.add(APGenreServiceAPG.InterruptionPendantServiceAvancement.getCodeSysteme());
-
             APDroitAPGJointTiersManager manager = new APDroitAPGJointTiersManager();
             manager.setSession(getSession());
-            manager.setForCsGenreServiceIn(forIn);
+            manager.setForCsGenreService(APGenreServiceAPG.resoudreGenreParCodeAnnonce(serviceType).getCodeSysteme());
             manager.setLikeNumeroAvs(nss);
 
             // Ne pas traiter les droits en état refusé ou transféré
@@ -78,20 +78,88 @@ public class Rule417 extends Rule {
                 throwRuleExecutionException(e);
             }
 
-            for (Object d : droitsSansParents) {
-                APDroitAPGJointTiers droit = (APDroitAPGJointTiers) d;
-                if (!JadeStringUtil.isEmpty(droit.getNbrJourSoldes())) {
-                    totalDeJours += Integer.valueOf(droit.getNbrJourSoldes());
+            if(serviceType.equals(APGenreServiceAPG.InterruptionAvantEcoleSousOfficier.getCodePourAnnonce())) {
+                // Pour genre service 15
+
+                for (Object d : droitsSansParents) {
+                    APDroitAPGJointTiers droit = (APDroitAPGJointTiers) d;
+                    if (!JadeStringUtil.isEmpty(droit.getNbrJourSoldes())) {
+                        totalDeJours += Integer.valueOf(droit.getNbrJourSoldes());
+                    }
                 }
 
-            }
-            if (totalDeJours > NB_JOUR_MAX) {
-                return false;
-            }
+                if (totalDeJours > NB_JOUR_MAX) {
+                    return false;
+                }
 
+            } else {
+                // Pour genre service 16
+
+                // Si plus de 42 jours dans une periode consecutive : erreur
+                List<JadePeriodWrapper> periodesConsecutives = periodesConsecutives(droitsSansParents.stream().map(obj -> (APDroitAPGJointTiers) obj).collect(Collectors.toList()));
+                for (JadePeriodWrapper periode : periodesConsecutives) {
+                    if (getNombreJourFromPeriode(periode) > NB_JOUR_MAX) {
+                        return false;
+                    }
+                }
+
+                // Si plus de 2 interruptions par annee civile : erreur
+                Map<Integer, List<JadePeriodWrapper>> periodesAnnee = getPeriodesConsecutivesParAnnee(periodesConsecutives);
+                for (List<JadePeriodWrapper> periodes : periodesAnnee.values()) {
+                    // 3 periodes = 2 interruptions
+                    if (periodes.size() > NB_PERIODE_MAX) {
+                        return false;
+                    }
+                }
+            }
         }
 
         return true;
+    }
+
+    private List<JadePeriodWrapper> periodesConsecutives(List<APDroitAPGJointTiers> droits) {
+        List<JadePeriodWrapper> periodes = new ArrayList<>();
+        for(APDroitAPGJointTiers droit : droits) {
+            periodes.addAll(droit.getPeriodes());
+        }
+        Collections.sort(periodes);
+
+        Map<Integer, JadePeriodWrapper> periodesConsecutives = new HashMap<>();
+        JadePeriodWrapper first = periodes.get(0);
+        periodesConsecutives.put(0, first);
+        periodes.remove(first);
+        int numPeriode = 0;
+
+        for(JadePeriodWrapper periode : periodes){
+            JadePeriodWrapper periodesUnion = periodesConsecutives.get(numPeriode).union(periode);
+            if(periodesUnion != null){
+                periodesConsecutives.put(numPeriode, periodesUnion);
+            } else {
+                numPeriode++;
+                periodesConsecutives.put(numPeriode, periode);
+            }
+        }
+
+        return new ArrayList(periodesConsecutives.values());
+    }
+
+    private Integer getNombreJourFromPeriode(JadePeriodWrapper periode) {
+        return JadeDateUtil.getNbDayBetween(periode.getDateDebut(), periode.getDateFin()) + 1;
+    }
+
+    private Map<Integer, List<JadePeriodWrapper>> getPeriodesConsecutivesParAnnee(List<JadePeriodWrapper> periodesConsecutives) {
+        Map<Integer, List<JadePeriodWrapper>> periodeAnnee = new HashMap<>();
+        for(JadePeriodWrapper periode: periodesConsecutives) {
+            int year = JadeDateUtil.getGlobazCalendar(periode.getDateDebut()).get(Calendar.YEAR);
+            periodeAnnee.computeIfAbsent(year, val -> new ArrayList<>()).add(periode);
+            // pour les periodes chevauchantes : associer la periode avec l annee de fin
+            int yearFin = JadeDateUtil.getGlobazCalendar(periode.getDateFin()).get(Calendar.YEAR);
+            if(year != yearFin){
+                periodeAnnee.computeIfAbsent(yearFin, val -> new ArrayList<>()).add(periode);
+            }
+        }
+
+        return periodeAnnee;
     }
 
 }

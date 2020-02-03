@@ -40,6 +40,15 @@ public enum APGenreServiceAPG {
         return null;
     }
 
+    public static APGenreServiceAPG resoudreGenreParCodeAnnonce(final String codeAnnonce) {
+        for (final APGenreServiceAPG genre : APGenreServiceAPG.values()) {
+            if (genre.codePourAnnonce.equals(codeAnnonce)) {
+                return genre;
+            }
+        }
+        return null;
+    }
+
     public static boolean isValidGenreService(String genreService) {
         if (genreService == null) {
             return false;
