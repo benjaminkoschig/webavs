@@ -151,9 +151,7 @@ public class ContextPrestation {
                         "01." + contextDossier.getDebutPeriode()));
 
         if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue() && !JadeStringUtil.isBlankOrZero(detail.getMontantIS())) {
-            String date = "01." + contextDossier.getDebutPeriode();
-            String idExterneIS = ALImplServiceLocator.getRubriqueService().getRubriqueForIS(contextDossier.getDossier().getDossierModel(), detail,
-                    "01." + contextDossier.getDebutPeriode());
+            String idExterneIS = ALImplServiceLocator.getRubriqueService().getRubriqueForIS(contextDossier.getDossier().getDossierModel(), detail, "01." + contextDossier.getDebutPeriode());
             detail.setNumeroCompteIS(idExterneIS);
             if(JadeStringUtil.isBlank(entete.getMontantTotalIS())) {
                 entete.setMontantTotalIS("0");

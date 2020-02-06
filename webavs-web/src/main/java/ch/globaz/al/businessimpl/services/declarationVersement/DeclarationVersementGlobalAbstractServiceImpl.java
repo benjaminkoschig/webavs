@@ -1,5 +1,6 @@
 package ch.globaz.al.businessimpl.services.declarationVersement;
 
+import ch.globaz.al.properties.ALProperties;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeDateUtil;
@@ -241,7 +242,9 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
         }
 
         String montantTotal = calculMontant(montantAnneeVersement, montantRetroactif);
-        montantTotal = calculMontantIS(montantTotal, montantTotalIS);
+        if (ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
+            montantTotal = calculMontantIS(montantTotal, montantTotalIS);
+        }
 
         totaux.put(ALConstDeclarationVersement.TOTAL_RETROACTIF, montantRetroactif);
         totaux.put(ALConstDeclarationVersement.TOTAL_ANNEE, montantAnneeVersement);
@@ -511,7 +514,6 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
 
         // Impôt source
         DataList ligneImpotSource = new DataList("colonneMontantIS");
-
         ligneImpotSource.addData("col_montant_IS_label",
                 this.getText("al.declarationVersement.prestation.impotSource", langueDocument));
 
@@ -533,7 +535,7 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
 
         tableauVersement.add(ligneAnneePrec);
         tableauVersement.add(ligneAnneeCour);
-        if (JadeStringUtil.equals(typeDeclaration, ALCSDeclarationVersement.DECLA_VERS_DIR_IMP_SOURCE, false)) {
+        if (ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue() && JadeStringUtil.equals(typeDeclaration, ALCSDeclarationVersement.DECLA_VERS_DIR_IMP_SOURCE, false)) {
             tableauVersement.add(ligneImpotSource);
         }
         tableauVersement.add(ligneTotal);

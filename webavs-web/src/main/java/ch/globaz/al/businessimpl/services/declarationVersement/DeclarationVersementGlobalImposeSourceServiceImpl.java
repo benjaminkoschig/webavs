@@ -1,5 +1,6 @@
 package ch.globaz.al.businessimpl.services.declarationVersement;
 
+import ch.globaz.al.properties.ALProperties;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
@@ -115,13 +116,16 @@ public class DeclarationVersementGlobalImposeSourceServiceImpl extends Declarati
             // sette les infos du dossier
             setInfos(document, dossier, dateDebut, dateFin, langueDocument);
 
-            // recherche l'identifiant du tiers affillié
-
-            String idTiersAllocataire = ALImplServiceLocator.getAllocataireModelService().read( dossier.getDossierModel().getIdAllocataire()).getIdTiersAllocataire();
+            // recherche l'identifiant du tiers : si impôt à la source, on récupère celui de l'allocataire, sinon celui de l'affillié
+            String idTiers;
+            if (ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
+                idTiers = ALImplServiceLocator.getAllocataireModelService().read( dossier.getDossierModel().getIdAllocataire()).getIdTiersAllocataire();
+            } else {
+                idTiers = AFBusinessServiceLocator.getAffiliationService().findIdTiersForNumeroAffilie(dossier.getDossierModel().getNumeroAffilie());
+            }
 
             try {
-                this.addDateAdresse(document, dateImpression, idTiersAllocataire, langueDocument, dossier.getDossierModel()
-                        .getNumeroAffilie());
+                this.addDateAdresse(document, dateImpression, idTiers, langueDocument, dossier.getDossierModel().getNumeroAffilie());
             } catch (ALDocumentAddressException e) {
                 logger.getErrorsLogger(idDossier, "Dossier #" + idDossier).addMessage(
                         new JadeBusinessMessage(JadeBusinessMessageLevels.ERROR,
