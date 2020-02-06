@@ -5,7 +5,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import ch.globaz.common.domaine.Date;
+import ch.globaz.pegasus.business.domaine.decision.TypeDecision;
 import ch.globaz.pegasus.business.domaine.membreFamille.RoleMembreFamille;
+import ch.globaz.pegasus.business.domaine.pca.PcaSituation;
 import ch.globaz.pegasus.rpc.domaine.RpcData;
 import ch.globaz.pegasus.rpc.domaine.RpcDecisionRequerantConjoint;
 
@@ -16,19 +18,23 @@ import ch.globaz.pegasus.rpc.domaine.RpcDecisionRequerantConjoint;
 public class RpcDataDecisionFilter {
 
     public static void filtre(RpcData rpcData) {
-        //filtreNonRequerant(rpcData);
-        if (rpcData.getRpcDecisionRequerantConjoints().size() > 1) {
-            if (isOnlyNegativ(rpcData.getRpcDecisionRequerantConjoints())) {
-                keepLast(rpcData);
-            } else if (rpcData.hasCurrent()) {
-                keepCurrent(rpcData, resolveMinValidFrom(rpcData.getRpcDecisionRequerantConjoints()));
-            } else {
-                keepLastPositiv(rpcData, resolveMinValidFrom(rpcData.getRpcDecisionRequerantConjoints()),
-                        resolveMaxValidTo(rpcData.getRpcDecisionRequerantConjoints()));
-            }
+        if (rpcData.getRpcDecisionRequerantConjoints().size() > 1
+            && !isSupressionConjoint(rpcData)) {
+            mergeDecisions(rpcData);
         }
     }
-    
+
+    private static void mergeDecisions(RpcData rpcData) {
+        if (isOnlyNegativ(rpcData.getRpcDecisionRequerantConjoints())) {
+            keepLast(rpcData);
+        } else if (rpcData.hasCurrent()) {
+            keepCurrent(rpcData, resolveMinValidFrom(rpcData.getRpcDecisionRequerantConjoints()));
+        } else {
+            keepLastPositiv(rpcData, resolveMinValidFrom(rpcData.getRpcDecisionRequerantConjoints()),
+                    resolveMaxValidTo(rpcData.getRpcDecisionRequerantConjoints()));
+        }
+    }
+
     static void filtreNonRequerant(RpcData rpcData) {
         boolean hasRequerant = false;
         List<RpcDecisionRequerantConjoint> decisionsToRemove = new ArrayList<>();
@@ -83,8 +89,8 @@ public class RpcDataDecisionFilter {
             rpcDeci.getRequerant().getDecision().setDateFin(resolvedMaxValidTo);
             rpcDeci.getRequerant().getPca().setDateFin(resolvedMaxValidTo);
             if (rpcDeci.hasConjoint()) {
-                rpcDeci.getConjoint().getDecision().setDateFin(resolvedMinValidFrom);
-                rpcDeci.getConjoint().getPca().setDateFin(resolvedMinValidFrom);
+                rpcDeci.getConjoint().getDecision().setDateFin(resolvedMaxValidTo);
+                rpcDeci.getConjoint().getPca().setDateFin(resolvedMaxValidTo);
             }
         }
         RpcDecisionRequerantConjoint rpcDecif = resolveConjoint(rpcDeci, rpcData);
@@ -277,6 +283,42 @@ public class RpcDataDecisionFilter {
                         .compareTo(deci2.getConjoint().getDecision().getDateDebut());
             }
         });
+    }
+
+    private static boolean isSupressionConjoint(RpcData rpcData) {
+        sortOnDateFrom(rpcData);
+        RpcDecisionRequerantConjoint splitDecision = null;
+        boolean isCoupleASeul = false;
+        for(RpcDecisionRequerantConjoint decision : rpcData.getRpcDecisionRequerantConjoints()) {
+            if (splitDecision != null
+                    && !TypeDecision.SUPPRESSION_SANS_CALCUL.equals(decision.getRequerant().getDecision().getType())
+                    && (PcaSituation.HOME.equals(decision.getSituation()) || PcaSituation.DOMICILE.equals(decision.getSituation()))) {
+                isCoupleASeul = true;
+                break;
+            } else if((TypeDecision.SUPPRESSION_SANS_CALCUL.equals(decision.getRequerant().getDecision().getType())
+                    && decision.getSituation().isCoupleSepare())){
+                splitDecision = decision;
+            }
+        }
+
+        if(isCoupleASeul) {
+            List<RpcDecisionRequerantConjoint> enCouple = new ArrayList<>(rpcData.getRpcDecisionRequerantConjoints().subList(0, rpcData.getRpcDecisionRequerantConjoints().indexOf(splitDecision) + 1));
+            List<RpcDecisionRequerantConjoint> seul = new ArrayList<>(rpcData.getRpcDecisionRequerantConjoints().subList(rpcData.getRpcDecisionRequerantConjoints().indexOf(splitDecision) + 1, rpcData.getRpcDecisionRequerantConjoints().size()));
+            RpcDecisionRequerantConjoint finalEnCouple = mergeAndReturnDecision(rpcData, enCouple);
+            RpcDecisionRequerantConjoint finalSeul = mergeAndReturnDecision(rpcData, seul);
+            rpcData.getRpcDecisionRequerantConjoints().clear();
+            rpcData.add(finalEnCouple);
+            rpcData.add(finalSeul);
+        }
+
+        return isCoupleASeul;
+    }
+
+    private static RpcDecisionRequerantConjoint mergeAndReturnDecision(RpcData rpcData, List<RpcDecisionRequerantConjoint> listDecisions) {
+        rpcData.getRpcDecisionRequerantConjoints().clear();
+        rpcData.getRpcDecisionRequerantConjoints().addAll(listDecisions);
+        mergeDecisions(rpcData);
+        return rpcData.getRpcDecisionRequerantConjoints().get(0);
     }
 
 }
