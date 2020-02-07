@@ -8,6 +8,8 @@ import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class DateTest {
@@ -39,6 +41,7 @@ public class DateTest {
     }
 
     @Test(timeout = 500)
+    @Ignore
     public void given100ThreadsWhichCreate100DatesThenReturnNoException() {
         try {
             create100Times(5);
