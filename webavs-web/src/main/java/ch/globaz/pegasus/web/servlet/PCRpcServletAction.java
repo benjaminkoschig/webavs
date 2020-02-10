@@ -1,7 +1,12 @@
 package ch.globaz.pegasus.web.servlet;
 
+import globaz.framework.bean.FWAJAXFindInterface;
+import globaz.framework.bean.FWAJAXViewBeanInterface;
 import globaz.framework.bean.FWViewBeanInterface;
+import globaz.framework.controller.FWAction;
+import globaz.framework.controller.FWDefaultServletAction;
 import globaz.framework.controller.FWDispatcher;
+import globaz.framework.controller.FWViewBeanActionFactory;
 import globaz.framework.servlets.FWServlet;
 import globaz.globall.db.BSession;
 import globaz.jade.admin.JadeAdminServiceLocatorProvider;
@@ -10,6 +15,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.pegasus.vb.rpc.PCAnnoncesViewBean;
 import globaz.pegasus.vb.rpc.PCDetailAnnonceAjaxViewBean;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -17,6 +23,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import org.apache.commons.lang.StringUtils;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.process.byitem.ProcessItemsService;
@@ -41,10 +48,11 @@ public class PCRpcServletAction extends PCAbstractServletAction {
     private String periodFin = null;
     private String sortBy = null;
     private boolean rechercheFamille = false;
+    private String destination = "";
 
     /**
      * Constructeur
-     * 
+     *
      * @param aServlet
      */
     public PCRpcServletAction(FWServlet aServlet) {
@@ -53,35 +61,98 @@ public class PCRpcServletAction extends PCAbstractServletAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.framework.controller.FWDefaultServletAction#actionAjouter(javax .servlet.http.HttpSession,
      * javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
      * globaz.framework.controller.FWDispatcher)
      */
     @Override
     protected void actionAjouter(HttpSession session, HttpServletRequest request, HttpServletResponse response,
-            FWDispatcher mainDispatcher) throws ServletException, IOException {
+                                 FWDispatcher mainDispatcher) throws ServletException, IOException {
         // TODO Auto-generated method stub
         super.actionAjouter(session, request, response, mainDispatcher);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.framework.controller.FWDefaultServletAction#actionModifier(javax .servlet.http.HttpSession,
      * javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
      * globaz.framework.controller.FWDispatcher)
      */
     @Override
     protected void actionModifier(HttpSession session, HttpServletRequest request, HttpServletResponse response,
-            FWDispatcher mainDispatcher) throws ServletException, IOException {
+                                  FWDispatcher mainDispatcher) throws ServletException, IOException {
         // TODO Auto-generated method stub
         super.actionModifier(session, request, response, mainDispatcher);
     }
 
     @Override
+    protected void actionListerAJAX(HttpSession session, HttpServletRequest request, HttpServletResponse response,
+                                    FWDispatcher mainDispatcher) throws javax.servlet.ServletException, java.io.IOException {
+        String action = request.getParameter("userAction");
+        FWAction newAction = FWAction.newInstance(action);
+
+        /*
+         * Creation dynamique de notre viewBean
+         */
+        FWViewBeanInterface viewBean = FWViewBeanActionFactory.newInstance(newAction, mainDispatcher.getPrefix());
+
+        if (viewBean instanceof PCDetailAnnonceAjaxViewBean) {
+            try {
+
+                ((PCDetailAnnonceAjaxViewBean) viewBean).setAnnonceId(request.getParameter("annonceId"));
+
+
+                /*
+                 * set des properietes
+                 */
+                globaz.globall.http.JSPUtils.setBeanProperties(request, viewBean);
+
+                if (FWAJAXViewBeanInterface.class.isAssignableFrom(viewBean.getClass())) {
+                    ((FWAJAXViewBeanInterface) viewBean).setGetListe(true);
+
+                }
+
+                if (FWAJAXFindInterface.class.isAssignableFrom(viewBean.getClass())) {
+                    String orderKey = request.getParameter("orderKey");
+                    if (!JadeStringUtil.isEmpty(orderKey) && !"null".equalsIgnoreCase(orderKey)) {
+                        ((FWAJAXFindInterface) viewBean).getSearchModel().setOrderKey(request.getParameter("orderKey"));
+                    }
+                }
+
+                /*
+                 * initialisation du viewBean appelle beforeLister, puis le Dispatcher, puis met le bean en session
+                 */
+                viewBean = beforeLister(session, request, response, viewBean);
+                viewBean = mainDispatcher.dispatch(viewBean, newAction);
+
+                request.setAttribute(FWServlet.VIEWBEAN, viewBean);
+                /*
+                 * choix destination
+                 */
+                // if (viewBean.getMsgType().equals(FWViewBeanInterface.ERROR)) {
+                // this.destination = FWDefaultServletAction.ERROR_AJAX_PAGE;
+                // } else {
+                destination = getAJAXListerSuccessDestination(session, request, viewBean);
+                // }
+
+            } catch (Exception e) {
+                destination = FWDefaultServletAction.ERROR_AJAX_PAGE;
+                request.setAttribute("exception", e);
+            }
+            /*
+             * redirection vers la destination
+             */
+            servlet.getServletContext().getRequestDispatcher(destination).forward(request, response);
+        } else {
+            super.actionListerAJAX(session, request, response, mainDispatcher);
+        }
+    }
+
+    @Override
     protected FWViewBeanInterface beforeAfficher(HttpSession session, HttpServletRequest request,
-            HttpServletResponse response, FWViewBeanInterface viewBean) {
+                                                 HttpServletResponse response, FWViewBeanInterface viewBean) {
 
         if ((viewBean instanceof PCDetailAnnonceAjaxViewBean)) {
             PCDetailAnnonceAjaxViewBean vb = (PCDetailAnnonceAjaxViewBean) viewBean;
