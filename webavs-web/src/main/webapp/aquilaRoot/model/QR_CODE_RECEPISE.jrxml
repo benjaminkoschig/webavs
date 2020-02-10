@@ -18,11 +18,11 @@
 		 isTitleNewPage="false"
 		 isSummaryNewPage="false">
 	<property name="ireport.scriptlethandling" value="2" />
-	<parameter name="Compte_titre" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_COMPTE_TITRE" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_COMPTE" isForPrompting="false" class="java.lang.String"/>
-	<parameter name="Ref_titre" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REF_TITRE" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_REFERENCE" isForPrompting="false" class="java.lang.String"/>
-	<parameter name="Payable_titre" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_PAR_TITRE" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_PAR" isForPrompting="false" class="java.lang.String"/>
 		<background>
 			<band height="0"  isSplitAllowed="true" >
@@ -65,12 +65,12 @@
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{Compte_titre}!=null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_COMPTE_TITRE}!=null)]]></printWhenExpression>
 						</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="6" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{Compte_titre}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_COMPTE_TITRE}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -109,12 +109,12 @@
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{Ref_titre}!=null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_REF_TITRE}!=null && $P{P_REFERENCE}!=null)]]></printWhenExpression>
 						</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Bottom" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="6" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{Ref_titre}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REF_TITRE}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -153,12 +153,12 @@
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{Payable_titre}!=null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_PAR_TITRE}!=null)]]></printWhenExpression>
 						</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Bottom" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="6" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{Payable_titre}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_PAR_TITRE}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"

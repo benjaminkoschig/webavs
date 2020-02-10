@@ -21,16 +21,8 @@ import globaz.osiris.parser.IntReferenceBVRParser;
  * @author sel Créé le : 6 déc. 06
  */
 public class CAReferenceBVR extends AbstractCAReference{
-    // Variables nécessaire pour récupérer le noAdhérent dans le catalogue de
-    // texte
-    public static final String IDENTIFIANT_REF_IDCOMPTEANNEXE = "99";
+
     private static final String ERROR_MONTANT_NEGATIF = "Error : Montant négatif !";
-    private static int lengthIdRole = Integer.MIN_VALUE;
-    private static int lengthRefDebiteur = Integer.MIN_VALUE;
-    private static int lengthRefFacture = Integer.MIN_VALUE;
-    private static int lengthTypeFacture = Integer.MIN_VALUE;
-    private static final int MAX_LENGTH_NUM_AFFILIE = 13;
-    private static final int MAX_LENGTH_REFERENCE = 26; // +1 du modulo de contrôle = les 27 positions
 
     public static final String OCRB_NON_FACTURABLE = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 
@@ -58,7 +50,7 @@ public class CAReferenceBVR extends AbstractCAReference{
      * @throws Exception
      */
     private String genererNumReferenceBVR(APISection section) throws Exception {
-        return this.genererNumReferenceBVR(section.getCompteAnnexe().getIdRole(), section.getCompteAnnexe()
+        return this.genererNumReference(section.getCompteAnnexe().getIdRole(), section.getCompteAnnexe()
                 .getIdExterneRole(), false, section.getIdTypeSection(), section.getIdExterne(), section
                 .getIdCompteAnnexe());
     }
@@ -76,154 +68,15 @@ public class CAReferenceBVR extends AbstractCAReference{
      */
     private String genererNumReferenceBVR(String idRole, String idExterneRole, boolean isPlanPaiement,
             String typeSection, String idExterneSection) throws Exception {
-        return genererNumReferenceBVR(idRole, idExterneRole, isPlanPaiement, typeSection, idExterneSection, null);
+        return genererNumReference(idRole, idExterneRole, isPlanPaiement, typeSection, idExterneSection, null);
     }
 
-    /**
-     * Permet de générer un numéro de référence pour un BVR.
-     * 
-     * @param idRole
-     * @param idExterneRole
-     * @param isPlanPaiement
-     * @param typeSection
-     * @param idExterneSection
-     * @param idCompteAnnexe
-     * @return
-     * @throws Exception
-     */
-    private String genererNumReferenceBVR(String idRole, String idExterneRole, boolean isPlanPaiement,
-            String typeSection, String idExterneSection, String idCompteAnnexe) throws Exception {
-        // Valeur forcée dans les paramètres pour idRole
-        int valIdRole = Integer.parseInt(CAApplication.getApplicationOsiris().getProperty(
-                IntReferenceBVRParser.VAL_ID_ROLE));
-
-        String idExterneRoleUnformatted = removeNotLetterNotDigit(idExterneRole);
-        String role = JadeStringUtil.rightJustifyInteger(idRole, getLengthIdRole());
-        String refDebiteur = JadeStringUtil.rightJustifyInteger(idExterneRoleUnformatted, getLengthRefDebiteur());
-        String refFacture = JadeStringUtil.rightJustifyInteger(idExterneSection, getLengthRefFacture());
-        String idTypeFacture = "";
-
-        // idRole sur 2 positions
-        if (role.length() > getLengthIdRole()) {
-            role = role.substring(4, 6);
-        }
-
-        // Si l'id du rôle est forcé
-        if (valIdRole != 0) {
-            role = JadeStringUtil.rightJustifyInteger(String.valueOf(valIdRole), getLengthIdRole());
-        }
-
-        if (isPlanPaiement) {
-            idTypeFacture = JadeStringUtil.rightJustifyInteger(
-                    CAApplication.getApplicationOsiris().getProperty(IntReferenceBVRParser.IDENT_PLAN, ""),
-                    getLengthTypeFacture());
-        } else {
-            idTypeFacture = JadeStringUtil.rightJustifyInteger(typeSection, getLengthTypeFacture());
-        }
-
-        // Si le numéro d'affilié non formatté comporte plus de 13 caractères, on utilise l'id du compte annexe pour le
-        // numéro de référence. On utilise le numéro 99 à la place du rôle pour indiquer que le numéro de référence
-        // utilise l'idCompteAnnexe au lieu du numéro d'affilié
-        if (refDebiteur.length() > MAX_LENGTH_NUM_AFFILIE) {
-            role = IDENTIFIANT_REF_IDCOMPTEANNEXE;
-            if (idCompteAnnexe == null) {
-                CACompteAnnexe compteAnnexe = findCompteAnnexeForIdRoleAndIdExterneRole(idRole, idExterneRole);
-                refDebiteur = compteAnnexe.getIdCompteAnnexe();
-            } else {
-                refDebiteur = idCompteAnnexe;
-            }
-        }
-
-        StringBuffer ref = new StringBuffer();
-        ref.append(role);
-        ref.append(JadeStringUtil.rightJustifyInteger(refDebiteur, getLengthRefDebiteur()));
-        ref.append(idTypeFacture);
-        ref.append(refFacture); // idPlan = reference facture
-
-        if (ref.length() > CAReferenceBVR.MAX_LENGTH_REFERENCE) {
-            throw new Exception(CAReferenceBVR.class.getName() + ": " + getSession().getLabel("ERREUR_REFERENCEBVR"));
-        }
-
-        return ref.toString();
-    }
-
-    /**
-     * Retourne le compte annexe correspondant à l'idRole et l'idExterneRole
-     * 
-     * @param idRole
-     * @param idExterneRole
-     * @return
-     * @throws Exception si aucun résultat
-     */
-    private CACompteAnnexe findCompteAnnexeForIdRoleAndIdExterneRole(String idRole, String idExterneRole)
-            throws Exception {
-        CACompteAnnexeManager compteAnnexeManager = new CACompteAnnexeManager();
-        compteAnnexeManager.setSession(getSession());
-        compteAnnexeManager.setForIdRole(idRole);
-        compteAnnexeManager.setForIdExterneRole(idExterneRole);
-        compteAnnexeManager.find();
-
-        if (compteAnnexeManager.size() > 0) {
-            return (CACompteAnnexe) compteAnnexeManager.getFirstEntity();
-        } else {
-            throw new Exception(CAReferenceBVR.class.getName() + ": unable to find compte annexe for idRole" + idRole
-                    + " and idExterneRole" + idExterneRole);
-        }
-    }
 
     /**
      * @return the forcerBV
      */
     public Boolean getForcerBV() {
         return forcerBV;
-    }
-
-    /**
-     * @author: sel Créé le : 18 déc. 06
-     * @return la longueur de id role
-     */
-    private int getLengthIdRole() {
-        if (CAReferenceBVR.lengthIdRole == Integer.MIN_VALUE) {
-            CAReferenceBVR.lengthIdRole = Integer.parseInt(CAApplication.getApplicationOsiris().getProperty(
-                    IntReferenceBVRParser.LEN_ID_ROLE));
-        }
-        return CAReferenceBVR.lengthIdRole;
-    }
-
-    /**
-     * @author: sel Créé le : 18 déc. 06
-     * @return la longueur de l'id externe role
-     */
-    private int getLengthRefDebiteur() {
-        if (CAReferenceBVR.lengthRefDebiteur == Integer.MIN_VALUE) {
-            CAReferenceBVR.lengthRefDebiteur = Integer.parseInt(CAApplication.getApplicationOsiris().getProperty(
-                    IntReferenceBVRParser.LEN_ID_EXTERNE_ROLE));
-        }
-        return CAReferenceBVR.lengthRefDebiteur;
-    }
-
-    /**
-     * @author: sel Créé le : 18 déc. 06
-     * @return la longueur de l'id plan
-     */
-    private int getLengthRefFacture() {
-        if (CAReferenceBVR.lengthRefFacture == Integer.MIN_VALUE) {
-            CAReferenceBVR.lengthRefFacture = Integer.parseInt(CAApplication.getApplicationOsiris().getProperty(
-                    IntReferenceBVRParser.LEN_ID_PLAN));
-        }
-        return CAReferenceBVR.lengthRefFacture;
-    }
-
-    /**
-     * @author: sel Créé le : 18 déc. 06
-     * @return la longueur de type plan
-     */
-    private int getLengthTypeFacture() {
-        if (CAReferenceBVR.lengthTypeFacture == Integer.MIN_VALUE) {
-            CAReferenceBVR.lengthTypeFacture = Integer.parseInt(CAApplication.getApplicationOsiris().getProperty(
-                    IntReferenceBVRParser.LEN_TYPE_PLAN));
-        }
-        return CAReferenceBVR.lengthTypeFacture;
     }
 
     /**
@@ -305,24 +158,6 @@ public class CAReferenceBVR extends AbstractCAReference{
     }
 
     /**
-     * Supprime tout caractère qui n'est pas une lettre ou un chiffre
-     * 
-     * @author: sel Créé le : 19 déc. 06
-     * @param val
-     * @return une chaine contenant que des lettres et des chiffres
-     */
-    private String removeNotLetterNotDigit(String val) {
-        StringBuffer strBuf = new StringBuffer();
-        for (int i = 0; i < val.length(); i++) {
-            char c = val.charAt(i);
-            if (Character.isLetterOrDigit(c)) {
-                strBuf.append(c);
-            }
-        }
-        return strBuf.toString();
-    }
-
-    /**
      * Vérifie le montant minime féfinit dans Musca
      * 
      * @author: sel Créé le : 20 déc. 06
@@ -382,7 +217,7 @@ public class CAReferenceBVR extends AbstractCAReference{
         String idExterneRole = plan.getCompteAnnexe().getIdExterneRole();
         String idPlan = plan.getIdPlanRecouvrement();
 
-        String refBVR = this.genererNumReferenceBVR(idRole, idExterneRole, true, "", idPlan, plan.getIdCompteAnnexe());
+        String refBVR = this.genererNumReference(idRole, idExterneRole, true, "", idPlan, plan.getIdCompteAnnexe());
 
         if (new FWCurrency(montantF.floatValue()).isPositive()) {
             bvr = new JABVR(JANumberFormatter.deQuote(montantF.toString()), refBVR, getNoAdherent());

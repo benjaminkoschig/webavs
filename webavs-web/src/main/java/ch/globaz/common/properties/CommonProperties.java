@@ -47,7 +47,9 @@ public enum CommonProperties implements IProperties {
     UPI_KEYSTORE_PASSWORD("upi.keystore.password", "Password du keystore"),
     UPI_SSL_CONTEXT_TYPE("upi.ssl.context.type", "type du context ssl"),
     UPI_WSDL_RESOURCE_PATH("upi.wsdl.path", "Chemin de la wsdl"),
-    UPI_ENDPOINT_ADDRESS("upi.endpoint.address", "URL de surcharge de la wsdl");
+    UPI_ENDPOINT_ADDRESS("upi.endpoint.address", "URL de surcharge de la wsdl"),
+
+    QR_FACTURE("qrFacture","Permet de changer le mode de facturation QR-Facture/BVR");
 
     private String description;
     private String propertyName;

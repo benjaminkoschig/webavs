@@ -6,6 +6,10 @@ import globaz.babel.api.ICTTexte;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.musca.itext.FAImpressionFacturation;
+import globaz.osiris.application.CAApplication;
+import globaz.osiris.db.comptes.CACompteAnnexe;
+import globaz.osiris.db.comptes.CACompteAnnexeManager;
+import globaz.osiris.parser.IntReferenceBVRParser;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,21 +21,29 @@ public abstract class AbstractCAReference {
     public static final String TEXTE_INTROUVABLE = "[TEXTE INTROUVABLE]";
     public static final String RETOUR_LIGNE = "\n";
 
+    // Variables nécessaire pour récupérer le noAdhérent dans le catalogue de texte
+    public static final String IDENTIFIANT_REF_IDCOMPTEANNEXE = "99";
+
     private static final String DOMAINE_FACTURATION = FAImpressionFacturation.DOMAINE_FACTURATION;
     private static final String TYPE_FACTURE = FAImpressionFacturation.TYPE_FACTURE;
 
 
+    private static final int MAX_LENGTH_NUM_AFFILIE = 13;
+    private static final int MAX_LENGTH_REFERENCE = 26; // +1 du modulo de contrôle = les 27 positions
+
+    private static int lengthIdRole = Integer.MIN_VALUE;
+    private static int lengthRefDebiteur = Integer.MIN_VALUE;
+    private static int lengthRefFacture = Integer.MIN_VALUE;
+    private static int lengthTypeFacture = Integer.MIN_VALUE;
 
     private String ligneReference;
     private BSession session;
     private static Map documents;
-    private boolean isQRFacture;
 
     public AbstractCAReference(){
         ligneReference = AbstractCAReference.REFERENCE_NON_FACTURABLE;
         session = null;
         documents = null;
-        isQRFacture = "true".equals(globaz.jade.properties.JadePropertiesService.getInstance().getProperty("common.qrFacture"));
     }
 
     /**
@@ -152,6 +164,166 @@ public abstract class AbstractCAReference {
     }
 
     /**
+     * Permet de générer un numéro de référence.
+     * Actuellement le numéro de référence d'un BVR et d'une QR-facture sont identiques.
+     *
+     * @param idRole
+     * @param idExterneRole
+     * @param isPlanPaiement
+     * @param typeSection
+     * @param idExterneSection
+     * @param idCompteAnnexe
+     * @return
+     * @throws Exception
+     */
+    protected String genererNumReference(String idRole, String idExterneRole, boolean isPlanPaiement,
+                                          String typeSection, String idExterneSection, String idCompteAnnexe) throws Exception {
+        // Valeur forcée dans les paramètres pour idRole
+        int valIdRole = Integer.parseInt(CAApplication.getApplicationOsiris().getProperty(
+                IntReferenceBVRParser.VAL_ID_ROLE));
+
+        String idExterneRoleUnformatted = removeNotLetterNotDigit(idExterneRole);
+        String role = JadeStringUtil.rightJustifyInteger(idRole, getLengthIdRole());
+        String refDebiteur = JadeStringUtil.rightJustifyInteger(idExterneRoleUnformatted, getLengthRefDebiteur());
+        String refFacture = JadeStringUtil.rightJustifyInteger(idExterneSection, getLengthRefFacture());
+        String idTypeFacture = "";
+
+        // idRole sur 2 positions
+        if (role.length() > getLengthIdRole()) {
+            role = role.substring(4, 6);
+        }
+
+        // Si l'id du rôle est forcé
+        if (valIdRole != 0) {
+            role = JadeStringUtil.rightJustifyInteger(String.valueOf(valIdRole), getLengthIdRole());
+        }
+
+        if (isPlanPaiement) {
+            idTypeFacture = JadeStringUtil.rightJustifyInteger(
+                    CAApplication.getApplicationOsiris().getProperty(IntReferenceBVRParser.IDENT_PLAN, ""),
+                    getLengthTypeFacture());
+        } else {
+            idTypeFacture = JadeStringUtil.rightJustifyInteger(typeSection, getLengthTypeFacture());
+        }
+
+        // Si le numéro d'affilié non formatté comporte plus de 13 caractères, on utilise l'id du compte annexe pour le
+        // numéro de référence. On utilise le numéro 99 à la place du rôle pour indiquer que le numéro de référence
+        // utilise l'idCompteAnnexe au lieu du numéro d'affilié
+        if (refDebiteur.length() > MAX_LENGTH_NUM_AFFILIE) {
+            role = IDENTIFIANT_REF_IDCOMPTEANNEXE;
+            if (idCompteAnnexe == null) {
+                CACompteAnnexe compteAnnexe = findCompteAnnexeForIdRoleAndIdExterneRole(idRole, idExterneRole);
+                refDebiteur = compteAnnexe.getIdCompteAnnexe();
+            } else {
+                refDebiteur = idCompteAnnexe;
+            }
+        }
+
+        StringBuffer ref = new StringBuffer();
+        ref.append(role);
+        ref.append(JadeStringUtil.rightJustifyInteger(refDebiteur, getLengthRefDebiteur()));
+        ref.append(idTypeFacture);
+        ref.append(refFacture); // idPlan = reference facture
+
+        if (ref.length() > MAX_LENGTH_REFERENCE) {
+            throw new Exception(AbstractCAReference.class.getName() + ": " + getSession().getLabel("ERREUR_REFERENCEBVR"));
+        }
+
+        return ref.toString();
+    }
+
+    /**
+     * Supprime tout caractère qui n'est pas une lettre ou un chiffre
+     *
+     * @author: sel Créé le : 19 déc. 06
+     * @param val
+     * @return une chaine contenant que des lettres et des chiffres
+     */
+    protected String removeNotLetterNotDigit(String val) {
+        StringBuffer strBuf = new StringBuffer();
+        for (int i = 0; i < val.length(); i++) {
+            char c = val.charAt(i);
+            if (Character.isLetterOrDigit(c)) {
+                strBuf.append(c);
+            }
+        }
+        return strBuf.toString();
+    }
+
+    /**
+     * @author: sel Créé le : 18 déc. 06
+     * @return la longueur de id role
+     */
+    private int getLengthIdRole() {
+        if (lengthIdRole == Integer.MIN_VALUE) {
+            lengthIdRole = Integer.parseInt(CAApplication.getApplicationOsiris().getProperty(
+                    IntReferenceBVRParser.LEN_ID_ROLE));
+        }
+        return lengthIdRole;
+    }
+
+    /**
+     * @author: sel Créé le : 18 déc. 06
+     * @return la longueur de l'id externe role
+     */
+    private int getLengthRefDebiteur() {
+        if (lengthRefDebiteur == Integer.MIN_VALUE) {
+            lengthRefDebiteur = Integer.parseInt(CAApplication.getApplicationOsiris().getProperty(
+                    IntReferenceBVRParser.LEN_ID_EXTERNE_ROLE));
+        }
+        return lengthRefDebiteur;
+    }
+
+    /**
+     * @author: sel Créé le : 18 déc. 06
+     * @return la longueur de l'id plan
+     */
+    private int getLengthRefFacture() {
+        if (lengthRefFacture == Integer.MIN_VALUE) {
+            lengthRefFacture = Integer.parseInt(CAApplication.getApplicationOsiris().getProperty(
+                    IntReferenceBVRParser.LEN_ID_PLAN));
+        }
+        return lengthRefFacture;
+    }
+
+    /**
+     * @author: sel Créé le : 18 déc. 06
+     * @return la longueur de type plan
+     */
+    private int getLengthTypeFacture() {
+        if (lengthTypeFacture == Integer.MIN_VALUE) {
+            lengthTypeFacture = Integer.parseInt(CAApplication.getApplicationOsiris().getProperty(
+                    IntReferenceBVRParser.LEN_TYPE_PLAN));
+        }
+        return lengthTypeFacture;
+    }
+
+    /**
+     * Retourne le compte annexe correspondant à l'idRole et l'idExterneRole
+     *
+     * @param idRole
+     * @param idExterneRole
+     * @return
+     * @throws Exception si aucun résultat
+     */
+    private CACompteAnnexe findCompteAnnexeForIdRoleAndIdExterneRole(String idRole, String idExterneRole)
+            throws Exception {
+        CACompteAnnexeManager compteAnnexeManager = new CACompteAnnexeManager();
+        compteAnnexeManager.setSession(getSession());
+        compteAnnexeManager.setForIdRole(idRole);
+        compteAnnexeManager.setForIdExterneRole(idExterneRole);
+        compteAnnexeManager.find();
+
+        if (compteAnnexeManager.size() > 0) {
+            return (CACompteAnnexe) compteAnnexeManager.getFirstEntity();
+        } else {
+            throw new Exception(CAReferenceBVR.class.getName() + ": unable to find compte annexe for idRole" + idRole
+                    + " and idExterneRole" + idExterneRole);
+        }
+    }
+
+
+    /**
      * Récupère les textes pour un niveau
      *
      * @param niveau
@@ -230,9 +402,7 @@ public abstract class AbstractCAReference {
      * @throws Exception
      */
     public String getNumeroCC() throws Exception {
-        String res = "";
-        res = getTexteBabel(2, 1);
-        return res;
+        return getTexteBabel(2, 1);
     }
 
     /**
@@ -255,11 +425,4 @@ public abstract class AbstractCAReference {
         return resString.toString();
     }
 
-    public boolean isQRFacture() {
-        return isQRFacture;
-    }
-
-    public void setQRFacture(boolean QRFacture) {
-        isQRFacture = QRFacture;
-    }
 }

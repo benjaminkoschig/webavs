@@ -4,10 +4,11 @@ import globaz.aquila.print.COParameter;
 import globaz.framework.printing.itext.FWIDocumentManager;
 import globaz.framework.printing.itext.fill.FWIImportParametre;
 import globaz.globall.db.BManager;
-import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
+import globaz.osiris.api.APISection;
 import globaz.pyxis.db.adressecourrier.TIAbstractAdresseData;
 import globaz.pyxis.db.adressecourrier.TIAdresseDataManager;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,31 +25,35 @@ public class CAReferenceQR extends AbstractCAReference {
     private static final String IBAN = "SCOR";
     private static final String SANS_REF = "NON";
 
+    private static final String QR_TYPE = "SPC";
+    private static final String VERSION= "0200";
+    private static final String CODING_TYPE= "1";
+
     public static final String COMBINE = "K";
     public static final String STRUCTURE = "S";
     // ---------------------- //
 
-    private String adresse;
-    private String adresseCopy;
-    private String adresseDebiteur;
-    private String compte;
-    private String reference;
-    private String montantSansCentimes;
-    private String montantCentimes;
-    private String nomAV1;
-    private String nomAV2;
-    private String infosAdditionnelles;
+    private String adresse = StringUtils.EMPTY;
+    private String adresseCopy = StringUtils.EMPTY;
+    private String adresseDebiteur = StringUtils.EMPTY;
+    private String compte = StringUtils.EMPTY;
+    private String reference = StringUtils.EMPTY;
+    private String montantSansCentimes = StringUtils.EMPTY;
+    private String montantCentimes = StringUtils.EMPTY;
+    private String nomAV1 = StringUtils.EMPTY;
+    private String nomAV2 = StringUtils.EMPTY;
+    private String infosAdditionnelles = StringUtils.EMPTY;
 
-    private String qrType;
-    private String version;
-    private String codingType;
-    private String creNom;
-    private String creAdressTyp;
-    private String creRueOuLigneAdresse1;
-    private String creNumMaisonOuLigneAdresse2;
-    private String creCodePostal;
-    private String creLieu;
-    private String crePays;
+    private String qrType = QR_TYPE;
+    private String version = VERSION;
+    private String codingType = CODING_TYPE;
+    private String creNom = StringUtils.EMPTY;
+    private String creAdressTyp  = StringUtils.EMPTY;
+    private String creRueOuLigneAdresse1  = StringUtils.EMPTY;
+    private String creNumMaisonOuLigneAdresse2  = StringUtils.EMPTY;
+    private String creCodePostal = StringUtils.EMPTY;
+    private String creLieu = StringUtils.EMPTY;
+    private String crePays = StringUtils.EMPTY;
 
     // Non utilisé pour le moment - Pour une utilisation future.
     private String crefNom;
@@ -61,93 +66,45 @@ public class CAReferenceQR extends AbstractCAReference {
     //
 
 
-    private String montant;
-    private String monnaie;
-    private String debfNom;
-    private String debfAdressTyp;
-    private String debfRueOuLigneAdresse1;
-    private String debfNumMaisonOuLigneAdresse2;
-    private String debfCodePostal;
-    private String debfLieu;
-    private String debfPays;
-    private String typeReference;
-    private String communicationNonStructuree;
-    private String trailer;
-    private String infoFacture;
-    private String pa1Param;
-    private String pa2Param;
+    private String montant = StringUtils.EMPTY;
+    private String monnaie = StringUtils.EMPTY;
+    private String debfNom = StringUtils.EMPTY;
+    private String debfAdressTyp = StringUtils.EMPTY;
+    private String debfRueOuLigneAdresse1 = StringUtils.EMPTY;
+    private String debfNumMaisonOuLigneAdresse2 = StringUtils.EMPTY;
+    private String debfCodePostal = StringUtils.EMPTY;
+    private String debfLieu = StringUtils.EMPTY;
+    private String debfPays = StringUtils.EMPTY;
+    private String typeReference = StringUtils.EMPTY;
+    private String communicationNonStructuree = StringUtils.EMPTY;
+    private String trailer = StringUtils.EMPTY;
+    private String infoFacture = StringUtils.EMPTY;
+    private String pa1Param = StringUtils.EMPTY;
+    private String pa2Param = StringUtils.EMPTY;
 
-    private HashMap<String,String> parameters;
+    private HashMap<String, String> parameters = new HashMap<>();
 
     // Pour le moment le QR Code est défini en String. Sera modifié par la suite
     private String qRCode;
 
-    public CAReferenceQR () {
+    public CAReferenceQR() {
         super();
-        adresse = "";
-        adresseCopy = "";
-        adresseDebiteur = "";
-
-        compte = "";
-        reference = "";
-        montantSansCentimes = "";
-        montantCentimes = "";
-        nomAV1 = "";
-        nomAV2 = "";
-        infosAdditionnelles = "";
-        parameters = new HashMap<>();
-
-        // Non utilisé pour le moment, mis à vide.
-        crefNom = "";
-        crefAdressTyp = "";
-        crefRueOuLigneAdresse1 = "";
-        crefNumMaisonOuLigneAdresse2 = "";
-        crefCodePostal = "";
-        crefLieu = "";
-        crefPays = "";
-
-        // Adresses combinées
-        creAdressTyp = COMBINE;
-        debfAdressTyp = COMBINE;
-
-        // Valeur Fixe
-        qrType = "SPC";
-        version = "200";
-        codingType = "1";
-
-        // Fixé pour le moment, utilisation de l'IBAN
-        // QR-IBAN = GRR
-        // IBAN = SCOR
-        // Sans ref = NON
-        typeReference = IBAN;
-
-        crefNom = "";
-        crefAdressTyp = "";
-        crefRueOuLigneAdresse1 = "";
-        creNumMaisonOuLigneAdresse2 = "";
-        creCodePostal = "";
-        creLieu = "";
-        crePays = "";
-
-        montant = "";
-        monnaie = "";
-        debfNom = "";
-        debfAdressTyp = "";
-        debfRueOuLigneAdresse1 = "";
-        debfNumMaisonOuLigneAdresse2 = "";
-        debfCodePostal = "";
-        debfLieu = "";
-        debfPays = "";
-        typeReference = "";
-        communicationNonStructuree = "";
-        trailer = "";
-        infoFacture = "";
-        pa1Param = "";
-        pa2Param = "";
     }
 
-    public void initEnteteQR (FWIDocumentManager document){
 
+    public FWIDocumentManager initQR(FWIDocumentManager document) {
+        initEnteteQR(document);
+        Iterator it = parameters.entrySet().iterator();
+
+        while (it.hasNext()) {
+            HashMap.Entry element = (HashMap.Entry) it.next();
+            document.setParametres(element.getKey(), Objects.isNull(element.getValue()) ? "" : element.getValue());
+        }
+
+        return document;
+    }
+
+    private void initEnteteQR(FWIDocumentManager document) {
         parameters.put(COParameter.P_SUBREPORT_QR_FACTURE, document.getImporter().getImportPath() + "QR_FACTURE_TEMPLATE.jasper");
         parameters.put(COParameter.P_TITRE_1, getSession().getLabel("QR_RECEPISSE"));
         parameters.put(COParameter.P_TITRE_2, getSession().getLabel("QR_SECTION_PAIEMENT"));
@@ -157,7 +114,7 @@ public class CAReferenceQR extends AbstractCAReference {
         parameters.put(COParameter.P_MONNAIE_TITRE_2, getSession().getLabel("QR_MONNAIE"));
         parameters.put(COParameter.P_MONTANT_TITRE_1, getSession().getLabel("MONTANT"));
         parameters.put(COParameter.P_MONTANT_TITRE_2, getSession().getLabel("MONTANT"));
-        parameters.put(COParameter.P_SUBREPORT_ZONE_INDICATIONS,document.getImporter().getImportPath() + "QR_CODE_ZONE_INDICATIONS.jasper");
+        parameters.put(COParameter.P_SUBREPORT_ZONE_INDICATIONS, document.getImporter().getImportPath() + "QR_CODE_ZONE_INDICATIONS.jasper");
         parameters.put(COParameter.P_SUBREPORT_RECEPISE, document.getImporter().getImportPath() + "QR_CODE_RECEPISE.jasper");
         parameters.put(COParameter.P_COMPTE_TITRE, getSession().getLabel("QR_COMPTE_PAYABLE"));
         parameters.put(COParameter.P_PAR_TITRE, getSession().getLabel("QR_PAYABLE_PAR"));
@@ -173,119 +130,79 @@ public class CAReferenceQR extends AbstractCAReference {
         parameters.put(FWIImportParametre.PARAM_REFERENCE, getReference());
         parameters.put(COParameter.P_PAR, debfRueOuLigneAdresse1);
         //parameters.put("Payable", debfNom+ RETOUR_LIGNE  + debfRueOuLigneAdresse1 + " " + debfNumMaisonOuLigneAdresse2 + RETOUR_LIGNE  + debfCodePostal + " " + debfLieu);
-        parameters.put(COParameter.P_INFO_ADD, communicationNonStructuree + RETOUR_LIGNE  + infoFacture);
+        parameters.put(COParameter.P_INFO_ADD, communicationNonStructuree + RETOUR_LIGNE + infoFacture);
 
     }
 
-    public FWIDocumentManager initQR(FWIDocumentManager document){
-        initEnteteQR(document);
-        Iterator it = parameters.entrySet().iterator();
+    private String generationPayLoad() {
+        StringBuilder builder = new StringBuilder();
 
-        while (it.hasNext()){
-            HashMap.Entry element = (HashMap.Entry) it.next();
-            document.setParametres(element.getKey(), Objects.isNull(element.getValue()) ? "" : element.getValue());
-        }
+        builder.append(qrType).append(CHAR_FIN_LIGNE);
+        builder.append(version).append(CHAR_FIN_LIGNE);
+        builder.append(codingType).append(CHAR_FIN_LIGNE);
+        builder.append(compte).append(CHAR_FIN_LIGNE);
+        builder.append(creNom).append(CHAR_FIN_LIGNE);
+        builder.append(creAdressTyp).append(CHAR_FIN_LIGNE);
+        builder.append(creRueOuLigneAdresse1).append(CHAR_FIN_LIGNE);
+        builder.append(creNumMaisonOuLigneAdresse2).append(CHAR_FIN_LIGNE);
+        builder.append((Objects.equals(creAdressTyp, COMBINE) ? StringUtils.EMPTY : creCodePostal)).append(CHAR_FIN_LIGNE);
+        builder.append((Objects.equals(creAdressTyp, COMBINE) ? StringUtils.EMPTY : creLieu)).append(CHAR_FIN_LIGNE);
+        builder.append(crePays).append(CHAR_FIN_LIGNE);
+        builder.append(crefNom).append(CHAR_FIN_LIGNE);
+        builder.append(crefAdressTyp).append(CHAR_FIN_LIGNE);
+        builder.append(crefRueOuLigneAdresse1).append(CHAR_FIN_LIGNE);
+        builder.append(crefNumMaisonOuLigneAdresse2).append(CHAR_FIN_LIGNE);
+        builder.append((Objects.equals(crefAdressTyp, COMBINE) ? StringUtils.EMPTY : crefCodePostal)).append(CHAR_FIN_LIGNE);
+        builder.append((Objects.equals(crefAdressTyp, COMBINE) ? StringUtils.EMPTY : crefLieu)).append(CHAR_FIN_LIGNE);
+        builder.append(crefPays).append(CHAR_FIN_LIGNE);
+        builder.append(montant).append(CHAR_FIN_LIGNE);
+        builder.append(monnaie).append(CHAR_FIN_LIGNE);
+        builder.append(debfNom).append(CHAR_FIN_LIGNE);
+        builder.append(debfAdressTyp).append(CHAR_FIN_LIGNE);
+        builder.append(debfRueOuLigneAdresse1).append(CHAR_FIN_LIGNE);
+        builder.append(debfNumMaisonOuLigneAdresse2).append(CHAR_FIN_LIGNE);
+        builder.append((Objects.equals(debfAdressTyp, COMBINE) ? StringUtils.EMPTY : debfCodePostal)).append(CHAR_FIN_LIGNE);
+        builder.append((Objects.equals(debfAdressTyp, COMBINE) ? StringUtils.EMPTY : debfLieu)).append(CHAR_FIN_LIGNE);
+        builder.append(debfPays).append(CHAR_FIN_LIGNE);
+        builder.append(typeReference).append(CHAR_FIN_LIGNE);
+        builder.append(reference).append(CHAR_FIN_LIGNE);
+        builder.append(communicationNonStructuree).append(CHAR_FIN_LIGNE);
+        builder.append(trailer).append(CHAR_FIN_LIGNE);
+        builder.append(infoFacture).append(CHAR_FIN_LIGNE);
+        builder.append(pa1Param).append(CHAR_FIN_LIGNE);
+        builder.append(pa2Param).append(CHAR_FIN_LIGNE);
 
-        return document;
-    }
-
-    public String generationPayLoad (){
-
-        // TODO Mieux gérer le String
-        String payloadFinal = qrType + CHAR_FIN_LIGNE
-                + version + CHAR_FIN_LIGNE
-                + codingType + CHAR_FIN_LIGNE
-                + compte + CHAR_FIN_LIGNE
-                + creNom + CHAR_FIN_LIGNE
-                + creAdressTyp + CHAR_FIN_LIGNE
-                + creRueOuLigneAdresse1 + CHAR_FIN_LIGNE
-                + creNumMaisonOuLigneAdresse2 + CHAR_FIN_LIGNE
-                + (Objects.equals(creAdressTyp, COMBINE)? "" : creCodePostal) + CHAR_FIN_LIGNE
-                + (Objects.equals(creAdressTyp, COMBINE)? "" : creLieu) + CHAR_FIN_LIGNE
-                + crePays + CHAR_FIN_LIGNE
-                + crefNom + CHAR_FIN_LIGNE
-                + crefAdressTyp + CHAR_FIN_LIGNE
-                + crefRueOuLigneAdresse1 + CHAR_FIN_LIGNE
-                + crefNumMaisonOuLigneAdresse2 + CHAR_FIN_LIGNE
-                + (Objects.equals(crefAdressTyp, COMBINE)? "" : crefCodePostal) + CHAR_FIN_LIGNE
-                + (Objects.equals(crefAdressTyp, COMBINE)? "" : crefLieu) + CHAR_FIN_LIGNE
-                + crefPays + CHAR_FIN_LIGNE
-                + montant + CHAR_FIN_LIGNE
-                + monnaie + CHAR_FIN_LIGNE
-                + debfNom + CHAR_FIN_LIGNE
-                + debfAdressTyp + CHAR_FIN_LIGNE
-                + debfRueOuLigneAdresse1 + CHAR_FIN_LIGNE
-                + debfNumMaisonOuLigneAdresse2 + CHAR_FIN_LIGNE
-                + (Objects.equals(debfAdressTyp, COMBINE)? "" : debfCodePostal) + CHAR_FIN_LIGNE
-                + (Objects.equals(debfAdressTyp, COMBINE)? "" : debfLieu) + CHAR_FIN_LIGNE
-                + debfPays + CHAR_FIN_LIGNE
-                + typeReference + CHAR_FIN_LIGNE
-                + reference + CHAR_FIN_LIGNE
-                + communicationNonStructuree + CHAR_FIN_LIGNE
-                + trailer + CHAR_FIN_LIGNE
-                + infoFacture + CHAR_FIN_LIGNE
-                + pa1Param + CHAR_FIN_LIGNE
-                + pa2Param + CHAR_FIN_LIGNE;
-
-        String oldPayload = "SPC\r\n" +
-                "0200\r\n" +
-                "1\r\n" +
-                "CH4431999123000889012\r\n" +
-                "S\r\n" +
-                "Robert Schneider AG\r\n" +
-                "Via Casa Postale\r\n" +
-                "1268/2/22\r\n" +
-                "2501\r\n" +
-                "Biel\r\n" +
-                "CH\r\n" +
-                "\r\n" +
-                "\r\n" +
-                "\r\n" +
-                "\r\n" +
-                "\r\n" +
-                "\r\n" +
-                "\r\n" +
-                "123949.75\r\n" +
-                "CHF\r\n" +
-                "S\r\n"+
-                "Pia-Maria Rutschmann-Schnyder\r\n" +
-                "Grosse Marktgasse\r\n" +
-                "28/5\r\n" +
-                "9400\r\n" +
-                "Rorschach\r\n" +
-                "CH\r\n" +
-                "QRR\r\n" +
-                "210000000003139471430009017\r\n" +
-                "Beachten sie unsere Sonderangebotswoche bis 23.02.2017!\r\n" +
-                "EPD\r\n" +
-                "//S1/10/10201409/11/181105/40/0:30\r\n" +
-                "eBill/B/41010560425610173";
-
-        return payloadFinal;
+        return builder.toString();
     }
 
     /**
      * Méthode de génération de la référence QR.
-     *
+     * <p>
      * A implémenter
-     * @param typeReference
+     *
+     * @param section la section
      */
-    public void genererReferenceQR(String typeReference){
-        // Méthode à implémenter
-        this.typeReference = IBAN;
-        reference = "VALEUR A CHANGER";
+    public void genererReferenceQR(APISection section) throws Exception {
+        this.reference = genererNumReference(section.getCompteAnnexe().getIdRole(), section.getCompteAnnexe()
+                .getIdExterneRole(), false, section.getIdTypeSection(), section.getIdExterne(), section
+                .getIdCompteAnnexe());
+        if (StringUtils.isEmpty(reference)) {
+            this.typeReference = SANS_REF;
+        } else {
+            this.typeReference = IBAN;
+        }
     }
 
     /**
      * Méthode qui génére l'adresse du débiteur depuis la DB
-     *
+     * <p>
      * Si l'adresse est trouvé (unique) alors renvoi true et charge les paramètres
      *
      * @param idTiers
      * @return Boolean
      * @throws Exception
      */
-    public Boolean genererAdresseDebiteur(String idTiers) throws Exception{
+    public Boolean genererAdresseDebiteur(String idTiers) throws Exception {
 
         TIAdresseDataManager adresseDataManager = new TIAdresseDataManager();
         adresseDataManager.setSession(getSession());
@@ -296,17 +213,17 @@ public class CAReferenceQR extends AbstractCAReference {
 
         ArrayList<TIAbstractAdresseData> listAdresses = new ArrayList<>();
 
-        for (int i = 0; i < adresseDataManager.size() ; i++) {
+        for (int i = 0; i < adresseDataManager.size(); i++) {
             TIAbstractAdresseData adresseTemp = ((TIAbstractAdresseData) adresseDataManager.getEntity(i));
-            if ( adresseTemp.getDateFinRelation().isEmpty()) {
+            if (adresseTemp.getDateFinRelation().isEmpty()) {
                 listAdresses.add(adresseTemp);
             }
         }
 
         // Chargement des données débiteurs sur le QR
-        if (listAdresses.size() == 1){
+        if (listAdresses.size() == 1) {
             debfAdressTyp = STRUCTURE;
-            debfNom= listAdresses.get(0).getNom();
+            debfNom = listAdresses.get(0).getNom();
             debfPays = listAdresses.get(0).getPaysIso();
             debfCodePostal = listAdresses.get(0).getNpa();
             debfLieu = listAdresses.get(0).getLocalite();
@@ -314,6 +231,10 @@ public class CAReferenceQR extends AbstractCAReference {
             debfNumMaisonOuLigneAdresse2 = listAdresses.get(0).getNumero();
             return true;
         } else return false;
+    }
+
+    public void recupererIban() throws Exception {
+        this.compte = this.getNumeroCC();
     }
 
 
@@ -409,7 +330,7 @@ public class CAReferenceQR extends AbstractCAReference {
         this.parameters = parameters;
     }
 
-    public void addParametersValue(String key, String value){
+    public void addParametersValue(String key, String value) {
         parameters.put(key, value);
     }
 
@@ -443,7 +364,7 @@ public class CAReferenceQR extends AbstractCAReference {
 
     public void setCreNom(String creNom) {
         // Limitation du nombre de caractère à 70 ( doc officielle)
-        if (creNom.length()>70){
+        if (creNom.length() > 70) {
             this.creNom = creNom.substring(70, creNom.length());
         } else this.creNom = creNom;
     }
@@ -517,7 +438,7 @@ public class CAReferenceQR extends AbstractCAReference {
     }
 
     public void setDebfNom(String debfNom) {
-        if (debfNom.length()>70){
+        if (debfNom.length() > 70) {
             this.debfNom = debfNom.substring(70, debfNom.length());
         } else this.debfNom = debfNom;
     }
@@ -617,4 +538,5 @@ public class CAReferenceQR extends AbstractCAReference {
     public void setPa2Param(String pa2Param) {
         this.pa2Param = pa2Param;
     }
+
 }

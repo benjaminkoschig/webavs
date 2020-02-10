@@ -1,37 +1,31 @@
 /*
  * Créé le 10 janv. 06
- * 
+ *
  * Pour changer le modèle de ce fichier généré, allez à : Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code
  * et commentaires
  */
 package globaz.aquila.print;
 
+import ch.globaz.common.properties.CommonProperties;
 import globaz.aquila.api.ICOEtape;
-import globaz.aquila.api.ICOSequenceConstante;
-import globaz.aquila.service.cataloguetxt.COCatalogueTextesService;
 import globaz.aquila.service.taxes.COTaxe;
 import globaz.framework.printing.itext.exception.FWIException;
 import globaz.framework.printing.itext.fill.FWIImportParametre;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
-import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
-import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.pdf.JadePdfUtil;
 import globaz.osiris.api.APISection;
-import globaz.osiris.db.utils.AbstractCAReference;
 import globaz.osiris.db.utils.CAReferenceBVR;
 import globaz.osiris.db.utils.CAReferenceQR;
-import globaz.osiris.db.utils.GenerationQRCode;
-import globaz.pyxis.db.adressecourrier.TIAbstractAdresseData;
-import globaz.pyxis.db.adressecourrier.TIAdresseDataManager;
-import org.springframework.format.number.money.MonetaryAmountFormatter;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  * <H1>Description</H1> Document : Sommation <br>
@@ -54,22 +48,28 @@ import java.util.*;
  * </ul>
  * Document : Voies de droits <br>
  * Prend tous les niveaux et les concatènes. Aucun paramètre possible.
- * 
+ *
  * @author vre, sel
  */
 public class CO00CSommationPaiement extends CODocumentManager {
 
     public static final String NOM_DOCUMENT_SOMMATION_CAP_CGAS = "Sommation CAP/CGAS";
-    /** Numéro Inforom pour la sommation LTN */
+    /**
+     * Numéro Inforom pour la sommation LTN
+     */
     public static final String NUM_REF_SOMMATION_LTN = "0197GCO";
-    /** Numéro Inforom */
+    /**
+     * Numéro Inforom
+     */
     public static final String NUMERO_REFERENCE_INFOROM = "0022GCO";
 
     public static final String NUMERO_REFERENCE_INFOROM_SOMMATION_CAP_CGAS = "0297GCO";
 
     private static final long serialVersionUID = -3645938861761414428L;
 
-    /** Nom du document du catalogue de textes à utiliser pour les sommation LTN */
+    /**
+     * Nom du document du catalogue de textes à utiliser pour les sommation LTN
+     */
     private static final String SOMMATION_LTN = "sommation LTN";
 
     // ~ Static fields/initializers
@@ -78,11 +78,15 @@ public class CO00CSommationPaiement extends CODocumentManager {
     private static final int STATE_LETTRE = 1;
     private static final int STATE_VD = 2;
 
-    /** Modele Jasper */
+    /**
+     * Modele Jasper
+     */
     private static final String TEMPLATE_NAME = "CO_00C_SOMMATION_AF";
-    private static final String TEMPLATE_NAME_QR = "CO_00C_SOMMATION_AF_QR_CODE";
+    private static final String NEW_TEMPLATE_NAME = "CO_00C_SOMMATION_AF_QR_CODE";
 
-    /** Le nom du modèle Jasper pour les voies de droits */
+    /**
+     * Le nom du modèle Jasper pour les voies de droits
+     */
     private static final String TEMPLATE_NAME_VD = "CO_00C_SOMMATION_VOIES_DROIT";
 
     private static final String TITLE_VOIES_DE_DROIT = "sommation voies de droit";
@@ -101,7 +105,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
 
     /**
      * Crée une nouvelle instance de la classe CO00CSommationPaiement.
-     * 
+     *
      * @throws Exception
      */
     public CO00CSommationPaiement() throws Exception {
@@ -110,7 +114,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
 
     /**
      * Crée une nouvelle instance de la classe CO00SommationPaiement.
-     * 
+     *
      * @param session
      * @throws FWIException
      */
@@ -123,7 +127,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.aquila.print.CODocumentManager#afterBuildReport()
      */
     @Override
@@ -149,7 +153,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
         try {
             if ((getSession().getApplication().getProperty(CODocumentManager.GESTION_VERSO_AQUILA) == null)
                     || getSession().getApplication().getProperty(CODocumentManager.GESTION_VERSO_AQUILA)
-                            .equals(CODocumentManager.AVEC_VERSO)) {
+                    .equals(CODocumentManager.AVEC_VERSO)) {
                 this.mergePDF(getDocumentInfo(), true, 500, false, null, JadePdfUtil.DUPLEX_ON_FIRST);
             } else {
                 this.mergePDF(getDocumentInfo(), true, 500, false, null);
@@ -167,13 +171,10 @@ public class CO00CSommationPaiement extends CODocumentManager {
         super.beforeExecuteReport();
 
         // Si l'on veut une QR Facture, dans ce cas, on va utiliser le deuxième template.
-        if (getBvr().isQRFacture()) {
-            setTemplateFile(CO00CSommationPaiement.TEMPLATE_NAME_QR);
-        } else {
-            setTemplateFile(CO00CSommationPaiement.TEMPLATE_NAME);
-        }
+        setTemplateFile(CO00CSommationPaiement.NEW_TEMPLATE_NAME);
         setDocumentTitle(getSession().getLabel("AQUILA_SOMMATION"));
         setNumeroReferenceInforom(CO00CSommationPaiement.NUMERO_REFERENCE_INFOROM);
+
     }
 
     /**
@@ -181,7 +182,6 @@ public class CO00CSommationPaiement extends CODocumentManager {
      */
     @Override
     public void createDataSource() throws Exception {
-
         try {
             if (state == CO00CSommationPaiement.STATE_LETTRE) {
                 createDataSourceLettre();
@@ -195,14 +195,12 @@ public class CO00CSommationPaiement extends CODocumentManager {
 
     /**
      * DataSource pour la lettre de sommation
-     * 
+     *
      * @throws Exception
      */
     private void createDataSourceLettre() throws Exception {
 
-        if (APISection.ID_CATEGORIE_SECTION_LTN.equals(curContentieux.getSection().getCategorieSection())
-                || APISection.ID_CATEGORIE_SECTION_LTN_COMPLEMENTAIRE.equals(curContentieux.getSection()
-                        .getCategorieSection())) {
+        if (APISection.ID_CATEGORIE_SECTION_LTN.equals(curContentieux.getSection().getCategorieSection()) || APISection.ID_CATEGORIE_SECTION_LTN_COMPLEMENTAIRE.equals(curContentieux.getSection().getCategorieSection())) {
             // Setter pour un CT différent
             getCatalogueTextesUtil().setNomDocument(CO00CSommationPaiement.SOMMATION_LTN);
             setNumeroReferenceInforom(CO00CSommationPaiement.NUM_REF_SOMMATION_LTN);
@@ -226,16 +224,13 @@ public class CO00CSommationPaiement extends CODocumentManager {
         // -- texte en dessous du detail
         initTexteDetail(getParent());
 
-        if (getBvr().isQRFacture()) {
+        if (CommonProperties.QR_FACTURE.getBooleanValue()) {
             // -- QR
             qrFacture = new CAReferenceQR();
             qrFacture.setSession(getSession());
             // Initialisation des variables du document
             initVariableQR(montantTotal);
-            // Initialisation des entêtes QR
-            //qrFacture.initEnteteQR(this);
             // Génération du document QR
-
             qrFacture.initQR(this);
         } else {
             // -- BVR
@@ -248,35 +243,33 @@ public class CO00CSommationPaiement extends CODocumentManager {
 
         qrFacture.setMonnaie(getCatalogueTextesUtil().texte(getParent(), 3, 2));
         qrFacture.setMontant(montantTotal.toString());
+        qrFacture.setCrePays("CH");
 
         try {
-            qrFacture.setCrePays("CH");
-            if(!qrFacture.genererAdresseDebiteur(curContentieux.getCompteAnnexe().getIdTiers())) {
+            qrFacture.recupererIban();
+            if (!qrFacture.genererAdresseDebiteur(curContentieux.getCompteAnnexe().getIdTiers())) {
                 // si l'adresse n'est pas trouvé en DB, alors chargement d'une adresse Combiné
                 qrFacture.setDebfAdressTyp(CAReferenceQR.COMBINE);
                 //
                 qrFacture.setDebfRueOuLigneAdresse1(getAdresseDestinataire());
             }
+            qrFacture.genererReferenceQR(curContentieux.getSection());
+
             //qrFacture.setDebfPays("CH");
-            qrFacture.genererReferenceQR(qrFacture.getTypeReference());
-            //qrFacture.setReference(bvr.genererNumReferenceBVR(curContentieux.getSection()));
-            qrFacture.setCompte(qrFacture.getNumeroCC());
-            //qrFacture.setReference(qrFacture.getLigneReference());
             qrFacture.setCreRueOuLigneAdresse1(qrFacture.getAdresse());
             //qrFacture.setDebfRueOuLigneAdresse1(getAdresseDestinataire());
-        } catch (Exception e){
+        } catch (Exception e) {
             getMemoryLog().logMessage(
                     "Erreur lors de recherche des élements de la sommation : " + e.getMessage(),
                     FWMessage.AVERTISSEMENT, this.getClass().getName());
         }
 
 
-
     }
 
     /**
      * DataSource pour les voies de droits
-     * 
+     *
      * @throws Exception
      */
     private void createDataSourceVoiesDroit() throws Exception {
@@ -310,7 +303,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
 
     /**
      * Renvoie la référence BVR.
-     * 
+     *
      * @return la référence BVR.
      */
     public CAReferenceBVR getBvr() {
@@ -322,7 +315,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
 
     /**
      * getter pour l'attribut date delai paiement.
-     * 
+     *
      * @return la valeur courante de l'attribut date delai paiement
      */
     public String getDateDelaiPaiement() {
@@ -331,7 +324,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
 
     /**
      * BVR
-     * 
+     *
      * @param montantTotal
      * @throws Exception
      */
@@ -360,6 +353,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
             e.printStackTrace();
         }
         try {
+            super.setParametres(COParameter.P_SUBREPORT_QR_FACTURE, getImporter().getImportPath() + "BVR_TEMPLATE.jasper");
             super.setParametres(COParameter.P_ADRESSE, getBvr().getAdresse());
             super.setParametres(COParameter.P_ADRESSECOPY, getBvr().getAdresse());
             super.setParametres(COParameter.P_COMPTE, getBvr().getNumeroCC());// numéro CC
@@ -387,12 +381,11 @@ public class CO00CSommationPaiement extends CODocumentManager {
         qrFacture.setSession(getSession());
 
 
-
     }
 
     /**
      * corps du doc
-     * 
+     *
      * @param key
      * @throws Exception
      */
@@ -418,15 +411,15 @@ public class CO00CSommationPaiement extends CODocumentManager {
                 COParameter.T5,
                 formatMessage(
                         body,
-                        new Object[] {
+                        new Object[]{
                                 getFormulePolitesse(destinataireDocument),
-                                formatMessage(optionnel, new Object[] { formatDate(curContentieux.getDateExecution()) }),
-                                formatDate(curContentieux.getSection().getDateSection()) }));
+                                formatMessage(optionnel, new Object[]{formatDate(curContentieux.getDateExecution())}),
+                                formatDate(curContentieux.getSection().getDateSection())}));
     }
 
     /**
      * boucle de detail
-     * 
+     *
      * @return
      * @throws Exception
      */
@@ -444,7 +437,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
         // ajout des taxes si necessaire
         FWCurrency montantTotal = curContentieux.getSection().getSoldeToCurrency();
 
-        for (Iterator taxesIter = getTaxes().iterator(); taxesIter.hasNext();) {
+        for (Iterator taxesIter = getTaxes().iterator(); taxesIter.hasNext(); ) {
             COTaxe taxe = (COTaxe) taxesIter.next();
 
             montantTotal.add(taxe.getMontantTaxe());
@@ -470,7 +463,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
 
     /**
      * texte en dessous du detail
-     * 
+     *
      * @throws Exception
      */
     private void initTexteDetail(Object key) throws Exception {
@@ -492,13 +485,13 @@ public class CO00CSommationPaiement extends CODocumentManager {
          */
         this.setParametres(
                 COParameter.T6,
-                formatMessage(body, new Object[] { getFormulePolitesse(destinataireDocument),
-                        formatDate(dateDelaiPaiement) }));
+                formatMessage(body, new Object[]{getFormulePolitesse(destinataireDocument),
+                        formatDate(dateDelaiPaiement)}));
     }
 
     /**
      * titre du doc
-     * 
+     *
      * @return
      */
     private StringBuffer initTitreDoc(Object key) {
@@ -515,8 +508,8 @@ public class CO00CSommationPaiement extends CODocumentManager {
          */
         this.setParametres(
                 COParameter.T1,
-                formatMessage(body, new Object[] { curContentieux.getSection().getDescription(getLangue()),
-                        curContentieux.getSection().getDateSection() }));
+                formatMessage(body, new Object[]{curContentieux.getSection().getDescription(getLangue()),
+                        curContentieux.getSection().getDateSection()}));
         return body;
     }
 
@@ -552,9 +545,8 @@ public class CO00CSommationPaiement extends CODocumentManager {
 
     /**
      * setter pour l'attribut date delai paiement.
-     * 
-     * @param dateDelaiPaiement
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param dateDelaiPaiement une nouvelle valeur pour cet attribut
      */
     public void setDateDelaiPaiement(String dateDelaiPaiement) {
         this.dateDelaiPaiement = dateDelaiPaiement;

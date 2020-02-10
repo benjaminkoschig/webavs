@@ -11,6 +11,7 @@ import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CACompteAnnexeManager;
 import globaz.osiris.db.comptes.CASection;
+import globaz.osiris.db.utils.AbstractCAReference;
 import globaz.osiris.db.utils.CAReferenceBVR;
 import globaz.osiris.external.IntRole;
 import globaz.osiris.parser.IntReferenceBVRParser;
@@ -110,7 +111,7 @@ public class CARefBVRBanqueParser implements IntReferenceBVRParser {
             String testRefIdRole = reference.substring(posIdRole - 1, posIdRole - 1 + lenIdRole);
 
             // Récupérer le compte annexe
-            if (CAReferenceBVR.IDENTIFIANT_REF_IDCOMPTEANNEXE.equals(testRefIdRole)) {
+            if (AbstractCAReference.IDENTIFIANT_REF_IDCOMPTEANNEXE.equals(testRefIdRole)) {
                 idCompteAnnexe = parseIdCompteAnnexeForRefIdCompteAnnexe(reference);
             } else if (!testRefIdRole.equals("00")) {
                 parseIdCompteAnnexe();
