@@ -79,18 +79,6 @@ public class CAReferenceBVR extends AbstractCAReference{
         return forcerBV;
     }
 
-    /**
-     * Va chercher le numéro de l'adherent dans Babel
-     * 
-     * @author: sel Créé le : 28 nov. 06
-     * @return le N° adherent (ex: 010123451)
-     * @throws Exception
-     */
-    public String getNoAdherent() throws Exception {
-        String res = "";
-        res = getTexteBabel(2, 2);
-        return res;
-    }
 
     /**
      * @return the ocrb

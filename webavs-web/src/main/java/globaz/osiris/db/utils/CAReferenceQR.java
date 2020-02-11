@@ -3,8 +3,11 @@ package globaz.osiris.db.utils;
 import globaz.aquila.print.COParameter;
 import globaz.framework.printing.itext.FWIDocumentManager;
 import globaz.framework.printing.itext.fill.FWIImportParametre;
+import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BManager;
+import globaz.globall.util.JABVR;
 import globaz.globall.util.JACalendar;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.api.APISection;
 import globaz.pyxis.db.adressecourrier.TIAbstractAdresseData;
 import globaz.pyxis.db.adressecourrier.TIAdresseDataManager;
@@ -19,6 +22,7 @@ import java.util.Objects;
 public class CAReferenceQR extends AbstractCAReference {
 
     private static final String CHAR_FIN_LIGNE = "\r\n";
+    private static final String CODE_PAYS_DEFAUT = "CH";
 
     // Variables à externaliser
     private static final String QR_IBAN = "QRR";
@@ -33,7 +37,6 @@ public class CAReferenceQR extends AbstractCAReference {
     public static final String STRUCTURE = "S";
     // ---------------------- //
 
-    private String adresse = StringUtils.EMPTY;
     private String adresseCopy = StringUtils.EMPTY;
     private String adresseDebiteur = StringUtils.EMPTY;
     private String compte = StringUtils.EMPTY;
@@ -56,13 +59,13 @@ public class CAReferenceQR extends AbstractCAReference {
     private String crePays = StringUtils.EMPTY;
 
     // Non utilisé pour le moment - Pour une utilisation future.
-    private String crefNom;
-    private String crefAdressTyp;
-    private String crefRueOuLigneAdresse1;
-    private String crefNumMaisonOuLigneAdresse2;
-    private String crefCodePostal;
-    private String crefLieu;
-    private String crefPays;
+    private String crefNom = StringUtils.EMPTY;
+    private String crefAdressTyp = StringUtils.EMPTY;
+    private String crefRueOuLigneAdresse1 = StringUtils.EMPTY;
+    private String crefNumMaisonOuLigneAdresse2 = StringUtils.EMPTY;
+    private String crefCodePostal = StringUtils.EMPTY;
+    private String crefLieu = StringUtils.EMPTY;
+    private String crefPays = StringUtils.EMPTY;
     //
 
 
@@ -126,9 +129,20 @@ public class CAReferenceQR extends AbstractCAReference {
         parameters.put(COParameter.P_MONNAIE_2, monnaie);
         parameters.put(COParameter.P_MONTANT_1, montant);
         parameters.put(COParameter.P_MONTANT_2, montant);
-        parameters.put(COParameter.P_COMPTE, compte + RETOUR_LIGNE + creRueOuLigneAdresse1);
-        parameters.put(FWIImportParametre.PARAM_REFERENCE, getReference());
-        parameters.put(COParameter.P_PAR, debfRueOuLigneAdresse1);
+        parameters.put(FWIImportParametre.PARAM_REFERENCE, getReferenceFormatte());
+
+        if (!COMBINE.equals(creAdressTyp)) {
+            parameters.put(COParameter.P_COMPTE, compte + RETOUR_LIGNE + creNom + RETOUR_LIGNE + creRueOuLigneAdresse1 + " " + creNumMaisonOuLigneAdresse2 + RETOUR_LIGNE + creCodePostal + " " + creLieu);
+        } else {
+            parameters.put(COParameter.P_COMPTE, compte + RETOUR_LIGNE + creRueOuLigneAdresse1 + creNumMaisonOuLigneAdresse2);
+        }
+
+
+        if (!COMBINE.equals(debfAdressTyp)){
+            parameters.put(COParameter.P_PAR, debfNom + RETOUR_LIGNE + debfRueOuLigneAdresse1 + " " + debfNumMaisonOuLigneAdresse2 + RETOUR_LIGNE + debfCodePostal + " " + debfLieu);
+        } else {
+            parameters.put(COParameter.P_PAR, debfRueOuLigneAdresse1 + RETOUR_LIGNE + debfNumMaisonOuLigneAdresse2);
+        }
         //parameters.put("Payable", debfNom+ RETOUR_LIGNE  + debfRueOuLigneAdresse1 + " " + debfNumMaisonOuLigneAdresse2 + RETOUR_LIGNE  + debfCodePostal + " " + debfLieu);
         parameters.put(COParameter.P_INFO_ADD, communicationNonStructuree + RETOUR_LIGNE + infoFacture);
 
@@ -147,7 +161,7 @@ public class CAReferenceQR extends AbstractCAReference {
         builder.append(creNumMaisonOuLigneAdresse2).append(CHAR_FIN_LIGNE);
         builder.append((Objects.equals(creAdressTyp, COMBINE) ? StringUtils.EMPTY : creCodePostal)).append(CHAR_FIN_LIGNE);
         builder.append((Objects.equals(creAdressTyp, COMBINE) ? StringUtils.EMPTY : creLieu)).append(CHAR_FIN_LIGNE);
-        builder.append(crePays).append(CHAR_FIN_LIGNE);
+        builder.append(Objects.isNull(getCrePays())? CODE_PAYS_DEFAUT : crePays).append(CHAR_FIN_LIGNE);
         builder.append(crefNom).append(CHAR_FIN_LIGNE);
         builder.append(crefAdressTyp).append(CHAR_FIN_LIGNE);
         builder.append(crefRueOuLigneAdresse1).append(CHAR_FIN_LIGNE);
@@ -178,7 +192,7 @@ public class CAReferenceQR extends AbstractCAReference {
     /**
      * Méthode de génération de la référence QR.
      * <p>
-     * A implémenter
+     *
      *
      * @param section la section
      */
@@ -190,6 +204,17 @@ public class CAReferenceQR extends AbstractCAReference {
             this.typeReference = SANS_REF;
         } else {
             this.typeReference = IBAN;
+        }
+        JABVR bvr = null;
+
+        if (JadeStringUtil.isDecimalEmpty(montant)) {
+            montant = section.getSolde();
+        }
+
+        if (new FWCurrency(montant).isPositive()) {
+            bvr = new JABVR(montant, reference, getNoAdherent());
+
+            setReference(bvr.get_ligneReference());
         }
     }
 
@@ -238,8 +263,24 @@ public class CAReferenceQR extends AbstractCAReference {
     }
 
 
-    public void setAdresse(String adresse) {
-        this.adresse = adresse;
+    /**
+     * Méthode qui va setter l'adresse créditeur
+     * depuis une adresse combinée
+     *
+     */
+    public void genererCreAdresse() {
+
+        String[] adresseSplit =  getAdresse().split("\r\n");
+
+        this.creAdressTyp = COMBINE;
+
+        for(int i = 0; i < adresseSplit.length ; i++) {
+            if (i == (adresseSplit.length - 1)) {
+                this.creNumMaisonOuLigneAdresse2 = adresseSplit[i];
+            } else {
+                this.creRueOuLigneAdresse1 = this.creRueOuLigneAdresse1 + adresseSplit[i] +"\r\n";
+            }
+        }
     }
 
     public String getAdresseCopy() {
@@ -268,6 +309,14 @@ public class CAReferenceQR extends AbstractCAReference {
 
     public String getReference() {
         return reference;
+    }
+
+    /**
+     *
+     *
+     */
+    public String getReferenceFormatte(){
+        return reference.substring(0, 2) + " " + reference.substring(2, 7) + " " + reference.substring(7, 12) + " " + reference.substring(12, 17) + " " + reference.substring(17, 22) + " " + reference.substring(22, 27) + " ";
     }
 
     public void setReference(String reference) {
@@ -410,7 +459,12 @@ public class CAReferenceQR extends AbstractCAReference {
     }
 
     public String getCrePays() {
-        return crePays;
+        try{
+            return getCodePays();
+        } catch (Exception e){
+            // Le code pays n'a pas été trouvé
+            return null;
+        }
     }
 
     public void setCrePays(String crePays) {

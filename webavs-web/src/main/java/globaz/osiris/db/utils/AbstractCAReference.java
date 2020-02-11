@@ -406,6 +406,28 @@ public abstract class AbstractCAReference {
     }
 
     /**
+     * Va chercher le numéro de l'adherent dans Babel
+     *
+     * @author: sel Créé le : 28 nov. 06
+     * @return le N° adherent (ex: 010123451)
+     * @throws Exception
+     */
+    public String getNoAdherent() throws Exception {
+        return  getTexteBabel(2, 2);
+    }
+
+    /**
+     * Va chercher le code pays dans babel
+     *
+     * @author: sel Créé le : 28 nov. 06
+     * @return le N° adherent (ex: 010123451)
+     * @throws Exception
+     */
+    public String getCodePays() throws Exception {
+        return  getTexteBabel(3, 1);
+    }
+
+    /**
      * Récupère les textes du catalogue de texte
      *
      * @author: sel Créé le : 28 nov. 06
@@ -414,7 +436,7 @@ public abstract class AbstractCAReference {
      * @return texte
      * @throws Exception
      */
-    protected String getTexteBabel(int niveau, int position) throws Exception {
+    public String getTexteBabel(int niveau, int position) throws Exception {
         StringBuffer resString = new StringBuffer("");
         if (this.getCurrentDocument() == null) {
             resString.append(TEXTE_INTROUVABLE);

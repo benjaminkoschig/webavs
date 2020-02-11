@@ -243,9 +243,10 @@ public class CO00CSommationPaiement extends CODocumentManager {
 
         qrFacture.setMonnaie(getCatalogueTextesUtil().texte(getParent(), 3, 2));
         qrFacture.setMontant(montantTotal.toString());
-        qrFacture.setCrePays("CH");
+
 
         try {
+            //qrFacture.setCrePays(qrFacture.getCodePays());
             qrFacture.recupererIban();
             if (!qrFacture.genererAdresseDebiteur(curContentieux.getCompteAnnexe().getIdTiers())) {
                 // si l'adresse n'est pas trouvé en DB, alors chargement d'une adresse Combiné
@@ -255,8 +256,9 @@ public class CO00CSommationPaiement extends CODocumentManager {
             }
             qrFacture.genererReferenceQR(curContentieux.getSection());
 
-            //qrFacture.setDebfPays("CH");
-            qrFacture.setCreRueOuLigneAdresse1(qrFacture.getAdresse());
+            // Il n'existe pas pour l'heure actuel d'adresse de créditeur en DB.
+            // Elle est récupérée depuis le catalogue de texte au format Combinée
+            qrFacture.genererCreAdresse();
             //qrFacture.setDebfRueOuLigneAdresse1(getAdresseDestinataire());
         } catch (Exception e) {
             getMemoryLog().logMessage(
