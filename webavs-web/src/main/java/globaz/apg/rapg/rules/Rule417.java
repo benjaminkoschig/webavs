@@ -3,6 +3,7 @@ package globaz.apg.rapg.rules;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import ch.globaz.vulpecula.domain.models.common.Periode;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.droits.APDroitAPGJointTiers;
 import globaz.apg.db.droits.APDroitAPGJointTiersManager;
@@ -120,6 +121,7 @@ public class Rule417 extends Rule {
     private List<JadePeriodWrapper> periodesConsecutives(List<APDroitAPGJointTiers> droits) {
         List<JadePeriodWrapper> periodes = new ArrayList<>();
         for(APDroitAPGJointTiers droit : droits) {
+            reducePeriode(droit);
             periodes.addAll(droit.getPeriodes());
         }
         Collections.sort(periodes);
@@ -160,6 +162,27 @@ public class Rule417 extends Rule {
         }
 
         return periodeAnnee;
+    }
+
+    /**
+     * Reduit les périodes par rapport aux jours soldés
+     * ex :  01.04.2019 au 30.04.2019 et 29 jours solés -> la fin de la période doit être 29.04.2019
+     * @param droit
+     */
+    private void reducePeriode(APDroitAPGJointTiers droit){
+        Collections.sort(droit.getPeriodes());
+        int nbJour = 0;
+        JadePeriodWrapper lastPeriode = null;
+        for(JadePeriodWrapper periode:droit.getPeriodes()) {
+            nbJour +=JadeDateUtil.getNbDayBetween(periode.getDateDebut(), periode.getDateFin()) + 1;
+            lastPeriode = periode;
+        }
+        int diff = nbJour - Integer.valueOf(droit.getNbrJourSoldes());
+        if(diff > 0) {
+            JadePeriodWrapper newPeriode = new JadePeriodWrapper(lastPeriode.getDateDebut(), JadeDateUtil.addDays(lastPeriode.getDateFin(), -diff));
+            droit.getPeriodes().remove(lastPeriode);
+            droit.getPeriodes().add(newPeriode);
+        }
     }
 
 }
