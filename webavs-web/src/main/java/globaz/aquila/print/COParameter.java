@@ -113,7 +113,6 @@ public class COParameter extends FWIImportParametre {
     public static final String P_TITRE_1 = "P_TITRE_1";
     public static final String P_TITRE_2 = "P_TITRE_2";
     public static final String P_POINT_DEPOT = "P_POINT_DEPOT";
-    public static final String P_INFO_SUPP = "P_INFO_SUPP";
     public static final String P_MONNAIE_TITRE_1 = "P_MONNAIE_TITRE_1";
     public static final String P_MONNAIE_TITRE_2 = "P_MONNAIE_TITRE_2";
     public static final String P_MONTANT_TITRE_1 = "P_MONTANT_TITRE_1";
@@ -124,6 +123,9 @@ public class COParameter extends FWIImportParametre {
     public static final String P_PAR_TITRE = "P_PAR_TITRE";
     public static final String P_REF_TITRE = "P_REF_TITRE";
     public static final String P_INFO_ADD_TITRE = "P_INFO_ADD_TITRE";
+
+    public static final String P_PARAM_1 = "P_PARAM_1";
+    public static final String P_PARAM_2 = "P_PARAM_2";
 
 
     public static final String P_TOTAL = "P_TOTAL";

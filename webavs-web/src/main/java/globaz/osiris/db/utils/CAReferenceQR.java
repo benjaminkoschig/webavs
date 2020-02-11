@@ -29,6 +29,9 @@ public class CAReferenceQR extends AbstractCAReference {
     private static final String IBAN = "SCOR";
     private static final String SANS_REF = "NON";
 
+    // Caractère de fin de paiement. Valeur fixe
+    private static final String END_OF_PAYMENT = "EPD";
+
     private static final String QR_TYPE = "SPC";
     private static final String VERSION= "0200";
     private static final String CODING_TYPE= "1";
@@ -92,13 +95,22 @@ public class CAReferenceQR extends AbstractCAReference {
 
     public CAReferenceQR() {
         super();
+
+        // Init Trailer. Valeur fixe = EPD
+        trailer = END_OF_PAYMENT;
     }
 
 
     public FWIDocumentManager initQR(FWIDocumentManager document) {
+        // Initialisation des entêtes de la QR-Facture
         initEnteteQR(document);
+
+        // Initialisation des params de la QR-Facture
+        initParamQR();
+
         Iterator it = parameters.entrySet().iterator();
 
+        // Chargement des paramètres sur le document
         while (it.hasNext()) {
             HashMap.Entry element = (HashMap.Entry) it.next();
             document.setParametres(element.getKey(), Objects.isNull(element.getValue()) ? "" : element.getValue());
@@ -107,12 +119,16 @@ public class CAReferenceQR extends AbstractCAReference {
         return document;
     }
 
+    /**
+     * Méthode qui charge les entêtes du documents QR-Facture
+     *
+     * @param document
+     */
     private void initEnteteQR(FWIDocumentManager document) {
         parameters.put(COParameter.P_SUBREPORT_QR_FACTURE, document.getImporter().getImportPath() + "QR_FACTURE_TEMPLATE.jasper");
         parameters.put(COParameter.P_TITRE_1, getSession().getLabel("QR_RECEPISSE"));
         parameters.put(COParameter.P_TITRE_2, getSession().getLabel("QR_SECTION_PAIEMENT"));
         parameters.put(COParameter.P_POINT_DEPOT, getSession().getLabel("QR_POINT_DEPOT"));
-        parameters.put(COParameter.P_INFO_SUPP, "NOM_AV1_A_CHARGER");
         parameters.put(COParameter.P_MONNAIE_TITRE_1, getSession().getLabel("QR_MONNAIE"));
         parameters.put(COParameter.P_MONNAIE_TITRE_2, getSession().getLabel("QR_MONNAIE"));
         parameters.put(COParameter.P_MONTANT_TITRE_1, getSession().getLabel("MONTANT"));
@@ -124,28 +140,33 @@ public class CAReferenceQR extends AbstractCAReference {
         parameters.put(COParameter.P_REF_TITRE, getSession().getLabel("REFERENCE"));
         parameters.put(COParameter.P_INFO_ADD_TITRE, getSession().getLabel("QR_INFO_SUPP"));
 
+
+    }
+
+    /**
+     * Méthode qui charge les paramètres variables de la QR-Facture
+     *
+     */
+    public void initParamQR(){
         parameters.put(COParameter.P_QR_CODE_PATH, new GenerationQRCode().generateSwissQrCode(generationPayLoad()));
         parameters.put(COParameter.P_MONNAIE_1, monnaie);
         parameters.put(COParameter.P_MONNAIE_2, monnaie);
         parameters.put(COParameter.P_MONTANT_1, montant);
         parameters.put(COParameter.P_MONTANT_2, montant);
-        parameters.put(FWIImportParametre.PARAM_REFERENCE, getReferenceFormatte());
-
+        parameters.put(FWIImportParametre.PARAM_REFERENCE, getReference());
+        parameters.put(COParameter.P_PARAM_1, pa1Param);
+        parameters.put(COParameter.P_PARAM_2, pa2Param);
         if (!COMBINE.equals(creAdressTyp)) {
             parameters.put(COParameter.P_COMPTE, compte + RETOUR_LIGNE + creNom + RETOUR_LIGNE + creRueOuLigneAdresse1 + " " + creNumMaisonOuLigneAdresse2 + RETOUR_LIGNE + creCodePostal + " " + creLieu);
         } else {
             parameters.put(COParameter.P_COMPTE, compte + RETOUR_LIGNE + creRueOuLigneAdresse1 + creNumMaisonOuLigneAdresse2);
         }
-
-
         if (!COMBINE.equals(debfAdressTyp)){
             parameters.put(COParameter.P_PAR, debfNom + RETOUR_LIGNE + debfRueOuLigneAdresse1 + " " + debfNumMaisonOuLigneAdresse2 + RETOUR_LIGNE + debfCodePostal + " " + debfLieu);
         } else {
             parameters.put(COParameter.P_PAR, debfRueOuLigneAdresse1 + RETOUR_LIGNE + debfNumMaisonOuLigneAdresse2);
         }
-        //parameters.put("Payable", debfNom+ RETOUR_LIGNE  + debfRueOuLigneAdresse1 + " " + debfNumMaisonOuLigneAdresse2 + RETOUR_LIGNE  + debfCodePostal + " " + debfLieu);
         parameters.put(COParameter.P_INFO_ADD, communicationNonStructuree + RETOUR_LIGNE + infoFacture);
-
     }
 
     private String generationPayLoad() {
@@ -179,7 +200,7 @@ public class CAReferenceQR extends AbstractCAReference {
         builder.append((Objects.equals(debfAdressTyp, COMBINE) ? StringUtils.EMPTY : debfLieu)).append(CHAR_FIN_LIGNE);
         builder.append(debfPays).append(CHAR_FIN_LIGNE);
         builder.append(typeReference).append(CHAR_FIN_LIGNE);
-        builder.append(reference).append(CHAR_FIN_LIGNE);
+        builder.append(getReferenceNonFormatte()).append(CHAR_FIN_LIGNE);
         builder.append(communicationNonStructuree).append(CHAR_FIN_LIGNE);
         builder.append(trailer).append(CHAR_FIN_LIGNE);
         builder.append(infoFacture).append(CHAR_FIN_LIGNE);
@@ -311,17 +332,18 @@ public class CAReferenceQR extends AbstractCAReference {
         return reference;
     }
 
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
+
     /**
      *
      *
      */
-    public String getReferenceFormatte(){
-        return reference.substring(0, 2) + " " + reference.substring(2, 7) + " " + reference.substring(7, 12) + " " + reference.substring(12, 17) + " " + reference.substring(17, 22) + " " + reference.substring(22, 27) + " ";
+    public String getReferenceNonFormatte(){
+        return reference.replaceAll("\\s", "");
     }
 
-    public void setReference(String reference) {
-        this.reference = reference;
-    }
 
     public String getMontantSansCentimes() {
         return montantSansCentimes;
