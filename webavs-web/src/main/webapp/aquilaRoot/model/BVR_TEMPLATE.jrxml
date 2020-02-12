@@ -14,7 +14,7 @@
 		 rightMargin="0"
 		 topMargin="0"
 		 bottomMargin="0"
-		 whenNoDataType="NoPages"
+		 whenNoDataType="AllSectionsNoDetail"
 		 isTitleNewPage="false"
 		 isSummaryNewPage="false">
 	<property name="ireport.scriptlethandling" value="2" />
@@ -63,8 +63,8 @@
 			<band height="297"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="17"
-						y="15"
+						x="19"
+						y="17"
 						width="150"
 						height="73"
 						forecolor="#000000"
@@ -75,7 +75,9 @@
 						isPrintRepeatedValues="true"
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="true"/>
+						isPrintWhenDetailOverflows="true">
+							<printWhenExpression><![CDATA[new Boolean($P{P_ADRESSE}!=null)]]></printWhenExpression>
+						</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font reportFont="NORMAL" fontName="Helvetica"/>
 					</textElement>
@@ -83,8 +85,8 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="85"
-						y="111"
+						x="87"
+						y="113"
 						width="72"
 						height="13"
 						forecolor="#000000"
@@ -103,8 +105,8 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="361"
-						y="139"
+						x="363"
+						y="141"
 						width="206"
 						height="73"
 						forecolor="#000000"
@@ -123,8 +125,8 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Page" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="170"
-						y="231"
+						x="172"
+						y="233"
 						width="402"
 						height="16"
 						forecolor="#000000"
@@ -143,8 +145,8 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Page" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="17"
-						y="136"
+						x="19"
+						y="138"
 						width="98"
 						height="15"
 						forecolor="#000000"
@@ -163,8 +165,8 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Page" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="127"
-						y="136"
+						x="129"
+						y="138"
 						width="25"
 						height="15"
 						forecolor="#000000"
@@ -183,8 +185,8 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Page" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="189"
-						y="136"
+						x="191"
+						y="138"
 						width="98"
 						height="15"
 						forecolor="#000000"
@@ -195,7 +197,9 @@
 						isPrintRepeatedValues="true"
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="true"/>
+						isPrintWhenDetailOverflows="true">
+							<printWhenExpression><![CDATA[new Boolean($P{P_FRANC}!=null)]]></printWhenExpression>
+						</reportElement>
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font reportFont="NORMAL" fontName="Helvetica" size="11"/>
 					</textElement>
@@ -203,8 +207,8 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Page" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="302"
-						y="136"
+						x="304"
+						y="138"
 						width="22"
 						height="15"
 						forecolor="#000000"
@@ -223,8 +227,8 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="17"
-						y="162"
+						x="19"
+						y="164"
 						width="148"
 						height="85"
 						forecolor="#000000"
@@ -243,8 +247,8 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="193"
-						y="15"
+						x="195"
+						y="17"
 						width="150"
 						height="73"
 						forecolor="#000000"
@@ -263,8 +267,8 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="262"
-						y="111"
+						x="264"
+						y="113"
 						width="72"
 						height="12"
 						forecolor="#000000"
@@ -283,8 +287,8 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="345"
-						y="87"
+						x="347"
+						y="89"
 						width="220"
 						height="19"
 						forecolor="#000000"

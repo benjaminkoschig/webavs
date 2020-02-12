@@ -20,19 +20,16 @@
 	<property name="ireport.scriptlethandling" value="2" />
 	<parameter name="P_TITRE_1" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_TITRE_2" isForPrompting="false" class="java.lang.String"/>
-	<parameter name="P_MONNAIE_TITRE_1" isForPrompting="false" class="java.lang.String"/>
-	<parameter name="P_MONNAIE_TITRE_2" isForPrompting="false" class="java.lang.String"/>
-	<parameter name="P_MONNAIE_1" isForPrompting="false" class="java.lang.String"/>
-	<parameter name="P_MONNAIE_2" isForPrompting="false" class="java.lang.String"/>
-	<parameter name="P_MONTANT_TITRE_1" isForPrompting="false" class="java.lang.String"/>
-	<parameter name="P_MONTANT_TITRE_2" isForPrompting="false" class="java.lang.String"/>
-	<parameter name="P_MONTANT_1" isForPrompting="false" class="java.lang.String"/>
-	<parameter name="P_MONTANT_2" isForPrompting="false" class="java.lang.String"/>
-	<parameter name="P_INFO_SUPP" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_MONNAIE_TITRE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_MONNAIE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_MONTANT_TITRE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_MONTANT" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_PARAM_1" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_POINT_DEPOT" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_SUBREPORT_ZONE_INDICATIONS" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_SUBREPORT_RECEPISE" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_QR_CODE_PATH" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_PARAM_2" isForPrompting="false" class="java.lang.String"/>
 		<background>
 			<band height="0"  isSplitAllowed="true" >
 			</band>
@@ -187,7 +184,7 @@
 						x="190"
 						y="255"
 						width="392"
-						height="28"
+						height="9"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="textField-3"
@@ -197,12 +194,12 @@
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_INFO_SUPP}!=null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_PARAM_1}!=null)]]></printWhenExpression>
 						</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="11" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_INFO_SUPP}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_PARAM_1}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -219,12 +216,12 @@
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONNAIE_TITRE_1}!=null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONNAIE_TITRE}!=null)]]></printWhenExpression>
 						</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="6" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONNAIE_TITRE_1}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONNAIE_TITRE}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -241,12 +238,12 @@
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT_TITRE_1}!=null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT_TITRE}!=null)]]></printWhenExpression>
 						</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="6" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONTANT_TITRE_1}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONTANT_TITRE}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -263,12 +260,12 @@
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONNAIE_1}!=null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONNAIE}!=null)]]></printWhenExpression>
 						</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONNAIE_1}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONNAIE}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -285,12 +282,12 @@
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT_1}!=null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT}!=null)]]></printWhenExpression>
 						</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONTANT_1}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONTANT}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -307,12 +304,12 @@
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONNAIE_TITRE_2}!=null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONNAIE_TITRE}!=null)]]></printWhenExpression>
 						</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONNAIE_TITRE_2}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONNAIE_TITRE}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -329,12 +326,12 @@
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONNAIE_2}!=null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONNAIE}!=null)]]></printWhenExpression>
 						</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONNAIE_2}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONNAIE}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -351,12 +348,12 @@
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT_TITRE_2}!=null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT_TITRE}!=null)]]></printWhenExpression>
 						</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONTANT_TITRE_2}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONTANT_TITRE}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -373,12 +370,12 @@
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT_2}!=null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT}!=null)]]></printWhenExpression>
 						</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONTANT_2}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONTANT}]]></textFieldExpression>
 				</textField>
 				<line direction="TopDown">
 					<reportElement
@@ -396,7 +393,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT_1}==null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT}==null)]]></printWhenExpression>
 						</reportElement>
 					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
@@ -416,7 +413,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT_1}==null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT}==null)]]></printWhenExpression>
 						</reportElement>
 					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
@@ -436,7 +433,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT_1}==null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT}==null)]]></printWhenExpression>
 						</reportElement>
 					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
@@ -456,7 +453,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT_1}==null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT}==null)]]></printWhenExpression>
 						</reportElement>
 					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
@@ -476,7 +473,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT_1}==null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT}==null)]]></printWhenExpression>
 						</reportElement>
 					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
@@ -496,7 +493,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT_1}==null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT}==null)]]></printWhenExpression>
 						</reportElement>
 					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
@@ -516,7 +513,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT_1}==null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT}==null)]]></printWhenExpression>
 						</reportElement>
 					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
@@ -536,7 +533,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT_1}==null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT}==null)]]></printWhenExpression>
 						</reportElement>
 					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
@@ -556,7 +553,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT_2}==null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT}==null)]]></printWhenExpression>
 						</reportElement>
 					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
@@ -576,7 +573,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT_2}==null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT}==null)]]></printWhenExpression>
 						</reportElement>
 					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
@@ -596,7 +593,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT_2}==null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT}==null)]]></printWhenExpression>
 						</reportElement>
 					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
@@ -616,7 +613,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT_2}==null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT}==null)]]></printWhenExpression>
 						</reportElement>
 					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
@@ -636,7 +633,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT_2}==null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT}==null)]]></printWhenExpression>
 						</reportElement>
 					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
@@ -656,7 +653,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT_2}==null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT}==null)]]></printWhenExpression>
 						</reportElement>
 					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
@@ -676,7 +673,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT_2}==null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT}==null)]]></printWhenExpression>
 						</reportElement>
 					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
@@ -696,10 +693,32 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT_2}==null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_MONTANT}==null)]]></printWhenExpression>
 						</reportElement>
 					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="190"
+						y="265"
+						width="392"
+						height="9"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-12"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true">
+							<printWhenExpression><![CDATA[new Boolean($P{P_PARAM_1}!=null)]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="11" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_PARAM_1}]]></textFieldExpression>
+				</textField>
 			</band>
 		</pageFooter>
 		<summary>

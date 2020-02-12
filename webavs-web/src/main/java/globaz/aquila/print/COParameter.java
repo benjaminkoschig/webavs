@@ -103,20 +103,15 @@ public class COParameter extends FWIImportParametre {
 
     // Ajout QR Facture
     public static final String P_QR_CODE_PATH = "P_QR_CODE_PATH";
-    public static final String P_MONNAIE_1 = "P_MONNAIE_1";
-    public static final String P_MONNAIE_2 = "P_MONNAIE_2";
-    public static final String P_MONTANT_1 = "P_MONTANT_1";
-    public static final String P_MONTANT_2 = "P_MONTANT_2";
+    public static final String P_MONNAIE = "P_MONNAIE";
     public static final String P_INFO_ADD = "P_INFO_ADD";
 
-    public static final String P_SUBREPORT_QR_FACTURE = "P_SUBREPORT_QR_FACTURE";
+    public static final String P_SUBREPORT_QR = "P_SUBREPORT_QR";
     public static final String P_TITRE_1 = "P_TITRE_1";
     public static final String P_TITRE_2 = "P_TITRE_2";
     public static final String P_POINT_DEPOT = "P_POINT_DEPOT";
-    public static final String P_MONNAIE_TITRE_1 = "P_MONNAIE_TITRE_1";
-    public static final String P_MONNAIE_TITRE_2 = "P_MONNAIE_TITRE_2";
-    public static final String P_MONTANT_TITRE_1 = "P_MONTANT_TITRE_1";
-    public static final String P_MONTANT_TITRE_2 = "P_MONTANT_TITRE_2";
+    public static final String P_MONNAIE_TITRE = "P_MONNAIE_TITRE";
+    public static final String P_MONTANT_TITRE = "P_MONTANT_TITRE";
     public static final String P_SUBREPORT_ZONE_INDICATIONS = "P_SUBREPORT_ZONE_INDICATIONS";
     public static final String P_SUBREPORT_RECEPISE = "P_SUBREPORT_RECEPISE";
     public static final String P_COMPTE_TITRE = "P_COMPTE_TITRE";

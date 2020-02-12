@@ -239,7 +239,7 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
     }
 
     private void initQRCode(FWCurrency montantTotal) {
-        super.setParametres("P_SUBREPORT_QR_FACTURE",getImporter().getImportPath() + "QR_FACTURE_TEMPLATE.jasper");
+        super.setParametres("P_SUBREPORT_QR",getImporter().getImportPath() + "QR_FACTURE_TEMPLATE.jasper");
         super.setParametres("P_QR_CODE_PATH", new GenerationQRCode().generateSwissQrCode(""));
         super.setParametres("P_TITRE_1", getSession().getLabel("QR_RECEPICE"));
         super.setParametres("P_TITRE_2", getSession().getLabel("QR_SECTION_PAIEMENT"));

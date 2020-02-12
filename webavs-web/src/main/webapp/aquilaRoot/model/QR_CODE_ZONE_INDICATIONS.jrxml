@@ -22,8 +22,8 @@
 	<parameter name="P_COMPTE" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="P_REF_TITRE" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="P_REFERENCE" isForPrompting="true" class="java.lang.String"/>
-	<parameter name="P_INFO_ADD_TITRE" isForPrompting="true" class="java.lang.String"/>
-	<parameter name="P_INFO_ADD" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_INFO_ADD_TITRE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_INFO_ADD" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_PAR_TITRE" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="P_PAR" isForPrompting="true" class="java.lang.String"/>
 		<background>
@@ -133,7 +133,8 @@
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_INFO_ADD_TITRE}!=null && $P{P_INFO_ADD}!=null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_INFO_ADD}!=null && !($P{P_INFO_ADD}).equals(""))
+]]></printWhenExpression>
 						</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Bottom" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
@@ -177,7 +178,7 @@
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_REF_TITRE}!=null && $P{P_REFERENCE}!=null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_REFERENCE}!=null &&!($P{P_REFERENCE}).equals(""))]]></printWhenExpression>
 						</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Bottom" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />

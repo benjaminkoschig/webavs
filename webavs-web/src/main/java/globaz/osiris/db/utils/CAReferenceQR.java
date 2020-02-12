@@ -13,10 +13,7 @@ import globaz.pyxis.db.adressecourrier.TIAbstractAdresseData;
 import globaz.pyxis.db.adressecourrier.TIAdresseDataManager;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Objects;
+import java.util.*;
 
 
 public class CAReferenceQR extends AbstractCAReference {
@@ -38,6 +35,7 @@ public class CAReferenceQR extends AbstractCAReference {
 
     public static final String COMBINE = "K";
     public static final String STRUCTURE = "S";
+    private static final String ESPACE = " ";
     // ---------------------- //
 
     private String adresseCopy = StringUtils.EMPTY;
@@ -88,7 +86,7 @@ public class CAReferenceQR extends AbstractCAReference {
     private String pa1Param = StringUtils.EMPTY;
     private String pa2Param = StringUtils.EMPTY;
 
-    private HashMap<String, String> parameters = new HashMap<>();
+    private Map<String, String> parameters = new HashMap<>();
 
     // Pour le moment le QR Code est défini en String. Sera modifié par la suite
     private String qRCode;
@@ -112,7 +110,7 @@ public class CAReferenceQR extends AbstractCAReference {
 
         // Chargement des paramètres sur le document
         while (it.hasNext()) {
-            HashMap.Entry element = (HashMap.Entry) it.next();
+            Map.Entry element = (Map.Entry) it.next();
             document.setParametres(element.getKey(), Objects.isNull(element.getValue()) ? "" : element.getValue());
         }
 
@@ -125,14 +123,12 @@ public class CAReferenceQR extends AbstractCAReference {
      * @param document
      */
     private void initEnteteQR(FWIDocumentManager document) {
-        parameters.put(COParameter.P_SUBREPORT_QR_FACTURE, document.getImporter().getImportPath() + "QR_FACTURE_TEMPLATE.jasper");
+        parameters.put(COParameter.P_SUBREPORT_QR, document.getImporter().getImportPath() + "QR_FACTURE_TEMPLATE.jasper");
         parameters.put(COParameter.P_TITRE_1, getSession().getLabel("QR_RECEPISSE"));
         parameters.put(COParameter.P_TITRE_2, getSession().getLabel("QR_SECTION_PAIEMENT"));
         parameters.put(COParameter.P_POINT_DEPOT, getSession().getLabel("QR_POINT_DEPOT"));
-        parameters.put(COParameter.P_MONNAIE_TITRE_1, getSession().getLabel("QR_MONNAIE"));
-        parameters.put(COParameter.P_MONNAIE_TITRE_2, getSession().getLabel("QR_MONNAIE"));
-        parameters.put(COParameter.P_MONTANT_TITRE_1, getSession().getLabel("MONTANT"));
-        parameters.put(COParameter.P_MONTANT_TITRE_2, getSession().getLabel("MONTANT"));
+        parameters.put(COParameter.P_MONNAIE_TITRE, getSession().getLabel("QR_MONNAIE"));
+        parameters.put(COParameter.P_MONTANT_TITRE, getSession().getLabel("MONTANT"));
         parameters.put(COParameter.P_SUBREPORT_ZONE_INDICATIONS, document.getImporter().getImportPath() + "QR_CODE_ZONE_INDICATIONS.jasper");
         parameters.put(COParameter.P_SUBREPORT_RECEPISE, document.getImporter().getImportPath() + "QR_CODE_RECEPISE.jasper");
         parameters.put(COParameter.P_COMPTE_TITRE, getSession().getLabel("QR_COMPTE_PAYABLE"));
@@ -149,24 +145,22 @@ public class CAReferenceQR extends AbstractCAReference {
      */
     public void initParamQR(){
         parameters.put(COParameter.P_QR_CODE_PATH, new GenerationQRCode().generateSwissQrCode(generationPayLoad()));
-        parameters.put(COParameter.P_MONNAIE_1, monnaie);
-        parameters.put(COParameter.P_MONNAIE_2, monnaie);
-        parameters.put(COParameter.P_MONTANT_1, montant);
-        parameters.put(COParameter.P_MONTANT_2, montant);
+        parameters.put(COParameter.P_MONNAIE, monnaie);
+        parameters.put(COParameter.P_MONTANT, montant);
         parameters.put(FWIImportParametre.PARAM_REFERENCE, getReference());
         parameters.put(COParameter.P_PARAM_1, pa1Param);
         parameters.put(COParameter.P_PARAM_2, pa2Param);
         if (!COMBINE.equals(creAdressTyp)) {
-            parameters.put(COParameter.P_COMPTE, compte + RETOUR_LIGNE + creNom + RETOUR_LIGNE + creRueOuLigneAdresse1 + " " + creNumMaisonOuLigneAdresse2 + RETOUR_LIGNE + creCodePostal + " " + creLieu);
+            parameters.put(COParameter.P_COMPTE, (compte + RETOUR_LIGNE + creNom + RETOUR_LIGNE + creRueOuLigneAdresse1 + ESPACE + creNumMaisonOuLigneAdresse2 + RETOUR_LIGNE + creCodePostal + ESPACE + creLieu).trim());
         } else {
-            parameters.put(COParameter.P_COMPTE, compte + RETOUR_LIGNE + creRueOuLigneAdresse1 + creNumMaisonOuLigneAdresse2);
+            parameters.put(COParameter.P_COMPTE, (compte + RETOUR_LIGNE + creRueOuLigneAdresse1 + creNumMaisonOuLigneAdresse2).trim());
         }
         if (!COMBINE.equals(debfAdressTyp)){
-            parameters.put(COParameter.P_PAR, debfNom + RETOUR_LIGNE + debfRueOuLigneAdresse1 + " " + debfNumMaisonOuLigneAdresse2 + RETOUR_LIGNE + debfCodePostal + " " + debfLieu);
+            parameters.put(COParameter.P_PAR, (debfNom + RETOUR_LIGNE + debfRueOuLigneAdresse1 + ESPACE + debfNumMaisonOuLigneAdresse2 + RETOUR_LIGNE + debfCodePostal + ESPACE + debfLieu).trim());
         } else {
-            parameters.put(COParameter.P_PAR, debfRueOuLigneAdresse1 + RETOUR_LIGNE + debfNumMaisonOuLigneAdresse2);
+            parameters.put(COParameter.P_PAR, (debfRueOuLigneAdresse1 + RETOUR_LIGNE + debfNumMaisonOuLigneAdresse2).trim());
         }
-        parameters.put(COParameter.P_INFO_ADD, communicationNonStructuree + RETOUR_LIGNE + infoFacture);
+        parameters.put(COParameter.P_INFO_ADD, (communicationNonStructuree + RETOUR_LIGNE + infoFacture).trim());
     }
 
     private String generationPayLoad() {
@@ -393,11 +387,11 @@ public class CAReferenceQR extends AbstractCAReference {
         this.qRCode = qRCode;
     }
 
-    public HashMap<String, String> getParameters() {
+    public Map<String, String> getParameters() {
         return parameters;
     }
 
-    public void setParameters(HashMap<String, String> parameters) {
+    public void setParameters(Map<String, String> parameters) {
         this.parameters = parameters;
     }
 

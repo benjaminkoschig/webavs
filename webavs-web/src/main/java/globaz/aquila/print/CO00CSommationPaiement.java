@@ -82,7 +82,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
      * Modele Jasper
      */
     private static final String TEMPLATE_NAME = "CO_00C_SOMMATION_AF";
-    private static final String NEW_TEMPLATE_NAME = "CO_00C_SOMMATION_AF_QR_CODE";
+    private static final String NEW_TEMPLATE_NAME = "CO_00C_SOMMATION_AF_QR";
 
     /**
      * Le nom du modèle Jasper pour les voies de droits
@@ -355,7 +355,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
             e.printStackTrace();
         }
         try {
-            super.setParametres(COParameter.P_SUBREPORT_QR_FACTURE, getImporter().getImportPath() + "BVR_TEMPLATE.jasper");
+            super.setParametres(COParameter.P_SUBREPORT_QR, getImporter().getImportPath() + "BVR_TEMPLATE.jasper");
             super.setParametres(COParameter.P_ADRESSE, getBvr().getAdresse());
             super.setParametres(COParameter.P_ADRESSECOPY, getBvr().getAdresse());
             super.setParametres(COParameter.P_COMPTE, getBvr().getNumeroCC());// numéro CC
