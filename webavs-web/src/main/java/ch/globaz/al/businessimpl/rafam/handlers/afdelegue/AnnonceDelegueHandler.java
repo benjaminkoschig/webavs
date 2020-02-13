@@ -27,6 +27,8 @@ import globaz.jade.log.JadeLogger;
 import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 /**
  * Classe de base pour la gestion de l'enregistrement des annonces RAFam provenant d'un employeur délégué. Elle contient
  * les méthodes communes auxdifférents cas possibles (Enfant, Formation, Naissance, ...)
@@ -81,7 +83,7 @@ public class AnnonceDelegueHandler extends AnnonceHandlerAbstract {
 
     @Override
     protected void doAnnulation() throws JadeApplicationException, JadePersistenceException {
-        if (!AnnoncesChangeChecker.isDateFinDroitExpire(context.getDroit().getDroitModel().getFinDroitForcee())) {
+        if (!isDateEcheanceAnnonceEDExpire(context.getAllowance().getAllowanceDateTo())) {
             if (!getLastAnnonce().isNew() && !RafamTypeAnnonce._68C_ANNULATION
                     .equals(RafamTypeAnnonce.getRafamTypeAnnonce(getLastAnnonce().getTypeAnnonce()))) {
                 AnnonceRafamModel annonce = ALServiceLocator.getAnnonceRafamModelService().create(
@@ -120,7 +122,7 @@ public class AnnonceDelegueHandler extends AnnonceHandlerAbstract {
 
     @Override
     protected void doCreation() throws JadeApplicationException, JadePersistenceException {
-        if (isCurrentAllowanceTypeActive() && !AnnoncesChangeChecker.isDateFinDroitExpire(context.getDroit().getDroitModel().getFinDroitForcee())) {
+        if (isCurrentAllowanceTypeActive() && !isDateEcheanceAnnonceEDExpire(context.getAllowance().getAllowanceDateTo())) {
 
             AnnonceRafamModel annonce = ALImplServiceLocator.getInitAnnoncesRafamService()
                     .initAnnonceDelegue68a(context.getBeneficiary(), context.getChild(), context.getAllowance());
@@ -157,6 +159,15 @@ public class AnnonceDelegueHandler extends AnnonceHandlerAbstract {
                         "Impossible de générer les compléments af-délégué pour l'annonce n°" + annonce.getIdAnnonce());
             }
 
+        }
+    }
+
+    private boolean isDateEcheanceAnnonceEDExpire(XMLGregorianCalendar allowanceDateTo) throws JadeApplicationException {
+        if(allowanceDateTo != null){
+            String echeanceDroit = ALDateUtils.XMLGregorianCalendarToGlobazDate(allowanceDateTo);
+            return AnnoncesChangeChecker.isDateFinDroitExpire(echeanceDroit);
+        }else{
+            return false;
         }
     }
 
