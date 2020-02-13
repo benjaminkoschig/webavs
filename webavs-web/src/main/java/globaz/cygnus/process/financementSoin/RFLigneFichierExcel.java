@@ -12,7 +12,7 @@ import java.util.List;
 
 public class RFLigneFichierExcel implements Comparable<RFLigneFichierExcel> {
 
-    private static final BigDecimal MONTANT_MAX_FRAIS_JOURNALIER = new BigDecimal("21.60");
+    private static final BigDecimal MONTANT_MAX_FRAIS_JOURNALIER = new BigDecimal("23.00");
     private static final String NSS_A_ZERO_POUR_LIGNE_NON_TIERS = "000.0000.0000.00";
 
     private ArrayList<CellulesExcelEnum> cellulesEnErreur = new ArrayList<CellulesExcelEnum>();
@@ -113,7 +113,7 @@ public class RFLigneFichierExcel implements Comparable<RFLigneFichierExcel> {
 
             BigDecimal fraisJournalier = new BigDecimal(this.fraisJournalier);
 
-            // Si montant supérieur à 21.60, retourne 1 / si montant negatif, retourne -1
+            // Si montant supérieur à 23.00, retourne 1 / si montant negatif, retourne -1
             if ((fraisJournalier.compareTo(RFLigneFichierExcel.MONTANT_MAX_FRAIS_JOURNALIER) > 0)) {
                 cellulesEnErreur.add(CellulesExcelEnum.FRAIS_JOURNALIER);
             }
