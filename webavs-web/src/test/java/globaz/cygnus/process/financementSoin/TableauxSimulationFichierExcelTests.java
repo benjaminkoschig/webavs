@@ -27,7 +27,7 @@ public class TableauxSimulationFichierExcelTests {
     }
 
     /**
-     * Une ligne avec erreur métier (frais journalier supérieur à 21.60)
+     * Une ligne avec erreur métier (frais journalier supérieur à 23.00)
      * 
      * @return
      */
@@ -37,7 +37,7 @@ public class TableauxSimulationFichierExcelTests {
 
         // ligne nulle et vide
         String tab[] = TableauxSimulationFichierExcelTests.generateTableau();
-        tab[4] = "21.65";
+        tab[4] = "23.05";
 
         listeCasTest.add(new RFLigneFichierExcel(tab, "1"));
         return listeCasTest;
