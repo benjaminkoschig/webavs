@@ -33,9 +33,8 @@
 		<wiki.parent>WebAVS RN</wiki.parent>
 		<!-- SCM ATTRIBUTES -->
 		<scm.path>webavs-repos</scm.path>
-		<scm.branch>1.23.0</scm.branch>
-		<scm.tags>${scm.protocol}://${scm.base}/tags/webavs/</scm.tags>
-		<scm.url>${scm.protocol}://${scm.base}/branches/${scm.branch}/</scm.url>
+		<scm.tags>${scm.protocol}://${scm.base}/tags</scm.tags>
+		<scm.url>${scm.protocol}://${scm.base}/${scm.branch}/webavs-parent</scm.url>
 		<scm.weburl>http://${scm.base}/${scm.branch}/webavs-parent</scm.weburl>
 		<release.tagFormat>webavs/@{project.version}</release.tagFormat>
 		<wiki.home>https://confluence.globaz.ch</wiki.home>
