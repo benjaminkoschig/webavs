@@ -87,7 +87,7 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
      * @return montantTotal
      * @throws JadeApplicationException Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    protected String calculMontantIS(String montantTotal, Double montantIS) throws JadeApplicationException {
+    protected String calculMontantIS(String montantTotal, String montantIS) throws JadeApplicationException {
 
         // contrôle des paramètres
         if (!JadeNumericUtil.isNumeric(montantTotal)) {
@@ -95,7 +95,7 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
                     + montantTotal + " is not a numreric value");
         }
 
-        double montantTotalRecap = JadeStringUtil.parseDouble(montantTotal, 0.00d) - montantIS;
+        double montantTotalRecap = JadeStringUtil.parseDouble(montantTotal, 0.00d) -  + JadeStringUtil.parseDouble(montantIS, 0.00d);
 
         // Format décimal 2 chiffres après la virgule
         DecimalFormat df = new DecimalFormat("0.00");
@@ -216,7 +216,7 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
         HashMap<String, String> totaux = new HashMap<String, String>();
         String montantRetroactif = "0.00";
         String montantAnneeVersement = "0.00";
-        double montantTotalIS = 0.0d;
+        String montantTotalIS = "0.00";
         for (int i = 0; i < attestDecla.size(); i++) {
             DeclarationVersementDetailleComplexModel declarationVersementLigne = attestDecla.get(i);
 
@@ -236,7 +236,7 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
             }
 
             if (StringUtils.isNotEmpty(declarationVersementLigne.getMontantIS())) {
-                montantTotalIS += Double.parseDouble(declarationVersementLigne.getMontantIS());
+                montantTotalIS = calculMontant(montantTotalIS,declarationVersementLigne.getMontantIS());
             }
 
         }
@@ -248,7 +248,7 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
 
         totaux.put(ALConstDeclarationVersement.TOTAL_RETROACTIF, montantRetroactif);
         totaux.put(ALConstDeclarationVersement.TOTAL_ANNEE, montantAnneeVersement);
-        totaux.put(ALConstDeclarationVersement.TOTAL_IS, String.valueOf(montantTotalIS));
+        totaux.put(ALConstDeclarationVersement.TOTAL_IS, montantTotalIS);
         totaux.put(ALConstDeclarationVersement.TOTAL, montantTotal);
 
         return totaux;
