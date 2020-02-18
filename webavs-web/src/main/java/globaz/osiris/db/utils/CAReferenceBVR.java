@@ -102,7 +102,7 @@ public class CAReferenceBVR extends AbstractCAReference{
      * @return
      */
     public String getTextBVRNeutre(BSession session, String langueIso) {
-        StringBuffer text = new StringBuffer("");
+        StringBuilder text = new StringBuilder();
         try {
             // va rechercher les textes qui sont au niveau 1
             if (this.getCurrentDocument(session, langueIso) == null) {

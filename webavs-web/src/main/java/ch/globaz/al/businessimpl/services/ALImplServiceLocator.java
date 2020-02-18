@@ -104,6 +104,7 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
  */
 public abstract class ALImplServiceLocator extends ALServiceLocator {
 
+
     /**
      *
      * @return instance du service de gestion de la persistance des adi décomptes complexes
@@ -650,7 +651,7 @@ public abstract class ALImplServiceLocator extends ALServiceLocator {
      */
 
     public static EnteteDocumentService getEnteteDocumentService(Class serviceClassImpl)
-            throws JadeApplicationServiceNotAvailableException, JadeApplicationException {
+            throws JadeApplicationException {
         if (serviceClassImpl == null) {
             throw new ALEnteteDocumentException(
                     "ALImplServiceLocator, unable initialize EnteteDocumentService, interface class not defined!");
@@ -1088,7 +1089,7 @@ public abstract class ALImplServiceLocator extends ALServiceLocator {
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
     public static RubriquesComptablesService getRubriqueComptableService(Class serviceClassImpl)
-            throws JadeApplicationServiceNotAvailableException, JadeApplicationException {
+            throws JadeApplicationException {
         if (serviceClassImpl == null) {
             throw new ALRubriquesException(
                     "ALImplServiceLocator, unable to initialize RubriquesComptablesService service, interface class not defined!");
@@ -1122,7 +1123,7 @@ public abstract class ALImplServiceLocator extends ALServiceLocator {
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
     public static SignatureCaisseService getSignatureCaisseService(Class serviceClassImpl)
-            throws JadeApplicationServiceNotAvailableException, JadeApplicationException {
+            throws JadeApplicationException {
 
         if (serviceClassImpl == null) {
             throw new ALSignatureServiceException(

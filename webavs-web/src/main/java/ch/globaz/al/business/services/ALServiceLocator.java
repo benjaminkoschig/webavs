@@ -116,11 +116,6 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 public abstract class ALServiceLocator {
 
     /**
-     * Constructeur privé
-     */
-    private ALServiceLocator(){}
-
-    /**
      * Méthode qui retourne une instance du service des décomptes Adi complexe
      *
      * @return une instance du service de l'implémantation du service
