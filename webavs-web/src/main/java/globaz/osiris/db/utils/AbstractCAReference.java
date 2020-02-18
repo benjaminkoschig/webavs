@@ -3,13 +3,17 @@ package globaz.osiris.db.utils;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.ICTListeTextes;
 import globaz.babel.api.ICTTexte;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.musca.itext.FAImpressionFacturation;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CACompteAnnexeManager;
+import globaz.osiris.exceptions.CABusinessException;
+import globaz.osiris.exceptions.CATechnicalException;
 import globaz.osiris.parser.IntReferenceBVRParser;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,6 +31,7 @@ public abstract class AbstractCAReference {
     private static final String DOMAINE_FACTURATION = FAImpressionFacturation.DOMAINE_FACTURATION;
     private static final String TYPE_FACTURE = FAImpressionFacturation.TYPE_FACTURE;
 
+    private static final Logger LOGGER = Logger.getLogger(AbstractCAReference.class);
 
     private static final int MAX_LENGTH_NUM_AFFILIE = 13;
     private static final int MAX_LENGTH_REFERENCE = 26; // +1 du modulo de contrôle = les 27 positions
@@ -38,7 +43,7 @@ public abstract class AbstractCAReference {
 
     private String ligneReference;
     private BSession session;
-    private static Map documents;
+    private Map documents;
 
     public AbstractCAReference(){
         ligneReference = AbstractCAReference.REFERENCE_NON_FACTURABLE;
@@ -68,7 +73,7 @@ public abstract class AbstractCAReference {
      * @return
      */
     public String getAdresse() {
-        StringBuffer adresse = new StringBuffer("");
+        StringBuilder adresse = new StringBuilder();
         try {
             // va rechercher les textes qui sont au niveau 1
             if (this.getCurrentDocument() == null) {
@@ -88,7 +93,7 @@ public abstract class AbstractCAReference {
      * @return
      */
     public String getAdresse(String langueIso) {
-        StringBuffer adresse = new StringBuffer("");
+        StringBuilder adresse = new StringBuilder();
         try {
             // va rechercher les textes qui sont au niveau 1
             if (this.getCurrentDocument(getSession(), langueIso) == null) {
@@ -119,10 +124,8 @@ public abstract class AbstractCAReference {
             apiDocument.setISession(getSession());
             apiDocument.setCsDomaine(DOMAINE_FACTURATION);
             apiDocument.setCsTypeDocument(TYPE_FACTURE);
-            apiDocument.setDefault(new Boolean(true));
-            // document.setCodeIsoLangue(plan.getCompteAnnexe().getTiers().getLangueISO());
-            // //"FR"
-            apiDocument.setActif(new Boolean(true));
+            apiDocument.setDefault(Boolean.TRUE);
+            apiDocument.setActif(Boolean.TRUE);
             ICTDocument[] docs = apiDocument.load();
             if ((docs != null) && (docs.length > 0)) {
                 document = docs[0];
@@ -149,11 +152,9 @@ public abstract class AbstractCAReference {
             apiDocument.setISession(session);
             apiDocument.setCsDomaine(DOMAINE_FACTURATION);
             apiDocument.setCsTypeDocument(TYPE_FACTURE);
-            apiDocument.setDefault(new Boolean(true));
-            // document.setCodeIsoLangue(plan.getCompteAnnexe().getTiers().getLangueISO());
-            // //"FR"
+            apiDocument.setDefault(Boolean.TRUE);
             apiDocument.setCodeIsoLangue(langueIso);
-            apiDocument.setActif(new Boolean(true));
+            apiDocument.setActif(Boolean.TRUE);
             ICTDocument[] docs = apiDocument.load();
             if ((docs != null) && (docs.length > 0)) {
                 document = docs[0];
@@ -186,7 +187,7 @@ public abstract class AbstractCAReference {
         String role = JadeStringUtil.rightJustifyInteger(idRole, getLengthIdRole());
         String refDebiteur = JadeStringUtil.rightJustifyInteger(idExterneRoleUnformatted, getLengthRefDebiteur());
         String refFacture = JadeStringUtil.rightJustifyInteger(idExterneSection, getLengthRefFacture());
-        String idTypeFacture = "";
+        String idTypeFacture;
 
         // idRole sur 2 positions
         if (role.length() > getLengthIdRole()) {
@@ -219,14 +220,14 @@ public abstract class AbstractCAReference {
             }
         }
 
-        StringBuffer ref = new StringBuffer();
+        StringBuilder ref = new StringBuilder();
         ref.append(role);
         ref.append(JadeStringUtil.rightJustifyInteger(refDebiteur, getLengthRefDebiteur()));
         ref.append(idTypeFacture);
         ref.append(refFacture); // idPlan = reference facture
 
         if (ref.length() > MAX_LENGTH_REFERENCE) {
-            throw new Exception(AbstractCAReference.class.getName() + ": " + getSession().getLabel("ERREUR_REFERENCEBVR"));
+            throw new CATechnicalException(AbstractCAReference.class.getName() + ": " + getSession().getLabel("ERREUR_REFERENCEBVR"));
         }
 
         return ref.toString();
@@ -240,7 +241,7 @@ public abstract class AbstractCAReference {
      * @return une chaine contenant que des lettres et des chiffres
      */
     protected String removeNotLetterNotDigit(String val) {
-        StringBuffer strBuf = new StringBuffer();
+        StringBuilder strBuf = new StringBuilder();
         for (int i = 0; i < val.length(); i++) {
             char c = val.charAt(i);
             if (Character.isLetterOrDigit(c)) {
@@ -254,7 +255,7 @@ public abstract class AbstractCAReference {
      * @author: sel Créé le : 18 déc. 06
      * @return la longueur de id role
      */
-    private int getLengthIdRole() {
+    private static int getLengthIdRole() {
         if (lengthIdRole == Integer.MIN_VALUE) {
             lengthIdRole = Integer.parseInt(CAApplication.getApplicationOsiris().getProperty(
                     IntReferenceBVRParser.LEN_ID_ROLE));
@@ -266,7 +267,7 @@ public abstract class AbstractCAReference {
      * @author: sel Créé le : 18 déc. 06
      * @return la longueur de l'id externe role
      */
-    private int getLengthRefDebiteur() {
+    private static int getLengthRefDebiteur() {
         if (lengthRefDebiteur == Integer.MIN_VALUE) {
             lengthRefDebiteur = Integer.parseInt(CAApplication.getApplicationOsiris().getProperty(
                     IntReferenceBVRParser.LEN_ID_EXTERNE_ROLE));
@@ -278,7 +279,7 @@ public abstract class AbstractCAReference {
      * @author: sel Créé le : 18 déc. 06
      * @return la longueur de l'id plan
      */
-    private int getLengthRefFacture() {
+    private static int getLengthRefFacture() {
         if (lengthRefFacture == Integer.MIN_VALUE) {
             lengthRefFacture = Integer.parseInt(CAApplication.getApplicationOsiris().getProperty(
                     IntReferenceBVRParser.LEN_ID_PLAN));
@@ -290,7 +291,7 @@ public abstract class AbstractCAReference {
      * @author: sel Créé le : 18 déc. 06
      * @return la longueur de type plan
      */
-    private int getLengthTypeFacture() {
+    private static int getLengthTypeFacture() {
         if (lengthTypeFacture == Integer.MIN_VALUE) {
             lengthTypeFacture = Integer.parseInt(CAApplication.getApplicationOsiris().getProperty(
                     IntReferenceBVRParser.LEN_TYPE_PLAN));
@@ -312,12 +313,12 @@ public abstract class AbstractCAReference {
         compteAnnexeManager.setSession(getSession());
         compteAnnexeManager.setForIdRole(idRole);
         compteAnnexeManager.setForIdExterneRole(idExterneRole);
-        compteAnnexeManager.find();
+        compteAnnexeManager.find(BManager.SIZE_NOLIMIT);
 
         if (compteAnnexeManager.size() > 0) {
             return (CACompteAnnexe) compteAnnexeManager.getFirstEntity();
         } else {
-            throw new Exception(CAReferenceBVR.class.getName() + ": unable to find compte annexe for idRole" + idRole
+            throw new CABusinessException(CAReferenceBVR.class.getName() + ": unable to find compte annexe for idRole" + idRole
                     + " and idExterneRole" + idExterneRole);
         }
     }
@@ -330,7 +331,7 @@ public abstract class AbstractCAReference {
      * @param out
      * @param paraSep
      */
-    protected void dumpNiveau(int niveau, StringBuffer out, String paraSep) {
+    protected void dumpNiveau(int niveau, StringBuilder out, String paraSep) {
         try {
             for (Iterator paraIter = this.getCurrentDocument().getTextes(niveau).iterator(); paraIter.hasNext();) {
                 if (out.length() > 0) {
@@ -339,7 +340,7 @@ public abstract class AbstractCAReference {
                 out.append(((ICTTexte) paraIter.next()).getDescription());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Erreur lors de la récupération du document courant",e);
             out.append(TEXTE_INTROUVABLE);
         }
     }
@@ -352,7 +353,7 @@ public abstract class AbstractCAReference {
      * @param paraSep
      * @param langueIso
      */
-    protected void dumpNiveau(int niveau, StringBuffer out, String paraSep, String langueIso) {
+    protected void dumpNiveau(int niveau, StringBuilder out, String paraSep, String langueIso) {
         try {
             for (Iterator paraIter = this.getCurrentDocument(getSession(), langueIso).getTextes(niveau).iterator(); paraIter
                     .hasNext();) {
@@ -362,8 +363,8 @@ public abstract class AbstractCAReference {
                 out.append(((ICTTexte) paraIter.next()).getDescription());
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            out.append(CAReferenceBVR.TEXTE_INTROUVABLE);
+            LOGGER.error("Erreur lors de la récupération du document courant",e);
+            out.append(TEXTE_INTROUVABLE);
         }
     }
 
@@ -388,10 +389,10 @@ public abstract class AbstractCAReference {
      * @return la table des textes par langue.
      */
     public Map getDocuments() {
-        if (AbstractCAReference.documents == null) {
-            AbstractCAReference.documents = new HashMap();
+        if (documents == null) {
+            documents = new HashMap();
         }
-        return AbstractCAReference.documents;
+        return documents;
     }
 
     /**
@@ -437,7 +438,7 @@ public abstract class AbstractCAReference {
      * @throws Exception
      */
     public String getTexteBabel(int niveau, int position) throws Exception {
-        StringBuffer resString = new StringBuffer("");
+        StringBuilder resString = new StringBuilder();
         if (this.getCurrentDocument() == null) {
             resString.append(TEXTE_INTROUVABLE);
         } else {

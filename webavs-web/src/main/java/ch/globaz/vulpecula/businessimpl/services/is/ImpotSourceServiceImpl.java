@@ -48,8 +48,7 @@ import com.google.common.collect.Multimaps;
 
 public class ImpotSourceServiceImpl implements ImpotSourceService {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
-    public static List<String> listDossierNonCalcule;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImpotSourceServiceImpl.class);
 
     @Override
     public List<EntetePrestationComplexModel> getEntetesPrestationsIS(String idProcessus)  throws PropertiesException{
@@ -86,9 +85,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
             TauxImpositions tauxImpositions = ALRepositoryLocator.getTauxImpositionRepository().findAll();
             calculImpotSourceForAllPrestations(detailPrestationsAFList, tauxImpositions);
         }
-        Map<String, Collection<DetailPrestationAF>> prestationsGroupedByCaisseAF = groupByCaisseAFForPrestationsDetaillees(
-                detailPrestationsAFList);
-        return prestationsGroupedByCaisseAF;
+        return groupByCaisseAFForPrestationsDetaillees(detailPrestationsAFList);
     }
 
     /**
@@ -155,7 +152,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
      */
     private List<DetailPrestationAF> prepareListeDetailAF(List<HashMap<String, Object>> queryContentResult) {
         // Construction des objets de type DetailPrestationAF (contient l'entête + les détails associés)
-        List<DetailPrestationAF> detailPrestationsAFList = new ArrayList<DetailPrestationAF>();
+        List<DetailPrestationAF> detailPrestationsAFList = new ArrayList<>();
         for (HashMap<String, Object> prest : queryContentResult) {
 
             DetailPrestationAF detailPrestAF = new DetailPrestationAF();
@@ -262,7 +259,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
     }
 
     private List<PrestationGroupee> mergeMap(Map<String, List<PrestationGroupee>> mapPrestations) {
-        List<PrestationGroupee> prestations = new ArrayList<PrestationGroupee>();
+        List<PrestationGroupee> prestations = new ArrayList<>();
         for (Map.Entry<String, List<PrestationGroupee>> entry : mapPrestations.entrySet()) {
             prestations.addAll(entry.getValue());
         }
@@ -276,7 +273,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
             List<String> rubriques = ALImplServiceLocator.getRubriqueService().getAllRubriquesForIS(caisse, annee.getFirstDayOfYear().getSwissValue());
             BigDecimal prestationsISByCaisse =  BigDecimal.ZERO;
             for (String eachRubrique : rubriques) {
-                prestationsISByCaisse.add(getPrestationISByRubrique(eachRubrique, annee));
+                prestationsISByCaisse = prestationsISByCaisse.add(getPrestationISByRubrique(eachRubrique, annee));
             }
             mapMontantISComptaAux.put(caisse, prestationsISByCaisse);
         }
@@ -351,7 +348,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
      */
     private Map<String, List<PrestationGroupee>> grouperPrestations(List<EntetePrestationComplexModel> prestations,
             TauxImpositions tauxImpositions) throws TauxImpositionNotFoundException, PropertiesException {
-        Map<String, List<PrestationGroupee>> entetesPrestations = new HashMap<String, List<PrestationGroupee>>();
+        Map<String, List<PrestationGroupee>> entetesPrestations = new HashMap<>();
 
         // On groupe les cotisations par dossiers
         Map<String, Collection<EntetePrestationComplexModel>> prestationsGroupByDossier = groupByIdDossier(prestations);
@@ -359,8 +356,8 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
         for (Map.Entry<String, Collection<EntetePrestationComplexModel>> entry : prestationsGroupByDossier.entrySet()) {
             List<EntetePrestationComplexModel> prestationsGroupees = orderByPeriode(entry.getValue());
 
-            List<PrestationGroupee> liste = new ArrayList<PrestationGroupee>();
-            List<Montant> montantTotal = new ArrayList<Montant>();
+            List<PrestationGroupee> liste = new ArrayList<>();
+            List<Montant> montantTotal = new ArrayList<>();
             List<Montant> montantTotalIS = new ArrayList<>();
             boolean hasImpotSource = ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue();
 
@@ -405,9 +402,9 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
                     prestationGroupee.setIdTiersBeneficiaire(getIdTiersBeneficiaire(entetePrestation));
                     prestationGroupee.setIdAssurance(entetePrestation.getIdAssurance());
                     liste.add(prestationGroupee);
-                    montantTotal = new ArrayList<Montant>();
+                    montantTotal = new ArrayList<>();
                     montantTotal.add(new Montant(entetePrestation.getMontantTotal()));
-                    montantTotalIS = new ArrayList<Montant>();
+                    montantTotalIS = new ArrayList<>();
                     addMontantIS(montantTotalIS, entetePrestation, tauxImpositions, dateDebut, hasImpotSource);
                     dateDebut = periodePrestation.getDateDebut();
                     dateFin = periodePrestation.getDateFin();
@@ -500,7 +497,6 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
         HashMap<String, List<DetailPrestationComplexModel>> listDetailPourUnePrestation;
 
         Map<String, Collection<EntetePrestationComplexModel>> prestationsGroupByDossier = groupByIdDossier(prestations);
-        listDossierNonCalcule = new ArrayList<>();
         try {
             for (Map.Entry<String, Collection<EntetePrestationComplexModel>> entry : prestationsGroupByDossier
                     .entrySet()) {
@@ -510,18 +506,12 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
                 Date dateFin = null;
                 List<Montant> montantTotal = new ArrayList<Montant>();
 
-                /**
-                 * Méthode pour debug les adresses NULL
-                 */
-                // checkIdBenefNull(prestationsGroupees);
-
                 for (int i = 0; i < prestationsGroupees.size(); i++) {
                     initList(listePrestationParIdBenef, prestationsGroupees.get(i));
                 }
                 for (String idBenef : listePrestationParIdBenef.keySet()) {
-                    Adresse adresse = null;
-                    Adresse adresseAffilie = null;
-                    String idDossier = prestationsGroupees.get(0).getIdDossier();
+                    Adresse adresse;
+                    Adresse adresseAffilie;
                     isDebut = true;
                     adresse = getAdresseById(idBenef);
                     for (int i = 0; i < prestationsGroupees.size(); i++) {
@@ -536,7 +526,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
 
                         // Si premier de la liste
                         if (isDebut && listDetailPourUnePrestation.containsKey(idBenef)) {
-                            montantTotal = new ArrayList<Montant>();
+                            montantTotal = new ArrayList<>();
                             montantTotal.add(getMontantDetailLieIdTier(listDetailPourUnePrestation.get(idBenef)));
                             dateDebut = periodePrestation.getDateDebut();
                             dateFin = periodePrestation.getDateFin();
@@ -570,7 +560,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
                                 prestationGroupee.setCantonResidence(entetePrestation.getCantonAllocataire());
                                 listePrestationParIdBenef.get(idBenef).add(prestationGroupee);
 
-                                montantTotal = new ArrayList<Montant>();
+                                montantTotal = new ArrayList<>();
                                 montantTotal.add(getMontantDetailLieIdTier(listDetailPourUnePrestation.get(idBenef)));
                                 dateDebut = periodePrestation.getDateDebut();
                                 dateFin = periodePrestation.getDateFin();
@@ -601,7 +591,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
                 }
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage() + " " + entetePrestation.getIdDossier());
+            LOGGER.error(e.getMessage() + " " + entetePrestation.getIdDossier());
         }
         return entetesPrestations;
     }
@@ -664,7 +654,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
             DetailPrestationComplexModel details = (DetailPrestationComplexModel) model;
             if (!liste.containsKey(details.getDetailPrestationModel().getIdTiersBeneficiaire())) {
                 liste.put(details.getDetailPrestationModel().getIdTiersBeneficiaire(),
-                        new ArrayList<PrestationGroupee>());
+                        new ArrayList<>());
             }
 
         }
@@ -902,20 +892,6 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
         return Multimaps.index(prestations, funcGroupLibelleCaisseAF).asMap();
     }
 
-    /**
-     * Groupe un ensemble de prestation groupées par caisseAF.
-     *
-     */
-    private Map<String, Collection<PrestationGroupee>> groupByLibelleCaisseAF(Collection<PrestationGroupee> prestations) {
-        Function<PrestationGroupee, String> funcGroupLibelleCaisseAF = new Function<PrestationGroupee, String>() {
-            @Override
-            public String apply(PrestationGroupee prestationGroupee) {
-                return prestationGroupee.getLibelleCaisseAF();
-            }
-        };
-        return Multimaps.index(prestations, funcGroupLibelleCaisseAF).asMap();
-    }
-
     private Map<String, Collection<PrestationGroupee>> groupByCaisseAFWithIDAssurance(
             Collection<PrestationGroupee> prestations) {
         Function<PrestationGroupee, String> funcGroupLibelleCaisseAF = new Function<PrestationGroupee, String>() {
@@ -1091,7 +1067,6 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
         } else {
             searchModel.setForIsRetenueImpotSomme("0");
         }
-        // searchModel.setForBonification(ALCSPrestation.BONI_DIRECT);
         List<EntetePrestationComplexModel> prestations = RepositoryJade.searchForAndFetch(searchModel);
         return findCaisseAFAndCantonAffilie(prestations);
     }
@@ -1181,31 +1156,10 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
      */
     private List<EntetePrestationComplexModel> sortAndExcludePaiementIndirect(
             List<EntetePrestationComplexModel> listPrestations) {
-        List<EntetePrestationComplexModel> finalPrestationsList = new ArrayList<EntetePrestationComplexModel>();
+        List<EntetePrestationComplexModel> finalPrestationsList = new ArrayList<>();
         for (EntetePrestationComplexModel prestation : listPrestations) {
 
             if (!prestation.getBonification().equals(ALCSPrestation.BONI_INDIRECT)) {
-
-                finalPrestationsList.add(prestation);
-            }
-        }
-        return finalPrestationsList;
-    }
-
-    /**
-     * Permet de trier la liste des prestations passée en paramètre et de retirer les objets dont le type de paiement
-     * est "INDIRECT"
-     *
-     * @param listPrestations
-     * @return une liste des prestations dont le type de paiement indirect est retiré.
-     */
-    private List<EntetePrestationComplexModel> sortImpotSourceAndExcludePaiementIndirect(
-            List<EntetePrestationComplexModel> listPrestations) {
-        List<EntetePrestationComplexModel> finalPrestationsList = new ArrayList<EntetePrestationComplexModel>();
-        for (EntetePrestationComplexModel prestation : listPrestations) {
-
-            if (!prestation.getBonification().equals(ALCSPrestation.BONI_INDIRECT)
-                    && !JadeStringUtil.isBlankOrZero(prestation.getMontantTotalIS())) {
 
                 finalPrestationsList.add(prestation);
             }
@@ -1223,7 +1177,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
      */
     private List<EntetePrestationComplexModel> findCaisseAFAndCantonAffilie(
             List<EntetePrestationComplexModel> prestations, String codeCaisseAF) {
-        List<EntetePrestationComplexModel> prestationsFiltrees = new ArrayList<EntetePrestationComplexModel>();
+        List<EntetePrestationComplexModel> prestationsFiltrees = new ArrayList<>();
 
         CaisseAFProvider caisseAFProvider = new CaisseAFProvider();
         for (EntetePrestationComplexModel prestation : prestations) {
@@ -1249,7 +1203,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
      */
     private List<DetailPrestationAF> resolveCaisseAFAndCantonAffilie(List<DetailPrestationAF> prestations) {
 
-        List<DetailPrestationAF> prestationsFiltrees = new ArrayList<DetailPrestationAF>();
+        List<DetailPrestationAF> prestationsFiltrees = new ArrayList<>();
 
         CaisseAFProvider caisseAFProvider = new CaisseAFProvider();
         for (DetailPrestationAF prestation : prestations) {
@@ -1261,11 +1215,6 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
             prestationsFiltrees.add(prestation);
         }
         return prestationsFiltrees;
-    }
-
-    @Override
-    public List<String> getListDossierNonPrise() {
-        return listDossierNonCalcule;
     }
 
 }

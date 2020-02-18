@@ -128,5 +128,4 @@ public interface ImpotSourceService {
 
     Map<String, BigDecimal> getMontantISCaisseAFComptaAux(List<String> caisses, Annee annee) throws Exception;
 
-    List<String> getListDossierNonPrise();
 }

@@ -114,6 +114,12 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
  * @author jts
  */
 public abstract class ALServiceLocator {
+
+    /**
+     * Constructeur privé
+     */
+    private ALServiceLocator(){}
+
     /**
      * Méthode qui retourne une instance du service des décomptes Adi complexe
      *
@@ -613,7 +619,7 @@ public abstract class ALServiceLocator {
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
     public static DecisionService getDecisionService(Class serviceClassImpl)
-            throws JadeApplicationServiceNotAvailableException, JadeApplicationException {
+            throws JadeApplicationException {
         if (serviceClassImpl == null) {
             throw new ALDecisionException(
                     "ALServiceLocator, unable to initialize decision service, interface class not defined!");
@@ -1001,7 +1007,7 @@ public abstract class ALServiceLocator {
     /**
      *
      * @return Instance du service de gestion des langues des affiliés et allocataires
-     * @throws ApplicationServiceNotAvailableException
+     * @throws JadeApplicationServiceNotAvailableException
      *             Exception levée si le service n'est pas accessibel
      */
     public static LangueAllocAffilieService getLangueAllocAffilieService()
