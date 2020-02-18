@@ -6,7 +6,6 @@
  */
 package globaz.aquila.print;
 
-import com.google.gson.JsonObject;
 import globaz.aquila.api.ICOEtape;
 import globaz.aquila.service.cataloguetxt.COCatalogueTextesService;
 import globaz.aquila.service.taxes.COTaxe;
@@ -21,7 +20,6 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.pdf.JadePdfUtil;
 import globaz.osiris.api.APISection;
 import globaz.osiris.db.utils.CAReferenceBVR;
-import globaz.osiris.db.utils.GenerationQRCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -171,7 +169,6 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
     @Override
     public void beforeExecuteReport() throws FWIException {
         super.beforeExecuteReport();
-//        setTemplateFile(CO00CSommationPaiementCapCgas.TEMPLATE_NAME);
         setTemplateFile("CO_00C_SOMMATION_AF_QR_CODE");
         setDocumentTitle(getSession().getLabel("AQUILA_SOMMATION"));
         setNumeroReferenceInforom(CO00CSommationPaiementCapCgas.NUMERO_REFERENCE_INFOROM);
@@ -233,38 +230,9 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
         initTexteDetail(getParent());
 
         // -- BVR
-//        initBVR(montantTotal);
-
-        initQRCode(montantTotal);
+        initBVR(montantTotal);
     }
 
-    private void initQRCode(FWCurrency montantTotal) {
-        super.setParametres("P_SUBREPORT_QR",getImporter().getImportPath() + "QR_FACTURE_TEMPLATE.jasper");
-        super.setParametres("P_QR_CODE_PATH", new GenerationQRCode().generateSwissQrCode(""));
-        super.setParametres("P_TITRE_1", getSession().getLabel("QR_RECEPICE"));
-        super.setParametres("P_TITRE_2", getSession().getLabel("QR_SECTION_PAIEMENT"));
-        super.setParametres("P_POINT_DEPOT", getSession().getLabel("QR_POINT_DEPOT"));
-        super.setParametres("P_INFO_SUPP", getSession().getLabel("QR_NOM_AV1"));
-        super.setParametres("P_MONNAIE_TITRE_1", getSession().getLabel("QR_MONNAIE"));
-        super.setParametres("P_MONNAIE_1", "CHF");
-        super.setParametres("P_MONNAIE_TITRE_2", getSession().getLabel("QR_MONNAIE"));
-        super.setParametres("P_MONNAIE_2", "CHF");
-        super.setParametres("P_MONTANT_TITRE_1", getSession().getLabel("MONTANT"));
-        super.setParametres("P_MONTANT_1", montantTotal.toString());
-        super.setParametres("P_MONTANT_TITRE_2", getSession().getLabel("MONTANT"));
-        super.setParametres("P_MONTANT_2", montantTotal.toString());
-
-        super.setParametres("P_SUBREPORT_ZONE_INDICATIONS",getImporter().getImportPath() + "QR_CODE_ZONE_INDICATIONS.jasper");
-        super.setParametres("P_SUBREPORT_RECEPISE", getImporter().getImportPath() + "QR_CODE_RECEPISE.jasper");
-        super.setParametres("Compte_titre", "Compte / Payable à");
-        super.setParametres("Compte", "TEST COMPTE\nTEST COMPTE 2\nTEST COMPTE 3");
-//        super.setParametres("Ref_titre", "Référence");
-//        super.setParametres("Ref_2", "TEST REF");
-        super.setParametres("Payable_titre", "Payable par");
-//        super.setParametres("Payable", "TEST PAYABLE");
-//        super.setParametres("Info_add_titre", "informations additionnelles");
-//        super.setParametres("Info_add", "TEST INFO\nTEST INFO 2\nTEST INFO 3");
-    }
 
     /**
      * DataSource pour les voies de droits

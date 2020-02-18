@@ -9,6 +9,7 @@ import globaz.globall.util.JABVR;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.api.APISection;
+import globaz.osiris.exceptions.CATechnicalException;
 import globaz.pyxis.db.adressecourrier.TIAbstractAdresseData;
 import globaz.pyxis.db.adressecourrier.TIAdresseDataManager;
 import org.apache.commons.lang.StringUtils;
@@ -30,7 +31,7 @@ public class CAReferenceQR extends AbstractCAReference {
     private static final String END_OF_PAYMENT = "EPD";
 
     private static final String QR_TYPE = "SPC";
-    private static final String VERSION= "0200";
+    private static final String DEFAULT_VERSION = "0200";
     private static final String CODING_TYPE= "1";
 
     public static final String COMBINE = "K";
@@ -49,7 +50,7 @@ public class CAReferenceQR extends AbstractCAReference {
     private String infosAdditionnelles = StringUtils.EMPTY;
 
     private String qrType = QR_TYPE;
-    private String version = VERSION;
+    private String version = DEFAULT_VERSION;
     private String codingType = CODING_TYPE;
     private String creNom = StringUtils.EMPTY;
     private String creAdressTyp  = StringUtils.EMPTY;
@@ -99,7 +100,7 @@ public class CAReferenceQR extends AbstractCAReference {
     }
 
 
-    public FWIDocumentManager initQR(FWIDocumentManager document) {
+    public FWIDocumentManager initQR(FWIDocumentManager document) throws CATechnicalException {
         // Initialisation des entêtes de la QR-Facture
         initEnteteQR(document);
 
@@ -143,7 +144,7 @@ public class CAReferenceQR extends AbstractCAReference {
      * Méthode qui charge les paramètres variables de la QR-Facture
      *
      */
-    public void initParamQR(){
+    public void initParamQR() throws CATechnicalException {
         parameters.put(COParameter.P_QR_CODE_PATH, new GenerationQRCode().generateSwissQrCode(generationPayLoad()));
         parameters.put(COParameter.P_MONNAIE, monnaie);
         parameters.put(COParameter.P_MONTANT, montant);
@@ -220,14 +221,13 @@ public class CAReferenceQR extends AbstractCAReference {
         } else {
             this.typeReference = IBAN;
         }
-        JABVR bvr = null;
 
         if (JadeStringUtil.isDecimalEmpty(montant)) {
             montant = section.getSolde();
         }
 
         if (new FWCurrency(montant).isPositive()) {
-            bvr = new JABVR(montant, reference, getNoAdherent());
+            JABVR bvr = new JABVR(montant, reference, getNoAdherent());
 
             setReference(bvr.get_ligneReference());
         }
