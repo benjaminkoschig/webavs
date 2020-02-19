@@ -1,9 +1,18 @@
 package ch.globaz.al.businessimpl.generation.prestations;
 
+import ch.globaz.al.business.models.dossier.DossierComplexModel;
+import ch.globaz.al.business.services.ALRepositoryLocator;
+import ch.globaz.al.business.services.ALServiceLocator;
+import ch.globaz.al.businessimpl.calcul.modes.CalculImpotSource;
+import ch.globaz.al.impotsource.domain.TauxImpositions;
+import ch.globaz.al.impotsource.domain.TypeImposition;
+import ch.globaz.al.impotsource.persistence.TauxImpositionRepository;
 import ch.globaz.al.properties.ALProperties;
+import ch.globaz.naos.business.data.AssuranceInfo;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import java.math.BigDecimal;
@@ -66,19 +75,12 @@ public class GenPrestationForcee extends GenPrestationAbstract {
             throw new ALGenerationException("GenPrestationForcee#process : montantForce is empty or zero");
         }
 
-        if (calcul.size() > 0) {
+        if (!calcul.isEmpty()) {
 
             // exécution de la répartition du montant
             ArrayList<String> repartition = repartirMontant(String.valueOf(getNextMontant()), calcul, context
                     .getContextDossier().getDossier().getDossierModel(), "01."
                     + context.getContextDossier().getCurrentPeriode());
-
-            ArrayList<String> repartitionIS = null;
-            if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
-                repartitionIS = repartirMontant(String.valueOf(getNextMontant()), calcul, context
-                        .getContextDossier().getDossier().getDossierModel(), "01."
-                        + context.getContextDossier().getCurrentPeriode());
-            }
 
             for (int i = 0; i < calcul.size(); i++) {
 
@@ -89,8 +91,15 @@ public class GenPrestationForcee extends GenPrestationAbstract {
                     droitCalcule.setCalculResultMontantEffectif(montant);
                     droitCalcule.setTarifForce(false);
                     droitCalcule.setTarif(droitCalcule.getTarif());
-                    if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
-                        droitCalcule.setCalculResultMontantIS(repartitionIS.get(i));
+                    DossierComplexModel dossierComplex = context.getContextDossier().getDossier();
+                    DossierModel dossierModel = dossierComplex.getDossierModel();
+                    if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()
+                            && !JadeStringUtil.isBlankOrZero(droitCalcule.getCalculResultMontantIS())) {
+                        TauxImpositionRepository tauxImpositionRepository = ALRepositoryLocator.getTauxImpositionRepository();
+                        TauxImpositions tauxGroupByCanton = tauxImpositionRepository.findAll(TypeImposition.IMPOT_SOURCE);
+                        AssuranceInfo infos = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossierModel, getDateCalcul(dossierComplex));
+                        CalculImpotSource.computeISforDroit(droitCalcule, montant
+                                , tauxGroupByCanton, tauxImpositionRepository, infos.getCanton(), getDateCalcul(dossierComplex));
                     }
                     addDetailPrestation(context, droitCalcule);
                 }
@@ -108,6 +117,23 @@ public class GenPrestationForcee extends GenPrestationAbstract {
         BigDecimal next = montantsParMois.get(0);
         montantsParMois.remove(0);
         return next;
+    }
+
+    /**
+     * Retourne la date à utiliser pour le calcul de la décision selon le dossier
+     *
+     * @param dossierComplexModel
+     *            dossier
+     * @return la date à utiliser pour le calcul dans la décision
+     */
+    private final String getDateCalcul(DossierComplexModel dossierComplexModel) {
+
+        if (JadeDateUtil.isGlobazDate(dossierComplexModel.getDossierModel().getFinValidite())) {
+            return dossierComplexModel.getDossierModel().getFinValidite();
+
+        } else {
+            return dossierComplexModel.getDossierModel().getDebutValidite();
+        }
     }
 
     /**
@@ -135,7 +161,7 @@ public class GenPrestationForcee extends GenPrestationAbstract {
             throw new ALCalculException("GenPrestationForcee#repartirMontant : montant is empty or zero");
         }
 
-        if ((droitsCalcules == null) || (droitsCalcules.size() == 0)) {
+        if ((droitsCalcules == null) || (droitsCalcules.isEmpty())) {
             throw new ALCalculException("GenPrestationForcee#repartirMontant : droitsCalcules is null or empty");
         }
 
@@ -147,7 +173,7 @@ public class GenPrestationForcee extends GenPrestationAbstract {
             throw new ALCalculException("GenPrestationForcee#repartirMontant : " + date + " is not a valid date");
         }
 
-        ArrayList<String> repartition = new ArrayList<String>();
+        ArrayList<String> repartition = new ArrayList<>();
         BigDecimal montantTotal = new BigDecimal((String) ALImplServiceLocator.getCalculMontantsService()
                 .calculerTotalMontant(dossier, droitsCalcules, dossier.getUniteCalcul(), "1", false, date)
                 .get(ALConstCalcul.TOTAL_EFFECTIF));
@@ -187,7 +213,7 @@ public class GenPrestationForcee extends GenPrestationAbstract {
         BigDecimal montantTmp = montant.divide(new BigDecimal(nbMois), 2, ALConstCalcul.ROUNDING_MODE);
         BigDecimal residu = montantTmp.multiply(new BigDecimal(nbMois)).subtract(montant);
 
-        montantsParMois = new ArrayList<BigDecimal>();
+        montantsParMois = new ArrayList<>();
 
         for (int i = 0; i < nbMois; i++) {
             if (i == 0) {
