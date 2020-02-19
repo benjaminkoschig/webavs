@@ -96,7 +96,6 @@ public class CO00CSommationPaiement extends CODocumentManager {
     // ------------------------------------------------------------------------------------------------
 
     private CAReferenceBVR bvr = null;
-    private CAReferenceQR qrFacture = null;
     private String dateDelaiPaiement = null;
     private int state = CO00CSommationPaiement.STATE_IDLE;
 
@@ -239,36 +238,6 @@ public class CO00CSommationPaiement extends CODocumentManager {
 
     }
 
-    private void initVariableQR(FWCurrency montantTotal) {
-
-        qrFacture.setMonnaie(getCatalogueTextesUtil().texte(getParent(), 3, 2));
-        qrFacture.setMontant(montantTotal.toString());
-
-
-        try {
-            //qrFacture.setCrePays(qrFacture.getCodePays());
-            qrFacture.recupererIban();
-            if (!qrFacture.genererAdresseDebiteur(curContentieux.getCompteAnnexe().getIdTiers())) {
-                // si l'adresse n'est pas trouvé en DB, alors chargement d'une adresse Combiné
-                qrFacture.setDebfAdressTyp(CAReferenceQR.COMBINE);
-                //
-                qrFacture.setDebfRueOuLigneAdresse1(getAdresseDestinataire());
-            }
-            qrFacture.genererReferenceQR(curContentieux.getSection());
-
-            // Il n'existe pas pour l'heure actuel d'adresse de créditeur en DB.
-            // Elle est récupérée depuis le catalogue de texte au format Combinée
-            qrFacture.genererCreAdresse();
-            //qrFacture.setDebfRueOuLigneAdresse1(getAdresseDestinataire());
-        } catch (Exception e) {
-            getMemoryLog().logMessage(
-                    "Erreur lors de recherche des élements de la sommation : " + e.getMessage(),
-                    FWMessage.AVERTISSEMENT, this.getClass().getName());
-        }
-
-
-    }
-
     /**
      * DataSource pour les voies de droits
      *
@@ -281,7 +250,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
             setTemplateFile(CO00CSommationPaiement.TEMPLATE_NAME_VD);
             setDocumentTitle(getSession().getLabel("AQUILA_SOMMATION"));
 
-            StringBuffer body = new StringBuffer("");
+            StringBuilder body = new StringBuilder("");
             // rechercher tous les paragraphes du corps du document
             for (int i = 1; i <= 9; i++) {
                 try {
@@ -295,13 +264,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
         }
     }
 
-    /**
-     * @return l'adresse définie dans la section sinon getAdresseString(destinataireDocument)
-     * @throws Exception
-     */
-    private String getAdresseDestinataire() throws Exception {
-        return getAdressePrincipale(destinataireDocument);
-    }
+
 
     /**
      * Renvoie la référence BVR.
@@ -355,7 +318,9 @@ public class CO00CSommationPaiement extends CODocumentManager {
             e.printStackTrace();
         }
         try {
+            // Modification suite à QR-Facture. Choix du footer
             super.setParametres(COParameter.P_SUBREPORT_QR, getImporter().getImportPath() + "BVR_TEMPLATE.jasper");
+
             super.setParametres(COParameter.P_ADRESSE, getBvr().getAdresse());
             super.setParametres(COParameter.P_ADRESSECOPY, getBvr().getAdresse());
             super.setParametres(COParameter.P_COMPTE, getBvr().getNumeroCC());// numéro CC
@@ -393,11 +358,11 @@ public class CO00CSommationPaiement extends CODocumentManager {
      */
     private void initCorpsDoc(Object key) throws Exception {
         // -- corps du doc
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
         // rechercher tous les paragraphes du corps du document
         getCatalogueTextesUtil().dumpNiveau(key, 2, body, "\n\n");
 
-        StringBuffer optionnel = new StringBuffer("");
+        StringBuilder optionnel = new StringBuilder("");
 
         if (getTransition().getEtape().getLibEtape().equals(ICOEtape.CS_PREMIER_RAPPEL_ENVOYE)) {
             getCatalogueTextesUtil().dumpNiveau(key, 9, optionnel, " ");
@@ -469,7 +434,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
      * @throws Exception
      */
     private void initTexteDetail(Object key) throws Exception {
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
 
         // Si l'affiliation est de type employeur on affiche la phrase de niveau 5
         if (curContentieux.getSection().getCompteAnnexe().getIdCategorie()
@@ -496,10 +461,10 @@ public class CO00CSommationPaiement extends CODocumentManager {
      *
      * @return
      */
-    private StringBuffer initTitreDoc(Object key) {
+    private StringBuilder initTitreDoc(Object key) {
         // -- titre du doc
         // rechercher tous les paragraphes du titre du document
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
 
         getCatalogueTextesUtil().dumpNiveau(key, 1, body, "\n");
 

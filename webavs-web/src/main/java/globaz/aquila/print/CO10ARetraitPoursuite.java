@@ -96,7 +96,7 @@ public class CO10ARetraitPoursuite extends CODocumentManager {
         try {
             String affilieName = "";
             int numLettre = 0;
-            StringBuffer body = new StringBuffer();
+            StringBuilder body = new StringBuilder();
 
             // destinataire est l'OP
             if (state == CO10ARetraitPoursuite.STATE_OP) {
@@ -171,7 +171,7 @@ public class CO10ARetraitPoursuite extends CODocumentManager {
             if (sendTo == CO10ARetraitPoursuite.SEND_TO_BOTH) {
                 this.setParametres(
                         COParameter.T8,
-                        formatMessage(new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 3, 2)),
+                        formatMessage(new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 3, 2)),
                                 new Object[] { state == CO10ARetraitPoursuite.SEND_TO_ASSURE ? getCatalogueTextesUtil()
                                         .texte(getParent(), 3, 4) : getCatalogueTextesUtil().texte(getParent(), 3, 3) }));
             }

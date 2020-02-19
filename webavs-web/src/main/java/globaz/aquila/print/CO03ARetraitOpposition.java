@@ -111,7 +111,7 @@ public class CO03ARetraitOpposition extends CODocumentManager {
         // -- corps du document
         // ----------------------------------------------------------------------------
         // rechercher tous les paragraphes du corps du document
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
 
         getCatalogueTextesUtil().dumpNiveau(getParent(), 2, body, "\n\n");
 
@@ -179,7 +179,7 @@ public class CO03ARetraitOpposition extends CODocumentManager {
         // -- titre du doc
         // ------------------------------------------------------------------------------
         // rechercher tous les paragraphes du corps du document
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
 
         getCatalogueTextesUtil().dumpNiveau(getParent(), 4, body, "\n");
 

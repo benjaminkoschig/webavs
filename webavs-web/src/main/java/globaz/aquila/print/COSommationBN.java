@@ -133,7 +133,7 @@ public class COSommationBN extends CODocumentManager {
         getCatalogueTextesUtil().setNomDocument(COSommationBN.CAT_TEXTE_VOIE_DROIT);
         setTemplateFile(COSommationBN.TEMPLATE_NAME_VOIE_DROIT);
 
-        StringBuffer body = new StringBuffer("");
+        StringBuilder body = new StringBuilder("");
         for (int i = 1; i <= 6; i++) {
             try {
                 getCatalogueTextesUtil().dumpNiveau(getParent(), i, body, "\n");
@@ -151,9 +151,9 @@ public class COSommationBN extends CODocumentManager {
      * @return l'adresse définie dans la section sinon getAdresseString(destinataireDocument)
      * @throws Exception
      */
-    private String getAdresseDestinataire() throws Exception {
-        return getAdressePrincipale(destinataireDocument);
-    }
+//    private String getAdresseDestinataire() throws Exception {
+//        return getAdressePrincipale(destinataireDocument);
+//    }
 
     public CAReferenceBVR getBvr() {
         if (bvr == null) {
@@ -245,14 +245,14 @@ public class COSommationBN extends CODocumentManager {
     }
 
     private void initFooterDetail(Object key) {
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
         getCatalogueTextesUtil().dumpNiveau(key, 4, body, "\n\n");
         this.setParametres(COParameter.P_REMARQUE, body.toString());
     }
 
     private void initTitreDoc(Object key) {
 
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
 
         getCatalogueTextesUtil().dumpNiveau(key, 1, body, "\n");
         this.setParametres(COParameter.P_LIBELLE, body.toString());

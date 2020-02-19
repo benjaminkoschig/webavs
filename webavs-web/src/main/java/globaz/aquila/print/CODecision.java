@@ -6,6 +6,7 @@
  */
 package globaz.aquila.print;
 
+import ch.globaz.common.properties.CommonProperties;
 import globaz.aquila.api.ICOEtape;
 import globaz.aquila.db.rdp.CORequisitionPoursuiteUtil;
 import globaz.aquila.service.taxes.COTaxe;
@@ -19,6 +20,8 @@ import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.pdf.JadePdfUtil;
 import globaz.osiris.db.utils.CAReferenceBVR;
+import globaz.osiris.db.utils.CAReferenceQR;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +49,7 @@ public class CODecision extends CODocumentManager {
 
     private static final int STATE_LETTRE = 1;
     private static final int STATE_VD = 2;
-    private static final String TEMPLATE_NAME = "CO_DECISION";
+    private static final String TEMPLATE_NAME = "CO_DECISION_QR";
     /** Le nom du modèle */
     private static final String TEMPLATE_NAME_VD = "CO_DECISION_VOIES_DROIT";
 
@@ -168,9 +171,21 @@ public class CODecision extends CODocumentManager {
         FWCurrency montantTotal = initDetail(getParent());
         // -- texte en dessous du detail
         initTexteDetail(getParent());
-        // -- BVR
-        initBVR(montantTotal);
+
+        if (CommonProperties.QR_FACTURE.getBooleanValue()) {
+            // -- QR
+            qrFacture = new CAReferenceQR();
+            qrFacture.setSession(getSession());
+            // Initialisation des variables du document
+            initVariableQR(montantTotal);
+            // Génération du document QR
+            qrFacture.initQR(this);
+        } else {
+            // -- BVR
+            initBVR(montantTotal);
+        }
     }
+
 
     /**
      * Créé les voies de droit s'il existe un catalogue de textes pour.
@@ -182,7 +197,7 @@ public class CODecision extends CODocumentManager {
             setTemplateFile(CODecision.TEMPLATE_NAME_VD);
             setDocumentTitle(getSession().getLabel("AQUILA_DECISION"));
 
-            StringBuffer body = new StringBuffer();
+            StringBuilder body = new StringBuilder();
             // rechercher tous les paragraphes du corps du document
             for (int i = 1; i <= 9; i++) {
                 try {
@@ -194,14 +209,6 @@ public class CODecision extends CODocumentManager {
 
             this.setParametres(COParameter.P_TEXTVD, JadeStringUtil.isBlank(body.toString()) ? " " : body.toString());
         }
-    }
-
-    /**
-     * @return l'adresse définie dans la section sinon getAdresseString(destinataireDocument)
-     * @throws Exception
-     */
-    private String getAdresseDestinataire() throws Exception {
-        return getAdressePrincipale(destinataireDocument);
     }
 
     /**
@@ -248,10 +255,17 @@ public class CODecision extends CODocumentManager {
             e.printStackTrace();
         }
         try {
+            // Modification suite à QR-Facture. Choix du footer
+            super.setParametres(COParameter.P_SUBREPORT_QR, getImporter().getImportPath() + "BVR_TEMPLATE.jasper");
+            super.setParametres(COParameter.P_SUBREPORT_QR_CURRENT_PAGE, getImporter().getImportPath() + "BVR_TEMPLATE_CURRENT_PAGE.jasper");
+
+            // Paramètre de footer si document sur plusieurs pages
+            // N'est plus utilisé sur document CO_DECISION, car il est sur une seule page
             super.setParametres(FWIImportParametre.PARAM_REFERENCE + "_X", CODecision.REFERENCE_NON_FACTURABLE_DEFAUT);
             super.setParametres(COParameter.P_OCR + "_X", CODecision.OCRB_DEFAUT);
             super.setParametres(COParameter.P_FRANC + "_X", CODecision.MONTANT_DEFAUT);
             super.setParametres(COParameter.P_CENTIME + "_X", CODecision.CENT_DEFAUT);
+            //
 
             super.setParametres(COParameter.P_ADRESSE, getBvr().getAdresse());
             super.setParametres(COParameter.P_ADRESSECOPY, getBvr().getAdresse());
@@ -278,11 +292,11 @@ public class CODecision extends CODocumentManager {
      */
     private void initCorpsDoc(Object key) throws Exception {
         // -- corps du doc
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
         // rechercher tous les paragraphes du corps du document
         getCatalogueTextesUtil().dumpNiveau(key, 2, body, "\n\n");
 
-        StringBuffer optionnel = new StringBuffer("");
+        StringBuilder optionnel = new StringBuilder("");
 
         if (getTransition().getEtape().getLibEtape().equals(ICOEtape.CS_PREMIER_RAPPEL_ENVOYE)) {
             getCatalogueTextesUtil().dumpNiveau(key, 9, optionnel, " ");
@@ -372,7 +386,7 @@ public class CODecision extends CODocumentManager {
      */
     private void initTexteDetail(Object key) throws Exception {
         // -- texte en dessous du detail
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
 
         // Si l'affiliation est de type employeur on affiche la phrase de niveau
         // 5
@@ -396,10 +410,10 @@ public class CODecision extends CODocumentManager {
      * 
      * @return
      */
-    private StringBuffer initTitreDoc(Object key) {
+    private StringBuilder initTitreDoc(Object key) {
         // -- titre du doc
         // rechercher tous les paragraphes du titre du document
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
 
         getCatalogueTextesUtil().dumpNiveau(key, 1, body, "\n");
 

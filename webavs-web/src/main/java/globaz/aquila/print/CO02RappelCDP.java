@@ -82,7 +82,7 @@ public class CO02RappelCDP extends CODocumentManager {
             this._handleHeaders(destinataireDocument, curContentieux, true, false, true);
 
             // -- zone titre du document --------------------------------------------------------------------
-            StringBuffer body = new StringBuffer();
+            StringBuilder body = new StringBuilder();
             IntTiers affilie = curContentieux.getCompteAnnexe().getTiers();
             TIAdresseDataSource adresse = getAdresseDataSourcePrincipalEnvoiOP(affilie);
             COHistorique historique = initHistorique();

@@ -77,7 +77,7 @@ public class CO05RappelReceptionPaiement extends CODocumentManager {
 
             // -- titre du doc ------------------------------------------------------------------------------
             // rechercher toutes les lignes du titre du document
-            StringBuffer body = new StringBuffer();
+            StringBuilder body = new StringBuilder();
 
             getCatalogueTextesUtil().dumpNiveau(getParent(), 1, body, "\n");
 

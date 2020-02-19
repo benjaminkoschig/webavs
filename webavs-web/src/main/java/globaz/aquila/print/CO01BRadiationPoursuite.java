@@ -87,7 +87,7 @@ public class CO01BRadiationPoursuite extends CODocumentManager {
         try {
             String affilieName = "";
             int numLettre = 0;
-            StringBuffer body = new StringBuffer();
+            StringBuilder body = new StringBuilder();
 
             // destinataire est soit l'OP soit l'affilie
             if (state == CO01BRadiationPoursuite.STATE_OP) {

@@ -20,7 +20,7 @@ public class COCatalogueTextesService {
     public static final String CS_CONTENTIEUX_AVS = "5600001";
     public static final String CS_DOMAINE_CONTENTIEUX_CAP_CGAS = "5600003";
     private static final String DOMAINE_FACTURATION = FAImpressionFacturation.DOMAINE_FACTURATION;
-    protected static final String TEXTE_INTROUVABLE = "[TEXTE INTROUVABLE]";
+    public static final String TEXTE_INTROUVABLE = "[TEXTE INTROUVABLE]";
     private static final String TYPE_FACTURE = FAImpressionFacturation.TYPE_FACTURE;
 
     protected ICTDocument document = null;
@@ -45,7 +45,7 @@ public class COCatalogueTextesService {
      * @param paraSep
      *            Chaine de séparation de paragraphe
      */
-    public void dumpNiveau(Object key, int niveau, StringBuffer out, String paraSep) {
+    public void dumpNiveau(Object key, int niveau, StringBuilder out, String paraSep) {
         try {
             ICTListeTextes textes = null;
             if ((key == null)

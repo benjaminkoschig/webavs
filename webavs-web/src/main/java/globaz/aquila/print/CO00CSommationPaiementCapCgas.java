@@ -6,6 +6,8 @@
  */
 package globaz.aquila.print;
 
+import ch.globaz.common.properties.CommonProperties;
+import com.google.gson.JsonObject;
 import globaz.aquila.api.ICOEtape;
 import globaz.aquila.service.cataloguetxt.COCatalogueTextesService;
 import globaz.aquila.service.taxes.COTaxe;
@@ -20,6 +22,8 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.pdf.JadePdfUtil;
 import globaz.osiris.api.APISection;
 import globaz.osiris.db.utils.CAReferenceBVR;
+import globaz.osiris.db.utils.CAReferenceQR;
+import globaz.osiris.db.utils.GenerationQRCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -169,7 +173,7 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
     @Override
     public void beforeExecuteReport() throws FWIException {
         super.beforeExecuteReport();
-        setTemplateFile("CO_00C_SOMMATION_AF_QR_CODE");
+        setTemplateFile(CO00CSommationPaiementCapCgas.TEMPLATE_NAME);
         setDocumentTitle(getSession().getLabel("AQUILA_SOMMATION"));
         setNumeroReferenceInforom(CO00CSommationPaiementCapCgas.NUMERO_REFERENCE_INFOROM);
     }
@@ -229,10 +233,20 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
         // -- texte en dessous du detail
         initTexteDetail(getParent());
 
-        // -- BVR
-        initBVR(montantTotal);
-    }
+        if (CommonProperties.QR_FACTURE.getBooleanValue()) {
+            // -- QR
+            qrFacture = new CAReferenceQR();
+            qrFacture.setSession(getSession());
+            // Initialisation des variables du document
+            initVariableQR(montantTotal);
+            // Génération du document QR
+            qrFacture.initQR(this);
+        } else {
+            // -- BVR
+            initBVR(montantTotal);
+        }
 
+    }
 
     /**
      * DataSource pour les voies de droits
@@ -244,7 +258,7 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
             setTemplateFile(CO00CSommationPaiementCapCgas.TEMPLATE_NAME_VD);
             setDocumentTitle(getSession().getLabel("AQUILA_SOMMATION"));
 
-            StringBuffer body = new StringBuffer("");
+            StringBuilder body = new StringBuilder("");
             // rechercher tous les paragraphes du corps du document
             for (int i = 1; i <= 9; i++) {
                 try {
@@ -262,9 +276,9 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
      * @return l'adresse définie dans la section sinon getAdresseString(destinataireDocument)
      * @throws Exception
      */
-    private String getAdresseDestinataire() throws Exception {
-        return getAdressePrincipale(destinataireDocument);
-    }
+//    private String getAdresseDestinataire() throws Exception {
+//        return getAdressePrincipale(destinataireDocument);
+//    }
 
     /**
      * Renvoie la référence BVR.
@@ -318,6 +332,9 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
             LOG.error("A error occured while retrieving the address of the addressee.", e);
         }
         try {
+            // Modification suite à QR-Facture. Choix du footer
+            super.setParametres(COParameter.P_SUBREPORT_QR, getImporter().getImportPath() + "BVR_TEMPLATE.jasper");
+
             super.setParametres(COParameter.P_ADRESSE, getBvr().getAdresse());
             super.setParametres(COParameter.P_ADRESSECOPY, getBvr().getAdresse());
             super.setParametres(COParameter.P_COMPTE, getBvr().getNumeroCC());// numéro CC
@@ -341,11 +358,11 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
      */
     private void initCorpsDoc(Object key) throws Exception {
         // -- corps du doc
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
         // rechercher tous les paragraphes du corps du document
         getCatalogueTextesUtil().dumpNiveau(key, 2, body, "\n\n");
 
-        StringBuffer optionnel = new StringBuffer("");
+        StringBuilder optionnel = new StringBuilder("");
 
         if (getTransition().getEtape().getLibEtape().equals(ICOEtape.CS_PREMIER_RAPPEL_ENVOYE)) {
             getCatalogueTextesUtil().dumpNiveau(key, 9, optionnel, " ");
@@ -399,7 +416,7 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
      * @throws Exception
      */
     private void initTexteDetail(Object key) throws Exception {
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
 
         // Si l'affiliation est de type employeur on affiche la phrase de niveau 5
         if (curContentieux.getSection().getCompteAnnexe().getIdCategorie()
@@ -426,10 +443,10 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
      *
      * @return
      */
-    private StringBuffer initTitreDoc(Object key) {
+    private StringBuilder initTitreDoc(Object key) {
         // -- titre du doc
         // rechercher tous les paragraphes du titre du document
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
 
         getCatalogueTextesUtil().dumpNiveau(key, 1, body, "\n");
 

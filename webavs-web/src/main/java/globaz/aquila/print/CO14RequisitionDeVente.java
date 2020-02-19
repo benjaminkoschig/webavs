@@ -89,7 +89,7 @@ public class CO14RequisitionDeVente extends CODocumentRequisition {
         // --------------------------------------------------------------------
         this.setParametres(COParameter.T1, getCatalogueTextesUtil().texte(getParent(), 1, 1));
 
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
 
         getCatalogueTextesUtil().dumpNiveau(getParent(), 2, body, "\n");
 
@@ -131,16 +131,16 @@ public class CO14RequisitionDeVente extends CODocumentRequisition {
                 getAdressePrincipaleEnvoiOP(curContentieux.getCompteAnnexe().getTiers()));
         this.setParametres(
                 COParameter.T6,
-                formatMessage(new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 3, 5)), new Object[] {
+                formatMessage(new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 3, 5)), new Object[] {
                         curContentieux.getCompteAnnexe().getRole().getDescription(getLangue()),
                         curContentieux.getCompteAnnexe().getIdExterneRole() }));
         this.setParametres(
                 COParameter.T7,
-                formatMessage(new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 3, 6)),
+                formatMessage(new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 3, 6)),
                         new Object[] { this._getProperty(CODocumentManager.JASP_PROP_BODY_NOM_ADRESSE_CAISSE) }));
         this.setParametres(
                 COParameter.T8,
-                formatMessage(new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 3, 7)),
+                formatMessage(new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 3, 7)),
                         new Object[] { getNumeroCCP() }));
 
         this.setParametres(COParameter.HEADER1, getCatalogueTextesUtil().texte(getParent(), 4, 1));
@@ -163,7 +163,7 @@ public class CO14RequisitionDeVente extends CODocumentRequisition {
 
         this.setParametres(
                 COParameter.L_MONTANT,
-                formatMessage(new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 9, 95)),
+                formatMessage(new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 9, 95)),
                         new Object[] { formatDate(dateInteret) }));
 
         String montantCreance = CORequisitionPoursuiteUtil.getMontantCreanceSoumis(getTransaction(), curContentieux);
@@ -171,7 +171,7 @@ public class CO14RequisitionDeVente extends CODocumentRequisition {
         if (!JadeStringUtil.isBlankOrZero(montantCreance)) {
             this.setParametres(
                     COParameter.L_INTERET,
-                    formatMessage(new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 9, 95)), new Object[] {
+                    formatMessage(new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 9, 95)), new Object[] {
                             formatDate(dateInteret), getCatalogueTextesUtil().texte(getParent(), 4, 2),
                             formatMontant(montantCreance) }));
         }
@@ -328,7 +328,7 @@ public class CO14RequisitionDeVente extends CODocumentRequisition {
             this.setParametres(
                     COParameter.L_INTERET,
                     formatMessage(
-                            new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 9, 95)),
+                            new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 9, 95)),
                             new Object[] {
                                     formatDate(CORequisitionPoursuiteUtil.getDateExecutionRPPlus1Day(getSession(),
                                             curContentieux)), getCatalogueTextesUtil().texte(getParent(), 4, 2),
@@ -397,7 +397,7 @@ public class CO14RequisitionDeVente extends CODocumentRequisition {
                         COParameter.F1,
                         numeroteur
                                 + ") "
-                                + formatMessage(new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 9, 97)),
+                                + formatMessage(new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 9, 97)),
                                         new Object[] { formatDate(CORequisitionPoursuiteUtil.getDateExecutionRP(
                                                 getSession(), curContentieux)) }));
                 listDataSourceCreances.addLast(interets);
@@ -461,7 +461,7 @@ public class CO14RequisitionDeVente extends CODocumentRequisition {
     private void initFooter(String typeSaisie) {
         // -- pied de page
         // --------------------------------------------------------------------------
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
         body.setLength(0);
         getCatalogueTextesUtil().dumpNiveau(getParent(), 5, body, "\n");
 
@@ -473,7 +473,7 @@ public class CO14RequisitionDeVente extends CODocumentRequisition {
             historiqueMainlevee = historiqueService.getHistoriqueForLibEtape(getSession(), curContentieux,
                     ICOEtape.CS_DEMANDE_DE_MAINLEVEE_ENVOYEE);
             if (historiqueMainlevee != null) {
-                annexeMainlevee = formatMessage(new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 9, 91)),
+                annexeMainlevee = formatMessage(new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 9, 91)),
                         new Object[] { getTaxesMainlevee(), getCatalogueTextesUtil().texte(getParent(), 4, 2) });
             }
         } catch (Exception e) {

@@ -6,6 +6,7 @@
  */
 package globaz.aquila.print;
 
+import ch.globaz.common.properties.CommonProperties;
 import globaz.aquila.api.ICOEtape;
 import globaz.aquila.db.rdp.CORequisitionPoursuiteUtil;
 import globaz.aquila.service.taxes.COTaxe;
@@ -19,6 +20,7 @@ import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.pdf.JadePdfUtil;
 import globaz.osiris.db.utils.CAReferenceBVR;
+import globaz.osiris.db.utils.CAReferenceQR;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +49,7 @@ public class CODecisionFPV extends CODocumentManager {
     private static final long serialVersionUID = -3645938861761414428L;
     private static final int STATE_IDLE = 0;
 
-    private static final String TEMPLATE_NAME = "CO_DECISION";
+    private static final String TEMPLATE_NAME = "CO_DECISION_QR";
 
     private static final Logger LOG = LoggerFactory.getLogger(CODecisionFPV.class);
 
@@ -151,8 +153,20 @@ public class CODecisionFPV extends CODocumentManager {
             initCorpsDoc(getParent());
             // -- boucle de detail
             FWCurrency montantTotal = initDetail(getParent());
-            // -- BVR
-            initBVR(montantTotal);
+
+            if (CommonProperties.QR_FACTURE.getBooleanValue()) {
+                // -- QR
+                qrFacture = new CAReferenceQR();
+                qrFacture.setSession(getSession());
+                // Initialisation des variables du document
+                initVariableQR(montantTotal);
+                // Génération du document QR
+                qrFacture.initQR(this);
+            } else {
+
+                // -- BVR
+                initBVR(montantTotal);
+            }
         } catch (Exception e) {
             this.log("exception: " + e.getMessage());
         }
@@ -162,9 +176,9 @@ public class CODecisionFPV extends CODocumentManager {
      * @return l'adresse définie dans la section sinon getAdresseString(destinataireDocument)
      * @throws Exception
      */
-    private String getAdresseDestinataire() throws Exception {
-        return getAdressePrincipale(destinataireDocument);
-    }
+//    private String getAdresseDestinataire() throws Exception {
+//        return getAdressePrincipale(destinataireDocument);
+//    }
 
     /**
      * Renvoie la référence BVR.
@@ -210,6 +224,10 @@ public class CODecisionFPV extends CODocumentManager {
             LOG.error("La récupération de l'addresse du destinaire a échoué", e);
         }
         try {
+            // Modification suite à QR-Facture. Choix du footer
+            super.setParametres(COParameter.P_SUBREPORT_QR, getImporter().getImportPath() + "BVR_TEMPLATE.jasper");
+            super.setParametres(COParameter.P_SUBREPORT_QR_CURRENT_PAGE, getImporter().getImportPath() + "BVR_TEMPLATE_CURRENT_PAGE.jasper");
+
             super.setParametres(FWIImportParametre.PARAM_REFERENCE + "_X", CODecisionFPV.REFERENCE_NON_FACTURABLE_DEFAUT);
             super.setParametres(COParameter.P_OCR + "_X", CODecisionFPV.OCRB_DEFAUT);
             super.setParametres(COParameter.P_FRANC + "_X", CODecisionFPV.MONTANT_DEFAUT);
@@ -240,11 +258,11 @@ public class CODecisionFPV extends CODocumentManager {
      */
     private void initCorpsDoc(Object key) throws Exception {
         // -- corps du doc
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
         // rechercher tous les paragraphes du corps du document
         getCatalogueTextesUtil().dumpNiveau(key, 2, body, "\n\n");
 
-        StringBuffer optionnel = new StringBuffer("");
+        StringBuilder optionnel = new StringBuilder("");
 
         if (getTransition().getEtape().getLibEtape().equals(ICOEtape.CS_PREMIER_RAPPEL_ENVOYE)) {
             getCatalogueTextesUtil().dumpNiveau(key, 9, optionnel, " ");
@@ -333,10 +351,10 @@ public class CODecisionFPV extends CODocumentManager {
      * 
      * @return
      */
-    private StringBuffer initTitreDoc(Object key) {
+    private StringBuilder initTitreDoc(Object key) {
         // -- titre du doc
         // rechercher tous les paragraphes du titre du document
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
 
         getCatalogueTextesUtil().dumpNiveau(key, 1, body, "\n");
 

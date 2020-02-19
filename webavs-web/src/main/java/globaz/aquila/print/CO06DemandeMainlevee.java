@@ -127,7 +127,7 @@ public class CO06DemandeMainlevee extends CODocumentManager {
         // -- titre du doc
         // ------------------------------------------------------------------------------
         // rechercher toutes les lignes du titre du document
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
 
         getCatalogueTextesUtil().dumpNiveau(getParent(), 1, body, "\n");
 
@@ -178,7 +178,7 @@ public class CO06DemandeMainlevee extends CODocumentManager {
         // -- titre du doc
         // ------------------------------------------------------------------------------
         // rechercher toutes les lignes du titre du document
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
 
         getCatalogueTextesUtil().dumpNiveau(getParent(), 4, body, "\n");
 
@@ -230,7 +230,7 @@ public class CO06DemandeMainlevee extends CODocumentManager {
                 + curContentieux.getSection().getIdExterne()
                 + ")"
                 + " "
-                + formatMessage(new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 9, 90)), new Object[] {
+                + formatMessage(new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 9, 90)), new Object[] {
                         formatDate(infoSection[2]), "", giveLibelleInfoRom246() }));
 
         this.setParametres(COParameter.L_SECTION_DESCR, sectionDesc);
@@ -337,7 +337,7 @@ public class CO06DemandeMainlevee extends CODocumentManager {
 
         descriptionExtraitCompte.append(" ");
         descriptionExtraitCompte.append(formatMessage(
-                new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 9, 90)),
+                new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 9, 90)),
                 new Object[] { formatDate(extraitCompte.getDate()),
                         getSession().getCodeLibelle(extraitCompte.getProvenancePmt()), "" }));
 

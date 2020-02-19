@@ -67,7 +67,7 @@ public class COMuterDelaiDoc extends CODocumentManager {
 
             // remplacement du texte
             // ---------------------------------------------------------------------
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
 
             // titre - {0} = libelle de la facture
             getCatalogueTextesUtil().dumpNiveau(getParent(), 1, buffer, "");

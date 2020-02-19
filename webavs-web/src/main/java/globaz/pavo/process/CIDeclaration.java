@@ -3,18 +3,14 @@ package globaz.pavo.process;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
+import globaz.draco.application.DSApplication;
+import globaz.draco.properties.DSProperties;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -910,7 +906,12 @@ public class CIDeclaration extends BProcess {
                                                     }
 
                                                 }
-                                                insc.add(getTransaction());
+                                                // Ajout en DB de l'inscription seulement si les montants de l'inscription sont différents de 0
+//                                                if (!Objects.isNull(insc.getMontant()) && !Objects.isNull(insc.getMontantAf())) {
+                                                    insc.add(getTransaction());
+//                                                } else {
+//                                                    insc.setInsertInDB(false);
+//                                                }
                                                 boolean differenceAc = false;
                                                 if (!DeclarationSalaireProvenance.fromValueWithOutException(provenance)
                                                         .isDan() && !JadeStringUtil.isBlank(rec.getMontantAc())) {
@@ -969,7 +970,13 @@ public class CIDeclaration extends BProcess {
                                                     insc.setACI(rec.getMontantAc());
                                                     insc.setACII(rec.getMontantAc2());
                                                     insc.wantCallValidate(false);
-                                                    insc.update(getTransaction());
+                                                    // si l'inscription n'avait pas été inserée en DB
+//                                                    if (insc.getInsertInDB()) {
+                                                        insc.update(getTransaction());
+                                                        // si l'inscription n'était pas en DB et que ACI ou ACII n'est pas null, il faut l'ajouter
+//                                                    } else if (!Objects.isNull(insc.getACI()) || !Objects.isNull(insc.getACII())){
+//                                                        insc.add(getTransaction());
+//                                                    }
                                                 }
 
                                                 if (CIUtil.isRetraite(ecriture.getAvs(),
@@ -1304,7 +1311,6 @@ public class CIDeclaration extends BProcess {
                     launcherImportPucsFileProcess.setImportStatutAFile(CIImportPucsFileProcess.IMPORT_STATUT_KO);
                 }
             }
-
             return result;
         }
     }

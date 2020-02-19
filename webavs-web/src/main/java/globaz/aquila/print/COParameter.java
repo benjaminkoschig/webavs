@@ -107,6 +107,7 @@ public class COParameter extends FWIImportParametre {
     public static final String P_INFO_ADD = "P_INFO_ADD";
 
     public static final String P_SUBREPORT_QR = "P_SUBREPORT_QR";
+    public static final String P_SUBREPORT_QR_CURRENT_PAGE = "P_SUBREPORT_QR_CURRENT_PAGE";
     public static final String P_TITRE_1 = "P_TITRE_1";
     public static final String P_TITRE_2 = "P_TITRE_2";
     public static final String P_POINT_DEPOT = "P_POINT_DEPOT";

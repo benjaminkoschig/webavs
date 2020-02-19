@@ -86,7 +86,7 @@ public class CO13RappelOpPaiement extends CODocumentManager {
             this._handleHeaders(destinataireDocument, curContentieux, true, false, true);
 
             // -- zone titre du document --------------------------------------------------------------------
-            StringBuffer body = new StringBuffer();
+            StringBuilder body = new StringBuilder();
             getCatalogueTextesUtil().dumpNiveau(getParent(), 1, body, "\n");
 
             IntTiers affilie = curContentieux.getCompteAnnexe().getTiers();
@@ -158,7 +158,7 @@ public class CO13RappelOpPaiement extends CODocumentManager {
 
             fields.put(
                     COParameter.F1,
-                    formatMessage(new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 3, 1)),
+                    formatMessage(new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 3, 1)),
                             new Object[] { formatDate(historiqueRCP.getDateExecution()) }));
             fields.put(COParameter.F2, formatMontant(solde));
             fields.put(COParameter.F3, getCatalogueTextesUtil().texte(getParent(), 3, 2));

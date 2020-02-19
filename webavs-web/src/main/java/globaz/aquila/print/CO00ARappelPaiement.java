@@ -88,7 +88,7 @@ public class CO00ARappelPaiement extends CODocumentManager {
             // -- titre du doc
             // ------------------------------------------------------------------------------
             // rechercher tous les paragraphes du titre du document
-            StringBuffer body = new StringBuffer();
+            StringBuilder body = new StringBuilder();
 
             getCatalogueTextesUtil().dumpNiveau(getParent(), 1, body, "\n");
 

@@ -98,7 +98,7 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
 
             mapInterets.put(
                     COParameter.F1,
-                    formatMessage(new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 9, 97)),
+                    formatMessage(new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 9, 97)),
                             new Object[] { formatDate(getDateExecution()) }));
             mapInterets.put(CAExtraitCompte.SECTIONDATE_FIELD, getDateExecution());
             mapInterets.put(COParameter.F3, getCatalogueTextesUtil().texte(getParent(), 3, 2));
@@ -157,7 +157,7 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
             this.setParametres(
                     COParameter.T2,
                     formatMessage(
-                            new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 1, 2)),
+                            new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 1, 2)),
                             new Object[] { historiqueService
                                     .getHistoriqueForLibEtape(getSession(), curContentieux,
                                             ICOEtape.CS_ACTE_DE_DEFAUT_DE_BIEN_SAISI)
@@ -165,7 +165,7 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
         } else {
             this.setParametres(
                     COParameter.T2,
-                    formatMessage(new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 1, 1)),
+                    formatMessage(new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 1, 1)),
                             new Object[] { curContentieux.getNumPoursuite() }));
         }
 
@@ -174,16 +174,16 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
         this.setParametres(COParameter.ADRESSE, getInfoAdresse(curContentieux.getCompteAnnexe().getTiers()));
         this.setParametres(
                 COParameter.T6,
-                formatMessage(new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 2, 7)), new Object[] {
+                formatMessage(new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 2, 7)), new Object[] {
                         curContentieux.getCompteAnnexe().getRole().getDescription(getLangue()),
                         curContentieux.getCompteAnnexe().getIdExterneRole() }));
         this.setParametres(
                 COParameter.T7,
-                formatMessage(new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 2, 5)),
+                formatMessage(new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 2, 5)),
                         new Object[] { this._getProperty(CODocumentManager.JASP_PROP_BODY_NOM_ADRESSE_CAISSE) }));
         this.setParametres(
                 COParameter.T8,
-                formatMessage(new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 2, 8)),
+                formatMessage(new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 2, 8)),
                         new Object[] { getNumeroCCP() }));
     }
 
@@ -423,7 +423,7 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
         if (!JadeStringUtil.isBlankOrZero(montantCreance)) {
             this.setParametres(
                     COParameter.L_INTERET,
-                    formatMessage(new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 9, 95)), new Object[] {
+                    formatMessage(new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 9, 95)), new Object[] {
                             formatDate(getDateExecutionPlus1Day()), getCatalogueTextesUtil().texte(getParent(), 3, 2),
                             formatMontant(montantCreance) }));
         }
@@ -448,7 +448,7 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
             this.setParametres(
                     COParameter.L_INTERET,
                     formatMessage(
-                            new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 9, 95)),
+                            new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 9, 95)),
                             new Object[] {
                                     formatDate(CORequisitionPoursuiteUtil.getDateDebutInteretsTardifs(getSession(),
                                             getTransaction(), curContentieux)),
@@ -523,7 +523,7 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
                         libelleEtape = historique.getEtape().getLibEtapeLibelle();
                     }
                     texteApresDecompte = formatMessage(
-                            new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 9, 91)), new Object[] { "\n",
+                            new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 9, 91)), new Object[] { "\n",
                                     numeroteur + ") " + libelleEtape, formatDate(historique.getDateExecution()) });
 
                     removeFromListDSTitreCreances(indexSommation);
@@ -544,7 +544,7 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
             FWCurrency montantLigne = new FWCurrency(value.get(COParameter.F2));
             if (montantLigne.isZero() == false) {
                 texteApresDecompte += formatMessage(
-                        new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 9, 91)), new Object[] { "\n",
+                        new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 9, 91)), new Object[] { "\n",
                                 value.get(COParameter.F1), formatDate(value.get(CAExtraitCompte.SECTIONDATE_FIELD)) });
                 numeroteur++;
             }
@@ -584,7 +584,7 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
      * @throws Exception
      */
     private void initFooterNouveauRegime(COHistorique historique) throws Exception {
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
         getCatalogueTextesUtil().dumpNiveau(getParent(), 7, body, "\n");
 
         String texteApresDecompte = initTexteApresDecompte(historique);
@@ -620,11 +620,11 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
     /**
      * Pied de page
      * 
-     * @param body
+     * @param historique
      * @throws Exception
      */
     private void initFooter(COHistorique historique) throws Exception {
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
         getCatalogueTextesUtil().dumpNiveau(getParent(), 6, body, "\n");
 
         // Si on a un historique, on affiche la date de l'étape
@@ -638,7 +638,7 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
             libelleEtape = historique.getEtape().getLibEtapeLibelle();
         }
         if (historique != null) {
-            texteSommation = formatMessage(new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 9, 91)),
+            texteSommation = formatMessage(new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 9, 91)),
                     new Object[] { "\n", libelleEtape, formatDate(historique.getDateExecution()) });
         }
 

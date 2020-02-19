@@ -145,13 +145,13 @@ public abstract class CODocumentRequisition extends CODocumentManager {
                 this.setParametres(
                         COParameter.T4,
                         formatMessage(
-                                new StringBuffer(getCatalogueTextesUtil().texte(key, ctNiveauTextForOPName,
+                                new StringBuilder(getCatalogueTextesUtil().texte(key, ctNiveauTextForOPName,
                                         ctPositionTextForOPName)), new Object[] { destinataireDocument.getNom() }));
                 if (adresseOP != null) {
                     this.setParametres(
                             COParameter.T4b,
                             formatMessage(
-                                    new StringBuffer(getCatalogueTextesUtil().texte(key, ctNiveauTextForOPCanton,
+                                    new StringBuilder(getCatalogueTextesUtil().texte(key, ctNiveauTextForOPCanton,
                                             ctPositionTextForOPCanton)),
                                     new Object[] { getTiersService().getCanton(getSession(), adresseOP.canton_id,
                                             getLangue()) }));

@@ -21,6 +21,7 @@ public class CAReferenceQR extends AbstractCAReference {
 
     private static final String CHAR_FIN_LIGNE = "\r\n";
     private static final String CODE_PAYS_DEFAUT = "CH";
+    public static final String DEVISE_DEFAUT = "CHF";
 
     // Variables à externaliser
     private static final String QR_IBAN = "QRR";
@@ -105,7 +106,9 @@ public class CAReferenceQR extends AbstractCAReference {
         initEnteteQR(document);
 
         // Initialisation des params de la QR-Facture
-        initParamQR();
+
+         initParamQR();
+
 
         Iterator it = parameters.entrySet().iterator();
 

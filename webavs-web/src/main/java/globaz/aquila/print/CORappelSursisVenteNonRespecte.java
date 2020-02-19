@@ -82,7 +82,7 @@ public class CORappelSursisVenteNonRespecte extends CODocumentManager {
             this._handleHeaders(destinataireDocument, curContentieux, true, false, true);
 
             // -- zone titre du document --------------------------------------------------------------------
-            StringBuffer body = new StringBuffer();
+            StringBuilder body = new StringBuilder();
             getCatalogueTextesUtil().dumpNiveau(getParent(), 1, body, "\n");
 
             IntTiers affilie = curContentieux.getCompteAnnexe().getTiers();

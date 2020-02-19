@@ -48,6 +48,7 @@ import globaz.osiris.db.comptes.CATypeOperationManager;
 import globaz.osiris.db.comptes.extrait.CAExtraitCompte;
 import globaz.osiris.db.comptes.extrait.CAExtraitCompteManager;
 import globaz.osiris.db.interets.CARubriqueSoumiseInteretManager;
+import globaz.osiris.db.utils.CAReferenceQR;
 import globaz.osiris.external.IntRole;
 import globaz.osiris.external.IntTiers;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
@@ -81,6 +82,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
      * 
      */
     private static final long serialVersionUID = 1L;
+    public CAReferenceQR qrFacture = null;
 
     /**
      * <H1>Description</H1>
@@ -230,7 +232,6 @@ public abstract class CODocumentManager extends FWIDocumentManager {
         }
 
         /**
-         * @see globaz.osiris.db.contentieux.CAExtraitCompteListViewBean#processFoundedExtraitCompte(BTransaction,CAExtraitCompteManager)
          */
         public FWCurrency getMontant() {
             if (montant == null) {
@@ -306,7 +307,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
         /**
          * Si j'ai une rubrique et qu'elle fait partis de la liste des soumis à intérêt (cfr : compta.aux.)
          * 
-         * @param BSession pour le manager des rubrique
+         * @param session pour le manager des rubrique
          * @return si trouvé l'id rubrique de l'item courant dans la table des rubrique soumises à IM <br/>
          *         (sans session ou en erreur retourne faux)
          */
@@ -567,9 +568,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      * Gestion de l'en-tête/pied de page/signature.
-     * 
-     * @param destinataire
-     *            Le destinataire du document
+     *
      * @param contentieux
      *            Le contentieux concerné par ce document
      * @param hasHeader
@@ -595,8 +594,6 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     }
 
     /**
-     * @param destinataire
-     *            Le destinataire du document
      * @param contentieux
      *            Le contentieux concerné par ce document
      * @param hasHeader
@@ -896,9 +893,9 @@ public abstract class CODocumentManager extends FWIDocumentManager {
      *            le nom du champ du document dans lequel afficher le libellé de la devise
      * @param devise
      *            le libellé de la devise
-     * @param etape
+     * @param csEtape
      *            concernée
-     * @param id
+     * @param idJournal
      *            du premier journal de la section
      * @return DOCUMENT ME!
      * @throws Exception
@@ -924,9 +921,9 @@ public abstract class CODocumentManager extends FWIDocumentManager {
      *            le nom du champ du document dans lequel afficher le libellé de la devise
      * @param devise
      *            le libellé de la devise
-     * @param etape
+     * @param csEtape
      *            concernée
-     * @param id
+     * @param idJournal
      *            du premier journal de la section
      * @return DOCUMENT ME!
      * @throws Exception
@@ -1149,7 +1146,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
      * @return le message formatté
      * @see MessageFormat
      */
-    protected String formatMessage(StringBuffer message, Object[] args) {
+    protected String formatMessage(StringBuilder message, Object[] args) {
         return COStringUtils.formatMessage(message.toString(), args);
     }
 
@@ -1163,7 +1160,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
      * </UL>
      * 
      * @return un String représentant le montant formattée.
-     * @param un
+     * @param montant
      *            montant à formatter.
      */
     protected String formatMontant(String montant) {
@@ -1342,7 +1339,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     }
 
     /**
-     * @param tiers
+     * @param affilie
      * @param separator
      *            entre les éléments de l'adresse
      * @return l'adresse du tiers avec le séparateur définit.
@@ -1519,7 +1516,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
                 buffer.append(" ");
                 // TODO sel : ne devrait pas utiliser texte
                 buffer.append(formatMessage(
-                        new StringBuffer(getCatalogueTextesUtil().texte(getParent(), 9, 90)),
+                        new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 9, 90)),
                         new Object[] { formatDate(extraitCompte.getDate()),
                                 getSession().getCodeLibelle(extraitCompte.getProvenancePmt()), "" }));
 
@@ -1609,7 +1606,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
      * la section.<br>
      * Exemple : Erreur contentieux [21] 123.456 200801000
      * 
-     * @param String
+     * @param label
      *            label : message d'erreur
      * @return label [idContentieux] idExterneRole idExterne
      */
@@ -1724,7 +1721,6 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     }
 
     /**
-     * @see CAExtraitCompteManager#getTypeOperationDescriptionFromCache(String, String)
      */
     protected String getTypeOperationDescriptionFromCache(String typeOperation, String language) {
         if (CODocumentManager.TYPE_OP_CACHE == null) {
@@ -2153,5 +2149,44 @@ public abstract class CODocumentManager extends FWIDocumentManager {
         }
 
         return resultat.toString();
+    }
+
+    public void initVariableQR(FWCurrency montantTotal) {
+
+        qrFacture.setMonnaie(getCatalogueTextesUtil().texte(getParent(), 3, 2).contains(COCatalogueTextesService.TEXTE_INTROUVABLE)?
+                qrFacture.DEVISE_DEFAUT : getCatalogueTextesUtil().texte(getParent(), 3, 2) );
+        qrFacture.setMontant(montantTotal.toString());
+
+
+        try {
+            //qrFacture.setCrePays(qrFacture.getCodePays());
+            qrFacture.recupererIban();
+            if (!qrFacture.genererAdresseDebiteur(curContentieux.getCompteAnnexe().getIdTiers())) {
+                // si l'adresse n'est pas trouvé en DB, alors chargement d'une adresse Combiné
+                qrFacture.setDebfAdressTyp(CAReferenceQR.COMBINE);
+                //
+                qrFacture.setDebfRueOuLigneAdresse1(getAdresseDestinataire());
+            }
+            qrFacture.genererReferenceQR(curContentieux.getSection());
+
+            // Il n'existe pas pour l'heure actuel d'adresse de créditeur en DB.
+            // Elle est récupérée depuis le catalogue de texte au format Combinée
+            qrFacture.genererCreAdresse();
+            //qrFacture.setDebfRueOuLigneAdresse1(getAdresseDestinataire());
+        } catch (Exception e) {
+            getMemoryLog().logMessage(
+                    "Erreur lors de recherche des élements de la sommation : " + e.getMessage(),
+                    FWMessage.AVERTISSEMENT, this.getClass().getName());
+        }
+
+
+    }
+
+    /**
+     * @return l'adresse définie dans la section sinon getAdresseString(destinataireDocument)
+     * @throws Exception
+     */
+    public String getAdresseDestinataire() throws Exception {
+        return getAdressePrincipale(destinataireDocument);
     }
 }

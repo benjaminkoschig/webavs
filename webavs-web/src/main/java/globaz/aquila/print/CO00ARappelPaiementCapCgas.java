@@ -6,6 +6,7 @@
  */
 package globaz.aquila.print;
 
+import ch.globaz.common.properties.CommonProperties;
 import globaz.aquila.api.ICOSequenceConstante;
 import globaz.aquila.service.cataloguetxt.COCatalogueTextesService;
 import globaz.aquila.service.taxes.COTaxe;
@@ -17,6 +18,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.util.JANumberFormatter;
 import globaz.globall.util.JAUtil;
 import globaz.osiris.db.utils.CAReferenceBVR;
+import globaz.osiris.db.utils.CAReferenceQR;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +42,7 @@ public class CO00ARappelPaiementCapCgas extends CODocumentManager {
 
     public static final String NUMERO_REFERENCE_INFOROM_RAPPEL_CAP_CGAS = "0300GCO";
     private static final long serialVersionUID = 4866945152594877861L;
-    private static final String TEMPLATE_NAME = "CO_00A_RAPPEL_AF_CAP_CGAS";
+    private static final String TEMPLATE_NAME = "CO_00A_RAPPEL_AF_CAP_CGAS_QR";
 
     // ~ Instance fields
     // ------------------------------------------------------------------------------------------------
@@ -114,7 +116,7 @@ public class CO00ARappelPaiementCapCgas extends CODocumentManager {
             // -- titre du doc
             // ------------------------------------------------------------------------------
             // rechercher tous les paragraphes du titre du document
-            StringBuffer body = new StringBuffer();
+            StringBuilder body = new StringBuilder();
 
             getCatalogueTextesUtil().dumpNiveau(getParent(), 1, body, "\n");
 
@@ -153,7 +155,17 @@ public class CO00ARappelPaiementCapCgas extends CODocumentManager {
                 COTaxe taxe = (COTaxe) taxesIter.next();
                 montantTotal.add(taxe.getMontantTaxe());
             }
-            initBVR(montantTotal);
+            if (CommonProperties.QR_FACTURE.getBooleanValue()) {
+                // -- QR
+                qrFacture = new CAReferenceQR();
+                qrFacture.setSession(getSession());
+                // Initialisation des variables du document
+                initVariableQR(montantTotal);
+                // Génération du document QR
+                qrFacture.initQR(this);
+            } else {
+                initBVR(montantTotal);
+            }
         } catch (Exception e) {
             this.log("exception: " + e.getMessage());
         }
@@ -190,6 +202,9 @@ public class CO00ARappelPaiementCapCgas extends CODocumentManager {
            LOG.error("A error occured while retrieving the address of the addressee.", e);
         }
         try {
+            // Modification suite à QR-Facture. Choix du footer
+            super.setParametres(COParameter.P_SUBREPORT_QR, getImporter().getImportPath() + "BVR_TEMPLATE.jasper");
+
             super.setParametres(COParameter.P_ADRESSE, getBvr().getAdresse());
             super.setParametres(COParameter.P_ADRESSECOPY, getBvr().getAdresse());
             super.setParametres(COParameter.P_COMPTE, getBvr().getNumeroCC());// numéro CC
@@ -216,14 +231,6 @@ public class CO00ARappelPaiementCapCgas extends CODocumentManager {
             bvr = new CAReferenceBVR();
         }
         return bvr;
-    }
-
-    /**
-     * @return l'adresse définie dans la section sinon getAdresseString(destinataireDocument)
-     * @throws Exception
-     */
-    private String getAdresseDestinataire() throws Exception {
-        return getAdressePrincipale(destinataireDocument);
     }
 
     /**
