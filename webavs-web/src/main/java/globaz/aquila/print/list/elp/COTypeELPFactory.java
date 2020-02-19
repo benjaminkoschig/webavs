@@ -8,6 +8,8 @@ import java.lang.reflect.Method;
 
 public class COTypeELPFactory {
 
+    private COTypeELPFactory(){}
+
     public static COTypeMessageELP getCOTypeMessageELPFromXml(Document doc)  {
         Method[] methods = doc.getClass().getMethods();
         for(Method method:methods) {

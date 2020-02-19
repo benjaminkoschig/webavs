@@ -1,8 +1,6 @@
 package globaz.aquila.print.list;
 
-import ch.globaz.utils.Pair;
 import ch.globaz.vulpecula.external.api.poi.AbstractListExcel;
-import ch.globaz.vulpecula.external.api.poi.StyleFactory;
 import globaz.aquila.print.list.elp.*;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
@@ -28,6 +26,25 @@ public class COResultELPExcel extends AbstractListExcel {
     private static final Integer[] HEADER_RGB = {91, 155, 213};
     private static final Integer[] BACK_LIGNE_IMPAIRE_RGB = {221, 235, 247};
     private static final Integer[] BORD_LIGNE_RGB = {155, 194, 230};
+    public static final String ELP_REFERENCE_FICHIER = "ELP_REFERENCE_FICHIER";
+    public static final String ELP_TYPE_MESSAGE = "ELP_TYPE_MESSAGE";
+    public static final String ELP_SC_DATE_NOTIFICATION = "ELP_SC_DATE_NOTIFICATION";
+    public static final String ELP_SC_DATE_RECEPTION = "ELP_SC_DATE_RECEPTION";
+    public static final String ELP_SC_NO_POURSUITE = "ELP_SC_NO_POURSUITE";
+    public static final String ELP_SC_OPPOSITION = "ELP_SC_OPPOSITION";
+    public static final String ELP_REMARQUE = "ELP_REMARQUE";
+    public static final String ELP_MOTIF = "ELP_MOTIF";
+    public static final String ELP_ONGLET_CDP_NON_TRAITE = "ELP_ONGLET_CDP_NON_TRAITE";
+    public static final String ELP_SP_TYPE_SAISIE = "ELP_SP_TYPE_SAISIE";
+    public static final String ELP_SP_DATE_EXECUTION = "ELP_SP_DATE_EXECUTION";
+    public static final String ELP_SP_DATE_RECEPTION = "ELP_SP_DATE_RECEPTION";
+    public static final String ELP_ONGLET_PV_NON_TRAITE = "ELP_ONGLET_PV_NON_TRAITE";
+    public static final String ELP_RC_NO_ADB = "ELP_RC_NO_ADB";
+    public static final String ELP_RC_DATE_ETABLISSEMENT = "ELP_RC_DATE_ETABLISSEMENT";
+    public static final String ELP_RC_DATE_RECEPTION = "ELP_RC_DATE_RECEPTION";
+    public static final String ELP_ONGLET_ADB_NON_TRAITE = "ELP_ONGLET_ADB_NON_TRAITE";
+    public static final String ELP_ONGLET_MESSAGES_INCOHERENTS = "ELP_ONGLET_MESSAGES_INCOHERENTS";
+    public static final String ELP_ONGLET_MESSAGES_TRAITES = "ELP_ONGLET_MESSAGES_TRAITES";
 
     private COProtocoleELP protocole;
     private HSSFCellStyle styleHeader = null;
@@ -46,7 +63,7 @@ public class COResultELPExcel extends AbstractListExcel {
 
     @Override
     public void createContent() {
-
+        // fait dans populateSheet avec un COELPException
     }
 
     @Override
@@ -60,16 +77,16 @@ public class COResultELPExcel extends AbstractListExcel {
     private void initOnglet1() {
         // Titres des colonnes
         ArrayList<String> colTitles = new ArrayList<>();
-        colTitles.add(getSession().getLabel("ELP_REFERENCE_FICHIER"));
-        colTitles.add(getSession().getLabel("ELP_TYPE_MESSAGE"));
-        colTitles.add(getSession().getLabel("ELP_SC_DATE_NOTIFICATION"));
-        colTitles.add(getSession().getLabel("ELP_SC_DATE_RECEPTION"));
-        colTitles.add(getSession().getLabel("ELP_SC_NO_POURSUITE"));
-        colTitles.add(getSession().getLabel("ELP_SC_OPPOSITION"));
-        colTitles.add(getSession().getLabel("ELP_REMARQUE"));
-        colTitles.add(getSession().getLabel("ELP_MOTIF"));
+        colTitles.add(getSession().getLabel(ELP_REFERENCE_FICHIER));
+        colTitles.add(getSession().getLabel(ELP_TYPE_MESSAGE));
+        colTitles.add(getSession().getLabel(ELP_SC_DATE_NOTIFICATION));
+        colTitles.add(getSession().getLabel(ELP_SC_DATE_RECEPTION));
+        colTitles.add(getSession().getLabel(ELP_SC_NO_POURSUITE));
+        colTitles.add(getSession().getLabel(ELP_SC_OPPOSITION));
+        colTitles.add(getSession().getLabel(ELP_REMARQUE));
+        colTitles.add(getSession().getLabel(ELP_MOTIF));
 
-        createSheet(getSession().getLabel("ELP_ONGLET_CDP_NON_TRAITE"));
+        createSheet(getSession().getLabel(ELP_ONGLET_CDP_NON_TRAITE));
 
         initTitleRow(colTitles);
         initPage(true);
@@ -81,15 +98,15 @@ public class COResultELPExcel extends AbstractListExcel {
     private void initOnglet2() {
         // Titres des colonnes
         ArrayList<String> colTitles = new ArrayList<>();
-        colTitles.add(getSession().getLabel("ELP_REFERENCE_FICHIER"));
-        colTitles.add(getSession().getLabel("ELP_TYPE_MESSAGE"));
-        colTitles.add(getSession().getLabel("ELP_SP_TYPE_SAISIE"));
-        colTitles.add(getSession().getLabel("ELP_SP_DATE_EXECUTION"));
-        colTitles.add(getSession().getLabel("ELP_SP_DATE_RECEPTION"));
-        colTitles.add(getSession().getLabel("ELP_REMARQUE"));
-        colTitles.add(getSession().getLabel("ELP_MOTIF"));
+        colTitles.add(getSession().getLabel(ELP_REFERENCE_FICHIER));
+        colTitles.add(getSession().getLabel(ELP_TYPE_MESSAGE));
+        colTitles.add(getSession().getLabel(ELP_SP_TYPE_SAISIE));
+        colTitles.add(getSession().getLabel(ELP_SP_DATE_EXECUTION));
+        colTitles.add(getSession().getLabel(ELP_SP_DATE_RECEPTION));
+        colTitles.add(getSession().getLabel(ELP_REMARQUE));
+        colTitles.add(getSession().getLabel(ELP_MOTIF));
 
-        createSheet(getSession().getLabel("ELP_ONGLET_PV_NON_TRAITE"));
+        createSheet(getSession().getLabel(ELP_ONGLET_PV_NON_TRAITE));
 
         initTitleRow(colTitles);
         initPage(true);
@@ -100,15 +117,15 @@ public class COResultELPExcel extends AbstractListExcel {
     private void initOnglet3() {
         // Titres des colonnes
         ArrayList<String> colTitles = new ArrayList<>();
-        colTitles.add(getSession().getLabel("ELP_REFERENCE_FICHIER"));
-        colTitles.add(getSession().getLabel("ELP_TYPE_MESSAGE"));
-        colTitles.add(getSession().getLabel("ELP_RC_NO_ADB"));
-        colTitles.add(getSession().getLabel("ELP_RC_DATE_ETABLISSEMENT"));
-        colTitles.add(getSession().getLabel("ELP_RC_DATE_RECEPTION"));
-        colTitles.add(getSession().getLabel("ELP_REMARQUE"));
-        colTitles.add(getSession().getLabel("ELP_MOTIF"));
+        colTitles.add(getSession().getLabel(ELP_REFERENCE_FICHIER));
+        colTitles.add(getSession().getLabel(ELP_TYPE_MESSAGE));
+        colTitles.add(getSession().getLabel(ELP_RC_NO_ADB));
+        colTitles.add(getSession().getLabel(ELP_RC_DATE_ETABLISSEMENT));
+        colTitles.add(getSession().getLabel(ELP_RC_DATE_RECEPTION));
+        colTitles.add(getSession().getLabel(ELP_REMARQUE));
+        colTitles.add(getSession().getLabel(ELP_MOTIF));
 
-        createSheet(getSession().getLabel("ELP_ONGLET_ADB_NON_TRAITE"));
+        createSheet(getSession().getLabel(ELP_ONGLET_ADB_NON_TRAITE));
 
         initTitleRow(colTitles);
         initPage(true);
@@ -119,11 +136,11 @@ public class COResultELPExcel extends AbstractListExcel {
     private void initOnglet4() {
         // Titres des colonnes
         ArrayList<String> colTitles = new ArrayList<>();
-        colTitles.add(getSession().getLabel("ELP_REFERENCE_FICHIER"));
-        colTitles.add(getSession().getLabel("ELP_TYPE_MESSAGE"));
-        colTitles.add(getSession().getLabel("ELP_MOTIF"));
+        colTitles.add(getSession().getLabel(ELP_REFERENCE_FICHIER));
+        colTitles.add(getSession().getLabel(ELP_TYPE_MESSAGE));
+        colTitles.add(getSession().getLabel(ELP_MOTIF));
 
-        createSheet(getSession().getLabel("ELP_ONGLET_MESSAGES_INCOHERENTS"));
+        createSheet(getSession().getLabel(ELP_ONGLET_MESSAGES_INCOHERENTS));
 
         initTitleRow(colTitles);
         initPage(true);
@@ -134,11 +151,11 @@ public class COResultELPExcel extends AbstractListExcel {
     private void initOnglet5() {
         // Titres des colonnes
         ArrayList<String> colTitles = new ArrayList<>();
-        colTitles.add(getSession().getLabel("ELP_REFERENCE_FICHIER"));
-        colTitles.add(getSession().getLabel("ELP_TYPE_MESSAGE"));
-        colTitles.add(getSession().getLabel("ELP_REMARQUE"));
+        colTitles.add(getSession().getLabel(ELP_REFERENCE_FICHIER));
+        colTitles.add(getSession().getLabel(ELP_TYPE_MESSAGE));
+        colTitles.add(getSession().getLabel(ELP_REMARQUE));
 
-        createSheet(getSession().getLabel("ELP_ONGLET_MESSAGES_TRAITES"));
+        createSheet(getSession().getLabel(ELP_ONGLET_MESSAGES_TRAITES));
 
         initTitleRow(colTitles);
         initPage(true);
@@ -230,19 +247,11 @@ public class COResultELPExcel extends AbstractListExcel {
         return currentSheet;
     }
 
-    private void setColumnWidth(HSSFSheet sheet, Integer... values){
-        int numCol=0;
-        for(int value: values){
-            currentSheet.setColumnWidth((short) numCol++,(short) value);
-        }
-    }
-
     private void initStyle() {
         setColor(getWorkbook(), HSSFColor.ROYAL_BLUE.index, HEADER_RGB);
         setColor(getWorkbook(), HSSFColor.SKY_BLUE.index, BACK_LIGNE_IMPAIRE_RGB);
         setColor(getWorkbook(), HSSFColor.PALE_BLUE.index, BORD_LIGNE_RGB);
 
-        StyleFactory styleFactory = new StyleFactory(getWorkbook());
         HSSFFont fontHeader = getWorkbook().createFont();
         fontHeader.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
         fontHeader.setColor(HSSFColor.WHITE.index);
@@ -252,7 +261,7 @@ public class COResultELPExcel extends AbstractListExcel {
         styleHeader.setBorderBottom(HSSFCellStyle.BORDER_NONE);
         styleHeader.setBorderLeft(HSSFCellStyle.BORDER_NONE);
         styleHeader.setBorderRight(HSSFCellStyle.BORDER_NONE);
-        styleHeader.setBorderTop(HSSFCellStyle.BORDER_NONE); // BORDER_THIN);
+        styleHeader.setBorderTop(HSSFCellStyle.BORDER_NONE);
         styleHeader.setWrapText(true);
         styleHeader.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
         styleHeader.setFillForegroundColor(HSSFColor.ROYAL_BLUE.index);
@@ -295,13 +304,13 @@ public class COResultELPExcel extends AbstractListExcel {
         return calendar == null ? "" : new SimpleDateFormat(DATE_FORMAT).format(calendar.toGregorianCalendar().getTime());
     }
 
-    protected HSSFSheet initTitleRow(List<String> col_titles) {
+    protected HSSFSheet initTitleRow(List<String> colTitles) {
         // create Title Row
         setCurrentRow(currentSheet.createRow(currentSheet.getPhysicalNumberOfRows()));
 
-        IntStream.range(0, col_titles.size()).forEach(i -> {
+        IntStream.range(0, colTitles.size()).forEach(i -> {
             HSSFCell c = getCurrentRow().createCell((short)i);
-            c.setCellValue(col_titles.get(i));
+            c.setCellValue(colTitles.get(i));
             c.setCellStyle(styleHeader);
         });
         return currentSheet;
