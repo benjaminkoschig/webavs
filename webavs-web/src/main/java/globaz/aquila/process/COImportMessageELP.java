@@ -21,12 +21,13 @@ import globaz.globall.db.GlobazServer;
 import globaz.globall.util.JACalendar;
 import globaz.jade.common.JadeClassCastException;
 import globaz.jade.fs.JadeFsFacade;
-import globaz.jade.log.JadeLogger;
 import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.service.exception.JadeServiceActivatorException;
 import globaz.jade.service.exception.JadeServiceLocatorException;
 import globaz.jade.smtp.JadeSmtpClient;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -36,6 +37,8 @@ import java.util.List;
 
 public class COImportMessageELP extends AbstractDaemon {
 
+    private static final Logger LOG = LoggerFactory.getLogger(COImportMessageELP.class);
+
     private static final String ELP_SCHEMA = "aquila.ch.eschkg";
     private static final String MAIL_SUBJECT = "ELP_MAIL_SUBJECT";
     private static final String BACKUP_FOLDER =  "/backup/";
@@ -44,11 +47,11 @@ public class COImportMessageELP extends AbstractDaemon {
     private BSession bsession;
     private COProtocoleELP protocole;
     private String error = "";
-    private String urlFichiersELP;
     private String backupFolder;
 
     @Override
     public void run() {
+
         try {
             initBsession();
             String isActive = JadePropertiesService.getInstance().getProperty(COProperties.RECEPTION_MESSAGES_ELP.getProperty());
@@ -59,11 +62,9 @@ public class COImportMessageELP extends AbstractDaemon {
 
         } catch (Exception e) {
             error = "erreur fatale : " + Throwables.getStackTraceAsString(e);
-            JadeLogger.error(this,"COImportMessageELP#run : "+error);
             try {
                 sendResultMail(null);
             } catch (Exception e1) {
-                JadeLogger.error(this,"COImportMessageELP#run : "+Throwables.getStackTraceAsString(e1));
                 throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, e1);
             }
             throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, e);
@@ -98,7 +99,7 @@ public class COImportMessageELP extends AbstractDaemon {
             }
         } catch (Exception e) {
             error = "erreur fatale : " + Throwables.getStackTraceAsString(e);
-            JadeLogger.error(this,"COImportMessageELP#run : "+error);
+            LOG.error("COImportMessageELP#import : erreur lors de l'importation des fichiers", e);
         }
     }
 
@@ -130,7 +131,7 @@ public class COImportMessageELP extends AbstractDaemon {
                     JadeFsFacade.delete(tmpLocalWorkFile);
 
                 } catch (JadeServiceLocatorException | JadeClassCastException | JadeServiceActivatorException e) {
-                    JadeLogger.error(this, e.getMessage());
+                    LOG.error("COImportMessageELP#importFile : erreur lors de l'importation du fichier "+nameOriginalFile, e);
                     protocole.addMsgIncoherentInattendue(infos, e.getMessage());
                 }
             } else {
@@ -231,10 +232,8 @@ public class COImportMessageELP extends AbstractDaemon {
     public final java.lang.String getEMailAddress() {
         String eMailAddress = JadePropertiesService.getInstance().getProperty(COProperties.DESTINATAIRE_PROTOCOLE_MESSAGES_ELP.getProperty());
 
-        if ((eMailAddress == null) || (eMailAddress.length() == 0)) {
-            if (bsession != null) {
+        if (((eMailAddress == null) || (eMailAddress.length() == 0)) && bsession != null) {
                 return bsession.getUserEMail();
-            }
         }
         return eMailAddress;
     }
