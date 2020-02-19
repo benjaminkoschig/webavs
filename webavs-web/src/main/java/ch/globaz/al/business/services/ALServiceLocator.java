@@ -115,6 +115,10 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
  */
 public abstract class ALServiceLocator {
 
+    protected ALServiceLocator(){
+
+    }
+
     /**
      * Méthode qui retourne une instance du service des décomptes Adi complexe
      *
