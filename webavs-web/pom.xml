@@ -230,6 +230,24 @@
 							</bindingIncludes>
 						</configuration>
 					</execution>
+					<execution>
+						<id>generate-aquila</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<specVersion>2.1</specVersion>
+							<schemaDirectory>src/main/resources/xsd</schemaDirectory>
+							<generateDirectory>target/generated-sources/xjc-aquila</generateDirectory>
+							<schemaIncludes>
+								<include>aquila/*.xsd</include>
+							</schemaIncludes>
+							<bindingDirectory>src/main/resources/xjb</bindingDirectory>
+							<bindingIncludes>
+								<include>aquila-bindings.xjb</include>
+							</bindingIncludes>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>

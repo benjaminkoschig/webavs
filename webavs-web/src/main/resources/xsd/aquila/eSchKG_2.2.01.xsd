@@ -1,0 +1,3352 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+eSchKG 2.2.01 - Oktober 2019
+Das vorliegende XML-Schema gehört zum rechtsverbindlichen eSchKG-Standard nach Artikel 5 Absatz 2 der Verordnung des EJPD vom 9. Februar 2011 über die elektronische Übermittlung im Betreibungswesen (SR 281.112.1, eSchKG-Verordnung, https://www.admin.ch/opc/de/classified-compilation/20103227/index.html). 
+Die Verwendung des eSchKG-Standards ist freigestellt und kostenlos. 
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.eschkg.ch/schema/2.2" targetNamespace="http://www.eschkg.ch/schema/2.2" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.2.01">
+	<xs:element name="document">
+		<xs:annotation>
+			<xs:documentation>eSchKG / eLP 2.2.01</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="envelope" type="envelopeType">
+					<xs:annotation>
+						<xs:documentation>Message metadata.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:choice id="docType">
+					<xs:element name="CR" type="CrType">
+						<xs:annotation>
+							<xs:documentation>Collection Request</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="SC" type="ScType">
+						<xs:annotation>
+							<xs:documentation>Copy of the defaults summons</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="CC" type="CcType">
+						<xs:annotation>
+							<xs:documentation>Continuation Request</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="SP" type="SpType">
+						<xs:annotation>
+							<xs:documentation>Seizure Protocol</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="RR" type="RrType">
+						<xs:annotation>
+							<xs:documentation>Realisation Request</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="RC" type="RcType">
+						<xs:annotation>
+							<xs:documentation>Realisation Closure</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="SR" type="SrType">
+						<xs:annotation>
+							<xs:documentation>Status Request</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="SA" type="SaType">
+						<xs:annotation>
+							<xs:documentation>Status Answer</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="PN" type="PnType">
+						<xs:annotation>
+							<xs:documentation>Payment Notice</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="PR" type="PrType">
+						<xs:annotation>
+							<xs:documentation>Payments Received</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="IN" type="InType">
+						<xs:annotation>
+							<xs:documentation>Invoice</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="SN" type="SnType">
+						<xs:annotation>
+							<xs:documentation>Special Notification</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="DI" type="DiType">
+						<xs:annotation>
+							<xs:documentation>Debt Inquiry</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="DR" type="DrType">
+						<xs:annotation>
+							<xs:documentation>Debt Records</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="SI" type="SiType">
+						<xs:annotation>
+							<xs:documentation>Statistical Inquiry</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="SD" type="SdType">
+						<xs:annotation>
+							<xs:documentation>Statistical Data</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:choice>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="CrType">
+		<xs:annotation>
+			<xs:documentation>Request for debt collection.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="msgId" type="token40Type">
+				<xs:annotation>
+					<xs:documentation>Unique message identifier by the creditor. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="refData" type="token32Type">
+				<xs:annotation>
+					<xs:documentation>Creditor's case reference.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="creditor" type="creditorCreType"/>
+			<xs:element name="debtor" type="debtorCreType"/>
+			<xs:element name="caseDetails" type="caseDetailsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Classification details.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="claims" type="claimsetType">
+				<xs:annotation>
+					<xs:documentation>The claims in this request.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="commentary" type="string2000Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Additional information.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="externalDocuments" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Providers of cloud services are the only ones allowed to use attachments.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="externalDocument" type="externalDocumentType" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ScType">
+		<xs:annotation>
+			<xs:documentation>Default summons.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="msgRef" type="msgRefType">
+				<xs:annotation>
+					<xs:documentation>Message identification.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="refData" type="token32Type">
+				<xs:annotation>
+					<xs:documentation>Creditor's case reference - same as refData in the CR.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="caseNumber" type="token16Type">
+				<xs:annotation>
+					<xs:documentation>Official identification number of this debt collection.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="creditor" type="creditorOffType"/>
+			<xs:element name="debtor" type="debtorOffType"/>
+			<xs:element name="officeData" type="officeType">
+				<xs:annotation>
+					<xs:documentation>Office information.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="outcome">
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="notExecuted">
+							<xs:annotation>
+								<xs:documentation>The collection was not executed. Send only one SC regardless of the number of associates.</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="2000"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="summon">
+							<xs:annotation>
+								<xs:documentation>The default summons</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:complexContent>
+									<xs:extension base="claimsetScType">
+										<xs:sequence>
+											<xs:element name="numIssued" type="xs:unsignedInt">
+												<xs:annotation>
+													<xs:documentation>The number of default summons produced.</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="addressedToId" type="token16Type">
+												<xs:annotation>
+													<xs:documentation>actorIdOffice of the person to whom the default summons was addressed.</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="delivery" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Delivery details.</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="deliveryDate" type="dateWithoutZoneType">
+															<xs:annotation>
+																<xs:documentation>Date of delivery of the default summons.</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="deliveredBy" type="string255Type">
+															<xs:annotation>
+																<xs:documentation>Name of the delivery agent.</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="alternativeRecipient" type="string255Type" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>Recipient of the default summons in case it was not the person specified in the addressedToId field.</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="objection">
+												<xs:annotation>
+													<xs:documentation>Objection details.</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:choice>
+														<xs:element name="none">
+															<xs:annotation>
+																<xs:documentation>No objection.</xs:documentation>
+															</xs:annotation>
+															<xs:complexType/>
+														</xs:element>
+														<xs:element name="full">
+															<xs:annotation>
+																<xs:documentation>Full objection.</xs:documentation>
+															</xs:annotation>
+															<xs:complexType>
+																<xs:sequence>
+																	<xs:element name="objectionDate" type="dateWithoutZoneType">
+																		<xs:annotation>
+																			<xs:documentation>Date of the objection.</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																	<xs:element name="objectionReason" type="string255Type" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>Reason of the objection.</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																</xs:sequence>
+															</xs:complexType>
+														</xs:element>
+														<xs:element name="partial">
+															<xs:annotation>
+																<xs:documentation>Partial objection.</xs:documentation>
+															</xs:annotation>
+															<xs:complexType>
+																<xs:sequence>
+																	<xs:element name="objectionAmount" type="nonZeroAmountType">
+																		<xs:annotation>
+																			<xs:documentation>The contested amount. Do not provide if the whole collection is affected.</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																	<xs:element name="objectionDate" type="dateWithoutZoneType">
+																		<xs:annotation>
+																			<xs:documentation>Date of the objection.</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																	<xs:element name="objectionReason" type="string255Type" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>Reason of the objection.</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																</xs:sequence>
+															</xs:complexType>
+														</xs:element>
+													</xs:choice>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:extension>
+								</xs:complexContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="statusInfo" type="statusInfoType">
+				<xs:annotation>
+					<xs:documentation>Official status of the debt collection.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="charges" type="amountType">
+				<xs:annotation>
+					<xs:documentation>Accumulated amount of all charges attributed to the creditor.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="externalDocuments" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Documents that go as an attachment to this message.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="externalDocument" type="externalDocumentType" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CcType">
+		<xs:annotation>
+			<xs:documentation>Request for continuation.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="msgId" type="token40Type">
+				<xs:annotation>
+					<xs:documentation>Unique message identifier by the creditor.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="refData" type="token32Type">
+				<xs:annotation>
+					<xs:documentation>Creditor's case reference.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="request" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>If the element is missing, original mode applies.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="modified">
+							<xs:annotation>
+								<xs:documentation>Some data have changed since the collection began.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="creditor" type="creditorModType"/>
+									<xs:element name="debtor" type="debtorModType"/>
+									<xs:element name="claims" type="claimsetType"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="novel">
+							<xs:annotation>
+								<xs:documentation>Starting a new collection in the continuation phase.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="creditor" type="creditorCreType"/>
+									<xs:element name="debtor" type="debtorCreType"/>
+									<xs:element name="claims" type="claimsetType">
+										<xs:annotation>
+											<xs:documentation>Original list of claims, same as in the default summons.</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="payments" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Payments since the default summons.</xs:documentation>
+										</xs:annotation>
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="payment" maxOccurs="unbounded">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="amount" type="nonZeroAmountType">
+																<xs:annotation>
+																	<xs:documentation>The actual amount received.</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="date" type="dateWithoutZoneType">
+																<xs:annotation>
+																	<xs:documentation>The date of the payment.</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="legalBasis">
+										<xs:annotation>
+											<xs:documentation>- summon
+- certificate of loss
+- certifiate of shortfall
+- article 111</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="token16Type">
+												<xs:enumeration value="sum"/>
+												<xs:enumeration value="col"/>
+												<xs:enumeration value="cos"/>
+												<xs:enumeration value="111"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="CcExpenses" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Extra expenses by the creditor since the return of the default summons.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="expense" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>A particular expense</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="amount" type="nonZeroAmountType">
+										<xs:annotation>
+											<xs:documentation>Amount of the expense</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="reason" type="string2000Type">
+										<xs:annotation>
+											<xs:documentation>Explain the expense</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="commentary" type="string2000Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Additional information.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="externalDocuments" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Documents that go as an attachment to this message.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="externalDocument" type="externalDocumentType" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SpType">
+		<xs:annotation>
+			<xs:documentation>Results from the continuation.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="msgRef" type="msgRefType">
+				<xs:annotation>
+					<xs:documentation>Message identification.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="refData" type="token32Type">
+				<xs:annotation>
+					<xs:documentation>Creditor's case reference - same as refData in the CC.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="caseNumber" type="token16Type">
+				<xs:annotation>
+					<xs:documentation>Official identification number of the debt collection.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="creditor" type="creditorOffType"/>
+			<xs:element name="debtor" type="debtorOffType"/>
+			<xs:element name="officeData" type="officeType">
+				<xs:annotation>
+					<xs:documentation>Office information.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="outcome">
+				<xs:annotation>
+					<xs:documentation>The result of the contiunation. </xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="notExecuted">
+							<xs:annotation>
+								<xs:documentation>No seizure or warning was done. Send only one SP regardless of the number of associates.</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="2000"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="seizure">
+							<xs:annotation>
+								<xs:documentation>A seizure was executed.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:choice>
+									<xs:element name="deed">
+										<xs:annotation>
+											<xs:documentation>The result of the seizure.</xs:documentation>
+										</xs:annotation>
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="seizureNumber" type="token32Type" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Official identifier of the seizure /seizure group.</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element name="seizureDate" type="dateWithoutZoneType">
+													<xs:annotation>
+														<xs:documentation>Date when the seizure was executed.</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element name="seized">
+													<xs:annotation>
+														<xs:documentation>mv = movables
+re = real estate
+in = income</xs:documentation>
+													</xs:annotation>
+													<xs:complexType>
+														<xs:choice>
+															<xs:annotation>
+																<xs:documentation>Any combination of applicable submission deadlines.
+__from = start of deadline
+__to = end of deadline</xs:documentation>
+															</xs:annotation>
+															<xs:sequence>
+																<xs:sequence>
+																	<xs:element name="reFrom" type="dateWithoutZoneType"/>
+																	<xs:element name="reTo" type="dateWithoutZoneType"/>
+																</xs:sequence>
+																<xs:sequence minOccurs="0">
+																	<xs:element name="inFrom" type="dateWithoutZoneType"/>
+																	<xs:element name="inTo" type="dateWithoutZoneType"/>
+																</xs:sequence>
+																<xs:sequence minOccurs="0">
+																	<xs:element name="mvFrom" type="dateWithoutZoneType"/>
+																	<xs:element name="mvTo" type="dateWithoutZoneType"/>
+																</xs:sequence>
+															</xs:sequence>
+															<xs:sequence>
+																<xs:sequence>
+																	<xs:element name="inFrom" type="dateWithoutZoneType"/>
+																	<xs:element name="inTo" type="dateWithoutZoneType"/>
+																</xs:sequence>
+																<xs:sequence minOccurs="0">
+																	<xs:element name="mvFrom" type="dateWithoutZoneType"/>
+																	<xs:element name="mvTo" type="dateWithoutZoneType"/>
+																</xs:sequence>
+															</xs:sequence>
+															<xs:sequence>
+																<xs:element name="mvFrom" type="dateWithoutZoneType"/>
+																<xs:element name="mvTo" type="dateWithoutZoneType"/>
+															</xs:sequence>
+														</xs:choice>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+											<xs:attribute name="provLoss" type="xs:boolean" use="required">
+												<xs:annotation>
+													<xs:documentation>TRUE: deed is a provisional loss certificate.
+FALSE: otherwise.</xs:documentation>
+												</xs:annotation>
+											</xs:attribute>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="loss" type="lossType">
+										<xs:annotation>
+											<xs:documentation>A certificate of loss according to §115. </xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:choice>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="bankruptcyWarning">
+							<xs:annotation>
+								<xs:documentation>A bankruptcy warning was executed.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:complexContent>
+									<xs:extension base="claimsetType">
+										<xs:sequence>
+											<xs:element name="numIssued" type="xs:unsignedInt">
+												<xs:annotation>
+													<xs:documentation>The number of warnings produced.</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="dateOfSummon" type="dateWithoutZoneType">
+												<xs:annotation>
+													<xs:documentation>Date of the default summons.</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="addressedToId" type="token16Type">
+												<xs:annotation>
+													<xs:documentation>actorIdOffice of the person to whom the warning was addressed.</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="payments" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Payments since the default summons.</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="payment" maxOccurs="unbounded">
+															<xs:complexType>
+																<xs:sequence>
+																	<xs:element name="amount" type="nonZeroAmountType">
+																		<xs:annotation>
+																			<xs:documentation>The actual amount received.</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																	<xs:element name="date" type="dateWithoutZoneType">
+																		<xs:annotation>
+																			<xs:documentation>The date of the payment.</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																</xs:sequence>
+															</xs:complexType>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="CcExpenses" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Extra expenses by the creditor since the default summons was received - same as in the CC.</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="expense" maxOccurs="unbounded">
+															<xs:complexType>
+																<xs:sequence>
+																	<xs:element name="amount" type="nonZeroAmountType">
+																		<xs:annotation>
+																			<xs:documentation>Amount of the expense</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																	<xs:element name="reason" type="string60Type">
+																		<xs:annotation>
+																			<xs:documentation>Explain the expense</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																</xs:sequence>
+															</xs:complexType>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="delivery" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Delivery details.</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="deliveryDate" type="dateWithoutZoneType">
+															<xs:annotation>
+																<xs:documentation>Date of delivery of the warning.</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="deliveredBy" type="string255Type">
+															<xs:annotation>
+																<xs:documentation>Name of the delivery agent.</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="alternativeRecipient" type="string255Type" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>Recipient of the warning in case it was not the person specified in the addressedToId field.</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:extension>
+								</xs:complexContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="statusInfo" type="statusInfoType">
+				<xs:annotation>
+					<xs:documentation>Official status of the debt collection.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="charges" type="amountType">
+				<xs:annotation>
+					<xs:documentation>Accumulated amount of all charges attributed to the creditor.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="externalDocuments" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Documents that go as an attachment to this message.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="externalDocument" type="externalDocumentType" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RrType">
+		<xs:annotation>
+			<xs:documentation>Request for realisation of seized assets.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="msgId" type="token40Type">
+				<xs:annotation>
+					<xs:documentation>Unique message identifier by the creditor.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="refData" type="token32Type">
+				<xs:annotation>
+					<xs:documentation>Creditor's case reference.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="creditor" type="creditorType" minOccurs="0"/>
+			<xs:element name="debtor" type="debtorCreType" minOccurs="0"/>
+			<xs:element name="realise">
+				<xs:annotation>
+					<xs:documentation>Express preference regarding the realisation.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="pref" use="required">
+						<xs:annotation>
+							<xs:documentation>mv = movables ONLY
+re = real estate ONLY
+all = movables AND real estate
+in = income (after payments failed ONLY)
+none = waive (Verwertungsverzicht)</xs:documentation>
+						</xs:annotation>
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:enumeration value="mv"/>
+								<xs:enumeration value="re"/>
+								<xs:enumeration value="all"/>
+								<xs:enumeration value="in"/>
+								<xs:enumeration value="none"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="commentary" type="string2000Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Additional information.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RcType">
+		<xs:annotation>
+			<xs:documentation>The realisation's outcome.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="msgRef" type="msgRefType">
+				<xs:annotation>
+					<xs:documentation>Message identification.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="refData" type="token32Type">
+				<xs:annotation>
+					<xs:documentation>Creditor's case reference - same as refData in previous messages.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="caseNumber" type="token16Type">
+				<xs:annotation>
+					<xs:documentation>Official identification number of the debt collection.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="officeData" type="officeType">
+				<xs:annotation>
+					<xs:documentation>Office information.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="outcome">
+				<xs:annotation>
+					<xs:documentation>The outcome of the realisation.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="notExecuted">
+							<xs:annotation>
+								<xs:documentation>No realisation was done.</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="2000"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="delayBegin" type="dateWithoutZoneType">
+							<xs:annotation>
+								<xs:documentation>An adjournment has startet. This normally goes with status 305.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="delayEnd" type="dateWithoutZoneType">
+							<xs:annotation>
+								<xs:documentation>The adjournment was terminated.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="realised">
+							<xs:annotation>
+								<xs:documentation>The result of the realisation.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="avails" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Monetary gain.</xs:documentation>
+										</xs:annotation>
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="amount" type="amountType">
+													<xs:annotation>
+														<xs:documentation>Total revenues minus the expenses.</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="loss" type="lossType" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Certificate of loss according to §149.</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="statusInfo" type="statusInfoType">
+				<xs:annotation>
+					<xs:documentation>Official status of the debt collection.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="charges" type="amountType">
+				<xs:annotation>
+					<xs:documentation>Accumulated amount of all charges attributed to the creditor.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="externalDocuments" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Documents that go as an attachment to this message.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="externalDocument" type="externalDocumentType" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SrType">
+		<xs:annotation>
+			<xs:documentation>Request status information and suspend, terminate or withdraw the debt collection.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="msgId" type="token40Type">
+				<xs:annotation>
+					<xs:documentation>Unique message identifier by the creditor.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="refData" type="token32Type">
+				<xs:annotation>
+					<xs:documentation>Creditor's case reference.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="action">
+				<xs:annotation>
+					<xs:documentation>info: get status
+undo: withdraw
+stop: suspend
+paid: terminate</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="token16Type">
+						<xs:enumeration value="info"/>
+						<xs:enumeration value="undo"/>
+						<xs:enumeration value="stop"/>
+						<xs:enumeration value="paid"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SaType">
+		<xs:annotation>
+			<xs:documentation>Progress indicator and status information provided by the office.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="msgRef" type="msgRefType">
+				<xs:annotation>
+					<xs:documentation>Message identification.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="msgId" type="token40Type">
+				<xs:annotation>
+					<xs:documentation>Same as msgId in the request message.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="refData" type="token32Type">
+				<xs:annotation>
+					<xs:documentation>Creditor's case reference - same as refData in the request message.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="caseNumber" type="token16Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Official identification number of the debt collection.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="statusInfo" type="statusInfoType">
+				<xs:annotation>
+					<xs:documentation>Official status of the debt collection.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:choice>
+				<xs:element name="actionReport">
+					<xs:annotation>
+						<xs:documentation>Outcome of the requested action.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="action">
+								<xs:annotation>
+									<xs:documentation>The requested action.</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="token16Type">
+										<xs:enumeration value="info"/>
+										<xs:enumeration value="undo"/>
+										<xs:enumeration value="stop"/>
+										<xs:enumeration value="paid"/>
+										<xs:enumeration value="crRq"/>
+										<xs:enumeration value="ccRq"/>
+										<xs:enumeration value="rrRq"/>
+										<xs:enumeration value="pnRq"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="actionStatus">
+								<xs:annotation>
+									<xs:documentation>done: action executed as requested
+rejected: action was refused</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:choice>
+										<xs:element name="accept" fixed="">
+											<xs:simpleType>
+												<xs:restriction base="xs:string"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="reject" fixed="">
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="cost" type="amountType" use="required"/>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+									</xs:choice>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="date">
+								<xs:annotation>
+									<xs:documentation>Last updated.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:simpleContent>
+										<xs:extension base="dateWithoutZoneType"/>
+									</xs:simpleContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="errors">
+					<xs:annotation>
+						<xs:documentation>There was a technical error with the request message.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="error" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="errorCode" type="token32Type">
+											<xs:annotation>
+												<xs:documentation>Specify error by code.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="errorReason" type="string255Type" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Explanation of the error.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PnType">
+		<xs:annotation>
+			<xs:documentation>Notification of payments received by the creditor.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="msgId" type="token40Type">
+				<xs:annotation>
+					<xs:documentation>Unique message identifier by the creditor.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="refData" type="token32Type">
+				<xs:annotation>
+					<xs:documentation>Creditor's case reference.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:choice>
+				<xs:element name="post">
+					<xs:annotation>
+						<xs:documentation>Post a payment.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="amount" type="nonZeroAmountType">
+								<xs:annotation>
+									<xs:documentation>The amount received.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="paymentDate" type="dateWithoutZoneType">
+								<xs:annotation>
+									<xs:documentation>Date of the payment received.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="void">
+					<xs:annotation>
+						<xs:documentation>Cancel a previous payment notice (PN message).</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="msgId" type="token40Type">
+								<xs:annotation>
+									<xs:documentation>msgId of the PN to be cancelled.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PrType">
+		<xs:annotation>
+			<xs:documentation>Notification of payments received by the office.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="msgRef" type="msgRefType">
+				<xs:annotation>
+					<xs:documentation>Message identification.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="refData" type="token32Type">
+				<xs:annotation>
+					<xs:documentation>Creditor's case reference.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="caseNumber" type="token16Type">
+				<xs:annotation>
+					<xs:documentation>Official identification number of the debt collection.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="amount" type="amountType">
+				<xs:annotation>
+					<xs:documentation>Net amount of payment received (the part that will be credited).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="valueDate" type="dateWithoutZoneType">
+				<xs:annotation>
+					<xs:documentation>Valuta.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="statusInfo" type="statusInfoType">
+				<xs:annotation>
+					<xs:documentation>Official status of the debt collection.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InType">
+		<xs:annotation>
+			<xs:documentation>Invoice issued by the office. </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="msgRef" type="msgRefType">
+				<xs:annotation>
+					<xs:documentation>Message identification.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="summary">
+				<xs:annotation>
+					<xs:documentation>Summarised invoice data.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="invoiceId" type="token40Type">
+							<xs:annotation>
+								<xs:documentation>Invoice number.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="issuanceDate" type="dateWithoutZoneType">
+							<xs:annotation>
+								<xs:documentation>Date of invoice.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="dueDate" type="dateWithoutZoneType">
+							<xs:annotation>
+								<xs:documentation>Payment deadline.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="amountTotal">
+							<xs:annotation>
+								<xs:documentation>Invoiced total amount.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="amountType">
+										<xs:attribute name="code" use="required">
+											<xs:annotation>
+												<xs:documentation>debit: amount must be paid
+credit: amount is credited</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="debit"/>
+													<xs:enumeration value="credit"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:attribute>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="invoicedCases">
+				<xs:annotation>
+					<xs:documentation>List of cases in this invoice.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="invoicedCase" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>A particular collection or debt record inquiry (the "case").</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:choice>
+										<xs:element name="refData">
+											<xs:annotation>
+												<xs:documentation>reference to a debt collection.</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="token32Type"/>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="inquiryId">
+											<xs:annotation>
+												<xs:documentation>reference to a debt record inquiry.</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="token32Type"/>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+									</xs:choice>
+									<xs:element name="costItems">
+										<xs:annotation>
+											<xs:documentation>List of cost items that apply to the case.</xs:documentation>
+										</xs:annotation>
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="costItem" maxOccurs="unbounded">
+													<xs:annotation>
+														<xs:documentation>A cost item.</xs:documentation>
+													</xs:annotation>
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="eventDate" type="dateWithoutZoneType">
+																<xs:annotation>
+																	<xs:documentation>When the cost incurred.</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="description" type="string2000Type">
+																<xs:annotation>
+																	<xs:documentation>A description of the cost item.</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="amount">
+																<xs:annotation>
+																	<xs:documentation>Amount of cost item.</xs:documentation>
+																</xs:annotation>
+																<xs:complexType>
+																	<xs:simpleContent>
+																		<xs:extension base="amountType">
+																			<xs:attribute name="code" use="required">
+																				<xs:annotation>
+																					<xs:documentation>debit: amount was debited.
+credit: amount was credited</xs:documentation>
+																				</xs:annotation>
+																				<xs:simpleType>
+																					<xs:restriction base="xs:string">
+																						<xs:enumeration value="debit"/>
+																						<xs:enumeration value="credit"/>
+																					</xs:restriction>
+																				</xs:simpleType>
+																			</xs:attribute>
+																		</xs:extension>
+																	</xs:simpleContent>
+																</xs:complexType>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="invoicedTo">
+				<xs:annotation>
+					<xs:documentation>Particulars and address of the invoice recipient.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="particularType">
+							<xs:sequence>
+								<xs:element name="address" type="addressType"/>
+								<xs:element name="customerId" type="token32Type">
+									<xs:annotation>
+										<xs:documentation>credId or repId of the recipient.</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="payableTo" type="paymentType">
+				<xs:annotation>
+					<xs:documentation>Payment instructions.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="externalDocuments">
+				<xs:annotation>
+					<xs:documentation>Documents that go as an attachment to this message.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="externalDocument" type="externalDocumentType" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SnType">
+		<xs:annotation>
+			<xs:documentation>Special Notification.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice minOccurs="0">
+				<xs:element name="refData" type="token32Type">
+					<xs:annotation>
+						<xs:documentation>Creditor's case reference.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="inquiryId" type="token32Type">
+					<xs:annotation>
+						<xs:documentation>Debt record inquiry reference.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+			<xs:element name="caseNumber" type="token16Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Official identification number of the debt collection.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SnCode" type="token32Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A code supporting automated processing.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="subject" type="string80Type">
+				<xs:annotation>
+					<xs:documentation>The subject of this message.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="contents" type="string2000Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The message text.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="externalDocuments" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Documents that go as an attachment to this message.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="externalDocument" type="externalDocumentType" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DiType">
+		<xs:annotation>
+			<xs:documentation>Request for obtaining the debt records of a person.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="inquiryId" type="token32Type">
+				<xs:annotation>
+					<xs:documentation>Unique inquiry reference.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="inquirer">
+				<xs:annotation>
+					<xs:documentation>The inquiring party.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="particularType">
+							<xs:sequence>
+								<xs:element name="address" type="addressType"/>
+								<xs:element name="credId" type="token32Type">
+									<xs:annotation>
+										<xs:documentation>Must be unique for the inquirer, must not change over time.</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="subject">
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="particularType">
+							<xs:sequence>
+								<xs:element name="address" type="addressType"/>
+							</xs:sequence>
+							<xs:attribute name="subjectId" type="token32Type">
+								<xs:annotation>
+									<xs:documentation>A private identifier of the subject used by the inquirer.</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="externalDocuments" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Documents that go as an attachment to this message.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="externalDocument" type="externalDocumentType" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DrType">
+		<xs:annotation>
+			<xs:documentation>A person's debt record.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="inquiryId">
+				<xs:annotation>
+					<xs:documentation>Inquiry reference - same as in the DI message.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="token32Type"/>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="officeData" type="officeType">
+				<xs:annotation>
+					<xs:documentation>Office information.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="subject" minOccurs="0">
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="particularType">
+							<xs:sequence>
+								<xs:element name="address" type="addressType"/>
+							</xs:sequence>
+							<xs:attribute name="subjectId" type="token32Type">
+								<xs:annotation>
+									<xs:documentation>A private identifier of the subject by the inquirer.</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="response">
+				<xs:annotation>
+					<xs:documentation>the  debt record content</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="data">
+							<xs:annotation>
+								<xs:documentation>The actual debt record.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:choice>
+									<xs:element name="findings">
+										<xs:annotation>
+											<xs:documentation>List of debt record items.</xs:documentation>
+										</xs:annotation>
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="collections" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Registered collections.</xs:documentation>
+													</xs:annotation>
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="collection" maxOccurs="unbounded">
+																<xs:complexType>
+																	<xs:sequence>
+																		<xs:element name="caseNumber" type="token16Type">
+																			<xs:annotation>
+																				<xs:documentation>Official identification number of the debt collection.</xs:documentation>
+																			</xs:annotation>
+																		</xs:element>
+																		<xs:element name="collectionDate" type="dateWithoutZoneType">
+																			<xs:annotation>
+																				<xs:documentation>Date of the debt collection.</xs:documentation>
+																			</xs:annotation>
+																		</xs:element>
+																		<xs:element name="amount" type="nonZeroAmountType">
+																			<xs:annotation>
+																				<xs:documentation>Total amount of the collection.</xs:documentation>
+																			</xs:annotation>
+																		</xs:element>
+																		<xs:element name="creditor">
+																			<xs:annotation>
+																				<xs:documentation>Who the creditor was.</xs:documentation>
+																			</xs:annotation>
+																			<xs:complexType>
+																				<xs:complexContent>
+																					<xs:extension base="particularType">
+																						<xs:sequence>
+																							<xs:element name="address" type="addressType" minOccurs="0"/>
+																						</xs:sequence>
+																					</xs:extension>
+																				</xs:complexContent>
+																			</xs:complexType>
+																		</xs:element>
+																		<xs:element name="representative" minOccurs="0">
+																			<xs:annotation>
+																				<xs:documentation>Who the representative was.</xs:documentation>
+																			</xs:annotation>
+																			<xs:complexType>
+																				<xs:complexContent>
+																					<xs:extension base="particularType">
+																						<xs:sequence>
+																							<xs:element name="address" type="addressType"/>
+																						</xs:sequence>
+																					</xs:extension>
+																				</xs:complexContent>
+																			</xs:complexType>
+																		</xs:element>
+																		<xs:element name="status" type="DrStatusType">
+																			<xs:annotation>
+																				<xs:documentation>Official status of the debt collection at the present moment.</xs:documentation>
+																			</xs:annotation>
+																		</xs:element>
+																	</xs:sequence>
+																</xs:complexType>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+												<xs:element name="COLsFromSeizure" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Registered loss certificates after seizure.</xs:documentation>
+													</xs:annotation>
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="COLfromSeizure" maxOccurs="unbounded">
+																<xs:complexType>
+																	<xs:sequence>
+																		<xs:element name="caseNumber" type="token16Type">
+																			<xs:annotation>
+																				<xs:documentation>Official identification number of the debt collection.</xs:documentation>
+																			</xs:annotation>
+																		</xs:element>
+																		<xs:element name="issuingDate" type="dateWithoutZoneType">
+																			<xs:annotation>
+																				<xs:documentation>Issuing date of the loss certificate.</xs:documentation>
+																			</xs:annotation>
+																		</xs:element>
+																		<xs:element name="amount" type="nonZeroAmountType">
+																			<xs:annotation>
+																				<xs:documentation>Total loss amount.</xs:documentation>
+																			</xs:annotation>
+																		</xs:element>
+																		<xs:element name="creditor">
+																			<xs:annotation>
+																				<xs:documentation>Who the creditor was.</xs:documentation>
+																			</xs:annotation>
+																			<xs:complexType>
+																				<xs:complexContent>
+																					<xs:extension base="particularType">
+																						<xs:sequence>
+																							<xs:element name="address" type="addressType" minOccurs="0"/>
+																						</xs:sequence>
+																					</xs:extension>
+																				</xs:complexContent>
+																			</xs:complexType>
+																		</xs:element>
+																		<xs:element name="representative" minOccurs="0">
+																			<xs:annotation>
+																				<xs:documentation>Who the representative was.</xs:documentation>
+																			</xs:annotation>
+																			<xs:complexType>
+																				<xs:complexContent>
+																					<xs:extension base="particularType">
+																						<xs:sequence>
+																							<xs:element name="address" type="addressType"/>
+																						</xs:sequence>
+																					</xs:extension>
+																				</xs:complexContent>
+																			</xs:complexType>
+																		</xs:element>
+																		<xs:element name="article">
+																			<xs:annotation>
+																				<xs:documentation>The kind of loss certificate, either §115 or §149.</xs:documentation>
+																			</xs:annotation>
+																			<xs:simpleType>
+																				<xs:restriction base="xs:token">
+																					<xs:enumeration value="149"/>
+																					<xs:enumeration value="115"/>
+																				</xs:restriction>
+																			</xs:simpleType>
+																		</xs:element>
+																	</xs:sequence>
+																</xs:complexType>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+												<xs:element name="bankruptcies" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Registered bankruptcies.</xs:documentation>
+													</xs:annotation>
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="bankruptcy" maxOccurs="unbounded">
+																<xs:complexType>
+																	<xs:sequence>
+																		<xs:element name="opening" type="dateWithoutZoneType">
+																			<xs:annotation>
+																				<xs:documentation>Opening of the bankruptcy.</xs:documentation>
+																			</xs:annotation>
+																		</xs:element>
+																		<xs:element name="closing" type="dateWithoutZoneType" minOccurs="0">
+																			<xs:annotation>
+																				<xs:documentation>Closing of the bankruptcy, if actually closed.</xs:documentation>
+																			</xs:annotation>
+																		</xs:element>
+																		<xs:element name="statusInfo" type="string60Type" minOccurs="0">
+																			<xs:annotation>
+																				<xs:documentation>Status of the bankruptcy in plain text.</xs:documentation>
+																			</xs:annotation>
+																		</xs:element>
+																	</xs:sequence>
+																</xs:complexType>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+											<xs:attribute name="serial" type="token16Type" use="required"/>
+											<xs:attribute name="dateIssued" type="dateWithoutZoneType" use="required"/>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="rejection">
+										<xs:annotation>
+											<xs:documentation>The office refuses to deliver the debt records.</xs:documentation>
+										</xs:annotation>
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="rejectionCode">
+													<xs:annotation>
+														<xs:documentation>lowEvidence = inquirer is not entitled to the debt record
+unspecified = any other reason</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="token16Type">
+															<xs:enumeration value="unspecified"/>
+															<xs:enumeration value="lowEvidence"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="rejectionText" type="string2000Type" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Explain the rejection.</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:choice>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="errors">
+							<xs:annotation>
+								<xs:documentation>An exception has occurred, there was something wrong with the DI message.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="error" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="errorCode" type="token32Type">
+													<xs:annotation>
+														<xs:documentation>Specify error by code.</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element name="errorReason" type="string255Type" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Explanation of the error.</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="remarks" type="string2000Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Further information.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="externalDocuments" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Documents that go as an attachment to this message.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="externalDocument" type="externalDocumentType" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SiType">
+		<xs:annotation>
+			<xs:documentation>Statistical Inquiry by the federal office of justice.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="msgId" type="token40Type">
+				<xs:annotation>
+					<xs:documentation>Unique message identifier provided by the federal office of justice.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="beginStat" type="dateWithoutZoneType">
+				<xs:annotation>
+					<xs:documentation>Statistical report start date (inclusive).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="endStat" type="dateWithoutZoneType">
+				<xs:annotation>
+					<xs:documentation>Statistical report end date (inclusive).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SdType">
+		<xs:annotation>
+			<xs:documentation>Statistical Data delivered by the office.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="msgId" type="token40Type">
+				<xs:annotation>
+					<xs:documentation>Return the message identifier of the corresponding SI message.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="beginStat" type="dateWithoutZoneType">
+				<xs:annotation>
+					<xs:documentation>Statistical report start date (inclusive).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="endStat" type="dateWithoutZoneType">
+				<xs:annotation>
+					<xs:documentation>Statistical report end date (inclusive).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="stats">
+				<xs:annotation>
+					<xs:documentation>The statistics.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="cr" type="xs:unsignedInt">
+							<xs:annotation>
+								<xs:documentation>number of CR.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="cc" type="xs:unsignedInt">
+							<xs:annotation>
+								<xs:documentation>number of CC.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="rr" type="xs:unsignedInt">
+							<xs:annotation>
+								<xs:documentation>number of RR.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="di" type="xs:unsignedInt">
+							<xs:annotation>
+								<xs:documentation>number of DI.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="summon" type="xs:unsignedInt">
+							<xs:annotation>
+								<xs:documentation>number of default summons.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="seizure" type="xs:unsignedInt">
+							<xs:annotation>
+								<xs:documentation>number of seizures executed.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="realisation" type="xs:unsignedInt">
+							<xs:annotation>
+								<xs:documentation>number of realisations.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="addressType">
+		<xs:annotation>
+			<xs:documentation>A postal address.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="street1" type="string255Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Street address line 1.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="street2" type="string255Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Street address line 2.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="buildingNo" type="string16Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Building number.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:sequence minOccurs="0">
+				<xs:element name="poBoxNumber" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>PO box number (nothing but the number).</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:unsignedInt">
+							<xs:maxInclusive value="99999999"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="poBoxText" type="token15Type">
+					<xs:annotation>
+						<xs:documentation>PO box line, no number.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+			<xs:element name="zip" type="string16Type">
+				<xs:annotation>
+					<xs:documentation>4-digit Swiss zip code (may be longer and alphanumeric in a foreign address).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="zipCode" type="zipCodeType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>6-digit zip code (Switzerland only).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="city" type="string35Type">
+				<xs:annotation>
+					<xs:documentation>City name.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="country" type="countryCodeType">
+				<xs:annotation>
+					<xs:documentation>ISO 3166-1, alpha-2.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="caseDetailsType">
+		<xs:annotation>
+			<xs:documentation>A classification of the debt collection.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="caseType">
+				<xs:annotation>
+					<xs:documentation>Classify the collection, use "ordinary" by default.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="token16Type">
+						<xs:enumeration value="ordinary"/>
+						<xs:enumeration value="special"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="caseStats" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Class of debt execution: tax, insurance or other.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="token16Type">
+						<xs:enumeration value="tax"/>
+						<xs:enumeration value="insurance"/>
+						<xs:enumeration value="other"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="claimsetType">
+		<xs:annotation>
+			<xs:documentation>The claims.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="principalClaim">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="amount" type="nonZeroAmountType">
+							<xs:annotation>
+								<xs:documentation>The claimed amount.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="reason" type="string640Type">
+							<xs:annotation>
+								<xs:documentation>Specification of the claim reason, up to 640 characters.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="collocation" default="class3" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Collocation class as suggested by the creditor.</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="token16Type">
+									<xs:enumeration value="class1"/>
+									<xs:enumeration value="class2"/>
+									<xs:enumeration value="class3"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="interest" type="interestType" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="subsidiaryClaims" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="subsidiaryClaim" maxOccurs="9">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="amount" type="nonZeroAmountType">
+										<xs:annotation>
+											<xs:documentation>The claimed amount.</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="reason" type="string80Type">
+										<xs:annotation>
+											<xs:documentation>Specification of the claim reason, up to 80 characters.</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="collocation" default="class3" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Collocation class as suggested by the creditor.</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="token16Type">
+												<xs:enumeration value="class1"/>
+												<xs:enumeration value="class2"/>
+												<xs:enumeration value="class3"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="interest" type="interestType" minOccurs="0"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="claimsetScType">
+		<xs:annotation>
+			<xs:documentation>The claims returned in the SC message. Does not contaion collocation data.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="principalClaim">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="amount" type="nonZeroAmountType">
+							<xs:annotation>
+								<xs:documentation>The claimed amount.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="reason" type="string640Type">
+							<xs:annotation>
+								<xs:documentation>Specification of the claim reason, up to 640 characters.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="interest" type="interestType" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="subsidiaryClaims" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="subsidiaryClaim" maxOccurs="9">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="amount" type="nonZeroAmountType">
+										<xs:annotation>
+											<xs:documentation>The claimed amount.</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="reason" type="string80Type">
+										<xs:annotation>
+											<xs:documentation>Specification of the claim reason, up to 80 characters.</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="interest" type="interestType" minOccurs="0"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="companyType">
+		<xs:annotation>
+			<xs:documentation>A company or public organisation.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="uid" type="token16Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>UID, enterprise identifier according to the Swiss statistical office.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="uidStruct" type="uidStructureType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A structured UID according to eCH 0097.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="name" type="string255Type">
+				<xs:annotation>
+					<xs:documentation>Name of the company.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="nameAddon" type="string640Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Addon to the company name.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="legalSeat" type="string35Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The company's legal seat.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="contactPerson" type="string255Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Name of contact person.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="language" type="languageType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Preferred language.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="isRegistered" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>TRUE = company is registered in the Swiss commercial registry.
+FALSE = otherwise.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="phone1" type="string60Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Primary phone number.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="phone2" type="string60Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Other phone number.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="email" type="token100Type" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="creditorCreType">
+		<xs:annotation>
+			<xs:documentation>Creditor data used only in CR and CC novel. The difference is in the invoiceToCre attribute.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="standalone">
+					<xs:annotation>
+						<xs:documentation>The creditor is acting on their own behalf.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="principal">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="particularType">
+											<xs:sequence>
+												<xs:element name="address" type="addressType"/>
+												<xs:element name="credId" type="token32Type">
+													<xs:annotation>
+														<xs:documentation>Unique identifier for the creditor.</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+											</xs:sequence>
+										</xs:extension>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="represented">
+					<xs:annotation>
+						<xs:documentation>There is a representative acting on behalf of the creditor.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="principal">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="particularType">
+											<xs:sequence>
+												<xs:element name="address" type="addressType" minOccurs="0"/>
+												<xs:element name="credId" type="token32Type">
+													<xs:annotation>
+														<xs:documentation>Unique identifier for the creditor.</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+											</xs:sequence>
+										</xs:extension>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="representative">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="particularType">
+											<xs:sequence>
+												<xs:element name="address" type="addressType"/>
+												<xs:element name="repId" type="token32Type">
+													<xs:annotation>
+														<xs:documentation>Unique identifier for the representative.</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+											</xs:sequence>
+										</xs:extension>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="invoiceToCre" type="xs:boolean"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+			<xs:element name="payment" type="paymentType">
+				<xs:annotation>
+					<xs:documentation>payment instructions.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="creditorModType">
+		<xs:annotation>
+			<xs:documentation>Creditor data restricted for CC modified.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="standalone">
+					<xs:annotation>
+						<xs:documentation>The creditor is acting on their own behalf.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="principal">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="particularModType">
+											<xs:sequence>
+												<xs:element name="address" type="addressType"/>
+												<xs:element name="credId" type="token32Type">
+													<xs:annotation>
+														<xs:documentation>Unique identifier for the creditor.</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+											</xs:sequence>
+										</xs:extension>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="represented">
+					<xs:annotation>
+						<xs:documentation>There is a representative acting on behalf of the creditor.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="principal">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="particularModType">
+											<xs:sequence>
+												<xs:element name="address" type="addressType" minOccurs="0"/>
+												<xs:element name="credId" type="token32Type">
+													<xs:annotation>
+														<xs:documentation>Unique identifier for the creditor.</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+											</xs:sequence>
+										</xs:extension>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="representative">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="particularModType">
+											<xs:sequence>
+												<xs:element name="address" type="addressType"/>
+												<xs:element name="repId" type="token32Type">
+													<xs:annotation>
+														<xs:documentation>Unique identifier for the representative.</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+											</xs:sequence>
+										</xs:extension>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+			<xs:element name="payment" type="paymentType">
+				<xs:annotation>
+					<xs:documentation>payment instructions</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="creditorOffType">
+		<xs:annotation>
+			<xs:documentation>Creditor data used in messages by the office. They lack credId and repId.</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:element name="standalone">
+				<xs:annotation>
+					<xs:documentation>The creditor is acting on their own behalf.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="principal">
+							<xs:complexType>
+								<xs:complexContent>
+									<xs:extension base="particularType">
+										<xs:sequence>
+											<xs:element name="address" type="addressType"/>
+										</xs:sequence>
+									</xs:extension>
+								</xs:complexContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="represented">
+				<xs:annotation>
+					<xs:documentation>There is a representative acting on behalf of the creditor.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="principal">
+							<xs:complexType>
+								<xs:complexContent>
+									<xs:extension base="particularType">
+										<xs:sequence>
+											<xs:element name="address" type="addressType" minOccurs="0"/>
+										</xs:sequence>
+									</xs:extension>
+								</xs:complexContent>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="representative">
+							<xs:complexType>
+								<xs:complexContent>
+									<xs:extension base="particularType">
+										<xs:sequence>
+											<xs:element name="address" type="addressType"/>
+										</xs:sequence>
+									</xs:extension>
+								</xs:complexContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="creditorType">
+		<xs:annotation>
+			<xs:documentation>Creditor data used in messages other than CR or CC novel.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="standalone">
+					<xs:annotation>
+						<xs:documentation>The creditor is acting on their own behalf.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="principal">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="particularType">
+											<xs:sequence>
+												<xs:element name="address" type="addressType"/>
+												<xs:element name="credId" type="token32Type">
+													<xs:annotation>
+														<xs:documentation>Unique identifier for the creditor.</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+											</xs:sequence>
+										</xs:extension>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="represented">
+					<xs:annotation>
+						<xs:documentation>There is a representative acting on behalf of the creditor.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="principal">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="particularType">
+											<xs:sequence>
+												<xs:element name="address" type="addressType" minOccurs="0"/>
+												<xs:element name="credId" type="token32Type">
+													<xs:annotation>
+														<xs:documentation>Unique identifier for the creditor.</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+											</xs:sequence>
+										</xs:extension>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="representative">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="particularType">
+											<xs:sequence>
+												<xs:element name="address" type="addressType"/>
+												<xs:element name="repId" type="token32Type">
+													<xs:annotation>
+														<xs:documentation>Unique identifier for the representative.</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+											</xs:sequence>
+										</xs:extension>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+			<xs:element name="payment" type="paymentType">
+				<xs:annotation>
+					<xs:documentation>payment instructions</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="debtorCreType">
+		<xs:annotation>
+			<xs:documentation>Debtor data used in a request to the office.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="principal" type="particularType"/>
+			<xs:sequence>
+				<xs:element name="address" type="addressType"/>
+				<xs:element name="actorId" type="token32Type">
+					<xs:annotation>
+						<xs:documentation>Internal id of the person used by the creditor.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="actorIdOffice" type="token16Type" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Internal id of the person used by the office.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="debtorModType">
+		<xs:annotation>
+			<xs:documentation>Debtor data restricted for CC modified.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="principal" type="particularModType"/>
+			<xs:sequence>
+				<xs:element name="address" type="addressType"/>
+				<xs:element name="actorId" type="token32Type">
+					<xs:annotation>
+						<xs:documentation>Internal id of the person managed by the creditor.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="actorIdOffice" type="token16Type" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Internal id of the person managed by the office.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="debtorOffType">
+		<xs:annotation>
+			<xs:documentation>Debor data returned in office-bound messages.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="principal">
+				<xs:annotation>
+					<xs:documentation>The debtor.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="particularType">
+							<xs:sequence>
+								<xs:element name="address" type="addressType"/>
+								<xs:element name="actorId" type="token32Type">
+									<xs:annotation>
+										<xs:documentation>Internal id of the person used by the creditor.</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="actorIdOffice" type="token16Type">
+									<xs:annotation>
+										<xs:documentation>Internal id of the person used by the office.</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="associates" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A party involved in the collection by their relationship with the debtor.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="associate" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:complexContent>
+									<xs:extension base="particularType">
+										<xs:sequence>
+											<xs:element name="address" type="addressType"/>
+											<xs:element name="role">
+												<xs:annotation>
+													<xs:documentation>Legal relationship with the debtor.</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="token16Type">
+														<xs:enumeration value="spouse"/>
+														<xs:enumeration value="guardian"/>
+														<xs:enumeration value="agent"/>
+														<xs:enumeration value="organ"/>
+														<xs:enumeration value="thirdparty"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:element>
+											<xs:element name="actorIdOffice" type="token16Type">
+												<xs:annotation>
+													<xs:documentation>Internal id of the person used by the office.</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:extension>
+								</xs:complexContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="envelopeType">
+		<xs:annotation>
+			<xs:documentation>The message envelope.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="transactionInfo">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="version">
+							<xs:annotation>
+								<xs:documentation>Schema version.</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="token16Type">
+									<xs:enumeration value="2.2.01"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="usage">
+							<xs:annotation>
+								<xs:documentation>test or production.</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="token16Type">
+									<xs:enumeration value="test"/>
+									<xs:enumeration value="production"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="sender">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="dateSent" type="dateWithoutZoneType">
+							<xs:annotation>
+								<xs:documentation>Date of this message.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="senderId" type="token32Type">
+							<xs:annotation>
+								<xs:documentation>eSchKG network identifier of the sender (sedex ID).</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="senderName" type="string100Type">
+							<xs:annotation>
+								<xs:documentation>Name of the sender.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="system">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="vendor" type="string255Type">
+										<xs:annotation>
+											<xs:documentation>System vendor, e.g. "ACME Ltd."</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="product" type="string255Type">
+										<xs:annotation>
+											<xs:documentation>Product name or brand of the application.</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="releaseInfo" type="string255Type">
+										<xs:annotation>
+											<xs:documentation>Version or release number of the product, e.g. "Release 2.0.49". The automated SanityCheck confirmation report refers this information.</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="senderContact" type="string60Type" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Name of contact person.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="senderPhone" type="string60Type" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Contact phone number.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="senderFax" type="string60Type" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Contact fax number.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="senderEmail" type="token100Type" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Contact email address.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="receiver">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="receiverId" type="token32Type">
+							<xs:annotation>
+								<xs:documentation>eSchKG network identifier of the receiver (sedex ID).</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="externalDocumentType">
+		<xs:annotation>
+			<xs:documentation>A reference to a document that goes as an attachment to the message.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="documentTitle" type="string255Type">
+				<xs:annotation>
+					<xs:documentation>Original document title.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="canonicalName" type="token100Type">
+				<xs:annotation>
+					<xs:documentation>Transposed file name using eSchKG naming rules.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="mimetype" type="token60Type">
+				<xs:annotation>
+					<xs:documentation>The document's MIME type.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="interestType">
+		<xs:annotation>
+			<xs:documentation>Interest details.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="interestRate">
+				<xs:annotation>
+					<xs:documentation>Interest rate, representing a percentage.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:minExclusive value="0"/>
+						<xs:fractionDigits value="5"/>
+						<xs:maxInclusive value="99.99999"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="interestDateFrom" type="dateWithoutZoneType">
+				<xs:annotation>
+					<xs:documentation>Date when interest starts.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="lossType">
+		<xs:annotation>
+			<xs:documentation>The details of a loss certificate.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="lossNumber" type="token16Type">
+				<xs:annotation>
+					<xs:documentation>Identification number of the loss certificate.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="date" type="dateWithoutZoneType">
+				<xs:annotation>
+					<xs:documentation>Issuing date.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="capital" type="amountType">
+				<xs:annotation>
+					<xs:documentation>The total claim.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="interest" type="amountType">
+				<xs:annotation>
+					<xs:documentation>Interest amount as calculated by the office.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="expense" type="amountType">
+				<xs:annotation>
+					<xs:documentation>Cost of the collection.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="apriori" type="amountType">
+				<xs:annotation>
+					<xs:documentation>Partial costs already settled by previous payments.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="avails" type="amountType">
+				<xs:annotation>
+					<xs:documentation>The avails from the sale, including payments received.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="lossAmount" type="nonZeroAmountType">
+				<xs:annotation>
+					<xs:documentation>The amount uncovered after the sale.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="lossKind">
+				<xs:annotation>
+					<xs:documentation>rolling=suitable for another continuation within 6 months (using CC)
+standing=a new collection request is required</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="token16Type">
+						<xs:enumeration value="rolling"/>
+						<xs:enumeration value="standing"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="msgRefType">
+		<xs:annotation>
+			<xs:documentation>Office-bound message identification and correction.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="msgNo">
+				<xs:annotation>
+					<xs:documentation>Message identifier.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="token40Type"/>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="void" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Previous messages are being overridden by this one.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="msgNo" type="token40Type" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>Identifier of the message being overridden.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="legalNote" type="string2000Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Legal note, if deemed necessary by the office (Rechtsmittelbelehrung).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="officeType">
+		<xs:annotation>
+			<xs:documentation>Office information.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="officeName" type="string100Type">
+				<xs:annotation>
+					<xs:documentation>Name of the office.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="officeNameAddon" type="string100Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Add-on to the name.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="officeAddress" type="addressType"/>
+			<xs:element name="payment" type="paymentType">
+				<xs:annotation>
+					<xs:documentation>Payment information.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="particularModType">
+		<xs:annotation>
+			<xs:documentation>A person or company. Used only to specify a change in the CC modified message.</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:element name="physicalPerson">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="gender">
+							<xs:annotation>
+								<xs:documentation>M=male, F=female, U=unknown</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="token16Type">
+									<xs:enumeration value="M"/>
+									<xs:enumeration value="F"/>
+									<xs:enumeration value="U"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="lastName" type="string255Type"/>
+						<xs:element name="lastNameAddon" type="string640Type" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>A long name. Alternatively, the maiden name.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="firstNames" type="string255Type">
+							<xs:annotation>
+								<xs:documentation>Separate multiple names by a single space, like "Maria Katharina".</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="company">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="uid" type="token16Type" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>UID, enterprise identifier according to the Swiss statistical office.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="uidStruct" type="uidStructureType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>A structured UID according to eCH 0097.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="name" type="string255Type">
+							<xs:annotation>
+								<xs:documentation>Name of the company.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="nameAddon" type="string640Type" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>In case of excess name length.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="particularType">
+		<xs:annotation>
+			<xs:documentation>A person or company.</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:element name="physicalPerson" type="personType"/>
+			<xs:element name="company" type="companyType"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="payeePostalAddressType">
+		<xs:annotation>
+			<xs:documentation>Postal address of an account holder in the paymentType.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="street" type="string70Type"/>
+			<xs:element name="buildingNumber" type="string16Type" minOccurs="0"/>
+			<xs:element name="zip" type="string16Type" minOccurs="0"/>
+			<xs:element name="city" type="string35Type"/>
+			<xs:element name="country" type="countryCodeType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="paymentType">
+		<xs:annotation>
+			<xs:documentation>Swiss payment standards
+Customer credit transfer initiation (pain.001)
+ISO 20022
+</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:element name="domestic">
+				<xs:annotation>
+					<xs:documentation>Swiss payment information standards.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="ISR">
+							<xs:annotation>
+								<xs:documentation>Payment type 1.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="payeeISRParticipantNumber" type="isrParticipantNumberType">
+										<xs:annotation>
+											<xs:documentation>Example: 01-10755-7 or 010107557</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="payeeISRReference" type="isrReferenceType"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="IBAN">
+							<xs:annotation>
+								<xs:documentation>Payment type 3.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:choice>
+										<xs:sequence>
+											<xs:element name="payeeIBAN" type="swissIbanType"/>
+											<xs:element name="payeeReference" type="rfReferenceType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Structured creditor reference (ISO 11649)</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+										<xs:sequence>
+											<xs:element name="payeeQRIBAN" type="swissQRIbanType"/>
+											<xs:element name="payeeQRReference" type="isrReferenceType"/>
+										</xs:sequence>
+									</xs:choice>
+									<xs:element name="payeeName" type="string70Type"/>
+									<xs:element name="payeePostalAddress" type="payeePostalAddressType" minOccurs="0"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="foreign">
+				<xs:annotation>
+					<xs:documentation>Foreign payment information standards.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:choice>
+							<xs:element name="SEPA">
+								<xs:annotation>
+									<xs:documentation>Payment type 5: Financial institution is a SEPA participant.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="payeeIBAN" type="ibanType"/>
+										<xs:element name="payeeBIC" type="bicType" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="nonSEPA">
+								<xs:annotation>
+									<xs:documentation>Payment type 6.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:choice>
+											<xs:element name="payeeIBAN" type="ibanType"/>
+											<xs:element name="payeeProprietaryAccount" type="string34Type"/>
+										</xs:choice>
+										<xs:element name="payeeBIC" type="bicType"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:choice>
+						<xs:element name="payeeName" type="string70Type"/>
+						<xs:element name="payeePostalAddress" type="payeePostalAddressType"/>
+						<xs:element name="payeeReference" type="rfReferenceType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Structured creditor reference (ISO 11649)</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="internalAccount">
+				<xs:annotation>
+					<xs:documentation>Private account identifier.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="accountRef" type="string100Type">
+							<xs:annotation>
+								<xs:documentation>A purely private internal reference.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="personType">
+		<xs:annotation>
+			<xs:documentation>A natural person.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="gender">
+				<xs:annotation>
+					<xs:documentation>M=male, F=female, U=unknown</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="token16Type">
+						<xs:enumeration value="M"/>
+						<xs:enumeration value="F"/>
+						<xs:enumeration value="U"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="lastName" type="string255Type"/>
+			<xs:element name="lastNameAddon" type="string640Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A long name. Alternatively, the maiden name.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="firstNames" type="string255Type">
+				<xs:annotation>
+					<xs:documentation>Separate multiple names by a single space, like "Maria Katharina".</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="nationality" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ISO 3166-1, alpha-2</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:token">
+						<xs:length value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:choice>
+				<xs:element name="dateOfBirth" type="dateWithoutZoneType" minOccurs="0"/>
+				<xs:element name="yearOfBirth" type="xs:gYear" minOccurs="0"/>
+			</xs:choice>
+			<xs:element name="language" type="languageType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Preferred language.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="isRegistered" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>TRUE = the person is registered in the Swiss commercial registry.
+FALSE = otherwise.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="phone1" type="string60Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Primary phone number.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="phone2" type="string60Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Other phone number.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="fax" type="string60Type" minOccurs="0"/>
+			<xs:element name="email" type="token100Type" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="statusInfoType">
+		<xs:annotation>
+			<xs:documentation>The status of the collection, reported by the office.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="status" type="statusType">
+				<xs:annotation>
+					<xs:documentation>Status code.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="since" type="dateWithoutZoneType">
+				<xs:annotation>
+					<xs:documentation>Date of last update.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="details" type="string2000Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Optoinal information.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="uidStructureType">
+		<xs:annotation>
+			<xs:documentation>Unique business identification number acc. to eCH-0097</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="uidOrganisationIdCategory">
+				<xs:simpleType>
+					<xs:restriction base="xs:token">
+						<xs:length value="3"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="uidOrganisationId" nillable="true">
+				<xs:simpleType>
+					<xs:restriction base="xs:unsignedInt">
+						<xs:minInclusive value="000000001"/>
+						<xs:maxInclusive value="999999999"/>
+						<xs:totalDigits value="9"/>
+						<xs:fractionDigits value="0"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="amountType">
+		<xs:annotation>
+			<xs:documentation>Monetary amounts, may be zero.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:maxInclusive value="9999999999.99"/>
+			<xs:fractionDigits value="2"/>
+			<xs:minInclusive value="0.00"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="bicType">
+		<xs:annotation>
+			<xs:documentation>Bank iidentifier code according to ISO 9362</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="countryCodeType">
+		<xs:annotation>
+			<xs:documentation>2-character country code according to ISO 3166</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z]{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="dateWithoutZoneType">
+		<xs:annotation>
+			<xs:documentation>Specify Date without time zone information.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:date">
+			<xs:pattern value="[0-9]{4}-[0-9]{2}-[0-9]{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DrStatusType">
+		<xs:annotation>
+			<xs:documentation>Status of the debt collection in a debt record.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="token16Type">
+			<xs:enumeration value="101"/>
+			<xs:enumeration value="102"/>
+			<xs:enumeration value="103"/>
+			<xs:enumeration value="104"/>
+			<xs:enumeration value="105"/>
+			<xs:enumeration value="106"/>
+			<xs:enumeration value="201"/>
+			<xs:enumeration value="202"/>
+			<xs:enumeration value="203"/>
+			<xs:enumeration value="204"/>
+			<xs:enumeration value="205"/>
+			<xs:enumeration value="206"/>
+			<xs:enumeration value="207"/>
+			<xs:enumeration value="209"/>
+			<xs:enumeration value="301"/>
+			<xs:enumeration value="302"/>
+			<xs:enumeration value="303"/>
+			<xs:enumeration value="304"/>
+			<xs:enumeration value="305"/>
+			<xs:enumeration value="306"/>
+			<xs:enumeration value="501"/>
+			<xs:enumeration value="801"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ibanType">
+		<xs:annotation>
+			<xs:documentation>International Bank Account Number</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z]{2}\d{2}[a-zA-Z0-9]{1,30}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="isrParticipantNumberType">
+		<xs:annotation>
+			<xs:documentation>string, 01XXXXXXC or 01-XXXXXX-C</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="(01|03)-[1-9]\d{0,5}-\d{1}|(01|03)\d{7}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="isrReferenceType">
+		<xs:annotation>
+			<xs:documentation>string, ISR-Reference has 27 characters</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{27}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="languageType">
+		<xs:annotation>
+			<xs:documentation>ISO 639-1 limited to Swiss official languages De, Fr, It, and Rm plus English.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="token16Type">
+			<xs:enumeration value="de"/>
+			<xs:enumeration value="fr"/>
+			<xs:enumeration value="it"/>
+			<xs:enumeration value="rm"/>
+			<xs:enumeration value="en"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="nonZeroAmountType">
+		<xs:annotation>
+			<xs:documentation>Monetary amounts, must be greater than zero.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:maxInclusive value="9999999999.99"/>
+			<xs:fractionDigits value="2"/>
+			<xs:minExclusive value="0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="rfReferenceType">
+		<xs:annotation>
+			<xs:documentation>RF reference according to ISO 11646, max 25 characters</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="RF[0-9]{2}[a-zA-Z0-9]{1,21}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="statusType">
+		<xs:annotation>
+			<xs:documentation>Status of the debt collection in office-bound messages other than DR.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="token16Type">
+			<xs:enumeration value="101"/>
+			<xs:enumeration value="102"/>
+			<xs:enumeration value="103"/>
+			<xs:enumeration value="104"/>
+			<xs:enumeration value="105"/>
+			<xs:enumeration value="106"/>
+			<xs:enumeration value="201"/>
+			<xs:enumeration value="202"/>
+			<xs:enumeration value="203"/>
+			<xs:enumeration value="204"/>
+			<xs:enumeration value="205"/>
+			<xs:enumeration value="206"/>
+			<xs:enumeration value="207"/>
+			<xs:enumeration value="209"/>
+			<xs:enumeration value="301"/>
+			<xs:enumeration value="302"/>
+			<xs:enumeration value="303"/>
+			<xs:enumeration value="304"/>
+			<xs:enumeration value="305"/>
+			<xs:enumeration value="306"/>
+			<xs:enumeration value="501"/>
+			<xs:enumeration value="801"/>
+			<xs:enumeration value="901"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="string16Type">
+		<xs:annotation>
+			<xs:documentation>string, maximal length is 16 characters, must not be empty (used in ISO 20022)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="16"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="string34Type">
+		<xs:annotation>
+			<xs:documentation>string, maximal length is 34 characters, must not be empty (used in ISO 20022)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="34"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="string35Type">
+		<xs:annotation>
+			<xs:documentation>string, maximal length is 35 characters, must not be empty (used in ISO 20022)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="35"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="string60Type">
+		<xs:annotation>
+			<xs:documentation>string, maximal length is 60 characters, must not be empty.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="60"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="string70Type">
+		<xs:annotation>
+			<xs:documentation>string, maximal length is 70 characters, must not be empty (used in ISO 20022).</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="70"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="string80Type">
+		<xs:annotation>
+			<xs:documentation>string, maximal length is 80 characters, must not be empty.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="80"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="string100Type">
+		<xs:annotation>
+			<xs:documentation>string, maximal length is 100 characters, must not be empty.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="100"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="string255Type">
+		<xs:annotation>
+			<xs:documentation>string, maximal length is 255 characters, must not be empty.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="255"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="string640Type">
+		<xs:annotation>
+			<xs:documentation>string, maximal length is 640 characters, must not be empty.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="640"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="string2000Type">
+		<xs:annotation>
+			<xs:documentation>string, maximal length is 2000 characters, must not be empty.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="2000"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="swissIbanType">
+		<xs:annotation>
+			<xs:documentation>string, CH9999999XXXXXXXXXXXX CH/LI IBAN without spaces</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="(CH|LI)\d{7}[a-zA-Z0-9]{12}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="swissQRIbanType">
+		<xs:annotation>
+			<xs:documentation>string, CH99YYYYYXXXXXXXXXXXX QR IBAN without spaces, with YYYYY in the range 30000-31999</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="(CH|LI)\d{2}(30|31)\d{3}[a-zA-Z0-9]{12}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="token15Type">
+		<xs:annotation>
+			<xs:documentation>A token, length between 1 and 15 characters.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="15"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="token16Type">
+		<xs:annotation>
+			<xs:documentation>A token, length between 1 and 16 characters.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="16"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="token32Type">
+		<xs:annotation>
+			<xs:documentation>A token, length between 1 and 32 characters.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="32"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="token40Type">
+		<xs:annotation>
+			<xs:documentation>A token, length between 1 and 40 characters.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="40"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="token60Type">
+		<xs:annotation>
+			<xs:documentation>A token, length between 1 and 60 characters.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="60"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="token100Type">
+		<xs:annotation>
+			<xs:documentation>A token, length between 1 and 100 characters.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="100"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="zipCodeType">
+		<xs:annotation>
+			<xs:documentation>6-digit zip code.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedInt">
+			<xs:minInclusive value="100000"/>
+			<xs:maxInclusive value="999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>
