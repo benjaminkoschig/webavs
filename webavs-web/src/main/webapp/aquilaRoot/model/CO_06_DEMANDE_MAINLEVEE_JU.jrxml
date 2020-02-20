@@ -44,9 +44,7 @@
 	<parameter name="P_DEFAULT_MODEL_PATH" isForPrompting="false" class="java.lang.String">
 		<defaultValueExpression ><![CDATA["C:/Documents and Settings/Administrator/My Documents/consultran/projet/globaz/contentieux/workspace/webavs/WebContent/defaultModel"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="P_SUBREPORT_HEADER" isForPrompting="false" class="java.lang.String">
-		<defaultValueExpression ><![CDATA["Header_Caisse.jasper"]]></defaultValueExpression>
-	</parameter>
+	<parameter name="P_SUBREPORT_HEADER" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_SUBREPORT_SIGNATURE" isForPrompting="false" class="java.lang.String">
 		<defaultValueExpression ><![CDATA["Signature_CO2.jasper"]]></defaultValueExpression>
 	</parameter>
