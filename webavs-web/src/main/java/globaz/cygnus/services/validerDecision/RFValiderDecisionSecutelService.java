@@ -15,10 +15,14 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.print.server.JadePrintDocumentContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
 public class RFValiderDecisionSecutelService extends RFValiderDecisionService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(RFValiderDecisionSecutelService.class);
 
     private void chercherDecisionsSecutel(
             RFDecisionJointDemandeJointMotifRefusJointTiersValidationManager decisionJointTiersManager,
@@ -49,22 +53,22 @@ public class RFValiderDecisionSecutelService extends RFValiderDecisionService {
                     transaction.commit();
                 }
             } catch (Exception e1) {
-                e1.printStackTrace();
+                LOG.error(e1.getMessage(), e1);
             } finally {
                 try {
                     transaction.closeTransaction();
                 } catch (Exception e2) {
-                    e2.printStackTrace();
+                    LOG.error(e2.getMessage(), e2);
                 }
             }
         }
     }
 
     public JadePrintDocumentContainer genererDecisionDocument(String dateSurDocument, DocumentData docData,
-            String emailAdress, String idGestionnaire, boolean isMiseEnGed, boolean isSimulation,
-            FWMemoryLog memoryLog, StringBuffer pdfDecisionURL, ArrayList<RFDecisionDocumentData> decisionArray,
-            RFValiderDecisionSecutelProcess process, String idExecutionProcess, BSession session,
-            BTransaction transaction) throws Exception {
+                                                              String emailAdress, String idGestionnaire, boolean isMiseEnGed, boolean isSimulation,
+                                                              FWMemoryLog memoryLog, StringBuffer pdfDecisionURL, ArrayList<RFDecisionDocumentData> decisionArray,
+                                                              RFValiderDecisionSecutelProcess process, String idExecutionProcess, BSession session,
+                                                              BTransaction transaction) throws Exception {
 
         // TopazSystem.getInstance().getDocBuilder().setOpenedDocumentsVisible(true);
 
@@ -98,7 +102,6 @@ public class RFValiderDecisionSecutelService extends RFValiderDecisionService {
                            RFValiderDecisionSecutelProcess process, BSession session, BTransaction transaction) {
 
         JadeLogger.error(process, e.toString());
-        e.printStackTrace();
         memoryLog.logMessage(e.getMessage(), FWMessage.ERREUR, "RFValiderDecisionsProcess.run())");
 
         if (transaction != null) {
@@ -111,7 +114,7 @@ public class RFValiderDecisionSecutelService extends RFValiderDecisionService {
                     .getMessagesInHtml().replaceAll("</br>", "<br>"), null);
 
         } catch (Exception e2) {
-            e2.printStackTrace();
+            LOG.error(e2.getMessage(), e2);
         }
 
     }

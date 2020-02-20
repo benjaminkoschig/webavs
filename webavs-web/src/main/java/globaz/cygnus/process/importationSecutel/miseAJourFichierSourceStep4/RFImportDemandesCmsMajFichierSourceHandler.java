@@ -55,7 +55,7 @@ public class RFImportDemandesCmsMajFichierSourceHandler implements JadeProcessEn
     private static String CARACTER_FORMAT_MONTANT = "0";
     private static String CODE_LIGNE_TRAITEE_PAR_CAVS = "2";
     private static String MONTANT_ZERO = "0.00";
-    public static int NOMBRE_DE_POSITIONS_FORMAT_DERNIERE_LIGNE = 10;
+    public static final int NOMBRE_DE_POSITIONS_FORMAT_DERNIERE_LIGNE = 10;
     private static int NOMBRE_DE_POSITIONS_FORMAT_LIGNE_COURANTE = 7;
 
     public static String getMontantFormatteSurNPositionsDontDeuxDecimales(String montantAPayerNonFormatte,
@@ -98,7 +98,7 @@ public class RFImportDemandesCmsMajFichierSourceHandler implements JadeProcessEn
     private Map<Enum<?>, String> properties = null;
 
     public RFImportDemandesCmsMajFichierSourceHandler(Map<String, String> lignes, List<String[]> logsList,
-            RFMyBigDecimal montantAccepteTotal) {
+                                                      RFMyBigDecimal montantAccepteTotal) {
         super();
         this.lignes = lignes;
         this.logsList = logsList;

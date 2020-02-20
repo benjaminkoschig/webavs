@@ -259,7 +259,6 @@ public class RFImportDemandesCmsPopulation extends JadeProcessPopulationByFileCs
             return getHachageMd5();
 
         } catch (Exception e) {
-            e.printStackTrace();
             JadeProcessCommonUtils.addError(e);
             return null;
         }

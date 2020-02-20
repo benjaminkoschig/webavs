@@ -11,11 +11,15 @@ import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.job.AbstractJadeJob;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.publish.document.JadePublishDocumentInfoProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Date;
 
 public class RFValiderDecisionSecutelProcess extends AbstractJadeJob {
+
+    private static final Logger LOG = LoggerFactory.getLogger(RFValiderDecisionSecutelProcess.class);
 
     private String dateSurDocument = "";
     private DocumentData docData = new DocumentData();
@@ -145,7 +149,7 @@ public class RFValiderDecisionSecutelProcess extends AbstractJadeJob {
             try {
                 RFSetEtatProcessService.setEtatProcessValiderDecision(false, getSession());
             } catch (Exception e2) {
-                e2.printStackTrace();
+                LOG.error(e2.getMessage(), e2);
             }
         }
     }

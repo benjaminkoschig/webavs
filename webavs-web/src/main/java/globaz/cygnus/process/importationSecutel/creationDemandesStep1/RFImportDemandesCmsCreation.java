@@ -33,6 +33,8 @@ import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.smtp.JadeSmtpClient;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -46,6 +48,8 @@ import java.util.Map.Entry;
  */
 public class RFImportDemandesCmsCreation implements JadeProcessStepInterface, JadeProcessStepBeforable,
         JadeProcessStepAfterable, JadeProcessStepInfoCurrentStep, JadeProcessStepInit {
+
+    private static final Logger LOG = LoggerFactory.getLogger(RFImportDemandesCmsCreation.class);
 
     private class ComparateurLogs implements Comparator<String[]> {
         @Override
@@ -79,7 +83,6 @@ public class RFImportDemandesCmsCreation implements JadeProcessStepInterface, Ja
                 secutelDebugLogger.logInfoToDB("ending Secutel step", "Secutel - step 1 - after");
             }
         } catch (Exception e) {
-            e.printStackTrace();
             JadeProcessCommonUtils.addError(e);
         }
     }
@@ -325,12 +328,12 @@ public class RFImportDemandesCmsCreation implements JadeProcessStepInterface, Ja
                         transaction.commit();
                     }
                 } catch (Exception e1) {
-                    e1.printStackTrace();
+                    LOG.error(e1.getMessage(), e1);
                 } finally {
                     try {
                         transaction.closeTransaction();
                     } catch (Exception e2) {
-                        e2.printStackTrace();
+                        LOG.error(e2.getMessage(), e2);
                     }
                 }
             }

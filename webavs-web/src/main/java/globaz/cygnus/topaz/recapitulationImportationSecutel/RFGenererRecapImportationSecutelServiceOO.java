@@ -33,12 +33,16 @@ import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.*;
 
 public class RFGenererRecapImportationSecutelServiceOO {
+
+    private static final Logger LOG = LoggerFactory.getLogger(RFGenererRecapImportationSecutelServiceOO.class);
 
     private static final String CS_DOCUMENT_RECAPITULATION_SECUTEL = IRFCatalogueTexte.CS_LISTE_RECAPITULATIVE_SECUTEL;
     public static final String FICHIER_MODELE_SIGNATURE_CYGNUS = "RF_LISTE_RECAPITULATIVE_SECUTEL";
@@ -331,10 +335,8 @@ public class RFGenererRecapImportationSecutelServiceOO {
             try {
                 sendMailError(e.getMessage());
             } catch (Exception e1) {
-                e1.printStackTrace();
+                LOG.error(e1.getMessage(), e1);
             }
-
-            e.printStackTrace();
             throw new IllegalArgumentException(e
                     + " : RFGenererRecapImportationSecutelServiceOO - creerRecapSecutelDocumentOO");
         }
@@ -514,7 +516,6 @@ public class RFGenererRecapImportationSecutelServiceOO {
                 }
 
             } catch (Exception e) {
-                e.printStackTrace();
                 throw new Exception(e);
             }
         }

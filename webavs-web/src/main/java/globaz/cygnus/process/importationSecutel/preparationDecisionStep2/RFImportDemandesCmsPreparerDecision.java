@@ -55,7 +55,6 @@ public class RFImportDemandesCmsPreparerDecision implements JadeProcessStepInter
                 secutelDebugLogger.logInfoToDB("ending Secutel step", "Secutel - step 2 - after");
             }
         } catch (Exception e) {
-            e.printStackTrace();
             JadeProcessCommonUtils.addError(e);
         }
     }
@@ -118,7 +117,6 @@ public class RFImportDemandesCmsPreparerDecision implements JadeProcessStepInter
                         transactionPreparerDecProcess.commit();
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
                     throw new RFImportationSecutelException(e.getMessage());
                 } finally {
                     terminerProcessPreparerDecision(memoryLog, transactionPreparerDecProcess);
@@ -224,7 +222,6 @@ public class RFImportDemandesCmsPreparerDecision implements JadeProcessStepInter
             JadeThread.logClear();
             RFSetEtatProcessService.setEtatProcessPreparerDecision(false, BSessionUtil.getSessionFromThreadContext());
         } catch (Exception e) {
-            e.printStackTrace();
             memoryLog.logMessage(e.getMessage(), FWMessage.ERREUR,
                     BSessionUtil.getSessionFromThreadContext().getLabel("PROCESS_PREPARER_DECISIONS"));
         }
