@@ -87,7 +87,7 @@ public class Rule417 extends Rule {
      * Charge les droits liée au NSS
      * @param serviceType
      * @param nss
-     * @return
+     * @return List des droits
      * @throws APRuleExecutionException
      */
     private List<APDroitAvecParent> getDroitSansParents(String serviceType, String nss) throws APRuleExecutionException {
@@ -116,7 +116,7 @@ public class Rule417 extends Rule {
      * Vérifie la plausi pour le service interruption 15
      * @param totalDeJours
      * @param droitsSansParents
-     * @return
+     * @return true si la plausi n'est pas satisfaite
      */
     private boolean erreurPlausiService15(int totalDeJours, List<APDroitAvecParent> droitsSansParents) {
 
@@ -139,7 +139,7 @@ public class Rule417 extends Rule {
     /**
      * Vérifie la plausi pour le service interruption 16
      * @param droitsSansParents
-     * @return
+     * @return true si la plausi n'est pas satisfaite
      */
     private boolean erreurPlausiService16(List<APDroitAvecParent> droitsSansParents) {
 
@@ -196,7 +196,7 @@ public class Rule417 extends Rule {
     /**
      * renvoie le nombre de jour de la période
      * @param periode
-     * @return
+     * @return nb jour de la période
      */
     private Integer getNombreJourFromPeriode(JadePeriodWrapper periode) {
         return JadeDateUtil.getNbDaysBetween(periode.getDateDebut(), periode.getDateFin()) + 1;
@@ -238,10 +238,29 @@ public class Rule417 extends Rule {
         }
         int diff = nbJour - Integer.valueOf(droit.getNbrJourSoldes());
         if (lastPeriode != null && diff > 0) {
+            diff = checkRemovePeriode(diff, lastPeriode, droit);
+            lastPeriode = droit.getPeriodes().get(droit.getPeriodes().size()-1);
             JadePeriodWrapper newPeriode = new JadePeriodWrapper(lastPeriode.getDateDebut(), JadeDateUtil.addDays(lastPeriode.getDateFin(), -diff));
             droit.getPeriodes().remove(lastPeriode);
             droit.getPeriodes().add(newPeriode);
         }
+    }
+
+    /**
+     * Méthode récursive pour supprimer les périodes en trop si le nb de jours soldés n'est pas suffisant
+     * @param diff
+     * @param periode
+     * @param droit
+     * @return nb jour restants à retirer aux périodes
+     */
+    private Integer checkRemovePeriode(Integer diff, JadePeriodWrapper periode, APDroitAPGJointTiers droit) {
+        int nbJourLastPeriode = JadeDateUtil.getNbDaysBetween(periode.getDateDebut(), periode.getDateFin()) + 1;
+        if(diff >= nbJourLastPeriode) {
+            diff -= nbJourLastPeriode;
+            droit.getPeriodes().remove(periode);
+            diff = checkRemovePeriode(diff, droit.getPeriodes().get(droit.getPeriodes().size()-1), droit);
+        }
+        return diff;
     }
 
 }
