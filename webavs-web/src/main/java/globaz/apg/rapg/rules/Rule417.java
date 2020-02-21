@@ -199,7 +199,7 @@ public class Rule417 extends Rule {
      * @return nb jour de la période
      */
     private Integer getNombreJourFromPeriode(JadePeriodWrapper periode) {
-        return JadeDateUtil.getNbDaysBetween(periode.getDateDebut(), periode.getDateFin()) + 1;
+        return JadeDateUtil.getNbDayBetween(periode.getDateDebut(), periode.getDateFin()) + 1;
     }
 
     /**
@@ -233,7 +233,7 @@ public class Rule417 extends Rule {
         int nbJour = 0;
         JadePeriodWrapper lastPeriode = null;
         for (JadePeriodWrapper periode : droit.getPeriodes()) {
-            nbJour += JadeDateUtil.getNbDaysBetween(periode.getDateDebut(), periode.getDateFin()) + 1;
+            nbJour += JadeDateUtil.getNbDayBetween(periode.getDateDebut(), periode.getDateFin()) + 1;
             lastPeriode = periode;
         }
         int diff = nbJour - Integer.valueOf(droit.getNbrJourSoldes());
@@ -254,7 +254,7 @@ public class Rule417 extends Rule {
      * @return nb jour restants à retirer aux périodes
      */
     private Integer checkRemovePeriode(Integer diff, JadePeriodWrapper periode, APDroitAPGJointTiers droit) {
-        int nbJourLastPeriode = JadeDateUtil.getNbDaysBetween(periode.getDateDebut(), periode.getDateFin()) + 1;
+        int nbJourLastPeriode = JadeDateUtil.getNbDayBetween(periode.getDateDebut(), periode.getDateFin()) + 1;
         if(diff >= nbJourLastPeriode) {
             diff -= nbJourLastPeriode;
             droit.getPeriodes().remove(periode);
