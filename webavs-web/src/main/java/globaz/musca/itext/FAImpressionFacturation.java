@@ -1,14 +1,25 @@
 package globaz.musca.itext;
 
+import globaz.aquila.service.cataloguetxt.COCatalogueTextesService;
 import globaz.framework.printing.itext.FWIDocumentManager;
 import globaz.framework.printing.itext.exception.FWIException;
+import globaz.framework.util.FWCurrency;
+import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
+import globaz.globall.util.JANumberFormatter;
+import globaz.globall.util.JAUtil;
 import globaz.jade.admin.user.bean.JadeUser;
 import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.musca.db.facturation.FAPassage;
+import globaz.musca.itext.impfactbvrutil.FAImpFactDataSource;
+import globaz.musca.itext.newimpbvrutil.FANewImpFactDataSource;
+import globaz.osiris.db.utils.CAReferenceBVR;
+import globaz.osiris.db.utils.CAReferenceQR;
+
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.StringTokenizer;
 
 /**
@@ -39,6 +50,18 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
     protected FAPassage passage;
     protected globaz.framework.util.FWCurrency totalMontant;
     private Boolean isEbusiness = false;
+
+    protected FAImpFactDataSource currentDataSource = null;
+    protected FANewImpFactDataSource newCurrentDataSource = null;
+    protected CAReferenceQR qrFacture = null;
+    protected FWCurrency tmpCurrency = null;
+    protected boolean reporterMontant = false;
+    protected boolean factureMontantReport = false;
+    protected boolean modeReporterMontantMinime;
+    protected String adresseDebiteur = "";
+    protected boolean factureAvecMontantMinime = false;
+    protected CAReferenceBVR bvr = null;
+
 
     /**
      * Constructor for FAImpressionFacturation.
@@ -157,9 +180,9 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
      * Insérez la description de la méthode ici. Date de création : (07.05.2003 13:06:03)
      * 
      * @return java.lang.String
-     * @param param
+     * @param textString
      *            java.lang.String
-     * @param delim
+     * @param stretchChar
      *            java.lang.String
      */
     public final String getTextStrechedByChar(String textString, String stretchChar) {
@@ -176,7 +199,7 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
      * Insérez la description de la méthode ici. Date de création : (07.05.2003 13:06:03)
      * 
      * @return java.lang.String
-     * @param param
+     * @param textString
      *            java.lang.String
      * @param delim
      *            java.lang.String
@@ -242,7 +265,7 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
     /**
      * Insert the method's description here. Creation date: (20.06.2003 14:23:25)
      * 
-     * @param newFacturImpressionNo
+     * @param newFactureImpressionNo
      *            int
      */
     public final void setFactureImpressionNo(int newFactureImpressionNo) {
@@ -297,4 +320,113 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
         this.isEbusiness = isEbusiness;
     }
 
+    public void initVariableQR() {
+
+        qrFacture.setMontant(Objects.isNull(tmpCurrency)? "" : tmpCurrency.toString());
+
+
+        try {
+            // La monnaie n'est pas géré dans le module Facturation. Par défaut nous mettrons CHF
+            qrFacture.setMonnaie(qrFacture.DEVISE_DEFAUT);
+
+            //qrFacture.setCrePays(qrFacture.getCodePays());
+            qrFacture.recupererIban();
+            if (!qrFacture.genererAdresseDebiteur(currentDataSource.getEnteteFacture().getIdTiers())) {
+                // si l'adresse n'est pas trouvé en DB, alors chargement d'une adresse Combiné
+                qrFacture.setDebfAdressTyp(CAReferenceQR.COMBINE);
+                //
+                qrFacture.setDebfRueOuLigneAdresse1(currentDataSource.getAdressePrincipale());
+            }
+            qrFacture.genererReferenceQRFact(currentDataSource.getEnteteFacture(), isFactureAvecMontantMinime(), reporterMontant);
+
+            // Il n'existe pas pour l'heure actuel d'adresse de créditeur en DB.
+            // Elle est récupérée depuis le catalogue de texte au format Combinée
+            qrFacture.genererCreAdresse();
+            //qrFacture.setDebfRueOuLigneAdresse1(getAdresseDestinataire());
+        } catch (Exception e) {
+            getMemoryLog().logMessage(
+                    "Erreur lors de recherche des élements de la sommation : " + e.getMessage(),
+                    FWMessage.AVERTISSEMENT, this.getClass().getName());
+        }
+
+
+    }
+
+    protected void initCommonVar() {
+
+        tmpCurrency = new FWCurrency(currentDataSource.getEnteteFacture().getTotalFacture());
+
+        if (!(tmpCurrency.isNegative() || tmpCurrency.isZero())) {
+            _initMontant();
+        }
+
+        if (isFactureMontantReport() && modeReporterMontantMinime) {
+            reporterMontant = true;
+        }
+
+        // commencer à écrire les paramètres
+
+        adresseDebiteur = currentDataSource.getAdressePrincipale();
+
+    }
+
+    public void _initMontant() {
+        String montantFacture = JANumberFormatter.deQuote(currentDataSource.getEnteteFacture().getTotalFacture());
+        // convertir le montant en entier (BigInteger)
+        montantSansCentime = JAUtil.createBigDecimal(montantFacture).toBigInteger().toString();
+
+        java.math.BigDecimal montantSansCentimeBig = JAUtil.createBigDecimal(montantSansCentime);
+        // convertir le montant avec centimes en BigDecimal
+        java.math.BigDecimal montantAvecCentimeBig = JAUtil.createBigDecimal(montantFacture);
+
+        // les centimes représentés en entier
+        centimes = montantAvecCentimeBig.subtract(montantSansCentimeBig).toString().substring(2, 4);
+    }
+
+    public boolean isFactureMontantReport() {
+        return factureMontantReport;
+    }
+
+
+    public void setFactureMontantReport(boolean factureMontantReport) {
+        this.factureMontantReport = factureMontantReport;
+    }
+
+    /**
+     * @return
+     */
+    public boolean isModeReporterMontantMinimal() {
+        return modeReporterMontantMinime;
+    }
+
+    /**
+     * Returns the factureAvecMontantMinime.
+     *
+     * @return boolean
+     */
+    public boolean isFactureAvecMontantMinime() {
+        return factureAvecMontantMinime;
+    }
+
+    /**
+     * Sets the factureAvecMontantMinime.
+     *
+     * @param factureAvecMontantMinime
+     *            The factureAvecMontantMinime to set
+     */
+    public void setFactureAvecMontantMinime(boolean factureAvecMontantMinime) {
+        this.factureAvecMontantMinime = factureAvecMontantMinime;
+    }
+
+    /**
+     * Renvoie la référence BVR.
+     *
+     * @return la référence BVR.
+     */
+    public CAReferenceBVR getBvr() {
+        if (bvr == null) {
+            bvr = new CAReferenceBVR();
+        }
+        return bvr;
+    }
 }

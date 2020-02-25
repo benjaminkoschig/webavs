@@ -175,11 +175,11 @@ public class Date implements Comparable<Date> {
     }
 
     /**
-     * Création d'une date à partir d'un objet {@link java.lang.long} La date
+     * Création d'une date à partir d'un objet {@link java.lang.Long} La date
      * est transformé en String avant d'être converti en objet métier date afin
      * d'éviter les problèmes inhérantes aux heures, minutes et secondes de la
      * date.
-     * 
+     *
      * @param date
      */
     public Date(final Long date) {
@@ -796,8 +796,8 @@ public class Date implements Comparable<Date> {
     /**
      * Retourne si la date est entre deux dates
      * 
-     * @param date la plus ancienne
-     * @param date la plus récente
+     * @param oldDate la plus ancienne
+     * @param recentDate la plus récente
      * 
      * @return true si la date est entre les dates passées en paramètre.
      */
@@ -810,8 +810,7 @@ public class Date implements Comparable<Date> {
 
     /**
      * 
-     * @param dateDeDebut
-     * @param dateDeFin
+     * @param dateDeComparaison
      * @return
      */
     public int getNbDaysBetween(Date dateDeComparaison) {

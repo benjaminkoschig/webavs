@@ -229,6 +229,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
             qrFacture.setSession(getSession());
             // Initialisation des variables du document
             initVariableQR(montantTotal);
+
             // Génération du document QR
             qrFacture.initQR(this);
         } else {

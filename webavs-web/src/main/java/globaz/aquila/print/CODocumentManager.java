@@ -57,13 +57,8 @@ import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.tiers.TITiers;
 import java.io.Serializable;
 import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
+
 import net.sf.jasperreports.engine.JRExporterParameter;
 
 /**
@@ -2155,7 +2150,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
         qrFacture.setMonnaie(getCatalogueTextesUtil().texte(getParent(), 3, 2).contains(COCatalogueTextesService.TEXTE_INTROUVABLE)?
                 qrFacture.DEVISE_DEFAUT : getCatalogueTextesUtil().texte(getParent(), 3, 2) );
-        qrFacture.setMontant(montantTotal.toString());
+        qrFacture.setMontant(Objects.isNull(montantTotal)? "" : montantTotal.toString());
 
 
         try {
@@ -2189,4 +2184,9 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     public String getAdresseDestinataire() throws Exception {
         return getAdressePrincipale(destinataireDocument);
     }
+
+    public String getLangueDoc() {
+        return langueDoc;
+    }
+
 }

@@ -1,5 +1,6 @@
 package globaz.musca.itext;
 
+import globaz.aquila.print.COParameter;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.caisse.report.helper.ACaisseReportHelper;
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
@@ -46,6 +47,7 @@ import globaz.osiris.api.APISectionDescriptor;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CASection;
 import globaz.osiris.db.utils.CAReferenceBVR;
+import globaz.osiris.db.utils.CAReferenceQR;
 import globaz.osiris.exceptions.CATechnicalException;
 import globaz.osiris.translation.CACodeSystem;
 import globaz.webavs.common.CommonProperties;
@@ -73,9 +75,9 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
     public final static String NUM_INFOROM_FACTURE_PERIODIQUE = "0293CFA";
     public final static String NUM_INFOROM_FACTURE_PERIODIQUE_PARITAIRE = "0288CFA";
     public final static String NUM_INFOROM_FACTURE_PERIODIQUE_PERSONELLE = "0289CFA";
-    public final static String TEMPLATE_FILENAME = "MUSCA_BVR_1";
-    public final static String TEMPLATE_FILENAME_BVR_NEUTRE = "MUSCA_BVR_NEUTRE";
-    public final static String TEMPLATE_FILENAME4DECSAL = "MUSCA_BVR4DECSAL"; // Template
+    public final static String TEMPLATE_FILENAME = "MUSCA_BVR_1_QR";
+    public final static String TEMPLATE_FILENAME_BVR_NEUTRE = "MUSCA_BVR_NEUTRE_QR";
+    public final static String TEMPLATE_FILENAME4DECSAL = "MUSCA_BVR4DECSAL_QR"; // Template
     private Boolean isEbusiness = false;
 
     public static String getTemplateFilename(FAEnteteFacture entFacture) {
@@ -99,20 +101,17 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
 
     private FAApplication application = null;
     private long buildReportStartTime = 0;
-    private CAReferenceBVR bvr = null;
+
 
     private int countFactures = 0;
-    private FAImpFactDataSource currentDataSource = null;
+
     private ArrayList enteteFactures = null;
     private Boolean envoyerGed = new Boolean(false);
-    private boolean factureAvecMontantMinime = false;
-    private boolean factureMontantReport = false;
     // Va contenir les données à utiliser dans le cadre de la génération des
     // documents
     private IFAImpFactDataSourceProvider impressionFactureDataSourceProvider = null;
     private boolean imprimable = false;
     private int index = 1;
-    private boolean modeReporterMontantMinime;
     private String montantMinimeMax;
     // recherche les valeurs de MUSCA.properties
     private String montantMinimeNeg;
@@ -165,20 +164,10 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
     }
 
     protected void _bvrText() {
-        // initier les variables pour le montant
-        FWCurrency tmpCurrency = new FWCurrency(currentDataSource.getEnteteFacture().getTotalFacture());
-        if (!(tmpCurrency.isNegative() || tmpCurrency.isZero())) {
-            _initMontant();
-        }
 
-        // commencer à écrire les paramètres
-        String adresseDebiteur = "";
-        adresseDebiteur = currentDataSource.getAdressePrincipale();
+
         try {
-            boolean reporterMontant = false;
-            if (isFactureMontantReport() && modeReporterMontantMinime) {
-                reporterMontant = true;
-            }
+
             getBvr().setSession(getSession());
             if (APISection.ID_TYPE_SECTION_BULLETIN_NEUTRE.equals(currentDataSource.getEnteteFacture()
                     .getIdTypeFacture())) {
@@ -191,6 +180,10 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
             } else {
                 getBvr().setBVR(currentDataSource.getEnteteFacture(), isFactureAvecMontantMinime(), reporterMontant);
             }
+
+            // Modification suite à QR-Facture. Choix du footer
+            super.setParametres(COParameter.P_SUBREPORT_QR, getImporter().getImportPath() + "BVR_TEMPLATE.jasper");
+
             super.setParametres(FAImpressionFacture_Param.P_ADRESSE,
                     getBvr().getAdresse(currentDataSource.getEnteteFacture().getISOLangueTiers()));
             super.setParametres(FAImpressionFacture_Param.P_ADRESSECOPY,
@@ -311,18 +304,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
         }
     }
 
-    public void _initMontant() {
-        String montantFacture = JANumberFormatter.deQuote(currentDataSource.getEnteteFacture().getTotalFacture());
-        // convertir le montant en entier (BigInteger)
-        montantSansCentime = JAUtil.createBigDecimal(montantFacture).toBigInteger().toString();
 
-        java.math.BigDecimal montantSansCentimeBig = JAUtil.createBigDecimal(montantSansCentime);
-        // convertir le montant avec centimes en BigDecimal
-        java.math.BigDecimal montantAvecCentimeBig = JAUtil.createBigDecimal(montantFacture);
-
-        // les centimes représentés en entier
-        centimes = montantAvecCentimeBig.subtract(montantSansCentimeBig).toString().substring(2, 4);
-    }
 
     protected void _summaryText() {
         String dateEcheance = "";
@@ -698,7 +680,24 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
             _tableHeader();
         }
         _summaryText();
-        _bvrText();
+
+        // Init montant facture
+        // initier les variables pour le montant
+
+        initCommonVar();
+
+        if (ch.globaz.common.properties.CommonProperties.QR_FACTURE.getBooleanValue()) {
+            // -- QR
+            qrFacture = new CAReferenceQR();
+            qrFacture.setSession(getSession());
+            // Initialisation des variables du document
+            initVariableQR();
+            // Génération du document QR
+            qrFacture.initQR(this);
+        } else {
+            // BVR
+            _bvrText();
+        }
 
         caisseReportHelper.addHeaderParameters(this, headerBean);
 
@@ -746,17 +745,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
         }
     }
 
-    /**
-     * Renvoie la référence BVR.
-     * 
-     * @return la référence BVR.
-     */
-    public CAReferenceBVR getBvr() {
-        if (bvr == null) {
-            bvr = new CAReferenceBVR();
-        }
-        return bvr;
-    }
+
 
     /**
      * 
@@ -906,18 +895,9 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
         return false;
     }
 
-    /**
-     * Returns the factureAvecMontantMinime.
-     * 
-     * @return boolean
-     */
-    public boolean isFactureAvecMontantMinime() {
-        return factureAvecMontantMinime;
-    }
 
-    public boolean isFactureMontantReport() {
-        return factureMontantReport;
-    }
+
+
 
     /**
      * @return
@@ -926,12 +906,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
         return imprimable;
     }
 
-    /**
-     * @return
-     */
-    public boolean isModeReporterMontantMinimal() {
-        return modeReporterMontantMinime;
-    }
+
 
     private boolean isSectionContentieux(CASection section) throws CATechnicalException {
         if (section.hasMotifContentieux(CACodeSystem.CS_RENTIER)
@@ -1111,7 +1086,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
     /**
      * Sets the currentDataSource.getEnteteFacture()List.
      * 
-     * @param currentDataSource
+     * @param entityList
      *            .getEnteteFacture()List The currentDataSource.getEnteteFacture()List to set
      */
     @Override
@@ -1127,20 +1102,6 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
      */
     public void setEnvoyerGed(Boolean boolean1) {
         envoyerGed = boolean1;
-    }
-
-    /**
-     * Sets the factureAvecMontantMinime.
-     * 
-     * @param factureAvecMontantMinime
-     *            The factureAvecMontantMinime to set
-     */
-    public void setFactureAvecMontantMinime(boolean factureAvecMontantMinime) {
-        this.factureAvecMontantMinime = factureAvecMontantMinime;
-    }
-
-    public void setFactureMontantReport(boolean factureMontantReport) {
-        this.factureMontantReport = factureMontantReport;
     }
 
     /**

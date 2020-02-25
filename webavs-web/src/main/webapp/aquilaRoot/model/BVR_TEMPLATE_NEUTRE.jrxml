@@ -28,13 +28,13 @@
 	<reportFont name="OCR" isDefault="false" fontName="3 of 9 Barcode" size="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 	<parameter name="P_ADRESSE" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_ADRESSECOPY" isForPrompting="false" class="java.lang.String"/>
-	<parameter name="P_REFERENCE_X" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REFERENCE" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_COMPTE" isForPrompting="false" class="java.lang.String"/>
-	<parameter name="P_FRANC_X" isForPrompting="false" class="java.lang.String"/>
-	<parameter name="P_CENTIME_X" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_FRANC" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_CENTIME" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_PAR" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_VERSE" isForPrompting="false" class="java.lang.String"/>
-	<parameter name="P_OCR_X" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_OCR" isForPrompting="false" class="java.lang.String"/>
 		<background>
 			<band height="0"  isSplitAllowed="true" >
 			</band>
@@ -88,7 +88,7 @@
 						x="87"
 						y="113"
 						width="72"
-						height="12"
+						height="13"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="textField-2"
@@ -141,89 +141,7 @@
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="OCR-B New Abacus" pdfFontName="OCR-B New Abacus.ttf" size="12" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="true" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_OCR_X}]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Page" hyperlinkType="None" >					<reportElement
-						mode="Transparent"
-						x="19"
-						y="138"
-						width="98"
-						height="15"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="textField-5"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="true"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="true"/>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="NORMAL" fontName="Helvetica" size="11"/>
-					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_FRANC_X}]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Page" hyperlinkType="None" >					<reportElement
-						mode="Transparent"
-						x="129"
-						y="138"
-						width="25"
-						height="15"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="textField-6"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="true"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="true"/>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="NORMAL" fontName="Helvetica" size="11"/>
-					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_CENTIME_X}]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Page" hyperlinkType="None" >					<reportElement
-						mode="Transparent"
-						x="191"
-						y="138"
-						width="98"
-						height="15"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="textField-7"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="true"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_FRANC_X}!=null)]]></printWhenExpression>
-						</reportElement>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="NORMAL" fontName="Helvetica" size="11"/>
-					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_FRANC_X}]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Page" hyperlinkType="None" >					<reportElement
-						mode="Transparent"
-						x="304"
-						y="138"
-						width="22"
-						height="15"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="textField-8"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="true"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="true"/>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="NORMAL" fontName="Helvetica" size="11"/>
-					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_CENTIME_X}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_OCR}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -303,7 +221,7 @@
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font reportFont="NORMAL" fontName="OCR-B New Abacus" isPdfEmbedded ="true"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REFERENCE_X}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REFERENCE}]]></textFieldExpression>
 				</textField>
 			</band>
 		</pageFooter>

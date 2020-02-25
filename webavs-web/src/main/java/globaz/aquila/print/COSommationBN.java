@@ -1,5 +1,6 @@
 package globaz.aquila.print;
 
+import ch.globaz.common.properties.CommonProperties;
 import globaz.aquila.service.taxes.COTaxe;
 import globaz.framework.printing.itext.exception.FWIException;
 import globaz.framework.printing.itext.fill.FWIImportParametre;
@@ -12,6 +13,8 @@ import globaz.osiris.db.bulletinneutre.CAComptabiliserBulletinNeutre;
 import globaz.osiris.db.comptes.CAOperation;
 import globaz.osiris.db.comptes.CAOperationBulletinNeutre;
 import globaz.osiris.db.utils.CAReferenceBVR;
+import globaz.osiris.db.utils.CAReferenceQR;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,7 +33,7 @@ public class COSommationBN extends CODocumentManager {
     public static final int STATE_LETTRE = 1;
     public static final int STATE_VOIE_DROIT = 2;
     public static final String TAXE_SOMMATION_TEST = "15.00";
-    public static final String TEMPLATE_NAME_SOMMATION = "CO_SOMMATION_BN";
+    public static final String TEMPLATE_NAME_SOMMATION = "CO_SOMMATION_BN_QR";
     public static final String TEMPLATE_NAME_VOIE_DROIT = "CO_SOMMATION_BN_VOIE_DROIT";
     public static final String TYPE_DOC_SOMMATION_BN = "5300048";
 
@@ -126,7 +129,19 @@ public class COSommationBN extends CODocumentManager {
 
         initFooterDetail(getParent());
 
-        initBVR();
+        if (CommonProperties.QR_FACTURE.getBooleanValue()) {
+            // -- QR
+            qrFacture = new CAReferenceQR();
+            qrFacture.setSession(getSession());
+            // Initialisation des variables du document
+            initVariableQR(null);
+            qrFacture.setQrNeutre(true);
+            // Génération du document QR
+            qrFacture.initQR(this);
+        } else {
+            // BVR
+            initBVR();
+        }
     }
 
     private void createDataSourceVoiesDroit() throws Exception {
@@ -147,13 +162,6 @@ public class COSommationBN extends CODocumentManager {
 
     }
 
-    /**
-     * @return l'adresse définie dans la section sinon getAdresseString(destinataireDocument)
-     * @throws Exception
-     */
-//    private String getAdresseDestinataire() throws Exception {
-//        return getAdressePrincipale(destinataireDocument);
-//    }
 
     public CAReferenceBVR getBvr() {
         if (bvr == null) {
@@ -180,6 +188,9 @@ public class COSommationBN extends CODocumentManager {
             e.printStackTrace();
         }
         try {
+            // Modification suite à QR-Facture. Choix du footer
+            super.setParametres(COParameter.P_SUBREPORT_QR, getImporter().getImportPath() + "BVR_TEMPLATE_NEUTRE.jasper");
+
             super.setParametres(COParameter.P_ADRESSE, getBvr().getAdresse());
             super.setParametres(COParameter.P_ADRESSECOPY, getBvr().getAdresse());
             super.setParametres(COParameter.P_COMPTE, getBvr().getNumeroCC());// numéro CC

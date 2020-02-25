@@ -373,6 +373,8 @@ public class CASommation_Doc extends FWIScriptDocument {
             JANumberFormatter.fmt(String.valueOf(new BigDecimal(
                     JANumberFormatter.deQuote(sommation.getMontantFacture())).subtract(new BigDecimal(JANumberFormatter
                     .deQuote(sommation.getSection().getPmtCmp())))), true, true, false, 2));
+
+
             super.setParametres(CASommationParam.PARAM_ADRESSE, getAdresseBVR().toString());
             super.setParametres(CASommationParam.PARAM_ADRESSECOPY, getAdresseBVR().toString());
             super.setParametres(CASommationParam.PARAM_REFERENCE, sommation.getReference());

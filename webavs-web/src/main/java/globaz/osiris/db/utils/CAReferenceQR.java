@@ -1,5 +1,7 @@
 package globaz.osiris.db.utils;
 
+import ch.globaz.ij.businessimpl.exception.TechnicalException;
+import globaz.aquila.print.CODocumentManager;
 import globaz.aquila.print.COParameter;
 import globaz.framework.printing.itext.FWIDocumentManager;
 import globaz.framework.printing.itext.fill.FWIImportParametre;
@@ -7,7 +9,9 @@ import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BManager;
 import globaz.globall.util.JABVR;
 import globaz.globall.util.JACalendar;
+import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.osiris.api.APISection;
 import globaz.osiris.exceptions.CATechnicalException;
 import globaz.pyxis.db.adressecourrier.TIAbstractAdresseData;
@@ -88,6 +92,9 @@ public class CAReferenceQR extends AbstractCAReference {
     private String pa1Param = StringUtils.EMPTY;
     private String pa2Param = StringUtils.EMPTY;
 
+    // Boolean qui permet d'activer un QR Neutre
+    private Boolean qrNeutre = false;
+
     private Map<String, String> parameters = new HashMap<>();
 
     // Pour le moment le QR Code est défini en String. Sera modifié par la suite
@@ -124,21 +131,32 @@ public class CAReferenceQR extends AbstractCAReference {
     /**
      * Méthode qui charge les entêtes du documents QR-Facture
      *
-     * @param document
+     * @param documentCO
      */
-    private void initEnteteQR(FWIDocumentManager document) {
-        parameters.put(COParameter.P_SUBREPORT_QR, document.getImporter().getImportPath() + "QR_FACTURE_TEMPLATE.jasper");
-        parameters.put(COParameter.P_TITRE_1, getSession().getLabel("QR_RECEPISSE"));
-        parameters.put(COParameter.P_TITRE_2, getSession().getLabel("QR_SECTION_PAIEMENT"));
-        parameters.put(COParameter.P_POINT_DEPOT, getSession().getLabel("QR_POINT_DEPOT"));
-        parameters.put(COParameter.P_MONNAIE_TITRE, getSession().getLabel("QR_MONNAIE"));
-        parameters.put(COParameter.P_MONTANT_TITRE, getSession().getLabel("MONTANT"));
-        parameters.put(COParameter.P_SUBREPORT_ZONE_INDICATIONS, document.getImporter().getImportPath() + "QR_CODE_ZONE_INDICATIONS.jasper");
-        parameters.put(COParameter.P_SUBREPORT_RECEPISE, document.getImporter().getImportPath() + "QR_CODE_RECEPISE.jasper");
-        parameters.put(COParameter.P_COMPTE_TITRE, getSession().getLabel("QR_COMPTE_PAYABLE"));
-        parameters.put(COParameter.P_PAR_TITRE, getSession().getLabel("QR_PAYABLE_PAR"));
-        parameters.put(COParameter.P_REF_TITRE, getSession().getLabel("REFERENCE"));
-        parameters.put(COParameter.P_INFO_ADD_TITRE, getSession().getLabel("QR_INFO_SUPP"));
+    private void initEnteteQR(FWIDocumentManager documentCO) throws CATechnicalException {
+
+        CODocumentManager document = (CODocumentManager) documentCO;
+
+        try {
+            parameters.put(COParameter.P_SUBREPORT_QR, document.getImporter().getImportPath() + "QR_FACTURE_TEMPLATE.jasper");
+            // QR sur current page. Pour le moment on laisse le QR avec toutes les informations
+            parameters.put(COParameter.P_SUBREPORT_QR_CURRENT_PAGE, document.getImporter().getImportPath() + "QR_FACTURE_TEMPLATE.jasper");
+            parameters.put(COParameter.P_TITRE_1, getSession().getApplication().getLabel("QR_RECEPISSE", document.getLangueDoc()));
+            parameters.put(COParameter.P_TITRE_2, getSession().getApplication().getLabel("QR_SECTION_PAIEMENT", document.getLangueDoc()));
+            parameters.put(COParameter.P_POINT_DEPOT, getSession().getApplication().getLabel("QR_POINT_DEPOT", document.getLangueDoc()));
+            parameters.put(COParameter.P_MONNAIE_TITRE, getSession().getApplication().getLabel("QR_MONNAIE", document.getLangueDoc()));
+            parameters.put(COParameter.P_MONTANT_TITRE, getSession().getApplication().getLabel("MONTANT", document.getLangueDoc()));
+            parameters.put(COParameter.P_SUBREPORT_ZONE_INDICATIONS, document.getImporter().getImportPath() + "QR_CODE_ZONE_INDICATIONS.jasper");
+            parameters.put(COParameter.P_SUBREPORT_RECEPISE, document.getImporter().getImportPath() + "QR_CODE_RECEPISE.jasper");
+            parameters.put(COParameter.P_COMPTE_TITRE, getSession().getApplication().getLabel("QR_COMPTE_PAYABLE", document.getLangueDoc()));
+            parameters.put(COParameter.P_PAR_TITRE, getSession().getApplication().getLabel("QR_PAYABLE_PAR", document.getLangueDoc()));
+            parameters.put(COParameter.P_REF_TITRE, getSession().getApplication().getLabel("REFERENCE", document.getLangueDoc()));
+            parameters.put(COParameter.P_INFO_ADD_TITRE, getSession().getApplication().getLabel("QR_INFO_SUPP", document.getLangueDoc()));
+        } catch (Exception e) {
+            throw new CATechnicalException (e.getMessage());
+        }
+
+
 
 
     }
@@ -150,7 +168,18 @@ public class CAReferenceQR extends AbstractCAReference {
     public void initParamQR() throws CATechnicalException {
         parameters.put(COParameter.P_QR_CODE_PATH, new GenerationQRCode().generateSwissQrCode(generationPayLoad()));
         parameters.put(COParameter.P_MONNAIE, monnaie);
-        parameters.put(COParameter.P_MONTANT, montant);
+        // Si l'on est sur un QR Neutre, dans ce cas, il doit être sans montant ni adresse Debiteur.
+        if (!qrNeutre) {
+            parameters.put(COParameter.P_MONTANT, montant);
+            if (!COMBINE.equals(debfAdressTyp)){
+                parameters.put(COParameter.P_PAR, (debfNom + RETOUR_LIGNE + debfRueOuLigneAdresse1 + ESPACE + debfNumMaisonOuLigneAdresse2 + RETOUR_LIGNE + debfCodePostal + ESPACE + debfLieu).trim());
+            } else {
+                parameters.put(COParameter.P_PAR, (debfRueOuLigneAdresse1 + RETOUR_LIGNE + debfNumMaisonOuLigneAdresse2).trim());
+            }
+        } else {
+            parameters.put(COParameter.P_PAR, "");
+        }
+
         parameters.put(FWIImportParametre.PARAM_REFERENCE, getReference());
         parameters.put(COParameter.P_PARAM_1, pa1Param);
         parameters.put(COParameter.P_PARAM_2, pa2Param);
@@ -159,11 +188,7 @@ public class CAReferenceQR extends AbstractCAReference {
         } else {
             parameters.put(COParameter.P_COMPTE, (compte + RETOUR_LIGNE + creRueOuLigneAdresse1 + creNumMaisonOuLigneAdresse2).trim());
         }
-        if (!COMBINE.equals(debfAdressTyp)){
-            parameters.put(COParameter.P_PAR, (debfNom + RETOUR_LIGNE + debfRueOuLigneAdresse1 + ESPACE + debfNumMaisonOuLigneAdresse2 + RETOUR_LIGNE + debfCodePostal + ESPACE + debfLieu).trim());
-        } else {
-            parameters.put(COParameter.P_PAR, (debfRueOuLigneAdresse1 + RETOUR_LIGNE + debfNumMaisonOuLigneAdresse2).trim());
-        }
+
         parameters.put(COParameter.P_INFO_ADD, (communicationNonStructuree + RETOUR_LIGNE + infoFacture).trim());
     }
 
@@ -188,14 +213,25 @@ public class CAReferenceQR extends AbstractCAReference {
         builder.append((Objects.equals(crefAdressTyp, COMBINE) ? StringUtils.EMPTY : crefCodePostal)).append(CHAR_FIN_LIGNE);
         builder.append((Objects.equals(crefAdressTyp, COMBINE) ? StringUtils.EMPTY : crefLieu)).append(CHAR_FIN_LIGNE);
         builder.append(crefPays).append(CHAR_FIN_LIGNE);
-        builder.append(montant).append(CHAR_FIN_LIGNE);
-        builder.append(monnaie).append(CHAR_FIN_LIGNE);
-        builder.append(debfNom).append(CHAR_FIN_LIGNE);
-        builder.append(debfAdressTyp).append(CHAR_FIN_LIGNE);
-        builder.append(debfRueOuLigneAdresse1).append(CHAR_FIN_LIGNE);
-        builder.append(debfNumMaisonOuLigneAdresse2).append(CHAR_FIN_LIGNE);
-        builder.append((Objects.equals(debfAdressTyp, COMBINE) ? StringUtils.EMPTY : debfCodePostal)).append(CHAR_FIN_LIGNE);
-        builder.append((Objects.equals(debfAdressTyp, COMBINE) ? StringUtils.EMPTY : debfLieu)).append(CHAR_FIN_LIGNE);
+        if (qrNeutre) {
+            builder.append(StringUtils.EMPTY).append(CHAR_FIN_LIGNE);
+            builder.append(monnaie).append(CHAR_FIN_LIGNE);
+            builder.append(StringUtils.EMPTY).append(CHAR_FIN_LIGNE);
+            builder.append(StringUtils.EMPTY).append(CHAR_FIN_LIGNE);
+            builder.append(StringUtils.EMPTY).append(CHAR_FIN_LIGNE);
+            builder.append(StringUtils.EMPTY).append(CHAR_FIN_LIGNE);
+            builder.append(StringUtils.EMPTY).append(CHAR_FIN_LIGNE);
+            builder.append(StringUtils.EMPTY).append(CHAR_FIN_LIGNE);
+        } else {
+            builder.append(montant).append(CHAR_FIN_LIGNE);
+            builder.append(monnaie).append(CHAR_FIN_LIGNE);
+            builder.append(debfNom).append(CHAR_FIN_LIGNE);
+            builder.append(debfAdressTyp).append(CHAR_FIN_LIGNE);
+            builder.append(debfRueOuLigneAdresse1).append(CHAR_FIN_LIGNE);
+            builder.append(debfNumMaisonOuLigneAdresse2).append(CHAR_FIN_LIGNE);
+            builder.append((Objects.equals(debfAdressTyp, COMBINE) ? StringUtils.EMPTY : debfCodePostal)).append(CHAR_FIN_LIGNE);
+            builder.append((Objects.equals(debfAdressTyp, COMBINE) ? StringUtils.EMPTY : debfLieu)).append(CHAR_FIN_LIGNE);
+        }
         builder.append(debfPays).append(CHAR_FIN_LIGNE);
         builder.append(typeReference).append(CHAR_FIN_LIGNE);
         builder.append(getReferenceNonFormatte()).append(CHAR_FIN_LIGNE);
@@ -209,7 +245,7 @@ public class CAReferenceQR extends AbstractCAReference {
     }
 
     /**
-     * Méthode de génération de la référence QR.
+     * Méthode de génération de la référence QR pour Contentieux
      * <p>
      *
      *
@@ -233,6 +269,41 @@ public class CAReferenceQR extends AbstractCAReference {
             JABVR bvr = new JABVR(montant, reference, getNoAdherent());
 
             setReference(bvr.get_ligneReference());
+        }
+    }
+
+    /**
+     * Méthode de génération de la référence QR pour Facturation
+     * <p>
+     *
+     *
+     * @param enteteFacture l'entête facture
+     */
+    public void genererReferenceQRFact(FAEnteteFacture enteteFacture, boolean isFactureAvecMontantMinime, boolean isFactureMontantReport) throws Exception {
+        this.reference = genererNumReference(enteteFacture.getIdRole(), enteteFacture.getIdExterneRole(), false,
+                JadeStringUtil.rightJustifyInteger(enteteFacture.getIdTypeFacture(), 2), enteteFacture.getIdExterneFacture(), null);
+        if (StringUtils.isEmpty(reference)) {
+            this.typeReference = SANS_REF;
+        } else {
+            this.typeReference = IBAN;
+        }
+
+        JABVR bvr = null;
+
+        if (new FWCurrency(enteteFacture.getTotalFacture()).isPositive()
+                && !enteteFacture.getIdModeRecouvrement().equals(FAEnteteFacture.CS_MODE_RECOUVREMENT_DIRECT)) {
+            bvr = new JABVR(JANumberFormatter.deQuote(enteteFacture.getTotalFacture()), reference, getNoAdherent());
+        }
+
+        if (!(new FWCurrency(enteteFacture.getTotalFacture()).isZero() || isFactureAvecMontantMinime || isFactureMontantReport)
+                && (bvr != null)) {
+            if (!enteteFacture.getIdModeRecouvrement().equals(FAEnteteFacture.CS_MODE_RECOUVREMENT_DIRECT)) {
+                setReference(bvr.get_ligneReference());
+            } else {
+                setReference(CAReferenceBVR.REFERENCE_NON_FACTURABLE);
+            }
+        } else {
+            setReference(CAReferenceBVR.REFERENCE_NON_FACTURABLE);
         }
     }
 
@@ -612,4 +683,11 @@ public class CAReferenceQR extends AbstractCAReference {
         this.pa2Param = pa2Param;
     }
 
+    public Boolean getQrNeutre() {
+        return qrNeutre;
+    }
+
+    public void setQrNeutre(Boolean qrNeutre) {
+        this.qrNeutre = qrNeutre;
+    }
 }

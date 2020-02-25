@@ -1,5 +1,6 @@
 package globaz.aquila.print;
 
+import ch.globaz.common.properties.CommonProperties;
 import globaz.aquila.api.ICOEtape;
 import globaz.aquila.db.rdp.CORequisitionPoursuiteUtil;
 import globaz.framework.printing.itext.exception.FWIException;
@@ -10,6 +11,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.util.JANumberFormatter;
 import globaz.globall.util.JAUtil;
 import globaz.osiris.db.utils.CAReferenceBVR;
+import globaz.osiris.db.utils.CAReferenceQR;
 import globaz.osiris.process.interetmanuel.visualcomponent.CAInteretManuelVisualComponent;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -37,7 +39,7 @@ public class CO04ReceptionPaiement extends CODocumentManager {
 
     public static final String REFERENCE_NON_FACTURABLE_DEFAUT = "XXXXXXXXXXXXXXXXXXXXXXXXXXX";
     private static final long serialVersionUID = -1361271953197021651L;
-    private static final String TEMPLATE_NAME = "CO_04_RECEPTION_PAIEMENT_AF_BVR";
+    private static final String TEMPLATE_NAME = "CO_04_RECEPTION_PAIEMENT_AF_BVR_QR";
 
     private List<CAInteretManuelVisualComponent> interetCalcule = null;
 
@@ -192,7 +194,17 @@ public class CO04ReceptionPaiement extends CODocumentManager {
             body.setLength(0);
             getCatalogueTextesUtil().dumpNiveau(getParent(), 4, body, "\n\n");
 
-            initBVR(bvr);
+            if (CommonProperties.QR_FACTURE.getBooleanValue()) {
+                // -- QR
+                qrFacture = new CAReferenceQR();
+                qrFacture.setSession(getSession());
+                // Initialisation des variables du document
+                initVariableQR(bvr);
+                // Génération du document QR
+                qrFacture.initQR(this);
+            } else {
+                initBVR(bvr);
+            }
 
             // formater le pied après détail, les conventions de remplacement pour les paragraphes sont:
             // {0} = délai
@@ -246,6 +258,10 @@ public class CO04ReceptionPaiement extends CODocumentManager {
         bvr.setSession(getSession());
         bvr.setBVR(curContentieux.getSection(), cMontant.toString());
         try {
+            // Modification suite à QR-Facture. Choix du footer
+            super.setParametres(COParameter.P_SUBREPORT_QR, getImporter().getImportPath() + "BVR_TEMPLATE.jasper");
+            super.setParametres(COParameter.P_SUBREPORT_QR_CURRENT_PAGE, getImporter().getImportPath() + "BVR_TEMPLATE_CURRENT_PAGE.jasper");
+
             super.setParametres(FWIImportParametre.PARAM_REFERENCE + "_X",
                     CO04ReceptionPaiement.REFERENCE_NON_FACTURABLE_DEFAUT);
             super.setParametres(COParameter.P_OCR + "_X", CO04ReceptionPaiement.OCRB_DEFAUT);
