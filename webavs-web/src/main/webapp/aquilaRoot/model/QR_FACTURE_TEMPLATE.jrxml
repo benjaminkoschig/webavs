@@ -96,10 +96,10 @@
 				</subreport>
 				<image  scaleImage="FillFrame" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">					<reportElement
 						mode="Transparent"
-						x="190"
-						y="48"
-						width="130"
-						height="130"
+						x="186"
+						y="44"
+						width="137"
+						height="137"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="image-1"

@@ -34,9 +34,9 @@ public class GenerationQRCode {
     /**
      * The edge length of the qrcode inclusive its white border.
      */
-    private static final int QR_CODE_EDGE_SIDE_MM = 45;
+    private static final int QR_CODE_EDGE_SIDE_MM = 46;
 
-    private static final int QR_CODE_EDGE_SIDE_PX = SWISS_CROSS_EDGE_SIDE_PX / SWISS_CROSS_EDGE_SIDE_MM * QR_CODE_EDGE_SIDE_MM;
+    private static final int QR_CODE_EDGE_SIDE_PX = SWISS_CROSS_EDGE_SIDE_PX * QR_CODE_EDGE_SIDE_MM  / SWISS_CROSS_EDGE_SIDE_MM;
 
     public String generateSwissQrCode(String payload) throws CATechnicalException {
 
