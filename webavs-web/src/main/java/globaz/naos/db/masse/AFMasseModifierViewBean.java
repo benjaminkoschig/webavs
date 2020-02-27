@@ -5,6 +5,7 @@ package globaz.naos.db.masse;
 
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.db.BEntity;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
@@ -204,7 +205,7 @@ public class AFMasseModifierViewBean extends BEntity implements FWViewBeanInterf
                     // les
                     // FFPP
                     cotiManager.setOrder("IDEXTERNE");
-                    cotiManager.find();
+                    cotiManager.find(BManager.SIZE_NOLIMIT);
 
                     for (int j = 0; j < cotiManager.size(); j++) {
                         AFCotisation cotisation = (AFCotisation) cotiManager.get(j);
