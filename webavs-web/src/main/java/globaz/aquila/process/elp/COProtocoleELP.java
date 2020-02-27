@@ -1,9 +1,8 @@
-package globaz.aquila.print.list.elp;
+package globaz.aquila.process.elp;
 
 import aquila.ch.eschkg.RcType;
-import aquila.ch.eschkg.ScType;
 import aquila.ch.eschkg.SpType;
-import globaz.aquila.process.elp.COInfoFileELP;
+import globaz.aquila.print.list.elp.*;
 import globaz.globall.util.JACalendar;
 
 import java.util.ArrayList;
@@ -11,14 +10,13 @@ import java.util.List;
 
 public class COProtocoleELP {
 
-    private List<COResultScELP> listCDPnonTraite = new ArrayList<>();
+    private List<COScElpDto> listCDPnonTraite = new ArrayList<>();
     private List<COResultSpELP> listPVnonTraite = new ArrayList<>();
     private List<COResultRcELP> listADBnonTraite = new ArrayList<>();
-    private List<COAbstractResultELP> listMsgIncoherent = new ArrayList<>();
-    private List<COAbstractResultELP> listMsgTraite = new ArrayList<>();
+    private List<COAbstractELP> listMsgIncoherent = new ArrayList<>();
+    private List<COAbstractELP> listMsgTraite = new ArrayList<>();
 
-    public void addnonTraite(ScType scType, COInfoFileELP infos, COMotifMessageELP motif) {
-        COResultScELP result = getResultScELP(scType, infos, motif);
+    public void addnonTraite(COScElpDto result) {
         listCDPnonTraite.add(result);
     }
 
@@ -61,8 +59,7 @@ public class COProtocoleELP {
         listMsgIncoherent.add(result);
     }
 
-    public void addMsgIncoherent(ScType scType, COInfoFileELP infos, COMotifMessageELP motif) {
-        COResultScELP result = getResultScELP(scType, infos, motif);
+    public void addMsgIncoherent(COScElpDto result) {
         listMsgIncoherent.add(result);
     }
 
@@ -76,8 +73,7 @@ public class COProtocoleELP {
         listMsgIncoherent.add(result);
     }
 
-    public void addMsgTraite(ScType scType, COInfoFileELP infos) {
-        COResultScELP result = getResultScELP(scType, infos, null);
+    public void addMsgTraite(COScElpDto result) {
         listMsgTraite.add(result);
     }
 
@@ -99,14 +95,6 @@ public class COProtocoleELP {
         return result;
     }
 
-    private COResultScELP getResultScELP(ScType scType, COInfoFileELP infos, COMotifMessageELP motif) {
-        COResultScELP result = new COResultScELP(scType);
-        result.setDateReception(infos.getDate());
-        result.setFichier(infos.getFichier());
-        result.setMotif(motif);
-        return result;
-    }
-
     private COResultSpELP getResultSpELP(SpType spType, COInfoFileELP infos, COMotifMessageELP motif) {
         COResultSpELP result = new COResultSpELP(spType);
         result.setDateReception(infos.getDate());
@@ -115,11 +103,11 @@ public class COProtocoleELP {
         return result;
     }
 
-    public List<COResultScELP> getListCDPnonTraite() {
+    public List<COScElpDto> getListCDPnonTraite() {
         return listCDPnonTraite;
     }
 
-    public void setListCDPnonTraite(List<COResultScELP> listCDPnonTraite) {
+    public void setListCDPnonTraite(List<COScElpDto> listCDPnonTraite) {
         this.listCDPnonTraite = listCDPnonTraite;
     }
 
@@ -139,19 +127,19 @@ public class COProtocoleELP {
         this.listADBnonTraite = listADBnonTraite;
     }
 
-    public List<COAbstractResultELP> getListMsgIncoherent() {
+    public List<COAbstractELP> getListMsgIncoherent() {
         return listMsgIncoherent;
     }
 
-    public void setListMsgIncoherent(List<COAbstractResultELP> listMsgIncoherent) {
+    public void setListMsgIncoherent(List<COAbstractELP> listMsgIncoherent) {
         this.listMsgIncoherent = listMsgIncoherent;
     }
 
-    public List<COAbstractResultELP> getListMsgTraite() {
+    public List<COAbstractELP> getListMsgTraite() {
         return listMsgTraite;
     }
 
-    public void setListMsgTraite(List<COAbstractResultELP> listMsgTraite) {
+    public void setListMsgTraite(List<COAbstractELP> listMsgTraite) {
         this.listMsgTraite = listMsgTraite;
     }
 

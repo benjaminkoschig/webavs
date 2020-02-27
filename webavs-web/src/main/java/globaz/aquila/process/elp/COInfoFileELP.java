@@ -1,11 +1,17 @@
 package globaz.aquila.process.elp;
 
 import globaz.globall.util.JACalendar;
+import globaz.osiris.external.IntRole;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class COInfoFileELP {
+
+    private static final String NAME_FILE_REGEX = "^(.{10})-(.{3})-(.{9})-(.{1})(.*)";
+    private static final String ROLE_PERSONNEL = "IND";
+    private static final String ROLE_PARITAIRE = "PAR";
+    private static final String ROLE_ADMIN = "ADM";
 
     private String noAffilie;
     private String genreAffiliation;
@@ -14,22 +20,41 @@ public class COInfoFileELP {
     private String date;
     private String fichier;
 
-    private static String NAME_FILE_REGEX = "^(.{10})-(.{3})-(.{9})-(.{1})(.*)";
 
     public static COInfoFileELP getInfosFromFile(String file) {
         Pattern pattern = Pattern.compile(NAME_FILE_REGEX);
         Matcher matcher = pattern.matcher(file);
-        if(!matcher.matches()){
+        if (!matcher.matches()) {
             return null;
         }
         COInfoFileELP info = new COInfoFileELP();
         info.setFichier(file);
         info.setDate(JACalendar.todayJJsMMsAAAA());
-        info.setNoAffilie(matcher.group(0));
-        info.setGenreAffiliation(matcher.group(1));
-        info.setNoSection(matcher.group(2));
-        info.setNbPoursuite(matcher.group(3));
+        info.setNoAffilie(matcher.group(1));
+        String genreAffiliationNum = getGenreAffiliationCS(matcher.group(2));
+        info.setGenreAffiliation(genreAffiliationNum);
+        info.setNoSection(matcher.group(3));
+        info.setNbPoursuite(matcher.group(4));
         return info;
+    }
+
+    private static String getGenreAffiliationCS(String group) {
+        String genreAffiliationCS;
+        switch (group) {
+            case ROLE_PERSONNEL:
+                genreAffiliationCS = IntRole.ROLE_AFFILIE_PERSONNEL;
+                break;
+            case ROLE_PARITAIRE:
+                genreAffiliationCS = IntRole.ROLE_AFFILIE_PARITAIRE;
+                break;
+            case ROLE_ADMIN:
+                genreAffiliationCS = IntRole.ROLE_ADMINISTRATEUR;
+                break;
+            default:
+                genreAffiliationCS = "-1";
+                break;
+        }
+        return genreAffiliationCS;
     }
 
     public String getNoAffilie() {

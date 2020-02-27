@@ -2,6 +2,9 @@ package globaz.aquila.print.list;
 
 import ch.globaz.vulpecula.external.api.poi.AbstractListExcel;
 import globaz.aquila.print.list.elp.*;
+import globaz.aquila.process.elp.COAbstractELP;
+import globaz.aquila.process.elp.COProtocoleELP;
+import globaz.aquila.process.elp.COScElpDto;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
 import org.apache.poi.hssf.usermodel.*;
@@ -21,7 +24,6 @@ import java.util.stream.IntStream;
 public class COResultELPExcel extends AbstractListExcel {
 
     public static final String NUMERO_REFERENCE_INFOROM = "0333GCO";
-    public static final String DATE_FORMAT = "MM.dd.yyyy";
 
     private static final Integer[] HEADER_RGB = {91, 155, 213};
     private static final Integer[] BACK_LIGNE_IMPAIRE_RGB = {221, 235, 247};
@@ -176,14 +178,14 @@ public class COResultELPExcel extends AbstractListExcel {
      */
     public HSSFSheet populateSheet1() {
         initOnglet1();
-        for(COResultScELP result : protocole.getListCDPnonTraite()){
+        for(COScElpDto result : protocole.getListCDPnonTraite()){
             createRow();
             this.createCell(result.getFichier(), getStyleLeft());
             this.createCell(result.getTypemessage().getValue(), getStyleLeft());
-            this.createCell(getDate(result.getDateNotification()), getStyleRight());
+            this.createCell(result.getDateNotification(), getStyleRight());
             this.createCell(result.getDateReception(), getStyleRight());
             this.createCell(result.getNoPoursuite(), getStyleLeft());
-            this.createCell(getDate(result.getOpposition()), getStyleRight());
+            this.createCell(result.getOpposition(), getStyleRight());
             this.createCell(result.getRemarque(), getStyleLeft());
             this.createCell(result.getMotif(getSession()), getStyleLeft());
         }
@@ -198,7 +200,7 @@ public class COResultELPExcel extends AbstractListExcel {
             this.createCell(result.getFichier(), getStyleLeft());
             this.createCell(result.getTypemessage().getValue(), getStyleLeft());
             this.createCell(result.getTypeDeSaisie(getSession()), getStyleLeft());
-            this.createCell(getDate(result.getDateExecution()), getStyleRight());
+            this.createCell(result.getDateExecution(), getStyleRight());
             this.createCell(result.getDateReception(), getStyleRight());
             this.createCell(result.getRemarque(), getStyleLeft());
             this.createCell(result.getMotif(getSession()), getStyleLeft());
@@ -214,7 +216,7 @@ public class COResultELPExcel extends AbstractListExcel {
             this.createCell(result.getFichier(), getStyleLeft());
             this.createCell(result.getTypemessage().getValue(), getStyleLeft());
             this.createCell(result.getNoAbd(), getStyleRight());
-            this.createCell(getDate(result.getDateEtablissement()), getStyleRight());
+            this.createCell(result.getDateEtablissement(), getStyleRight());
             this.createCell(result.getDateReception(), getStyleRight());
             this.createCell(result.getRemarque(), getStyleLeft());
             this.createCell(result.getMotif(getSession()), getStyleLeft());
@@ -225,7 +227,7 @@ public class COResultELPExcel extends AbstractListExcel {
 
     public HSSFSheet populateSheet4() {
         initOnglet4();
-        for(COAbstractResultELP result : protocole.getListMsgIncoherent()){
+        for(COAbstractELP result : protocole.getListMsgIncoherent()){
             createRow();
             this.createCell(result.getFichier(), getStyleLeft());
             this.createCell(result.getTypemessage().getValue(), getStyleLeft());
@@ -237,7 +239,7 @@ public class COResultELPExcel extends AbstractListExcel {
 
     public HSSFSheet populateSheet5() {
         initOnglet5();
-        for(COAbstractResultELP result : protocole.getListMsgTraite()){
+        for(COAbstractELP result : protocole.getListMsgTraite()){
             createRow();
             this.createCell(result.getFichier(), getStyleLeft());
             this.createCell(result.getTypemessage().getValue(), getStyleLeft());
@@ -298,10 +300,6 @@ public class COResultELPExcel extends AbstractListExcel {
 
     private boolean isPair() {
         return getCurrentRow().getRowNum() % 2 == 0;
-    }
-
-    private String getDate(XMLGregorianCalendar calendar) {
-        return calendar == null ? "" : new SimpleDateFormat(DATE_FORMAT).format(calendar.toGregorianCalendar().getTime());
     }
 
     protected HSSFSheet initTitleRow(List<String> colTitles) {

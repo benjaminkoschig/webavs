@@ -1,6 +1,8 @@
 package globaz.aquila.print.list.elp;
 
-public class COResultOtherELP extends COAbstractResultELP {
+import globaz.aquila.process.elp.COAbstractELP;
+
+public class COResultOtherELP extends COAbstractELP {
 
     private COTypeMessageELP type;
 

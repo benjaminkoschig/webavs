@@ -127,12 +127,5 @@ public class CO040SaisirCDP extends COTransitionAction {
         opposition = string;
     }
 
-    /**
-     * @see globaz.aquila.db.access.batch.transition.COTransitionAction#_annuler(globaz.aquila.db.access.poursuite.COContentieux,
-     *      globaz.aquila.db.access.poursuite.COHistorique, globaz.globall.db.BTransaction)
-     */
-    // protected void _annuler(COContentieux contentieux, COHistorique
-    // historique, BTransaction transaction) throws COTransitionException {
-    // }
 
 }

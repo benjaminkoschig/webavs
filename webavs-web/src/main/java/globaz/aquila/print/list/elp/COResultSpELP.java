@@ -4,13 +4,13 @@ import aquila.ch.eschkg.SpType;
 import aquila.ch.eschkg.SpType.Outcome;
 import aquila.ch.eschkg.SpType.Outcome.Seizure;
 import globaz.aquila.db.access.batch.COEtapeInfoConfig;
+import globaz.aquila.process.elp.COAbstractELP;
 import globaz.globall.db.BSession;
 import globaz.globall.parameters.FWParametersUserCode;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Optional;
 
-public class COResultSpELP extends COAbstractResultELP {
+public class COResultSpELP extends COAbstractELP {
 
     SpType spType;
 
@@ -89,12 +89,12 @@ public class COResultSpELP extends COAbstractResultELP {
      *  sinon date de Loss si Loss non null
      *  sinon null
      */
-    public XMLGregorianCalendar getDateExecution() {
+    public String getDateExecution() {
         Optional<Outcome> op = Optional.of(spType.getOutcome());
-        return op.map(Outcome::getSeizure).map(Seizure::getDeed).map(deed -> deed.getSeizureDate()) // Deed
+        return getDate(op.map(Outcome::getSeizure).map(Seizure::getDeed).map(deed -> deed.getSeizureDate()) // Deed
                 .orElse(op.map(Outcome::getSeizure).map(Seizure::getLoss).map(loss -> loss.getDate()) // Loss
                         .orElse(op.map(Outcome::getBankruptcyWarning).map(warn -> warn.getDateOfSummon()) // Warning
-                                .orElse(null))); // Other
+                                .orElse(null)))); // Other
     }
 
 }

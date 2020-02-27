@@ -10,28 +10,28 @@ import globaz.naos.api.IAFAffiliation;
  * @author auteur
  */
 public interface IntRole extends BIEntity {
-    public String PERIODICITE_ANNUELLE = "802004";
-    public String PERIODICITE_MENSUELLE = "802001";
-    public String PERIODICITE_SEMESTRIELLE = "802003";
-    public String PERIODICITE_TRIMESTRIELLE = "802002";
-    public String ROLE_ADMINISTRATEUR = "517041";
-    public String ROLE_ADMINISTRATION = "517003";
-    public String ROLE_AF = "517036";
-    public String ROLE_AFFILIE = "517002";
-    public String ROLE_AFFILIE_PARITAIRE = "517039";
-    public String ROLE_AFFILIE_PERSONNEL = "517040";
-    public String ROLE_AMC = "19170089";
-    public String ROLE_APG = "517033";
-    public String ROLE_ASSURE = "517001";
-    public String ROLE_BANQUE = "517004";
-    public String ROLE_CONTRIBUABLE = "517005";
-    public String ROLE_DEBITEUR = "517090";
-    public String ROLE_FCF = "19170088";
-    public String ROLE_IJAI = "517034";
-    public String ROLE_PCF = "517045";
-    public String ROLE_RENTIER = "517038";
-    public String ROLE_BENEFICIAIRE_PRESTATIONS_CONVENTIONNELLES = "68902001";
-    public String ROLE_ASSOCIATION_PROFESSIONNELLE = "68902003";
+    String PERIODICITE_ANNUELLE = "802004";
+    String PERIODICITE_MENSUELLE = "802001";
+    String PERIODICITE_SEMESTRIELLE = "802003";
+    String PERIODICITE_TRIMESTRIELLE = "802002";
+    String ROLE_ADMINISTRATEUR = "517041";
+    String ROLE_ADMINISTRATION = "517003";
+    String ROLE_AF = "517036";
+    String ROLE_AFFILIE = "517002";
+    String ROLE_AFFILIE_PARITAIRE = "517039";
+    String ROLE_AFFILIE_PERSONNEL = "517040";
+    String ROLE_AMC = "19170089";
+    String ROLE_APG = "517033";
+    String ROLE_ASSURE = "517001";
+    String ROLE_BANQUE = "517004";
+    String ROLE_CONTRIBUABLE = "517005";
+    String ROLE_DEBITEUR = "517090";
+    String ROLE_FCF = "19170088";
+    String ROLE_IJAI = "517034";
+    String ROLE_PCF = "517045";
+    String ROLE_RENTIER = "517038";
+    String ROLE_BENEFICIAIRE_PRESTATIONS_CONVENTIONNELLES = "68902001";
+    String ROLE_ASSOCIATION_PROFESSIONNELLE = "68902003";
 
     /**
      *
@@ -43,7 +43,7 @@ public interface IntRole extends BIEntity {
      * @exception java.lang.Exception
      *                si ???
      */
-    public void checkIdExterneRoleFormat(String idRole, String idExterne) throws java.lang.Exception;
+    void checkIdExterneRoleFormat(String idRole, String idExterne) throws java.lang.Exception;
 
     /**
      * @return
@@ -52,9 +52,9 @@ public interface IntRole extends BIEntity {
      * @param idExterneRole
      *            idExterneRole
      */
-    public String formatIdExterneRole(String idRole, String idExterneRole);
+    String formatIdExterneRole(String idRole, String idExterneRole);
 
-    public IAFAffiliation getAffiliation();
+    IAFAffiliation getAffiliation();
 
     /**
      * Renvoie l'affilié correspondant au numéro en paramètre.
@@ -62,14 +62,14 @@ public interface IntRole extends BIEntity {
      * @param idExterneRole Un numéro d'affilié
      * @return Un objet affilié
      */
-    public IAFAffiliation getAffiliation(String idExterneRole);
+    IAFAffiliation getAffiliation(String idExterneRole);
 
     /**
      * Retourne la date de début d'affiliation au format jj.mm.aaaa En cas de problème retourne ""
      *
      * @return la valeur de la propriété dateDebut
      */
-    public String getDateDebut();
+    String getDateDebut();
 
     /**
      * Retourne la date de début d'affiliation au format jj.mm.aaaa pour un idExterneRole donné En cas de problème
@@ -78,14 +78,14 @@ public interface IntRole extends BIEntity {
      * @param idExterneRole
      * @return la valeur de la propriété dateDebut
      */
-    public String getDateDebut(String idExterneRole);
+    String getDateDebut(String idExterneRole);
 
     /**
      * Retourne la date de début et date de fin d'affiliation au format jj.mm.aaaa En cas de problème retourne "-"
      *
      * @return la valeur de la propriété dateDebutDateFin
      */
-    public String getDateDebutDateFin();
+    String getDateDebutDateFin();
 
     /**
      * Retourne la date de début et date de fin d'affiliation au format jj.mm.aaaa pour un idExterneRole donné En cas de
@@ -94,30 +94,30 @@ public interface IntRole extends BIEntity {
      * @param idExterneRole
      * @return la valeur de la propriété dateDebutDateFin
      */
-    public String getDateDebutDateFin(String idExterneRole);
+    String getDateDebutDateFin(String idExterneRole);
 
     /**
      * Retourne la date de fin d'affiliation au format jj.mm.aaaa En cas de problème retourne ""
      *
      * @return la valeur de la propriété dateFin
      */
-    public String getDateFin();
+    String getDateFin();
 
     /**
      * Retourne la date de fin d'affiliation au format jj.mm.aaaa pour un idExterneRole donné En cas de problème
      * retourne ""
      *
-     * @param idExterneRole
+     * @param idExterne
      * @return la valeur de la propriété dateFin
      */
-    public String getDateFin(String idExterne);
+    String getDateFin(String idExterne);
 
     /**
      * Renvoie la valeur de la propriété description
      *
      * @return la valeur de la propriété description
      */
-    public String getDescription();
+    String getDescription();
 
     /**
      * Renvoie la valeur de la propriété description
@@ -126,14 +126,14 @@ public interface IntRole extends BIEntity {
      * @param codeISOLangue
      *            codeISOLangue
      */
-    public String getDescription(String codeISOLangue);
+    String getDescription(String codeISOLangue);
 
     /**
      * Renvoie la valeur de la propriété idCategorie
      *
      * @return la valeur de la propriété idCategorie
      */
-    public String getIdCategorie();
+    String getIdCategorie();
 
     /**
      * Renvoie la valeur de la propriété idCategorie en fonction de lidExterneRole
@@ -141,32 +141,32 @@ public interface IntRole extends BIEntity {
      * @param idExterneRole
      * @return la valeur de la propriété idCategorie en fonction de lidExterneRole
      */
-    public String getIdCategorie(String idExterneRole);
+    String getIdCategorie(String idExterneRole);
 
     /**
      * Renvoie la valeur de la propriété idExterne
      *
      * @return la valeur de la propriété idExterne
      */
-    public String getIdExterne();
+    String getIdExterne();
 
     /**
      * Renvoie la valeur de la propriété idRole
      *
      * @return la valeur de la propriété idRole
      */
-    public String getIdRole();
+    String getIdRole();
 
     /**
      * Renvoie la valeur de la propriété idTiers
      *
      * @return la valeur de la propriété idTiers
      */
-    public String getIdTiers();
+    String getIdTiers();
 
-    public String getMotifFin();
+    String getMotifFin();
 
-    public String getPeriodicite();
+    String getPeriodicite();
 
     /**
      * Renvoie la valeur de la propriété tiers
@@ -174,12 +174,12 @@ public interface IntRole extends BIEntity {
      * @return la valeur de la propriété tiers
      */
 
-    public IntTiers getTiers();
+    IntTiers getTiers();
 
     /**
      * @return
      */
-    public boolean isOnError();
+    boolean isOnError();
 
     /**
      * @param transaction
@@ -187,14 +187,14 @@ public interface IntRole extends BIEntity {
      * @param idExterne
      * @throws java.lang.Exception
      */
-    public void retrieve(BITransaction transaction, String idRole, String idExterne) throws java.lang.Exception;
+    void retrieve(BITransaction transaction, String idRole, String idExterne) throws java.lang.Exception;
 
     /**
      * @param idRole
      * @param idExterne
      * @throws java.lang.Exception
      */
-    public void retrieve(String idRole, String idExterne) throws java.lang.Exception;
+    void retrieve(String idRole, String idExterne) throws java.lang.Exception;
 
     /**
      * @param idTiers
@@ -202,7 +202,7 @@ public interface IntRole extends BIEntity {
      * @param transaction
      * @throws java.lang.Exception
      */
-    public void retrieve(String idTiers, String idRole, BITransaction transaction) throws java.lang.Exception;
+    void retrieve(String idTiers, String idRole, BITransaction transaction) throws java.lang.Exception;
 
     IAFAffiliation getAffiliationByNumAffAndIDRoleAndIDTiers(String numAff, String idRole, String idTiers);
 }

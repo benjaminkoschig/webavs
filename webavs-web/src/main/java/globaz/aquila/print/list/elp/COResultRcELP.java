@@ -1,11 +1,11 @@
 package globaz.aquila.print.list.elp;
 
 import aquila.ch.eschkg.RcType;
+import globaz.aquila.process.elp.COAbstractELP;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Optional;
 
-public class COResultRcELP extends COAbstractResultELP {
+public class COResultRcELP extends COAbstractELP {
 
     RcType rcType;
 
@@ -30,10 +30,10 @@ public class COResultRcELP extends COAbstractResultELP {
                 .orElse("");
     }
 
-    public XMLGregorianCalendar getDateEtablissement() {
-        return Optional.ofNullable(rcType.getOutcome().getRealised())
+    public String getDateEtablissement() {
+        return getDate(Optional.ofNullable(rcType.getOutcome().getRealised())
                 .map(realised -> realised.getLoss())
-                .map(loss -> loss.getDate()).orElse(null);
+                .map(loss -> loss.getDate()).orElse(null));
     }
 
 }

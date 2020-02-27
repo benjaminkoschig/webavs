@@ -1,9 +1,16 @@
-package globaz.aquila.print.list.elp;
+package globaz.aquila.process.elp;
 
+import globaz.aquila.print.list.elp.COMotifMessageELP;
+import globaz.aquila.print.list.elp.COTypeMessageELP;
 import globaz.globall.db.BSession;
+import org.apache.commons.lang.StringUtils;
 
-public abstract class COAbstractResultELP {
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.text.SimpleDateFormat;
 
+public abstract class COAbstractELP {
+
+    public static final String DATE_FORMAT = "dd.MM.yyyy";
     String fichier;
     COMotifMessageELP motif;
     String dateReception;
@@ -52,4 +59,8 @@ public abstract class COAbstractResultELP {
     public abstract String getRemarque();
 
     public abstract COTypeMessageELP getTypemessage();
+
+    protected String getDate(XMLGregorianCalendar calendar) {
+        return calendar == null ? StringUtils.EMPTY : new SimpleDateFormat(DATE_FORMAT).format(calendar.toGregorianCalendar().getTime());
+    }
 }

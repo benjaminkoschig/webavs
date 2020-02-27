@@ -829,7 +829,7 @@ public class COContentieux extends COBEntity implements ICOContentieuxConstante 
     public String getIdEtapePrecedente() throws Exception {
         String retour = "";
         COHistoriqueService historiqueService = COServiceLocator.getHistoriqueService();
-        COHistorique historique = null;
+        COHistorique historique;
 
         if (!JadeStringUtil.isBlank(getIdEtape())) {
             historique = historiqueService.loadHistorique(getSession(), this, getIdEtape(), new Boolean(false),
