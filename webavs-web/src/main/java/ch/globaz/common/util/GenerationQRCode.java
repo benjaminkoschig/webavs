@@ -1,5 +1,6 @@
-package globaz.osiris.db.utils;
+package ch.globaz.common.util;
 
+import ch.globaz.common.exceptions.CommonTechnicalException;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
@@ -9,7 +10,6 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
-import globaz.osiris.exceptions.CATechnicalException;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -38,7 +38,7 @@ public class GenerationQRCode {
 
     private static final int QR_CODE_EDGE_SIDE_PX = SWISS_CROSS_EDGE_SIDE_PX * QR_CODE_EDGE_SIDE_MM  / SWISS_CROSS_EDGE_SIDE_MM;
 
-    public static String generateSwissQrCode(String payload) throws CATechnicalException {
+    public static String generateSwissQrCode(String payload) {
 
         // generate the qr code from the payload.
         BufferedImage qrCodeImage = generateQrCodeImage(payload);
@@ -52,12 +52,12 @@ public class GenerationQRCode {
             // Save as new file to the target location
             ImageIO.write(combinedQrCodeImage, "PNG", new File(qrCodePath));
         } catch (IOException e) {
-            throw new CATechnicalException("Erreur lors de l'ajout de la croix suisse au QR Code", e);
+            throw new CommonTechnicalException("Erreur lors de l'ajout de la croix suisse au QR Code", e);
         }
         return qrCodePath;
     }
 
-    private static BufferedImage generateQrCodeImage(String payload) throws CATechnicalException {
+    private static BufferedImage generateQrCodeImage(String payload) {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         EnumMap<EncodeHintType, Object> hints = new EnumMap<>(EncodeHintType.class);
         hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
@@ -68,7 +68,7 @@ public class GenerationQRCode {
         try {
             bitMatrix = qrCodeWriter.encode(payload, BarcodeFormat.QR_CODE, QR_CODE_EDGE_SIDE_PX, QR_CODE_EDGE_SIDE_PX, hints);
         } catch (WriterException e) {
-            throw new CATechnicalException("Erreur lors de la création du QR Code", e);
+            throw new CommonTechnicalException("Erreur lors de la création du QR Code", e);
         }
         return MatrixToImageWriter.toBufferedImage(bitMatrix);
     }

@@ -1,6 +1,5 @@
 package globaz.musca.itext;
 
-import globaz.aquila.service.cataloguetxt.COCatalogueTextesService;
 import globaz.framework.printing.itext.FWIDocumentManager;
 import globaz.framework.printing.itext.exception.FWIException;
 import globaz.framework.util.FWCurrency;
@@ -14,8 +13,8 @@ import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.musca.db.facturation.FAPassage;
 import globaz.musca.itext.impfactbvrutil.FAImpFactDataSource;
 import globaz.musca.itext.newimpbvrutil.FANewImpFactDataSource;
-import globaz.osiris.db.utils.CAReferenceBVR;
-import globaz.osiris.db.utils.CAReferenceQR;
+import ch.globaz.common.document.reference.ReferenceBVR;
+import ch.globaz.common.document.reference.ReferenceQR;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -53,14 +52,14 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
 
     protected FAImpFactDataSource currentDataSource = null;
     protected FANewImpFactDataSource newCurrentDataSource = null;
-    protected CAReferenceQR qrFacture = null;
+    protected ReferenceQR qrFacture = null;
     protected FWCurrency tmpCurrency = null;
     protected boolean reporterMontant = false;
     protected boolean factureMontantReport = false;
     protected boolean modeReporterMontantMinime;
     protected String adresseDebiteur = "";
     protected boolean factureAvecMontantMinime = false;
-    protected CAReferenceBVR bvr = null;
+    protected ReferenceBVR bvr = null;
 
 
     /**
@@ -334,7 +333,7 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
             qrFacture.recupererIban();
             if (!qrFacture.genererAdresseDebiteur(currentDataSource.getEnteteFacture().getIdTiers())) {
                 // si l'adresse n'est pas trouvé en DB, alors chargement d'une adresse Combiné
-                qrFacture.setDebfAdressTyp(CAReferenceQR.COMBINE);
+                qrFacture.setDebfAdressTyp(ReferenceQR.COMBINE);
                 //
                 qrFacture.setDebfRueOuLigneAdresse1(currentDataSource.getAdressePrincipale());
             }
@@ -424,9 +423,9 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
      *
      * @return la référence BVR.
      */
-    public CAReferenceBVR getBvr() {
+    public ReferenceBVR getBvr() {
         if (bvr == null) {
-            bvr = new CAReferenceBVR();
+            bvr = new ReferenceBVR();
         }
         return bvr;
     }

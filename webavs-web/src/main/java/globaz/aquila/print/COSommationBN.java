@@ -12,8 +12,8 @@ import globaz.jade.pdf.JadePdfUtil;
 import globaz.osiris.db.bulletinneutre.CAComptabiliserBulletinNeutre;
 import globaz.osiris.db.comptes.CAOperation;
 import globaz.osiris.db.comptes.CAOperationBulletinNeutre;
-import globaz.osiris.db.utils.CAReferenceBVR;
-import globaz.osiris.db.utils.CAReferenceQR;
+import ch.globaz.common.document.reference.ReferenceBVR;
+import ch.globaz.common.document.reference.ReferenceQR;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,7 +37,7 @@ public class COSommationBN extends CODocumentManager {
     public static final String TEMPLATE_NAME_VOIE_DROIT = "CO_SOMMATION_BN_VOIE_DROIT";
     public static final String TYPE_DOC_SOMMATION_BN = "5300048";
 
-    private CAReferenceBVR bvr = null;
+    private ReferenceBVR bvr = null;
     private String dateDelaiPaiement = null;
     private int state = COSommationBN.STATE_IDLE;
 
@@ -131,7 +131,7 @@ public class COSommationBN extends CODocumentManager {
 
         if (CommonProperties.QR_FACTURE.getBooleanValue()) {
             // -- QR
-            qrFacture = new CAReferenceQR();
+            qrFacture = new ReferenceQR();
             qrFacture.setSession(getSession());
             // Initialisation des variables du document
             initVariableQR(null);
@@ -163,9 +163,9 @@ public class COSommationBN extends CODocumentManager {
     }
 
 
-    public CAReferenceBVR getBvr() {
+    public ReferenceBVR getBvr() {
         if (bvr == null) {
-            bvr = new CAReferenceBVR();
+            bvr = new ReferenceBVR();
         }
         return bvr;
     }

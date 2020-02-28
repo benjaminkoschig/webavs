@@ -1,17 +1,19 @@
-package globaz.osiris.db.utils;
+package ch.globaz.common.document.reference;
 
+import ch.globaz.common.exceptions.CommonTechnicalException;
 import globaz.aquila.print.COParameter;
+import ch.globaz.common.util.GenerationQRCode;
 import globaz.framework.printing.itext.FWIDocumentManager;
 import globaz.framework.printing.itext.fill.FWIImportParametre;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BManager;
+import globaz.globall.db.BSession;
 import globaz.globall.util.JABVR;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.osiris.api.APISection;
-import globaz.osiris.exceptions.CATechnicalException;
 import globaz.pyxis.db.adressecourrier.TIAbstractAdresseData;
 import globaz.pyxis.db.adressecourrier.TIAdresseDataManager;
 import org.apache.commons.lang.StringUtils;
@@ -19,11 +21,12 @@ import org.apache.commons.lang.StringUtils;
 import java.util.*;
 
 
-public class CAReferenceQR extends AbstractCAReference {
+public class ReferenceQR extends AbstractReference {
 
+    public static final String DEVISE_DEFAUT = "CHF";
     private static final String CHAR_FIN_LIGNE = "\r\n";
     private static final String CODE_PAYS_DEFAUT = "CH";
-    public static final String DEVISE_DEFAUT = "CHF";
+    private static final String ESPACE = " ";
 
     // Variables à externaliser
     private static final String QR_IBAN = "QRR";
@@ -39,9 +42,7 @@ public class CAReferenceQR extends AbstractCAReference {
 
     public static final String COMBINE = "K";
     public static final String STRUCTURE = "S";
-    private static final String ESPACE = " ";
     // ---------------------- //
-
     private String adresseCopy = StringUtils.EMPTY;
     private String adresseDebiteur = StringUtils.EMPTY;
     private String compte = StringUtils.EMPTY;
@@ -71,8 +72,6 @@ public class CAReferenceQR extends AbstractCAReference {
     private String crefCodePostal = StringUtils.EMPTY;
     private String crefLieu = StringUtils.EMPTY;
     private String crefPays = StringUtils.EMPTY;
-    //
-
 
     private String montant = StringUtils.EMPTY;
     private String monnaie = StringUtils.EMPTY;
@@ -101,7 +100,7 @@ public class CAReferenceQR extends AbstractCAReference {
     // Param de langue du document
     private String langueDoc;
 
-    public CAReferenceQR() {
+    public ReferenceQR() {
         super();
 
         // Init Trailer. Valeur fixe = EPD
@@ -112,7 +111,7 @@ public class CAReferenceQR extends AbstractCAReference {
     }
 
 
-    public FWIDocumentManager initQR(FWIDocumentManager document) throws CATechnicalException {
+    public FWIDocumentManager initQR(FWIDocumentManager document) {
         // Initialisation des entêtes de la QR-Facture
         initEnteteQR(document);
 
@@ -132,7 +131,7 @@ public class CAReferenceQR extends AbstractCAReference {
      *
      * @param document
      */
-    private void initEnteteQR(FWIDocumentManager document) throws CATechnicalException {
+    private void initEnteteQR(FWIDocumentManager document)  {
 
         try {
             parameters.put(COParameter.P_SUBREPORT_QR, document.getImporter().getImportPath() + "QR_FACTURE_TEMPLATE.jasper");
@@ -150,7 +149,7 @@ public class CAReferenceQR extends AbstractCAReference {
             parameters.put(COParameter.P_REF_TITRE, getSession().getApplication().getLabel("REFERENCE", langueDoc));
             parameters.put(COParameter.P_INFO_ADD_TITRE, getSession().getApplication().getLabel("QR_INFO_SUPP", langueDoc));
         } catch (Exception e) {
-            throw new CATechnicalException ("Problème à l'initialisation des entêtes QR : ", e);
+            throw new CommonTechnicalException ("Problème à l'initialisation des entêtes QR : ", e);
         }
 
 
@@ -162,7 +161,7 @@ public class CAReferenceQR extends AbstractCAReference {
      * Méthode qui charge les paramètres variables de la QR-Facture
      *
      */
-    public void initParamQR() throws CATechnicalException {
+    public void initParamQR()  {
         parameters.put(COParameter.P_QR_CODE_PATH, GenerationQRCode.generateSwissQrCode(generationPayLoad()));
         parameters.put(COParameter.P_MONNAIE, monnaie);
         // Si l'on est sur un QR Neutre, dans ce cas, il doit être sans montant ni adresse Debiteur.
@@ -297,10 +296,10 @@ public class CAReferenceQR extends AbstractCAReference {
             if (!enteteFacture.getIdModeRecouvrement().equals(FAEnteteFacture.CS_MODE_RECOUVREMENT_DIRECT)) {
                 setReference(bvr.get_ligneReference());
             } else {
-                setReference(CAReferenceBVR.REFERENCE_NON_FACTURABLE);
+                setReference(REFERENCE_NON_FACTURABLE);
             }
         } else {
-            setReference(CAReferenceBVR.REFERENCE_NON_FACTURABLE);
+            setReference(REFERENCE_NON_FACTURABLE);
         }
     }
 

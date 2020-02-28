@@ -7,7 +7,7 @@ import globaz.aquila.db.access.poursuite.COHistorique;
 import globaz.caisse.report.helper.ICaisseReportHelper;
 import globaz.framework.printing.itext.exception.FWIException;
 import globaz.globall.db.BSession;
-import globaz.osiris.db.utils.CAReferenceBVR;
+import ch.globaz.common.document.reference.ReferenceBVR;
 import globaz.osiris.external.IntTiers;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 
@@ -37,7 +37,7 @@ public class CO03ARetraitOpposition extends CODocumentManager {
     // ~ Instance fields
     // ------------------------------------------------------------------------------------------------
 
-    private CAReferenceBVR bvr = null;
+    private ReferenceBVR bvr = null;
     private int state = CO03ARetraitOpposition.STATE_IDLE;
 
     // ~ Constructors
@@ -246,9 +246,9 @@ public class CO03ARetraitOpposition extends CODocumentManager {
      * 
      * @return la référence BVR.
      */
-    public CAReferenceBVR getBvr() {
+    public ReferenceBVR getBvr() {
         if (bvr == null) {
-            bvr = new CAReferenceBVR();
+            bvr = new ReferenceBVR();
         }
         return bvr;
     }

@@ -31,7 +31,6 @@ import globaz.jade.log.JadeLogger;
 import globaz.musca.application.FAApplication;
 import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.musca.db.facturation.FAPassage;
-import globaz.musca.itext.newimpbvrutil.FANewImpFactDataSource;
 import globaz.musca.itext.newimpbvrutil.FANewImpFactDataSourceProviderFactory;
 import globaz.musca.itext.newimpbvrutil.FANewImpFactPropertiesProvider;
 import globaz.musca.itext.newimpbvrutil.IFANewImpFactDataSourceProvider;
@@ -42,8 +41,7 @@ import globaz.osiris.api.APISection;
 import globaz.osiris.api.APISectionDescriptor;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CASection;
-import globaz.osiris.db.utils.CAReferenceBVR;
-import globaz.osiris.db.utils.CAReferenceQR;
+import ch.globaz.common.document.reference.ReferenceQR;
 import globaz.osiris.exceptions.CATechnicalException;
 import globaz.osiris.translation.CACodeSystem;
 import globaz.webavs.common.CommonProperties;
@@ -611,7 +609,7 @@ public class FANewImpressionFacture_BVR_Doc extends FAImpressionFacturation {
 
         if (ch.globaz.common.properties.CommonProperties.QR_FACTURE.getBooleanValue()) {
             // -- QR
-            qrFacture = new CAReferenceQR();
+            qrFacture = new ReferenceQR();
             qrFacture.setSession(getSession());
             // Initialisation des variables du document
             initVariableQR();

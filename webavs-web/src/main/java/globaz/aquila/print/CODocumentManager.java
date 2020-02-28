@@ -48,7 +48,7 @@ import globaz.osiris.db.comptes.CATypeOperationManager;
 import globaz.osiris.db.comptes.extrait.CAExtraitCompte;
 import globaz.osiris.db.comptes.extrait.CAExtraitCompteManager;
 import globaz.osiris.db.interets.CARubriqueSoumiseInteretManager;
-import globaz.osiris.db.utils.CAReferenceQR;
+import ch.globaz.common.document.reference.ReferenceQR;
 import globaz.osiris.external.IntRole;
 import globaz.osiris.external.IntTiers;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
@@ -77,7 +77,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
      * 
      */
     private static final long serialVersionUID = 1L;
-    public CAReferenceQR qrFacture = null;
+    public ReferenceQR qrFacture = null;
 
     /**
      * <H1>Description</H1>
@@ -2148,7 +2148,9 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     /**
      *
-     * @param montantTotal
+     * Initialisation la QR facture
+     *
+     * @param montantTotal : le montant de la facture
      */
     public void initVariableQR(FWCurrency montantTotal) {
 
@@ -2162,7 +2164,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
             qrFacture.recupererIban();
             if (!qrFacture.genererAdresseDebiteur(curContentieux.getCompteAnnexe().getIdTiers())) {
                 // si l'adresse n'est pas trouvé en DB, alors chargement d'une adresse Combiné
-                qrFacture.setDebfAdressTyp(CAReferenceQR.COMBINE);
+                qrFacture.setDebfAdressTyp(ReferenceQR.COMBINE);
                 qrFacture.setDebfRueOuLigneAdresse1(getAdresseDestinataire());
             }
             qrFacture.genererReferenceQR(curContentieux.getSection());
@@ -2188,8 +2190,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     }
 
     /**
-     *
-     * @return
+     * @return La langue du documet
      */
     public String getLangueDoc() {
         return langueDoc;

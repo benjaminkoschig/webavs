@@ -3,7 +3,7 @@ package globaz.osiris.client.cfc.contentieux;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.api.BIDocument;
 import globaz.globall.db.BTransaction;
-import globaz.osiris.db.utils.CAReferenceBVR;
+import ch.globaz.common.document.reference.ReferenceBVR;
 import globaz.osiris.print.itext.CADocumentContentieux;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
@@ -17,7 +17,7 @@ public class CFPremierRappel extends CADocumentContentieux {
      * 
      */
     private static final long serialVersionUID = 1L;
-    CAReferenceBVR bvr = null;
+    ReferenceBVR bvr = null;
     private String centimes = new String();
     private String civilite = new String();
     private String dateEcheance = new String();
@@ -141,9 +141,9 @@ public class CFPremierRappel extends CADocumentContentieux {
      * 
      * @return la référence BVR.
      */
-    public CAReferenceBVR getBvr() {
+    public ReferenceBVR getBvr() {
         if (bvr == null) {
-            bvr = new CAReferenceBVR();
+            bvr = new ReferenceBVR();
         }
         return bvr;
     }

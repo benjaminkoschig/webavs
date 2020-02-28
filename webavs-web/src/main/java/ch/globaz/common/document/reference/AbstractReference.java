@@ -1,5 +1,7 @@
-package globaz.osiris.db.utils;
+package ch.globaz.common.document.reference;
 
+import ch.globaz.common.exceptions.CommonBusinessException;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.ICTListeTextes;
 import globaz.babel.api.ICTTexte;
@@ -10,8 +12,6 @@ import globaz.musca.itext.FAImpressionFacturation;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CACompteAnnexeManager;
-import globaz.osiris.exceptions.CABusinessException;
-import globaz.osiris.exceptions.CATechnicalException;
 import globaz.osiris.parser.IntReferenceBVRParser;
 import org.apache.log4j.Logger;
 
@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public abstract class AbstractCAReference {
+public abstract class AbstractReference {
 
     public static final String REFERENCE_NON_FACTURABLE = "XXXXXXXXXXXXXXXXX";
     public static final String TEXTE_INTROUVABLE = "[TEXTE INTROUVABLE]";
@@ -31,7 +31,7 @@ public abstract class AbstractCAReference {
     private static final String DOMAINE_FACTURATION = FAImpressionFacturation.DOMAINE_FACTURATION;
     private static final String TYPE_FACTURE = FAImpressionFacturation.TYPE_FACTURE;
 
-    private static final Logger LOGGER = Logger.getLogger(AbstractCAReference.class);
+    private static final Logger LOGGER = Logger.getLogger(AbstractReference.class);
 
     private static final int MAX_LENGTH_NUM_AFFILIE = 13;
     private static final int MAX_LENGTH_REFERENCE = 26; // +1 du modulo de contrôle = les 27 positions
@@ -45,8 +45,8 @@ public abstract class AbstractCAReference {
     private BSession session;
     private Map documents;
 
-    public AbstractCAReference(){
-        ligneReference = AbstractCAReference.REFERENCE_NON_FACTURABLE;
+    public AbstractReference(){
+        ligneReference = AbstractReference.REFERENCE_NON_FACTURABLE;
         session = null;
         documents = null;
     }
@@ -77,12 +77,12 @@ public abstract class AbstractCAReference {
         try {
             // va rechercher les textes qui sont au niveau 1
             if (this.getCurrentDocument() == null) {
-                adresse.append(AbstractCAReference.TEXTE_INTROUVABLE);
+                adresse.append(AbstractReference.TEXTE_INTROUVABLE);
             } else {
-                this.dumpNiveau(1, adresse, AbstractCAReference.RETOUR_LIGNE);
+                this.dumpNiveau(1, adresse, AbstractReference.RETOUR_LIGNE);
             }
         } catch (Exception e3) {
-            adresse.append(AbstractCAReference.TEXTE_INTROUVABLE);
+            adresse.append(AbstractReference.TEXTE_INTROUVABLE);
         }
         return adresse.toString();
     }
@@ -227,7 +227,7 @@ public abstract class AbstractCAReference {
         ref.append(refFacture); // idPlan = reference facture
 
         if (ref.length() > MAX_LENGTH_REFERENCE) {
-            throw new CATechnicalException(AbstractCAReference.class.getName() + ": " + getSession().getLabel("ERREUR_REFERENCEBVR"));
+            throw new CommonTechnicalException(AbstractReference.class.getName() + ": " + getSession().getLabel("ERREUR_REFERENCEBVR"));
         }
 
         return ref.toString();
@@ -318,7 +318,7 @@ public abstract class AbstractCAReference {
         if (compteAnnexeManager.size() > 0) {
             return (CACompteAnnexe) compteAnnexeManager.getFirstEntity();
         } else {
-            throw new CABusinessException(CAReferenceBVR.class.getName() + ": unable to find compte annexe for idRole" + idRole
+            throw new CommonBusinessException(ReferenceBVR.class.getName() + ": unable to find compte annexe for idRole" + idRole
                     + " and idExterneRole" + idExterneRole);
         }
     }

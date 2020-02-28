@@ -10,8 +10,8 @@ import globaz.framework.util.FWMessage;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JANumberFormatter;
 import globaz.globall.util.JAUtil;
-import globaz.osiris.db.utils.CAReferenceBVR;
-import globaz.osiris.db.utils.CAReferenceQR;
+import ch.globaz.common.document.reference.ReferenceBVR;
+import ch.globaz.common.document.reference.ReferenceQR;
 import globaz.osiris.process.interetmanuel.visualcomponent.CAInteretManuelVisualComponent;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -196,7 +196,7 @@ public class CO04ReceptionPaiement extends CODocumentManager {
 
             if (CommonProperties.QR_FACTURE.getBooleanValue()) {
                 // -- QR
-                qrFacture = new CAReferenceQR();
+                qrFacture = new ReferenceQR();
                 qrFacture.setSession(getSession());
                 // Initialisation des variables du document
                 initVariableQR(bvr);
@@ -254,7 +254,7 @@ public class CO04ReceptionPaiement extends CODocumentManager {
         }
 
         // Informations pour la référence et l'OCRB
-        CAReferenceBVR bvr = new CAReferenceBVR();
+        ReferenceBVR bvr = new ReferenceBVR();
         bvr.setSession(getSession());
         bvr.setBVR(curContentieux.getSection(), cMontant.toString());
         try {

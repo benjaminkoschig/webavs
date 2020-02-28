@@ -1,4 +1,4 @@
-package globaz.osiris.db.utils;
+package ch.globaz.common.document.reference;
 
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
@@ -9,18 +9,14 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.musca.application.FAApplication;
 import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.osiris.api.APISection;
-import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.access.recouvrement.CAEcheancePlan;
 import globaz.osiris.db.access.recouvrement.CAPlanRecouvrement;
-import globaz.osiris.db.comptes.CACompteAnnexe;
-import globaz.osiris.db.comptes.CACompteAnnexeManager;
 import globaz.osiris.db.comptes.CASection;
-import globaz.osiris.parser.IntReferenceBVRParser;
 
 /**
  * @author sel Créé le : 6 déc. 06
  */
-public class CAReferenceBVR extends AbstractCAReference{
+public class ReferenceBVR extends AbstractReference {
 
     private static final String ERROR_MONTANT_NEGATIF = "Error : Montant négatif !";
 
@@ -28,7 +24,7 @@ public class CAReferenceBVR extends AbstractCAReference{
 
     private Boolean forcerBV = false;
 
-    private String ocrb = CAReferenceBVR.OCRB_NON_FACTURABLE;
+    private String ocrb = ReferenceBVR.OCRB_NON_FACTURABLE;
 
 
     /**
@@ -38,7 +34,7 @@ public class CAReferenceBVR extends AbstractCAReference{
      * @throws Exception
      *             si erreur lors du chargement des textes de Babel
      */
-    public CAReferenceBVR() {
+    public ReferenceBVR() {
         super();
     }
 
@@ -269,12 +265,12 @@ public class CAReferenceBVR extends AbstractCAReference{
                 setLigneReference(bvr.get_ligneReference());
                 setOcrb(bvr.get_ocrb());
             } else {
-                setLigneReference(CAReferenceBVR.REFERENCE_NON_FACTURABLE);
-                setOcrb(CAReferenceBVR.OCRB_NON_FACTURABLE);
+                setLigneReference(REFERENCE_NON_FACTURABLE);
+                setOcrb(OCRB_NON_FACTURABLE);
             }
         } else {
-            setLigneReference(CAReferenceBVR.REFERENCE_NON_FACTURABLE);
-            setOcrb(CAReferenceBVR.OCRB_NON_FACTURABLE);
+            setLigneReference(REFERENCE_NON_FACTURABLE);
+            setOcrb(OCRB_NON_FACTURABLE);
         }
     }
 

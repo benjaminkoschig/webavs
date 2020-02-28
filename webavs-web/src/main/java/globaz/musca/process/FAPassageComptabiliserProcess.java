@@ -42,7 +42,7 @@ import globaz.osiris.db.comptes.CAOperation;
 import globaz.osiris.db.comptes.CARubrique;
 import globaz.osiris.db.comptes.CASection;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
-import globaz.osiris.db.utils.CAReferenceBVR;
+import ch.globaz.common.document.reference.ReferenceBVR;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAvoirPaiement;
@@ -63,7 +63,7 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
     private static final long serialVersionUID = 1L;
     protected FAApplication app = null;
     protected globaz.globall.api.BIApplication appOsiris = null;
-    protected CAReferenceBVR bvr = null;
+    protected ReferenceBVR bvr = null;
     private APIGestionComptabiliteExterne compta = null;
     protected FWMemoryLog comptaMemoryLog = new FWMemoryLog();
     protected int currentNumeroJournal = 0;
@@ -254,7 +254,7 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
         getBvr().setSession(getSession());
         getBvr().setBVR(sec, entFacture.getTotalFacture());
 
-        if (!getBvr().getRefNoSpace().equals(CAReferenceBVR.REFERENCE_NON_FACTURABLE)) {
+        if (!getBvr().getRefNoSpace().equals(ReferenceBVR.REFERENCE_NON_FACTURABLE)) {
             recouvrement.setReferenceBVR(getBvr().getRefNoSpace());
             compta.addOperation(recouvrement);
         }
@@ -835,9 +835,9 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
      * 
      * @return la référence BVR.
      */
-    public CAReferenceBVR getBvr() {
+    public ReferenceBVR getBvr() {
         if (bvr == null) {
-            bvr = new CAReferenceBVR();
+            bvr = new ReferenceBVR();
         }
         return bvr;
     }

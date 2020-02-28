@@ -4,7 +4,7 @@ import globaz.framework.util.FWCurrency;
 import globaz.globall.api.BIDocument;
 import globaz.globall.db.BTransaction;
 import globaz.globall.util.JAUtil;
-import globaz.osiris.db.utils.CAReferenceBVR;
+import ch.globaz.common.document.reference.ReferenceBVR;
 import globaz.osiris.formatter.CAAdresseCourrierFormatter;
 import java.math.BigDecimal;
 import java.util.Enumeration;
@@ -19,7 +19,7 @@ public class CASommation extends CADocumentContentieux {
      * 
      */
     private static final long serialVersionUID = 1L;
-    CAReferenceBVR bvr = null;
+    ReferenceBVR bvr = null;
     private java.lang.String centimes = new String();
     private java.lang.String civilite = new String();
     private java.lang.String dateDocument = new String();
@@ -139,9 +139,9 @@ public class CASommation extends CADocumentContentieux {
      * 
      * @return la référence BVR.
      */
-    public CAReferenceBVR getBvr() {
+    public ReferenceBVR getBvr() {
         if (bvr == null) {
-            bvr = new CAReferenceBVR();
+            bvr = new ReferenceBVR();
         }
         return bvr;
     }

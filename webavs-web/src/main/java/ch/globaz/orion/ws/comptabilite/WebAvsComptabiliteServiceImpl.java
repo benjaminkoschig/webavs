@@ -19,7 +19,7 @@ import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CACompteAnnexeManager;
 import globaz.osiris.db.comptes.CASection;
 import globaz.osiris.db.comptes.CASectionManager;
-import globaz.osiris.db.utils.CAReferenceBVR;
+import ch.globaz.common.document.reference.ReferenceBVR;
 import globaz.osiris.external.IntRole;
 import globaz.osiris.print.itext.list.CAProcessImpressionExtraitCompteAnnexe;
 import java.io.File;
@@ -435,7 +435,7 @@ public class WebAvsComptabiliteServiceImpl implements WebAvsComptabiliteService 
         if (StringUtils.isEmpty(section.getReferenceBvr())) {
             try {
                 // On regénère la référence BVR
-                CAReferenceBVR refBvr = new CAReferenceBVR();
+                ReferenceBVR refBvr = new ReferenceBVR();
                 refBvr.setBVR(section, section.getSolde());
                 facture.setReferenceBvr(refBvr.getLigneReference());
             } catch (Exception e) {

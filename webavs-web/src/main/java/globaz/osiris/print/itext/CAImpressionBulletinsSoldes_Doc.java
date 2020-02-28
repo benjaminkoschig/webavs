@@ -52,16 +52,15 @@ import globaz.osiris.db.contentieux.CAExtraitCompteListViewBean;
 import globaz.osiris.db.contentieux.CALigneExtraitCompte;
 import globaz.osiris.db.historique.CAHistoriqueBulletinSolde;
 import globaz.osiris.db.historique.CAHistoriqueBulletinSoldeManager;
-import globaz.osiris.db.utils.CAReferenceBVR;
-import globaz.osiris.db.utils.CAReferenceQR;
+import ch.globaz.common.document.reference.ReferenceBVR;
+import ch.globaz.common.document.reference.ReferenceQR;
 import globaz.osiris.external.IntAdressePaiement;
 import globaz.osiris.external.IntRole;
-import globaz.osiris.external.IntTiers;
 import globaz.osiris.print.itext.list.CADocumentManager;
 import globaz.osiris.utils.CAContentieux;
 import globaz.osiris.utils.CADateUtil;
 import globaz.pyxis.application.TIApplication;
-import globaz.pyxis.constantes.IConstantes;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -83,7 +82,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     private String adressePrincipale;
     private FAAfact afact;
-    private CAReferenceBVR bvr = null;
+    private ReferenceBVR bvr = null;
     private Boolean callEcran = new Boolean(false);
     private String centimes;
     private Iterator<FAAfact> entityList = null;
@@ -557,7 +556,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
                 if (CommonProperties.QR_FACTURE.getBooleanValue()) {
                     // -- QR
-                    qrFacture = new CAReferenceQR();
+                    qrFacture = new ReferenceQR();
                     qrFacture.setSession(getSession());
                     // Initialisation des variables du document
                     initVariableQR(new FWCurrency(_getMontantApresCompensation()));
@@ -716,9 +715,9 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
      * 
      * @return la référence BVR.
      */
-    public CAReferenceBVR getBvr() {
+    public ReferenceBVR getBvr() {
         if (bvr == null) {
-            bvr = new CAReferenceBVR();
+            bvr = new ReferenceBVR();
         }
         return bvr;
     }

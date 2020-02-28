@@ -7,7 +7,6 @@
 package globaz.aquila.print;
 
 import ch.globaz.common.properties.CommonProperties;
-import com.google.gson.JsonObject;
 import globaz.aquila.api.ICOEtape;
 import globaz.aquila.service.cataloguetxt.COCatalogueTextesService;
 import globaz.aquila.service.taxes.COTaxe;
@@ -21,9 +20,8 @@ import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.pdf.JadePdfUtil;
 import globaz.osiris.api.APISection;
-import globaz.osiris.db.utils.CAReferenceBVR;
-import globaz.osiris.db.utils.CAReferenceQR;
-import globaz.osiris.db.utils.GenerationQRCode;
+import ch.globaz.common.document.reference.ReferenceBVR;
+import ch.globaz.common.document.reference.ReferenceQR;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,7 +100,7 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
     // ~ Instance fields
     // ------------------------------------------------------------------------------------------------
 
-    private transient CAReferenceBVR bvr = null;
+    private transient ReferenceBVR bvr = null;
     private String dateDelaiPaiement = null;
     private int state = CO00CSommationPaiementCapCgas.STATE_IDLE;
 
@@ -235,7 +233,7 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
 
         if (CommonProperties.QR_FACTURE.getBooleanValue()) {
             // -- QR
-            qrFacture = new CAReferenceQR();
+            qrFacture = new ReferenceQR();
             qrFacture.setSession(getSession());
             // Initialisation des variables du document
             initVariableQR(montantTotal);
@@ -285,9 +283,9 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
      *
      * @return la référence BVR.
      */
-    public CAReferenceBVR getBvr() {
+    public ReferenceBVR getBvr() {
         if (bvr == null) {
-            bvr = new CAReferenceBVR();
+            bvr = new ReferenceBVR();
         }
         return bvr;
     }

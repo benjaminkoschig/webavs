@@ -1,6 +1,5 @@
 package globaz.osiris.print.itext.list;
 
-import globaz.aquila.service.cataloguetxt.COCatalogueTextesService;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.ICTListeTextes;
 import globaz.babel.api.ICTTexte;
@@ -24,7 +23,7 @@ import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.access.recouvrement.CAPlanRecouvrement;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CASection;
-import globaz.osiris.db.utils.CAReferenceQR;
+import ch.globaz.common.document.reference.ReferenceQR;
 import globaz.osiris.external.IntTiers;
 import globaz.osiris.print.itext.CAImpressionBulletinsSoldes_DS;
 import globaz.osiris.translation.CACodeSystem;
@@ -172,7 +171,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
     protected String typeDocument = "";
 
     // Ajout pour QR Facture
-    protected CAReferenceQR qrFacture = null;
+    protected ReferenceQR qrFacture = null;
     protected CAImpressionBulletinsSoldes_DS sectionCourante;
     protected CACompteAnnexe compteAnnexe;
     protected CASection section = null;
@@ -890,7 +889,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
             qrFacture.recupererIban();
             if (!qrFacture.genererAdresseDebiteur(sectionCourante.getSection().getCompteAnnexe().getIdTiers())) {
                 // si l'adresse n'est pas trouvé en DB, alors chargement d'une adresse Combiné
-                qrFacture.setDebfAdressTyp(CAReferenceQR.COMBINE);
+                qrFacture.setDebfAdressTyp(ReferenceQR.COMBINE);
 
                 qrFacture.setDebfRueOuLigneAdresse1(_getAdressePrincipale());
             }

@@ -19,8 +19,8 @@ import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.pdf.JadePdfUtil;
 import globaz.osiris.api.APISection;
-import globaz.osiris.db.utils.CAReferenceBVR;
-import globaz.osiris.db.utils.CAReferenceQR;
+import ch.globaz.common.document.reference.ReferenceBVR;
+import ch.globaz.common.document.reference.ReferenceQR;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -95,7 +95,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
     // ~ Instance fields
     // ------------------------------------------------------------------------------------------------
 
-    private CAReferenceBVR bvr = null;
+    private ReferenceBVR bvr = null;
     private String dateDelaiPaiement = null;
     private int state = CO00CSommationPaiement.STATE_IDLE;
 
@@ -225,7 +225,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
 
         if (CommonProperties.QR_FACTURE.getBooleanValue()) {
             // -- QR
-            qrFacture = new CAReferenceQR();
+            qrFacture = new ReferenceQR();
             qrFacture.setSession(getSession());
             // Initialisation des variables du document
             initVariableQR(montantTotal);
@@ -272,9 +272,9 @@ public class CO00CSommationPaiement extends CODocumentManager {
      *
      * @return la référence BVR.
      */
-    public CAReferenceBVR getBvr() {
+    public ReferenceBVR getBvr() {
         if (bvr == null) {
-            bvr = new CAReferenceBVR();
+            bvr = new ReferenceBVR();
         }
         return bvr;
     }
@@ -525,7 +525,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
      *
      * @return
      */
-    public CAReferenceQR getQrFacture() {
+    public ReferenceQR getQrFacture() {
         return qrFacture;
     }
 
@@ -534,7 +534,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
      *
      * @param qrFacture
      */
-    public void setQrFacture(CAReferenceQR qrFacture) {
+    public void setQrFacture(ReferenceQR qrFacture) {
         this.qrFacture = qrFacture;
     }
 }

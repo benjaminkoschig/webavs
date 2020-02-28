@@ -19,8 +19,8 @@ import globaz.globall.util.JANumberFormatter;
 import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.pdf.JadePdfUtil;
-import globaz.osiris.db.utils.CAReferenceBVR;
-import globaz.osiris.db.utils.CAReferenceQR;
+import ch.globaz.common.document.reference.ReferenceBVR;
+import ch.globaz.common.document.reference.ReferenceQR;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ public class CODecision extends CODocumentManager {
     // ~ Instance fields
     // ------------------------------------------------------------------------------------------------
 
-    private CAReferenceBVR bvr = null;
+    private ReferenceBVR bvr = null;
     private int state = CODecision.STATE_IDLE;
 
     // ~ Constructors
@@ -174,7 +174,7 @@ public class CODecision extends CODocumentManager {
 
         if (CommonProperties.QR_FACTURE.getBooleanValue()) {
             // -- QR
-            qrFacture = new CAReferenceQR();
+            qrFacture = new ReferenceQR();
             qrFacture.setSession(getSession());
             // Initialisation des variables du document
             initVariableQR(montantTotal);
@@ -216,9 +216,9 @@ public class CODecision extends CODocumentManager {
      * 
      * @return la référence BVR.
      */
-    public CAReferenceBVR getBvr() {
+    public ReferenceBVR getBvr() {
         if (bvr == null) {
-            bvr = new CAReferenceBVR();
+            bvr = new ReferenceBVR();
         }
         return bvr;
     }

@@ -8,8 +8,7 @@ import globaz.osiris.api.APICompteAnnexe;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CASection;
-import globaz.osiris.db.utils.AbstractCAReference;
-import globaz.osiris.db.utils.CAReferenceBVR;
+import ch.globaz.common.document.reference.AbstractReference;
 import globaz.osiris.external.IntRole;
 import globaz.osiris.parser.IntReferenceBVRParser;
 import java.math.BigDecimal;
@@ -582,7 +581,7 @@ public class CARefBVRParserTemp implements IntReferenceBVRParser {
         if (!testRef.equals("000000000000")) {
             if (testLsvSpec.equals("99") && testRefLsv.equals(numInterneLsv.substring(0, 6))) {
                 parseCompteAnnexeByIdCompteAnnexe();
-            } else if (AbstractCAReference.IDENTIFIANT_REF_IDCOMPTEANNEXE.equals(testRefIdRole)) {
+            } else if (AbstractReference.IDENTIFIANT_REF_IDCOMPTEANNEXE.equals(testRefIdRole)) {
                 idCompteAnnexe = parseIdCompteAnnexeForRefIdCompteAnnexe(reference);
             } else if (!testRefIdRole.equals("00") && !testRefLsv.equals(numInterneLsv.substring(0, 6))) {
                 parseIdCompteAnnexe();

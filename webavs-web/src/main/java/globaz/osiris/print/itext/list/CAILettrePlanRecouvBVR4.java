@@ -17,7 +17,7 @@ import globaz.jade.log.JadeLogger;
 import globaz.osiris.application.CAParametres;
 import globaz.osiris.db.access.recouvrement.CAEcheancePlan;
 import globaz.osiris.db.access.recouvrement.CAPlanRecouvrement;
-import globaz.osiris.db.utils.CAReferenceBVR;
+import ch.globaz.common.document.reference.ReferenceBVR;
 import globaz.pyxis.api.ITIRole;
 import globaz.pyxis.application.TIApplication;
 import java.math.BigDecimal;
@@ -37,7 +37,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
     /** Le nom du modèle */
     private static final String TEMPLATE_NAME = "CAIEcheancierBVR4";
 
-    private CAReferenceBVR bvr = null;
+    private ReferenceBVR bvr = null;
     private String centimes;
     private double cumulSolde = 0;
     private String dateRef = "";
@@ -211,9 +211,9 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
      * 
      * @return la référence BVR.
      */
-    public CAReferenceBVR getBvr() {
+    public ReferenceBVR getBvr() {
         if (bvr == null) {
-            bvr = new CAReferenceBVR();
+            bvr = new ReferenceBVR();
         }
         return bvr;
     }
