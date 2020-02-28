@@ -1,14 +1,30 @@
 package ch.globaz.al.businessimpl.services.adiDecomptes;
 
 import ch.globaz.al.business.constantes.*;
+import ch.globaz.al.business.constantes.enumerations.RafamEtatAnnonce;
+import ch.globaz.al.business.constantes.enumerations.generation.prestations.Bonification;
+import ch.globaz.al.business.exceptions.business.ALPrestationBusinessException;
+import ch.globaz.al.business.exceptions.model.adi.ALDecompteAdiModelException;
 import ch.globaz.al.business.models.adi.*;
+import ch.globaz.al.business.models.dossier.DossierComplexModel;
+import ch.globaz.al.business.models.dossier.DossierModel;
+import ch.globaz.al.business.models.droit.CalculBusinessModel;
+import ch.globaz.al.business.models.prestation.DetailPrestationComplexModel;
+import ch.globaz.al.business.models.prestation.DetailPrestationComplexSearchModel;
+import ch.globaz.al.business.models.prestation.EntetePrestationModel;
+import ch.globaz.al.business.models.prestation.EntetePrestationSearchModel;
 import ch.globaz.al.business.services.ALRepositoryLocator;
+import ch.globaz.al.business.services.ALServiceLocator;
+import ch.globaz.al.business.services.adiDecomptes.DecompteAdiBusinessService;
 import ch.globaz.al.businessimpl.calcul.modes.CalculImpotSource;
-import ch.globaz.al.properties.ALProperties;
-import ch.globaz.naos.business.data.AssuranceInfo;
+import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.al.impotsource.domain.TauxImpositions;
 import ch.globaz.al.impotsource.domain.TypeImposition;
 import ch.globaz.al.impotsource.persistence.TauxImpositionRepository;
+import ch.globaz.al.properties.ALProperties;
+import ch.globaz.al.utils.ALDateUtils;
+import ch.globaz.naos.business.data.AssuranceInfo;
+import ch.globaz.param.business.service.ParamServiceLocator;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -20,21 +36,7 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 
 import java.util.*;
 import java.util.Map.Entry;
-
-import ch.globaz.al.business.constantes.enumerations.generation.prestations.Bonification;
-import ch.globaz.al.business.exceptions.business.ALPrestationBusinessException;
-import ch.globaz.al.business.exceptions.model.adi.ALDecompteAdiModelException;
-import ch.globaz.al.business.models.dossier.DossierComplexModel;
-import ch.globaz.al.business.models.dossier.DossierModel;
-import ch.globaz.al.business.models.droit.CalculBusinessModel;
-import ch.globaz.al.business.models.prestation.DetailPrestationComplexModel;
-import ch.globaz.al.business.models.prestation.DetailPrestationComplexSearchModel;
-import ch.globaz.al.business.models.prestation.EntetePrestationModel;
-import ch.globaz.al.business.models.prestation.EntetePrestationSearchModel;
-import ch.globaz.al.business.services.ALServiceLocator;
-import ch.globaz.al.business.services.adiDecomptes.DecompteAdiBusinessService;
-import ch.globaz.al.utils.ALDateUtils;
-import ch.globaz.param.business.service.ParamServiceLocator;
+import java.util.stream.Collectors;
 
 /**
  * 
@@ -156,7 +158,7 @@ public class DecompteAdiBusinessServiceImpl implements DecompteAdiBusinessServic
     }
 
     @Override
-    public void comptabiliserDecompteLie(String idEnteteAdi) throws JadeApplicationException, JadePersistenceException {
+    public String comptabiliserDecompteLie(String idEnteteAdi) throws JadeApplicationException, JadePersistenceException {
         // on met le décompte lié en CO
         DecompteAdiSearchModel decompteLie = new DecompteAdiSearchModel();
         decompteLie.setForIdPrestationAdi(idEnteteAdi);
@@ -165,7 +167,10 @@ public class DecompteAdiBusinessServiceImpl implements DecompteAdiBusinessServic
             DecompteAdiModel decompteToUpd = (DecompteAdiModel) decompteLie.getSearchResults()[0];
             decompteToUpd.setEtatDecompte(ALCSPrestation.ETAT_CO);
             ALServiceLocator.getDecompteAdiModelService().update(decompteToUpd);
+            return decompteToUpd.getIdDecompteAdi();
         }
+
+        return null;
 
     }
 
@@ -320,14 +325,11 @@ public class DecompteAdiBusinessServiceImpl implements DecompteAdiBusinessServic
             listeCalculAdiEnfant.put(periodeCouverte, new ArrayList<CalculBusinessModel>());
         }
 
-        List<AdiEnfantMoisComplexModel> listAdi = new ArrayList<>();
-
         // pour chaque adiEnfantMois lié au décompte, on crée un
         // calculBusinessModel correspondant
         for (int i = 0; i < adiEnfantMoisComplexSearch.getSize(); i++) {
             AdiEnfantMoisComplexModel currentAdiEnfantMoisComplex = (AdiEnfantMoisComplexModel) adiEnfantMoisComplexSearch
                     .getSearchResults()[i];
-            listAdi.add(currentAdiEnfantMoisComplex);
 
             ArrayList<DetailPrestationComplexModel> listCorrespDetail = searchDetailInPrestationTravail(
                     prestationTravailSearchModel, currentAdiEnfantMoisComplex.getAdiEnfantMoisModel().getIdDroit(),
@@ -463,12 +465,6 @@ public class DecompteAdiBusinessServiceImpl implements DecompteAdiBusinessServic
                 throw new ALDecompteAdiModelException(
                         "DecompteAdiBusinessServiceImpl#genererPrestationAdi: unable to link prestation ADI to decompte - prestation ADI not found");
             }
-        }
-
-        Map<String, List<AdiEnfantMoisComplexModel>> adiParDroit = getAdiParDroit(listAdi);
-
-        for(String idDroit : adiParDroit.keySet()) {
-            ALServiceLocator.getAnnonceRafamCreationService().creerAnnoncesADI(adiParDroit.get(idDroit));
         }
 
     }
@@ -702,22 +698,6 @@ public class DecompteAdiBusinessServiceImpl implements DecompteAdiBusinessServic
         return listCorrespondingDetailPrestTravail;
     }
 
-    private ArrayList<DetailPrestationComplexModel> searchDetailInPrestatiosnTravailHorloger(
-            DetailPrestationComplexSearchModel detailPres) {
-        ArrayList<DetailPrestationComplexModel> listCorrespondingDetailPrestTravail = new ArrayList<DetailPrestationComplexModel>();
-
-        for (int i = 0; i < detailPres.getSize(); i++) {
-            DetailPrestationComplexModel correspondingDetailPrestTravail = null;
-            correspondingDetailPrestTravail = (DetailPrestationComplexModel) detailPres.getSearchResults()[i];
-            if (JadeStringUtil.equals(correspondingDetailPrestTravail.getDetailPrestationModel().getCategorieTarif(),
-                    ALCSTarif.CATEGORIE_SUP_HORLO, false)) {
-                listCorrespondingDetailPrestTravail.add(correspondingDetailPrestTravail);
-            }
-        }
-
-        return listCorrespondingDetailPrestTravail;
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -742,4 +722,32 @@ public class DecompteAdiBusinessServiceImpl implements DecompteAdiBusinessServic
         }
 
     }
+
+    public void creeAnnonceDepuisDecompteADI(List<String> idDecomptesADI) throws JadeApplicationException, JadePersistenceException {
+        List<AdiEnfantMoisComplexModel> listTotalAdi = new ArrayList<>();
+        for(String idDecompte: idDecomptesADI){
+            listTotalAdi.addAll(getDetailDecompteADI(idDecompte));
+        }
+
+        Map<String, List<AdiEnfantMoisComplexModel>> adiParDroit = getAdiParDroit(listTotalAdi);
+
+        for(Entry<String, List<AdiEnfantMoisComplexModel>> entry : adiParDroit.entrySet()) {
+            // supprime les annonces "A_TRANSMETTRE" liées au droit
+            ALImplServiceLocator.getAnnonceRafamBusinessService().deleteForEtat(entry.getKey(), RafamEtatAnnonce.A_TRANSMETTRE);
+
+            // Créé les nouvelles annonces
+            ALServiceLocator.getAnnonceRafamCreationService().creerAnnoncesADI(entry.getValue());
+        }
+    }
+
+    private  List<AdiEnfantMoisComplexModel> getDetailDecompteADI(String idDecompteADI) throws JadeApplicationException, JadePersistenceException {
+        AdiEnfantMoisComplexSearchModel adiEnfantMoisComplexSearch = new AdiEnfantMoisComplexSearchModel();
+        adiEnfantMoisComplexSearch.setForIdDecompteAdi(idDecompteADI);
+        adiEnfantMoisComplexSearch = ALServiceLocator.getAdiEnfantMoisComplexModelService().search(adiEnfantMoisComplexSearch);
+
+        return Arrays.stream(adiEnfantMoisComplexSearch.getSearchResults())
+                .map(obj -> (AdiEnfantMoisComplexModel) obj)
+                .collect(Collectors.toList());
+    }
+
 }

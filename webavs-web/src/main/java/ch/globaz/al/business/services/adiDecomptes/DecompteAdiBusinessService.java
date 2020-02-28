@@ -4,6 +4,8 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
 import java.util.HashMap;
+import java.util.List;
+
 import ch.globaz.al.business.constantes.ALConstParametres;
 import ch.globaz.al.business.models.adi.AdiSaisieComplexSearchModel;
 import ch.globaz.al.business.models.adi.DecompteAdiModel;
@@ -28,7 +30,7 @@ public interface DecompteAdiBusinessService extends JadeApplicationService {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public void comptabiliserDecompteLie(String idEnteteAdi) throws JadeApplicationException, JadePersistenceException;
+    public String comptabiliserDecompteLie(String idEnteteAdi) throws JadeApplicationException, JadePersistenceException;
 
     /**
      * Contrôle pour un décompte si toutes les saisies nécessaires ont bien été effectuées.
@@ -128,5 +130,14 @@ public interface DecompteAdiBusinessService extends JadeApplicationService {
      */
     public void supprimerPrestationTravailDossier(String idDossier, String periodeDebut, String periodeFin)
             throws JadeApplicationException, JadePersistenceException;
+
+
+    /**
+     * Créé les annonces RAFAM depuis la liste des id décomptes ADI
+     * @param idDecomptesADI
+     * @throws JadeApplicationException
+     * @throws JadePersistenceException
+     */
+    public void creeAnnonceDepuisDecompteADI(List<String> idDecomptesADI) throws JadeApplicationException, JadePersistenceException;
 
 }

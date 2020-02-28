@@ -21,6 +21,7 @@ import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.business.services.models.droit.DroitBusinessService;
 import ch.globaz.al.business.services.rafam.AnnonceRafamCreationService;
 import ch.globaz.al.business.services.rafam.AnnoncesRafamSearchService;
+import ch.globaz.al.businessimpl.checker.model.prestation.EntetePrestationModelChecker;
 import ch.globaz.al.businessimpl.checker.model.rafam.AnnonceRafamModelChecker;
 import ch.globaz.al.businessimpl.rafam.ContextAnnonceRafam;
 import ch.globaz.al.businessimpl.rafam.ContextAnnonceRafamDelegue;
@@ -54,6 +55,8 @@ import java.util.*;
  */
 public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceImpl implements
         AnnonceRafamCreationService {
+
+    public static final String IMPOSSIBLE_DE_TRAITER_L_ANNONCE_N = "Impossible de traiter l'annonce n°";
 
     /*
      * (non-Javadoc)
@@ -334,10 +337,8 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
 
             for (RafamFamilyAllowanceType type : types) {
                 // S190502_010 : traiter uniquement les primes naissances
-                if(primeNaisanceOnly && !isPrimeNaissance(type)) {
-                    continue;
-                // S190502_010 : ne pas traiter les primes naissances
-                } else if(montantOnly && isPrimeNaissance(type)){
+                if((primeNaisanceOnly && !isPrimeNaissance(type))
+                    || (montantOnly && isPrimeNaissance(type))) {
                     continue;
                 }
 
@@ -348,10 +349,10 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
                     && droit.getEnfantComplexModel().getEnfantModel().getAllocationNaissanceVersee()) {
                     continue;
                 }
-                if(isPrimeNaissance(type)) {
-                    if (droit.getEnfantComplexModel().getEnfantModel().getAllocationNaissanceVersee()){
-                        continue;
-                    }
+                if(isPrimeNaissance(type) &&
+                        droit.getEnfantComplexModel().getEnfantModel().getAllocationNaissanceVersee()){
+                    continue;
+
                 }
                 if (JadeThread.logMessagesFromLevel(JadeBusinessMessageLevels.ERROR) == null) {
                     ContextAnnonceRafam context = ContextAnnonceRafam.getContext(evDecl, etat, dossier, droit, type);
@@ -415,7 +416,7 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
 
                         if (JadeThread.logMessages() != null) {
                             errors.append(
-                                    "Impossible de traiter l'annonce n°" + allowance.getAllowanceRefNumber()
+                                    IMPOSSIBLE_DE_TRAITER_L_ANNONCE_N + allowance.getAllowanceRefNumber()
                                             + ",erreur:+" + JadeThread.logMessages()[0].getMessageId()).append(")\n");
                             JadeLogger.error(this, allowance.getAllowanceRefNumber() + " non transmis à la CAF");
                             JadeThread.rollbackSession();
@@ -430,10 +431,10 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
 
                         JadeThread.rollbackSession();
 
-                        JadeLogger.error(this, "Impossible de traiter l'annonce n°" + allowance.getAllowanceRefNumber()
+                        JadeLogger.error(this, IMPOSSIBLE_DE_TRAITER_L_ANNONCE_N + allowance.getAllowanceRefNumber()
                                 + ":" + e.getMessage());
 
-                        errors.append("Impossible de traiter l'annonce n°" + allowance.getAllowanceRefNumber())
+                        errors.append(IMPOSSIBLE_DE_TRAITER_L_ANNONCE_N + allowance.getAllowanceRefNumber())
                                 .append(e.getMessage()).append(")\n");
 
                         JadeThread.logClear();
@@ -456,9 +457,15 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
     @Override
     public void creerAnnoncesADI(List<AdiEnfantMoisComplexModel> listAdi)
             throws JadeApplicationException, JadePersistenceException {
-
         TreeMap<Periode, Boolean> periodes = createPeriodes(listAdi);
-        createRafamFromPeriode(periodes, listAdi.get(0).getDroitComplexModel());
+        DroitComplexModel droit = listAdi.get(0).getDroitComplexModel();
+        if(EntetePrestationModelChecker.checkAnnnonce(periodes.firstEntry().getKey().getDateDebut().substring(3,7), droit.getId())) {
+            JadeThread.logWarn(EntetePrestationModelChecker.class.getName(),
+                    "al.protocoles.paiementDirect.annonce.envoyee.compta.error");
+            throw new ALAnnonceRafamException("AnnonceRafamCreationServiceImpl#creerAnnoncesADI : Annonces RAFam liées au décompte ADI en état « Transmise »");
+        } else {
+            createRafamFromPeriode(periodes, droit);
+        }
     }
 
     private TreeMap<Periode, Boolean> createPeriodes(List<AdiEnfantMoisComplexModel> listAdi) {
@@ -472,11 +479,9 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
             }
         });
         TreeMap<Periode, Boolean> periodes = new TreeMap<>();
-        List<Periode> periodesZero = new ArrayList<>();
-        List<Periode> periodesAdi = new ArrayList<>();
 
         AdiEnfantMoisModel firstAdi = listAdi.get(0).getAdiEnfantMoisModel();
-        listAdi.remove(firstAdi);
+        listAdi.remove(listAdi.get(0));
 
         String startPeriode = firstAdi.getMoisPeriode();
         String lastMonthPeriode = startPeriode;
@@ -512,14 +517,8 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
 
         annonces = getLastAnnonceFromRecordNumber(annonces);
 
-        String debutDroit = droitComplexModel.getDroitModel().getDebutDroit();
-        String debutFin = droitComplexModel.getDroitModel().getFinDroitForcee();
-
-        for (Periode periode : periodes.keySet()) {
-            annonces = genererAnnonceSelonAnnoncePrecedante(droitComplexModel, annonces, periode, periodes.get(periode));
-
-            droitComplexModel.getDroitModel().setDebutDroit(debutDroit);
-            droitComplexModel.getDroitModel().setFinDroitForcee(debutFin);
+        for (Map.Entry<Periode, Boolean> entry : periodes.entrySet()) {
+            annonces = genererAnnonceSelonAnnoncePrecedante(droitComplexModel, annonces, entry.getKey(), entry.getValue());
         }
     }
 
@@ -552,8 +551,10 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
 
         Date debutPeriode = JadeDateUtil.getGlobazDate(JadeDateUtil.getFirstDateOfMonth(periode.getDateDebut()));
         Date finPeriode = JadeDateUtil.getGlobazDate(JadeDateUtil.getLastDateOfMonth(periode.getDateFin()));
-        Date debutDroit = JadeDateUtil.getGlobazDate(droit.getDroitModel().getDebutDroit());
-        Date finDroit = JadeDateUtil.getGlobazDate(droit.getDroitModel().getFinDroitForcee());
+        String debutDroitBackup = droit.getDroitModel().getDebutDroit();
+        String finDroitBackup = droit.getDroitModel().getFinDroitForcee();
+        Date debutDroit = JadeDateUtil.getGlobazDate(debutDroitBackup);
+        Date finDroit = JadeDateUtil.getGlobazDate(finDroitBackup);
         Date debDate = debutPeriode;
         Date finDate = finPeriode;
 
@@ -586,6 +587,10 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
             DossierComplexModel dossier = ALServiceLocator.getDossierComplexModelService().read(droit.getDroitModel().getIdDossier());
             ALServiceLocator.getAnnonceRafamCreationService().creerAnnoncesWithoutDelete(RafamEvDeclencheur.CREATION, RafamEtatAnnonce.A_TRANSMETTRE, dossier, droit);
         }
+
+        // restauration des bonnes dates pour les prochains traitements
+        droit.getDroitModel().setDebutDroit(debutDroitBackup);
+        droit.getDroitModel().setFinDroitForcee(finDroitBackup);
 
         return annonces;
     }
@@ -636,7 +641,7 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
         }
 
         DroitBusinessService dbs = ALServiceLocator.getDroitBusinessService();
-        List<RafamFamilyAllowanceType> list = new ArrayList<RafamFamilyAllowanceType>();
+        List<RafamFamilyAllowanceType> list = new ArrayList<>();
 
         if (!dbs.isMontantForceZero(droit.getDroitModel()) || forAnnulation) {
 
@@ -833,7 +838,7 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
         ALImplServiceLocator.getAnnonceRafamBusinessService().deleteForEtat(idDroit, RafamEtatAnnonce.A_TRANSMETTRE);
 
         AnnonceRafamSearchModel search = new AnnonceRafamSearchModel();
-        ArrayList<String> etats = new ArrayList<String>();
+        ArrayList<String> etats = new ArrayList<>();
         etats.add(RafamEtatAnnonce.ENREGISTRE.getCS());
         search.setInEtatAnnonce(etats);
         search.setForIdDroit(idDroit);
@@ -900,7 +905,6 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
             }
         } catch (JadeApplicationException e) {
             boolean calculError = true;
-            String calculErrorMessage = e.getMessage();
         }
 
         String montantTotal = "0";
@@ -940,7 +944,7 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
             Montant montNaissaceAfter = new Montant(montants.get(1));
 
             if (montAfter.isZero()) {
-                if (RafamTypeAction.ANNULATION.equals(lastAnnonce.getTypeAnnonce())) {
+                if (RafamTypeAnnonce._68C_ANNULATION.equals(RafamTypeAnnonce.getRafamTypeAnnonce(lastAnnonce.getTypeAnnonce()))) {
                     ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(droit.getId());
                 } else { //RafamTypeAction.CREATION + RafamTypeAction.MODIFICATION
                     ALServiceLocator.getAnnonceRafamCreationService().creerAnnonces(RafamEvDeclencheur.ANNULATION, droit);
@@ -951,7 +955,7 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
                 }
             } else {
                 ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(droit.getId());
-                if (RafamTypeAction.ANNULATION.equals(lastAnnonce.getTypeAnnonce())) {
+                if (RafamTypeAnnonce._68C_ANNULATION.equals(RafamTypeAnnonce.getRafamTypeAnnonce(lastAnnonce.getTypeAnnonce()))) {
                     evDecl = RafamEvDeclencheur.CREATION;
                 }
                 if (hasAllocationNaissance(droit) && montNaissaceAfter.isZero()) {
@@ -977,7 +981,6 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
             DroitComplexSearchModel search = new DroitComplexSearchModel();
             search.setForIdDossier(dossier.getId());
 
-            List<String> types = new ArrayList<>();
             search = ALServiceLocator.getDroitComplexModelService().search(search);
 
             for (int i = 0; i < search.getSize(); i++) {

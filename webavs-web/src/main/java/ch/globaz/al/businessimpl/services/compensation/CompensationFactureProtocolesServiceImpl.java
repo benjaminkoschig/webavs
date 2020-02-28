@@ -210,7 +210,7 @@ public class CompensationFactureProtocolesServiceImpl extends ALAbstractBusiness
 
             // protocole erreur
             container.addDocument(
-                    sProtErrComp.getDocumentData(sCompFacture.checkRecaps(recaps, new ProtocoleLogger()), params),
+                    sProtErrComp.getDocumentData(sCompFacture.checkRecaps(recaps, logger), params),
                     pubInfo3);
 
         }

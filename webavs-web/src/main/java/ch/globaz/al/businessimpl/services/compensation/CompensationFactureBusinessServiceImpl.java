@@ -1,15 +1,5 @@
 package ch.globaz.al.businessimpl.services.compensation;
 
-import globaz.jade.client.util.JadeCodesSystemsUtil;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeNumericUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.persistence.JadePersistenceManager;
-import globaz.jade.persistence.model.JadeAbstractSearchModel;
-import java.util.ArrayList;
-import java.util.Collection;
 import ch.globaz.al.business.compensation.CompensationBusinessModel;
 import ch.globaz.al.business.constantes.ALCSPrestation;
 import ch.globaz.al.business.constantes.ALConstPrestations;
@@ -26,6 +16,18 @@ import ch.globaz.al.business.services.models.prestation.EntetePrestationModelSer
 import ch.globaz.al.business.services.models.prestation.RecapitulatifEntrepriseModelService;
 import ch.globaz.al.businessimpl.services.ALAbstractBusinessServiceImpl;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import globaz.jade.client.util.JadeCodesSystemsUtil;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Implémentation du service fournissant les méthodes nécessaires à une compensation sur facture
@@ -56,7 +58,7 @@ public class CompensationFactureBusinessServiceImpl extends ALAbstractBusinessSe
 
         CompensationPrestationFullComplexSearchModel searchPrestationsZero = searchPrestations(periodeA, typeCoti,
                 ALCSPrestation.ETAT_TR, true);
-        ArrayList<String> listIdEnteteTraites = new ArrayList<String>();
+        ArrayList<String> listIdEnteteTraites = new ArrayList<>();
         // chaque prestation à 0.- sont mises dans une nouvelle récap
         for (int i = 0; i < searchPrestationsZero.getSize(); i++) {
             EntetePrestationModel currentEntete = ALServiceLocator.getEntetePrestationModelService().read(
@@ -96,7 +98,7 @@ public class CompensationFactureBusinessServiceImpl extends ALAbstractBusinessSe
         CompensationPrestationFullComplexSearchModel searchPrestationsZero = searchPrestationsByNumProcessus(
                 ALCSPrestation.ETAT_TR, typeCoti, idProcessus, true);
 
-        ArrayList<String> listIdEnteteTraites = new ArrayList<String>();
+        ArrayList<String> listIdEnteteTraites = new ArrayList<>();
 
         // chaque prestation à 0.- sont mises dans une nouvelle récap
         for (int i = 0; i < searchPrestationsZero.getSize(); i++) {
@@ -130,7 +132,7 @@ public class CompensationFactureBusinessServiceImpl extends ALAbstractBusinessSe
         search.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
         search = servicePrest.search(search);
 
-        ArrayList<String> recapsId = new ArrayList<String>();
+        ArrayList<String> recapsId = new ArrayList<>();
 
         // mise à jour des en-tête
         for (int i = 0; i < search.getSize(); i++) {
@@ -285,6 +287,8 @@ public class CompensationFactureBusinessServiceImpl extends ALAbstractBusinessSe
         search.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
         search = servicePrest.search(search);
 
+        List<String> decompteLiee = new ArrayList<>();
+
         // mise à jour des en-tête
         for (int i = 0; i < search.getSize(); i++) {
 
@@ -292,7 +296,11 @@ public class CompensationFactureBusinessServiceImpl extends ALAbstractBusinessSe
             // si prestation ADI comptabilisée
             if (ALCSPrestation.STATUT_ADI.equals(prest.getStatut())) {
                 // comptabilise le décompte
-                ALServiceLocator.getDecompteAdiBusinessService().comptabiliserDecompteLie(prest.getIdEntete());
+                String idDecompteLiee = ALServiceLocator.getDecompteAdiBusinessService().comptabiliserDecompteLie(prest.getIdEntete());
+                if(idDecompteLiee != null) {
+                    decompteLiee.add(idDecompteLiee);
+                }
+
                 // on supprime la prestation de travail (TMP)
                 ALServiceLocator.getDecompteAdiBusinessService().supprimerPrestationTravailDossier(
                         prest.getIdDossier(), prest.getPeriodeDe(), prest.getPeriodeA());
@@ -305,8 +313,14 @@ public class CompensationFactureBusinessServiceImpl extends ALAbstractBusinessSe
             servicePrest.update(prest);
         }
 
+        // Création des annonces RAFAM des décomptes ADI
+        if(!decompteLiee.isEmpty()){
+            ALServiceLocator.getDecompteAdiBusinessService().creeAnnonceDepuisDecompteADI(decompteLiee);
+        }
+
         // mise à jour de la récap
         recap.setEtatRecap(ALCSPrestation.ETAT_CO);
         serviceRecap.update(recap);
     }
+
 }

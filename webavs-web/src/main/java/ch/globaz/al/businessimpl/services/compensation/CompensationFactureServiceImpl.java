@@ -1,5 +1,6 @@
 package ch.globaz.al.businessimpl.services.compensation;
 
+import ch.globaz.al.businessimpl.checker.model.prestation.EntetePrestationModelChecker;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
@@ -58,6 +59,7 @@ import ch.globaz.naos.business.data.AssuranceInfo;
  */
 public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImpl implements CompensationFactureService {
     private static final Logger LOG = LoggerFactory.getLogger(CompensationFactureServiceImpl.class);
+    public static final String COMPENSATION_FACTURE_SERVICE_IMPL_SEARCH_PRESTATIONS = "CompensationFactureServiceImpl#searchPrestations : ";
 
     /*
      * (non-Javadoc)
@@ -123,7 +125,7 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
         }
         // il faut un model par numcpt et pas par récap,
         // la clé est idrecap-numcpt, car 1 ligne par récap et par compte
-        HashMap<String, CompensationBusinessModel> recaps = new HashMap<String, CompensationBusinessModel>();
+        HashMap<String, CompensationBusinessModel> recaps = new HashMap<>();
 
         for (int i = 0; i < search.getSize(); i++) {
 
@@ -154,7 +156,7 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
             }
         }
 
-        ArrayList<CompensationBusinessModel> list = new ArrayList<CompensationBusinessModel>(recaps.values());
+        ArrayList<CompensationBusinessModel> list = new ArrayList<>(recaps.values());
         Collections.sort(list);
         return list;
     }
@@ -174,7 +176,7 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
             throw new ALCompensationPrestationException("CompensationFactureServiceImpl#loadRubriques : search is null");
         }
 
-        HashMap<String, CompensationRecapitulatifBusinessModel> recaps = new HashMap<String, CompensationRecapitulatifBusinessModel>();
+        HashMap<String, CompensationRecapitulatifBusinessModel> recaps = new HashMap<>();
 
         for (int i = 0; i < search.getSize(); i++) {
 
@@ -195,7 +197,7 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
             recaps.put(line.getNumeroCompte(), model);
         }
 
-        ArrayList<CompensationRecapitulatifBusinessModel> list = new ArrayList<CompensationRecapitulatifBusinessModel>(
+        ArrayList<CompensationRecapitulatifBusinessModel> list = new ArrayList<>(
                 recaps.values());
         Collections.sort(list);
         return list;
@@ -224,7 +226,7 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
         }
 
         // préparation de la liste des récaps
-        HashSet<String> idsRecap = new HashSet<String>();
+        HashSet<String> idsRecap = new HashSet<>();
         Iterator<CompensationBusinessModel> it = recaps.iterator();
         while (it.hasNext()) {
 
@@ -246,7 +248,7 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
          * TODO : ça mériterait d'être supprimé lorsque le framework saura gérer correctement les limites de tailles
          * pour un champ de recherche utilisant l'opérateur "IN".
          */
-        List<String> listIdsRecap = new ArrayList<String>(idsRecap);
+        List<String> listIdsRecap = new ArrayList<>(idsRecap);
 
         double lots = Math.ceil(((double) listIdsRecap.size()) / IN_MAX);
         LOG.debug("will iterate {} times to cover {} elements in the IN criteria", lots, listIdsRecap.size());
@@ -263,9 +265,9 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
             search = (CheckAffiliationSearchComplexModel) JadePersistenceManager.search(search);
 
             // Map contenant les avertissement (key) en cours de traitement dans la boucle for
-            Map<String, Object> avertissementEnTraitement = new HashMap<String, Object>();
+            Map<String, Object> avertissementEnTraitement;
             // Map contenant pour chaque affilié (key) leurs avertissements (value)
-            Map<String, Map<String, Object>> affilieTraiter = new HashMap<String, Map<String, Object>>();
+            Map<String, Map<String, Object>> affilieTraiter = new HashMap<>();
 
             for (int i = 0; i < search.getSize(); i++) {
 
@@ -275,7 +277,7 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
                 if (affilieTraiter.containsKey(model.getNumeroAffilie())) {
                     avertissementEnTraitement = affilieTraiter.get(model.getNumeroAffilie());
                 } else { // autrement nous créons une nouvelle map d'avertissement pour l'affilié pas encore été traité
-                    avertissementEnTraitement = new HashMap<String, Object>();
+                    avertissementEnTraitement = new HashMap<>();
                     affilieTraiter.put(model.getNumeroAffilie(), avertissementEnTraitement);
                 }
 
@@ -342,8 +344,8 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
     private void checkDoublons(Collection<CompensationBusinessModel> recaps, ProtocoleLogger logger)
             throws JadeApplicationException {
 
-        Map<String, List<String>> listeIdEnteteParDossier = new HashMap<String, List<String>>();
-        Map<String, String> nomsAffilies = new HashMap<String, String>();
+        Map<String, List<String>> listeIdEnteteParDossier = new HashMap<>();
+        Map<String, String> nomsAffilies = new HashMap<>();
 
         for (CompensationBusinessModel compensationBusinessModel : recaps) {
             populateListeIdEnteteParDossier(logger, listeIdEnteteParDossier, nomsAffilies, compensationBusinessModel);
@@ -352,6 +354,7 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
         for (Entry<String, List<String>> entry : listeIdEnteteParDossier.entrySet()) {
             checkDoublonsEntetesDossier(logger, nomsAffilies, entry);
         }
+
     }
 
     private void checkDoublonsEntetesDossier(ProtocoleLogger logger, Map<String, String> nomsAffilies,
@@ -367,8 +370,9 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
 
             boolean hasDoubleEntetePrestation = DoublonPrestationsChecker.hasDoubleEntetePrestation(idEnteteDossier);
             boolean hasDoubleDetailPrestation = DoublonPrestationsChecker.hasDoubleDetailPrestation(idEnteteDossier);
+            boolean hasAnnonceRafam = checkAnnonceRafam(idEnteteDossier);
 
-            if (hasDoubleEntetePrestation || hasDoubleDetailPrestation) {
+            if (hasDoubleEntetePrestation || hasDoubleDetailPrestation || hasAnnonceRafam) {
                 DossierSearchModel dossierSearch = new DossierSearchModel();
                 dossierSearch.setForIdDossier(idDossier);
                 dossierSearch = ALServiceLocator.getDossierModelService().search(dossierSearch);
@@ -393,6 +397,14 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
                                 .getName(), "al.protocoles.compensation.doubleDetailsPrestation",
                                 new String[] { idDossier }));
             }
+
+            if(hasAnnonceRafam) {
+                logger.getWarningsLogger(numAffilie, nomAffilie).addMessage(
+                        new JadeBusinessMessage(JadeBusinessMessageLevels.WARN, CompensationFactureServiceImpl.class
+                                .getName(), "al.protocoles.compensation.annonce.envoyee.simulation.error",
+                                new String[]{idDossier}));
+            }
+
         } catch (Exception e) {
             logger.getWarningsLogger("?", "?").addMessage(
                     new JadeBusinessMessage(JadeBusinessMessageLevels.WARN, CompensationFactureServiceImpl.class
@@ -400,6 +412,15 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
                             new String[] { idDossier }));
 
         }
+    }
+
+    private boolean checkAnnonceRafam(List<String> idEnteteDossier) throws JadeApplicationException, JadePersistenceException {
+        for (String idEntete : idEnteteDossier) {
+            if (EntetePrestationModelChecker.hasAnnonceRafamEnCours(idEntete)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void populateListeIdEnteteParDossier(ProtocoleLogger logger,
@@ -447,7 +468,7 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
                     + idPassage + " is not a positif integer");
         }
 
-        if ((activitesAlloc == null) || (activitesAlloc.size() == 0)) {
+        if ((activitesAlloc == null) || (activitesAlloc.isEmpty())) {
             throw new ALCompensationPrestationException(
                     "CompensationFactureServiceImpl#loadRecapsDefinitif : activitesAlloc is null or empty ");
         }
@@ -479,7 +500,7 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
                     + periodeA + " is not a valid period (MM.YYYY)");
         }
 
-        if ((activitesAlloc == null) || (activitesAlloc.size() == 0)) {
+        if ((activitesAlloc == null) || (activitesAlloc.isEmpty())) {
             throw new ALCompensationPrestationException(
                     "CompensationFactureServiceImpl#loadRecapsSimulation : activitesAlloc is null or empty ");
         }
@@ -652,20 +673,20 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
             throws JadeApplicationException, JadePersistenceException {
 
         if (!JadeDateUtil.isGlobazDateMonthYear(periodeA)) {
-            throw new ALCompensationPrestationException("CompensationFactureServiceImpl#searchPrestations : "
+            throw new ALCompensationPrestationException(COMPENSATION_FACTURE_SERVICE_IMPL_SEARCH_PRESTATIONS
                     + periodeA + " is not a valid period (MM.YYYY)");
         }
 
         if (!ALConstPrestations.TYPE_INDIRECT_GROUPE.equals(typeCoti)
                 && !ALConstPrestations.TYPE_COT_PAR.equals(typeCoti)
                 && !ALConstPrestations.TYPE_COT_PERS.equals(typeCoti)) {
-            throw new ALCompensationPrestationException("CompensationFactureServiceImpl#searchPrestations : "
+            throw new ALCompensationPrestationException(COMPENSATION_FACTURE_SERVICE_IMPL_SEARCH_PRESTATIONS
                     + typeCoti + " is not valid");
         }
 
         try {
             if (!JadeCodesSystemsUtil.checkCodeSystemType(ALCSPrestation.GROUP_ETAT, etat)) {
-                throw new ALCompensationPrestationException("CompensationFactureServiceImpl#searchPrestations : "
+                throw new ALCompensationPrestationException(COMPENSATION_FACTURE_SERVICE_IMPL_SEARCH_PRESTATIONS
                         + etat + " is not valid");
             }
         } catch (Exception e) {

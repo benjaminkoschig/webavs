@@ -1,42 +1,5 @@
 package ch.globaz.al.businessimpl.services.paiement;
 
-import ch.globaz.al.properties.ALProperties;
-import ch.globaz.common.domaine.Montant;
-import globaz.globall.util.JACalendar;
-import globaz.globall.util.JACalendarGregorian;
-import globaz.globall.util.JADate;
-import globaz.globall.util.JAException;
-import globaz.globall.util.JANumberFormatter;
-import globaz.jade.client.util.JadeCodesSystemsUtil;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeNumericUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
-import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.i18n.JadeI18n;
-import globaz.jade.log.business.JadeBusinessMessage;
-import globaz.jade.log.business.JadeBusinessMessageLevels;
-import globaz.jade.persistence.JadePersistenceManager;
-import globaz.jade.persistence.model.JadeAbstractModel;
-import globaz.jade.persistence.model.JadeAbstractSearchModel;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import globaz.osiris.api.APIEcriture;
-import globaz.osiris.api.APIOperationOrdreVersement;
-import globaz.osiris.api.APISection;
-import globaz.osiris.db.ordres.CAOrdreGroupe;
-import globaz.osiris.external.IntRole;
-import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map.Entry;
 import ch.globaz.al.business.constantes.ALCSDossier;
 import ch.globaz.al.business.constantes.ALCSPrestation;
 import ch.globaz.al.business.constantes.ALCSTiers;
@@ -54,20 +17,44 @@ import ch.globaz.al.business.paiement.PaiementRecapitulatifBusinessModel;
 import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.business.services.models.prestation.RecapitulatifEntrepriseModelService;
 import ch.globaz.al.business.services.paiement.PaiementDirectService;
+import ch.globaz.al.businessimpl.checker.model.prestation.EntetePrestationModelChecker;
 import ch.globaz.al.businessimpl.services.ALAbstractBusinessServiceImpl;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.al.businessimpl.services.compensation.CompensationFactureServiceImpl;
 import ch.globaz.al.prestations.DoublonPrestationsChecker;
+import ch.globaz.al.properties.ALProperties;
+import ch.globaz.common.domaine.Montant;
 import ch.globaz.osiris.business.data.JournalConteneur;
-import ch.globaz.osiris.business.model.CompteAnnexeSimpleModel;
-import ch.globaz.osiris.business.model.EcritureSimpleModel;
-import ch.globaz.osiris.business.model.JournalSimpleModel;
-import ch.globaz.osiris.business.model.OrdreVersementComplexModel;
-import ch.globaz.osiris.business.model.SectionSimpleModel;
+import ch.globaz.osiris.business.model.*;
 import ch.globaz.osiris.business.service.CABusinessServiceLocator;
 import ch.globaz.pyxis.business.model.AdresseTiersDetail;
 import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
+import globaz.globall.util.*;
+import globaz.jade.client.util.JadeCodesSystemsUtil;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.i18n.JadeI18n;
+import globaz.jade.log.business.JadeBusinessMessage;
+import globaz.jade.log.business.JadeBusinessMessageLevels;
+import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
+import globaz.osiris.api.APIEcriture;
+import globaz.osiris.api.APIOperationOrdreVersement;
+import globaz.osiris.api.APISection;
+import globaz.osiris.db.ordres.CAOrdreGroupe;
+import globaz.osiris.external.IntRole;
+
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Implémentation du service permettant la gestion des paiements direct de prestations
@@ -75,6 +62,11 @@ import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
  * @author jts
  */
 public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl implements PaiementDirectService {
+
+    public static final String IS_NOT_A_VALID_PERIOD_MM_YYYY = " is not a valid period (MM.YYYY)";
+    public static final String JOURNAL_AF = "Journal AF";
+    public static final String PAIEMENT_DIRECT = "paiementDirect";
+    public static final String PAIEMENT_DIRECT_SERVICE_IMPL_VERSER_PRESTATIONS = "PaiementDirectServiceImpl#verserPrestations : ";
 
     private void ajouterEcrituresAuJournal(HashMap<String, EcritureSimpleModel> ecritures, JournalConteneur jc) {
         for (EcritureSimpleModel ecriture : ecritures.values()) {
@@ -114,7 +106,7 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
 
         if (!JadeDateUtil.isGlobazDateMonthYear(periodeA)) {
             throw new ALPaiementPrestationException("PaiementDirectServiceImpl#annulerPreparationPaiementDirect : "
-                    + periodeA + " is not a valid period (MM.YYYY)");
+                    + periodeA + IS_NOT_A_VALID_PERIOD_MM_YYYY);
         }
 
         ALServiceLocator.getPrestationBusinessService().updateEtat(
@@ -129,7 +121,7 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
     @Override
     public void annulerVersement(String idJournal) throws JadeApplicationException, JadePersistenceException {
 
-        HashSet<String> listeRecap = new HashSet<String>();
+        HashSet<String> listeRecap = new HashSet<>();
 
         EntetePrestationSearchModel search = new EntetePrestationSearchModel();
         search.setForIdJournal(idJournal);
@@ -178,8 +170,8 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
             throw new ALPaiementPrestationException("PaiementDirectServiceImpl#buildListPrestations : search is null");
         }
 
-        HashMap<String, PaiementBusinessModel> prestations = new HashMap<String, PaiementBusinessModel>();
-        HashMap<String, PaiementRecapitulatifBusinessModel> rubriques = new HashMap<String, PaiementRecapitulatifBusinessModel>();
+        HashMap<String, PaiementBusinessModel> prestations = new HashMap<>();
+        HashMap<String, PaiementRecapitulatifBusinessModel> rubriques = new HashMap<>();
         String currentNSS = null;
         BigDecimal solde = null;
         PaiementBusinessModel prest = null;
@@ -279,7 +271,7 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
             currentNSS = line.getNssAllocataire();
         }
 
-        ArrayList<PaiementBusinessModel> listPrest = new ArrayList<PaiementBusinessModel>(prestations.values());
+        ArrayList<PaiementBusinessModel> listPrest = new ArrayList<>(prestations.values());
         Collections.sort(listPrest);
 
         PaiementContainer container = new PaiementContainer();
@@ -373,12 +365,22 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
                                 .getName(), "al.protocoles.paiementDirect.checkDoublePrestation.error"));
             }
 
+
+            List<String> listSansDoublon = new ArrayList<>(new HashSet(paiement.getIdsEntete()));
+            for(String idEntete : listSansDoublon) {
+                if (EntetePrestationModelChecker.hasAnnonceRafamEnCours(idEntete)) {
+                    logger.getWarningsLogger(paiement.getIdDossier(), paiement.getNomAllocataire()).addMessage(
+                            new JadeBusinessMessage(JadeBusinessMessageLevels.WARN, CompensationFactureServiceImpl.class
+                                    .getName(), "al.protocoles.paiementDirect.annonce.envoyee.simulation.error"));
+                }
+            }
+
         }
 
         return logger;
     }
 
-    private void comptabiliserRecaps(HashSet<String> listeRecap) throws JadeApplicationServiceNotAvailableException,
+    private void comptabiliserRecaps(HashSet<String> listeRecap) throws
             JadeApplicationException, JadePersistenceException {
         // mise à jour des récap
         RecapitulatifEntrepriseModelService sRecap = ALServiceLocator.getRecapitulatifEntrepriseModelService();
@@ -386,7 +388,9 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
         for (String idRecap : listeRecap) {
             RecapitulatifEntrepriseModel recap = sRecap.read(idRecap);
             recap.setEtatRecap(ALCSPrestation.ETAT_CO);
-            sRecap.update(recap);
+            if(!recap.isNew()){
+                sRecap.update(recap);
+            }
         }
     }
 
@@ -400,7 +404,7 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
             HashMap<String, EcritureSimpleModel> ecritures, HashMap<String, EcritureSimpleModel> ecrituresRestitution)
             throws JadeApplicationException, JadePersistenceException {
 
-        HashSet<String> idsEntete = new HashSet<String>();
+        HashSet<String> idsEntete = new HashSet<>();
 
         BigDecimal solde = JadeNumericUtil.isEmptyOrZero(ca.getSolde()) ? new BigDecimal("0.00") : (new BigDecimal(
                 ca.getSolde())).negate();
@@ -570,6 +574,8 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
             idsEntete.add(credit.getIdEntete());
         }
 
+        List<String> decompteLiee = new ArrayList<>();
+
         // Traitement des en-têtes
         for (String idEntete : idsEntete) {
             // mise à jour de la prestation
@@ -588,10 +594,18 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
             listeRecap.add(entete.getIdRecap());
 
             // mis en CO du décompte lié à la prestation
-            ALServiceLocator.getDecompteAdiBusinessService().comptabiliserDecompteLie(entete.getIdEntete());
+            String idDecompteLiee = ALServiceLocator.getDecompteAdiBusinessService().comptabiliserDecompteLie(entete.getIdEntete());
+            if(idDecompteLiee != null) {
+                decompteLiee.add(idDecompteLiee);
+            }
             // suppression des prestations de travail
             ALServiceLocator.getDecompteAdiBusinessService().supprimerPrestationTravailDossier(entete.getIdDossier(),
                     entete.getPeriodeDe(), entete.getPeriodeA());
+        }
+
+        // Création des annonces RAFAM des décomptes ADI
+        if(!decompteLiee.isEmpty()){
+            ALServiceLocator.getDecompteAdiBusinessService().creeAnnonceDepuisDecompteADI(decompteLiee);
         }
 
         return totalAF;
@@ -603,10 +617,10 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
             JadeApplicationException {
 
         BigDecimal totalAF = new BigDecimal("0");
-        HashSet<String> listeRecap = new HashSet<String>();
-        HashMap<String, OrdreVersementComplexModel> ordres = new HashMap<String, OrdreVersementComplexModel>();
-        HashMap<String, EcritureSimpleModel> ecritures = new HashMap<String, EcritureSimpleModel>();
-        HashMap<String, EcritureSimpleModel> ecrituresRestitution = new HashMap<String, EcritureSimpleModel>();
+        HashSet<String> listeRecap = new HashSet<>();
+        HashMap<String, OrdreVersementComplexModel> ordres = new HashMap<>();
+        HashMap<String, EcritureSimpleModel> ecritures = new HashMap<>();
+        HashMap<String, EcritureSimpleModel> ecrituresRestitution = new HashMap<>();
 
         JournalConteneur journalContainer = createJournal(dateComptable);
 
@@ -630,10 +644,10 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
 
     private JournalSimpleModel checkMontantJournal(ProtocoleLogger logger, BigDecimal totalAF,
             JournalSimpleModel journal) throws JadePersistenceException, JadeApplicationException,
-            JadeApplicationServiceNotAvailableException, JadeNoBusinessLogSessionError {
+            JadeNoBusinessLogSessionError {
         if (totalAF.compareTo((new BigDecimal(JANumberFormatter.deQuote(CABusinessServiceLocator.getJournalService()
                 .getSommeEcritures(journal)))).negate()) != 0) {
-            logger.getErrorsLogger("0", "Journal AF").addMessage(
+            logger.getErrorsLogger("0", JOURNAL_AF).addMessage(
                     new JadeBusinessMessage(JadeBusinessMessageLevels.ERROR, PaiementDirectServiceImpl.class.getName(),
                             "al.protocoles.erreurs.osiris.differenceMontant"));
             JadeThread.logError(PaiementDirectServiceImpl.class.getName(),
@@ -648,7 +662,7 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
     }
 
     private JournalConteneur createJournal(String dateComptable) throws JadePersistenceException,
-            JadeApplicationException, JadeApplicationServiceNotAvailableException, ALPaiementPrestationException {
+            JadeApplicationException {
         JournalSimpleModel journal;
         journal = CABusinessServiceLocator.getJournalService().createJournal("AF ", dateComptable);
         JournalConteneur journalContainer = new JournalConteneur();
@@ -668,7 +682,7 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
             ProtocoleLogger logger, BigDecimal totalAF, HashSet<String> listeRecap,
             HashMap<String, OrdreVersementComplexModel> ordres, HashMap<String, EcritureSimpleModel> ecritures,
             HashMap<String, EcritureSimpleModel> ecrituresRestitution, JournalConteneur jc)
-            throws JadeApplicationException, ALPaiementPrestationException {
+            throws JadeApplicationException {
 
         // boucle sur les prestations regroupées par compte annexe (NSS allocataire)
         for (Entry<String, ArrayList<PaiementPrestationComplexModel>> compteAnnexe : groupByCompteAnnexe(prestations)
@@ -706,13 +720,14 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
                     JadeThread.logClear();
                     for (int iMessage = 0; iMessage < allMessages.length; iMessage++) {
 
-                        List<String> enteteMoved = new ArrayList<String>();
+                        List<String> enteteMoved = new ArrayList<>();
                         for (PaiementPrestationComplexModel prestation : prest) {
                             // si l'entete a déjà été déplacée plus besoin de le faire
                             if (!enteteMoved.contains(prestation.getIdEntete())) {
                                 EntetePrestationModel enteteToMove = null;
 
                                 try {
+                                    listeRecap.remove(prestation.getIdRecap());
                                     enteteToMove = ALServiceLocator.getEntetePrestationModelService().read(
                                             prestation.getIdEntete());
                                     ALServiceLocator.getPrestationBusinessService().deplaceDansRecapOuverte(
@@ -731,13 +746,13 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
                                 } catch (JadePersistenceException e1) {
 
                                     if (enteteToMove != null) {
-                                        logger.getErrorsLogger(idDossier, "Journal AF").addMessage(
+                                        logger.getErrorsLogger(idDossier, JOURNAL_AF).addMessage(
                                                 new JadeBusinessMessage(JadeBusinessMessageLevels.ERROR,
                                                         PaiementDirectServiceImpl.class.getName(),
                                                         "Impossible de déplacer la prestation ("
                                                                 + enteteToMove.getIdEntete() + ")"));
                                     } else {
-                                        logger.getErrorsLogger(idDossier, "Journal AF").addMessage(
+                                        logger.getErrorsLogger(idDossier, JOURNAL_AF).addMessage(
                                                 new JadeBusinessMessage(JadeBusinessMessageLevels.ERROR,
                                                         PaiementDirectServiceImpl.class.getName(),
                                                         "Impossible de déplacer la prestation concernée"));
@@ -794,8 +809,8 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
             PaiementPrestationComplexSearchModel prestations) {
 
         String currentNSS = null;
-        HashMap<String, ArrayList<PaiementPrestationComplexModel>> list = new HashMap<String, ArrayList<PaiementPrestationComplexModel>>();
-        ArrayList<PaiementPrestationComplexModel> prestCompteAnnexe = new ArrayList<PaiementPrestationComplexModel>();
+        HashMap<String, ArrayList<PaiementPrestationComplexModel>> list = new HashMap<>();
+        ArrayList<PaiementPrestationComplexModel> prestCompteAnnexe = new ArrayList<>();
 
         for (JadeAbstractModel prestation : prestations.getSearchResults()) {
             PaiementPrestationComplexModel prest = (PaiementPrestationComplexModel) prestation;
@@ -804,7 +819,7 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
             if (!prest.getNssAllocataire().equals(currentNSS)) {
                 if (!prestCompteAnnexe.isEmpty()) {
                     list.put(currentNSS, prestCompteAnnexe);
-                    prestCompteAnnexe = new ArrayList<PaiementPrestationComplexModel>();
+                    prestCompteAnnexe = new ArrayList<>();
                 }
 
                 currentNSS = prest.getNssAllocataire();
@@ -823,12 +838,11 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
     private HashMap<String, ArrayList<PaiementPrestationComplexModel>> groupByDebitCredit(
             ArrayList<PaiementPrestationComplexModel> prestations) throws JadeApplicationException {
 
-        HashMap<String, ArrayList<PaiementPrestationComplexModel>> list = new HashMap<String, ArrayList<PaiementPrestationComplexModel>>();
-        list.put(ALCSPrestation.BONI_DIRECT, new ArrayList<PaiementPrestationComplexModel>());
-        list.put(ALCSPrestation.BONI_RESTITUTION, new ArrayList<PaiementPrestationComplexModel>());
+        HashMap<String, ArrayList<PaiementPrestationComplexModel>> list = new HashMap<>();
+        list.put(ALCSPrestation.BONI_DIRECT, new ArrayList<>());
+        list.put(ALCSPrestation.BONI_RESTITUTION, new ArrayList<>());
 
-        for (JadeAbstractModel prestation : prestations) {
-            PaiementPrestationComplexModel prest = (PaiementPrestationComplexModel) prestation;
+        for (PaiementPrestationComplexModel prest : prestations) {
 
             if (prest.getBonificationEntete().equals(ALCSPrestation.BONI_DIRECT)) {
                 list.get(ALCSPrestation.BONI_DIRECT).add(prest);
@@ -862,7 +876,7 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
         PaiementPrestationComplexSearchModel search = new PaiementPrestationComplexSearchModel();
         search.setForIdJournal(idJournal);
         search.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
-        search.setOrderKey("paiementDirect");
+        search.setOrderKey(PAIEMENT_DIRECT);
         search = (PaiementPrestationComplexSearchModel) JadePersistenceManager.search(search);
 
         return buildListPrestations(search);
@@ -879,13 +893,13 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
 
         if (!JadeDateUtil.isGlobazDateMonthYear(periodeA)) {
             throw new ALPaiementPrestationException("PaiementDirectServiceImpl#loadPrestationsPreparees : " + periodeA
-                    + " is not a valid period (MM.YYYY)");
+                    + IS_NOT_A_VALID_PERIOD_MM_YYYY);
         }
         // recherche les prestations a 0.-
         PaiementPrestationComplexSearchModel searchPrestationsZero = searchPrestations(periodeA,
                 ALCSPrestation.ETAT_TR, true);
 
-        ArrayList<String> listIdEnteteTraites = new ArrayList<String>();
+        ArrayList<String> listIdEnteteTraites = new ArrayList<>();
 
         // chaque prestation à 0.- (non-ADI) sont mises dans une nouvelle récap
         for (int i = 0; i < searchPrestationsZero.getSize(); i++) {
@@ -919,7 +933,7 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
         PaiementPrestationComplexSearchModel searchPrestationsZero = searchPrestationsByNumProcessus(
                 ALCSPrestation.ETAT_TR, idProcessus, true);
 
-        ArrayList<String> listIdEnteteTraites = new ArrayList<String>();
+        ArrayList<String> listIdEnteteTraites = new ArrayList<>();
 
         // chaque prestation à 0.- (non-ADI) sont mises dans une nouvelle récap
         for (int i = 0; i < searchPrestationsZero.getSize(); i++) {
@@ -946,7 +960,7 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
 
         if (!JadeDateUtil.isGlobazDateMonthYear(periodeA)) {
             throw new ALPaiementPrestationException("PaiementDirectServiceImpl#loadPrestationsSimulation : " + periodeA
-                    + " is not a valid period (MM.YYYY)");
+                    + IS_NOT_A_VALID_PERIOD_MM_YYYY);
         }
 
         return buildListPrestations(searchPrestations(periodeA, ALCSPrestation.ETAT_SA, false));
@@ -975,7 +989,7 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
 
         if (!JadeDateUtil.isGlobazDateMonthYear(periodeA)) {
             throw new ALPaiementPrestationException("PaiementDirectServiceImpl#preparerPaiementDirect : " + periodeA
-                    + " is not a valid period (MM.YYYY)");
+                    + IS_NOT_A_VALID_PERIOD_MM_YYYY);
         }
 
         PaiementPrestationComplexSearchModel searchNonZero = searchPrestations(periodeA, ALCSPrestation.ETAT_SA, false);
@@ -1037,7 +1051,7 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
 
         if (!JadeDateUtil.isGlobazDateMonthYear(periodeA)) {
             throw new ALPaiementPrestationException("PaiementDirectServiceImpl#searchPrestations : " + periodeA
-                    + " is not a valid period (MM.YYYY)");
+                    + IS_NOT_A_VALID_PERIOD_MM_YYYY);
         }
 
         try {
@@ -1054,7 +1068,7 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
         search.setForPeriodeA(periodeA);
         search.setForEtat(etat);
         search.setForIdProcessusPeriodique("0");
-        HashSet<String> setBoni = new HashSet<String>();
+        HashSet<String> setBoni = new HashSet<>();
         setBoni.add(ALCSPrestation.BONI_DIRECT);
         setBoni.add(ALCSPrestation.BONI_RESTITUTION);
         search.setInBonifications(setBoni);
@@ -1064,7 +1078,7 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
         } else {
             search.setWhereKey("montantNonZeroAndAdiZero");
         }
-        search.setOrderKey("paiementDirect");
+        search.setOrderKey(PAIEMENT_DIRECT);
         search = (PaiementPrestationComplexSearchModel) JadePersistenceManager.search(search);
 
         return search;
@@ -1114,7 +1128,7 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
         PaiementPrestationComplexSearchModel search = new PaiementPrestationComplexSearchModel();
         search.setForEtat(etat);
         search.setForIdProcessusPeriodique(idProcessus);
-        HashSet<String> setBoni = new HashSet<String>();
+        HashSet<String> setBoni = new HashSet<>();
         setBoni.add(ALCSPrestation.BONI_DIRECT);
         setBoni.add(ALCSPrestation.BONI_RESTITUTION);
         search.setInBonifications(setBoni);
@@ -1124,7 +1138,7 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
         } else {
             search.setWhereKey("montantNonZeroAndAdiZero");
         }
-        search.setOrderKey("paiementDirect");
+        search.setOrderKey(PAIEMENT_DIRECT);
         search = (PaiementPrestationComplexSearchModel) JadePersistenceManager.search(search);
 
         return search;
@@ -1141,17 +1155,17 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
             ProtocoleLogger logger) throws JadeApplicationException, JadePersistenceException {
 
         if (!JadeDateUtil.isGlobazDateMonthYear(periodeA)) {
-            throw new ALPaiementPrestationException("PaiementDirectServiceImpl#verserPrestations : " + periodeA
-                    + " is not a valid period (MM.YYYY)");
+            throw new ALPaiementPrestationException(PAIEMENT_DIRECT_SERVICE_IMPL_VERSER_PRESTATIONS + periodeA
+                    + IS_NOT_A_VALID_PERIOD_MM_YYYY);
         }
 
         if (!JadeDateUtil.isGlobazDate(dateComptable)) {
-            throw new ALPaiementPrestationException("PaiementDirectServiceImpl#verserPrestations : " + dateComptable
+            throw new ALPaiementPrestationException(PAIEMENT_DIRECT_SERVICE_IMPL_VERSER_PRESTATIONS + dateComptable
                     + " is not a valid date");
         }
 
         if (logger == null) {
-            throw new ALPaiementPrestationException("PaiementDirectServiceImpl#verserPrestations : logger is null");
+            throw new ALPaiementPrestationException(PAIEMENT_DIRECT_SERVICE_IMPL_VERSER_PRESTATIONS +"logger is null");
         }
 
         return genererPaiement(dateComptable, loadPrestationsPreparees(periodeA), logger);
@@ -1173,7 +1187,7 @@ public class PaiementDirectServiceImpl extends ALAbstractBusinessServiceImpl imp
         }
 
         if (!JadeDateUtil.isGlobazDate(dateComptable)) {
-            throw new ALPaiementPrestationException("PaiementDirectServiceImpl#verserPrestations : " + dateComptable
+            throw new ALPaiementPrestationException(PAIEMENT_DIRECT_SERVICE_IMPL_VERSER_PRESTATIONS + dateComptable
                     + " is not a valid date");
         }
 

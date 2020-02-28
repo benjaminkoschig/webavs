@@ -1,7 +1,18 @@
 package ch.globaz.al.facturation.process;
 
+import ch.globaz.al.api.facturation.ALFacturationInterfaceImpl;
+import ch.globaz.al.business.compensation.CompensationBusinessModel;
+import ch.globaz.al.business.exceptions.prestations.ALPaiementPrestationException;
+import ch.globaz.al.business.loggers.ProtocoleLogger;
+import ch.globaz.al.business.models.prestation.EntetePrestationModel;
+import ch.globaz.al.business.models.prestation.EntetePrestationSearchModel;
+import ch.globaz.al.business.services.ALServiceLocator;
+import ch.globaz.al.business.services.documents.DocumentDataContainer;
+import ch.globaz.al.businessimpl.services.paiement.PaiementDirectServiceImpl;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.framework.bean.FWViewBeanInterface;
+import globaz.globall.context.BJadeThreadActivator;
+import globaz.globall.context.exception.BJadeMultipleJdbcConnectionInSameThreadException;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionInfo;
@@ -11,9 +22,13 @@ import globaz.globall.util.JACalendarGregorian;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.i18n.JadeI18n;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.log.business.JadeBusinessMessage;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.print.client.JadePrintServerFacade;
 import globaz.jade.print.message.JadePrintTaskDefinition;
 import globaz.jade.print.server.JadePrintDocumentContainer;
@@ -22,24 +37,15 @@ import globaz.jade.publish.client.JadePublishServerFacade;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.publish.message.JadePublishDocumentMessage;
 import globaz.jade.smtp.JadeSmtpClient;
-import globaz.musca.db.facturation.FAAfact;
-import globaz.musca.db.facturation.FAAfactManager;
-import globaz.musca.db.facturation.FAEnteteFacture;
-import globaz.musca.db.facturation.FAModulePassageManager;
-import globaz.musca.db.facturation.FAPassage;
+import globaz.musca.db.facturation.*;
 import globaz.musca.util.FAUtil;
 import globaz.naos.api.IAFAffiliation;
 import globaz.osiris.api.APISection;
+
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.Iterator;
-import ch.globaz.al.api.facturation.ALFacturationInterfaceImpl;
-import ch.globaz.al.business.compensation.CompensationBusinessModel;
-import ch.globaz.al.business.loggers.ProtocoleLogger;
-import ch.globaz.al.business.services.documents.DocumentDataContainer;
+import java.sql.SQLException;
+import java.util.*;
 
 public class ALFacturationProcess extends BProcess {
 
@@ -107,9 +113,8 @@ public class ALFacturationProcess extends BProcess {
             Iterator<CompensationBusinessModel> it = recaps.iterator();
             while (it.hasNext()) {
 
+                CompensationBusinessModel recap = it.next();
                 try {
-
-                    CompensationBusinessModel recap = it.next();
 
                     IAFAffiliation affiliationAF = getAffiliationFacturation(recap.getNumeroAffilie());
 
@@ -133,7 +138,7 @@ public class ALFacturationProcess extends BProcess {
                                         getSession().getApplication()), affiliationAF.getAffilieNumero(),
                                 APISection.ID_TYPE_SECTION_DECOMPTE_COTISATION, recap.getNumeroFacture(), getSession(),
                                 getTransaction());
-                        createLigneFacture(recap, enteteFacture, affiliationAF);
+                        createLigneFacture(recap, enteteFacture);
                         factuAPI.updateRecap(recap.getIdRecap(), numeroPassage, dateComptable, getTransaction());
                         getTransaction().commit();
 
@@ -141,11 +146,16 @@ public class ALFacturationProcess extends BProcess {
                         recapsProtocoles.add(recap);
                     }
                 } catch (Exception e) {
-                    getTransaction().rollback();
-                    errorMessage = "Une erreur s'est produite pendant le traitement d'une ou plusieurs récaps, veuillez consulter le protocole d'erreurs pour plus d'informations";
-                    hasError = true;
-                    logger.addFatalError(new JadeBusinessMessage(JadeBusinessMessageLevels.ERROR, this.getClass()
-                            .getName(), e.getMessage()));
+
+                    if (e.getCause().getMessage().contains("creerAnnoncesADI")) {
+                        errorRafam(logger, recap, e);
+                    } else {
+                        getTransaction().rollback();
+                        errorMessage = "Une erreur s'est produite pendant le traitement d'une ou plusieurs récaps, veuillez consulter le protocole d'erreurs pour plus d'informations";
+                        hasError = true;
+                        logger.addFatalError(new JadeBusinessMessage(JadeBusinessMessageLevels.ERROR, this.getClass()
+                                .getName(), e.getMessage()));
+                    }
                 }
                 count++;
             }
@@ -175,7 +185,6 @@ public class ALFacturationProcess extends BProcess {
             }
 
             publishProtocoles(factuAPI, logger, periode);
-            // this.removeWarnings();
 
             if (getTransaction().hasErrors() || hasError) {
                 getTransaction().rollback();
@@ -194,8 +203,79 @@ public class ALFacturationProcess extends BProcess {
         }
     }
 
-    private void createLigneFacture(CompensationBusinessModel recap, FAEnteteFacture enteteFacture,
-            IAFAffiliation affiliationAF) throws Exception {
+    private void errorRafam(ProtocoleLogger logger, CompensationBusinessModel recap, Exception e) throws JadeApplicationException, JadePersistenceException, BJadeMultipleJdbcConnectionInSameThreadException, SQLException {
+        // Rollback des éventuelles opérations faites relatives au compte annexe en cours
+        try {
+            getTransaction().rollback();
+        } catch (Exception e1) {
+            throw new ALPaiementPrestationException(
+                    "PaiementDirectServiceImpl#genererPourChaqueCompteAnnexe : unable to rollback", e);
+        }
+
+        String msg = JadeI18n.getInstance().getMessage(
+                JadeThread.currentLanguage(),"al.protocoles.paiementDirect.annonce.envoyee.compta.error");
+
+        deplaceDansProcahineRecap(logger, recap, msg);
+
+        // commit pour valider le déplacement des prestations dans la récap suivante
+        try {
+            getTransaction().commit();
+        } catch (Exception e1) {
+            throw new ALPaiementPrestationException(
+                    "ALFacturationProcess#_executeProcess : unable to commit (deplaceDansRecapOuverte)",
+                    e);
+        }
+    }
+
+    private void deplaceDansProcahineRecap(ProtocoleLogger logger, CompensationBusinessModel recap, String msg) throws JadeApplicationException, JadePersistenceException, BJadeMultipleJdbcConnectionInSameThreadException, SQLException {
+        BJadeThreadActivator.startUsingContext(getTransaction());
+        try {
+
+            List<String> enteteMoved = new ArrayList<>();
+
+            EntetePrestationSearchModel search = new EntetePrestationSearchModel();
+            search.setForIdRecap(recap.getIdRecap());
+            search.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+            search = ALServiceLocator.getEntetePrestationModelService().search(search);
+
+            // mise à jour des en-tête
+            for (int i = 0; i < search.getSize(); i++) {
+                EntetePrestationModel prestation = (EntetePrestationModel) search.getSearchResults()[i];
+
+                // si l'entete a déjà été déplacée plus besoin de le faire
+                if (!enteteMoved.contains(prestation.getIdEntete())) {
+                    EntetePrestationModel enteteToMove = null;
+
+                    try {
+                        enteteToMove = ALServiceLocator.getEntetePrestationModelService().read(
+                                prestation.getIdEntete());
+                        ALServiceLocator.getPrestationBusinessService().deplaceDansRecapOuverte(
+                                enteteToMove, true);
+                        enteteMoved.add(enteteToMove.getIdEntete());
+                        JadeBusinessMessage message = new JadeBusinessMessage(
+                                JadeBusinessMessageLevels.ERROR, PaiementDirectServiceImpl.class.getName(),
+                                msg.concat(
+                                        JadeI18n.getInstance().getMessage(
+                                                JadeThread.currentLanguage(),
+                                                "al.protocoles.paiementDirect.prestationReportee",
+                                                new String[]{enteteToMove.getPeriodeDe(),
+                                                        enteteToMove.getPeriodeA()})));
+                        logger.getWarningsLogger(recap.getNumeroAffilie(), recap.getNomAffilie()).addMessage(message);
+                    } catch (JadePersistenceException e1) {
+                        logger.getErrorsLogger(recap.getIdRecap(), "Journal AF").addMessage(
+                                new JadeBusinessMessage(JadeBusinessMessageLevels.ERROR,
+                                        PaiementDirectServiceImpl.class.getName(),
+                                        "Impossible de déplacer la prestation concernée"));
+
+                    }
+                }
+            }
+        } finally {
+            BJadeThreadActivator.stopUsingContext(getTransaction());
+        }
+    }
+
+    private void createLigneFacture(CompensationBusinessModel recap, FAEnteteFacture enteteFacture) throws Exception {
 
         // On reset le buffer d'erreur de la transaction
         getTransaction().clearErrorBuffer();
@@ -239,22 +319,22 @@ public class ALFacturationProcess extends BProcess {
         params.put(IAFAffiliation.FIND_FOR_NOAFFILIE, numeroAffilie);
 
         IAFAffiliation affiliation = (IAFAffiliation) getSession().getAPIFor(IAFAffiliation.class);
-        IAFAffiliation affiliations[] = affiliation.findAffiliationAF(params);
+        IAFAffiliation[] affiliations = affiliation.findAffiliationAF(params);
 
         if ((affiliations != null) && (affiliations.length > 0)) {
             affiliation = affiliations[0];
             affiliation.setISession(getSession());
+            IAFAffiliation newAff = affiliation.getAffiliationFacturationAF(JACalendar.today().toString());
+            // TODO: si succursale et que maison mère n'est pas active car pas de masse...mettre erreur
+            if (newAff == null) {
+                return affiliation;
+            }
+
+            return newAff;
         } else {
-            affiliation = null;
+            return null;
         }
 
-        IAFAffiliation newAff = affiliation.getAffiliationFacturationAF(JACalendar.today().toString());
-        // TODO: si succursale et que maison mère n'est pas active car pas de masse...mettre erreur
-        if (newAff == null) {
-            return affiliation;
-        }
-
-        return newAff;
     }
 
     public String getDateComptable() {
@@ -327,18 +407,17 @@ public class ALFacturationProcess extends BProcess {
          */
         if ((aContainer != null) && (aContainer.getDocumentCSV().size() > 0)) {
             try {
-                String fileNameBase = new String("protocole_csv_%d.csv");
+                String fileNameBase = "protocole_csv_%d.csv";
                 int counter = 0;
                 for (String csv : aContainer.getDocumentCSV()) {
 
                     if (!JadeStringUtil.isBlank(csv)) {
                         String fileName = Jade.getInstance().getPersistenceDir()
                                 + String.format(fileNameBase, counter++);
-                        FileOutputStream fichier = new FileOutputStream(fileName);
-
-                        fichier.write(csv.getBytes());
-                        fichier.flush();
-                        fichier.close();
+                        try (FileOutputStream fichier = new FileOutputStream(fileName)){
+                            fichier.write(csv.getBytes());
+                            fichier.flush();
+                        }
 
                         JadePublishDocumentInfo publishDocInfo = factuAPI.getPubInfoProtocoleCSV(numeroPassage,
                                 periode, typeCoti, getTransaction());

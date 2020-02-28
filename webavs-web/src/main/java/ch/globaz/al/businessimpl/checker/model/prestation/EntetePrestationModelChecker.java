@@ -1,13 +1,19 @@
 package ch.globaz.al.businessimpl.checker.model.prestation;
 
+import ch.globaz.al.business.constantes.ALCSCantons;
+import ch.globaz.al.business.constantes.ALCSDossier;
+import ch.globaz.al.business.constantes.ALCSPrestation;
 import ch.globaz.al.business.constantes.enumerations.RafamEtatAnnonce;
-import ch.globaz.al.business.constantes.enumerations.RafamTypeAnnonce;
-import ch.globaz.al.business.models.prestation.DetailPrestationModel;
-import ch.globaz.al.business.models.prestation.DetailPrestationSearchModel;
+import ch.globaz.al.business.constantes.enumerations.RafamFamilyAllowanceType;
+import ch.globaz.al.business.exceptions.model.prestation.ALEntetePrestationModelException;
+import ch.globaz.al.business.models.dossier.DossierFkSearchModel;
+import ch.globaz.al.business.models.prestation.*;
 import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
 import ch.globaz.al.business.models.rafam.AnnonceRafamSearchModel;
-import ch.globaz.common.domaine.Date;
-import ch.globaz.common.domaine.Periode;
+import ch.globaz.al.business.services.ALServiceLocator;
+import ch.globaz.al.businessimpl.checker.ALAbstractChecker;
+import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import ch.globaz.al.utils.ALImportUtils;
 import globaz.jade.client.util.JadeCodesSystemsUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
@@ -15,26 +21,12 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
-import ch.globaz.al.business.constantes.ALCSCantons;
-import ch.globaz.al.business.constantes.ALCSDossier;
-import ch.globaz.al.business.constantes.ALCSPrestation;
-import ch.globaz.al.business.exceptions.model.prestation.ALEntetePrestationModelException;
-import ch.globaz.al.business.models.dossier.DossierFkSearchModel;
-import ch.globaz.al.business.models.prestation.EntetePrestationModel;
-import ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseSearchModel;
-import ch.globaz.al.business.services.ALServiceLocator;
-import ch.globaz.al.businessimpl.checker.ALAbstractChecker;
-import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
-import ch.globaz.al.utils.ALImportUtils;
 import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * contrôle la validité des données de EntetePrestation
@@ -138,8 +130,7 @@ public abstract class EntetePrestationModelChecker extends ALAbstractChecker {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    private static void checkCodesystemIntegrity(EntetePrestationModel entetePrest) throws JadeApplicationException,
-            JadePersistenceException {
+    private static void checkCodesystemIntegrity(EntetePrestationModel entetePrest) throws JadeApplicationException {
         if (ALAbstractChecker.hasError()) {
             return;
         }
@@ -203,8 +194,7 @@ public abstract class EntetePrestationModelChecker extends ALAbstractChecker {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    private static void checkDatabaseIntegrity(EntetePrestationModel entetePrest) throws JadeApplicationException,
-            JadePersistenceException {
+    private static void checkDatabaseIntegrity(EntetePrestationModel entetePrest) {
 
         if (ALAbstractChecker.hasError()) {
             return;
@@ -387,10 +377,27 @@ public abstract class EntetePrestationModelChecker extends ALAbstractChecker {
                         "al.prestation.recapEntrepriseModel.etat.businessIntegrity.verrouille");
             }
         }
+    }
 
-        // Vérifie si les annonces des prestations ADI ont été envoyées
-        if (ALCSPrestation.STATUT_ADI.equals(entetePrestationModel.getStatut())
-            && !ALCSPrestation.ETAT_TMP.equals(entetePrestationModel.getEtatPrestation())) {
+    /**
+     * Vérifie si des annonces ADI sont en cours d'envoie pour cette entête
+     * @param entetePrestationModel
+     * @throws JadePersistenceException
+     * @throws JadeApplicationException
+     */
+    public static boolean hasAnnonceRafamEnCours(String idEntete) throws JadePersistenceException, JadeApplicationException {
+
+        EntetePrestationSearchModel searchPrestation = new EntetePrestationSearchModel();
+        searchPrestation.setForIdEntete(idEntete);
+        searchPrestation.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_USEDEFAULT);
+        searchPrestation.setWhereKey("idAndADI");
+        searchPrestation = ALImplServiceLocator.getEntetePrestationModelService().search(searchPrestation);
+
+        Boolean annonceEnCours = false;
+
+        if(searchPrestation.getSearchResults().length > 0) {
+            EntetePrestationModel entetePrestationModel = (EntetePrestationModel) searchPrestation.getSearchResults()[0];
+
             DetailPrestationSearchModel search = new DetailPrestationSearchModel();
             search.setForIdEntetePrestation(entetePrestationModel.getIdEntete());
             search = (DetailPrestationSearchModel) JadePersistenceManager.search(search);
@@ -398,54 +405,49 @@ public abstract class EntetePrestationModelChecker extends ALAbstractChecker {
             List<String> listIdDroit = new ArrayList<>();
             for (JadeAbstractModel abstractEnteteModel : search.getSearchResults()) {
                 DetailPrestationModel detail = (DetailPrestationModel) abstractEnteteModel;
-                if(!listIdDroit.contains(detail.getIdDroit())) {
+                if (!listIdDroit.contains(detail.getIdDroit())) {
                     listIdDroit.add(detail.getIdDroit());
                 }
             }
 
-            String enteteCreationSpy = entetePrestationModel.getCreationSpy().substring(0, 8);
+            String annee = entetePrestationModel.getPeriodeDe().substring(3, 7);
 
             for (String idDroit : listIdDroit) {
-                AnnonceRafamSearchModel rafamModel = ALImplServiceLocator.getAnnoncesRafamSearchService()
-                        .loadAnnoncesForDroit(idDroit);
+                if(checkAnnnonce(annee, idDroit)) {
+                    annonceEnCours = true;
+                }
+            }
 
-                for(JadeAbstractModel abstractModel : rafamModel.getSearchResults()) {
-                    AnnonceRafamModel annonce = (AnnonceRafamModel) abstractModel;
-                    String annnonceCreationSpy = annonce.getCreationSpy().substring(0, 8);
+        }
+        return annonceEnCours;
+    }
 
-                    if(annnonceCreationSpy.equals(enteteCreationSpy)
-                            && !RafamEtatAnnonce.A_TRANSMETTRE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(annonce.getEtat()))
-                            && !RafamTypeAnnonce._68C_ANNULATION.equals(RafamTypeAnnonce.getRafamTypeAnnonce(annonce.getTypeAnnonce()))
-                            && hasPrestationForAnnonce(search, annonce)
-                            && !hasAnnonceAnnulation(annonce, annnonceCreationSpy)) {
-                        JadeThread.logError(EntetePrestationModelChecker.class.getName(),
-                                "al.prestation.entetePrestationModel.idEntete.deleteIntegrity.adi.rafam.envoyee");
+    /**
+     * Vérifie si une annonce ADI est en cours d'envoie pour ce droit
+     * @param search
+     * @param enteteCreationSpy
+     * @param idDroit
+     * @throws JadeApplicationException
+     * @throws JadePersistenceException
+     */
+    public static boolean checkAnnnonce(String annee, String idDroit) throws JadeApplicationException, JadePersistenceException {
 
-                    }
+        AnnonceRafamSearchModel searchAnnonce = new AnnonceRafamSearchModel();
+        searchAnnonce.setForIdDroit(idDroit);
+        searchAnnonce.setForEtatAnnonce(RafamEtatAnnonce.TRANSMIS.getCS());
+        searchAnnonce.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+        searchAnnonce.setForGenrePrestation(RafamFamilyAllowanceType.ADI.getCodeCentrale());
+        searchAnnonce = ALServiceLocator.getAnnonceRafamModelService().search(searchAnnonce);
+
+        if(searchAnnonce.getSearchResults().length > 0) {
+            for (JadeAbstractModel model : searchAnnonce.getSearchResults()) {
+                AnnonceRafamModel rafamModel =  (AnnonceRafamModel) model;
+                if(!JadeStringUtil.isEmpty(rafamModel.getDebutDroit()) && rafamModel.getDebutDroit().endsWith(annee)) {
+                    return true;
                 }
             }
         }
-    }
 
-    private static boolean hasAnnonceAnnulation(AnnonceRafamModel annonce, String creationSpy) throws JadeApplicationException, JadePersistenceException {
-        AnnonceRafamModel rafamModel = ALImplServiceLocator.getAnnoncesRafamSearchService().getLastAnnonceForRecordNumber(annonce.getRecordNumber());
-        if(rafamModel.getId()!= annonce.getId()
-                && RafamTypeAnnonce._68C_ANNULATION.equals(RafamTypeAnnonce.getRafamTypeAnnonce(rafamModel.getTypeAnnonce()))
-                && RafamEtatAnnonce.VALIDE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(rafamModel.getEtat()))) {
-            return true;
-        }
-        return false;
-    }
-
-    private static boolean hasPrestationForAnnonce(DetailPrestationSearchModel search, AnnonceRafamModel annonce) {
-        for (JadeAbstractModel abstractEnteteModel : search.getSearchResults()) {
-            DetailPrestationModel detail = (DetailPrestationModel) abstractEnteteModel;
-            String dateToTest = new Date(detail.getPeriodeValidite()).getSwissValue();
-            if (annonce.getIdDroit().equals(detail.getIdDroit())
-                    && new Periode(annonce.getDebutDroit(), annonce.getEcheanceDroit()).isDateDansLaPeriode(dateToTest)) {
-                return true;
-            }
-        }
         return false;
     }
 
@@ -460,8 +462,7 @@ public abstract class EntetePrestationModelChecker extends ALAbstractChecker {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    private static void checkMandatory(EntetePrestationModel entetePrest) throws JadeApplicationException,
-            JadePersistenceException {
+    private static void checkMandatory(EntetePrestationModel entetePrest) {
 
         // id du dossier
         if (JadeStringUtil.isEmpty(entetePrest.getIdDossier())) {

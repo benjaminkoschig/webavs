@@ -109,6 +109,13 @@
 			    <search-field name="forMontantTotal" field-ref="montantTotal" operation="GREATER_OR_EQUALS"/>
 			</search-group>
 		</search-definition>
+		<search-definition name="idAndADI">
+			<search-group operator="AND">
+				<search-field name="forIdEntete" field-ref="idEntete" operation="EQUALS"/>
+				<search-field name="forStatut" field-ref="statut" operation="EQUALS" value="61230003"/>
+				<search-field name="forEtat" field-ref="etatPrestation" operation="NOT_EQUALS" value="61170005"/>
+			</search-group>
+		</search-definition>
 		<order-by name="numGeneration">
 			<order-field field-ref="numPsgGeneration" order="DESC"/>
 		</order-by>
