@@ -3,6 +3,8 @@ package ch.globaz.al.businessimpl.calcul.modes;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import java.util.HashSet;
+import java.util.Set;
+
 import ch.globaz.al.business.constantes.ALCSCantons;
 import ch.globaz.al.business.constantes.ALCSTarif;
 import ch.globaz.al.business.exceptions.calcul.ALCalculException;
@@ -18,8 +20,8 @@ import ch.globaz.al.business.models.droit.DroitModel;
 public class CalculModeFPVVisana extends CalculModeAbstract {
 
     @Override
-    protected HashSet<String> getCategoriesList(DossierComplexModelRoot dossier, DroitModel droitModel,
-            String dateCalcul) throws JadeApplicationException, JadePersistenceException {
+    protected Set<String> getCategoriesList(DossierComplexModelRoot dossier, DroitModel droitModel,
+                                            String dateCalcul) throws JadeApplicationException, JadePersistenceException {
 
         return super.getCategoriesList(dossier, droitModel, dateCalcul);
         // TODO : actuellement la FPV force le tarif des dossiers de la VISANA

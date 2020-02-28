@@ -7,8 +7,10 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.business.JadeBusinessMessage;
 import globaz.jade.log.business.renderer.JadeBusinessMessageRenderer;
-import java.util.ArrayList;
-import java.util.HashMap;
+
+import java.util.List;
+import java.util.Map;
+
 import ch.globaz.al.business.constantes.ALConstProtocoles;
 import ch.globaz.al.business.exceptions.protocoles.ALProtocoleException;
 import ch.globaz.al.business.loggers.ProtocoleLogger;
@@ -59,7 +61,7 @@ public abstract class AbstractProtocoleErreurs extends AbstractProtocole {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    protected DocumentData init(ProtocoleLogger logger, HashMap<String, String> params)
+    protected DocumentData init(ProtocoleLogger logger, Map<String, String> params)
             throws JadePersistenceException, JadeApplicationException {
         DocumentData document = super.init(params);
         setTitles(document);
@@ -136,7 +138,7 @@ public abstract class AbstractProtocoleErreurs extends AbstractProtocole {
      * 
      * @see ch.globaz.al.business.loggers.ProtocoleLogger
      */
-    protected void setTable(DocumentData document, String tableName, HashMap<String, ProtocoleLogger> errorsLogs)
+    protected void setTable(DocumentData document, String tableName, Map<String, ProtocoleLogger> errorsLogs)
             throws JadeApplicationException {
 
         if (document == null) {
@@ -192,7 +194,7 @@ public abstract class AbstractProtocoleErreurs extends AbstractProtocole {
      * @throws JadeApplicationException
      *             Exception levée si le log d'erreurs ne peut être récupéré
      */
-    protected void setTableFatal(DocumentData document, ArrayList<JadeBusinessMessage> errorsLog)
+    protected void setTableFatal(DocumentData document, List<JadeBusinessMessage> errorsLog)
             throws JadeApplicationException {
         Collection tabErreurs = new Collection("tableFatal");
 

@@ -9,9 +9,12 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.log.business.JadeBusinessMessage;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
+
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import ch.globaz.al.business.constantes.ALCSAffilie;
 import ch.globaz.al.business.constantes.ALCSDossier;
 import ch.globaz.al.business.constantes.ALCSDroit;
@@ -116,7 +119,7 @@ public class ContextDossier {
     /**
      * Résultat du calcul
      */
-    private ArrayList<CalculBusinessModel> calcul = null;
+    private List<CalculBusinessModel> calcul = null;
 
     /**
      * Contexte d'affilié auquel est lié le contexte de dossier
@@ -214,8 +217,7 @@ public class ContextDossier {
     /**
      * Constructeur privé. Utiliser la méthode <code>getContextDossier</code> pour récupérer une instance de context
      * 
-     * @see ContextDossier#getContextDossier(DossierComplexModel, String, String, String, ContextAffilie, boolean,
-     *      String, TypeGeneration)
+     * @see ContextDossier#getContextDossier(DossierComplexModel dossier, String debutPeriode, String finPeriode, String montantForce, ContextAffilie contextAffilie, Bonification bonification, String nbUnites, TypeGeneration typeGen)
      */
     private ContextDossier() {
         // Utiliser la méthode getContextDossier
@@ -321,7 +323,7 @@ public class ContextDossier {
     private void calculFilter() throws JadeApplicationException {
         if (JadeNumericUtil.isIntegerPositif(idDroit)) {
 
-            ArrayList<CalculBusinessModel> calculNew = new ArrayList<CalculBusinessModel>();
+            List<CalculBusinessModel> calculNew = new ArrayList<>();
 
             for (CalculBusinessModel item : calcul) {
                 if (idDroit.equals(item.getDroit().getId())) {
@@ -346,7 +348,7 @@ public class ContextDossier {
     public void checkMontantForce() throws JadeApplicationException {
         if (hasPrestations && JadeNumericUtil.isNumericPositif(dossier.getDossierModel().getMontantForce())) {
 
-            ArrayList<String> csvVal = new ArrayList<String>();
+            List<String> csvVal = new ArrayList<>();
             csvVal.add(dossier.getDossierModel().getIdDossier());
             csvVal.add(getContextAffilie().getNumAffilie());
 
@@ -413,7 +415,7 @@ public class ContextDossier {
      *             souhaitée
      */
     @SuppressWarnings("unchecked")
-    public ArrayList<CalculBusinessModel> getCalcul() throws JadeApplicationException, JadePersistenceException {
+    public List<CalculBusinessModel> getCalcul() throws JadeApplicationException, JadePersistenceException {
 
         String periode = getNextPeriode();
 
@@ -430,7 +432,7 @@ public class ContextDossier {
             if (!ALCSPrestation.GENERATION_TYPE_GEN_DOSSIER.equals(contextAffilie.getTypeGeneration())
                     && prestationExistsForPeriod(periode)) {
 
-                ArrayList<String> csvVal = new ArrayList<String>();
+                List<String> csvVal = new ArrayList<>();
                 csvVal.add(dossier.getDossierModel().getIdDossier());
                 csvVal.add(getContextAffilie().getNumAffilie());
 
@@ -447,7 +449,7 @@ public class ContextDossier {
                                 new JadeBusinessMessage(JadeBusinessMessageLevels.WARN, ContextDossier.class.getName(),
                                         "al.generation.warning.prestationExistante", new String[] { periode }));
 
-                calcul = new ArrayList<CalculBusinessModel>();
+                calcul = new ArrayList<>();
                 return calcul;
 
                 // si le dossier n'est pas valide pour la période à générer
@@ -455,7 +457,7 @@ public class ContextDossier {
                     || JadeDateUtil.isDateBefore(ALDateUtils.getDateFinMoisPourPeriode(periode), dossier
                             .getDossierModel().getDebutActivite())) {
 
-                calcul = new ArrayList<CalculBusinessModel>();
+                calcul = new ArrayList<>();
                 return calcul;
 
                 // sinon, exécution du calcul pour la période. Si le montant
@@ -473,12 +475,12 @@ public class ContextDossier {
 
                 calculFilter();
 
-                HashMap total = ALImplServiceLocator.getCalculMontantsService()
+                Map total = ALImplServiceLocator.getCalculMontantsService()
                         .calculerTotalMontant(dossier.getDossierModel(), calcul, unite,
                                 (JadeStringUtil.isEmpty(nbJourDebutOuFin) ? nbUnites : nbJourDebutOuFin), true,
                                 "01." + periode);
 
-                calcul = (ArrayList) total.get(ALConstCalcul.DROITS_CALCULES);
+                calcul = (List) total.get(ALConstCalcul.DROITS_CALCULES);
                 Double montantTotal = new Double((String) total.get(ALConstCalcul.TOTAL_EFFECTIF));
 
                 if (totalPrecedent == null) {
@@ -849,7 +851,7 @@ public class ContextDossier {
 
         for (int i = 0; (messages != null) && (i < messages.length); i++) {
 
-            ArrayList<String> csvVal = new ArrayList<String>();
+            List<String> csvVal = new ArrayList<>();
             csvVal.add(dossier.getDossierModel().getIdDossier());
             csvVal.add(getContextAffilie().getNumAffilie());
 

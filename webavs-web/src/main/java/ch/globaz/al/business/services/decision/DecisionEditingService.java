@@ -6,6 +6,9 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import ch.ech.xmlns.ech_0044._2.PersonIdentificationPartnerType;
 import ch.globaz.al.business.models.dossier.DossierComplexModel;
 import ch.globaz.al.business.models.dossier.DossierModel;
@@ -31,7 +34,7 @@ public interface DecisionEditingService extends JadeApplicationService {
      * Méthode qui reprend les données d'une adresse de paiement
      */
 
-    public CoordoneesPaiementType buildAdressePaiement(String idTiers, ch.ech.xmlns.ech_0010._4.ObjectFactory ech10of)
+     CoordoneesPaiementType buildAdressePaiement(String idTiers, ch.ech.xmlns.ech_0010._4.ObjectFactory ech10of)
             throws JadeApplicationException, JadePersistenceException;
 
     /**
@@ -42,7 +45,7 @@ public interface DecisionEditingService extends JadeApplicationService {
      * @throws JadeApplicationException
      * @throws JadePersistenceException
      */
-    public EnteteGlobaleType buildEntetesDecisions(EditingHelper h, EnteteGlobaleType enteteGlobale,
+     EnteteGlobaleType buildEntetesDecisions(EditingHelper h, EnteteGlobaleType enteteGlobale,
             DossierComplexModel dossier, String uuid) throws JadeApplicationException, JadePersistenceException;
 
     /**
@@ -68,8 +71,8 @@ public interface DecisionEditingService extends JadeApplicationService {
      * @throws JadeApplicationException
      * @throws JadePersistenceException
      */
-    public void getAllocationsType(DecisionAFRootType decAF, DossierComplexModel dossier, ObjectFactory bof,
-            HashMap<?, ?> total, ArrayList<CalculBusinessModel> calcul) throws JadeApplicationException,
+     void getAllocationsType(DecisionAFRootType decAF, DossierComplexModel dossier, ObjectFactory bof,
+                             Map<?, ?> total, List<CalculBusinessModel> calcul) throws JadeApplicationException,
             JadePersistenceException;
 
     /**
@@ -80,7 +83,7 @@ public interface DecisionEditingService extends JadeApplicationService {
      * @throws JadeApplicationException
      * @throws JadePersistenceException
      */
-    public DecisionAFRootType getContent(DecisionAFRootType decAF, DossierComplexModel dossierModel)
+    DecisionAFRootType getContent(DecisionAFRootType decAF, DossierComplexModel dossierModel)
             throws JadeApplicationException, JadePersistenceException;
 
     /**
@@ -91,7 +94,7 @@ public interface DecisionEditingService extends JadeApplicationService {
      * @throws JadePersistenceException
      */
 
-    public AffilieType getContentAffilie(AffilieType affilieType, DossierModel dossier)
+    AffilieType getContentAffilie(AffilieType affilieType, DossierModel dossier)
             throws JadeApplicationException, JadePersistenceException;
 
     /**
@@ -102,7 +105,7 @@ public interface DecisionEditingService extends JadeApplicationService {
      * @throws JadeApplicationException
      * @throws JadePersistenceException
      */
-    public AllocataireType getContentAllocataire(AllocataireType allocType, DossierComplexModel dossierModel,
+     AllocataireType getContentAllocataire(AllocataireType allocType, DossierComplexModel dossierModel,
             ObjectFactory bof, ch.ech.xmlns.ech_0010._4.ObjectFactory ech10of,
             ch.inforom.xmlns.editing_common._1.ObjectFactory comof) throws JadeApplicationException,
             JadePersistenceException;
@@ -115,7 +118,7 @@ public interface DecisionEditingService extends JadeApplicationService {
      * @throws JadeApplicationException
      * @throws JadePersistenceException
      */
-    public PersonIdentificationPartnerType getContentPersonneType(PersonIdentificationPartnerType persType,
+     PersonIdentificationPartnerType getContentPersonneType(PersonIdentificationPartnerType persType,
             PersonneEtendueComplexModel personne) throws JadeApplicationException, JadePersistenceException;
 
     /**
@@ -127,8 +130,8 @@ public interface DecisionEditingService extends JadeApplicationService {
      * @throws JadePersistenceException
      */
 
-    public void getDroitsDivers(DecisionAFRootType decAf, DossierComplexModel dossier, ObjectFactory bof,
-            ArrayList<CalculBusinessModel> resultatCalcul) throws JadeApplicationException, JadePersistenceException;
+     void getDroitsDivers(DecisionAFRootType decAf, DossierComplexModel dossier, ObjectFactory bof,
+            List<CalculBusinessModel> resultatCalcul) throws JadeApplicationException, JadePersistenceException;
 
     /**
      * Méthode qui génère les données des droits pour le docuemnt .xml
@@ -138,8 +141,7 @@ public interface DecisionEditingService extends JadeApplicationService {
      * @throws JadeApplicationException
      * @throws JadePersistenceException
      */
-    public void getDroitsEnfantType(DecisionAFRootType decAF, DossierComplexModel dossier, ObjectFactory bof,
-            ArrayList<CalculBusinessModel> resultatCalcul) throws JadeApplicationException, JadePersistenceException;
+     void getDroitsEnfantType(DecisionAFRootType decAF, DossierComplexModel dossier, ObjectFactory bof, List<CalculBusinessModel> resultatCalcul) throws JadeApplicationException, JadePersistenceException;
 
     /**
      * 
@@ -148,6 +150,6 @@ public interface DecisionEditingService extends JadeApplicationService {
      * @throws JadePersistenceException
      */
 
-    public void getEnteteEditionType(EditionType edition, DossierComplexModel dossier) throws JadeApplicationException,
+     void getEnteteEditionType(EditionType edition, DossierComplexModel dossier) throws JadeApplicationException,
             JadePersistenceException;
 }

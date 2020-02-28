@@ -3,6 +3,8 @@ package ch.globaz.al.businessimpl.services.calcul;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import java.util.ArrayList;
+import java.util.List;
+
 import ch.globaz.al.business.exceptions.calcul.ALCalculException;
 import ch.globaz.al.business.models.dossier.DossierAgricoleComplexModel;
 import ch.globaz.al.business.models.dossier.DossierComplexModel;
@@ -82,7 +84,7 @@ public abstract class CalculAbstractService extends ALAbstractBusinessServiceImp
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    protected ArrayList<CalculBusinessModel> execute(ContextCalcul contextCalcul) throws JadeApplicationException,
+    protected List<CalculBusinessModel> execute(ContextCalcul contextCalcul) throws JadeApplicationException,
             JadePersistenceException {
 
         // récupération du type de calcul

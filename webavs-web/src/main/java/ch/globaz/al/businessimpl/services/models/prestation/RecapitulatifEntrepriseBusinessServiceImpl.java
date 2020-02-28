@@ -7,9 +7,8 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
+import java.util.*;
+
 import ch.globaz.al.business.constantes.ALCSAffilie;
 import ch.globaz.al.business.constantes.ALCSDossier;
 import ch.globaz.al.business.constantes.ALCSPrestation;
@@ -40,7 +39,7 @@ public class RecapitulatifEntrepriseBusinessServiceImpl extends ALAbstractBusine
         RecapitulatifEntrepriseBusinessService {
 
     @Override
-    public String calculMontantPourUneRecapEntreprise(String idRecap, ArrayList listeRecap)
+    public String calculMontantPourUneRecapEntreprise(String idRecap, List listeRecap)
             throws JadePersistenceException, JadeApplicationException {
         double montantTotalRecap = 0.00d;
         // contrôle des paramètres
@@ -363,7 +362,7 @@ public class RecapitulatifEntrepriseBusinessServiceImpl extends ALAbstractBusine
     }
 
     @Override
-    public ArrayList<RecapitulatifEntrepriseImpressionComplexSearchModel> resultSearchRecap(
+    public List<RecapitulatifEntrepriseImpressionComplexSearchModel> resultSearchRecap(
             RecapitulatifEntrepriseImpressionComplexSearchModel recap, String typeRecap, String periodeA,
             String etatRecap) throws JadePersistenceException, JadeApplicationException {
         // vérification des paramètres
@@ -396,17 +395,17 @@ public class RecapitulatifEntrepriseBusinessServiceImpl extends ALAbstractBusine
 
         }
 
-        ArrayList<RecapitulatifEntrepriseImpressionComplexSearchModel> listRecap = new ArrayList<RecapitulatifEntrepriseImpressionComplexSearchModel>();
+        List<RecapitulatifEntrepriseImpressionComplexSearchModel> listRecap = new ArrayList<>();
         // cotisations groupées
         if (JadeStringUtil.equals(typeRecap, ALConstPrestations.TYPE_INDIRECT_GROUPE, false)) {
 
             recap = initSearchForAllTypeRecap(periodeA, etatRecap);
             // ajout de la bonif indirect
-            HashSet inTypeBonification = new HashSet();
+            Set inTypeBonification = new HashSet();
             inTypeBonification.add(ALCSPrestation.BONI_INDIRECT);
             recap.setInTypeBonification(inTypeBonification);
             // HashSet des type d'activit exclure
-            HashSet<String> notInActivite = new HashSet<String>();
+            Set<String> notInActivite = new HashSet<>();
             notInActivite.add(ALCSDossier.ACTIVITE_AGRICULTEUR);
             notInActivite.add(ALCSDossier.ACTIVITE_INDEPENDANT);
             notInActivite.add(ALCSDossier.ACTIVITE_PECHEUR);
@@ -429,11 +428,11 @@ public class RecapitulatifEntrepriseBusinessServiceImpl extends ALAbstractBusine
             // .getDossierBusinessService().getActivitesCategorieCotPers();
             recap = initSearchForAllTypeRecap(periodeA, etatRecap);
             // ajout de la bonif indirect
-            HashSet inTypeBonification = new HashSet();
+            Set inTypeBonification = new HashSet();
             inTypeBonification.add(ALCSPrestation.BONI_INDIRECT);
             recap.setInTypeBonification(inTypeBonification);
             // HashSet des type d'activit exclure
-            HashSet<String> notInActivite = new HashSet<String>();
+            Set<String> notInActivite = new HashSet<>();
             notInActivite.add(ALCSDossier.ACTIVITE_AGRICULTEUR);
             notInActivite.add(ALCSDossier.ACTIVITE_INDEPENDANT);
             notInActivite.add(ALCSDossier.ACTIVITE_NONACTIF);
@@ -454,11 +453,11 @@ public class RecapitulatifEntrepriseBusinessServiceImpl extends ALAbstractBusine
 
             recap = initSearchForAllTypeRecap(periodeA, etatRecap);
             // ajout de la bonif indirect
-            HashSet inTypeBonification = new HashSet();
+            Set inTypeBonification = new HashSet();
             inTypeBonification.add(ALCSPrestation.BONI_INDIRECT);
             recap.setInTypeBonification(inTypeBonification);
             // HashSet des type d'activit exclure
-            HashSet<String> notInActivite = new HashSet<String>();
+            Set<String> notInActivite = new HashSet<>();
 
             notInActivite.add(ALCSDossier.ACTIVITE_AGRICULTEUR);
             notInActivite.add(ALCSDossier.ACTIVITE_COLLAB_AGRICOLE);
@@ -480,7 +479,7 @@ public class RecapitulatifEntrepriseBusinessServiceImpl extends ALAbstractBusine
         if (JadeStringUtil.equals(typeRecap, ALConstPrestations.TYPE_DIRECT, false)) {
 
             recap = initSearchForAllTypeRecap(periodeA, etatRecap);
-            HashSet typeBonification = new HashSet();
+            Set typeBonification = new HashSet();
             typeBonification.add(ALCSPrestation.BONI_DIRECT);
             typeBonification.add(ALCSPrestation.BONI_RESTITUTION);
 
@@ -490,7 +489,7 @@ public class RecapitulatifEntrepriseBusinessServiceImpl extends ALAbstractBusine
             recap.setInTypeBonification(typeBonification);
             // exclure les catégories
             // HashSet des type d'activit exclure
-            HashSet<String> notInActivite = new HashSet<String>();
+            Set<String> notInActivite = new HashSet<>();
 
             notInActivite.add(ALCSDossier.ACTIVITE_AGRICULTEUR);
             notInActivite.add(ALCSDossier.ACTIVITE_INDEPENDANT);
@@ -512,9 +511,9 @@ public class RecapitulatifEntrepriseBusinessServiceImpl extends ALAbstractBusine
     }
 
     @Override
-    public ArrayList<RecapitulatifEntrepriseImpressionComplexSearchModel> resultSearchRecap(String noLot)
+    public List<RecapitulatifEntrepriseImpressionComplexSearchModel> resultSearchRecap(String noLot)
             throws JadePersistenceException, JadeApplicationException {
-        ArrayList<RecapitulatifEntrepriseImpressionComplexSearchModel> recap = new ArrayList<RecapitulatifEntrepriseImpressionComplexSearchModel>();
+        List<RecapitulatifEntrepriseImpressionComplexSearchModel> recap = new ArrayList<>();
         RecapitulatifEntrepriseImpressionComplexSearchModel recapParLot = new RecapitulatifEntrepriseImpressionComplexSearchModel();
         recapParLot = searchRecapNumLot(noLot);
 
@@ -523,7 +522,7 @@ public class RecapitulatifEntrepriseBusinessServiceImpl extends ALAbstractBusine
     }
 
     @Override
-    public ArrayList<RecapitulatifEntrepriseImpressionComplexSearchModel> resultSearchRecapNumProcessus(
+    public List<RecapitulatifEntrepriseImpressionComplexSearchModel> resultSearchRecapNumProcessus(
             String idProcessus) throws JadePersistenceException, JadeApplicationException {
         // Contrôle du paramètre
         if (!JadeNumericUtil.isInteger(idProcessus)) {
@@ -531,14 +530,14 @@ public class RecapitulatifEntrepriseBusinessServiceImpl extends ALAbstractBusine
                     "RecapitulatifEntrepriseBusinessServiceImpl#resultSearchRecapNumProcessus: " + idProcessus
                             + "is not a integer more than 0");
         }
-        ArrayList<RecapitulatifEntrepriseImpressionComplexSearchModel> recap = new ArrayList<RecapitulatifEntrepriseImpressionComplexSearchModel>();
+        List<RecapitulatifEntrepriseImpressionComplexSearchModel> recap = new ArrayList<>();
         RecapitulatifEntrepriseImpressionComplexSearchModel recapSearch = new RecapitulatifEntrepriseImpressionComplexSearchModel();
         recapSearch.setForNumProcessus(idProcessus);
         recapSearch.setWhereKey("numProcessus");
 
         // exclure les catégories
         // HashSet des type d'activit exclure
-        HashSet<String> notInActivite = new HashSet<String>();
+        Set<String> notInActivite = new HashSet<>();
 
         notInActivite.add(ALCSDossier.ACTIVITE_AGRICULTEUR);
         notInActivite.add(ALCSDossier.ACTIVITE_INDEPENDANT);
@@ -557,7 +556,7 @@ public class RecapitulatifEntrepriseBusinessServiceImpl extends ALAbstractBusine
     }
 
     @Override
-    public ArrayList<RecapitulatifEntrepriseImpressionComplexSearchModel> resultSearchRecapNumRecap(String numRecap)
+    public List<RecapitulatifEntrepriseImpressionComplexSearchModel> resultSearchRecapNumRecap(String numRecap)
             throws JadePersistenceException, JadeApplicationException {
         // Contrôle du paramètre
         if (!JadeNumericUtil.isInteger(numRecap)) {
@@ -565,7 +564,7 @@ public class RecapitulatifEntrepriseBusinessServiceImpl extends ALAbstractBusine
                     "RecapitulatifEntrepriseBusinessServiceImpl#resultSearchRecapNumRecap: " + numRecap
                             + "is not a integer more than 0");
         }
-        ArrayList<RecapitulatifEntrepriseImpressionComplexSearchModel> recap = new ArrayList<RecapitulatifEntrepriseImpressionComplexSearchModel>();
+        List<RecapitulatifEntrepriseImpressionComplexSearchModel> recap = new ArrayList<>();
         RecapitulatifEntrepriseImpressionComplexSearchModel recapSearch = new RecapitulatifEntrepriseImpressionComplexSearchModel();
         recapSearch.setForIdRecap(numRecap);
         if (ALServiceLocator.getAffiliationBusinessService().requireDocumentLienAgenceCommunale()) {

@@ -3,13 +3,14 @@ package ch.globaz.al.business.services.models.droit;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
-import java.util.ArrayList;
-import java.util.HashMap;
 import ch.globaz.al.business.constantes.enumerations.droit.ALEnumMsgDroitPC;
 import ch.globaz.al.business.exceptions.business.ALDroitBusinessException;
 import ch.globaz.al.business.models.droit.DroitComplexModel;
 import ch.globaz.al.business.models.droit.DroitModel;
 import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Interface définissant les services métier implémentés liés au droit
@@ -31,7 +32,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public void ajoutDroitMemeType(DroitComplexModel droitComplexModel) throws JadeApplicationException,
+    void ajoutDroitMemeType(DroitComplexModel droitComplexModel) throws JadeApplicationException,
             JadePersistenceException;
 
     /**
@@ -42,7 +43,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      * @throws JadeApplicationException
      * @throws JadePersistenceException
      */
-    public ALEnumMsgDroitPC checkPCFamille(String nssAllocataire, String nssEnfant) throws JadeApplicationException,
+    ALEnumMsgDroitPC checkPCFamille(String nssAllocataire, String nssEnfant) throws JadeApplicationException,
             JadePersistenceException;
 
     /**
@@ -56,7 +57,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      * @throws JadeApplicationException
      * @throws JadePersistenceException
      */
-    public void copierDroitAndUpdateAttestationDate(String idDroitSource, String dateAttestationDroitSource,
+    void copierDroitAndUpdateAttestationDate(String idDroitSource, String dateAttestationDroitSource,
             String newDateDebut, String newDateFin) throws JadeApplicationException, JadePersistenceException;
 
     /**
@@ -71,7 +72,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public DroitComplexModel copieToFormation(DroitComplexModel droitComplexModel) throws JadeApplicationException,
+    DroitComplexModel copieToFormation(DroitComplexModel droitComplexModel) throws JadeApplicationException,
             JadePersistenceException;
 
     /**
@@ -86,7 +87,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public int countEnfantsInDroitsList(ArrayList<String> listIdDroits) throws JadeApplicationException,
+    int countEnfantsInDroitsList(List<String> listIdDroits) throws JadeApplicationException,
             JadePersistenceException;
 
     /**
@@ -105,7 +106,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public DroitComplexModel createDroitEtEnvoyeAnnoncesRafam(DroitComplexModel droit, boolean onlyDroitModel)
+    DroitComplexModel createDroitEtEnvoyeAnnoncesRafam(DroitComplexModel droit, boolean onlyDroitModel)
             throws JadeApplicationException, JadePersistenceException;
 
     /**
@@ -122,7 +123,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public boolean ctrlDroitExportabilite(DroitComplexModel droit, String date) throws JadePersistenceException,
+    boolean ctrlDroitExportabilite(DroitComplexModel droit, String date) throws JadePersistenceException,
             JadeApplicationException;
 
     /**
@@ -140,7 +141,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public DroitComplexModel defineDebutDroit(DroitComplexModel droitComplexModel, String dateDebutDossier)
+    DroitComplexModel defineDebutDroit(DroitComplexModel droitComplexModel, String dateDebutDossier)
             throws JadeApplicationException, JadePersistenceException;
 
     /**
@@ -155,7 +156,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public DroitComplexModel deleteDroit(DroitComplexModel droit) throws JadeApplicationException,
+    DroitComplexModel deleteDroit(DroitComplexModel droit) throws JadeApplicationException,
             JadePersistenceException;
 
     /**
@@ -168,7 +169,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      * @throws JadeApplicationException
      * @throws JadePersistenceException
      */
-    public boolean hasChevauchementDate(DroitModel droit, boolean sameDossier) throws JadeApplicationException,
+    boolean hasChevauchementDate(DroitModel droit, boolean sameDossier) throws JadeApplicationException,
             JadePersistenceException;
 
     /**
@@ -185,7 +186,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public boolean hasPrestations(String idDroit) throws JadeApplicationException, JadePersistenceException;
+    boolean hasPrestations(String idDroit) throws JadeApplicationException, JadePersistenceException;
 
     /**
      * Indique si <code>droit</code> est actif
@@ -209,7 +210,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      * @see ch.globaz.al.business.models.droit.DroitModel
      * @see ch.globaz.al.business.constantes.ALCSDroit
      */
-    public boolean isDroitActif(DroitModel droit, String date) throws JadeApplicationException;
+    boolean isDroitActif(DroitModel droit, String date) throws JadeApplicationException;
 
     /**
      * Vérifie si le droit est inactif avec calcul du rang
@@ -221,7 +222,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      * @throws JadeApplicationException
      *             Exception levée si le droit passé est <code>null</code> ou si la date n'est pas valide
      */
-    public boolean isDroitInactif(DroitModel droit) throws ALDroitBusinessException, JadeApplicationException;
+    boolean isDroitInactif(DroitModel droit) throws ALDroitBusinessException, JadeApplicationException;
 
     /**
      * Détermine si l'échéance du droit dépasse la limite légale ou non (limite droit ENF : 16 ans, limite droit FORM :
@@ -236,7 +237,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public boolean isEcheanceOverLimiteLegale(DroitComplexModel droit) throws JadeApplicationException,
+     boolean isEcheanceOverLimiteLegale(DroitComplexModel droit) throws JadeApplicationException,
             JadePersistenceException;
 
     /**
@@ -249,7 +250,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      * @return <code>true</code> si le droit est en formation anticipée, <code>false</code> sinon
      * @throws JadeApplicationException
      */
-    public boolean isFormationAnticipee(DroitComplexModel droit) throws JadeApplicationException;
+     boolean isFormationAnticipee(DroitComplexModel droit) throws JadeApplicationException;
 
     /**
      * Vérifie si le droit passé en paramètre a un montant forcé à zero
@@ -258,7 +259,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      *            Droit à vérifier
      * @return <code>true</code> si le montant a été forcé à zero, <code>false</code> sinon
      */
-    public boolean isMontantForceZero(DroitModel droit);
+     boolean isMontantForceZero(DroitModel droit);
 
     /**
      * Vérifie si un droit est de type ménage ou non
@@ -270,7 +271,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      *             Exception levée si <code>droit</code> est null
      * @see ch.globaz.al.business.models.droit.DroitModel
      */
-    public boolean isTypeMenage(DroitModel droit) throws JadeApplicationException;
+     boolean isTypeMenage(DroitModel droit) throws JadeApplicationException;
 
     /**
      * Créé les annonces temporaires (état enregistré) et les affiche avec les existantes (les plus récentes)
@@ -280,7 +281,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      * @throws JadeApplicationException
      * @throws JadePersistenceException
      */
-    public ArrayList<AnnonceRafamModel> readWidget_apercuAnnoncesRafam(HashMap<?, ?> values)
+    List<AnnonceRafamModel> readWidget_apercuAnnoncesRafam(Map<?, ?> values)
             throws JadeApplicationException, JadePersistenceException;
 
     /**
@@ -290,7 +291,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      * @throws JadeApplicationException
      * @throws JadePersistenceException
      */
-    public void readWidget_deleteAnnoncesTemporaires(HashMap<?, ?> values) throws JadeApplicationException,
+     void readWidget_deleteAnnoncesTemporaires(Map<?, ?> values) throws JadeApplicationException,
             JadePersistenceException;
 
     /**
@@ -302,7 +303,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      * @throws JadeApplicationException
      * @throws JadePersistenceException
      */
-    public void readWidget_validerAnnoncesTemporaires(HashMap<?, ?> values) throws JadeApplicationException,
+    void readWidget_validerAnnoncesTemporaires(Map<?, ?> values) throws JadeApplicationException,
             JadePersistenceException;
 
     /**
@@ -316,7 +317,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public void removeBeneficiaire(DroitModel droit) throws JadeApplicationException, JadePersistenceException;
+    void removeBeneficiaire(DroitModel droit) throws JadeApplicationException, JadePersistenceException;
 
     /**
      * Définit la date de fin de droit. La date de fin n'est mise à jour que si elle est vide dans le modèle passé en
@@ -329,7 +330,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      * @see ch.globaz.al.business.services.echeances.DatesEcheanceService#getDateFinValiditeDroitCalculee
      */
-    public DroitComplexModel setDateFinDroitForce(DroitComplexModel model) throws JadeApplicationException;
+     DroitComplexModel setDateFinDroitForce(DroitComplexModel model) throws JadeApplicationException;
 
     /**
      * Méthode mettant a jour le droit et créant l'annonce rafam en conséquence
@@ -343,6 +344,6 @@ public interface DroitBusinessService extends JadeApplicationService {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public DroitComplexModel updateDroitEtEnvoyeAnnoncesRafam(DroitComplexModel droit) throws JadeApplicationException,
+     DroitComplexModel updateDroitEtEnvoyeAnnoncesRafam(DroitComplexModel droit) throws JadeApplicationException,
             JadePersistenceException;
 }

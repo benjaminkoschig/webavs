@@ -4,6 +4,8 @@ import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import java.util.ArrayList;
+import java.util.List;
+
 import ch.globaz.al.business.constantes.ALCSDroit;
 import ch.globaz.al.business.constantes.ALCSTarif;
 import ch.globaz.al.business.exceptions.calcul.ALCalculException;
@@ -44,7 +46,7 @@ public class CalculTypeTravailleurAgricoleJura extends CalculTypeStandard {
      * java.lang.String)
      */
     @Override
-    public ArrayList<CalculBusinessModel> compute(ContextCalcul context, CalculMode calcMode)
+    public List<CalculBusinessModel> compute(ContextCalcul context, CalculMode calcMode)
             throws JadeApplicationException, JadePersistenceException {
 
         if (context == null) {
@@ -62,7 +64,7 @@ public class CalculTypeTravailleurAgricoleJura extends CalculTypeStandard {
 
         // calcul des droits selon le type travailleur agricole (y compris
         // ménage fédéral agricole)
-        ArrayList<CalculBusinessModel> droitsCalcules = super.compute(context, calcMode);
+        List<CalculBusinessModel> droitsCalcules = super.compute(context, calcMode);
 
         // ... + ménage Jurassien pour l'agriculture
         computeMenageJura(context.getDossier().getDossierModel(), droitsCalcules);
@@ -80,7 +82,7 @@ public class CalculTypeTravailleurAgricoleJura extends CalculTypeStandard {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    private void computeMenageJura(DossierModel dossier, ArrayList<CalculBusinessModel> droitsCalcules)
+    private void computeMenageJura(DossierModel dossier, List<CalculBusinessModel> droitsCalcules)
             throws JadeApplicationException {
 
         // le calcul des prestations "spéciales" ne doit pas se faire si on est

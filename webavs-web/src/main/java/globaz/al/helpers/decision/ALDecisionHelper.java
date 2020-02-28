@@ -8,6 +8,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import ch.globaz.al.business.constantes.ALCSCopie;
 import ch.globaz.al.business.constantes.ALCSDossier;
 import ch.globaz.al.business.constantes.ALConstCalcul;
@@ -255,18 +258,18 @@ public class ALDecisionHelper extends ALAbstractHelper {
         DossierComplexModel dossierComplex = ALServiceLocator.getDossierComplexModelService().read(numeroDossier);
 
         // charger les calculs des droits
-        ArrayList<CalculBusinessModel> resultatCalcul = ALServiceLocator.getCalculBusinessService()
+        List<CalculBusinessModel> resultatCalcul = ALServiceLocator.getCalculBusinessService()
                 .getCalcul(dossierComplex, getDateCalcul(dossierComplex.getDossierModel()));
         // calcul du montant total de la décision
-        HashMap<?, ?> total = ALServiceLocator.getCalculBusinessService().getTotal(dossierComplex.getDossierModel(),
+        Map<?, ?> total = ALServiceLocator.getCalculBusinessService().getTotal(dossierComplex.getDossierModel(),
                 resultatCalcul, ALCSDossier.UNITE_CALCUL_MOIS, "1", false,
                 getDateCalcul(dossierComplex.getDossierModel()));
         // calcul du montant total de la décision
 
-        resultatCalcul = (ArrayList<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
+        resultatCalcul = (List<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
 
         CalculDroitEditingSearchModel calculDroitSearch = new CalculDroitEditingSearchModel();
-        ArrayList<String> listDroit = new ArrayList<String>();
+        List<String> listDroit = new ArrayList<>();
 
         // recherche des calculs en db
         for (int i = 0; i < resultatCalcul.size(); i++) {
@@ -347,17 +350,17 @@ public class ALDecisionHelper extends ALAbstractHelper {
             throws JadeApplicationException, JadePersistenceException {
         // contrôle du paramète
         // charger les calculs des droits
-        ArrayList<CalculBusinessModel> resultatCalcul = ALServiceLocator.getCalculBusinessService()
+        List<CalculBusinessModel> resultatCalcul = ALServiceLocator.getCalculBusinessService()
                 .getCalcul(dossierComplex, getDateCalcul(dossierComplex.getDossierModel()));
         // calcul du montant total de la décision
-        HashMap<?, ?> total = ALServiceLocator.getCalculBusinessService().getTotal(dossierComplex.getDossierModel(),
+        Map<?, ?> total = ALServiceLocator.getCalculBusinessService().getTotal(dossierComplex.getDossierModel(),
                 resultatCalcul, ALCSDossier.UNITE_CALCUL_MOIS, "1", false,
                 getDateCalcul(dossierComplex.getDossierModel()));
         // calcul du montant total de la décision
 
-        resultatCalcul = (ArrayList<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
+        resultatCalcul = (List<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
 
-        HashMap<?, ?> tot = ALServiceLocator.getCalculBusinessService().getTotal(dossierComplex.getDossierModel(),
+        Map<?, ?> tot = ALServiceLocator.getCalculBusinessService().getTotal(dossierComplex.getDossierModel(),
                 resultatCalcul, ALCSDossier.UNITE_CALCUL_JOUR, dossierComplex.getDossierModel().getNbJoursDebut(),
                 false, getDateCalcul(dossierComplex.getDossierModel()));
         //
@@ -373,17 +376,17 @@ public class ALDecisionHelper extends ALAbstractHelper {
             throws JadeApplicationException, JadePersistenceException {
         // contrôle du paramète
         // charger les calculs des droits
-        ArrayList<CalculBusinessModel> resultatCalcul = ALServiceLocator.getCalculBusinessService()
+        List<CalculBusinessModel> resultatCalcul = ALServiceLocator.getCalculBusinessService()
                 .getCalcul(dossierComplex, getDateCalcul(dossierComplex.getDossierModel()));
         // calcul du montant total de la décision
-        HashMap<?, ?> total = ALServiceLocator.getCalculBusinessService().getTotal(dossierComplex.getDossierModel(),
+        Map<?, ?> total = ALServiceLocator.getCalculBusinessService().getTotal(dossierComplex.getDossierModel(),
                 resultatCalcul, ALCSDossier.UNITE_CALCUL_MOIS, "1", false,
                 getDateCalcul(dossierComplex.getDossierModel()));
         // calcul du montant total de la décision
 
-        resultatCalcul = (ArrayList<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
+        resultatCalcul = (List<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
 
-        HashMap<?, ?> tot = ALServiceLocator.getCalculBusinessService().getTotal(dossierComplex.getDossierModel(),
+        Map<?, ?> tot = ALServiceLocator.getCalculBusinessService().getTotal(dossierComplex.getDossierModel(),
                 resultatCalcul, ALCSDossier.UNITE_CALCUL_JOUR, dossierComplex.getDossierModel().getNbJoursFin(), false,
                 getDateCalcul(dossierComplex.getDossierModel()));
         // TODO ajouter seulement si pas naissance ou acceuil

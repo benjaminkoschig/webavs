@@ -27,8 +27,8 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Classe d'implémentation des services liés aux récapitulatifs d'entreprise
@@ -50,7 +50,7 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument
      * @throws JadeNoBusinessLogSessionError
      */
     private String getStatutDossier(String statutDossier, boolean forCsv, String langue)
-            throws JadeApplicationException, JadePersistenceException {
+            throws JadeApplicationException {
         // contrôle paramètre
         if (!JadeStringUtil.equals(langue, ALConstLangue.LANGUE_ISO_FRANCAIS, false)
                 && !JadeStringUtil.equals(langue, ALConstLangue.LANGUE_ISO_ALLEMAND, false)
@@ -91,7 +91,7 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument
     }
 
     @Override
-    public DocumentData loadData(ArrayList recapitulatifs, String numAffilie, String idRecap, String periodeDe,
+    public DocumentData loadData(List recapitulatifs, String numAffilie, String idRecap, String periodeDe,
                                  String periodeA, String agenceCommunaleAvs, String activiteAllocataire, String dateImpression,
                                  String typeBonification) throws JadePersistenceException, JadeApplicationException {
 
@@ -164,7 +164,7 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument
     }
 
     @Override
-    public StringBuffer loadDataCSV(ArrayList listTempRecap, Boolean isCharNssRecap) throws JadePersistenceException, JadeApplicationException {
+    public StringBuffer loadDataCSV(List listTempRecap, Boolean isCharNssRecap) throws JadePersistenceException, JadeApplicationException {
         // vérification des paramètres
         if (listTempRecap == null) {
             throw new ALRecapitulatifEntrepriseImpressionModelException(
@@ -554,7 +554,7 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument
      *             Exception levée
      */
 
-    private void setTable(DocumentData document, ArrayList prestations, String idRecap, String numeroAffilie,
+    private void setTable(DocumentData document, List prestations, String idRecap, String numeroAffilie,
                           String langueDocument, boolean numSalarieDisplay)
             throws JadeApplicationException, JadePersistenceException {
         // vérification des paramètres

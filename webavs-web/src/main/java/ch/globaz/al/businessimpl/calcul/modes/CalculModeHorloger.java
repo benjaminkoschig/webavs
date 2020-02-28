@@ -7,6 +7,8 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+
 import ch.globaz.al.business.constantes.ALCSDroit;
 import ch.globaz.al.business.constantes.ALCSTarif;
 import ch.globaz.al.business.exceptions.calcul.ALCalculException;
@@ -44,7 +46,7 @@ public class CalculModeHorloger extends CalculModeAbstract {
      *             faire
      */
     protected void computeComplementHorloger(DossierComplexModelRoot dossier, DroitComplexModel droit,
-            String dateCalcul, String typeResident, ArrayList<CalculBusinessModel> droitsCalcules)
+            String dateCalcul, String typeResident, List<CalculBusinessModel> droitsCalcules)
             throws JadeApplicationException, JadePersistenceException {
 
         if (dossier == null) {

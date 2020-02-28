@@ -4,7 +4,8 @@ import ch.globaz.common.domaine.Periode;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
-import java.util.ArrayList;
+import java.util.List;
+
 import ch.ech.xmlns.ech_0104_69._3.NoticeType;
 import ch.ech.xmlns.ech_0104_69._3.ReceiptType;
 import ch.globaz.al.business.constantes.enumerations.RafamFamilyAllowanceType;
@@ -47,7 +48,7 @@ public interface AnnoncesRafamSearchService extends JadeApplicationService {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    public AnnonceRafamModel getAnnonceForNotice(NoticeType message) throws JadeApplicationException,
+    AnnonceRafamModel getAnnonceForNotice(NoticeType message) throws JadeApplicationException,
             JadePersistenceException;
 
     /**
@@ -74,7 +75,7 @@ public interface AnnoncesRafamSearchService extends JadeApplicationService {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    public AnnonceRafamModel getAnnonceForReceipt(ReceiptType receipt) throws JadeApplicationException,
+    AnnonceRafamModel getAnnonceForReceipt(ReceiptType receipt) throws JadeApplicationException,
             JadePersistenceException;
 
     /**
@@ -97,7 +98,7 @@ public interface AnnoncesRafamSearchService extends JadeApplicationService {
      *             plus enregistrées
      */
     @Deprecated
-    public AnnonceRafamModel getAnnonceRegisterStatus(String recordNumber) throws JadeApplicationException,
+    AnnonceRafamModel getAnnonceRegisterStatus(String recordNumber) throws JadeApplicationException,
             JadePersistenceException;
 
     /**
@@ -139,10 +140,10 @@ public interface AnnoncesRafamSearchService extends JadeApplicationService {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    public AnnonceRafamModel getLastActive(String idDroit, RafamFamilyAllowanceType type)
+    AnnonceRafamModel getLastActive(String idDroit, RafamFamilyAllowanceType type)
             throws JadeApplicationException, JadePersistenceException;
 
-    public AnnonceRafamModel getLastActive(String idDroit, RafamFamilyAllowanceType type, Periode periode)
+    AnnonceRafamModel getLastActive(String idDroit, RafamFamilyAllowanceType type, Periode periode)
             throws JadeApplicationException, JadePersistenceException;
 
     /**
@@ -186,7 +187,7 @@ public interface AnnoncesRafamSearchService extends JadeApplicationService {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    public AnnonceRafamModel getLastActive(String idDroit, RafamFamilyAllowanceType type, ArrayList<String> etats, Periode periode)
+    AnnonceRafamModel getLastActive(String idDroit, RafamFamilyAllowanceType type, List<String> etats, Periode periode)
             throws JadeApplicationException, JadePersistenceException;
 
     /**
@@ -203,7 +204,7 @@ public interface AnnoncesRafamSearchService extends JadeApplicationService {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    public AnnonceRafamModel getLastAnnonceForRecordNumber(String recordNumber) throws JadeApplicationException,
+    AnnonceRafamModel getLastAnnonceForRecordNumber(String recordNumber) throws JadeApplicationException,
             JadePersistenceException;
 
     /**
@@ -220,7 +221,7 @@ public interface AnnoncesRafamSearchService extends JadeApplicationService {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    public AnnonceRafamSearchModel getAnnoncesForRecordNumber(String recordNumber) throws JadeApplicationException,
+    AnnonceRafamSearchModel getAnnoncesForRecordNumber(String recordNumber) throws JadeApplicationException,
             JadePersistenceException;
 
     /**
@@ -239,7 +240,7 @@ public interface AnnoncesRafamSearchService extends JadeApplicationService {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    public boolean hasAnnonceOfType(String idDroit, RafamFamilyAllowanceType type) throws JadeApplicationException,
+    boolean hasAnnonceOfType(String idDroit, RafamFamilyAllowanceType type) throws JadeApplicationException,
             JadePersistenceException;
 
     /**
@@ -255,7 +256,7 @@ public interface AnnoncesRafamSearchService extends JadeApplicationService {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    public boolean hasSentAnnonces(String idDroit) throws JadeApplicationException, JadePersistenceException;
+    boolean hasSentAnnonces(String idDroit) throws JadeApplicationException, JadePersistenceException;
 
     /**
      * Charge les annonces à envoyer à la centrale, en excluant les annonces délégués
@@ -268,7 +269,7 @@ public interface AnnoncesRafamSearchService extends JadeApplicationService {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    public AnnonceRafamComplexSearchModel loadAnnoncesToSend() throws JadeApplicationException,
+    AnnonceRafamComplexSearchModel loadAnnoncesToSend() throws JadeApplicationException,
             JadePersistenceException;
 
     /**
@@ -285,7 +286,7 @@ public interface AnnoncesRafamSearchService extends JadeApplicationService {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    public AnnonceRafamSearchModel loadAnnoncesToSendForDroit(String idDroit) throws JadeApplicationException,
+    AnnonceRafamSearchModel loadAnnoncesToSendForDroit(String idDroit) throws JadeApplicationException,
             JadePersistenceException;
 
     /**
@@ -302,7 +303,7 @@ public interface AnnoncesRafamSearchService extends JadeApplicationService {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    public AnnonceRafamSearchModel loadAnnoncesForDroit(String idDroit) throws JadeApplicationException,
+    AnnonceRafamSearchModel loadAnnoncesForDroit(String idDroit) throws JadeApplicationException,
             JadePersistenceException;
 
     /**
@@ -313,6 +314,6 @@ public interface AnnoncesRafamSearchService extends JadeApplicationService {
      * @throws JadeApplicationException
      * @throws JadePersistenceException
      */
-    public AnnonceRafamModel getLastAnnonceUPIForRecordNumber(String recordNumber) throws JadeApplicationException,
+    AnnonceRafamModel getLastAnnonceUPIForRecordNumber(String recordNumber) throws JadeApplicationException,
             JadePersistenceException;
 }

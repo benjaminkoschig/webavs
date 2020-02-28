@@ -1,8 +1,5 @@
 package ch.globaz.al.businessimpl.generation.prestations;
 
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import java.util.ArrayList;
 import ch.globaz.al.business.exceptions.generation.prestations.ALGenerationException;
 import ch.globaz.al.business.models.droit.CalculBusinessModel;
 import ch.globaz.al.business.models.prestation.EntetePrestationModel;
@@ -10,6 +7,10 @@ import ch.globaz.al.business.models.prestation.EntetePrestationSearchModel;
 import ch.globaz.al.business.services.models.prestation.EntetePrestationModelService;
 import ch.globaz.al.businessimpl.generation.prestations.context.ContextAffilie;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+
+import java.util.List;
 
 /**
  * Classe de génération pour les dossiers unitaires (jour ou heure). Elle est utilisée pendant une génération de dossier
@@ -67,7 +68,7 @@ public class GenPrestationUnitaire extends GenPrestationAbstract {
             throw new ALGenerationException("GenPrestationUnitaire#execute : context is null");
         }
 
-        ArrayList<CalculBusinessModel> calcul = context.getContextDossier().getCalcul();
+        List<CalculBusinessModel> calcul = context.getContextDossier().getCalcul();
         deletePrestationZero(context);
         if (calcul != null) {
             generatePrestation(context, calcul);

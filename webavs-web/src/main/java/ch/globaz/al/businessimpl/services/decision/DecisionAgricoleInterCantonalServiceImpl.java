@@ -7,6 +7,9 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import ch.globaz.al.business.constantes.ALCSDroit;
 import ch.globaz.al.business.constantes.ALCSTarif;
 import ch.globaz.al.business.constantes.ALConstCalcul;
@@ -28,7 +31,7 @@ public class DecisionAgricoleInterCantonalServiceImpl extends DecisionAgricoleSe
 
     @Override
     protected void loadListDroit(DocumentData documentData, DossierComplexModel dossier,
-            ArrayList<CalculBusinessModel> calcul, String date, String langueDocument) throws JadePersistenceException,
+                                 List<CalculBusinessModel> calcul, String date, String langueDocument) throws JadePersistenceException,
             JadeApplicationException {
         // contrôle des paramètres
         if (documentData == null) {
@@ -68,11 +71,11 @@ public class DecisionAgricoleInterCantonalServiceImpl extends DecisionAgricoleSe
         documentData.add(tableau_entete);
 
         // liste des tiers bénéficiaires des droits
-        ArrayList<String> listTiersBeneficiaireDroit = new ArrayList<String>();
+        ArrayList<String> listTiersBeneficiaireDroit = new ArrayList<>();
 
-        HashMap total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
+        Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
                 dossier.getDossierModel().getUniteCalcul(), "1", false, date);
-        calcul = (ArrayList) total.get(ALConstCalcul.DROITS_CALCULES);
+        calcul = (List) total.get(ALConstCalcul.DROITS_CALCULES);
 
         DroitBusinessService dbs = ALServiceLocator.getDroitBusinessService();
 
@@ -81,7 +84,7 @@ public class DecisionAgricoleInterCantonalServiceImpl extends DecisionAgricoleSe
 
         String idDroit = null;
 
-        HashMap<String, String> droitDecision = new HashMap<String, String>();
+        Map<String, String> droitDecision = new HashMap<>();
 
         for (int i = 0; i < calcul.size(); i++) {
 
@@ -173,8 +176,8 @@ public class DecisionAgricoleInterCantonalServiceImpl extends DecisionAgricoleSe
     }
 
     private void loadChampsDroitCalcule(DroitBusinessService dbs, DataList list, Collection tableau_colonne,
-            String langueDocument, ArrayList<CalculBusinessModel> calcul, DossierComplexModel dossier,
-            ArrayList<String> listTiersBeneficiaireDroit, int i, String date) throws JadeApplicationException,
+            String langueDocument, List<CalculBusinessModel> calcul, DossierComplexModel dossier,
+            List<String> listTiersBeneficiaireDroit, int i, String date) throws JadeApplicationException,
             JadePersistenceException {
         // si le droit est actif et le type de droit autre que naissance et
         // accueil
@@ -261,7 +264,7 @@ public class DecisionAgricoleInterCantonalServiceImpl extends DecisionAgricoleSe
 
     @Override
     protected void loadListNaissance(DocumentData documentData, DossierComplexModel dossier,
-            ArrayList<CalculBusinessModel> calcul, String date, String langueDocument) throws JadeApplicationException,
+            List<CalculBusinessModel> calcul, String date, String langueDocument) throws JadeApplicationException,
             JadePersistenceException {
 
         Collection tableau_naissance = new Collection("tableau_naissance");
@@ -277,10 +280,10 @@ public class DecisionAgricoleInterCantonalServiceImpl extends DecisionAgricoleSe
                 } else if (ALCSDroit.TYPE_ACCE.equals((calcul.get(i)).getType())) {
                     libelle = this.getText("al.decision.liste.droit.accueil.libelle", langueDocument);
                 }
-                HashMap total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
+                Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
                         dossier.getDossierModel().getUniteCalcul(), "1", false, date);
 
-                calcul = (ArrayList<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
+                calcul = (List<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
 
                 list.addData("tableau_naissance_0", libelle
                         + " "

@@ -17,6 +17,8 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
+
 import ch.globaz.al.business.constantes.ALConstCalcul;
 import ch.globaz.al.business.exceptions.calcul.ALCalculException;
 import ch.globaz.al.business.exceptions.generation.prestations.ALGenerationException;
@@ -36,7 +38,7 @@ public class GenPrestationForcee extends GenPrestationAbstract {
     /**
      * Montant par mois. Résultat de la division du montant forcé par le nombre de mois à générer
      */
-    protected ArrayList<BigDecimal> montantsParMois = null;
+    protected List<BigDecimal> montantsParMois = null;
 
     /**
      * Constructeur
@@ -60,7 +62,7 @@ public class GenPrestationForcee extends GenPrestationAbstract {
     }
 
     @Override
-    protected void generatePrestation(ContextAffilie context, ArrayList<CalculBusinessModel> calcul)
+    protected void generatePrestation(ContextAffilie context, List<CalculBusinessModel> calcul)
             throws JadeApplicationException, JadePersistenceException {
 
         if (context == null) {
@@ -78,7 +80,7 @@ public class GenPrestationForcee extends GenPrestationAbstract {
         if (!calcul.isEmpty()) {
 
             // exécution de la répartition du montant
-            ArrayList<String> repartition = repartirMontant(String.valueOf(getNextMontant()), calcul, context
+            List<String> repartition = repartirMontant(String.valueOf(getNextMontant()), calcul, context
                     .getContextDossier().getDossier().getDossierModel(), "01."
                     + context.getContextDossier().getCurrentPeriode());
 
@@ -154,7 +156,7 @@ public class GenPrestationForcee extends GenPrestationAbstract {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    protected ArrayList<String> repartirMontant(String montant, ArrayList<CalculBusinessModel> droitsCalcules,
+    protected List<String> repartirMontant(String montant, List<CalculBusinessModel> droitsCalcules,
             DossierModel dossier, String date) throws JadeApplicationException, JadePersistenceException {
 
         if (JadeNumericUtil.isEmptyOrZero(montant)) {
@@ -173,7 +175,7 @@ public class GenPrestationForcee extends GenPrestationAbstract {
             throw new ALCalculException("GenPrestationForcee#repartirMontant : " + date + " is not a valid date");
         }
 
-        ArrayList<String> repartition = new ArrayList<>();
+        List<String> repartition = new ArrayList<>();
         BigDecimal montantTotal = new BigDecimal((String) ALImplServiceLocator.getCalculMontantsService()
                 .calculerTotalMontant(dossier, droitsCalcules, dossier.getUniteCalcul(), "1", false, date)
                 .get(ALConstCalcul.TOTAL_EFFECTIF));

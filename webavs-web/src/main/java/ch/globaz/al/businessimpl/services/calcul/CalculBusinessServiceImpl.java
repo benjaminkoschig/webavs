@@ -5,6 +5,9 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import ch.globaz.al.business.exceptions.calcul.ALCalculException;
 import ch.globaz.al.business.models.dossier.DossierComplexModelRoot;
 import ch.globaz.al.business.models.dossier.DossierModel;
@@ -22,7 +25,7 @@ import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 public class CalculBusinessServiceImpl extends CalculAbstractService implements CalculBusinessService {
 
     @Override
-    public ArrayList<CalculBusinessModel> getCalcul(DossierComplexModelRoot dossier, String dateCalcul)
+    public List<CalculBusinessModel> getCalcul(DossierComplexModelRoot dossier, String dateCalcul)
             throws JadeApplicationException, JadePersistenceException {
 
         if (dossier == null) {
@@ -42,8 +45,8 @@ public class CalculBusinessServiceImpl extends CalculAbstractService implements 
     }
 
     @Override
-    public HashMap getTotal(DossierModel dossier, ArrayList<CalculBusinessModel> droitsCalcules, String unite,
-            String nbUnite, boolean avecNAIS, String date) throws JadeApplicationException, JadePersistenceException {
+    public Map getTotal(DossierModel dossier, List<CalculBusinessModel> droitsCalcules, String unite,
+                        String nbUnite, boolean avecNAIS, String date) throws JadeApplicationException, JadePersistenceException {
 
         if (dossier == null) {
             throw new ALCalculException("CalculServiceImpl#getTotal : Unable to get the total, dossier is null");

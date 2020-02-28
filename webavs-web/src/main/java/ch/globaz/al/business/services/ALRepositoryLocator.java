@@ -22,6 +22,11 @@ public final class ALRepositoryLocator {
     }
 
     private static class TauxImpositionRepositoryHolder {
+
+        private TauxImpositionRepositoryHolder() {
+            throw new UnsupportedOperationException();
+        }
+
         private static final TauxImpositionRepository INSTANCE = new TauxImpositionRepositoryJade();
     }
 
@@ -35,6 +40,10 @@ public final class ALRepositoryLocator {
     }
 
     private static class AdministrationRepositoryHolder {
+        private AdministrationRepositoryHolder() {
+            throw new UnsupportedOperationException();
+        }
+
         private static final AdministrationRepository INSTANCE = new AdministrationRepositoryJade();
     }
 
@@ -48,6 +57,10 @@ public final class ALRepositoryLocator {
     }
 
     private static class AdresseRepositoryHolder {
+        private AdresseRepositoryHolder() {
+            throw new UnsupportedOperationException();
+        }
+
         private static final AdresseRepository INSTANCE = new AdresseRepositoryJade();
     }
 

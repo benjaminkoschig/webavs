@@ -3,6 +3,8 @@ package ch.globaz.al.businessimpl.calcul.types;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import java.util.ArrayList;
+import java.util.List;
+
 import ch.globaz.al.business.models.droit.CalculBusinessModel;
 import ch.globaz.al.businessimpl.calcul.context.ContextCalcul;
 import ch.globaz.al.businessimpl.calcul.modes.CalculMode;
@@ -37,6 +39,6 @@ public interface CalculType {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public ArrayList<CalculBusinessModel> compute(ContextCalcul context, CalculMode calcMode)
+    List<CalculBusinessModel> compute(ContextCalcul context, CalculMode calcMode)
             throws JadeApplicationException, JadePersistenceException;
 }

@@ -10,10 +10,7 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 import javax.xml.datatype.DatatypeConfigurationException;
 import ch.ech.xmlns.ech_0010._4.MailAddressType;
 import ch.ech.xmlns.ech_0044._2.DatePartiallyKnownType;
@@ -221,7 +218,7 @@ public class DecisionEditingServiceImpl implements DecisionEditingService {
 
     @Override
     public void getAllocationsType(DecisionAFRootType decAF, DossierComplexModel dossier, ObjectFactory bof,
-            HashMap<?, ?> total, ArrayList<CalculBusinessModel> calcul) throws JadeApplicationException,
+                                   Map<?, ?> total, List<CalculBusinessModel> calcul) throws JadeApplicationException,
             JadePersistenceException {
         // contrôles des paramètres
         if (dossier == null) {
@@ -347,13 +344,13 @@ public class DecisionEditingServiceImpl implements DecisionEditingService {
         decAF.setAllocataire(alloc);
 
         // charger les calculs des droits
-        ArrayList<CalculBusinessModel> resultatCalcul = ALServiceLocator.getCalculBusinessService().getCalcul(
+        List<CalculBusinessModel> resultatCalcul = ALServiceLocator.getCalculBusinessService().getCalcul(
                 dossierModel, getDateCalcul(dossierModel));
         // calcul du montant total de la décision
-        HashMap<?, ?> total = ALServiceLocator.getCalculBusinessService().getTotal(dossierModel.getDossierModel(),
+        Map<?, ?> total = ALServiceLocator.getCalculBusinessService().getTotal(dossierModel.getDossierModel(),
                 resultatCalcul, ALCSDossier.UNITE_CALCUL_MOIS, "1", false, getDateCalcul(dossierModel));
 
-        resultatCalcul = (ArrayList<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
+        resultatCalcul = (List<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
 
         // ajouter les données des droits
         ALServiceLocator.getDecisionEditingService().getDroitsEnfantType(decAF, dossierModel, bof, resultatCalcul);
@@ -510,7 +507,7 @@ public class DecisionEditingServiceImpl implements DecisionEditingService {
 
     @Override
     public void getDroitsDivers(DecisionAFRootType decAf, DossierComplexModel dossier, ObjectFactory bof,
-            ArrayList<CalculBusinessModel> resultatCalcul) throws JadeApplicationException, JadePersistenceException {
+            List<CalculBusinessModel> resultatCalcul) throws JadeApplicationException, JadePersistenceException {
         for (int i = 0; i < resultatCalcul.size(); i++) {
 
             // prendre en compte uniquement les prestations naissances ou acceuil
@@ -555,7 +552,7 @@ public class DecisionEditingServiceImpl implements DecisionEditingService {
 
     @Override
     public void getDroitsEnfantType(DecisionAFRootType decAF, DossierComplexModel dossier, ObjectFactory bof,
-            ArrayList<CalculBusinessModel> resultatCalcul) throws JadeApplicationException, JadePersistenceException {
+            List<CalculBusinessModel> resultatCalcul) throws JadeApplicationException, JadePersistenceException {
 
         // contrôle des paramètres
         if (decAF == null) {
@@ -809,11 +806,9 @@ public class DecisionEditingServiceImpl implements DecisionEditingService {
      * @param dossier
      * @return
      * @throws JadeApplicationException
-     * @throws JadePersistenceException
      */
 
-    private String getTypePaiementDossierDecisionEditing(DossierComplexModel dossier) throws JadeApplicationException,
-            JadePersistenceException {
+    private String getTypePaiementDossierDecisionEditing(DossierComplexModel dossier) throws JadeApplicationException {
         // Contrôle du paramètres
         if (dossier == null) {
             throw new ALDecisionEditingException(

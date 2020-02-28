@@ -32,9 +32,7 @@ import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.print.server.JadePrintDocumentContainer;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * Implémentation du service des récapitulatifs d'entreprise à imprimer
@@ -65,14 +63,14 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
      * @param lastNumEntete
      * @return
      */
-    private ArrayList<RecapitulatifEntrepriseImpressionComplexModel> calculEffectifDossier(
+    private List<RecapitulatifEntrepriseImpressionComplexModel> calculEffectifDossier(
             ContextDossier contextDossier, int lastNumRecap, int lastNumEntete) {
         // prochain entête créé vaudra dernière créée + 1
         int incrementEntete = lastNumEntete + 1;
 
-        ArrayList<CalculBusinessModel> calcul = null;
+        List<CalculBusinessModel> calcul = null;
         // conteneur pour les lignes représentant le dossier sur la récap
-        ArrayList<RecapitulatifEntrepriseImpressionComplexModel> entetesSurRecap = new ArrayList<RecapitulatifEntrepriseImpressionComplexModel>();
+        List<RecapitulatifEntrepriseImpressionComplexModel> entetesSurRecap = new ArrayList<>();
 
         try {
             int iterCalcul = 0;
@@ -86,8 +84,8 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
 
             // cpt de mois consécutifs
             int cptMois = 0;
-            ArrayList<DetailPrestationModel> details = new ArrayList<DetailPrestationModel>();
-            ArrayList<String> idDroitsNaisAcceSurRecap = new ArrayList<String>();
+            List<DetailPrestationModel> details = new ArrayList<>();
+            List<String> idDroitsNaisAcceSurRecap = new ArrayList<>();
             // on calcul autant de fois que le contexte dossier le définit (selon période_de, période_a, selon
             // périodicité)
             while ((iterCalcul == 0) || (calcul != null)) {
@@ -105,14 +103,14 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
 
                     // on retire les nais/acce du calcul => ca donnera une ligne récap indépendant des autres droits
                     // calculés
-                    ArrayList<CalculBusinessModel> calculWithoutNaisAcce = new ArrayList<CalculBusinessModel>();
+                    List<CalculBusinessModel> calculWithoutNaisAcce = new ArrayList<>();
                     for (CalculBusinessModel droitCalcule : calcul) {
 
                         if ((ALCSDroit.TYPE_ACCE.equals(droitCalcule.getType()) || ALCSDroit.TYPE_NAIS
                                 .equals(droitCalcule.getType()))) {
-                            ArrayList<DetailPrestationModel> detailNaisAcce = new ArrayList<DetailPrestationModel>();
+                            List<DetailPrestationModel> detailNaisAcce = new ArrayList<>();
 
-                            ArrayList<CalculBusinessModel> calculNaisAcce = new ArrayList<CalculBusinessModel>();
+                            List<CalculBusinessModel> calculNaisAcce = new ArrayList<>();
                             calculNaisAcce.add(droitCalcule);
                             // On doit appeler cette méthode pour avoir montant effectif du droit qu'on veut afficher
                             ALImplServiceLocator.getCalculMontantsService().calculerTotalMontant(
@@ -142,7 +140,7 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
 
                     // on calcule mois par mois, donc si unite = M => nb unites = 1
                     // sinon jour / h on a besoin de nb unités
-                    HashMap total = ALImplServiceLocator.getCalculMontantsService().calculerTotalMontant(
+                    Map total = ALImplServiceLocator.getCalculMontantsService().calculerTotalMontant(
                             contextDossier.getDossier().getDossierModel(),
                             calculWithoutNaisAcce,
                             unite,
@@ -241,8 +239,7 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
 
     @Override
     public RecapitulatifEntrepriseImpressionComplexSearchModel calculPrestationsStoreInRecapsDocs(
-            ArrayList<String> dossiersToGenerate, String periode, String bonification) throws JadePersistenceException,
-            JadeApplicationException {
+            List<String> dossiersToGenerate, String periode, String bonification) throws JadeApplicationException {
 
         // dossiersToGenerate est trié par affilié
         ProtocoleLogger logger = new ProtocoleLogger();
@@ -251,7 +248,7 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
 
         ContextAffilie contextAffilie = null;
 
-        ArrayList<JadeAbstractModel> resultCalculPrestations = new ArrayList<JadeAbstractModel>();
+        List<JadeAbstractModel> resultCalculPrestations = new ArrayList<>();
         // compteurs pour la gestion des incréments virtuels récaps et entête
         int cptEnteteFictive = 0;
         int cptRecapFictive = 0;
@@ -285,7 +282,7 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
                             contextAffilie.getFinRecap(), "0", Bonification.AUTO, "0",
                             ALConstPrestations.TypeGeneration.STANDARD);
                     // on calcul pour le dossier initialisé,on passe en paramètre le dernier id récap créé et dernier
-                    ArrayList<RecapitulatifEntrepriseImpressionComplexModel> lignesDossier = calculEffectifDossier(
+                    List<RecapitulatifEntrepriseImpressionComplexModel> lignesDossier = calculEffectifDossier(
                             contextAffilie.getContextDossier(), cptRecapFictive - 1, cptEnteteFictive);
 
                     cptEnteteFictive += lignesDossier.size();
@@ -363,7 +360,7 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    private void createDocRecapAffilie(ArrayList recapitulatifsTemp, String numAffilie, String periodeDe,
+    private void createDocRecapAffilie(List recapitulatifsTemp, String numAffilie, String periodeDe,
             String periodeA, String idRecap, String agenceCommunaleAvs, String activiteAllocataire,
             String dateImpression, String typeBonification, boolean isGed,
             JadePrintDocumentContainer conteneurNonActif, JadePrintDocumentContainer conteneurCollaAgri,
@@ -501,7 +498,7 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
     }
 
     private RecapitulatifEntrepriseImpressionComplexModel detailsDossierToLineRecap(
-            ArrayList<DetailPrestationModel> details, ContextDossier contextDossier, int numRecap, int numEntete,
+            List<DetailPrestationModel> details, ContextDossier contextDossier, int numRecap, int numEntete,
             String typeUnite, String nbUnites) throws JadeApplicationException, JadePersistenceException {
         // TODO: traiter les paramètres
         RecapitulatifEntrepriseImpressionComplexModel recapLine = new RecapitulatifEntrepriseImpressionComplexModel();
@@ -543,7 +540,7 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
         String maxPeriod = null;
 
         // liste des droits parmi les détails
-        ArrayList<String> idDroitsDetails = new ArrayList<String>();
+        List<String> idDroitsDetails = new ArrayList<>();
         for (DetailPrestationModel detail : details) {
             idDroitsDetails.add(detail.getIdDroit());
             Double nouveauMontant = new Double(detail.getMontant()) + new Double(recapLine.getMontant());
@@ -623,14 +620,14 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
      * @return listEntetePrestation
      * @throws JadeApplicationException
      */
-    private ArrayList<RecapitulatifEntrepriseImpressionComplexModel> getListEntetePrestationUnique(
-            ArrayList recapitulatifPrestationSearchModel) throws JadeApplicationException {
+    private List<RecapitulatifEntrepriseImpressionComplexModel> getListEntetePrestationUnique(
+            List recapitulatifPrestationSearchModel) throws JadeApplicationException {
         // contrôle paramètre
         if (recapitulatifPrestationSearchModel == null) {
             throw new ALRecapitulatifEntrepriseModelException(
                     "RecapitulatifEntrepriseBusinessService#getListEntetePrestationUnique is null");
         }
-        ArrayList<RecapitulatifEntrepriseImpressionComplexModel> listRecap = new ArrayList<RecapitulatifEntrepriseImpressionComplexModel>();
+        List<RecapitulatifEntrepriseImpressionComplexModel> listRecap = new ArrayList<>();
         if (recapitulatifPrestationSearchModel.size() > 0) {
             String idEntete = "";
 
@@ -708,9 +705,9 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
     }
 
     @Override
-    public ArrayList loadArrayListCsv(ArrayList listRecap) throws JadePersistenceException, JadeApplicationException {
+    public List loadArrayListCsv(List listRecap) throws JadePersistenceException, JadeApplicationException {
 
-        ArrayList listRecapCsv = new ArrayList();
+        List listRecapCsv = new ArrayList();
         Iterator iter = listRecap.iterator();
 
         while (iter.hasNext()) {
@@ -742,9 +739,9 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
     }
 
     @Override
-    public ArrayList loadArrayListDocData(ArrayList listRecap) throws JadePersistenceException,
+    public List loadArrayListDocData(List listRecap) throws JadePersistenceException,
             JadeApplicationException {
-        ArrayList listRecapDocData = new ArrayList();
+        List listRecapDocData = new ArrayList();
 
         Iterator iter = listRecap.iterator();
         while (iter.hasNext()) {
@@ -780,15 +777,15 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
     }
 
     @Override
-    public HashMap loadCSVDocument(ArrayList recapList, Boolean isCharNssRecap) throws JadePersistenceException, JadeApplicationException {
-        HashMap container = new HashMap();
+    public Map loadCSVDocument(List recapList, Boolean isCharNssRecap) throws JadePersistenceException, JadeApplicationException {
+        Map container = new HashMap();
         // identifiant de la récap
         String idRecap = null;
 
-        ArrayList listRecapTemp = new ArrayList();
+        List listRecapTemp = new ArrayList();
         String numeroAffilie = null;
 
-        ArrayList listRecapEnteteUnique = getListEntetePrestationUnique(recapList);
+        List listRecapEnteteUnique = getListEntetePrestationUnique(recapList);
 
         // StringBuffer csvContent = new StringBuffer();
 
@@ -831,7 +828,7 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
     }
 
     @Override
-    public ArrayList<JadePrintDocumentContainer> loadDocuments(ArrayList recapList, String dateImpression, boolean isGed)
+    public List<JadePrintDocumentContainer> loadDocuments(List recapList, String dateImpression, boolean isGed)
             throws JadePersistenceException, JadeApplicationException {
         /**
          * conteneur pour la liste des agriculteurs indépendants
@@ -874,7 +871,7 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
         /**
          * tableau contenant les conteneur
          */
-        ArrayList<JadePrintDocumentContainer> listContainer = new ArrayList<JadePrintDocumentContainer>();
+        List<JadePrintDocumentContainer> listContainer = new ArrayList<>();
 
         // vérification des paramètres
         if (recapList == null) {
@@ -888,7 +885,7 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
                             + " is not a valid globaz date (dd.MM.yyyy)");
         }
         // tableau temporaire contenant la liste de récap
-        ArrayList listRecapTemp = new ArrayList();
+        List listRecapTemp = new ArrayList();
 
         // identifiant de la récap
         String idRecap = null;
@@ -905,7 +902,7 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
         // type de bonification
         String typeBonification = null;
 
-        ArrayList listRecapEnteteUnique = getListEntetePrestationUnique(recapList);
+        List listRecapEnteteUnique = getListEntetePrestationUnique(recapList);
 
         // itération sur la liste des récapa
 

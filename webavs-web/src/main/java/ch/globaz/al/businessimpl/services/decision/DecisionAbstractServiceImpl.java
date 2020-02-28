@@ -8,11 +8,9 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+
+import java.util.*;
+
 import ch.globaz.al.business.constantes.ALCSCopie;
 import ch.globaz.al.business.constantes.ALCSDossier;
 import ch.globaz.al.business.constantes.ALCSDroit;
@@ -228,7 +226,7 @@ public abstract class DecisionAbstractServiceImpl extends AbstractDocument imple
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
     private void getDossierReference(DocumentData documentData, DossierComplexModel dossierComplexModel,
-            HashMap<String, String> userInfos, String langueDocument) throws JadeApplicationException,
+            Map<String, String> userInfos, String langueDocument) throws JadeApplicationException,
             JadePersistenceException {
         // contrôle des paramètre
         if (documentData == null) {
@@ -483,7 +481,7 @@ public abstract class DecisionAbstractServiceImpl extends AbstractDocument imple
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    protected boolean isNotAllDroitBenEgalBenDos(ArrayList<String> listTiersBeneficiaireDroit,
+    protected boolean isNotAllDroitBenEgalBenDos(List<String> listTiersBeneficiaireDroit,
             String idBeneficiaireDossier) throws JadeApplicationException {
         // contrôle de paramètres
         if (listTiersBeneficiaireDroit == null) {
@@ -679,7 +677,7 @@ public abstract class DecisionAbstractServiceImpl extends AbstractDocument imple
 
         loadTextEntete(documentData, dossier, userInfos, langueDocument, dateImpression);
 
-        ArrayList<CalculBusinessModel> resultatCalcul = ALServiceLocator.getCalculBusinessService().getCalcul(dossier,
+        List<CalculBusinessModel> resultatCalcul = ALServiceLocator.getCalculBusinessService().getCalcul(dossier,
                 getDateCalcul(dossier));
         loadListDroit(documentData, dossier, resultatCalcul, getDateCalcul(dossier), langueDocument);
         loadListNaissance(documentData, dossier, resultatCalcul, getDateCalcul(dossier), langueDocument);
@@ -944,7 +942,7 @@ public abstract class DecisionAbstractServiceImpl extends AbstractDocument imple
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
     protected abstract void loadListDroit(DocumentData documentData, DossierComplexModel dossier,
-            ArrayList<CalculBusinessModel> calcul, String date, String langueDocument) throws JadePersistenceException,
+            List<CalculBusinessModel> calcul, String date, String langueDocument) throws JadePersistenceException,
             JadeApplicationException;
 
     /**
@@ -963,7 +961,7 @@ public abstract class DecisionAbstractServiceImpl extends AbstractDocument imple
      *             Exception levée par la couche métier
      */
     protected abstract void loadListNaissance(DocumentData documentData, DossierComplexModel dossier,
-            ArrayList<CalculBusinessModel> calcul, String dateDossierCalcul, String langueAffilie)
+            List<CalculBusinessModel> calcul, String dateDossierCalcul, String langueAffilie)
             throws JadeApplicationException, JadePersistenceException;
 
     /**
@@ -980,8 +978,8 @@ public abstract class DecisionAbstractServiceImpl extends AbstractDocument imple
      * @throws JadeApplicationException
      * @throws JadePersistenceException
      */
-    protected Collection loadMontantJoursDebut(DossierComplexModel dossier, ArrayList<CalculBusinessModel> calcul,
-            HashMap total, String date, DataList list, Collection tableau_sous_total, String langueDocument)
+    protected Collection loadMontantJoursDebut(DossierComplexModel dossier, List<CalculBusinessModel> calcul,
+                                               Map total, String date, DataList list, Collection tableau_sous_total, String langueDocument)
             throws JadeApplicationException, JadePersistenceException {
         if (!JadeNumericUtil.isEmptyOrZero(dossier.getDossierModel().getNbJoursDebut())) {
             String dateDebut = dossier.getDossierModel().getDebutValidite();
@@ -1027,8 +1025,8 @@ public abstract class DecisionAbstractServiceImpl extends AbstractDocument imple
         return tableau_sous_total;
     }
 
-    protected Collection loadMontantJoursFin(DossierComplexModel dossier, ArrayList<CalculBusinessModel> calcul,
-            HashMap total, String date, DataList list, Collection tableau_sous_total, String langueDocument)
+    protected Collection loadMontantJoursFin(DossierComplexModel dossier, List<CalculBusinessModel> calcul,
+            Map total, String date, DataList list, Collection tableau_sous_total, String langueDocument)
             throws JadeApplicationException, JadePersistenceException {
         if (!JadeNumericUtil.isEmptyOrZero(dossier.getDossierModel().getNbJoursFin())) {
 
@@ -1138,7 +1136,7 @@ public abstract class DecisionAbstractServiceImpl extends AbstractDocument imple
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    protected void loadTextCopies(DocumentData documentData, ArrayList<String> listCopies,
+    protected void loadTextCopies(DocumentData documentData, List<String> listCopies,
             DossierComplexModel dossierComplexModel, String langueDocument) throws JadeApplicationException {
         Collection tableau_copie = new Collection("tableau_copie_definition");
         if (!listCopies.isEmpty()) {
@@ -1180,7 +1178,7 @@ public abstract class DecisionAbstractServiceImpl extends AbstractDocument imple
      * @throws JadePersistenceException
      */
     protected void loadTextEntete(DocumentData documentData, DossierComplexModel dossierComplexModel,
-            HashMap<String, String> userInfos, String langueDocument, String dateImpression)
+            Map<String, String> userInfos, String langueDocument, String dateImpression)
             throws JadeApplicationException, JadePersistenceException {
 
         AssuranceInfo assInfo = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(

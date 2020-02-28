@@ -2,6 +2,9 @@ package ch.globaz.al.businessimpl.services.decision;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import ch.globaz.al.business.constantes.ALCSDossier;
 import ch.globaz.al.business.constantes.ALCSDroit;
 import ch.globaz.al.business.constantes.ALCSTarif;
@@ -38,7 +41,7 @@ public class DecisionAgricoleServiceImpl extends DecisionAbstractServiceImpl imp
 
     @Override
     protected void loadListDroit(DocumentData documentData, DossierComplexModel dossier,
-            ArrayList<CalculBusinessModel> calcul, String date, String langueDocument)
+                                 List<CalculBusinessModel> calcul, String date, String langueDocument)
             throws JadePersistenceException, JadeApplicationException {
 
         // vérification des paramètres
@@ -76,13 +79,13 @@ public class DecisionAgricoleServiceImpl extends DecisionAbstractServiceImpl imp
         documentData.add(tableau_entete);
 
         // liste des tiers bénéficiaires des droits
-        ArrayList<String> listTiersBeneficiaireDroit = new ArrayList<String>();
+        List<String> listTiersBeneficiaireDroit = new ArrayList<>();
 
         // calcul du montant total de la décision
-        HashMap total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
+        Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
                 ALCSDossier.UNITE_CALCUL_MOIS, "1", false, date);
 
-        calcul = (ArrayList<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
+        calcul = (List<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
 
         Collection tableau_colonne = new Collection("tableau_colonne_definition");
 
@@ -294,7 +297,7 @@ public class DecisionAgricoleServiceImpl extends DecisionAbstractServiceImpl imp
     }
 
     protected void addLigneTarifAgricole(DocumentData documentData, DossierComplexModel dossier,
-            ArrayList<CalculBusinessModel> calcul, String langueDocument)
+            List<CalculBusinessModel> calcul, String langueDocument)
             throws JadeApplicationException, JadePersistenceException {
 
         String tarifCode = null;
@@ -326,7 +329,7 @@ public class DecisionAgricoleServiceImpl extends DecisionAbstractServiceImpl imp
 
     @Override
     protected void loadListNaissance(DocumentData documentData, DossierComplexModel dossier,
-            ArrayList<CalculBusinessModel> calcul, String date, String langueDocument)
+            List<CalculBusinessModel> calcul, String date, String langueDocument)
             throws JadeApplicationException, JadePersistenceException {
 
         Collection tableau_naissance = new Collection("tableau_naissance");
@@ -343,10 +346,10 @@ public class DecisionAgricoleServiceImpl extends DecisionAbstractServiceImpl imp
                     libelle = this.getText("al.decision.liste.droit.accueil.libelle", langueDocument);
                 }
 
-                HashMap total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
+                Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
                         dossier.getDossierModel().getUniteCalcul(), "1", false, date);
 
-                calcul = (ArrayList<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
+                calcul = (List<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
 
                 list.addData("tableau_naissance_0",
                         libelle + " "
@@ -373,7 +376,7 @@ public class DecisionAgricoleServiceImpl extends DecisionAbstractServiceImpl imp
     }
 
     @Override
-    protected void loadTextCopies(DocumentData documentData, ArrayList<String> listCopies,
+    protected void loadTextCopies(DocumentData documentData, List<String> listCopies,
             DossierComplexModel dossierComplexModel, String langueDocument) throws JadeApplicationException {
         if (ALCSDossier.STATUT_IS.equals(dossierComplexModel.getDossierModel().getStatut())) {
             documentData.addData("copie_annexe_label", this.getText("al.decision.adi.annexe", langueDocument));

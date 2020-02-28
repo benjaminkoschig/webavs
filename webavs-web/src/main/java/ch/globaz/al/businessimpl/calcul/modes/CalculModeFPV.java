@@ -4,6 +4,8 @@ import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import java.util.HashSet;
+import java.util.Set;
+
 import ch.globaz.al.business.constantes.ALCSDossier;
 import ch.globaz.al.business.constantes.ALConstAttributsEntite;
 import ch.globaz.al.business.exceptions.calcul.ALCalculException;
@@ -26,8 +28,8 @@ import ch.globaz.al.business.services.ALServiceLocator;
 public class CalculModeFPV extends CalculModeAbstract {
 
     @Override
-    protected HashSet<String> getCategoriesList(DossierComplexModelRoot dossier, DroitModel droitModel,
-            String dateCalcul) throws JadeApplicationException, JadePersistenceException {
+    protected Set<String> getCategoriesList(DossierComplexModelRoot dossier, DroitModel droitModel,
+                                            String dateCalcul) throws JadeApplicationException, JadePersistenceException {
 
         if (dossier == null) {
             throw new ALCalculException("CalculModeFPVVisana#getCategoriesList : dossier is null");
@@ -42,7 +44,7 @@ public class CalculModeFPV extends CalculModeAbstract {
                     + " is not a valid date");
         }
 
-        HashSet<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
 
         if (setCategoriesForceesList(dossier, droitModel, set)) {
             return set;

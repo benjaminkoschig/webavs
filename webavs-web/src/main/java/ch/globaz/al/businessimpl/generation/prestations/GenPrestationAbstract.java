@@ -11,6 +11,8 @@ import globaz.jade.log.business.JadeBusinessMessageLevels;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
+
 import ch.globaz.al.business.constantes.ALCSDroit;
 import ch.globaz.al.business.constantes.ALCSPrestation;
 import ch.globaz.al.business.exceptions.generation.prestations.ALGenerationException;
@@ -168,7 +170,7 @@ public abstract class GenPrestationAbstract implements GenPrestation {
                 nomDroit.append(JadeCodesSystemsUtil.getCode(droitCalcule.getDroit().getDroitModel().getTypeDroit()));
             }
 
-            ArrayList<String> csvVal = new ArrayList<String>();
+            List<String> csvVal = new ArrayList<>();
             csvVal.add(context.getContextDossier().getDossier().getId());
             csvVal.add(context.getNumAffilie());
 
@@ -199,7 +201,7 @@ public abstract class GenPrestationAbstract implements GenPrestation {
             throw new ALGenerationException("GenPrestationAbstract#execute : context is null");
         }
 
-        ArrayList<CalculBusinessModel> calcul = context.getContextDossier().getCalcul();
+        List<CalculBusinessModel> calcul = context.getContextDossier().getCalcul();
 
         while (calcul != null) {
             generatePrestation(context, calcul);
@@ -221,7 +223,7 @@ public abstract class GenPrestationAbstract implements GenPrestation {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    protected void generatePrestation(ContextAffilie context, ArrayList<CalculBusinessModel> calcul)
+    protected void generatePrestation(ContextAffilie context, List<CalculBusinessModel> calcul)
             throws JadeApplicationException, JadePersistenceException {
 
         if (context == null) {

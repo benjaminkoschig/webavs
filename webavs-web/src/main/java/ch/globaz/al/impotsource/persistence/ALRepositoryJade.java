@@ -61,7 +61,7 @@ public abstract class ALRepositoryJade<T extends DomainEntity, S extends JadeSim
                                           final int limitSize) {
         List<List<String>> idsSplited = Lists.partition(new ArrayList<String>(ids), limitSize);
 
-        List<T> listReturn = new ArrayList<T>();
+        List<T> listReturn = new ArrayList<>();
 
         for (List<String> idsList : idsSplited) {
             listReturn.addAll(executor.execute(idsList));
@@ -197,11 +197,11 @@ public abstract class ALRepositoryJade<T extends DomainEntity, S extends JadeSim
                         if (search.getSearchResults().length > 0) {
                             return Arrays.asList(search.getSearchResults());
                         }
-                        return new ArrayList<JadeAbstractModel>();
+                        return new ArrayList<>();
                     }
                 });
 
-        List<T> entities = new ArrayList<T>();
+        List<T> entities = new ArrayList<>();
         DomaineConverterJade<T, S> converter = this.getConverter();
         for (JadeAbstractModel model : list) {
             entities.add(converter.convertToDomain((S) model));
@@ -210,7 +210,7 @@ public abstract class ALRepositoryJade<T extends DomainEntity, S extends JadeSim
     }
 
     protected List<T> fetchSearchModel(final JadeSearchSimpleModel search) {
-        List<T> list = new ArrayList<T>();
+        List<T> list = new ArrayList<>();
         DomaineConverterJade<T, S> converter = this.getConverter();
         for (JadeAbstractModel abstractModel : search.getSearchResults()) {
             @SuppressWarnings("unchecked")
@@ -313,7 +313,7 @@ public abstract class ALRepositoryJade<T extends DomainEntity, S extends JadeSim
 
     @SuppressWarnings("unchecked")
     private static <T extends JadeAbstractModel> List<T> createListe(JadeAbstractSearchModel searchModel) {
-        List<T> liste = new ArrayList<T>(searchModel.getSize());
+        List<T> liste = new ArrayList<>(searchModel.getSize());
         for (JadeAbstractModel model : searchModel.getSearchResults()) {
             liste.add((T) model);
         }

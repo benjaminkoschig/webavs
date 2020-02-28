@@ -5,8 +5,8 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Service pour les récapitulatifs d'entreprise (destinés aux employeurs) à imprimer
@@ -24,8 +24,8 @@ public interface RecapitulatifEntrepriseImpressionService extends JadeApplicatio
      * @throws JadePersistenceException
      * @throws JadeApplicationException
      */
-    public RecapitulatifEntrepriseImpressionComplexSearchModel calculPrestationsStoreInRecapsDocs(
-            ArrayList<String> dossiersToGenerate, String periode, String bonification) throws JadePersistenceException,
+    RecapitulatifEntrepriseImpressionComplexSearchModel calculPrestationsStoreInRecapsDocs(
+            List<String> dossiersToGenerate, String periode, String bonification) throws JadePersistenceException,
             JadeApplicationException;
 
     /**
@@ -40,7 +40,7 @@ public interface RecapitulatifEntrepriseImpressionService extends JadeApplicatio
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public ArrayList loadArrayListCsv(ArrayList listRecap) throws JadePersistenceException, JadeApplicationException;
+    List loadArrayListCsv(List listRecap) throws JadePersistenceException, JadeApplicationException;
 
     /**
      * Méthode qui retourne la liste des recap à sortir en csv
@@ -54,7 +54,7 @@ public interface RecapitulatifEntrepriseImpressionService extends JadeApplicatio
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public ArrayList loadArrayListDocData(ArrayList listRecap) throws JadePersistenceException,
+    List loadArrayListDocData(List listRecap) throws JadePersistenceException,
             JadeApplicationException;
 
     /**
@@ -70,7 +70,7 @@ public interface RecapitulatifEntrepriseImpressionService extends JadeApplicatio
      *             faire
      */
     
-    public HashMap loadCSVDocument(ArrayList recapList, Boolean isCharNssRecap) throws JadePersistenceException, JadeApplicationException;
+    Map loadCSVDocument(List recapList, Boolean isCharNssRecap) throws JadePersistenceException, JadeApplicationException;
 
     /**
      * Méthode qui retourne le container renfermant les listes des récapitulatifs
@@ -88,7 +88,7 @@ public interface RecapitulatifEntrepriseImpressionService extends JadeApplicatio
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public ArrayList loadDocuments(ArrayList listRecap, String dateImpression, boolean isGEd)
+    List loadDocuments(List listRecap, String dateImpression, boolean isGEd)
             throws JadePersistenceException, JadeApplicationException;
 
 }

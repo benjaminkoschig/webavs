@@ -5,6 +5,9 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import ch.globaz.al.business.models.dossier.DossierModel;
 import ch.globaz.al.business.models.droit.CalculBusinessModel;
 import ch.globaz.al.business.models.droit.DroitComplexModel;
@@ -46,8 +49,8 @@ public interface CalculMontantsService extends JadeApplicationService {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public ArrayList<CalculBusinessModel> addDroitCalculeActif(DossierModel dossier, DroitComplexModel droit,
-            TarifComplexSearchModel tarifs, String tarifForce, ArrayList<CalculBusinessModel> droitsCalcules,
+    List<CalculBusinessModel> addDroitCalculeActif(DossierModel dossier, DroitComplexModel droit,
+            TarifComplexSearchModel tarifs, String tarifForce, List<CalculBusinessModel> droitsCalcules,
             String rang, String date) throws JadeApplicationException, JadePersistenceException;
 
     /**
@@ -80,8 +83,8 @@ public interface CalculMontantsService extends JadeApplicationService {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public ArrayList<CalculBusinessModel> addDroitCalculeActif(DossierModel dossier, DroitComplexModel droit,
-            TarifComplexSearchModel tarifs, String tarifForce, ArrayList<CalculBusinessModel> droitsCalcules,
+    List<CalculBusinessModel> addDroitCalculeActif(DossierModel dossier, DroitComplexModel droit,
+            TarifComplexSearchModel tarifs, String tarifForce, List<CalculBusinessModel> droitsCalcules,
             String rang, String date, boolean hideDroit) throws JadeApplicationException, JadePersistenceException;
 
     /**
@@ -101,9 +104,7 @@ public interface CalculMontantsService extends JadeApplicationService {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public ArrayList<CalculBusinessModel> addDroitCalculeInactif(DroitComplexModel droit,
-            ArrayList<CalculBusinessModel> droitsCalcules, String date) throws JadeApplicationException,
-            JadePersistenceException;
+     List<CalculBusinessModel> addDroitCalculeInactif(DroitComplexModel droit, List<CalculBusinessModel> droitsCalcules, String date) throws JadeApplicationException, JadePersistenceException;
 
     /**
      * Ajoute un droit de naissance/accueil à la liste des droits calculés
@@ -135,8 +136,8 @@ public interface CalculMontantsService extends JadeApplicationService {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public ArrayList<CalculBusinessModel> addDroitCalculeNaissance(DossierModel dossier, DroitComplexModel droit,
-            TarifComplexSearchModel tarifs, String tarifForce, ArrayList<CalculBusinessModel> droitsCalcules,
+    List<CalculBusinessModel> addDroitCalculeNaissance(DossierModel dossier, DroitComplexModel droit,
+            TarifComplexSearchModel tarifs, String tarifForce, List<CalculBusinessModel> droitsCalcules,
             String rang, String type, String date) throws JadeApplicationException, JadePersistenceException;
 
     /**
@@ -161,8 +162,8 @@ public interface CalculMontantsService extends JadeApplicationService {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    public ArrayList<CalculBusinessModel> addDroitCalculeSpecial(String montant,
-            ArrayList<CalculBusinessModel> droitsCalcules, DroitComplexModel droit, String typeDroit,
+    List<CalculBusinessModel> addDroitCalculeSpecial(String montant,
+            List<CalculBusinessModel> droitsCalcules, DroitComplexModel droit, String typeDroit,
             String categorieTarif, String tarifCaisse, String tarifCanton) throws JadeApplicationException;
 
     /**
@@ -190,8 +191,8 @@ public interface CalculMontantsService extends JadeApplicationService {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    public ArrayList<CalculBusinessModel> addDroitCalculeSpecial(String montant,
-            ArrayList<CalculBusinessModel> droitsCalcules, DroitComplexModel droit, String typeDroit,
+     List<CalculBusinessModel> addDroitCalculeSpecial(String montant,
+            List<CalculBusinessModel> droitsCalcules, DroitComplexModel droit, String typeDroit,
             String categorieTarif, String tarifCaisse, String tarifCanton, boolean hideDroit)
             throws JadeApplicationException;
 
@@ -231,8 +232,8 @@ public interface CalculMontantsService extends JadeApplicationService {
      * @see ch.globaz.al.business.models.droit.CalculBusinessModel
      */
     @SuppressWarnings("unchecked")
-    public HashMap calculerTotalMontant(DossierModel dossier, ArrayList<CalculBusinessModel> droitsCalcules,
-            String unite, String nbUnites, boolean avecNAIS, String date) throws JadeApplicationException,
+    Map calculerTotalMontant(DossierModel dossier, List<CalculBusinessModel> droitsCalcules,
+                             String unite, String nbUnites, boolean avecNAIS, String date) throws JadeApplicationException,
             JadePersistenceException;
 
     /**
@@ -243,7 +244,7 @@ public interface CalculMontantsService extends JadeApplicationService {
      * @return <code>true</code> si le montant a été forcé, <code>false</code> dans le cas contraire forcé à un autre
      *         montant
      */
-    public boolean isMontantForce(CalculBusinessModel calcDroit);
+    boolean isMontantForce(CalculBusinessModel calcDroit);
 
     /**
      * Vérifie si un montant a été forcé à 0 pour un droit calculé
@@ -253,5 +254,5 @@ public interface CalculMontantsService extends JadeApplicationService {
      * @return <code>true</code> si le montant a été forcé à 0, <code>false</code> s'il n'a pas été forcé ou s'il a été
      *         forcé à un autre montant
      */
-    public boolean isMontantForceZero(CalculBusinessModel calcDroit);
+    boolean isMontantForceZero(CalculBusinessModel calcDroit);
 }

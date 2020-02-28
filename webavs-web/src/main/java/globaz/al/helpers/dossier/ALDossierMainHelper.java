@@ -1,5 +1,6 @@
 package globaz.al.helpers.dossier;
 
+import ch.globaz.al.business.services.ALServiceLocator;
 import globaz.al.helpers.ALAbstractHelper;
 import globaz.al.vb.dossier.ALDossierMainViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -9,7 +10,6 @@ import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.context.JadeThread;
 import globaz.jade.log.business.JadeBusinessMessage;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
-import ch.globaz.al.business.services.ALServiceLocator;
 
 /**
  * Helper dédié au viewBean ALDossierMainViewBean
@@ -34,7 +34,7 @@ public class ALDossierMainHelper extends ALAbstractHelper {
      * Initialise le modèle complex (dossierComplexModel) du viewBean, c'est-à-dire qu'il le charge si il existe ou
      * définit les valeurs par défaut sinon.
      * 
-     * @see globaz.framework.controller.FWHelper#_init(globaz.framework.bean. FWViewBeanInterface,
+     * @see globaz.framework.controller.FWHelper#_init(globaz.framework.bean.FWViewBeanInterface,
      *      globaz.framework.controller.FWAction, globaz.globall.api.BISession)
      */
     @Override
@@ -85,7 +85,7 @@ public class ALDossierMainHelper extends ALAbstractHelper {
     /**
      * Exécute les différentes customAction possibles depuis le viewBean
      * 
-     * @see globaz.framework.controller.FWHelper#execute(globaz.framework.bean. FWViewBeanInterface,
+     * @see globaz.framework.controller.FWHelper#execute(globaz.framework.bean.FWViewBeanInterface,
      *      globaz.framework.controller.FWAction, globaz.globall.api.BISession)
      */
     @Override

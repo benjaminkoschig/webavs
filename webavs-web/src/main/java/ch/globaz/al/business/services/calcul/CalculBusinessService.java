@@ -1,13 +1,16 @@
 package ch.globaz.al.business.services.calcul;
 
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.service.provider.application.JadeApplicationService;
-import java.util.ArrayList;
-import java.util.HashMap;
 import ch.globaz.al.business.models.dossier.DossierComplexModelRoot;
 import ch.globaz.al.business.models.dossier.DossierModel;
 import ch.globaz.al.business.models.droit.CalculBusinessModel;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.service.provider.application.JadeApplicationService;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Service permettant le calcul des droits AF d'un dossier
@@ -33,7 +36,7 @@ public interface CalculBusinessService extends JadeApplicationService {
      *             faire
      * 
      */
-    public ArrayList<CalculBusinessModel> getCalcul(DossierComplexModelRoot dossier, String dateCalcul)
+    List<CalculBusinessModel> getCalcul(DossierComplexModelRoot dossier, String dateCalcul)
             throws JadeApplicationException, JadePersistenceException;
 
     /**
@@ -73,6 +76,6 @@ public interface CalculBusinessService extends JadeApplicationService {
      *             faire
      * @see CalculBusinessService#getCalcul(DossierComplexModelRoot, String)
      */
-    public HashMap getTotal(DossierModel dossier, ArrayList<CalculBusinessModel> droitsCalcules, String unite,
-            String nbUnite, boolean avecNAIS, String date) throws JadeApplicationException, JadePersistenceException;
+    Map getTotal(DossierModel dossier, List<CalculBusinessModel> droitsCalcules, String unite,
+                 String nbUnite, boolean avecNAIS, String date) throws JadeApplicationException, JadePersistenceException;
 }

@@ -1,31 +1,17 @@
 package ch.globaz.al.businessimpl.services.models.droit;
 
-import ch.globaz.al.business.constantes.*;
-import ch.globaz.al.business.constantes.enumerations.RafamTypeAction;
-import ch.globaz.al.business.models.droit.*;
-import ch.globaz.al.business.models.rafam.AnnonceRafamComplexModel;
-import ch.globaz.al.business.models.rafam.AnnonceRafamComplexSearchModel;
-import ch.globaz.common.domaine.Montant;
-import globaz.jade.client.util.JadeCodesSystemsUtil;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeNumericUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.log.business.JadeBusinessMessage;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
+import ch.globaz.al.business.constantes.ALCSDroit;
+import ch.globaz.al.business.constantes.ALConstCaisse;
 import ch.globaz.al.business.constantes.enumerations.RafamEtatAnnonce;
 import ch.globaz.al.business.constantes.enumerations.RafamEvDeclencheur;
 import ch.globaz.al.business.constantes.enumerations.RafamFamilyAllowanceType;
 import ch.globaz.al.business.constantes.enumerations.droit.ALEnumMsgDroitPC;
 import ch.globaz.al.business.exceptions.business.ALDroitBusinessException;
 import ch.globaz.al.business.models.dossier.DossierComplexModel;
+import ch.globaz.al.business.models.droit.DroitComplexModel;
+import ch.globaz.al.business.models.droit.DroitComplexSearchModel;
+import ch.globaz.al.business.models.droit.DroitModel;
+import ch.globaz.al.business.models.droit.DroitSearchModel;
 import ch.globaz.al.business.models.prestation.DetailPrestationSearchModel;
 import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
 import ch.globaz.al.business.models.rafam.AnnonceRafamSearchModel;
@@ -38,7 +24,17 @@ import ch.globaz.al.utils.ALDateUtils;
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
 import ch.globaz.pegasus.business.models.dossier.DossierRCListSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import globaz.jade.client.util.JadeCodesSystemsUtil;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.log.business.JadeBusinessMessage;
+
+import java.util.*;
+
 
 /**
  * Implémentation des services métier liés au droit
@@ -100,7 +96,7 @@ public class DroitBusinessServiceImpl implements DroitBusinessService {
             // récupération de la capacité d'exercer de l'enfant
             Boolean capExercer = droitComplexModel.getEnfantComplexModel().getEnfantModel().getCapableExercer();
 
-            ArrayList<EcheanceComplexModel> listeEcheance = new ArrayList<EcheanceComplexModel>();
+            List<EcheanceComplexModel> listeEcheance = new ArrayList<>();
             // rechercher la liste des échéances (âge début et âge fin) pour le
             // droit
             listeEcheance = ALImplServiceLocator.getDatesEcheancePrivateService().getDebutFinValiditeEcheance(
@@ -315,7 +311,7 @@ public class DroitBusinessServiceImpl implements DroitBusinessService {
     }
 
     @Override
-    public int countEnfantsInDroitsList(ArrayList<String> listIdDroits) throws JadeApplicationException,
+    public int countEnfantsInDroitsList(List<String> listIdDroits) throws JadeApplicationException,
             JadePersistenceException {
 
         if (listIdDroits == null) {
@@ -323,7 +319,7 @@ public class DroitBusinessServiceImpl implements DroitBusinessService {
                     "DroitBusinessServiceImpl#countEnfantsInDroitsList : listIdDroits is null");
         }
 
-        ArrayList<String> idEnfantsFound = new ArrayList<String>();
+        List<String> idEnfantsFound = new ArrayList<>();
         for (String idDroit : listIdDroits) {
             DroitModel currentDroit = ALImplServiceLocator.getDroitModelService().read(idDroit);
             if (!JadeNumericUtil.isEmptyOrZero(currentDroit.getIdEnfant())
@@ -446,7 +442,7 @@ public class DroitBusinessServiceImpl implements DroitBusinessService {
         DroitComplexSearchModel searchForChevauchement = new DroitComplexSearchModel();
         searchForChevauchement.setForDebutDroit(droit.getDebutDroit());
         searchForChevauchement.setForFinDroitForcee(droit.getFinDroitForcee());
-        List<String> types = new ArrayList<String>();
+        List<String> types = new ArrayList<>();
         types.add(droit.getTypeDroit());
         searchForChevauchement.setInTypeDroit(types);
 
@@ -636,11 +632,11 @@ public class DroitBusinessServiceImpl implements DroitBusinessService {
     }
 
     @Override
-    public ArrayList<AnnonceRafamModel> readWidget_apercuAnnoncesRafam(HashMap<?, ?> values)
+    public List<AnnonceRafamModel> readWidget_apercuAnnoncesRafam(Map<?, ?> values)
             throws JadeApplicationException, JadePersistenceException {
 
         // Préparation de l'arraylist
-        ArrayList<AnnonceRafamModel> annoncesForDroit = new ArrayList<AnnonceRafamModel>();
+        List<AnnonceRafamModel> annoncesForDroit = new ArrayList<>();
 
         String dateDebut = values.get("dateDebut").toString();
         String dateFin = values.get("dateFin").toString();
@@ -665,7 +661,7 @@ public class DroitBusinessServiceImpl implements DroitBusinessService {
         searchJustCreated.setForIdDroit(idDroit);
         searchJustCreated = ALServiceLocator.getAnnonceRafamModelService().search(searchJustCreated);
 
-        ArrayList<RafamFamilyAllowanceType> typeDroitsCreated = new ArrayList<RafamFamilyAllowanceType>();
+        List<RafamFamilyAllowanceType> typeDroitsCreated = new ArrayList<>();
 
         // on stocke les annonces créées et les types de droits de ces annonces
         for (int i = 0; i < searchJustCreated.getSize(); i++) {
@@ -675,7 +671,7 @@ public class DroitBusinessServiceImpl implements DroitBusinessService {
             typeDroitsCreated.add(RafamFamilyAllowanceType.getFamilyAllowanceType(currentAnnonce.getGenrePrestation()));
         }
 
-        ArrayList<String> etats = new ArrayList<String>();
+        List<String> etats = new ArrayList<>();
 
         etats.add(RafamEtatAnnonce.RECU.getCS());
         etats.add(RafamEtatAnnonce.SUSPENDU.getCS());
@@ -693,7 +689,7 @@ public class DroitBusinessServiceImpl implements DroitBusinessService {
     }
 
     @Override
-    public void readWidget_deleteAnnoncesTemporaires(HashMap<?, ?> values) throws JadeApplicationException,
+    public void readWidget_deleteAnnoncesTemporaires(Map<?, ?> values) throws JadeApplicationException,
             JadePersistenceException {
 
         String idDroit = values.get("idDroit").toString();
@@ -703,7 +699,7 @@ public class DroitBusinessServiceImpl implements DroitBusinessService {
     }
 
     @Override
-    public void readWidget_validerAnnoncesTemporaires(HashMap<?, ?> values) throws JadeApplicationException,
+    public void readWidget_validerAnnoncesTemporaires(Map<?, ?> values) throws JadeApplicationException,
             JadePersistenceException {
         // TODO: mettre le recordNumber sélectionné à l'annonce correspondante (0 si nouvelle)
         // - appeler service
@@ -771,7 +767,7 @@ public class DroitBusinessServiceImpl implements DroitBusinessService {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    private void setNewEcheance(DroitComplexModel droitModel, ArrayList<EcheanceComplexModel> listEcheancesAge,
+    private void setNewEcheance(DroitComplexModel droitModel, List<EcheanceComplexModel> listEcheancesAge,
             String dateNaissanceEnfant) throws JadeApplicationException, JadePersistenceException {
 
         if (droitModel == null) {

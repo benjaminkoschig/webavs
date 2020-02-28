@@ -1,6 +1,5 @@
 package ch.globaz.al.business.services;
 
-import static ch.globaz.al.business.services.ALRepositoryLocator.*;
 import ch.globaz.al.business.exceptions.decision.ALDecisionException;
 import ch.globaz.al.business.services.adi.CalculAdiBusinessService;
 import ch.globaz.al.business.services.adiDecomptes.AdiDecomptesService;
@@ -15,12 +14,7 @@ import ch.globaz.al.business.services.compensation.CompensationFactureBusinessSe
 import ch.globaz.al.business.services.compensation.CompensationFactureProtocolesService;
 import ch.globaz.al.business.services.copies.CopiesBusinessService;
 import ch.globaz.al.business.services.courrier.LettreAccompagnementCopieService;
-import ch.globaz.al.business.services.decision.DecisionBuilderService;
-import ch.globaz.al.business.services.decision.DecisionEditingService;
-import ch.globaz.al.business.services.decision.DecisionListService;
-import ch.globaz.al.business.services.decision.DecisionProviderService;
-import ch.globaz.al.business.services.decision.DecisionService;
-import ch.globaz.al.business.services.decision.ProtocoleDecisionsMasseService;
+import ch.globaz.al.business.services.decision.*;
 import ch.globaz.al.business.services.declarationVersement.DeclarationsVersementService;
 import ch.globaz.al.business.services.dossiers.RadiationAutomatiqueDossiersProtocoleService;
 import ch.globaz.al.business.services.dossiers.RadiationAutomatiqueService;
@@ -33,80 +27,46 @@ import ch.globaz.al.business.services.ged.GedBusinessService;
 import ch.globaz.al.business.services.generation.factures.NumeroFactureService;
 import ch.globaz.al.business.services.generation.prestations.GenerationAffilieService;
 import ch.globaz.al.business.services.generation.prestations.GenerationDossierService;
+import ch.globaz.al.business.services.impotsource.TauxImpositionService;
+import ch.globaz.al.business.services.impotsource.TauxImpositionServiceCRUD;
 import ch.globaz.al.business.services.languesAllocAffilies.LangueAllocAffilieService;
-import ch.globaz.al.business.services.models.adi.AdiDecompteComplexModelService;
-import ch.globaz.al.business.services.models.adi.AdiEnfantMoisComplexModelService;
-import ch.globaz.al.business.services.models.adi.AdiSaisieComplexModelService;
-import ch.globaz.al.business.services.models.adi.AdiSaisieModelService;
-import ch.globaz.al.business.services.models.adi.DecompteAdiModelService;
+import ch.globaz.al.business.services.models.adi.*;
 import ch.globaz.al.business.services.models.allocataire.AllocataireAgricoleComplexModelService;
 import ch.globaz.al.business.services.models.allocataire.AllocataireBusinessService;
 import ch.globaz.al.business.services.models.allocataire.AllocataireComplexModelService;
 import ch.globaz.al.business.services.models.allocataire.RevenuModelService;
 import ch.globaz.al.business.services.models.attribut.AttributEntiteBusinessService;
 import ch.globaz.al.business.services.models.attribut.AttributEntiteModelService;
-import ch.globaz.al.business.services.models.dossier.CommentaireModelService;
-import ch.globaz.al.business.services.models.dossier.CopieComplexModelService;
-import ch.globaz.al.business.services.models.dossier.CopieModelService;
-import ch.globaz.al.business.services.models.dossier.DossierAgricoleComplexModelService;
-import ch.globaz.al.business.services.models.dossier.DossierBusinessService;
-import ch.globaz.al.business.services.models.dossier.DossierComplexModelService;
-import ch.globaz.al.business.services.models.dossier.DossierDecisionComplexModelService;
-import ch.globaz.al.business.services.models.dossier.DossierLieComplexModelService;
-import ch.globaz.al.business.services.models.dossier.DossierListComplexModelService;
-import ch.globaz.al.business.services.models.dossier.DossierModelService;
-import ch.globaz.al.business.services.models.droit.CalculDroitEditingModelService;
-import ch.globaz.al.business.services.models.droit.DroitBusinessService;
-import ch.globaz.al.business.services.models.droit.DroitComplexModelService;
-import ch.globaz.al.business.services.models.droit.DroitEcheanceComplexModelService;
-import ch.globaz.al.business.services.models.droit.EnfantBusinessService;
-import ch.globaz.al.business.services.models.droit.EnfantComplexModelService;
+import ch.globaz.al.business.services.models.dossier.*;
+import ch.globaz.al.business.services.models.droit.*;
 import ch.globaz.al.business.services.models.envoi.EnvoiComplexModelService;
 import ch.globaz.al.business.services.models.envoi.EnvoiTemplateComplexModelService;
 import ch.globaz.al.business.services.models.periodeAF.PeriodeAFBusinessService;
 import ch.globaz.al.business.services.models.periodeAF.PeriodeAFModelService;
 import ch.globaz.al.business.services.models.personne.PersonneAFComplexModelService;
-import ch.globaz.al.business.services.models.prestation.DetailPrestationComplexModelService;
-import ch.globaz.al.business.services.models.prestation.EntetePrestationListRecapComplexModelService;
-import ch.globaz.al.business.services.models.prestation.EntetePrestationModelService;
-import ch.globaz.al.business.services.models.prestation.PrestationBusinessService;
-import ch.globaz.al.business.services.models.prestation.RecapitulatifEntrepriseBusinessService;
-import ch.globaz.al.business.services.models.prestation.RecapitulatifEntrepriseListComplexModelService;
-import ch.globaz.al.business.services.models.prestation.RecapitulatifEntrepriseModelService;
+import ch.globaz.al.business.services.models.prestation.*;
 import ch.globaz.al.business.services.models.processus.ConfigProcessusModelService;
 import ch.globaz.al.business.services.models.processus.ProcessusPeriodiqueModelService;
 import ch.globaz.al.business.services.models.processus.TemplateTraitementListComplexModelService;
 import ch.globaz.al.business.services.models.processus.TraitementPeriodiqueModelService;
-import ch.globaz.al.business.services.models.rafam.AnnonceRafamComplexModelService;
-import ch.globaz.al.business.services.models.rafam.AnnonceRafamDelegueComplexModelService;
-import ch.globaz.al.business.services.models.rafam.AnnonceRafamModelService;
-import ch.globaz.al.business.services.models.rafam.ComplementDelegueModelService;
-import ch.globaz.al.business.services.models.rafam.ErreurAnnonceRafamModelService;
-import ch.globaz.al.business.services.models.rafam.ErrorPeriodModelService;
-import ch.globaz.al.business.services.models.rafam.OverlapInformationModelService;
+import ch.globaz.al.business.services.models.rafam.*;
 import ch.globaz.al.business.services.models.tauxMonnaieEtrangere.TauxMonnaieEtrangereModelService;
 import ch.globaz.al.business.services.parameters.ParametersServices;
 import ch.globaz.al.business.services.processus.BusinessProcessusService;
-import ch.globaz.al.business.services.rafam.AnnonceRafamCreationService;
-import ch.globaz.al.business.services.rafam.AnnonceRafamDelegueBusinessService;
-import ch.globaz.al.business.services.rafam.AnnonceRafamImportProtocoleService;
-import ch.globaz.al.business.services.rafam.AnnoncesRafamDelegueProtocoleService;
-import ch.globaz.al.business.services.rafam.AnnoncesRafamErrorBusinessService;
-import ch.globaz.al.business.services.rafam.AnnoncesRafamNewXSDVersionErrorBusinessService;
-import ch.globaz.al.business.services.rafam.AnnoncesRafamProtocoleService;
+import ch.globaz.al.business.services.rafam.*;
 import ch.globaz.al.business.services.rafam.sedex.ExportAnnoncesNewXSDVersionRafamService;
 import ch.globaz.al.business.services.rafam.sedex.ExportAnnoncesRafamService;
 import ch.globaz.al.business.services.recapitulatifs.RecapitulatifEntrepriseImpressionService;
 import ch.globaz.al.business.services.tarif.TarifBusinessService;
 import ch.globaz.al.business.services.tucana.TucanaBusinessService;
-import ch.globaz.al.business.services.impotsource.TauxImpositionService;
-import ch.globaz.al.business.services.impotsource.TauxImpositionServiceCRUD;
 import ch.globaz.al.businessimpl.services.impotsource.TauxImpositionServiceImpl;
 import ch.globaz.vulpecula.business.services.is.ImpotSourceService;
 import ch.globaz.vulpecula.businessimpl.services.is.ImpotSourceServiceImpl;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.service.provider.JadeApplicationServiceLocator;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+
+import static ch.globaz.al.business.services.ALRepositoryLocator.getTauxImpositionRepository;
 
 /**
  * Permet d'obtenir une instance de l'implémentation des services de l'application des Allocations Familiales
@@ -116,7 +76,6 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 public abstract class ALServiceLocator {
 
     protected ALServiceLocator(){
-
     }
 
     /**
@@ -1341,6 +1300,10 @@ public abstract class ALServiceLocator {
     }
 
     private static class TauxImpositionServiceHolder {
+        private TauxImpositionServiceHolder() {
+            throw new UnsupportedOperationException();
+        }
+
         public static final TauxImpositionService INSTANCE = new TauxImpositionServiceImpl(
                 getTauxImpositionRepository());
     }
@@ -1350,6 +1313,10 @@ public abstract class ALServiceLocator {
     }
 
     private static class ImpotSourceServiceHolder {
+        private ImpotSourceServiceHolder() {
+            throw new UnsupportedOperationException();
+        }
+
         public static final ImpotSourceService INSTANCE = new ImpotSourceServiceImpl();
     }
 

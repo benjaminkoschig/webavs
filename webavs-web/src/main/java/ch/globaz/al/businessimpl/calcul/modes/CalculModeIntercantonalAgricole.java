@@ -3,6 +3,8 @@ package ch.globaz.al.businessimpl.calcul.modes;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.exception.JadeApplicationException;
 import java.util.HashSet;
+import java.util.Set;
+
 import ch.globaz.al.business.constantes.ALCSTarif;
 import ch.globaz.al.business.exceptions.calcul.ALCalculException;
 import ch.globaz.al.business.models.dossier.DossierAgricoleComplexModel;
@@ -25,8 +27,8 @@ public class CalculModeIntercantonalAgricole extends CalculModeIntercantonal {
      * java.lang.String)
      */
     @Override
-    protected HashSet<String> getCategoriesList(DossierComplexModelRoot dossier, DroitModel droitModel,
-            String dateCalcul) throws JadeApplicationException {
+    protected Set<String> getCategoriesList(DossierComplexModelRoot dossier, DroitModel droitModel,
+                                            String dateCalcul) throws JadeApplicationException {
 
         if (dossier == null) {
             throw new ALCalculException("CalculModeIntercantonalAgricole#getCategoriesList : dossier is null");
@@ -46,7 +48,7 @@ public class CalculModeIntercantonalAgricole extends CalculModeIntercantonal {
                     + " is not a valid date");
         }
 
-        HashSet<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
 
         if (setCategoriesForceesList(dossier, droitModel, set)) {
             return set;

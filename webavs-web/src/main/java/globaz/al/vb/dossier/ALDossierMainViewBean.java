@@ -68,7 +68,7 @@ public class ALDossierMainViewBean extends BJadePersistentObjectViewBean {
     /**
      * Structure contenant les informations de l'affiliation affichée à l'écran
      */
-    private AssuranceInfo affiliation = null;
+    private AssuranceInfo affiliation;
 
     /**
      * Map contenant les cs compléments activité
@@ -103,12 +103,12 @@ public class ALDossierMainViewBean extends BJadePersistentObjectViewBean {
     /**
      * Modèle conteneur du dossier complet géré dans l'écran correspondant
      */
-    private DossierComplexModel dossierComplexModel = null;
+    private DossierComplexModel dossierComplexModel;
 
     /**
      * La liste des droits calculés à la date définie (dateCalcul)
      */
-    private ArrayList<CalculBusinessModel> droitsList = new ArrayList<CalculBusinessModel>();
+    private List<CalculBusinessModel> droitsList = new ArrayList<>();
 
     /**
      * Représente la valeur de l'état du dossier à l'entrée dans l'écran
@@ -349,7 +349,7 @@ public class ALDossierMainViewBean extends BJadePersistentObjectViewBean {
 
     }
 
-    public ArrayList<CalculBusinessModel> getDroitsList() {
+    public List<CalculBusinessModel> getDroitsList() {
         return droitsList;
     }
 
@@ -980,7 +980,7 @@ public class ALDossierMainViewBean extends BJadePersistentObjectViewBean {
      * @param droitsList
      *            la liste des droits calculés
      */
-    public void setDroitsList(ArrayList droitsList) {
+    public void setDroitsList(List droitsList) {
         this.droitsList = droitsList;
     }
 

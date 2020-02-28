@@ -8,10 +8,8 @@ import globaz.jade.log.business.JadeBusinessMessageLevels;
 import globaz.jade.log.business.renderer.JadeBusinessMessageRenderer;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.*;
+
 import ch.globaz.al.business.exceptions.generation.prestations.ALGenerationException;
 import ch.globaz.al.businessimpl.generation.prestations.context.ContextPrestation;
 
@@ -46,7 +44,7 @@ public class ProtocoleLogger {
     /**
      * Liste permettant de stocker des valeurs à afficher dans le protocole CSV
      */
-    private ArrayList<String> csvFields = new ArrayList<String>();
+    private List<String> csvFields = new ArrayList<>();
     /**
      * Conteneur de messages d'erreur
      */
@@ -54,7 +52,7 @@ public class ProtocoleLogger {
     /**
      * Conteneur pour les erreurs système
      */
-    private ArrayList<JadeBusinessMessage> fatalErrorsContainer = new ArrayList<JadeBusinessMessage>();
+    private List<JadeBusinessMessage> fatalErrorsContainer = new ArrayList<>();
     /**
      * Identifiant de l'élément concerné par les erreurs. Exemple : id de dossier, numéro d'affilié, ...
      */
@@ -98,7 +96,7 @@ public class ProtocoleLogger {
      * @throws JadeApplicationException
      *             Exception levée si l'un des paramètres n'est pas valide
      */
-    private ProtocoleLogger(String idItem, String nomItem, ArrayList<String> csvFields) throws JadeApplicationException {
+    private ProtocoleLogger(String idItem, String nomItem, List<String> csvFields) throws JadeApplicationException {
 
         super();
 
@@ -170,7 +168,7 @@ public class ProtocoleLogger {
     /**
      * @return le conteneur de messages d'erreur
      */
-    public HashMap<String, ProtocoleLogger> getErrorsContainer() {
+    public Map<String, ProtocoleLogger> getErrorsContainer() {
         return errorsContainer;
     }
 
@@ -202,7 +200,7 @@ public class ProtocoleLogger {
      * @throws JadeApplicationException
      *             Exception levée si idItem est vide ou null
      */
-    public ProtocoleLogger getErrorsLogger(String idItem, String nomItem, ArrayList<String> csvFields)
+    public ProtocoleLogger getErrorsLogger(String idItem, String nomItem, List<String> csvFields)
             throws JadeApplicationException {
 
         if (JadeStringUtil.isEmpty(idItem)) {
@@ -230,7 +228,7 @@ public class ProtocoleLogger {
     /**
      * @return the fatalErrorsContainer
      */
-    public ArrayList<JadeBusinessMessage> getFatalErrorsContainer() {
+    public List<JadeBusinessMessage> getFatalErrorsContainer() {
         return fatalErrorsContainer;
     }
 
@@ -244,7 +242,7 @@ public class ProtocoleLogger {
     /**
      * @return le conteneur contenant les messages d'information
      */
-    public HashMap<String, ProtocoleLogger> getInfosContainer() {
+    public Map<String, ProtocoleLogger> getInfosContainer() {
         return infosContainer;
     }
 
@@ -276,7 +274,7 @@ public class ProtocoleLogger {
      * @throws JadeApplicationException
      *             Exception levée si idItem est vide ou null
      */
-    public ProtocoleLogger getInfosLogger(String idItem, String nomItem, ArrayList<String> csvFields)
+    public ProtocoleLogger getInfosLogger(String idItem, String nomItem, List<String> csvFields)
             throws JadeApplicationException {
 
         if (JadeStringUtil.isEmpty(idItem)) {
@@ -320,7 +318,7 @@ public class ProtocoleLogger {
     /**
      * @return the warningsContainer
      */
-    public HashMap<String, ProtocoleLogger> getWarningsContainer() {
+    public Map<String, ProtocoleLogger> getWarningsContainer() {
 
         return warningsContainer;
     }
@@ -353,7 +351,7 @@ public class ProtocoleLogger {
      * @throws JadeApplicationException
      *             Exception levée si idItem est vide ou null
      */
-    public ProtocoleLogger getWarningsLogger(String idItem, String nomItem, ArrayList<String> csvFields)
+    public ProtocoleLogger getWarningsLogger(String idItem, String nomItem, List<String> csvFields)
             throws JadeApplicationException {
 
         if (JadeStringUtil.isEmpty(idItem)) {
@@ -414,7 +412,7 @@ public class ProtocoleLogger {
         return warningsContainer.size() > 0;
     }
 
-    private StringBuffer processLog(HashMap<String, ProtocoleLogger> errorsLogs, String type) {
+    private StringBuffer processLog(Map<String, ProtocoleLogger> errorsLogs, String type) {
 
         JadeBusinessMessageRenderer renderer = JadeBusinessMessageRenderer.getInstance();
         StringBuffer sb = new StringBuffer();

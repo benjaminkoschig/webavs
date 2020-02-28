@@ -1,15 +1,6 @@
 package ch.globaz.al.businessimpl.services.decision;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import ch.globaz.al.business.constantes.ALCSDossier;
-import ch.globaz.al.business.constantes.ALCSDroit;
-import ch.globaz.al.business.constantes.ALCSTarif;
-import ch.globaz.al.business.constantes.ALConstCaisse;
-import ch.globaz.al.business.constantes.ALConstCalcul;
-import ch.globaz.al.business.constantes.ALConstDecisions;
-import ch.globaz.al.business.constantes.ALConstLangue;
-import ch.globaz.al.business.constantes.ALConstNumeric;
+import ch.globaz.al.business.constantes.*;
 import ch.globaz.al.business.exceptions.decision.ALDecisionException;
 import ch.globaz.al.business.models.dossier.DossierComplexModel;
 import ch.globaz.al.business.models.droit.CalculBusinessModel;
@@ -30,6 +21,11 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Classe fille de DecisionAbstractServiceImpl qui contient toutes les spécificités des décisions pour salariés
  *
@@ -47,10 +43,9 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
      *                                   les calculs
      * @return
      */
-    private ArrayList<CalculBusinessModel> listCalculDroitIdentique(
-            ArrayList<CalculBusinessModel> listDroitCalculDossier, String idDroit)
-            throws JadeApplicationException, JadePersistenceException {
-        ArrayList<CalculBusinessModel> listCalculDroitIdentique = new ArrayList<CalculBusinessModel>();
+    private List<CalculBusinessModel> listCalculDroitIdentique(
+            List<CalculBusinessModel> listDroitCalculDossier, String idDroit) {
+        List<CalculBusinessModel> listCalculDroitIdentique = new ArrayList<>();
         for (int i = 0; i < listDroitCalculDossier.size(); i++) {
 
             if (JadeStringUtil.equals(listDroitCalculDossier.get(i).getDroit().getDroitModel().getIdDroit(), idDroit,
@@ -197,8 +192,8 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
     }
 
     private void loadChampsNonHorlogere(DataList list, Collection tableau_colonne, String langueDocument,
-            ArrayList<CalculBusinessModel> calcul, DossierComplexModel dossier,
-            ArrayList<String> listTiersBeneficiaireDroit, int i)
+            List<CalculBusinessModel> calcul, DossierComplexModel dossier,
+            List<String> listTiersBeneficiaireDroit, int i)
             throws JadeApplicationException, JadePersistenceException {
         // si le montant calcul de base est <> de 0 ou que le montant a été forcé et le type de droit
         // autre que naissance et accueil
@@ -306,8 +301,8 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
     }
 
     private void loadChampsSpecificiteHorlogere(DataList list, Collection tableau_colonne, String langueDocument,
-            ArrayList<CalculBusinessModel> calcul, DossierComplexModel dossier,
-            ArrayList<String> listTiersBeneficiaireDroit /* , int i */, String idDroit, String montantDroit,
+            List<CalculBusinessModel> calcul, DossierComplexModel dossier,
+            List<String> listTiersBeneficiaireDroit /* , int i */, String idDroit, String montantDroit,
             String montantSupplHorloger, String typePrestation)
             throws JadeApplicationException, JadePersistenceException {
         if (calcul.size() > 0) {
@@ -372,7 +367,7 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
     @SuppressWarnings("unchecked")
     @Override
     protected void loadListDroit(DocumentData documentData, DossierComplexModel dossier,
-            ArrayList<CalculBusinessModel> calcul, String date, String langueDocument)
+            List<CalculBusinessModel> calcul, String date, String langueDocument)
             throws JadeApplicationException, JadePersistenceException {
 
         // vérification des paramètres
@@ -410,16 +405,16 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
         documentData.add(tableau_entete);
 
         // liste des tiers bénéficiaires des droits
-        ArrayList<String> listTiersBeneficiaireDroit = new ArrayList<String>();
+        List<String> listTiersBeneficiaireDroit = new ArrayList<String>();
 
         // Rempli la partie LISTE DROITS de la décision
         Collection tableau_colonne = new Collection("tableau_colonne_definition");
 
         // calcul du montant total de la décision
-        HashMap total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
+        Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
                 ALCSDossier.UNITE_CALCUL_MOIS, "1", false, date);
 
-        calcul = (ArrayList<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
+        calcul = (List<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
 
         String idDroit = null;
         String montantDroit = null;
@@ -445,7 +440,7 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
                         idDroit = (calcul.get(i)).getDroit().getDroitModel().getIdDroit();
 
                         // récupère la liste des calcul pour le même droit
-                        ArrayList<CalculBusinessModel> listCalculUnDroitDossier = listCalculDroitIdentique(calcul,
+                        List<CalculBusinessModel> listCalculUnDroitDossier = listCalculDroitIdentique(calcul,
                                 idDroit);
 
                         if (!droitDecision.containsValue(idDroit)) {
@@ -559,7 +554,7 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
 
     @Override
     protected void loadListNaissance(DocumentData documentData, DossierComplexModel dossier,
-            ArrayList<CalculBusinessModel> calcul, String date, String langueDocument)
+            List<CalculBusinessModel> calcul, String date, String langueDocument)
             throws JadeApplicationException, JadePersistenceException {
 
         Collection tableau_naissance = new Collection("tableau_naissance");
@@ -578,10 +573,10 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
                 }
 
                 // calcul du montant
-                HashMap total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
+                Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
                         dossier.getDossierModel().getUniteCalcul(), "1", false, date);
 
-                calcul = (ArrayList<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
+                calcul = (List<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
 
                 list.addData("tableau_naissance_0",
                         libelle + " "
@@ -608,7 +603,7 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
     }
 
     @Override
-    protected void loadTextCopies(DocumentData documentData, ArrayList<String> listCopies,
+    protected void loadTextCopies(DocumentData documentData, List<String> listCopies,
             DossierComplexModel dossierComplexModel, String langueDocument) throws JadeApplicationException {
 
         if (ALCSDossier.STATUT_IS.equals(dossierComplexModel.getDossierModel().getStatut())) {

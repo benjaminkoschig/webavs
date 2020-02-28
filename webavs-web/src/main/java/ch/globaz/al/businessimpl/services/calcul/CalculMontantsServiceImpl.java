@@ -15,6 +15,9 @@ import globaz.jade.exception.JadePersistenceException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import ch.globaz.al.business.constantes.ALCSDossier;
 import ch.globaz.al.business.constantes.ALCSDroit;
 import ch.globaz.al.business.constantes.ALCSTarif;
@@ -54,9 +57,9 @@ public class CalculMontantsServiceImpl extends ALAbstractBusinessServiceImpl imp
      * java.lang.String, java.lang.String)
      */
     @Override
-    public ArrayList<CalculBusinessModel> addDroitCalculeActif(DossierModel dossier, DroitComplexModel droit,
-            TarifComplexSearchModel tarifs, String tarifForce, ArrayList<CalculBusinessModel> droitsCalcules,
-            String rang, String date) throws JadeApplicationException, JadePersistenceException {
+    public List<CalculBusinessModel> addDroitCalculeActif(DossierModel dossier, DroitComplexModel droit,
+                                                          TarifComplexSearchModel tarifs, String tarifForce, List<CalculBusinessModel> droitsCalcules,
+                                                          String rang, String date) throws JadeApplicationException, JadePersistenceException {
 
         return this.addDroitCalculeActif(dossier, droit, tarifs, tarifForce, droitsCalcules, rang, date, false);
     }
@@ -70,8 +73,8 @@ public class CalculMontantsServiceImpl extends ALAbstractBusinessServiceImpl imp
      * java.lang.String, java.util.ArrayList, java.lang.String, java.lang.String)
      */
     @Override
-    public ArrayList<CalculBusinessModel> addDroitCalculeActif(DossierModel dossier, DroitComplexModel droit,
-            TarifComplexSearchModel tarifs, String tarifForce, ArrayList<CalculBusinessModel> droitsCalcules,
+    public List<CalculBusinessModel> addDroitCalculeActif(DossierModel dossier, DroitComplexModel droit,
+            TarifComplexSearchModel tarifs, String tarifForce, List<CalculBusinessModel> droitsCalcules,
             String rang, String date, boolean hideDroit) throws JadeApplicationException, JadePersistenceException {
 
         if (droit == null) {
@@ -129,8 +132,8 @@ public class CalculMontantsServiceImpl extends ALAbstractBusinessServiceImpl imp
      * ch.globaz.al.business.models.droit.DroitComplexModel, java.util.ArrayList)
      */
     @Override
-    public ArrayList<CalculBusinessModel> addDroitCalculeInactif(DroitComplexModel droit,
-            ArrayList<CalculBusinessModel> droitsCalcules, String date) throws JadeApplicationException,
+    public List<CalculBusinessModel> addDroitCalculeInactif(DroitComplexModel droit,
+            List<CalculBusinessModel> droitsCalcules, String date) throws JadeApplicationException,
             JadePersistenceException {
 
         if (droit == null) {
@@ -171,8 +174,8 @@ public class CalculMontantsServiceImpl extends ALAbstractBusinessServiceImpl imp
      * java.lang.String, java.lang.String)
      */
     @Override
-    public ArrayList<CalculBusinessModel> addDroitCalculeNaissance(DossierModel dossier, DroitComplexModel droit,
-            TarifComplexSearchModel tarifs, String tarifForce, ArrayList<CalculBusinessModel> droitsCalcules,
+    public List<CalculBusinessModel> addDroitCalculeNaissance(DossierModel dossier, DroitComplexModel droit,
+            TarifComplexSearchModel tarifs, String tarifForce, List<CalculBusinessModel> droitsCalcules,
             String rang, String type, String date) throws JadeApplicationException, JadePersistenceException {
 
         if (droit == null) {
@@ -233,8 +236,8 @@ public class CalculMontantsServiceImpl extends ALAbstractBusinessServiceImpl imp
     }
 
     @Override
-    public ArrayList<CalculBusinessModel> addDroitCalculeSpecial(String montant,
-            ArrayList<CalculBusinessModel> droitsCalcules, DroitComplexModel droit, String typeDroit,
+    public List<CalculBusinessModel> addDroitCalculeSpecial(String montant,
+            List<CalculBusinessModel> droitsCalcules, DroitComplexModel droit, String typeDroit,
             String categorieTarif, String tarifCaisse, String tarifCanton) throws JadeApplicationException {
 
         if (!JadeNumericUtil.isNumeric(montant)) {
@@ -261,8 +264,8 @@ public class CalculMontantsServiceImpl extends ALAbstractBusinessServiceImpl imp
      * java.lang.String, java.lang.String)
      */
     @Override
-    public ArrayList<CalculBusinessModel> addDroitCalculeSpecial(String montant,
-            ArrayList<CalculBusinessModel> droitsCalcules, DroitComplexModel droit, String typeDroit,
+    public List<CalculBusinessModel> addDroitCalculeSpecial(String montant,
+            List<CalculBusinessModel> droitsCalcules, DroitComplexModel droit, String typeDroit,
             String categorieTarif, String tarifCaisse, String tarifCanton, boolean hideDroit)
             throws JadeApplicationException {
 
@@ -330,8 +333,8 @@ public class CalculMontantsServiceImpl extends ALAbstractBusinessServiceImpl imp
     }
 
     @Override
-    public HashMap calculerTotalMontant(DossierModel dossier, ArrayList<CalculBusinessModel> droitsCalcules,
-            String unite, String nbUnites, boolean avecNAIS, String date) throws JadeApplicationException,
+    public Map calculerTotalMontant(DossierModel dossier, List<CalculBusinessModel> droitsCalcules,
+                                    String unite, String nbUnites, boolean avecNAIS, String date) throws JadeApplicationException,
             JadePersistenceException {
 
         if (dossier == null) {
@@ -500,7 +503,7 @@ public class CalculMontantsServiceImpl extends ALAbstractBusinessServiceImpl imp
             }
         }
 
-        HashMap<String, Object> res = new HashMap<String, Object>();
+        Map<String, Object> res = new HashMap<>();
         res.put(ALConstCalcul.TOTAL_EFFECTIF, total.toPlainString());
         res.put(ALConstCalcul.TOTAL_UNITE_EFFECTIF, montantUnite.toPlainString());
         res.put(ALConstCalcul.TOTAL_BASE, totalBase.toPlainString());
@@ -653,7 +656,7 @@ public class CalculMontantsServiceImpl extends ALAbstractBusinessServiceImpl imp
                     + " is not a valid date");
         }
 
-        String paramName = null;
+        String paramName;
 
         if (ALCSDossier.UNITE_CALCUL_MOIS.equals(unite)) {
             return new BigDecimal("1");
@@ -700,7 +703,7 @@ public class CalculMontantsServiceImpl extends ALAbstractBusinessServiceImpl imp
         }
 
         ParameterModelService service = ParamServiceLocator.getParameterModelService();
-        ParameterModel param = null;
+        ParameterModel param;
 
         if (ALCSDossier.UNITE_CALCUL_MOIS.equals(unite)) {
             param = service.getParameterByName(ALConstParametres.APPNAME, ALConstParametres.PRECISION_UNITE_MOIS, date);

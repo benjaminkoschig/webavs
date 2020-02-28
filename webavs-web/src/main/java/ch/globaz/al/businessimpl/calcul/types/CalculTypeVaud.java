@@ -4,6 +4,8 @@ import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import java.util.ArrayList;
+import java.util.List;
+
 import ch.globaz.al.business.constantes.ALCSDroit;
 import ch.globaz.al.business.constantes.ALCSTarif;
 import ch.globaz.al.business.exceptions.calcul.ALCalculModeException;
@@ -48,7 +50,7 @@ public class CalculTypeVaud extends CalculTypeStandard {
      * java.lang.String)
      */
     @Override
-    public ArrayList<CalculBusinessModel> compute(ContextCalcul context, CalculMode calcMode)
+    public List<CalculBusinessModel> compute(ContextCalcul context, CalculMode calcMode)
             throws JadeApplicationException, JadePersistenceException {
 
         if (context == null) {
@@ -60,7 +62,7 @@ public class CalculTypeVaud extends CalculTypeStandard {
         }
 
         // calcul standard...
-        ArrayList<CalculBusinessModel> res = super.compute(context, calcMode);
+        List<CalculBusinessModel> res = super.compute(context, calcMode);
 
         // ... + FNB
         computeFNB(context.getDossier().getDossierModel(), res, ((CalculModeAbstract) calcMode).getNombre());
@@ -81,7 +83,7 @@ public class CalculTypeVaud extends CalculTypeStandard {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    private void computeFNB(DossierModel dossier, ArrayList<CalculBusinessModel> droitsCalcules, int nbPrestations)
+    private void computeFNB(DossierModel dossier, List<CalculBusinessModel> droitsCalcules, int nbPrestations)
             throws JadeApplicationException {
 
         // le calcul des prestations "spéciales" ne doit pas se faire si on est

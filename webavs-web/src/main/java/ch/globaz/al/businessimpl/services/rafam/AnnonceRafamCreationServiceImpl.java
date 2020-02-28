@@ -882,12 +882,12 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
             && JadeDateUtil.getGlobazDate(dateFin).before(dateDuJour)) {
             dateCalcul = dateFin;
         }
-        ArrayList<CalculBusinessModel> droitsList = new ArrayList<>();
-        ArrayList<CalculBusinessModel> droitsNaissance = new ArrayList<>();
+        List<CalculBusinessModel> droitsList = new ArrayList<>();
+        List<CalculBusinessModel> droitsNaissance = new ArrayList<>();
 
         // Chargement des droits calculés
         try {
-            ArrayList<CalculBusinessModel> droitsListTemp = ALServiceLocator.getCalculBusinessService().getCalcul(dossierComplexModel, dateCalcul);
+            List<CalculBusinessModel> droitsListTemp = ALServiceLocator.getCalculBusinessService().getCalcul(dossierComplexModel, dateCalcul);
             for(CalculBusinessModel calcul : droitsListTemp) {
                 if(calcul.getDroit() != null && calcul.getDroit().getId().equals(droit.getId())
                         && !ALCSTarif.CATEGORIE_SUP_HORLO.equals(calcul.getTarif())) {

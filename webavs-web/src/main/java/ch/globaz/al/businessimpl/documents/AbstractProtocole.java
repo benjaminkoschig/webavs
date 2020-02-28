@@ -6,8 +6,9 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+
 import ch.globaz.al.business.constantes.ALConstDocument;
 import ch.globaz.al.business.constantes.ALConstProtocoles;
 import ch.globaz.al.business.exceptions.protocoles.ALProtocoleException;
@@ -41,7 +42,7 @@ public abstract class AbstractProtocole extends AbstractDocument {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    protected DocumentData init(HashMap<String, String> params) throws JadePersistenceException,
+    protected DocumentData init(Map<String, String> params) throws JadePersistenceException,
             JadeApplicationException {
 
         if (params == null) {
@@ -91,7 +92,7 @@ public abstract class AbstractProtocole extends AbstractDocument {
      * @throws JadeApplicationException
      *             Exception levée si l'un des paramètres est null ou vide
      */
-    protected void setInfos(DocumentData document, HashMap<String, String> infos) throws JadeApplicationException {
+    protected void setInfos(DocumentData document, Map<String, String> infos) throws JadeApplicationException {
 
         if (document == null) {
             throw new ALProtocoleException("AbstractProtocoleServiceImpl#initInfos : document is null");

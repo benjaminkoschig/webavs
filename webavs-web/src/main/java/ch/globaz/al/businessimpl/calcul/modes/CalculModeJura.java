@@ -6,6 +6,8 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+
 import ch.globaz.al.business.exceptions.calcul.ALCalculException;
 import ch.globaz.al.business.models.dossier.DossierComplexModelRoot;
 import ch.globaz.al.business.models.droit.CalculBusinessModel;
@@ -41,7 +43,7 @@ public class CalculModeJura extends CalculModeAbstract {
      * .business.models.dossier.DossierComplexModelAbstract, java.lang.String)
      */
     @Override
-    public ArrayList<CalculBusinessModel> compute(ContextCalcul context) throws JadeApplicationException,
+    public List<CalculBusinessModel> compute(ContextCalcul context) throws JadeApplicationException,
             JadePersistenceException {
 
         if (context == null) {

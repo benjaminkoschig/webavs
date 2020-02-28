@@ -7,6 +7,7 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.pyxis.util.CommonNSSFormater;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -53,14 +54,14 @@ public class AnnoncesRafamSearchServiceImpl extends ALAbstractBusinessServiceImp
 
         AnnonceRafamSearchModel search = new AnnonceRafamSearchModel();
 
-        ArrayList<String> etats = new ArrayList<String>();
+        List<String> etats = new ArrayList<>();
         etats.add(RafamEtatAnnonce.RECU.getCS());
         etats.add(RafamEtatAnnonce.VALIDE.getCS());
         etats.add(RafamEtatAnnonce.SUSPENDU.getCS());
         // FIXME : ajouter les annonces 'transmises' ? (Incident FPV : I130430_001)
         search.setInEtatAnnonce(etats);
 
-        ArrayList<String> types = new ArrayList<String>();
+        List<String> types = new ArrayList<>();
         types.add(RafamTypeAnnonce._68A_CREATION.getCode());
         types.add(RafamTypeAnnonce._68B_MUTATION.getCode());
         types.add(RafamTypeAnnonce._68C_ANNULATION.getCode());
@@ -118,7 +119,7 @@ public class AnnoncesRafamSearchServiceImpl extends ALAbstractBusinessServiceImp
         }
         // )
 
-        ArrayList<String> types = new ArrayList<String>();
+        List<String> types = new ArrayList<>();
         types.add(RafamTypeAnnonce._68A_CREATION.getCode());
         types.add(RafamTypeAnnonce._68B_MUTATION.getCode());
         types.add(RafamTypeAnnonce._68C_ANNULATION.getCode());
@@ -195,7 +196,7 @@ public class AnnoncesRafamSearchServiceImpl extends ALAbstractBusinessServiceImp
                     "AnnoncesRafamSearchServiceImpl#getLastActive68a : idDroit is not defined");
         }
 
-        ArrayList<String> etats = new ArrayList<String>();
+        List<String> etats = new ArrayList<>();
         etats.add(RafamEtatAnnonce.RECU.getCS());
         etats.add(RafamEtatAnnonce.SUSPENDU.getCS());
         etats.add(RafamEtatAnnonce.TRANSMIS.getCS());
@@ -226,7 +227,7 @@ public class AnnoncesRafamSearchServiceImpl extends ALAbstractBusinessServiceImp
      * ch.globaz.al.business.constantes.enumerations.RafamFamilyAllowanceType, java.util.ArrayList)
      */
     @Override
-    public AnnonceRafamModel getLastActive(String idDroit, RafamFamilyAllowanceType type, ArrayList<String> etats, Periode periode)
+    public AnnonceRafamModel getLastActive(String idDroit, RafamFamilyAllowanceType type, List<String> etats, Periode periode)
             throws JadeApplicationException, JadePersistenceException {
 
         if (type == null) {
@@ -243,7 +244,7 @@ public class AnnoncesRafamSearchServiceImpl extends ALAbstractBusinessServiceImp
 
         search.setInEtatAnnonce(etats);
 
-        ArrayList<String> types = new ArrayList<String>();
+        List<String> types = new ArrayList<>();
         types.add(RafamTypeAnnonce._68A_CREATION.getCode());
         types.add(RafamTypeAnnonce._68B_MUTATION.getCode());
         search.setInTypeAnnonce(types);
@@ -257,7 +258,7 @@ public class AnnoncesRafamSearchServiceImpl extends ALAbstractBusinessServiceImp
 
         AnnonceRafamModel last68c = null;
         AnnonceRafamModel last68ab = null;
-        ArrayList<String> processedRecordNumbers = new ArrayList<String>();
+        List<String> processedRecordNumbers = new ArrayList<>();
 
         // pour chaque 68a on regarde si ca a déjà été annulé
         for (int i = 0; i < search.getSize(); i++) {
@@ -334,7 +335,7 @@ public class AnnoncesRafamSearchServiceImpl extends ALAbstractBusinessServiceImp
         AnnonceRafamSearchModel search = new AnnonceRafamSearchModel();
         search.setForRecordNumber(recordNumber);
         search.setDefinedSearchSize(1);
-        ArrayList<String> types = new ArrayList<String>();
+        List<String> types = new ArrayList<>();
         types.add(RafamTypeAnnonce._68A_CREATION.getCode());
         types.add(RafamTypeAnnonce._68B_MUTATION.getCode());
         types.add(RafamTypeAnnonce._68C_ANNULATION.getCode());
@@ -367,7 +368,7 @@ public class AnnoncesRafamSearchServiceImpl extends ALAbstractBusinessServiceImp
         AnnonceRafamSearchModel search = new AnnonceRafamSearchModel();
         search.setForRecordNumber(recordNumber);
         search.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
-        ArrayList<String> types = new ArrayList<String>();
+        List<String> types = new ArrayList<>();
         types.add(RafamTypeAnnonce._68A_CREATION.getCode());
         types.add(RafamTypeAnnonce._68B_MUTATION.getCode());
         types.add(RafamTypeAnnonce._68C_ANNULATION.getCode());
@@ -413,7 +414,7 @@ public class AnnoncesRafamSearchServiceImpl extends ALAbstractBusinessServiceImp
         }
 
         AnnonceRafamSearchModel search = new AnnonceRafamSearchModel();
-        ArrayList<String> etats = new ArrayList<String>();
+        List<String> etats = new ArrayList<>();
         etats.add(RafamEtatAnnonce.RECU.getCS());
         etats.add(RafamEtatAnnonce.SUSPENDU.getCS());
         etats.add(RafamEtatAnnonce.TRANSMIS.getCS());
@@ -492,7 +493,7 @@ public class AnnoncesRafamSearchServiceImpl extends ALAbstractBusinessServiceImp
 
         AnnonceRafamSearchModel search = new AnnonceRafamSearchModel();
         search.setForRecordNumber(recordNumber);
-        List<String> etats = new ArrayList<String>();
+        List<String> etats = new ArrayList<>();
         etats.add(RafamEtatAnnonce.RECU.getCS());
         etats.add(RafamEtatAnnonce.SUSPENDU.getCS());
         search.setInEtatAnnonce(etats);

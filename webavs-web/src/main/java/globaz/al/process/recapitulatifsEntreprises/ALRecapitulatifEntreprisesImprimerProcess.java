@@ -38,7 +38,7 @@ public class ALRecapitulatifEntreprisesImprimerProcess extends ALAbsrtactProcess
     /**
      * activité allocataire
      */
-    private HashSet activiteAllocSalarie = new HashSet();
+    private Set activiteAllocSalarie = new HashSet();
 
     /**
      * date à laquelle il faut imprimer les récap
@@ -82,7 +82,7 @@ public class ALRecapitulatifEntreprisesImprimerProcess extends ALAbsrtactProcess
     /**
      * @return the activiteAllocParitaire
      */
-    public HashSet getActiviteAllocParitaire() {
+    public Set getActiviteAllocParitaire() {
         return activiteAllocSalarie;
     }
 
@@ -209,19 +209,19 @@ public class ALRecapitulatifEntreprisesImprimerProcess extends ALAbsrtactProcess
     @Override
     protected void process() {
         // liste des conteneurs dont le document fusionné est publié par mail
-        ArrayList listConteneurRecapPublicationPdf = new ArrayList();
+        List listConteneurRecapPublicationPdf = new ArrayList();
         // liste des conteneurs dont le document fusionné n'est pas publié par
         // mail
-        ArrayList listConteneurRecapNonPublicationPdf = new ArrayList();
+        List listConteneurRecapNonPublicationPdf = new ArrayList();
         // liste des recap devant être envoyé par mail au format .pdf
-        ArrayList listRecapPdf = new ArrayList();
+        List listRecapPdf = new ArrayList();
         // liste des recap devatn être envoyé par mail au format .csv
-        ArrayList listRecapCsv = new ArrayList();
+        List listRecapCsv = new ArrayList();
 
-        HashMap recapCSV = new HashMap();
+        Map recapCSV = new HashMap();
 
         // liste du résultats de la recherche
-        ArrayList listResultatRecherche = new ArrayList();
+        List listResultatRecherche = new ArrayList();
 
         // modèle de recherche
         RecapitulatifEntrepriseImpressionComplexSearchModel recap = new RecapitulatifEntrepriseImpressionComplexSearchModel();
@@ -422,7 +422,7 @@ public class ALRecapitulatifEntreprisesImprimerProcess extends ALAbsrtactProcess
      * @param activiteAllocParitaire
      *            the activiteAllocParitaire to set
      */
-    public void setActiviteAllocParitaire(HashSet activiteAllocParitaire) {
+    public void setActiviteAllocParitaire(Set activiteAllocParitaire) {
         activiteAllocSalarie = activiteAllocParitaire;
     }
 

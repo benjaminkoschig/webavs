@@ -7,8 +7,6 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import ch.globaz.al.business.constantes.ALCSDossier;
 import ch.globaz.al.business.constantes.ALCSDroit;
 import ch.globaz.al.business.constantes.ALCSTarif;
@@ -28,6 +26,11 @@ import ch.globaz.topaz.datajuicer.Collection;
 import ch.globaz.topaz.datajuicer.DataList;
 import ch.globaz.topaz.datajuicer.DocumentData;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Classe fille de DecisionAbstractServiceImpl qui contient toutes les spécificités des décisions intercantonale
  * 
@@ -45,10 +48,9 @@ public class DecisionInterCantonalServiceImpl extends DecisionAbstractServiceImp
      *            identifiant du droit pour lequel on recherche des droits calculés on recherche les calculs
      * @return
      */
-    private ArrayList<CalculBusinessModel> listCalculDroitIdentique(
-            ArrayList<CalculBusinessModel> listDroitCalculDossier, String idDroit) throws JadeApplicationException,
-            JadePersistenceException {
-        ArrayList<CalculBusinessModel> listCalculDroitIdentique = new ArrayList<CalculBusinessModel>();
+    private List<CalculBusinessModel> listCalculDroitIdentique(
+            List<CalculBusinessModel> listDroitCalculDossier, String idDroit) {
+        List<CalculBusinessModel> listCalculDroitIdentique = new ArrayList<>();
         for (int i = 0; i < listDroitCalculDossier.size(); i++) {
             if (JadeStringUtil.equals(listDroitCalculDossier.get(i).getDroit().getDroitModel().getIdDroit(), idDroit,
                     false)
@@ -63,8 +65,8 @@ public class DecisionInterCantonalServiceImpl extends DecisionAbstractServiceImp
     }
 
     private void loadChampsCantonaleSupplNonHorlogere(DroitBusinessService dbs, DataList list,
-            Collection tableau_colonne, String langueDocument, ArrayList<CalculBusinessModel> calcul,
-            DossierComplexModel dossier, ArrayList<String> listTiersBeneficiaireDroit, int i, String date)
+            Collection tableau_colonne, String langueDocument, List<CalculBusinessModel> calcul,
+            DossierComplexModel dossier, List<String> listTiersBeneficiaireDroit, int i, String date)
             throws JadeApplicationException, JadePersistenceException {
         // si le droit est actif et le type de droit autre que naissance et
         // accueil
@@ -260,8 +262,8 @@ public class DecisionInterCantonalServiceImpl extends DecisionAbstractServiceImp
     }
 
     private void loadDroitsCantonaleSupplHorlogere(DroitBusinessService dbs, DataList list, Collection tableau_colonne,
-            String langueDocument, ArrayList<CalculBusinessModel> calcul, DossierComplexModel dossier,
-            ArrayList<String> listTiersBeneficiaireDroit,/* int i, */String idDroit, String date)
+            String langueDocument, List<CalculBusinessModel> calcul, DossierComplexModel dossier,
+            List<String> listTiersBeneficiaireDroit,/* int i, */String idDroit, String date)
             throws JadeApplicationException, JadePersistenceException {
 
         if (calcul.size() > 0) {
@@ -318,7 +320,7 @@ public class DecisionInterCantonalServiceImpl extends DecisionAbstractServiceImp
     @SuppressWarnings("unchecked")
     @Override
     protected void loadListDroit(DocumentData documentData, DossierComplexModel dossier,
-            ArrayList<CalculBusinessModel> calcul, String date, String langueDocument) throws JadePersistenceException,
+            List<CalculBusinessModel> calcul, String date, String langueDocument) throws JadePersistenceException,
             JadeApplicationException {
 
         // contrôle des paramètres
@@ -358,11 +360,11 @@ public class DecisionInterCantonalServiceImpl extends DecisionAbstractServiceImp
         documentData.add(tableau_entete);
 
         // liste des tiers bénéficiaires des droits
-        ArrayList<String> listTiersBeneficiaireDroit = new ArrayList<String>();
+        List<String> listTiersBeneficiaireDroit = new ArrayList<>();
 
-        HashMap total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
+        Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
                 dossier.getDossierModel().getUniteCalcul(), "1", false, date);
-        calcul = (ArrayList) total.get(ALConstCalcul.DROITS_CALCULES);
+        calcul = (List) total.get(ALConstCalcul.DROITS_CALCULES);
 
         DroitBusinessService dbs = ALServiceLocator.getDroitBusinessService();
 
@@ -371,7 +373,7 @@ public class DecisionInterCantonalServiceImpl extends DecisionAbstractServiceImp
 
         String idDroit = null;
 
-        HashMap<String, String> droitDecision = new HashMap<String, String>();
+        Map<String, String> droitDecision = new HashMap<>();
 
         for (int i = 0; i < calcul.size(); i++) {
 
@@ -394,7 +396,7 @@ public class DecisionInterCantonalServiceImpl extends DecisionAbstractServiceImp
                         idDroit = (calcul.get(i)).getDroit().getDroitModel().getIdDroit();
 
                         // récupère la lsite des calcul pour le même droit
-                        ArrayList<CalculBusinessModel> listCalculUnDroitDossier = listCalculDroitIdentique(calcul,
+                        List<CalculBusinessModel> listCalculUnDroitDossier = listCalculDroitIdentique(calcul,
                                 idDroit);
 
                         if (!droitDecision.containsValue(idDroit)) {
@@ -502,7 +504,7 @@ public class DecisionInterCantonalServiceImpl extends DecisionAbstractServiceImp
 
     @Override
     protected void loadListNaissance(DocumentData documentData, DossierComplexModel dossier,
-            ArrayList<CalculBusinessModel> calcul, String date, String langueDocument) throws JadeApplicationException,
+            List<CalculBusinessModel> calcul, String date, String langueDocument) throws JadeApplicationException,
             JadePersistenceException {
 
         Collection tableau_naissance = new Collection("tableau_naissance");
@@ -518,10 +520,10 @@ public class DecisionInterCantonalServiceImpl extends DecisionAbstractServiceImp
                 } else if (ALCSDroit.TYPE_ACCE.equals((calcul.get(i)).getType())) {
                     libelle = this.getText("al.decision.liste.droit.accueil.libelle", langueDocument);
                 }
-                HashMap total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
+                Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
                         dossier.getDossierModel().getUniteCalcul(), "1", false, date);
 
-                calcul = (ArrayList<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
+                calcul = (List<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
 
                 list.addData("tableau_naissance_0", libelle
                         + " "
@@ -557,8 +559,7 @@ public class DecisionInterCantonalServiceImpl extends DecisionAbstractServiceImp
 
     @Override
     protected void loadTextesDecision(DocumentData documentData, DossierComplexModel dossierComplexModel,
-            String commentaire, String langueDocument) throws JadeApplicationServiceNotAvailableException,
-            JadeApplicationException, JadePersistenceException {
+            String commentaire, String langueDocument) throws JadeApplicationException, JadePersistenceException {
 
         // INFOROMD0028 - AF - Modifications montants AF VD (CBU)
         if (JadeStringUtil.equals(ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS, dossierComplexModel.getDossierModel()

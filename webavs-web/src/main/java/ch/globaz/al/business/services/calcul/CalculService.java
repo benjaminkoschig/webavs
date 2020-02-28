@@ -4,6 +4,8 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
 import java.util.ArrayList;
+import java.util.List;
+
 import ch.globaz.al.business.models.dossier.DossierComplexModelRoot;
 import ch.globaz.al.business.models.droit.CalculBusinessModel;
 import ch.globaz.naos.business.data.AssuranceInfo;
@@ -25,7 +27,7 @@ public interface CalculService extends JadeApplicationService {
      * @throws JadeApplicationException
      *             Exception levée si l'une des dates n'est pas valide
      */
-    public int getAgeForCalcul(String dateNaissance, String dateCalcul) throws JadeApplicationException;
+    int getAgeForCalcul(String dateNaissance, String dateCalcul) throws JadeApplicationException;
 
     /**
      * Execute le calcul des droits pour un dossier.
@@ -46,8 +48,8 @@ public interface CalculService extends JadeApplicationService {
      *             faire
      * 
      */
-    public ArrayList<CalculBusinessModel> getCalcul(DossierComplexModelRoot dossier, String dateCalcul,
-            AssuranceInfo assuranceInfo) throws JadeApplicationException, JadePersistenceException;
+    List<CalculBusinessModel> getCalcul(DossierComplexModelRoot dossier, String dateCalcul,
+                                        AssuranceInfo assuranceInfo) throws JadeApplicationException, JadePersistenceException;
 
     /**
      * Retourne le code système du canton correspondant au tarif passé en paramètre
@@ -56,7 +58,7 @@ public interface CalculService extends JadeApplicationService {
      * @return
      * @throws JadeApplicationException
      */
-    public String getCantonForTarif(String csTarif) throws JadeApplicationException;
+    String getCantonForTarif(String csTarif) throws JadeApplicationException;
 
     /**
      * Retourne le code système du tarif correspondant au canton passé en paramètre
@@ -69,7 +71,7 @@ public interface CalculService extends JadeApplicationService {
      * @see ch.globaz.al.business.constantes.ALCSCantons
      * @see ch.globaz.al.business.constantes.ALCSTarif#GROUP_CATEGORIE
      */
-    public String getTarifForCanton(String canton) throws JadeApplicationException;
+    String getTarifForCanton(String canton) throws JadeApplicationException;
 
     /**
      * Vérifie si une date est sous le régime LAFam (date > 31.12.2008)
@@ -80,6 +82,6 @@ public interface CalculService extends JadeApplicationService {
      * @throws JadeApplicationException
      *             Exception levée si <code>date</code>
      */
-    public boolean isDateLAFam(String date) throws JadeApplicationException;
+    boolean isDateLAFam(String date) throws JadeApplicationException;
 
 }

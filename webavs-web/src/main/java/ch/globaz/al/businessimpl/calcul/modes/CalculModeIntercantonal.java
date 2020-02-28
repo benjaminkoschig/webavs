@@ -1,12 +1,5 @@
 package ch.globaz.al.businessimpl.calcul.modes;
 
-import ch.globaz.al.properties.ALProperties;
-import globaz.jade.client.util.JadeNumericUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import java.util.ArrayList;
 import ch.globaz.al.business.constantes.ALCSDroit;
 import ch.globaz.al.business.exceptions.calcul.ALCalculException;
 import ch.globaz.al.business.models.dossier.DossierComplexModelRoot;
@@ -15,6 +8,15 @@ import ch.globaz.al.business.models.droit.CalculBusinessModel;
 import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.business.services.calcul.CalculBusinessService;
 import ch.globaz.al.businessimpl.calcul.context.ContextCalcul;
+import ch.globaz.al.properties.ALProperties;
+import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Mode de calcul intercantonal
@@ -43,8 +45,8 @@ public class CalculModeIntercantonal extends CalculModeAbstract {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    protected ArrayList<CalculBusinessModel> compare(DossierModel dossier, ArrayList<CalculBusinessModel> droits,
-            ArrayList<CalculBusinessModel> droitsAutreParent) throws JadeApplicationException {
+    protected List<CalculBusinessModel> compare(DossierModel dossier, List<CalculBusinessModel> droits,
+            List<CalculBusinessModel> droitsAutreParent) throws JadeApplicationException {
 
         if (dossier == null) {
             throw new ALCalculException("CalculModeIntercantonal:compare : dossier is null");
@@ -169,7 +171,7 @@ public class CalculModeIntercantonal extends CalculModeAbstract {
      * .business.models.dossier.DossierComplexModel, java.lang.String)
      */
     @Override
-    public ArrayList<CalculBusinessModel> compute(ContextCalcul context) throws JadeApplicationException,
+    public List<CalculBusinessModel> compute(ContextCalcul context) throws JadeApplicationException,
             JadePersistenceException {
 
         if (context == null) {
@@ -204,7 +206,7 @@ public class CalculModeIntercantonal extends CalculModeAbstract {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    protected ArrayList<CalculBusinessModel> computeAutreParent(DossierComplexModelRoot dossier, String dateCalcul)
+    protected List<CalculBusinessModel> computeAutreParent(DossierComplexModelRoot dossier, String dateCalcul)
             throws JadeApplicationException, JadePersistenceException {
         try {
 

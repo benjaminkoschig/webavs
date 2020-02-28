@@ -52,14 +52,14 @@ public class ImpressionRecapsTraitement extends BusinessTraitement {
     @Override
     protected void execute() {
 
-        ArrayList listConteneurRecap = new ArrayList();
-        HashMap recapCSV = new HashMap();
-        ArrayList listRecapPdf = new ArrayList();
-        ArrayList listRecapCsv = new ArrayList();
-        ArrayList listConteneurRecapNonPublicationPdf = new ArrayList();
+        List listConteneurRecap = new ArrayList();
+        Map recapCSV = new HashMap();
+        List listRecapPdf = new ArrayList();
+        List listRecapCsv = new ArrayList();
+        List listConteneurRecapNonPublicationPdf = new ArrayList();
 
         // liste du résultats de la recherche
-        ArrayList listResultatRecherche = new ArrayList();
+        List listResultatRecherche = new ArrayList();
         //
 
         // envoi en ged à true dans le traitement

@@ -50,7 +50,7 @@ public class CalculTest extends ALTestCaseJU4 {
 
         try {
             DossierComplexModel dossier = ALServiceLocator.getDossierComplexModelService().read(pIdDossier);
-            ArrayList<CalculBusinessModel> resCalc = ALServiceLocator.getCalculBusinessService().getCalcul(dossier,
+            List<CalculBusinessModel> resCalc = ALServiceLocator.getCalculBusinessService().getCalcul(dossier,
                     pDateCalcul);
             Assert.assertEquals(resultatAttendu, resCalc.get(pIndexRes).getCalculResultMontantBase());
 

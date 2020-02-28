@@ -3,7 +3,8 @@ package ch.globaz.al.business.services.models.prestation;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
-import java.util.ArrayList;
+import java.util.List;
+
 import ch.globaz.al.business.models.dossier.DossierModel;
 import ch.globaz.al.business.models.prestation.EntetePrestationModel;
 import ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseImpressionComplexSearchModel;
@@ -30,7 +31,7 @@ public interface RecapitulatifEntrepriseBusinessService extends JadeApplicationS
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public String calculMontantPourUneRecapEntreprise(String idRecap, ArrayList listeRecap)
+    String calculMontantPourUneRecapEntreprise(String idRecap, List listeRecap)
             throws JadePersistenceException, JadeApplicationException;
 
     /**
@@ -49,7 +50,7 @@ public interface RecapitulatifEntrepriseBusinessService extends JadeApplicationS
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public String getDebutRecap(DossierModel dossier, String periode) throws JadePersistenceException,
+    String getDebutRecap(DossierModel dossier, String periode) throws JadePersistenceException,
             JadeApplicationException;
 
     /**
@@ -68,7 +69,7 @@ public interface RecapitulatifEntrepriseBusinessService extends JadeApplicationS
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public String getFinRecap(DossierModel dossier, String periode) throws JadePersistenceException,
+     String getFinRecap(DossierModel dossier, String periode) throws JadePersistenceException,
             JadeApplicationException;
 
     /**
@@ -83,7 +84,7 @@ public interface RecapitulatifEntrepriseBusinessService extends JadeApplicationS
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public int getNbPrestationsASaisir(String numRecap) throws JadePersistenceException, JadeApplicationException;
+     int getNbPrestationsASaisir(String numRecap) throws JadePersistenceException, JadeApplicationException;
 
     /**
      * Retourne la prochaine prestation à compléter (à l'heure/jour) dans la récap spécifiée
@@ -97,7 +98,7 @@ public interface RecapitulatifEntrepriseBusinessService extends JadeApplicationS
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public EntetePrestationModel getNextPrestationASaisir(String numRecap) throws JadePersistenceException,
+     EntetePrestationModel getNextPrestationASaisir(String numRecap) throws JadePersistenceException,
             JadeApplicationException;
 
     /**
@@ -112,7 +113,7 @@ public interface RecapitulatifEntrepriseBusinessService extends JadeApplicationS
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public String getTotalRecap(String idRecap) throws JadePersistenceException, JadeApplicationException;
+     String getTotalRecap(String idRecap) throws JadePersistenceException, JadeApplicationException;
 
     /**
      * Initialise une récap ouverte pour une période donnée et un dossier
@@ -127,7 +128,7 @@ public interface RecapitulatifEntrepriseBusinessService extends JadeApplicationS
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public RecapitulatifEntrepriseModel initRecap(DossierModel dossier, String periode, String bonification)
+     RecapitulatifEntrepriseModel initRecap(DossierModel dossier, String periode, String bonification)
             throws JadeApplicationException, JadePersistenceException;
 
     /**
@@ -141,7 +142,7 @@ public interface RecapitulatifEntrepriseBusinessService extends JadeApplicationS
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public boolean isRecapVerouillee(RecapitulatifEntrepriseModel recap) throws JadePersistenceException,
+     boolean isRecapVerouillee(RecapitulatifEntrepriseModel recap) throws JadePersistenceException,
             JadeApplicationException;
 
     /**
@@ -164,7 +165,7 @@ public interface RecapitulatifEntrepriseBusinessService extends JadeApplicationS
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public ArrayList resultSearchRecap(RecapitulatifEntrepriseImpressionComplexSearchModel recap, String typeRecap,
+    List resultSearchRecap(RecapitulatifEntrepriseImpressionComplexSearchModel recap, String typeRecap,
             String periodeDe, String etatRecap) throws JadePersistenceException, JadeApplicationException;
 
     /**
@@ -179,7 +180,7 @@ public interface RecapitulatifEntrepriseBusinessService extends JadeApplicationS
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public ArrayList resultSearchRecap(String noLot) throws JadePersistenceException, JadeApplicationException;
+    List resultSearchRecap(String noLot) throws JadePersistenceException, JadeApplicationException;
 
     /**
      * Méthode qui retournes une liste de résultats des récaps liée à un processus donné
@@ -193,7 +194,7 @@ public interface RecapitulatifEntrepriseBusinessService extends JadeApplicationS
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public ArrayList<RecapitulatifEntrepriseImpressionComplexSearchModel> resultSearchRecapNumProcessus(
+    List<RecapitulatifEntrepriseImpressionComplexSearchModel> resultSearchRecapNumProcessus(
             String idProcessus) throws JadePersistenceException, JadeApplicationException;
 
     /**
@@ -207,6 +208,6 @@ public interface RecapitulatifEntrepriseBusinessService extends JadeApplicationS
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public ArrayList resultSearchRecapNumRecap(String numRecap) throws JadePersistenceException,
+    List resultSearchRecapNumRecap(String numRecap) throws JadePersistenceException,
             JadeApplicationException;
 }

@@ -52,7 +52,7 @@ public class CalculHorlogerTest extends ALTestCaseJU4 {
             updateParamater("TUCANA_IS_ENABLED", "1", "01.01.2009");
 
             DossierComplexModel dossier = ALServiceLocator.getDossierComplexModelService().read(pIdDossier);
-            ArrayList<CalculBusinessModel> resCalc = ALServiceLocator.getCalculBusinessService().getCalcul(dossier,
+            List<CalculBusinessModel> resCalc = ALServiceLocator.getCalculBusinessService().getCalcul(dossier,
                     pDateCalcul);
             Assert.assertEquals(resultatAttendu, resCalc.get(pIndexRes).getCalculResultMontantBase());
 

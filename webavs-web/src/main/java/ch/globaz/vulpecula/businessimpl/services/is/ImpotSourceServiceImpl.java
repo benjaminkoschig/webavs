@@ -1,10 +1,29 @@
 package ch.globaz.vulpecula.businessimpl.services.is;
 
+import ch.globaz.al.business.constantes.ALCSPrestation;
+import ch.globaz.al.business.models.prestation.DetailPrestationComplexModel;
+import ch.globaz.al.business.models.prestation.DetailPrestationComplexSearchModel;
 import ch.globaz.al.business.services.ALRepositoryLocator;
+import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import ch.globaz.al.exception.TauxImpositionNotFoundException;
+import ch.globaz.al.impotsource.domain.TauxImpositions;
 import ch.globaz.al.properties.ALProperties;
 import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.naos.business.data.AssuranceInfo;
+import ch.globaz.vulpecula.business.models.is.EntetePrestationComplexModel;
+import ch.globaz.vulpecula.business.models.is.EntetePrestationSearchComplexModel;
+import ch.globaz.vulpecula.business.services.is.ImpotSourceService;
+import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.*;
+import ch.globaz.vulpecula.domain.models.is.DetailPrestationAF;
+import ch.globaz.vulpecula.external.models.pyxis.Adresse;
+import ch.globaz.vulpecula.external.models.pyxis.CodeLangue;
+import ch.globaz.vulpecula.repositoriesjade.RepositoryJade;
+import ch.globaz.vulpecula.util.DBUtil;
+import ch.globaz.vulpecula.util.ExceptionsUtil;
+import com.google.common.base.Function;
+import com.google.common.collect.Multimaps;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeDateUtil;
@@ -17,34 +36,11 @@ import globaz.osiris.db.recaprubriques.CARecapRubriquesExcel;
 import globaz.osiris.db.recaprubriques.CARecapRubriquesExcelManager;
 import globaz.osiris.external.IntRole;
 import globaz.vulpecula.business.exception.VulpeculaException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ch.globaz.al.business.constantes.ALCSPrestation;
-import ch.globaz.al.business.models.prestation.DetailPrestationComplexModel;
-import ch.globaz.al.business.models.prestation.DetailPrestationComplexSearchModel;
-import ch.globaz.al.business.services.ALServiceLocator;
-import ch.globaz.naos.business.data.AssuranceInfo;
-import ch.globaz.vulpecula.business.models.is.EntetePrestationComplexModel;
-import ch.globaz.vulpecula.business.models.is.EntetePrestationSearchComplexModel;
-import ch.globaz.vulpecula.business.services.is.ImpotSourceService;
-import ch.globaz.vulpecula.domain.models.is.DetailPrestationAF;
-import ch.globaz.al.exception.TauxImpositionNotFoundException;
-import ch.globaz.al.impotsource.domain.TauxImpositions;
-import ch.globaz.vulpecula.external.models.pyxis.Adresse;
-import ch.globaz.vulpecula.external.models.pyxis.CodeLangue;
-import ch.globaz.vulpecula.repositoriesjade.RepositoryJade;
-import ch.globaz.vulpecula.util.DBUtil;
-import ch.globaz.vulpecula.util.ExceptionsUtil;
-import com.google.common.base.Function;
-import com.google.common.collect.Multimaps;
+
+import java.math.BigDecimal;
+import java.util.*;
 
 public class ImpotSourceServiceImpl implements ImpotSourceService {
 
@@ -267,7 +263,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
     }
 
     @Override
-    public Map<String, BigDecimal> getMontantISCaisseAFComptaAux(List<String> caisses, Annee annee) throws Exception {
+    public Map<String, BigDecimal> getMontantISCaisseAFComptaAux(List<String> caisses, Annee annee) throws JadeApplicationException, JadePersistenceException {
         Map<String, BigDecimal> mapMontantISComptaAux = new HashMap<>();
         for(String caisse: caisses) {
             List<String> rubriques = ALImplServiceLocator.getRubriqueService().getAllRubriquesForIS(caisse, annee.getFirstDayOfYear().getSwissValue());
@@ -281,14 +277,18 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
 
     }
 
-    private BigDecimal getPrestationISByRubrique(String rubrique, Annee annee) throws Exception {
+    private BigDecimal getPrestationISByRubrique(String rubrique, Annee annee) throws JadePersistenceException {
         CARecapRubriquesExcelManager manager = new CARecapRubriquesExcelManager();
         manager.setSession(BSessionUtil.getSessionFromThreadContext());
         manager.setFromIdExterne(rubrique);
         manager.setFromDateValeur(JadeDateUtil.getYMDDate(JadeDateUtil.getGlobazDate(annee.getFirstDayOfYear().getSwissValue())));
         manager.setToDateValeur(JadeDateUtil.getYMDDate(JadeDateUtil.getGlobazDate(annee.getLastDayOfYear().getSwissValue())));
         manager.setForSelectionRole(IntRole.ROLE_AF);
-        manager.find(BManager.SIZE_NOLIMIT);
+        try {
+            manager.find(BManager.SIZE_NOLIMIT);
+        } catch (Exception e) {
+            throw new JadePersistenceException("Erreur lors de la récupération des rubriques",e);
+        }
 
         BigDecimal montantTotal = BigDecimal.ZERO;
         for (int i = 0; i < manager.size(); i++) {

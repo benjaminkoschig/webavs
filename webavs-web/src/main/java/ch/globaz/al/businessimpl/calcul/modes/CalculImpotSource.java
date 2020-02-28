@@ -8,24 +8,28 @@ import ch.globaz.al.business.models.dossier.DossierComplexModelRoot;
 import ch.globaz.al.business.models.droit.CalculBusinessModel;
 import ch.globaz.al.business.models.droit.DroitComplexModel;
 import ch.globaz.al.business.services.ALServiceLocator;
-import ch.globaz.naos.business.data.AssuranceInfo;
-import ch.globaz.param.business.service.ParamServiceLocator;
-import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.al.exception.TauxImpositionNotFoundException;
 import ch.globaz.al.impotsource.domain.TauxImpositions;
 import ch.globaz.al.impotsource.domain.TypeImposition;
 import ch.globaz.al.impotsource.persistence.TauxImpositionRepository;
+import ch.globaz.naos.business.data.AssuranceInfo;
+import ch.globaz.param.business.service.ParamServiceLocator;
+import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.common.Taux;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class CalculImpotSource {
 
-    public static void computeIS(ArrayList<CalculBusinessModel> droitsCalcules, TauxImpositions tauxGroupByCanton, TauxImpositionRepository tauxImpositionRepository,
+    private CalculImpotSource() {
+        throw new UnsupportedOperationException();
+    }
+
+    public static void computeIS(List<CalculBusinessModel> droitsCalcules, TauxImpositions tauxGroupByCanton, TauxImpositionRepository tauxImpositionRepository,
                                  DossierComplexModelRoot dossier, DroitComplexModel droit, String dateCalcul)
             throws JadeApplicationException, JadePersistenceException {
         AssuranceInfo infos = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier.getDossierModel(), dateCalcul);
@@ -54,7 +58,7 @@ public class CalculImpotSource {
                     droitCalcule.setCalculResultMontantIS(impots.getValue());
         }
 
-    static private Taux findTauxApplicable(TauxImpositions tauxGroupByCanton, TauxImpositionRepository tauxImpositionRepository,
+    private static Taux findTauxApplicable(TauxImpositions tauxGroupByCanton, TauxImpositionRepository tauxImpositionRepository,
                                            String cantonResidence, String date)
             throws TauxImpositionNotFoundException {
         if(tauxGroupByCanton == null) {

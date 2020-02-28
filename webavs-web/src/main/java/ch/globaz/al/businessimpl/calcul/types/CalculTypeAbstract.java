@@ -3,6 +3,8 @@ package ch.globaz.al.businessimpl.calcul.types;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import java.util.ArrayList;
+import java.util.List;
+
 import ch.globaz.al.business.exceptions.calcul.ALCalculModeException;
 import ch.globaz.al.business.models.droit.CalculBusinessModel;
 import ch.globaz.al.businessimpl.calcul.context.ContextCalcul;
@@ -25,7 +27,7 @@ public abstract class CalculTypeAbstract implements CalculType {
      * java.lang.String)
      */
     @Override
-    public ArrayList<CalculBusinessModel> compute(ContextCalcul context, CalculMode calcMode)
+    public List<CalculBusinessModel> compute(ContextCalcul context, CalculMode calcMode)
             throws JadeApplicationException, JadePersistenceException {
 
         if (context == null) {

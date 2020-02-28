@@ -64,7 +64,7 @@ public class GenerationFictivePrestationsTraitement extends BusinessTraitement {
     /**
      * Conteneur pour les protocoles CSV de la simulation
      */
-    private ArrayList<String> protocolesCSV = new ArrayList<String>();
+    private List<String> protocolesCSV = new ArrayList<>();
     /**
      * PubInfo pour l'envoi des protocoles
      */
@@ -77,12 +77,12 @@ public class GenerationFictivePrestationsTraitement extends BusinessTraitement {
         boolean isEbusinessConnected = CommonProperties.EBUSINESS_CONNECTED.getBooleanValue();
         boolean isManagedRecapAfInEbusiness = ALProperties.RECAPAF_MANAGE_RECAP_IN_EBUSINESS.getBooleanValue();
 
-        ArrayList listConteneurRecap = new ArrayList();
-        HashMap recapCSV = new HashMap();
-        ArrayList listRecapPdf = new ArrayList();
-        ArrayList listRecapCsv = new ArrayList();
+        List listConteneurRecap = new ArrayList();
+        Map recapCSV = new HashMap();
+        List listRecapPdf = new ArrayList();
+        List listRecapCsv = new ArrayList();
 
-        ArrayList<String> listDossiersGeneration = new ArrayList<String>();
+        List<String> listDossiersGeneration = new ArrayList<>();
         String periode = getProcessusConteneur().getDataCriterias().periodeCriteria;
         String typeCoti = getProcessusConteneur().getDataCriterias().cotisationCriteria;
 
@@ -124,7 +124,7 @@ public class GenerationFictivePrestationsTraitement extends BusinessTraitement {
                         listDossiersGeneration, periode, bonification);
 
         // liste des récaps à imprimer
-        ArrayList<RecapitulatifEntrepriseImpressionComplexSearchModel> recapToPrint = new ArrayList<RecapitulatifEntrepriseImpressionComplexSearchModel>();
+        List<RecapitulatifEntrepriseImpressionComplexSearchModel> recapToPrint = new ArrayList<>();
 
         // si l'environnement webAVS est connecté à EBusiness on créé certaines récaps côté EBusiness
         if (isEbusinessConnected && isManagedRecapAfInEbusiness) {
@@ -133,8 +133,8 @@ public class GenerationFictivePrestationsTraitement extends BusinessTraitement {
                     .listAllActivNumerosAffiliesEbusiness(BSessionUtil.getSessionFromThreadContext());
 
             List<JadeAbstractModel> allPrestationsList = Arrays.asList(allPrestations.getSearchResults());
-            List<JadeAbstractModel> prestationsToPrintList = new ArrayList<JadeAbstractModel>();
-            Map<String, List<RecapitulatifEntrepriseImpressionComplexModel>> recapForEbusinessByNumAffilieMap = new HashMap<String, List<RecapitulatifEntrepriseImpressionComplexModel>>();
+            List<JadeAbstractModel> prestationsToPrintList = new ArrayList<>();
+            Map<String, List<RecapitulatifEntrepriseImpressionComplexModel>> recapForEbusinessByNumAffilieMap = new HashMap<>();
 
             for (JadeAbstractModel model : allPrestationsList) {
                 RecapitulatifEntrepriseImpressionComplexModel dossier = (RecapitulatifEntrepriseImpressionComplexModel) model;
@@ -145,7 +145,7 @@ public class GenerationFictivePrestationsTraitement extends BusinessTraitement {
                     if (recapForEbusinessByNumAffilieMap.containsKey(numAffilie)) {
                         recapForEbusinessByNumAffilieMap.get(numAffilie).add(dossier);
                     } else {
-                        List<RecapitulatifEntrepriseImpressionComplexModel> listeDossier = new ArrayList<RecapitulatifEntrepriseImpressionComplexModel>();
+                        List<RecapitulatifEntrepriseImpressionComplexModel> listeDossier = new ArrayList<>();
                         listeDossier.add(dossier);
                         recapForEbusinessByNumAffilieMap.put(numAffilie, listeDossier);
                     }

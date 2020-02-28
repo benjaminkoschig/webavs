@@ -5,6 +5,8 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
 import ch.globaz.al.business.constantes.ALCSCantons;
 import ch.globaz.al.business.constantes.ALCSTarif;
 import ch.globaz.al.business.exceptions.calcul.ALCalculException;
@@ -52,8 +54,8 @@ public class CalculServiceImpl extends CalculAbstractService implements CalculSe
     }
 
     @Override
-    public ArrayList<CalculBusinessModel> getCalcul(DossierComplexModelRoot dossier, String dateCalcul,
-            AssuranceInfo assuranceInfo) throws JadeApplicationException, JadePersistenceException {
+    public List<CalculBusinessModel> getCalcul(DossierComplexModelRoot dossier, String dateCalcul,
+                                               AssuranceInfo assuranceInfo) throws JadeApplicationException, JadePersistenceException {
 
         if (dossier == null) {
             throw new ALCalculException("CalculServiceImpl#getCalcul : Unable to compute, dossier is null");

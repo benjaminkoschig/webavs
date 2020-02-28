@@ -12,10 +12,8 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.*;
+
 import ch.globaz.al.business.constantes.ALCSAllocataire;
 import ch.globaz.al.business.constantes.ALCSDossier;
 import ch.globaz.al.business.constantes.ALCSDroit;
@@ -58,7 +56,7 @@ public abstract class CalculModeAbstract implements CalculMode {
     /**
      * Liste contenant les droits calculé
      */
-    protected ArrayList<CalculBusinessModel> droitsCalcules = new ArrayList<>();
+    protected List<CalculBusinessModel> droitsCalcules = new ArrayList<>();
     /**
      * Mode de calcul
      */
@@ -148,7 +146,7 @@ public abstract class CalculModeAbstract implements CalculMode {
      * .business.models.dossier.DossierComplexModelAbstract, java.lang.String)
      */
     @Override
-    public ArrayList<CalculBusinessModel> compute(ContextCalcul context) throws JadeApplicationException,
+    public List<CalculBusinessModel> compute(ContextCalcul context) throws JadeApplicationException,
             JadePersistenceException {
 
         if (context == null) {
@@ -406,7 +404,7 @@ public abstract class CalculModeAbstract implements CalculMode {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    protected HashSet<String> getCategoriesList(DossierComplexModelRoot dossier, DroitModel droitModel,
+    protected Set<String> getCategoriesList(DossierComplexModelRoot dossier, DroitModel droitModel,
             String dateCalcul) throws JadeApplicationException, JadePersistenceException {
 
         if (dossier == null) {
@@ -442,8 +440,8 @@ public abstract class CalculModeAbstract implements CalculMode {
      * 
      * @return liste des législations
      */
-    protected HashSet<String> getLegislationSet() {
-        HashSet<String> set = new HashSet<String>();
+    protected Set<String> getLegislationSet() {
+        Set<String> set = new HashSet<String>();
         set.add(ALCSTarif.LEGISLATION_CAISSE);
         set.add(ALCSTarif.LEGISLATION_CANTONAL);
         set.add(ALCSTarif.LEGISLATION_FEDERAL);
@@ -866,7 +864,7 @@ public abstract class CalculModeAbstract implements CalculMode {
      * 
      * @see CalculModeAbstract#getCategoriesList(DossierComplexModelRoot, DroitModel, String)
      */
-    protected boolean setCategoriesForceesList(DossierComplexModelRoot dossier, DroitModel droit, HashSet<String> set)
+    protected boolean setCategoriesForceesList(DossierComplexModelRoot dossier, DroitModel droit, Set<String> set)
             throws JadeApplicationException {
 
         if (droit == null) {
@@ -924,7 +922,7 @@ public abstract class CalculModeAbstract implements CalculMode {
      * 
      * @see CalculModeAbstract#getCategoriesList(DossierComplexModelRoot, DroitModel, String)
      */
-    protected boolean setCategoriesModesList(HashSet<String> set, String dateCalcul) throws JadeApplicationException,
+    protected boolean setCategoriesModesList(Set<String> set, String dateCalcul) throws JadeApplicationException,
             JadePersistenceException {
 
         if (set == null) {
@@ -978,10 +976,10 @@ public abstract class CalculModeAbstract implements CalculMode {
      *             faire
      * 
      * @see CalculModeAbstract#getCategoriesList(DossierComplexModelRoot, DroitModel, String)
-     * @see CalculModeAbstract#setCategoriesForceesList(DossierComplexModelRoot, DroitModel, HashSet)
-     * @see CalculModeAbstract#setCategoriesModesList(HashSet, String)
+     * @see CalculModeAbstract#setCategoriesForceesList(DossierComplexModelRoot, DroitModel, Set)
+     * @see CalculModeAbstract#setCategoriesModesList(Set, String)
      */
-    protected void setCategoriesStandardsList(DossierComplexModelRoot dossier, String dateCalcul, HashSet<String> set)
+    protected void setCategoriesStandardsList(DossierComplexModelRoot dossier, String dateCalcul, Set<String> set)
             throws JadeApplicationException, JadePersistenceException {
 
         if (dossier == null) {
