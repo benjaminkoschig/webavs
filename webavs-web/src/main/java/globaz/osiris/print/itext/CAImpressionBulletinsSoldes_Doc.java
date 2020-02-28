@@ -1,8 +1,10 @@
 package globaz.osiris.print.itext;
 
+import ch.globaz.common.properties.CommonProperties;
 import globaz.aquila.api.ICOApplication;
 import globaz.aquila.api.ICOEtape;
 import globaz.aquila.api.ICOGestionContentieuxExterne;
+import globaz.aquila.print.COParameter;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import globaz.caisse.report.helper.ICaisseReportHelper;
@@ -51,6 +53,7 @@ import globaz.osiris.db.contentieux.CALigneExtraitCompte;
 import globaz.osiris.db.historique.CAHistoriqueBulletinSolde;
 import globaz.osiris.db.historique.CAHistoriqueBulletinSoldeManager;
 import globaz.osiris.db.utils.CAReferenceBVR;
+import globaz.osiris.db.utils.CAReferenceQR;
 import globaz.osiris.external.IntAdressePaiement;
 import globaz.osiris.external.IntRole;
 import globaz.osiris.external.IntTiers;
@@ -75,7 +78,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     public final static String NUM_REF_INFOROM_BVR_SOLDE = "0100CFA";
 
-    public final static String TEMPLATE_FILENAME = "MUSCA_BVR4BULLSOLD";
+    public final static String TEMPLATE_FILENAME = "MUSCA_BVR4BULLSOLD_QR";
     public final static String TYPE_FACTURE_ETUDIANT = "22";
 
     private String adressePrincipale;
@@ -83,7 +86,6 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
     private CAReferenceBVR bvr = null;
     private Boolean callEcran = new Boolean(false);
     private String centimes;
-    private CACompteAnnexe compteAnnexe;
     private Iterator<FAAfact> entityList = null;
     private Boolean envoyerGed = new Boolean(false);
     private boolean factureAvecMontantMinime = false;
@@ -101,9 +103,6 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     private FAPassage passage;
 
-    private CASection section = null;
-
-    private CAImpressionBulletinsSoldes_DS sectionCourante;
     private String sectionLibelle = "";
 
     private BSession sessionAquila = null;
@@ -239,57 +238,6 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
             }
         } catch (Exception e) {
             getDocumentInfo().setDocumentProperty("numero.affilie.non.formatte", numAff);
-        }
-    }
-
-    /**
-     * Via le tiers du compte annexe.
-     * 
-     * @return l'adresse du domaine Facturation de type Courrier
-     * @throws Exception
-     */
-    public String _getAdresseCourrier() throws Exception {
-        IntTiers tiers = compteAnnexe.getTiers();
-        if (tiers == null) {
-            return "";
-        } else {
-            String domaine = section.getDomaine();
-            if (JadeStringUtil.isBlankOrZero(domaine)) {
-                domaine = compteAnnexe._getDefaultDomainFromRole();
-            }
-            return tiers.getAdresseAsString(getDocumentInfo(), section.getTypeAdresse(), domaine,
-                    compteAnnexe.getIdExterneRole(), JACalendar.today().toStr("."));
-        }
-    }
-
-    /**
-     * Via le tiers du compte annexe.
-     * 
-     * @return l'adresse du domaine Standard de type Domicile
-     * @throws Exception
-     */
-    public String _getAdresseDomicile() throws Exception {
-        IntTiers tiers = compteAnnexe.getTiers();
-        if (tiers == null) {
-            return "";
-        } else {
-            return tiers.getAdresseAsString(getDocumentInfo(), IConstantes.CS_AVOIR_ADRESSE_DOMICILE,
-                    IConstantes.CS_APPLICATION_DEFAUT, compteAnnexe.getIdExterneRole(), JACalendar.today().toStr("."));
-        }
-    }
-
-    /**
-     * L'adresse de paiement est l'adresse de courrier
-     * 
-     * @return l'adresse courrier du domaine facturation sinon l'adresse de domicile du domaine standard
-     * @throws Exception
-     */
-    public String _getAdressePrincipale() throws Exception {
-        String result = _getAdresseCourrier();
-        if (!JadeStringUtil.isBlank(result)) {
-            return result;
-        } else {
-            return _getAdresseDomicile();
         }
     }
 
@@ -606,7 +554,19 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                 decalerEcheanceContencieux();
 
                 tableHeader();
-                fillBVR();
+
+                if (CommonProperties.QR_FACTURE.getBooleanValue()) {
+                    // -- QR
+                    qrFacture = new CAReferenceQR();
+                    qrFacture.setSession(getSession());
+                    // Initialisation des variables du document
+                    initVariableQR(new FWCurrency(_getMontantApresCompensation()));
+
+                    // Génération du document QR
+                    qrFacture.initQR(this);
+                } else {
+                    fillBVR();
+                }
 
                 addToHistory();
             } catch (Exception e) {
@@ -675,6 +635,9 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
             getBvr().setSession(getSession());
             getBvr().setForcerBV(getForcerBV());
             getBvr().setBVR(sectionCourante.getSection(), _getMontantApresCompensation(), isFactureMontantReport());
+
+            // Modification suite à QR-Facture. Choix du footer
+            super.setParametres(COParameter.P_SUBREPORT_QR, getImporter().getImportPath() + "BVR_TEMPLATE.jasper");
 
             super.setParametres(CAImpressionBulletinsSoldes_Param.P_ADRESSE, getBvr().getAdresse());
             super.setParametres(CAImpressionBulletinsSoldes_Param.P_ADRESSECOPY, getBvr().getAdresse());

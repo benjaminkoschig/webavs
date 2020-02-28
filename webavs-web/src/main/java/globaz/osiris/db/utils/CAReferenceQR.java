@@ -1,7 +1,5 @@
 package globaz.osiris.db.utils;
 
-import ch.globaz.ij.businessimpl.exception.TechnicalException;
-import globaz.aquila.print.CODocumentManager;
 import globaz.aquila.print.COParameter;
 import globaz.framework.printing.itext.FWIDocumentManager;
 import globaz.framework.printing.itext.fill.FWIImportParametre;
@@ -100,11 +98,17 @@ public class CAReferenceQR extends AbstractCAReference {
     // Pour le moment le QR Code est défini en String. Sera modifié par la suite
     private String qRCode;
 
+    // Param de langue du document
+    private String langueDoc;
+
     public CAReferenceQR() {
         super();
 
         // Init Trailer. Valeur fixe = EPD
         trailer = END_OF_PAYMENT;
+
+        // Init langue par défaut
+        langueDoc = "FR";
     }
 
 
@@ -116,14 +120,9 @@ public class CAReferenceQR extends AbstractCAReference {
 
          initParamQR();
 
-
-        Iterator it = parameters.entrySet().iterator();
-
-        // Chargement des paramètres sur le document
-        while (it.hasNext()) {
-            Map.Entry element = (Map.Entry) it.next();
-            document.setParametres(element.getKey(), Objects.isNull(element.getValue()) ? "" : element.getValue());
-        }
+         for (Map.Entry element : parameters.entrySet()){
+             document.setParametres(element.getKey(), Objects.isNull(element.getValue()) ? "" : element.getValue());
+         }
 
         return document;
     }
@@ -131,29 +130,27 @@ public class CAReferenceQR extends AbstractCAReference {
     /**
      * Méthode qui charge les entêtes du documents QR-Facture
      *
-     * @param documentCO
+     * @param document
      */
-    private void initEnteteQR(FWIDocumentManager documentCO) throws CATechnicalException {
-
-        CODocumentManager document = (CODocumentManager) documentCO;
+    private void initEnteteQR(FWIDocumentManager document) throws CATechnicalException {
 
         try {
             parameters.put(COParameter.P_SUBREPORT_QR, document.getImporter().getImportPath() + "QR_FACTURE_TEMPLATE.jasper");
             // QR sur current page. Pour le moment on laisse le QR avec toutes les informations
             parameters.put(COParameter.P_SUBREPORT_QR_CURRENT_PAGE, document.getImporter().getImportPath() + "QR_FACTURE_TEMPLATE.jasper");
-            parameters.put(COParameter.P_TITRE_1, getSession().getApplication().getLabel("QR_RECEPISSE", document.getLangueDoc()));
-            parameters.put(COParameter.P_TITRE_2, getSession().getApplication().getLabel("QR_SECTION_PAIEMENT", document.getLangueDoc()));
-            parameters.put(COParameter.P_POINT_DEPOT, getSession().getApplication().getLabel("QR_POINT_DEPOT", document.getLangueDoc()));
-            parameters.put(COParameter.P_MONNAIE_TITRE, getSession().getApplication().getLabel("QR_MONNAIE", document.getLangueDoc()));
-            parameters.put(COParameter.P_MONTANT_TITRE, getSession().getApplication().getLabel("MONTANT", document.getLangueDoc()));
+            parameters.put(COParameter.P_TITRE_1, getSession().getApplication().getLabel("QR_RECEPISSE", langueDoc));
+            parameters.put(COParameter.P_TITRE_2, getSession().getApplication().getLabel("QR_SECTION_PAIEMENT", langueDoc));
+            parameters.put(COParameter.P_POINT_DEPOT, getSession().getApplication().getLabel("QR_POINT_DEPOT", langueDoc));
+            parameters.put(COParameter.P_MONNAIE_TITRE, getSession().getApplication().getLabel("QR_MONNAIE", langueDoc));
+            parameters.put(COParameter.P_MONTANT_TITRE, getSession().getApplication().getLabel("MONTANT", langueDoc));
             parameters.put(COParameter.P_SUBREPORT_ZONE_INDICATIONS, document.getImporter().getImportPath() + "QR_CODE_ZONE_INDICATIONS.jasper");
             parameters.put(COParameter.P_SUBREPORT_RECEPISE, document.getImporter().getImportPath() + "QR_CODE_RECEPISE.jasper");
-            parameters.put(COParameter.P_COMPTE_TITRE, getSession().getApplication().getLabel("QR_COMPTE_PAYABLE", document.getLangueDoc()));
-            parameters.put(COParameter.P_PAR_TITRE, getSession().getApplication().getLabel("QR_PAYABLE_PAR", document.getLangueDoc()));
-            parameters.put(COParameter.P_REF_TITRE, getSession().getApplication().getLabel("REFERENCE", document.getLangueDoc()));
-            parameters.put(COParameter.P_INFO_ADD_TITRE, getSession().getApplication().getLabel("QR_INFO_SUPP", document.getLangueDoc()));
+            parameters.put(COParameter.P_COMPTE_TITRE, getSession().getApplication().getLabel("QR_COMPTE_PAYABLE", langueDoc));
+            parameters.put(COParameter.P_PAR_TITRE, getSession().getApplication().getLabel("QR_PAYABLE_PAR", langueDoc));
+            parameters.put(COParameter.P_REF_TITRE, getSession().getApplication().getLabel("REFERENCE", langueDoc));
+            parameters.put(COParameter.P_INFO_ADD_TITRE, getSession().getApplication().getLabel("QR_INFO_SUPP", langueDoc));
         } catch (Exception e) {
-            throw new CATechnicalException (e.getMessage());
+            throw new CATechnicalException ("Problème à l'initialisation des entêtes QR : ", e);
         }
 
 
@@ -166,7 +163,7 @@ public class CAReferenceQR extends AbstractCAReference {
      *
      */
     public void initParamQR() throws CATechnicalException {
-        parameters.put(COParameter.P_QR_CODE_PATH, new GenerationQRCode().generateSwissQrCode(generationPayLoad()));
+        parameters.put(COParameter.P_QR_CODE_PATH, GenerationQRCode.generateSwissQrCode(generationPayLoad()));
         parameters.put(COParameter.P_MONNAIE, monnaie);
         // Si l'on est sur un QR Neutre, dans ce cas, il doit être sans montant ni adresse Debiteur.
         if (!qrNeutre) {
@@ -344,7 +341,9 @@ public class CAReferenceQR extends AbstractCAReference {
             debfRueOuLigneAdresse1 = listAdresses.get(0).getRue();
             debfNumMaisonOuLigneAdresse2 = listAdresses.get(0).getNumero();
             return true;
-        } else return false;
+        } else {
+            return false;
+        }
     }
 
     public void recupererIban() throws Exception {
@@ -689,5 +688,13 @@ public class CAReferenceQR extends AbstractCAReference {
 
     public void setQrNeutre(Boolean qrNeutre) {
         this.qrNeutre = qrNeutre;
+    }
+
+    public String getLangueDoc() {
+        return langueDoc;
+    }
+
+    public void setLangueDoc(String langueDoc) {
+        this.langueDoc = langueDoc;
     }
 }

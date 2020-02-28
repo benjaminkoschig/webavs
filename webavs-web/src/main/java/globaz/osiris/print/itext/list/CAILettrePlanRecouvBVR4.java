@@ -141,7 +141,9 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
             setMontantMinime(echeance);
             initMontant(echeance);
             // Renseigne les paramètres du document
+
             fillBVR(echeance);
+
             setColumnHeader(1, _getProperty(CADocumentManager.JASP_PROP_BODY_CACLIBELLE, ""));
             setColumnHeader(6, _getProperty(CADocumentManager.JASP_PROP_BODY_CACMONTANT, ""));
             String textMontant = FWMessageFormat.format(_getProperty(CADocumentManager.JASP_PROP_BODY_CACREPORT, ""),

@@ -323,6 +323,7 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
     public void initVariableQR() {
 
         qrFacture.setMontant(Objects.isNull(tmpCurrency)? "" : tmpCurrency.toString());
+        qrFacture.setLangueDoc(currentDataSource.getEnteteFacture().getISOLangueTiers());
 
 
         try {

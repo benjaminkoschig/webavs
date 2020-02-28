@@ -1,5 +1,6 @@
 package globaz.osiris.print.itext.list;
 
+import globaz.aquila.service.cataloguetxt.COCatalogueTextesService;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.ICTListeTextes;
 import globaz.babel.api.ICTTexte;
@@ -9,6 +10,7 @@ import globaz.caisse.report.helper.ICaisseReportHelper;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.framework.printing.itext.FWIDocumentManager;
 import globaz.framework.printing.itext.exception.FWIException;
+import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
@@ -20,18 +22,19 @@ import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.access.recouvrement.CAPlanRecouvrement;
+import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CASection;
+import globaz.osiris.db.utils.CAReferenceQR;
 import globaz.osiris.external.IntTiers;
+import globaz.osiris.print.itext.CAImpressionBulletinsSoldes_DS;
 import globaz.osiris.translation.CACodeSystem;
 import globaz.pyxis.api.ITIRole;
 import globaz.pyxis.application.TIApplication;
+import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.tiers.TITiersViewBean;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
+
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
@@ -123,7 +126,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
      * </UL>
      * 
      * @return un String représentant le montant formattée.
-     * @param un
+     * @param montant
      *            montant à formatter.
      */
     public static final String formatMontant(String montant) {
@@ -167,6 +170,12 @@ public abstract class CADocumentManager extends FWIDocumentManager {
     private Map row = new HashMap();
 
     protected String typeDocument = "";
+
+    // Ajout pour QR Facture
+    protected CAReferenceQR qrFacture = null;
+    protected CAImpressionBulletinsSoldes_DS sectionCourante;
+    protected CACompteAnnexe compteAnnexe;
+    protected CASection section = null;
 
     /*
      * @TODO Supprimer ces vieux constructeurs
@@ -273,8 +282,6 @@ public abstract class CADocumentManager extends FWIDocumentManager {
      * 
      * @param adresseDestination
      *            L'adresse du destinataire du document
-     * @param annonce
-     *            L'annonce de l'assuré concernée par ce document
      * @param hasHeader
      *            <code>true</code> si le document contient un en-tête
      * @param hasFooter
@@ -294,8 +301,6 @@ public abstract class CADocumentManager extends FWIDocumentManager {
      * 
      * @param adresseDestination
      *            L'adresse du destinataire du document
-     * @param annonce
-     *            L'annonce de l'assuré concernée par ce document
      * @param hasHeader
      *            <code>true</code> si le document contient un en-tête
      * @param hasFooter
@@ -440,7 +445,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
     /**
      * Spécifie la langue du document
      * 
-     * @param langue
+     * @param langueDoc
      *            La langue du document
      */
     protected void _setLangueDocument(String langueDoc) {
@@ -452,7 +457,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
     /**
      * Spécifie la langue du document en fonction de la langue de l'affilié
      * 
-     * @param TITiersViewBean
+     * @param affilie
      *            La langue de l'affilié
      */
     protected void _setLangueFromAffilie(TITiersViewBean affilie) {
@@ -820,7 +825,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
     }
 
     /**
-     * @param liste
+     * @param string
      *            des annexes
      */
     public void setListeAnnexes(String string) {
@@ -869,6 +874,90 @@ public abstract class CADocumentManager extends FWIDocumentManager {
      */
     protected void setTypeDocument(String typeDocument) {
         this.typeDocument = typeDocument;
+    }
+
+
+    // Initialisation des variables QR
+    public void initVariableQR(FWCurrency montantTotal) {
+
+        qrFacture.setMonnaie(qrFacture.DEVISE_DEFAUT);
+        qrFacture.setMontant(Objects.isNull(montantTotal)? "" : montantTotal.toString());
+        qrFacture.setLangueDoc(_getLangue());
+
+
+        try {
+            //qrFacture.setCrePays(qrFacture.getCodePays());
+            qrFacture.recupererIban();
+            if (!qrFacture.genererAdresseDebiteur(sectionCourante.getSection().getCompteAnnexe().getIdTiers())) {
+                // si l'adresse n'est pas trouvé en DB, alors chargement d'une adresse Combiné
+                qrFacture.setDebfAdressTyp(CAReferenceQR.COMBINE);
+
+                qrFacture.setDebfRueOuLigneAdresse1(_getAdressePrincipale());
+            }
+            qrFacture.genererReferenceQR(sectionCourante.getSection());
+
+            // Il n'existe pas pour l'heure actuel d'adresse de créditeur en DB.
+            // Elle est récupérée depuis le catalogue de texte au format Combinée
+            qrFacture.genererCreAdresse();
+            //qrFacture.setDebfRueOuLigneAdresse1(getAdresseDestinataire());
+        } catch (Exception e) {
+            getMemoryLog().logMessage(
+                    "Erreur lors de recherche des élements de la sommation : " + e.getMessage(),
+                    FWMessage.AVERTISSEMENT, this.getClass().getName());
+        }
+
+
+    }
+
+    /**
+     * L'adresse de paiement est l'adresse de courrier
+     *
+     * @return l'adresse courrier du domaine facturation sinon l'adresse de domicile du domaine standard
+     * @throws Exception
+     */
+    public String _getAdressePrincipale() throws Exception {
+        String result = _getAdresseCourrier();
+        if (!JadeStringUtil.isBlank(result)) {
+            return result;
+        } else {
+            return _getAdresseDomicile();
+        }
+    }
+
+    /**
+     * Via le tiers du compte annexe.
+     *
+     * @return l'adresse du domaine Facturation de type Courrier
+     * @throws Exception
+     */
+    public String _getAdresseCourrier() throws Exception {
+        IntTiers tiers = compteAnnexe.getTiers();
+        if (tiers == null) {
+            return "";
+        } else {
+            String domaine = section.getDomaine();
+            if (JadeStringUtil.isBlankOrZero(domaine)) {
+                domaine = compteAnnexe._getDefaultDomainFromRole();
+            }
+            return tiers.getAdresseAsString(getDocumentInfo(), section.getTypeAdresse(), domaine,
+                    compteAnnexe.getIdExterneRole(), JACalendar.today().toStr("."));
+        }
+    }
+
+    /**
+     * Via le tiers du compte annexe.
+     *
+     * @return l'adresse du domaine Standard de type Domicile
+     * @throws Exception
+     */
+    public String _getAdresseDomicile() throws Exception {
+        IntTiers tiers = compteAnnexe.getTiers();
+        if (tiers == null) {
+            return "";
+        } else {
+            return tiers.getAdresseAsString(getDocumentInfo(), IConstantes.CS_AVOIR_ADRESSE_DOMICILE,
+                    IConstantes.CS_APPLICATION_DEFAUT, compteAnnexe.getIdExterneRole(), JACalendar.today().toStr("."));
+        }
     }
 
 }

@@ -38,7 +38,7 @@ public class GenerationQRCode {
 
     private static final int QR_CODE_EDGE_SIDE_PX = SWISS_CROSS_EDGE_SIDE_PX * QR_CODE_EDGE_SIDE_MM  / SWISS_CROSS_EDGE_SIDE_MM;
 
-    public String generateSwissQrCode(String payload) throws CATechnicalException {
+    public static String generateSwissQrCode(String payload) throws CATechnicalException {
 
         // generate the qr code from the payload.
         BufferedImage qrCodeImage = generateQrCodeImage(payload);
@@ -57,7 +57,7 @@ public class GenerationQRCode {
         return qrCodePath;
     }
 
-    private BufferedImage generateQrCodeImage(String payload) throws CATechnicalException {
+    private static BufferedImage generateQrCodeImage(String payload) throws CATechnicalException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         EnumMap<EncodeHintType, Object> hints = new EnumMap<>(EncodeHintType.class);
         hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
@@ -73,7 +73,7 @@ public class GenerationQRCode {
         return MatrixToImageWriter.toBufferedImage(bitMatrix);
     }
 
-    private BufferedImage overlayWithSwissCross(BufferedImage qrCodeImage) throws IOException {
+    private static BufferedImage overlayWithSwissCross(BufferedImage qrCodeImage) throws IOException {
 
         Path swissCrossPath;
         String pathString = JadeStringUtil.change(Jade.getInstance().getExternalModelDir() + OVERLAY_IMAGE, '\\', '/');

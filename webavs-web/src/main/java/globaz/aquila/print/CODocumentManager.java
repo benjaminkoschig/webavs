@@ -2146,12 +2146,16 @@ public abstract class CODocumentManager extends FWIDocumentManager {
         return resultat.toString();
     }
 
+    /**
+     *
+     * @param montantTotal
+     */
     public void initVariableQR(FWCurrency montantTotal) {
 
         qrFacture.setMonnaie(getCatalogueTextesUtil().texte(getParent(), 3, 2).contains(COCatalogueTextesService.TEXTE_INTROUVABLE)?
                 qrFacture.DEVISE_DEFAUT : getCatalogueTextesUtil().texte(getParent(), 3, 2) );
         qrFacture.setMontant(Objects.isNull(montantTotal)? "" : montantTotal.toString());
-
+        qrFacture.setLangueDoc(langueDoc);
 
         try {
             //qrFacture.setCrePays(qrFacture.getCodePays());
@@ -2159,7 +2163,6 @@ public abstract class CODocumentManager extends FWIDocumentManager {
             if (!qrFacture.genererAdresseDebiteur(curContentieux.getCompteAnnexe().getIdTiers())) {
                 // si l'adresse n'est pas trouvé en DB, alors chargement d'une adresse Combiné
                 qrFacture.setDebfAdressTyp(CAReferenceQR.COMBINE);
-                //
                 qrFacture.setDebfRueOuLigneAdresse1(getAdresseDestinataire());
             }
             qrFacture.genererReferenceQR(curContentieux.getSection());
@@ -2167,7 +2170,6 @@ public abstract class CODocumentManager extends FWIDocumentManager {
             // Il n'existe pas pour l'heure actuel d'adresse de créditeur en DB.
             // Elle est récupérée depuis le catalogue de texte au format Combinée
             qrFacture.genererCreAdresse();
-            //qrFacture.setDebfRueOuLigneAdresse1(getAdresseDestinataire());
         } catch (Exception e) {
             getMemoryLog().logMessage(
                     "Erreur lors de recherche des élements de la sommation : " + e.getMessage(),
@@ -2185,6 +2187,10 @@ public abstract class CODocumentManager extends FWIDocumentManager {
         return getAdressePrincipale(destinataireDocument);
     }
 
+    /**
+     *
+     * @return
+     */
     public String getLangueDoc() {
         return langueDoc;
     }
