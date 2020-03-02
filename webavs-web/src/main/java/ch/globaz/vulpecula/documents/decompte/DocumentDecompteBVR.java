@@ -1,5 +1,8 @@
 package ch.globaz.vulpecula.documents.decompte;
 
+import ch.globaz.common.document.reference.ReferenceQR;
+import ch.globaz.common.properties.CommonProperties;
+import globaz.aquila.print.COParameter;
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import globaz.framework.printing.itext.fill.FWIImportParametre;
 import globaz.framework.util.FWMessage;
@@ -29,7 +32,7 @@ import com.sun.star.lang.NullPointerException;
 public class DocumentDecompteBVR extends VulpeculaDocumentManager<DecompteContainer> {
 
     private static final long serialVersionUID = 2002626138123336066L;
-    private TypeSection typeSection = TypeSection.BULLETIN_NEUTRE;
+
 
     /**
      * Constructeur
@@ -92,7 +95,20 @@ public class DocumentDecompteBVR extends VulpeculaDocumentManager<DecompteContai
         String texteFormatte = getTexteFormatte(1, 1, parametres);
         setParametres("P_NO_DECOMPTE", texteFormatte);
 
-        fillBVR(decompte.getMontantContributionTotal());
+        // Evolution QR-Facture
+        if (CommonProperties.QR_FACTURE.getBooleanValue()) {
+            // -- QR
+            qrFacture = new ReferenceQR();
+            qrFacture.setSession(getSession());
+            // Initialisation des variables du document
+            initVariableQR(decompte);
+            // Génération du document QR
+            qrFacture.setSubReportQR("QR_FACTURE_TEMPLATE_BMS.jasper");
+            qrFacture.initQR(this);
+        } else {
+
+            fillBVR(decompte.getMontantContributionTotal());
+        }
 
         fillDocumentTitle();
     }
@@ -125,6 +141,9 @@ public class DocumentDecompteBVR extends VulpeculaDocumentManager<DecompteContai
                     FWMessage.AVERTISSEMENT, this.getClass().getName());
         }
         try {
+            // Modification suite à QR-Facture. Choix du footer
+            super.setParametres(COParameter.P_SUBREPORT_QR, getImporter().getImportPath() + "BVR_TEMPLATE_BMS.jasper");
+
             super.setParametres(DocumentConstants.P_ADRESSE, bvr.getAdresseBVR(getCodeLangue()));
             super.setParametres(DocumentConstants.P_ADRESSECOPY, bvr.getAdresseBVR(getCodeLangue()));
             super.setParametres(DocumentConstants.P_COMPTE, bvr.getNumeroCC());
@@ -158,7 +177,7 @@ public class DocumentDecompteBVR extends VulpeculaDocumentManager<DecompteContai
      */
     @Override
     public String getJasperTemplate() {
-        return DocumentConstants.DECOMPTE_BVR_TEMPLATE;
+        return DocumentConstants.DECOMPTE_BVR_QR_TEMPLATE;
     }
 
     @Override

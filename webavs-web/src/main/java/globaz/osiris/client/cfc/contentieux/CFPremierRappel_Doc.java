@@ -1,5 +1,9 @@
 package globaz.osiris.client.cfc.contentieux;
 
+import ch.globaz.common.document.reference.ReferenceQR;
+import ch.globaz.common.properties.CommonProperties;
+import globaz.aquila.print.CODecisionFPV;
+import globaz.aquila.print.COParameter;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import globaz.caisse.report.helper.ICaisseReportHelper;
@@ -7,17 +11,23 @@ import globaz.framework.printing.itext.FWIScriptDocument;
 import globaz.framework.printing.itext.exception.FWIException;
 import globaz.framework.printing.itext.fill.FWIImportParametre;
 import globaz.framework.secure.FWSecureConstants;
+import globaz.framework.util.FWCurrency;
+import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JANumberFormatter;
+import globaz.globall.util.JAUtil;
 import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.admin.user.bean.JadeUser;
 import globaz.jade.admin.user.bean.JadeUserDetail;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.application.CAApplication;
+import globaz.osiris.db.access.recouvrement.CAPlanRecouvrement;
+
 import java.math.BigDecimal;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Vector;
 
 /**
@@ -45,7 +55,7 @@ public class CFPremierRappel_Doc extends FWIScriptDocument {
     /**
      * Commentaire relatif au constructeur CAProcessImprJournalContentieuxCSC.
      * 
-     * @param session
+     * @param parent
      *            globaz.globall.db.BProcess
      */
     public CFPremierRappel_Doc(BProcess parent) throws FWIException {
@@ -136,7 +146,7 @@ public class CFPremierRappel_Doc extends FWIScriptDocument {
      */
     @Override
     public void beforeExecuteReport() {
-        setTemplateFile("CARappel1_BVR");
+        setTemplateFile("CARappel1_BVR_QR");
     }
 
     /*
@@ -227,6 +237,39 @@ public class CFPremierRappel_Doc extends FWIScriptDocument {
                     getSession().getApplication().getLabel("REMARQUE_FIXE", rappel.getTiers().getLangueISO()));
             super.setParametres(CFRappelParam.PARAM_REMARQUE2_GRAS,
                     getSession().getApplication().getLabel("REMARQUE_FIXE2_GRAS", rappel.getTiers().getLangueISO()));
+            super.setParametres(CFRappelParam.PARAM_TAXE, new BigDecimal(JANumberFormatter.deQuote(rappel.getTaxe())));
+            super.setParametres(CFRappelParam.PARAM_MONTANT,
+                    new BigDecimal(JANumberFormatter.deQuote(rappel.getMontant())));
+
+            if (CommonProperties.QR_FACTURE.getBooleanValue()) {
+                // -- QR
+                rappel.setQrFacture(new ReferenceQR());
+                rappel.getQrFacture().setSession(getSession());
+                // Initialisation des variables du document
+                rappel.initVariableQR(new FWCurrency(rappel.getMontant()), rappel.getTiers().getIdTiers());
+                // Génération du document QR
+                rappel.getQrFacture().initQR(this);
+            } else {
+                initBVR();
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        _headerText();
+    }
+
+    /**
+     * BVR
+     */
+    private void initBVR() {
+
+        try {
+            // Modification suite à QR-Facture. Choix du footer
+            super.setParametres(COParameter.P_SUBREPORT_QR, getImporter().getImportPath() + "BVR_TEMPLATE.jasper");
+
             super.setParametres(CFRappelParam.PARAM_MONTANT_FACTURE,
                     new BigDecimal(JANumberFormatter.deQuote(rappel.getMontantFacture())));
             super.setParametres(CFRappelParam.PARAM_ADRESSE,
@@ -236,20 +279,19 @@ public class CFPremierRappel_Doc extends FWIScriptDocument {
             super.setParametres(CFRappelParam.PARAM_REFERENCE, rappel.getReference());
             super.setParametres(CFRappelParam.PARAM_COMPTE,
                     getSession().getApplication().getLabel("NUMERO_COMPTE", rappel.getTiers().getLangueISO()));
-            super.setParametres(CFRappelParam.PARAM_TAXE, new BigDecimal(JANumberFormatter.deQuote(rappel.getTaxe())));
-            super.setParametres(CFRappelParam.PARAM_MONTANT,
-                    new BigDecimal(JANumberFormatter.deQuote(rappel.getMontant())));
+
+
             super.setParametres(CFRappelParam.PARAM_FRANC, JANumberFormatter.deQuote(rappel.getMontantSansCentime()));
             super.setParametres(CFRappelParam.PARAM_CENTIME, rappel.getCentimes());
             super.setParametres(CFRappelParam.PARAM_VERSE, _getAdresseCourrier());
             super.setParametres(CFRappelParam.PARAM_PAR, _getAdresseCourrier());
             super.setParametres(CFRappelParam.PARAM_OCR, rappel.getOcrb());
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception e1) {
+            getMemoryLog().logMessage(
+                    "Erreur lors de recherche du texte sur le bvr de la Décision : " + e1.getMessage(),
+                    FWMessage.AVERTISSEMENT, this.getClass().getName());
         }
-
-        _headerText();
     }
 
     /**

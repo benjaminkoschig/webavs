@@ -1,5 +1,6 @@
 package globaz.osiris.client.cfc.contentieux;
 
+import ch.globaz.common.document.reference.ReferenceQR;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.api.BIDocument;
 import globaz.globall.db.BTransaction;

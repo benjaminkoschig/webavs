@@ -20,6 +20,7 @@ import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.application.CAApplication;
+import globaz.osiris.db.access.recouvrement.CAEcheancePlan;
 import globaz.osiris.db.access.recouvrement.CAPlanRecouvrement;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CASection;
@@ -175,6 +176,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
     protected CAImpressionBulletinsSoldes_DS sectionCourante;
     protected CACompteAnnexe compteAnnexe;
     protected CASection section = null;
+    protected CAEcheancePlan echeance = null;
 
     /*
      * @TODO Supprimer ces vieux constructeurs
@@ -867,7 +869,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
     /**
      * Définit le type du document
-     * 
+     *
      * @param typeDocument
      *            the typeDocument to set
      */
@@ -877,7 +879,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
 
     // Initialisation des variables QR
-    public void initVariableQR(FWCurrency montantTotal) {
+    public void initVariableQR(FWCurrency montantTotal, String idTier) {
 
         qrFacture.setMonnaie(qrFacture.DEVISE_DEFAUT);
         qrFacture.setMontant(Objects.isNull(montantTotal)? "" : montantTotal.toString());
@@ -887,13 +889,25 @@ public abstract class CADocumentManager extends FWIDocumentManager {
         try {
             //qrFacture.setCrePays(qrFacture.getCodePays());
             qrFacture.recupererIban();
-            if (!qrFacture.genererAdresseDebiteur(sectionCourante.getSection().getCompteAnnexe().getIdTiers())) {
+            if (!qrFacture.genererAdresseDebiteur(idTier)) {
                 // si l'adresse n'est pas trouvé en DB, alors chargement d'une adresse Combiné
                 qrFacture.setDebfAdressTyp(ReferenceQR.COMBINE);
 
                 qrFacture.setDebfRueOuLigneAdresse1(_getAdressePrincipale());
             }
-            qrFacture.genererReferenceQR(sectionCourante.getSection());
+
+            // Si la sectionCourante est null, c'est que les informations sont contenues dans le plan de recouvrement.
+            if (Objects.isNull(sectionCourante)) {
+                CAPlanRecouvrement plan = echeance.getPlanRecouvrement();
+                String idRole = plan.getCompteAnnexe().getIdRole();
+                String idExterneRole = plan.getCompteAnnexe().getIdExterneRole();
+                String idPlan = plan.getIdPlanRecouvrement();
+
+                qrFacture.genererReferenceQR(idRole, idExterneRole, true, "", idPlan, plan.getIdCompteAnnexe(), montantTotal.toString());
+            } else {
+                qrFacture.genererReferenceQR(sectionCourante.getSection());
+            }
+
 
             // Il n'existe pas pour l'heure actuel d'adresse de créditeur en DB.
             // Elle est récupérée depuis le catalogue de texte au format Combinée
@@ -959,4 +973,31 @@ public abstract class CADocumentManager extends FWIDocumentManager {
         }
     }
 
+    /**
+     * Le montant de la facture après les compensations.
+     *
+     * @return le montant de la section moins le montant de la facture.
+     */
+    public String _getMontantApresCompensation() {
+        FWCurrency montant = new FWCurrency(sectionCourante.getSection().getSolde());
+        return JANumberFormatter.fmt(JANumberFormatter.deQuote(montant.toStringFormat()), false, true, false, 2);
+    }
+
+    /**
+     * Getter QrFacture
+     *
+     * @return
+     */
+    public ReferenceQR getQrFacture() {
+        return qrFacture;
+    }
+
+    /**
+     * Setter qrFacture
+     *
+     * @param qrFacture
+     */
+    public void setQrFacture(ReferenceQR qrFacture) {
+        this.qrFacture = qrFacture;
+    }
 }

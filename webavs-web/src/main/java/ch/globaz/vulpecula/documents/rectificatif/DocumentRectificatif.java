@@ -1,5 +1,7 @@
 package ch.globaz.vulpecula.documents.rectificatif;
 
+import ch.globaz.common.document.reference.ReferenceQR;
+import ch.globaz.common.properties.CommonProperties;
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.framework.printing.itext.exception.FWIException;
@@ -196,7 +198,19 @@ public class DocumentRectificatif extends VulpeculaDocumentManager<Decompte> {
         }
         setParametres(P_SALUTATIONS, getSalutations());
 
-        fillBVR();
+
+        // Evolution QR-Facture
+        if (CommonProperties.QR_FACTURE.getBooleanValue()) {
+            // -- QR
+            qrFacture = new ReferenceQR();
+            qrFacture.setSession(getSession());
+            // Initialisation des variables du document
+            initVariableQR(getCurrentElement());
+            // Génération du document QR
+            qrFacture.initQR(this);
+        } else {
+            fillBVR();
+        }
     }
 
     private String getParagraphe1() throws Exception {

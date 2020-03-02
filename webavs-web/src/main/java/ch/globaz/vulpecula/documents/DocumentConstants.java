@@ -43,6 +43,7 @@ public final class DocumentConstants {
     public static final String DECOMPTE_VIDE_DEFAULT_SUBJECT = "Décompte";
 
     public static final String DECOMPTE_BVR_TEMPLATE = "PT_DECOMPTE_BVR";
+    public static final String DECOMPTE_BVR_QR_TEMPLATE = "PT_DECOMPTE_BVR_QR";
     public static final String DECOMPTE_BVR_CT_NAME = "Décompte BVR";
     public static final String DECOMPTE_BVR_FILENAME = "DecompteBVR";
     public static final String DECOMPTE_BVR_TYPE_NUMBER = "0003PPT";

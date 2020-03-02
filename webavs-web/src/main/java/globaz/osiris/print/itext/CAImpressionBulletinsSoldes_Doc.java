@@ -280,16 +280,6 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
     }
 
     /**
-     * Le montant de la facture après les compensations.
-     * 
-     * @return le montant de la section moins le montant de la facture.
-     */
-    public String _getMontantApresCompensation() {
-        FWCurrency montant = new FWCurrency(sectionCourante.getSection().getSolde());
-        return JANumberFormatter.fmt(JANumberFormatter.deQuote(montant.toStringFormat()), false, true, false, 2);
-    }
-
-    /**
      * Returns the sectionIdExterne
      * 
      * @return String
@@ -559,7 +549,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                     qrFacture = new ReferenceQR();
                     qrFacture.setSession(getSession());
                     // Initialisation des variables du document
-                    initVariableQR(new FWCurrency(_getMontantApresCompensation()));
+                    initVariableQR(new FWCurrency(_getMontantApresCompensation()), sectionCourante.getSection().getCompteAnnexe().getIdTiers());
 
                     // Génération du document QR
                     qrFacture.initQR(this);

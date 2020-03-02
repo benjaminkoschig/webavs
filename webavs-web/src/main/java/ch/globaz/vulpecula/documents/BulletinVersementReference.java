@@ -49,7 +49,7 @@ public class BulletinVersementReference {
      * Constructeur pour les types BVR 04 sans montant
      *
      * @param session
-     * @param NumeroReference
+     * @param numReference
      * @throws Exception
      */
     public BulletinVersementReference(final BSession session, final NumeroReference numReference) throws Exception {
@@ -60,8 +60,8 @@ public class BulletinVersementReference {
      * Constructeur pour les types BVR 01 avec montant
      *
      * @param session
-     * @param NumeroReference
-     * @param Montant
+     * @param numReference
+     * @param montant
      * @throws Exception
      */
     public BulletinVersementReference(final BSession session, final NumeroReference numReference, final Montant montant)

@@ -14,6 +14,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.i18n.JadeI18n;
 import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.osiris.api.APISection;
+import globaz.osiris.exceptions.CATechnicalException;
 import globaz.pyxis.db.adressecourrier.TIAbstractAdresseData;
 import globaz.pyxis.db.adressecourrier.TIAdresseDataManager;
 import org.apache.commons.lang.StringUtils;
@@ -31,6 +32,8 @@ public class ReferenceQR extends AbstractReference {
     private static final String CODE_PAYS_DEFAUT = "CH";
     private static final String ESPACE = " ";
     private static final String LANGUE_PAR_DEFAUT = "FR";
+
+    private String subReportQR = "QR_FACTURE_TEMPLATE.jasper";
 
     private static final String QR_IBAN = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT,"type.reference.qr.iban");
     private static final String IBAN = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT,"type.reference.iban");
@@ -83,7 +86,7 @@ public class ReferenceQR extends AbstractReference {
     private String debfPays = StringUtils.EMPTY;
     private String typeReference = StringUtils.EMPTY;
     private String communicationNonStructuree = StringUtils.EMPTY;
-    private String trailer = END_OF_PAYMENT;
+    private String trailer = StringUtils.EMPTY;
     private String infoFacture = StringUtils.EMPTY;
     private String pa1Param = StringUtils.EMPTY;
     private String pa2Param = StringUtils.EMPTY;
@@ -126,9 +129,10 @@ public class ReferenceQR extends AbstractReference {
     private void initEnteteQR(FWIDocumentManager document)  {
 
         try {
-            parameters.put(COParameter.P_SUBREPORT_QR, document.getImporter().getImportPath() + "QR_FACTURE_TEMPLATE.jasper");
+            parameters.put(COParameter.P_SUBREPORT_QR, document.getImporter().getImportPath() + subReportQR);
+
             // QR sur current page. Pour le moment on laisse le QR avec toutes les informations
-            parameters.put(COParameter.P_SUBREPORT_QR_CURRENT_PAGE, document.getImporter().getImportPath() + "QR_FACTURE_TEMPLATE.jasper");
+            parameters.put(COParameter.P_SUBREPORT_QR_CURRENT_PAGE, document.getImporter().getImportPath() + subReportQR);
             parameters.put(COParameter.P_TITRE_1, getSession().getApplication().getLabel("QR_RECEPISSE", langueDoc));
             parameters.put(COParameter.P_TITRE_2, getSession().getApplication().getLabel("QR_SECTION_PAIEMENT", langueDoc));
             parameters.put(COParameter.P_POINT_DEPOT, getSession().getApplication().getLabel("QR_POINT_DEPOT", langueDoc));
@@ -229,16 +233,38 @@ public class ReferenceQR extends AbstractReference {
     }
 
     /**
-     * Méthode de génération de la référence QR pour Contentieux
+     * Méthode de génération de la référence QR pour Contentieux depuis la section
      * <p>
      *
      *
      * @param section la section
      */
-    public void genererReferenceQR(APISection section) throws Exception {
-        this.reference = genererNumReference(section.getCompteAnnexe().getIdRole(), section.getCompteAnnexe()
-                .getIdExterneRole(), false, section.getIdTypeSection(), section.getIdExterne(), section
-                .getIdCompteAnnexe());
+    public void genererReferenceQR(APISection section) throws CATechnicalException {
+        genererReferenceQR(section.getCompteAnnexe().getIdRole(), section.getCompteAnnexe().getIdExterneRole(), false, section.getIdTypeSection()
+                , section.getIdExterne(), section.getIdCompteAnnexe(), section.getSolde());
+
+    }
+
+    /**
+     *
+     * Méthode de génération de la référence QR
+     *
+     * @param idRole
+     * @param idExterneRole
+     * @param isPlanPaiement
+     * @param idTypeSection
+     * @param idExterne
+     * @param idCompteAnnexe
+     */
+    public void genererReferenceQR(String idRole, String idExterneRole, Boolean isPlanPaiement, String idTypeSection, String idExterne, String idCompteAnnexe, String solde) throws CATechnicalException{
+
+        try{
+            this.reference = genererNumReference(idRole, idExterneRole , isPlanPaiement, idTypeSection, idExterne, idCompteAnnexe);
+        } catch (Exception e) {
+            throw new CATechnicalException("Erreur à la génération de la référence QR :", e);
+        }
+
+
         if (StringUtils.isEmpty(reference)) {
             this.typeReference = SANS_REF;
         } else {
@@ -246,13 +272,29 @@ public class ReferenceQR extends AbstractReference {
         }
 
         if (JadeStringUtil.isDecimalEmpty(montant)) {
-            montant = section.getSolde();
+            montant = solde;
         }
 
-        if (new FWCurrency(montant).isPositive()) {
-            JABVR bvr = new JABVR(montant, reference, getNoAdherent());
+        genererReference(reference, montant);
 
-            setReference(bvr.get_ligneReference());
+    }
+
+    /**
+     * Génération de la référence
+     *
+     * @param reference
+     * @param montant
+     * @throws CATechnicalException
+     */
+
+    public void genererReference(String reference, String montant) throws CATechnicalException {
+        if (new FWCurrency(montant).isPositive()) {
+            try{
+                JABVR bvr = new JABVR(montant, reference, getNoAdherent());
+                setReference(bvr.get_ligneReference());
+            } catch (Exception e) {
+                throw new CATechnicalException("Erreur lors de la récupération du N° Adhérent :", e);
+            }
         }
     }
 
@@ -683,5 +725,13 @@ public class ReferenceQR extends AbstractReference {
 
     public void setLangueDoc(String langueDoc) {
         this.langueDoc = langueDoc;
+    }
+
+    public String getSubReportQR() {
+        return subReportQR;
+    }
+
+    public void setSubReportQR(String subReportQR) {
+        this.subReportQR = subReportQR;
     }
 }

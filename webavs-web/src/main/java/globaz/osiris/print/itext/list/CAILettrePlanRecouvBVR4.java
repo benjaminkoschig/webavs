@@ -1,5 +1,8 @@
 package globaz.osiris.print.itext.list;
 
+import ch.globaz.common.document.reference.ReferenceQR;
+import ch.globaz.common.properties.CommonProperties;
+import globaz.aquila.print.COParameter;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.framework.printing.itext.exception.FWIException;
 import globaz.framework.printing.itext.fill.FWIImportParametre;
@@ -35,7 +38,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
     private static final long serialVersionUID = 1L;
     private static final String NUMERO_REFERENCE_INFOROM = "0043GCA";
     /** Le nom du modèle */
-    private static final String TEMPLATE_NAME = "CAIEcheancierBVR4";
+    private static final String TEMPLATE_NAME = "CAIEcheancierBVR4_QR";
 
     private ReferenceBVR bvr = null;
     private String centimes;
@@ -118,7 +121,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
     public void createDataSource() throws Exception {
         String compteCADesc = "";
         // Récupération des données
-        CAEcheancePlan echeance = (CAEcheancePlan) currentEntity();
+        echeance = (CAEcheancePlan) currentEntity();
         // Sette la langue selon le tier.
         _setLangueFromTiers(getPlanRecouvrement().getCompteAnnexe().getTiers());
 
@@ -142,7 +145,18 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
             initMontant(echeance);
             // Renseigne les paramètres du document
 
-            fillBVR(echeance);
+            if (CommonProperties.QR_FACTURE.getBooleanValue()) {
+                // -- QR
+                qrFacture = new ReferenceQR();
+                qrFacture.setSession(getSession());
+                // Initialisation des variables du document
+                initVariableQR(new FWCurrency(echeance.getMontant()), getPlanRecouvrement().getCompteAnnexe().getIdTiers());
+
+                // Génération du document QR
+                qrFacture.initQR(this);
+            } else {
+                fillBVR();
+            }
 
             setColumnHeader(1, _getProperty(CADocumentManager.JASP_PROP_BODY_CACLIBELLE, ""));
             setColumnHeader(6, _getProperty(CADocumentManager.JASP_PROP_BODY_CACMONTANT, ""));
@@ -171,7 +185,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
     /**
      * Method _fillBVR.
      */
-    private void fillBVR(CAEcheancePlan echeance) {
+    private void fillBVR() {
         // commencer à écrire les paramètres
         String adresseDebiteur = "";
         try {
@@ -192,6 +206,9 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
         try {
             getBvr().setSession(getSession());
             getBvr().setBVR(echeance);
+
+            // Modification suite à QR-Facture. Choix du footer
+            super.setParametres(COParameter.P_SUBREPORT_QR, getImporter().getImportPath() + "BVR_TEMPLATE.jasper");
 
             this.setParametres(CAILettrePlanRecouvParam.P_ADRESSE, getBvr().getAdresse());
             this.setParametres(CAILettrePlanRecouvParam.P_ADRESSECOPY, getBvr().getAdresse());

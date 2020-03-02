@@ -7,6 +7,7 @@ import globaz.babel.api.ICTListeTextes;
 import globaz.babel.api.ICTTexte;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
+import globaz.globall.util.JACCP;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.musca.itext.FAImpressionFacturation;
 import globaz.osiris.application.CAApplication;
@@ -415,6 +416,17 @@ public abstract class AbstractReference {
      */
     public String getNoAdherent() throws Exception {
         return  getTexteBabel(2, 2);
+    }
+
+    /**
+     * Va chercher le numéro de l'adherent dans Babel
+     *
+     * @author: sel Créé le : 28 nov. 06
+     * @return le N° adherent (ex: 010123451)
+     * @throws Exception
+     */
+    public String getNoAdherentBMS() throws Exception {
+        return getTexteBabel(2, 2);
     }
 
     /**

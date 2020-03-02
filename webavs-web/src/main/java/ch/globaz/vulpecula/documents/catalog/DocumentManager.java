@@ -1,5 +1,13 @@
 package ch.globaz.vulpecula.documents.catalog;
 
+import ch.globaz.common.document.reference.ReferenceQR;
+import ch.globaz.vulpecula.documents.NumeroReferenceFactory;
+import ch.globaz.vulpecula.documents.decompte.DocumentDecompteBVR;
+import ch.globaz.vulpecula.domain.models.common.Montant;
+import ch.globaz.vulpecula.domain.models.common.NumeroReference;
+import ch.globaz.vulpecula.domain.models.decompte.Decompte;
+import ch.globaz.vulpecula.external.models.osiris.TypeSection;
+import ch.globaz.vulpecula.external.models.pyxis.Role;
 import globaz.babel.utils.BabelContainer;
 import globaz.babel.utils.CatalogueText;
 import globaz.caisse.helper.CaisseHelperFactory;
@@ -7,6 +15,8 @@ import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import globaz.caisse.report.helper.ICaisseReportHelper;
 import globaz.framework.printing.itext.FWIDocumentManager;
 import globaz.framework.printing.itext.exception.FWIException;
+import globaz.framework.util.FWCurrency;
+import globaz.framework.util.FWMessage;
 import globaz.globall.db.BApplication;
 import globaz.globall.db.BSession;
 import globaz.globall.db.GlobazJobQueue;
@@ -19,10 +29,9 @@ import globaz.jade.context.JadeThreadActivator;
 import globaz.jade.context.JadeThreadContext;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import globaz.osiris.db.access.recouvrement.CAPlanRecouvrement;
 import net.sf.jasperreports.engine.JRDataSource;
 import ch.globaz.exceptions.ExceptionMessage;
 import ch.globaz.exceptions.GlobazTechnicalException;
@@ -35,15 +44,15 @@ import ch.globaz.vulpecula.util.I18NUtil;
  * Classe abstraite permettant la génération de document iText
  * 
  * <p>
- * Dans le cas où la gestion de catalogues babel est nécessaire, il appeler la méthode {@link #initCataloguesTextes()}.
+ * Dans le cas où la gestion de catalogues babel est nécessaire, il appeler la méthode .
  * 
  * <p>
  * La classe générique utilisée doit être serializable.
  * <p>
  * La classe concrète étendant cette classe doit implémenter deux constructeurs obligatoirement :
  * <ul>
- * <li>{@link #DocumentManager()} -> A ne pas utiliser mais nécessaire pour le serveur de job
- * <li>{@link #DocumentManager(List, String, String)} -> A utiliser pour créer un processus
+ * <li> -> A ne pas utiliser mais nécessaire pour le serveur de job
+ * <li> -> A utiliser pour créer un processus
  * </ul>
  * 
  * <p>
@@ -70,6 +79,10 @@ public abstract class DocumentManager<T extends Serializable> extends FWIDocumen
 
     private CatalogueText catalogueText;
     private BabelContainer babelContainer;
+
+    // Ajout pour QR Facture
+    protected ReferenceQR qrFacture = null;
+    protected TypeSection typeSection = TypeSection.BULLETIN_NEUTRE;
 
     private T element;
 
@@ -125,7 +138,7 @@ public abstract class DocumentManager<T extends Serializable> extends FWIDocumen
     /**
      * Remplissage du formulaire
      * Cette méthode doit contenir EXCLUSIVEMENT des appels à {@link #setParametres(Object, Object)} et
-     * {@link #getTexte(CatalogueText, int, int)}
+     *
      */
     public abstract void fillFields() throws Exception;
 
@@ -158,7 +171,8 @@ public abstract class DocumentManager<T extends Serializable> extends FWIDocumen
     /**
      * Retourne le texte du catalogue définit pour une position, un niveau et une langue
      * 
-     * @param codeIsoLangue
+     * @param niveau
+     * @param position
      * @return le texte traduit
      * @throws Exception
      */
@@ -167,7 +181,7 @@ public abstract class DocumentManager<T extends Serializable> extends FWIDocumen
     }
 
     /**
-     * @param langue
+     * @param codeLangue
      * @return le CatalogueText définit pour cette langue
      */
     private CatalogueText getCatalogueTextForLangue(CodeLangue codeLangue) {
@@ -215,9 +229,7 @@ public abstract class DocumentManager<T extends Serializable> extends FWIDocumen
     /**
      * Définit la casacade d'adresses suivante : Domicile - Courrier.
      * Force l'adresse, le user, le nom du collaborateur et le téléphone du bean passé en paramètre.
-     * 
-     * @param idTiers : idTiers permettant de retrouver l'adresse. obligatoire
-     * @param bean : bean de l'entete. obligatoire
+     *
      * @param codeLangue : langue du document. obligatoire
      * @throws NullPointerException
      */
@@ -368,7 +380,7 @@ public abstract class DocumentManager<T extends Serializable> extends FWIDocumen
     }
 
     /**
-     * @param langue
+     * @param codeLangue
      * @return le CatalogueText définit pour cette langue
      */
     private CatalogueText getCatalogueText(CodeLangue codeLangue) {
@@ -465,5 +477,58 @@ public abstract class DocumentManager<T extends Serializable> extends FWIDocumen
         }
 
         return messageFormat.toString();
+    }
+
+    // Initialisation des variables QR
+    public void initVariableQR(Decompte decompte) {
+
+        qrFacture.setLangueDoc(getLangue());
+        qrFacture.setMonnaie(qrFacture.DEVISE_DEFAUT);
+
+        Montant montant = decompte.getMontantContributionTotal();
+
+        if (montant.isNegative()) {
+            qrFacture.setMontant("XXXXXXXXXXXXXXX.XX");
+        } else {
+            qrFacture.setMontant(Objects.isNull(montant)? "" : montant.toString());
+        }
+
+
+        try {
+            qrFacture.recupererIban();
+            if (!qrFacture.genererAdresseDebiteur(decompte.getIdTiers())) {
+                // si l'adresse n'est pas trouvé en DB, alors chargement d'une adresse Combiné
+                qrFacture.setDebfAdressTyp(ReferenceQR.COMBINE);
+
+                qrFacture.setDebfRueOuLigneAdresse1(decompte.getEmployeur().getAdressePrincipale().toString());
+            }
+
+            // Création du numRef
+            NumeroReference numRef = NumeroReferenceFactory.createNumeroReference(Role.AFFILIE_PARITAIRE, decompte
+                    .getEmployeur().getAffilieNumero(), typeSection, decompte.getNumeroDecompte());
+
+            qrFacture.genererReference(decompte.getMontantContributionTotal().toString(), numRef.getValue());
+
+
+            // Il n'existe pas pour l'heure actuel d'adresse de créditeur en DB.
+            // Elle est récupérée depuis le catalogue de texte au format Combinée
+            qrFacture.genererCreAdresse();
+            //qrFacture.setDebfRueOuLigneAdresse1(getAdresseDestinataire());
+        } catch (Exception e) {
+            getMemoryLog().logMessage(
+                    "Erreur lors de recherche des élements de la QR-Facture : " + e.getMessage(),
+                    FWMessage.AVERTISSEMENT, this.getClass().getName());
+        }
+
+
+    }
+
+    /**
+     * @return La langue du document.
+     * Pas d'implémentation de langue, return "FR" par défaut
+     *
+     */
+    protected String getLangue() {
+        return getCodeLangue().getCodeIsoLangue().toUpperCase();
     }
 }
