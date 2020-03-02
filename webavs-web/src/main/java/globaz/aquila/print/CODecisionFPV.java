@@ -172,13 +172,6 @@ public class CODecisionFPV extends CODocumentManager {
         }
     }
 
-    /**
-     * @return l'adresse définie dans la section sinon getAdresseString(destinataireDocument)
-     * @throws Exception
-     */
-//    private String getAdresseDestinataire() throws Exception {
-//        return getAdressePrincipale(destinataireDocument);
-//    }
 
     /**
      * Renvoie la référence BVR.

@@ -46,9 +46,9 @@ public class CO03ARetraitOpposition extends CODocumentManager {
     /**
      * Crée une nouvelle instance de la classe CO03ARetraitOpposition1.
      * 
-     * @throws Exception
+     * @throws FWIException
      */
-    public CO03ARetraitOpposition() throws Exception {
+    public CO03ARetraitOpposition() throws FWIException {
     }
 
     /**
@@ -257,7 +257,7 @@ public class CO03ARetraitOpposition extends CODocumentManager {
      * @return
      */
     private String getDonnees() {
-        StringBuffer donnees = new StringBuffer("");
+        StringBuilder donnees = new StringBuilder("");
         // destinataire est l'affilie
         IntTiers affilie = curContentieux.getCompteAnnexe().getTiers();
         donnees.append(curContentieux.getSection().getIdExterne());
@@ -278,7 +278,7 @@ public class CO03ARetraitOpposition extends CODocumentManager {
      * @return
      */
     private String getLibelle() {
-        StringBuffer libelle = new StringBuffer("");
+        StringBuilder libelle = new StringBuilder("");
         libelle.append(getSession().getLabel("IMPRIMER_JOURNAL_NUM_SECTION"));
         libelle.append("\n");
         libelle.append(getSession().getLabel("IMPRIMER_JOURNAL_NUM_AFFILIE"));

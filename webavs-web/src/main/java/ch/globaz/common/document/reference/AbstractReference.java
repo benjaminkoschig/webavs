@@ -7,7 +7,6 @@ import globaz.babel.api.ICTListeTextes;
 import globaz.babel.api.ICTTexte;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
-import globaz.globall.util.JACCP;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.musca.itext.FAImpressionFacturation;
 import globaz.osiris.application.CAApplication;

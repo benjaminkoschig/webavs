@@ -88,7 +88,7 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
     /**
      * Modele Jasper
      */
-    private static final String TEMPLATE_NAME = "CO_00C_SOMMATION_AF_CAP_CGAS";
+    private static final String TEMPLATE_NAME = "CO_00C_SOMMATION_AF_CAP_CGAS_QR";
     /**
      * Le nom du modèle Jasper pour les voies de droits
      */
@@ -269,14 +269,6 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
             this.setParametres(COParameter.P_TEXTVD, JadeStringUtil.isBlank(body.toString()) ? " " : body.toString());
         }
     }
-
-    /**
-     * @return l'adresse définie dans la section sinon getAdresseString(destinataireDocument)
-     * @throws Exception
-     */
-//    private String getAdresseDestinataire() throws Exception {
-//        return getAdressePrincipale(destinataireDocument);
-//    }
 
     /**
      * Renvoie la référence BVR.
