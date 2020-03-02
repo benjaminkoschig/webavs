@@ -1,24 +1,27 @@
 package ch.globaz.common.document.reference;
 
 import ch.globaz.common.exceptions.CommonTechnicalException;
-import globaz.aquila.print.COParameter;
 import ch.globaz.common.util.GenerationQRCode;
+import globaz.aquila.print.COParameter;
 import globaz.framework.printing.itext.FWIDocumentManager;
 import globaz.framework.printing.itext.fill.FWIImportParametre;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BManager;
-import globaz.globall.db.BSession;
 import globaz.globall.util.JABVR;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.i18n.JadeI18n;
 import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.osiris.api.APISection;
 import globaz.pyxis.db.adressecourrier.TIAbstractAdresseData;
 import globaz.pyxis.db.adressecourrier.TIAdresseDataManager;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 
 public class ReferenceQR extends AbstractReference {
@@ -27,22 +30,18 @@ public class ReferenceQR extends AbstractReference {
     private static final String CHAR_FIN_LIGNE = "\r\n";
     private static final String CODE_PAYS_DEFAUT = "CH";
     private static final String ESPACE = " ";
+    private static final String LANGUE_PAR_DEFAUT = "FR";
 
-    // Variables à externaliser
-    private static final String QR_IBAN = "QRR";
-    private static final String IBAN = "SCOR";
-    private static final String SANS_REF = "NON";
+    private static final String QR_IBAN = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT,"type.reference.qr.iban");
+    private static final String IBAN = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT,"type.reference.iban");
+    private static final String SANS_REF = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT,"type.sans.reference");
+    private static final String END_OF_PAYMENT = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT,"end.of.payment");
+    private static final String QR_TYPE = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT,"type.qr");
+    private static final String DEFAULT_VERSION = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT,"default.version");
+    private static final String CODING_TYPE= JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT,"coding.type");
+    public static final String COMBINE = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT,"adresse.combine");
+    public static final String STRUCTURE = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT,"adresse.structure");
 
-    // Caractère de fin de paiement. Valeur fixe
-    private static final String END_OF_PAYMENT = "EPD";
-
-    private static final String QR_TYPE = "SPC";
-    private static final String DEFAULT_VERSION = "0200";
-    private static final String CODING_TYPE= "1";
-
-    public static final String COMBINE = "K";
-    public static final String STRUCTURE = "S";
-    // ---------------------- //
     private String adresseCopy = StringUtils.EMPTY;
     private String adresseDebiteur = StringUtils.EMPTY;
     private String compte = StringUtils.EMPTY;
@@ -84,7 +83,7 @@ public class ReferenceQR extends AbstractReference {
     private String debfPays = StringUtils.EMPTY;
     private String typeReference = StringUtils.EMPTY;
     private String communicationNonStructuree = StringUtils.EMPTY;
-    private String trailer = StringUtils.EMPTY;
+    private String trailer = END_OF_PAYMENT;
     private String infoFacture = StringUtils.EMPTY;
     private String pa1Param = StringUtils.EMPTY;
     private String pa2Param = StringUtils.EMPTY;
@@ -98,25 +97,18 @@ public class ReferenceQR extends AbstractReference {
     private String qRCode;
 
     // Param de langue du document
-    private String langueDoc;
+    private String langueDoc = LANGUE_PAR_DEFAUT;
 
     public ReferenceQR() {
         super();
-
-        // Init Trailer. Valeur fixe = EPD
-        trailer = END_OF_PAYMENT;
-
-        // Init langue par défaut
-        langueDoc = "FR";
     }
 
-
     public FWIDocumentManager initQR(FWIDocumentManager document) {
+
         // Initialisation des entêtes de la QR-Facture
         initEnteteQR(document);
 
         // Initialisation des params de la QR-Facture
-
          initParamQR();
 
          for (Map.Entry element : parameters.entrySet()){
@@ -151,10 +143,6 @@ public class ReferenceQR extends AbstractReference {
         } catch (Exception e) {
             throw new CommonTechnicalException ("Problème à l'initialisation des entêtes QR : ", e);
         }
-
-
-
-
     }
 
     /**

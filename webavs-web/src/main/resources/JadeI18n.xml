@@ -17,6 +17,9 @@
 		<provider name="commonimplprovider" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
 			<filename>commonbusinessmessages.properties</filename>
 		</provider>
+		<provider name="qrcodeprovider" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>qrCode.properties</filename>
+		</provider>
 		
 		<!-- PC -->
 		<provider name="pegasusimplprovider" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
