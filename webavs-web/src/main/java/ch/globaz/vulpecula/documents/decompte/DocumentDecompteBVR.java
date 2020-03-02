@@ -88,7 +88,7 @@ public class DocumentDecompteBVR extends VulpeculaDocumentManager<DecompteContai
 
         setParametres("P_COMMENTAIRES", getTexte(2, 1));
         // On remplace les paramètres du catalogue de texte par les données du décompte
-        HashMap<String, String> parametres = new HashMap<String, String>();
+        HashMap<String, String> parametres = new HashMap<>();
         parametres.put("noDecompte", decompte.getId());
         parametres.put("periode", decompte.getPeriode().toString());
 

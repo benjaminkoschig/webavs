@@ -98,7 +98,7 @@ public class CATaxation extends CADocumentContentieux {
     }
 
     public String getConcerne() {
-        StringBuffer concerne = new StringBuffer("");
+        StringBuilder concerne = new StringBuilder("");
         dumpNiveau(1, concerne, "\n");
         return this.formatMessage(concerne, new Object[] { getSection().getIdExterne(),
                 getSection().getCompteAnnexe().getIdExterneRole(), getSection().getDescription() });
@@ -196,7 +196,7 @@ public class CATaxation extends CADocumentContentieux {
     }
 
     public String getSignature() {
-        StringBuffer signature = new StringBuffer("");
+        StringBuilder signature = new StringBuilder("");
         dumpNiveau(6, signature, "\n");
         return signature.toString();
     }
@@ -228,7 +228,7 @@ public class CATaxation extends CADocumentContentieux {
     }
 
     public String getTexteDebut() {
-        StringBuffer corps = new StringBuffer("");
+        StringBuilder corps = new StringBuilder("");
         dumpNiveau(3, corps, "\n\n");
         CAEvenementContentieux evSommation;
         try {
@@ -243,7 +243,7 @@ public class CATaxation extends CADocumentContentieux {
     }
 
     public String getTexteFin() {
-        StringBuffer texteFin = new StringBuffer("");
+        StringBuilder texteFin = new StringBuilder("");
         dumpNiveau(5, texteFin, "\n\n");
         return this.formatMessage(texteFin, new Object[] { "\n", getTiers().getPolitesse() });
 

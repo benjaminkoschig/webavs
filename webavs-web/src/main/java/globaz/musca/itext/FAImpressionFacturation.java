@@ -186,7 +186,7 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
      */
     public final String getTextStrechedByChar(String textString, String stretchChar) {
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < textString.length(); i++) {
             sb.append(textString.charAt(i));
             sb.append(stretchChar);
@@ -205,7 +205,7 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
      */
     public final String getTextWithoutDelimiter(String textString, String delim) {
         StringTokenizer st = new java.util.StringTokenizer(textString, delim);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         while (st.hasMoreTokens()) {
             sb.append(st.nextToken());
         }
@@ -329,7 +329,6 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
             // La monnaie n'est pas géré dans le module Facturation. Par défaut nous mettrons CHF
             qrFacture.setMonnaie(qrFacture.DEVISE_DEFAUT);
 
-            //qrFacture.setCrePays(qrFacture.getCodePays());
             qrFacture.recupererIban();
             if (!qrFacture.genererAdresseDebiteur(currentDataSource.getEnteteFacture().getIdTiers())) {
                 // si l'adresse n'est pas trouvé en DB, alors chargement d'une adresse Combiné
@@ -342,7 +341,6 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
             // Il n'existe pas pour l'heure actuel d'adresse de créditeur en DB.
             // Elle est récupérée depuis le catalogue de texte au format Combinée
             qrFacture.genererCreAdresse();
-            //qrFacture.setDebfRueOuLigneAdresse1(getAdresseDestinataire());
         } catch (Exception e) {
             getMemoryLog().logMessage(
                     "Erreur lors de recherche des élements de la sommation : " + e.getMessage(),

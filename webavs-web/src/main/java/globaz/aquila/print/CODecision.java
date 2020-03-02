@@ -71,7 +71,7 @@ public class CODecision extends CODocumentManager {
      * @throws Exception
      *             DOCUMENT ME!
      */
-    public CODecision() throws Exception {
+    public CODecision() {
         super();
     }
 
@@ -450,11 +450,7 @@ public class CODecision extends CODocumentManager {
             case STATE_LETTRE:
                 // on vient de créer la lettre, on va créer les voies de droits
                 state = CODecision.STATE_VD;
-                if (getCatalogueTextesUtil().isExistDocument(getParent(), CODecision.TITLE_VOIES_DE_DROIT)) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return getCatalogueTextesUtil().isExistDocument(getParent(), CODecision.TITLE_VOIES_DE_DROIT);
             default:
                 // on regarder s'il y a encore des contentieux à traiter.
                 state = CODecision.STATE_IDLE;

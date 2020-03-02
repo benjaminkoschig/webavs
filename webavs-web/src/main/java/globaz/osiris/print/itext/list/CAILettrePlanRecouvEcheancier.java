@@ -233,8 +233,8 @@ public class CAILettrePlanRecouvEcheancier extends CADocumentManager {
      * @param paragraphe
      * @return
      */
-    private String format(StringBuffer paragraphe) {
-        StringBuffer res = new StringBuffer("");
+    private String format(StringBuilder paragraphe) {
+        StringBuilder res = new StringBuilder("");
         IntTiers affilie = getPlanRecouvrement().getCompteAnnexe().getTiers();
         try {
             for (int i = 0; i < paragraphe.length(); i++) {

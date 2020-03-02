@@ -230,7 +230,7 @@ public class DocumentRectificatif extends VulpeculaDocumentManager<Decompte> {
         return sb.toString();
     }
 
-    private String getMontantTotal() throws Exception {
+    private String getMontantTotal() {
         Decompte decompte = getCurrentElement();
 
         return JANumberFormatter.format(decompte.getMontantContributionTotal().getValue(), 0.05, 2,
@@ -240,7 +240,7 @@ public class DocumentRectificatif extends VulpeculaDocumentManager<Decompte> {
     private String getParagraphe3() throws Exception {
         Decompte decompte = getCurrentElement();
 
-        Map<String, String> parametres = new HashMap<String, String>();
+        Map<String, String> parametres = new HashMap<>();
         parametres.put(DocumentRectificatif.CTPARAMETRE_MONTANT,
                 JANumberFormatter.format(decompte.getMontantControle().getValue(), 0.05, 2, JANumberFormatter.NEAR));
         parametres.put(DocumentRectificatif.CTPARAMETRE_MONTANT_DU, JANumberFormatter.format(decompte

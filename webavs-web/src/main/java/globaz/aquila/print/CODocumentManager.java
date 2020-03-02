@@ -218,7 +218,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
         /**
          * @see CAExtraitCompteManager#getDescription(CAExtraitCompte, BTransaction, String, boolean)
          */
-        public String getDescription() throws Exception {
+        public String getDescription() {
             if (description == null) {
                 description = getDescriptionExtraitCompte(extraitCompte);
             }
@@ -434,7 +434,6 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     public CODocumentManager() {
         super();
         catalogueTextesUtil = new COCatalogueTextesService();
-        // previsionnel = Boolean.FALSE;
         nouveauContentieux = Boolean.FALSE;
         historiqueService = COServiceLocator.getHistoriqueService();
         tiersService = COServiceLocator.getTiersService();
@@ -461,7 +460,6 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     public CODocumentManager(BSession session, String fileName) throws FWIException {
         super(session, COApplication.APPLICATION_AQUILA_ROOT, fileName);
         catalogueTextesUtil = new COCatalogueTextesService();
-        // previsionnel = Boolean.FALSE;
         nouveauContentieux = Boolean.FALSE;
         historiqueService = COServiceLocator.getHistoriqueService();
         tiersService = COServiceLocator.getTiersService();
@@ -1341,7 +1339,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
      * @throws Exception
      */
     protected String getAdresseInLine(IntTiers affilie, String separator) throws Exception {
-        StringBuffer adresse = new StringBuffer("");
+        StringBuilder adresse = new StringBuilder("");
         TIAdresseDataSource adresseDS = getAdresseDataSourcePrincipalEnvoiOP(affilie);
 
         adresse.append(addInfo(adresseDS.ligne1, " "));
@@ -1506,7 +1504,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
                     || extraitCompte.getIdTypeOperation().equalsIgnoreCase(APIOperation.CAAUXILIAIRE)) {
                 return extraitCompte.getRubrique().getDescription(getLangue());
             } else {
-                StringBuffer buffer = new StringBuffer(getTypeOperationDescriptionFromCache(
+                StringBuilder buffer = new StringBuilder(getTypeOperationDescriptionFromCache(
                         extraitCompte.getIdTypeOperation(), getLangue()));
                 buffer.append(" ");
                 // TODO sel : ne devrait pas utiliser texte
@@ -2113,7 +2111,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
      * @return la source avec des \n tous les nbCharPerLine
      */
     protected String splitOnXChar(String source, int nbCharPerLine) {
-        StringBuffer resultat = new StringBuffer("");
+        StringBuilder resultat = new StringBuilder("");
         String[] lines = source.split("\n");
 
         // Parcour toutes les lignes de la source

@@ -2,7 +2,6 @@ package ch.globaz.vulpecula.documents.catalog;
 
 import ch.globaz.common.document.reference.ReferenceQR;
 import ch.globaz.vulpecula.documents.NumeroReferenceFactory;
-import ch.globaz.vulpecula.documents.decompte.DocumentDecompteBVR;
 import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.common.NumeroReference;
 import ch.globaz.vulpecula.domain.models.decompte.Decompte;
@@ -15,7 +14,6 @@ import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import globaz.caisse.report.helper.ICaisseReportHelper;
 import globaz.framework.printing.itext.FWIDocumentManager;
 import globaz.framework.printing.itext.exception.FWIException;
-import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BApplication;
 import globaz.globall.db.BSession;
@@ -30,8 +28,6 @@ import globaz.jade.context.JadeThreadContext;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import java.io.Serializable;
 import java.util.*;
-
-import globaz.osiris.db.access.recouvrement.CAPlanRecouvrement;
 import net.sf.jasperreports.engine.JRDataSource;
 import ch.globaz.exceptions.ExceptionMessage;
 import ch.globaz.exceptions.GlobazTechnicalException;
@@ -435,16 +431,9 @@ public abstract class DocumentManager<T extends Serializable> extends FWIDocumen
      */
     public static String formatMessage(String message, String[] args) {
 
-        StringBuffer buffer = new StringBuffer(message);
+        StringBuilder buffer = new StringBuilder(message);
 
         // doubler les guillemets simples si necessaire
-        // for (int idChar = 0; idChar < buffer.length(); ++idChar) {
-        // if ((buffer.charAt(idChar) == '\'')
-        // && ((idChar == (buffer.length() - 1)) || (buffer.charAt(idChar + 1) != '\''))) {
-        // buffer.insert(idChar, '\'');
-        // ++idChar;
-        // }
-        // }
         // remplacer les arguments null par chaine vide
         for (int idArg = 0; idArg < args.length; ++idArg) {
             if (args[idArg] == null) {
@@ -453,7 +442,7 @@ public abstract class DocumentManager<T extends Serializable> extends FWIDocumen
         }
 
         // Remplace les {x} par les args[x]
-        StringBuffer messageFormat = new StringBuffer();
+        StringBuilder messageFormat = new StringBuilder();
         boolean isTexte = true;
         String param = "";
         for (int i = 0; i < buffer.length(); i++) {
@@ -513,7 +502,6 @@ public abstract class DocumentManager<T extends Serializable> extends FWIDocumen
             // Il n'existe pas pour l'heure actuel d'adresse de créditeur en DB.
             // Elle est récupérée depuis le catalogue de texte au format Combinée
             qrFacture.genererCreAdresse();
-            //qrFacture.setDebfRueOuLigneAdresse1(getAdresseDestinataire());
         } catch (Exception e) {
             getMemoryLog().logMessage(
                     "Erreur lors de recherche des élements de la QR-Facture : " + e.getMessage(),

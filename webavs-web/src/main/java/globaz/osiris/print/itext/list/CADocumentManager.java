@@ -94,7 +94,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
      * @see MessageFormat
      */
     public static final String formatMessage(String message, Object[] args) {
-        StringBuffer buffer = new StringBuffer(message);
+        StringBuilder buffer = new StringBuilder(message);
 
         // doubler les guillemets simples si necessaire
         for (int idChar = 0; idChar < buffer.length(); ++idChar) {
@@ -267,7 +267,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
      * @return La valeur de la propriété
      */
     protected String _getProperty(String property, String additionalValue) {
-        StringBuffer buffer = new StringBuffer("");
+        StringBuilder buffer = new StringBuilder("");
         if ((!JadeStringUtil.isBlank(property))
                 && (getTemplateProperty(getDocumentInfo(), property + _getLangue()) != null)) {
             buffer.append(getTemplateProperty(getDocumentInfo(), property + _getLangue()));
@@ -364,11 +364,6 @@ public abstract class CADocumentManager extends FWIDocumentManager {
                 getDocumentInfo().setArchiveDocument(true);
             }
         }
-        // if (annonceAssure != null) {
-        // headerBean.setNoAvs(annonceAssure.getNumeroAvs());
-        // } else {
-        // headerBean.setNoAvs("");
-        // }
         if (hasHeader) {
             caisseReportHelper.addHeaderParameters(this, headerBean);
         }
@@ -380,68 +375,6 @@ public abstract class CADocumentManager extends FWIDocumentManager {
         }
     }
 
-    /**
-     * @return La valeur courante de la propriété
-     */
-    // public HEExtraitAnnonceAssureBean getAnnonceAssure() {
-    // return annonceAssure;
-    // }
-    /**
-     * @param user
-     *            La nouvelle valeur de la propriété
-     */
-    // public void setAnnonceAssure(HEExtraitAnnonceAssureBean bean) {
-    // annonceAssure = bean;
-    // }
-    /**
-     * Retourne un String représentant l'adresse sur plusieurs lignes
-     * 
-     * @param info
-     *            L'info d'où vient l'adresse
-     * @return La représentation de l'adresse
-     */
-    // protected String _getAdresseString(HEInfos adresse) {
-    // StringBuffer adresseString = new StringBuffer();
-    // adresseString.append(annonceAssure.getNomPrenom() + "\n\n");
-    // adresseString.append(adresse.getLibInfo());
-    // return adresseString.toString();
-    // }
-    // public String getAdressePrincipale() throws Exception {
-    // //l'adresse de paiement est l'adresse de courrier
-    // String result = getAdresseCourrier();
-    // if (!JadeStringUtil.isBlank(result)) {
-    // return result;
-    // } else
-    // return getAdresseDomicile();
-    // }
-    // /** ALD Ajout bulletins de soldes : 2004.08.26
-    // * Retourne l'adresse de domicile du tiers
-    // * Ex: Soit le n° avs, le n° affilié ou le n° de contribuable
-    // */
-    // public String getAdresseDomicile() throws Exception {
-    // // Récupérer le tiers
-    // IntTiers tiers = compteAnnexe.getTiers();
-    // if (tiers == null)
-    // return "";
-    // else
-    // return tiers.getAdresseAsString(TIAvoirAdresse.CS_DOMICILE,
-    // globaz.pyxis.db.divers.TIApplication.CS_DEFAUT,
-    // JACalendar.today().toStr("."));
-    // }
-    // /** ALD Ajout bulletins de soldes : 2004.08.26
-    // * Retourne l'adresse de domicile du tiers
-    // * Ex: Soit le n° avs, le n° affilié ou le n° de contribuable
-    // */
-    // public String getAdresseCourrier() throws Exception {
-    // // Récupérer le tiers
-    // IntTiers tiers = compteAnnexe.getTiers();
-    // if (tiers == null)
-    // return "";
-    // else
-    // return tiers.getAdresseAsString(TIAvoirAdresse.CS_COURRIER,
-    // globaz.pyxis.db.divers.TIApplication.CS_FACTURATION,
-    // JACalendar.today().toStr("."));
-    // }
 
     /**
      * Spécifie la langue du document
@@ -561,7 +494,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
      * @param paraSep
      *            Chaine de séparation entre les positions du niveau.
      */
-    protected void dumpNiveau(int niveau, StringBuffer out, String paraSep) {
+    protected void dumpNiveau(int niveau, StringBuilder out, String paraSep) {
         try {
             for (Iterator paraIter = loadCatalogue().getTextes(niveau).iterator(); paraIter.hasNext();) {
                 if (out.length() > 0) {
@@ -608,7 +541,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
      * @return le message formatté
      * @see MessageFormat
      */
-    protected String formatMessage(StringBuffer message, Object[] args) {
+    protected String formatMessage(StringBuilder message, Object[] args) {
         return CADocumentManager.formatMessage(message.toString(), args);
     }
 
@@ -667,30 +600,6 @@ public abstract class CADocumentManager extends FWIDocumentManager {
         return numeroReferenceInforom;
     }
 
-    /**
-     * Recherche de l'info de l'assuré
-     * 
-     * @param String
-     *            idArc Id de l'annonce
-     * @param String
-     *            systemCode
-     * @return info de type HEInfos
-     */
-    // public HEInfos getInfoAssure(String idArc, String systemCode) throws
-    // Exception {
-    // HEInfos info = null;
-    // // Recherche de l'info de l'assuré
-    // HEInfosManager infosManager = new HEInfosManager();
-    // infosManager.setSession(getSession());
-    // infosManager.setForIdArc(idArc);
-    // infosManager.setForTypeInfo(systemCode);
-    // infosManager.find();
-    // if (infosManager.size() > 0) {
-    // info = ((HEInfos) infosManager.getEntity(0));
-    // return info;
-    // }
-    // return new HEInfos();
-    // }
 
     /**
      * Récupère les textes du catalogue de texte
@@ -699,8 +608,8 @@ public abstract class CADocumentManager extends FWIDocumentManager {
      * @param position
      * @return
      */
-    protected StringBuffer getTexte(int niveau, int position) {
-        StringBuffer resString = new StringBuffer("");
+    protected StringBuilder getTexte(int niveau, int position) {
+        StringBuilder resString = new StringBuilder("");
         try {
             ICTListeTextes listeTextes = loadCatalogue().getTextes(niveau);
             resString.append(listeTextes.getTexte(position));
@@ -887,7 +796,6 @@ public abstract class CADocumentManager extends FWIDocumentManager {
 
 
         try {
-            //qrFacture.setCrePays(qrFacture.getCodePays());
             qrFacture.recupererIban();
             if (!qrFacture.genererAdresseDebiteur(idTier)) {
                 // si l'adresse n'est pas trouvé en DB, alors chargement d'une adresse Combiné
@@ -903,7 +811,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
                 String idExterneRole = plan.getCompteAnnexe().getIdExterneRole();
                 String idPlan = plan.getIdPlanRecouvrement();
 
-                qrFacture.genererReferenceQR(idRole, idExterneRole, true, "", idPlan, plan.getIdCompteAnnexe(), montantTotal.toString());
+                qrFacture.genererReferenceQR(idRole, idExterneRole, true, "", idPlan, plan.getIdCompteAnnexe(), Objects.isNull(montantTotal)? "" : montantTotal.toString());
             } else {
                 qrFacture.genererReferenceQR(sectionCourante.getSection());
             }
@@ -912,7 +820,6 @@ public abstract class CADocumentManager extends FWIDocumentManager {
             // Il n'existe pas pour l'heure actuel d'adresse de créditeur en DB.
             // Elle est récupérée depuis le catalogue de texte au format Combinée
             qrFacture.genererCreAdresse();
-            //qrFacture.setDebfRueOuLigneAdresse1(getAdresseDestinataire());
         } catch (Exception e) {
             getMemoryLog().logMessage(
                     "Erreur lors de recherche des élements de la sommation : " + e.getMessage(),

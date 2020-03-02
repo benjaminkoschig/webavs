@@ -48,7 +48,7 @@ public class CO04ReceptionPaiement extends CODocumentManager {
      * 
      * @throws Exception
      */
-    public CO04ReceptionPaiement() throws Exception {
+    public CO04ReceptionPaiement() {
     }
 
     /**
@@ -76,7 +76,7 @@ public class CO04ReceptionPaiement extends CODocumentManager {
         }
 
         for (CAInteretManuelVisualComponent im : getInteretCalcule()) {
-            Map<String, String> f = new HashMap<String, String>();
+            Map<String, String> f = new HashMap<>();
             f.put(COParameter.F1, im.getInteretMoratoire().getRubrique().getDescription(getLangue()));
             f.put(COParameter.F2, formatMontant(im.montantInteretTotalCalcule()));
             f.put(COParameter.F3, getCatalogueTextesUtil().texte(getParent(), 3, 2));
@@ -156,7 +156,7 @@ public class CO04ReceptionPaiement extends CODocumentManager {
             this.setParametres(COParameter.P_BASE, formatMontant(infoSection[0]));
             this.setParametres(COParameter.P_DEVISE, getCatalogueTextesUtil().texte(getParent(), 3, 2));
 
-            List<Map<String, String>> dataSource = new ArrayList<Map<String, String>>();
+            List<Map<String, String>> dataSource = new ArrayList<>();
 
             dataSource.add(montantFactureInitiale(infoSection));
 
@@ -289,7 +289,7 @@ public class CO04ReceptionPaiement extends CODocumentManager {
      * @return
      */
     private HashMap<String, String> montantFactureInitiale(String[] infoSection) {
-        HashMap<String, String> fields = new HashMap<String, String>();
+        HashMap<String, String> fields = new HashMap<>();
         fields.put(COParameter.F1, curContentieux.getSection().getDescription(getLangue()));
         fields.put(COParameter.F2, formatMontant(infoSection[0]));
         fields.put(COParameter.F3, getCatalogueTextesUtil().texte(getParent(), 3, 2));

@@ -81,8 +81,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
     /**
      * Modele Jasper
      */
-    private static final String TEMPLATE_NAME = "CO_00C_SOMMATION_AF";
-    private static final String NEW_TEMPLATE_NAME = "CO_00C_SOMMATION_AF_QR";
+    private static final String TEMPLATE_NAME = "CO_00C_SOMMATION_AF_QR";
 
     /**
      * Le nom du modèle Jasper pour les voies de droits
@@ -107,7 +106,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
      *
      * @throws Exception
      */
-    public CO00CSommationPaiement() throws Exception {
+    public CO00CSommationPaiement() {
         super();
     }
 
@@ -170,7 +169,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
         super.beforeExecuteReport();
 
         // Si l'on veut une QR Facture, dans ce cas, on va utiliser le deuxième template.
-        setTemplateFile(CO00CSommationPaiement.NEW_TEMPLATE_NAME);
+        setTemplateFile(CO00CSommationPaiement.TEMPLATE_NAME);
         setDocumentTitle(getSession().getLabel("AQUILA_SOMMATION"));
         setNumeroReferenceInforom(CO00CSommationPaiement.NUMERO_REFERENCE_INFOROM);
 
@@ -242,9 +241,8 @@ public class CO00CSommationPaiement extends CODocumentManager {
     /**
      * DataSource pour les voies de droits
      *
-     * @throws Exception
      */
-    private void createDataSourceVoiesDroit() throws Exception {
+    private void createDataSourceVoiesDroit() {
         getCatalogueTextesUtil().setNomDocument(CO00CSommationPaiement.TITLE_VOIES_DE_DROIT);
 
         if (getCatalogueTextesUtil().isExistDocument(getParent(), CO00CSommationPaiement.TITLE_VOIES_DE_DROIT)) {
@@ -316,7 +314,9 @@ public class CO00CSommationPaiement extends CODocumentManager {
         try {
             adresseDebiteur = getAdresseDestinataire();
         } catch (Exception e) {
-            e.printStackTrace();
+            getMemoryLog().logMessage(
+                    "Erreur lors de la recherche de l'adresse destinataire : " + e.getMessage(),
+                    FWMessage.AVERTISSEMENT, this.getClass().getName());
         }
         try {
             // Modification suite à QR-Facture. Choix du footer
@@ -336,19 +336,6 @@ public class CO00CSommationPaiement extends CODocumentManager {
                     "Erreur lors de recherche du texte sur le bvr de la sommation : " + e1.getMessage(),
                     FWMessage.AVERTISSEMENT, this.getClass().getName());
         }
-    }
-
-    /**
-     * BVR
-     *
-     * @param montantTotal
-     * @throws Exception
-     */
-    private void initValueQR(FWCurrency montantTotal) throws Exception {
-        // -- QR
-        qrFacture.setSession(getSession());
-
-
     }
 
     /**
@@ -394,8 +381,8 @@ public class CO00CSommationPaiement extends CODocumentManager {
     private FWCurrency initDetail(Object key) throws Exception {
         // -- boucle de detail
         // si on a des taxes, on les affichent avec un total, sinon, on affiche juste le solde de la section
-        LinkedList<HashMap<String, String>> lignes = new LinkedList<HashMap<String, String>>();
-        HashMap<String, String> fields = new HashMap<String, String>();
+        LinkedList<HashMap<String, String>> lignes = new LinkedList<>();
+        HashMap<String, String> fields = new HashMap<>();
 
         fields.put(COParameter.F1, getCatalogueTextesUtil().texte(key, 3, 1));
         fields.put(COParameter.F2, getCatalogueTextesUtil().texte(key, 3, 2));
@@ -410,7 +397,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
 
             montantTotal.add(taxe.getMontantTaxe());
 
-            fields = new HashMap<String, String>();
+            fields = new HashMap<>();
             fields.put(COParameter.F1, taxe.loadCalculTaxe(getSession()).getRubrique().getDescription(getLangue()));
             fields.put(COParameter.F2, getCatalogueTextesUtil().texte(key, 3, 2));
             fields.put(COParameter.F3, formatMontant(taxe.getMontantTaxe()));
@@ -418,7 +405,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
         }
 
         if (montantTotal != null) {
-            fields = new HashMap<String, String>();
+            fields = new HashMap<>();
             fields.put(COParameter.F2, getCatalogueTextesUtil().texte(key, 3, 2));
             fields.put(COParameter.F3, formatMontant(montantTotal.toString()));
             fields.put(COParameter.F4, getCatalogueTextesUtil().texte(key, 3, 3));
@@ -499,11 +486,7 @@ public class CO00CSommationPaiement extends CODocumentManager {
             case STATE_LETTRE:
                 // on vient de créer la lettre, on va créer les voies de droits
                 state = CO00CSommationPaiement.STATE_VD;
-                if (getCatalogueTextesUtil().isExistDocument(getParent(), CO00CSommationPaiement.TITLE_VOIES_DE_DROIT)) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return getCatalogueTextesUtil().isExistDocument(getParent(), CO00CSommationPaiement.TITLE_VOIES_DE_DROIT);
             default:
                 // on regarder s'il y a encore des contentieux à traiter.
                 state = CO00CSommationPaiement.STATE_IDLE;

@@ -380,8 +380,8 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
      * @return
      */
     private FWCurrency initDetail(Object key) {
-        LinkedList<HashMap<String, String>> lignes = new LinkedList<HashMap<String, String>>();
-        HashMap<String, String> fields = new HashMap<String, String>();
+        LinkedList<HashMap<String, String>> lignes = new LinkedList<>();
+        HashMap<String, String> fields = new HashMap<>();
 
         fields.put(COParameter.F1, getCatalogueTextesUtil().texte(key, 3, 1));
         fields.put(COParameter.F2, getCatalogueTextesUtil().texte(key, 3, 2));
@@ -470,11 +470,7 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
             case STATE_LETTRE:
                 // on vient de créer la lettre, on va créer les voies de droits
                 state = CO00CSommationPaiementCapCgas.STATE_VD;
-                if (getCatalogueTextesUtil().isExistDocument(getParent(), CO00CSommationPaiementCapCgas.TITLE_VOIES_DE_DROIT)) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return (getCatalogueTextesUtil().isExistDocument(getParent(), CO00CSommationPaiementCapCgas.TITLE_VOIES_DE_DROIT));
             default:
                 // on regarder s'il y a encore des contentieux à traiter.
                 state = CO00CSommationPaiementCapCgas.STATE_IDLE;

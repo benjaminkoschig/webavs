@@ -136,7 +136,7 @@ public class CAIRappelPlanRecouv extends CADocumentManager {
         this._handleHeaders(getPlanRecouvrement(), true, false, true, getDateRef());
 
         // Renseigne les paramètres du document
-        StringBuffer corps = new StringBuffer("");
+        StringBuilder corps = new StringBuilder("");
         dumpNiveau(1, corps, "");
         // plan.getCompteAnnexe().getDescription() == affilie.getNom()
         /*
@@ -153,7 +153,7 @@ public class CAIRappelPlanRecouv extends CADocumentManager {
                                 getPlanRecouvrement().getCompteAnnexe().getIdExterneRole(),
                                 JACalendar.format(getPlanRecouvrement().getDate(), JACalendar.FORMAT_DDsMMsYYYY) }));
 
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
         dumpNiveau(2, body, "");
         dumpNiveau(3, body, "");
         dumpNiveau(4, body, "");

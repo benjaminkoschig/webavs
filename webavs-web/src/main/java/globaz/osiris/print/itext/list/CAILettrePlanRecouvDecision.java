@@ -175,7 +175,7 @@ public class CAILettrePlanRecouvDecision extends CADocumentManager {
 
         // Renseigne les paramètres du document
         this.setParametres(CAILettrePlanRecouvParam.P_CONCERNE, format(getTexte(1, 1)));
-        StringBuffer corps = new StringBuffer("");
+        StringBuilder corps = new StringBuilder("");
         dumpNiveau(2, corps, "");
         if (getJoindreBVR().booleanValue()) {
             corps.append(getTexte(3, 1)); // Texte : Veuillez trouvez ci-join l'échéancier accompagné des BVR.
@@ -235,19 +235,11 @@ public class CAILettrePlanRecouvDecision extends CADocumentManager {
      * @param paragraphe
      * @return
      */
-    private String format(StringBuffer paragraphe) {
-        StringBuffer res = new StringBuffer("");
+    private String format(StringBuilder paragraphe) {
+        StringBuilder res = new StringBuilder("");
         String titre = "";
 
         titre = getPlanRecouvrement().getCompteAnnexe().getTiers().getPolitesse();
-
-        // if (!StringUtils.isStringEmpty(plan.getCompteAnnexe().getId()) &&
-        // !StringUtils.isStringEmpty(plan.getCompteAnnexe().getTiers().getId())) {
-        // titre = plan.getCompteAnnexe().getTiers().getTitre();
-        // }
-        // if (StringUtils.isStringEmpty(titre)) {
-        // titre = _getProperty(JASP_PROP_BODY_FORMULE_DESTINATAIRE_HOMME_FEMME, "");
-        // }
 
         try {
             for (int i = 0; i < paragraphe.length(); i++) {
