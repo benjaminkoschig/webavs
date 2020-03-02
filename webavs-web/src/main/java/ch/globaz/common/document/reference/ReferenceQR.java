@@ -189,7 +189,9 @@ public class ReferenceQR extends AbstractReference {
         builder.append(compte).append(CHAR_FIN_LIGNE);
         builder.append(creNom).append(CHAR_FIN_LIGNE);
         builder.append(creAdressTyp).append(CHAR_FIN_LIGNE);
-        builder.append(creRueOuLigneAdresse1).append(CHAR_FIN_LIGNE);
+
+        // replace des CHAR_FIN_LIGNE compris dans le string.
+        builder.append(creRueOuLigneAdresse1.replace(CHAR_FIN_LIGNE, " ")).append(CHAR_FIN_LIGNE);
         builder.append(creNumMaisonOuLigneAdresse2).append(CHAR_FIN_LIGNE);
         builder.append((Objects.equals(creAdressTyp, COMBINE) ? StringUtils.EMPTY : creCodePostal)).append(CHAR_FIN_LIGNE);
         builder.append((Objects.equals(creAdressTyp, COMBINE) ? StringUtils.EMPTY : creLieu)).append(CHAR_FIN_LIGNE);
@@ -391,13 +393,16 @@ public class ReferenceQR extends AbstractReference {
 
         this.creAdressTyp = COMBINE;
 
+        StringBuilder creRueOuLigneAdresse1SB = new StringBuilder(creRueOuLigneAdresse1);
+
         for(int i = 0; i < adresseSplit.length ; i++) {
             if (i == (adresseSplit.length - 1)) {
                 this.creNumMaisonOuLigneAdresse2 = adresseSplit[i];
             } else {
-                this.creRueOuLigneAdresse1 = this.creRueOuLigneAdresse1 + adresseSplit[i] +"\r\n";
+                creRueOuLigneAdresse1SB.append(adresseSplit[i] +"\r\n");
             }
         }
+        creRueOuLigneAdresse1 = creRueOuLigneAdresse1SB.toString();
     }
 
     public String getAdresseCopy() {
