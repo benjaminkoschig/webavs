@@ -293,14 +293,14 @@ public class RpcDataDecisionFilter {
         RpcDecisionRequerantConjoint splitDecision = null;
         boolean isCoupleASeul = false;
         for (RpcDecisionRequerantConjoint decision : rpcData.getRpcDecisionRequerantConjoints()) {
-            if (splitDecision != null
-                    && !TypeDecision.SUPPRESSION_SANS_CALCUL.equals(decision.getRequerant().getDecision().getType())
-                    && (PcaSituation.HOME.equals(decision.getSituation()) || PcaSituation.DOMICILE.equals(decision.getSituation()))) {
+            if ((TypeDecision.SUPPRESSION_SANS_CALCUL.equals(decision.getRequerant().getDecision().getType())
+                    && (decision.getSituation().isCoupleSepare()) || decision.getSituation().isDom2())) {
+                splitDecision = decision;
+            } else if (splitDecision != null
+                && !TypeDecision.SUPPRESSION_SANS_CALCUL.equals(decision.getRequerant().getDecision().getType())
+                && (PcaSituation.HOME.equals(decision.getSituation()) || PcaSituation.DOMICILE.equals(decision.getSituation()))) {
                 isCoupleASeul = true;
                 break;
-            } else if ((TypeDecision.SUPPRESSION_SANS_CALCUL.equals(decision.getRequerant().getDecision().getType())
-                    && decision.getSituation().isCoupleSepare())) {
-                splitDecision = decision;
             }
         }
 
