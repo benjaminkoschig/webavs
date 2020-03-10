@@ -161,39 +161,25 @@ public class RFVerificationAttestationsService {
 
         // this.sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_5_APPAREIL_ACOUSTIQUE,
         // IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
-        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_5_CHAUSSURES_ORTHOPEDIQUES,
-                IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
-        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_5_FAUTEUIL_ROULANT_PAS_DANS_HOME,
-                IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
+        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_5_CHAUSSURES_ORTHOPEDIQUES, IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
+        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_5_FAUTEUIL_ROULANT_PAS_DANS_HOME, IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
         sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_5_PERRUQUE, IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
-        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_5_LUNNETTES_LOUPE,
-                IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
-        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_5_APPAREIL_ORTHOPHONIQUE,
-                IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
-        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_5_EPITHESES_DE_L_OEIL,
-                IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
-        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_5_PROTHESE_FACIALE_EPITHESES,
-                IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
+        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_5_LUNNETTES_LOUPE, IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
+        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_5_APPAREIL_ORTHOPHONIQUE, IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
+        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_5_EPITHESES_DE_L_OEIL, IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
+        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_5_PROTHESE_FACIALE_EPITHESES, IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
 
         sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_9_BARRIERES, IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
-        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_9_LIT_ELECTRIQUE,
-                IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
+        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_9_LIT_ELECTRIQUE, IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
         sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_9_POTENCE, IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
-        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_13_AIDE_AU_MENAGE_PAR_AIDE_PRIVEE,
-                IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
-        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_13_AIDE_AU_MENAGE_PAR_CONTRAT_DE_TRAVAIL,
-                IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
-        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_13_AIDE_AU_MENAGE_PAR_UN_MEMBRE_DE_LA_FAMILLE_13bOMPC,
-                IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
-        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_16_AU_LIEU_DU_TRAITEMENT_MEDICAL,
-                IRFAttestations.NIVEAU_AVERTISSEMENT_AVERTISSEMENT);
-        sousTypesDeSoinsAttestations.put(
-                IRFTypesDeSoins.st_16_DANS_UN_ATELIER_PROTEGE_OU_AUTRE_LIEU_DE_FORMATION_REHABILITATION,
-                IRFAttestations.NIVEAU_AVERTISSEMENT_AVERTISSEMENT);
-        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_16_DANS_UN_UAT_OU_ACCUEIL_DE_JOUR,
-                IRFAttestations.NIVEAU_AVERTISSEMENT_AVERTISSEMENT);
-        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_16_VISITE_CHEZ_LES_PARENTS_ENFANT_EN_EMS,
-                IRFAttestations.NIVEAU_AVERTISSEMENT_AVERTISSEMENT);
+        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_13_AIDE_AU_MENAGE_PAR_AIDE_PRIVEE, IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
+        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_13_AIDE_AU_MENAGE_PAR_CONTRAT_DE_TRAVAIL, IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
+        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_13_AIDE_AU_MENAGE_PAR_UN_MEMBRE_DE_LA_FAMILLE_13bOMPC, IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
+        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_13_AIDE_AU_MENAGE_PAR_UN_MEMBRE_DE_LA_FAMILLE,  IRFAttestations.NIVEAU_AVERTISSEMENT_REFUS);
+        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_16_AU_LIEU_DU_TRAITEMENT_MEDICAL, IRFAttestations.NIVEAU_AVERTISSEMENT_AVERTISSEMENT);
+        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_16_DANS_UN_ATELIER_PROTEGE_OU_AUTRE_LIEU_DE_FORMATION_REHABILITATION, IRFAttestations.NIVEAU_AVERTISSEMENT_AVERTISSEMENT);
+        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_16_DANS_UN_UAT_OU_ACCUEIL_DE_JOUR, IRFAttestations.NIVEAU_AVERTISSEMENT_AVERTISSEMENT);
+        sousTypesDeSoinsAttestations.put(IRFTypesDeSoins.st_16_VISITE_CHEZ_LES_PARENTS_ENFANT_EN_EMS, IRFAttestations.NIVEAU_AVERTISSEMENT_AVERTISSEMENT);
 
         /**
          * 

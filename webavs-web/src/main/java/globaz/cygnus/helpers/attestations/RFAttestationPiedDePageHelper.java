@@ -28,6 +28,7 @@ import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.helpers.PRAbstractHelper;
+
 import java.util.Iterator;
 
 public class RFAttestationPiedDePageHelper extends PRAbstractHelper {
@@ -691,7 +692,7 @@ public class RFAttestationPiedDePageHelper extends PRAbstractHelper {
     /*
      * test si le String en paramètre représente un nombre positif ou nul ou "" renvoi vrai si positif ou nul faux si
      * négatif
-     * 
+     *
      * private Boolean isEntierPositifOuNul(String montant) throws Exception { // enlever le formatage : ' if
      * (JadeStringUtil.isEmpty(montant)) { return true; } montant = montant.replace("'", ""); try { Integer floatMontant
      * = Integer.parseInt(montant); return floatMontant >= 0; } catch (Exception e) { return false; } }
@@ -717,7 +718,7 @@ public class RFAttestationPiedDePageHelper extends PRAbstractHelper {
 
     /**
      * Méthode de validation des attestations
-     * 
+     *
      * @param session
      * @param statement
      * @throws Exception
@@ -797,7 +798,7 @@ public class RFAttestationPiedDePageHelper extends PRAbstractHelper {
         // vérification des dates
         if ((!JadeStringUtil.isEmpty(attestationVB.getDateFraisLiv()) && (attestationVB.getDateFraisLiv().length() != 10))
                 || (!JadeStringUtil.isEmpty(attestationVB.getAttestationLivraison()) && (attestationVB
-                        .getAttestationLivraison().length() != 10))) {
+                .getAttestationLivraison().length() != 10))) {
             RFUtils.setMsgErreurViewBean(attestationVB, "ERREUR_RF_SAISIE_ATTESTATION_FORMAT_DATE");
             return false;
         }
@@ -832,19 +833,19 @@ public class RFAttestationPiedDePageHelper extends PRAbstractHelper {
         if ((!JadeDateUtil.isGlobazDate(attestationVB.getDateReception()) && !JadeStringUtil.isEmpty(attestationVB
                 .getDateReception()))
                 || (!JadeDateUtil.isGlobazDate(attestationVB.getDateDecision()) && !JadeStringUtil
-                        .isEmpty(attestationVB.getDateDecision()))
+                .isEmpty(attestationVB.getDateDecision()))
                 || (!JadeDateUtil.isGlobazDate(attestationVB.getDateDecisionRefus()) && !JadeStringUtil
-                        .isEmpty(attestationVB.getDateDecisionRefus()))
+                .isEmpty(attestationVB.getDateDecisionRefus()))
                 || (!JadeDateUtil.isGlobazDate(attestationVB.getDateEnvoiInfosMedecin()) && !JadeStringUtil
-                        .isEmpty(attestationVB.getDateEnvoiInfosMedecin()))
+                .isEmpty(attestationVB.getDateEnvoiInfosMedecin()))
                 || (!JadeDateUtil.isGlobazDate(attestationVB.getDateEnvoiEvaluationCMS()) && !JadeStringUtil
-                        .isEmpty(attestationVB.getDateEnvoiEvaluationCMS()))
+                .isEmpty(attestationVB.getDateEnvoiEvaluationCMS()))
                 || (!JadeDateUtil.isGlobazDate(attestationVB.getDateRetourEvaluationCMS()) && !JadeStringUtil
-                        .isEmpty(attestationVB.getDateRetourEvaluationCMS()))
+                .isEmpty(attestationVB.getDateRetourEvaluationCMS()))
                 || (!JadeDateUtil.isGlobazDate(attestationVB.getDateRetourInfosMedecin()) && !JadeStringUtil
-                        .isEmpty(attestationVB.getDateRetourInfosMedecin()))
+                .isEmpty(attestationVB.getDateRetourInfosMedecin()))
                 || (!JadeDateUtil.isGlobazDate(attestationVB.getEcheanceRevision()) && !JadeStringUtil
-                        .isEmpty(attestationVB.getEcheanceRevision()))) {
+                .isEmpty(attestationVB.getEcheanceRevision()))) {
             RFUtils.setMsgErreurViewBean(attestationVB, "ERREUR_RF_SAISIE_ATTESTATION_FORMAT_DATE");
             return false;
         }
@@ -895,31 +896,16 @@ public class RFAttestationPiedDePageHelper extends PRAbstractHelper {
                     && IRFAttestations.REGIME_ALIMENTAIRE.equals(vb.getCsTypeAttestation())) {
                 return true;
             } else if (IRFAttestations.CERTIFICAT_MOYENS_AUXILIAIRES.equals(vb.getCsTypeAttestation())
-                    && (((idSousTypeSoin >= new Integer(IRFTypesDeSoins.st_3_CHAISES_PERCEES).intValue()) && (idSousTypeSoin <= new Integer(
-                            IRFTypesDeSoins.st_3_FRAIS_D_ENDOPROTHESES).intValue()))
-
-                            || (idSousTypeSoin == new Integer(IRFTypesDeSoins.st_2_REGIME_ALIMENTAIRE).intValue())
-
-                            || (idSousTypeSoin == new Integer(IRFTypesDeSoins.st_2_REGIME_ALIMENTAIRE_DIABETIQUE)
-                                    .intValue())
-
-                            || ((idSousTypeSoin >= new Integer(IRFTypesDeSoins.st_9_LIT_ELECTRIQUE).intValue()) && (idSousTypeSoin <= new Integer(
-                                    IRFTypesDeSoins.st_9_BARRIERES).intValue()))
-
-                            || (idSousTypeSoin >= new Integer(IRFTypesDeSoins.st_8_LIT_ELECTRIQUE).intValue())
-
-                            || (idSousTypeSoin == new Integer(IRFTypesDeSoins.st_13_AIDE_AU_MENAGE_PAR_AIDE_PRIVEE)
-                                    .intValue())
-
-                            || (idSousTypeSoin == new Integer(
-                                    IRFTypesDeSoins.st_13_AIDE_AU_MENAGE_PAR_UN_MEMBRE_DE_LA_FAMILLE_13bOMPC)
-                                    .intValue())
-
-                    || (((idSousTypeSoin >= new Integer(IRFTypesDeSoins.st_16_AU_LIEU_DU_TRAITEMENT_MEDICAL).intValue()) && (idSousTypeSoin <= new Integer(
-                            IRFTypesDeSoins.st_16_VISITE_CHEZ_LES_PARENTS_ENFANT_EN_EMS).intValue()))))) {
-
+                    && (((idSousTypeSoin >= new Integer(IRFTypesDeSoins.st_3_CHAISES_PERCEES).intValue()) && (idSousTypeSoin <= new Integer(IRFTypesDeSoins.st_3_FRAIS_D_ENDOPROTHESES).intValue()))
+                    || (idSousTypeSoin == new Integer(IRFTypesDeSoins.st_2_REGIME_ALIMENTAIRE).intValue())
+                    || (idSousTypeSoin == new Integer(IRFTypesDeSoins.st_2_REGIME_ALIMENTAIRE_DIABETIQUE).intValue())
+                    || ((idSousTypeSoin >= new Integer(IRFTypesDeSoins.st_9_LIT_ELECTRIQUE).intValue()) && (idSousTypeSoin <= new Integer(IRFTypesDeSoins.st_9_BARRIERES).intValue()))
+                    || (idSousTypeSoin >= new Integer(IRFTypesDeSoins.st_8_LIT_ELECTRIQUE).intValue())
+                    || (idSousTypeSoin == new Integer(IRFTypesDeSoins.st_13_AIDE_AU_MENAGE_PAR_AIDE_PRIVEE).intValue())
+                    || (idSousTypeSoin == new Integer(IRFTypesDeSoins.st_13_AIDE_AU_MENAGE_PAR_UN_MEMBRE_DE_LA_FAMILLE_13bOMPC).intValue())
+                    || (idSousTypeSoin == new Integer(IRFTypesDeSoins.st_13_AIDE_AU_MENAGE_PAR_UN_MEMBRE_DE_LA_FAMILLE).intValue())
+                    || (((idSousTypeSoin >= new Integer(IRFTypesDeSoins.st_16_AU_LIEU_DU_TRAITEMENT_MEDICAL).intValue()) && (idSousTypeSoin <= new Integer(IRFTypesDeSoins.st_16_VISITE_CHEZ_LES_PARENTS_ENFANT_EN_EMS).intValue()))))) {
                 return true;
-
             } else if ((idSousTypeSoin >= new Integer(IRFTypesDeSoins.st_5_APPAREIL_ACOUSTIQUE).intValue())
                     && (idSousTypeSoin <= new Integer(IRFTypesDeSoins.st_5_PROTHESE_FACIALE_EPITHESES).intValue())
                     && IRFAttestations.DECISION_MOYENS_AUXILIAIRES.equals(vb.getCsTypeAttestation())) {
@@ -932,10 +918,9 @@ public class RFAttestationPiedDePageHelper extends PRAbstractHelper {
                     && (idSousTypeSoin <= new Integer(IRFTypesDeSoins.st_11_MAGNETOPHONE_POUR_AVEUGLE).intValue())
                     && IRFAttestations.BON_MOYENS_AUXILIAIRES.equals(vb.getCsTypeAttestation())) {
                 return true;
-            } else if ((idSousTypeSoin >= new Integer(IRFTypesDeSoins.st_13_AIDE_AU_MENAGE_PAR_SPITEX_OMSV_CMS)
-                    .intValue())
-                    && (idSousTypeSoin <= new Integer(
-                            IRFTypesDeSoins.st_13_AIDE_AU_MENAGE_PAR_UN_MEMBRE_DE_LA_FAMILLE_13bOMPC).intValue())
+            }  else if ((((idSousTypeSoin >= new Integer(IRFTypesDeSoins.st_13_AIDE_AU_MENAGE_PAR_SPITEX_OMSV_CMS).intValue())
+                    && (idSousTypeSoin <= new Integer(IRFTypesDeSoins.st_13_AIDE_AU_MENAGE_PAR_UN_MEMBRE_DE_LA_FAMILLE_13bOMPC).intValue()))
+                    || idSousTypeSoin == new Integer(IRFTypesDeSoins.st_13_AIDE_AU_MENAGE_PAR_UN_MEMBRE_DE_LA_FAMILLE).intValue())
                     && IRFAttestations.MAINTIEN_DOMICILE.equals(vb.getCsTypeAttestation())) {
                 return true;
             } else if ((idSousTypeSoin == new Integer(IRFTypesDeSoins.st_13_AIDE_AU_MENAGE_PAR_AIDE_PRIVEE).intValue())
@@ -966,7 +951,7 @@ public class RFAttestationPiedDePageHelper extends PRAbstractHelper {
         attestationManager.find();
 
         // résultats
-        for (Iterator<RFAttestationJointDossier> it = attestationManager.iterator(); it.hasNext();) {
+        for (Iterator<RFAttestationJointDossier> it = attestationManager.iterator(); it.hasNext(); ) {
 
             RFAttestationJointDossier attestation = it.next();
 
