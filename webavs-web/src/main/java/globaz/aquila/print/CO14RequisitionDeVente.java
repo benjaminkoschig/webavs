@@ -79,6 +79,11 @@ public class CO14RequisitionDeVente extends CODocumentRequisition {
         setNumeroReferenceInforom(CO14RequisitionDeVente.NUMERO_REFERENCE_INFOROM);
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return null;
+    }
+
     /**
      * 
      * @return

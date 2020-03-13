@@ -198,6 +198,11 @@ public class FADetailInteretMoratoire_Doc extends FAImpressionFacturation {
         centimes = montantAvecCentimeBig.subtract(montantSansCentimeBig).toString().substring(2, 4);
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return TEMPLATE_FILENAME;
+    }
+
     protected void _letterBody() {
 
         try {

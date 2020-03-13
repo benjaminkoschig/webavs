@@ -45,6 +45,11 @@ public class CARequisition extends CADocumentContentieux {
         super();
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return null;
+    }
+
     /**
      * Insérez la description de la méthode ici. Date de création : (13.06.2002 10:51:26)
      * 

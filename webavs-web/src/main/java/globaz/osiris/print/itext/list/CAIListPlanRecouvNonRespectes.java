@@ -70,7 +70,7 @@ public class CAIListPlanRecouvNonRespectes extends CADocumentManager {
         }
 
         /**
-         * @param string
+         * @param plan
          *            La nouvelle valeur de la propriété
          */
         public void setEcheance(CAEcheancePlan plan) {
@@ -78,7 +78,7 @@ public class CAIListPlanRecouvNonRespectes extends CADocumentManager {
         }
 
         /**
-         * @param string
+         * @param recouvrement
          *            La nouvelle valeur de la propriété
          */
         public void setPlan(CAPlanRecouvrement recouvrement) {
@@ -86,7 +86,7 @@ public class CAIListPlanRecouvNonRespectes extends CADocumentManager {
         }
 
         /**
-         * @param string
+         * @param section
          *            La nouvelle valeur de la propriété
          */
         public void setSection(CASection section) {
@@ -161,6 +161,11 @@ public class CAIListPlanRecouvNonRespectes extends CADocumentManager {
         }
 
         return super.beforePrintDocument();
+    }
+
+    @Override
+    public String getJasperTemplate() {
+        return null;
     }
 
     /**

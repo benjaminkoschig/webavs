@@ -63,6 +63,11 @@ public class CO11RappelOpPvSaisie extends CODocumentManager {
         setNumeroReferenceInforom(CO11RappelOpPvSaisie.NUMERO_REFERENCE_INFOROM);
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return null;
+    }
+
     /**
      * @see globaz.framework.printing.itext.api.FWIDocumentInterface#createDataSource()
      */

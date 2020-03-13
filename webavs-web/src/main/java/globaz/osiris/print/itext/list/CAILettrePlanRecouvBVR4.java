@@ -35,6 +35,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
     /**
      * 
      */
+
     private static final long serialVersionUID = 1L;
     private static final String NUMERO_REFERENCE_INFOROM = "0043GCA";
     /** Le nom du modèle */
@@ -102,6 +103,7 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
         }
         getDocumentInfo().setPublishDocument(true);
         getDocumentInfo().setArchiveDocument(true);
+        computeTotalPage();
     }
 
     /*
@@ -112,6 +114,11 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
     @Override
     public void beforeExecuteReport() throws FWIException {
         setNumeroReferenceInforom(CAILettrePlanRecouvBVR4.NUMERO_REFERENCE_INFOROM);
+    }
+
+    @Override
+    public String getJasperTemplate() {
+        return TEMPLATE_NAME;
     }
 
     /**

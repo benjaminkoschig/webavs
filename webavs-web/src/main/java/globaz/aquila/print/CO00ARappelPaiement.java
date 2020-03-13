@@ -70,6 +70,11 @@ public class CO00ARappelPaiement extends CODocumentManager {
 
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return null;
+    }
+
     /**
      * @see globaz.framework.printing.itext.FWIDocumentManager#createDataSource()
      */

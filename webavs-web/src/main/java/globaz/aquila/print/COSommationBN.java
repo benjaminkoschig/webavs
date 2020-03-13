@@ -49,6 +49,12 @@ public class COSommationBN extends CODocumentManager {
         super(session, session.getLabel("AQUILA_SOMMATION_BN"));
     }
 
+    @Override
+    public void beforeBuildReport() throws FWIException {
+        super.beforeBuildReport();
+        computeTotalPage();
+    }
+
     /**
      * Après la génération de chaque document
      * 
@@ -298,6 +304,11 @@ public class COSommationBN extends CODocumentManager {
                 state = COSommationBN.STATE_IDLE;
                 return next();
         }
+    }
+
+    @Override
+    public String getJasperTemplate() {
+        return TEMPLATE_NAME_SOMMATION;
     }
 
     public void setDateDelaiPaiement(String dateDelaiPaiement) {

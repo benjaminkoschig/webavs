@@ -323,4 +323,9 @@ public class CO03ARetraitOpposition extends CODocumentManager {
                 return next();
         }
     }
+
+    @Override
+    public String getJasperTemplate() {
+        return null;
+    }
 }

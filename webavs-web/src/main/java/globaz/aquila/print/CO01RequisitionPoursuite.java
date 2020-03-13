@@ -86,6 +86,11 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
         setNumeroReferenceInforom(CO01RequisitionPoursuite.NUMERO_REFERENCE_INFOROM);
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return null;
+    }
+
     /**
      * Ajoute les IM facturé à cette étape au dataSource
      * 

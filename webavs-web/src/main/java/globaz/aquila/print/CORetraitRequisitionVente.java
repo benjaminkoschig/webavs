@@ -280,6 +280,11 @@ public class CORetraitRequisitionVente extends CODocumentManager {
         }
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return TEMPLATE_NAME;
+    }
+
     /**
      * @see globaz.aquila.print.COIDocumentOnCopy#setDestinataire(IntTiers)
      */

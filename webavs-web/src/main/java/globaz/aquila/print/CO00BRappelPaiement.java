@@ -63,6 +63,11 @@ public class CO00BRappelPaiement extends CODocumentManager {
         setNumeroReferenceInforom(CO00BRappelPaiement.NUMERO_REFERENCE_INFOROM);
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return null;
+    }
+
     /**
      * @see globaz.framework.printing.itext.FWIDocumentManager#createDataSource()
      */

@@ -75,6 +75,13 @@ public class CO00ARappelPaiementCapCgas extends CODocumentManager {
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
 
+
+    @Override
+    public void beforeBuildReport() throws FWIException {
+        super.beforeBuildReport();
+        computeTotalPage();
+    }
+
     /**
      * @throws FWIException
      *             DOCUMENT ME!
@@ -86,6 +93,11 @@ public class CO00ARappelPaiementCapCgas extends CODocumentManager {
         setDocumentTitle(getSession().getLabel("AQUILA_RAPPEL_PAIEMENT"));
         setNumeroReferenceInforom(CO00ARappelPaiementCapCgas.NUMERO_REFERENCE_INFOROM);
 
+    }
+
+    @Override
+    public String getJasperTemplate() {
+        return TEMPLATE_NAME;
     }
 
     /**

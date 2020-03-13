@@ -159,6 +159,11 @@ public class COMuterDelaiDoc extends CODocumentManager {
         return GlobazJobQueue.READ_SHORT;
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return TEMPLATE_NAME;
+    }
+
     /**
      * setter pour l'attribut date document.
      * 

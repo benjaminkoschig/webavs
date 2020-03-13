@@ -257,6 +257,11 @@ public class CO01BRadiationPoursuite extends CODocumentManager {
         }
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return null;
+    }
+
     /**
      * @see globaz.aquila.print.COIDocumentOnCopy#setDestinataire(IntTiers)
      */

@@ -51,6 +51,11 @@ public class CASommation extends CADocumentContentieux {
         super();
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return null;
+    }
+
     /**
      * Date de création : (13.06.2002 10:51:26)
      * 

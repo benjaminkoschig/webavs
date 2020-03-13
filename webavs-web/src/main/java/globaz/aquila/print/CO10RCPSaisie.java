@@ -76,6 +76,11 @@ public class CO10RCPSaisie extends CODocumentRequisition {
         setNumeroReferenceInforom(CO10RCPSaisie.NUMERO_REFERENCE_INFOROM);
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return null;
+    }
+
     /**
      * 
      * @param dateNotificationCDP

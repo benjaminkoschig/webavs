@@ -108,6 +108,11 @@ public class CAIRappelPlanRecouv extends CADocumentManager {
         setNumeroReferenceInforom(CAIRappelPlanRecouv.NUMERO_REFERENCE_INFOROM);
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return TEMPLATE_NAME;
+    }
+
     /**
      * @see globaz.framework.printing.itext.api.FWIDocumentInterface#createDataSource()
      */

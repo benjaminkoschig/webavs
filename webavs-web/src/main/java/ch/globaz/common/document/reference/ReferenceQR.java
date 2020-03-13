@@ -1,5 +1,6 @@
 package ch.globaz.common.document.reference;
 
+import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.util.GenerationQRCode;
 import globaz.aquila.print.COParameter;
@@ -19,10 +20,7 @@ import globaz.pyxis.db.adressecourrier.TIAbstractAdresseData;
 import globaz.pyxis.db.adressecourrier.TIAdresseDataManager;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 
 public class ReferenceQR extends AbstractReference {
@@ -54,6 +52,7 @@ public class ReferenceQR extends AbstractReference {
     private String nomAV1 = StringUtils.EMPTY;
     private String nomAV2 = StringUtils.EMPTY;
     private String infosAdditionnelles = StringUtils.EMPTY;
+    private String P_INFO_ADD_ERREUR = StringUtils.EMPTY;
 
     private String qrType = QR_TYPE;
     private String version = DEFAULT_VERSION;
@@ -144,6 +143,9 @@ public class ReferenceQR extends AbstractReference {
             parameters.put(COParameter.P_PAR_TITRE, getSession().getApplication().getLabel("QR_PAYABLE_PAR", langueDoc));
             parameters.put(COParameter.P_REF_TITRE, getSession().getApplication().getLabel("REFERENCE", langueDoc));
             parameters.put(COParameter.P_INFO_ADD_TITRE, getSession().getApplication().getLabel("QR_INFO_SUPP", langueDoc));
+
+            P_INFO_ADD_ERREUR = getSession().getApplication().getLabel("INFO_ADD_ERREUR", langueDoc);
+            parameters.put(COParameter.P_INFO_ADD_ERREUR, P_INFO_ADD_ERREUR);
         } catch (Exception e) {
             throw new CommonTechnicalException ("Problème à l'initialisation des entêtes QR : ", e);
         }
@@ -156,9 +158,16 @@ public class ReferenceQR extends AbstractReference {
     public void initParamQR()  {
         parameters.put(COParameter.P_QR_CODE_PATH, GenerationQRCode.generateSwissQrCode(generationPayLoad()));
         parameters.put(COParameter.P_MONNAIE, monnaie);
+
         // Si l'on est sur un QR Neutre, dans ce cas, il doit être sans montant ni adresse Debiteur.
         if (!qrNeutre) {
-            parameters.put(COParameter.P_MONTANT, montant);
+            if (new Montant(montant).isNegative()) {
+                parameters.put(COParameter.P_MONTANT, "0.00");
+                parameters.put(COParameter.P_INFO_ADD, (P_INFO_ADD_ERREUR + RETOUR_LIGNE + communicationNonStructuree + RETOUR_LIGNE + infoFacture).trim());
+            } else {
+                parameters.put(COParameter.P_MONTANT, montant);
+                parameters.put(COParameter.P_INFO_ADD, (communicationNonStructuree + RETOUR_LIGNE + infoFacture).trim());
+            }
             if (!COMBINE.equals(debfAdressTyp)){
                 parameters.put(COParameter.P_PAR, (debfNom + RETOUR_LIGNE + debfRueOuLigneAdresse1 + ESPACE + debfNumMaisonOuLigneAdresse2 + RETOUR_LIGNE + debfCodePostal + ESPACE + debfLieu).trim());
             } else {
@@ -166,6 +175,7 @@ public class ReferenceQR extends AbstractReference {
             }
         } else {
             parameters.put(COParameter.P_PAR, "");
+            parameters.put(COParameter.P_INFO_ADD, (communicationNonStructuree + RETOUR_LIGNE + infoFacture).trim());
         }
 
         parameters.put(FWIImportParametre.PARAM_REFERENCE, getReference());
@@ -177,7 +187,7 @@ public class ReferenceQR extends AbstractReference {
             parameters.put(COParameter.P_COMPTE, (compte + RETOUR_LIGNE + creRueOuLigneAdresse1 + creNumMaisonOuLigneAdresse2).trim());
         }
 
-        parameters.put(COParameter.P_INFO_ADD, (communicationNonStructuree + RETOUR_LIGNE + infoFacture).trim());
+
     }
 
     private String generationPayLoad() {

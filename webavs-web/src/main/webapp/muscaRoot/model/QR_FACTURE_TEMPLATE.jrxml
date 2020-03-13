@@ -30,6 +30,9 @@
 	<parameter name="P_SUBREPORT_RECEPISE" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_QR_CODE_PATH" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_PARAM_2" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NOMBRE_PAGES" isForPrompting="false" class="java.lang.Integer"/>
+	<parameter name="P_TOTAL_ROW2" isForPrompting="false" class="java.lang.Integer"/>
+	<field name="COL_ID2" class="java.lang.Integer"/>
 		<background>
 			<band height="0"  isSplitAllowed="true" >
 			</band>
@@ -267,7 +270,7 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONNAIE}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Page" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="48"
 						y="205"

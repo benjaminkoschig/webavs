@@ -62,6 +62,11 @@ public class CO02RappelCDP extends CODocumentManager {
         setNumeroReferenceInforom(CO02RappelCDP.NUMERO_REFERENCE_INFOROM);
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return null;
+    }
+
     /**
      * @see globaz.framework.printing.itext.api.FWIDocumentInterface#createDataSource()
      */

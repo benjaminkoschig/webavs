@@ -1,6 +1,7 @@
 package globaz.osiris.print.itext;
 
 import ch.globaz.common.properties.CommonProperties;
+import ch.globaz.vulpecula.documents.DocumentConstants;
 import globaz.aquila.api.ICOApplication;
 import globaz.aquila.api.ICOEtape;
 import globaz.aquila.api.ICOGestionContentieuxExterne;
@@ -409,6 +410,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
             getDocumentInfo().setDocumentProperty("numeroPassage", getPassage().getIdPassage());
             getDocumentInfo().setDocumentProperty("numeroPlanFacturation", getPassage().getIdPlanFacturation());
         }
+        computeTotalPage();
     }
 
     /**
@@ -1123,6 +1125,11 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
         }
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return TEMPLATE_FILENAME;
+    }
+
     public void setCallEcran(Boolean callEcran) {
         this.callEcran = callEcran;
     }
@@ -1226,7 +1233,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
     /**
      * Sets the journalLibelle.
      * 
-     * @param journalLibelle
+     * @param sectionLibelle
      *            The journalLibelle to set
      */
     public void setSectionLibelle(String sectionLibelle) {

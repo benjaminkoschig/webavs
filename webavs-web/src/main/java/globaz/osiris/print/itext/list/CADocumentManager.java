@@ -8,6 +8,7 @@ import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import globaz.caisse.report.helper.ICaisseReportHelper;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.framework.printing.itext.FWIDocumentManager;
+import globaz.framework.printing.itext.api.FWIImporterInterface;
 import globaz.framework.printing.itext.exception.FWIException;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
@@ -37,6 +38,8 @@ import java.util.*;
 
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 
 /**
@@ -907,4 +910,40 @@ public abstract class CADocumentManager extends FWIDocumentManager {
     public void setQrFacture(ReferenceQR qrFacture) {
         this.qrFacture = qrFacture;
     }
+
+    /**
+     * Détermine le total de page d'un document afin de pouvoir gérer les X dans les BVR.
+     * Pour cela, on construit en mémoire le document.
+     */
+    protected void computeTotalPage() {
+        int nbPages = 0;
+        FWIImporterInterface importDoc = super.getImporter();
+        try {
+            String sourceFilename = importDoc.getImportPath() + "/" + getJasperTemplate() + importDoc.getImportType();
+
+            // On construit le document pour connaitre le nb de page total
+            JasperPrint m_document = JasperFillManager.fillReport(sourceFilename, importDoc.getParametre(),
+                    getDataSource());
+            if ((m_document != null)) {
+                nbPages = m_document.getPages().size();
+            }
+
+            // On recharge le data source
+            createDataSource();
+        } catch (Exception e) {
+            getMemoryLog().logMessage("Problème pour déterminer le nb de page total du document : " + e.getMessage(),
+                    FWMessage.AVERTISSEMENT, this.getClass().getName());
+        }
+
+        // On passe le nb de page au document
+        setParametres("P_NOMBRE_PAGES", nbPages);
+    }
+
+    /**
+     * Retourne le template Jasper PRINCIPAL utilisé pour générer le document. (p.ex : DOCUMENT_VIDE pour
+     * DOCUMENT_VIDE.japser)
+     *
+     * @return String représentant le fichier jasper pour la génération du document.
+     */
+    public abstract String getJasperTemplate();
 }

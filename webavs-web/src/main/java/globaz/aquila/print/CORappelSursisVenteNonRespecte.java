@@ -62,6 +62,11 @@ public class CORappelSursisVenteNonRespecte extends CODocumentManager {
         setNumeroReferenceInforom(CORappelSursisVenteNonRespecte.NUMERO_REFERENCE_INFOROM);
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return TEMPLATE_NAME;
+    }
+
     /**
      * @see globaz.framework.printing.itext.api.FWIDocumentInterface#createDataSource()
      */

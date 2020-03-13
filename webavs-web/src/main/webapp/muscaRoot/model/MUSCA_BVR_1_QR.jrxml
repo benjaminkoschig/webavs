@@ -746,6 +746,12 @@
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true"/>
 					<parametersMapExpression><![CDATA[new java.util.HashMap($P{REPORT_PARAMETERS_MAP})]]></parametersMapExpression>
+					<subreportParameter  name="P_TOTAL_ROW2">
+						<subreportParameterExpression><![CDATA[$P{P_TOTAL_ROW}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="COL_ID2">
+						<subreportParameterExpression><![CDATA[$F{COL_ID}]]></subreportParameterExpression>
+					</subreportParameter>
 					<subreportExpression  class="java.lang.String"><![CDATA[$P{P_SUBREPORT_QR}]]></subreportExpression>
 				</subreport>
 			</band>

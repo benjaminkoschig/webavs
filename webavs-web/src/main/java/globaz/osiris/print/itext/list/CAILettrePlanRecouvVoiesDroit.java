@@ -115,6 +115,11 @@ public class CAILettrePlanRecouvVoiesDroit extends CADocumentManager {
         setNumeroReferenceInforom(CAILettrePlanRecouvDecision.NUMERO_REFERENCE_INFOROM);
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return TEMPLATE_NAME;
+    }
+
     /**
      * @see globaz.framework.printing.itext.api.FWIDocumentInterface#createDataSource()
      */

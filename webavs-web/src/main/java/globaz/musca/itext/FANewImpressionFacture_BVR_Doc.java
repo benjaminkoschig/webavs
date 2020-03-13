@@ -524,6 +524,7 @@ public class FANewImpressionFacture_BVR_Doc extends FAImpressionFacturation {
         super.setDocumentTitle(newCurrentDataSource.getEnteteFacture().getIdExterneRole() + " - " + index + " - " + "1_"
                 + newCurrentDataSource.getEnteteFacture().getNomTiers());
         buildReportStartTime = System.currentTimeMillis();
+        //computeTotalPage();
     }
 
     @Override
@@ -963,6 +964,11 @@ public class FANewImpressionFacture_BVR_Doc extends FAImpressionFacturation {
         getParent().setProgressScaleValue(entityList.size());
         this.entityList = entityList.iterator();
         enteteFactures = entityList;
+    }
+
+    @Override
+    public String getJasperTemplate() {
+        return TEMPLATE_FILENAME_BVR_NEUTRE;
     }
 
     /**

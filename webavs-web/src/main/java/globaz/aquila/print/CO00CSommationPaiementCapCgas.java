@@ -124,6 +124,13 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
         super(session, session.getLabel("AQUILA_SOMMATION"));
     }
 
+
+    @Override
+    public void beforeBuildReport() throws FWIException {
+        super.beforeBuildReport();
+        computeTotalPage();
+    }
+
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
 
@@ -476,6 +483,11 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
                 state = CO00CSommationPaiementCapCgas.STATE_IDLE;
                 return next();
         }
+    }
+
+    @Override
+    public String getJasperTemplate() {
+        return TEMPLATE_NAME;
     }
 
     /**

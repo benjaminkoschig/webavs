@@ -369,6 +369,11 @@ public class CAILettrePlanRecouvDecision extends CADocumentManager {
         this.idDocument = idDocument;
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return TEMPLATE_NAME;
+    }
+
     /**
      * @param string
      *            La nouvelle valeur de la propriété

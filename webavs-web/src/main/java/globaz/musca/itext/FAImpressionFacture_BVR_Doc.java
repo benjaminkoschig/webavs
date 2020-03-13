@@ -10,6 +10,7 @@ import globaz.docinfo.CTDocumentInfoHelper;
 import globaz.docinfo.FADocumentInfoHelper;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.framework.bean.FWViewBeanInterface;
+import globaz.framework.printing.itext.api.FWIImporterInterface;
 import globaz.framework.printing.itext.exception.FWIException;
 import globaz.framework.printing.itext.fill.FWIImportParametre;
 import globaz.framework.util.FWCurrency;
@@ -50,6 +51,8 @@ import globaz.osiris.exceptions.CATechnicalException;
 import globaz.osiris.translation.CACodeSystem;
 import globaz.webavs.common.CommonProperties;
 import java.util.ArrayList;
+
+import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 
 /**
@@ -76,6 +79,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
     public final static String TEMPLATE_FILENAME = "MUSCA_BVR_1_QR";
     public final static String TEMPLATE_FILENAME_BVR_NEUTRE = "MUSCA_BVR_NEUTRE_QR";
     public final static String TEMPLATE_FILENAME4DECSAL = "MUSCA_BVR4DECSAL_QR"; // Template
+    private static String TEMPLATE_NAME= "MUSCA_BVR_NEUTRE_QR"; // Par défaut
     private Boolean isEbusiness = false;
 
     public static String getTemplateFilename(FAEnteteFacture entFacture) {
@@ -87,12 +91,15 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
                         .substring(4, 6))
                 || FAImpressionFacture_BVR_Doc.CODEDECOMPTESALAIRE30.equalsIgnoreCase(entFacture.getIdExterneFacture()
                         .substring(4, 6))) {
+            setJasperTemplate(FAImpressionFacture_BVR_Doc.TEMPLATE_FILENAME4DECSAL);
             return FAImpressionFacture_BVR_Doc.TEMPLATE_FILENAME4DECSAL; // Template pour déclaration de
             // salaire
         } else if (APISection.ID_TYPE_SECTION_BULLETIN_NEUTRE.equals(entFacture.getIdTypeFacture())) {
+            setJasperTemplate(FAImpressionFacture_BVR_Doc.TEMPLATE_FILENAME_BVR_NEUTRE);
             return FAImpressionFacture_BVR_Doc.TEMPLATE_FILENAME_BVR_NEUTRE; // Template pour bulletin
             // neutre
         } else {
+            setJasperTemplate(FAImpressionFacture_BVR_Doc.TEMPLATE_FILENAME);
             return FAImpressionFacture_BVR_Doc.TEMPLATE_FILENAME;
         }
     }
@@ -594,7 +601,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
     }
 
     @Override
-    public void beforeBuildReport() {
+    public void beforeBuildReport() throws FWIException {
         super.setDocumentTitle(currentDataSource.getEnteteFacture().getIdExterneRole() + " - " + index + " - " + "1_"
                 + currentDataSource.getEnteteFacture().getNomTiers());
         buildReportStartTime = System.currentTimeMillis();
@@ -1126,6 +1133,15 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
 
     public void setIsEbusiness(Boolean isEbusiness) {
         this.isEbusiness = isEbusiness;
+    }
+
+    @Override
+    public String getJasperTemplate() {
+        return TEMPLATE_NAME;
+    }
+
+    public static void setJasperTemplate(String templateName) {
+        TEMPLATE_NAME = templateName;
     }
 
 }

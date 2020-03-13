@@ -85,6 +85,12 @@ public class CODecisionFPV extends CODocumentManager {
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
 
+    @Override
+    public void beforeBuildReport() throws FWIException {
+        super.beforeBuildReport();
+        computeTotalPage();
+    }
+
     /**
      * Pour les voies de droit
      * 
@@ -385,6 +391,11 @@ public class CODecisionFPV extends CODocumentManager {
                 state = CODecisionFPV.STATE_IDLE;
                 return next();
         }
+    }
+
+    @Override
+    public String getJasperTemplate() {
+        return TEMPLATE_NAME;
     }
 
 }

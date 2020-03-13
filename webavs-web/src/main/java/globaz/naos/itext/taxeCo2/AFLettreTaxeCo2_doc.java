@@ -438,4 +438,8 @@ public class AFLettreTaxeCo2_doc extends FAImpressionFacturation {
         signataire2 = string;
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return TEMPLATE_FILENAME;
+    }
 }

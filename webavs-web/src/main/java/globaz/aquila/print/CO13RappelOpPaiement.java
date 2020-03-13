@@ -66,6 +66,11 @@ public class CO13RappelOpPaiement extends CODocumentManager {
         setNumeroReferenceInforom(CO13RappelOpPaiement.NUMERO_REFERENCE_INFOROM);
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return null;
+    }
+
     /**
      * @see globaz.framework.printing.itext.api.FWIDocumentInterface#createDataSource()
      */

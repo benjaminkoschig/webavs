@@ -88,6 +88,12 @@ public class CO04ReceptionPaiement extends CODocumentManager {
     }
 
     @Override
+    public void beforeBuildReport() throws FWIException {
+        super.beforeBuildReport();
+        computeTotalPage();
+    }
+
+    @Override
     public void afterBuildReport() {
         super.afterBuildReport();
         getDocumentInfo().setDocumentProperty("annee", getAnneeFromContentieux());
@@ -102,6 +108,11 @@ public class CO04ReceptionPaiement extends CODocumentManager {
         setTemplateFile(CO04ReceptionPaiement.TEMPLATE_NAME);
         setDocumentTitle(getSession().getLabel("AQUILA_RECEPTION_PAIEMENT"));
         setNumeroReferenceInforom(CO04ReceptionPaiement.NUMERO_REFERENCE_INFOROM);
+    }
+
+    @Override
+    public String getJasperTemplate() {
+        return TEMPLATE_NAME;
     }
 
     /**

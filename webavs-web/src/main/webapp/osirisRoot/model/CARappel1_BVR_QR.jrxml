@@ -570,6 +570,9 @@
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true"/>
 					<parametersMapExpression><![CDATA[new java.util.HashMap($P{REPORT_PARAMETERS_MAP})]]></parametersMapExpression>
+					<subreportParameter  name="P_PAGE_NUMBER">
+						<subreportParameterExpression><![CDATA[$V{PAGE_NUMBER}]]></subreportParameterExpression>
+					</subreportParameter>
 					<subreportExpression  class="java.lang.String"><![CDATA[$P{P_SUBREPORT_QR}]]></subreportExpression>
 				</subreport>
 			</band>

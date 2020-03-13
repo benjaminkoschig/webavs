@@ -30,6 +30,7 @@
 	<parameter name="P_SUBREPORT_RECEPISE" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_QR_CODE_PATH" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_PARAM_2" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NOMBRE_PAGES" isForPrompting="false" class="java.lang.Integer"/>
 		<background>
 			<band height="0"  isSplitAllowed="true" >
 			</band>
@@ -287,7 +288,7 @@
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONTANT}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[($P{P_NOMBRE_PAGES}.intValue() > $V{PAGE_NUMBER}.intValue())?"0.00" : $P{P_MONTANT}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -375,7 +376,7 @@
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONTANT}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[($P{P_NOMBRE_PAGES}.intValue() > $V{PAGE_NUMBER}.intValue())?"0.00" : $P{P_MONTANT}]]></textFieldExpression>
 				</textField>
 				<line direction="TopDown">
 					<reportElement

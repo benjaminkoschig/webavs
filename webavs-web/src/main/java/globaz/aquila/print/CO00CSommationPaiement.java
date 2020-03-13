@@ -161,6 +161,12 @@ public class CO00CSommationPaiement extends CODocumentManager {
         }
     }
 
+    @Override
+    public void beforeBuildReport() throws FWIException {
+        super.beforeBuildReport();
+        computeTotalPage();
+    }
+
     /**
      * @throws FWIException
      */
@@ -492,6 +498,11 @@ public class CO00CSommationPaiement extends CODocumentManager {
                 state = CO00CSommationPaiement.STATE_IDLE;
                 return next();
         }
+    }
+
+    @Override
+    public String getJasperTemplate() {
+        return TEMPLATE_NAME;
     }
 
     /**

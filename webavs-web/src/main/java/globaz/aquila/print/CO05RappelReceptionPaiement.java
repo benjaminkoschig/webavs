@@ -58,6 +58,11 @@ public class CO05RappelReceptionPaiement extends CODocumentManager {
         setNumeroReferenceInforom(CO05RappelReceptionPaiement.NUMERO_REFERENCE_INFOROM);
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return null;
+    }
+
     /**
      * @see globaz.framework.printing.itext.api.FWIDocumentInterface#createDataSource()
      */

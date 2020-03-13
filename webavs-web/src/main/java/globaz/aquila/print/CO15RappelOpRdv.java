@@ -68,6 +68,11 @@ public class CO15RappelOpRdv extends CODocumentManager {
         setNumeroReferenceInforom(CO15RappelOpRdv.NUMERO_REFERENCE_INFOROM);
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return null;
+    }
+
     /**
      * @see globaz.framework.printing.itext.api.FWIDocumentInterface#createDataSource()
      */

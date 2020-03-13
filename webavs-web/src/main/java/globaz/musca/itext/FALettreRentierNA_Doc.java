@@ -501,6 +501,11 @@ public class FALettreRentierNA_Doc extends FAImpressionFacturation {
     }
 
     @Override
+    public String getJasperTemplate() {
+        return TEMPLATE_FILENAME;
+    }
+
+    @Override
     public void afterBuildReport() {
         try {
             returnDocument();

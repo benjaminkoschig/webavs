@@ -254,6 +254,11 @@ public class CO10ARetraitPoursuite extends CODocumentManager {
         }
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return null;
+    }
+
     /**
      * @see globaz.aquila.print.COIDocumentOnCopy#setDestinataire(IntTiers)
      */

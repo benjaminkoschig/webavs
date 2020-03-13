@@ -382,6 +382,11 @@ public class CO06DemandeMainlevee extends CODocumentManager {
         }
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return null;
+    }
+
     /**
      * setter pour l'attribut date situation compte.
      * 

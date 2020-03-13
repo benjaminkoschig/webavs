@@ -42,6 +42,11 @@ public class CATaxation extends CADocumentContentieux {
         super();
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return null;
+    }
+
     /**
      * @throws Exception
      *             La description de l'exception.

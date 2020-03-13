@@ -87,6 +87,11 @@ public class CO01AImputerVersement extends CODocumentManager {
         setNumeroReferenceInforom(CO01AImputerVersement.NUMERO_REFERENCE_INFOROM);
     }
 
+    @Override
+    public String getJasperTemplate() {
+        return null;
+    }
+
     /**
      * @see globaz.framework.printing.itext.api.FWIDocumentInterface#createDataSource()
      */
