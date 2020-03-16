@@ -223,7 +223,14 @@ public class ReferenceQR extends AbstractReference {
             builder.append(StringUtils.EMPTY).append(CHAR_FIN_LIGNE);
             builder.append(StringUtils.EMPTY).append(CHAR_FIN_LIGNE);
         } else {
-            builder.append(montant).append(CHAR_FIN_LIGNE);
+            if (new Montant(montant).isNegative()) {
+                builder.append("0.00").append(CHAR_FIN_LIGNE);
+                builder.append(P_INFO_ADD_ERREUR + " " +communicationNonStructuree).append(CHAR_FIN_LIGNE);
+            } else {
+                builder.append(montant).append(CHAR_FIN_LIGNE);
+                builder.append(communicationNonStructuree).append(CHAR_FIN_LIGNE);
+            }
+
             builder.append(monnaie).append(CHAR_FIN_LIGNE);
             builder.append(debfNom).append(CHAR_FIN_LIGNE);
             builder.append(debfAdressTyp).append(CHAR_FIN_LIGNE);
@@ -235,7 +242,7 @@ public class ReferenceQR extends AbstractReference {
         builder.append(debfPays).append(CHAR_FIN_LIGNE);
         builder.append(typeReference).append(CHAR_FIN_LIGNE);
         builder.append(getReferenceNonFormatte()).append(CHAR_FIN_LIGNE);
-        builder.append(communicationNonStructuree).append(CHAR_FIN_LIGNE);
+
         builder.append(trailer).append(CHAR_FIN_LIGNE);
         builder.append(infoFacture).append(CHAR_FIN_LIGNE);
         builder.append(pa1Param).append(CHAR_FIN_LIGNE);
