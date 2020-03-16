@@ -457,8 +457,8 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
     @Override
     public void creerAnnoncesADI(List<AdiEnfantMoisComplexModel> listAdi)
             throws JadeApplicationException, JadePersistenceException {
-        TreeMap<Periode, Boolean> periodes = createPeriodes(listAdi);
         DroitComplexModel droit = listAdi.get(0).getDroitComplexModel();
+        TreeMap<Periode, Boolean> periodes = createPeriodes(listAdi);
         if(EntetePrestationModelChecker.checkAnnnonce(periodes.firstEntry().getKey().getDateDebut().substring(3,7), droit.getId())) {
             JadeThread.logWarn(EntetePrestationModelChecker.class.getName(),
                     "al.protocoles.paiementDirect.annonce.envoyee.compta.error");
