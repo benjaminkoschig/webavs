@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	2013-08-28 - v 1.0 - KRA - Version initiales
+                         SHM - reformattage et documentation
+-->
+<wsdl:definitions name="RapgConsultationWebserviceDefinition"
+  targetNamespace="http://www.zas.admin.ch/rapg/webservice/consultation/1"
+  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+  xmlns:rws="http://www.zas.admin.ch/rapg/webservice/consultation/1" 
+  xmlns:rapg-ws="http://www.zas.admin.ch/xmlns/rapg-ws/1">
+  <!--
+		Notes :
+			la définition avec xmlns:rws référence ce fichier (le wsdl)
+			la définition avec xmlns:rapg-ws référence le xsd rapg-ws-1-0.xsd 
+	 -->
+	 
+	<!-- La balise types définit les types de données utilisés par le webservice -->
+	<wsdl:types>
+		<xs:schema targetNamespace="http://www.zas.admin.ch/rapg/webservice/consultation/1" elementFormDefault="qualified">
+			<xs:import namespace="http://www.zas.admin.ch/xmlns/rapg-ws/1" schemaLocation="../xsd/rapg-ws-1-0.xsd"/>
+		</xs:schema>
+	</wsdl:types>
+	
+	<!-- Les balises message définissent les paramètres (messages) des appels possibles au service web -->
+	<wsdl:message name="findAnnoncesRequestMessage">
+		<wsdl:part name="annoncesRequest" element="rapg-ws:rapgAnnoncesRequest"/>
+	</wsdl:message>
+	<wsdl:message name="findAnnoncesResponseMessage">
+		<wsdl:part name="annoncesResponse" element="rapg-ws:rapgAnnoncesResponse"/>
+	</wsdl:message>
+	<wsdl:message name="registerStatusRequestMessage">
+		<wsdl:part name="registerStatusRequest" element="rapg-ws:rapgRegisterStatusRequest"/>
+	</wsdl:message>
+	<wsdl:message name="registerStatusResponseMessage">
+		<wsdl:part name="registerStatusResponse" element="rapg-ws:rapgRegisterStatusResponse"/>
+	</wsdl:message>
+	
+	<!-- La balise portType contient les abstractions haut niveau des opérations possibles du service web -->
+	<wsdl:portType name="RapgConsultation-1">
+		<wsdl:operation name="findAnnonces">
+			<wsdl:input message="rws:findAnnoncesRequestMessage"/>
+			<wsdl:output message="rws:findAnnoncesResponseMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="getRegisterStatus">
+			<wsdl:input message="rws:registerStatusRequestMessage"/>
+			<wsdl:output message="rws:registerStatusResponseMessage"/>
+		</wsdl:operation>
+		
+	<!-- La balise binding définit les liens entre les opérations du service web et le protocole de communication utilisé
+	(généralement SOAP). C'est ici qu'on définit comment on utilise SOAP, les paramètres d'entrées et de sorties. -->	
+	</wsdl:portType>
+	<wsdl:binding name="RapgConsultationBinding-1-0" type="rws:RapgConsultation-1">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="findAnnonces">
+			<soap:operation soapAction="findAnnonces"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getRegisterStatus">
+			<soap:operation soapAction="getRegisterStatus"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	
+	<!-- La balise service contient les endpoints (port) d'accès. -->
+	<wsdl:service name="RapgConsultationService-1">
+		<wsdl:port name="RapgConsultationPort-1" binding="rws:RapgConsultationBinding-1-0">
+			<soap:address location="No Target Adress"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>
