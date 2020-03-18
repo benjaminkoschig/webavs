@@ -60,7 +60,7 @@
 		<op.version>5.0.4</op.version>
 		<globaz-external-xsd.version>1.2.6</globaz-external-xsd.version>
 		<ebback-api.version>9.2.0</ebback-api.version>
-		<cxf.version>3.3.5</cxf.version>
+		<cxf.version>3.2.1</cxf.version>
 
 
 		<!-- CONTINUOUS INTEGRATION -->
