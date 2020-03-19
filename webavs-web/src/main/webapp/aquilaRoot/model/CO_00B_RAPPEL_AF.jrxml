@@ -2,7 +2,7 @@
 <!-- Created with iReport - A designer for JasperReports -->
 <!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
 <jasperReport
-		 name="CO_00B_RAPPEL_AF"
+		 name="CO_00A_RAPPEL_AF"
 		 columnCount="1"
 		 printOrder="Vertical"
 		 orientation="Portrait"
@@ -39,7 +39,7 @@
 			</band>
 		</background>
 		<title>
-			<band height="468"  isSplitAllowed="true" >
+			<band height="487"  isSplitAllowed="true" >
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
@@ -121,7 +121,7 @@
 					<reportElement
 						mode="Opaque"
 						x="0"
-						y="396"
+						y="415"
 						width="535"
 						height="72"
 						forecolor="#000000"
@@ -155,7 +155,7 @@
 			</band>
 		</columnFooter>
 		<pageFooter>
-			<band height="20"  isSplitAllowed="true" >
+			<band height="22"  isSplitAllowed="true" >
 			</band>
 		</pageFooter>
 		<summary>

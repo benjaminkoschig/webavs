@@ -21,7 +21,7 @@ public class CO00BRappelPaiement extends CODocumentManager {
 
     public static final String NUMERO_REFERENCE_INFOROM = "0020GCO";
     private static final long serialVersionUID = -6253823454355503549L;
-    private static final String TEMPLATE_NAME = "CO_00B_RAPPEL_AF";
+    private static final String TEMPLATE_NAME = "CO_00A_RAPPEL_AF";
 
     // ~ Instance fields
     // ------------------------------------------------------------------------------------------------
@@ -102,17 +102,19 @@ public class CO00BRappelPaiement extends CODocumentManager {
             body.setLength(0);
             getCatalogueTextesUtil().dumpNiveau(getParent(), 2, body, "\n\n");
 
-            /*
-             * formater le corps, les conventions de remplacement pour les paragraphes du corps sont: {0} = formule de
-             * politesse {1} = montant facture {2} = délai de paiement {3} = durée transition
-             */
+            // formater le corps, les conventions de remplacement pour les paragraphes du corps sont:
+            // {0} = formule de politesse
+            // {1} = montant facture
+            // {2} = date échéance
+            // {3} = date de délai de paiement
+            // {4} = date de la section
+
             this.setParametres(
                     COParameter.T5,
-                    formatMessage(
-                            body,
-                            new Object[] { getFormulePolitesse(destinataireDocument),
-                                    formatMontant(curContentieux.getMontantInitial()),
-                                    formatDate(curContentieux.getDateDeclenchement()), getTransition().getDuree() }));
+                    formatMessage(body, new Object[] { getFormulePolitesse(destinataireDocument),
+                            formatMontant(curContentieux.getSection().getSolde()),
+                            formatDate(curContentieux.getSection().getDateEcheance()), formatDate(dateDelaiPaiement),
+                            formatDate(curContentieux.getSection().getDateSection()) }));
         } catch (Exception e) {
             this.log("exception: " + e.getMessage());
         }
