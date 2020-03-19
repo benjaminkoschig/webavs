@@ -22,6 +22,8 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
+import static globaz.osiris.print.itext.list.CADocumentManager.formatMontant;
+
 
 public class ReferenceQR extends AbstractReference {
 
@@ -165,7 +167,7 @@ public class ReferenceQR extends AbstractReference {
                 parameters.put(COParameter.P_MONTANT, "0.00");
                 parameters.put(COParameter.P_INFO_ADD, (P_INFO_ADD_ERREUR + RETOUR_LIGNE + communicationNonStructuree + RETOUR_LIGNE + infoFacture).trim());
             } else {
-                parameters.put(COParameter.P_MONTANT, montant);
+                parameters.put(COParameter.P_MONTANT, JANumberFormatter.format(montant));
                 parameters.put(COParameter.P_INFO_ADD, (communicationNonStructuree + RETOUR_LIGNE + infoFacture).trim());
             }
             if (!COMBINE.equals(debfAdressTyp)){
