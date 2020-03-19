@@ -4,14 +4,13 @@ import ch.globaz.vulpecula.external.api.poi.AbstractListExcel;
 import globaz.aquila.print.list.elp.*;
 import globaz.aquila.process.elp.COAbstractELP;
 import globaz.aquila.process.elp.COProtocoleELP;
+import globaz.aquila.process.elp.COSpElpDto;
 import globaz.aquila.process.elp.COScElpDto;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -73,182 +72,6 @@ public class COResultELPExcel extends AbstractListExcel {
         return COResultELPExcel.NUMERO_REFERENCE_INFOROM;
     }
 
-    /**
-     * Création des onglets
-     */
-    private void initOnglet1() {
-        // Titres des colonnes
-        ArrayList<String> colTitles = new ArrayList<>();
-        colTitles.add(getSession().getLabel(ELP_REFERENCE_FICHIER));
-        colTitles.add(getSession().getLabel(ELP_TYPE_MESSAGE));
-        colTitles.add(getSession().getLabel(ELP_SC_DATE_NOTIFICATION));
-        colTitles.add(getSession().getLabel(ELP_SC_DATE_RECEPTION));
-        colTitles.add(getSession().getLabel(ELP_SC_NO_POURSUITE));
-        colTitles.add(getSession().getLabel(ELP_SC_OPPOSITION));
-        colTitles.add(getSession().getLabel(ELP_REMARQUE));
-        colTitles.add(getSession().getLabel(ELP_MOTIF));
-
-        createSheet(getSession().getLabel(ELP_ONGLET_CDP_NON_TRAITE));
-
-        initTitleRow(colTitles);
-        initPage(true);
-        createHeader();
-        createFooter(COResultELPExcel.NUMERO_REFERENCE_INFOROM);
-
-    }
-
-    private void initOnglet2() {
-        // Titres des colonnes
-        ArrayList<String> colTitles = new ArrayList<>();
-        colTitles.add(getSession().getLabel(ELP_REFERENCE_FICHIER));
-        colTitles.add(getSession().getLabel(ELP_TYPE_MESSAGE));
-        colTitles.add(getSession().getLabel(ELP_SP_TYPE_SAISIE));
-        colTitles.add(getSession().getLabel(ELP_SP_DATE_EXECUTION));
-        colTitles.add(getSession().getLabel(ELP_SP_DATE_RECEPTION));
-        colTitles.add(getSession().getLabel(ELP_REMARQUE));
-        colTitles.add(getSession().getLabel(ELP_MOTIF));
-
-        createSheet(getSession().getLabel(ELP_ONGLET_PV_NON_TRAITE));
-
-        initTitleRow(colTitles);
-        initPage(true);
-        createHeader();
-        createFooter(COResultELPExcel.NUMERO_REFERENCE_INFOROM);
-    }
-
-    private void initOnglet3() {
-        // Titres des colonnes
-        ArrayList<String> colTitles = new ArrayList<>();
-        colTitles.add(getSession().getLabel(ELP_REFERENCE_FICHIER));
-        colTitles.add(getSession().getLabel(ELP_TYPE_MESSAGE));
-        colTitles.add(getSession().getLabel(ELP_RC_NO_ADB));
-        colTitles.add(getSession().getLabel(ELP_RC_DATE_ETABLISSEMENT));
-        colTitles.add(getSession().getLabel(ELP_RC_DATE_RECEPTION));
-        colTitles.add(getSession().getLabel(ELP_REMARQUE));
-        colTitles.add(getSession().getLabel(ELP_MOTIF));
-
-        createSheet(getSession().getLabel(ELP_ONGLET_ADB_NON_TRAITE));
-
-        initTitleRow(colTitles);
-        initPage(true);
-        createHeader();
-        createFooter(COResultELPExcel.NUMERO_REFERENCE_INFOROM);
-    }
-
-    private void initOnglet4() {
-        // Titres des colonnes
-        ArrayList<String> colTitles = new ArrayList<>();
-        colTitles.add(getSession().getLabel(ELP_REFERENCE_FICHIER));
-        colTitles.add(getSession().getLabel(ELP_TYPE_MESSAGE));
-        colTitles.add(getSession().getLabel(ELP_MOTIF));
-
-        createSheet(getSession().getLabel(ELP_ONGLET_MESSAGES_INCOHERENTS));
-
-        initTitleRow(colTitles);
-        initPage(true);
-        createHeader();
-        createFooter(COResultELPExcel.NUMERO_REFERENCE_INFOROM);
-    }
-
-    private void initOnglet5() {
-        // Titres des colonnes
-        ArrayList<String> colTitles = new ArrayList<>();
-        colTitles.add(getSession().getLabel(ELP_REFERENCE_FICHIER));
-        colTitles.add(getSession().getLabel(ELP_TYPE_MESSAGE));
-        colTitles.add(getSession().getLabel(ELP_REMARQUE));
-
-        createSheet(getSession().getLabel(ELP_ONGLET_MESSAGES_TRAITES));
-
-        initTitleRow(colTitles);
-        initPage(true);
-        createHeader();
-        createFooter(COResultELPExcel.NUMERO_REFERENCE_INFOROM);
-    }
-
-    public void populateSheet() throws COELPException {
-        populateSheet1();
-        populateSheet2();
-        populateSheet3();
-        populateSheet4();
-        populateSheet5();
-    }
-
-    /**
-     * initialisation des feuilles xls
-     */
-    public HSSFSheet populateSheet1() {
-        initOnglet1();
-        for(COScElpDto result : protocole.getListCDPnonTraite()){
-            createRow();
-            this.createCell(result.getFichier(), getStyleLeft());
-            this.createCell(result.getTypemessage().getValue(), getStyleLeft());
-            this.createCell(result.getDateNotification(), getStyleRight());
-            this.createCell(result.getDateReception(), getStyleRight());
-            this.createCell(result.getNoPoursuite(), getStyleLeft());
-            this.createCell(result.getOpposition(), getStyleRight());
-            this.createCell(result.getRemarque(), getStyleLeft());
-            this.createCell(result.getMotif(getSession()), getStyleLeft());
-        }
-        formatSheet();
-        return currentSheet;
-    }
-
-    public HSSFSheet populateSheet2() throws COELPException {
-        initOnglet2();
-        for(COResultSpELP result : protocole.getListPVnonTraite()){
-            createRow();
-            this.createCell(result.getFichier(), getStyleLeft());
-            this.createCell(result.getTypemessage().getValue(), getStyleLeft());
-            this.createCell(result.getTypeDeSaisie(getSession()), getStyleLeft());
-            this.createCell(result.getDateExecution(), getStyleRight());
-            this.createCell(result.getDateReception(), getStyleRight());
-            this.createCell(result.getRemarque(), getStyleLeft());
-            this.createCell(result.getMotif(getSession()), getStyleLeft());
-        }
-        formatSheet();
-        return currentSheet;
-    }
-
-    public HSSFSheet populateSheet3() {
-        initOnglet3();
-        for(COResultRcELP result : protocole.getListADBnonTraite()){
-            createRow();
-            this.createCell(result.getFichier(), getStyleLeft());
-            this.createCell(result.getTypemessage().getValue(), getStyleLeft());
-            this.createCell(result.getNoAbd(), getStyleRight());
-            this.createCell(result.getDateEtablissement(), getStyleRight());
-            this.createCell(result.getDateReception(), getStyleRight());
-            this.createCell(result.getRemarque(), getStyleLeft());
-            this.createCell(result.getMotif(getSession()), getStyleLeft());
-        }
-        formatSheet();
-        return currentSheet;
-    }
-
-    public HSSFSheet populateSheet4() {
-        initOnglet4();
-        for(COAbstractELP result : protocole.getListMsgIncoherent()){
-            createRow();
-            this.createCell(result.getFichier(), getStyleLeft());
-            this.createCell(result.getTypemessage().getValue(), getStyleLeft());
-            this.createCell(result.getMotif(getSession()), getStyleLeft());
-        }
-        formatSheet();
-        return currentSheet;
-    }
-
-    public HSSFSheet populateSheet5() {
-        initOnglet5();
-        for(COAbstractELP result : protocole.getListMsgTraite()){
-            createRow();
-            this.createCell(result.getFichier(), getStyleLeft());
-            this.createCell(result.getTypemessage().getValue(), getStyleLeft());
-            this.createCell(result.getRemarque(), getStyleLeft());
-        }
-        formatSheet();
-        return currentSheet;
-    }
-
     private void initStyle() {
         setColor(getWorkbook(), HSSFColor.ROYAL_BLUE.index, HEADER_RGB);
         setColor(getWorkbook(), HSSFColor.SKY_BLUE.index, BACK_LIGNE_IMPAIRE_RGB);
@@ -276,7 +99,20 @@ public class COResultELPExcel extends AbstractListExcel {
         styleLeftEven = createsStyleLigne(HSSFCellStyle.ALIGN_LEFT);
         styleLeftEven.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
         styleLeftEven.setFillForegroundColor(HSSFColor.SKY_BLUE.index);
+    }
 
+    private HSSFColor setColor(HSSFWorkbook workbook, int index, Integer[] colors){
+        Byte r = colors[0].byteValue();
+        Byte g = colors[1].byteValue();
+        Byte b = colors[2].byteValue();
+        HSSFPalette palette = workbook.getCustomPalette();
+        HSSFColor hssfColor = null;
+        hssfColor= palette.findColor(r, g, b);
+        if (hssfColor == null ){
+            palette.setColorAtIndex((short) index, r, g, b);
+            hssfColor = palette.getColor((short) index);
+        }
+        return hssfColor;
     }
 
     private HSSFCellStyle createsStyleLigne(Short alignement) {
@@ -288,6 +124,182 @@ public class COResultELPExcel extends AbstractListExcel {
         style.setAlignment(alignement);
         style.setWrapText(true);
         return style;
+    }
+
+    private void populateSheet() throws COELPException {
+        populateSheet1();
+        populateSheet2();
+        populateSheet3();
+        populateSheet4();
+        populateSheet5();
+    }
+
+    /**
+     * initialisation des feuilles xls
+     */
+    private HSSFSheet populateSheet1() {
+        initOnglet1();
+        for(COScElpDto result : protocole.getListCDPnonTraite()){
+            createRow();
+            this.createCell(result.getFichier(), getStyleLeft());
+            this.createCell(result.getTypemessage().getValue(), getStyleLeft());
+            this.createCell(result.getDateNotification(), getStyleRight());
+            this.createCell(result.getDateReception(), getStyleRight());
+            this.createCell(result.getNoPoursuite(), getStyleLeft());
+            this.createCell(result.getOpposition(), getStyleRight());
+            this.createCell(result.getRemarque(), getStyleLeft());
+            this.createCell(result.getMotif(getSession()), getStyleLeft());
+        }
+        formatSheet();
+        return currentSheet;
+    }
+
+    /**
+     * Création des onglets
+     */
+    private void initOnglet1() {
+        // Titres des colonnes
+        ArrayList<String> colTitles = new ArrayList<>();
+        colTitles.add(getSession().getLabel(ELP_REFERENCE_FICHIER));
+        colTitles.add(getSession().getLabel(ELP_TYPE_MESSAGE));
+        colTitles.add(getSession().getLabel(ELP_SC_DATE_NOTIFICATION));
+        colTitles.add(getSession().getLabel(ELP_SC_DATE_RECEPTION));
+        colTitles.add(getSession().getLabel(ELP_SC_NO_POURSUITE));
+        colTitles.add(getSession().getLabel(ELP_SC_OPPOSITION));
+        colTitles.add(getSession().getLabel(ELP_REMARQUE));
+        colTitles.add(getSession().getLabel(ELP_MOTIF));
+
+        createSheet(getSession().getLabel(ELP_ONGLET_CDP_NON_TRAITE));
+
+        initTitleRow(colTitles);
+        initPage(true);
+        createHeader();
+        createFooter(COResultELPExcel.NUMERO_REFERENCE_INFOROM);
+
+    }
+
+    private HSSFSheet populateSheet2() throws COELPException {
+        initOnglet2();
+        for(COSpElpDto result : protocole.getListPVnonTraite()){
+            createRow();
+            this.createCell(result.getFichier(), getStyleLeft());
+            this.createCell(result.getTypemessage().getValue(), getStyleLeft());
+            this.createCell(result.getTypeSaisieLabel(), getStyleLeft());
+            this.createCell(result.getDateExecution(), getStyleRight());
+            this.createCell(result.getDateReception(), getStyleRight());
+            this.createCell(result.getRemarque(), getStyleLeft());
+            this.createCell(result.getMotif(getSession()), getStyleLeft());
+        }
+        formatSheet();
+        return currentSheet;
+    }
+
+    private void initOnglet2() {
+        // Titres des colonnes
+        ArrayList<String> colTitles = new ArrayList<>();
+        colTitles.add(getSession().getLabel(ELP_REFERENCE_FICHIER));
+        colTitles.add(getSession().getLabel(ELP_TYPE_MESSAGE));
+        colTitles.add(getSession().getLabel(ELP_SP_TYPE_SAISIE));
+        colTitles.add(getSession().getLabel(ELP_SP_DATE_EXECUTION));
+        colTitles.add(getSession().getLabel(ELP_SP_DATE_RECEPTION));
+        colTitles.add(getSession().getLabel(ELP_REMARQUE));
+        colTitles.add(getSession().getLabel(ELP_MOTIF));
+
+        createSheet(getSession().getLabel(ELP_ONGLET_PV_NON_TRAITE));
+
+        initTitleRow(colTitles);
+        initPage(true);
+        createHeader();
+        createFooter(COResultELPExcel.NUMERO_REFERENCE_INFOROM);
+    }
+
+    private HSSFSheet populateSheet3() {
+        initOnglet3();
+        for(COResultRcELP result : protocole.getListADBnonTraite()){
+            createRow();
+            this.createCell(result.getFichier(), getStyleLeft());
+            this.createCell(result.getTypemessage().getValue(), getStyleLeft());
+            this.createCell(result.getNoAbd(), getStyleRight());
+            this.createCell(result.getDateEtablissement(), getStyleRight());
+            this.createCell(result.getDateReception(), getStyleRight());
+            this.createCell(result.getRemarque(), getStyleLeft());
+            this.createCell(result.getMotif(getSession()), getStyleLeft());
+        }
+        formatSheet();
+        return currentSheet;
+    }
+
+    private void initOnglet3() {
+        // Titres des colonnes
+        ArrayList<String> colTitles = new ArrayList<>();
+        colTitles.add(getSession().getLabel(ELP_REFERENCE_FICHIER));
+        colTitles.add(getSession().getLabel(ELP_TYPE_MESSAGE));
+        colTitles.add(getSession().getLabel(ELP_RC_NO_ADB));
+        colTitles.add(getSession().getLabel(ELP_RC_DATE_ETABLISSEMENT));
+        colTitles.add(getSession().getLabel(ELP_RC_DATE_RECEPTION));
+        colTitles.add(getSession().getLabel(ELP_REMARQUE));
+        colTitles.add(getSession().getLabel(ELP_MOTIF));
+
+        createSheet(getSession().getLabel(ELP_ONGLET_ADB_NON_TRAITE));
+
+        initTitleRow(colTitles);
+        initPage(true);
+        createHeader();
+        createFooter(COResultELPExcel.NUMERO_REFERENCE_INFOROM);
+    }
+
+    private HSSFSheet populateSheet4() {
+        initOnglet4();
+        for(COAbstractELP result : protocole.getListMsgIncoherent()){
+            createRow();
+            this.createCell(result.getFichier(), getStyleLeft());
+            this.createCell(result.getTypemessage().getValue(), getStyleLeft());
+            this.createCell(result.getMotif(getSession()), getStyleLeft());
+        }
+        formatSheet();
+        return currentSheet;
+    }
+
+    private void initOnglet4() {
+        // Titres des colonnes
+        ArrayList<String> colTitles = new ArrayList<>();
+        colTitles.add(getSession().getLabel(ELP_REFERENCE_FICHIER));
+        colTitles.add(getSession().getLabel(ELP_TYPE_MESSAGE));
+        colTitles.add(getSession().getLabel(ELP_MOTIF));
+
+        createSheet(getSession().getLabel(ELP_ONGLET_MESSAGES_INCOHERENTS));
+
+        initTitleRow(colTitles);
+        initPage(true);
+        createHeader();
+        createFooter(COResultELPExcel.NUMERO_REFERENCE_INFOROM);
+    }
+
+    private HSSFSheet populateSheet5() {
+        initOnglet5();
+        for(COAbstractELP result : protocole.getListMsgTraite()){
+            createRow();
+            this.createCell(result.getFichier(), getStyleLeft());
+            this.createCell(result.getTypemessage().getValue(), getStyleLeft());
+            this.createCell(result.getRemarque(), getStyleLeft());
+        }
+        formatSheet();
+        return currentSheet;
+    }
+
+    private void initOnglet5() {
+        // Titres des colonnes
+        ArrayList<String> colTitles = new ArrayList<>();
+        colTitles.add(getSession().getLabel(ELP_REFERENCE_FICHIER));
+        colTitles.add(getSession().getLabel(ELP_TYPE_MESSAGE));
+        colTitles.add(getSession().getLabel(ELP_REMARQUE));
+
+        createSheet(getSession().getLabel(ELP_ONGLET_MESSAGES_TRAITES));
+
+        initTitleRow(colTitles);
+        initPage(true);
+        createHeader();
+        createFooter(COResultELPExcel.NUMERO_REFERENCE_INFOROM);
     }
 
     HSSFCellStyle getStyleLeft() {
@@ -328,19 +340,5 @@ public class COResultELPExcel extends AbstractListExcel {
         }
     }
 
-    public HSSFColor setColor(HSSFWorkbook workbook, int index, Integer[] colors){
-        Byte r = colors[0].byteValue();
-        Byte g = colors[1].byteValue();
-        Byte b = colors[2].byteValue();
-        HSSFPalette palette = workbook.getCustomPalette();
-        HSSFColor hssfColor = null;
-        hssfColor= palette.findColor(r, g, b);
-        if (hssfColor == null ){
-            palette.setColorAtIndex((short) index, r, g, b);
-            hssfColor = palette.getColor((short) index);
-        }
-
-        return hssfColor;
-    }
 
 }

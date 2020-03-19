@@ -11,7 +11,7 @@ import java.util.List;
 public class COProtocoleELP {
 
     private List<COScElpDto> listCDPnonTraite = new ArrayList<>();
-    private List<COResultSpELP> listPVnonTraite = new ArrayList<>();
+    private List<COSpElpDto> listPVnonTraite = new ArrayList<>();
     private List<COResultRcELP> listADBnonTraite = new ArrayList<>();
     private List<COAbstractELP> listMsgIncoherent = new ArrayList<>();
     private List<COAbstractELP> listMsgTraite = new ArrayList<>();
@@ -20,8 +20,8 @@ public class COProtocoleELP {
         listCDPnonTraite.add(result);
     }
 
-    public void addnonTraite(SpType spType, COInfoFileELP infos, COMotifMessageELP motif) {
-        COResultSpELP result = getResultSpELP(spType, infos, motif);
+
+    public void addnonTraite(COSpElpDto result) {
         listPVnonTraite.add(result);
     }
 
@@ -63,8 +63,7 @@ public class COProtocoleELP {
         listMsgIncoherent.add(result);
     }
 
-    public void addMsgIncoherent(SpType spType, COInfoFileELP infos, COMotifMessageELP motif) {
-        COResultSpELP result = getResultSpELP(spType, infos, motif);
+    public void addMsgIncoherent(COSpElpDto result) {
         listMsgIncoherent.add(result);
     }
 
@@ -77,8 +76,7 @@ public class COProtocoleELP {
         listMsgTraite.add(result);
     }
 
-    public void addMsgTraite(SpType spType, COInfoFileELP infos) {
-        COResultSpELP result = getResultSpELP(spType, infos, null);
+    public void addMsgTraite(COSpElpDto result) {
         listMsgTraite.add(result);
     }
 
@@ -95,13 +93,6 @@ public class COProtocoleELP {
         return result;
     }
 
-    private COResultSpELP getResultSpELP(SpType spType, COInfoFileELP infos, COMotifMessageELP motif) {
-        COResultSpELP result = new COResultSpELP(spType);
-        result.setDateReception(infos.getDate());
-        result.setFichier(infos.getFichier());
-        result.setMotif(motif);
-        return result;
-    }
 
     public List<COScElpDto> getListCDPnonTraite() {
         return listCDPnonTraite;
@@ -111,11 +102,11 @@ public class COProtocoleELP {
         this.listCDPnonTraite = listCDPnonTraite;
     }
 
-    public List<COResultSpELP> getListPVnonTraite() {
+    public List<COSpElpDto> getListPVnonTraite() {
         return listPVnonTraite;
     }
 
-    public void setListPVnonTraite(List<COResultSpELP> listPVnonTraite) {
+    public void setListPVnonTraite(List<COSpElpDto> listPVnonTraite) {
         this.listPVnonTraite = listPVnonTraite;
     }
 
