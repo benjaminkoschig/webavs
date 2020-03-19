@@ -54,7 +54,7 @@ public class ReferenceQR extends AbstractReference {
     private String nomAV1 = StringUtils.EMPTY;
     private String nomAV2 = StringUtils.EMPTY;
     private String infosAdditionnelles = StringUtils.EMPTY;
-    private String P_INFO_ADD_ERREUR = StringUtils.EMPTY;
+    private String pInfoAddErreur = StringUtils.EMPTY;
 
     private String qrType = QR_TYPE;
     private String version = DEFAULT_VERSION;
@@ -146,8 +146,8 @@ public class ReferenceQR extends AbstractReference {
             parameters.put(COParameter.P_REF_TITRE, getSession().getApplication().getLabel("REFERENCE", langueDoc));
             parameters.put(COParameter.P_INFO_ADD_TITRE, getSession().getApplication().getLabel("QR_INFO_SUPP", langueDoc));
 
-            P_INFO_ADD_ERREUR = getSession().getApplication().getLabel("INFO_ADD_ERREUR", langueDoc);
-            parameters.put(COParameter.P_INFO_ADD_ERREUR, P_INFO_ADD_ERREUR);
+            pInfoAddErreur = getSession().getApplication().getLabel("INFO_ADD_ERREUR", langueDoc);
+            parameters.put(COParameter.P_INFO_ADD_ERREUR, pInfoAddErreur);
         } catch (Exception e) {
             throw new CommonTechnicalException ("Problème à l'initialisation des entêtes QR : ", e);
         }
@@ -165,7 +165,7 @@ public class ReferenceQR extends AbstractReference {
         if (!qrNeutre) {
             if (new Montant(montant).isNegative()) {
                 parameters.put(COParameter.P_MONTANT, "0.00");
-                parameters.put(COParameter.P_INFO_ADD, (P_INFO_ADD_ERREUR + RETOUR_LIGNE + communicationNonStructuree + RETOUR_LIGNE + infoFacture).trim());
+                parameters.put(COParameter.P_INFO_ADD, (pInfoAddErreur + RETOUR_LIGNE + communicationNonStructuree + RETOUR_LIGNE + infoFacture).trim());
             } else {
                 parameters.put(COParameter.P_MONTANT, JANumberFormatter.format(montant));
                 parameters.put(COParameter.P_INFO_ADD, (communicationNonStructuree + RETOUR_LIGNE + infoFacture).trim());
@@ -227,7 +227,7 @@ public class ReferenceQR extends AbstractReference {
         } else {
             if (new Montant(montant).isNegative()) {
                 builder.append("0.00").append(CHAR_FIN_LIGNE);
-                builder.append(P_INFO_ADD_ERREUR + " " +communicationNonStructuree).append(CHAR_FIN_LIGNE);
+                builder.append(pInfoAddErreur + " " +communicationNonStructuree).append(CHAR_FIN_LIGNE);
             } else {
                 builder.append(montant).append(CHAR_FIN_LIGNE);
                 builder.append(communicationNonStructuree).append(CHAR_FIN_LIGNE);
