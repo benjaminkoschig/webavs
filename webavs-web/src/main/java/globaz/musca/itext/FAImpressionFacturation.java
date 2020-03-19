@@ -1,5 +1,6 @@
 package globaz.musca.itext;
 
+import ch.globaz.common.util.GenerationQRCode;
 import globaz.framework.printing.itext.FWIDocumentManager;
 import globaz.framework.printing.itext.api.FWIImporterInterface;
 import globaz.framework.printing.itext.exception.FWIException;
@@ -19,6 +20,7 @@ import ch.globaz.common.document.reference.ReferenceQR;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
@@ -98,6 +100,16 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
     public boolean beforePrintDocument() {
         super.DocumentSort();
         return super.beforePrintDocument();
+    }
+
+    @Override
+    public void afterExecuteReport() {
+        super.afterExecuteReport();
+        try {
+            GenerationQRCode.deleteQRCodeImage();
+        } catch (IOException e) {
+            getMemoryLog().logMessage("Erreur lors de la suppression de l'image QR-Code : " + e.getMessage(), FWMessage.ERREUR, this.getClass().getName());
+        }
     }
 
     protected String getAnneeFromEntete(FAEnteteFacture entity) {

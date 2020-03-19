@@ -128,6 +128,7 @@ public class CODecisionFPV extends CODocumentManager {
         } catch (Exception e) {
             this._addError(e.toString());
         }
+        super.afterExecuteReport();
     }
 
     /**

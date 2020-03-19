@@ -131,6 +131,7 @@ public class CODecision extends CODocumentManager {
         } catch (Exception e) {
             this._addError(e.toString());
         }
+        super.afterExecuteReport();
     }
 
     /**

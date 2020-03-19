@@ -75,10 +75,8 @@ public class CAILettrePlanRecouvDecision extends CADocumentManager {
     @Override
     public void afterExecuteReport() {
         try {
-            super.afterExecuteReport();
-
             createVoiesDroit();
-
+            super.afterExecuteReport();
         } catch (FWIException e) {
             JadeLogger.error(this, e);
         } catch (Exception e) {

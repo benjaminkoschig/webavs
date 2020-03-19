@@ -1,7 +1,10 @@
 package ch.globaz.vulpecula.documents.catalog;
 
+import ch.globaz.common.util.GenerationQRCode;
 import globaz.framework.printing.itext.api.FWIImporterInterface;
 import globaz.framework.util.FWMessage;
+
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -67,9 +70,15 @@ public abstract class VulpeculaDocumentManager<T extends Serializable> extends D
 
         // On passe le nb de page au document
         setParametres("P_NOMBRE_PAGES", nbPages);
+    }
 
-        
-
-        
+    @Override
+    public void afterExecuteReport() {
+        super.afterExecuteReport();
+        try {
+            GenerationQRCode.deleteQRCodeImage();
+        } catch (IOException e) {
+            getMemoryLog().logMessage("Erreur lors de la suppression de l'image QR-Code : " + e.getMessage(), FWMessage.ERREUR, this.getClass().getName());
+        }
     }
 }

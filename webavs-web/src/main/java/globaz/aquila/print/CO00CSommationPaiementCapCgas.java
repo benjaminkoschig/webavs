@@ -170,6 +170,7 @@ public class CO00CSommationPaiementCapCgas extends CODocumentManager {
         } catch (Exception e) {
             this._addError(e.toString());
         }
+        super.afterExecuteReport();
     }
 
     /**

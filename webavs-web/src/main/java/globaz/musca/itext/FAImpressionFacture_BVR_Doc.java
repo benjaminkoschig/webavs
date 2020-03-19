@@ -593,6 +593,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
             JadeLogger.info(this, "----> Temps moyen du chargement des données (FAImpressionFactureDatasource) :"
                     + totalDataSourceLoadingTime / factureImpressionNo);
         }
+        super.afterExecuteReport();
     }
 
     @Override

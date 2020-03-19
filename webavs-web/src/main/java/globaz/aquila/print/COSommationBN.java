@@ -91,6 +91,7 @@ public class COSommationBN extends CODocumentManager {
         } catch (Exception e) {
             this._addError(e.toString());
         }
+        super.afterExecuteReport();
     }
 
     /**

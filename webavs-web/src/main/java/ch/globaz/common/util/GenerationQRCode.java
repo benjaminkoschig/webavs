@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.EnumMap;
 
@@ -38,6 +39,12 @@ public class GenerationQRCode {
 
     private static final int QR_CODE_EDGE_SIDE_PX = SWISS_CROSS_EDGE_SIDE_PX * QR_CODE_EDGE_SIDE_MM  / SWISS_CROSS_EDGE_SIDE_MM;
 
+    /**
+     * Méthode permettant de générer un QR Code avec la croix swiss intégrée en son centre.
+     *
+     * @param payload : le contenu du QR Code.
+     * @return le chemin vers l'image du QR code créé.
+     */
     public static String generateSwissQrCode(String payload) {
 
         // generate the qr code from the payload.
@@ -57,6 +64,12 @@ public class GenerationQRCode {
         return qrCodePath;
     }
 
+    /**
+     * Génération du QR Code sous forme d'image.
+     *
+     * @param payload : le contenu du QR Code.
+     * @return l'image du QR Code.
+     */
     private static BufferedImage generateQrCodeImage(String payload) {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         EnumMap<EncodeHintType, Object> hints = new EnumMap<>(EncodeHintType.class);
@@ -73,8 +86,14 @@ public class GenerationQRCode {
         return MatrixToImageWriter.toBufferedImage(bitMatrix);
     }
 
+    /**
+     * Ajout de la croix suisse sur l'image du QR code créé.
+     *
+     * @param qrCodeImage : l'image du QR Code.
+     * @return l'image du QR Code avec la croix suisse intégrée.
+     * @throws IOException
+     */
     private static BufferedImage overlayWithSwissCross(BufferedImage qrCodeImage) throws IOException {
-
         Path swissCrossPath;
         String pathString = JadeStringUtil.change(Jade.getInstance().getExternalModelDir() + OVERLAY_IMAGE, '\\', '/');
         swissCrossPath = FileSystems.getDefault().getPath(pathString);
@@ -90,5 +109,14 @@ public class GenerationQRCode {
         g.drawImage(swissCrossImage, swissCrossPosition, swissCrossPosition, null);
 
         return combindedQrCodeImage;
+    }
+
+    /**
+     * Méthode permettant de supprimer l'image temporaire du QR Code créée.
+     */
+    public static void deleteQRCodeImage() throws IOException {
+        String pathString = JadeStringUtil.change(Jade.getInstance().getExternalModelDir() + TARGET_FINAL_NAME, '\\', '/');
+        Path qrCodePath = FileSystems.getDefault().getPath(pathString);
+        Files.deleteIfExists(qrCodePath);
     }
 }

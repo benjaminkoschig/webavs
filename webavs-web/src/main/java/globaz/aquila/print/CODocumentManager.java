@@ -1,5 +1,7 @@
 package globaz.aquila.print;
 
+import ch.globaz.common.document.reference.ReferenceQR;
+import ch.globaz.common.util.GenerationQRCode;
 import globaz.aquila.api.ICOApplication;
 import globaz.aquila.api.ICOEtape;
 import globaz.aquila.api.helper.ICOEtapeHelper;
@@ -49,18 +51,19 @@ import globaz.osiris.db.comptes.CATypeOperationManager;
 import globaz.osiris.db.comptes.extrait.CAExtraitCompte;
 import globaz.osiris.db.comptes.extrait.CAExtraitCompteManager;
 import globaz.osiris.db.interets.CARubriqueSoumiseInteretManager;
-import ch.globaz.common.document.reference.ReferenceQR;
 import globaz.osiris.external.IntRole;
 import globaz.osiris.external.IntTiers;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.adresse.formater.TIAdresseFormater;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.tiers.TITiers;
+import net.sf.jasperreports.engine.JRExporterParameter;
+
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.*;
 
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 
@@ -855,6 +858,16 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
         } catch (Exception e) {
             throw new FWIException(e);
+        }
+    }
+
+    @Override
+    public void afterExecuteReport() {
+        super.afterExecuteReport();
+        try {
+            GenerationQRCode.deleteQRCodeImage();
+        } catch (IOException e) {
+            this.log("Erreur lors de la suppression de l'image QR-Code : " + e.getMessage());
         }
     }
 

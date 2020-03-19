@@ -1,5 +1,6 @@
 package globaz.osiris.print.itext.list;
 
+import ch.globaz.common.util.GenerationQRCode;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.ICTListeTextes;
 import globaz.babel.api.ICTTexte;
@@ -33,6 +34,8 @@ import globaz.pyxis.api.ITIRole;
 import globaz.pyxis.application.TIApplication;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.tiers.TITiersViewBean;
+
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -251,6 +254,16 @@ public abstract class CADocumentManager extends FWIDocumentManager {
     protected void _createDocumentInfo() {
         super._createDocumentInfo();
         super.getDocumentInfo().setDocumentTypeNumber(getNumeroReferenceInforom());
+    }
+
+    @Override
+    public void afterExecuteReport() {
+        super.afterExecuteReport();
+        try {
+            GenerationQRCode.deleteQRCodeImage();
+        } catch (IOException e) {
+            getMemoryLog().logMessage("Erreur lors de la suppression de l'image QR-Code : " + e.getMessage(), FWMessage.ERREUR, this.getClass().getName());
+        }
     }
 
     /**

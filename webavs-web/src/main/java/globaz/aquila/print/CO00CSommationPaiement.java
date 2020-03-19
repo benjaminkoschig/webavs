@@ -6,6 +6,8 @@
  */
 package globaz.aquila.print;
 
+import ch.globaz.common.document.reference.ReferenceBVR;
+import ch.globaz.common.document.reference.ReferenceQR;
 import ch.globaz.common.properties.CommonProperties;
 import globaz.aquila.api.ICOEtape;
 import globaz.aquila.service.taxes.COTaxe;
@@ -19,8 +21,6 @@ import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.pdf.JadePdfUtil;
 import globaz.osiris.api.APISection;
-import ch.globaz.common.document.reference.ReferenceBVR;
-import ch.globaz.common.document.reference.ReferenceQR;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -159,6 +159,8 @@ public class CO00CSommationPaiement extends CODocumentManager {
         } catch (Exception e) {
             this._addError(e.toString());
         }
+        super.afterExecuteReport();
+
     }
 
     @Override
@@ -246,7 +248,6 @@ public class CO00CSommationPaiement extends CODocumentManager {
 
     /**
      * DataSource pour les voies de droits
-     *
      */
     private void createDataSourceVoiesDroit() {
         getCatalogueTextesUtil().setNomDocument(CO00CSommationPaiement.TITLE_VOIES_DE_DROIT);
