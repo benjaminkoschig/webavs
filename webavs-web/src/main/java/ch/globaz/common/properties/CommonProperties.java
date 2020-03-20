@@ -49,6 +49,16 @@ public enum CommonProperties implements IProperties {
     UPI_WSDL_RESOURCE_PATH("upi.wsdl.path", "Chemin de la wsdl"),
     UPI_ENDPOINT_ADDRESS("upi.endpoint.address", "URL de surcharge de la wsdl"),
 
+    RAPG_ENDPOINT_ADDRESS("rapg.endpoint.address","adresse endpoint"),
+    RAPG_KEYSTORE_PASSWORD("rapg.keystore.password","adresse endpoint"),
+    RAPG_KEYSTORE_PATH("rapg.keystore.path","adresse endpoint"),
+    RAPG_KEYSTORE_TYPE("rapg.keystore.type","adresse endpoint"),
+    RAPG_SEODOR_WSDL_PATH("rapg.seodor.wsdl.path","adresse endpoint"),
+    RAPG_SSI_CONTEXT_TYPE("rapg.ssi.context.type","adresse endpoint"),
+    RAPG_WEBSERVICE_NAME("rapg.webservice.name","adresse endpoint"),
+    RAPG_WEBSERVICE_NAMESPACE("rapg.webservice.namespace","adresse endpoint"),
+    RAPG_WEBSERVICE_SEDEX_SENDER_ID("rapg.webservice.sedex.sender.id","adresse endpoint"),
+
     QR_FACTURE("qrFacture","Permet de changer le mode de facturation QR-Facture/BVR");
 
     private String description;

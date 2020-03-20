@@ -35,6 +35,12 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
     private List<APErreurValidationPeriode> erreursValidationPeriodes = new ArrayList<APErreurValidationPeriode>();
     private List<String> erreursValidationsJoursIsoles = new ArrayList<String>();
 
+
+
+    private List<String> messagesError = new ArrayList<>();
+
+    private boolean hasMessagePropError = false;
+
     public final List<APValidationPrestationAPGContainer> getPrestationValidees() {
         return prestationValidees;
     }
@@ -252,5 +258,24 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
 
     public String getAppColor() {
         return Jade.getInstance().getWebappBackgroundColor();
+    }
+
+    public void setMessagePropError(boolean b) {
+        hasMessagePropError = b;
+    }
+    public boolean hasMessagePropError() {
+        return hasMessagePropError;
+    }
+
+    public String getMessagesError() {
+        String msgHTML = "";
+        for(String msg: messagesError){
+            msgHTML = msgHTML+ "<p>"+msg+"<p><br>";
+        }
+        return msgHTML;
+    }
+
+    public void setMessagesError(List<String> messagesError) {
+        this.messagesError = messagesError;
     }
 }

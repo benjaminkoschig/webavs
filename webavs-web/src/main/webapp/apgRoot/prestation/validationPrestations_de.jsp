@@ -22,6 +22,10 @@
 
 <c:set var="selectedIdValue" value="${viewBean.idDroit}" scope="page" />
 
+<%
+	globaz.apg.vb.prestation.APValidationPrestationViewBean viewBean = (globaz.apg.vb.prestation.APValidationPrestationViewBean) session.getAttribute("viewBean");
+%>
+
 <%--  ********************************************************************** JS CSS ***************************************************************************--%>
 <%@ include file="/theme/detail_el/javascripts.jspf" %>
 
@@ -150,9 +154,27 @@
 		$(".areaTable").on("click",".breakRuleCheckBox",function(){
 			allCheckBoxSelected();
 		})
+		checkParametersWebService();
 		
 	});
-	
+	function checkParametersWebService() {
+		$("#dialog_apg_webservice").dialog({
+			resizable: true,
+			height: 170,
+			width: 300,
+			modal: true,
+			buttons: [{
+				id: "Ok",
+				text: "<ct:FWLabel key='JSP_CONTINUER'/>",
+				click: function () {
+					$(this).dialog("close");
+				}
+			}],
+			open : function() {
+				$("#Ok").focus();
+			}
+		});
+	}
 </script>
 <%@ include file="/theme/detail_el/bodyStart.jspf" %>
 <%@ include file="/theme/detail_el/bodyStart2.jspf" %>
@@ -297,7 +319,12 @@
 		<input id="boutonCorriger" name="boutonCorriger" type="button" value='<ct:FWLabel key="JSP_PAP2004_CORRIGER"/>' />
 		<input id="boutonValider" name="boutonValider" type="button" value='<ct:FWLabel key="JSP_PAP2004_VALIDER"/>' />
 	</span>
-
+<% if(viewBean.hasMessagePropError()){ %>
+<div style="display:none" id="dialog_apg_webservice"
+	 title="<ct:FWLabel key='JSP_CONTROLE_SERVICE'/>" >
+	<%=viewBean.getMessagesError() %>
+</div>
+<%}%>
 
 <%@ include file="/theme/detail_el/bodyButtons.jspf" %>			
 <%@ include file="/theme/detail_el/bodyErrors.jspf" %>

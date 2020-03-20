@@ -10,7 +10,10 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.CommonPropertiesUtils;
+import ch.globaz.common.properties.PropertiesException;
 import globaz.apg.ApgServiceLocator;
 import globaz.apg.acor.parser.APACORPrestationsParser;
 import globaz.apg.api.annonces.IAPAnnonce;
@@ -115,6 +118,7 @@ import globaz.prestation.tools.nnss.PRNSSUtil;
  *
  * @author vre
  */
+@SuppressWarnings("JavadocReference")
 public class APPrestationHelper extends PRAbstractHelper {
 
     public static final String ACTION_CALCULER_PRESTATION_AVEC_ACOR = "calculerPrestationsAvecAcor";
@@ -860,6 +864,11 @@ public class APPrestationHelper extends PRAbstractHelper {
             }
 
             // BSessionUtil.initContext(session, this);
+            List<String> messageError = checkProperties();
+            if(!messageError.isEmpty()){
+                viewBean.setMessagePropError(true);
+                viewBean.setMessagesError(messageError);
+            }
 
             // Validation de chaque annonce par le services des plausi
             final APPlausibilitesApgService plausiService = ApgServiceLocator.getPlausibilitesApgService();
@@ -910,6 +919,40 @@ public class APPrestationHelper extends PRAbstractHelper {
             }
         }
         return viewBean;
+    }
+
+    private List<String> checkProperties() throws PropertiesException {
+        List<String> listPropertiesEmpty = new ArrayList<>();
+        final String prefix = "Propriété vide : ";
+        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_ENDPOINT_ADDRESS))){
+            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_ENDPOINT_ADDRESS.getPropertyName());
+        }
+        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_PASSWORD))){
+            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_KEYSTORE_PASSWORD.getPropertyName());
+        }
+        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_PATH))){
+            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_KEYSTORE_PATH.getPropertyName());
+        }
+        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_TYPE))){
+            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_KEYSTORE_TYPE.getPropertyName());
+        }
+        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_SEODOR_WSDL_PATH))){
+            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_SEODOR_WSDL_PATH.getPropertyName());
+        }
+        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_SSI_CONTEXT_TYPE))){
+            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_SSI_CONTEXT_TYPE.getPropertyName());
+        }
+        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_WEBSERVICE_NAME))){
+            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_WEBSERVICE_NAME.getPropertyName());
+        }
+        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_WEBSERVICE_NAMESPACE))){
+            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_WEBSERVICE_NAMESPACE.getPropertyName());
+        }
+        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_WEBSERVICE_SEDEX_SENDER_ID))){
+            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_WEBSERVICE_SEDEX_SENDER_ID.getPropertyName());
+        }
+
+        return listPropertiesEmpty;
     }
 
     // public APPrestationViewBean calculDesPrestationsAvecCalculateurGlobazOld(final FWViewBeanInterface vb,
