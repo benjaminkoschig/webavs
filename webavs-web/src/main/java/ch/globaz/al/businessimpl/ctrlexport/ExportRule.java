@@ -21,7 +21,7 @@ public class ExportRule {
     /** liste des nationalités pour lesquelles la règle s'applique */
     private List enfantsResidence = new ArrayList();
     /**
-     * indique si l'allocation est exportable, dans le cas lafam, jusqu'à 16 ans
+     * indique si l'allocation est exportable, dans le cas lafam, jusqu'à l'âge de début de formation
      */
     private boolean lafam16 = false;
 
@@ -171,16 +171,16 @@ public class ExportRule {
     protected boolean getStatus(int enumLoi) throws JadeApplicationException {
         boolean value = false;
         switch (enumLoi) {
-            case ALConstLoisExport.LOI_LAFAM_16:
+            case ALConstLoisExport.LOI_LAFAM_FORMATION:
                 value = lafam16;
                 break;
-            case ALConstLoisExport.LOI_LAFAM_16_25:
+            case ALConstLoisExport.LOI_LAFAM_FORMATION_25:
                 value = lafam1625;
                 break;
-            case ALConstLoisExport.LOI_LFA_16:
+            case ALConstLoisExport.LOI_LFA_FORMATION:
                 value = lfa16;
                 break;
-            case ALConstLoisExport.LOI_LFA_16_25:
+            case ALConstLoisExport.LOI_LFA_FORMATION_25:
                 value = lfa1625;
                 break;
             case ALConstLoisExport.LOI_LFA_MENAGE:
@@ -295,16 +295,16 @@ public class ExportRule {
      */
     protected void setStatus(boolean status, int enumLoi) throws JadeApplicationException {
         switch (enumLoi) {
-            case ALConstLoisExport.LOI_LAFAM_16:
+            case ALConstLoisExport.LOI_LAFAM_FORMATION:
                 lafam16 = status;
                 break;
-            case ALConstLoisExport.LOI_LAFAM_16_25:
+            case ALConstLoisExport.LOI_LAFAM_FORMATION_25:
                 lafam1625 = status;
                 break;
-            case ALConstLoisExport.LOI_LFA_16:
+            case ALConstLoisExport.LOI_LFA_FORMATION:
                 lfa16 = status;
                 break;
-            case ALConstLoisExport.LOI_LFA_16_25:
+            case ALConstLoisExport.LOI_LFA_FORMATION_25:
                 lfa1625 = status;
                 break;
             case ALConstLoisExport.LOI_LFA_MENAGE:

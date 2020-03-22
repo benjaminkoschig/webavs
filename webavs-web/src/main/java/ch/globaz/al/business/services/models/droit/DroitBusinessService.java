@@ -225,7 +225,7 @@ public interface DroitBusinessService extends JadeApplicationService {
     boolean isDroitInactif(DroitModel droit) throws ALDroitBusinessException, JadeApplicationException;
 
     /**
-     * Détermine si l'échéance du droit dépasse la limite légale ou non (limite droit ENF : 16 ans, limite droit FORM :
+     * Détermine si l'échéance du droit dépasse la limite légale ou non (limite droit ENF : âge début de formation, limite droit FORM :
      * 25 ans)
      * 
      * @param droit
@@ -250,7 +250,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      * @return <code>true</code> si le droit est en formation anticipée, <code>false</code> sinon
      * @throws JadeApplicationException
      */
-     boolean isFormationAnticipee(DroitComplexModel droit) throws JadeApplicationException;
+     boolean isFormationAnticipee(DroitComplexModel droit) throws JadeApplicationException, JadePersistenceException;
 
     /**
      * Vérifie si le droit passé en paramètre a un montant forcé à zero
@@ -330,7 +330,7 @@ public interface DroitBusinessService extends JadeApplicationService {
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      * @see ch.globaz.al.business.services.echeances.DatesEcheanceService#getDateFinValiditeDroitCalculee
      */
-     DroitComplexModel setDateFinDroitForce(DroitComplexModel model) throws JadeApplicationException;
+     DroitComplexModel setDateFinDroitForce(DroitComplexModel model) throws JadeApplicationException, JadePersistenceException;
 
     /**
      * Méthode mettant a jour le droit et créant l'annonce rafam en conséquence

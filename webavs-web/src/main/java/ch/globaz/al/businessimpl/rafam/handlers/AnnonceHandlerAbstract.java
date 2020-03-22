@@ -391,7 +391,7 @@ public abstract class AnnonceHandlerAbstract {
      * @return <code>true</code> si le type en cours de traitement est actif
      * @throws JadeApplicationException Exception lev�e si la v�rification n'a pas pu �tre effectu�e avec succ�s
      */
-    protected abstract boolean isCurrentAllowanceTypeActive() throws JadeApplicationException;
+    protected abstract boolean isCurrentAllowanceTypeActive() throws JadeApplicationException, JadePersistenceException;
 
     /**
      * Retourne le type d'allocation g�r�e par une classe

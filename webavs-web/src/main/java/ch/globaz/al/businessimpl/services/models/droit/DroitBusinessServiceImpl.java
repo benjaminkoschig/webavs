@@ -21,6 +21,7 @@ import ch.globaz.al.business.services.models.droit.DroitBusinessService;
 import ch.globaz.al.businessimpl.ctrlexport.PrestationExportableController;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.al.utils.ALDateUtils;
+import ch.globaz.al.utils.ALFomationUtils;
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
 import ch.globaz.pegasus.business.models.dossier.DossierRCListSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
@@ -547,20 +548,21 @@ public class DroitBusinessServiceImpl implements DroitBusinessService {
 
             String moisNaissance = dateNaissance.substring(3, 5);
             String moisEcheance = echeance.substring(3, 5);
-            // si echeance - naissance ==16 et que moisNaissance != moisEcheance
-            // => mois suivant les 16 ans de l'enfant (sans le test sur les
+            // si echeance - naissance == age de formation et que moisNaissance != moisEcheance
+            // => mois suivant l'age de formation de l'enfant (sans le test sur les
             // mois,
-            // on aura le mois de ses 16 ans et on doit laisser passer
+            // on aura le mois de l'age de formation et on doit laisser passer
+            int ageFormation = ALFomationUtils.getAgeFormation(droit.getDroitModel().getDebutDroit());
             if ((ALCSDroit.TYPE_ENF.equals(droit.getDroitModel().getTypeDroit()) && (JadeDateUtil.getNbYearsBetween(
-                    dateNaissance, echeance, JadeDateUtil.YEAR_MONTH_COMPARISON) == 16))
+                    dateNaissance, echeance, JadeDateUtil.YEAR_MONTH_COMPARISON) == ageFormation))
                     && !moisNaissance.equals(moisEcheance)) {
 
                 result = true;
 
             }
-            // si echeance - naissance >16
+            // si echeance - naissance > age de formation
             else if (ALCSDroit.TYPE_ENF.equals(droit.getDroitModel().getTypeDroit())
-                    && (JadeDateUtil.getNbYearsBetween(dateNaissance, echeance, JadeDateUtil.YEAR_MONTH_COMPARISON) > 16)) {
+                    && (JadeDateUtil.getNbYearsBetween(dateNaissance, echeance, JadeDateUtil.YEAR_MONTH_COMPARISON) > ageFormation)) {
                 result = true;
             }
             // si echeance - naissance ==24 et que moisNaissance != moisEcheance
@@ -589,7 +591,7 @@ public class DroitBusinessServiceImpl implements DroitBusinessService {
      * (ch.globaz.al.business.models.droit.DroitComplexModel)
      */
     @Override
-    public boolean isFormationAnticipee(DroitComplexModel droit) throws JadeApplicationException {
+    public boolean isFormationAnticipee(DroitComplexModel droit) throws JadeApplicationException, JadePersistenceException {
 
         if (droit == null) {
             throw new ALDroitBusinessException("DroitBusinessServiceImpl#isFormationAnticipee : droit is null");
@@ -736,7 +738,7 @@ public class DroitBusinessServiceImpl implements DroitBusinessService {
      * (ch.globaz.al.business.models.droit.DroitComplexModel)
      */
     @Override
-    public DroitComplexModel setDateFinDroitForce(DroitComplexModel model) throws JadeApplicationException {
+    public DroitComplexModel setDateFinDroitForce(DroitComplexModel model) throws JadeApplicationException, JadePersistenceException {
 
         if (model == null) {
             throw new ALDroitBusinessException("DroitBusinessSerrviceImpl#updateDateFinDroitForce : model is null");

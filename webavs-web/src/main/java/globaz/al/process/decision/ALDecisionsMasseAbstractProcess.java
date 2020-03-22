@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+
+import ch.globaz.al.utils.ALFomationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.globaz.al.business.constantes.ALCSDossier;
@@ -375,21 +377,21 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
                                 if (getInTypeDroit().contains(DROIT_FORMANT) && !getInTypeDroit().contains(DROIT_FORM)
                                         && droitMatch) {
                                     // Check -16ans
-                                    // la DDN est strictement postérieure au début de formation, 16 ans en arrière début
+                                    // la DDN est strictement postérieure au début de formation, âge de formation en arrière début
                                     // de mois
                                     try {
                                         DateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
-                                        Date moinsSeize;
+                                        Date moinsAgeFormation;
 
-                                        moinsSeize = formatter.parse(droit.getDroitModel().getDebutDroit());
-                                        // 16 ans en arrière
-                                        moinsSeize.setYear(moinsSeize.getYear() - 16);
+                                        moinsAgeFormation = formatter.parse(droit.getDroitModel().getDebutDroit());
+                                        // retire l'âge de formation
+                                        moinsAgeFormation.setYear(moinsAgeFormation.getYear() - ALFomationUtils.getAgeFormation(droit.getDroitModel().getDebutDroit()));
                                         // début de mois
-                                        moinsSeize.setDate(01);
+                                        moinsAgeFormation.setDate(01);
 
                                         droitMatch = formatter.parse(droit.getEnfantComplexModel()
                                                 .getPersonneEtendueComplexModel().getPersonne().getDateNaissance())
-                                                .after(moinsSeize);
+                                                .after(moinsAgeFormation);
                                     } catch (ParseException e) {
                                         throw new ALDecisionException("noSQLFilter filter can't parse date ", e);
                                     }

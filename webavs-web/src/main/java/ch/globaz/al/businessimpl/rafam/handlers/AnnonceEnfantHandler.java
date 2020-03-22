@@ -1,5 +1,6 @@
 package ch.globaz.al.businessimpl.rafam.handlers;
 
+import ch.globaz.al.utils.ALFomationUtils;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
@@ -68,9 +69,9 @@ public class AnnonceEnfantHandler extends AnnonceHandlerAbstract {
         }
     }
 
-    protected String getEcheance() throws JadeApplicationException {
+    protected String getEcheance() throws JadeApplicationException, JadePersistenceException {
         String echeanceCalculee = ALDateUtils.getDateAjoutAnneesFinMois(context.getDroit().getEnfantComplexModel()
-                .getPersonneEtendueComplexModel().getPersonne().getDateNaissance(), 16);
+                .getPersonneEtendueComplexModel().getPersonne().getDateNaissance(), ALFomationUtils.getAgeFormation(context.getDroit().getDroitModel().getDebutDroit()));
         return echeanceCalculee;
     }
 
@@ -80,7 +81,7 @@ public class AnnonceEnfantHandler extends AnnonceHandlerAbstract {
     }
 
     @Override
-    protected boolean isCurrentAllowanceTypeActive() throws JadeApplicationException {
+    protected boolean isCurrentAllowanceTypeActive() throws JadeApplicationException, JadePersistenceException {
 
         if (!context.getDroit().getEnfantComplexModel().getEnfantModel().getCapableExercer()
                 && JadeDateUtil.isDateBefore(getEcheance(), context.getDroit().getDroitModel().getDebutDroit())) {
@@ -93,8 +94,8 @@ public class AnnonceEnfantHandler extends AnnonceHandlerAbstract {
     }
 
     /**
-     * Modifie la date de fin de l'annonce aux 16 ans de l'enfant si la date contenue dans l'annonce est au-delà de cet
-     * âge. S'il s'agit d'un enfant incapable d'exercer, la part de 16 à 20 ans sera traitée par la classe de gestion de
+     * Modifie la date de fin de l'annonce à l'âge début de formation de l'enfant si la date contenue dans l'annonce est au-delà de cet
+     * âge. S'il s'agit d'un enfant incapable d'exercer, la part de l'âge de début de formation à 20 ans sera traitée par la classe de gestion de
      * ce type de cas : {@link AnnonceEnfantIncapableExercerHandler}
      * 
      * @param annonce
@@ -105,7 +106,7 @@ public class AnnonceEnfantHandler extends AnnonceHandlerAbstract {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    protected AnnonceRafamModel setEcheance(AnnonceRafamModel annonce) throws JadeApplicationException {
+    protected AnnonceRafamModel setEcheance(AnnonceRafamModel annonce) throws JadeApplicationException, JadePersistenceException {
 
         String echeanceCalculee = getEcheance();
 

@@ -1,5 +1,6 @@
 package ch.globaz.al.businessimpl.services.echeances;
 
+import ch.globaz.al.utils.ALFomationUtils;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -72,11 +73,11 @@ public class DatesEcheanceServiceImpl extends ALAbstractBusinessServiceImpl impl
             if ((se.getSize() == 0)
                     || JadeNumericUtil.isEmptyOrZero(droitComplexModel.getEnfantComplexModel().getEnfantModel()
                             .getIdEnfant())) {
-                // ajouter 16 ans à la date de naissance et mois suivant et retourner la date
+                // ajouter l'âge de début de formation à la date de naissance et mois suivant et retourner la date
                 String dateDebutValiditeDroitFormation = ALImplServiceLocator.getDatesEcheancePrivateService()
                         .getDateDebutValiditeDroit(
                                 ALDateUtils.getDateAjoutAnneesFinMois(droitComplexModel.getEnfantComplexModel()
-                                        .getPersonneEtendueComplexModel().getPersonne().getDateNaissance(), 16));
+                                        .getPersonneEtendueComplexModel().getPersonne().getDateNaissance(), ALFomationUtils.getAgeFormation(droitComplexModel.getDroitModel().getDebutDroit())));
                 // si la date du début du dossier est antérieure à la date du début de la formation on retourne la date
                 // du début du droit sinon la date du début du dossier
                 if (JadeDateUtil.isDateAfter(dateDebutValiditeDroitFormation, dateDebutDossier)) {
@@ -105,7 +106,7 @@ public class DatesEcheanceServiceImpl extends ALAbstractBusinessServiceImpl impl
     }
 
     @Override
-    public String getDateFinValiditeDroitCalculee(DroitComplexModel droitComplexModel) throws JadeApplicationException {
+    public String getDateFinValiditeDroitCalculee(DroitComplexModel droitComplexModel) throws JadeApplicationException, JadePersistenceException {
 
         if (droitComplexModel == null) {
             throw new ALEcheanceModelException(
@@ -115,7 +116,7 @@ public class DatesEcheanceServiceImpl extends ALAbstractBusinessServiceImpl impl
 
         String dateFinValiditeCalcule = null;
 
-        // fin d'un droit enfant calculé, il faut rajouter 16 ans à la date de
+        // fin d'un droit enfant calculé, il faut rajouter l'âge de début de formation à la date de
         // naissance pour la fin d'un droit type enfant et capable exercer, 20
         // ans à la date d naissance pour un enfant incapable exercer et 25 ans
         // pour un droit
@@ -138,13 +139,13 @@ public class DatesEcheanceServiceImpl extends ALAbstractBusinessServiceImpl impl
                     || JadeStringUtil.equals(droitComplexModel.getDroitModel().getTypeDroit(), ALCSDroit.TYPE_FORM,
                             true)) {
 
-                // ajout de 16 ans pour un type de droit Enfant pour un capable
+                // ajout de l'âge de formation pour un type de droit Enfant pour un capable
                 // exercer
                 if (JadeStringUtil.equals(droitComplexModel.getDroitModel().getTypeDroit(), ALCSDroit.TYPE_ENF, true)
                         && (droitComplexModel.getEnfantComplexModel().getEnfantModel().getCapableExercer())) {
                     dateFinValiditeCalcule = ALDateUtils.getDateAjoutAnneesFinMois(droitComplexModel
                             .getEnfantComplexModel().getPersonneEtendueComplexModel().getPersonne().getDateNaissance(),
-                            16);
+                            ALFomationUtils.getAgeFormation(droitComplexModel.getDroitModel().getDebutDroit()));
 
                 }// ajout de 20 ans pour un enfant incapable d'exercer
                 else if (JadeStringUtil.equals(droitComplexModel.getDroitModel().getTypeDroit(), ALCSDroit.TYPE_ENF,
@@ -173,7 +174,7 @@ public class DatesEcheanceServiceImpl extends ALAbstractBusinessServiceImpl impl
      * globaz.al.business.models.droit.DroitComplexModel)
      */
     @Override
-    public String getDateFinValiditeDroitCalculeeFormAnticipe(DroitComplexModel droit) throws JadeApplicationException {
+    public String getDateFinValiditeDroitCalculeeFormAnticipe(DroitComplexModel droit) throws JadeApplicationException, JadePersistenceException {
 
         DroitComplexModel copie = ALServiceLocator.getDroitComplexModelService().copie(droit);
         copie.getDroitModel().setTypeDroit(ALCSDroit.TYPE_ENF);

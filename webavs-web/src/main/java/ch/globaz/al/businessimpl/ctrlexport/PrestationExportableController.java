@@ -1,5 +1,6 @@
 package ch.globaz.al.businessimpl.ctrlexport;
 
+import ch.globaz.al.utils.ALFomationUtils;
 import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -306,30 +307,30 @@ public class PrestationExportableController {
 
                 if (lois.item(j).getNodeName().equals("lafam16")) {
                     if (lois.item(j).getFirstChild().getNodeValue().equals("1")) {
-                        rule.setStatus(true, ALConstLoisExport.LOI_LAFAM_16);
+                        rule.setStatus(true, ALConstLoisExport.LOI_LAFAM_FORMATION);
                     } else {
-                        rule.setStatus(false, ALConstLoisExport.LOI_LAFAM_16);
+                        rule.setStatus(false, ALConstLoisExport.LOI_LAFAM_FORMATION);
                     }
                 }
                 if (lois.item(j).getNodeName().equals("lafam1625")) {
                     if (lois.item(j).getFirstChild().getNodeValue().equals("1")) {
-                        rule.setStatus(true, ALConstLoisExport.LOI_LAFAM_16_25);
+                        rule.setStatus(true, ALConstLoisExport.LOI_LAFAM_FORMATION_25);
                     } else {
-                        rule.setStatus(false, ALConstLoisExport.LOI_LAFAM_16_25);
+                        rule.setStatus(false, ALConstLoisExport.LOI_LAFAM_FORMATION_25);
                     }
                 }
                 if (lois.item(j).getNodeName().equals("lfa16")) {
                     if (lois.item(j).getFirstChild().getNodeValue().equals("1")) {
-                        rule.setStatus(true, ALConstLoisExport.LOI_LFA_16);
+                        rule.setStatus(true, ALConstLoisExport.LOI_LFA_FORMATION);
                     } else {
-                        rule.setStatus(false, ALConstLoisExport.LOI_LFA_16);
+                        rule.setStatus(false, ALConstLoisExport.LOI_LFA_FORMATION);
                     }
                 }
                 if (lois.item(j).getNodeName().equals("lfa1625")) {
                     if (lois.item(j).getFirstChild().getNodeValue().equals("1")) {
-                        rule.setStatus(true, ALConstLoisExport.LOI_LFA_16_25);
+                        rule.setStatus(true, ALConstLoisExport.LOI_LFA_FORMATION_25);
                     } else {
-                        rule.setStatus(false, ALConstLoisExport.LOI_LFA_16_25);
+                        rule.setStatus(false, ALConstLoisExport.LOI_LFA_FORMATION_25);
                     }
                 }
                 if (lois.item(j).getNodeName().equals("lfaMenage")) {
@@ -498,17 +499,17 @@ public class PrestationExportableController {
         }
         int loi = 0;
         try {
-            if (age < 16) {
+            if (age < ALFomationUtils.getAgeFormation(_droit.getDroitModel().getDebutDroit())) {
                 if (isAgricole(_dossier)) {
-                    loi = ALConstLoisExport.LOI_LFA_16;
+                    loi = ALConstLoisExport.LOI_LFA_FORMATION;
                 } else {
-                    loi = ALConstLoisExport.LOI_LAFAM_16;
+                    loi = ALConstLoisExport.LOI_LAFAM_FORMATION;
                 }
             } else if (age < 25) {
                 if (isAgricole(_dossier)) {
-                    loi = ALConstLoisExport.LOI_LFA_16_25;
+                    loi = ALConstLoisExport.LOI_LFA_FORMATION_25;
                 } else {
-                    loi = ALConstLoisExport.LOI_LAFAM_16_25;
+                    loi = ALConstLoisExport.LOI_LAFAM_FORMATION_25;
                 }
             }
             // sinon c'est qu'il a plus de 25 ans et pas besoin de ctrl
@@ -535,7 +536,7 @@ public class PrestationExportableController {
                 }
             }
 
-        } catch (JadeApplicationException e) {
+        } catch (JadeApplicationException | JadePersistenceException e) {
             throw new ALCtrlExportException("PrestationExportableController#control:unable to determine law to check",
                     e);
         }

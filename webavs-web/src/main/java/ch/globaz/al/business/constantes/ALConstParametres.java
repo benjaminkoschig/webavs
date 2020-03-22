@@ -184,4 +184,9 @@ public interface ALConstParametres {
     public static final String TYPE_COPIE_DECISION_NONACTIF = "typeCopieDecisionNonActif";
 
     public static final String WARN_RETRO_BEFORE = "WARN_RETRO_BEFORE";
+
+    /**
+     * Age et date du début de droit de formation
+     */
+    public static final String DEBUT_DROIT_FORMATION = "DEBUT_DROIT_FORMATION";
 }

@@ -1,5 +1,6 @@
 package ch.globaz.al.businessimpl.services.echeances;
 
+import ch.globaz.al.utils.ALFomationUtils;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
@@ -123,7 +124,8 @@ public class DroitEcheanceServiceImpl extends ALAbstractBusinessServiceImpl impl
 
         // les autres cas enfant
         else {
-            if (droit.getEnfantComplexModel().getEnfantModel().getCapableExercer() && "16".equals(ageEnfant)) {
+            String ageFormation = ALFomationUtils.getAgeFormation(droit.getDroitModel().getDebutDroit()).toString();
+            if (droit.getEnfantComplexModel().getEnfantModel().getCapableExercer() && ageFormation.equals(ageEnfant)) {
                 return ageEnfant + " " + i18n.getMessage(langue, "al.documentCommun.echeances.motifAge");
             }
 
