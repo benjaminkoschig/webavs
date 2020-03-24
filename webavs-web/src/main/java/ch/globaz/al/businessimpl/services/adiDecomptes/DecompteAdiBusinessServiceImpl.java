@@ -732,9 +732,6 @@ public class DecompteAdiBusinessServiceImpl implements DecompteAdiBusinessServic
         Map<String, List<AdiEnfantMoisComplexModel>> adiParDroit = getAdiParDroit(listTotalAdi);
 
         for(Entry<String, List<AdiEnfantMoisComplexModel>> entry : adiParDroit.entrySet()) {
-            // supprime les annonces "A_TRANSMETTRE" liées au droit
-            ALImplServiceLocator.getAnnonceRafamBusinessService().deleteForEtat(entry.getKey(), RafamEtatAnnonce.A_TRANSMETTRE);
-
             // Créé les nouvelles annonces
             ALServiceLocator.getAnnonceRafamCreationService().creerAnnoncesADI(entry.getValue());
         }

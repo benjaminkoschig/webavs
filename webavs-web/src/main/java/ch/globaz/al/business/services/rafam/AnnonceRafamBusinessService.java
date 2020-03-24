@@ -82,6 +82,27 @@ public interface AnnonceRafamBusinessService extends JadeApplicationService {
             JadePersistenceException;
 
     /**
+     * Supprime les annonces pour un droit et un état donné
+     *
+     * @param idDroit
+     *            id du droit pour lequel supprimer les annonces
+     * @param etat
+     *            etat dans lesquels les annonces à supprimer doivent être (RafamEtatAnnonce.A_TRANSMETTRE ou
+     *            RafamEtatAnnonce_ENREGISTRE)
+     *  @param year
+     *      Spécifie l'année de l'annonce à supprimer : pour les annonces ADI
+     * @return nombre d'annonces supprimées
+     *
+     * @throws JadePersistenceException
+     *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
+     *             faire
+     * @throws JadeApplicationException
+     *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
+     */
+    public int deleteForEtatYear(String idDroit, RafamEtatAnnonce etat, String years) throws JadeApplicationException,
+            JadePersistenceException;
+
+    /**
      * Supprime les annonces non transmises pour un droit
      * 
      * @param idDroit

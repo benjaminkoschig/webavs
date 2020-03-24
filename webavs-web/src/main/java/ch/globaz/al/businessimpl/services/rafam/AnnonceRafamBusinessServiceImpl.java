@@ -146,6 +146,38 @@ public class AnnonceRafamBusinessServiceImpl extends ALAbstractBusinessServiceIm
 
     /*
      * (non-Javadoc)
+     *
+     * @see ch.globaz.al.business.services.rafam.AnnonceRafamBusinessService#deleteForEtat(java.lang.String,
+     * ch.globaz.al.business.constantes.enumerations.RafamEtatAnnonce)
+     */
+    @Override
+    public int deleteForEtatYear(String idDroit, RafamEtatAnnonce etatToDelete, String years) throws JadeApplicationException,
+            JadePersistenceException {
+
+        if (JadeNumericUtil.isEmptyOrZero(idDroit)) {
+            throw new ALAnnonceRafamException("AnnonceRafamBusinessServiceImpl#deleteNotSent : idDroit is not defined");
+        }
+
+        if (!RafamEtatAnnonce.ENREGISTRE.equals(etatToDelete) && !RafamEtatAnnonce.A_TRANSMETTRE.equals(etatToDelete)) {
+            throw new ALAnnonceRafamException(
+                    "AnnonceRafamBusinessServiceImpl#deleteNotSent : etatToDelete is not valid");
+        }
+
+        AnnonceRafamSearchModel search = new AnnonceRafamSearchModel();
+        List<String> etats = new ArrayList<String>();
+        etats.add(etatToDelete.getCS());
+
+        search.setInEtatAnnonce(etats);
+        search.setForIdDroit(idDroit);
+        search.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+        search.setBetweenDateDebut("01.01."+years);
+        search.setBetweenDateFin("31.12."+years);
+
+        return JadePersistenceManager.delete(search);
+    }
+
+    /*
+     * (non-Javadoc)
      * 
      * @see ch.globaz.al.business.services.rafam.AnnonceRafamBusinessService#deleteNotSent(java.lang.String)
      */

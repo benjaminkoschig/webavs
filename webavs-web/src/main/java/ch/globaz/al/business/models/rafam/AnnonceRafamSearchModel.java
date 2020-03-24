@@ -63,6 +63,10 @@ public class AnnonceRafamSearchModel extends JadeSearchSimpleModel {
 
     private String likeInternalOffice = null;
 
+    private String betweenDateDebut = null;
+
+    private String betweenDateFin = null;
+
     public String getForCodeRetour() {
         return forCodeRetour;
     }
@@ -178,5 +182,21 @@ public class AnnonceRafamSearchModel extends JadeSearchSimpleModel {
 
     public void setInCodeRetour(Collection<String> inCodeRetour) {
         this.inCodeRetour = inCodeRetour;
+    }
+
+    public String getBetweenDateDebut() {
+        return betweenDateDebut;
+    }
+
+    public void setBetweenDateDebut(String betweenDateDebut) {
+        this.betweenDateDebut = betweenDateDebut;
+    }
+
+    public String getBetweenDateFin() {
+        return betweenDateFin;
+    }
+
+    public void setBetweenDateFin(String betweenDateFin) {
+        this.betweenDateFin = betweenDateFin;
     }
 }

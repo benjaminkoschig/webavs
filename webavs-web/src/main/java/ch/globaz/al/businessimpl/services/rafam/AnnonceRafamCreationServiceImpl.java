@@ -324,7 +324,17 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
         if (isAnnoncesRequired(dossier, droit)) {
 
             if(deletePrevious) {
-                ALImplServiceLocator.getAnnonceRafamBusinessService().deleteForEtat(droit.getId(), etat);
+                if(ALCSDossier.STATUT_IS.equals(dossier.getDossierModel().getStatut())) {
+                    String dateDebut = droit.getDroitModel().getDebutDroit();
+                    if(!JadeStringUtil.isEmpty(dateDebut) && dateDebut.length() > 6) {
+                        String annee = dateDebut.substring(6);
+                        ALImplServiceLocator.getAnnonceRafamBusinessService().deleteForEtatYear(droit.getId(), etat, annee);
+                    } else {
+                        ALImplServiceLocator.getAnnonceRafamBusinessService().deleteForEtat(droit.getId(), etat);
+                    }
+                } else {
+                    ALImplServiceLocator.getAnnonceRafamBusinessService().deleteForEtat(droit.getId(), etat);
+                }
             }
 
             List<RafamFamilyAllowanceType> types;
@@ -585,7 +595,7 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
 
         if (!isZero) {
             DossierComplexModel dossier = ALServiceLocator.getDossierComplexModelService().read(droit.getDroitModel().getIdDossier());
-            ALServiceLocator.getAnnonceRafamCreationService().creerAnnoncesWithoutDelete(RafamEvDeclencheur.CREATION, RafamEtatAnnonce.A_TRANSMETTRE, dossier, droit);
+            ALServiceLocator.getAnnonceRafamCreationService().creerAnnonces(RafamEvDeclencheur.CREATION, RafamEtatAnnonce.A_TRANSMETTRE, dossier, droit);
         }
 
         // restauration des bonnes dates pour les prochains traitements

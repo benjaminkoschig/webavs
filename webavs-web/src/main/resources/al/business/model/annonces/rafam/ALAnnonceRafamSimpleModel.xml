@@ -71,6 +71,8 @@
 				<search-field name="inTypeAnnonce" field-ref="typeAnnonce" operation="IN"/>
 				<search-field name="forTypeAnnonce" field-ref="typeAnnonce" operation="EQUALS"/>
 				<search-field name="forCodeRetour" field-ref="codeRetour" operation="EQUALS"/>
+				<search-field name="betweenDateDebut" field-ref="debutDroit" operation="GREATER_OR_EQUALS"/>
+				<search-field name="betweenDateFin" field-ref="debutDroit" operation="LESS_OR_EQUALS"/>
 			</search-group>
 		</search-definition>
 		
