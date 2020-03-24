@@ -446,6 +446,7 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
     }
 
     private String getRuleMessage(BSession session, String code) {
+
         return session.getLabel(APPlausibilitesApgServiceImpl.PREFIX_LABEL + code);
     }
 

@@ -71,7 +71,8 @@ public enum APAllPlausibiliteRules {
     R_507(true, 507),
     R_508(true, 508),
     R_509(true, 509),
-    R_510(true, 510);
+    R_510(true, 510),
+    R_1509(true, 1509);
 
     public static APAllPlausibiliteRules valueOfCode(String code) {
         return APAllPlausibiliteRules.valueOf("R_" + code);

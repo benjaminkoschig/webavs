@@ -160,7 +160,7 @@
 	function checkParametersWebService() {
 		$("#dialog_apg_webservice").dialog({
 			resizable: true,
-			height: 170,
+			height: 500,
 			width: 300,
 			modal: true,
 			buttons: [{

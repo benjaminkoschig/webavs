@@ -864,7 +864,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             }
 
             // BSessionUtil.initContext(session, this);
-            List<String> messageError = checkProperties();
+            List<String> messageError = checkProperties(session);
             if(!messageError.isEmpty()){
                 viewBean.setMessagePropError(true);
                 viewBean.setMessagesError(messageError);
@@ -921,9 +921,9 @@ public class APPrestationHelper extends PRAbstractHelper {
         return viewBean;
     }
 
-    private List<String> checkProperties() throws PropertiesException {
+    private List<String> checkProperties(BSession session) throws PropertiesException {
         List<String> listPropertiesEmpty = new ArrayList<>();
-        final String prefix = "Propriété vide : ";
+        final String prefix = session.getLabel("PROPERTIES_WEBSERVICE_EMPTY") + "<br>";
         if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_ENDPOINT_ADDRESS))){
             listPropertiesEmpty.add(prefix+CommonProperties.RAPG_ENDPOINT_ADDRESS.getPropertyName());
         }

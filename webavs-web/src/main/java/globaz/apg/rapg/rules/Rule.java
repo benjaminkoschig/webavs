@@ -68,7 +68,7 @@ public abstract class Rule implements APRuleDBDataProvider {
         this.dataBaseDataProvider = dataBaseDataProvider;
     }
 
-    public final String getErrorCode() {
+    public  String getErrorCode() {
         return errorCode;
     }
 

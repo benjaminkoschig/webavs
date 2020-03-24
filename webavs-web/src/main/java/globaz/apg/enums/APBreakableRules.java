@@ -19,7 +19,8 @@ public enum APBreakableRules {
     R_508(508),
     R_509(509),
     R_510(510),
-    R_600(600);
+    R_600(600),
+    R_1509(1509);
 
     private int code;
 
