@@ -954,10 +954,12 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
             Montant montNaissaceAfter = new Montant(montants.get(1));
 
             if (montAfter.isZero()) {
-                if (RafamTypeAnnonce._68C_ANNULATION.equals(RafamTypeAnnonce.getRafamTypeAnnonce(lastAnnonce.getTypeAnnonce()))) {
-                    ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(droit.getId());
-                } else { //RafamTypeAction.CREATION + RafamTypeAction.MODIFICATION
-                    ALServiceLocator.getAnnonceRafamCreationService().creerAnnonces(RafamEvDeclencheur.ANNULATION, droit);
+                if(lastAnnonce.getTypeAnnonce()!= null) {
+                    if (RafamTypeAnnonce._68C_ANNULATION.equals(RafamTypeAnnonce.getRafamTypeAnnonce(lastAnnonce.getTypeAnnonce()))) {
+                        ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(droit.getId());
+                    } else { //RafamTypeAction.CREATION + RafamTypeAction.MODIFICATION
+                        ALServiceLocator.getAnnonceRafamCreationService().creerAnnonces(RafamEvDeclencheur.ANNULATION, droit);
+                    }
                 }
                 // Test si annonce naissance
                 if (hasAllocationNaissance(droit) && !montNaissaceAfter.isZero()) {
@@ -965,7 +967,7 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
                 }
             } else {
                 ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(droit.getId());
-                if (RafamTypeAnnonce._68C_ANNULATION.equals(RafamTypeAnnonce.getRafamTypeAnnonce(lastAnnonce.getTypeAnnonce()))) {
+                if (lastAnnonce.getTypeAnnonce()!= null && RafamTypeAnnonce._68C_ANNULATION.equals(RafamTypeAnnonce.getRafamTypeAnnonce(lastAnnonce.getTypeAnnonce()))) {
                     evDecl = RafamEvDeclencheur.CREATION;
                 }
                 if (hasAllocationNaissance(droit) && montNaissaceAfter.isZero()) {
