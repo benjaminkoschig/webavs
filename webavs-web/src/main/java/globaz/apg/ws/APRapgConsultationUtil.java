@@ -10,20 +10,16 @@ import ch.eahv.rapg.eahv000601._4.RegisterStatusRecordType;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.CommonPropertiesUtils;
 import ch.globaz.common.properties.PropertiesException;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.crypto.JadeDefaultEncrypters;
-import globaz.phenix.util.WIRRDataBean;
-import globaz.phenix.util.WIRRServiceCallUtil;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import globaz.globall.db.BSession;
+import globaz.jade.crypto.JadeDefaultEncrypters;
+import globaz.jade.crypto.JadeEncrypterNotFoundException;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import wirrch.admin.ws.zas.regcent.nrr._0.NRRQueryServicePortType;
+
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -126,7 +122,7 @@ public class APRapgConsultationUtil {
         return request;
     }
     private static RapgConsultation1 getRapgConsultation(BSession session,final String urlRAPGWS, final String certFileName, final String certPassword, String certType)
-            throws IOException, PropertiesException {
+            throws Exception {
         // Instantiate the service object generated from wsdl.
         String pathWsdl = CommonPropertiesUtils.getValue(CommonProperties.RAPG_SEODOR_WSDL_PATH);
         String nameSpace = CommonPropertiesUtils.getValue(CommonProperties.RAPG_WEBSERVICE_NAMESPACE);
@@ -142,8 +138,10 @@ public class APRapgConsultationUtil {
         // Set endpoint address (URL) of the webservice.
         final Map<String, Object> ctxt = ((BindingProvider) port).getRequestContext();
         ctxt.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, urlRAPGWS);
+        String certPasswordDecrypt = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(
+                certPassword);
 
-        configureSSLOnTheClient(port, certFileName, certPassword,certType);
+        configureSSLOnTheClient(port, certFileName, certPasswordDecrypt,certType);
         return port;
     }
 
@@ -154,15 +152,13 @@ public class APRapgConsultationUtil {
      * @param certFileName certFileName certificat filename with full path
      * @param certPassword certificat password
      */
-    private static void configureSSLOnTheClient(final RapgConsultation1 proxy, final String certFileName, final String certPassword, String certType) {
-        // Get httpConduit
-        final Client client = ClientProxy.getClient(proxy);
-        final HTTPConduit httpConduit = (HTTPConduit) client.getConduit();
+    private static void configureSSLOnTheClient(final RapgConsultation1 proxy, final String certFileName, final String certPassword, String certType) throws PropertiesException {
+
+        SSLContext sc = null;
         KeyStore ks = null;
 
         try {
-            final TLSClientParameters tlsParams = new TLSClientParameters();
-            tlsParams.setDisableCNCheck(true);
+            sc = SSLContext.getInstance(CommonProperties.RAPG_SSI_CONTEXT_TYPE.getValue());
 
             // Read the certificate
             FileInputStream filePkcs12;
@@ -182,9 +178,11 @@ public class APRapgConsultationUtil {
             final KeyManagerFactory keyFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             keyFactory.init(ks, certPassword.toCharArray());
             final KeyManager[] km = keyFactory.getKeyManagers();
-            tlsParams.setKeyManagers(km);
+            sc.init(keyFactory.getKeyManagers(), null, null);
 
-            httpConduit.setTlsClientParameters(tlsParams);
+            final Map<String, Object> ctxt = ((BindingProvider) proxy).getRequestContext();
+            ctxt.put(SSL_SOCKET_FACTORY_JAX_WS_RI, sc.getSocketFactory());
+            ctxt.put(SSL_SOCKET_FACTORY_ORACLE_JDK, sc.getSocketFactory());
 
         } catch (final FileNotFoundException e) {
             System.err.println("File " + certFileName + " doesn't exist");
@@ -196,7 +194,10 @@ public class APRapgConsultationUtil {
             System.out.println("Security configuration failed with the following: " + nsa.getCause());
         } catch (final GeneralSecurityException gse) {
             System.out.println("Security configuration failed with the following: " + gse.getCause());
+        }catch (Exception E) {
+            System.out.println("Security configuration failed with the following: " + E.getCause());
         }
+
     }
 
 }
