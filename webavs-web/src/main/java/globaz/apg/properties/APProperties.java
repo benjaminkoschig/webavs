@@ -129,6 +129,13 @@ public enum APProperties implements IProperties {
             return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
         }
 
+    },
+
+    SEODOR_TYPE_SERVICE("rapg.genre.service.seodor", "Type de service pour l'appel WebService SEODOR"){
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
+        }
     }
 
     ;

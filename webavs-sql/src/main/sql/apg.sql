@@ -9,3 +9,6 @@ INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.rapg.we
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.rapg.webservice.namespace','http://www.zas.admin.ch/rapg/webservice/consultation/1','20200318120000Globaz    ','20200318120000Globaz    ');
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.rapg.webservice.sedex.sender.id','T6-150000-1','20200318120000Globaz    ','20200318120000Globaz    ');
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('apg.rapg.activer.webservice','true','20200318120000Globaz    ','20200318120000Globaz    ');
+
+-- [WEBAVS-7577] INFOROM SEODOR - Propriété d'appel du WebService
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('apg.rapg.genre.service.seodor','','202003241120000Globaz    ','202003241120000Globaz    ');

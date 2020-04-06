@@ -1,6 +1,10 @@
 package globaz.apg.servlet;
 
+import ch.globaz.common.properties.PropertiesException;
+import globaz.apg.db.droits.APDroitAPG;
+import globaz.apg.enums.APModeEditionDroit;
 import globaz.apg.exceptions.APWrongViewBeanTypeException;
+import globaz.apg.properties.APProperties;
 import globaz.apg.vb.droits.APDroitAPGDTO;
 import globaz.apg.vb.droits.APDroitAPGPViewBean;
 import globaz.apg.vb.prestation.APValidationPrestationViewBean;
@@ -10,8 +14,16 @@ import globaz.framework.controller.FWDefaultServletAction;
 import globaz.framework.controller.FWDispatcher;
 import globaz.framework.servlets.FWServlet;
 import globaz.globall.http.JSPUtils;
+import globaz.prestation.servlet.PRDefaultAction;
 import globaz.prestation.tools.PRSessionDataContainerHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,6 +35,8 @@ import javax.servlet.http.HttpSession;
  * @author vre
  */
 public class APDroitAPGPAction extends APAbstractDroitPAction {
+
+    private static final Logger LOG = LoggerFactory.getLogger(APDroitAPGPAction.class);
 
     public APDroitAPGPAction(FWServlet servlet) {
         super(servlet);
@@ -81,6 +95,12 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
         APDroitAPGDTO dto = new APDroitAPGDTO(((APDroitAPGPViewBean) viewBean).getDroit());
         PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO, dto);
 
+    }
+
+    @Override
+    protected void actionReAfficher(HttpSession session, HttpServletRequest request, HttpServletResponse response,
+                                    FWDispatcher mainDispatcher) throws ServletException, IOException {
+        super.actionReAfficher(session, request, response, mainDispatcher);
     }
 
     /**
@@ -191,4 +211,59 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
         goSendRedirect(destination, request, response);
     }
 
+    @Override
+    protected void actionFindNext(HttpSession session, HttpServletRequest request, HttpServletResponse response, FWDispatcher mainDispatcher) throws ServletException, IOException{
+
+        APDroitAPGPViewBean viewBean = (APDroitAPGPViewBean) loadViewBean(session);
+        String[] userAction = request.getParameterValues("userAction");
+        String[] methode = request.getParameterValues("_method");
+
+        FWAction newAction = null;
+
+        if (methode[0].equalsIgnoreCase("read")) {
+                newAction = FWAction.newInstance(IAPActions.ACTION_SITUATION_PROFESSIONNELLE + ".chercher");
+        } else {
+            if (viewBean.getModeEditionDroit().equals(APModeEditionDroit.CREATION)){
+                newAction = FWAction.newInstance(IAPActions.ACTION_SAISIE_CARTE_APG + ".ajouter");
+			} else if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.EDITION)){
+                newAction = FWAction.newInstance(IAPActions.ACTION_SAISIE_CARTE_APG + ".modifier");
+			} else if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.LECTURE)){
+                if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.CREATION) || viewBean.getModeEditionDroit().equals(APModeEditionDroit.EDITION) ){
+                    newAction = FWAction.newInstance(IAPActions.ACTION_SAISIE_CARTE_APG + ".modifier");
+                }
+                else {
+                    newAction = FWAction.newInstance(IAPActions.ACTION_SITUATION_PROFESSIONNELLE + ".chercher");
+                }
+			}
+        }
+
+        try {
+            if (!Objects.isNull(APProperties.SEODOR_TYPE_SERVICE.getValue()) && !APProperties.SEODOR_TYPE_SERVICE.getValue().isEmpty()) {
+                // Controle SEODOR à implémenter
+                viewBean.setMessagePropError(true);
+                List<String> messagesError = new ArrayList<>();
+
+                messagesError.add("Erreur N°1");
+                messagesError.add("Erreur N°2");
+                messagesError.add("Erreur N°3");
+                messagesError.add("Erreur N°4");
+
+                viewBean.setMessagesError(messagesError);
+                session.setAttribute(FWServlet.VIEWBEAN, viewBean);
+                request.setAttribute("viewBean", viewBean);
+            }
+        } catch (PropertiesException e) {
+            // La propriété n'existe pas
+            LOG.error("La propriété apg.rapg.genre.service.seodor n'a pas été trouvé : ", e);
+        }
+
+        if (viewBean.hasMessagePropError()) {
+            newAction = FWAction.newInstance(IAPActions.ACTION_SAISIE_CARTE_APG + ".reAfficher");
+        }
+
+        // Fin contrôle SEODOR
+
+        String destination =request.getServletPath() + "?" + PRDefaultAction.USER_ACTION + "=" + newAction;
+        goSendRedirect(destination, request, response);
+    }
 }

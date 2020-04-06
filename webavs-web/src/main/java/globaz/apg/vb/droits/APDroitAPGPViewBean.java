@@ -30,6 +30,9 @@ public class APDroitAPGPViewBean extends APAbstractDroitProxyViewBean {
     private String dateFinPeriode = "";
     private List<PRPeriode> periodes;
 
+    private List<String> messagesError = new ArrayList<>();
+    private boolean hasMessagePropError = false;
+
     /**
      * Crée une nouvelle instance de la classe APDroitAPGPViewBean.
      */
@@ -304,6 +307,26 @@ public class APDroitAPGPViewBean extends APAbstractDroitProxyViewBean {
     public final void setModeEditionDroit(String modeEditionDroit) {
         APModeEditionDroit mode = Enum.valueOf(APModeEditionDroit.class, modeEditionDroit);
         this.setModeEditionDroit(mode);
+    }
+
+
+    public void setMessagePropError(boolean b) {
+        hasMessagePropError = b;
+    }
+    public boolean hasMessagePropError() {
+        return hasMessagePropError;
+    }
+
+    public String getMessagesError() {
+        String msgHTML = "";
+        for(String msg: messagesError){
+            msgHTML = msgHTML+ "<p>"+msg+"<p><br>";
+        }
+        return msgHTML;
+    }
+
+    public void setMessagesError(List<String> messagesError) {
+        this.messagesError = messagesError;
     }
 
 }

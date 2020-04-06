@@ -71,7 +71,8 @@
 
 	function validate () {
 		if (document.forms[0].elements('_method').value === "read") {
-			document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SITUATION_PROFESSIONNELLE%>.chercher";
+			<%--document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SITUATION_PROFESSIONNELLE%>.chercher";--%>
+			document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_APG%>.next";
 			action(COMMIT);
 		} else {
 			nssUpdateHiddenFields();
@@ -88,8 +89,8 @@
 			if(periodes.lenght == 0){
 				showErrorMessage("Aucune période n'est renseignée");
 				return;
-			}			
-	
+			}
+
 			<%if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.CREATION)){%>
 				document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_APG%>.ajouter";
 			<%} else if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.EDITION)){%>
@@ -128,6 +129,26 @@
 			document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_APG%>.supprimer";
 			document.forms[0].submit();
 		}
+
+	}
+
+	function checkParametersWebService() {
+		$("#dialog_apg_webservice").dialog({
+			resizable: true,
+			height: 170,
+			width: 300,
+			modal: true,
+			buttons: [{
+				id: "Ok",
+				text: "<ct:FWLabel key='JSP_CONTINUER'/>",
+				click: function () {
+					$(this).dialog("close");
+				}
+			}],
+			open : function() {
+				$("#Ok").focus();
+			}
+		});
 	}
 
 	periodes = [];
@@ -313,6 +334,7 @@
 			document.getElementById("isSoumisCotisation").checked = true;
 		}
 		showCantonImpotSource();
+		checkParametersWebService();
 	}
 	
 	
@@ -962,6 +984,13 @@
 								<ct:FWLabel key="JSP_REMARQUE_COMMENT" />
 						</td>
 					</tr>
+
+<% if(viewBean.hasMessagePropError()){ %>
+<div style="display:none" id="dialog_apg_webservice"
+	 title="<ct:FWLabel key='JSP_CONTROLE_SERVICE'/>" >
+	<%=viewBean.getMessagesError() %>
+</div>
+<%}%>
 <%@ include file="plausibilites.jsp" %>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
 				<input	type="button" 

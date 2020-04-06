@@ -6,6 +6,9 @@
  */
 package globaz.apg.helpers.droits;
 
+import ch.globaz.common.properties.CommonProperties;
+import ch.globaz.common.properties.CommonPropertiesUtils;
+import ch.globaz.common.properties.PropertiesException;
 import globaz.apg.ApgServiceLocator;
 import globaz.apg.db.droits.APDroitAPG;
 import globaz.apg.db.droits.APDroitLAPG;
@@ -19,7 +22,10 @@ import globaz.framework.controller.FWAction;
 import globaz.globall.api.BISession;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.beans.PRPeriode;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -290,4 +296,37 @@ public class APDroitAPGPHelper extends APAbstractDroitPHelper {
         return session.hasErrors() || (transaction == null) || transaction.hasErrors() || transaction.isRollbackOnly();
     }
 
+    private List<String> checkProperties() throws PropertiesException {
+        List<String> listPropertiesEmpty = new ArrayList<>();
+        final String prefix = "Propriété vide : ";
+        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_ENDPOINT_ADDRESS))){
+            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_ENDPOINT_ADDRESS.getPropertyName());
+        }
+        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_PASSWORD))){
+            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_KEYSTORE_PASSWORD.getPropertyName());
+        }
+        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_PATH))){
+            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_KEYSTORE_PATH.getPropertyName());
+        }
+        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_TYPE))){
+            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_KEYSTORE_TYPE.getPropertyName());
+        }
+        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_SEODOR_WSDL_PATH))){
+            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_SEODOR_WSDL_PATH.getPropertyName());
+        }
+        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_SSI_CONTEXT_TYPE))){
+            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_SSI_CONTEXT_TYPE.getPropertyName());
+        }
+        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_WEBSERVICE_NAME))){
+            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_WEBSERVICE_NAME.getPropertyName());
+        }
+        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_WEBSERVICE_NAMESPACE))){
+            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_WEBSERVICE_NAMESPACE.getPropertyName());
+        }
+        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_WEBSERVICE_SEDEX_SENDER_ID))){
+            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_WEBSERVICE_SEDEX_SENDER_ID.getPropertyName());
+        }
+
+        return listPropertiesEmpty;
+    }
 }
