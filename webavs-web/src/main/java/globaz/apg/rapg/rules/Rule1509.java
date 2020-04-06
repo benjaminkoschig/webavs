@@ -60,13 +60,15 @@ public class Rule1509 extends Rule {
         //Message Error à préparer
         return false;
     }
-    public java.lang.String getErrorCode() {
-        String errorCode = getSession().getLabel("APG_RULE_1509");
-        errorCode = errorCode.replace("{0}", numCaisse);
-        errorCode = errorCode.replace("{1}", debutPeriode);
-        errorCode = errorCode.replace("{2}", finPeriode);
-        errorCode = errorCode.replace("{3}", genreService);
-        return errorCode;
+
+    @Override
+    public String getDetailMessageErreur() {
+        String errorMessage = getSession().getLabel("APG_RULE_1509");
+        errorMessage = errorMessage.replace("{0}", numCaisse);
+        errorMessage = errorMessage.replace("{1}", debutPeriode);
+        errorMessage = errorMessage.replace("{2}", finPeriode);
+        errorMessage = errorMessage.replace("{3}", genreService);
+        return errorMessage;
     }
 
 

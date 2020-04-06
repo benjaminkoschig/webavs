@@ -67,7 +67,9 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
                     if (!isRuleInSkipListFerciab(rule, annonce) && !rule.check(annonce)) {
                         if (ruleConcernePlageValeurs(rule)) {
                             listErrors.add(getViolatedRuleDetail(session, rule.getErrorCode(), annonce));
-                        } else {
+                        } else if (!JadeStringUtil.isEmpty(rule.getDetailMessageErreur())) {
+                            listErrors.add(getViolatedRuleDetail(session, rule.getErrorCode(), rule.getDetailMessageErreur()));
+                        } else  {
                             listErrors.add(getViolatedRuleDetail(session, rule.getErrorCode()));
                         }
                     }
@@ -489,6 +491,11 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
     private ViolatedRule getViolatedRuleDetail(BSession session, String code, APChampsAnnonce annonce)
             throws APRuleExecutionException {
         return new ViolatedRule(code, getRuleMessage(session, code, annonce), isRuleBreakable(code));
+    }
+
+    private ViolatedRule getViolatedRuleDetail(BSession session, String code, String errorMessage)
+            throws APRuleExecutionException {
+        return new ViolatedRule(code, errorMessage, isRuleBreakable(code));
     }
 
     private Boolean isRuleBreakable(String code) {

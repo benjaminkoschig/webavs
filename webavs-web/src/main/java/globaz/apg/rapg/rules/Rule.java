@@ -400,4 +400,8 @@ public abstract class Rule implements APRuleDBDataProvider {
         this.session = session;
     }
 
+    public String getDetailMessageErreur() {
+        return "";
+    }
+
 }
