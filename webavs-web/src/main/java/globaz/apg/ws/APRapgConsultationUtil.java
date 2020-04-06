@@ -56,45 +56,46 @@ public class APRapgConsultationUtil {
         RapgConsultation1 rapgConsultation;
         try {
             rapgConsultation = getRapgConsultation(session,urlRAPGWS, certFileName, certPassword,certType);
+            System.out.println("Create request... "); //$NON-NLS-1$
+            // 2) Create the request StandardConsultationInputType
+            final RapgAnnoncesRequestType request = createRequest(Long.parseLong(nss), Integer.parseInt(numCaisse), Integer.parseInt(numBranche));
+
+            System.out.println("Calling RapgConsultationSSLSession.findAnnonces ... "); //$NON-NLS-1$
+            //3) Call webservice
+            final RapgAnnoncesResponseType response = rapgConsultation.findAnnonces(request);
+
+            //4)Check the return ack
+            System.out.println("Call successful, result : " + response.getAck().getValue()); //$NON-NLS-1$
+            switch (response.getAck().getValue()) {
+                //All those statuses have error message joined (normaly)
+                case FAILURE: //Something goes wrong and the webservice can not execute corectly. Check the error to know in witch side is the problem.
+                case PARTIALFAILURE: //In case of Patialfailure you maybe have a correct business response, it's depend on the error. Check it.
+                case WARNING:
+                    //5) Use the Errors
+                    if (response.getErrors() != null) {
+                        for (final ErreurMessageType error : response.getErrors()) {
+                            // Make what you need
+
+                            // It's an exemple to get error
+                            System.out.println("Error message : " + error.getMessage()); //$NON-NLS-1$
+                        }
+                    }
+                    break;
+                //Everything goes well.
+                case SUCCESS:
+                    //6)  Use the RegisterStatus answer
+                    System.out.println("Number of Records : " + response.getMessage().getContent().getRegisterStatusRecords().size()); //$NON-NLS-1$
+                    for (final RegisterStatusRecordType registerStatus : response.getMessage().getContent().getRegisterStatusRecords()) {
+                        //TODO: Vérifier les doublons
+
+                    }
+            }
+            System.out.println("End of test.");
+
         } catch (final Exception e) {
             e.printStackTrace();
             return;
         }
-        System.out.println("Create request... "); //$NON-NLS-1$
-        // 2) Create the request StandardConsultationInputType
-        final RapgAnnoncesRequestType request = createRequest(Long.parseLong(nss), Integer.parseInt(numCaisse), Integer.parseInt(numBranche));
-
-        System.out.println("Calling RapgConsultationSSLSession.findAnnonces ... "); //$NON-NLS-1$
-        //3) Call webservice
-        final RapgAnnoncesResponseType response = rapgConsultation.findAnnonces(request);
-
-        //4)Check the return ack
-        System.out.println("Call successful, result : " + response.getAck().getValue()); //$NON-NLS-1$
-        switch (response.getAck().getValue()) {
-            //All those statuses have error message joined (normaly)
-            case FAILURE: //Something goes wrong and the webservice can not execute corectly. Check the error to know in witch side is the problem.
-            case PARTIALFAILURE: //In case of Patialfailure you maybe have a correct business response, it's depend on the error. Check it.
-            case WARNING:
-                //5) Use the Errors
-                if (response.getErrors() != null) {
-                    for (final ErreurMessageType error : response.getErrors()) {
-                        // Make what you need
-
-                        // It's an exemple to get error
-                        System.out.println("Error message : " + error.getMessage()); //$NON-NLS-1$
-                    }
-                }
-                break;
-            //Everything goes well.
-            case SUCCESS:
-                //6)  Use the RegisterStatus answer
-                System.out.println("Number of Records : " + response.getMessage().getContent().getRegisterStatusRecords().size()); //$NON-NLS-1$
-                for (final RegisterStatusRecordType registerStatus : response.getMessage().getContent().getRegisterStatusRecords()) {
-                    //TODO: Vérifier les doublons
-
-                }
-        }
-        System.out.println("End of test.");
 
     }
 
