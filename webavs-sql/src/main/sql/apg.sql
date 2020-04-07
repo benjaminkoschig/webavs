@@ -1,4 +1,4 @@
--- Ajout propriété pour la webservices des breakrules
+-- POAVS-2816 Ajout propriété pour la webservices des breakrules
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.rapg.endpoint.address','https://www.rapg-a.zas.admin.ch/ApgCore/ws/consultation','20200318120000Globaz    ','20200318120000Globaz    ');
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.rapg.keystore.password','tsz9ty9of+53aZlasRVLjw==','20200318120000Globaz    ','20200318120000Globaz    ');
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.rapg.keystore.path','/home/wascnt/keys/T6-150000-1_2.p12','20200318120000Globaz    ','20200318120000Globaz    ');

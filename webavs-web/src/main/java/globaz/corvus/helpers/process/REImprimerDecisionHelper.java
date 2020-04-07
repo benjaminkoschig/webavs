@@ -112,8 +112,6 @@ public class REImprimerDecisionHelper extends PRAbstractHelper {
                 } else {
                     vb.setIsTypeCorrect(false);
                 }
-            } else {
-                vb.setIsTypeCorrect(false);
             }
         } catch (Exception e) {
             viewBean.setMessage(e.toString());
