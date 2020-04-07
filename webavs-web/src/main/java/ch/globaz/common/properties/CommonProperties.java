@@ -54,6 +54,7 @@ public enum CommonProperties implements IProperties {
     RAPG_KEYSTORE_PATH("rapg.keystore.path","adresse endpoint"),
     RAPG_KEYSTORE_TYPE("rapg.keystore.type","adresse endpoint"),
     RAPG_SEODOR_WSDL_PATH("rapg.seodor.wsdl.path","adresse endpoint"),
+    RAPG_WEBSERVICE_WSDL_PATH("common.rapg.webservice.wsdl.path","adresse endpoint"),
     RAPG_SSI_CONTEXT_TYPE("rapg.ssi.context.type","adresse endpoint"),
     RAPG_WEBSERVICE_NAME("rapg.webservice.name","adresse endpoint"),
     RAPG_WEBSERVICE_NAMESPACE("rapg.webservice.namespace","adresse endpoint"),

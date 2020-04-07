@@ -56,7 +56,7 @@ public abstract class Rule implements APRuleDBDataProvider {
      *                                      Lors d'exception interne à la règle (accès DB, etc)
      */
     public abstract boolean check(APChampsAnnonce champsAnnonce)
-            throws APRuleExecutionException, IllegalArgumentException;
+            throws Exception;
 
     /**
      * Set l'objet responsable de l'accès à la base de données. Cette composition est nécessaire pour pouvoir passer les

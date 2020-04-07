@@ -7,16 +7,14 @@ import ch.admin.cdc.rapg.core.service.ws._1.RapgConsultationService1;
 import ch.admin.ofit.commun.ws._2.ErreurMessageType;
 import ch.eahv.rapg.common._4.DeliveryOfficeType;
 import ch.eahv.rapg.eahv000601._4.RegisterStatusRecordType;
+import ch.globaz.common.domaine.Date;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.CommonPropertiesUtils;
 import ch.globaz.common.properties.PropertiesException;
+import globaz.apg.exceptions.APRuleExecutionException;
 import globaz.globall.db.BSession;
 import globaz.jade.crypto.JadeDefaultEncrypters;
-import globaz.jade.crypto.JadeEncrypterNotFoundException;
-import org.apache.cxf.configuration.jsse.TLSClientParameters;
-import org.apache.cxf.endpoint.Client;
-import org.apache.cxf.frontend.ClientProxy;
-import org.apache.cxf.transport.http.HTTPConduit;
+import globaz.jade.log.JadeLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +24,6 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
-import javax.xml.ws.Service;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -35,6 +32,8 @@ import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class APRapgConsultationUtil {
@@ -42,74 +41,57 @@ public class APRapgConsultationUtil {
     private static final String SSL_SOCKET_FACTORY_JAX_WS_RI = "com.sun.xml.internal.ws.transport.https.client.SSLSocketFactory";
     private static final Logger logger = LoggerFactory.getLogger(APRapgConsultationUtil.class);
 
-    public static void findAnnonces(BSession session, String nss, String numCaisse, String numBranche) throws PropertiesException {
+    public static List<RegisterStatusRecordType> findAnnonces(BSession session, String nss, String numCaisse, String numBranche) throws PropertiesException, APRuleExecutionException {
         String urlRAPGWS = CommonPropertiesUtils.getValue(CommonProperties.RAPG_ENDPOINT_ADDRESS);
         String certFileName = CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_PATH);
         String certPassword = CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_PASSWORD);
         String certType = CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_TYPE);
 
-
-        boolean secure = false;
-
-
         //1) Create the service
         RapgConsultation1 rapgConsultation;
         try {
-            rapgConsultation = getRapgConsultation(session,urlRAPGWS, certFileName, certPassword,certType);
-            System.out.println("Create request... "); //$NON-NLS-1$
+            rapgConsultation = getRapgConsultation(session, urlRAPGWS, certFileName, certPassword, certType);
+            JadeLogger.info(APRapgConsultationUtil.class,"Create request... ");
             // 2) Create the request StandardConsultationInputType
             final RapgAnnoncesRequestType request = createRequest(Long.parseLong(nss), Integer.parseInt(numCaisse), Integer.parseInt(numBranche));
 
-            System.out.println("Calling RapgConsultationSSLSession.findAnnonces ... "); //$NON-NLS-1$
+            JadeLogger.info(APRapgConsultationUtil.class,"Calling RapgConsultationSSLSession.findAnnonces ... ");
             //3) Call webservice
             final RapgAnnoncesResponseType response = rapgConsultation.findAnnonces(request);
 
             //4)Check the return ack
-            System.out.println("Call successful, result : " + response.getAck().getValue()); //$NON-NLS-1$
+            JadeLogger.info(APRapgConsultationUtil.class,"Call successful, result : " + response.getAck().getValue());
             switch (response.getAck().getValue()) {
                 //All those statuses have error message joined (normaly)
                 case FAILURE: //Something goes wrong and the webservice can not execute corectly. Check the error to know in witch side is the problem.
                 case PARTIALFAILURE: //In case of Patialfailure you maybe have a correct business response, it's depend on the error. Check it.
                 case WARNING:
-                    //5) Use the Errors
+                    StringBuilder str = new StringBuilder();
                     if (response.getErrors() != null) {
                         for (final ErreurMessageType error : response.getErrors()) {
-                            // Make what you need
-
-                            // It's an exemple to get error
-                            System.out.println("Error message : " + error.getMessage()); //$NON-NLS-1$
+                            str.append(error.getMessage());
+                            str.append(" ");
                         }
+                        throw new APRuleExecutionException(str.toString());
                     }
                     break;
-                //Everything goes well.
                 case SUCCESS:
                     //6)  Use the RegisterStatus answer
-                    System.out.println("Number of Records : " + response.getMessage().getContent().getRegisterStatusRecords().size()); //$NON-NLS-1$
-                    for (final RegisterStatusRecordType registerStatus : response.getMessage().getContent().getRegisterStatusRecords()) {
-                        //TODO: Vérifier les doublons
-
-                    }
+                    JadeLogger.info(APRapgConsultationUtil.class,"Number of Records : " + response.getMessage().getContent().getRegisterStatusRecords().size()); //$NON-NLS-1$
+                    return response.getMessage().getContent().getRegisterStatusRecords();
             }
-            System.out.println("End of test.");
-
         } catch (final Exception e) {
-            e.printStackTrace();
-            return;
+            throw new APRuleExecutionException(e);
         }
-
+        return null;
     }
 
-    public static boolean checkDuplicate(String nss, String deliveryOffice,String officeIdentifier, String branch,BSession session){
-        boolean isCheck = false;
 
-
-
-        return isCheck;
-    }
     /**
      * Create the request
-     * @param nas AHV-Versichertennummer/Numero AVS (13 position)
-     * @param cafCode office identifier max 3 positions
+     *
+     * @param nas        AHV-Versichertennummer/Numero AVS (13 position)
+     * @param cafCode    office identifier max 3 positions
      * @param agencyCode branch office branch max 3 positions
      * @return the request
      */
@@ -122,16 +104,17 @@ public class APRapgConsultationUtil {
         request.setDeliveryOffice(caisse);
         return request;
     }
-    private static RapgConsultation1 getRapgConsultation(BSession session,final String urlRAPGWS, final String certFileName, final String certPassword, String certType)
+
+    private static RapgConsultation1 getRapgConsultation(BSession session, final String urlRAPGWS, final String certFileName, final String certPassword, String certType)
             throws Exception {
         // Instantiate the service object generated from wsdl.
-        String pathWsdl = CommonPropertiesUtils.getValue(CommonProperties.RAPG_SEODOR_WSDL_PATH);
+        String pathWsdl = CommonPropertiesUtils.getValue(CommonProperties.RAPG_WEBSERVICE_WSDL_PATH);
         String nameSpace = CommonPropertiesUtils.getValue(CommonProperties.RAPG_WEBSERVICE_NAMESPACE);
         String name = CommonPropertiesUtils.getValue(CommonProperties.RAPG_WEBSERVICE_NAME);
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         URL wsdlLocation = classloader.getResource(pathWsdl);
-        QName qName = new QName(nameSpace,name);
-        final RapgConsultationService1 rapgConsultationService = new RapgConsultationService1(wsdlLocation,qName);
+        QName qName = new QName(nameSpace, name);
+        final RapgConsultationService1 rapgConsultationService = new RapgConsultationService1(wsdlLocation, qName);
         //Getting the port. Entry point for the Webservice.
 
         final RapgConsultation1 port = rapgConsultationService.getRapgConsultationPort1();
@@ -142,18 +125,19 @@ public class APRapgConsultationUtil {
         String certPasswordDecrypt = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(
                 certPassword);
 
-        configureSSLOnTheClient(port, certFileName, certPasswordDecrypt,certType);
+        configureSSLOnTheClient(port, certFileName, certPasswordDecrypt, certType);
         return port;
     }
 
 
     /**
      * Configure SSL On the client
-     * @param proxy webservice proxy
+     *
+     * @param proxy        webservice proxy
      * @param certFileName certFileName certificat filename with full path
      * @param certPassword certificat password
      */
-    private static void configureSSLOnTheClient(final RapgConsultation1 proxy, final String certFileName, final String certPassword, String certType) throws PropertiesException {
+    private static void configureSSLOnTheClient(final RapgConsultation1 proxy, final String certFileName, final String certPassword, String certType) throws Exception {
 
         SSLContext sc = null;
         KeyStore ks = null;
@@ -173,6 +157,7 @@ public class APRapgConsultationUtil {
                 filePkcs12.close();
             } catch (final IOException e) {
                 System.err.println("Error on close " + certFileName + " file");
+                throw e;
             }
 
             // Add certificate to the conduit
@@ -187,16 +172,22 @@ public class APRapgConsultationUtil {
 
         } catch (final FileNotFoundException e) {
             System.err.println("File " + certFileName + " doesn't exist");
+            throw e;
         } catch (final IOException ioe) {
             System.err.println("File " + certFileName + " doesn't exist. Cause by " + ioe.getCause());
+            throw ioe;
         } catch (final KeyStoreException kse) {
             System.out.println("Security configuration failed with the following: " + kse.getCause());
+            throw kse;
         } catch (final NoSuchAlgorithmException nsa) {
             System.out.println("Security configuration failed with the following: " + nsa.getCause());
+            throw nsa;
         } catch (final GeneralSecurityException gse) {
             System.out.println("Security configuration failed with the following: " + gse.getCause());
-        }catch (Exception E) {
-            System.out.println("Security configuration failed with the following: " + E.getCause());
+            throw gse;
+        } catch (Exception e) {
+            System.out.println("Security configuration failed with the following: " + e.getCause());
+            throw e;
         }
 
     }
