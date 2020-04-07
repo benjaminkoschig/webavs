@@ -243,7 +243,7 @@
 						<td></td>
 						<td></td>
 						<td></td>
-						<td>${violatedRule.errorCode}</td>
+						<td valign="top">${violatedRule.errorCode}</td>
 						<td>
 							${violatedRule.errorMessage}
 						</td>	
