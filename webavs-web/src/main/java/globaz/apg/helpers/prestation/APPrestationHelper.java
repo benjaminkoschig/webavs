@@ -867,7 +867,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             List<String> messageError = checkProperties(session);
             if(!messageError.isEmpty()){
                 viewBean.setMessagePropError(true);
-                viewBean.setMessagesError(messageError);
+                viewBean.getMessagesError().addAll(messageError);
             }
 
             // Validation de chaque annonce par le services des plausi
@@ -876,6 +876,12 @@ public class APPrestationHelper extends PRAbstractHelper {
                 // Exécution des Rules RAPG
                 final List<ViolatedRule> validationErrors = plausiService.checkAnnonce(session, container, tiers);
                 container.setValidationErrors(validationErrors);
+                for(ViolatedRule vRule:validationErrors) {
+                    if(vRule.isPopUp()) {
+                        viewBean.setMessagePropError(true);
+                        viewBean.getMessagesError().add(vRule.getErrorMessagePopUp());
+                    }
+                }
             }
 
             if (APGUtils.isTypeAllocationJourIsole(droit.getGenreService())) {

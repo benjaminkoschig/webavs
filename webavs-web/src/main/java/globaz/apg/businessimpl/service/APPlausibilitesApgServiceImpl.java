@@ -16,10 +16,7 @@ import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.enums.APAllPlausibiliteRules;
 import globaz.apg.enums.APBreakableRules;
 import globaz.apg.enums.APStepSendAnnonceRules;
-import globaz.apg.exceptions.APEntityNotFoundException;
-import globaz.apg.exceptions.APPlausibilitesException;
-import globaz.apg.exceptions.APRuleExecutionException;
-import globaz.apg.exceptions.APRuleFactoryException;
+import globaz.apg.exceptions.*;
 import globaz.apg.pojo.APChampsAnnonce;
 import globaz.apg.pojo.APErreurValidationPeriode;
 import globaz.apg.pojo.APValidationPrestationAPGContainer;
@@ -92,10 +89,15 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
                 }
                 // Survient en cas d'erreur interne à la règle lors de son l'exection
                 catch (APRuleExecutionException e) {
-                    String message = getViolatedRuleDetail(session, rule.getErrorCode()).getErrorMessage();
-                    message += "</br><strong>" + e.toString() + "</strong>";
-                    ViolatedRule violatedRule = new ViolatedRule(rule.getErrorCode(), message, rule.isBreakable());
-                    violatedRule.setFatalErrorThrown(true);
+                    String messageError = e.toString();
+                    ViolatedRule violatedRule = getViolatedRule(session, rule, messageError);
+                    listErrors.add(violatedRule);
+                }
+                catch (APWebserviceException e) {
+                    String messageError = e.toString();
+                    ViolatedRule violatedRule = getViolatedRule(session, rule, messageError);
+                    violatedRule.setErrorMessagePopUp(messageError);
+                    violatedRule.setPopUp(true);
                     listErrors.add(violatedRule);
                 }
             }
@@ -109,6 +111,19 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
             JadeLogger.error(this, t);
         }
         return listErrors;
+    }
+
+    private ViolatedRule getViolatedRule(BSession session, Rule rule, String messageError) throws APRuleExecutionException {
+        String message = "";
+        if (!JadeStringUtil.isEmpty(rule.getDetailMessageErreur())) {
+            message = getViolatedRuleDetail(session, rule.getErrorCode(), rule.getDetailMessageErreur()).getErrorMessage();
+        } else {
+            message = getViolatedRuleDetail(session, rule.getErrorCode()).getErrorMessage();
+        }
+        message += "</br><strong>" + messageError + "</strong>";
+        ViolatedRule violatedRule = new ViolatedRule(rule.getErrorCode(), message, rule.isBreakable());
+        violatedRule.setFatalErrorThrown(true);
+        return violatedRule;
     }
 
     private boolean isRuleInSkipListFerciab(Rule rule, APChampsAnnonce annonce) {

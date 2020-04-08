@@ -267,12 +267,16 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
         return hasMessagePropError;
     }
 
-    public String getMessagesError() {
+    public String getMessagesErrorPopUp() {
         String msgHTML = "";
         for(String msg: messagesError){
             msgHTML = msgHTML+ "<p>"+msg+"<p><br>";
         }
         return msgHTML;
+    }
+
+    public List<String> getMessagesError() {
+        return messagesError;
     }
 
     public void setMessagesError(List<String> messagesError) {

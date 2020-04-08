@@ -3,9 +3,11 @@ package globaz.apg.rapg.rules;
 import ch.eahv.rapg.eahv000601._4.RegisterStatusRecordType;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.properties.PropertiesException;
+import com.google.common.base.Throwables;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.droits.APDroitLAPGJointTiersManager;
 import globaz.apg.exceptions.APRuleExecutionException;
+import globaz.apg.exceptions.APWebserviceException;
 import globaz.apg.interfaces.APDroitAvecParent;
 import globaz.apg.pojo.APChampsAnnonce;
 import globaz.apg.rapg.messages.Message1509;
@@ -37,7 +39,7 @@ public class Rule1509 extends Rule {
      * ch.globaz.apg.businessimpl.plausibilites.Rule#check(ch.globaz.apg.business.models.plausibilites.ChampsAnnonce)
      */
     @Override
-    public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException, IllegalArgumentException  {
+    public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException, IllegalArgumentException, APWebserviceException {
         Message1509 message;
         String startOfPeriod = champsAnnonce.getStartOfPeriod();
         String endOfPeriod = champsAnnonce.getEndOfPeriod();
@@ -68,7 +70,7 @@ public class Rule1509 extends Rule {
             }
 
         } catch (Exception e) {
-            throw new APRuleExecutionException(e);
+            throw new APRuleExecutionException(e.getMessage(), e);
         }
         if(listMessage.isEmpty()){
             return true;

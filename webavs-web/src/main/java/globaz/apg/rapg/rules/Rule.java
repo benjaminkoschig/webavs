@@ -14,6 +14,7 @@ import globaz.apg.db.prestation.APPrestationManager;
 import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.enums.APTypeProtectionCivile;
 import globaz.apg.exceptions.APRuleExecutionException;
+import globaz.apg.exceptions.APWebserviceException;
 import globaz.apg.interfaces.APDroitAvecParent;
 import globaz.apg.pojo.APChampsAnnonce;
 import globaz.apg.utils.APRuleUtils;
@@ -56,7 +57,7 @@ public abstract class Rule implements APRuleDBDataProvider {
      *                                      Lors d'exception interne à la règle (accès DB, etc)
      */
     public abstract boolean check(APChampsAnnonce champsAnnonce)
-            throws Exception;
+            throws APRuleExecutionException, IllegalArgumentException, APWebserviceException;
 
     /**
      * Set l'objet responsable de l'accès à la base de données. Cette composition est nécessaire pour pouvoir passer les

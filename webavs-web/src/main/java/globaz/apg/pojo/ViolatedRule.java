@@ -21,7 +21,11 @@ public class ViolatedRule {
      */
     private String errorMessage;
 
+    private String errorMessagePopUp;
+
     private boolean fatalErrorThrown;
+
+    private boolean isPopUp = false;
 
     /**
      * @param errorCode
@@ -68,4 +72,19 @@ public class ViolatedRule {
         this.fatalErrorThrown = fatalErrorThrown;
     }
 
+    public boolean isPopUp() {
+        return isPopUp;
+    }
+
+    public void setPopUp(boolean popUp) {
+        isPopUp = popUp;
+    }
+
+    public String getErrorMessagePopUp() {
+        return errorMessagePopUp;
+    }
+
+    public void setErrorMessagePopUp(String errorMessagePopUp) {
+        this.errorMessagePopUp = errorMessagePopUp;
+    }
 }

@@ -5,6 +5,9 @@ package globaz.apg.vb.process;
 
 import globaz.prestation.vb.PRAbstractViewBeanSupport;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 
  * @author mmo
@@ -18,6 +21,8 @@ public class APListePrestationVerseeViewBean extends PRAbstractViewBeanSupport {
     private Boolean envoyerGed = new Boolean(false);
     private String numeroAffilie = "";
     private String selecteurPrestation = "";
+    private List<String> messagesError = new ArrayList<>();
+    private boolean hasMessagePropError = false;
 
     public String getDateDebut() {
         return dateDebut;
@@ -78,5 +83,25 @@ public class APListePrestationVerseeViewBean extends PRAbstractViewBeanSupport {
     @Override
     public boolean validate() {
         return true;
+    }
+
+
+    public void setMessagePropError(boolean b) {
+        hasMessagePropError = b;
+    }
+    public boolean hasMessagePropError() {
+        return hasMessagePropError;
+    }
+
+    public String getMessagesError() {
+        String msgHTML = "";
+        for(String msg: messagesError){
+            msgHTML = msgHTML+ "<p>"+msg+"<p><br>";
+        }
+        return msgHTML;
+    }
+
+    public void setMessagesError(List<String> messagesError) {
+        this.messagesError = messagesError;
     }
 }

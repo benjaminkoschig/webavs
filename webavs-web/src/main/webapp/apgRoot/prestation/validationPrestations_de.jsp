@@ -161,7 +161,7 @@
 		$("#dialog_apg_webservice").dialog({
 			resizable: true,
 			height: 500,
-			width: 300,
+			width: 500,
 			modal: true,
 			buttons: [{
 				id: "Ok",
@@ -175,6 +175,7 @@
 			}
 		});
 	}
+
 </script>
 <%@ include file="/theme/detail_el/bodyStart.jspf" %>
 <%@ include file="/theme/detail_el/bodyStart2.jspf" %>
@@ -322,10 +323,10 @@
 <% if(viewBean.hasMessagePropError()){ %>
 <div style="display:none" id="dialog_apg_webservice"
 	 title="<ct:FWLabel key='JSP_CONTROLE_SERVICE'/>" >
-	<%=viewBean.getMessagesError() %>
+	<%=viewBean.getMessagesErrorPopUp() %>
 </div>
 <%}%>
 
-<%@ include file="/theme/detail_el/bodyButtons.jspf" %>			
+<%@ include file="/theme/detail_el/bodyButtons.jspf" %>
 <%@ include file="/theme/detail_el/bodyErrors.jspf" %>
 <%@ include file="/theme/detail_el/footer.jspf" %>
