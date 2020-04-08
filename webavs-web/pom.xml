@@ -296,7 +296,7 @@
 					</execution>
 					<execution>
 						<id>generate-sources-seodor</id>
-						<phase>generate-sources</phase>
+						<phase>generate-sources-seodor</phase>
 						<configuration>
 							<sourceRoot>${project.build.directory}/generated-sources/seodor</sourceRoot>
 							<wsdlOptions>
