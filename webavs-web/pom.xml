@@ -288,18 +288,6 @@
 										<extraarg>http://www.w3.org/2001/XMLSchema=org.w3.dummy</extraarg>
 									</extraargs>
 								</wsdlOption>
-							</wsdlOptions>
-						</configuration>
-						<goals>
-							<goal>wsdl2java</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>generate-sources-seodor</id>
-						<phase>generate-sources</phase>
-						<configuration>
-							<sourceRoot>${project.build.directory}/generated-sources/seodor</sourceRoot>
-							<wsdlOptions>
 								<wsdlOption>
 									<wsdl>${basedir}/src/main/resources/wsdl/seodor/wsdl/SEODOR-query.wsdl</wsdl>
 									<extraargs>
