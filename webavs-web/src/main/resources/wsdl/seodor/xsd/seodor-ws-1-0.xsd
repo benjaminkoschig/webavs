@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044-f/4"
+           xmlns:eCH-0058="http://www.ech.ch/xmlns/eCH-0058/5"
+           xmlns="http://www.zas.admin.ch/xmlns/seodor-ws/1"
+           xmlns:eavh-iv-2014="http://www.eahv-iv.ch/xmlns/eahv-iv-2014-000101/1"
+           targetNamespace="http://www.zas.admin.ch/xmlns/seodor-ws/1"
+           version="1.0">
+  <xs:import namespace="http://www.ech.ch/xmlns/eCH-0044-f/4" schemaLocation="eCH-0044-4-1f.xsd"/>
+  <xs:import namespace="http://www.ech.ch/xmlns/eCH-0058/5" schemaLocation="eCH-0058-5-0.xsd"/>
+  <xs:import namespace="http://www.eahv-iv.ch/xmlns/eahv-iv-2014-000101/1" schemaLocation="eavh-iv-2014-000101-1-0.xsd"/>
+
+  <xs:element name="getServicePeriodsRequest" type="getServicePeriodsRequestType"/>
+  <xs:element name="getServicePeriodsResponse" type="getServicePeriodsResponseType"/>
+
+  <xs:complexType name="headerType">
+    <xs:sequence>
+      <xs:element name="senderId" type="eCH-0058:participantIdType"/>
+      <xs:element name="originalSenderId" type="eCH-0058:participantIdType" minOccurs="0"/>
+      <xs:element name="declarationLocalReference" type="eCH-0058:declarationLocalReferenceType" minOccurs="0"/>
+      <xs:element name="recipientId" type="eCH-0058:participantIdType"/>
+      <xs:element name="messageId" type="eCH-0058:messageIdType"/>
+      <xs:element name="referenceMessageId" type="eCH-0058:messageIdType" minOccurs="0"/>
+      <xs:element name="businessProcessId" type="eCH-0058:businessProcessIdType" minOccurs="0"/>
+      <xs:element name="ourBusinessReferenceId" type="eCH-0058:businessReferenceIdType" minOccurs="0"/>
+      <xs:element name="yourBusinessReferenceId" type="eCH-0058:businessReferenceIdType" minOccurs="0"/>
+      <xs:element name="uniqueIdBusinessTransaction" type="eCH-0058:uniqueIdBusinessTransactionType" minOccurs="0"/>
+      <xs:element name="messageType">
+        <xs:simpleType>
+          <xs:restriction base="eCH-0058:messageTypeType">
+            <xs:enumeration value="2017"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="subMessageType">
+        <xs:simpleType>
+          <xs:restriction base="eCH-0058:subMessageTypeType">
+            <xs:enumeration value="000101"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="sendingApplication" type="eCH-0058:sendingApplicationType"/>
+      <xs:element name="partialDelivery" type="eCH-0058:partialDeliveryType" minOccurs="0"/>
+      <xs:element name="subject" type="eCH-0058:subjectType" minOccurs="0"/>
+      <xs:element name="comment" type="eCH-0058:commentType" minOccurs="0"/>
+      <xs:element name="messageDate" type="eCH-0058:messageDateType"/>
+      <xs:element name="initialMessageDate" type="eCH-0058:messageDateType" minOccurs="0"/>
+      <xs:element name="eventDate" type="eCH-0058:eventDateType" minOccurs="0"/>
+      <xs:element name="modificationDate" type="eCH-0058:eventDateType" minOccurs="0"/>
+      <xs:element name="action" type="eCH-0058:actionType"/>
+      <xs:element name="attachment" type="xs:anyType" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="testDeliveryFlag" type="eCH-0058:testDeliveryFlagType"/>
+      <xs:element name="responseExpected" type="eCH-0058:responseExpectedType" minOccurs="0"/>
+      <xs:element name="businessCaseClosed" type="eCH-0058:businessCaseClosedType" minOccurs="0"/>
+      <xs:element name="namedMetaData" type="eCH-0058:namedMetaDataType" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="extension" type="xs:anyType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="servicePeriodsRequestType">
+    <xs:sequence>
+      <xs:element name="vn" type="eCH-0044:vnType"/>
+      <xs:element name="startDate" type="xs:date" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getServicePeriodsRequestType">
+    <xs:sequence>
+      <xs:element name="message">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="header" type="headerType"/>
+            <xs:element name="content">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="request" type="servicePeriodsRequestType"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="infoType">
+    <xs:sequence>
+      <xs:element name="negativeReport">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="notice">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="code" type="xs:token"/>
+                  <xs:element name="codeDescription" minOccurs="0">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:minLength value="1" />
+                        <xs:maxLength value="300" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:element name="timestamp" type="xs:dateTime"/>
+                  <xs:element name="comment" minOccurs="0">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:minLength value="1" />
+                        <xs:maxLength value="5000" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="data" minOccurs="0">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="echoRequest" type="servicePeriodsRequestType"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="servicePeriodsResponseType">
+    <xs:sequence>
+      <xs:element name="period" type="eavh-iv-2014:contentType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getServicePeriodsResponseType">
+    <xs:sequence>
+      <xs:element name="message">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="header" type="headerType"/>
+            <xs:choice>
+              <xs:element name="content">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="response" type="servicePeriodsResponseType"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="info" type="infoType"/>
+            </xs:choice>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

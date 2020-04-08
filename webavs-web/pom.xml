@@ -294,6 +294,50 @@
 							<goal>wsdl2java</goal>
 						</goals>
 					</execution>
+					<execution>
+						<id>generate-sources-seodor</id>
+						<phase>generate-sources</phase>
+						<configuration>
+							<sourceRoot>${project.build.directory}/generated-sources/seodor</sourceRoot>
+							<wsdlOptions>
+								<wsdlOption>
+									<wsdl>${basedir}/src/main/resources/wsdl/seodor/wsdl/SEODOR-query.wsdl</wsdl>
+									<extraargs>
+										<extraarg>-client</extraarg>
+										<extraarg>-xjc-Xlocator,-mark-generated</extraarg>
+										<extraarg>-xjc-extension</extraarg>
+										<extraarg>-p</extraarg>
+										<extraarg>http://www.zas.admin.ch/sedor/ws/service-periods/1=ch.admin.cdc.seodor.core.service.ws._1</extraarg>
+										<extraarg>-p</extraarg>
+										<extraarg>http://www.zas.admin.ch/xmlns/seodor-ws/1=ch.admin.cdc.seodor.core.dto.generated._1</extraarg>
+										<extraarg>-p</extraarg>
+										<extraarg>http://www.eahv-iv.ch/xmlns/eahv-iv-2014-000101/1=ch.eahv.seodor.eahv000101._1</extraarg>
+										<extraarg>-p</extraarg>
+										<extraarg>http://www.ech.ch/xmlns/eCH-0007/6=ch.ech.ech0007._6</extraarg>
+										<extraarg>-p</extraarg>
+										<extraarg>http://www.ech.ch/xmlns/eCH-0008/3=ch.ech.ech0008._3</extraarg>
+										<extraarg>-p</extraarg>
+										<extraarg>http://www.ech.ch/xmlns/eCH-0010/7=ch.ech.ech00010._7</extraarg>
+										<extraarg>-p</extraarg>
+										<extraarg>http://www.ech.ch/xmlns/eCH-0044/4=ch.ech.ech0044._4</extraarg>
+										<extraarg>-p</extraarg>
+										<extraarg>http://www.ech.ch/xmlns/eCH-0046/5=ch.ech.ech0046._5</extraarg>
+										<extraarg>-p</extraarg>
+										<extraarg>http://www.ech.ch/xmlns/eCH-0058/5=ch.ech.ech0058._5</extraarg>
+										<extraarg>-p</extraarg>
+										<extraarg>http://www.ech.ch/xmlns/eCH-0090/1=ch.ech.ech0090._1</extraarg>
+										<extraarg>-p</extraarg>
+										<extraarg>http://www.ofit.admin.ch/xmlns/commun-ws/2=ch.admin.ofit.commun.ws._2</extraarg>
+										<extraarg>-nexclude</extraarg>
+										<extraarg>http://www.w3.org/2001/XMLSchema=org.w3.dummy</extraarg>
+									</extraargs>
+								</wsdlOption>
+							</wsdlOptions>
+						</configuration>
+						<goals>
+							<goal>wsdl2java</goal>
+						</goals>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>

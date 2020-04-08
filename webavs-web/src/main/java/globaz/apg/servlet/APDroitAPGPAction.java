@@ -1,18 +1,23 @@
 package globaz.apg.servlet;
 
+import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
 import globaz.apg.db.droits.APDroitAPG;
 import globaz.apg.enums.APModeEditionDroit;
 import globaz.apg.exceptions.APWrongViewBeanTypeException;
 import globaz.apg.properties.APProperties;
+import globaz.apg.util.APGSeodorDataBean;
+import globaz.apg.util.APGSeodorServiceCallUtil;
 import globaz.apg.vb.droits.APDroitAPGDTO;
 import globaz.apg.vb.droits.APDroitAPGPViewBean;
 import globaz.apg.vb.prestation.APValidationPrestationViewBean;
+import globaz.apg.ws.APRapgConsultationUtil;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWDefaultServletAction;
 import globaz.framework.controller.FWDispatcher;
 import globaz.framework.servlets.FWServlet;
+import globaz.globall.db.BSession;
 import globaz.globall.http.JSPUtils;
 import globaz.prestation.servlet.PRDefaultAction;
 import globaz.prestation.tools.PRSessionDataContainerHelper;
@@ -243,6 +248,10 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
                 viewBean.setMessagePropError(true);
                 List<String> messagesError = new ArrayList<>();
 
+                APGSeodorDataBean apgSeodorDataBean = new APGSeodorDataBean();
+
+                APGSeodorServiceCallUtil.getPeriode(((BSession) mainDispatcher.getSession()), apgSeodorDataBean);
+
                 messagesError.add("Erreur N°1");
                 messagesError.add("Erreur N°2");
                 messagesError.add("Erreur N°3");
@@ -255,6 +264,8 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
         } catch (PropertiesException e) {
             // La propriété n'existe pas
             LOG.error("La propriété apg.rapg.genre.service.seodor n'a pas été trouvé : ", e);
+            ((BSession) mainDispatcher.getSession()).getLabel("WEBSERVICE_SEODOR_PROP_MANQUANTE");
+            //messagesError.add(WEBSERVICE_SEODOR_PROP_MANQUANTE)
         }
 
         if (viewBean.hasMessagePropError()) {

@@ -60,7 +60,18 @@ public enum CommonProperties implements IProperties {
     RAPG_WEBSERVICE_NAMESPACE("rapg.webservice.namespace","adresse endpoint"),
     RAPG_WEBSERVICE_SEDEX_SENDER_ID("rapg.webservice.sedex.sender.id","adresse endpoint"),
 
+    SEODOR_ENDPOINT_ADDRESS("seodor.endpoint.address","adresse endpoint"),
+    SEODOR_KEYSTORE_PASSWORD("seodor.keystore.password","Password KeyStore"),
+    SEODOR_KEYSTORE_PATH("seodor.keystore.path","Path keystore"),
+    SEODOR_KEYSTORE_TYPE("seodor.keystore.type","Type keystore"),
+    SEODOR_SEODOR_WSDL_PATH("seodor.wsdl.path","Path Wsdl Seodor"),
+    SEODOR_SSI_CONTEXT_TYPE("seodor.ssi.context.type","Type Context Seodor"),
+    SEODOR_WEBSERVICE_NAME("seodor.webservice.name","Webservice Name Seodor"),
+    SEODOR_WEBSERVICE_NAMESPACE("seodor.webservice.namespace","WebService NameSpace"),
+    SEODOR_WEBSERVICE_SEDEX_SENDER_ID("seodor.webservice.sedex.sender.id","Id Sedex Seodor"),
+
     QR_FACTURE("qrFacture","Permet de changer le mode de facturation QR-Facture/BVR");
+
 
     private String description;
     private String propertyName;
