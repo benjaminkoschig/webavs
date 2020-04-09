@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Magnin (OFIT) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:simpleType name="MZRApplcode_weakType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">MZR : weite Codifizierung eines Anwendungsgebietcodes (default)</xs:documentation>
+			<xs:documentation xml:lang="fr">ARC : code application (typage faible, défaut)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:length value="2"/>
+			<xs:pattern value="\d[\dABCDEFG]"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>
