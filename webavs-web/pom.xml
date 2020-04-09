@@ -230,28 +230,28 @@
 							</bindingIncludes>
 						</configuration>
 					</execution>
-					<execution>
-						<id>generate-acorV4</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<specVersion>2.1</specVersion>
-							<schemaDirectory>src/main/resources/xsd</schemaDirectory>
-							<generateDirectory>target/generated-sources/xjc-acorV4</generateDirectory>
-							<schemaIncludes>
-								<include>acorV4/swap/xsd/*.xsd</include>
-								<include>acorV4/xsd/*.xsd</include>
-								<include>acorV4/xsd/annoncesRC/*/*.xsd</include>
-								<include>acorV4/xsd/euro/*/*.xsd</include>
-								<include>acorV4/xsd/Typebase/*/*.xsd</include>
-							</schemaIncludes>
-							<bindingDirectory>src/main/resources/xjb</bindingDirectory>
-							<bindingIncludes>
-								<include>acorV4-bindings.xjb</include>
-							</bindingIncludes>
-						</configuration>
-					</execution>
+<!--					<execution>-->
+<!--						<id>generate-acorV4</id>-->
+<!--						<goals>-->
+<!--							<goal>generate</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<specVersion>2.1</specVersion>-->
+<!--							<schemaDirectory>src/main/resources/xsd</schemaDirectory>-->
+<!--							<generateDirectory>target/generated-sources/xjc-acorV4</generateDirectory>-->
+<!--							<schemaIncludes>-->
+<!--								<include>acorV4/swap/xsd/*.xsd</include>-->
+<!--								<include>acorV4/xsd/*.xsd</include>-->
+<!--								<include>acorV4/xsd/annoncesRC/*/*.xsd</include>-->
+<!--								<include>acorV4/xsd/euro/*/*.xsd</include>-->
+<!--								<include>acorV4/xsd/Typebase/*/*.xsd</include>-->
+<!--							</schemaIncludes>-->
+<!--							<bindingDirectory>src/main/resources/xjb</bindingDirectory>-->
+<!--							<bindingIncludes>-->
+<!--								<include>acorV4-bindings.xjb</include>-->
+<!--							</bindingIncludes>-->
+<!--						</configuration>-->
+<!--					</execution>-->
 					<execution>
 						<id>generate-aquila</id>
 						<goals>
