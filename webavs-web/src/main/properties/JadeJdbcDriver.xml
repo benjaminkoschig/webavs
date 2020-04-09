@@ -226,14 +226,14 @@
 
 
 		<datasource name="CCVS_QUALITE" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver>
-			<url>jdbc:db2://sccvswq2.ju.globaz.ch:50121/ccvsqua</url>
-			<user>iccvsqua</user>
-			<password>iccvsqua</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+		<driver>com.ibm.db2.jcc.DB2Driver</driver>
+		<url>jdbc:db2://sccvsqa1.ju.globaz.ch:50005/ccvsqua</url>
+		<user>db2inst1</user>
+		<password>db2inst1</password>
+		<maxConnections>100</maxConnections>
+		<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
+		<urlParameter name="prompt" value="false"/>
+	</datasource>
 		     
         <datasource name="CCVS_QUALITE_2" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
                <driver>com.ibm.db2.jcc.DB2Driver</driver>
