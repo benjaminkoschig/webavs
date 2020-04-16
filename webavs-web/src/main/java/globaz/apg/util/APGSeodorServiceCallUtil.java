@@ -32,9 +32,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.security.*;
 import java.security.cert.CertificateException;
+import java.util.Map;
 
 public class APGSeodorServiceCallUtil {
-
+    private static final String SSL_SOCKET_FACTORY_ORACLE_JDK = "com.sun.xml.ws.transport.https.client.SSLSocketFactory";
+    private static final String SSL_SOCKET_FACTORY_JAX_WS_RI = "com.sun.xml.internal.ws.transport.https.client.SSLSocketFactory";
     private static final Logger LOG = LoggerFactory.getLogger(APGSeodorServiceCallUtil.class);
 
 //        public static final APGSeodorDataBean getPeriode(BSession session, APGSeodorDataBean apgSeodorDataBean) {
@@ -156,7 +158,9 @@ public class APGSeodorServiceCallUtil {
                 kmf.init(ks, certPasswd.toCharArray());
 
                 sc.init(kmf.getKeyManagers(), null, null);
-
+                final Map<String, Object> ctxt = ((BindingProvider) port).getRequestContext();
+                ctxt.put(SSL_SOCKET_FACTORY_JAX_WS_RI, sc.getSocketFactory());
+                ctxt.put(SSL_SOCKET_FACTORY_ORACLE_JDK, sc.getSocketFactory());
                 BindingProvider bindingProvider = (BindingProvider) port;
 
                 // Si la propriété ide.webservice.url.endpoint existe on surcharge l'adresse du endpoint
