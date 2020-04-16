@@ -7,7 +7,6 @@ import ch.admin.cdc.rapg.core.service.ws._1.RapgConsultationService1;
 import ch.admin.ofit.commun.ws._2.ErreurMessageType;
 import ch.eahv.rapg.common._4.DeliveryOfficeType;
 import ch.eahv.rapg.eahv000601._4.RegisterStatusRecordType;
-import ch.globaz.common.domaine.Date;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.CommonPropertiesUtils;
 import ch.globaz.common.properties.PropertiesException;
@@ -32,7 +31,6 @@ import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -143,7 +141,7 @@ public class APRapgConsultationUtil {
         KeyStore ks = null;
 
         try {
-            sc = SSLContext.getInstance(CommonProperties.RAPG_SSI_CONTEXT_TYPE.getValue());
+            sc = SSLContext.getInstance(CommonProperties.RAPG_SSL_CONTEXT_TYPE.getValue());
 
             // Read the certificate
             FileInputStream filePkcs12;

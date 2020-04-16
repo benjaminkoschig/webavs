@@ -314,8 +314,8 @@ public class APDroitAPGPHelper extends APAbstractDroitPHelper {
         if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_SEODOR_WSDL_PATH))){
             listPropertiesEmpty.add(prefix+CommonProperties.RAPG_SEODOR_WSDL_PATH.getPropertyName());
         }
-        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_SSI_CONTEXT_TYPE))){
-            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_SSI_CONTEXT_TYPE.getPropertyName());
+        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_SSL_CONTEXT_TYPE))){
+            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_SSL_CONTEXT_TYPE.getPropertyName());
         }
         if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_WEBSERVICE_NAME))){
             listPropertiesEmpty.add(prefix+CommonProperties.RAPG_WEBSERVICE_NAME.getPropertyName());
