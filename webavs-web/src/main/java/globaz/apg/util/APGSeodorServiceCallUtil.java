@@ -1,6 +1,5 @@
 package globaz.apg.util;
 
-import ch.admin.cdc.rapg.core.service.ws._1.RapgConsultation1;
 import ch.admin.cdc.seodor.core.dto.generated._1.GetServicePeriodsRequestType;
 import ch.admin.cdc.seodor.core.dto.generated._1.GetServicePeriodsResponseType;
 import ch.admin.zas.seodor.ws.service_periods._1.ServicePeriodsPort10;
@@ -10,7 +9,8 @@ import ch.globaz.common.properties.PropertiesException;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.crypto.JadeDefaultEncrypters;
-import globaz.jade.crypto.JadeEncrypterNotFoundException;
+import globaz.phenix.util.WIRRDataBean;
+import globaz.phenix.util.WIRRServiceMappingUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
@@ -19,6 +19,7 @@ import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import wirrch.admin.bsv.xmlns.ebsv_2028_000101._1.Delivery;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -27,7 +28,6 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.security.*;
@@ -37,93 +37,147 @@ public class APGSeodorServiceCallUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(APGSeodorServiceCallUtil.class);
 
-        public static final APGSeodorDataBean getPeriode(BSession session, APGSeodorDataBean apgSeodorDataBean) {
+//        public static final APGSeodorDataBean getPeriode(BSession session, APGSeodorDataBean apgSeodorDataBean) {
+//            ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+//            try {
+//                String webServiceNameSpace = CommonProperties.SEODOR_WEBSERVICE_NAMESPACE.getValue();
+//                String webServiceName = CommonProperties.SEODOR_WEBSERVICE_NAME.getValue();
+//
+//                String keyStorePath = CommonProperties.SEODOR_KEYSTORE_PATH.getValue();
+//                String keyStoreType = CommonProperties.SEODOR_KEYSTORE_TYPE.getValue();
+//                String keyStorePass = CommonProperties.SEODOR_KEYSTORE_PASSWORD.getValue();
+//                String contextType = CommonProperties.SEODOR_SSL_CONTEXT_TYPE.getValue();
+//
+//                URL wsdlLocation = classloader.getResource(CommonProperties.RAPG_SEODOR_WSDL_PATH.getValue());
+//
+//                // Création du ServicePort
+//                ServicePeriodsPort10 port = createServicePeriodsPort(wsdlLocation, webServiceNameSpace, webServiceName);
+//
+//                // Condition pour générer la config SSL et le Binding
+//                if (!JadeStringUtil.isBlankOrZero(CommonProperties.SEODOR_KEYSTORE_PATH.getValue())
+//                        && !JadeStringUtil.isBlankOrZero(CommonProperties.SEODOR_KEYSTORE_TYPE.getValue())
+//                        && !JadeStringUtil.isBlankOrZero(CommonProperties.SEODOR_KEYSTORE_PASSWORD.getValue())) {
+//
+//                    // Config SSL
+//                    // TODO Ligne à supprimer. Pour test
+//                    keyStorePath = "C:\\Users\\eniv\\Downloads\\certificat\\T6-600024-1.p12";
+//
+//                    // Configure SSL
+//                    configureSSLOnTheClient(port, keyStorePath, keyStorePass, keyStoreType);
+//
+//                    // Binding du endPoint
+//                    String endpoint = CommonProperties.SEODOR_ENDPOINT_ADDRESS.getValue();
+//                    BindingProvider bindingProvider = (BindingProvider) port;
+//                    bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpoint);
+//
+//                    // TODO Voir si l'on garde cette surcharge
+//                    // Si la propriété ide.webservice.url.endpoint existe on surcharge l'adresse du endpoint
+////                    if (StringUtils.isNotEmpty(endpoint)) {
+////                        bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpoint);
+////                    }
+//                }
+//
+//                // TODO charger les données de request
+//                GetServicePeriodsRequestType requestDelivery = APGSeodorServiceMappingUtil.convertSeodorDataBeanToRequestDelivery(apgSeodorDataBean);
+//
+//                // TODO à supprimer si pas besoin de log
+//                // Pas de log demandé de session pour le moment
+//                //logCallPeriodeAPGSeodor(session, requestDelivery);
+//
+//                GetServicePeriodsResponseType responseDelivery = port.getServicePeriods(requestDelivery);
+//
+//                // TODO Mapper la réponse
+//
+//            // TODO Changer exception
+//            } catch (Exception e) {
+//
+//                // TODO Logger les erreurs
+//                if (apgSeodorDataBean == null) {
+//                    apgSeodorDataBean = new APGSeodorDataBean();
+//                }
+//
+//                apgSeodorDataBean.setHasTechnicalError(true);
+//                String message = session.getLabel("ERROR_REASON_DETAILED_UNEXCEPTED_ERROR");
+//                //apgSeodorDataBean.setMessageForUser(message);
+//                LOG.error(message, e);
+//            } finally {
+//
+//                if (apgSeodorDataBean == null) {
+//                    apgSeodorDataBean = new APGSeodorDataBean();
+//                }
+//
+//                if (apgSeodorDataBean.isHasTechnicalError()) {
+//                    StringBuilder sb = new StringBuilder();
+//                    sb.append("TechnicalError as occurr : errorReason = [");
+//                    //sb.append(apgSeodorDataBean.getErrorReason());
+//                    sb.append("] ");
+//                    sb.append("errorDetailedReason = [");
+//                    //sb.append(apgSeodorDataBean.getErrorDetailedReason());
+//                    sb.append("] ");
+//                    sb.append("errorComment = [");
+//                    //sb.append(apgSeodorDataBean.getErrorComment());
+//                    sb.append("]");
+//                    LOG.error(sb.toString());
+//                }
+//
+//
+//                return apgSeodorDataBean;
+//            }
+//        }
+
+    public static final APGSeodorDataBean getPeriode(BSession session, APGSeodorDataBean apgSeodorDataBean) {
+        try {
+            // init service
             ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-            try {
-                String webServiceNameSpace = CommonProperties.SEODOR_WEBSERVICE_NAMESPACE.getValue();
-                String webServiceName = CommonProperties.SEODOR_WEBSERVICE_NAME.getValue();
+            URL wsdlLocation = classloader.getResource(CommonProperties.SEODOR_SEODOR_WSDL_PATH.getValue());
+            Service service = Service.create(wsdlLocation,
+                    new QName(CommonProperties.SEODOR_WEBSERVICE_NAMESPACE.getValue(),
+                            CommonProperties.SEODOR_WEBSERVICE_NAME.getValue()));
 
-                String keyStorePath = CommonProperties.SEODOR_KEYSTORE_PATH.getValue();
-                String keyStoreType = CommonProperties.SEODOR_KEYSTORE_TYPE.getValue();
-                String keyStorePass = CommonProperties.SEODOR_KEYSTORE_PASSWORD.getValue();
-                String contextType = CommonProperties.SEODOR_SSI_CONTEXT_TYPE.getValue();
+            ServicePeriodsPort10 port = service.getPort(ServicePeriodsPort10.class);
 
-                URL wsdlLocation = classloader.getResource(CommonProperties.RAPG_SEODOR_WSDL_PATH.getValue());
+            if (!JadeStringUtil.isBlankOrZero(CommonProperties.SEODOR_KEYSTORE_PATH.getValue())
+                    && !JadeStringUtil.isBlankOrZero(CommonProperties.SEODOR_KEYSTORE_TYPE.getValue())
+                    && !JadeStringUtil.isBlankOrZero(CommonProperties.SEODOR_KEYSTORE_PASSWORD.getValue())
+                    && !JadeStringUtil.isBlankOrZero(CommonProperties.SEODOR_SSL_CONTEXT_TYPE.getValue())) {
 
-                // Création du ServicePort
-                ServicePeriodsPort10 port = createServicePeriodsPort(wsdlLocation, webServiceNameSpace, webServiceName);
+                SSLContext sc = SSLContext.getInstance(CommonProperties.SEODOR_SSL_CONTEXT_TYPE.getValue());
 
-                // Condition pour générer la config SSL et le Binding
-                if (!JadeStringUtil.isBlankOrZero(CommonProperties.SEODOR_KEYSTORE_PATH.getValue())
-                        && !JadeStringUtil.isBlankOrZero(CommonProperties.SEODOR_KEYSTORE_TYPE.getValue())
-                        && !JadeStringUtil.isBlankOrZero(CommonProperties.SEODOR_KEYSTORE_PASSWORD.getValue())) {
+                KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 
-                    // Config SSL
-                    // TODO Ligne à supprimer. Pour test
-                    keyStorePath = "C:\\Users\\eniv\\Downloads\\certificat\\T6-600024-1.p12";
+                KeyStore ks = KeyStore.getInstance(CommonProperties.SEODOR_KEYSTORE_TYPE.getValue());
+                FileInputStream fis = new FileInputStream(CommonProperties.SEODOR_KEYSTORE_PATH.getValue());
 
-                    // Configure SSL
-                    configureSSLOnTheClient(port, keyStorePath, keyStorePass, keyStoreType);
+                String certPasswd = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(
+                        CommonProperties.SEODOR_KEYSTORE_PASSWORD.getValue());
 
-                    // Binding du endPoint
-                    String endpoint = CommonProperties.SEODOR_ENDPOINT_ADDRESS.getValue();
-                    BindingProvider bindingProvider = (BindingProvider) port;
-                    bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpoint);
+                ks.load(fis, certPasswd.toCharArray());
+                IOUtils.closeQuietly(fis);
+                kmf.init(ks, certPasswd.toCharArray());
 
-                    // TODO Voir si l'on garde cette surcharge
-                    // Si la propriété ide.webservice.url.endpoint existe on surcharge l'adresse du endpoint
-//                    if (StringUtils.isNotEmpty(endpoint)) {
-//                        bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpoint);
-//                    }
+                sc.init(kmf.getKeyManagers(), null, null);
+
+                BindingProvider bindingProvider = (BindingProvider) port;
+
+                // Si la propriété ide.webservice.url.endpoint existe on surcharge l'adresse du endpoint
+                String endpoint = CommonProperties.SEODOR_ENDPOINT_ADDRESS.getValue();
+                if (StringUtils.isNotEmpty(endpoint)) {
+                    bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,  endpoint);
                 }
-
-                // TODO charger les données de request
-                GetServicePeriodsRequestType requestDelivery = APGSeodorServiceMappingUtil.convertSeodorDataBeanToRequestDelivery(apgSeodorDataBean);
-
-                // TODO à supprimer si pas besoin de log
-                // Pas de log demandé de session pour le moment
-                //logCallPeriodeAPGSeodor(session, requestDelivery);
-
-                GetServicePeriodsResponseType responseDelivery = port.getServicePeriods(requestDelivery);
-
-                // TODO Mapper la réponse
-
-            // TODO Changer exception
-            } catch (Exception e) {
-
-                // TODO Logger les erreurs
-                if (apgSeodorDataBean == null) {
-                    apgSeodorDataBean = new APGSeodorDataBean();
-                }
-
-                apgSeodorDataBean.setHasTechnicalError(true);
-                String message = session.getLabel("ERROR_REASON_DETAILED_UNEXCEPTED_ERROR");
-                //apgSeodorDataBean.setMessageForUser(message);
-                LOG.error(message, e);
-            } finally {
-
-                if (apgSeodorDataBean == null) {
-                    apgSeodorDataBean = new APGSeodorDataBean();
-                }
-
-                if (apgSeodorDataBean.isHasTechnicalError()) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("TechnicalError as occurr : errorReason = [");
-                    //sb.append(apgSeodorDataBean.getErrorReason());
-                    sb.append("] ");
-                    sb.append("errorDetailedReason = [");
-                    //sb.append(apgSeodorDataBean.getErrorDetailedReason());
-                    sb.append("] ");
-                    sb.append("errorComment = [");
-                    //sb.append(apgSeodorDataBean.getErrorComment());
-                    sb.append("]");
-                    LOG.error(sb.toString());
-                }
-
-
-                return apgSeodorDataBean;
+//                bindingProvider.getRequestContext().put(SSL_SOCKET_FACTORY_JAX_WS_RI, sc.getSocketFactory());
+//                bindingProvider.getRequestContext().put(SSL_SOCKET_FACTORY_ORACLE_JDK, sc.getSocketFactory());
             }
+
+            GetServicePeriodsRequestType requestDelivery = APGSeodorServiceMappingUtil.convertSeodorDataBeanToRequestDelivery(apgSeodorDataBean);
+
+            GetServicePeriodsResponseType responseDelivery = port.getServicePeriods(requestDelivery);
+
+
+        } catch (Exception e) {
+            LOG.error("test");
         }
+        return apgSeodorDataBean;
+    }
 
     /**
      * Méthode qui créé le SericePeriodsPort
