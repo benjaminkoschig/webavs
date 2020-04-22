@@ -5,7 +5,6 @@ import ch.admin.cdc.seodor.core.dto.generated._1.GetServicePeriodsRequestType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 public class APGSeodorDataBean {
-
     private String nss;
     private XMLGregorianCalendar startDate;
     private GetServicePeriodsRequestType.Message message;
@@ -31,4 +30,17 @@ public class APGSeodorDataBean {
     public void setHasTechnicalError(boolean hasTechnicalError) {
         this.hasTechnicalError = hasTechnicalError;
     }
+
+    public void setNss(String nss) {
+        this.nss = nss;
+    }
+
+    public void setStartDate(XMLGregorianCalendar startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setMessage(GetServicePeriodsRequestType.Message message) {
+        this.message = message;
+    }
+
 }

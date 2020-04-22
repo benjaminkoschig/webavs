@@ -1,5 +1,6 @@
 package globaz.apg.servlet;
 
+import ch.globaz.common.domaine.Date;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
 import globaz.apg.db.droits.APDroitAPG;
@@ -19,6 +20,7 @@ import globaz.framework.controller.FWDispatcher;
 import globaz.framework.servlets.FWServlet;
 import globaz.globall.db.BSession;
 import globaz.globall.http.JSPUtils;
+import globaz.prestation.beans.PRPeriode;
 import globaz.prestation.servlet.PRDefaultAction;
 import globaz.prestation.tools.PRSessionDataContainerHelper;
 import org.slf4j.Logger;
@@ -33,6 +35,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.xml.datatype.DatatypeConfigurationException;
 
 /**
  * <H1>Description</H1> Créé le 7 juil. 05
@@ -249,7 +252,11 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
                 List<String> messagesError = new ArrayList<>();
 
                 APGSeodorDataBean apgSeodorDataBean = new APGSeodorDataBean();
-
+                String nss = viewBean.getNss().replaceAll("\\.","");
+                PRPeriode periode1er = viewBean.getPeriodes().get(0);
+                Date dateDebut = new Date(periode1er.getDateDeDebut());
+                apgSeodorDataBean.setNss(nss);
+                apgSeodorDataBean.setStartDate(dateDebut.toXMLGregorianCalendar());
                 APGSeodorServiceCallUtil.getPeriode(((BSession) mainDispatcher.getSession()), apgSeodorDataBean);
 
                 messagesError.add("Erreur N°1");
@@ -266,6 +273,8 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
             LOG.error("La propriété apg.rapg.genre.service.seodor n'a pas été trouvé : ", e);
             ((BSession) mainDispatcher.getSession()).getLabel("WEBSERVICE_SEODOR_PROP_MANQUANTE");
             //messagesError.add(WEBSERVICE_SEODOR_PROP_MANQUANTE)
+        } catch (DatatypeConfigurationException e) {
+            e.printStackTrace();
         }
 
         if (viewBean.hasMessagePropError()) {

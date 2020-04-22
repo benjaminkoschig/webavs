@@ -1,7 +1,9 @@
 package globaz.apg.util;
 
 import ch.admin.cdc.seodor.core.dto.generated._1.GetServicePeriodsRequestType;
+
 import ch.admin.cdc.seodor.core.dto.generated._1.GetServicePeriodsResponseType;
+import ch.admin.cdc.seodor.core.dto.generated._1.ServicePeriodsRequestType;
 import ch.admin.zas.seodor.ws.service_periods._1.ServicePeriodsPort10;
 import ch.admin.zas.seodor.ws.service_periods._1.ServicePeriodsService10;
 import ch.globaz.common.properties.CommonProperties;
@@ -168,13 +170,13 @@ public class APGSeodorServiceCallUtil {
                 if (StringUtils.isNotEmpty(endpoint)) {
                     bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,  endpoint);
                 }
-//                bindingProvider.getRequestContext().put(SSL_SOCKET_FACTORY_JAX_WS_RI, sc.getSocketFactory());
-//                bindingProvider.getRequestContext().put(SSL_SOCKET_FACTORY_ORACLE_JDK, sc.getSocketFactory());
             }
 
-            GetServicePeriodsRequestType requestDelivery = APGSeodorServiceMappingUtil.convertSeodorDataBeanToRequestDelivery(apgSeodorDataBean);
+            GetServicePeriodsRequestType requestType = APGSeodorServiceMappingUtil.convertSeodorDataBeanToRequestDelivery(apgSeodorDataBean);
+            GetServicePeriodsResponseType responseDelivery = null;
+            responseDelivery = port.getServicePeriods(requestType);
 
-            GetServicePeriodsResponseType responseDelivery = port.getServicePeriods(requestDelivery);
+
 
 
         } catch (Exception e) {
