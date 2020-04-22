@@ -1,8 +1,8 @@
 package globaz.aquila.process.elp;
 
-import aquila.ch.eschkg.RcType;
-import aquila.ch.eschkg.SpType;
-import globaz.aquila.print.list.elp.*;
+import globaz.aquila.print.list.elp.COMotifMessageELP;
+import globaz.aquila.print.list.elp.COResultOtherELP;
+import globaz.aquila.print.list.elp.COTypeMessageELP;
 import globaz.globall.util.JACalendar;
 
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ public class COProtocoleELP {
 
     private List<COScElpDto> listCDPnonTraite = new ArrayList<>();
     private List<COSpElpDto> listPVnonTraite = new ArrayList<>();
-    private List<COResultRcELP> listADBnonTraite = new ArrayList<>();
+    private List<CORcElpDto> listADBnonTraite = new ArrayList<>();
     private List<COAbstractELP> listMsgIncoherent = new ArrayList<>();
     private List<COAbstractELP> listMsgTraite = new ArrayList<>();
 
@@ -25,8 +25,7 @@ public class COProtocoleELP {
         listPVnonTraite.add(result);
     }
 
-    public void addnonTraite(RcType rcType, COInfoFileELP infos, COMotifMessageELP motif) {
-        COResultRcELP result = getResultRcELP(rcType, infos, motif);
+    public void addnonTraite(CORcElpDto result) {
         listADBnonTraite.add(result);
     }
 
@@ -67,8 +66,8 @@ public class COProtocoleELP {
         listMsgIncoherent.add(result);
     }
 
-    public void addMsgIncoherent(RcType rcType, COInfoFileELP infos, COMotifMessageELP motif) {
-        COResultRcELP result = getResultRcELP(rcType, infos, motif);
+
+    public void addMsgIncoherent(CORcElpDto result) {
         listMsgIncoherent.add(result);
     }
 
@@ -80,17 +79,8 @@ public class COProtocoleELP {
         listMsgTraite.add(result);
     }
 
-    public void addMsgTraite(RcType rcType, COInfoFileELP infos) {
-        COResultRcELP result = getResultRcELP(rcType, infos, null);
+    public void addMsgTraite(CORcElpDto result) {
         listMsgTraite.add(result);
-    }
-
-    private COResultRcELP getResultRcELP(RcType rcType, COInfoFileELP infos, COMotifMessageELP motif) {
-        COResultRcELP result = new COResultRcELP(rcType);
-        result.setDateReception(infos.getDate());
-        result.setFichier(infos.getFichier());
-        result.setMotif(motif);
-        return result;
     }
 
 
@@ -110,11 +100,11 @@ public class COProtocoleELP {
         this.listPVnonTraite = listPVnonTraite;
     }
 
-    public List<COResultRcELP> getListADBnonTraite() {
+    public List<CORcElpDto> getListADBnonTraite() {
         return listADBnonTraite;
     }
 
-    public void setListADBnonTraite(List<COResultRcELP> listADBnonTraite) {
+    public void setListADBnonTraite(List<CORcElpDto> listADBnonTraite) {
         this.listADBnonTraite = listADBnonTraite;
     }
 

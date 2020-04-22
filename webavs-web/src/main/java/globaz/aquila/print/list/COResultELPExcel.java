@@ -2,10 +2,7 @@ package globaz.aquila.print.list;
 
 import ch.globaz.vulpecula.external.api.poi.AbstractListExcel;
 import globaz.aquila.print.list.elp.*;
-import globaz.aquila.process.elp.COAbstractELP;
-import globaz.aquila.process.elp.COProtocoleELP;
-import globaz.aquila.process.elp.COSpElpDto;
-import globaz.aquila.process.elp.COScElpDto;
+import globaz.aquila.process.elp.*;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
 import org.apache.poi.hssf.usermodel.*;
@@ -215,7 +212,7 @@ public class COResultELPExcel extends AbstractListExcel {
 
     private HSSFSheet populateSheet3() {
         initOnglet3();
-        for(COResultRcELP result : protocole.getListADBnonTraite()){
+        for(CORcElpDto result : protocole.getListADBnonTraite()){
             createRow();
             this.createCell(result.getFichier(), getStyleLeft());
             this.createCell(result.getTypemessage().getValue(), getStyleLeft());

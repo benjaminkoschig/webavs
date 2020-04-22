@@ -19,15 +19,13 @@ import globaz.aquila.db.access.batch.transition.CO043SaisirPVSaisie;
 import globaz.aquila.db.access.batch.transition.COTransitionAction;
 import globaz.aquila.db.access.poursuite.COContentieux;
 import globaz.aquila.db.access.poursuite.COContentieuxManager;
+import globaz.aquila.db.batch.COTransitionViewBean;
 import globaz.aquila.helpers.batch.process.COProcessEffectuerTransition;
 import globaz.aquila.print.list.COResultELPExcel;
 import globaz.aquila.print.list.elp.COELPException;
 import globaz.aquila.print.list.elp.COMotifMessageELP;
 import globaz.aquila.print.list.elp.COTypeELPFactory;
-import globaz.aquila.process.elp.COInfoFileELP;
-import globaz.aquila.process.elp.COProtocoleELP;
-import globaz.aquila.process.elp.COScElpDto;
-import globaz.aquila.process.elp.COSpElpDto;
+import globaz.aquila.process.elp.*;
 import globaz.aquila.process.exception.ElpProcessException;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
@@ -35,11 +33,17 @@ import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.GlobazServer;
 import globaz.globall.util.JACalendar;
 import globaz.jade.common.JadeClassCastException;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.fs.JadeFsFacade;
 import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.service.exception.JadeServiceActivatorException;
 import globaz.jade.service.exception.JadeServiceLocatorException;
 import globaz.jade.smtp.JadeSmtpClient;
+import globaz.osiris.api.APIReferenceRubrique;
+import globaz.osiris.api.APIRubrique;
+import globaz.osiris.db.comptes.CAReferenceRubrique;
+import globaz.osiris.external.IntRole;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -49,8 +53,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class COImportMessageELP extends AbstractDaemon {
 
@@ -63,26 +66,27 @@ public class COImportMessageELP extends AbstractDaemon {
     private static final String ID_ETAPE_SAISIR_CDP = "5";
     private static final String ID_ETAPE_SAISIR_PV_ADB = "34";
     private static final String ID_ETAPE_SAISIR_PV_SAISIE = "36";
+    private static final String ID_ETAPE_SAISIR_ADB = "21";
 
     private BSession bsession;
     private COProtocoleELP protocole;
     private String error = "";
     private String backupFolder;
 
-    public static void main(final String[] args) {
-        try {
-
-            COImportMessageELP importMessageELP = new COImportMessageELP();
-            importMessageELP.setPassword("oca");
-            importMessageELP.setUsername("oca");
-            importMessageELP.run();
-
-            System.exit(0);
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
+//    public static void main(final String[] args) {
+//        try {
+//
+//            COImportMessageELP importMessageELP = new COImportMessageELP();
+//            importMessageELP.setPassword("glob4az");
+//            importMessageELP.setUsername("ccjuglo");
+//            importMessageELP.run();
+//
+//            System.exit(0);
+//
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//    }
 
     @Override
     public void run() {
@@ -145,7 +149,7 @@ public class COImportMessageELP extends AbstractDaemon {
      * @param nomFichierDistant
      * @throws JAXBException
      */
-    private void importFile(String nomFichierDistant) throws JAXBException {
+    private void importFile(String nomFichierDistant) throws JAXBException, JadePersistenceException, JadeApplicationException {
         if (nomFichierDistant.endsWith(XML_EXTENSION)) {
             String tmpLocalWorkFile;
             String nameOriginalFile = FilenameUtils.getName(nomFichierDistant);
@@ -198,7 +202,7 @@ public class COImportMessageELP extends AbstractDaemon {
             } else if (doc.getSP() != null) {
                 resultTraitement = traitement(doc.getSP(), infos);
             } else if (doc.getRC() != null) {
-                traitement(doc.getRC(), infos);
+                resultTraitement = traitement(doc.getRC(), infos);
             } else {
                 protocole.addMsgIncoherentOther(infos, COTypeELPFactory.getCOTypeMessageELPFromXml(doc));
             }
@@ -251,7 +255,7 @@ public class COImportMessageELP extends AbstractDaemon {
                     // Ajout des étapes infos
                     addCDPEtapeInfos(action, scElpDto);
                     // Création du process
-                    executeCOTransitionProcess(contentieux, action);
+                    executeCOTransitionProcess(contentieux, action, new ArrayList());
                     protocole.addMsgTraite(scElpDto);
                     traitementInSuccess = true;
                 } else {
@@ -374,11 +378,12 @@ public class COImportMessageELP extends AbstractDaemon {
     /**
      * Lance l'exécution du process permettant la création de la nouvelle étape.
      *
-     * @param contentieux : le contentieux concerné.
-     * @param action      : l'action liée.
+     * @param contentieux     : le contentieux concerné.
+     * @param action          : l'action liée.
+     * @param fraisEtInterets : les frais et intérêts liés.
      * @throws ElpProcessException : Exception lancée si une erreur intervient lors de l'exécution du process.
      */
-    private void executeCOTransitionProcess(COContentieux contentieux, COTransitionAction action) throws ElpProcessException {
+    private void executeCOTransitionProcess(COContentieux contentieux, COTransitionAction action, List fraisEtInterets) throws ElpProcessException {
         COProcessEffectuerTransition process = new COProcessEffectuerTransition();
         process.setSession(bsession);
         process.setTransaction(bsession.getCurrentThreadTransaction());
@@ -386,6 +391,7 @@ public class COImportMessageELP extends AbstractDaemon {
         process.setRefresh(false);
         process.setLibSequence(contentieux.getLibSequence());
         process.setSelectedId(contentieux.getId());
+        process.setFraisEtInterets(fraisEtInterets);
         process.setIdEtapeSuivante(action.getTransition().getIdEtapeSuivante());
         process.setAction(action);
         try {
@@ -401,44 +407,42 @@ public class COImportMessageELP extends AbstractDaemon {
      * @param spType
      * @param infos
      * @throws ElpProcessException Exception lancée si un incident intervient dans la récupération du contentieux.
-     * @throws COELPException Exception lancée si un incident intervient lors de la récupération du type de saisie.
+     * @throws COELPException      Exception lancée si un incident intervient lors de la récupération du type de saisie.
      */
     private Boolean traitement(SpType spType, COInfoFileELP infos) throws ElpProcessException, COELPException {
         boolean traitementInSuccess = false;
         // Création de l'objet spElp
         COSpElpDto spElpDto = getSpElp(spType, infos);
-
         // Récupération du contentieux
         COContentieux contentieux = getContentieux(infos);
         if (Objects.nonNull(contentieux)) {
             COTransitionAction action;
             COTransition transition;
-                if (spElpDto.isADB()) {
-                    action = createAdbAction(spElpDto);
-                    transition = getTransition(contentieux, ID_ETAPE_SAISIR_PV_ADB);
-                } else {
-                    action = createPvAction(spElpDto);
-                    transition = getTransition(contentieux, ID_ETAPE_SAISIR_PV_SAISIE);
+            if (spElpDto.isADB()) {
+                action = createPvAdbAction(spElpDto);
+                transition = getTransition(contentieux, ID_ETAPE_SAISIR_PV_ADB);
+            } else {
+                action = createPvSaisieAction(spElpDto);
+                transition = getTransition(contentieux, ID_ETAPE_SAISIR_PV_SAISIE);
+            }
+            if (Objects.nonNull(transition)) {
+                action.setTransition(transition);
+                // Ajout des étapes infos
+                if (!spElpDto.isADB()) {
+                    addPvEtapeInfos(action, spElpDto);
                 }
-                if (Objects.nonNull(transition)) {
-                    action.setTransition(transition);
-                    // Ajout des étapes infos
-                    if (!spElpDto.isADB()) {
-                        addPvEtapeInfos(action, spElpDto);
-                    }
-                    // Création du process
-                    executeCOTransitionProcess(contentieux, action);
-                    protocole.addMsgTraite(spElpDto);
-                    traitementInSuccess = true;
-                } else {
-                    spElpDto.setMotif(COMotifMessageELP.PV_NON_TRAITE);
-                    protocole.addnonTraite(spElpDto);
-                }
+                // Création du process
+                executeCOTransitionProcess(contentieux, action, new ArrayList());
+                protocole.addMsgTraite(spElpDto);
+                traitementInSuccess = true;
+            } else {
+                spElpDto.setMotif(COMotifMessageELP.PV_NON_TRAITE);
+                protocole.addnonTraite(spElpDto);
+            }
         } else {
             spElpDto.setMotif(COMotifMessageELP.REF_INCOMPATIBLE);
             protocole.addMsgIncoherent(spElpDto);
         }
-
         return traitementInSuccess;
     }
 
@@ -448,9 +452,8 @@ public class COImportMessageELP extends AbstractDaemon {
      * @param action   : l'action pour laquelle on souhaite ajouter les étapes infos.
      * @param spElpDto : l'objet spElp contenant les informations du fichier xml.
      * @throws ElpProcessException exception lancée si un problème intervient durant la récupération des configs.
-     * @throws COELPException exception lancée si un problème intervient durant la récupération du type de saisie.
      */
-    private void addPvEtapeInfos(COTransitionAction action, COSpElpDto spElpDto) throws ElpProcessException, COELPException {
+    private void addPvEtapeInfos(COTransitionAction action, COSpElpDto spElpDto) throws ElpProcessException {
         List<COEtapeInfoConfig> etapeInfosConfigs;
         try {
             etapeInfosConfigs = action.getTransition().getEtapeSuivante().loadEtapeInfoConfigs();
@@ -477,7 +480,6 @@ public class COImportMessageELP extends AbstractDaemon {
             }
             action.addEtapeInfo(eachEtapeInfosConfig, valeur);
         }
-
     }
 
     /**
@@ -495,20 +497,24 @@ public class COImportMessageELP extends AbstractDaemon {
     }
 
     /**
+     * Création de l'action en fonction des paramètres du fichier xml.
+     *
      * @param spElpDto
-     * @return
+     * @return l'action PV Saisie pour Acte de défaut de bien
      */
-    private COTransitionAction createAdbAction(COSpElpDto spElpDto) {
+    private COTransitionAction createPvAdbAction(COSpElpDto spElpDto) {
         CO041SaisirActeDefautBien action = new CO041SaisirActeDefautBien();
         action.setDateExecution(spElpDto.getDateExecution());
         return action;
     }
 
     /**
+     * Créé l'action en fonction des paramètres du fichier xml.
+     *
      * @param spElpDto
-     * @return
+     * @return l'action PV de saisie
      */
-    private COTransitionAction createPvAction(COSpElpDto spElpDto) throws COELPException {
+    private COTransitionAction createPvSaisieAction(COSpElpDto spElpDto) {
         CO043SaisirPVSaisie action = new CO043SaisirPVSaisie();
         action.setCsTypeSaisie(spElpDto.getCsTypeDeSaisie());
         action.setDateExecutionSaisie(spElpDto.getDateExecution());
@@ -521,13 +527,132 @@ public class COImportMessageELP extends AbstractDaemon {
      * @param rcType
      * @param infos
      */
-    private void traitement(RcType rcType, COInfoFileELP infos) {
-        // TODO Non traité : indiquer le motif
-        protocole.addnonTraite(rcType, infos, COMotifMessageELP.RUBRIQUE_FRAIS_INDEF);
-        // TODO Pas de dossier trouvé
-        protocole.addMsgIncoherent(rcType, infos, COMotifMessageELP.REF_INCOMPATIBLE);
-        // TODO Traitement OK
-        protocole.addMsgTraite(rcType, infos);
+    private Boolean traitement(RcType rcType, COInfoFileELP infos) throws ElpProcessException {
+        boolean traitementInSuccess = false;
+        // Création de l'objet rcElp
+        CORcElpDto rcElpDto = getRcElp(rcType, infos);
+        // Récupération du contentieux
+        COContentieux contentieux = getContentieux(infos);
+        if (Objects.nonNull(contentieux)) {
+            COTransitionAction action = createAdbAction(rcElpDto);
+            COTransition transition = getTransition(contentieux, ID_ETAPE_SAISIR_ADB);
+            if (Objects.nonNull(transition)) {
+                action.setTransition(transition);
+                // Ajout des étapes infos
+                addAdbEtapeInfos(action, rcElpDto);
+                List<Map<String, String>> fraisEtInterets = null;
+                try {
+                    fraisEtInterets = getFraisEtInterets(rcElpDto, infos.getGenreAffiliation());
+                } catch (COELPException e) {
+                    LOG.error("Les frais et intérêts n'ont pas pu être gérés automatiquement.", e);
+                    rcElpDto.setMotif(COMotifMessageELP.RUBRIQUE_FRAIS_INDEF);
+                    protocole.addnonTraite(rcElpDto);
+                    return false;
+                }
+                executeCOTransitionProcess(contentieux, action, fraisEtInterets);
+                protocole.addMsgTraite(rcElpDto);
+                traitementInSuccess = true;
+            } else {
+                rcElpDto.setMotif(COMotifMessageELP.ADB_NON_TRAITE);
+                protocole.addnonTraite(rcElpDto);
+            }
+        } else {
+            rcElpDto.setMotif(COMotifMessageELP.REF_INCOMPATIBLE);
+            protocole.addMsgIncoherent(rcElpDto);
+        }
+        return traitementInSuccess;
+    }
+
+    /**
+     * Création de l'objet RpElp à partir du fichier XML.
+     *
+     * @param rcType : la classe de cast
+     * @param infos  : les infos sur le fichier
+     * @return l'objet RcElp
+     */
+    private CORcElpDto getRcElp(RcType rcType, COInfoFileELP infos) {
+        CORcElpDto result = new CORcElpDto(rcType);
+        result.setDateReception(infos.getDate());
+        result.setFichier(infos.getFichier());
+        return result;
+    }
+
+    /**
+     * Créé l'action en fonction des paramètres du fichier xml.
+     *
+     * @param rcElpDto
+     * @return l'action Acte de défaut de bien.
+     */
+    private COTransitionAction createAdbAction(CORcElpDto rcElpDto) {
+        CO041SaisirActeDefautBien adbAction = new CO041SaisirActeDefautBien();
+        adbAction.setNumeroADB(rcElpDto.getNoAbd());
+        return adbAction;
+    }
+
+    /**
+     * Ajout des informations liées à l'étape dans l'action.
+     *
+     * @param action   : l'action pour laquelle on souhaite ajouter les étapes infos.
+     * @param rcElpDto : l'objet rcElp contenant les informations du fichier xml.
+     * @throws ElpProcessException exception lancée si un problème intervient durant la récupération des configs.
+     */
+    private void addAdbEtapeInfos(COTransitionAction action, CORcElpDto rcElpDto) throws ElpProcessException {
+        List<COEtapeInfoConfig> etapeInfosConfigs;
+        try {
+            etapeInfosConfigs = action.getTransition().getEtapeSuivante().loadEtapeInfoConfigs();
+        } catch (Exception e) {
+            throw new ElpProcessException("Erreur lors de la récupération de la configuration des informations de l'étape", e);
+        }
+        for (COEtapeInfoConfig eachEtapeInfosConfig : etapeInfosConfigs) {
+            String valeur = StringUtils.EMPTY;
+            switch (eachEtapeInfosConfig.getCsLibelle()) {
+                case COEtapeInfoConfig.CS_NUMERO_ADB:
+                    valeur = rcElpDto.getNoAbd();
+                    break;
+                case COEtapeInfoConfig.CS_DATE_ETABLISSEMENT_ADB:
+                    valeur = rcElpDto.getDateEtablissement();
+                    break;
+                default:
+                    break;
+            }
+            action.addEtapeInfo(eachEtapeInfosConfig, valeur);
+        }
+    }
+
+    /**
+     * Récupère les frais et les intérêts depuis le fichier xml.
+     *
+     * @param rcElpDto         : le rcElp.
+     * @param genreAffiliation : le genre de l'affiliation.
+     * @return la liste des frais et intérêts s'il y en a.
+     */
+    private List<Map<String, String>> getFraisEtInterets(CORcElpDto rcElpDto, String genreAffiliation) throws COELPException {
+        List<Map<String, String>> fraisEtInterets = new ArrayList<>();
+        Map<String, String> mapFraisEtInterets = new HashMap<>();
+        if (StringUtils.isNotEmpty(rcElpDto.getInterest())) {
+            mapFraisEtInterets.put(COTransitionViewBean.LIBELLE, StringUtils.EMPTY);
+            mapFraisEtInterets.put(COTransitionViewBean.MONTANT, rcElpDto.getInterest());
+            CAReferenceRubrique ref = new CAReferenceRubrique();
+            APIRubrique rubrique;
+            ref.setSession(bsession);
+            switch (genreAffiliation) {
+                case IntRole.ROLE_AFFILIE_PARITAIRE:
+                    rubrique = ref.getRubriqueByCodeReference(APIReferenceRubrique.CONTENTIEUX_INTERET_MORATOIRE_PARITAIRE);
+                    mapFraisEtInterets.put(COTransitionViewBean.RUB_DESCRIPTION, rubrique.getDescription());
+                    mapFraisEtInterets.put(COTransitionViewBean.RUBRIQUE, rubrique.getIdRubrique());
+                    break;
+                case IntRole.ROLE_AFFILIE_PERSONNEL:
+                    rubrique = ref.getRubriqueByCodeReference(APIReferenceRubrique.CONTENTIEUX_INTERET_MORATOIRE_PERSONNEL);
+                    mapFraisEtInterets.put(COTransitionViewBean.RUB_DESCRIPTION, rubrique.getDescription());
+                    mapFraisEtInterets.put(COTransitionViewBean.RUBRIQUE, rubrique.getIdRubrique());
+                    break;
+                default:
+                    throw new COELPException("Ce type de rubrique n'est pas géré automatiquement.");
+            }
+            fraisEtInterets = new ArrayList<>();
+            fraisEtInterets.add(mapFraisEtInterets);
+        }
+        return fraisEtInterets;
     }
 
     /**

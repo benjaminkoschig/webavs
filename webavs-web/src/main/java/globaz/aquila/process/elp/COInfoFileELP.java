@@ -1,6 +1,11 @@
 package globaz.aquila.process.elp;
 
+import ch.globaz.al.business.constantes.ALConstParametres;
+import ch.globaz.param.business.models.ParameterModel;
+import ch.globaz.param.business.service.ParamServiceLocator;
 import globaz.globall.util.JACalendar;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
 import globaz.osiris.external.IntRole;
 
 import java.util.regex.Matcher;
@@ -8,7 +13,9 @@ import java.util.regex.Pattern;
 
 public class COInfoFileELP {
 
-    private static final String NAME_FILE_REGEX = "^(.{10})-(.{3})-(.{9})-(.{1})(.*)";
+
+    private static final String NAME_FILE_REGEX_FPV= "^(.{6})-(.{3})-(.{9})-(.{1})(.*)";
+    private static final String NAME_FILE_REGEX_FER = "^(.{10})-(.{3})-(.{9})-(.{1})(.*)";
     private static final String ROLE_PERSONNEL = "IND";
     private static final String ROLE_PARITAIRE = "PAR";
     private static final String ROLE_ADMIN = "ADM";
@@ -21,8 +28,18 @@ public class COInfoFileELP {
     private String fichier;
 
 
-    public static COInfoFileELP getInfosFromFile(String file) {
-        Pattern pattern = Pattern.compile(NAME_FILE_REGEX);
+    public static COInfoFileELP getInfosFromFile(String file) throws JadeApplicationException, JadePersistenceException {
+        ParameterModel nomCaisse = ParamServiceLocator.getParameterModelService().getParameterByName(
+                ALConstParametres.APPNAME, ALConstParametres.NOM_CAISSE,JACalendar.todayJJsMMsAAAA());
+
+        String regex;
+        if ("FPV".equals(nomCaisse.getValeurAlphaParametre())) {
+            regex = NAME_FILE_REGEX_FPV;
+        } else {
+           regex = NAME_FILE_REGEX_FER;
+        }
+
+        Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(file);
         if (!matcher.matches()) {
             return null;
