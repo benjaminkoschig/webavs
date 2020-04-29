@@ -942,8 +942,8 @@ public class APPrestationHelper extends PRAbstractHelper {
         if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_TYPE))){
             listPropertiesEmpty.add(prefix+CommonProperties.RAPG_KEYSTORE_TYPE.getPropertyName());
         }
-        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_SEODOR_WSDL_PATH))){
-            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_SEODOR_WSDL_PATH.getPropertyName());
+        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_WEBSERVICE_WSDL_PATH))){
+            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_WEBSERVICE_WSDL_PATH.getPropertyName());
         }
         if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_SSL_CONTEXT_TYPE))){
             listPropertiesEmpty.add(prefix+CommonProperties.RAPG_SSL_CONTEXT_TYPE.getPropertyName());

@@ -21,6 +21,5 @@ INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.seodor.
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.seodor.webservice.namespace','http://seodor-backend-r.zas.admin.ch/services/seodor/ws/service-periods/1','20200318120000Globaz    ','20200318120000Globaz    ');
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.seodor.webservice.sedex.sender.id','T6-600024-1','20200318120000Globaz    ','20200318120000Globaz    ');
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('apg.rapg.genre.service.seodor','','202003241120000Globaz    ','202003241120000Globaz    ');
-INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.rapg.seodor.wsdl.path','wsdl/apg/wsdl/rapg-webservice-1-0.wsdl','20200318120000Globaz    ','20200318120000Globaz    ');
 
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('apg.seodor.activer.webservice','true','20200318120000Globaz    ','20200318120000Globaz    ');
