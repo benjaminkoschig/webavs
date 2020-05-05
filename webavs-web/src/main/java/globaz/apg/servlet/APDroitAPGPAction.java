@@ -1,9 +1,11 @@
 package globaz.apg.servlet;
 
+import ch.globaz.common.document.reference.AbstractReference;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
 import globaz.apg.db.droits.APDroitAPG;
+import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.enums.APModeEditionDroit;
 import globaz.apg.exceptions.APWrongViewBeanTypeException;
 import globaz.apg.properties.APProperties;
@@ -17,10 +19,12 @@ import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWDefaultServletAction;
 import globaz.framework.controller.FWDispatcher;
+import globaz.framework.controller.FWViewBeanActionFactory;
 import globaz.framework.servlets.FWServlet;
 import globaz.globall.db.BSession;
 import globaz.globall.http.JSPUtils;
 import globaz.prestation.beans.PRPeriode;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.servlet.PRDefaultAction;
 import globaz.prestation.tools.PRSessionDataContainerHelper;
 import org.slf4j.Logger;
@@ -28,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -92,10 +97,48 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
             FWDispatcher mainDispatcher) throws ServletException, IOException {
 
         String[] userAction = request.getParameterValues("userAction");
-        if ((userAction != null) && (userAction.length > 1) && userAction[1].toLowerCase().equals("back")) {
-            super.actionAfficherApresBack(session, request, response, mainDispatcher);
+        String destination;
+
+        FWViewBeanInterface viewBeanAP = (FWViewBeanInterface) session.getAttribute("viewBean");
+
+        if (Objects.nonNull(viewBeanAP) && viewBeanAP instanceof APDroitAPGPViewBean && ((APDroitAPGPViewBean)viewBeanAP).getACorriger()) {
+            try {
+                String method = request.getParameter("_method");
+                FWAction privateAction = FWAction.newInstance(userAction[0]);
+                FWViewBeanInterface viewBean = new APDroitAPGPViewBean();
+
+                if (method != null && method.equalsIgnoreCase("ADD")) {
+                    privateAction.changeActionPart(FWAction.ACTION_NOUVEAU);
+                    viewBean = this.beforeNouveau(session, request, response, viewBeanAP);
+                }
+
+                if (method != null && method.equalsIgnoreCase("UPD")) {
+                    privateAction.changeActionPart(FWAction.ACTION_MODIFIER);
+                    viewBean = this.beforeModifier(session, request, response, viewBeanAP);
+                }
+
+                viewBean = this.beforeAfficher(session, request, response, viewBean);
+                viewBean = mainDispatcher.dispatch(viewBean, privateAction);
+                viewBean.setMessage("");
+                viewBean.setMsgType("");
+                session.removeAttribute("viewBean");
+                session.setAttribute("viewBean", viewBean);
+                request.setAttribute("viewBean", viewBean);
+                if (false && viewBean.getMsgType().equals("ERROR")) {
+                    destination = "/errorPage.jsp";
+                } else {
+                    destination = this.getRelativeURL(request, session) + "_de.jsp";
+                }
+            } catch (Exception var10) {
+                destination = "/errorPage.jsp";
+            }
+            this.servlet.getServletContext().getRequestDispatcher(destination).forward(request, response);
         } else {
-            super.actionAfficher(session, request, response, mainDispatcher);
+            if ((userAction != null) && (userAction.length > 1) && userAction[1].toLowerCase().equals("back")) {
+                super.actionAfficherApresBack(session, request, response, mainDispatcher);
+            } else {
+                super.actionAfficher(session, request, response, mainDispatcher);
+            }
         }
 
         FWViewBeanInterface viewBean = this.loadViewBean(session);
@@ -158,20 +201,44 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
 
             JSPUtils.setBeanProperties(request, viewBean);
             viewBean = (APDroitAPGPViewBean) beforeAjouter(session, request, response, viewBean);
-            viewBean = (APDroitAPGPViewBean) mainDispatcher.dispatch(viewBean, newAction);
 
-            boolean goesToSuccessDest = !viewBean.getMsgType().equals(FWViewBeanInterface.ERROR);
+            try {
+                if (viewBean.getACorriger()) {
+                    callWSSeodor(viewBean, mainDispatcher);
+                }
+            } catch (PropertiesException e) {
+                // La propriété n'existe pas
+                LOG.error("La propriété apg.rapg.genre.service.seodor n'a pas été trouvé : ", e);
+                ((BSession) mainDispatcher.getSession()).getLabel("WEBSERVICE_SEODOR_PROP_MANQUANTE");
+                //messagesError.add(WEBSERVICE_SEODOR_PROP_MANQUANTE)
+            } catch (DatatypeConfigurationException e) {
+                // TODO Gérer exception
+            }
 
-            if (goesToSuccessDest) {
-                // APSituationProfessionnelleViewBean newViewBean = new APSituationProfessionnelleViewBean();
-                // newViewBean.setIdDroit(viewBean.getIdDroit());
-                // session.setAttribute("viewBean", newViewBean);
-                request.setAttribute(FWServlet.VIEWBEAN, viewBean);
-                destination = _getDestAjouterSucces(session, request, response, viewBean);
-            } else {
+            // Fin contrôle SEODOR
+            // Si l'on corrige les données, alors on revient sur la page de modification du droit
+            if (viewBean.hasMessagePropError()) {
+                newAction = FWAction.newInstance(IAPActions.ACTION_SAISIE_CARTE_APG + ".afficher");
+                session.removeAttribute("viewBean");
                 session.setAttribute("viewBean", viewBean);
-                request.setAttribute(FWServlet.VIEWBEAN, viewBean);
-                destination = _getDestAjouterEchec(session, request, response, viewBean);
+                request.setAttribute("viewBean", viewBean);
+                destination =request.getServletPath() + "?" + PRDefaultAction.USER_ACTION + "=" + newAction;
+            } else{
+                // Sinon, on continue le process originel
+                viewBean = (APDroitAPGPViewBean) mainDispatcher.dispatch(viewBean, newAction);
+                boolean goesToSuccessDest = !viewBean.getMsgType().equals(FWViewBeanInterface.ERROR);
+
+                if (goesToSuccessDest) {
+                    // APSituationProfessionnelleViewBean newViewBean = new APSituationProfessionnelleViewBean();
+                    // newViewBean.setIdDroit(viewBean.getIdDroit());
+                    // session.setAttribute("viewBean", newViewBean);
+                    request.setAttribute(FWServlet.VIEWBEAN, viewBean);
+                    destination = _getDestAjouterSucces(session, request, response, viewBean);
+                } else {
+                    session.setAttribute("viewBean", viewBean);
+                    request.setAttribute(FWServlet.VIEWBEAN, viewBean);
+                    destination = _getDestAjouterEchec(session, request, response, viewBean);
+                }
             }
 
         } catch (Exception e) {
@@ -195,20 +262,45 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
 
             JSPUtils.setBeanProperties(request, viewBean);
             viewBean = (APDroitAPGPViewBean) beforeAjouter(session, request, response, viewBean);
-            viewBean = (APDroitAPGPViewBean) mainDispatcher.dispatch(viewBean, newAction);
 
-            boolean goesToSuccessDest = !viewBean.getMsgType().equals(FWViewBeanInterface.ERROR);
+            //
 
-            if (goesToSuccessDest) {
-                // APSituationProfessionnelleViewBean newViewBean = new APSituationProfessionnelleViewBean();
-                // newViewBean.setIdDroit(viewBean.getIdDroit());
-                // session.setAttribute("viewBean", newViewBean);
-                request.setAttribute(FWServlet.VIEWBEAN, viewBean);
-                destination = _getDestAjouterSucces(session, request, response, viewBean);
-            } else {
+            try {
+                if (viewBean.getACorriger()) {
+                    callWSSeodor(viewBean, mainDispatcher);
+                }
+            } catch (PropertiesException e) {
+                // La propriété n'existe pas
+                LOG.error("La propriété apg.rapg.genre.service.seodor n'a pas été trouvé : ", e);
+                ((BSession) mainDispatcher.getSession()).getLabel("WEBSERVICE_SEODOR_PROP_MANQUANTE");
+                //messagesError.add(WEBSERVICE_SEODOR_PROP_MANQUANTE)
+            } catch (DatatypeConfigurationException e) {
+                // TODO Gérer exception
+            }
+
+            // Fin contrôle SEODOR
+            // Si l'on corrige les données, alors on revient sur la page de modification du droit
+            if (viewBean.hasMessagePropError()) {
+                newAction = FWAction.newInstance(IAPActions.ACTION_SAISIE_CARTE_APG + ".afficher");
+                session.removeAttribute("viewBean");
                 session.setAttribute("viewBean", viewBean);
-                request.setAttribute(FWServlet.VIEWBEAN, viewBean);
-                destination = _getDestAjouterEchec(session, request, response, viewBean);
+                request.setAttribute("viewBean", viewBean);
+                destination =request.getServletPath() + "?" + PRDefaultAction.USER_ACTION + "=" + newAction;
+            } else {
+                viewBean = (APDroitAPGPViewBean) mainDispatcher.dispatch(viewBean, newAction);
+                boolean goesToSuccessDest = !viewBean.getMsgType().equals(FWViewBeanInterface.ERROR);
+
+                if (goesToSuccessDest) {
+                    // APSituationProfessionnelleViewBean newViewBean = new APSituationProfessionnelleViewBean();
+                    // newViewBean.setIdDroit(viewBean.getIdDroit());
+                    // session.setAttribute("viewBean", newViewBean);
+                    request.setAttribute(FWServlet.VIEWBEAN, viewBean);
+                    destination = _getDestAjouterSucces(session, request, response, viewBean);
+                } else {
+                    session.setAttribute("viewBean", viewBean);
+                    request.setAttribute(FWServlet.VIEWBEAN, viewBean);
+                    destination = _getDestAjouterEchec(session, request, response, viewBean);
+                }
             }
 
         } catch (Exception e) {
@@ -225,7 +317,6 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
         APDroitAPGPViewBean viewBean = (APDroitAPGPViewBean) loadViewBean(session);
         String[] userAction = request.getParameterValues("userAction");
         String[] methode = request.getParameterValues("_method");
-
         FWAction newAction = null;
 
         if (methode[0].equalsIgnoreCase("read")) {
@@ -245,45 +336,38 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
 			}
         }
 
-        try {
-            if (!Objects.isNull(APProperties.SEODOR_TYPE_SERVICE.getValue()) && !APProperties.SEODOR_TYPE_SERVICE.getValue().isEmpty()) {
-                // Controle SEODOR à implémenter
-                viewBean.setMessagePropError(true);
-                List<String> messagesError = new ArrayList<>();
+        String destination =request.getServletPath() + "?" + PRDefaultAction.USER_ACTION + "=" + newAction;
+        goSendRedirect(destination, request, response);
+    }
 
-                APGSeodorDataBean apgSeodorDataBean = new APGSeodorDataBean();
+    private List<APGSeodorDataBean> callWSSeodor (APDroitAPGPViewBean viewBean, FWDispatcher mainDispatcher) throws PropertiesException, DatatypeConfigurationException {
+
+        List<APGSeodorDataBean> apgSeodorDataBeans = new ArrayList<>();
+        APGSeodorDataBean apgSeodorDataBean = new APGSeodorDataBean();
+
+        if (!Objects.isNull(APProperties.SEODOR_TYPE_SERVICE.getValue()) && !APProperties.SEODOR_TYPE_SERVICE.getValue().isEmpty()
+                && APProperties.SEODOR_TYPE_SERVICE.getValue().contains(APGenreServiceAPG.resoudreGenreParCodeSystem(viewBean.getGenreService()).getCodePourAnnonce())) {
+            // Controle SEODOR à implémenter
+                List<String> messagesError = new ArrayList<>();
+                // TODO mapper la requete
                 String nss = viewBean.getNss().replaceAll("\\.","");
                 PRPeriode periode1er = viewBean.getPeriodes().get(0);
                 Date dateDebut = new Date(periode1er.getDateDeDebut());
                 apgSeodorDataBean.setNss(nss);
                 apgSeodorDataBean.setStartDate(dateDebut.toXMLGregorianCalendar());
-                APGSeodorServiceCallUtil.getPeriode(((BSession) mainDispatcher.getSession()), apgSeodorDataBean);
+                apgSeodorDataBeans = APGSeodorServiceCallUtil.getPeriode(((BSession) mainDispatcher.getSession()), apgSeodorDataBean);
 
+                // TODO mapper le résultat de l'appel
                 messagesError.add("Erreur N°1");
                 messagesError.add("Erreur N°2");
                 messagesError.add("Erreur N°3");
                 messagesError.add("Erreur N°4");
 
-                viewBean.setMessagesError(messagesError);
-                session.setAttribute(FWServlet.VIEWBEAN, viewBean);
-                request.setAttribute("viewBean", viewBean);
-            }
-        } catch (PropertiesException e) {
-            // La propriété n'existe pas
-            LOG.error("La propriété apg.rapg.genre.service.seodor n'a pas été trouvé : ", e);
-            ((BSession) mainDispatcher.getSession()).getLabel("WEBSERVICE_SEODOR_PROP_MANQUANTE");
-            //messagesError.add(WEBSERVICE_SEODOR_PROP_MANQUANTE)
-        } catch (DatatypeConfigurationException e) {
-            e.printStackTrace();
+                if (!messagesError.isEmpty()) {
+                    viewBean.setMessagePropError(true);
+                    viewBean.setMessagesError(messagesError);
+                }
         }
-
-        if (viewBean.hasMessagePropError()) {
-            newAction = FWAction.newInstance(IAPActions.ACTION_SAISIE_CARTE_APG + ".reAfficher");
-        }
-
-        // Fin contrôle SEODOR
-
-        String destination =request.getServletPath() + "?" + PRDefaultAction.USER_ACTION + "=" + newAction;
-        goSendRedirect(destination, request, response);
+        return apgSeodorDataBeans;
     }
 }

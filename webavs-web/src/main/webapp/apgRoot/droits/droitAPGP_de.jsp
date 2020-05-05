@@ -14,6 +14,8 @@
 <%@ page import="globaz.prestation.tools.PRCodeSystem"%>
 <%@ page import="globaz.pyxis.db.adressecourrier.TIPays"%>
 <%@ page import="java.util.HashSet"%>
+<%@ page import="globaz.apg.util.APGSeodorDataBean" %>
+<%@ page import="globaz.globall.db.BSession" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib uri="/WEB-INF/nss.tld" prefix="ct1" %>
 <%@ include file="/theme/detail/header.jspf" %>
@@ -23,6 +25,10 @@
 	idEcran = "PAP0001";
 
 	APDroitAPGPViewBean viewBean = (APDroitAPGPViewBean) session.getAttribute("viewBean");
+
+	viewBean.setACorriger(false);
+	session.setAttribute("viewBean", viewBean);
+
 	HashSet exceptGenreService = new HashSet();
 	exceptGenreService.add(IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE);
 
@@ -37,6 +43,8 @@
 	bButtonValidate = false;
 	bButtonCancel = false;
 	bButtonDelete = false;
+
+	APGSeodorDataBean apgSeodorDataBean = new APGSeodorDataBean();
 		
 %>
 <%@ include file="/theme/detail/javascripts.jspf" %>
@@ -75,45 +83,50 @@
 			document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_APG%>.next";
 			action(COMMIT);
 		} else {
-			nssUpdateHiddenFields();
-			//Récupération des dates
- 			// si l'utilisateur à saisit des valeurs pour les priodes sans cliquer le btn ajouter, on lui fit à sa place
-	 		var dateDebut = $('#dateDebutPeriode').val();
- 			var dateFin = $('#dateFinPeriode').val();
- 			var nbrJours = $('#nbrJourSoldes').val();
-			// Si au moins un des 3 champs n'est pas vide
- 			if(dateDebut || dateFin){
-				addPeriode();
-			}
-			// Si aucune période n'est renseigné -> message d'erreurs
-			if(periodes.lenght == 0){
-				showErrorMessage("Aucune période n'est renseignée");
-				return;
-			}
-
-			<%if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.CREATION)){%>
-				document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_APG%>.ajouter";
-			<%} else if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.EDITION)){%>
-				document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_APG%>.modifier";
-			<%} else if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.LECTURE)){%>
-				if(EDITION_MODE){
-					document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_APG%>.modifier";
-				}
-				else {
-					document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SITUATION_PROFESSIONNELLE%>.chercher";
-				}
-			<%}%>
-			
-			    var tmp = "";
-			    for(var i = 0; i < periodes.length; i++){
-			    	tmp += periodes[i].toString();
-			    	if(i + 1 < periodes.length){
-			    		tmp += ";";
-			    	}
-			    }
-			    $('#periodesAsString').val(tmp);
-			  action(COMMIT);
+			$('#aCorriger').prop( "checked", true);
+			nextStepValidate();
 		}
+	}
+
+	function nextStepValidate() {
+		nssUpdateHiddenFields();
+		//Récupération des dates
+		// si l'utilisateur à saisit des valeurs pour les priodes sans cliquer le btn ajouter, on lui fit à sa place
+		var dateDebut = $('#dateDebutPeriode').val();
+		var dateFin = $('#dateFinPeriode').val();
+		var nbrJours = $('#nbrJourSoldes').val();
+		// Si au moins un des 3 champs n'est pas vide
+		if(dateDebut || dateFin){
+			addPeriode();
+		}
+		// Si aucune période n'est renseigné -> message d'erreurs
+		if(periodes.lenght == 0){
+			showErrorMessage("Aucune période n'est renseignée");
+			return;
+		}
+
+		<%if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.CREATION)){%>
+		document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_APG%>.ajouter";
+		<%} else if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.EDITION)){%>
+		document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_APG%>.modifier";
+		<%} else if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.LECTURE)){%>
+		if(EDITION_MODE){
+			document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_APG%>.modifier";
+		}
+		else {
+			document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SITUATION_PROFESSIONNELLE%>.chercher";
+		}
+		<%}%>
+
+		var tmp = "";
+		for(var i = 0; i < periodes.length; i++){
+			tmp += periodes[i].toString();
+			if(i + 1 < periodes.length){
+				tmp += ";";
+			}
+		}
+		$('#periodesAsString').val(tmp);
+		action(COMMIT);
 	}
 
 	function cancel () {
@@ -139,9 +152,19 @@
 			width: 300,
 			modal: true,
 			buttons: [{
-				id: "Ok",
+				id: "Correct",
 				text: "<ct:FWLabel key='JSP_CONTINUER'/>",
 				click: function () {
+					$('#aCorriger').prop( "checked", false);
+					nextStepValidate();
+					$(this).dialog("close");
+				}
+			}, {
+				id: "Ok",
+				text: "<ct:FWLabel key='JSP_CORRIGER'/>",
+				click: function () {
+					action(UPDATE);
+					upd();
 					$(this).dialog("close");
 				}
 			}],
@@ -269,6 +292,7 @@
 
 
 	function postInit () {
+		$('#aCorriger').prop( "checked", false);
 		if (<%=viewBean.isTrouveDansTiers()%>) {
 			document.getElementById("nomAffiche").disabled = true;
 			document.getElementById("prenomAffiche").disabled = true;
@@ -360,6 +384,7 @@
 		document.getElementById("csEtatCivil").value = document.getElementById("csEtatCivilAffiche").value;
 		document.getElementById("nss").value = document.getElementById("likeNSS").value;
 		document.getElementById("csSexe").value = document.getElementById("csSexeAffiche").value;
+		document.getElementById("aCorriger").value = $('#aCorriger').is(':checked');
 		if(!document.getElementById("isSoumisCotisation").checked){
 			document.getElementById("csCantonDomicile").value = '';
 		}else{
@@ -568,6 +593,10 @@
 									name="modeEditionDroit" 
 									id="modeEditionDroit" 
 									value="<%=viewBean.getModeEditionDroit()%>" />
+							<input type="checkbox"
+									   name="aCorriger"
+									   id="aCorriger"
+									   value="<%=viewBean.getACorriger()%>" />
 						</td>
 					</tr>
 					<tr>

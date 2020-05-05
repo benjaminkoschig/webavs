@@ -44,6 +44,8 @@ public abstract class APAbstractDroitProxyViewBean extends PRAbstractViewBeanSup
     private String csSexe = "";
     private String csCantonDomicile = "";
 
+    private boolean aCorriger = false;
+
     protected APAbstractDroitProxyViewBean(APDroitLAPG droit) {
         this.droit = droit;
         modeEditionDroit = APModeEditionDroit.LECTURE;
@@ -586,4 +588,11 @@ public abstract class APAbstractDroitProxyViewBean extends PRAbstractViewBeanSup
         return true;
     }
 
+    public boolean getACorriger() {
+        return this.aCorriger;
+    }
+
+    public void setACorriger(boolean aCorriger) {
+        this.aCorriger = aCorriger;
+    }
 }

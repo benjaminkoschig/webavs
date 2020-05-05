@@ -2,8 +2,17 @@ package globaz.apg.util;
 
 import ch.admin.cdc.rapg.core.dto.generated._1.RapgAnnoncesRequestType;
 import ch.admin.cdc.seodor.core.dto.generated._1.GetServicePeriodsRequestType;
+import ch.admin.cdc.seodor.core.dto.generated._1.GetServicePeriodsResponseType;
 import ch.admin.cdc.seodor.core.dto.generated._1.ServicePeriodsRequestType;
 import ch.eahv.rapg.common._4.DeliveryOfficeType;
+import ch.eahv.seodor.eahv000101._1.AddressInformationType;
+import ch.eahv.seodor.eahv000101._1.ContentType;
+import ch.eahv.seodor.eahv000101._1.InsurantDomicileType;
+import ch.eahv.seodor.eahv000101._1.InsurantType;
+import ch.globaz.perseus.business.constantes.CSChoixDecision;
+import globaz.globall.db.BSession;
+import globaz.phenix.util.WIRRDataBean;
+import org.xml.sax.Locator;
 import ch.admin.cdc.seodor.core.dto.generated._1.HeaderType;
 import ch.globaz.common.properties.CommonProperties;
 import globaz.globall.util.JACalendar;
@@ -15,6 +24,9 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
@@ -83,5 +95,32 @@ public class APGSeodorServiceMappingUtil {
 
         return dataTypeFac.newXMLGregorianCalendar(gCalendar);
 
+    }
+
+    public static final List<APGSeodorDataBean> putResponseDeliveryResultInApgSeodorDataBean(BSession session, GetServicePeriodsResponseType responseDelivery, APGSeodorDataBean seodorDataBean) {
+        List<APGSeodorDataBean> seodorDataBeans = new ArrayList<>();
+
+        if (Objects.nonNull(responseDelivery.getMessage().getContent().getResponse().getPeriod())) {
+            for (ContentType content : responseDelivery.getMessage().getContent().getResponse().getPeriod()) {
+                APGSeodorDataBean seodorDataBeanTemp = new APGSeodorDataBean(seodorDataBean);
+                seodorDataBeanTemp.setAddressInformation(Objects.nonNull(content.getAddress()) ? content.getAddress() : new AddressInformationType());
+                seodorDataBeanTemp.setAnnotation(Objects.nonNull(content.getAnnotation()) ? content.getAnnotation() : "");
+                seodorDataBeanTemp.setControlNumber(Objects.nonNull(content.getControlNumber()) ? content.getControlNumber() : 0);
+                seodorDataBeanTemp.setDepartmentId(Objects.nonNull(content.getDepartmentId()) ? content.getDepartmentId() : "" );
+                seodorDataBeanTemp.setEmailAddress(Objects.nonNull(content.getEmailAddress()) ? content.getEmailAddress() : "" );
+                seodorDataBeanTemp.setInsurantDomicileType(Objects.nonNull(content.getInsurantDomicile()) ? content.getInsurantDomicile() : new InsurantDomicileType());
+                seodorDataBeanTemp.setInsurantType(Objects.nonNull(content.getInsurant()) ? content.getInsurant() : new InsurantType());
+                seodorDataBeanTemp.setMobilePhone(Objects.nonNull(content.getMobilePhone()) ? content.getMobilePhone() : "");
+                seodorDataBeanTemp.setNumberOfDays(Objects.nonNull(content.getNumberOfDays()) ? content.getNumberOfDays() : 0 );
+                seodorDataBeanTemp.setPersonalNumber(Objects.nonNull(content.getPersonalNumber()) ? content.getPersonalNumber() : "" );
+                seodorDataBeanTemp.setReferenceNumber(Objects.nonNull(content.getReferenceNumber()) ? content.getReferenceNumber() : "" );
+                seodorDataBeanTemp.setServiceEntryDate(Objects.nonNull(content.getServiceEntryDate()) ? content.getServiceEntryDate() : null);
+                seodorDataBeanTemp.setServiceType(Objects.nonNull(content.getServiceType()) ? content.getServiceType() : 0);
+                seodorDataBeanTemp.setStartOfPeriod(Objects.nonNull(content.getStartOfPeriod()) ? content.getStartOfPeriod() : null);
+                seodorDataBeanTemp.setUserId(Objects.nonNull(content.getUserId()) ? content.getUserId() : "" );
+                seodorDataBeans.add(seodorDataBeanTemp);
+            }
+        }
+        return seodorDataBeans;
     }
 }
