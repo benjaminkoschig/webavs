@@ -82,7 +82,7 @@ public class DecisionAgricoleServiceImpl extends DecisionAbstractServiceImpl imp
         List<String> listTiersBeneficiaireDroit = new ArrayList<>();
 
         // calcul du montant total de la décision
-        Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
+        Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier, calcul,
                 ALCSDossier.UNITE_CALCUL_MOIS, "1", false, date);
 
         calcul = (List<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
@@ -346,7 +346,7 @@ public class DecisionAgricoleServiceImpl extends DecisionAbstractServiceImpl imp
                     libelle = this.getText("al.decision.liste.droit.accueil.libelle", langueDocument);
                 }
 
-                Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
+                Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier, calcul,
                         dossier.getDossierModel().getUniteCalcul(), "1", false, date);
 
                 calcul = (List<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);

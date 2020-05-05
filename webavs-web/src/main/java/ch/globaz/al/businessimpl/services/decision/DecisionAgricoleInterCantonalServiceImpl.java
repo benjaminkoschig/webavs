@@ -73,7 +73,7 @@ public class DecisionAgricoleInterCantonalServiceImpl extends DecisionAgricoleSe
         // liste des tiers bénéficiaires des droits
         ArrayList<String> listTiersBeneficiaireDroit = new ArrayList<>();
 
-        Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
+        Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier, calcul,
                 dossier.getDossierModel().getUniteCalcul(), "1", false, date);
         calcul = (List) total.get(ALConstCalcul.DROITS_CALCULES);
 
@@ -280,7 +280,7 @@ public class DecisionAgricoleInterCantonalServiceImpl extends DecisionAgricoleSe
                 } else if (ALCSDroit.TYPE_ACCE.equals((calcul.get(i)).getType())) {
                     libelle = this.getText("al.decision.liste.droit.accueil.libelle", langueDocument);
                 }
-                Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
+                Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier, calcul,
                         dossier.getDossierModel().getUniteCalcul(), "1", false, date);
 
                 calcul = (List<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);

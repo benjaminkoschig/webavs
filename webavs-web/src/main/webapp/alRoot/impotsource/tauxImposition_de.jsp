@@ -66,7 +66,7 @@
 						</tr>
 						<tr>
 							<td><ct:FWLabel key="AL0036_CANTON_IMPOSITION"/></td>
-							<td><ct:FWCodeSelectTag name="currentEntity.canton" codeType="PYCANTON" defaut="" wantBlank="true" /></td>
+							<td><ct:FWCodeSelectTag name="currentEntity.canton" codeType="ALCANTON" defaut="" wantBlank="true" /></td>
 						</tr>
 						<tr>
 							<td><ct:FWLabel key="AL0036_TYPE_IMPOSITION"/></td>

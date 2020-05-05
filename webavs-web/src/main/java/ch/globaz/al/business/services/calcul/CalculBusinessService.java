@@ -1,14 +1,12 @@
 package ch.globaz.al.business.services.calcul;
 
+import ch.globaz.al.business.models.dossier.DossierComplexModel;
 import ch.globaz.al.business.models.dossier.DossierComplexModelRoot;
-import ch.globaz.al.business.models.dossier.DossierModel;
 import ch.globaz.al.business.models.droit.CalculBusinessModel;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -76,6 +74,6 @@ public interface CalculBusinessService extends JadeApplicationService {
      *             faire
      * @see CalculBusinessService#getCalcul(DossierComplexModelRoot, String)
      */
-    Map getTotal(DossierModel dossier, List<CalculBusinessModel> droitsCalcules, String unite,
+    Map getTotal(DossierComplexModel dossier, List<CalculBusinessModel> droitsCalcules, String unite,
                  String nbUnite, boolean avecNAIS, String date) throws JadeApplicationException, JadePersistenceException;
 }

@@ -81,7 +81,7 @@ public class GenPrestationForcee extends GenPrestationAbstract {
 
             // exécution de la répartition du montant
             List<String> repartition = repartirMontant(String.valueOf(getNextMontant()), calcul, context
-                    .getContextDossier().getDossier().getDossierModel(), "01."
+                    .getContextDossier().getDossier(), "01."
                     + context.getContextDossier().getCurrentPeriode());
 
             for (int i = 0; i < calcul.size(); i++) {
@@ -100,8 +100,9 @@ public class GenPrestationForcee extends GenPrestationAbstract {
                         TauxImpositionRepository tauxImpositionRepository = ALRepositoryLocator.getTauxImpositionRepository();
                         TauxImpositions tauxGroupByCanton = tauxImpositionRepository.findAll(TypeImposition.IMPOT_SOURCE);
                         AssuranceInfo infos = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossierModel, getDateCalcul(dossierComplex));
+                        String cantonImposition = CalculImpotSource.getCantonImposition(dossierComplex ,infos.getCanton());
                         CalculImpotSource.computeISforDroit(droitCalcule, montant
-                                , tauxGroupByCanton, tauxImpositionRepository, infos.getCanton(), getDateCalcul(dossierComplex));
+                                , tauxGroupByCanton, tauxImpositionRepository, cantonImposition, getDateCalcul(dossierComplex));
                     }
                     addDetailPrestation(context, droitCalcule);
                 }
@@ -157,7 +158,7 @@ public class GenPrestationForcee extends GenPrestationAbstract {
      *             faire
      */
     protected List<String> repartirMontant(String montant, List<CalculBusinessModel> droitsCalcules,
-            DossierModel dossier, String date) throws JadeApplicationException, JadePersistenceException {
+            DossierComplexModel dossier, String date) throws JadeApplicationException, JadePersistenceException {
 
         if (JadeNumericUtil.isEmptyOrZero(montant)) {
             throw new ALCalculException("GenPrestationForcee#repartirMontant : montant is empty or zero");
@@ -177,7 +178,7 @@ public class GenPrestationForcee extends GenPrestationAbstract {
 
         List<String> repartition = new ArrayList<>();
         BigDecimal montantTotal = new BigDecimal((String) ALImplServiceLocator.getCalculMontantsService()
-                .calculerTotalMontant(dossier, droitsCalcules, dossier.getUniteCalcul(), "1", false, date)
+                .calculerTotalMontant(dossier, droitsCalcules, dossier.getDossierModel().getUniteCalcul(), "1", false, date)
                 .get(ALConstCalcul.TOTAL_EFFECTIF));
         BigDecimal totalBrut = new BigDecimal("0.00");
 

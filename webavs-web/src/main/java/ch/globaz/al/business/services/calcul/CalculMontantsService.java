@@ -1,17 +1,16 @@
 package ch.globaz.al.business.services.calcul;
 
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.service.provider.application.JadeApplicationService;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import ch.globaz.al.business.models.dossier.DossierComplexModel;
 import ch.globaz.al.business.models.dossier.DossierModel;
 import ch.globaz.al.business.models.droit.CalculBusinessModel;
 import ch.globaz.al.business.models.droit.DroitComplexModel;
 import ch.globaz.al.business.models.tarif.TarifComplexSearchModel;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.service.provider.application.JadeApplicationService;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Service fournissant les méthodes permettant le calcul des montants effectif des prestations, la répartition des
@@ -232,7 +231,7 @@ public interface CalculMontantsService extends JadeApplicationService {
      * @see ch.globaz.al.business.models.droit.CalculBusinessModel
      */
     @SuppressWarnings("unchecked")
-    Map calculerTotalMontant(DossierModel dossier, List<CalculBusinessModel> droitsCalcules,
+    Map calculerTotalMontant(DossierComplexModel dossier, List<CalculBusinessModel> droitsCalcules,
                              String unite, String nbUnites, boolean avecNAIS, String date) throws JadeApplicationException,
             JadePersistenceException;
 

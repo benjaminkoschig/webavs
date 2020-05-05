@@ -818,7 +818,7 @@ public class ALDossierMainViewBean extends BJadePersistentObjectViewBean {
 
         // Obtention du montant total calculé
         if (droitsList.size() > 0) {
-            montantTotal = (ALServiceLocator.getCalculBusinessService().getTotal(dossierComplexModel.getDossierModel(),
+            montantTotal = (ALServiceLocator.getCalculBusinessService().getTotal(dossierComplexModel,
                     droitsList, dossierComplexModel.getDossierModel().getUniteCalcul(), "1", false, dateCalcul)).get(
                     ALConstCalcul.TOTAL_EFFECTIF).toString();
         }

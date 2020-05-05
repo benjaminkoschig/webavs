@@ -114,7 +114,7 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
                             calculNaisAcce.add(droitCalcule);
                             // On doit appeler cette méthode pour avoir montant effectif du droit qu'on veut afficher
                             ALImplServiceLocator.getCalculMontantsService().calculerTotalMontant(
-                                    contextDossier.getDossier().getDossierModel(),
+                                    contextDossier.getDossier(),
                                     calculNaisAcce,
                                     unite,
                                     ALCSDossier.UNITE_CALCUL_MOIS.equals(unite) ? "1" : JadeStringUtil
@@ -141,7 +141,7 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
                     // on calcule mois par mois, donc si unite = M => nb unites = 1
                     // sinon jour / h on a besoin de nb unités
                     Map total = ALImplServiceLocator.getCalculMontantsService().calculerTotalMontant(
-                            contextDossier.getDossier().getDossierModel(),
+                            contextDossier.getDossier(),
                             calculWithoutNaisAcce,
                             unite,
                             ALCSDossier.UNITE_CALCUL_MOIS.equals(unite) ? "1" : JadeStringUtil.isEmpty(contextDossier
@@ -319,8 +319,6 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
     /**
      * Méthode de création d'un document de récapitulatifs
      * 
-     * @param docContainer
-     *            container dan lequel on ajoute le document
      * @param recapitulatifsTemp
      *            list provisoire des récapitulatifs
      * @param numAffilie
@@ -349,9 +347,6 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
      *            <JadePrintDocumentContainer> conteneur de document pour les taravailleurs agricoles
      * @param recapitulatifsTemp
      *            ArrayList liste des récapitulatifs provisoires
-     * @param listContainer
-     *            <ArrayList> liste contenant les différents containers
-     * 
      * @param typeBonification
      *            <String>
      * @throws JadeApplicationException
@@ -615,7 +610,7 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
     /**
      * Méthode qui élimine les doublons au niveaux des entetes de prestations
      * 
-     * @param droitsEcheanceSearchModel
+     * @param recapitulatifPrestationSearchModel
      *            résultats de la recherche
      * @return listEntetePrestation
      * @throws JadeApplicationException

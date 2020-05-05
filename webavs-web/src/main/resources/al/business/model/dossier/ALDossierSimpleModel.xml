@@ -49,7 +49,7 @@
 			<field name="montantForce" column="EMFOR" type="NUMERIC" dataType="NUMERIC(9,2)" mandatory="false" comment="Montant forcé du dossier"/>
 			<field name="reference" column="EREF" type="STRING" dataType="VARCHAR(15)" mandatory="true" comment="personne de référence pour le dossier"/>
 			<field name="idGestionnaire" column="IDGEST" type="STRING" mandatory="false" comment="Id du dernier gestionnaire ayant réalisée une modification sur le dossier"/>
-			
+			<field name="cantonImposition" column="CSCANIMP" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="canton d'imposition"/>
 		</fields>
 		
 		<search-definition name="radiationDossierHorloger">

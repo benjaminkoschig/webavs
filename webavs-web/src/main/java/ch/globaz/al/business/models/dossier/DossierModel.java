@@ -94,6 +94,11 @@ public class DossierModel extends DossierFkModel {
     private String uniteCalcul = null;
 
     /**
+     * Le canton d'imposition
+     */
+    private String cantonImposition = null;
+
+    /**
      *
      * Id du gestionnaire ayant réalisée le dernière modification sur le dossier.</br>
      * Cette information est utilisée pour l'impression par file d'attente.
@@ -443,4 +448,11 @@ public class DossierModel extends DossierFkModel {
         this.idGestionnaire = idGestionnaire;
     }
 
+    public String getCantonImposition() {
+        return cantonImposition;
+    }
+
+    public void setCantonImposition(String cantonImposition) {
+        this.cantonImposition = cantonImposition;
+    }
 }

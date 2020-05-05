@@ -411,7 +411,7 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
         Collection tableau_colonne = new Collection("tableau_colonne_definition");
 
         // calcul du montant total de la décision
-        Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
+        Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier, calcul,
                 ALCSDossier.UNITE_CALCUL_MOIS, "1", false, date);
 
         calcul = (List<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
@@ -573,7 +573,7 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
                 }
 
                 // calcul du montant
-                Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
+                Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier, calcul,
                         dossier.getDossierModel().getUniteCalcul(), "1", false, date);
 
                 calcul = (List<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);

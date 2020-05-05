@@ -922,13 +922,13 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
 
         // Montant total calculé
         if (droitsList.size() > 0) {
-            montantTotal = (ALServiceLocator.getCalculBusinessService().getTotal(dossierComplexModel.getDossierModel(),
+            montantTotal = (ALServiceLocator.getCalculBusinessService().getTotal(dossierComplexModel,
                     droitsList, dossierComplexModel.getDossierModel().getUniteCalcul(), "1", false, dateCalcul)).get(
                     ALConstCalcul.TOTAL_EFFECTIF).toString();
         }
 
         if(droitsNaissance.size() > 0) {
-            montantNaissance = (ALServiceLocator.getCalculBusinessService().getTotal(dossierComplexModel.getDossierModel(),
+            montantNaissance = (ALServiceLocator.getCalculBusinessService().getTotal(dossierComplexModel,
                     droitsNaissance, dossierComplexModel.getDossierModel().getUniteCalcul(), "1", true, dateCalcul)).get(
                     ALConstCalcul.TOTAL_EFFECTIF).toString();
         }

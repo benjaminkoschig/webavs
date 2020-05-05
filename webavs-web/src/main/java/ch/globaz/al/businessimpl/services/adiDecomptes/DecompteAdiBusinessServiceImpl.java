@@ -417,9 +417,10 @@ public class DecompteAdiBusinessServiceImpl implements DecompteAdiBusinessServic
             for(String period : listeCalculAdiEnfant.keySet()) {
                 String date = JadeDateUtil.getFirstDateOfMonth(period);
                 AssuranceInfo infos = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier, date);
+                String cantonImposition = CalculImpotSource.getCantonImposition(dossierComplex ,infos.getCanton());
                 for(CalculBusinessModel calcul:listeCalculAdiEnfant.get(period)) {
                     CalculImpotSource.computeISforDroit(calcul, calcul.getCalculResultMontantEffectif()
-                            , tauxGroupByCanton, tauxImpositionRepository, infos.getCanton(), date);
+                            , tauxGroupByCanton, tauxImpositionRepository, cantonImposition, date);
                 }
             }
 

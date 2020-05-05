@@ -476,7 +476,7 @@ public class ContextDossier {
                 calculFilter();
 
                 Map total = ALImplServiceLocator.getCalculMontantsService()
-                        .calculerTotalMontant(dossier.getDossierModel(), calcul, unite,
+                        .calculerTotalMontant(dossier, calcul, unite,
                                 (JadeStringUtil.isEmpty(nbJourDebutOuFin) ? nbUnites : nbJourDebutOuFin), true,
                                 "01." + periode);
 

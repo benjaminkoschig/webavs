@@ -1,5 +1,6 @@
 package ch.globaz.al.businessimpl.services.calcul;
 
+import ch.globaz.al.business.models.dossier.DossierComplexModel;
 import ch.globaz.al.business.services.ALRepositoryLocator;
 import ch.globaz.al.businessimpl.calcul.modes.CalculImpotSource;
 import ch.globaz.al.impotsource.domain.TauxImpositions;
@@ -333,7 +334,7 @@ public class CalculMontantsServiceImpl extends ALAbstractBusinessServiceImpl imp
     }
 
     @Override
-    public Map calculerTotalMontant(DossierModel dossier, List<CalculBusinessModel> droitsCalcules,
+    public Map calculerTotalMontant(DossierComplexModel dossier, List<CalculBusinessModel> droitsCalcules,
                                     String unite, String nbUnites, boolean avecNAIS, String date) throws JadeApplicationException,
             JadePersistenceException {
 
@@ -371,7 +372,7 @@ public class CalculMontantsServiceImpl extends ALAbstractBusinessServiceImpl imp
         BigDecimal totalIS = new BigDecimal("0.00");
 
         // nombre d'unitées et taux
-        BigDecimal nb = new BigDecimal("0.01").multiply(new BigDecimal(dossier.getTauxVersement())
+        BigDecimal nb = new BigDecimal("0.01").multiply(new BigDecimal(dossier.getDossierModel().getTauxVersement())
                 .multiply(getNombreUnitesMax(unite, nbUnites, date)));
         BigDecimal nbNAIS = new BigDecimal("1.00");
 
@@ -443,9 +444,10 @@ public class CalculMontantsServiceImpl extends ALAbstractBusinessServiceImpl imp
 
                 if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()
                         && !JadeStringUtil.isBlankOrZero(calculDroit.getCalculResultMontantIS())) {
-                    AssuranceInfo infos = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier, date);
+                    AssuranceInfo infos = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier.getDossierModel(), date);
+                    String cantonImposition = CalculImpotSource.getCantonImposition(dossier ,infos.getCanton());
                     CalculImpotSource.computeISforDroit(calculDroit, calculDroit.getCalculResultMontantEffectif()
-                            , tauxGroupByCanton, tauxImpositionRepository, infos.getCanton(), date);
+                            , tauxGroupByCanton, tauxImpositionRepository, cantonImposition, date);
                 }
             }
 
@@ -477,9 +479,10 @@ public class CalculMontantsServiceImpl extends ALAbstractBusinessServiceImpl imp
 
                     if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()
                             && !JadeStringUtil.isBlankOrZero(droitsCalcules.get(indexPrest.get(i)).getCalculResultMontantIS())) {
-                        AssuranceInfo infos = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier, date);
+                        AssuranceInfo infos = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier.getDossierModel(), date);
+                        String cantonImposition = CalculImpotSource.getCantonImposition(dossier ,infos.getCanton());
                         CalculImpotSource.computeISforDroit(droitsCalcules.get(indexPrest.get(i)), droitsCalcules.get(indexPrest.get(i)).getCalculResultMontantEffectif()
-                                , tauxGroupByCanton, tauxImpositionRepository, infos.getCanton(), date);
+                                , tauxGroupByCanton, tauxImpositionRepository, cantonImposition, date);
                     }
                 }
             }

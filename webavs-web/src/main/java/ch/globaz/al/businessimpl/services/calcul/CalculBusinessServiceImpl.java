@@ -1,20 +1,18 @@
 package ch.globaz.al.businessimpl.services.calcul;
 
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import ch.globaz.al.business.exceptions.calcul.ALCalculException;
+import ch.globaz.al.business.models.dossier.DossierComplexModel;
 import ch.globaz.al.business.models.dossier.DossierComplexModelRoot;
-import ch.globaz.al.business.models.dossier.DossierModel;
 import ch.globaz.al.business.models.droit.CalculBusinessModel;
 import ch.globaz.al.business.services.calcul.CalculBusinessService;
 import ch.globaz.al.businessimpl.calcul.context.ContextCalcul;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Implémentation du service de calcul
@@ -45,7 +43,7 @@ public class CalculBusinessServiceImpl extends CalculAbstractService implements 
     }
 
     @Override
-    public Map getTotal(DossierModel dossier, List<CalculBusinessModel> droitsCalcules, String unite,
+    public Map getTotal(DossierComplexModel dossier, List<CalculBusinessModel> droitsCalcules, String unite,
                         String nbUnite, boolean avecNAIS, String date) throws JadeApplicationException, JadePersistenceException {
 
         if (dossier == null) {

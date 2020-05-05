@@ -217,8 +217,9 @@ public abstract class DecisionAbstractServiceImpl extends AbstractDocument imple
      * @param documentData
      *            Document à remplir
      * @param dossierComplexModel
-     * @param visaUtilisateur
-     *            visa d'utilisateur
+     * @param userInfos
+     *            infromations d'utilisateur
+     * @param langueDocument : la langue du document
      * @throws JadePersistenceException
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
@@ -993,7 +994,7 @@ public abstract class DecisionAbstractServiceImpl extends AbstractDocument imple
                 dateFin = dossier.getDossierModel().getFinValidite();
             }
 
-            total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
+            total = ALServiceLocator.getCalculBusinessService().getTotal(dossier, calcul,
                     ALCSDossier.UNITE_CALCUL_JOUR, dossier.getDossierModel().getNbJoursDebut(), false, date);
             calcul = (ArrayList<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
 
@@ -1046,7 +1047,7 @@ public abstract class DecisionAbstractServiceImpl extends AbstractDocument imple
 
             // calcul du montant en fonction du nombre de jour pour le début de
             // la période
-            total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
+            total = ALServiceLocator.getCalculBusinessService().getTotal(dossier, calcul,
                     ALCSDossier.UNITE_CALCUL_JOUR, dossier.getDossierModel().getNbJoursFin(), false, date);
             calcul = (ArrayList<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
             list = new DataList("subtotal");

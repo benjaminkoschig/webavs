@@ -228,7 +228,7 @@ public class ALDecisionHelper extends ALAbstractHelper {
     /**
      * Retourne la date à utiliser pour le calcul de la décision selon le dossier
      *
-     * @param dossierComplexModel
+     * @param dossierModel
      *            dossier
      * @return la date à utiliser pour le calcul dans la décision
      * @throws JadeApplicationException
@@ -261,7 +261,7 @@ public class ALDecisionHelper extends ALAbstractHelper {
         List<CalculBusinessModel> resultatCalcul = ALServiceLocator.getCalculBusinessService()
                 .getCalcul(dossierComplex, getDateCalcul(dossierComplex.getDossierModel()));
         // calcul du montant total de la décision
-        Map<?, ?> total = ALServiceLocator.getCalculBusinessService().getTotal(dossierComplex.getDossierModel(),
+        Map<?, ?> total = ALServiceLocator.getCalculBusinessService().getTotal(dossierComplex,
                 resultatCalcul, ALCSDossier.UNITE_CALCUL_MOIS, "1", false,
                 getDateCalcul(dossierComplex.getDossierModel()));
         // calcul du montant total de la décision
@@ -353,14 +353,14 @@ public class ALDecisionHelper extends ALAbstractHelper {
         List<CalculBusinessModel> resultatCalcul = ALServiceLocator.getCalculBusinessService()
                 .getCalcul(dossierComplex, getDateCalcul(dossierComplex.getDossierModel()));
         // calcul du montant total de la décision
-        Map<?, ?> total = ALServiceLocator.getCalculBusinessService().getTotal(dossierComplex.getDossierModel(),
+        Map<?, ?> total = ALServiceLocator.getCalculBusinessService().getTotal(dossierComplex,
                 resultatCalcul, ALCSDossier.UNITE_CALCUL_MOIS, "1", false,
                 getDateCalcul(dossierComplex.getDossierModel()));
         // calcul du montant total de la décision
 
         resultatCalcul = (List<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
 
-        Map<?, ?> tot = ALServiceLocator.getCalculBusinessService().getTotal(dossierComplex.getDossierModel(),
+        Map<?, ?> tot = ALServiceLocator.getCalculBusinessService().getTotal(dossierComplex,
                 resultatCalcul, ALCSDossier.UNITE_CALCUL_JOUR, dossierComplex.getDossierModel().getNbJoursDebut(),
                 false, getDateCalcul(dossierComplex.getDossierModel()));
         //
@@ -379,14 +379,14 @@ public class ALDecisionHelper extends ALAbstractHelper {
         List<CalculBusinessModel> resultatCalcul = ALServiceLocator.getCalculBusinessService()
                 .getCalcul(dossierComplex, getDateCalcul(dossierComplex.getDossierModel()));
         // calcul du montant total de la décision
-        Map<?, ?> total = ALServiceLocator.getCalculBusinessService().getTotal(dossierComplex.getDossierModel(),
+        Map<?, ?> total = ALServiceLocator.getCalculBusinessService().getTotal(dossierComplex,
                 resultatCalcul, ALCSDossier.UNITE_CALCUL_MOIS, "1", false,
                 getDateCalcul(dossierComplex.getDossierModel()));
         // calcul du montant total de la décision
 
         resultatCalcul = (List<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
 
-        Map<?, ?> tot = ALServiceLocator.getCalculBusinessService().getTotal(dossierComplex.getDossierModel(),
+        Map<?, ?> tot = ALServiceLocator.getCalculBusinessService().getTotal(dossierComplex,
                 resultatCalcul, ALCSDossier.UNITE_CALCUL_JOUR, dossierComplex.getDossierModel().getNbJoursFin(), false,
                 getDateCalcul(dossierComplex.getDossierModel()));
         // TODO ajouter seulement si pas naissance ou acceuil

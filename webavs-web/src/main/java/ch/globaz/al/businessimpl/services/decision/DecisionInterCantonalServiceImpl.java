@@ -362,7 +362,7 @@ public class DecisionInterCantonalServiceImpl extends DecisionAbstractServiceImp
         // liste des tiers bénéficiaires des droits
         List<String> listTiersBeneficiaireDroit = new ArrayList<>();
 
-        Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
+        Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier, calcul,
                 dossier.getDossierModel().getUniteCalcul(), "1", false, date);
         calcul = (List) total.get(ALConstCalcul.DROITS_CALCULES);
 
@@ -520,7 +520,7 @@ public class DecisionInterCantonalServiceImpl extends DecisionAbstractServiceImp
                 } else if (ALCSDroit.TYPE_ACCE.equals((calcul.get(i)).getType())) {
                     libelle = this.getText("al.decision.liste.droit.accueil.libelle", langueDocument);
                 }
-                Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
+                Map total = ALServiceLocator.getCalculBusinessService().getTotal(dossier, calcul,
                         dossier.getDossierModel().getUniteCalcul(), "1", false, date);
 
                 calcul = (List<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);

@@ -197,9 +197,8 @@ public class DecisionEditingServiceImpl implements DecisionEditingService {
     /**
      * méthode qui remplit une adresse de courrier (MailAdressType)
      * 
-     * @param dossier
-     * @param mailAdressType
-     * @return
+     * @param idTiers : id du tiers
+     * @return l'adresse de courrier
      * @throws JadeApplicationException
      * @throws JadePersistenceException
      * @throws JadeApplicationServiceNotAvailableException
@@ -259,7 +258,7 @@ public class DecisionEditingServiceImpl implements DecisionEditingService {
                         .getNbJoursDebut(), 0));
 
                 date = getDateCalcul(dossier);
-                total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
+                total = ALServiceLocator.getCalculBusinessService().getTotal(dossier, calcul,
                         ALCSDossier.UNITE_CALCUL_JOUR, dossier.getDossierModel().getNbJoursDebut(), false, date);
                 versementARealiser.setMontantTotalVersementDebut(new FWCurrency((String) total
                         .get(ALConstCalcul.TOTAL_EFFECTIF)).getBigDecimalValue());
@@ -270,7 +269,7 @@ public class DecisionEditingServiceImpl implements DecisionEditingService {
                         0));
 
                 date = getDateCalcul(dossier);
-                total = ALServiceLocator.getCalculBusinessService().getTotal(dossier.getDossierModel(), calcul,
+                total = ALServiceLocator.getCalculBusinessService().getTotal(dossier, calcul,
                         ALCSDossier.UNITE_CALCUL_JOUR, dossier.getDossierModel().getNbJoursFin(), false, date);
                 versementARealiser.setMontantTotalVersementFin(new FWCurrency((String) total
                         .get(ALConstCalcul.TOTAL_EFFECTIF)).getBigDecimalValue());
@@ -347,7 +346,7 @@ public class DecisionEditingServiceImpl implements DecisionEditingService {
         List<CalculBusinessModel> resultatCalcul = ALServiceLocator.getCalculBusinessService().getCalcul(
                 dossierModel, getDateCalcul(dossierModel));
         // calcul du montant total de la décision
-        Map<?, ?> total = ALServiceLocator.getCalculBusinessService().getTotal(dossierModel.getDossierModel(),
+        Map<?, ?> total = ALServiceLocator.getCalculBusinessService().getTotal(dossierModel,
                 resultatCalcul, ALCSDossier.UNITE_CALCUL_MOIS, "1", false, getDateCalcul(dossierModel));
 
         resultatCalcul = (List<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
@@ -713,7 +712,7 @@ public class DecisionEditingServiceImpl implements DecisionEditingService {
     /**
      * Méthode qui retourne le canton de l'affilié ou loi fédérale agricole
      * 
-     * @param dossierComplexModel
+     * @param dossier
      *            dossier pour lequel on recherche la loi
      * @return String : loi (canton ou loi agricole de l'affilié)
      * @throws JadeApplicationException
@@ -759,7 +758,7 @@ public class DecisionEditingServiceImpl implements DecisionEditingService {
     /**
      * Méthode qui remplit les éléments pour un MotifEcheanceType
      * 
-     * @param DroitModel
+     * @param droit
      *            : droit pour lequel il faut remplir MotifEcheanceType
      * @return MotifEcheanceType
      * @throws JadeApplicationException
