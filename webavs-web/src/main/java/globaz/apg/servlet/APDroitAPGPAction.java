@@ -202,18 +202,10 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
             JSPUtils.setBeanProperties(request, viewBean);
             viewBean = (APDroitAPGPViewBean) beforeAjouter(session, request, response, viewBean);
 
-            try {
-                if (viewBean.getACorriger()) {
-                    callWSSeodor(viewBean, mainDispatcher);
-                }
-            } catch (PropertiesException e) {
-                // La propriété n'existe pas
-                LOG.error("La propriété apg.rapg.genre.service.seodor n'a pas été trouvé : ", e);
-                ((BSession) mainDispatcher.getSession()).getLabel("WEBSERVICE_SEODOR_PROP_MANQUANTE");
-                //messagesError.add(WEBSERVICE_SEODOR_PROP_MANQUANTE)
-            } catch (DatatypeConfigurationException e) {
-                // TODO Gérer exception
+            if (viewBean.getACorriger()) {
+                callWSSeodor(viewBean, mainDispatcher);
             }
+
 
             // Fin contrôle SEODOR
             // Si l'on corrige les données, alors on revient sur la page de modification du droit
@@ -264,18 +256,8 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
             viewBean = (APDroitAPGPViewBean) beforeAjouter(session, request, response, viewBean);
 
             //
-
-            try {
-                if (viewBean.getACorriger()) {
-                    callWSSeodor(viewBean, mainDispatcher);
-                }
-            } catch (PropertiesException e) {
-                // La propriété n'existe pas
-                LOG.error("La propriété apg.rapg.genre.service.seodor n'a pas été trouvé : ", e);
-                ((BSession) mainDispatcher.getSession()).getLabel("WEBSERVICE_SEODOR_PROP_MANQUANTE");
-                //messagesError.add(WEBSERVICE_SEODOR_PROP_MANQUANTE)
-            } catch (DatatypeConfigurationException e) {
-                // TODO Gérer exception
+            if (viewBean.getACorriger()) {
+                callWSSeodor(viewBean, mainDispatcher);
             }
 
             // Fin contrôle SEODOR
@@ -340,15 +322,17 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
         goSendRedirect(destination, request, response);
     }
 
-    private List<APGSeodorDataBean> callWSSeodor (APDroitAPGPViewBean viewBean, FWDispatcher mainDispatcher) throws PropertiesException, DatatypeConfigurationException {
+    private List<APGSeodorDataBean> callWSSeodor (APDroitAPGPViewBean viewBean, FWDispatcher mainDispatcher) {
 
         List<APGSeodorDataBean> apgSeodorDataBeans = new ArrayList<>();
+        List<String> messagesError = new ArrayList<>();
         APGSeodorDataBean apgSeodorDataBean = new APGSeodorDataBean();
 
-        if (!Objects.isNull(APProperties.SEODOR_TYPE_SERVICE.getValue()) && !APProperties.SEODOR_TYPE_SERVICE.getValue().isEmpty()
-                && APProperties.SEODOR_TYPE_SERVICE.getValue().contains(APGenreServiceAPG.resoudreGenreParCodeSystem(viewBean.getGenreService()).getCodePourAnnonce())) {
-            // Controle SEODOR à implémenter
-                List<String> messagesError = new ArrayList<>();
+        try{
+            if (!Objects.isNull(APProperties.SEODOR_TYPE_SERVICE.getValue()) && !APProperties.SEODOR_TYPE_SERVICE.getValue().isEmpty()
+                    && APProperties.SEODOR_TYPE_SERVICE.getValue().contains(APGenreServiceAPG.resoudreGenreParCodeSystem(viewBean.getGenreService()).getCodePourAnnonce())) {
+                // Controle SEODOR à implémenter
+
                 // TODO mapper la requete
                 String nss = viewBean.getNss().replaceAll("\\.","");
                 PRPeriode periode1er = viewBean.getPeriodes().get(0);
@@ -357,17 +341,39 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
                 apgSeodorDataBean.setStartDate(dateDebut.toXMLGregorianCalendar());
                 apgSeodorDataBeans = APGSeodorServiceCallUtil.getPeriode(((BSession) mainDispatcher.getSession()), apgSeodorDataBean);
 
-                // TODO mapper le résultat de l'appel
-                messagesError.add("Erreur N°1");
-                messagesError.add("Erreur N°2");
-                messagesError.add("Erreur N°3");
-                messagesError.add("Erreur N°4");
-
-                if (!messagesError.isEmpty()) {
-                    viewBean.setMessagePropError(true);
-                    viewBean.setMessagesError(messagesError);
+                if (!apgSeodorDataBeans.isEmpty()) {
+                    if (apgSeodorDataBeans.get(0).isHasTechnicalError()) {
+                        messagesError.add(apgSeodorDataBeans.get(0).getMessageTechnicalError());
+                    } else {
+                        // TODO mapper le résultat de l'appel
+                        messagesError.add("Erreur N°1");
+                        messagesError.add("Erreur N°2");
+                        messagesError.add("Erreur N°3");
+                        messagesError.add("Erreur N°4");
+                    }
+                } else {
+                    // TODO A remplacer par Label
+                    messagesError.add("\nPas de données");
                 }
+            }
+        } catch (PropertiesException e) {
+            // La propriété n'existe pas
+            LOG.error("La propriété apg.rapg.genre.service.seodor n'a pas été trouvé : ", e);
+            messagesError.add(((BSession) mainDispatcher.getSession()).getLabel("WEBSERVICE_SEODOR_PROP_MANQUANTE"));
+        } catch (DatatypeConfigurationException e) {
+            // TODO Gérer exception
+
+            messagesError.add("Erreur de données lors de l'appel au webService");
+            viewBean.setMessagesError(messagesError);
+            viewBean.setMessagePropError(true);
         }
+
+        // On ajoute les erreurs à la ViewBean et on la tag pour afficher les erreurs lors du rechargement de la page.
+        if (!messagesError.isEmpty()) {
+            viewBean.setMessagePropError(true);
+            viewBean.setMessagesError(messagesError);
+        }
+
         return apgSeodorDataBeans;
     }
 }

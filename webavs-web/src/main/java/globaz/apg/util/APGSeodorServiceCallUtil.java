@@ -35,6 +35,7 @@ import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class APGSeodorServiceCallUtil {
     private static final String SSL_SOCKET_FACTORY_ORACLE_JDK = "com.sun.xml.ws.transport.https.client.SSLSocketFactory";
@@ -111,11 +112,12 @@ public class APGSeodorServiceCallUtil {
 
                 apgSeodorDataBean.setHasTechnicalError(true);
                 String message = session.getLabel("ERROR_REASON_DETAILED_UNEXCEPTED_ERROR");
+                apgSeodorDataBean.setMessageTechnicalError("Erreur de connexion avec la centrale");
                 //apgSeodorDataBean.setMessageForUser(message);
                 LOG.error(message, e);
             } finally {
 
-                if (apgSeodorDataBean == null) {
+                if (Objects.isNull(apgSeodorDataBeans)) {
                     apgSeodorDataBean = new APGSeodorDataBean();
                 }
 
@@ -131,8 +133,8 @@ public class APGSeodorServiceCallUtil {
                     //sb.append(apgSeodorDataBean.getErrorComment());
                     sb.append("]");
                     LOG.error(sb.toString());
+                    apgSeodorDataBeans.add(apgSeodorDataBean);
                 }
-
 
                 return apgSeodorDataBeans;
             }

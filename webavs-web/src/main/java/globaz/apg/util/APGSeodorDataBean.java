@@ -31,6 +31,7 @@ public class APGSeodorDataBean {
     private String userId;
 
     private boolean hasTechnicalError = false;
+    private String messageTechnicalError;
 
     public APGSeodorDataBean(){
     }
@@ -199,5 +200,13 @@ public class APGSeodorDataBean {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getMessageTechnicalError() {
+        return messageTechnicalError;
+    }
+
+    public void setMessageTechnicalError(String messageTechnicalError) {
+        this.messageTechnicalError = messageTechnicalError;
     }
 }
