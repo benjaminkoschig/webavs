@@ -23,6 +23,7 @@ import ch.ech.ech0058._5.SendingApplicationType;
 
 
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
@@ -52,7 +53,9 @@ public class APGSeodorServiceMappingUtil {
         String recipientId;
         ServicePeriodsRequestType servicePeriodsRequestType = new ServicePeriodsRequestType();
         servicePeriodsRequestType.setVn(Long.parseLong(seodorDataBean.getNss()));
-        servicePeriodsRequestType.setStartDate(seodorDataBean.getStartDate());
+        XMLGregorianCalendar dateDebut = seodorDataBean.getStartDate();
+        dateDebut.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
+        servicePeriodsRequestType.setStartDate(dateDebut);
         SendingApplicationType sendingApplicationType = new SendingApplicationType();
         sendingApplicationType.setManufacturer(MANUFACTURER);
         sendingApplicationType.setProduct(PRODUCT);
@@ -98,7 +101,9 @@ public class APGSeodorServiceMappingUtil {
         gCalendar.setTime(format.parse(date));
         DatatypeFactory dataTypeFac = DatatypeFactory.newInstance();
 
-        return dataTypeFac.newXMLGregorianCalendar(gCalendar);
+        XMLGregorianCalendar dateXML = dataTypeFac.newXMLGregorianCalendar(gCalendar);
+        dateXML.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
+        return dateXML ;
 
     }
 
