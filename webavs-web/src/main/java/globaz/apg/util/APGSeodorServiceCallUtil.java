@@ -1,25 +1,23 @@
 package globaz.apg.util;
 
+import ch.admin.cdc.rapg.core.service.ws._1.RapgConsultation1;
 import ch.admin.cdc.seodor.core.dto.generated._1.GetServicePeriodsRequestType;
 import ch.admin.cdc.seodor.core.dto.generated._1.GetServicePeriodsResponseType;
+
 import ch.admin.zas.seodor.ws.service_periods._1.ServicePeriodsPort10;
 import ch.admin.zas.seodor.ws.service_periods._1.ServicePeriodsService10;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.crypto.JadeDefaultEncrypters;
-import globaz.phenix.util.WIRRDataBean;
-import globaz.phenix.util.WIRRServiceMappingUtil;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import wirrch.admin.bsv.xmlns.ebsv_2028_000101._1.Delivery;
+
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -28,6 +26,7 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.security.*;
@@ -66,41 +65,38 @@ public class APGSeodorServiceCallUtil {
                         && !JadeStringUtil.isBlankOrZero(CommonProperties.SEODOR_KEYSTORE_PASSWORD.getValue())) {
 
                     // Config SSL
-                    // TODO Ligne à supprimer. Pour test
-                    keyStorePath = "C:\\Users\\eniv\\Downloads\\certificat\\T6-600024-1.p12";
+                    configureSSLOnTheClient(port, keyStorePath, keyStorePass, keyStoreType);
 
-                    SSLContext sc = SSLContext.getInstance(contextType);
-                    KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-                    KeyStore ks = KeyStore.getInstance(keyStoreType);
-                    FileInputStream fis = new FileInputStream(keyStorePath);
-                    String certPasswd = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(keyStorePass);
-
-                    ks.load(fis, certPasswd.toCharArray());
-                    IOUtils.closeQuietly(fis);
-                    kmf.init(ks, certPasswd.toCharArray());
-                    sc.init(kmf.getKeyManagers(), null, null);
-
-                    final Map<String, Object> ctxt = ((BindingProvider) port).getRequestContext();
-                    ctxt.put(SSL_SOCKET_FACTORY_JAX_WS_RI, sc.getSocketFactory());
-                    ctxt.put(SSL_SOCKET_FACTORY_ORACLE_JDK, sc.getSocketFactory());
-                    BindingProvider bindingProvider = (BindingProvider) port;
-
-                // Si la propriété ide.webservice.url.endpoint existe on surcharge l'adresse du endpoint
-                String endpoint = CommonProperties.SEODOR_ENDPOINT_ADDRESS.getValue();
-//                if (StringUtils.isNotEmpty(endpoint)) {
-//                    bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,  endpoint);
-//                }
-//                bindingProvider.getRequestContext().put(SSL_SOCKET_FACTORY_JAX_WS_RI, sc.getSocketFactory());
-//                bindingProvider.getRequestContext().put(SSL_SOCKET_FACTORY_ORACLE_JDK, sc.getSocketFactory());
+//                    SSLContext sc = SSLContext.getInstance(contextType);
+//                    KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+//                    KeyStore ks = KeyStore.getInstance(keyStoreType);
+//                    FileInputStream fis = new FileInputStream(keyStorePath);
+//                    String certPasswd = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(keyStorePass);
+//
+//                    ks.load(fis, certPasswd.toCharArray());
+//                    IOUtils.closeQuietly(fis);
+//                    kmf.init(ks, certPasswd.toCharArray());
+//                    sc.init(kmf.getKeyManagers(), null, null);
+//
+//                    final Map<String, Object> ctxt = ((BindingProvider) port).getRequestContext();
+//                    ctxt.put(SSL_SOCKET_FACTORY_JAX_WS_RI, sc.getSocketFactory());
+//                    ctxt.put(SSL_SOCKET_FACTORY_ORACLE_JDK, sc.getSocketFactory());
+//                    BindingProvider bindingProvider = (BindingProvider) port;
+//
+//                    // Si la propriété ide.webservice.url.endpoint existe on surcharge l'adresse du endpoint
+//                    String endpoint = CommonProperties.SEODOR_ENDPOINT_ADDRESS.getValue();
+//                    if (StringUtils.isNotEmpty(endpoint)) {
+//                        bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,  endpoint);
+//                    }
+//                    bindingProvider.getRequestContext().put(SSL_SOCKET_FACTORY_JAX_WS_RI, sc.getSocketFactory());
+//                    bindingProvider.getRequestContext().put(SSL_SOCKET_FACTORY_ORACLE_JDK, sc.getSocketFactory());
             }
 
             GetServicePeriodsRequestType requestDelivery = APGSeodorServiceMappingUtil.convertSeodorDataBeanToRequestDelivery(apgSeodorDataBean);
 
             GetServicePeriodsResponseType responseDelivery = port.getServicePeriods(requestDelivery);
 
-                // TODO Mapper la réponse
-
-                apgSeodorDataBeans = APGSeodorServiceMappingUtil.putResponseDeliveryResultInApgSeodorDataBean(session, responseDelivery, apgSeodorDataBean);
+            apgSeodorDataBeans = APGSeodorServiceMappingUtil.putResponseDeliveryResultInApgSeodorDataBean(session, responseDelivery, apgSeodorDataBean);
 
             // TODO Changer exception
             } catch (Exception e) {
@@ -218,34 +214,57 @@ public class APGSeodorServiceCallUtil {
      * @param keyStorePass certificat password
      * @param keyStoreType keyStoreType key types
      */
-    private static void configureSSLOnTheClient(final ServicePeriodsPort10 proxy, final String keyStorePath,
-                                                final String keyStorePass, String keyStoreType)
-            throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException {
+    private static void configureSSLOnTheClient(final ServicePeriodsPort10 proxy, final String keyStorePath, final String keyStorePass, String keyStoreType) throws Exception {
 
-        // Get httpConduit
-        final Client client = ClientProxy.getClient(proxy);
-        final HTTPConduit httpConduit = (HTTPConduit) client.getConduit();
+        SSLContext sc = null;
         KeyStore ks = null;
 
-        final TLSClientParameters tlsParams = new TLSClientParameters();
-        tlsParams.setDisableCNCheck(true);
+        try {
+            sc = SSLContext.getInstance(CommonProperties.SEODOR_SSL_CONTEXT_TYPE.getValue());
 
-        // Read the certificate
-        FileInputStream filePkcs12;
-        ks = KeyStore.getInstance(keyStoreType);
-        filePkcs12 = new FileInputStream(keyStorePath);
+            // Read the certificate
+            FileInputStream filePkcs12;
+            ks = KeyStore.getInstance(keyStoreType);
+            filePkcs12 = new FileInputStream(keyStorePath);
 
-        // For a better security you can encode your password and decode it here
-        ks.load(filePkcs12, keyStorePass.toCharArray());
-        filePkcs12.close();
+            // For a better security you can encode your password and decode it here
+            ks.load(filePkcs12, keyStorePass.toCharArray());
 
-        // Add certificate to the conduit
-        final KeyManagerFactory keyFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-        keyFactory.init(ks, keyStorePass.toCharArray());
-        final KeyManager[] km = keyFactory.getKeyManagers();
-        tlsParams.setKeyManagers(km);
+            try {
+                filePkcs12.close();
+            } catch (final IOException e) {
+                System.err.println("Error on close " + keyStorePath + " file");
+                throw e;
+            }
 
-        httpConduit.setTlsClientParameters(tlsParams);
+            // Add certificate to the conduit
+            final KeyManagerFactory keyFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            keyFactory.init(ks, keyStorePass.toCharArray());
+            final KeyManager[] km = keyFactory.getKeyManagers();
+            sc.init(keyFactory.getKeyManagers(), null, null);
 
+            final Map<String, Object> ctxt = ((BindingProvider) proxy).getRequestContext();
+            ctxt.put(SSL_SOCKET_FACTORY_JAX_WS_RI, sc.getSocketFactory());
+            ctxt.put(SSL_SOCKET_FACTORY_ORACLE_JDK, sc.getSocketFactory());
+
+        } catch (final FileNotFoundException e) {
+            System.err.println("File " + keyStorePath + " doesn't exist");
+            throw e;
+        } catch (final IOException ioe) {
+            System.err.println("File " + keyStorePath + " doesn't exist. Cause by " + ioe.getCause());
+            throw ioe;
+        } catch (final KeyStoreException kse) {
+            System.out.println("Security configuration failed with the following: " + kse.getCause());
+            throw kse;
+        } catch (final NoSuchAlgorithmException nsa) {
+            System.out.println("Security configuration failed with the following: " + nsa.getCause());
+            throw nsa;
+        } catch (final GeneralSecurityException gse) {
+            System.out.println("Security configuration failed with the following: " + gse.getCause());
+            throw gse;
+        } catch (Exception e) {
+            System.out.println("Security configuration failed with the following: " + e.getCause());
+            throw e;
+        }
     }
 }

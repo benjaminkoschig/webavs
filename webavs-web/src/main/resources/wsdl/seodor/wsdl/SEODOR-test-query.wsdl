@@ -7,7 +7,7 @@
                   xmlns:eavh-iv-2017="http://www.zas.admin.ch/xmlns/seodor-ws/1" >
 
   <wsdl:types>
-    <xs:schema targetNamespace="http://www.zas.admin.ch/sedor/ws/service-periods/1" elementFormDefault="qualified">
+    <xs:schema targetNamespace="http://www.zas.admin.ch/seodor/ws/service-periods/1" elementFormDefault="qualified">
       <xs:import namespace="http://www.zas.admin.ch/xmlns/seodor-ws/1" schemaLocation="../xsd/seodor-ws-1-0.xsd"/>
     </xs:schema>
   </wsdl:types>
@@ -41,7 +41,8 @@
 
   <wsdl:service name="ServicePeriodsService10">
     <wsdl:port name="ServicePeriodsPort10" binding="ServicePeriodsBinding10">
-      <soap:address location="https://ws.seodor-a.zas.admin.ch/seodor/ws/service-periods/1"/>
+      <soap:address location="https://ws.seodor-a.zas.admin.ch/services/seodor/ws/service-periods/1"/>
+<!--      <soap:address location="http://localhost:8088/mockServicePeriodsBinding-1-0"/>-->
     </wsdl:port>
   </wsdl:service>
 

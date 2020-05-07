@@ -9,9 +9,11 @@ import ch.eahv.seodor.eahv000101._1.AddressInformationType;
 import ch.eahv.seodor.eahv000101._1.ContentType;
 import ch.eahv.seodor.eahv000101._1.InsurantDomicileType;
 import ch.eahv.seodor.eahv000101._1.InsurantType;
+import ch.globaz.common.domaine.Periode;
 import ch.globaz.perseus.business.constantes.CSChoixDecision;
 import globaz.globall.db.BSession;
 import globaz.phenix.util.WIRRDataBean;
+import globaz.prestation.beans.PRPeriode;
 import org.xml.sax.Locator;
 import ch.admin.cdc.seodor.core.dto.generated._1.HeaderType;
 import ch.globaz.common.properties.CommonProperties;
@@ -37,13 +39,14 @@ public class APGSeodorServiceMappingUtil {
     public static final String TEST_PREFIX = "T";
     public static final String MANUFACTURER = "Globaz SA";
     public static final String PRODUCT = "Webavs";
-    public static final String PRODUCT_VERSION = "1.24.0";
+    public static final String PRODUCT_VERSION = "1-24-00";
     public static final String RECIPIENT_ID = "6-600024-1";
     public static final String SEDEX_PREFIX = "sedex://";
     public static final String DECLARATION_LOCAL_REFERENCE = "REF_SEARCH";
     public static final String ACTION = "1";
     public static final String MESSAGE_TYPE = "2017";
     public static final String MESSAGE_SUBTYPE = "000101";
+
     public static final GetServicePeriodsRequestType convertSeodorDataBeanToRequestDelivery(APGSeodorDataBean seodorDataBean) throws Exception {
         String senderId = CommonProperties.SEODOR_WEBSERVICE_SEDEX_SENDER_ID.getValue();
         String recipientId;
@@ -67,7 +70,9 @@ public class APGSeodorServiceMappingUtil {
         header.setSenderId(senderId);
         header.setRecipientId(recipientId);
         header.setDeclarationLocalReference(DECLARATION_LOCAL_REFERENCE);
-        header.setMessageId(JadeUUIDGenerator.createStringUUID());
+//        header.setMessageId(JadeUUIDGenerator.createStringUUID());
+        // TODO Recup l'info sur label ou properties
+        header.setMessageId("simple-request");
         header.setMessageType(MESSAGE_TYPE);
         header.setSubMessageType(MESSAGE_SUBTYPE);
         header.setMessageDate(convertDateJJMMAAAAtoXMLDateGregorian(JACalendar.todayJJsMMsAAAA()));
@@ -117,10 +122,31 @@ public class APGSeodorServiceMappingUtil {
                 seodorDataBeanTemp.setServiceEntryDate(Objects.nonNull(content.getServiceEntryDate()) ? content.getServiceEntryDate() : null);
                 seodorDataBeanTemp.setServiceType(Objects.nonNull(content.getServiceType()) ? content.getServiceType() : 0);
                 seodorDataBeanTemp.setStartOfPeriod(Objects.nonNull(content.getStartOfPeriod()) ? content.getStartOfPeriod() : null);
+                seodorDataBeanTemp.setEndOfPeriod(Objects.nonNull(content.getEndOfPeriod()) ? content.getEndOfPeriod() : null);
                 seodorDataBeanTemp.setUserId(Objects.nonNull(content.getUserId()) ? content.getUserId() : "" );
                 seodorDataBeans.add(seodorDataBeanTemp);
             }
         }
         return seodorDataBeans;
+    }
+
+    public static List<PRPeriode> controlePeriodesSeodor(List<APGSeodorDataBean> apgSeodorDataBeans, List<PRPeriode> periodesAControler) throws ParseException, DatatypeConfigurationException {
+        List<PRPeriode> periodesEnErreur = new ArrayList<>();
+
+        for (APGSeodorDataBean apgSeodorDataBeanTemp : apgSeodorDataBeans) {
+            XMLGregorianCalendar startDateSeodor = apgSeodorDataBeanTemp.getStartDate();
+            XMLGregorianCalendar endDateSeodor = apgSeodorDataBeanTemp.getEndOfPeriod();
+            boolean enErreur = true;
+            for (PRPeriode periodeTemp : periodesAControler) {
+                if (startDateSeodor.compare(convertDateJJMMAAAAtoXMLDateGregorian(periodeTemp.getDateDeDebut().toString())) == 1
+                        && endDateSeodor.compare(convertDateJJMMAAAAtoXMLDateGregorian(periodeTemp.getDateDeFin().toString())) == 1) {
+
+                }
+            }
+
+        }
+
+
+        return periodesEnErreur;
     }
 }

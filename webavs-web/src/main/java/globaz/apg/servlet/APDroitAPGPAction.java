@@ -11,6 +11,7 @@ import globaz.apg.exceptions.APWrongViewBeanTypeException;
 import globaz.apg.properties.APProperties;
 import globaz.apg.util.APGSeodorDataBean;
 import globaz.apg.util.APGSeodorServiceCallUtil;
+import globaz.apg.util.APGSeodorServiceMappingUtil;
 import globaz.apg.vb.droits.APDroitAPGDTO;
 import globaz.apg.vb.droits.APDroitAPGPViewBean;
 import globaz.apg.vb.prestation.APValidationPrestationViewBean;
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -345,7 +347,10 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
                     if (apgSeodorDataBeans.get(0).isHasTechnicalError()) {
                         messagesError.add(apgSeodorDataBeans.get(0).getMessageTechnicalError());
                     } else {
-                        // TODO mapper le résultat de l'appel
+                        List<PRPeriode> periodesAControler = viewBean.getPeriodes();
+                        APGSeodorServiceMappingUtil.controlePeriodesSeodor(apgSeodorDataBeans, periodesAControler);
+
+
                         messagesError.add("Erreur N°1");
                         messagesError.add("Erreur N°2");
                         messagesError.add("Erreur N°3");
@@ -364,6 +369,10 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
             // TODO Gérer exception
 
             messagesError.add("Erreur de données lors de l'appel au webService");
+            viewBean.setMessagesError(messagesError);
+            viewBean.setMessagePropError(true);
+        } catch (ParseException e) {
+            messagesError.add("Erreur de structure des données reçu de la centrale");
             viewBean.setMessagesError(messagesError);
             viewBean.setMessagePropError(true);
         }

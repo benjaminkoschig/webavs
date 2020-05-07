@@ -28,6 +28,7 @@ public class APGSeodorDataBean {
     private XMLGregorianCalendar serviceEntryDate;
     private int serviceType;
     private XMLGregorianCalendar startOfPeriod;
+    private XMLGregorianCalendar endOfPeriod;
     private String userId;
 
     private boolean hasTechnicalError = false;
@@ -208,5 +209,13 @@ public class APGSeodorDataBean {
 
     public void setMessageTechnicalError(String messageTechnicalError) {
         this.messageTechnicalError = messageTechnicalError;
+    }
+
+    public XMLGregorianCalendar getEndOfPeriod() {
+        return endOfPeriod;
+    }
+
+    public void setEndOfPeriod(XMLGregorianCalendar endOfPeriod) {
+        this.endOfPeriod = endOfPeriod;
     }
 }
