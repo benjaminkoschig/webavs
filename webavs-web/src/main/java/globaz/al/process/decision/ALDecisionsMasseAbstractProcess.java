@@ -385,7 +385,8 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
 
                                         moinsAgeFormation = formatter.parse(droit.getDroitModel().getDebutDroit());
                                         // retire l'âge de formation
-                                        moinsAgeFormation.setYear(moinsAgeFormation.getYear() - ALFomationUtils.getAgeFormation(droit.getDroitModel().getDebutDroit()));
+                                        moinsAgeFormation.setYear(moinsAgeFormation.getYear() - ALFomationUtils.getAgeFormation(droit.getEnfantComplexModel().getPersonneEtendueComplexModel().getPersonne()
+                                                .getDateNaissance()));
                                         // début de mois
                                         moinsAgeFormation.setDate(01);
 

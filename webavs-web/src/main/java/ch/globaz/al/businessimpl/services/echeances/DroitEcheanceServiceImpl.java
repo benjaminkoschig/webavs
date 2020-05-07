@@ -124,7 +124,8 @@ public class DroitEcheanceServiceImpl extends ALAbstractBusinessServiceImpl impl
 
         // les autres cas enfant
         else {
-            String ageFormation = ALFomationUtils.getAgeFormation(droit.getDroitModel().getDebutDroit()).toString();
+            String ageFormation = ALFomationUtils.getAgeFormation(droit.getEnfantComplexModel().getPersonneEtendueComplexModel().getPersonne()
+                    .getDateNaissance()).toString();
             if (droit.getEnfantComplexModel().getEnfantModel().getCapableExercer() && ageFormation.equals(ageEnfant)) {
                 return ageEnfant + " " + i18n.getMessage(langue, "al.documentCommun.echeances.motifAge");
             }

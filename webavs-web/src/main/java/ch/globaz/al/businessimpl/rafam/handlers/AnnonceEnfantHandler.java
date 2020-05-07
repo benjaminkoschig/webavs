@@ -70,8 +70,8 @@ public class AnnonceEnfantHandler extends AnnonceHandlerAbstract {
     }
 
     protected String getEcheance() throws JadeApplicationException, JadePersistenceException {
-        String echeanceCalculee = ALDateUtils.getDateAjoutAnneesFinMois(context.getDroit().getEnfantComplexModel()
-                .getPersonneEtendueComplexModel().getPersonne().getDateNaissance(), ALFomationUtils.getAgeFormation(context.getDroit().getDroitModel().getDebutDroit()));
+        String echeanceCalculee = ALFomationUtils.calculEcheanceFormation(context.getDroit().getEnfantComplexModel()
+                .getPersonneEtendueComplexModel().getPersonne().getDateNaissance());
         return echeanceCalculee;
     }
 

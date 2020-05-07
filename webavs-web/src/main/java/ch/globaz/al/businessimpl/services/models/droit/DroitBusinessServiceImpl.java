@@ -552,7 +552,7 @@ public class DroitBusinessServiceImpl implements DroitBusinessService {
             // => mois suivant l'age de formation de l'enfant (sans le test sur les
             // mois,
             // on aura le mois de l'age de formation et on doit laisser passer
-            int ageFormation = ALFomationUtils.getAgeFormation(droit.getDroitModel().getDebutDroit());
+            int ageFormation = ALFomationUtils.getAgeFormation(dateNaissance);
             if ((ALCSDroit.TYPE_ENF.equals(droit.getDroitModel().getTypeDroit()) && (JadeDateUtil.getNbYearsBetween(
                     dateNaissance, echeance, JadeDateUtil.YEAR_MONTH_COMPARISON) == ageFormation))
                     && !moisNaissance.equals(moisEcheance)) {

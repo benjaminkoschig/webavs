@@ -74,10 +74,9 @@ public class DatesEcheanceServiceImpl extends ALAbstractBusinessServiceImpl impl
                     || JadeNumericUtil.isEmptyOrZero(droitComplexModel.getEnfantComplexModel().getEnfantModel()
                             .getIdEnfant())) {
                 // ajouter l'âge de début de formation à la date de naissance et mois suivant et retourner la date
-                String dateDebutValiditeDroitFormation = ALImplServiceLocator.getDatesEcheancePrivateService()
-                        .getDateDebutValiditeDroit(
-                                ALDateUtils.getDateAjoutAnneesFinMois(droitComplexModel.getEnfantComplexModel()
-                                        .getPersonneEtendueComplexModel().getPersonne().getDateNaissance(), ALFomationUtils.getAgeFormation(droitComplexModel.getDroitModel().getDebutDroit())));
+                String datenaissance = droitComplexModel.getEnfantComplexModel()
+                        .getPersonneEtendueComplexModel().getPersonne().getDateNaissance();
+                String dateDebutValiditeDroitFormation = ALFomationUtils.calculDateDebutFormation(datenaissance);
                 // si la date du début du dossier est antérieure à la date du début de la formation on retourne la date
                 // du début du droit sinon la date du début du dossier
                 if (JadeDateUtil.isDateAfter(dateDebutValiditeDroitFormation, dateDebutDossier)) {
@@ -143,9 +142,8 @@ public class DatesEcheanceServiceImpl extends ALAbstractBusinessServiceImpl impl
                 // exercer
                 if (JadeStringUtil.equals(droitComplexModel.getDroitModel().getTypeDroit(), ALCSDroit.TYPE_ENF, true)
                         && (droitComplexModel.getEnfantComplexModel().getEnfantModel().getCapableExercer())) {
-                    dateFinValiditeCalcule = ALDateUtils.getDateAjoutAnneesFinMois(droitComplexModel
-                            .getEnfantComplexModel().getPersonneEtendueComplexModel().getPersonne().getDateNaissance(),
-                            ALFomationUtils.getAgeFormation(droitComplexModel.getDroitModel().getDebutDroit()));
+                    dateFinValiditeCalcule = ALFomationUtils.calculEcheanceFormation(droitComplexModel.getEnfantComplexModel()
+                            .getPersonneEtendueComplexModel().getPersonne().getDateNaissance());
 
                 }// ajout de 20 ans pour un enfant incapable d'exercer
                 else if (JadeStringUtil.equals(droitComplexModel.getDroitModel().getTypeDroit(), ALCSDroit.TYPE_ENF,

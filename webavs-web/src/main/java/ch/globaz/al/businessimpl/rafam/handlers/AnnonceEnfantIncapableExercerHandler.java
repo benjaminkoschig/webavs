@@ -85,8 +85,8 @@ public class AnnonceEnfantIncapableExercerHandler extends AnnonceHandlerAbstract
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
     private String getEcheanceCalculee() throws JadeApplicationException, JadePersistenceException {
-        String echeanceCalculee = ALDateUtils.getDateAjoutAnneesFinMois(context.getDroit().getEnfantComplexModel()
-                .getPersonneEtendueComplexModel().getPersonne().getDateNaissance(), ALFomationUtils.getAgeFormation(context.getDroit().getDroitModel().getDebutDroit()));
+        String echeanceCalculee = ALFomationUtils.calculEcheanceFormation(context.getDroit().getEnfantComplexModel()
+                .getPersonneEtendueComplexModel().getPersonne().getDateNaissance());
         return echeanceCalculee;
     }
 

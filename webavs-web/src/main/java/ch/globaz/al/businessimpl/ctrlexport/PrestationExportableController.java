@@ -499,7 +499,8 @@ public class PrestationExportableController {
         }
         int loi = 0;
         try {
-            if (age < ALFomationUtils.getAgeFormation(_droit.getDroitModel().getDebutDroit())) {
+            if (age < ALFomationUtils.getAgeFormation(_droit.getEnfantComplexModel().getPersonneEtendueComplexModel().getPersonne()
+                    .getDateNaissance())) {
                 if (isAgricole(_dossier)) {
                     loi = ALConstLoisExport.LOI_LFA_FORMATION;
                 } else {
