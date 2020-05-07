@@ -10,6 +10,7 @@ import globaz.apg.enums.APModeEditionDroit;
 import globaz.apg.exceptions.APWrongViewBeanTypeException;
 import globaz.apg.properties.APProperties;
 import globaz.apg.util.APGSeodorDataBean;
+import globaz.apg.util.APGSeodorErreurEntity;
 import globaz.apg.util.APGSeodorServiceCallUtil;
 import globaz.apg.util.APGSeodorServiceMappingUtil;
 import globaz.apg.vb.droits.APDroitAPGDTO;
@@ -204,6 +205,7 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
             JSPUtils.setBeanProperties(request, viewBean);
             viewBean = (APDroitAPGPViewBean) beforeAjouter(session, request, response, viewBean);
 
+            // Appel du WebService Seodor
             if (viewBean.getACorriger()) {
                 callWSSeodor(viewBean, mainDispatcher);
             }
@@ -327,7 +329,7 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
     private List<APGSeodorDataBean> callWSSeodor (APDroitAPGPViewBean viewBean, FWDispatcher mainDispatcher) {
 
         List<APGSeodorDataBean> apgSeodorDataBeans = new ArrayList<>();
-        List<String> messagesError = new ArrayList<>();
+        List<APGSeodorErreurEntity> messagesError = new ArrayList<>();
         APGSeodorDataBean apgSeodorDataBean = new APGSeodorDataBean();
 
         try{
@@ -345,34 +347,28 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
 
                 if (!apgSeodorDataBeans.isEmpty()) {
                     if (apgSeodorDataBeans.get(0).isHasTechnicalError()) {
-                        messagesError.add(apgSeodorDataBeans.get(0).getMessageTechnicalError());
+                        messagesError.add(new APGSeodorErreurEntity(apgSeodorDataBeans.get(0).getMessageTechnicalError()));
                     } else {
                         List<PRPeriode> periodesAControler = viewBean.getPeriodes();
-                        APGSeodorServiceMappingUtil.controlePeriodesSeodor(apgSeodorDataBeans, periodesAControler);
-
-
-                        messagesError.add("Erreur N°1");
-                        messagesError.add("Erreur N°2");
-                        messagesError.add("Erreur N°3");
-                        messagesError.add("Erreur N°4");
+                        messagesError = APGSeodorServiceMappingUtil.controlePeriodesSeodor(apgSeodorDataBeans, periodesAControler);
                     }
                 } else {
                     // TODO A remplacer par Label
-                    messagesError.add("\nPas de données");
+                    messagesError.add(new APGSeodorErreurEntity("\nPas de données"));
                 }
             }
         } catch (PropertiesException e) {
             // La propriété n'existe pas
             LOG.error("La propriété apg.rapg.genre.service.seodor n'a pas été trouvé : ", e);
-            messagesError.add(((BSession) mainDispatcher.getSession()).getLabel("WEBSERVICE_SEODOR_PROP_MANQUANTE"));
+            messagesError.add(new APGSeodorErreurEntity(((BSession) mainDispatcher.getSession()).getLabel("WEBSERVICE_SEODOR_PROP_MANQUANTE")));
         } catch (DatatypeConfigurationException e) {
             // TODO Gérer exception
 
-            messagesError.add("Erreur de données lors de l'appel au webService");
+            messagesError.add(new APGSeodorErreurEntity("Erreur de données lors de l'appel au webService"));
             viewBean.setMessagesError(messagesError);
             viewBean.setMessagePropError(true);
         } catch (ParseException e) {
-            messagesError.add("Erreur de structure des données reçu de la centrale");
+            messagesError.add(new APGSeodorErreurEntity("Erreur de structure des données reçu de la centrale"));
             viewBean.setMessagesError(messagesError);
             viewBean.setMessagePropError(true);
         }

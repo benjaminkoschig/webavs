@@ -10,6 +10,7 @@ import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.droits.APDroitAPG;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.enums.APModeEditionDroit;
+import globaz.apg.util.APGSeodorErreurEntity;
 import globaz.commons.nss.NSUtil;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
@@ -30,7 +31,7 @@ public class APDroitAPGPViewBean extends APAbstractDroitProxyViewBean {
     private String dateFinPeriode = "";
     private List<PRPeriode> periodes;
 
-    private List<String> messagesError = new ArrayList<>();
+    private List<APGSeodorErreurEntity> messagesError = new ArrayList<>();
     private boolean hasMessagePropError = false;
 
     /**
@@ -318,14 +319,14 @@ public class APDroitAPGPViewBean extends APAbstractDroitProxyViewBean {
     }
 
     public String getMessagesError() {
-        String msgHTML = "";
-        for(String msg: messagesError){
-            msgHTML = msgHTML+ "<p>"+msg+"<p><br>";
+        StringBuilder msgHTML = new StringBuilder();
+        for(APGSeodorErreurEntity msg: messagesError){
+            msgHTML.append("<p>"+msg.toString()+"<p><br>");
         }
-        return msgHTML;
+        return msgHTML.toString();
     }
 
-    public void setMessagesError(List<String> messagesError) {
+    public void setMessagesError(List<APGSeodorErreurEntity> messagesError) {
         this.messagesError = messagesError;
     }
 

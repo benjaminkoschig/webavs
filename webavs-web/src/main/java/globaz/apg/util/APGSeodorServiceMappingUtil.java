@@ -27,12 +27,9 @@ import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.GregorianCalendar;
 
 public class APGSeodorServiceMappingUtil {
 
@@ -107,10 +104,20 @@ public class APGSeodorServiceMappingUtil {
 
     }
 
+    public static String convertXMLDateGregorianToDateJJMMAAAAto(XMLGregorianCalendar date){
+
+        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+        GregorianCalendar gCalendar = date.toGregorianCalendar();
+        format.setTimeZone(gCalendar.getTimeZone());
+        String dateString = format.format(gCalendar.getTime());
+        return dateString;
+
+    }
+
     public static final List<APGSeodorDataBean> putResponseDeliveryResultInApgSeodorDataBean(BSession session, GetServicePeriodsResponseType responseDelivery, APGSeodorDataBean seodorDataBean) {
         List<APGSeodorDataBean> seodorDataBeans = new ArrayList<>();
 
-        if (Objects.nonNull(responseDelivery.getMessage().getContent().getResponse().getPeriod())) {
+        if (Objects.nonNull(responseDelivery.getMessage().getContent()) && Objects.nonNull(responseDelivery.getMessage().getContent().getResponse().getPeriod())) {
             for (ContentType content : responseDelivery.getMessage().getContent().getResponse().getPeriod()) {
                 APGSeodorDataBean seodorDataBeanTemp = new APGSeodorDataBean(seodorDataBean);
                 seodorDataBeanTemp.setAddressInformation(Objects.nonNull(content.getAddress()) ? content.getAddress() : new AddressInformationType());
@@ -135,23 +142,48 @@ public class APGSeodorServiceMappingUtil {
         return seodorDataBeans;
     }
 
-    public static List<PRPeriode> controlePeriodesSeodor(List<APGSeodorDataBean> apgSeodorDataBeans, List<PRPeriode> periodesAControler) throws ParseException, DatatypeConfigurationException {
-        List<PRPeriode> periodesEnErreur = new ArrayList<>();
+    public static List<APGSeodorErreurEntity> controlePeriodesSeodor(List<APGSeodorDataBean> apgSeodorDataBeans, List<PRPeriode> periodesAControler) throws ParseException, DatatypeConfigurationException {
+        List<APGSeodorErreurEntity> periodesEnErreur = new ArrayList<>();
 
-        for (APGSeodorDataBean apgSeodorDataBeanTemp : apgSeodorDataBeans) {
-            XMLGregorianCalendar startDateSeodor = apgSeodorDataBeanTemp.getStartDate();
-            XMLGregorianCalendar endDateSeodor = apgSeodorDataBeanTemp.getEndOfPeriod();
+        for (PRPeriode periodeTemp : periodesAControler) {
             boolean enErreur = true;
-            for (PRPeriode periodeTemp : periodesAControler) {
-                if (startDateSeodor.compare(convertDateJJMMAAAAtoXMLDateGregorian(periodeTemp.getDateDeDebut().toString())) == 1
-                        && endDateSeodor.compare(convertDateJJMMAAAAtoXMLDateGregorian(periodeTemp.getDateDeFin().toString())) == 1) {
-
+            XMLGregorianCalendar dateDeDebutPeriode = convertDateJJMMAAAAtoXMLDateGregorian(periodeTemp.getDateDeDebut().toString());
+            XMLGregorianCalendar dateDeFinPeriode = convertDateJJMMAAAAtoXMLDateGregorian(periodeTemp.getDateDeFin().toString());
+            for (APGSeodorDataBean apgSeodorDataBeanTemp : apgSeodorDataBeans) {
+                if (hasSamePeriodeXMLGregorian(apgSeodorDataBeanTemp.getStartOfPeriod(), dateDeDebutPeriode) &&
+                        hasSamePeriodeXMLGregorian(apgSeodorDataBeanTemp.getEndOfPeriod(), dateDeFinPeriode)) {
+                    enErreur = false;
                 }
             }
-
+            if (enErreur) {
+                for (APGSeodorDataBean apgSeodorTemps : apgSeodorDataBeans) {
+                    APGSeodorErreurEntity periodeApgTemp = new APGSeodorErreurEntity();
+                    periodeApgTemp.setDateDebutPeriode(convertXMLDateGregorianToDateJJMMAAAAto(apgSeodorTemps.getStartOfPeriod()));
+                    periodeApgTemp.setDateFinPeriode(convertXMLDateGregorianToDateJJMMAAAAto(apgSeodorTemps.getEndOfPeriod()));
+                    periodeApgTemp.setCodeService(apgSeodorTemps.getServiceType());
+                    periodeApgTemp.setNombreJours(apgSeodorTemps.getNumberOfDays());
+                    periodesEnErreur.add(periodeApgTemp);
+                }
+            }
         }
-
-
         return periodesEnErreur;
+    }
+
+    /**
+     * Méthode qui compare le jour / mois / année entre deux date au format XMLGregorianCalendar
+     *
+     * @param dateXmlGregorian1
+     * @param dateXmlGregorian2
+     * @return true si égale, false sinon
+     * @throws ParseException
+     * @throws DatatypeConfigurationException
+     */
+    private static boolean hasSamePeriodeXMLGregorian(XMLGregorianCalendar dateXmlGregorian1, XMLGregorianCalendar dateXmlGregorian2) throws ParseException, DatatypeConfigurationException {
+        if (Objects.equals(dateXmlGregorian1.getYear(), dateXmlGregorian2.getYear())
+                && Objects.equals(dateXmlGregorian1.getMonth(), dateXmlGregorian2.getMonth())
+                && Objects.equals(dateXmlGregorian1.getDay(), dateXmlGregorian2.getDay())) {
+            return true;
+        }
+        return false;
     }
 }
