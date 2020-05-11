@@ -1,6 +1,5 @@
 package globaz.apg.util;
 
-import ch.admin.cdc.rapg.core.service.ws._1.RapgConsultation1;
 import ch.admin.cdc.seodor.core.dto.generated._1.GetServicePeriodsRequestType;
 import ch.admin.cdc.seodor.core.dto.generated._1.GetServicePeriodsResponseType;
 
@@ -10,11 +9,6 @@ import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
-
-import org.apache.cxf.configuration.jsse.TLSClientParameters;
-import org.apache.cxf.endpoint.Client;
-import org.apache.cxf.frontend.ClientProxy;
-import org.apache.cxf.transport.http.HTTPConduit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,13 +18,11 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
-import javax.xml.ws.Service;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.security.*;
-import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
