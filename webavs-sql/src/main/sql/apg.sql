@@ -15,7 +15,7 @@ INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.seodor.
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.seodor.keystore.password','tsz9ty9of+53aZlasRVLjw==','20200318120000Globaz    ','20200318120000Globaz    ');
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.seodor.keystore.path','/home/wascnt/keys/T6-150000-1_2.p12','20200318120000Globaz    ','20200318120000Globaz    ');
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.seodor.keystore.type','JKS','20200318120000Globaz    ','20200318120000Globaz    ');
-INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.seodor.wsdl.path','wsdl/seodor/SEODOR-query.wsdl','20200318120000Globaz    ','20200318120000Globaz    ');
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.seodor.wsdl.path','wsdl/seodor/SEODOR-test-query.wsdl','20200318120000Globaz    ','20200318120000Globaz    ');
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.seodor.ssi.context.type','TLS','20200318120000Globaz    ','20200318120000Globaz    ');
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.seodor.webservice.name','ServicePeriodsService10','20200318120000Globaz    ','20200318120000Globaz    ');
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.seodor.webservice.namespace','http://www.zas.admin.ch/seodor/ws/service-periods/1','20200318120000Globaz    ','20200318120000Globaz    ');

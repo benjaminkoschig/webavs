@@ -16,6 +16,8 @@
 <%@ page import="java.util.HashSet"%>
 <%@ page import="globaz.apg.util.APGSeodorDataBean" %>
 <%@ page import="globaz.globall.db.BSession" %>
+<%@ page import="globaz.apg.util.APGSeodorErreurEntity" %>
+<%@ page import="java.util.Objects" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib uri="/WEB-INF/nss.tld" prefix="ct1" %>
 <%@ include file="/theme/detail/header.jspf" %>
@@ -60,8 +62,7 @@
 	<%if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.CREATION) || viewBean.getModeEditionDroit().equals(APModeEditionDroit.EDITION) ){%>
 		EDITION_MODE = true;
 	<%}%>
-		
-	
+
 	function init() {
 	}
 
@@ -147,9 +148,9 @@
 
 	function checkParametersWebService() {
 		$("#dialog_apg_webservice").dialog({
-			resizable: true,
-			height: 170,
-			width: 300,
+			resizable: false,
+			height: 500,
+			width: 500,
 			modal: true,
 			buttons: [{
 				id: "Correct",
@@ -169,7 +170,11 @@
 				}
 			}],
 			open : function() {
+				$(".ui-dialog-titlebar-close",".ui-dialog-titlebar").hide();
 				$("#Ok").focus();
+				<% if(viewBean.getMessagesErrorList().getApgSeodorErreurEntityList().size()!=0) { %>
+				$('#dialog_apg_webservice').append('<%=viewBean.getMessagesErrorList().getListErreursTableHTML()%>');
+				<% } %>
 			}
 		});
 	}
@@ -1017,9 +1022,11 @@
 <% if(viewBean.hasMessagePropError()){ %>
 <div style="display:none" id="dialog_apg_webservice"
 	 title="<ct:FWLabel key='JSP_CONTROLE_SERVICE'/>" >
-	<%=viewBean.getMessagesError() %>
+	<% if(Objects.nonNull(viewBean.getMessagesError()) && !viewBean.getMessagesError().isEmpty()) { %>
+	<h3><%=viewBean.getMessagesError()%></h3>
+	<% } %>
 </div>
-<%}%>
+<% } %>
 <%@ include file="plausibilites.jsp" %>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
 				<input	type="button" 

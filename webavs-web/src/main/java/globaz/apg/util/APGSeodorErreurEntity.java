@@ -7,16 +7,10 @@ public class APGSeodorErreurEntity {
     String dateFinPeriode = "";
     int codeService;
     Long nombreJours;
-    String messageErreur;
 
     public APGSeodorErreurEntity(){
 
     }
-
-    public APGSeodorErreurEntity(String messageErreur){
-        this.messageErreur = messageErreur;
-    }
-
 
     public APGSeodorErreurEntity(String dateDebutPeriode, String dateFinPeriode, int codeService, Long nombreJours) {
         this.dateDebutPeriode = dateDebutPeriode;
@@ -59,13 +53,5 @@ public class APGSeodorErreurEntity {
 
     public void setNombreJours(Long nombreJours) {
         this.nombreJours = nombreJours;
-    }
-
-    public String getMessageErreur() {
-        return messageErreur;
-    }
-
-    public void setMessageErreur(String messageErreur) {
-        this.messageErreur = messageErreur;
     }
 }

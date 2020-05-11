@@ -142,29 +142,54 @@ public class APGSeodorServiceMappingUtil {
         return seodorDataBeans;
     }
 
-    public static List<APGSeodorErreurEntity> controlePeriodesSeodor(List<APGSeodorDataBean> apgSeodorDataBeans, List<PRPeriode> periodesAControler) throws ParseException, DatatypeConfigurationException {
-        List<APGSeodorErreurEntity> periodesEnErreur = new ArrayList<>();
+    public static APGSeodorErreurListEntities controlePeriodesSeodor(List<APGSeodorDataBean> apgSeodorDataBeans, List<PRPeriode> periodesAControler, Long nombreJoursAControler, String messageErreur) throws ParseException, DatatypeConfigurationException {
+        APGSeodorErreurListEntities periodesEnErreur = new APGSeodorErreurListEntities();
+        boolean dejaAjouteErreur = false;
+        Long nombreJoursSoldesCalcules = new Long(0);
 
         for (PRPeriode periodeTemp : periodesAControler) {
             boolean enErreur = true;
             XMLGregorianCalendar dateDeDebutPeriode = convertDateJJMMAAAAtoXMLDateGregorian(periodeTemp.getDateDeDebut().toString());
             XMLGregorianCalendar dateDeFinPeriode = convertDateJJMMAAAAtoXMLDateGregorian(periodeTemp.getDateDeFin().toString());
+
+
             for (APGSeodorDataBean apgSeodorDataBeanTemp : apgSeodorDataBeans) {
                 if (hasSamePeriodeXMLGregorian(apgSeodorDataBeanTemp.getStartOfPeriod(), dateDeDebutPeriode) &&
                         hasSamePeriodeXMLGregorian(apgSeodorDataBeanTemp.getEndOfPeriod(), dateDeFinPeriode)) {
-                    enErreur = false;
+                        enErreur = false;
+                        nombreJoursSoldesCalcules = nombreJoursSoldesCalcules + apgSeodorDataBeanTemp.getNumberOfDays();
                 }
             }
-            if (enErreur) {
-                for (APGSeodorDataBean apgSeodorTemps : apgSeodorDataBeans) {
-                    APGSeodorErreurEntity periodeApgTemp = new APGSeodorErreurEntity();
-                    periodeApgTemp.setDateDebutPeriode(convertXMLDateGregorianToDateJJMMAAAAto(apgSeodorTemps.getStartOfPeriod()));
-                    periodeApgTemp.setDateFinPeriode(convertXMLDateGregorianToDateJJMMAAAAto(apgSeodorTemps.getEndOfPeriod()));
-                    periodeApgTemp.setCodeService(apgSeodorTemps.getServiceType());
-                    periodeApgTemp.setNombreJours(apgSeodorTemps.getNumberOfDays());
-                    periodesEnErreur.add(periodeApgTemp);
-                }
+            if (enErreur && !dejaAjouteErreur) {
+                dejaAjouteErreur = true;
+                periodesEnErreur = listPeriodeSeodorWithErrorMessage(apgSeodorDataBeans, messageErreur);
             }
+
+        }
+
+        if (!dejaAjouteErreur && !Objects.equals(nombreJoursSoldesCalcules, nombreJoursAControler)) {
+            periodesEnErreur = listPeriodeSeodorWithErrorMessage(apgSeodorDataBeans, messageErreur);
+        }
+        return periodesEnErreur;
+    }
+
+    /**
+     * Méthode qui liste les périodes récupérées par le WS Seodor
+     *
+     * @param apgSeodorDataBeans
+     * @param messageErreur
+     * @return APGSeodorErreurListEntities
+     */
+    private static APGSeodorErreurListEntities listPeriodeSeodorWithErrorMessage(List<APGSeodorDataBean> apgSeodorDataBeans, String messageErreur){
+        APGSeodorErreurListEntities periodesEnErreur = new APGSeodorErreurListEntities();
+        periodesEnErreur.setMessageErreur(messageErreur);
+        for (APGSeodorDataBean apgSeodorTemps : apgSeodorDataBeans) {
+            APGSeodorErreurEntity periodeApgTemp = new APGSeodorErreurEntity();
+            periodeApgTemp.setDateDebutPeriode(convertXMLDateGregorianToDateJJMMAAAAto(apgSeodorTemps.getStartOfPeriod()));
+            periodeApgTemp.setDateFinPeriode(convertXMLDateGregorianToDateJJMMAAAAto(apgSeodorTemps.getEndOfPeriod()));
+            periodeApgTemp.setCodeService(apgSeodorTemps.getServiceType());
+            periodeApgTemp.setNombreJours(apgSeodorTemps.getNumberOfDays());
+            periodesEnErreur.getApgSeodorErreurEntityList().add(periodeApgTemp);
         }
         return periodesEnErreur;
     }

@@ -68,6 +68,9 @@ public class APGSeodorDataBean {
     }
 
     public void setStartDate(XMLGregorianCalendar startDate) {
+        // Chaque recherche doit commencer sur le premier jour de l'année
+        startDate.setDay(1);
+        startDate.setMonth(1);
         this.startDate = startDate;
     }
 

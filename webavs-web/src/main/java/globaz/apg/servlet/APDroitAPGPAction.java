@@ -9,10 +9,7 @@ import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.enums.APModeEditionDroit;
 import globaz.apg.exceptions.APWrongViewBeanTypeException;
 import globaz.apg.properties.APProperties;
-import globaz.apg.util.APGSeodorDataBean;
-import globaz.apg.util.APGSeodorErreurEntity;
-import globaz.apg.util.APGSeodorServiceCallUtil;
-import globaz.apg.util.APGSeodorServiceMappingUtil;
+import globaz.apg.util.*;
 import globaz.apg.vb.droits.APDroitAPGDTO;
 import globaz.apg.vb.droits.APDroitAPGPViewBean;
 import globaz.apg.vb.prestation.APValidationPrestationViewBean;
@@ -198,8 +195,8 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
         APDroitAPGPViewBean viewBean = new APDroitAPGPViewBean();
         String action = request.getParameter("userAction");
         FWAction newAction = FWAction.newInstance(action);
-
         String destination = null;
+
         try {
 
             JSPUtils.setBeanProperties(request, viewBean);
@@ -209,7 +206,6 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
             if (viewBean.getACorriger()) {
                 callWSSeodor(viewBean, mainDispatcher);
             }
-
 
             // Fin contrôle SEODOR
             // Si l'on corrige les données, alors on revient sur la page de modification du droit
@@ -249,6 +245,7 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
     @Override
     protected void actionModifier(HttpSession session, HttpServletRequest request, HttpServletResponse response,
             FWDispatcher mainDispatcher) throws ServletException, IOException {
+
         APDroitAPGPViewBean viewBean = new APDroitAPGPViewBean();
         String action = request.getParameter("userAction");
         FWAction newAction = FWAction.newInstance(action);
@@ -329,7 +326,7 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
     private List<APGSeodorDataBean> callWSSeodor (APDroitAPGPViewBean viewBean, FWDispatcher mainDispatcher) {
 
         List<APGSeodorDataBean> apgSeodorDataBeans = new ArrayList<>();
-        List<APGSeodorErreurEntity> messagesError = new ArrayList<>();
+        APGSeodorErreurListEntities messagesError = new APGSeodorErreurListEntities();
         APGSeodorDataBean apgSeodorDataBean = new APGSeodorDataBean();
 
         try{
@@ -340,41 +337,40 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
                 // TODO mapper la requete
                 String nss = viewBean.getNss().replaceAll("\\.","");
                 PRPeriode periode1er = viewBean.getPeriodes().get(0);
-                Date dateDebut = new Date(periode1er.getDateDeDebut());
+                Date dateDebut = new Date(periode1er.getDateDeFin());
                 apgSeodorDataBean.setNss(nss);
                 apgSeodorDataBean.setStartDate(dateDebut.toXMLGregorianCalendar());
                 apgSeodorDataBeans = APGSeodorServiceCallUtil.getPeriode(((BSession) mainDispatcher.getSession()), apgSeodorDataBean);
 
                 if (!apgSeodorDataBeans.isEmpty()) {
                     if (apgSeodorDataBeans.get(0).isHasTechnicalError()) {
-                        messagesError.add(new APGSeodorErreurEntity(apgSeodorDataBeans.get(0).getMessageTechnicalError()));
+                        messagesError.setMessageErreur(apgSeodorDataBeans.get(0).getMessageTechnicalError());
                     } else {
                         List<PRPeriode> periodesAControler = viewBean.getPeriodes();
-                        messagesError = APGSeodorServiceMappingUtil.controlePeriodesSeodor(apgSeodorDataBeans, periodesAControler);
+                        messagesError = APGSeodorServiceMappingUtil.controlePeriodesSeodor(apgSeodorDataBeans, periodesAControler
+                                ,Long.valueOf(viewBean.getNbrJourSoldes()) , ((BSession) mainDispatcher.getSession()).getLabel("DIFFERENCE_PERIODES_ANNONCEES"));
                     }
                 } else {
                     // TODO A remplacer par Label
-                    messagesError.add(new APGSeodorErreurEntity("\nPas de données"));
+                    messagesError.setMessageErreur("Pas de données");
                 }
             }
         } catch (PropertiesException e) {
             // La propriété n'existe pas
             LOG.error("La propriété apg.rapg.genre.service.seodor n'a pas été trouvé : ", e);
-            messagesError.add(new APGSeodorErreurEntity(((BSession) mainDispatcher.getSession()).getLabel("WEBSERVICE_SEODOR_PROP_MANQUANTE")));
+            messagesError.setMessageErreur(((BSession) mainDispatcher.getSession()).getLabel("WEBSERVICE_SEODOR_PROP_MANQUANTE"));
         } catch (DatatypeConfigurationException e) {
-            // TODO Gérer exception
-
-            messagesError.add(new APGSeodorErreurEntity("Erreur de données lors de l'appel au webService"));
+            messagesError.setMessageErreur("Erreur de données lors de l'appel au webService");
             viewBean.setMessagesError(messagesError);
             viewBean.setMessagePropError(true);
         } catch (ParseException e) {
-            messagesError.add(new APGSeodorErreurEntity("Erreur de structure des données reçu de la centrale"));
+            messagesError.setMessageErreur("Erreur de structure des données reçu de la centrale");
             viewBean.setMessagesError(messagesError);
             viewBean.setMessagePropError(true);
         }
 
         // On ajoute les erreurs à la ViewBean et on la tag pour afficher les erreurs lors du rechargement de la page.
-        if (!messagesError.isEmpty()) {
+        if (!messagesError.getMessageErreur().isEmpty()) {
             viewBean.setMessagePropError(true);
             viewBean.setMessagesError(messagesError);
         }

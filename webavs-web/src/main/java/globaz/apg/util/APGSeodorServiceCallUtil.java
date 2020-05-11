@@ -69,30 +69,6 @@ public class APGSeodorServiceCallUtil {
                     keyStorePath = "C:\\Users\\eniv\\Downloads\\certificat\\T6-150000-1_2.p12";
 
                     configureSSLOnTheClient(port, keyStorePath, keyStorePass, keyStoreType);
-
-//                    SSLContext sc = SSLContext.getInstance(contextType);
-//                    KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-//                    KeyStore ks = KeyStore.getInstance(keyStoreType);
-//                    FileInputStream fis = new FileInputStream(keyStorePath);
-//                    String certPasswd = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(keyStorePass);
-//
-//                    ks.load(fis, certPasswd.toCharArray());
-//                    IOUtils.closeQuietly(fis);
-//                    kmf.init(ks, certPasswd.toCharArray());
-//                    sc.init(kmf.getKeyManagers(), null, null);
-//
-//                    final Map<String, Object> ctxt = ((BindingProvider) port).getRequestContext();
-//                    ctxt.put(SSL_SOCKET_FACTORY_JAX_WS_RI, sc.getSocketFactory());
-//                    ctxt.put(SSL_SOCKET_FACTORY_ORACLE_JDK, sc.getSocketFactory());
-//                    BindingProvider bindingProvider = (BindingProvider) port;
-//
-//                    // Si la propriété ide.webservice.url.endpoint existe on surcharge l'adresse du endpoint
-//                    String endpoint = CommonProperties.SEODOR_ENDPOINT_ADDRESS.getValue();
-//                    if (StringUtils.isNotEmpty(endpoint)) {
-//                        bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,  endpoint);
-//                    }
-//                    bindingProvider.getRequestContext().put(SSL_SOCKET_FACTORY_JAX_WS_RI, sc.getSocketFactory());
-//                    bindingProvider.getRequestContext().put(SSL_SOCKET_FACTORY_ORACLE_JDK, sc.getSocketFactory());
             }
 
             GetServicePeriodsRequestType requestDelivery = APGSeodorServiceMappingUtil.convertSeodorDataBeanToRequestDelivery(apgSeodorDataBean);
@@ -103,14 +79,12 @@ public class APGSeodorServiceCallUtil {
 
             // TODO Changer exception
             } catch (Exception e) {
-
-                // TODO Logger les erreurs
                 if (apgSeodorDataBean == null) {
                     apgSeodorDataBean = new APGSeodorDataBean();
                 }
-
                 apgSeodorDataBean.setHasTechnicalError(true);
                 String message = session.getLabel("ERROR_REASON_DETAILED_UNEXCEPTED_ERROR");
+                // TODO Label a créer
                 apgSeodorDataBean.setMessageTechnicalError("Erreur de connexion avec la centrale");
                 //apgSeodorDataBean.setMessageForUser(message);
                 LOG.error(message, e);
@@ -138,62 +112,6 @@ public class APGSeodorServiceCallUtil {
                 return apgSeodorDataBeans;
             }
         }
-
-//    public static final APGSeodorDataBean getPeriode(BSession session, APGSeodorDataBean apgSeodorDataBean) {
-//        try {
-//            // init service
-//            ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-//            URL wsdlLocation = classloader.getResource(CommonProperties.SEODOR_SEODOR_WSDL_PATH.getValue());
-//            Service service = Service.create(wsdlLocation,
-//                    new QName(CommonProperties.SEODOR_WEBSERVICE_NAMESPACE.getValue(),
-//                            CommonProperties.SEODOR_WEBSERVICE_NAME.getValue()));
-//
-//            ServicePeriodsPort10 port = service.getPort(ServicePeriodsPort10.class);
-//
-//            if (!JadeStringUtil.isBlankOrZero(CommonProperties.SEODOR_KEYSTORE_PATH.getValue())
-//                    && !JadeStringUtil.isBlankOrZero(CommonProperties.SEODOR_KEYSTORE_TYPE.getValue())
-//                    && !JadeStringUtil.isBlankOrZero(CommonProperties.SEODOR_KEYSTORE_PASSWORD.getValue())
-//                    && !JadeStringUtil.isBlankOrZero(CommonProperties.SEODOR_SSL_CONTEXT_TYPE.getValue())) {
-//
-//                SSLContext sc = SSLContext.getInstance(CommonProperties.SEODOR_SSL_CONTEXT_TYPE.getValue());
-//
-//                KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-//
-//                KeyStore ks = KeyStore.getInstance(CommonProperties.SEODOR_KEYSTORE_TYPE.getValue());
-//                FileInputStream fis = new FileInputStream(CommonProperties.SEODOR_KEYSTORE_PATH.getValue());
-//
-//                String certPasswd = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(
-//                        CommonProperties.SEODOR_KEYSTORE_PASSWORD.getValue());
-//
-//                ks.load(fis, certPasswd.toCharArray());
-//                IOUtils.closeQuietly(fis);
-//                kmf.init(ks, certPasswd.toCharArray());
-//
-//                sc.init(kmf.getKeyManagers(), null, null);
-//                final Map<String, Object> ctxt = ((BindingProvider) port).getRequestContext();
-//                ctxt.put(SSL_SOCKET_FACTORY_JAX_WS_RI, sc.getSocketFactory());
-//                ctxt.put(SSL_SOCKET_FACTORY_ORACLE_JDK, sc.getSocketFactory());
-//                BindingProvider bindingProvider = (BindingProvider) port;
-//
-//                // Si la propriété ide.webservice.url.endpoint existe on surcharge l'adresse du endpoint
-//                String endpoint = CommonProperties.SEODOR_ENDPOINT_ADDRESS.getValue();
-//                if (StringUtils.isNotEmpty(endpoint)) {
-//                    bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,  endpoint);
-//                }
-////                bindingProvider.getRequestContext().put(SSL_SOCKET_FACTORY_JAX_WS_RI, sc.getSocketFactory());
-////                bindingProvider.getRequestContext().put(SSL_SOCKET_FACTORY_ORACLE_JDK, sc.getSocketFactory());
-//            }
-//
-//            GetServicePeriodsRequestType requestDelivery = APGSeodorServiceMappingUtil.convertSeodorDataBeanToRequestDelivery(apgSeodorDataBean);
-//
-//            GetServicePeriodsResponseType responseDelivery = port.getServicePeriods(requestDelivery);
-//
-//
-//        } catch (Exception e) {
-//            LOG.error("test");
-//        }
-//        return apgSeodorDataBean;
-//    }
 
     /**
      * Méthode qui créé le SericePeriodsPort
