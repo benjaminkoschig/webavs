@@ -381,13 +381,16 @@ public class REValiderDecisionHandler {
         ISFSituationFamiliale sitFam = SFSituationFamilialeFactory.getSituationFamiliale(session,
                 ISFSituationFamiliale.CS_DOMAINE_RENTES, ra.getIdTiersBeneficiaire());
         String csEtatCivil = null;
+        String nss = null;
+        String dateDeces ="";
         ISFMembreFamilleRequerant[] mf = sitFam.getMembresFamille(ra.getIdTiersBeneficiaire());
         for (int i = 0; i < mf.length; i++) {
             ISFMembreFamilleRequerant membre = mf[i];
             // On récupère le bénéficiaire en tant que membre de famille
             if (ra.getIdTiersBeneficiaire().equals(membre.getIdTiers())) {
                 csEtatCivil = membre.getCsEtatCivil();
-
+                nss = membre.getNss();
+                dateDeces = membre.getDateDeces();
                 break;
             }
         }
@@ -401,7 +404,7 @@ public class REValiderDecisionHandler {
         // depuis hera : CS_ETAT_CELIBATAIRE
         // Stocké en base de données : 1, 2, 3, 4
 
-        annonce_01.setEtatCivil(PRACORConst.csEtatCivilHeraToAcorForRentes(session, csEtatCivil));
+        annonce_01.setEtatCivil(PRACORConst.csEtatCivilHeraToAcorForRentesWithLPart(session, csEtatCivil,nss, dateDeces));
 
         PRTiersWrapper tierComp1 = PRTiersHelper.getTiersParId(session, ra.getIdTiersComplementaire1());
         if (tierComp1 != null) {

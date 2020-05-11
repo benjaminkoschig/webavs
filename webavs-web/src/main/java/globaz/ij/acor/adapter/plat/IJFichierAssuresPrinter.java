@@ -168,6 +168,7 @@ public class IJFichierAssuresPrinter extends PRAbstractFichierAssuresPrinter {
         this.writeDate(cmd, dateDeces);
 
         // 6. etat civil de l'assuré (code RR)
+        //TODO: A corriger pour une demande d'adatation des IJ pour Acor avec l'état civil LPART
         this.writeEntier(cmd, PRACORConst.csEtatCivilHeraToAcor(getSession(), csEtatCivil));
 
         // 7. code du pays de nationalité de l'assuré (code OFAS)

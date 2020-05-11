@@ -103,7 +103,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                     ISFSituationFamiliale.CS_DOMAINE_RENTES, ra.getIdTiersBeneficiaire());
             String csEtatCivil = null;
             String csCantonDomicile = null;
-
+            String nssMembreFamille = null;
+            String dateDecesMembreFamille ="";
             String idMembreFamille = "";
             ISFMembreFamilleRequerant[] mf = sf.getMembresFamille(ra.getIdTiersBeneficiaire());
             for (int i = 0; i < mf.length; i++) {
@@ -111,7 +112,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                 // On récupère le bénéficiaire en tant que membre de famille
                 if (ra.getIdTiersBeneficiaire().equals(membre.getIdTiers())) {
                     csEtatCivil = membre.getCsEtatCivil();
-
+                    nssMembreFamille = membre.getNss();
+                    dateDecesMembreFamille = membre.getDateDeces();
                     String dateAujourdhui = new SimpleDateFormat("dd.MM.yyyy").format(Calendar.getInstance().getTime());
                     PRTiersWrapper adresseDomicile = PRTiersHelper.getTiersAdresseDomicileParId(session,
                             ra.getIdTiersBeneficiaire(), dateAujourdhui);
@@ -135,7 +137,7 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
             }
 
             vb.init((BSession) session, (BTransaction) transaction, ra, bc, csEtatCivil, csCantonDomicile,
-                    idMembreFamille);
+                    idMembreFamille,nssMembreFamille,dateDecesMembreFamille);
 
             // BZ 5176, si rente principale (code prestation 10,13,20,23,50,70) on compte les rentes liées
             // correspondantes afin de savoir si des annonces ponctuelles supplémentaires doivent être générées

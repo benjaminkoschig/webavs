@@ -2443,6 +2443,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                 ISFSituationFamiliale.CS_DOMAINE_RENTES, ra.getIdTiersBeneficiaire());
         String csEtatCivil = null;
         String csCantonDomicile = null;
+        String nss = null;
+        String dateDeces = "";
 
         ISFMembreFamilleRequerant[] mf = sf.getMembresFamille(ra.getIdTiersBeneficiaire());
         for (int i = 0; i < mf.length; i++) {
@@ -2451,6 +2453,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
             if (ra.getIdTiersBeneficiaire().equals(membre.getIdTiers())) {
                 csEtatCivil = membre.getCsEtatCivil();
                 csCantonDomicile = membre.getCsCantonDomicile();
+                nss = membre.getNss();
+                dateDeces = membre.getDateDeces();
                 if (csCantonDomicile == null) {
                     csCantonDomicile = session.getCode(membre.getCsNationalite());
                 }
@@ -2461,7 +2465,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
         if (csEtatCivil == null) {
             csEtatCivil = ISFSituationFamiliale.CS_ETAT_CIVIL_CELIBATAIRE;
         }
-        vb.setCodeEtatCivil(PRACORConst.csEtatCivilHeraToAcorForRentes(session, csEtatCivil));
+        vb.setCodeEtatCivil(PRACORConst.csEtatCivilHeraToAcorForRentesWithLPart(session, csEtatCivil,nss, dateDeces));
         vb.setCsEtatCivil(PRACORConst.csEtatCivilHeraToCsEtatCivil(csEtatCivil));
         vb.setCanton(PRACORConst.csCantonToAcor(csCantonDomicile));
 
