@@ -117,6 +117,9 @@ public enum CodeCasSpecialRente {
     CODE_CAS_SPECIAL_54(52822054),
     /** Rente AVS/AI avec périodes d'assurances UE/AELE inférieures à une année */
     CODE_CAS_SPECIAL_55(52822055),
+    /** Rente pour enfant pour déterminer si une adoption*/
+    CODE_CAS_SPECIAL_60(52822060),
+    /**
     /**
      * Rente sujette à mutation dès le 1er janvier 1979, pour laquelle les mois d'appoint ont été pris en compte en
      * vertu des règles applicables avant cette date
