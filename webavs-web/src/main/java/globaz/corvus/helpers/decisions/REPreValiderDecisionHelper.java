@@ -2087,6 +2087,7 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
                     .comporteDesRentesAccordeesCommencantAvantCeMois(dateDernierPaiement);
             boolean comporteDesRentesAccordeesCommencantDansLeMois = demande
                     .comporteDesRentesAccordeesCommencantDansCeMois(dateDernierPaiement);
+            boolean contientUnCodeSpecial60 = demande.comporteDesRentesAccordeesAvecCodeCasSpecial(CodeCasSpecialRente.CODE_CAS_SPECIAL_60);
 
             /*
              * S'il y a mélange de rentes rétro (rentes commençant avant ou pendant le mois) et de rentes futures

@@ -490,7 +490,7 @@ public class REFichierAssuresPrinter extends PRAbstractFichierAssuresPrinter {
         this.writeDate(cmd, dateDeces);
 
         // 6. etat civil de l'assuré (code RR)
-        this.writeEntier(cmd, PRACORConst.csEtatCivilHeraToAcorForRentesWithLPart(getSession(), csEtatCivil,noAVS,dateDeces));
+        this.writeEntier(cmd, PRACORConst.csEtatCivilHeraToAcorForRentes(getSession(), csEtatCivil));
 
         String nat;
         // 7. code du pays de nationalité de l'assuré (code OFAS)

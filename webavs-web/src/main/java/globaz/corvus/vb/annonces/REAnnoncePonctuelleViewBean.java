@@ -342,7 +342,7 @@ public class REAnnoncePonctuelleViewBean extends PRAbstractViewBeanSupport {
     }
 
     public void init(BSession session, BTransaction transaction, RERenteAccordee ra, REBasesCalcul baseCalcul,
-            String csEtatCivil, String csCanton, String idMembreFamille,String nssMembreFamille,String dateDecesMembreFamille) throws Exception {
+            String csEtatCivil, String csCanton, String idMembreFamille) throws Exception {
 
         REBasesCalcul bc = null;
 
@@ -378,7 +378,7 @@ public class REAnnoncePonctuelleViewBean extends PRAbstractViewBeanSupport {
         genrePrestation = ra.getCodePrestation();
         montantPrestation = ra.getMontantPrestation();
         dateDebut = ra.getDateDebutDroit();
-        codeEtatCivil = PRACORConst.csEtatCivilHeraToAcorForRentesWithLPart(session, csEtatCivil,nssMembreFamille, dateDecesMembreFamille);
+        codeEtatCivil = PRACORConst.csEtatCivilHeraToAcorForRentes(session, csEtatCivil);
         this.csEtatCivil = PRACORConst.csEtatCivilHeraToCsEtatCivil(csEtatCivil);
         csEtatCivilSF = csEtatCivil;
         canton = PRACORConst.csCantonToAcor(csCanton);

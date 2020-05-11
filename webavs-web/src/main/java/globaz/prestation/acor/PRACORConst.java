@@ -1,6 +1,5 @@
 package globaz.prestation.acor;
 
-import globaz.corvus.utils.personne.REPersonneLoader;
 import globaz.globall.db.BSession;
 import globaz.hera.api.ISFSituationFamiliale;
 import globaz.jade.client.util.JadeStringUtil;
@@ -171,7 +170,6 @@ public class PRACORConst {
     private static final String CS_VEUF = "515004";
     public static final String DOSSIER_DEM_COUR = "dem_cour\\";
     public static final String DOSSIER_IN_HOST = "in_host\\";
-
 
     public static String EXECUTABLE_ACOR = "aoappc\\aostart.exe";
 
@@ -354,8 +352,8 @@ public class PRACORConst {
             case "9":
                 return session.getSystemCode("PYETATCIVI", "10");
             default:
-                return session.getSystemCode("PYETATCIVI", caCode);
-        }
+        return session.getSystemCode("PYETATCIVI", caCode);
+    }
 
 
     }
@@ -548,64 +546,6 @@ public class PRACORConst {
         // } else {
         // return session.getCode(csEtatCivil);
         // }
-        if (ISFSituationFamiliale.CS_ETAT_CIVIL_SEPARE_DE_FAIT.equals(csEtatCivil)) {
-            return PRACORConst.CA_MARIE;
-        } else if (ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_SEPARE_DE_FAIT.equals(csEtatCivil)) {
-            return PRACORConst.CA_LPART_ENREGISTRE;
-        } else {
-            return res;
-        }
-
-    }
-
-    public static final String csEtatCivilHeraToAcorForRentesWithLPart(BSession session, String csEtatCivil, String nss, String dateDeces) {
-
-        if (JadeStringUtil.isBlankOrZero(csEtatCivil)) {
-            return PRACORConst.CA_CELIBATAIRE;
-        }
-
-        String res = session.getCode(csEtatCivil);
-
-        // BZ-5083 Cas spécial, si Etat civil est séparé de fait (5), il faut retourné le code MARIE (2),
-        // if (JadeStringUtil.isBlankOrZero(csEtatCivil)) {
-        // return PRACORConst.CA_CELIBATAIRE;
-        // } else {
-        // return session.getCode(csEtatCivil);
-        // }
-        if(ISFSituationFamiliale.CS_ETAT_CIVIL_MARIE.equals(csEtatCivil) && !JadeStringUtil.isBlankOrZero(nss)){
-           String etatCivilFromTiers = REPersonneLoader.searchEtatByNss(nss,session);
-           if(!JadeStringUtil.isBlankOrZero(etatCivilFromTiers)
-                   &&CS_LPART_ENREGISTRE.equals(etatCivilFromTiers) ){
-               return PRACORConst.CA_LPART_ENREGISTRE;
-           }
-        }
-        if(ISFSituationFamiliale.CS_ETAT_CIVIL_DIVORCE.equals(csEtatCivil) && !JadeStringUtil.isBlankOrZero(nss)){
-            String etatCivilFromTiers = REPersonneLoader.searchEtatByNss(nss,session);
-            if(!JadeStringUtil.isBlankOrZero(etatCivilFromTiers) ){
-                switch(etatCivilFromTiers){
-                    case CS_LPART_DISSOUS:
-                    case CS_LPART_ENREGISTRE:
-                        if(!JadeStringUtil.isBlankOrZero(dateDeces)){
-                            return PRACORConst.CA_LPART_DISSOUS;
-                        }else{
-                            return PRACORConst.CA_LPART_DECES;
-                        }
-                    case CS_LPART_DISSOUS_DECES  :
-                        return PRACORConst.CA_LPART_DECES;
-                }
-            }
-        }
-
-        if(ISFSituationFamiliale.CS_ETAT_CIVIL_SEPARE_JUDICIAIREMENT.equals(csEtatCivil)  && !JadeStringUtil.isBlankOrZero(nss)){
-            String etatCivilFromTiers = REPersonneLoader.searchEtatByNss(nss,session);
-            if(!JadeStringUtil.isBlankOrZero(etatCivilFromTiers)
-                    &&CS_LPART_ENREGISTRE.equals(etatCivilFromTiers) ){
-                return PRACORConst.CA_LPART_SEPARE_FAIT;
-            }
-        }
-
-
-
         if (ISFSituationFamiliale.CS_ETAT_CIVIL_SEPARE_DE_FAIT.equals(csEtatCivil)) {
             return PRACORConst.CA_MARIE;
         } else if (ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_SEPARE_DE_FAIT.equals(csEtatCivil)) {
