@@ -65,9 +65,6 @@ public class APGSeodorServiceCallUtil {
                         && !JadeStringUtil.isBlankOrZero(CommonProperties.SEODOR_KEYSTORE_PASSWORD.getValue())) {
 
                     // Config SSL
-                    // TODO Ligne à supprimer. Pour test
-                    keyStorePath = "C:\\Users\\eniv\\Downloads\\certificat\\T6-150000-1_2.p12";
-
                     configureSSLOnTheClient(port, keyStorePath, keyStorePass, keyStoreType);
             }
 
