@@ -9,6 +9,7 @@ import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.crypto.JadeDefaultEncrypters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,7 +158,9 @@ public class APGSeodorServiceCallUtil {
 
             // For a better security you can encode your password and decode it here
             // TODO Ajout du décrypteur
-            ks.load(filePkcs12, keyStorePass.toCharArray());
+            String certPasswd = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(
+                    keyStorePass);
+            ks.load(filePkcs12, certPasswd.toCharArray());
 
             try {
                 filePkcs12.close();
@@ -168,7 +171,7 @@ public class APGSeodorServiceCallUtil {
 
             // Add certificate to the conduit
             final KeyManagerFactory keyFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            keyFactory.init(ks, keyStorePass.toCharArray());
+            keyFactory.init(ks, certPasswd.toCharArray());
             final KeyManager[] km = keyFactory.getKeyManagers();
             sc.init(keyFactory.getKeyManagers(), null, null);
 
