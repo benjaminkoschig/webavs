@@ -10,6 +10,7 @@ import ch.globaz.common.properties.PropertiesException;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.crypto.JadeDefaultEncrypters;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +62,15 @@ public class APGSeodorServiceCallUtil {
 
                     // Config SSL
                     configureSSLOnTheClient(port, keyStorePath, keyStorePass, keyStoreType);
-            }
+
+                    BindingProvider bindingProvider = (BindingProvider) port;
+
+                    // Si la propriété ide.webservice.url.endpoint existe on surcharge l'adresse du endpoint
+                    String endpoint = CommonProperties.SEODOR_ENDPOINT_ADDRESS.getValue();
+                    if (StringUtils.isNotEmpty(endpoint)) {
+                        bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,  endpoint);
+                    }
+                }
 
             GetServicePeriodsRequestType requestDelivery = APGSeodorServiceMappingUtil.convertSeodorDataBeanToRequestDelivery(apgSeodorDataBean);
 
