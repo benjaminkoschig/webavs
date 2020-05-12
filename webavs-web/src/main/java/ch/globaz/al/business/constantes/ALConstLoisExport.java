@@ -19,17 +19,17 @@ public interface ALConstLoisExport {
      */
     public static final int LFA = 11;
     /**
-     * lafam jusqu'à l'âge de formation
+     * lafam jusqu'à l'âge 16 ans
      */
-    public static final int LOI_LAFAM_FORMATION = 1;
+    public static final int LOI_LAFAM_FIN_ENFANT = 1;
     /**
      * lafam de l'âge de formation - 25
      */
     public static final int LOI_LAFAM_FORMATION_25 = 2;
     /**
-     * agricole jusqu'à l'âge de fomation
+     * agricole jusqu'à 16 ans
      */
-    public static final int LOI_LFA_FORMATION = 3;
+    public static final int LOI_LFA_FIN_ENFANT = 3;
 
     /**
      * agricole âge de formation - 25

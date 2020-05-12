@@ -165,19 +165,18 @@ public class ExportRule {
      * @param enumLoi
      *            - loi à renseigner, constante provenant de {@link ch.globaz.al.business.constantes.ALConstLoisExport}
      * @return valeur du statut
-     * @throws JadeApplicationException
-     *             Exception levée si <code>enumLoi</code> n'a pas une valeur valide
+     * @throws
      */
     protected boolean getStatus(int enumLoi) throws JadeApplicationException {
         boolean value = false;
         switch (enumLoi) {
-            case ALConstLoisExport.LOI_LAFAM_FORMATION:
+            case ALConstLoisExport.LOI_LAFAM_FIN_ENFANT:
                 value = lafam16;
                 break;
             case ALConstLoisExport.LOI_LAFAM_FORMATION_25:
                 value = lafam1625;
                 break;
-            case ALConstLoisExport.LOI_LFA_FORMATION:
+            case ALConstLoisExport.LOI_LFA_FIN_ENFANT:
                 value = lfa16;
                 break;
             case ALConstLoisExport.LOI_LFA_FORMATION_25:
@@ -295,13 +294,13 @@ public class ExportRule {
      */
     protected void setStatus(boolean status, int enumLoi) throws JadeApplicationException {
         switch (enumLoi) {
-            case ALConstLoisExport.LOI_LAFAM_FORMATION:
+            case ALConstLoisExport.LOI_LAFAM_FIN_ENFANT:
                 lafam16 = status;
                 break;
             case ALConstLoisExport.LOI_LAFAM_FORMATION_25:
                 lafam1625 = status;
                 break;
-            case ALConstLoisExport.LOI_LFA_FORMATION:
+            case ALConstLoisExport.LOI_LFA_FIN_ENFANT:
                 lfa16 = status;
                 break;
             case ALConstLoisExport.LOI_LFA_FORMATION_25:

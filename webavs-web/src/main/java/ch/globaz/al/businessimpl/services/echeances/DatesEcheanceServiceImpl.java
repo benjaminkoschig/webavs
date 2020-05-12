@@ -115,7 +115,7 @@ public class DatesEcheanceServiceImpl extends ALAbstractBusinessServiceImpl impl
 
         String dateFinValiditeCalcule = null;
 
-        // fin d'un droit enfant calculé, il faut rajouter l'âge de début de formation à la date de
+        // fin d'un droit enfant calculé, il faut rajouter 16 ans à la date de
         // naissance pour la fin d'un droit type enfant et capable exercer, 20
         // ans à la date d naissance pour un enfant incapable exercer et 25 ans
         // pour un droit
@@ -138,12 +138,13 @@ public class DatesEcheanceServiceImpl extends ALAbstractBusinessServiceImpl impl
                     || JadeStringUtil.equals(droitComplexModel.getDroitModel().getTypeDroit(), ALCSDroit.TYPE_FORM,
                             true)) {
 
-                // ajout de l'âge de formation pour un type de droit Enfant pour un capable
+                // ajout de 16 ans pour un type de droit Enfant p                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 our un capable
                 // exercer
                 if (JadeStringUtil.equals(droitComplexModel.getDroitModel().getTypeDroit(), ALCSDroit.TYPE_ENF, true)
                         && (droitComplexModel.getEnfantComplexModel().getEnfantModel().getCapableExercer())) {
-                    dateFinValiditeCalcule = ALFomationUtils.calculEcheanceFormation(droitComplexModel.getEnfantComplexModel()
-                            .getPersonneEtendueComplexModel().getPersonne().getDateNaissance());
+                    dateFinValiditeCalcule = ALDateUtils.getDateAjoutAnneesFinMois(droitComplexModel
+                                    .getEnfantComplexModel().getPersonneEtendueComplexModel().getPersonne().getDateNaissance(),
+                            ALDateUtils.FIN_AGE_DROIT_ENFANT);
 
                 }// ajout de 20 ans pour un enfant incapable d'exercer
                 else if (JadeStringUtil.equals(droitComplexModel.getDroitModel().getTypeDroit(), ALCSDroit.TYPE_ENF,
@@ -173,11 +174,6 @@ public class DatesEcheanceServiceImpl extends ALAbstractBusinessServiceImpl impl
      */
     @Override
     public String getDateFinValiditeDroitCalculeeFormAnticipe(DroitComplexModel droit) throws JadeApplicationException, JadePersistenceException {
-
-        DroitComplexModel copie = ALServiceLocator.getDroitComplexModelService().copie(droit);
-        copie.getDroitModel().setTypeDroit(ALCSDroit.TYPE_ENF);
-        copie.getEnfantComplexModel().getEnfantModel().setCapableExercer(true);
-
-        return getDateFinValiditeDroitCalculee(copie);
+        return ALFomationUtils.calculEcheanceFormation(droit.getEnfantComplexModel().getPersonneEtendueComplexModel().getPersonne().getDateNaissance());
     }
 }

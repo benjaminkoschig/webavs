@@ -70,8 +70,8 @@ public class AnnonceEnfantHandler extends AnnonceHandlerAbstract {
     }
 
     protected String getEcheance() throws JadeApplicationException, JadePersistenceException {
-        String echeanceCalculee = ALFomationUtils.calculEcheanceFormation(context.getDroit().getEnfantComplexModel()
-                .getPersonneEtendueComplexModel().getPersonne().getDateNaissance());
+        String echeanceCalculee = ALDateUtils.getDateAjoutAnneesFinMois(context.getDroit().getEnfantComplexModel()
+                .getPersonneEtendueComplexModel().getPersonne().getDateNaissance(), ALDateUtils.FIN_AGE_DROIT_ENFANT);
         return echeanceCalculee;
     }
 
@@ -94,8 +94,8 @@ public class AnnonceEnfantHandler extends AnnonceHandlerAbstract {
     }
 
     /**
-     * Modifie la date de fin de l'annonce à l'âge début de formation de l'enfant si la date contenue dans l'annonce est au-delà de cet
-     * âge. S'il s'agit d'un enfant incapable d'exercer, la part de l'âge de début de formation à 20 ans sera traitée par la classe de gestion de
+     * Modifie la date de fin de l'annonce aux 16 ans de l'enfant si la date contenue dans l'annonce est au-delà de cet
+     * âge. S'il s'agit d'un enfant incapable d'exercer, la part de 16 à 20 ans sera traitée par la classe de gestion de
      * ce type de cas : {@link AnnonceEnfantIncapableExercerHandler}
      * 
      * @param annonce

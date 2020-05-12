@@ -32,7 +32,7 @@ public class AnnonceEnfantIncapableExercerHandler extends AnnonceHandlerAbstract
     @Override
     protected void doCreation() throws JadeApplicationException, JadePersistenceException {
 
-        // si incapable d'exercer et échéance du droit au-delà de l'âge de début de formation
+        // si incapable d'exercer et échéance du droit au-delà des 16 ans
         if (isIncapableExercer() && isCurrentAllowanceTypeActive() && !AnnoncesChangeChecker.isDateFinDroitExpire(context.getDroit().getDroitModel().getFinDroitForcee())) {
 
             AnnonceRafamModel annonce = ALImplServiceLocator.getInitAnnoncesRafamService().initAnnonce68a(
@@ -77,7 +77,7 @@ public class AnnonceEnfantIncapableExercerHandler extends AnnonceHandlerAbstract
     }
 
     /**
-     * Récupère la date d'échéance de l'âge de début de formation
+     * Récupère la date d'échéance des 16 ans
      * 
      * @return Date d'échéance
      * 
@@ -85,8 +85,8 @@ public class AnnonceEnfantIncapableExercerHandler extends AnnonceHandlerAbstract
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
     private String getEcheanceCalculee() throws JadeApplicationException, JadePersistenceException {
-        String echeanceCalculee = ALFomationUtils.calculEcheanceFormation(context.getDroit().getEnfantComplexModel()
-                .getPersonneEtendueComplexModel().getPersonne().getDateNaissance());
+        String echeanceCalculee = ALDateUtils.getDateAjoutAnneesFinMois(context.getDroit().getEnfantComplexModel()
+                .getPersonneEtendueComplexModel().getPersonne().getDateNaissance(), ALDateUtils.FIN_AGE_DROIT_ENFANT);
         return echeanceCalculee;
     }
 
@@ -122,7 +122,7 @@ public class AnnonceEnfantIncapableExercerHandler extends AnnonceHandlerAbstract
     }
 
     /**
-     * Modifie la date de début de l'annonce au jour suivant l'âge de début de formation de l'enfant si la date contenue dans l'annonce
+     * Modifie la date de début de l'annonce au jour suivant les 16 ans de l'enfant si la date contenue dans l'annonce
      * est antérieure à cet âge.
      * 
      * @param annonce
@@ -136,8 +136,8 @@ public class AnnonceEnfantIncapableExercerHandler extends AnnonceHandlerAbstract
     protected AnnonceRafamModel setEcheance(AnnonceRafamModel annonce) throws JadeApplicationException, JadePersistenceException {
         String echeanceCalculee = getEcheanceCalculee();
 
-        // si la date de début est antérieure ou égale à l'âge de formation => l'annonce incapable d'exercer débute le
-        // lendemain de l'âge de formation. Sinon on laisse la date du droit
+        // si la date de début est antérieure ou égale au 16 ans => l'annonce incapable d'exercer débute le
+        // lendemain des 16 ans. Sinon on laisse la date du droit
         if (JadeDateUtil.isDateBefore(context.getDroit().getDroitModel().getDebutDroit(), echeanceCalculee)
                 || echeanceCalculee.equals(context.getDroit().getDroitModel().getDebutDroit())) {
             annonce.setDebutDroit(JadeDateUtil.addDays(echeanceCalculee, 1));

@@ -548,21 +548,21 @@ public class DroitBusinessServiceImpl implements DroitBusinessService {
 
             String moisNaissance = dateNaissance.substring(3, 5);
             String moisEcheance = echeance.substring(3, 5);
-            // si echeance - naissance == age de formation et que moisNaissance != moisEcheance
-            // => mois suivant l'age de formation de l'enfant (sans le test sur les
+            // si echeance - naissance ==16 et que moisNaissance != moisEcheance
+            // => mois suivant les 16 ans de l'enfant (sans le test sur les
             // mois,
-            // on aura le mois de l'age de formation et on doit laisser passer
+            // on aura le mois de ses 16 ans et on doit laisser passer
             int ageFormation = ALFomationUtils.getAgeFormation(dateNaissance);
             if ((ALCSDroit.TYPE_ENF.equals(droit.getDroitModel().getTypeDroit()) && (JadeDateUtil.getNbYearsBetween(
-                    dateNaissance, echeance, JadeDateUtil.YEAR_MONTH_COMPARISON) == ageFormation))
+                    dateNaissance, echeance, JadeDateUtil.YEAR_MONTH_COMPARISON) == ALDateUtils.FIN_AGE_DROIT_ENFANT))
                     && !moisNaissance.equals(moisEcheance)) {
 
                 result = true;
 
             }
-            // si echeance - naissance > age de formation
+            // si echeance - naissance > 16
             else if (ALCSDroit.TYPE_ENF.equals(droit.getDroitModel().getTypeDroit())
-                    && (JadeDateUtil.getNbYearsBetween(dateNaissance, echeance, JadeDateUtil.YEAR_MONTH_COMPARISON) > ageFormation)) {
+                    && (JadeDateUtil.getNbYearsBetween(dateNaissance, echeance, JadeDateUtil.YEAR_MONTH_COMPARISON) > ALDateUtils.FIN_AGE_DROIT_ENFANT)) {
                 result = true;
             }
             // si echeance - naissance ==24 et que moisNaissance != moisEcheance

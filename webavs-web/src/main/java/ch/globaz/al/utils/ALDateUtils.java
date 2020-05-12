@@ -40,6 +40,8 @@ public abstract class ALDateUtils {
      */
     public static final String JOUR_PREMIER_MOIS = "01.";
 
+    public static final Integer FIN_AGE_DROIT_ENFANT = 16;
+
     /**
      * Méthode permettant d'ajouter des années à une date
      * 

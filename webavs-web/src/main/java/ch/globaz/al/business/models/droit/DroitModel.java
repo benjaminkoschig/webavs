@@ -200,7 +200,7 @@ public class DroitModel extends JadeSimpleModel {
     }
 
     /**
-     * Retourne le motif de fin de droit (âge début de formation, fin de formation, ...)
+     * Retourne le motif de fin de droit (16 ans, fin de formation, ...)
      * 
      * @return the motifFin
      */
@@ -372,7 +372,7 @@ public class DroitModel extends JadeSimpleModel {
     }
 
     /**
-     * Définit le motif de fin de droit (âge début de formation, fin de formation, ...)
+     * Définit le motif de fin de droit (16 ans, fin de formation, ...)
      * 
      * @param motifFin
      *            the motifFin to set

@@ -307,9 +307,9 @@ public class PrestationExportableController {
 
                 if (lois.item(j).getNodeName().equals("lafam16")) {
                     if (lois.item(j).getFirstChild().getNodeValue().equals("1")) {
-                        rule.setStatus(true, ALConstLoisExport.LOI_LAFAM_FORMATION);
+                        rule.setStatus(true, ALConstLoisExport.LOI_LAFAM_FIN_ENFANT);
                     } else {
-                        rule.setStatus(false, ALConstLoisExport.LOI_LAFAM_FORMATION);
+                        rule.setStatus(false, ALConstLoisExport.LOI_LAFAM_FIN_ENFANT);
                     }
                 }
                 if (lois.item(j).getNodeName().equals("lafam1625")) {
@@ -321,9 +321,9 @@ public class PrestationExportableController {
                 }
                 if (lois.item(j).getNodeName().equals("lfa16")) {
                     if (lois.item(j).getFirstChild().getNodeValue().equals("1")) {
-                        rule.setStatus(true, ALConstLoisExport.LOI_LFA_FORMATION);
+                        rule.setStatus(true, ALConstLoisExport.LOI_LFA_FIN_ENFANT);
                     } else {
-                        rule.setStatus(false, ALConstLoisExport.LOI_LFA_FORMATION);
+                        rule.setStatus(false, ALConstLoisExport.LOI_LFA_FIN_ENFANT);
                     }
                 }
                 if (lois.item(j).getNodeName().equals("lfa1625")) {
@@ -502,9 +502,9 @@ public class PrestationExportableController {
             if (age < ALFomationUtils.getAgeFormation(_droit.getEnfantComplexModel().getPersonneEtendueComplexModel().getPersonne()
                     .getDateNaissance())) {
                 if (isAgricole(_dossier)) {
-                    loi = ALConstLoisExport.LOI_LFA_FORMATION;
+                    loi = ALConstLoisExport.LOI_LFA_FIN_ENFANT;
                 } else {
-                    loi = ALConstLoisExport.LOI_LAFAM_FORMATION;
+                    loi = ALConstLoisExport.LOI_LAFAM_FIN_ENFANT;
                 }
             } else if (age < 25) {
                 if (isAgricole(_dossier)) {

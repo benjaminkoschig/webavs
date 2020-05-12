@@ -225,7 +225,7 @@ public interface DroitBusinessService extends JadeApplicationService {
     boolean isDroitInactif(DroitModel droit) throws ALDroitBusinessException, JadeApplicationException;
 
     /**
-     * Détermine si l'échéance du droit dépasse la limite légale ou non (limite droit ENF : âge début de formation, limite droit FORM :
+     * Détermine si l'échéance du droit dépasse la limite légale ou non (limite droit ENF : 16 ans, limite droit FORM :
      * 25 ans)
      * 
      * @param droit
