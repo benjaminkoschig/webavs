@@ -354,6 +354,8 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
                     // TODO A remplacer par Label
                     messagesError.setMessageErreur("Pas de données");
                 }
+            } else {
+                messagesError.setMessageErreur(((BSession) mainDispatcher.getSession()).getLabel("WEBSERVICE_SEODOR_PROP_MANQUANTE"));
             }
         } catch (PropertiesException e) {
             // La propriété n'existe pas

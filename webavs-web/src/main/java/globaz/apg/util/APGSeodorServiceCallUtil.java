@@ -16,11 +16,13 @@ import org.slf4j.LoggerFactory;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLHandshakeException;
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.URL;
 import java.security.*;
 import java.util.ArrayList;
@@ -67,6 +69,22 @@ public class APGSeodorServiceCallUtil {
             apgSeodorDataBeans = APGSeodorServiceMappingUtil.putResponseDeliveryResultInApgSeodorDataBean(session, responseDelivery, apgSeodorDataBean);
 
             // TODO Changer exception
+            } catch (ConnectException e) {
+                if (apgSeodorDataBean == null) {
+                    apgSeodorDataBean = new APGSeodorDataBean();
+                }
+                apgSeodorDataBean.setHasTechnicalError(true);
+                String message = session.getLabel("WEBSERVICE_SEODOR_DELAIS_DEPASSE");
+                apgSeodorDataBean.setMessageTechnicalError(message);
+                LOG.error(message, e);
+            } catch (SSLHandshakeException e) {
+                if (apgSeodorDataBean == null) {
+                    apgSeodorDataBean = new APGSeodorDataBean();
+                }
+                apgSeodorDataBean.setHasTechnicalError(true);
+                String message = session.getLabel("WEBSERVICE_SEODOR_AUTHENTICATION_INVALID");
+                apgSeodorDataBean.setMessageTechnicalError(message);
+                LOG.error(message, e);
             } catch (Exception e) {
                 if (apgSeodorDataBean == null) {
                     apgSeodorDataBean = new APGSeodorDataBean();
@@ -103,7 +121,7 @@ public class APGSeodorServiceCallUtil {
         }
 
     /**
-     * Méthode qui créé le SericePeriodsPort
+     * Méthode qui créé le ServicePeriodsPort
      *
      * @param wsdlLocation
      * @param webServiceNameSpace
@@ -138,6 +156,7 @@ public class APGSeodorServiceCallUtil {
             filePkcs12 = new FileInputStream(keyStorePath);
 
             // For a better security you can encode your password and decode it here
+            // TODO Ajout du décrypteur
             ks.load(filePkcs12, keyStorePass.toCharArray());
 
             try {
