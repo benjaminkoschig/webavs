@@ -335,7 +335,6 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
                     && APProperties.SEODOR_TYPE_SERVICE.getValue().contains(APGenreServiceAPG.resoudreGenreParCodeSystem(viewBean.getGenreService()).getCodePourAnnonce())) {
                 // Controle SEODOR à implémenter
 
-                // TODO mapper la requete
                 String nss = viewBean.getNss().replaceAll("\\.","");
                 PRPeriode periode1er = viewBean.getPeriodes().get(0);
                 Date dateDebut = new Date(periode1er.getDateDeFin());

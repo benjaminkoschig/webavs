@@ -101,8 +101,7 @@ public class APGSeodorServiceCallUtil {
                 }
                 apgSeodorDataBean.setHasTechnicalError(true);
                 String message = session.getLabel("ERROR_REASON_DETAILED_UNEXCEPTED_ERROR");
-                // TODO Label a créer
-                apgSeodorDataBean.setMessageTechnicalError("Erreur de connexion avec la centrale");
+                apgSeodorDataBean.setMessageTechnicalError(session.getLabel("ERROR_REASON_DETAILED_UNEXCEPTED_ERROR"));
                 //apgSeodorDataBean.setMessageForUser(message);
                 LOG.error(message, e);
             } finally {
