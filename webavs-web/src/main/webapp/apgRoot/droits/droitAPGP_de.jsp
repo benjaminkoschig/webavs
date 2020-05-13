@@ -18,6 +18,7 @@
 <%@ page import="globaz.globall.db.BSession" %>
 <%@ page import="globaz.apg.util.APGSeodorErreurEntity" %>
 <%@ page import="java.util.Objects" %>
+<%@ page import="org.apache.commons.lang.StringUtils" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib uri="/WEB-INF/nss.tld" prefix="ct1" %>
 <%@ include file="/theme/detail/header.jspf" %>
@@ -28,7 +29,7 @@
 
 	APDroitAPGPViewBean viewBean = (APDroitAPGPViewBean) session.getAttribute("viewBean");
 
-	viewBean.setACorriger(false);
+	viewBean.setAControler(false);
 	session.setAttribute("viewBean", viewBean);
 
 	HashSet exceptGenreService = new HashSet();
@@ -84,7 +85,7 @@
 			document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_APG%>.next";
 			action(COMMIT);
 		} else {
-			$('#aCorriger').prop( "checked", true);
+			$('#aControler').prop( "checked", true);
 			nextStepValidate();
 		}
 	}
@@ -156,7 +157,7 @@
 				id: "Correct",
 				text: "<ct:FWLabel key='JSP_CONTINUER'/>",
 				click: function () {
-					$('#aCorriger').prop( "checked", false);
+					$('#aControler').prop( "checked", false);
 					nextStepValidate();
 					$(this).dialog("close");
 				}
@@ -297,7 +298,7 @@
 
 
 	function postInit () {
-		$('#aCorriger').prop( "checked", false);
+		$('#aControler').prop( "checked", false);
 		if (<%=viewBean.isTrouveDansTiers()%>) {
 			document.getElementById("nomAffiche").disabled = true;
 			document.getElementById("prenomAffiche").disabled = true;
@@ -389,7 +390,7 @@
 		document.getElementById("csEtatCivil").value = document.getElementById("csEtatCivilAffiche").value;
 		document.getElementById("nss").value = document.getElementById("likeNSS").value;
 		document.getElementById("csSexe").value = document.getElementById("csSexeAffiche").value;
-		document.getElementById("aCorriger").value = $('#aCorriger').is(':checked');
+		document.getElementById("aControler").value = $('#aControler').is(':checked');
 		if(!document.getElementById("isSoumisCotisation").checked){
 			document.getElementById("csCantonDomicile").value = '';
 		}else{
@@ -599,9 +600,9 @@
 									id="modeEditionDroit" 
 									value="<%=viewBean.getModeEditionDroit()%>" />
 							<input type="checkbox"
-									   name="aCorriger"
-									   id="aCorriger"
-									   value="<%=viewBean.getACorriger()%>" />
+									   name="aControler"
+									   id="aControler"
+									   value="<%=viewBean.getAControler()%>" />
 						</td>
 					</tr>
 					<tr>
@@ -1020,9 +1021,9 @@
 					</tr>
 
 <% if(viewBean.hasMessagePropError()){ %>
-<div style="display:none" id="dialog_apg_webservice"
+<div style="display:none" align="center" id="dialog_apg_webservice"
 	 title="<ct:FWLabel key='JSP_CONTROLE_SERVICE'/>" >
-	<% if(Objects.nonNull(viewBean.getMessagesError()) && !viewBean.getMessagesError().isEmpty()) { %>
+	<% if(StringUtils.isNotEmpty(viewBean.getMessagesError())) { %>
 	<h3><%=viewBean.getMessagesError()%></h3>
 	<% } %>
 </div>

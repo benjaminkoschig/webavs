@@ -26,6 +26,7 @@ import globaz.prestation.beans.PRPeriode;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.servlet.PRDefaultAction;
 import globaz.prestation.tools.PRSessionDataContainerHelper;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,7 +102,7 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
 
         FWViewBeanInterface viewBeanAP = (FWViewBeanInterface) session.getAttribute("viewBean");
 
-        if (Objects.nonNull(viewBeanAP) && viewBeanAP instanceof APDroitAPGPViewBean && ((APDroitAPGPViewBean)viewBeanAP).getACorriger()) {
+        if (Objects.nonNull(viewBeanAP) && viewBeanAP instanceof APDroitAPGPViewBean && ((APDroitAPGPViewBean)viewBeanAP).getAControler()) {
             try {
                 String method = request.getParameter("_method");
                 FWAction privateAction = FWAction.newInstance(userAction[0]);
@@ -203,7 +204,7 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
             viewBean = (APDroitAPGPViewBean) beforeAjouter(session, request, response, viewBean);
 
             // Appel du WebService Seodor
-            if (viewBean.getACorriger()) {
+            if (viewBean.getAControler() && !viewBean.getPeriodes().isEmpty() && !viewBean.getGenreService().isEmpty()) {
                 callWSSeodor(viewBean, mainDispatcher);
             }
 
@@ -257,7 +258,7 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
             viewBean = (APDroitAPGPViewBean) beforeAjouter(session, request, response, viewBean);
 
             //
-            if (viewBean.getACorriger()) {
+            if (viewBean.getAControler()) {
                 callWSSeodor(viewBean, mainDispatcher);
             }
 
@@ -323,14 +324,14 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
         goSendRedirect(destination, request, response);
     }
 
-    private List<APGSeodorDataBean> callWSSeodor (APDroitAPGPViewBean viewBean, FWDispatcher mainDispatcher) {
+    private void callWSSeodor (APDroitAPGPViewBean viewBean, FWDispatcher mainDispatcher) {
 
         List<APGSeodorDataBean> apgSeodorDataBeans = new ArrayList<>();
         APGSeodorErreurListEntities messagesError = new APGSeodorErreurListEntities();
         APGSeodorDataBean apgSeodorDataBean = new APGSeodorDataBean();
 
         try{
-            if (!Objects.isNull(APProperties.SEODOR_TYPE_SERVICE.getValue()) && !APProperties.SEODOR_TYPE_SERVICE.getValue().isEmpty()
+            if (StringUtils.isNotEmpty(APProperties.SEODOR_TYPE_SERVICE.getValue()) && Objects.nonNull(viewBean.getGenreService())
                     && APProperties.SEODOR_TYPE_SERVICE.getValue().contains(APGenreServiceAPG.resoudreGenreParCodeSystem(viewBean.getGenreService()).getCodePourAnnonce())) {
                 // Controle SEODOR à implémenter
 
@@ -341,18 +342,22 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
                 apgSeodorDataBean.setNss(nss);
                 apgSeodorDataBean.setStartDate(dateDebut.toXMLGregorianCalendar());
                 apgSeodorDataBeans = APGSeodorServiceCallUtil.getPeriode(((BSession) mainDispatcher.getSession()), apgSeodorDataBean);
+                int genreService = Integer.valueOf(APGenreServiceAPG.resoudreGenreParCodeSystem(viewBean.getGenreService()).getCodePourAnnonce());
 
-                if (!apgSeodorDataBeans.isEmpty()) {
+                // On va regarder si l'on trouve des périodes pour le code service renseigné
+                int nombrePeriodeGenreService = APGSeodorServiceMappingUtil.calcNombrePeriodeGenreService(apgSeodorDataBeans, genreService);
+
+                if (!apgSeodorDataBeans.isEmpty() && nombrePeriodeGenreService != 0) {
                     if (apgSeodorDataBeans.get(0).isHasTechnicalError()) {
                         messagesError.setMessageErreur(apgSeodorDataBeans.get(0).getMessageTechnicalError());
                     } else {
                         List<PRPeriode> periodesAControler = viewBean.getPeriodes();
                         messagesError = APGSeodorServiceMappingUtil.controlePeriodesSeodor(apgSeodorDataBeans, periodesAControler
-                                ,Long.valueOf(viewBean.getNbrJourSoldes()) , ((BSession) mainDispatcher.getSession()).getLabel("DIFFERENCE_PERIODES_ANNONCEES"));
+                                ,Long.valueOf(viewBean.getNbrJourSoldes()) , ((BSession) mainDispatcher.getSession()).getLabel("DIFFERENCE_PERIODES_ANNONCEES")
+                                , genreService, nombrePeriodeGenreService);
                     }
                 } else {
-                    // TODO A remplacer par Label
-                    messagesError.setMessageErreur("Pas de données");
+                    messagesError.setMessageErreur(((BSession) mainDispatcher.getSession()).getLabel("WEBSERVICE_SEODOR_PAS_DE_DONNEES"));
                 }
             }
         } catch (PropertiesException e) {
@@ -372,9 +377,8 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
         // On ajoute les erreurs à la ViewBean et on la tag pour afficher les erreurs lors du rechargement de la page.
         if (!messagesError.getMessageErreur().isEmpty()) {
             viewBean.setMessagePropError(true);
+            messagesError.setSession(((BSession) mainDispatcher.getSession()));
             viewBean.setMessagesError(messagesError);
         }
-
-        return apgSeodorDataBeans;
     }
 }

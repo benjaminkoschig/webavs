@@ -142,33 +142,71 @@ public class APGSeodorServiceMappingUtil {
         return seodorDataBeans;
     }
 
-    public static APGSeodorErreurListEntities controlePeriodesSeodor(List<APGSeodorDataBean> apgSeodorDataBeans, List<PRPeriode> periodesAControler, Long nombreJoursAControler, String messageErreur) throws ParseException, DatatypeConfigurationException {
+    /**
+     * Méthode qui controle si une liste de periodes est bien défini sur SEODOR
+     *
+     * @param apgSeodorDataBeans
+     * @param periodesAControler
+     * @param nombreJoursAControler
+     * @param messageErreur
+     * @return
+     * @throws ParseException
+     * @throws DatatypeConfigurationException
+     */
+    public static APGSeodorErreurListEntities controlePeriodesSeodor(List<APGSeodorDataBean> apgSeodorDataBeans, List<PRPeriode> periodesAControler, Long nombreJoursAControler, String messageErreur
+            , int genreService, int nombrePeriodeGenreService)
+            throws ParseException, DatatypeConfigurationException {
         APGSeodorErreurListEntities periodesEnErreur = new APGSeodorErreurListEntities();
         boolean dejaAjouteErreur = false;
         Long nombreJoursSoldesCalcules = new Long(0);
-        for (APGSeodorDataBean apgSeodorDataBeanTemp : apgSeodorDataBeans) {
-            boolean enErreur = true;
-            for (PRPeriode periodeTemp : periodesAControler) {
-                XMLGregorianCalendar dateDeDebutPeriode = convertDateJJMMAAAAtoXMLDateGregorian(periodeTemp.getDateDeDebut().toString());
-                XMLGregorianCalendar dateDeFinPeriode = convertDateJJMMAAAAtoXMLDateGregorian(periodeTemp.getDateDeFin().toString());
+
+        // On contrôle que le nombre de périodes récupérées correspondent bien aux nombres de périodes renseignées pour le genre service donné
 
 
-                if (hasSamePeriodeXMLGregorian(apgSeodorDataBeanTemp.getStartOfPeriod(), dateDeDebutPeriode) &&
-                        hasSamePeriodeXMLGregorian(apgSeodorDataBeanTemp.getEndOfPeriod(), dateDeFinPeriode)) {
-                        enErreur = false;
-                        nombreJoursSoldesCalcules = nombreJoursSoldesCalcules + apgSeodorDataBeanTemp.getNumberOfDays();
+        if (!Objects.equals(nombrePeriodeGenreService, periodesAControler.size())) {
+            periodesEnErreur = listPeriodeSeodorWithErrorMessage(apgSeodorDataBeans, messageErreur);
+        } else {
+            for (APGSeodorDataBean apgSeodorDataBeanTemp : apgSeodorDataBeans) {
+                int anneeControle = convertDateJJMMAAAAtoXMLDateGregorian(periodesAControler.get(0).getDateDeDebut().toString()).getYear();
+                if (Objects.equals(apgSeodorDataBeanTemp.getStartOfPeriod().getYear(), anneeControle)) {
+                    boolean enErreur = true;
+                    for (PRPeriode periodeTemp : periodesAControler) {
+                        XMLGregorianCalendar dateDeDebutPeriode = convertDateJJMMAAAAtoXMLDateGregorian(periodeTemp.getDateDeDebut().toString());
+                        XMLGregorianCalendar dateDeFinPeriode = convertDateJJMMAAAAtoXMLDateGregorian(periodeTemp.getDateDeFin().toString());
+                        if (Objects.equals(apgSeodorDataBeanTemp.getServiceType(), genreService)){
+                            if (hasSamePeriodeXMLGregorian(apgSeodorDataBeanTemp.getStartOfPeriod(), dateDeDebutPeriode) &&
+                                    hasSamePeriodeXMLGregorian(apgSeodorDataBeanTemp.getEndOfPeriod(), dateDeFinPeriode)) {
+                                enErreur = false;
+                                nombreJoursSoldesCalcules = nombreJoursSoldesCalcules + apgSeodorDataBeanTemp.getNumberOfDays();
+                            }
+                        } else {
+                            // Si l'on est pas sur la même année, la période ne doit pas être comparée
+                            // Il ne peut pas y avoir d'erreurs
+                            enErreur = false;
+                        }
+                    }
+                    if (enErreur && !dejaAjouteErreur) {
+                        dejaAjouteErreur = true;
+                        periodesEnErreur = listPeriodeSeodorWithErrorMessage(apgSeodorDataBeans, messageErreur);
+                    }
                 }
             }
-            if (enErreur && !dejaAjouteErreur) {
-                dejaAjouteErreur = true;
+            if (!dejaAjouteErreur && !Objects.equals(nombreJoursSoldesCalcules, nombreJoursAControler)) {
                 periodesEnErreur = listPeriodeSeodorWithErrorMessage(apgSeodorDataBeans, messageErreur);
             }
         }
 
-        if (!dejaAjouteErreur && !Objects.equals(nombreJoursSoldesCalcules, nombreJoursAControler)) {
-            periodesEnErreur = listPeriodeSeodorWithErrorMessage(apgSeodorDataBeans, messageErreur);
-        }
         return periodesEnErreur;
+    }
+
+    public static int calcNombrePeriodeGenreService(List<APGSeodorDataBean> apgSeodorDataBeans, int genreService) {
+        int nombrePeriodeGenreService = 0;
+        for(APGSeodorDataBean apgSeodorDataBeanTemp : apgSeodorDataBeans) {
+            if (Objects.equals(apgSeodorDataBeanTemp.getServiceType(), genreService)) {
+                nombrePeriodeGenreService++;
+            }
+        }
+        return nombrePeriodeGenreService;
     }
 
     /**

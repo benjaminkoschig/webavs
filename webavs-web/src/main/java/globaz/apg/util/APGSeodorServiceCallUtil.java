@@ -166,7 +166,6 @@ public class APGSeodorServiceCallUtil {
             filePkcs12 = new FileInputStream(keyStorePath);
 
             // For a better security you can encode your password and decode it here
-            // TODO Ajout du décrypteur
             String certPasswd = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(
                     keyStorePass);
             ks.load(filePkcs12, certPasswd.toCharArray());

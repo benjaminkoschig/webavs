@@ -1,11 +1,16 @@
 package globaz.apg.util;
 
+
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class APGSeodorErreurListEntities {
+public class APGSeodorErreurListEntities{
     List<APGSeodorErreurEntity> apgSeodorErreurEntityList = new ArrayList<>();
     String messageErreur="";
+    BSession session;
 
     public APGSeodorErreurListEntities() {
 
@@ -30,16 +35,16 @@ public class APGSeodorErreurListEntities {
         enteteTableErreursHtml.append("<thead>");
         enteteTableErreursHtml.append("<tr>");
         enteteTableErreursHtml.append("<th>");
-        enteteTableErreursHtml.append("Date début période");
+        enteteTableErreursHtml.append(session.getLabel("ENTETE_SEODOR_DEBUT_PERIODE"));
         enteteTableErreursHtml.append("</th>");
         enteteTableErreursHtml.append("<th>");
-        enteteTableErreursHtml.append("Date fin période");
+        enteteTableErreursHtml.append(session.getLabel("ENTETE_SEODOR_FIN_PERIODE"));
         enteteTableErreursHtml.append("</th>");
         enteteTableErreursHtml.append("<th>");
-        enteteTableErreursHtml.append("Nbr jours");
+        enteteTableErreursHtml.append(session.getLabel("ENTETE_SEODOR_NBRE_JOURS"));
         enteteTableErreursHtml.append("</th>");
         enteteTableErreursHtml.append("<th>");
-        enteteTableErreursHtml.append("Genre service");
+        enteteTableErreursHtml.append(session.getLabel("ENTETE_SEODOR_GENRE_SERVICE"));
         enteteTableErreursHtml.append("</th>");
         enteteTableErreursHtml.append("</tr>");
         enteteTableErreursHtml.append("</thead>");
@@ -85,5 +90,13 @@ public class APGSeodorErreurListEntities {
 
     public void setMessageErreur(String messageErreur) {
         this.messageErreur = messageErreur;
+    }
+
+    public BSession getSession() {
+        return session;
+    }
+
+    public void setSession(BSession session) {
+        this.session = session;
     }
 }
