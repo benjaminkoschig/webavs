@@ -3,6 +3,8 @@ package globaz.apg.businessimpl.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 import globaz.apg.application.APApplication;
 import globaz.apg.business.service.APAnnoncesRapgService;
 import globaz.apg.business.service.APPlausibilitesApgService;
@@ -114,8 +116,8 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
     }
 
     private ViolatedRule getViolatedRule(BSession session, Rule rule, String messageError) throws APRuleExecutionException {
-        String message = "";
-        if (!JadeStringUtil.isEmpty(rule.getDetailMessageErreur())) {
+        String message;
+        if (Objects.nonNull(rule.getDetailMessageErreur())) {
             message = getViolatedRuleDetail(session, rule.getErrorCode(), rule.getDetailMessageErreur()).getErrorMessage();
         } else {
             message = getViolatedRuleDetail(session, rule.getErrorCode()).getErrorMessage();

@@ -336,7 +336,7 @@ public abstract class Rule implements APRuleDBDataProvider {
      *                          Le début de la période
      * @param endOfPeriod
      *                          La fin de la période
-     * @param droits
+     * @param droitsTries
      *                          La liste des droits
      * @throws Exception
      *                       En cas d'erreur liée au manager
@@ -404,7 +404,7 @@ public abstract class Rule implements APRuleDBDataProvider {
     }
 
     public String getDetailMessageErreur() {
-        return "";
+        return null;
     }
 
 }
