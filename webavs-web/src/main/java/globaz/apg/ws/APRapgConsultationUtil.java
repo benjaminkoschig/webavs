@@ -35,6 +35,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class APRapgConsultationUtil {
     private static final String SSL_SOCKET_FACTORY_ORACLE_JDK = "com.sun.xml.ws.transport.https.client.SSLSocketFactory";
@@ -65,7 +66,6 @@ public class APRapgConsultationUtil {
                 //All those statuses have error message joined (normaly)
                 case FAILURE: //Something goes wrong and the webservice can not execute corectly. Check the error to know in witch side is the problem.
                 case PARTIALFAILURE: //In case of Patialfailure you maybe have a correct business response, it's depend on the error. Check it.
-                case WARNING:
                     StringBuilder str = new StringBuilder();
                     if (response.getErrors() != null) {
                         for (final ErreurMessageType error : response.getErrors()) {
@@ -75,10 +75,22 @@ public class APRapgConsultationUtil {
                         throw new APRuleExecutionException(str.toString());
                     }
                     break;
+                case WARNING:
+                    StringBuilder builder = new StringBuilder();
+                    if (Objects.nonNull(response.getErrors())) {
+                        for (final ErreurMessageType error : response.getErrors()) {
+                            builder.append(error.getMessage());
+                            builder.append(" ");
+                        }
+                        logger.warn(builder.toString());
+                    }
+                    return response.getMessage().getContent().getRegisterStatusRecords();
                 case SUCCESS:
                     //6)  Use the RegisterStatus answer
                     JadeLogger.info(APRapgConsultationUtil.class, "Number of Records : " + response.getMessage().getContent().getRegisterStatusRecords().size()); //$NON-NLS-1$
                     return response.getMessage().getContent().getRegisterStatusRecords();
+                default:
+                    break;
             }
         } catch (final Exception e) {
             throw new APWebserviceException(e);
