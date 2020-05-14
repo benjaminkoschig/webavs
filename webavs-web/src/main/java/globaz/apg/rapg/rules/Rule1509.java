@@ -39,7 +39,7 @@ public class Rule1509 extends Rule {
      * ch.globaz.apg.businessimpl.plausibilites.Rule#check(ch.globaz.apg.business.models.plausibilites.ChampsAnnonce)
      */
     @Override
-    public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException, IllegalArgumentException, APWebserviceException {
+    public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException, IllegalArgumentException, APWebserviceException, PropertiesException {
         Message1509 message;
         String startOfPeriod = champsAnnonce.getStartOfPeriod();
         String endOfPeriod = champsAnnonce.getEndOfPeriod();
@@ -50,7 +50,6 @@ public class Rule1509 extends Rule {
         testDateNotEmptyAndValid(startOfPeriod, "startOfPeriod");
         testDateNotEmptyAndValid(endOfPeriod, "endOfPeriod");
         nss = nss.replaceAll("\\.", "");
-        try {
             List<RegisterStatusRecordType> list = APRapgConsultationUtil.findAnnonces(getSession(), nss, numOffice, numBranch);
             if(list !=null) {
                 for (final RegisterStatusRecordType reccord : list) {
@@ -69,9 +68,6 @@ public class Rule1509 extends Rule {
                 }
             }
 
-        } catch (Exception e) {
-            throw new APRuleExecutionException(e.getMessage(), e);
-        }
         if(listMessage.isEmpty()){
             return true;
         }else {

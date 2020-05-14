@@ -285,7 +285,7 @@
 							<sourceRoot>${project.build.directory}/generated-sources/apg</sourceRoot>
 							<wsdlOptions>
 								<wsdlOption>
-									<wsdl>${basedir}/src/main/resources/wsdl/apg/wsdl/rapg-webservice-1-0.wsdl</wsdl>
+									<wsdl>${basedir}/src/main/resources/wsdl/apg/wsdl/rapg-query.wsdl</wsdl>
 									<extraargs>
 										<extraarg>-client</extraarg>
 										<extraarg>-xjc-Xlocator,-mark-generated</extraarg>
@@ -311,7 +311,7 @@
 									</extraargs>
 								</wsdlOption>
 								<wsdlOption>
-									<wsdl>${basedir}/src/main/resources/wsdl/seodor/wsdl/SEODOR-test-query.wsdl</wsdl>
+									<wsdl>${basedir}/src/main/resources/wsdl/seodor/wsdl/SEODOR-query.wsdl</wsdl>
 									<extraargs>
 										<extraarg>-client</extraarg>
 										<extraarg>-xjc-Xlocator,-mark-generated</extraarg>

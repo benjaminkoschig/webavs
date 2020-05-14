@@ -11,9 +11,11 @@ import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.CommonPropertiesUtils;
 import ch.globaz.common.properties.PropertiesException;
 import globaz.apg.exceptions.APRuleExecutionException;
+import globaz.apg.exceptions.APWebserviceException;
 import globaz.globall.db.BSession;
 import globaz.jade.crypto.JadeDefaultEncrypters;
 import globaz.jade.log.JadeLogger;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +41,7 @@ public class APRapgConsultationUtil {
     private static final String SSL_SOCKET_FACTORY_JAX_WS_RI = "com.sun.xml.internal.ws.transport.https.client.SSLSocketFactory";
     private static final Logger logger = LoggerFactory.getLogger(APRapgConsultationUtil.class);
 
-    public static List<RegisterStatusRecordType> findAnnonces(BSession session, String nss, String numCaisse, String numBranche) throws PropertiesException, APRuleExecutionException {
+    public static List<RegisterStatusRecordType> findAnnonces(BSession session, String nss, String numCaisse, String numBranche) throws PropertiesException, APWebserviceException {
         String urlRAPGWS = CommonPropertiesUtils.getValue(CommonProperties.RAPG_ENDPOINT_ADDRESS);
         String certFileName = CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_PATH);
         String certPassword = CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_PASSWORD);
@@ -49,16 +51,16 @@ public class APRapgConsultationUtil {
         RapgConsultation1 rapgConsultation;
         try {
             rapgConsultation = getRapgConsultation(session, urlRAPGWS, certFileName, certPassword, certType);
-            JadeLogger.info(APRapgConsultationUtil.class,"Create request... ");
+            JadeLogger.info(APRapgConsultationUtil.class, "Create request... ");
             // 2) Create the request StandardConsultationInputType
             final RapgAnnoncesRequestType request = createRequest(Long.parseLong(nss), Integer.parseInt(numCaisse), Integer.parseInt(numBranche));
 
-            JadeLogger.info(APRapgConsultationUtil.class,"Calling RapgConsultationSSLSession.findAnnonces ... ");
+            JadeLogger.info(APRapgConsultationUtil.class, "Calling RapgConsultationSSLSession.findAnnonces ... ");
             //3) Call webservice
             final RapgAnnoncesResponseType response = rapgConsultation.findAnnonces(request);
 
             //4)Check the return ack
-            JadeLogger.info(APRapgConsultationUtil.class,"Call successful, result : " + response.getAck().getValue());
+            JadeLogger.info(APRapgConsultationUtil.class, "Call successful, result : " + response.getAck().getValue());
             switch (response.getAck().getValue()) {
                 //All those statuses have error message joined (normaly)
                 case FAILURE: //Something goes wrong and the webservice can not execute corectly. Check the error to know in witch side is the problem.
@@ -75,11 +77,11 @@ public class APRapgConsultationUtil {
                     break;
                 case SUCCESS:
                     //6)  Use the RegisterStatus answer
-                    JadeLogger.info(APRapgConsultationUtil.class,"Number of Records : " + response.getMessage().getContent().getRegisterStatusRecords().size()); //$NON-NLS-1$
+                    JadeLogger.info(APRapgConsultationUtil.class, "Number of Records : " + response.getMessage().getContent().getRegisterStatusRecords().size()); //$NON-NLS-1$
                     return response.getMessage().getContent().getRegisterStatusRecords();
             }
         } catch (final Exception e) {
-            throw new APRuleExecutionException(e);
+            throw new APWebserviceException(e);
         }
         return null;
     }
@@ -118,8 +120,11 @@ public class APRapgConsultationUtil {
         final RapgConsultation1 port = rapgConsultationService.getRapgConsultationPort1();
 
         // Set endpoint address (URL) of the webservice.
-        final Map<String, Object> ctxt = ((BindingProvider) port).getRequestContext();
-        ctxt.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, urlRAPGWS);
+        if (StringUtils.isNotEmpty(urlRAPGWS)) {
+            final Map<String, Object> ctxt = ((BindingProvider) port).getRequestContext();
+            ctxt.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, urlRAPGWS);
+        }
+
         String certPasswordDecrypt = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(
                 certPassword);
 

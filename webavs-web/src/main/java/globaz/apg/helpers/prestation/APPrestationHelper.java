@@ -930,9 +930,6 @@ public class APPrestationHelper extends PRAbstractHelper {
     private List<String> checkProperties(BSession session) throws PropertiesException {
         List<String> listPropertiesEmpty = new ArrayList<>();
         final String prefix = session.getLabel("PROPERTIES_WEBSERVICE_EMPTY") + "<br>";
-        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_ENDPOINT_ADDRESS))){
-            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_ENDPOINT_ADDRESS.getPropertyName());
-        }
         if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_PASSWORD))){
             listPropertiesEmpty.add(prefix+CommonProperties.RAPG_KEYSTORE_PASSWORD.getPropertyName());
         }

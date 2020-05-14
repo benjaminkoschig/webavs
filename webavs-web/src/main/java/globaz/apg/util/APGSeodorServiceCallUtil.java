@@ -2,7 +2,6 @@ package globaz.apg.util;
 
 import ch.admin.cdc.seodor.core.dto.generated._1.GetServicePeriodsRequestType;
 import ch.admin.cdc.seodor.core.dto.generated._1.GetServicePeriodsResponseType;
-
 import ch.admin.zas.seodor.ws.service_periods._1.ServicePeriodsPort10;
 import ch.admin.zas.seodor.ws.service_periods._1.ServicePeriodsService10;
 import ch.globaz.common.properties.CommonProperties;
@@ -13,7 +12,6 @@ import globaz.jade.crypto.JadeDefaultEncrypters;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -26,7 +24,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URL;
-import java.security.*;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

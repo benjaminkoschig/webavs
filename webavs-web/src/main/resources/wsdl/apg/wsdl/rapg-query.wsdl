@@ -76,7 +76,7 @@
 	<!-- La balise service contient les endpoints (port) d'accès. -->
 	<wsdl:service name="RapgConsultationService-1">
 		<wsdl:port name="RapgConsultationPort-1" binding="rws:RapgConsultationBinding-1-0">
-			<soap:address location="No Target Adress"/>
+			<soap:address location="https://ws.rapg.zas.admin.ch/ApgCore/ws/consultation"/>
 		</wsdl:port>
 	</wsdl:service>
 </wsdl:definitions>

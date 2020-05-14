@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import ch.globaz.common.properties.PropertiesException;
 import globaz.apg.api.annonces.IAPAnnonce;
 import globaz.apg.business.service.APAnnoncesRapgService;
 import globaz.apg.db.annonces.APAnnonceAPG;
@@ -57,7 +59,7 @@ public abstract class Rule implements APRuleDBDataProvider {
      *                                      Lors d'exception interne à la règle (accès DB, etc)
      */
     public abstract boolean check(APChampsAnnonce champsAnnonce)
-            throws APRuleExecutionException, IllegalArgumentException, APWebserviceException;
+            throws APRuleExecutionException, IllegalArgumentException, APWebserviceException, PropertiesException;
 
     /**
      * Set l'objet responsable de l'accès à la base de données. Cette composition est nécessaire pour pouvoir passer les
