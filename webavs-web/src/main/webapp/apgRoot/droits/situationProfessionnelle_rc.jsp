@@ -24,6 +24,7 @@ scrollingDetailActive = "YES";
 <%if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_APG) {%>
 	<%@page import="globaz.apg.servlet.IAPActions"%>
 <%@page import="globaz.framework.secure.FWSecureConstants"%>
+<%@ page import="globaz.prestation.api.IPRDemande" %>
 <ct:menuChange displayId="menu" menuId="ap-menuprincipalapg" showTab="menu"/>
 	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 <!--sinon, maternité -->
