@@ -21,6 +21,7 @@ if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session
 %>
 
 	<%@page import="globaz.apg.servlet.IAPActions"%>
+<%@ page import="globaz.prestation.api.IPRDemande" %>
 <ct:menuChange displayId="menu" menuId="ap-menuprincipalapg" showTab="menu"/>
 	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 <!--sinon, maternité -->

@@ -24,6 +24,8 @@ idEcran="PAP0035";
 	<!--si APG -->
 	<%if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_APG) {%>
    		<%@page import="java.util.Vector"%>
+<%@ page import="globaz.prestation.api.IPRDemande" %>
+<%@ page import="globaz.apg.utils.APGUtils" %>
 <ct:menuChange displayId="menu" menuId="ap-menuprincipalapg"/>
 	<!--sinon, maternité -->
 	<%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE) {%>	   	
