@@ -2,7 +2,11 @@ package globaz.apg.businessimpl.service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+
+import globaz.apg.api.droits.IAPDroitLAPG;
 import java.util.Objects;
 
 import globaz.apg.application.APApplication;
@@ -150,7 +154,9 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
                 || APAllPlausibiliteRules.R_57.getCodeAsString().equals(rule.getErrorCode())
                 || APAllPlausibiliteRules.R_58.getCodeAsString().equals(rule.getErrorCode())
                 || APAllPlausibiliteRules.R_59.getCodeAsString().equals(rule.getErrorCode())
-                || APAllPlausibiliteRules.R_60.getCodeAsString().equals(rule.getErrorCode());
+                || APAllPlausibiliteRules.R_60.getCodeAsString().equals(rule.getErrorCode())
+                || APAllPlausibiliteRules.R_61.getCodeAsString().equals(rule.getErrorCode())
+                || APAllPlausibiliteRules.R_63.getCodeAsString().equals(rule.getErrorCode());
     }
 
     /*
@@ -433,6 +439,16 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
 
         List<PRPeriode> periodes = new ArrayList<PRPeriode>();
         for (APPeriodeAPG p : periodesAPG) {
+            if(JadeStringUtil.isEmpty(p.getDateFinPeriode()) && droit instanceof APDroitPandemie) {
+                try {
+                    setDateFinPandemie(session, droit, p);
+                } catch (Exception exception) {
+                    String message = session.getLabel("VALIDATION_PRESTATION_EXCEPTION_ANALYSE_DATES_PRESTATION");
+                    message = message.replace("{0}", p.getDateDebutPeriode());
+                    message = message.replace("{1}", p.getDateFinPeriode());
+                    resultsString.add(new APErreurValidationPeriode(p, message));
+                }
+            }
             PRPeriode per = new PRPeriode(p.getDateDebutPeriode(), p.getDateFinPeriode());
             periodes.add(per);
         }
@@ -464,6 +480,23 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
         return resultsString;
     }
 
+    private void setDateFinPandemie(BSession session, APDroitLAPG droit, APPeriodeAPG periode) throws Exception {
+        if(IAPDroitLAPG.CS_QUARANTAINE.equals(droit.getGenreService())) {
+            resolveFinJourMaxParam(session, periode, APParameter.QUARANTAINE_JOURS_MAX.getParameterName());
+        } else {
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
+            Date dateFinDeMois = cal.getTime();
+            periode.setDateFinPeriode(JadeDateUtil.getGlobazFormattedDate(dateFinDeMois));
+        }
+    }
+
+    private void resolveFinJourMaxParam(BSession session, APPeriodeAPG periode, String param) throws Exception {
+        int jourMax = Integer.parseInt(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", param, "0", "", 0));
+        String dateFin = JadeDateUtil.addDays(periode.getDateDebutPeriode(), jourMax);
+        periode.setDateFinPeriode(dateFin);
+    }
+
     private String getRuleMessage(BSession session, String code) {
 
         return session.getLabel(APPlausibilitesApgServiceImpl.PREFIX_LABEL + code);
@@ -489,6 +522,10 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
                 parametre = APParameter.NOMBRE_JOURS_ISOLES_CONGE_JEUNESSE.getParameterName();
             } else if (APAllPlausibiliteRules.R_60.getCodeAsString().equals(code)) {
                 parametre = APParameter.NOMBRE_JOURS_ISOLES_DECES_DEMI_JOUR.getParameterName();
+            } else if (APAllPlausibiliteRules.R_61.getCodeAsString().equals(code)) {
+                parametre = APParameter.QUARANTAINE_JOURS_MAX.getParameterName();
+            } else if (APAllPlausibiliteRules.R_63.getCodeAsString().equals(code)) {
+                parametre = APParameter.GARDE_PARENTAL_INDE_JOURS_MAX.getParameterName();
             }
             if (parametre != null) {
                 BigDecimal valPlage = new BigDecimal(FWFindParameter.findParameter(
