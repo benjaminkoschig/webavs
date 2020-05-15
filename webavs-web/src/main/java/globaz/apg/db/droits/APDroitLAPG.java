@@ -14,6 +14,8 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.fx.PRGestionnaireHelper;
 
+import java.util.Arrays;
+
 /**
  * Le BEntity représentant un droit APG non typé APG ou MATERNITE.
  * 
@@ -318,7 +320,7 @@ public class APDroitLAPG extends BEntity {
             throw new IllegalArgumentException(
                     "Unable to know is the APDroitLAPG can be edited because his 'etat' is empty....");
         }
-        return IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(etat);
+        return Arrays.asList(IAPDroitLAPG.DROITS_MODIFIABLES).contains(etat);
     }
 
     /**

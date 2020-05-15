@@ -21,7 +21,7 @@ public class APListePrestationCIABExcel extends REAbstractListExcel {
     private static final short COLUMN_WIDTH_MEDIUM = 7000;
 
     private final static String MODEL_NAME = "AP_LISTE_COMPLEMENTS_CIAB";
-    public static final String NUM_INFOROM = "5045PAP";
+    public static final String NUM_INFOROM = "5049PAP";
     private static final String PAGE_SEPARATOR = "/";
 
     private HSSFFont fontBold;

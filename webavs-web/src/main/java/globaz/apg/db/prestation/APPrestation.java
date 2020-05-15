@@ -14,6 +14,7 @@ import globaz.globall.db.BConstants;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BTransaction;
+import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -466,6 +467,9 @@ public class APPrestation extends BEntity implements IAPPrestation {
                             m.add(nc);
                         }
 
+                        cotisation.setDateDebut(getDateDebut());
+                        cotisation.setDateFin(getDateFin());
+
                         cotisation.wantCallMethodAfter(false);
                         cotisation.update(transaction);
                     }
@@ -516,12 +520,16 @@ public class APPrestation extends BEntity implements IAPPrestation {
                             m.add(nc);
                         }
 
+                        cotisation.setDateDebut(getDateDebut());
+                        cotisation.setDateFin(getDateFin());
+
                         cotisation.wantCallMethodAfter(false);
                         cotisation.update(transaction);
                     }
 
                 }
                 // sauvegarder la nouvelle repartition
+                repartition.setDateValeur(JACalendar.todayJJsMMsAAAA());
                 repartition.setMontantNet(m.toString());
                 repartition.wantCallValidate(false);
                 repartition.update(transaction);

@@ -118,6 +118,7 @@ public class APInscrireCIProcess extends BProcess {
                     inscriptionCI.setAnnee(JADate.getYear(generationInscriptionCI.getDateFin()).toString());
                     inscriptionCI.setMontantBrut(generationInscriptionCI.getMontantBrut());
                     inscriptionCI.setStatut(IAPInscriptionCI.CS_OUVERT);
+                    inscriptionCI.setGenrePrestation(generationInscriptionCI.getGenrePrestation());
                     inscriptionCI.add(transaction);
 
                     // update de l'idci de la repartition

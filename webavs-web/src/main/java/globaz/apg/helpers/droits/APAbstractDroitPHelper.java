@@ -5,11 +5,7 @@ import java.util.Hashtable;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.annonces.APBreakRule;
 import globaz.apg.db.annonces.APBreakRuleManager;
-import globaz.apg.db.droits.APDroitLAPG;
-import globaz.apg.db.droits.APDroitMaternite;
-import globaz.apg.db.droits.APEmployeur;
-import globaz.apg.db.droits.APSituationProfessionnelle;
-import globaz.apg.db.droits.APSituationProfessionnelleManager;
+import globaz.apg.db.droits.*;
 import globaz.apg.utils.APGUtils;
 import globaz.apg.vb.droits.APAbstractDroitProxyViewBean;
 import globaz.apg.vb.droits.APDroitMatPViewBean;
@@ -129,7 +125,9 @@ public class APAbstractDroitPHelper extends PRAbstractHelper {
     @Override
     protected void _retrieve(FWViewBeanInterface viewBean, FWAction action, BISession session) throws Exception {
         viewBean.setISession(session);
+        if(viewBean instanceof APAbstractDroitProxyViewBean){
         ((APAbstractDroitProxyViewBean) viewBean).getDroit().retrieve();
+    }
     }
 
     /**
@@ -495,8 +493,14 @@ public class APAbstractDroitPHelper extends PRAbstractHelper {
     protected PRDemande setDemande(APDroitLAPG droit, String idTiers, BSession session, boolean creeSiNecessaire)
             throws Exception {
         PRDemande retValue = null;
-        String typeDemande = (droit instanceof APDroitMaternite) ? IPRDemande.CS_TYPE_MATERNITE
-                : IPRDemande.CS_TYPE_APG;
+        String typeDemande;
+        if(droit instanceof APDroitMaternite){
+            typeDemande = IPRDemande.CS_TYPE_MATERNITE;
+        } else if(droit instanceof APDroitPandemie){
+            typeDemande = IPRDemande.CS_TYPE_PANDEMIE;
+        } else {
+            typeDemande = IPRDemande.CS_TYPE_APG;
+        }
 
         if (PRDemande.ID_TIERS_DEMANDE_BIDON.equals(idTiers)
                 && (PRDemande.getDemandeBidon(session, typeDemande) != null)) {

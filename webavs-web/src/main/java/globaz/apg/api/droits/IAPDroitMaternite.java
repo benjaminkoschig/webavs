@@ -29,4 +29,7 @@ public interface IAPDroitMaternite {
     /** type père */
     public static final String CS_TYPE_PERE = "52004001";
 
+    /** type conjoint */
+    public static final String CS_TYPE_CONJOINT = "52004003";
+
 }

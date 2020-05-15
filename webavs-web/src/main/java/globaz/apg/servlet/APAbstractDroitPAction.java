@@ -7,12 +7,7 @@
 package globaz.apg.servlet;
 
 import globaz.apg.db.droits.APAbstractRecapitulatifDroit;
-import globaz.apg.vb.droits.APAbstractDroitProxyViewBean;
-import globaz.apg.vb.droits.APDroitAPGPViewBean;
-import globaz.apg.vb.droits.APDroitDTO;
-import globaz.apg.vb.droits.APDroitMatPViewBean;
-import globaz.apg.vb.droits.APRecapitulatifDroitAPGViewBean;
-import globaz.apg.vb.droits.APRecapitulatifDroitMatViewBean;
+import globaz.apg.vb.droits.*;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWDispatcher;
@@ -234,6 +229,8 @@ public abstract class APAbstractDroitPAction extends PRDefaultAction {
             droitVB = new APDroitMatPViewBean();
         } else if (viewBean instanceof APRecapitulatifDroitAPGViewBean) {
             droitVB = new APDroitAPGPViewBean();
+        }  else if (viewBean instanceof APRecapitulatifDroitPanViewBean) {
+            droitVB = new APDroitPanViewBean();
         } else {
             return viewBean;
         }

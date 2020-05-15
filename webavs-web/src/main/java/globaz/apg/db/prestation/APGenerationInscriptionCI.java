@@ -60,6 +60,8 @@ public class APGenerationInscriptionCI extends BEntity {
         machin.append(APRepartitionPaiements.FIELDNAME_IDTIERS);
         machin.append(", ");
         machin.append("SUM(" + APCotisation.FIELDNAME_MONTANT + ") AS " + TOTAL_COTISATION);
+        machin.append(", ");
+        machin.append(APPrestation.FIELDNAME_GENRE_PRESTATION);
 
         return machin.toString();
     }
@@ -119,6 +121,7 @@ public class APGenerationInscriptionCI extends BEntity {
     private String idRestitution = "";
     private String idTiers = "";
     private boolean inscriptionOK = false;
+    private String genrePrestation = "";
 
     private String montantBrut = "";
 
@@ -255,6 +258,7 @@ public class APGenerationInscriptionCI extends BEntity {
         idRestitution = statement.dbReadNumeric(APPrestation.FIELDNAME_IDRESTITUTION);
         idTiers = statement.dbReadNumeric(APRepartitionPaiements.FIELDNAME_IDTIERS);
         totalCotisation = statement.dbReadNumeric(TOTAL_COTISATION);
+        genrePrestation = statement.dbReadNumeric(APPrestation.FIELDNAME_GENRE_PRESTATION);
     }
 
     /**
@@ -373,4 +377,7 @@ public class APGenerationInscriptionCI extends BEntity {
         totalCotisation = string;
     }
 
+    public String getGenrePrestation() {
+        return genrePrestation;
+    }
 }

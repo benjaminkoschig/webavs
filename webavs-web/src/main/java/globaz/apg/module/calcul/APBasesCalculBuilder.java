@@ -6,37 +6,32 @@
  */
 package globaz.apg.module.calcul;
 
+import globaz.apg.ApgServiceLocator;
+import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.application.APApplication;
-import globaz.apg.db.droits.APDroitAPG;
-import globaz.apg.db.droits.APDroitLAPG;
-import globaz.apg.db.droits.APDroitMaternite;
-import globaz.apg.db.droits.APEnfantAPG;
-import globaz.apg.db.droits.APEnfantAPGManager;
-import globaz.apg.db.droits.APEnfantMatManager;
-import globaz.apg.db.droits.APPeriodeAPG;
-import globaz.apg.db.droits.APPeriodeAPGManager;
-import globaz.apg.db.droits.APSituationProfessionnelle;
-import globaz.apg.db.droits.APSituationProfessionnelleManager;
+import globaz.apg.db.droits.*;
 import globaz.apg.module.calcul.salaire.APMontantVerse;
 import globaz.apg.module.calcul.salaire.APSalaireAdapter;
+import globaz.apg.properties.APParameter;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
+import globaz.globall.db.FWFindParameter;
+import globaz.globall.db.FWFindParameterManager;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAUtil;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.application.PRAbstractApplication;
 import globaz.prestation.db.tauxImposition.PRTauxImposition;
 import globaz.prestation.db.tauxImposition.PRTauxImpositionManager;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.tauxImposition.api.IPRTauxImposition;
+import globaz.prestation.utils.PRDateUtils;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <H1>Description</H1>
@@ -342,6 +337,8 @@ public class APBasesCalculBuilder {
                     baseCourante.setNoRevision(((APDroitAPG) droit).getNoRevision());
                     baseCourante.setNombreEnfants(Integer.parseInt(((APDroitAPG) droit).loadSituationFamilliale()
                             .getNbrEnfantsDebutDroit()));
+                } else if(droit instanceof APDroitPandemie) {
+                    baseCourante.setNoRevision(((APDroitPandemie) droit).getNoRevision());
                 }
 
                 baseCourante.setTypeAllocation(droit.getGenreService());
@@ -488,7 +485,11 @@ public class APBasesCalculBuilder {
                     baseCourante.setSalarie(true);
                 }
 
+                if(IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE.equals(droit.getGenreService())) {
+                    baseCourante.setAllocationExploitation(false);
+                } else {
                 baseCourante.setAllocationExploitation(sitPro.getIsAllocationExploitation().booleanValue());
+                }
                 baseCourante.setAllocationMaximum(sitPro.getIsAllocationMax().booleanValue());
 
                 // le nombre de contrats avec cet employeur
@@ -873,6 +874,196 @@ public class APBasesCalculBuilder {
         }
     }
 
+    private Integer ajouterPeriodesPan(String dateDebut, int autreJours, boolean isIndependant) throws Exception {
+        // charger toutes les périodes pour ce droit.
+        APPeriodeAPGManager mgr = new APPeriodeAPGManager();
+        Calendar bCal = getCalendarInstance();
+
+        mgr.setSession(session);
+        mgr.setForIdDroit(droit.getIdDroit());
+        mgr.find(session.getCurrentThreadTransaction());
+
+        int nbJourSoldes = 0;
+        List<APPeriodeComparable> listPeriode = mgr.toList().stream().map(obj -> (APPeriodeAPG) obj).map(ap -> new APPeriodeComparable(ap)).collect(Collectors.toList());
+        Collections.sort(listPeriode);
+
+        int delai = autreJours == 0 ? getDelaiSelonService() : 0;
+
+        // pour chaque période
+        for (APPeriodeComparable periode : listPeriode) {
+            boolean dateDebutModif = false;
+            if(!JadeStringUtil.isEmpty(dateDebut) && JadeDateUtil.isDateBefore(periode.getDateDebutPeriode(), dateDebut)) {
+                periode.setDateDebutPeriode(dateDebut);
+                dateDebutModif = true;
+            }
+            // si pas de date fin mettre la fin du mois en cours pour le calcul
+            if (JadeStringUtil.isEmpty(periode.getDateFinPeriode())) {
+                if(IAPDroitLAPG.CS_QUARANTAINE.equals(droit.getGenreService())) {
+                    resolveFinJourMaxParam(periode, APParameter.QUARANTAINE_JOURS_MAX.getParameterName(), delai);
+                } else if (IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS.equals(droit.getGenreService())){
+                    resolveFinJourMaxParam(periode, APParameter.INDEPENDANT_PERTE_DE_GAIN_MAX.getParameterName(), delai);
+                } else {
+                    Calendar cal = Calendar.getInstance();
+                    cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
+                    periode.setDateFinPeriode(JadeDateUtil.getGlobazFormattedDate(cal.getTime()));
+                }
+            }
+
+            if(dateDebutModif && !JadeStringUtil.isBlankOrZero(periode.getNbrJours())){
+                int nbJours = PRDateUtils.getNbDayBetween(periode.getDateDebutPeriode(), periode.getDateFinPeriode()) + 1;
+                if(nbJours < Integer.valueOf(periode.getNbrJours())) {
+                    periode.setNbrJours(Integer.toString(nbJours));
+                }
+            }
+        }
+
+        // ajout d'un délai selon les services
+        if(autreJours == 0){
+            delaiSelonService(listPeriode, delai);
+        }
+
+        // pour chaque période
+        for (APPeriodeComparable periode : listPeriode) {
+
+            int nbJourSoldesAvantAjout = nbJourSoldes;
+            if(!JadeStringUtil.isBlankOrZero(periode.getNbrJours())) {
+                nbJourSoldes += Integer.valueOf(periode.getNbrJours());
+            } else {
+                nbJourSoldes += PRDateUtils.getNbDayBetween(periode.getDateDebutPeriode(), periode.getDateFinPeriode()) + 1;
+            }
+
+            nbJourSoldes = joursMaxSelonService(autreJours, nbJourSoldes, periode, isIndependant, dateDebut);
+
+            PeriodeAPGCommand bCommand = new PeriodeAPGCommand(periode.getDateDebutPeriode(), true);
+            PeriodeAPGCommand eCommand = new PeriodeAPGCommand(periode.getDateFinPeriode(), false);
+
+            // cota dépassé
+            if(nbJourSoldesAvantAjout >= nbJourSoldes){
+                break;
+            }
+
+            // ajouter l'événement "début de la période"
+            commands.add(bCommand);
+
+            // ajouter l'événement "fin de la période"
+            commands.add(eCommand);
+
+            if(!IAPDroitLAPG.CS_QUARANTAINE.equals(droit.getGenreService())) {
+                // couper par mois
+                Date debut = DF.parse(periode.getDateDebutPeriode());
+                Calendar fin = getCalendarInstance();
+
+                fin.setTime(DF.parse(periode.getDateFinPeriode()));
+                couperParMois(debut, fin);
+            }
+        }
+
+        return nbJourSoldes;
+    }
+
+    private int getDelaiSelonService() throws Exception {
+        Integer delai = 0;
+        String valeur = "";
+        switch(droit.getGenreService()){
+            case IAPDroitLAPG.CS_GARDE_PARENTALE:
+            case IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP:
+                valeur = APParameter.GARDE_PARENTAL_JOURS_SANS_IDEMNISATION.getParameterName();break;
+            case IAPDroitLAPG.CS_QUARANTAINE:
+                valeur = APParameter.QUARANTAINE_JOURS_SANS_INDEMISATION.getParameterName();break;
+            case IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE:
+            case IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS:
+            case IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE:
+                valeur = APParameter.INDEPENDANT_JOURS_SANS_INDEMISATION.getParameterName();break;
+            default:
+                valeur = "";
+        }
+
+        if(!valeur.isEmpty()) {
+            delai = Integer.valueOf(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", valeur, "0", "", 0));
+        }
+        return delai;
+    }
+
+    private void resolveFinJourMaxParam(APPeriodeComparable periode, String param, int delai) throws Exception {
+        int jourMax = Integer.parseInt(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", param, "0", "", 0));
+        String dateFin = JadeDateUtil.addDays(periode.getDateDebutPeriode(), delai + jourMax - 1);
+        periode.setDateFinPeriode(dateFin);
+    }
+
+    /**
+     * Ajout d'un délai selon le genre de service
+     * @param listPeriode
+     */
+    private void delaiSelonService(List<APPeriodeComparable> listPeriode, int delai) throws Exception {
+        if(!listPeriode.isEmpty()) {
+
+            //décale la date de début ou supprime la période si pas assez de jours
+            for(APPeriodeComparable periode: new ArrayList<>(listPeriode)) {
+                int nbjours = JadeStringUtil.isBlankOrZero(periode.getNbrJours()) ? PRDateUtils.getNbDayBetween(periode.getDateDebutPeriode(), periode.getDateFinPeriode()) + 1 : Integer.valueOf(periode.getNbrJours());
+                if (delai <= 0) {
+                    break;
+                }
+                if (nbjours > delai) {
+                    periode.setDateDebutPeriode(JadeDateUtil.addDays(periode.getDateDebutPeriode(), delai));
+                    if(!JadeStringUtil.isBlankOrZero(periode.getNbrJours())) {
+                        periode.setNbrJours(Integer.toString(Integer.valueOf(periode.getNbrJours()) - delai));
+                    }
+                    break;
+                } else {
+                    listPeriode.remove(periode);
+                    delai -= nbjours;
+                }
+            }
+        }
+    }
+
+    private int joursMaxSelonService(int autreJours, int nbJours, APPeriodeComparable periode, boolean independant, String dateDebut) throws Exception {
+        Integer jourMaximum = null;
+        Integer nbJoursNew = nbJours;
+        switch(droit.getGenreService()){
+            case IAPDroitLAPG.CS_GARDE_PARENTALE:
+            case IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP:
+                if(independant) {
+                    jourMaximum = getJourMax(APParameter.GARDE_PARENTAL_INDE_JOURS_MAX.getParameterName());
+                };
+                break;
+            case IAPDroitLAPG.CS_QUARANTAINE:
+                autreJours = 0;
+                jourMaximum = getJourMax(APParameter.QUARANTAINE_JOURS_MAX.getParameterName());break;
+            case IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS:
+                jourMaximum = getJourMax(APParameter.INDEPENDANT_PERTE_DE_GAIN_MAX.getParameterName());break;
+            default:
+                jourMaximum = null;
+        }
+
+        if(jourMaximum != null){
+            if(nbJours + autreJours > jourMaximum ) {
+                nbJoursNew = jourMaximum - autreJours;
+                periode.setDateFinPeriode(JadeDateUtil.addDays(periode.getDateFinPeriode(), nbJoursNew - nbJours));
+            }
+            checkFinPeriode(periode, dateDebut, jourMaximum);
+        }
+
+        return nbJoursNew;
+    }
+
+    private void checkFinPeriode(APPeriodeComparable periode, String dateDebut, int jourMax){
+        // Doit être une date fin fixe donc adapter par rapport à la date de début
+        if(droit.getGenreService().equals(IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS)) {
+            String dateFinMax = JadeDateUtil.addDays(dateDebut, jourMax - 1);
+            if (JadeDateUtil.isDateAfter(periode.getDateFinPeriode(), dateFinMax)) {
+                periode.setDateFinPeriode(dateFinMax);
+            }
+        }
+    }
+
+    private Integer getJourMax(String param) throws Exception {
+        if(!param.isEmpty()) {
+            return Integer.valueOf(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", param, "0", "", 0));
+        }
+        return null;
+    }
+
     // ~ Inner Classes
     // --------------------------------------------------------------------------------------------------
 
@@ -897,6 +1088,56 @@ public class APBasesCalculBuilder {
             commands.add(new VersementInterditCommand(null, true));
             commands.add(new VersementInterditCommand(TRENTE_JUIN_2005, false));
         }
+    }
+
+    // ajoute la date de début des versements selon le genre de service
+    private String ajouterDateDebutFromParam() throws Exception {
+        APDroitPanSituation droitSituation = ApgServiceLocator.getEntityService().getDroitPanSituation(session, session.getCurrentThreadTransaction(),
+                droit.getIdDroit());
+        String valeur = "";
+        String dateDebut = "";
+        switch(droit.getGenreService()){
+            case IAPDroitLAPG.CS_GARDE_PARENTALE:
+            case IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP:
+                valeur = APParameter.GARDE_PARENTAL_JOURS_SANS_IDEMNISATION.getParameterName();break;
+            case IAPDroitLAPG.CS_QUARANTAINE:
+                valeur = APParameter.QUARANTAINE_JOURS_SANS_INDEMISATION.getParameterName();break;
+            case IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE:
+                if(!JadeStringUtil.isEmpty(droitSituation.getDateDebutManifestationAnnulee())
+                    && (JadeStringUtil.isEmpty(droitSituation.getDateFermetureEtablissementDebut())
+                    || DF.parse(droitSituation.getDateDebutManifestationAnnulee()).before(DF.parse(droitSituation.getDateFermetureEtablissementDebut())))){
+                    valeur = APParameter.MANIFESTATION_INDERDITE_DATE_MINI.getParameterName();
+                } else {
+                    valeur = APParameter.FERMETURE_EMTREPRISE_DATE_MINI.getParameterName();
+                }
+                break;
+            case IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS:
+                valeur = APParameter.INDEPENDANT_PERTE_DE_GAIN_MAX.getParameterName();break;
+            case IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE:
+                valeur = APParameter.FERMETURE_EMTREPRISE_DATE_MINI.getParameterName();break;
+
+            default:return dateDebut;
+        }
+
+        FWFindParameterManager manager = new FWFindParameterManager();
+        manager.setSession(session);
+        manager.setIdCodeSysteme("1");
+        manager.setIdCleDiffere(valeur);
+        manager.find(BManager.SIZE_NOLIMIT);
+        if (manager.size() > 0){
+            FWFindParameter param = (FWFindParameter) manager.get(0);
+            Date dateDebutValide = DF.parse(new ch.globaz.common.domaine.Date(param.getDateDebutValidite()).getSwissValue());
+            Date debut = DF.parse(droit.getDateDebutDroit());
+            if (debut.before(dateDebutValide)) {
+                Calendar c = Calendar.getInstance();
+                c.setTime(dateDebutValide);
+                c.add(Calendar.DATE, -1);
+                commands.add(new VersementInterditCommand(null, true));
+                commands.add(new VersementInterditCommand(c.getTime(), false));
+            }
+            dateDebut = JadeDateUtil.getGlobazFormattedDate(dateDebutValide);
+        }
+        return dateDebut;
     }
 
     // ajouter les événements relatifs à la situation familiale APG à la liste
@@ -950,14 +1191,23 @@ public class APBasesCalculBuilder {
             commands.add(commandFin);
         }
 
-        /*
+        // couper par mois
+        couperParMois(debut, fin);
+    }
+
+    /**
          * couper par mois:
          * 
-         * les allocations maternité sont versées par mois, on ajoute donc des commandes qui vont découper la période de
+     * allocations par mois, on ajoute donc des com
+     *mandes qui vont découper la période de
          * prestation en unités mensuelles.
          * 
          * Pour les versements rétro-actifs (c'est-à-dire avant la date du jour), la coupure n'est pas effectuée.
+     *
+     * @param debut
+     * @param fin
          */
+    private void couperParMois(Date debut, Calendar fin) {
         Calendar moisDernier = getCalendarInstance(); // instancié à la date du
         // jour
 
@@ -983,9 +1233,38 @@ public class APBasesCalculBuilder {
         }
     }
 
+    // ajouter les événements relatifs à la situation familiale Pandémie à la liste
+    // des commandes.
+    private void ajouterSituationFamilialePan() throws Exception {
+        // obtenir les date des débuts et de fin du droit
+        Date debut = DF.parse(droit.getDateDebutDroit());
+        Calendar fin = getCalendarInstance();
+
+        fin.setTime(DF.parse(droit.getDateFinDroit()));
+
+        // creer les commandes de début de droit et de find de droit à
+        // TODO : un EnfantPanCommand
+        EnfantMatCommand commandDebut = new EnfantMatCommand(debut, true);
+        EnfantMatCommand commandFin = new EnfantMatCommand(fin.getTime(), false);
+
+        // charger toutes les personnes pour la situation familiale de ce droit.
+        APSituationFamilialePanManager mgr = new APSituationFamilialePanManager();
+
+        mgr.setSession(session);
+        mgr.setForIdDroit(droit.getIdDroit());
+        mgr.find(session.getCurrentThreadTransaction());
+
+        // pour chaque personne
+        for (int idPersonne = 0; idPersonne < mgr.size(); ++idPersonne) {
+            commands.add(commandDebut);
+            commands.add(commandFin);
+        }
+    }
+
     // ajouter les événements relatifs à la situation professionnelle à la liste
     // des commandes
-    private void ajouterSituationProfessionnelle() throws Exception {
+    private boolean ajouterSituationProfessionnelle() throws Exception {
+        boolean isIndependant = false;
         // charger tous les changements de situation professionnelle
         APSituationProfessionnelleManager mgr = new APSituationProfessionnelleManager();
 
@@ -1000,7 +1279,9 @@ public class APBasesCalculBuilder {
             // mettre a jour le compte du nombre de contrats par employeur
             String cleEmployeur = sitPro.loadEmployeur().getCleUnique();
             Integer nbContrats = (Integer) nbContratsList.get(cleEmployeur);
-
+            if(sitPro.getIsIndependant()) {
+                isIndependant = true;
+            };
             if (nbContrats != null) {
                 nbContrats = new Integer(nbContrats.intValue() + 1);
             } else {
@@ -1036,14 +1317,24 @@ public class APBasesCalculBuilder {
                 }
             }
         }
+        return isIndependant;
     }
 
     private void ajouterTauxImposition() throws Exception {
         if (droit.getIsSoumisImpotSource().booleanValue()) {
+
+            // si pas de date fin mettre la fin du mois en cours pour le calcul
+            String dateFinDuDroit = droit.getDateFinDroit();
+            if(JadeStringUtil.isEmpty(dateFinDuDroit)) {
+                Calendar cal = Calendar.getInstance();
+                cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
+                dateFinDuDroit = JadeDateUtil.getGlobazFormattedDate(cal.getTime());
+            }
+
             // on va rechercher tous les taux pour ce canton et pour la période
             // du droit
             String cantonImposition = PRTiersHelper.getCanton(session, droit.getNpa());
-            List tauxImpots = findTauxImposition(droit.getDateDebutDroit(), droit.getDateFinDroit(), cantonImposition);
+            List tauxImpots = findTauxImposition(droit.getDateDebutDroit(), dateFinDuDroit, cantonImposition);
 
             /*
              * remarque: s'il n'y a pas de taux d'impositions definis pour ce canton et qu'on n'en a pas saisi à la
@@ -1089,7 +1380,7 @@ public class APBasesCalculBuilder {
          * On commence par ajouter tous les événements relatifs à la situation professionnelle, le traitement est
          * identique pour un droit APG ou maternité.
          */
-        ajouterSituationProfessionnelle();
+        boolean isIndependant = ajouterSituationProfessionnelle();
         ajouterTauxImposition();
 
         if (droit instanceof APDroitAPG) {
@@ -1100,6 +1391,11 @@ public class APBasesCalculBuilder {
             ajouterPeriodesAPG(); // ajouter les périodes et splitter par année
             ajouterSituationFamilialeAPG();
             nbJoursSoldes = Integer.parseInt(((APDroitAPG) droit).getNbrJourSoldes());
+        } else if(droit instanceof APDroitPandemie) {
+            String dateDebut = ajouterDateDebutFromParam();
+            int jourAutrePresta = ApgServiceLocator.getEntityService().getTotalJourAutreDroit(session, droit.getIdDroit());
+            nbJoursSoldes = ajouterPeriodesPan(dateDebut, jourAutrePresta, isIndependant);
+            ((APDroitPandemie) droit).setNbrJourSoldes(String.valueOf(nbJoursSoldes));
         } else {
             /*
              * pour le cas où on traite un droit maternité, on ne traite que la situation familiale et on découpe les

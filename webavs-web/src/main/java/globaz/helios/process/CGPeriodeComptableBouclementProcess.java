@@ -43,6 +43,7 @@ import globaz.helios.helpers.ecritures.utils.CGGestionEcritureUtils;
 import globaz.helios.parser.CGBilanParser;
 import globaz.helios.translation.CodeSystem;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.properties.JadePropertiesService;
 import globaz.lynx.db.journal.LXJournal;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -81,6 +82,8 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
     private final static String LABEL_PREFIX = "BOUCLEMENT_";
     private static final String LABEL_REOUVERTURE_SOLDES_COMPTE_OUVERTURE_INEXISTANT = "REOUVERTURE_SOLDES_COMPTE_OUVERTURE_INEXISTANT";
     private static final String SECTEUR_EXPLOITATION_2110 = "2110";
+    private static final String SECTEUR_EXPLOITATION_2180 = "2180";
+    private static final String SECTEUR_EXPLOITATION_2189 = "2189";
     private static final String SECTEUR_EXPLOITATION_UNTIL = "2199";
 
     private CGBouclement bouclement = null;
@@ -95,6 +98,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
     private CGJournal journalClot2 = null;
     private CGJournal journalClot3 = null;
     private CGJournal journalExtourne = null;
+    private CGJournal journalPandemie = null;
 
     private CGMandat mandat = null;
 
@@ -125,8 +129,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
     /**
      * Commentaire relatif au constructeur CGPeriodeComptableBouclementProcess.
      * 
-     * @param session
-     *            globaz.globall.db.BSession
+     * @param session globaz.globall.db.BSession
      */
     public CGPeriodeComptableBouclementProcess(BSession session) {
         super(session);
@@ -174,6 +177,18 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
         }
 
         try {
+            /**
+             * À Décommenter en cas de création d'un journal pandémie.
+             *
+             */
+//            String isPandemie = JadePropertiesService.getInstance().getProperty("helios.pandemie.isSecteur_218X");
+//
+//            if (isPandemie == null) {
+//                throw new Exception(label("PROPERTY_PANDEMIE"));
+//            }
+//            if (isPandemie.equals("true")) {
+//                creationJournalPandemie();
+//            }
             comptabiliserJournaux();
             incProgressCounter();
         } catch (Exception e) {
@@ -539,6 +554,99 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
         return true;
     }
 
+    private void creationJournalPandemie() throws Exception {
+        Map<String, FWCurrency> cumulDoit218x = new HashMap<>();
+        Map<String, FWCurrency> cumulAvoir218x = new HashMap<>();
+        int nbreEcriture = 0;
+        CGPlanComptableManager planManager = new CGPlanComptableManager();
+        CGEcritureListViewBean ecriManager = null;
+        planManager.setSession(getSession());
+        planManager.setFromSecteur(CGPeriodeComptableBouclementProcess.SECTEUR_EXPLOITATION_2180);
+        planManager.setUntilSecteur(CGPeriodeComptableBouclementProcess.SECTEUR_EXPLOITATION_2189);
+        planManager.setForIdMandat(exercice.getIdMandat());
+        planManager.setForEstPeriode(new Boolean(true));
+        planManager.setForIdExerciceComptable(exercice.getIdExerciceComptable());
+        planManager.setForIdPeriodeComptable(periode.getIdPeriodeComptable());
+        planManager.setReqDomaine(CGCompte.CS_COMPTE_EXPLOITATION);
+        planManager.find(getTransaction(), BManager.SIZE_NOLIMIT);
+        for (int i = 0; (i < planManager.size()) && !isAborted(); i++) {
+            CGPlanComptableViewBean plan = (CGPlanComptableViewBean) planManager.getEntity(i);
+
+            CGJournalManager journalManager = new CGJournalManager();
+            journalManager.setSession(getSession());
+            journalManager.setForIdExerciceComptable(exercice.getIdExerciceComptable());
+            journalManager.setForIdPeriodeComptable(periode.getIdPeriodeComptable());
+            // journalManager.setExceptIdJournal(journalClot.getIdJournal());
+            journalManager.setExceptIdEtat(ICGJournal.CS_ETAT_ANNULE);
+            // ***********************************************************************************
+            // COMPLETEMENT FAUX !!!
+            journalManager.setExceptIdTypeJournal(CGJournal.CS_TYPE_SYSTEME);
+            // ***********************************************************************************
+
+            journalManager.find(getTransaction(), BManager.SIZE_NOLIMIT);
+
+            for (int j = 0; j < journalManager.size(); j++) {
+                CGJournal journal = (CGJournal) journalManager.getEntity(j);
+                ecriManager = new CGEcritureListViewBean();
+                ecriManager.setSession(getSession());
+                ecriManager.setForIdCompte(plan.getIdCompte());
+                ecriManager.setForIdJournal(journal.getIdJournal());
+                ecriManager.setForIdMandat(exercice.getIdMandat());
+                ecriManager.setForIdExerciceComptable(exercice.getIdExerciceComptable());
+                ecriManager.wantForEstActive(true);
+                ecriManager.find(getTransaction(), BManager.SIZE_NOLIMIT);
+                nbreEcriture = nbreEcriture + ecriManager.size();
+                for (int k = 0; k < ecriManager.size(); k++) {
+                    //cumulDoit
+                    if (!cumulDoit218x.containsKey(plan.getIdSecteurAVS())) {
+                        cumulDoit218x.put(plan.getIdSecteurAVS(), new FWCurrency());
+                    }
+                    FWCurrency cumulCurrency = cumulDoit218x.get(plan.getIdSecteurAVS());
+                    cumulCurrency.add(((CGEcritureViewBean) ecriManager.getEntity(k)).getDoit());
+                    cumulDoit218x.put(plan.getIdSecteurAVS(), cumulCurrency);
+                    //cumulAvoir
+                    if (!cumulAvoir218x.containsKey(plan.getIdSecteurAVS())) {
+                        cumulAvoir218x.put(plan.getIdSecteurAVS(), new FWCurrency());
+                    }
+                    cumulCurrency = cumulAvoir218x.get(plan.getIdSecteurAVS());
+                    cumulCurrency.add(((CGEcritureViewBean) ecriManager.getEntity(k)).getAvoir());
+                    cumulAvoir218x.put(plan.getIdSecteurAVS(), cumulCurrency);
+                }
+            }
+            setProgressDescription("idPlan:" + plan.getId());
+        }
+        if (isAborted()) {
+            return;
+        }
+        if (nbreEcriture > 0) {
+            annulationJournalPandemie();
+            ouvertureJournalClotPandemie();
+            for (String key : cumulDoit218x.keySet()) {
+                FWCurrency currencyDoit218x = cumulDoit218x.get(key);
+                if (!currencyDoit218x.isZero()) {
+                    String libelle = getLibelleToFit(50,
+                            label("CLOTURE_COMPTE_EXPLOITATION_AVS_AI_LABEL_ECRITURE_CUMUL_DOIT_AVS_PANDEMIE"));
+                    addEcritureDoubleToJournalPandemie(libelle, currencyDoit218x, key + ".4900.0000", "2000.2101.0000");
+                    this.info("CLOTURE_COMPTE_EXPLOITATION_AVS_AI_ECRITURE_CUMUL_DOIT_AVS_OK");
+                } else {
+                    this.warn("CLOTURE_COMPTE_EXPLOITATION_AVS_AI_ECRITURE_CUMUL_DOIT_AVS_ERROR");
+                }
+            }
+            for (String key : cumulAvoir218x.keySet()) {
+                FWCurrency currencyAvoir218x = cumulAvoir218x.get(key);
+                if (!currencyAvoir218x.isZero()) {
+                    String libelle = getLibelleToFit(50,
+                            label("CLOTURE_COMPTE_EXPLOITATION_AVS_AI_LABEL_ECRITURE_CUMUL_AVOIR_AVS_PANDEMIE"));
+                    addEcritureDoubleToJournalPandemie(libelle, currencyAvoir218x, "2000.2101.0000", key + ".3900.0000");
+                    this.info("CLOTURE_COMPTE_EXPLOITATION_AVS_AI_ECRITURE_CUMUL_AVOIR_AVS_OK");
+                } else {
+                    this.warn("CLOTURE_COMPTE_EXPLOITATION_AVS_AI_ECRITURE_CUMUL_AVOIR_AVS_ERROR");
+                }
+            }
+        }
+    }
+
+
     /**
      * Valide le contenu de l'entité (notamment les champs obligatoires)
      */
@@ -659,6 +767,12 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
     private void addEcritureDoubleToJournalClot(String libelle, FWCurrency solde, String idExterneCompteCredite,
             String idExterneCompteDebite) throws Exception {
         addEcrituresDebitCredit(periode.getDateFin(), journalClot.getIdJournal(), periode.getIdExerciceComptable(),
+                libelle, solde, idExterneCompteCredite, idExterneCompteDebite);
+    }
+
+    private void addEcritureDoubleToJournalPandemie(String libelle, FWCurrency solde, String idExterneCompteCredite,
+                                                    String idExterneCompteDebite) throws Exception {
+        addEcrituresDebitCredit(periode.getDateFin(), journalPandemie.getIdJournal(), periode.getIdExerciceComptable(),
                 libelle, solde, idExterneCompteCredite, idExterneCompteDebite);
     }
 
@@ -808,6 +922,46 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
                 throw new Exception(journal.getSession().getErrors().toString());
             }
         }
+    }
+
+    private void annulationJournalPandemie() throws Exception {
+//        CGJournal journal = new CGJournal();
+//        journal.setSession(getSession());
+//        journal.setLibelle(getLibelleToFit(40, label("LABEL_JOURNAL_CLOTURE_PANDEMIE") + " " + periode.getFullDescription()));
+//
+//        journal.retrieve(getTransaction());
+//
+
+        CGJournalManager journalManager = new CGJournalManager();
+        journalManager.setSession(getSession());
+        journalManager.setForIdExerciceComptable(exercice.getIdExerciceComptable());
+        journalManager.setForIdPeriodeComptable(periode.getIdPeriodeComptable());
+        journalManager.setFromLibelle(getLibelleToFit(40, label("LABEL_JOURNAL_CLOTURE_PANDEMIE") + " " + periode.getFullDescription()));
+        journalManager.setUntilLibelle(getLibelleToFit(40, label("LABEL_JOURNAL_CLOTURE_PANDEMIE") + " " + periode.getFullDescription()));
+        journalManager.setExceptIdEtat(ICGJournal.CS_ETAT_ANNULE);
+        // ***********************************************************************************
+        // COMPLETEMENT FAUX !!!
+        journalManager.setExceptIdTypeJournal(CGJournal.CS_TYPE_SYSTEME);
+        // ***********************************************************************************
+
+        journalManager.find(getTransaction(), BManager.SIZE_NOLIMIT);
+            if(journalManager.size()>1){
+                throw new Exception(label("ERROR_JOURNAL_DOUBLE_PANDEMIE"));
+            }else if(journalManager.size()==1){
+                CGJournal journal = (CGJournal) journalManager.getFirstEntity();
+            CGJournalAnnulerProcess process = new CGJournalAnnulerProcess(this);
+            process.setSession(getSession());
+            process.setTransaction(getTransaction());
+            process.setSendCompletionMail(false);
+            process.setSendMailOnError(false);
+            process.setMemoryLog(getMemoryLog());
+            process.setIdJournal(journal.getIdJournal());
+            process.executeProcess();
+                if (journal.getSession().hasErrors()) {
+                    throw new Exception(journal.getSession().getErrors().toString());
+                }
+            }
+
     }
 
     /**
@@ -1026,9 +1180,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * 10. Clôture du compte des autres tâches (bouclement mensuel et annuel AVS)
-     * 
-     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
-     * 
+     *
      * @param secteur
      * @param compteCloture
      * @param contreEcriture
@@ -1039,6 +1191,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
      * @param warnDoitLabel
      * @param warnAvoirLabel
      * @throws Exception
+     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
      */
     private void clotureCompteAutresTaches(CGSecteurAVS secteur, String compteCloture, String contreEcriture,
             boolean estPeriode, String requestDomaine, String libelleDoitLabel, String libelleAvoirLabel,
@@ -1111,8 +1264,8 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
     /**
      * 9. Clôture du compte d'exploitation AVS / AI (bouclement mensuel AVS)
      * 
-     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
      * @throws Exception
+     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
      */
     private void clotureCompteExploitation_AVS_AI() throws Exception {
         clotureCompteExploitationAi();
@@ -1127,8 +1280,8 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
     /**
      * 10. Clôture du compte d'exploitation / administration des autres tâches (bouclement mensuel et annuel AVS)
      * 
-     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
      * @throws Exception
+     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
      */
     private void clotureCompteExploitationAdministrationAutresTaches() throws Exception {
         CGSecteurAVSManager secteurManager = new CGSecteurAVSManager();
@@ -1383,6 +1536,8 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
     private void clotureCompteExploitationAvs() throws Exception {
         FWCurrency cumulDoit = new FWCurrency();
         FWCurrency cumulAvoir = new FWCurrency();
+        Map<String,FWCurrency> cumulDoit218x = new HashMap<>();
+        Map<String,FWCurrency> cumulAvoir218x = new HashMap<>();
 
         CGPlanComptableManager planManager = new CGPlanComptableManager();
         planManager.setSession(getSession());
@@ -1423,9 +1578,34 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
                 ecriManager.wantForEstActive(true);
                 ecriManager.find(getTransaction(), BManager.SIZE_NOLIMIT);
                 for (int k = 0; k < ecriManager.size(); k++) {
-
+                    String isPandemie = JadePropertiesService.getInstance().getProperty("helios.pandemie.isSecteur_218X");
+                    if(isPandemie== null){
+                        throw new Exception(label("PROPERTY_PANDEMIE"));
+                    }
+                    if(isPandemie.equals("true")){
+                        if(plan.getIdSecteurAVS().substring(0,3).contains("218")){
+                            //cumulDoit
+                            if(!cumulDoit218x.containsKey(plan.getIdSecteurAVS())){
+                                cumulDoit218x.put(plan.getIdSecteurAVS(),new FWCurrency());
+                            }
+                            FWCurrency cumulCurrency = cumulDoit218x.get(plan.getIdSecteurAVS());
+                            cumulCurrency.add(((CGEcritureViewBean) ecriManager.getEntity(k)).getDoit());
+                            cumulDoit218x.put(plan.getIdSecteurAVS(),cumulCurrency);
+                            //cumulAvoir
+                            if(!cumulAvoir218x.containsKey(plan.getIdSecteurAVS())){
+                                cumulAvoir218x.put(plan.getIdSecteurAVS(),new FWCurrency());
+                            }
+                            cumulCurrency = cumulAvoir218x.get(plan.getIdSecteurAVS());
+                            cumulCurrency.add(((CGEcritureViewBean) ecriManager.getEntity(k)).getAvoir());
+                            cumulAvoir218x.put(plan.getIdSecteurAVS(),cumulCurrency);
+                        }else{
                     cumulDoit.add(((CGEcritureViewBean) ecriManager.getEntity(k)).getDoit());
                     cumulAvoir.add(((CGEcritureViewBean) ecriManager.getEntity(k)).getAvoir());
+                }
+                    }else{
+                        cumulDoit.add(((CGEcritureViewBean) ecriManager.getEntity(k)).getDoit());
+                        cumulAvoir.add(((CGEcritureViewBean) ecriManager.getEntity(k)).getAvoir());
+                    }
                 }
             }
             setProgressDescription("idPlan:" + plan.getId());
@@ -1451,6 +1631,28 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
             this.info("CLOTURE_COMPTE_EXPLOITATION_AVS_AI_ECRITURE_CUMUL_AVOIR_AVS_OK");
         } else {
             this.warn("CLOTURE_COMPTE_EXPLOITATION_AVS_AI_ECRITURE_CUMUL_AVOIR_AVS_ERROR");
+        }
+        for(String key : cumulDoit218x.keySet()){
+            FWCurrency currencyDoit218x = cumulDoit218x.get(key);
+            if (!currencyDoit218x.isZero()) {
+                String libelle = getLibelleToFit(50,
+                        label("CLOTURE_COMPTE_EXPLOITATION_AVS_AI_LABEL_ECRITURE_CUMUL_DOIT_AVS_PANDEMIE"));
+                addEcritureDoubleToJournalClot(libelle, currencyDoit218x, key+".4900.0000", "2000.2101.0000");
+                this.info("CLOTURE_COMPTE_EXPLOITATION_AVS_AI_ECRITURE_CUMUL_DOIT_AVS_OK");
+            } else {
+                this.warn("CLOTURE_COMPTE_EXPLOITATION_AVS_AI_ECRITURE_CUMUL_DOIT_AVS_ERROR");
+            }
+        }
+        for(String key : cumulAvoir218x.keySet()){
+            FWCurrency currencyAvoir218x = cumulAvoir218x.get(key);
+            if (!currencyAvoir218x.isZero()) {
+                String libelle = getLibelleToFit(50,
+                        label("CLOTURE_COMPTE_EXPLOITATION_AVS_AI_LABEL_ECRITURE_CUMUL_AVOIR_AVS_PANDEMIE"));
+                addEcritureDoubleToJournalClot(libelle, currencyAvoir218x, "2000.2101.0000", key+".3900.0000");
+                this.info("CLOTURE_COMPTE_EXPLOITATION_AVS_AI_ECRITURE_CUMUL_AVOIR_AVS_OK");
+            } else {
+                this.warn("CLOTURE_COMPTE_EXPLOITATION_AVS_AI_ECRITURE_CUMUL_AVOIR_AVS_ERROR");
+            }
         }
     }
 
@@ -1704,6 +1906,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
     /**
      * 2. Contrôle du compte 1106 et 2740 (bouclement mensuel AVS)
      * 
+     *
      * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
      * @throws Exception
      */
@@ -2098,8 +2301,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
     /**
      * Insérez la description de la méthode ici. Date de création : (28.04.2003 14:35:53)
      * 
-     * @param msg
-     *            String
+     * @param msg String
      */
     private void error(String msg) {
         this.error(msg, "");
@@ -2108,8 +2310,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
     /**
      * Insérez la description de la méthode ici. Date de création : (28.04.2003 14:35:53)
      * 
-     * @param msg
-     *            String
+     * @param msg String
      */
     private void error(String codeLabel, String msg) {
         getMemoryLog().logMessage(
@@ -2170,11 +2371,10 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Method getIdExercExtournePourLissage.
-     * 
+     * <p>
      * Retourne l'id de l'exercice d'extourne pour les contre-écritures du lissage du secteur 1990
      * 
-     * @param periode
-     *            ou seront extourner les contres-écritures de lissage
+     * @param periode ou seront extourner les contres-écritures de lissage
      * @return String l'id de l'exercice comptable ou seront extourner les contre-écritures
      */
     private String getIdExercExtournePourLissage(CGPeriodeComptable periode) {
@@ -2251,7 +2451,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Method getLibelleToFit.
-     * 
+     * <p>
      * Retourne le libelle en le troncant à maxSize char si plus grand.
      * 
      * @param maxSize
@@ -2332,6 +2532,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
     /**
      * Insérez la description de la méthode ici. Date de création : (29.04.2003 18:36:40)
      * 
+     *
      * @return String
      * @param codeLabel
      *            String
@@ -2466,6 +2667,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
     /**
      * Insérez la description de la méthode ici. Date de création : (29.04.2003 18:36:40)
      * 
+     *
      * @return String
      * @param codeLabel
      *            String
@@ -2645,6 +2847,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
     /**
      * 4. Ouverture d'un nouveau journal de clôture (commun)
      * 
+     *
      * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
      * @throws Exception
      */
@@ -2724,6 +2927,25 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
             periode.setIdJournal3(journalClot3.getIdJournal());
             periode.update(getTransaction());
         }
+    }
+
+    private void ouvertureJournalClotPandemie() throws Exception {
+        journalPandemie = new CGJournal();
+        journalPandemie.setSession(getSession());
+        journalPandemie.setDateValeur(periode.getDateFin());
+        java.util.Calendar cal = new java.util.GregorianCalendar();
+        JADate date = new JADate(cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR));
+        journalPandemie.setDate(date.toStr("."));
+        journalPandemie.setIdExerciceComptable(exercice.getIdExerciceComptable());
+        journalPandemie.setIdPeriodeComptable(periode.getIdPeriodeComptable());
+        journalPandemie.setEstPublic(new Boolean(true));
+        journalPandemie.setEstConfidentiel(new Boolean(false));
+        journalPandemie.setIdTypeJournal(CGJournal.CS_TYPE_AUTOMATIQUE);
+        journalPandemie.setProprietaire(getSession().getUserId());
+        journalPandemie
+                .setLibelle(getLibelleToFit(40, label("LABEL_JOURNAL_CLOTURE_PANDEMIE") + " " + periode.getFullDescription()));
+        journalPandemie.add(getTransaction());
+
     }
 
     private CGJournal ouvertureJournalExtournePourLissage(CGPeriodeComptable periodeExtourne, String idExerciceLissage)

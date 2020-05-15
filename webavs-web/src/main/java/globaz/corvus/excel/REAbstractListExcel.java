@@ -3,11 +3,19 @@
  */
 package globaz.corvus.excel;
 
+import ch.globaz.exceptions.ExceptionMessage;
+import ch.globaz.exceptions.GlobazTechnicalException;
 import globaz.caisse.report.helper.ACaisseReportHelper;
 import globaz.framework.printing.itext.fill.FWIImportProperties;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
+import globaz.globall.util.JADate;
+import globaz.jade.admin.JadeAdminServiceLocatorProvider;
+import globaz.jade.client.util.JadeConversionUtil;
+import globaz.jade.client.util.JadeUUIDGenerator;
 import globaz.jade.common.JadeCodingUtil;
+import globaz.jade.context.JadeContextImplementation;
+import globaz.jade.context.JadeThreadContext;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -66,6 +74,7 @@ public abstract class REAbstractListExcel {
     private HSSFCellStyle styleCreance = null;
     private HSSFCellStyle styleDate = null;
     private HSSFCellStyle styleLeft = null;
+    private HSSFCellStyle styleLeftBorderTop = null;
     private HSSFCellStyle styleListTitleCenter = null;
     private HSSFCellStyle styleListTitleLeft = null;
     private HSSFCellStyle styleListTitleRight = null;
@@ -76,6 +85,17 @@ public abstract class REAbstractListExcel {
     private HSSFCellStyle styleRight = null;
     private HSSFCellStyle styleTitreCreance = null;
     private HSSFCellStyle styleTotal = null;
+    //Pandemie Style
+    private HSSFCellStyle styleBold;
+    private HSSFCellStyle styleRightMontant;
+    private HSSFCellStyle styleRightBorderTopMontant;
+    private HSSFCellStyle styleRightBold;
+    private HSSFCellStyle styleCenterNoBorder;
+    private HSSFCellStyle styleCenterBorderTop;
+    private HSSFCellStyle styleLeftCenterVert;
+    private HSSFCellStyle styleRightMontantVert;
+
+
     /** Workbook, classeur d'Excel */
     private HSSFWorkbook wb;
 
@@ -333,6 +353,36 @@ public abstract class REAbstractListExcel {
         }
     }
 
+    public String getOutputFile(String path) {
+        try {
+            File f = new File(path +(filenameRoot == null ? DEFAULT_FILE_NAME : filenameRoot)
+                    + JACalendar.today().toString() + "_"+JadeUUIDGenerator.createStringUUID() +FILE_TYPE);
+            f.deleteOnExit();
+            FileOutputStream out = new FileOutputStream(f);
+            wb.write(out);
+            out.close();
+            return f.getAbsolutePath();
+        } catch (Exception e) {
+            JadeCodingUtil.catchException(this, "getOutputFile", e);
+            return "";
+        }
+    }
+    public String getOutputFile(String path,String numCaisse) {
+        try {
+            JADate date = JACalendar.today();
+            File f = new File(path +(filenameRoot == null ? DEFAULT_FILE_NAME : filenameRoot)
+                    +"_"+numCaisse+"_"+date.getDay()+"."+String.format("%02d", date.getMonth())+"."+date.getYear()+FILE_TYPE);
+            f.deleteOnExit();
+            FileOutputStream out = new FileOutputStream(f);
+            wb.write(out);
+            out.close();
+            return f.getAbsolutePath();
+        } catch (Exception e) {
+            JadeCodingUtil.catchException(this, "getOutputFile", e);
+            return "";
+        }
+    }
+
     /**
      * @return the session
      */
@@ -466,6 +516,15 @@ public abstract class REAbstractListExcel {
             // contenu
         }
         return styleLeft;
+    }
+
+    protected HSSFCellStyle getStyleLeftBorderTop() {
+        if (styleLeftBorderTop == null) {
+            styleLeftBorderTop = wb.createCellStyle();
+            styleLeftBorderTop.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+            styleLeftBorderTop.setBorderTop(HSSFCellStyle.BORDER_MEDIUM);
+        }
+        return styleLeftBorderTop;
     }
 
     /**
@@ -647,6 +706,82 @@ public abstract class REAbstractListExcel {
         }
         return styleTotal;
     }
+    /**
+     * Pandemie cell style
+     */
+
+    protected HSSFCellStyle getStyleBold() {
+        if (styleBold == null) {
+            styleBold = wb.createCellStyle();
+            styleBold.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+            styleBold.setFont(getFontBold());
+        }
+        return styleBold;
+    }
+
+    protected HSSFCellStyle getStyleRightMontant() {
+        if (styleRightMontant == null) {
+            styleRightMontant = wb.createCellStyle();
+            styleRightMontant.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
+            styleRightMontant.setDataFormat(FORMAT_MONTANT);
+        }
+        return styleRightMontant;
+    }
+
+    protected HSSFCellStyle getStyleRightBold() {
+        if (styleRightBold == null) {
+            styleRightBold = wb.createCellStyle();
+            styleRightBold.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
+            styleRightBold.setFont(getFontBold());
+        }
+        return styleRightBold;
+    }
+    protected HSSFCellStyle getStyleCenterNoBorder() {
+        if (styleCenterNoBorder == null) {
+            styleCenterNoBorder = wb.createCellStyle();
+            styleCenterNoBorder = getWorkbook().createCellStyle();
+            styleCenterNoBorder.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+        }
+        return styleCenterNoBorder;
+    }
+    protected HSSFCellStyle getStyleCenterBorderTop() {
+        if (styleCenterBorderTop == null) {
+            styleCenterBorderTop = wb.createCellStyle();
+            styleCenterBorderTop.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+            styleCenterBorderTop.setBorderTop(HSSFCellStyle.BORDER_MEDIUM);
+        }
+        return styleCenterBorderTop;
+    }
+
+    protected HSSFCellStyle getStyleRightMontantBorderTop () {
+        if (styleRightBorderTopMontant == null) {
+            styleRightBorderTopMontant = wb.createCellStyle();
+            styleRightBorderTopMontant.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
+            styleRightBorderTopMontant.setDataFormat(FORMAT_MONTANT);
+            styleRightBorderTopMontant.setBorderTop(HSSFCellStyle.BORDER_MEDIUM);
+        }
+        return styleRightBorderTopMontant;
+    }
+
+    protected HSSFCellStyle getStyleLeftCenterVert () {
+        if (styleLeftCenterVert == null) {
+            styleLeftCenterVert = wb.createCellStyle();
+            styleLeftCenterVert.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        }
+        return styleLeftCenterVert;
+    }
+    protected HSSFCellStyle getStyleRightMontantVert () {
+        if (styleRightMontantVert== null) {
+            styleRightMontantVert = wb.createCellStyle();
+            styleRightMontantVert.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            styleRightMontantVert.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
+            styleRightMontantVert.setDataFormat(FORMAT_MONTANT);
+        }
+        return styleRightMontantVert;
+    }
+
+
+
 
     /**
      * @return le classeur
@@ -703,6 +838,23 @@ public abstract class REAbstractListExcel {
 
         return currentSheet;
     }
+    protected void createEmptyCell(int number) {
+        createEmptyCell(number, "");
+    }
+    private void createEmptyCell(int number, String value) {
+        if (styleNeutre == null) {
+            styleNeutre = wb.createCellStyle();
+        }
+        createEmptyCell(number, value, styleNeutre);
+    }
+    private void createEmptyCell(int number, String value, HSSFCellStyle style) {
+
+        for (int i = 0; i < number; i++) {
+            createCell(value, style);
+        }
+    }
+
+
 
     /**
      * @param currentSheet
@@ -751,4 +903,32 @@ public abstract class REAbstractListExcel {
     protected void setWb(HSSFWorkbook wb) {
         this.wb = wb;
     }
+
+    protected int getColNum(){
+        return colNum;
+    }
+    protected JadeThreadContext initThreadContext(BSession session) {
+        JadeThreadContext context;
+        JadeContextImplementation ctxtImpl = new JadeContextImplementation();
+        ctxtImpl.setApplicationId(session.getApplicationId());
+        ctxtImpl.setLanguage(session.getIdLangueISO());
+        ctxtImpl.setUserEmail(session.getUserEMail());
+        ctxtImpl.setUserId(session.getUserId());
+        ctxtImpl.setUserName(session.getUserName());
+        String[] roles;
+        try {
+            roles = JadeAdminServiceLocatorProvider.getInstance().getServiceLocator().getRoleUserService()
+                    .findAllIdRoleForIdUser(session.getUserId());
+        } catch (Exception e) {
+            throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, e);
+        }
+        if ((roles != null) && (roles.length > 0)) {
+            ctxtImpl.setUserRoles(JadeConversionUtil.toList(roles));
+        }
+        context = new JadeThreadContext(ctxtImpl);
+        context.storeTemporaryObject("bsession", session);
+
+        return context;
+    }
+
 }

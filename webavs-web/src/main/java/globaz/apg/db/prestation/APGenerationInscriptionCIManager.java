@@ -88,6 +88,8 @@ public class APGenerationInscriptionCIManager extends PRAbstractManager {
         groupBy += APRepartitionPaiements.FIELDNAME_IDREPARTITIONBENEFPAIEMENT;
         groupBy += ", ";
         groupBy += APPrestation.FIELDNAME_IDRESTITUTION;
+        groupBy += ", ";
+        groupBy += APPrestation.FIELDNAME_GENRE_PRESTATION;
         groupBy += " ";
 
         return groupBy;

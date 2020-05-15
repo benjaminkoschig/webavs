@@ -15,6 +15,7 @@ import globaz.apg.db.droits.APEmployeur;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.droits.APSituationProfessionnelleManager;
 import globaz.apg.groupdoc.ccju.GroupdocPropagateUtil;
+import globaz.apg.properties.APProperties;
 import globaz.apg.util.TypePrestation;
 import globaz.apg.vb.droits.APDroitAPGDTO;
 import globaz.apg.vb.droits.APDroitDTO;
@@ -419,10 +420,14 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
 
                 final APEmployeur loadEmployeur = situation.loadEmployeur();
                 final String idTiersPaiementEmployeur = loadEmployeur.getIdTiers();
-                final String idDomainPaiementEmployeur = IPRDemande.CS_TYPE_MATERNITE
-                        .equals(spViewBean.getTypePrestation().toCodeSysteme())
-                                ? IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE
-                                : IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
+                final String idDomainPaiementEmployeur;
+                if (IPRDemande.CS_TYPE_MATERNITE.equals(spViewBean.getTypePrestation().toCodeSysteme())) {
+                    idDomainPaiementEmployeur = IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
+                } else if (IPRDemande.CS_TYPE_PANDEMIE.equals(spViewBean.getTypePrestation().toCodeSysteme())) {
+                    idDomainPaiementEmployeur = APProperties.DOMAINE_ADRESSE_APG_PANDEMIE.getValue();
+                } else {
+                    idDomainPaiementEmployeur = IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
+                }
 
                 // nous recherchons en cascade du domaine APG ou MATERNITE
                 final TIAdressePaiementData detailTiers = PRTiersHelper.getAdressePaiementData(spViewBean.getSession(),

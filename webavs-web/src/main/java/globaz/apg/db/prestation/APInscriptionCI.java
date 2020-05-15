@@ -22,6 +22,7 @@ public class APInscriptionCI extends BEntity {
     public static final String FIELDNAME_NOAVS = "VJLAVS";
     public static final String FIELDNAME_NOPASSAGE = "VJNOPA";
     public static final String FIELDNAME_STATUT = "VJTSTA";
+    public static final String FIELDNAME_GENRE_PRESTATION = "VJTGEN";
     public static final String TABLE_NAME = "APINCIP";
 
     private String annee = "";
@@ -32,6 +33,7 @@ public class APInscriptionCI extends BEntity {
     private String noAVS = "";
     private String noPassage = "";
     private String statut = "";
+    private String genrePrestation = "";
 
     @Override
     protected void _beforeAdd(globaz.globall.db.BTransaction transaction) throws Exception {
@@ -53,6 +55,7 @@ public class APInscriptionCI extends BEntity {
         montantBrut = statement.dbReadNumeric(APInscriptionCI.FIELDNAME_MONTANTBRUT, 2);
         statut = statement.dbReadNumeric(APInscriptionCI.FIELDNAME_STATUT);
         noPassage = statement.dbReadNumeric(APInscriptionCI.FIELDNAME_NOPASSAGE);
+        genrePrestation = statement.dbReadNumeric(APInscriptionCI.FIELDNAME_GENRE_PRESTATION);
     }
 
     @Override
@@ -83,6 +86,8 @@ public class APInscriptionCI extends BEntity {
                 this._dbWriteNumeric(statement.getTransaction(), statut, "statut"));
         statement.writeField(APInscriptionCI.FIELDNAME_NOPASSAGE,
                 this._dbWriteNumeric(statement.getTransaction(), noPassage, "noPassage"));
+        statement.writeField(APInscriptionCI.FIELDNAME_GENRE_PRESTATION,
+                this._dbWriteNumeric(statement.getTransaction(), genrePrestation, "genrePrestation"));
     }
 
     /**
@@ -235,5 +240,14 @@ public class APInscriptionCI extends BEntity {
      */
     public void setStatut(String statut) {
         this.statut = statut;
+    }
+
+
+    public String getGenrePrestation() {
+        return genrePrestation;
+    }
+
+    public void setGenrePrestation(String genrePrestation) {
+        this.genrePrestation = genrePrestation;
     }
 }

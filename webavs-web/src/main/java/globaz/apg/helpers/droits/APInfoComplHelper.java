@@ -3,18 +3,27 @@
  */
 package globaz.apg.helpers.droits;
 
+import globaz.apg.ApgServiceLocator;
 import globaz.apg.api.droits.IAPDroitLAPG;
+import globaz.apg.api.lots.IAPLot;
+import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.db.droits.APDroitLAPG;
+import globaz.apg.db.lots.APLot;
+import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.vb.droits.APInfoComplViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.globall.api.BISession;
+import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.prestation.helpers.PRAbstractHelper;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.List;
 
 /**
  * @author hpe
- * 
+ * <p>
  *         Helper pour terminer un prononcé
  */
 public class APInfoComplHelper extends PRAbstractHelper {
@@ -22,18 +31,12 @@ public class APInfoComplHelper extends PRAbstractHelper {
     /**
      * (non-Javadoc)
      * 
+     * @param viewBean DOCUMENT ME!
+     * @param action   DOCUMENT ME!
+     * @param session  DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      * @see globaz.framework.controller.FWHelper#_add(globaz.framework.bean.FWViewBeanInterface,
      *      globaz.framework.controller.FWAction, globaz.globall.api.BISession)
-     * 
-     * @param viewBean
-     *            DOCUMENT ME!
-     * @param action
-     *            DOCUMENT ME!
-     * @param session
-     *            DOCUMENT ME!
-     * 
-     * @throws Exception
-     *             DOCUMENT ME!
      */
     @Override
     protected void _add(FWViewBeanInterface viewBean, FWAction action, BISession session) throws Exception {
@@ -65,6 +68,26 @@ public class APInfoComplHelper extends PRAbstractHelper {
                 droit.setEtat(IAPDroitLAPG.CS_REFUSE);
             }
             droit.update(transaction);
+
+            // Suppression des prestations non définitives
+            final List<APPrestation> prestations = ApgServiceLocator.getEntityService().getPrestationDuDroit((BSession) session,
+                    transaction, droit.getIdDroit());
+            for (APPrestation eachPrestation : prestations) {
+                if (!StringUtils.equals(IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF, eachPrestation.getEtat())) {
+                    if (StringUtils.isNotEmpty(eachPrestation.getIdLot()) && eachPrestation.getIdLot() != "0") {
+                        APLot lot = new APLot();
+                        lot.setSession((BSession) session);
+                        lot.setIdLot(eachPrestation.getIdLot());
+                        lot.retrieve(transaction);
+
+                        if (IAPLot.CS_COMPENSE.equals(lot.getEtat())) {
+                            lot.setEtat(IAPLot.CS_OUVERT);
+                            lot.update(transaction);
+                        }
+                    }
+                    eachPrestation.delete(transaction);
+                }
+            }
 
             if (transaction.hasErrors()) {
                 infoComplViewBean.setMessage(transaction.getErrors().toString());

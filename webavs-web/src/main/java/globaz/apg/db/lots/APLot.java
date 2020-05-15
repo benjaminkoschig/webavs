@@ -7,6 +7,7 @@ import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
+import globaz.apg.enums.APTypeDePrestation;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BTransaction;
@@ -96,7 +97,7 @@ public class APLot extends BEntity {
     @Override
     protected void _afterDelete(BTransaction transaction) throws Exception {
         // mise en etat contrôlé des prestations APG qui étaient dans ce lot et
-        // valide des prestations maternités
+        // valide des prestations maternités ou pandémies
         APPrestationManager mgr = new APPrestationManager();
         mgr.setSession(getSession());
         mgr.setForIdLot(idLot);
@@ -107,7 +108,8 @@ public class APLot extends BEntity {
         for (int i = 0; i < mgr.size(); i++) {
             prestation = (APPrestation) (mgr.getEntity(i));
 
-            if (prestation.getNoRevision().equals(IAPDroitMaternite.CS_REVISION_MATERNITE_2005)) {
+            if (prestation.getNoRevision().equals(IAPDroitMaternite.CS_REVISION_MATERNITE_2005)
+                || APTypeDePrestation.PANDEMIE.getCodesystemString().equals(prestation.getGenre())) {
                 prestation.setEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
             } else {
                 prestation.setEtat(IAPPrestation.CS_ETAT_PRESTATION_CONTROLE);

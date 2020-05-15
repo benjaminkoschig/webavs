@@ -12,6 +12,7 @@ import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationsControlees;
 import globaz.apg.db.prestation.APRepartitionJointPrestation;
 import globaz.apg.db.prestation.APRepartitionJointPrestationManager;
+import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.itext.APListePrestationsAPGControlees;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWCurrency;
@@ -140,6 +141,7 @@ public class APControlerPrestationsProcess extends BProcess {
             mgr.setSession(session);
             mgr.setForEtatPrestation(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
             mgr.setForEtatDroitDifferentDe(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
+            mgr.setNotForGenre(APTypeDePrestation.PANDEMIE.getCodesystemString());
 
             // pour memoriser les tiers en erreur
             Map tiersWithError = new HashMap();

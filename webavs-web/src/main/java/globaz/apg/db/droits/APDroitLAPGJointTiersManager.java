@@ -80,6 +80,15 @@ public class APDroitLAPGJointTiersManager extends PRAbstractManager {
 
             sql.append(tableDroitLAPG).append(".").append(APDroitLAPG.FIELDNAME_DATEDEBUTDROIT);
             sql.append("<=");
+            sql.append(this._dbWriteDateAMJ(statement.getTransaction(), forDroitContenuDansDateFin));
+            sql.append(" AND ");
+            sql.append(tableDroitLAPG).append(".").append(APDroitLAPG.FIELDNAME_DATEFINDROIT);
+            sql.append("= '0'");
+
+            sql.append(") OR (");
+
+            sql.append(tableDroitLAPG).append(".").append(APDroitLAPG.FIELDNAME_DATEDEBUTDROIT);
+            sql.append("<=");
             sql.append(this._dbWriteDateAMJ(statement.getTransaction(), forDroitContenuDansDateDebut));
             sql.append(" AND ");
             sql.append(tableDroitLAPG).append(".").append(APDroitLAPG.FIELDNAME_DATEFINDROIT);

@@ -2,6 +2,8 @@ package globaz.apg.enums;
 
 import globaz.apg.api.droits.IAPDroitLAPG;
 
+import java.util.Arrays;
+
 public enum APGenreServiceAPG {
 
     CoursMoniteursJeunesTireurs("50", IAPDroitLAPG.CS_COURS_MONITEURS_JEUNES_TIREURS),
@@ -27,9 +29,14 @@ public enum APGenreServiceAPG {
     InspectionRecrutementLiberation("505", IAPDroitLAPG.CS_JOURNEES_DIVERSES_CIAB),
     CongeJeunesse("506", IAPDroitLAPG.CS_CONGE_JEUNESSE_CIAB),
     ServiceEtranger("507", IAPDroitLAPG.CS_SERVICE_ETRANGER_CIAB),
-    DecesDemiJour("508", IAPDroitLAPG.CS_DECES_DEMI_JOUR_CIAB);
+    DecesDemiJour("508", IAPDroitLAPG.CS_DECES_DEMI_JOUR_CIAB),
+    GardeParentale("400", IAPDroitLAPG.CS_GARDE_PARENTALE),
+    Quarantaine("401", IAPDroitLAPG.CS_QUARANTAINE),
+    IndependantPandemie("402", IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE),
+    IndependantPerteGains("403", IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS),
+    GardeParentaleHandicap("404", IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP),
+    IndependantManifAnnulee("405", IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE);
 
-    ;
 
     public static APGenreServiceAPG resoudreGenreParCodeSystem(final String codeSystem) {
         for (final APGenreServiceAPG genre : APGenreServiceAPG.values()) {
@@ -53,7 +60,23 @@ public enum APGenreServiceAPG {
         if (genreService == null) {
             return false;
         }
+        if(isValidGenreServicePandemie(genreService)){
+            return false;
+        }
         for (APGenreServiceAPG gs : APGenreServiceAPG.values()) {
+            if (gs.getCodePourAnnonce().equals(genreService)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isValidGenreServicePandemie(String genreService) {
+        if (genreService == null) {
+            return false;
+        }
+        for (APGenreServiceAPG gs : Arrays.asList(APGenreServiceAPG.GardeParentale, APGenreServiceAPG.Quarantaine,  APGenreServiceAPG.IndependantPandemie,
+                APGenreServiceAPG.IndependantPerteGains, APGenreServiceAPG.GardeParentaleHandicap, APGenreServiceAPG.IndependantManifAnnulee)) {
             if (gs.getCodePourAnnonce().equals(genreService)) {
                 return true;
             }

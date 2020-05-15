@@ -8,6 +8,7 @@ import globaz.apg.db.annonces.APAnnonceAPG;
 import globaz.apg.db.droits.APDroitAPG;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APDroitMaternite;
+import globaz.apg.db.droits.APDroitPandemie;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
 import globaz.apg.enums.APTypeDePrestation;
@@ -143,7 +144,9 @@ public class APGenererAnnoncesProcess extends BProcess {
     private APDroitLAPG getDroit(APPrestation prestation) throws Exception {
         APDroitLAPG droit = null;
 
-        if (prestation.getNoRevision().equals(IAPDroitMaternite.CS_REVISION_MATERNITE_2005)) {
+        if (APTypeDePrestation.PANDEMIE.getCodesystemString().equals(prestation.getGenre())) {
+            droit = new APDroitPandemie();
+        } else if (prestation.getNoRevision().equals(IAPDroitMaternite.CS_REVISION_MATERNITE_2005)) {
             droit = new APDroitMaternite();
         } else {
             droit = new APDroitAPG();

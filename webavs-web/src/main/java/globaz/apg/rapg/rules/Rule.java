@@ -1,16 +1,11 @@
 package globaz.apg.rapg.rules;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import ch.globaz.common.properties.PropertiesException;
 import globaz.apg.api.annonces.IAPAnnonce;
+import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.business.service.APAnnoncesRapgService;
 import globaz.apg.db.annonces.APAnnonceAPG;
-import globaz.apg.db.droits.APDroitAPGJointTiers;
-import globaz.apg.db.droits.APDroitAPGJointTiersManager;
+import globaz.apg.db.droits.*;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
 import globaz.apg.enums.APGenreServiceAPG;
@@ -19,13 +14,19 @@ import globaz.apg.exceptions.APRuleExecutionException;
 import globaz.apg.exceptions.APWebserviceException;
 import globaz.apg.interfaces.APDroitAvecParent;
 import globaz.apg.pojo.APChampsAnnonce;
+import globaz.apg.properties.APParameter;
 import globaz.apg.utils.APRuleUtils;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
+import globaz.globall.db.FWFindParameter;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadePeriodWrapper;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.beans.PRPeriode;
 import globaz.prestation.utils.PRDateUtils;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Classe abstraite pour les règles de validation des données de l'annonces
@@ -71,7 +72,7 @@ public abstract class Rule implements APRuleDBDataProvider {
         this.dataBaseDataProvider = dataBaseDataProvider;
     }
 
-    public  String getErrorCode() {
+    public final String getErrorCode() {
         return errorCode;
     }
 
@@ -307,8 +308,8 @@ public abstract class Rule implements APRuleDBDataProvider {
                     droitAvecPlusGrandId = droit;
                 } else {
                     try {
-                        int idDroitAvecPlusGrandId = Integer.valueOf(droitAvecPlusGrandId.getIdDroit());
-                        int idDroit = Integer.valueOf(droit.getIdDroit());
+                        int idDroitAvecPlusGrandId = Integer.parseInt(droitAvecPlusGrandId.getIdDroit());
+                        int idDroit = Integer.parseInt(droit.getIdDroit());
                         if (idDroit > idDroitAvecPlusGrandId) {
                             droitAvecPlusGrandId = droit;
                         }
@@ -351,7 +352,7 @@ public abstract class Rule implements APRuleDBDataProvider {
         prestationManager.setForContenuAnnonce(IAPAnnonce.CS_DEMANDE_ALLOCATION);
         for (APDroitAvecParent dp : droitsTries) {
             prestationManager.setForIdDroit(dp.getIdDroit());
-            prestationManager.find();
+            prestationManager.find(BManager.SIZE_NOLIMIT);
             for (Object o : prestationManager.getContainer()) {
                 APPrestation prestation = (APPrestation) o;
                 if (PRDateUtils.isDateDansLaPeriode(periode, prestation.getDateDebut())) {
@@ -401,6 +402,84 @@ public abstract class Rule implements APRuleDBDataProvider {
 
     public final void setSession(BSession session) {
         this.session = session;
+    }
+
+    /**
+     * récupère le délai selon le genre de service
+     * @param listPeriode
+     */
+    protected int getDelai(List<APPeriodeComparable> listPeriode, String genreService) throws Exception {
+        Integer delai = 0;
+        if(!listPeriode.isEmpty()) {
+
+            String valeur = "";
+            switch(genreService){
+                case IAPDroitLAPG.CS_GARDE_PARENTALE:
+                    valeur = APParameter.GARDE_PARENTAL_JOURS_SANS_IDEMNISATION.getParameterName();break;
+                case IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP:
+                    valeur = APParameter.GARDE_PARENTAL_JOURS_SANS_IDEMNISATION.getParameterName();break;
+                case IAPDroitLAPG.CS_QUARANTAINE:
+                    valeur = APParameter.QUARANTAINE_JOURS_SANS_INDEMISATION.getParameterName();break;
+                case IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE:
+                    valeur = APParameter.INDEPENDANT_JOURS_SANS_INDEMISATION.getParameterName();break;
+                case IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS:
+                    valeur = APParameter.INDEPENDANT_PERTE_DE_GAIN_MAX.getParameterName();break;
+                case IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE:
+                    valeur = APParameter.INDEPENDANT_JOURS_SANS_INDEMISATION.getParameterName();break;
+            }
+
+            if(!valeur.isEmpty()) {
+                delai = Integer.valueOf(FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(), "1", valeur, "0", "", 0));
+            }
+        }
+        return  delai;
+    }
+
+
+    /**
+     * Ajout d'un délai
+     * @param listPeriode
+     */
+    protected void delaiSelonService(List<APPeriodeComparable> listPeriode, int delai) throws Exception {
+        if(!listPeriode.isEmpty()) {
+
+            //décale la date de début ou supprime la période si pas assez de jours
+            for(APPeriodeComparable periode: new ArrayList<>(listPeriode)) {
+                int nbjours = JadeStringUtil.isBlankOrZero(periode.getNbrJours()) ? PRDateUtils.getNbDayBetween(periode.getDateDebutPeriode(), periode.getDateFinPeriode()) + 1 : Integer.valueOf(periode.getNbrJours());
+                if (delai <= 0) {
+                    break;
+                }
+                if (nbjours > delai) {
+                    periode.setDateDebutPeriode(JadeDateUtil.addDays(periode.getDateDebutPeriode(), delai));
+                    if(!JadeStringUtil.isBlankOrZero(periode.getNbrJours())) {
+                        periode.setNbrJours(Integer.toString(Integer.valueOf(periode.getNbrJours()) - delai));
+                    }
+                    break;
+                } else {
+                    listPeriode.remove(periode);
+                    delai -= nbjours;
+                }
+            }
+        }
+    }
+
+    /**
+     * Récupère les périodes du droit
+     * @param idDroit
+     * @return
+     * @throws Exception
+     */
+    protected List<APPeriodeComparable> getPeriodes(String idDroit) throws Exception {
+        APPeriodeAPGManager mgr = new APPeriodeAPGManager();
+
+        mgr.setSession(getSession());
+        mgr.setForIdDroit(idDroit);
+        mgr.find(getSession().getCurrentThreadTransaction(), BManager.SIZE_NOLIMIT);
+
+        List<APPeriodeComparable> listPeriode = mgr.toList().stream().map(obj -> (APPeriodeAPG) obj).map(ap -> new APPeriodeComparable(ap)).collect(Collectors.toList());
+        Collections.sort(listPeriode);
+
+        return listPeriode;
     }
 
     public String getDetailMessageErreur() {

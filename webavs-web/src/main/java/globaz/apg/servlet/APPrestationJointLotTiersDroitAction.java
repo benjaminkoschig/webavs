@@ -8,7 +8,10 @@ import globaz.apg.api.lots.IAPLot;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.db.prestation.APRepartitionJointPrestation;
 import globaz.apg.db.prestation.APRepartitionJointPrestationManager;
+import globaz.apg.excel.APListePrestationsExcel;
 import globaz.apg.itext.APListePrestations;
+import globaz.apg.process.APListePrestationExcelProcess;
+import globaz.apg.utils.APGUtils;
 import globaz.apg.vb.droits.APDroitDTO;
 import globaz.apg.vb.lots.APLotViewBean;
 import globaz.apg.vb.prestation.APPrestationJointLotTiersDroitListViewBean;
@@ -25,6 +28,9 @@ import globaz.globall.db.BSession;
 import globaz.globall.http.JSPUtils;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.publish.client.JadePublishDocument;
+import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.jade.publish.document.JadePublishDocumentInfoProvider;
 import globaz.prestation.api.IPRDemande;
 import globaz.prestation.servlet.PRDefaultAction;
 import globaz.prestation.tools.PRSessionDataContainerHelper;
@@ -261,7 +267,9 @@ public class APPrestationJointLotTiersDroitAction extends PRDefaultAction {
 
             String typePrestation = null;
 
-            if (plViewBean.getNoRevision().equals(IAPDroitMaternite.CS_REVISION_MATERNITE_2005)) {
+            if (APGUtils.isTypeAllocationPandemie(plViewBean.getGenreService())) {
+                typePrestation = IPRDemande.CS_TYPE_PANDEMIE;
+            } else if (plViewBean.getNoRevision().equals(IAPDroitMaternite.CS_REVISION_MATERNITE_2005)) {
                 typePrestation = IPRDemande.CS_TYPE_MATERNITE;
             } else {
                 typePrestation = IPRDemande.CS_TYPE_APG;
@@ -464,7 +472,8 @@ public class APPrestationJointLotTiersDroitAction extends PRDefaultAction {
         try {
             viewBean = new APPrestationJointLotTiersDroitListViewBean();
             globaz.globall.http.JSPUtils.setBeanProperties(request, viewBean);
-
+            String isExcel = request.getParameter("isExcel");
+            if(JadeStringUtil.isBlankOrZero(isExcel)){
             APListePrestations listePrestatons = new APListePrestations((BSession) mainDispatcher.getSession());
             listePrestatons.setSession((BSession) mainDispatcher.getSession());
             listePrestatons.setForCsSexe(((APPrestationJointLotTiersDroitListViewBean) viewBean).getForCsSexe());
@@ -491,6 +500,33 @@ public class APPrestationJointLotTiersDroitAction extends PRDefaultAction {
                         .getAttachedDocuments());
             } else {
                 ((APPrestationJointLotTiersDroitListViewBean) viewBean).setAttachedDocuments(null);
+            }
+            }else{
+                APListePrestationExcelProcess listePrestatons = new APListePrestationExcelProcess();
+                listePrestatons.setSession((BSession) mainDispatcher.getSession());
+                listePrestatons.setForCsSexe(((APPrestationJointLotTiersDroitListViewBean) viewBean).getForCsSexe());
+                listePrestatons.setForDateNaissance(((APPrestationJointLotTiersDroitListViewBean) viewBean)
+                        .getForDateNaissance());
+                listePrestatons.setForEtat(((APPrestationJointLotTiersDroitListViewBean) viewBean).getForEtat());
+                listePrestatons.setForIdDroit(((APPrestationJointLotTiersDroitListViewBean) viewBean).getForIdDroit());
+                listePrestatons.setForNoLot(((APPrestationJointLotTiersDroitListViewBean) viewBean).getForNoLot());
+                listePrestatons.setForTypeDroit(((APPrestationJointLotTiersDroitListViewBean) viewBean).getForTypeDroit());
+                listePrestatons.setLikeNom(((APPrestationJointLotTiersDroitListViewBean) viewBean).getLikeNom());
+                listePrestatons.setLikePrenom(((APPrestationJointLotTiersDroitListViewBean) viewBean).getLikePrenom());
+                listePrestatons
+                        .setLikeNumeroAVS(((APPrestationJointLotTiersDroitListViewBean) viewBean).getLikeNumeroAVS());
+                listePrestatons.setLikeNumeroAVSNNSS(((APPrestationJointLotTiersDroitListViewBean) viewBean)
+                        .getLikeNumeroAVSNNSS());
+                listePrestatons
+                        .setFromDateDebut(((APPrestationJointLotTiersDroitListViewBean) viewBean).getFromDateDebut());
+                listePrestatons.setToDateFin(((APPrestationJointLotTiersDroitListViewBean) viewBean).getToDateFin());
+                listePrestatons.executeProcess();
+                if ((listePrestatons.getAttachedDocuments() != null) && (listePrestatons.getAttachedDocuments().size() > 0)) {
+                    ((APPrestationJointLotTiersDroitListViewBean) viewBean).setAttachedDocuments(listePrestatons
+                            .getAttachedDocuments());
+                } else {
+                    ((APPrestationJointLotTiersDroitListViewBean) viewBean).setAttachedDocuments(null);
+                }
             }
 
             getAction().changeActionPart(FWAction.ACTION_CHERCHER);

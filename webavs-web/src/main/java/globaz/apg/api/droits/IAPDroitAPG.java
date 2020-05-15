@@ -6,25 +6,25 @@ package globaz.apg.api.droits;
 public interface IAPDroitAPG {
 
     /** Nom du groupe des codes système des révision APG */
-    public static final String CS_GROUPE_REVISION_APG = "APNOREVIS";
+    String CS_GROUPE_REVISION_APG = "APNOREVIS";
 
-    public static final String CS_IJ_ASSURANCE_ACCIDENT_OBLIGATOIRE = "52023003";
-    public static final String CS_IJ_ASSURANCE_CHOMAGE = "52023004";
-    public static final String CS_IJ_ASSURANCE_INVALIDITE = "52023001";
-    public static final String CS_IJ_ASSURANCE_MALADIE_OBLIGATOIRE = "52023002";
-    public static final String CS_IJ_ASSURANCE_MILITAIRE = "52023005";
+    String CS_IJ_ASSURANCE_ACCIDENT_OBLIGATOIRE = "52023003";
+    String CS_IJ_ASSURANCE_CHOMAGE = "52023004";
+    String CS_IJ_ASSURANCE_INVALIDITE = "52023001";
+    String CS_IJ_ASSURANCE_MALADIE_OBLIGATOIRE = "52023002";
+    String CS_IJ_ASSURANCE_MILITAIRE = "52023005";
 
     /** Révision 1999! */
-    public static final String CS_REVISION_APG_1999 = "52002002";
+    String CS_REVISION_APG_1999 = "52002002";
 
     /** Révision 2005 */
-    public static final String CS_REVISION_APG_2005 = "52002003";
+    String CS_REVISION_APG_2005 = "52002003";
 
     /**
      * Révision standard (calculée automatiquement par rapport aux dates de service de l'APG)
      */
-    public static final String CS_REVISION_STANDARD = "52002001";
+    String CS_REVISION_STANDARD = "52002001";
 
-    public static final String GROUPE_CS_PROVENANCE_DROIT_ACQUIS = "APPRDROIT";
+    String GROUPE_CS_PROVENANCE_DROIT_ACQUIS = "APPRDROIT";
 
 }

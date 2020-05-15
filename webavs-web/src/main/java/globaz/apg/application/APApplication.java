@@ -6,12 +6,14 @@
  */
 package globaz.apg.application;
 
-import java.util.Properties;
 import globaz.apg.servlet.IAPActions;
 import globaz.framework.controller.FWAction;
 import globaz.framework.menu.FWMenuCache;
 import globaz.framework.secure.FWSecureConstants;
+import globaz.fweb.taglib.FWAppColorTag;
 import globaz.prestation.application.PRAbstractApplication;
+
+import java.util.Properties;
 
 /**
  * <H1>Description</H1>
@@ -119,6 +121,9 @@ public class APApplication extends PRAbstractApplication {
     /** Le groupe gestionnaire maternité */
     public static final String PROPERTY_GROUPE_MATERNITE_GESTIONNAIRE = "groupe.maternite.gestionnaire";
 
+    /** Le groupe gestionnaire pandémie */
+    public static final String PROPERTY_GROUPE_PANDEMIE_GESTIONNAIRE = "groupe.pandemie.gestionnaire";
+
     /**
      * Le nom de la propriété identifiant s'il s'agit d'une caisse traitant du droit maternité cantonale
      */
@@ -219,6 +224,9 @@ public class APApplication extends PRAbstractApplication {
 
         FWAction.registerActionCustom(IAPActions.ACTION_DROIT_LAPG + ".actionAfficherLAPG", FWSecureConstants.READ);
         FWAction.registerActionCustom(IAPActions.ACTION_DROIT_LAPG + ".actionRecapitulatif", FWSecureConstants.READ);
+        FWAction.registerActionCustom(IAPActions.ACTION_DROIT_LAPG + ".actionEnvoyerMail", FWSecureConstants.READ);
+        FWAction.registerActionCustom(IAPActions.ACTION_DROIT_LAPG + ".actionAttenteReponse", FWSecureConstants.READ);
+        FWAction.registerActionCustom(IAPActions.ACTION_DROIT_LAPG + ".actionRefuser", FWSecureConstants.READ);
         FWAction.registerActionCustom(IAPActions.ACTION_DROIT_LAPG + ".copierDroit", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(IAPActions.ACTION_DROIT_LAPG + ".corrigerDroit", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(IAPActions.ACTION_DROIT_LAPG + ".restituerDroit", FWSecureConstants.UPDATE);
@@ -230,6 +238,8 @@ public class APApplication extends PRAbstractApplication {
         FWAction.registerActionCustom(IAPActions.ACTION_DROIT_LAPG + ".simulerPaiementDroit", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("apg.droits.droitAPGP" + ".finaliserCreationDroit", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("apg.droits.droitMatP" + ".finaliserCreationDroit", FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom("apg.droits.droitPan" + ".finaliserCreationDroit", FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom(IAPActions.ACTION_SAISIE_CARTE_PAN+ ".passerDroitErreur", FWSecureConstants.UPDATE);
 
         // FWAction.registerActionCustom(IAPActions.ACTION_GENERER_COMM_DEC_AMAT,
         // FWSecureConstants.UPDATE);
@@ -386,7 +396,9 @@ public class APApplication extends PRAbstractApplication {
                 FWSecureConstants.READ);
         FWAction.registerActionCustom(IAPActions.ACTION_LISTE_TAXATIONS + "." + FWAction.ACTION_REAFFICHER,
                 FWSecureConstants.READ);
-
+        FWAction.registerActionCustom(IAPActions.ACTION_GENERER_DROIT_PAN_MENSUEL + ".afficher", FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom(IAPActions.ACTION_PANDEMIE_FIN_DU_DROIT + ".afficher", FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom(IAPActions.ACTION_LISTE_PANDEMIE_CONTROLE+".afficher",FWSecureConstants.UPDATE);
     }
 
     /**

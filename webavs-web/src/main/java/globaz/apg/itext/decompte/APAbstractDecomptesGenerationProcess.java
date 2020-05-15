@@ -3,29 +3,21 @@ package globaz.apg.itext.decompte;
 import java.io.File;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
+
+import globaz.apg.api.droits.IAPDroitLAPG;
+import globaz.apg.db.droits.*;
+import globaz.apg.db.prestation.*;
+import globaz.apg.itext.decompte.utils.APEmployeurTiersUtil;
+import globaz.babel.api.ICTListeTextes;
+import globaz.cygnus.api.demandes.IRFDemande;
+import globaz.pyxis.db.tiers.TITiers;
+
+import ch.globaz.common.properties.PropertiesException;
 import org.safehaus.uuid.Logger;
 import globaz.apg.ApgServiceLocator;
 import globaz.apg.application.APApplication;
-import globaz.apg.db.droits.APDroitLAPG;
-import globaz.apg.db.droits.APEmployeur;
-import globaz.apg.db.droits.APSituationProfessionnelle;
-import globaz.apg.db.droits.APSituationProfessionnelleManager;
 import globaz.apg.db.lots.APFactureACompenser;
-import globaz.apg.db.prestation.APCotisation;
-import globaz.apg.db.prestation.APCotisationManager;
-import globaz.apg.db.prestation.APPrestationJointLotTiersDroit;
-import globaz.apg.db.prestation.APPrestationJointLotTiersDroitManager;
-import globaz.apg.db.prestation.APRepartitionJointPrestation;
 import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.groupdoc.ccju.GroupdocPropagateUtil;
@@ -82,6 +74,7 @@ import globaz.pyxis.api.ITIRole;
 import globaz.pyxis.api.ITITiers;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.webavs.common.CommonProperties;
+import org.slf4j.LoggerFactory;
 
 /**
  * Cette classe abstraite s'ocupe de la génération des documents de décomptes</br>
@@ -111,6 +104,10 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     private String domaineDePaiement = "";
     private boolean hasNextDocument = false;
     private boolean restitution = false;
+    private HashMap<String, String> mapEmployeurs = new HashMap();
+    private Boolean isIndependant403 = false;
+
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(APAbstractDecomptesGenerationProcess.class);
 
     /**
      * Retourne le code système du type de prestation contenue dans le lot
@@ -172,6 +169,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     // on défini les propriétés du DocInfo pour envoyer le mail
                     setSendCompletionMail(false);
                     final JadePublishDocumentInfo docInfo = createDocumentInfo();
+                    if(getIsCopie()){
+                        docInfo.setDocumentType("COPIE_"+docInfo.getDocumentType());
+                    }
                     docInfo.setPublishDocument(true);
                     docInfo.setArchiveDocument(false);
                     docInfo.setPublishProperty(JadePublishDocumentInfo.MAIL_TO, getEMailAddress());
@@ -223,8 +223,11 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             // SI APG
             if (IPRDemande.CS_TYPE_APG.equals(getCSTypePrestationsLot())) {
                 docInfo.setDocumentTitle(getSession().getLabel("DOC_DECOMPTE_APG_TITLE"));
-                // SI MATERNITE
+                // SI PANDEMIE
+            } else if (IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot())){
+                docInfo.setDocumentTitle(getSession().getLabel("DOC_DECOMPTE_PANDEMIE_TITLE"));
             } else {
+                // SI MATERNITE
                 docInfo.setDocumentTitle(getSession().getLabel("DOC_DECOMPTE_MAT_TITLE"));
             }
 
@@ -320,7 +323,17 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         /*
                          * Si on génère les décomptes pour la CCVD ou AGRIVIT il faut renseigner l'id tiers
                          */
-                        if (isCCVD || isAGRIVIT) {
+
+                        // Ajout d'une propriété pour activer l'idTier dans la recherche.
+                        boolean isIdTierActivated = false;
+                        try {
+                            isIdTierActivated = APProperties.ACTIVER_ID_TIERS_GED_AP.getBooleanValue();
+                        } catch (PropertiesException | NoClassDefFoundError e) {
+                            LOG.warn("APAbstractDecomptesGenerationProcess#afterPrintDocument - impossible de charger la propriété ACTIVER_ID_TIERS_GED_AP", e);
+                        }
+
+
+                        if (isCCVD || isAGRIVIT || isIdTierActivated) {
                             idTiersPourLaGED = tiers.getIdTiers();
                         } else {
                             idTiersPourLaGED = "";
@@ -437,6 +450,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             // remplissage de l'entête
             final CaisseHeaderReportBean crBean = new CaisseHeaderReportBean();
             String noAffilie = "";
+            String domaineAdresse = getDomaineByTypePrest(getCSTypePrestationsLot());
 
             if (JadeStringUtil.isIntegerEmpty(decompteCourant.getIdAffilie())) {
                 PRTiersWrapper tiers;
@@ -451,10 +465,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     }
 
                     adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(), decompteCourant.getIdTiers(),
-                            decompteCourant.getIdAffilie(),
-                            IPRDemande.CS_TYPE_APG.equals(getCSTypePrestationsLot())
-                                    ? IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG
-                                    : IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE);
+                            decompteCourant.getIdAffilie(), domaineAdresse);
 
                 } catch (final Exception e) {
                     throw new FWIException("impossible de charger le tiers", e);
@@ -483,10 +494,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                             getSession().getCurrentThreadTransaction(), decompteCourant.getIdAffilie(),
                             decompteCourant.getIdTiers());
                     adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(), decompteCourant.getIdTiers(),
-                            decompteCourant.getIdAffilie(),
-                            IPRDemande.CS_TYPE_APG.equals(getCSTypePrestationsLot())
-                                    ? IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG
-                                    : IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE);
+                            decompteCourant.getIdAffilie(), domaineAdresse);
 
                     noAffilie = affilie.getNumAffilie();
 
@@ -525,6 +533,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 } else {
                     crBean.setConfidentiel(false);
                 }
+                if (IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot())) {
+                    crBean.setTypePrestation(APTypeDePrestation.PANDEMIE);
+                }
 
                 caisseHelper.addHeaderParameters(getImporter(), crBean);
             } catch (final Exception e) {
@@ -554,6 +565,10 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 switch (decompteCourant.getTypeDeDecompte()) {
 
                     case NORMAL:
+                        type_decompte = document.getTextes(5).getTexte(6).getDescription();
+                        break;
+
+                    case NORMAL_PANDEMIE:
                         type_decompte = document.getTextes(5).getTexte(6).getDescription();
                         break;
 
@@ -689,12 +704,26 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     break;
                 }
 
+                if (Integer.parseInt(texte.getPosition()) == 20) {
+                    break;
+                }
+
                 // Si ventilation, ne pas mettre le texte 4.1
                 if (texte.getPosition().equals("1")) {
                     if (!isTraitementDesVentilations()) {
                         buffer.append(texte.getDescription());
                         if (buffer.length() > 0) {
                             buffer.append("\n");
+                        }
+
+                        // Ajout d'une ligne aprés position 4 / 1 si un élément est contenu dans le catalogue de texte et pour le Type Pandémie.
+                        if(isIndependant403 && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "20")
+                                && Objects.nonNull(document.getTextes(4).getTexte(20))){
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(20).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
                         }
                     }
                 } else {
@@ -713,6 +742,39 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             buffer = new StringBuffer(PRStringUtils.formatMessage(buffer, titre));
             buffer.append("\n");
             parametres.put("PARAM_SALUTATIONS", buffer.toString());
+
+            // Ajout du paramètre "copie à".
+            // S'il ne s'agit pas d'un paiement employeur
+            // S'il existe des employeurs pour les répartitions
+            // si l'on est sur un décompte Pandémie
+
+            if (!decompteCourant.isIndependant() && !decompteCourant.getIsPaiementEmployeur()
+                    && !mapEmployeurs.isEmpty() && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot())){
+                try{
+                    buffer.setLength(0);
+                    if (mapEmployeurs.size()>1) {
+                        // Pluriel
+                        buffer.append(document.getTextes(11).getTexte(2).getDescription());
+                    } else {
+                        // Singulier
+                        buffer.append(document.getTextes(11).getTexte(1).getDescription());
+                    }
+
+                    buffer.append("\n");
+                    StringBuilder employeurs = new StringBuilder();
+
+                    for (Map.Entry entry : mapEmployeurs.entrySet()) {
+                        employeurs.append(entry.getValue()+ "\n");
+                    }
+
+                    parametres.put("PARAM_COPIE", buffer.toString());
+                    parametres.put("PARAM_COPIE_NAMES_EMPLOYEURS", employeurs.toString());
+
+                } catch (IndexOutOfBoundsException e){
+                    LOG.debug("Catalogue de texte non trouvé");
+                }
+            }
+            mapEmployeurs = new HashMap<>();
 
             try {
                 // ajouter la signature
@@ -752,6 +814,33 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         } catch (final Exception e) {
             getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, APDecompteGenerationProcess.class.getName());
             abort();
+        }
+    }
+
+    /**
+     * Méthode qui permet de vérifier si la position existe dans le catalogue de test
+     *
+     * @param textesParam Catalogue de texte à un niveau particulier
+     * @param position
+     * @return
+     */
+    private Boolean positionExistInCatalogueTextes(ICTListeTextes textesParam, String position) {
+        for (final Iterator<ICTTexte> textes = textesParam.iterator(); textes.hasNext();) {
+            final ICTTexte texte = textes.next();
+            if (Objects.equals(texte.getPosition(), position)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String getDomaineByTypePrest(String csTypePrestationsLot) throws PropertiesException {
+        if(IPRDemande.CS_TYPE_PANDEMIE.equals(csTypePrestationsLot)){
+            return APProperties.DOMAINE_ADRESSE_APG_PANDEMIE.getValue();
+        }else if(IPRDemande.CS_TYPE_APG.equals(csTypePrestationsLot)){
+            return IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
+        }else{
+            return IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
         }
     }
 
@@ -982,6 +1071,15 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
             Boolean hasPrestationAPGFederale = false;
             for (final APRepartitionJointPrestation repartition : repartitionsTreeSet) {
+
+                // S'il s'agit d'un type pandémie, il faudra donc envoyer des copies aux employeurs
+                if (IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot())) {
+                    APEmployeurTiersUtil element = getEmployeurForRepartition(repartition.getIdDroit(), repartition.getIdSituationProfessionnelle());
+                    if (Objects.nonNull(element)){
+                        mapEmployeurs.put(element.getEmployeur().getIdTiers(), element.getTiers().getDesignation1() + " " + element.getTiers().getDesignation2());
+                    }
+                }
+
                 setTailleLot(1);
                 setImpressionParLot(true);
 
@@ -1002,6 +1100,12 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 // 1. le n°AVS et le nom de l'assure
                 droit = ApgServiceLocator.getEntityService().getDroitLAPG(getSession(), getTransaction(),
                         repartition.getIdDroit());
+
+                // Si le droit est un indépendant 403.
+                if (Objects.equals(droit.getGenreService(), IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS)) {
+                    isIndependant403 = true;
+                }
+
                 final PRDemande demande = droit.loadDemande();
                 tiers = PRTiersHelper.getTiersParId(getSession(), demande.getIdTiers());
 
@@ -1590,6 +1694,48 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
     }
 
+    private APEmployeurTiersUtil getEmployeurForRepartition(String idDroit, String idSituationProfessionnelle) throws Exception {
+        APSituationProfessionnelle situationProfessionnelle = null;
+
+        if (Integer.valueOf(idSituationProfessionnelle) == 0) {
+            APDroitLAPG droit = new APDroitAPG();
+            droit.setSession(getSession());
+            droit.setIdDroit(idDroit);
+            droit.retrieve();
+
+            APSituationProfessionnelleManager situationProfessionnelleManager = new APSituationProfessionnelleManager();
+            situationProfessionnelleManager.setSession(getSession());
+            situationProfessionnelleManager.setForIdDroit(idDroit);
+            situationProfessionnelleManager.find(BManager.SIZE_NOLIMIT);
+
+            situationProfessionnelle = (APSituationProfessionnelle) situationProfessionnelleManager.getEntity(0);
+
+        } else {
+            situationProfessionnelle = new APSituationProfessionnelle();
+            situationProfessionnelle.setSession(getSession());
+            situationProfessionnelle.setIdSituationProf(idSituationProfessionnelle);
+            situationProfessionnelle.retrieve();
+        }
+
+        APEmployeur employeur = new APEmployeur();
+        employeur.setSession(getSession());
+        employeur.setIdEmployeur(situationProfessionnelle.getIdEmployeur());
+        employeur.retrieve();
+
+        TITiers tiers = new TITiers();
+        tiers.setSession(getSession());
+        tiers.setIdTiers(employeur.getIdTiers());
+        tiers.retrieve();
+
+        APEmployeurTiersUtil element = new APEmployeurTiersUtil(tiers, employeur);
+
+        if (situationProfessionnelle.getIsIndependant()) {
+            return null;
+        } else {
+            return element;
+        }
+    }
+
     /**
      * Défini les propriétés du JadePublishDocumentInfo pour archivage du document dans la GED
      */
@@ -1632,6 +1778,26 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                             default:
                                 throw new Exception(
                                         "Impossible de résoudre le type de décompte APG pour la génération du doc info");
+                        }
+                    }
+                // Si Pandémie
+                } else if (IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot())) {
+
+                    // SI APG
+                    docInfo.setDocumentTitle(getSession().getLabel("DOC_DECOMPTE_PANDEMIE_TITLE"));
+                    docInfo.setDocumentProperty("apg.typeDecompte", IPRDemande.CS_TYPE_PANDEMIE);
+
+                    if (isTraitementDesVentilations()) {
+                        docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_APG_VENTILATION);
+                    } else {
+                        switch (decompteCourant.getTypeDeDecompte()) {
+
+                            case NORMAL_PANDEMIE:
+                                docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_PANDEMIE_NORMAL);
+                                break;
+                            default:
+                                throw new Exception(
+                                        "Impossible de résoudre le type de décompte Pandemie pour la génération du doc info");
                         }
                     }
 
@@ -1952,6 +2118,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
     public abstract boolean getIsSendToGED();
 
+    public abstract boolean getIsCopie();
+
     public abstract boolean hasNextDocument() throws FWIException;
 
     private boolean isCaisse(final String noCaisse) throws Exception {
@@ -2139,5 +2307,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     public abstract void setIdLot(final String idLot);
 
     public abstract void setIsSendToGED(final boolean sentToGed);
+
+    public abstract void setIsCopie(final boolean isCopie);
 
 }

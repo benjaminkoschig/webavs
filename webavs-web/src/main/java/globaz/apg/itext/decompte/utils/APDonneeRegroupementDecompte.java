@@ -339,4 +339,8 @@ public class APDonneeRegroupementDecompte {
         return situationProfessionnelle;
     }
 
+    public Boolean isIndependant(){
+        return isIndependant;
+    }
+
 }

@@ -40,7 +40,9 @@ public class APModuleCalculAPG implements IAPCalculateur {
         APResultatCalcul result = null;
         IAPModuleCalcul alloc = null;
 
-        if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(baseCalcul.getTypeAllocation())) {
+        if (APGUtils.isTypeAllocationPandemie(baseCalcul.getTypeAllocation())){
+            alloc = new APModuleCalculAllocPandemie();
+        } else if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(baseCalcul.getTypeAllocation())) {
             alloc = new APModuleCalculAllocMaternite();
         } else if ((IAPDroitLAPG.CS_SERVICE_EN_QUALITE_DE_RECRUE.equals(baseCalcul.getTypeAllocation())
                 && (baseCalcul.getNombreEnfants() == 0)) ||

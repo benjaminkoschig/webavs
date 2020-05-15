@@ -166,4 +166,8 @@ public class APDecompte {
     public final APTypeDePrestation getTypeDePrestation() {
         return donneePourRegroupement.getTypeDePrestation();
     }
+
+    public final Boolean isIndependant(){
+        return donneePourRegroupement.isIndependant();
+    }
 }

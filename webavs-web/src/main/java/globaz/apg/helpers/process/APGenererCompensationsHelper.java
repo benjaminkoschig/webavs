@@ -4,6 +4,7 @@
 package globaz.apg.helpers.process;
 
 import globaz.apg.api.process.IAPGenererCompensationProcess;
+import globaz.apg.impl.process.APGenererCompensationsProcessPandemie;
 import globaz.apg.vb.process.APGenererCompensationsViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
@@ -11,6 +12,9 @@ import globaz.framework.controller.FWHelper;
 import globaz.globall.api.BISession;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BProcess;
+import globaz.globall.db.BSession;
+import globaz.prestation.api.IPRDemande;
+
 import java.rmi.RemoteException;
 
 /**
@@ -35,8 +39,13 @@ public class APGenererCompensationsHelper extends FWHelper {
 
         try {
 
-            IAPGenererCompensationProcess process = (IAPGenererCompensationProcess) GlobazSystem.getApplication(
+            IAPGenererCompensationProcess process;
+            if(gcViewBean.getTypePrestation().equals(IPRDemande.CS_TYPE_PANDEMIE)) {
+                process = new APGenererCompensationsProcessPandemie((BSession) session);
+            } else {
+                process = (IAPGenererCompensationProcess) GlobazSystem.getApplication(
                     session.getApplicationId()).getImplementationFor(session, IAPGenererCompensationProcess.class);
+            }
 
             if (!(process instanceof BProcess)) {
                 throw new Exception("Class cast Exception : " + process.getClass().getName()

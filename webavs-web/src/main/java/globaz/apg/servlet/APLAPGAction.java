@@ -1,17 +1,15 @@
 package globaz.apg.servlet;
 
+import ch.globaz.common.mail.CommonFilesUtils;
+import ch.globaz.common.process.ProcessMailUtils;
+import ch.globaz.common.properties.PropertiesException;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.helpers.droits.APDroitLAPGJointDemandeHelper;
 import globaz.apg.properties.APProperties;
 import globaz.apg.util.TypePrestation;
-import globaz.apg.vb.droits.APDroitAPGDTO;
-import globaz.apg.vb.droits.APDroitDTO;
-import globaz.apg.vb.droits.APDroitLAPGJointDemandeListViewBean;
-import globaz.apg.vb.droits.APDroitLAPGJointDemandeViewBean;
-import globaz.apg.vb.droits.APDroitParametresRCDTO;
-import globaz.apg.vb.droits.APRecapitulatifDroitAPGViewBean;
-import globaz.apg.vb.droits.APRecapitulatifDroitMatViewBean;
+import globaz.apg.utils.APGUtils;
+import globaz.apg.vb.droits.*;
 import globaz.apg.vb.prestation.APPrestationViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
@@ -27,11 +25,17 @@ import globaz.jade.service.exception.JadeServiceLocatorException;
 import globaz.prestation.ged.PRGedAffichageDossier;
 import globaz.prestation.servlet.PRDefaultAction;
 import globaz.prestation.tools.PRSessionDataContainerHelper;
-import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.mail.MailSendException;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Cette action est appellée par les écrans de recherche du droit. Il s'agit du premier écran qui est affiché lors de
@@ -49,8 +53,15 @@ public class APLAPGAction extends PRDefaultAction {
     // ~ Static fields/initializers
     // -------------------------------------------------------------------------------------
 
+    private static final Logger LOG = LoggerFactory.getLogger(APLAPGAction.class);
+
+    private static final String MAIL_SUBJECT_ENVOI_ZIP = "AGP_PANDEMIE_MAIL_SUBJECT_ENVOI_ZIP";
+    private static final String MAIL_CORPS_ENVOI_ZIP = "AGP_PANDEMIE_MAIL_CORPS_ENVOI_ZIP";
+    private static final String MAIL_CORPS_ENVOI_ZIP_EMPTY = "AGP_PANDEMIE_MAIL_CORPS_ENVOI_ZIP_EMPTY";
+
     private static final String VERS_ECRAN_RECAPITULATIF_APG = "recapitulatifDroitAPG_de.jsp";
     private static final String VERS_ECRAN_RECAPITULATIF_MAT = "recapitulatifDroitMat_de.jsp";
+    private static final String VERS_ECRAN_RECAPITULATIF_PAN = "recapitulatifDroitPan_de.jsp";
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -92,21 +103,14 @@ public class APLAPGAction extends PRDefaultAction {
      * Action custom permettant de rediriger correctement soit vers l'écran d'affichage du droit maternité, soit vers
      * les écrans du droit APG.
      * 
-     * @param session
-     *            DOCUMENT ME!
-     * @param request
-     *            DOCUMENT ME!
-     * @param response
-     *            DOCUMENT ME!
-     * @param mainDispatcher
-     *            DOCUMENT ME!
-     * @param viewBean
-     *            DOCUMENT ME!
+     * @param session        DOCUMENT ME!
+     * @param request        DOCUMENT ME!
+     * @param response       DOCUMENT ME!
+     * @param mainDispatcher DOCUMENT ME!
+     * @param viewBean       DOCUMENT ME!
      * @return la destination de forward
-     * @throws ServletException
-     *             DOCUMENT ME!
-     * @throws IOException
-     *             DOCUMENT ME!
+     * @throws ServletException DOCUMENT ME!
+     * @throws IOException      DOCUMENT ME!
      */
     public String actionAfficherLAPG(HttpSession session, HttpServletRequest request, HttpServletResponse response,
             FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) throws ServletException, IOException {
@@ -115,8 +119,10 @@ public class APLAPGAction extends PRDefaultAction {
         String selectedId = getSelectedId(request);
 
         genreService = assureQueGenreServiceEstLa(genreService, selectedId, session, mainDispatcher);
-
-        if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(genreService)) {
+        if (APGUtils.isTypeAllocationPandemie(genreService)) {
+            destination = this.getUserActionURL(request, IAPActions.ACTION_SAISIE_CARTE_PAN, FWAction.ACTION_AFFICHER
+                    + "&" + getSelectedIdParam(request));
+        } else if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(genreService)) {
             destination = this.getUserActionURL(request, IAPActions.ACTION_SAISIE_CARTE_AMAT, FWAction.ACTION_AFFICHER
                     + "&" + getSelectedIdParam(request));
         } else {
@@ -131,18 +137,12 @@ public class APLAPGAction extends PRDefaultAction {
      * Redéfinition d'actionChercher permettant de créer un viewBean qui sera utilisé pour l'affichage de données dans
      * la page rc.
      * 
-     * @param session
-     *            DOCUMENT ME!
-     * @param request
-     *            DOCUMENT ME!
-     * @param response
-     *            DOCUMENT ME!
-     * @param mainDispatcher
-     *            DOCUMENT ME!
-     * @throws ServletException
-     *             DOCUMENT ME!
-     * @throws IOException
-     *             DOCUMENT ME!
+     * @param session        DOCUMENT ME!
+     * @param request        DOCUMENT ME!
+     * @param response       DOCUMENT ME!
+     * @param mainDispatcher DOCUMENT ME!
+     * @throws ServletException DOCUMENT ME!
+     * @throws IOException      DOCUMENT ME!
      * @see globaz.framework.controller.FWDefaultServletAction#actionChercher(javax.servlet.http.HttpSession,
      *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
      *      globaz.framework.controller.FWDispatcher)
@@ -209,21 +209,14 @@ public class APLAPGAction extends PRDefaultAction {
      * Action custom permettant de ridiriger correctement vers soit l'écran de récapitulatif droit mat soit vers l'écran
      * de recapitulatif droit apg.
      * 
-     * @param session
-     *            DOCUMENT ME!
-     * @param request
-     *            DOCUMENT ME!
-     * @param response
-     *            DOCUMENT ME!
-     * @param mainDispatcher
-     *            DOCUMENT ME!
-     * @param viewBean
-     *            DOCUMENT ME!
+     * @param session        DOCUMENT ME!
+     * @param request        DOCUMENT ME!
+     * @param response       DOCUMENT ME!
+     * @param mainDispatcher DOCUMENT ME!
+     * @param viewBean       DOCUMENT ME!
      * @return soit l'écran de récapitulatif droit mat soit l'écran de recapitulatif droit apg.
-     * @throws ServletException
-     *             DOCUMENT ME!
-     * @throws IOException
-     *             DOCUMENT ME!
+     * @throws ServletException DOCUMENT ME!
+     * @throws IOException      DOCUMENT ME!
      */
     public String actionRecapitulatif(HttpSession session, HttpServletRequest request, HttpServletResponse response,
             FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) throws ServletException, IOException {
@@ -256,7 +249,27 @@ public class APLAPGAction extends PRDefaultAction {
              */
         }
 
-        if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(genreService)) {
+        if (APGUtils.isTypeAllocationPandemie(genreService)) {
+            destination += APLAPGAction.VERS_ECRAN_RECAPITULATIF_PAN;
+            action = FWAction.newInstance(IAPActions.ACTION_RECAPITUALATIF_DROIT_PAN + "." + FWAction.ACTION_AFFICHER);
+            recViewBean = new APRecapitulatifDroitPanViewBean();
+            ((APRecapitulatifDroitPanViewBean) recViewBean).setIdDroit(selectedId);
+
+            ((APRecapitulatifDroitPanViewBean) recViewBean).setAfficherBoutonSimulerPmtBPID(afficherBouton);
+            // dispatch
+            this.saveViewBean(recViewBean, session);
+            // action.setRight(FWSecureConstants.ADD);
+            mainDispatcher.dispatch(recViewBean, action);
+
+            APDroitDTO dto = new APDroitDTO();
+            dto.setDateDebutDroit(((APRecapitulatifDroitPanViewBean) recViewBean).getDateDebutDroit());
+            dto.setGenreService(((APRecapitulatifDroitPanViewBean) recViewBean).getGenreService());
+            dto.setIdDroit(selectedId);
+            dto.setNoAVS(((APRecapitulatifDroitPanViewBean) recViewBean).getNoAVS());
+            dto.setNomPrenom(((APRecapitulatifDroitPanViewBean) recViewBean).getNomPrenom());
+
+            PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO, dto);
+        } else if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(genreService)) {
             destination += APLAPGAction.VERS_ECRAN_RECAPITULATIF_MAT;
             action = FWAction.newInstance(IAPActions.ACTION_RECAPITUALATIF_DROIT_MAT + "." + FWAction.ACTION_AFFICHER);
             recViewBean = new APRecapitulatifDroitMatViewBean();
@@ -346,14 +359,10 @@ public class APLAPGAction extends PRDefaultAction {
     /**
      * redéfinition de beforeLister permettant d'initialiser le listViewBean avec les données contenues dans la session.
      * 
-     * @param session
-     *            DOCUMENT ME!
-     * @param request
-     *            DOCUMENT ME!
-     * @param response
-     *            DOCUMENT ME!
-     * @param viewBean
-     *            DOCUMENT ME!
+     * @param session  DOCUMENT ME!
+     * @param request  DOCUMENT ME!
+     * @param response DOCUMENT ME!
+     * @param viewBean DOCUMENT ME!
      * @return super.beforeLister
      * @see globaz.framework.controller.FWDefaultServletAction#beforeLister(javax.servlet.http.HttpSession,
      *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
@@ -370,6 +379,7 @@ public class APLAPGAction extends PRDefaultAction {
         dto.setResponsable(listViewBean.getForIdGestionnaire());
         dto.setEtatDemande(listViewBean.getForEtatDemande());
         dto.setEtatDroit(listViewBean.getForEtatDroit());
+        dto.setGenreService(listViewBean.getForGenreServiceListDroit());
         dto.setOrderBy(listViewBean.getOrderBy());
 
         PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_DROIT_PARAMETRES_RC_DTO, dto);
@@ -381,21 +391,14 @@ public class APLAPGAction extends PRDefaultAction {
      * Action custom permettant de calculer des prestations rétroactive pour les ACM crée un nouveau droit enfant du
      * droit source en vue d'une correction.
      * 
-     * @param session
-     *            DOCUMENT ME!
-     * @param request
-     *            DOCUMENT ME!
-     * @param response
-     *            DOCUMENT ME!
-     * @param mainDispatcher
-     *            DOCUMENT ME!
-     * @param viewBean
-     *            DOCUMENT ME!
+     * @param session        DOCUMENT ME!
+     * @param request        DOCUMENT ME!
+     * @param response       DOCUMENT ME!
+     * @param mainDispatcher DOCUMENT ME!
+     * @param viewBean       DOCUMENT ME!
      * @return DOCUMENT ME!
-     * @throws ServletException
-     *             DOCUMENT ME!
-     * @throws IOException
-     *             DOCUMENT ME!
+     * @throws ServletException DOCUMENT ME!
+     * @throws IOException      DOCUMENT ME!
      */
     public String calculerACM(HttpSession session, HttpServletRequest request, HttpServletResponse response,
             FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) throws ServletException, IOException {
@@ -407,21 +410,14 @@ public class APLAPGAction extends PRDefaultAction {
      * Action custom permettant de calculer des prestations rétroactive pour le droits à la maternite cantonale crée un
      * nouveau droit enfant du droit source en vue d'une correction.
      * 
-     * @param session
-     *            DOCUMENT ME!
-     * @param request
-     *            DOCUMENT ME!
-     * @param response
-     *            DOCUMENT ME!
-     * @param mainDispatcher
-     *            DOCUMENT ME!
-     * @param viewBean
-     *            DOCUMENT ME!
+     * @param session        DOCUMENT ME!
+     * @param request        DOCUMENT ME!
+     * @param response       DOCUMENT ME!
+     * @param mainDispatcher DOCUMENT ME!
+     * @param viewBean       DOCUMENT ME!
      * @return DOCUMENT ME!
-     * @throws ServletException
-     *             DOCUMENT ME!
-     * @throws IOException
-     *             DOCUMENT ME!
+     * @throws ServletException DOCUMENT ME!
+     * @throws IOException      DOCUMENT ME!
      */
 
     public String calculerDroitMaterniteCantonale(HttpSession session, HttpServletRequest request,
@@ -435,21 +431,14 @@ public class APLAPGAction extends PRDefaultAction {
      * Action custom permettant de copier complètement un droit. Au contraire de corrigerDroit, cette méthode crée une
      * copie complète et autonome d'un droit.
      * 
-     * @param session
-     *            DOCUMENT ME!
-     * @param request
-     *            DOCUMENT ME!
-     * @param response
-     *            DOCUMENT ME!
-     * @param mainDispatcher
-     *            DOCUMENT ME!
-     * @param viewBean
-     *            DOCUMENT ME!
+     * @param session        DOCUMENT ME!
+     * @param request        DOCUMENT ME!
+     * @param response       DOCUMENT ME!
+     * @param mainDispatcher DOCUMENT ME!
+     * @param viewBean       DOCUMENT ME!
      * @return DOCUMENT ME!
-     * @throws ServletException
-     *             DOCUMENT ME!
-     * @throws IOException
-     *             DOCUMENT ME!
+     * @throws ServletException DOCUMENT ME!
+     * @throws IOException      DOCUMENT ME!
      */
     public String copierDroit(HttpSession session, HttpServletRequest request, HttpServletResponse response,
             FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) throws ServletException, IOException {
@@ -459,8 +448,10 @@ public class APLAPGAction extends PRDefaultAction {
         String selectedId = getSelectedId(request);
 
         genreService = assureQueGenreServiceEstLa(genreService, selectedId, session, mainDispatcher);
-
-        if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(genreService)) {
+        if (APGUtils.isTypeAllocationPandemie(genreService)) {
+            destination = this.getUserActionURL(request, IAPActions.ACTION_SAISIE_CARTE_PAN, FWAction.ACTION_AFFICHER
+                    + "&" + getSelectedIdParam(request));
+        } else if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(genreService)) {
             destination = this.getUserActionURL(request, IAPActions.ACTION_SAISIE_CARTE_AMAT, FWAction.ACTION_AFFICHER
                     + "&" + getSelectedIdParam(request));
         } else {
@@ -481,21 +472,14 @@ public class APLAPGAction extends PRDefaultAction {
      * Action custom permettant de copier un droit en vue d'une correction. Au contraire de copierDroit, cette méthode
      * crée un nouveau droit enfant du droit source en vue d'une correction.
      * 
-     * @param session
-     *            DOCUMENT ME!
-     * @param request
-     *            DOCUMENT ME!
-     * @param response
-     *            DOCUMENT ME!
-     * @param mainDispatcher
-     *            DOCUMENT ME!
-     * @param viewBean
-     *            DOCUMENT ME!
+     * @param session        DOCUMENT ME!
+     * @param request        DOCUMENT ME!
+     * @param response       DOCUMENT ME!
+     * @param mainDispatcher DOCUMENT ME!
+     * @param viewBean       DOCUMENT ME!
      * @return DOCUMENT ME!
-     * @throws ServletException
-     *             DOCUMENT ME!
-     * @throws IOException
-     *             DOCUMENT ME!
+     * @throws ServletException DOCUMENT ME!
+     * @throws IOException      DOCUMENT ME!
      */
     public String corrigerDroit(HttpSession session, HttpServletRequest request, HttpServletResponse response,
             FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) throws ServletException, IOException {
@@ -545,8 +529,7 @@ public class APLAPGAction extends PRDefaultAction {
     /**
      * retourne le type de prestation sélectionné pour cette action.
      * 
-     * @param session
-     *            DOCUMENT ME!
+     * @param session DOCUMENT ME!
      * @return la valeur courante de l'attribut type prestation
      */
     protected TypePrestation getTypePrestation(HttpSession session) {
@@ -575,21 +558,14 @@ public class APLAPGAction extends PRDefaultAction {
      * Action custom permettant de restituer les prestations versées dans le cadre d'un droit. Cette méthode annule
      * toutes les prestations d'un droit en créant une prestation d'un montant exactement opposé.
      * 
-     * @param session
-     *            DOCUMENT ME!
-     * @param request
-     *            DOCUMENT ME!
-     * @param response
-     *            DOCUMENT ME!
-     * @param mainDispatcher
-     *            DOCUMENT ME!
-     * @param viewBean
-     *            DOCUMENT ME!
+     * @param session        DOCUMENT ME!
+     * @param request        DOCUMENT ME!
+     * @param response       DOCUMENT ME!
+     * @param mainDispatcher DOCUMENT ME!
+     * @param viewBean       DOCUMENT ME!
      * @return DOCUMENT ME!
-     * @throws ServletException
-     *             DOCUMENT ME!
-     * @throws IOException
-     *             DOCUMENT ME!
+     * @throws ServletException DOCUMENT ME!
+     * @throws IOException      DOCUMENT ME!
      */
     public String restituerDroit(HttpSession session, HttpServletRequest request, HttpServletResponse response,
             FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) throws ServletException, IOException {
@@ -600,21 +576,14 @@ public class APLAPGAction extends PRDefaultAction {
      * Action custom permettant de simuler le paiement d'un droit. Est utilisé pour récupéré des anciens cas de l'AS400
      * qui doivent être restitué. Pré requis : Saisir l'ancien cas dans le nouveau système.
      * 
-     * @param session
-     *            DOCUMENT ME!
-     * @param request
-     *            DOCUMENT ME!
-     * @param response
-     *            DOCUMENT ME!
-     * @param mainDispatcher
-     *            DOCUMENT ME!
-     * @param viewBean
-     *            DOCUMENT ME!
+     * @param session          DOCUMENT ME!
+     * @param request          DOCUMENT ME!
+     * @param response         DOCUMENT ME!
+     * @param mainDispatcher   DOCUMENT ME!
+     * @param originalViewBean DOCUMENT ME!
      * @return DOCUMENT ME!
-     * @throws ServletException
-     *             DOCUMENT ME!
-     * @throws IOException
-     *             DOCUMENT ME!
+     * @throws ServletException DOCUMENT ME!
+     * @throws IOException      DOCUMENT ME!
      */
     public String simulerPaiementDroit(HttpSession session, HttpServletRequest request, HttpServletResponse response,
             FWDispatcher mainDispatcher, FWViewBeanInterface originalViewBean) throws ServletException, IOException {
@@ -653,6 +622,84 @@ public class APLAPGAction extends PRDefaultAction {
         }
 
         return destination;
+    }
+
+    public void actionEnvoyerMail(HttpSession session, HttpServletRequest request, HttpServletResponse response,
+                                  FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) throws ServletException, IOException {
+
+        String numAvs = request.getParameter("noAVS");
+        BSession bSession = (BSession) mainDispatcher.getSession();
+        FWAction newAction = null;
+
+        String method = request.getParameter("_method");
+
+        String filesPathStorage = "";
+        try {
+
+
+            if (viewBean instanceof APDroitPanViewBean) {
+                newAction = FWAction.newInstance(IAPActions.ACTION_DROIT_LAPG + ".actionAfficherLAPG");
+            } else {
+                newAction = FWAction.newInstance(IAPActions.ACTION_DROIT_LAPG + ".chercher");
+            }
+
+            filesPathStorage = APProperties.STORAGE_APG_PANDEMIE_FOLDER.getValue();
+
+            filesPathStorage = CommonFilesUtils.readPathFiles(numAvs, filesPathStorage);
+
+            sendEmail(bSession, numAvs, filesPathStorage);
+
+            String destination = request.getServletPath() + "?" + PRDefaultAction.USER_ACTION + "=" + newAction;
+            goSendRedirect(destination, request, response);
+        } catch (PropertiesException e) {
+            servlet.getServletContext().getRequestDispatcher("/errorPage.jsp").forward(request, response);
+        }
+    }
+
+    private void sendEmail(BSession session, String numAVS, String filesPath) throws MailSendException, IOException {
+        List<String> filesToJoin = CommonFilesUtils.selectFilesToJoin(filesPath, numAVS);
+        StringBuilder corps = new StringBuilder();
+        if (!filesToJoin.isEmpty()) {
+            corps.append(session.getLabel(MAIL_CORPS_ENVOI_ZIP));
+        } else {
+            corps.append(session.getLabel(MAIL_CORPS_ENVOI_ZIP_EMPTY));
+        }
+        List<String> emailsAdresses = new ArrayList<>();
+        emailsAdresses.add(getEMailAddress(session));
+        try {
+            ProcessMailUtils.sendMail(emailsAdresses, getEMailObject(session, numAVS), corps.toString(), filesToJoin);
+        } catch (Exception e) {
+            throw new MailSendException("Erreur à l'envoi de l'e-mail", e);
+        }
+    }
+
+    public final String getEMailAddress(BSession session) {
+        String eMailAddress = "";
+        try {
+            if (session != null) {
+                eMailAddress = session.getUserEMail();
+            }
+            if (JadeStringUtil.isBlankOrZero(eMailAddress)) {
+                eMailAddress = APProperties.EMAIL_APG_PANDEMIE.getValue();
+            }
+        } catch (PropertiesException e) {
+            LOG.error("Erreur à la récupération de la propriété Adresse E-mail", e);
+        }
+        return eMailAddress;
+    }
+
+    protected String getEMailObject(BSession session, String numAVS) {
+        return session.getLabel(MAIL_SUBJECT_ENVOI_ZIP) + ": " + numAVS;
+    }
+
+    public String actionAttenteReponse(HttpSession session, HttpServletRequest request, HttpServletResponse response,
+                                     FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) throws ServletException, IOException {
+        return deleguerAHelper(session, request, response, mainDispatcher, viewBean);
+    }
+
+    public String actionRefuser(HttpSession session, HttpServletRequest request, HttpServletResponse response,
+                                       FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) throws ServletException, IOException {
+        return deleguerAHelper(session, request, response, mainDispatcher, viewBean);
     }
 
 }

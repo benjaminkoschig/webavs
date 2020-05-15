@@ -8,11 +8,9 @@ package globaz.apg.servlet;
 
 import globaz.apg.db.droits.APDroitAPG;
 import globaz.apg.db.droits.APDroitLAPG;
+import globaz.apg.db.droits.APDroitPandemie;
 import globaz.apg.util.TypePrestation;
-import globaz.apg.vb.droits.APDroitAPGDTO;
-import globaz.apg.vb.droits.APDroitAPGPViewBean;
-import globaz.apg.vb.droits.APDroitDTO;
-import globaz.apg.vb.droits.APDroitMatPViewBean;
+import globaz.apg.vb.droits.*;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWDispatcher;
@@ -66,7 +64,7 @@ public abstract class APAbstractDroitDTOAction extends PRDefaultAction {
      *      globaz.framework.controller.FWDispatcher)
      */
     @Override
-    protected final void actionAfficher(HttpSession session, HttpServletRequest request, HttpServletResponse response,
+    protected void actionAfficher(HttpSession session, HttpServletRequest request, HttpServletResponse response,
             FWDispatcher mainDispatcher) throws ServletException, IOException {
         if (loadDTO(session, request, mainDispatcher) == null) {
             forwardToErrorPage(loadViewBean(session), request, response);
@@ -242,15 +240,18 @@ public abstract class APAbstractDroitDTOAction extends PRDefaultAction {
      */
     protected APDroitDTO createDroitDTO(HttpSession session, HttpServletRequest request, String idDroitDTOBackup,
             FWDispatcher dispatcher) {
-        FWViewBeanInterface droit;
-        FWAction action;
+        FWViewBeanInterface droit = null;
+        FWAction action = null;
 
         if (isTypeAPG(session)) {
             droit = new APDroitAPGPViewBean();
             action = FWAction.newInstance(IAPActions.ACTION_SAISIE_CARTE_APG + "." + FWAction.ACTION_AFFICHER);
-        } else {
+        } else if (isTypeMAT(session)) {
             droit = new APDroitMatPViewBean();
             action = FWAction.newInstance(IAPActions.ACTION_SAISIE_CARTE_AMAT + "." + FWAction.ACTION_AFFICHER);
+        } else if (isTypePan(session)) {
+            droit = new APDroitPanViewBean();
+            action = FWAction.newInstance(IAPActions.ACTION_SAISIE_CARTE_PAN + "." + FWAction.ACTION_AFFICHER);
         }
 
         try {
@@ -258,8 +259,12 @@ public abstract class APAbstractDroitDTOAction extends PRDefaultAction {
 
             if (isTypeAPG(session)) {
                 return new APDroitAPGDTO((APDroitAPG) droit);
-            } else {
+            } else if (isTypeMAT(session)) {
                 return new APDroitDTO((APDroitLAPG) droit);
+            } else if (isTypePan(session)){
+                return new APDroitPanDTO((APDroitPandemie) droit);
+            } else {
+                return null;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -363,6 +368,34 @@ public abstract class APAbstractDroitDTOAction extends PRDefaultAction {
      */
     protected boolean isTypeAPG(HttpSession session) {
         return TypePrestation.TYPE_APG.equals(TypePrestation
+                .typePrestationInstanceForCS((String) PRSessionDataContainerHelper.getData(session,
+                        PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)));
+    }
+
+    /**
+     * getter pour l'attribut type APG
+     *
+     * @param session
+     *            DOCUMENT ME!
+     *
+     * @return la valeur courante de l'attribut type APG
+     */
+    protected boolean isTypeMAT(HttpSession session) {
+        return TypePrestation.TYPE_MATERNITE.equals(TypePrestation
+                .typePrestationInstanceForCS((String) PRSessionDataContainerHelper.getData(session,
+                        PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)));
+    }
+
+    /**
+     * getter pour l'attribut type APG
+     *
+     * @param session
+     *            DOCUMENT ME!
+     *
+     * @return la valeur courante de l'attribut type APG
+     */
+    protected boolean isTypePan(HttpSession session) {
+        return TypePrestation.TYPE_PANDEMIE.equals(TypePrestation
                 .typePrestationInstanceForCS((String) PRSessionDataContainerHelper.getData(session,
                         PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)));
     }

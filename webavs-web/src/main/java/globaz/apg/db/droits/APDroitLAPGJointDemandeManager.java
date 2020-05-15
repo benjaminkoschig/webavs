@@ -36,6 +36,7 @@ public class APDroitLAPGJointDemandeManager extends PRAbstractManagerHierarchiqu
 
     /** DOCUMENT ME! */
     public static final String CLE_DROITS_TOUS = "DROITS_TOUS";
+    public static final String CLE_GENRE_TOUS = "GENRE_TOUS";
 
     /** DOCUMENT ME! */
     public static final String CLE_NON_DEFINITIFS = "DROITS_NON_DEFINITIFS";
@@ -66,6 +67,7 @@ public class APDroitLAPGJointDemandeManager extends PRAbstractManagerHierarchiqu
     private String likeNumeroAVSNNSS = "";
     private String likePrenom = "";
     private String notForGenreService = "";
+    private String forGenreServiceListDroit = "";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -143,8 +145,15 @@ public class APDroitLAPGJointDemandeManager extends PRAbstractManagerHierarchiqu
             }
 
             if (CLE_NON_DEFINITIFS.equals(forEtatDroit)) {
+                // Les droits non définitifs sont les droits dont l'état n'est pas égale à : DEFINITIF, REFUSER et TRANFERE.
                 sqlWhere += schema + APDroitLAPG.TABLE_NAME_LAPG + "." + APDroitLAPG.FIELDNAME_ETAT + "<>"
                         + _dbWriteNumeric(statement.getTransaction(), IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
+                sqlWhere += " AND ";
+                sqlWhere += schema + APDroitLAPG.TABLE_NAME_LAPG + "." + APDroitLAPG.FIELDNAME_ETAT + "<>"
+                        + _dbWriteNumeric(statement.getTransaction(), IAPDroitLAPG.CS_ETAT_DROIT_REFUSE);
+                sqlWhere += " AND ";
+                sqlWhere += schema + APDroitLAPG.TABLE_NAME_LAPG + "." + APDroitLAPG.FIELDNAME_ETAT + "<>"
+                        + _dbWriteNumeric(statement.getTransaction(), IAPDroitLAPG.CS_ETAT_DROIT_TRANSFERE);
             } else {
                 sqlWhere += schema + APDroitLAPG.TABLE_NAME_LAPG + "." + APDroitLAPG.FIELDNAME_ETAT + "="
                         + _dbWriteNumeric(statement.getTransaction(), forEtatDroit);
@@ -292,6 +301,15 @@ public class APDroitLAPGJointDemandeManager extends PRAbstractManagerHierarchiqu
 
                     schema + APDroitLAPG.TABLE_NAME_LAPG + "." + APDroitLAPG.FIELDNAME_DATEFINDROIT + ">="
                     + _dbWriteDateAMJ(statement.getTransaction(), forDroitContenuDansDateFin) + " )) ";
+        }
+
+        if (!JadeStringUtil.isEmpty(forGenreServiceListDroit) && !CLE_GENRE_TOUS.equals(forGenreServiceListDroit)) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+
+            sqlWhere += schema + APDroitLAPG.TABLE_NAME_LAPG + "." + APDroitLAPG.FIELDNAME_GENRESERVICE + "="
+                    + _dbWriteNumeric(statement.getTransaction(), forGenreServiceListDroit);
         }
 
         if (!JadeStringUtil.isEmpty(forGenreService)) {
@@ -661,4 +679,11 @@ public class APDroitLAPGJointDemandeManager extends PRAbstractManagerHierarchiqu
         this.notForGenreService = notForGenreService;
     }
 
+    public String getForGenreServiceListDroit() {
+        return forGenreServiceListDroit;
+    }
+
+    public void setForGenreServiceListDroit(String forGenreServiceListDroit) {
+        this.forGenreServiceListDroit = forGenreServiceListDroit;
+    }
 }

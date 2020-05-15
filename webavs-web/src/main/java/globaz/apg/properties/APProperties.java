@@ -131,7 +131,42 @@ public enum APProperties implements IProperties {
 
     },
 
-    SEODOR_TYPE_SERVICE("rapg.genre.service.seodor", "Type de service pour l'appel WebService SEODOR"){
+    DEMANDES_APG_PANDEMIE_FOLDER("path.demande.covid19", "Chemin des demandes pour pandémie") {
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
+        }
+    },
+
+    DOMAINE_ADRESSE_APG_PANDEMIE("domaine.adresse.covid19", "Code système du domaine covid19 des adresses") {
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
+        }
+    },
+
+    STORAGE_APG_PANDEMIE_FOLDER("path.stockage.covid19", "Chemin du stockage des zip pour pandémie") {
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
+        }
+    },
+
+    EMAIL_APG_PANDEMIE("email.pandemie", "Email pour l'envoi des dossiers pandémie") {
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
+        }
+    },
+
+    GESTIONNAIRE_USER("user.gestionnaire.covid19", "Chemin du stockage des zip pour pandémie") {
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
+        }
+    },
+
+    ACTIVER_ID_TIERS_GED_AP("activer.idTiers.Ged", "Activation de l'idTier pour la mise en ged dans Process APG") {
         @Override
         public boolean isValidValue(final String propertyValue) {
             return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);

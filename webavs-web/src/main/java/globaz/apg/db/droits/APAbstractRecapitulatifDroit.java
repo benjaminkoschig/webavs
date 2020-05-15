@@ -6,7 +6,7 @@
  */
 package globaz.apg.db.droits;
 
-import globaz.apg.api.droits.IAPDroitLAPG;
+import globaz.apg.utils.APGUtils;
 import globaz.commons.nss.NSUtil;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
@@ -310,7 +310,7 @@ public abstract class APAbstractRecapitulatifDroit extends BEntity {
      * @return la valeur courante de l'attribut modifiable
      */
     public boolean isModifiable() {
-        return IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(etat);
+        return APGUtils.isDroitModifiable(etat);
     }
 
     /**

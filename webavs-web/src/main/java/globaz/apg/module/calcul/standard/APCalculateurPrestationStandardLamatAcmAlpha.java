@@ -2,14 +2,8 @@ package globaz.apg.module.calcul.standard;
 
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.*;
+
 import ch.globaz.common.properties.CommonPropertiesUtils;
 import globaz.apg.api.annonces.IAPAnnonce;
 import globaz.apg.api.droits.IAPDroitAPG;
@@ -21,13 +15,7 @@ import globaz.apg.application.APApplication;
 import globaz.apg.calculateur.IAPPrestationCalculateur;
 import globaz.apg.calculateur.acm.alfa.APCalculateurAcmAlpha;
 import globaz.apg.calculateur.pojo.APPrestationCalculeeAPersister;
-import globaz.apg.db.droits.APDroitAPG;
-import globaz.apg.db.droits.APDroitLAPG;
-import globaz.apg.db.droits.APDroitLAPGJointDemande;
-import globaz.apg.db.droits.APDroitLAPGJointDemandeManager;
-import globaz.apg.db.droits.APDroitMaternite;
-import globaz.apg.db.droits.APSituationProfessionnelle;
-import globaz.apg.db.droits.APSituationProfessionnelleManager;
+import globaz.apg.db.droits.*;
 import globaz.apg.db.prestation.APDroitLAPGJoinPrestationManager;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
@@ -146,6 +134,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
     public static final String PRESTATION_APG = "APG";
     public static final String PRESTATION_MATERNITE = "MATERNITE";
+    public static final String PRESTATION_PANDEMIE = "PANDEMIE";
     private static final String REFERENCE_FILE_APG = "calculAPGReferenceData.xml";
 
     private APPrestationViewBean viewBean;
@@ -205,7 +194,9 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         prestCalculee.setDateFin(pgpc.getDateFin());
         prestCalculee.setEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
         // Code défensif -> impact moindre vu que seule la FERCIAB utilise les jours isolés
-        if ("true".equals(JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_IS_FERCIAB))) {
+        //               -> pour le nodule Pandémie
+        if ("true".equals(JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_IS_FERCIAB))
+            || droit instanceof APDroitPandemie) {
             prestCalculee.setCsGenrePrestation(prestationWrapper.getPrestationBase().getCsGenrePrestion());
         }
 
@@ -300,7 +291,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         BTransaction transaction = null;
 
         try {
-            if (!IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(droit.getEtat())) {
+            if (!Arrays.asList(IAPDroitLAPG.DROITS_MODIFIABLES).contains(droit.getEtat())) {
                 throw new APCalculException(session.getLabel("MODULE_CALCUL_ETAT_DROIT_INVALIDE"));
             }
 
@@ -343,7 +334,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
         try {
             // le droit doit être dans l'état en attente
-            if (!IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(droit.getEtat())) {
+            if (!Arrays.asList(IAPDroitLAPG.DROITS_MODIFIABLES).contains(droit.getEtat())) {
                 throw new APCalculException(session.getLabel("MODULE_CALCUL_ETAT_DROIT_INVALIDE"));
             }
 
@@ -881,7 +872,9 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             entity.setEtat(prestationACreer.getEtat());
             entity.setIdDroit(prestationACreer.getIdDroit());
             // Code défensif -> impact moindre vu que seule la FERCIAB utilise les jours isolés
-            if ("true".equals(JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_IS_FERCIAB))) {
+            //               -> pour le module PANDEMIE
+            if ("true".equals(JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_IS_FERCIAB))
+                    || droit instanceof APDroitPandemie) {
                 entity.setGenre(prestationACreer.getCsGenrePrestation());
             }
 
@@ -1158,6 +1151,14 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             }
         }
         doRestitutionAndClear(session, transaction, idDroit, pgpcRestitution, prestations);
+
+        for (int i = 0; i < prestationsARestituer.length; i++) {
+            if (APTypeDePrestation.PANDEMIE.isCodeSystemEqual(prestationsARestituer[i].getGenre())
+                    && IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestationsARestituer[i].getEtat())) {
+                prestations.add(prestationsARestituer[i]);
+            }
+        }
+        doRestitutionAndClear(session, transaction, idDroit, pgpcRestitution, prestations);
     }
 
     private void doRestitutionAndClear(final BSession session, final BTransaction transaction, final String idDroit,
@@ -1417,11 +1418,13 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
             if (droit instanceof APDroitMaternite) {
                 apgOuMaternite = APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_MATERNITE;
+            } else if(droit instanceof APDroitPandemie) {
+                apgOuMaternite = APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PANDEMIE;
             } else {
                 apgOuMaternite = APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_APG;
             }
 
-            if (!IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(droit.getEtat())) {
+            if (!Arrays.asList(IAPDroitLAPG.DROITS_MODIFIABLES).contains(droit.getEtat())) {
                 throw new APCalculException(session.getLabel("MODULE_CALCUL_ETAT_DROIT_INVALIDE"));
             }
 
@@ -1442,12 +1445,13 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                         throw new APCalculACORException(session.getLabel("MODULE_CALCUL_ACOR_ERROR"));
                     }
                 }
-            } else {
+            } else if (!APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PANDEMIE.equals(apgOuMaternite)){
                 if (APCalculAcorUtil.grantCalulAcorAPG(session, (APDroitAPG) droit)) {
                     throw new APCalculACORException(session.getLabel("MODULE_CALCUL_ACOR_ERROR"));
                 }
             }
 
+            if (!basesCalcul.isEmpty()) {
             final APBaseCalcul bc = (APBaseCalcul) basesCalcul.get(0);
             if (bc != null) {
                 transaction = (BTransaction) session.newTransaction();
@@ -1463,6 +1467,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                 traiterPrestationsCourantes(session, transaction,
                         this.calculerPrestationsCourantes(session, basesCalcul, apgOuMaternite), droit, fraisGarde);
 
+                }
             }
         } catch (final Exception e) {
             if (transaction != null) {
@@ -2386,12 +2391,13 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
             }
         }
-
+        if (!listDesPrestationsACreer.isEmpty()) {
         // On fusionne les prestations contiguës, avec même montant d'allocation journalière
         listDesPrestationsACreer = fusionnerPrestationsACreer(session, listDesPrestationsACreer);
 
         // Créer les prestations
         creerPrestations(session, transaction, droit, listDesPrestationsACreer);
+    }
     }
 
     /**

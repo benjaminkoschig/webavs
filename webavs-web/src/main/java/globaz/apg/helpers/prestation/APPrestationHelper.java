@@ -29,35 +29,15 @@ import globaz.apg.calculateur.maternite.acm2.ACM2PersistenceInputData;
 import globaz.apg.calculateur.pojo.APPrestationCalculeeAPersister;
 import globaz.apg.calculateur.pojo.APRepartitionCalculeeAPersister;
 import globaz.apg.db.annonces.APAnnonceAPG;
-import globaz.apg.db.droits.APDroitAPG;
-import globaz.apg.db.droits.APDroitLAPG;
-import globaz.apg.db.droits.APDroitMaternite;
-import globaz.apg.db.droits.APEmployeur;
-import globaz.apg.db.droits.APEnfantAPG;
-import globaz.apg.db.droits.APPeriodeAPG;
-import globaz.apg.db.droits.APSitProJointEmployeur;
-import globaz.apg.db.droits.APSituationFamilialeMat;
-import globaz.apg.db.droits.APSituationFamilialeMatManager;
-import globaz.apg.db.droits.APSituationProfessionnelle;
-import globaz.apg.db.droits.APSituationProfessionnelleManager;
-import globaz.apg.db.prestation.APCotisation;
-import globaz.apg.db.prestation.APCotisationManager;
-import globaz.apg.db.prestation.APPrestation;
-import globaz.apg.db.prestation.APPrestationManager;
-import globaz.apg.db.prestation.APRepartitionJointPrestation;
-import globaz.apg.db.prestation.APRepartitionPaiements;
+import globaz.apg.db.droits.*;
+import globaz.apg.db.prestation.*;
 import globaz.apg.enums.APAssuranceTypeAssociation;
 import globaz.apg.enums.APTypeCalculPrestation;
 import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.exceptions.APEntityNotFoundException;
 import globaz.apg.exceptions.APWrongViewBeanTypeException;
 import globaz.apg.helpers.droits.APSituationProfessionnelleHelper;
-import globaz.apg.module.calcul.APBaseCalcul;
-import globaz.apg.module.calcul.APBasesCalculBuilder;
-import globaz.apg.module.calcul.APCalculException;
-import globaz.apg.module.calcul.APModuleRepartitionPaiements;
-import globaz.apg.module.calcul.APPrestationCalculee;
-import globaz.apg.module.calcul.APPrestationStandardLamatAcmAlphaData;
+import globaz.apg.module.calcul.*;
 import globaz.apg.module.calcul.constantes.ECanton;
 import globaz.apg.module.calcul.constantes.EMontantsMax;
 import globaz.apg.module.calcul.standard.APCalculateurPrestationStandardLamatAcmAlpha;
@@ -79,12 +59,7 @@ import globaz.framework.controller.FWAction;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.api.BISession;
 import globaz.globall.api.BITransaction;
-import globaz.globall.db.BManager;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.db.BStatement;
-import globaz.globall.db.BTransaction;
-import globaz.globall.db.FWFindParameter;
+import globaz.globall.db.*;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
@@ -112,6 +87,10 @@ import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRSession;
 import globaz.prestation.tools.nnss.PRNSSUtil;
+
+import java.io.StringReader;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * <H1>Description</H1> Créé le 3 juin 05
@@ -470,7 +449,8 @@ public class APPrestationHelper extends PRAbstractHelper {
     private void calculerComplement(final BSession session, final BTransaction transaction, final APDroitLAPG droit)
             throws Exception {
 
-        if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())) {
+        if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())
+                || APGUtils.isTypeAllocationPandemie(droit.getGenreService())) {
             return;
         }
 
@@ -561,7 +541,8 @@ public class APPrestationHelper extends PRAbstractHelper {
          * prestastions ACM_NE pour la maternité
          **/
         if (!JadeStringUtil.isBlankOrZero(droit.getGenreService())) {
-            if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())) {
+            if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())
+                    || APGUtils.isTypeAllocationPandemie(droit.getGenreService())) {
                 return;
             }
         }
@@ -831,7 +812,8 @@ public class APPrestationHelper extends PRAbstractHelper {
             for (int ctr = 0; ctr < prestations.size(); ctr++) {
                 // On évite les prestation ACM et autres
                 if (APTypeDePrestation.STANDARD.isCodeSystemEqual(prestations.get(ctr).getGenre())
-                        || APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(prestations.get(ctr).getGenre())) {
+                        || APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(prestations.get(ctr).getGenre())
+                        || APTypeDePrestation.PANDEMIE.isCodeSystemEqual(prestations.get(ctr).getGenre())) {
                     // On évite les prestations de restitutions
                     if (!IAPAnnonce.CS_RESTITUTION.equals(prestations.get(ctr).getContenuAnnonce())) {
                         final APValidationPrestationAPGContainer container = new APValidationPrestationAPGContainer();
@@ -1071,11 +1053,12 @@ public class APPrestationHelper extends PRAbstractHelper {
             String apgOuMaternite = null;
             if (droit instanceof APDroitMaternite) {
                 apgOuMaternite = APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_MATERNITE;
+            } else if (droit instanceof APDroitPandemie) {
+                apgOuMaternite = APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PANDEMIE;
             } else {
                 apgOuMaternite = APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_APG;
             }
-
-            if (!IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(droit.getEtat())) {
+            if (!Arrays.asList(IAPDroitLAPG.DROITS_MODIFIABLES).contains(droit.getEtat())) {
                 throw new APCalculException(session.getLabel("MODULE_CALCUL_ETAT_DROIT_INVALIDE"));
             }
 
@@ -1101,7 +1084,7 @@ public class APPrestationHelper extends PRAbstractHelper {
                         viewBean.setTypeCalculPrestation(APTypeCalculPrestation.ACOR);
                     }
                 }
-            } else {
+            } else if(!APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PANDEMIE.equals(apgOuMaternite)) {
                 if (APCalculAcorUtil.grantCalulAcorAPG(session, (APDroitAPG) droit)) {
                     viewBean.setTypeCalculPrestation(APTypeCalculPrestation.ACOR);
                 }
@@ -1583,5 +1566,18 @@ public class APPrestationHelper extends PRAbstractHelper {
         } finally {
             transactionSupPreSta.closeTransaction();
         }
+    }
+
+    public FWViewBeanInterface passerDroitValider(FWViewBeanInterface vb, FWAction action, BSession session)
+            throws Exception {
+        updateDroitEtat(((APValidationPrestationViewBean) vb).getIdDroit(), session, IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
+        return vb;
+    }
+
+    private void updateDroitEtat(String idDroit, BSession session, String etat) throws Exception {
+        BTransaction transaction = (BTransaction) session.newTransaction();
+        APDroitLAPG droit = ApgServiceLocator.getEntityService().getDroitLAPG(session, transaction, idDroit);
+        droit.setEtat(etat);
+        droit.update();
     }
 }

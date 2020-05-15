@@ -3,12 +3,15 @@
  */
 package globaz.apg.process;
 
+import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.api.lots.IAPLot;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.db.lots.APLot;
 import globaz.apg.db.prestation.APPrestation;
+import globaz.apg.db.prestation.APPrestationJointDroitManager;
 import globaz.apg.db.prestation.APPrestationManager;
+import globaz.apg.enums.APTypeDePrestation;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
@@ -93,12 +96,20 @@ public class APGenererLotProcess extends BProcess {
 
             if (typePrestation.equals(IPRDemande.CS_TYPE_APG)) {
                 prestationManager.setForEtat(IAPPrestation.CS_ETAT_PRESTATION_CONTROLE);
+                prestationManager.setNotForGenre(APTypeDePrestation.PANDEMIE.getCodesystemString());
             } else if (typePrestation.equals(IPRDemande.CS_TYPE_MATERNITE)) {
                 prestationManager.setForEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
                 prestationManager.setToDateFin(getPrestationDateFin());
+                prestationManager.setNotForGenre(APTypeDePrestation.PANDEMIE.getCodesystemString());
                 prestationManager.setForNoRevision(IAPDroitMaternite.CS_REVISION_MATERNITE_2005);
+            } else if (typePrestation.equals(IPRDemande.CS_TYPE_PANDEMIE)) {
+                prestationManager = new APPrestationJointDroitManager();
+                prestationManager.setSession(getSession());
+                prestationManager.setForEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
+                prestationManager.setForGenre(APTypeDePrestation.PANDEMIE.getCodesystemString());
+                ((APPrestationJointDroitManager) prestationManager).setNotForEtatDroit(java.util.Arrays.asList(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE,IAPDroitLAPG.CS_ETAT_DROIT_ERREUR, IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE_REPONSE, IAPDroitLAPG.CS_ETAT_DROIT_REFUSE, IAPDroitLAPG.CS_ETAT_DROIT_TRANSFERE));
+                prestationManager.setToDateFin(getPrestationDateFin());
             } else {
-                // On n'est pas dans la mouise....
                 throw new Exception("Type de prestation introuvable");
             }
 

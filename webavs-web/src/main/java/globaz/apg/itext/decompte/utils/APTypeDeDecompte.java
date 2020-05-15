@@ -10,6 +10,7 @@ public enum APTypeDeDecompte {
             new APTypeDePrestation[] { APTypeDePrestation.ACM_ALFA, APTypeDePrestation.ACM2_ALFA }),
     AMAT_GE(3, "LAMat", "AP_DECOMPTE_DETAIL.jasper", new APTypeDePrestation[] { APTypeDePrestation.LAMAT }),
     NORMAL(1, "normal", "AP_DECOMPTE_DETAIL.jasper", new APTypeDePrestation[] { APTypeDePrestation.STANDARD }),
+    NORMAL_PANDEMIE(8, "Decompte_Pandemie", "AP_DECOMPTE_DETAIL.jasper", new APTypeDePrestation[] { APTypeDePrestation.PANDEMIE }),
     NORMAL_ACM_NE(5, "normal_acmne", "AP_DECOMPTE_DETAIL_ACMNE.jasper",
             new APTypeDePrestation[] { APTypeDePrestation.STANDARD, APTypeDePrestation.ACM_NE }),
     COMPCIAB(6, "normal", "AP_DECOMPTE_DETAIL_CIAB.jasper", new APTypeDePrestation[] { APTypeDePrestation.COMPCIAB }),
@@ -19,7 +20,7 @@ public enum APTypeDeDecompte {
      * Le but de cette méthode est de déterminer le type de décompte en fonction du(des) type(s) de prestations qu'il
      * contient
      *
-     * @param typesDePrestationContenuesDansDecompte
+     * @param typesDePrestationDecompte
      * @return Le type de décompte en fonction des prestations qu'il contient
      */
     public static APTypeDeDecompte determinerTypeDeDecompte(final List<APTypeDePrestation> typesDePrestationDecompte) {
@@ -64,6 +65,9 @@ public enum APTypeDeDecompte {
                         break;
                     case ACM_NE:
                         typeDuDecompte = APTypeDeDecompte.NORMAL_ACM_NE;
+                        break;
+                    case PANDEMIE:
+                        typeDuDecompte = APTypeDeDecompte.NORMAL_PANDEMIE;
                         break;
                 }
             } else if (vals.length == 2) { // 2 types de prestations trouvés. (Due aux regroupement dans

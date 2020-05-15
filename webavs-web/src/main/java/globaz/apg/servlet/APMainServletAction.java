@@ -33,10 +33,13 @@ public class APMainServletAction {
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_DROIT_LAPG, APLAPGAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_SAISIE_CARTE_APG, APDroitAPGPAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_SAISIE_CARTE_AMAT, APDroitMatPAction.class);
+        APMainServletAction.ACTIONS.put(IAPActions.ACTION_SAISIE_CARTE_PAN, APDroitPanAction.class);
+        APMainServletAction.ACTIONS.put(IAPActions.ACTION_SAISIE_CARTE_PAN_SITUATION, APDroitPanSituationAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_RECAPITUALATIF_DROIT_APG, PRDefaultAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_RECAPITUALATIF_DROIT_MAT, PRDefaultAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_PERE_MAT, APPereMatAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_ENFANT_MAT, APEnfantMatAction.class);
+        APMainServletAction.ACTIONS.put(IAPActions.ACTION_ENFANT_PAN, APEnfantPanAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_SITUATION_PROFESSIONNELLE,
                 APSituationProfessionnelleAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_ENFANT_APG, APEnfantAPGAction.class);
@@ -73,6 +76,9 @@ public class APMainServletAction {
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_LISTE_PRESTATION_VERSEE, APListePrestationVerseeAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_LISTE_PRESTATION_CIAB, APListePrestationCIABAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_LISTE_TAXATIONS, APListeTaxationsDefinitivesAction.class);
+        APMainServletAction.ACTIONS.put(IAPActions.ACTION_GENERER_DROIT_PAN_MENSUEL, APGenererDroitPandemieMensuelAction.class);
+        APMainServletAction.ACTIONS.put(IAPActions.ACTION_LISTE_PANDEMIE_CONTROLE, APListePandemieControleAction.class);
+        APMainServletAction.ACTIONS.put(IAPActions.ACTION_PANDEMIE_FIN_DU_DROIT, APFinDuDroitAction.class);
     }
 
     // ~ Constructors

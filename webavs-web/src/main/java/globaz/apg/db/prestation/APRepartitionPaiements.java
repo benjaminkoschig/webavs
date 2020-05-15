@@ -1,16 +1,19 @@
 package globaz.apg.db.prestation;
 
-import globaz.apg.api.droits.IAPDroitMaternite;
+import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.lots.IAPLot;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
-import globaz.apg.db.droits.APDroitLAPG;
-import globaz.apg.db.droits.APSituationProfessionnelle;
+import globaz.apg.db.droits.*;
 import globaz.apg.db.lots.APCompensation;
 import globaz.apg.db.lots.APCompensationManager;
 import globaz.apg.db.lots.APLot;
+import globaz.apg.properties.APProperties;
+import globaz.apg.utils.APGUtils;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.util.FWCurrency;
+import globaz.framework.util.FWMessageFormat;
 import globaz.globall.db.BEntity;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
@@ -20,6 +23,8 @@ import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.tools.PRHierarchique;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import org.apache.commons.lang.StringUtils;
+
 import java.math.BigDecimal;
 import java.util.Hashtable;
 
@@ -290,8 +295,25 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
         // l'adresse paiement
         if (!JadeStringUtil.isBlankOrZero(idTiers) && !JadeStringUtil.isBlankOrZero(idTiersAdressePaiement)) {
             if (!idTiers.equals(idTiersAdressePaiement)) {
+                APPrestation prest = new APPrestation();
+                prest.setSession(getSession());
+                prest.setIdPrestationApg(getIdPrestationApg());
+                prest.retrieve();
+
+                APDroitAPGJointTiersManager manager = new APDroitAPGJointTiersManager();
+                manager.setSession(getSession());
+                manager.setForIdTiers(idTiers);
+                manager.find(BManager.SIZE_NOLIMIT);
+
+                String numeroAVS = StringUtils.EMPTY;
+                if (manager.size() == 1) {
+                    numeroAVS = ((APDroitAPGJointTiers)manager.getFirstEntity()).getNumeroAvsTiers();
+                }
+
+                String message = FWMessageFormat.format(getSession().getLabel("ERROR_BENEFICIAIRE_DIFF_PROPR_ADRESSE_PAIEMENT"), numeroAVS,
+                       nom, prest.getDateDebut(), prest.getDateFin(), prest.getIdDroit() , idPrestationApg, idTiers, idTiersAdressePaiement);
                 _addError(statement.getTransaction(),
-                        getSession().getLabel("ERROR_BENEFICIAIRE_DIFF_PROPR_ADRESSE_PAIEMENT"));
+                        message);
             }
         }
 
@@ -403,7 +425,14 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
         prestation.setIdPrestationApg(getIdPrestationApg());
         prestation.retrieve(transaction);
 
-        if (IAPDroitMaternite.CS_REVISION_MATERNITE_2005.equals(prestation.getNoRevision())) {
+        APDroitLAPG droit = new APDroitAPG();
+        droit.setSession(getSession());
+        droit.setIdDroit(prestation.getIdDroit());
+        droit.retrieve();
+
+        if (APGUtils.isTypeAllocationPandemie(droit.getGenreService())) {
+            return APProperties.DOMAINE_ADRESSE_APG_PANDEMIE.getValue();
+        } else if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())) {
             return IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
         } else {
             return IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;

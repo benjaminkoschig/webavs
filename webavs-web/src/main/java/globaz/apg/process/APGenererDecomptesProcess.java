@@ -3,6 +3,8 @@
  */
 package globaz.apg.process;
 
+import bsh.StringUtil;
+import ch.globaz.common.properties.CommonPropertiesUtils;
 import globaz.apg.api.annonces.IAPAnnonce;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.lots.IAPLot;
@@ -19,19 +21,15 @@ import globaz.framework.util.FWMessage;
 import globaz.framework.util.FWMessageFormat;
 import globaz.globall.api.BITransaction;
 import globaz.globall.api.GlobazSystem;
-import globaz.globall.db.BProcess;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BStatement;
-import globaz.globall.db.BTransaction;
-import globaz.globall.db.GlobazJobQueue;
+import globaz.globall.db.*;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.prestation.api.IPRDemande;
 import globaz.prestation.interfaces.af.PRAffiliationHelper;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import ch.globaz.common.properties.CommonPropertiesUtils;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.*;
 
 /**
  * <H1>Process effectuant la logique de génération de communications.</H1>
@@ -65,6 +63,7 @@ public class APGenererDecomptesProcess extends BProcess {
     private String idLot = "";
     private Boolean isDefinitif = null;
     private Boolean isSendToGed = null;
+    private String typeLot = "";
 
     public APGenererDecomptesProcess() {
         super();
@@ -73,8 +72,7 @@ public class APGenererDecomptesProcess extends BProcess {
     /**
      * Crée une nouvelle instance de la classe APGenererDecomptesProcess.
      * 
-     * @param parent
-     *            DOCUMENT ME!
+     * @param parent DOCUMENT ME!
      */
     public APGenererDecomptesProcess(final BProcess parent) {
         super(parent);
@@ -83,8 +81,7 @@ public class APGenererDecomptesProcess extends BProcess {
     /**
      * Crée une nouvelle instance de la classe APGenererDecomptesProcess.
      * 
-     * @param session
-     *            DOCUMENT ME!
+     * @param session DOCUMENT ME!
      */
     public APGenererDecomptesProcess(final BSession session) {
         super(session);
@@ -163,7 +160,11 @@ public class APGenererDecomptesProcess extends BProcess {
 
                     getMemoryLog().logMessage(getSession().getLabel("GENERATION_DECOMPTES_M_A_J_LOT"),
                             FWMessage.INFORMATION, "");
-                    imprimerCommunication();
+                    imprimerCommunication(false);
+
+                    if (StringUtils.equals(IPRDemande.CS_TYPE_PANDEMIE, typeLot)) {
+                        imprimerCommunication(true);
+                    }
                     if (getMemoryLog().hasErrors()) {
                         throw new Exception(getSession().getLabel(
                                 "ERROR_GENERATION_DECOMPTES_IMPRESSION_COMMUNIQUATION"));
@@ -186,7 +187,10 @@ public class APGenererDecomptesProcess extends BProcess {
                     getMemoryLog().logMessage(getSession().getLabel("GENERATION_DECOMPTES_ECRITURES_COMPTABLES"),
                             FWMessage.INFORMATION, "");
                 } else {
-                    imprimerCommunication();
+                    imprimerCommunication(false);
+                    if (StringUtils.equals(IPRDemande.CS_TYPE_PANDEMIE, typeLot)) {
+                        imprimerCommunication(true);
+                    }
                     if (getMemoryLog().hasErrors()) {
                         throw new Exception(getSession().getLabel(
                                 "ERROR_GENERATION_DECOMPTES_IMPRESSION_COMMUNIQUATION"));
@@ -220,6 +224,10 @@ public class APGenererDecomptesProcess extends BProcess {
                 }
                 return false;
             }
+            if (StringUtils.equals(IPRDemande.CS_TYPE_PANDEMIE,typeLot)) {
+                // Dans le cadre des pandémies, on n'envoie pas d'annonces.
+                envoiAnnoncesSuccess = true;
+            } else {
             try {
                 // Faire l'envoi des annonces (dans une transaction séparée, si ça plante, on fera l'envoi manuellement
                 if (isDefinitif.booleanValue()) {
@@ -260,9 +268,9 @@ public class APGenererDecomptesProcess extends BProcess {
                 }
                 return true;
             }
+            }
         } finally {
-
-            String status = "";
+            String status;
             if (succes) {
                 if (envoiAnnoncesSuccess) {
                     status = "SUCCESS";
@@ -289,9 +297,8 @@ public class APGenererDecomptesProcess extends BProcess {
     /**
      * (non-Javadoc)
      * 
+     * @throws Exception DOCUMENT ME!
      * @see globaz.globall.db.BProcess#_validate()
-     * @throws Exception
-     *             DOCUMENT ME!
      */
     @Override
     protected void _validate() throws Exception {
@@ -306,6 +313,7 @@ public class APGenererDecomptesProcess extends BProcess {
         } else if (!IAPLot.CS_COMPENSE.equals(lot.getEtat()) && getIsDefinitif().booleanValue()) {
             this._addError(getTransaction(), getSession().getLabel("GENERATION_COMMUNICATIONS_IMPOSSIBLE"));
         }
+        typeLot = lot.getTypeLot();
 
     }
 
@@ -412,10 +420,9 @@ public class APGenererDecomptesProcess extends BProcess {
     /**
      * Exécute le process de génération des décomptes
      * 
-     * @throws Exception
-     *             En cas d'exception lors de la génération des déccomptes
+     * @throws Exception En cas d'exception lors de la génération des déccomptes
      */
-    private void imprimerCommunication() throws Exception {
+    private void imprimerCommunication(Boolean isCopie) throws Exception {
         try {
             final APDecompteGenerationProcess process = new APDecompteGenerationProcess();
 
@@ -491,6 +498,7 @@ public class APGenererDecomptesProcess extends BProcess {
 
             process.setSession(getSession());
             process.setIdLot(getIdLot());
+            process.setIsCopie(isCopie);
             process.setIsSendToGED(isSendToGed.booleanValue());
             process.setDateDocument(new JADate(dateSurDocument));
             process.setDateComptable(new JADate(dateValeurComptable));
@@ -540,6 +548,32 @@ public class APGenererDecomptesProcess extends BProcess {
             droitLAPG.setIdDroit((iterator.next()));
             droitLAPG.retrieve(transaction);
 
+            if (Arrays.asList(IAPDroitLAPG.CS_GARDE_PARENTALE,IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE, IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP, IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE).contains(droitLAPG.getGenreService())) {
+                if (StringUtils.isEmpty(droitLAPG.getDateFinDroit())) {
+                    droitLAPG.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL);
+                } else {
+                    droitLAPG.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
+                }
+            } else if (Arrays.asList(IAPDroitLAPG.CS_QUARANTAINE,IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS).contains(droitLAPG.getGenreService())) {
+                final APPrestationManager prestationManager = new APPrestationManager();
+                prestationManager.setSession(session);
+                prestationManager.setForIdDroit(droitLAPG.getIdDroit());
+                prestationManager.find(transaction);
+
+                boolean isPartiel = false;
+                for (Object eachPresta : prestationManager.getContainerAsList()) {
+                    if (StringUtils.isEmpty(((APPrestation) eachPresta).getIdLot())) {
+                        isPartiel = true;
+                        break;
+                    }
+                }
+                if (isPartiel) {
+                    droitLAPG.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL);
+                } else {
+                    droitLAPG.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
+                }
+
+            } else {
             final APPrestationManager prestationManager = new APPrestationManager();
             prestationManager.setSession(session);
             prestationManager.setForIdDroit(droitLAPG.getIdDroit());
@@ -553,6 +587,8 @@ public class APGenererDecomptesProcess extends BProcess {
             } else {
                 droitLAPG.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL);
             }
+            }
+
 
             droitLAPG.update(transaction);
             getMemoryLog().logMessage("Droit n°" + droitLAPG.getIdDroit() + " mis à jour", FWMessage.INFORMATION, "");
@@ -639,8 +675,7 @@ public class APGenererDecomptesProcess extends BProcess {
     /**
      * setter pour l'attribut date sur document
      * 
-     * @param string
-     *            une nouvelle valeur pour cet attribut
+     * @param string une nouvelle valeur pour cet attribut
      */
     public void setDateSurDocument(final String string) {
         dateSurDocument = string;
@@ -649,8 +684,7 @@ public class APGenererDecomptesProcess extends BProcess {
     /**
      * setter pour l'attribut date valeur comptable
      * 
-     * @param string
-     *            une nouvelle valeur pour cet attribut
+     * @param string une nouvelle valeur pour cet attribut
      */
     public void setDateValeurComptable(final String string) {
         dateValeurComptable = string;
@@ -659,8 +693,7 @@ public class APGenererDecomptesProcess extends BProcess {
     /**
      * setter pour l'attribut description lot
      * 
-     * @param string
-     *            une nouvelle valeur pour cet attribut
+     * @param string une nouvelle valeur pour cet attribut
      */
     public void setDescriptionLot(final String string) {
         descriptionLot = string;
@@ -669,8 +702,7 @@ public class APGenererDecomptesProcess extends BProcess {
     /**
      * setter pour l'attribut no lot
      * 
-     * @param string
-     *            une nouvelle valeur pour cet attribut
+     * @param string une nouvelle valeur pour cet attribut
      */
     public void setIdLot(final String string) {
         idLot = string;
@@ -679,8 +711,7 @@ public class APGenererDecomptesProcess extends BProcess {
     /**
      * setter pour l'attribut is definitif
      * 
-     * @param boolean1
-     *            une nouvelle valeur pour cet attribut
+     * @param boolean1 une nouvelle valeur pour cet attribut
      */
     public void setIsDefinitif(final Boolean boolean1) {
         isDefinitif = boolean1;

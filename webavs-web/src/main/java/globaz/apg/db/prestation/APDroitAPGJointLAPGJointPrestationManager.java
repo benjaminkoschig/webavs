@@ -73,6 +73,7 @@ public class APDroitAPGJointLAPGJointPrestationManager extends BManager {
 
     private String forEtatDroitDifferentDe = "";
     private String forEtatPrestation = "";
+    private String notForGenre = "";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -117,6 +118,15 @@ public class APDroitAPGJointLAPGJointPrestationManager extends BManager {
 
             sqlWhere += _getCollection() + APDroitLAPG.TABLE_NAME_LAPG + "." + APDroitLAPG.FIELDNAME_ETAT + "<>"
                     + _dbWriteNumeric(statement.getTransaction(), getForEtatDroitDifferentDe());
+        }
+
+        if (!JadeStringUtil.isIntegerEmpty(notForGenre)) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+
+            sqlWhere += _getCollection() + APPrestation.TABLE_NAME + "." + APPrestation.FIELDNAME_GENRE_PRESTATION
+                    + "<>" + this._dbWriteNumeric(statement.getTransaction(), notForGenre);
         }
 
         return sqlWhere;
@@ -169,5 +179,13 @@ public class APDroitAPGJointLAPGJointPrestationManager extends BManager {
      */
     public void setForEtatPrestation(String string) {
         forEtatPrestation = string;
+    }
+
+    public String getNotForGenre() {
+        return notForGenre;
+    }
+
+    public void setNotForGenre(String notForGenre) {
+        this.notForGenre = notForGenre;
     }
 }

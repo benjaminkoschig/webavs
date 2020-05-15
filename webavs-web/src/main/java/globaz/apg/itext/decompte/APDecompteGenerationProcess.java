@@ -34,11 +34,10 @@ import globaz.prestation.interfaces.babel.PRBabelHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.interfaces.util.nss.PRUtil;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 /**
  * Le rôle de cette classe est de préparer les données (récupération. regroupement, catalogue de textes, etc)
@@ -57,6 +56,8 @@ import java.util.Map;
  * @author lga
  */
 public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationProcess {
+
+    private static final Logger LOG = LoggerFactory.getLogger(APDecompteGenerationProcess.class);
 
     /**
      * Définit les différentes étapes du processus Par défaut, au démarrage de ce processus nous sommes à l'état
@@ -110,6 +111,7 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
      * OK Est-ce que les décomptes doivent êtres envoyées à la GED
      */
     private Boolean isSendToGED;
+    private Boolean isCopie;
 
     private String codeIsoLangue;
 
@@ -231,12 +233,25 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
      */
     private void preparerHelperCatalogueDetextes() throws Exception {
         documentHelper = PRBabelHelper.getDocumentHelper(getISession());
-        documentHelper.setCsDomaine(IPRDemande.CS_TYPE_APG.equals(loadCsTypePrestation()) ? IAPCatalogueTexte.CS_APG
-                : IAPCatalogueTexte.CS_MATERNITE);
 
-        documentHelper
-                .setCsTypeDocument(IPRDemande.CS_TYPE_APG.equals(loadCsTypePrestation()) ? IAPCatalogueTexte.CS_DECOMPTE_APG
-                        : IAPCatalogueTexte.CS_DECOMPTE_MAT);
+        String csTypePrestation = loadCsTypePrestation();
+
+        if (IPRDemande.CS_TYPE_MATERNITE.equals(csTypePrestation)) {
+            documentHelper.setCsDomaine(IAPCatalogueTexte.CS_MATERNITE);
+//        } else if (IPRDemande.CS_TYPE_PANDEMIE.equals(csTypePrestation)) {
+//            documentHelper.setCsDomaine(IAPCatalogueTexte.CS_APG);
+        } else {
+            documentHelper.setCsDomaine(IAPCatalogueTexte.CS_APG);
+        }
+
+
+        if (IPRDemande.CS_TYPE_MATERNITE.equals(csTypePrestation)) {
+            documentHelper.setCsTypeDocument(IAPCatalogueTexte.CS_DECOMPTE_MAT);
+//        } else if (IPRDemande.CS_TYPE_PANDEMIE.equals(csTypePrestation)) {
+//            documentHelper.setCsTypeDocument(IAPCatalogueTexte.CS_DECOMPTE_APG);
+        } else {
+            documentHelper.setCsTypeDocument(IAPCatalogueTexte.CS_DECOMPTE_APG);
+        }
 
         documentHelper.setActif(Boolean.TRUE);
     }
@@ -409,8 +424,7 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
     }
 
     /**
-     * @param data
-     * @param repartitionsMgr
+     * @param repartitions
      * @throws Exception
      */
     private List<APPrestationJointRepartitionPOJO> conversionDonneesDBVersDonneesDecompte(
@@ -546,12 +560,35 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
             // vas pas aller voir les ventilations
             if (next) {
                 decompteCourant = repartitions.get(iteratorRepartitions.next());
+
+                // lors de l'execution de la copie (Type PANDEMIE), nous ne voulons pas rééditer
+                // les décomptes pour indépendant / les paiements pour employeur
+                // la boucle permet de vérifier les itérations suivantes jusqu'à trouver un décompte correspondant
+                while((getIsCopie() && (!hasRemboursementAssure(decompteCourant) || isIndependant(decompteCourant))) && next) {
+                    next = iteratorRepartitions.hasNext();
+                    if (next) {
+                        decompteCourant = repartitions.get(iteratorRepartitions.next());
+                    } else {
+                        decompteCourant = null;
+                    }
+                }
             }
         } else if (TraitementCourant.TRAITEMENT_REPARTITIONS.equals(traitementCourant)) {
             // Si oui, il faut récupérer le décompte en question
             next = iteratorRepartitions.hasNext();
             if (next) {
                 decompteCourant = repartitions.get(iteratorRepartitions.next());
+                // lors de l'execution de la copie (Type PANDEMIE), nous ne voulons pas rééditer
+                // les décomptes pour indépendant / les paiements pour employeur
+                // la boucle permet de vérifier les itérations suivantes jusqu'à trouver un décompte correspondant
+                while((getIsCopie() && (!hasRemboursementAssure(decompteCourant) || isIndependant(decompteCourant))) && next) {
+                    next = iteratorRepartitions.hasNext();
+                    if (next) {
+                        decompteCourant = repartitions.get(iteratorRepartitions.next());
+                    } else {
+                        decompteCourant = null;
+                    }
+                }
             }
 
             /*
@@ -563,14 +600,38 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
                 next = iteratorVentilations.hasNext();
                 if (next) {
                     decompteCourant = ventilations.get(iteratorVentilations.next());
+                    // lors de l'execution de la copie (Type PANDEMIE), nous ne voulons pas rééditer
+                    // les décomptes pour indépendant / les paiements pour employeur
+                    // la boucle permet de vérifier les itérations suivantes jusqu'à trouver un décompte correspondant
+                    while((getIsCopie() && (!hasRemboursementAssure(decompteCourant) || isIndependant(decompteCourant))) && next) {
+                        next = iteratorVentilations.hasNext();
+                        if (next) {
+                            decompteCourant = ventilations.get(iteratorVentilations.next());
+                        } else {
+                            decompteCourant = null;
+                        }
+                    }
+                    if (next){
                     traitementCourant = TraitementCourant.TRAITEMENT_VENTILATIONS;
                 }
+            }
             }
         } else if (TraitementCourant.TRAITEMENT_VENTILATIONS.equals(traitementCourant)) {
             // Si oui, il faut récupérer le décompte en question
             next = iteratorVentilations.hasNext();
             if (next) {
                 decompteCourant = ventilations.get(iteratorVentilations.next());
+                // lors de l'execution de la copie (Type PANDEMIE), nous ne voulons pas rééditer
+                // les décomptes pour indépendant / les paiements pour employeur
+                // la boucle permet de vérifier les itérations suivantes jusqu'à trouver un décompte correspondant
+                while((getIsCopie() && (!hasRemboursementAssure(decompteCourant) || isIndependant(decompteCourant))) && next) {
+                    next = iteratorVentilations.hasNext();
+                    if (next) {
+                        decompteCourant = ventilations.get(iteratorVentilations.next());
+                    } else {
+                        decompteCourant = null;
+                    }
+                }
             }
         } else {
             throw new FWIException("APDecompteGenerationProcess.hasNextDocument() : unconsistent state Founded ["
@@ -597,6 +658,30 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
             setCatalogueTextesCourant(catalogueTextes);
         }
         return next;
+    }
+
+    private Boolean hasRemboursementAssure(APDecompte decompte){
+        if (Objects.isNull(decompte)) return false;
+        for (final APRepartitionJointPrestation repartition : decompte.getRepartitionsPeres()) {
+            if (!repartition.isBeneficiaireEmployeur()) return true;
+        }
+        return false;
+    }
+
+    private Boolean isIndependant(APDecompte decompte){
+        if (Objects.isNull(decompte)) return false;
+        for (final APRepartitionJointPrestation repartition : decompte.getRepartitionsPeres()) {
+            try {
+            APSituationProfessionnelle situationPro = new APSituationProfessionnelle();
+            situationPro.setSession(getSession());
+            situationPro.setIdSituationProf(repartition.getIdSituationProfessionnelle());
+            situationPro.retrieve();
+            return situationPro.getIsIndependant();
+            } catch (Exception e) {
+                LOG.error("#APDecompteGenerationProcess#isIndependantImpossible de récupérer la situation pro", e);
+            }
+        }
+        return false;
     }
 
     /**
@@ -807,6 +892,16 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
     @Override
     public final boolean getIsSendToGED() {
         return isSendToGED;
+    }
+
+    @Override
+    public final boolean getIsCopie(){
+        return isCopie;
+    }
+
+    @Override
+    public final void setIsCopie(final boolean copie){
+        isCopie = copie;
     }
 
     /**

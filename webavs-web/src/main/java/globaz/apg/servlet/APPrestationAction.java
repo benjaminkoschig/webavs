@@ -9,6 +9,7 @@ package globaz.apg.servlet;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.exceptions.APEmptyIdException;
 import globaz.apg.helpers.prestation.APPrestationHelper;
+import globaz.apg.utils.APGUtils;
 import globaz.apg.vb.droits.APSituationProfessionnelleViewBean;
 import globaz.apg.vb.prestation.APCalculACORViewBean;
 import globaz.apg.vb.prestation.APDeterminerTypeCalculPrestationViewBean;
@@ -22,11 +23,12 @@ import globaz.framework.servlets.FWServlet;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.prestation.servlet.PRDefaultAction;
-import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 /**
  * <H1>Description</H1>
@@ -272,6 +274,10 @@ public class APPrestationAction extends PRDefaultAction {
             getAction().changeActionPart("validationPrestations");
             return "/apgRoot/prestation/validationPrestations_de.jsp";
         } else {
+            if(APGUtils.isTypeAllocationPandemie(newViewBean.getGenreService())) {
+                getAction().changeActionPart("passerDroitValider");
+                mainDispatcher.dispatch(newViewBean, getAction());
+            }
             return this.getUserActionURL(request, IAPActions.ACTION_PRESTATION_JOINT_LOT_TIERS_DROIT,
                     "chercher&forIdDroit=" + idDroit + "&checkRepartitionsDroit=true");
         }
@@ -299,10 +305,6 @@ public class APPrestationAction extends PRDefaultAction {
 
     private String resoudreIdDroit(FWViewBeanInterface viewBean, HttpServletRequest request) {
         String idDroit = null;
-        // Ce cas se présente lordqu'on arrive depuis le calcul des prestations d'un droit mat
-        if (viewBean instanceof APSituationProfessionnelleViewBean) {
-            idDroit = ((APSituationProfessionnelleViewBean) viewBean).getIdDroit();
-        }
 
         if (JadeStringUtil.isBlankOrZero(idDroit)) {
             idDroit = request.getParameter("selectedId");

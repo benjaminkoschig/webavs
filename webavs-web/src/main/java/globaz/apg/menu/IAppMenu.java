@@ -23,6 +23,10 @@ public interface IAppMenu {
     public static final String MENU_OPTION_DROIT_APG = "ap-optionmenudroitapg";
 
     /**
+     */
+    public static final String MENU_OPTION_DROIT_PAN = "ap-optionmenudroitpan";
+
+    /**
 	 */
     public static final String MENU_OPTION_LOT = "ap-optionlot";
 

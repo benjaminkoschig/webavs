@@ -48,6 +48,8 @@ import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
 import globaz.pyxis.db.adressepaiement.TIAvoirPaiement;
 import globaz.pyxis.db.adressepaiement.TIAvoirPaiementManager;
 import globaz.pyxis.db.divers.TIApplication;
+import org.apache.commons.lang.StringUtils;
+
 import java.math.BigDecimal;
 
 /**
@@ -629,7 +631,7 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
                 idTypeSection = APISection.ID_TYPE_SECTION_DECOMPTE_CAP_CGAS;
             } else if (idSousTypeFacture.equals(APISection.ID_CATEGORIE_SECTION_ALLOCATIONS_FAMILIALES)) {
                 idTypeSection = APISection.ID_TYPE_SECTION_AF;
-            } else if (idSousTypeFacture.equals(APISection.ID_CATEGORIE_SECTION_APG)) {
+            } else if (idSousTypeFacture.equals(APISection.ID_CATEGORIE_SECTION_APG) || StringUtils.equals(APISection.ID_CATEGORIE_SECTION_PANDEMIE,idSousTypeFacture)) {
                 idTypeSection = APISection.ID_TYPE_SECTION_APG;
             } else if (idSousTypeFacture.equals(APISection.ID_CATEGORIE_SECTION_IJAI)) {
                 idTypeSection = APISection.ID_TYPE_SECTION_IJAI;

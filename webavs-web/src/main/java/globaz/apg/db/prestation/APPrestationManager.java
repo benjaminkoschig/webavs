@@ -35,6 +35,7 @@ public class APPrestationManager extends PRAbstractManager {
     private String forContenuAnnonce = null;
     private String forEtat = null;
     private String forGenre = "";
+    private String notForGenre = null;
     private List<String> forInGenre = new ArrayList();
     private String forIdAnnonce = null;
     private String forIdDroit = null;
@@ -54,6 +55,7 @@ public class APPrestationManager extends PRAbstractManager {
     private String toDateFin = null;
 
     private String toIdPrestationApg = null;
+    private List<String> forIdDroitIn = new ArrayList();
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -271,6 +273,15 @@ public class APPrestationManager extends PRAbstractManager {
                     + "=" + this._dbWriteNumeric(statement.getTransaction(), forGenre);
         }
 
+        if (!JadeStringUtil.isIntegerEmpty(notForGenre)) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+
+            sqlWhere += _getCollection() + APPrestation.TABLE_NAME + "." + APPrestation.FIELDNAME_GENRE_PRESTATION + "<>"
+                    + this._dbWriteNumeric(statement.getTransaction(), notForGenre);
+        }
+
         if (!getForInGenre().isEmpty()) {
             if (sqlWhere.length() != 0) {
                 sqlWhere += " AND ";
@@ -299,6 +310,23 @@ public class APPrestationManager extends PRAbstractManager {
 
             sqlWhere += _getCollection() + APPrestation.TABLE_NAME + "." + APPrestation.FIELDNAME_DATEFIN + ">="
                     + this._dbWriteDateAMJ(statement.getTransaction(), inDateFin);
+        }
+
+        if (!forIdDroitIn.isEmpty()) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+
+            StringBuilder valuesStr = new StringBuilder();
+            for (String idDroit : forIdDroitIn) {
+                if (!JadeStringUtil.isEmpty(valuesStr.toString())) {
+                    valuesStr.append(",");
+                }
+                valuesStr.append(this._dbWriteNumeric(statement.getTransaction(), idDroit));
+            }
+
+            sqlWhere += _getCollection() + APPrestation.TABLE_NAME + "." + APPrestation.FIELDNAME_IDDROIT
+                    + " IN (" + valuesStr.toString() + ")";
         }
 
         return sqlWhere;
@@ -696,5 +724,21 @@ public class APPrestationManager extends PRAbstractManager {
 
     public List<String> getForInGenre() {
         return forInGenre;
+    }
+
+    public String getNotForGenre() {
+        return notForGenre;
+    }
+
+    public void setNotForGenre(String notForGenre) {
+        this.notForGenre = notForGenre;
+    }
+
+    public List<String> getForIdDroitIn() {
+        return forIdDroitIn;
+    }
+
+    public void setForIdDroitIn(List<String> forIdDroitIn) {
+        this.forIdDroitIn = forIdDroitIn;
     }
 }

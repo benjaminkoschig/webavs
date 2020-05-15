@@ -85,7 +85,7 @@ public class Rule321 extends Rule {
             if ((Float.valueOf(basicDailyAmount) > montantMiniAllocationJournalierMaternite)) {
                 return false;
             }
-        } else {
+        } else if(!APGenreServiceAPG.isValidGenreServicePandemie(serviceType)) {
             if ((Integer.valueOf(numberOfChilren) > 0) && (Float.valueOf(basicDailyAmount) > montantMiniAllocationJournalierCadre)) {
                 return false;
             }

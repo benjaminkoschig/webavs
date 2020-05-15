@@ -4,6 +4,7 @@
 package globaz.apg.helpers.process;
 
 import globaz.apg.itext.APListePrestationsLot;
+import globaz.apg.process.APListePrestationsLotExcelProcess;
 import globaz.apg.vb.process.APListeControleViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
@@ -31,11 +32,20 @@ public class APListeControleHelper extends FWHelper {
     protected void _start(FWViewBeanInterface viewBean, FWAction action, BISession session) {
         APListeControleViewBean lcViewBean = (APListeControleViewBean) viewBean;
 
+        if("pdf".equals(lcViewBean.getTypeImpression())){
         APListePrestationsLot process = new APListePrestationsLot((BSession) session);
 
         process.setEMailAddress(lcViewBean.getEMailAddress());
         process.setIdLot(lcViewBean.getIdLot());
 
         process.start();
+        }else{
+            APListePrestationsLotExcelProcess process = new APListePrestationsLotExcelProcess((BSession) session);
+            process.setEMailAddress(lcViewBean.getEMailAddress());
+            process.setIdLot(lcViewBean.getIdLot());
+            process.start();
+        }
+
+;
     }
 }
