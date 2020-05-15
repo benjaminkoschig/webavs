@@ -13,6 +13,8 @@
 	globaz.framework.controller.FWController controller = (globaz.framework.controller.FWController) session.getAttribute("objController");
 	globaz.globall.db.BSession objSession = (globaz.globall.db.BSession)controller.getSession();
 	String eMailAddress=objSession.getUserEMail();
+	String pdfChecked = "pdf".equals(viewBean.getTypeImpression()) ? "checked='checked'" : "";
+	String xlsChecked = "xls".equals(viewBean.getTypeImpression()) ? "checked='checked'" : "";
 %>
 
 
@@ -38,6 +40,13 @@
 						<TR>
 							<TD><ct:FWLabel key="JSP_ADRESSE_EMAIL"/></TD>
 							<TD><INPUT type="text" name="eMailAddress" value="<%=eMailAddress!=null?eMailAddress:""%>"></TD>
+						</TR>
+						<TR class="specialLine">
+							<td><ct:FWLabel key="CDS2004_TYPE_IMPRESSION"/></td>
+							<TD>
+								<input type="radio" name="typeImpression" value="pdf" <%=pdfChecked%>/>PDF&nbsp;
+								<input type="radio" name="typeImpression" value="xls" <%=xlsChecked%>/>Excel
+							</TD>
 						</TR>
 						<TR>
 							<TD><ct:FWLabel key="JSP_NO_LOT"/></TD>

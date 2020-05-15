@@ -5,13 +5,20 @@ import globaz.prestation.utils.PRDateUtils;
 public class PRPeriode implements Comparable<PRPeriode> {
     private String dateDeDebut;
     private String dateDeFin;
+    private String nbJour = "";
 
     public PRPeriode() {
     }
 
     public PRPeriode(String datedeDebut, String dateDeFin) {
-        dateDeDebut = datedeDebut;
+        this.dateDeDebut = datedeDebut;
         this.dateDeFin = dateDeFin;
+    }
+
+    public PRPeriode(String dateDeDebut, String dateDeFin, String nbJour) {
+        this.dateDeDebut = dateDeDebut;
+        this.dateDeFin = dateDeFin;
+        this.nbJour = nbJour;
     }
 
     public final String getDateDeDebut() {
@@ -28,6 +35,14 @@ public class PRPeriode implements Comparable<PRPeriode> {
 
     public final void setDateDeFin(String dateDeFin) {
         this.dateDeFin = dateDeFin;
+    }
+
+    public String getNbJour() {
+        return nbJour;
+    }
+
+    public void setNbJour(String nbJour) {
+        this.nbJour = nbJour;
     }
 
     private Integer compareDates(String date1, String date2) {

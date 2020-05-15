@@ -6,6 +6,7 @@ package globaz.apg.vb.prestation;
 import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.db.prestation.APPrestationJointLotTiersDroit;
+import globaz.apg.utils.APGUtils;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.db.BStatement;
 import globaz.globall.util.JANumberFormatter;
@@ -120,7 +121,8 @@ public class APPrestationJointLotTiersDroitViewBean extends APPrestationJointLot
             except.add(IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF);
         }
 
-        if (isMisEnLot() && getNoRevision().equals(IAPDroitMaternite.CS_REVISION_MATERNITE_2005)) {
+        if (isMisEnLot() && (APGUtils.isTypeAllocationPandemie(getGenreService()) ||
+                getNoRevision().equals(IAPDroitMaternite.CS_REVISION_MATERNITE_2005))) {
             except.add(IAPPrestation.CS_ETAT_PRESTATION_CONTROLE);
         }
 
@@ -274,7 +276,9 @@ public class APPrestationJointLotTiersDroitViewBean extends APPrestationJointLot
         // true (si dans l'etat controle
         // ou si valide et prestation maternite)
         // et pas une prestation annule
-        return (isControle() || (isValide() && getNoRevision().equals(
+        return (isControle()
+                || (isValide() && APGUtils.isTypeAllocationPandemie(getGenreService()))
+                || (isValide() && getNoRevision().equals(
                 globaz.apg.api.droits.IAPDroitMaternite.CS_REVISION_MATERNITE_2005)))
                 && !isAnnule();
     }

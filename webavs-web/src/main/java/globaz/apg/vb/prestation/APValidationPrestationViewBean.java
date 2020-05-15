@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.enums.APAllPlausibiliteRules;
+import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.pojo.APBreakRulesFromView;
 import globaz.apg.pojo.APErreurValidationPeriode;
 import globaz.apg.pojo.APValidationPrestationAPGContainer;
@@ -227,6 +228,8 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
     public String getActionFinalser() {
         if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(getGenreService())) {
             return "apg.droits.droitMatP.finaliserCreationDroit";
+        } else  if (APGenreServiceAPG.isValidGenreServicePandemie(APGenreServiceAPG.resoudreGenreParCodeSystem(getGenreService()).getCodePourAnnonce())) {
+            return "apg.droits.droitPan.finaliserCreationDroit";
         } else {
             return "apg.droits.droitAPGP.finaliserCreationDroit";
         }
@@ -235,6 +238,8 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
     public String getActionCorriger() {
         if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(getGenreService())) {
             return "apg.droits.droitMatP.afficher";
+        } else if (APGenreServiceAPG.isValidGenreServicePandemie(APGenreServiceAPG.resoudreGenreParCodeSystem(getGenreService()).getCodePourAnnonce())) {
+            return "apg.droits.droitPan.passerDroitErreur";
         } else {
             return "apg.droits.droitAPGP.afficher";
         }

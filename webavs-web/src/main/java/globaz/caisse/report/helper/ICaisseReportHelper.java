@@ -92,6 +92,9 @@ public interface ICaisseReportHelper {
     static String PARAM_SIGNATURE_SERVICE = "P_SIGNATURE_SERVICE";
     static String PARAM_SIGNATURE_SERVICE2 = "P_SIGNATURE_SERVICE2";
 
+    // nom Gestionnaire Coronavirus
+    static String PARAM_SIGNATURE_GESTIONNAIRE = "P_SIGNATURE_GESTIONNAIRE";
+
     // nom du signataire, collaborateur de la caisse
     static String PARAM_SIGNATURE_SIGNATAIRE = "P_SIGNATURE_SIGNATAIRE";
 

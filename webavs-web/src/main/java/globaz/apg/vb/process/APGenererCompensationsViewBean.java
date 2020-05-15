@@ -29,6 +29,7 @@ public class APGenererCompensationsViewBean extends PRAbstractViewBeanSupport {
     private String etatLot = "";
     private String forIdLot = "";
     private String MoisPeriodeFacturation = "";
+    private String typePrestation = "";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -128,6 +129,14 @@ public class APGenererCompensationsViewBean extends PRAbstractViewBeanSupport {
      */
     public void setMoisPeriodeFacturation(String string) {
         MoisPeriodeFacturation = string;
+    }
+
+    public String getTypePrestation() {
+        return typePrestation;
+    }
+
+    public void setTypePrestation(String typePrestation) {
+        this.typePrestation = typePrestation;
     }
 
     /**

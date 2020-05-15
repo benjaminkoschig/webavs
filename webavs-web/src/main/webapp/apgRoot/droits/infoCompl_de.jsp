@@ -28,6 +28,10 @@
 <%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE) {%>
 	<ct:menuChange displayId="menu" menuId="ap-menuprincipalamat" showTab="menu"/>
 	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
+<!--sinon, pandémie -->
+<%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)== globaz.prestation.api.IPRDemande.CS_TYPE_PANDEMIE) {%>
+<ct:menuChange displayId="menu" menuId="ap-menuprincipalpan" showTab="menu"/>
+<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 <%}%>
 
 <SCRIPT language="javaScript">

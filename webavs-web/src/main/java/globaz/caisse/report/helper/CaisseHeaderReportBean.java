@@ -1,5 +1,6 @@
 package globaz.caisse.report.helper;
 
+import globaz.apg.enums.APTypeDePrestation;
 import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.admin.user.bean.JadeUser;
 import globaz.jade.admin.user.bean.JadeUserDetail;
@@ -25,6 +26,7 @@ public class CaisseHeaderReportBean {
     private String noSection = "";
     private boolean recommandee = false;
     private String numeroIDE = "";
+    private APTypeDePrestation typePrestation;
 
     private String telCollaborateur = "";
 
@@ -244,5 +246,13 @@ public class CaisseHeaderReportBean {
 
     public void setNumeroIDE(String numeroIDE) {
         this.numeroIDE = numeroIDE;
+    }
+
+    public APTypeDePrestation getTypePrestation() {
+        return typePrestation;
+    }
+
+    public void setTypePrestation(APTypeDePrestation typePrestation) {
+        this.typePrestation = typePrestation;
     }
 }

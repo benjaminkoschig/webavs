@@ -121,7 +121,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
     public final static String NATURE_PCF = "209009";
     public final static String NATURE_RENTES_AVS_AI = "209005";
     public final static String NATURE_VERSEMENT_AF = "209007";
-
+    public static final String NATURE_VERSEMENT_PANDEMIE = "209013";
     public final static String NATURE_VERSEMENT_AMC = "209011";
     public final static String NATURE_VERSEMENT_APG = "209003";
     public final static String NATURE_VERSEMENT_FCF = "209010";

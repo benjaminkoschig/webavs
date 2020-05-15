@@ -93,6 +93,65 @@
         </linkedClass> 			          
    </clone>
 
+	<clone id="prestation-PAN-copie-droit-PAN" class="globaz.apg.db.droits.APDroitPandemie">
 
+		<linkedClass class="globaz.apg.db.droits.APSituationFamilialePan"
+					 relationType="1_TO_N"
+					 idParent="idDroit"
+					 manager="globaz.apg.db.droits.APSituationFamilialePanManager"
+					 forIdParent="forIdDroit"/>
 
+		<linkedClass class="globaz.apg.db.droits.APDroitPanSituation"
+					 relationType="1_TO_1"
+					 idParent="idDroit"
+					 manager="globaz.apg.db.droits.APDroitPanSituationManager"
+					 forIdParent="forIdDroit" />
+
+		<linkedClass class="globaz.apg.db.droits.APSituationProfessionnelle"
+					 relationType="1_TO_N"
+					 idParent="idDroit"
+					 manager="globaz.apg.db.droits.APSituationProfessionnelleManager"
+					 forIdParent="forIdDroit">
+
+			<linkedClass class="globaz.apg.db.droits.APEmployeur"
+						 relationType="1_TO_1"
+						 idParent="idEmployeur"
+						 forIdParent="na"
+						 manager="na"/>
+		</linkedClass>
+	</clone>
+
+	<clone id="prestation-PAN-correction-droit-PAN" class="globaz.apg.db.droits.APDroitPandemie">
+
+		<linkedClass class="globaz.apg.db.droits.APSituationFamilialePan"
+					 relationType="1_TO_N"
+					 idParent="idDroit"
+					 manager="globaz.apg.db.droits.APSituationFamilialePanManager"
+					 forIdParent="forIdDroit" />
+
+		<linkedClass class="globaz.apg.db.droits.APDroitPanSituation"
+					 relationType="1_TO_1"
+					 idParent="idDroit"
+					 manager="globaz.apg.db.droits.APDroitPanSituationManager"
+					 forIdParent="forIdDroit" />
+
+		<linkedClass class="globaz.apg.db.droits.APPeriodeAPG"
+					 relationType="1_TO_N"
+					 idParent="idDroit"
+					 manager="globaz.apg.db.droits.APPeriodeAPGManager"
+					 forIdParent="forIdDroit"/>
+
+		<linkedClass class="globaz.apg.db.droits.APSituationProfessionnelle"
+					 relationType="1_TO_N"
+					 idParent="idDroit"
+					 manager="globaz.apg.db.droits.APSituationProfessionnelleManager"
+					 forIdParent="forIdDroit">
+
+			<linkedClass class="globaz.apg.db.droits.APEmployeur"
+						 relationType="1_TO_1"
+						 idParent="idEmployeur"
+						 forIdParent="na"
+						 manager="na"/>
+		</linkedClass>
+	</clone>
 </clones>

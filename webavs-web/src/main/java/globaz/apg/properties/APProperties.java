@@ -131,6 +131,13 @@ public enum APProperties implements IProperties {
 
     },
 
+    SEODOR_TYPE_SERVICE("rapg.genre.service.seodor", "Type de service pour l'appel WebService SEODOR"){
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
+        }
+    },
+
     DEMANDES_APG_PANDEMIE_FOLDER("path.demande.covid19", "Chemin des demandes pour pandémie") {
         @Override
         public boolean isValidValue(final String propertyValue) {
@@ -171,14 +178,7 @@ public enum APProperties implements IProperties {
         public boolean isValidValue(final String propertyValue) {
             return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
         }
-    },
-
-    SEODOR_TYPE_SERVICE("rapg.genre.service.seodor", "Type de service pour l'appel WebService SEODOR"){
-        @Override
-        public boolean isValidValue(final String propertyValue) {
-            return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
-        }
-     }
+    }
 
     ;
 

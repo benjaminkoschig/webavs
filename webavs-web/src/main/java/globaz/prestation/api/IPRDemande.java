@@ -14,23 +14,24 @@ package globaz.prestation.api;
 public interface IPRDemande {
 
     /** etat demande: CLOTURE */
-    public String CS_ETAT_CLOTURE = "52200002";
+    String CS_ETAT_CLOTURE = "52200002";
 
     /** etat demande: OUVERT */
-    public String CS_ETAT_OUVERT = "52200001";
+    String CS_ETAT_OUVERT = "52200001";
     // ~ Instance fields
     // ------------------------------------------------------------------------------------------------
     /** nom du groupe des codes systèmes pour l'état d'une demande */
-    public String CS_GROUPE_ETAT_DEMANDE = "PRETADEMAN";
+    String CS_GROUPE_ETAT_DEMANDE = "PRETADEMAN";
 
     /** nom du groupe des codes systèmes pour le type d'une demande */
-    public String CS_GROUPE_TYPE_DEMANDE = "PRTYPDEMAN";
+    String CS_GROUPE_TYPE_DEMANDE = "PRTYPDEMAN";
 
-    public String CS_TYPE_APG = "52201001";
-    public String CS_TYPE_IJ = "52201003";
-    public String CS_TYPE_MATERNITE = "52201002";
-    public String CS_TYPE_PC = "52201005";
-    public String CS_TYPE_PC_FAMILLES = "52201007";
-    public String CS_TYPE_RENTE = "52201004";
-    public String CS_TYPE_RFM = "52201006";
+    String CS_TYPE_APG = "52201001";
+    String CS_TYPE_IJ = "52201003";
+    String CS_TYPE_MATERNITE = "52201002";
+    String CS_TYPE_PC = "52201005";
+    String CS_TYPE_PC_FAMILLES = "52201007";
+    String CS_TYPE_RENTE = "52201004";
+    String CS_TYPE_RFM = "52201006";
+    String CS_TYPE_PANDEMIE = "52201008";
 }

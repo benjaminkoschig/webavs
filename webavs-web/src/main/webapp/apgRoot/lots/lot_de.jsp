@@ -52,6 +52,22 @@ idEcran="PAP0027";
 	<%}%>
 
 </ct:menuChange>
+<!--pandémie -->
+<%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_PANDEMIE) {%>
+<ct:menuChange displayId="menu" menuId="ap-menuprincipalpan"/>
+<ct:menuChange displayId="options" menuId="ap-optionlotpan" showTab="options">
+	<ct:menuSetAllParams key="forIdLot" value="<%=viewBean.getIdLot()%>"/>
+	<ct:menuSetAllParams key="etatlot" value="<%=viewBean.getEtat()%>"/>
+	<ct:menuSetAllParams key="selectedId" value="<%=viewBean.getIdLot()%>"/>
+	<ct:menuSetAllParams key="idLot" value="<%=viewBean.getIdLot()%>"/>
+
+	<% if (viewBean.getEtat().equals(globaz.apg.api.lots.IAPLot.CS_VALIDE)) {%>
+	<ct:menuActivateNode active="no" nodeId="generercompensations"/>
+	<%} else {%>
+	<ct:menuActivateNode active="yes" nodeId="generercompensations"/>
+	<%}%>
+
+</ct:menuChange>
 <%}%>
 
 <SCRIPT language="javascript"> 

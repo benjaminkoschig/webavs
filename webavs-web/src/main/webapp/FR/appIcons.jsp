@@ -418,7 +418,15 @@ var hideTimeout;
 							</a>
 						    </li>
 						<%}%>
-						
+
+                        <%if (objSession.hasRight("apg", globaz.framework.secure.FWSecureConstants.READ)) {%>
+                        <li>
+                            <a href="<%=request.getContextPath()%>/apg?typePrestation=PANDEMIE" target="_top">
+                                Pandémie
+                            </a>
+                        </li>
+                        <%}%>
+
 						<%if (objSession.hasRight("pegasus", globaz.framework.secure.FWSecureConstants.READ)) {%>
 						    <li>
 							<a href="<%=request.getContextPath()%>/pegasus" target="_top">

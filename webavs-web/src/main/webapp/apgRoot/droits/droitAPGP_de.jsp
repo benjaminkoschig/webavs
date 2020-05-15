@@ -81,8 +81,7 @@
 
 	function validate () {
 		if (document.forms[0].elements('_method').value === "read") {
-			<%--document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SITUATION_PROFESSIONNELLE%>.chercher";--%>
-			document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_APG%>.next";
+			document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SITUATION_PROFESSIONNELLE%>.chercher";
 			action(COMMIT);
 		} else {
 			$('#aControler').prop( "checked", true);
@@ -866,6 +865,12 @@
 										styleClass="forceDisable">
 								<ct:optionsCodesSystems csFamille="<%=IAPDroitLAPG.CS_GROUPE_GENRE_SERVICE_APG%>">
 									<ct:excludeCode code="<%=IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE%>"/> 
+									<ct:excludeCode code="<%=IAPDroitLAPG.CS_GARDE_PARENTALE%>"/>
+									<ct:excludeCode code="<%=IAPDroitLAPG.CS_QUARANTAINE%>"/>
+									<ct:excludeCode code="<%=IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE%>"/>
+									<ct:excludeCode code="<%=IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS%>"/>
+									<ct:excludeCode code="<%=IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP%>"/>
+									<ct:excludeCode code="<%=IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE%>"/>
 								</ct:optionsCodesSystems>
 							</ct:select>
 						</td>

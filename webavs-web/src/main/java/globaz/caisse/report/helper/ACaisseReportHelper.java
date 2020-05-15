@@ -1,5 +1,6 @@
 package globaz.caisse.report.helper;
 
+import globaz.apg.enums.APTypeDePrestation;
 import globaz.framework.printing.itext.api.FWIDocumentInterface;
 import globaz.framework.printing.itext.api.FWIImporterInterface;
 import globaz.framework.printing.itext.fill.FWIImportProperties;
@@ -12,6 +13,8 @@ import globaz.jade.admin.user.service.JadeUserDetailService;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.naos.util.AFIDEUtil;
+import globaz.phenix.listes.itext.CPIListeDecisionParam;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,6 +74,7 @@ public abstract class ACaisseReportHelper implements ICaisseReportHelper {
     public final static String JASP_PROP_SIGN_NOM_CAISSE = "signature.nom.caisse.";
     public final static String JASP_PROP_SIGN_NOM_SERVICE = "signature.nom.service.";
     public final static String JASP_PROP_SIGN_SIGNATAIRE = "signature.signataire.";
+    public final static String JASP_PROP_SIGN_NOM_GESTIONNAIRE = "signature.nom.gestionnaire.";
 
     /*
      * OCA - remplace des variable dans une chaine de car par la/les valeurs des user details : exemple : abc
@@ -885,6 +889,17 @@ public abstract class ACaisseReportHelper implements ICaisseReportHelper {
             doc.setParametres(ICaisseReportHelper.PARAM_SIGNATURE_SERVICE, nomService);
         }
 
+        if (doc.getTemplateProperty(docInfo, ACaisseReportHelper.JASP_PROP_SIGN_NOM_GESTIONNAIRE + codeIsoLangue) != null
+                && (bean != null && APTypeDePrestation.PANDEMIE.equals(bean.getTypePrestation()))) {
+            String nomGestionnaire = doc.getTemplateProperty(docInfo, ACaisseReportHelper.JASP_PROP_SIGN_NOM_GESTIONNAIRE
+                    + codeIsoLangue);
+            if ((bean != null) && (bean.getUser() != null)) {
+                nomGestionnaire = JadeStringUtil.change(nomGestionnaire, "{user}", bean.getNomCollaborateur());
+                nomGestionnaire = ACaisseReportHelper._replaceVars(nomGestionnaire, bean.getUser().getIdUser(), null);
+            }
+            doc.setParametres(ICaisseReportHelper.PARAM_SIGNATURE_GESTIONNAIRE, nomGestionnaire);
+        }
+
         if (doc.getTemplateProperty(docInfo, ACaisseReportHelper.JASP_PROP_SIGN_SIGNATAIRE + codeIsoLangue) != null) {
             String signataire = doc.getTemplateProperty(docInfo, ACaisseReportHelper.JASP_PROP_SIGN_SIGNATAIRE
                     + codeIsoLangue);
@@ -946,6 +961,17 @@ public abstract class ACaisseReportHelper implements ICaisseReportHelper {
                 nomService = ACaisseReportHelper._replaceVars(nomService, bean.getUser().getIdUser(), null);
             }
             doc.setParametre(ICaisseReportHelper.PARAM_SIGNATURE_SERVICE, nomService);
+        }
+
+        if ((doc.getTemplateProperty(docInfo, ACaisseReportHelper.JASP_PROP_SIGN_NOM_GESTIONNAIRE + codeIsoLangue) != null)
+                && (bean != null && APTypeDePrestation.PANDEMIE.equals(bean.getTypePrestation()))) {
+            String nomGestionnaire = doc.getTemplateProperty(docInfo, ACaisseReportHelper.JASP_PROP_SIGN_NOM_GESTIONNAIRE
+                    + codeIsoLangue);
+            if ((bean != null) && (bean.getUser() != null)) {
+                nomGestionnaire = JadeStringUtil.change(nomGestionnaire, "{user}", bean.getNomCollaborateur());
+                nomGestionnaire = ACaisseReportHelper._replaceVars(nomGestionnaire, bean.getUser().getIdUser(), null);
+            }
+            doc.setParametre(ICaisseReportHelper.PARAM_SIGNATURE_GESTIONNAIRE, nomGestionnaire);
         }
 
         /*

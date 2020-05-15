@@ -38,6 +38,9 @@ userActionValue="apg.process.genererLot.executer";
 								<%if(globaz.prestation.tools.PRSessionDataContainerHelper.getData(session, globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION).equals(globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE)){%>
 									<TD><ct:FWLabel key="JUSQU_A_DATE"/></TD>
 									<TD><ct:FWCalendarTag name="prestationDateFin" value="<%=globaz.globall.util.JACalendar.todayJJsMMsAAAA()%>"/></TD>
+								<%} else if(globaz.prestation.tools.PRSessionDataContainerHelper.getData(session, globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION).equals(globaz.prestation.api.IPRDemande.CS_TYPE_PANDEMIE)){%>
+									<TD><ct:FWLabel key="JUSQU_A_DATE"/></TD>
+									<TD><ct:FWCalendarTag name="prestationDateFin" value="<%=globaz.globall.util.JACalendar.todayJJsMMsAAAA()%>"/></TD>
 								<%} else{%>
 									<TD>&nbsp;</TD>
 									<TD><INPUT type="hidden" name="prestationDateFin" value="<%=globaz.globall.util.JACalendar.todayJJsMMsAAAA()%>"/></TD>

@@ -92,6 +92,8 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     private static final String DEST_SUIVANT_APG = IAPActions.ACTION_ENFANT_APG + ".chercher";
     private static final String DEST_SUIVANT_MAT = IAPActions.ACTION_PRESTATIONS
             + ".actionCalculerToutesLesPrestations";
+    private static final String DEST_SUIVANT_PAN = IAPActions.ACTION_PRESTATIONS
+            + ".actionCalculerToutesLesPrestations";
 
     private static final String ERREUR_DEPARTEMENT_INTROUVABLE = "DEPARTEMENT_INTROUVABLE";
 
@@ -103,6 +105,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
 
     private static final String LABEL_TITRE_APG = "JSP_TITRE_SAISIE_APG_2";
     private static final String LABEL_TITRE_MAT = "JSP_TITRE_SAISIE_MAT_4";
+    private static final String LABEL_TITRE_PAN = "JSP_TITRE_SAISIE_PAN_4";
 
     private static final Vector<String[]> MENU_DEROULANT_BLANK = new Vector<String[]>();
 
@@ -241,8 +244,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
                 // si un employeur défini dans la situation
 
                 idTiersPaiementEmployeur = getIdTiersEmployeur();
-                idDomainPaiementEmployeur = isAPG() ? IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG
-                        : IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
+                idDomainPaiementEmployeur = APGUtils.getCSDomaineFromTypeDemande(getTypePrestation().toCodeSysteme());
 
                 // nous recherchons en cascade du domaine APG ou MATERNITE
                 detailTiers = PRTiersHelper.getAdressePaiementData(getSession(),
@@ -506,6 +508,9 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         if (TypePrestation.TYPE_MATERNITE.equals(typePrestation)) {
             return APSituationProfessionnelleViewBean.DEST_SUIVANT_MAT + "&selectedId=" + droitDTO.getIdDroit()
                     + "&genreService=" + droitDTO.getGenreService();
+        } else if (TypePrestation.TYPE_PANDEMIE.equals(typePrestation)) {
+            return APSituationProfessionnelleViewBean.DEST_SUIVANT_PAN + "&selectedId=" + droitDTO.getIdDroit()
+                    + "&genreService=" + droitDTO.getGenreService();
         } else {
             return APSituationProfessionnelleViewBean.DEST_SUIVANT_APG;
         }
@@ -514,11 +519,9 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     public String getAdressePaiementRequerant() throws Exception {
 
         String adresseLine = "";
-
+        String TIERS_CS_DOMAINE = APGUtils.getCSDomaineFromTypeDemande(getTypePrestation().toCodeSysteme());
         final TIAdressePaiementData detailTiers = PRTiersHelper.getAdressePaiementData(getSession(),
-                getSession().getCurrentThreadTransaction(), getIdTier(),
-                isAPG() ? IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG
-                        : IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE,
+                getSession().getCurrentThreadTransaction(), getIdTier(), TIERS_CS_DOMAINE,
                 null, JACalendar.todayJJsMMsAAAA());
 
         final TIAdressePaiementDataSource dataSource = new TIAdressePaiementDataSource();
@@ -852,8 +855,12 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     public String getTitrePage() {
         if (TypePrestation.TYPE_MATERNITE.equals(typePrestation)) {
             return getSession().getLabel(APSituationProfessionnelleViewBean.LABEL_TITRE_MAT);
-        } else {
+        } else if (TypePrestation.TYPE_APG.equals(typePrestation)) {
             return getSession().getLabel(APSituationProfessionnelleViewBean.LABEL_TITRE_APG);
+        } else if (TypePrestation.TYPE_PANDEMIE.equals(typePrestation)) {
+            return getSession().getLabel(APSituationProfessionnelleViewBean.LABEL_TITRE_PAN);
+        } else {
+            return "";
         }
     }
 

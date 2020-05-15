@@ -38,6 +38,12 @@
 		<ct:menuChange displayId="menu" menuId="ap-menuprincipalamat" showTab="menu" />
 		<ct:menuChange displayId="options" menuId="ap-optionsempty" />
 <%
+} else if (IPRDemande.CS_TYPE_PANDEMIE.equals(PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION))) {
+    // Si Pandémie
+%>
+<ct:menuChange displayId="menu" menuId="ap-menuprincipalpan" showTab="menu"/>
+<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
+<%
 	}
 %>		<script type="text/javascript">
 <%
@@ -62,6 +68,7 @@
 				document.getElementsByName("likePrenom")[0].value = "";
 				document.getElementsByName("forEtatDemande")[0].value = "blank";
 				document.getElementsByName("forEtatDroit")[0].value = "blank";
+        document.getElementsByName("forGenreServiceListDroit")[0].value = "blank";
 				document.getElementsByName("forDateNaissance")[0].value = "";
 				document.getElementsByName("forCsSexe")[0].value = "";
 				document.getElementsByName("orderBy")[0].value = "<%=APDroitLAPGJointDemandeViewBean.FIELDNAME_NOM%>,<%=APDroitLAPGJointDemandeViewBean.FIELDNAME_PRENOM%>,<%=APDroitLAPG.FIELDNAME_DATEDEBUTDROIT%> DESC";
@@ -255,9 +262,34 @@
 <%
 	} else {
 %>										<td><ct:FWListSelectTag data="<%=viewBean.getOrderByData()%>" defaut="" name="orderBy" /></td>								
-								<%}%>
-								
-								<td colspan="4"></td>
+                <%}
+                    if (IPRDemande.CS_TYPE_PANDEMIE.equals(PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION))){%>
+                <td>
+                <label for="forGenreServiceListDroit">
+                    <ct:FWLabel key="JSP_GENRE_SERVICE"/>
+                </label>
+                </td>
+                <%
+                    if (PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_PARAMETRES_RC_DTO) != null) {
+                %>
+                <td>
+                    <ct:FWListSelectTag data="<%=viewBean.getGenreDroitData()%>"
+                                        defaut="<%=((APDroitParametresRCDTO) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_PARAMETRES_RC_DTO)).getGenreService()%>"
+                                        name="forGenreServiceListDroit"/>
+                </td>
+                <%
+                } else {
+                %>
+                <td>
+                    <ct:FWListSelectTag data="<%=viewBean.getGenreDroitData()%>"
+                                        defaut=" "
+                                        name="forGenreServiceListDroit"/>
+                </td>
+                <td colspan="2"></td>
+                <%
+                    }}else{
+                %>
+                <td colspan="4"></td><% } %>
 							</tr>
 							<tr><td colspan="6">&nbsp;</td></tr>
 							<tr>

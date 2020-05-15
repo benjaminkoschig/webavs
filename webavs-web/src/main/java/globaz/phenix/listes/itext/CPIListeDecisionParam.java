@@ -81,4 +81,8 @@ public class CPIListeDecisionParam extends FWIImportParametre {
     public static final String PARAM_TYPE_DECISION = "P_TYPE_DECISION";
 
     public static final String PARAM_TYPEETPERIODE = "P_TYPEETPERIODE";
+
+    // Footer
+    public static final String PARAM_COPIE_A = "PARAM_COPIE";
+    public static final String PARAM_COPIE_NAMES_EMPLOYEURS = "PARAM_COPIE_NAMES_EMPLOYEURS";
 }

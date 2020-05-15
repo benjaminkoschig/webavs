@@ -28,6 +28,7 @@ public class APDroitParametresRCDTO implements Serializable {
     private static final long serialVersionUID = 1L;
     private String etatDemande = "";
     private String etatDroit = "";
+    private String genreService = "";
     private String orderBy = "";
     private String responsable = "";
 
@@ -43,13 +44,14 @@ public class APDroitParametresRCDTO implements Serializable {
     /**
      * Crée une nouvelle instance de la classe APDroitDTO.
      * 
-     * @param droitDTO
+     * @param paramDroitDTO
      *            DOCUMENT ME!
      */
     public APDroitParametresRCDTO(APDroitParametresRCDTO paramDroitDTO) {
         responsable = paramDroitDTO.responsable;
         etatDemande = paramDroitDTO.etatDemande;
         etatDroit = paramDroitDTO.etatDroit;
+        genreService = paramDroitDTO.genreService;
         orderBy = paramDroitDTO.orderBy;
     }
 
@@ -109,4 +111,11 @@ public class APDroitParametresRCDTO implements Serializable {
         responsable = string;
     }
 
+    public String getGenreService() {
+        return genreService;
+    }
+
+    public void setGenreService(String genreService) {
+        this.genreService = genreService;
+    }
 }

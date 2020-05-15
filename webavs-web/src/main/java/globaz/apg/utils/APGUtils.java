@@ -1,15 +1,22 @@
 package globaz.apg.utils;
 
+import ch.globaz.common.properties.PropertiesException;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.application.APApplication;
 import globaz.apg.db.droits.APDroitAPG;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APDroitMaternite;
+import globaz.apg.db.droits.APDroitPandemie;
 import globaz.apg.enums.APGenreServiceAPG;
+import globaz.apg.properties.APProperties;
+import globaz.externe.IPRConstantesExternes;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.properties.JadePropertiesService;
+import globaz.prestation.api.IPRDemande;
+
+import java.util.Arrays;
 
 /**
  * Une simple classe utilitaire. Devrait disparaitre....
@@ -65,6 +72,8 @@ public class APGUtils {
         }
         if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(genreService)) {
             droit = new APDroitMaternite();
+        } else if (APGUtils.isTypeAllocationPandemie(genreService)) {
+            droit = new APDroitPandemie();
         } else {
             droit = new APDroitAPG();
         }
@@ -99,5 +108,34 @@ public class APGUtils {
                 || APGenreServiceAPG.CongeJeunesse.getCodePourAnnonce().equals(serviceType)
                 || APGenreServiceAPG.ServiceEtranger.getCodePourAnnonce().equals(serviceType)
                 || APGenreServiceAPG.DecesDemiJour.getCodePourAnnonce().equals(serviceType);
+    }
+
+    public static Boolean isTypeAllocationPandemie(String csTypeAllocation) {
+        return (IAPDroitLAPG.CS_GARDE_PARENTALE.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_QUARANTAINE.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE.equals(csTypeAllocation));
+    }
+
+    public static String getCSDomaineFromTypeDemande(String typePrestation) {
+        String csDomaineDefault = IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
+        if (IPRDemande.CS_TYPE_APG.equals(typePrestation)) {
+            csDomaineDefault = IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
+        } else if (IPRDemande.CS_TYPE_MATERNITE.equals(typePrestation)) {
+            csDomaineDefault = IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
+        } else if (IPRDemande.CS_TYPE_PANDEMIE.equals(typePrestation)) {
+            try {
+                csDomaineDefault = APProperties.DOMAINE_ADRESSE_APG_PANDEMIE.getValue();
+            } catch (PropertiesException e) {
+                csDomaineDefault = IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
+            }
+        }
+        return csDomaineDefault;
+    }
+
+    public static Boolean isDroitModifiable(String etat) {
+        return Arrays.asList(IAPDroitLAPG.DROITS_MODIFIABLES).contains(etat);
     }
 }

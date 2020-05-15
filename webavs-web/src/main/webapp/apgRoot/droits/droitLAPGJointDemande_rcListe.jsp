@@ -7,6 +7,9 @@
 <%@page import="globaz.apg.vb.droits.APDroitLAPGJointDemandeListViewBean"%>
 <%@ page language="java" errorPage="/errorPage.jsp" %>
 <%@page import="globaz.apg.application.APApplication"%>
+<%@ page import="globaz.apg.properties.APProperties" %>
+<%@ page import="java.util.Objects" %>
+<%@ page import="java.util.Arrays" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 
@@ -115,6 +118,43 @@
 %>
 				</ct:menuPopup>
 <%
+    } else if (IPRDemande.CS_TYPE_PANDEMIE.equals((String) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION))) {
+        // sinon, Pandémie
+    %> <ct:menuPopup menu="ap-optionmenudroitpan" detailLabelId="MENU_OPTION_DETAIL" detailLink="<%=detailMenu%>">
+    <ct:menuParam key="selectedId" value="<%=courant.getIdDroit()%>"/>
+    <ct:menuParam key="genreService" value="<%=courant.getGenreService()%>"/>
+    <ct:menuParam key="forIdDroit" value="<%=courant.getIdDroit()%>"/>
+    <ct:menuParam key="nomPrenom" value="<%=courant.getNomPrenom()%>"/>
+    <ct:menuParam key="noAVS" value="<%=courant.getNoAVS()%>"/>
+    <ct:menuParam key="detailsAssure" value="<%=courant.getDetailRequerant()%>"/>
+    <ct:menuParam key="<%=VueGlobaleTiersUtils.PARAMETRE_REQUETE_ID_TIERS_VUE_GLOBALE%>"
+                  value="<%=courant.getIdTiers()%>"/>
+    <%
+        if (Objects.isNull(APProperties.STORAGE_APG_PANDEMIE_FOLDER.getValue()) || (APProperties.STORAGE_APG_PANDEMIE_FOLDER.getValue().isEmpty())) {
+            // pas de calculs de prestations si le droit est en attente
+    %> <ct:menuExcludeNode nodeId="envoyerParEmail"/>
+    <%
+        }
+    %>
+    <%
+        if (!Arrays.asList(IAPDroitLAPG.DROITS_MODIFIABLES).contains(courant.getEtatDroit())) {
+            // pas de calculs de prestations ni de mise en attente réponse ni de mise en refus si le droit n'est pas en "attente" (attente, validé, en erreur ou attente réponse)
+    %>
+    <ct:menuExcludeNode nodeId="calculertoutesprestations"/>
+    <ct:menuExcludeNode nodeId="attenteReponse"/>
+    <ct:menuExcludeNode nodeId="refuser"/>
+    <%
+        }
+    %>
+    <%
+        if (!(Arrays.asList(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF, IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL).contains(courant.getEtatDroit()) && Arrays.asList(IAPDroitLAPG.CS_GARDE_PARENTALE, IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE, IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP, IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE).contains(courant.getGenreService())
+                && courant.getDateFinDroit().isEmpty())) {
+    %> <ct:menuExcludeNode nodeId="finDeDroit"/>
+    <%
+        }
+    %>
+</ct:menuPopup>
+    <%
 	}
 	if (iterH.isPere()) {
 %>				<input	id="bouton_<%=courant.getIdDroit()%>" 

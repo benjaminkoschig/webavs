@@ -41,6 +41,11 @@ public class APDroitDTO implements Serializable {
     // ~ Instance fields
     // ------------------------------------------------------------------------------------------------
 
+    protected String nom;
+    protected String prenom;
+    protected String csSexe;
+    protected String csEtatCivil;
+    protected String dateNaissance;
     /**
      * 
      */
@@ -101,8 +106,12 @@ public class APDroitDTO implements Serializable {
 
         if (tiers != null) {
             noAVS = tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
-            nomPrenom = tiers.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
-                    + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM);
+            nom = tiers.getProperty(PRTiersWrapper.PROPERTY_NOM);
+            prenom = tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM);
+            csSexe = tiers.getProperty(PRTiersWrapper.PROPERTY_SEXE);
+            csEtatCivil = tiers.getProperty(PRTiersWrapper.PROPERTY_PERSONNE_AVS_ETAT_CIVIL);
+            dateNaissance = tiers.getProperty(PRTiersWrapper.PROPERTY_DATE_NAISSANCE);
+            nomPrenom = nom + " " + prenom;
             idTiers = tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
         }
         // else n'importe pas
@@ -200,7 +209,7 @@ public class APDroitDTO implements Serializable {
     /**
      * setter pour l'attribut prenom nom
      * 
-     * @param string
+     * @param idTiers
      *            une nouvelle valeur pour cet attribut
      */
 
@@ -211,11 +220,10 @@ public class APDroitDTO implements Serializable {
     /**
      * setter pour l'attribut modifiable
      * 
-     * @param b
-     *            une nouvelle valeur pour cet attribut
+     * @param modifiable une nouvelle valeur pour cet attribut
      */
-    public void setModifiable(boolean b) {
-        modifiable = b;
+    public void setModifiable(boolean modifiable) {
+        this.modifiable = modifiable;
     }
 
     /**

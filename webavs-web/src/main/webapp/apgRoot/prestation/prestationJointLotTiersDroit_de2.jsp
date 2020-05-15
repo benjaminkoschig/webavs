@@ -7,7 +7,7 @@ idEcran="PAP0035";
 
 	globaz.apg.vb.prestation.APPrestationJointLotTiersDroitViewBean viewBean = (globaz.apg.vb.prestation.APPrestationJointLotTiersDroitViewBean) session.getAttribute("viewBean");
 	selectedIdValue = viewBean.getIdPrestationApg();
-	String typePrestation = viewBean.getNoRevision().equals(globaz.apg.api.droits.IAPDroitMaternite.CS_REVISION_MATERNITE_2005)?globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE:globaz.prestation.api.IPRDemande.CS_TYPE_APG;
+	String typePrestation = APGUtils.isTypeAllocationPandemie(viewBean.getGenreService()) ? IPRDemande.CS_TYPE_PANDEMIE :viewBean.getNoRevision().equals(globaz.apg.api.droits.IAPDroitMaternite.CS_REVISION_MATERNITE_2005)?globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE:globaz.prestation.api.IPRDemande.CS_TYPE_APG;
 	java.util.Vector v = globaz.apg.db.lots.APLotManager.getIdsDescriptionsLotsOuvertsOuCompenses(viewBean.getSession(),typePrestation);
 	bButtonDelete = false;
 	

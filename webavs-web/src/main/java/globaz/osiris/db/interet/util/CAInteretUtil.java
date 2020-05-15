@@ -1,29 +1,31 @@
 package globaz.osiris.db.interet.util;
 
+import ch.globaz.common.domaine.Date;
 import globaz.framework.util.FWCurrency;
-import globaz.globall.db.BManager;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BTransaction;
-import globaz.globall.db.FWFindParameter;
+import globaz.globall.db.*;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarMonth;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAUtil;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.db.interet.tardif.montantsoumis.CASumMontantSoumisParPlan;
 import globaz.osiris.db.interet.tardif.montantsoumis.CASumMontantSoumisParPlanManager;
 import globaz.osiris.db.interet.util.ecriturenonsoumise.CAEcritureNonSoumiseManager;
 import globaz.osiris.db.interet.util.planparsection.CAPlanParSectionManager;
+import globaz.osiris.db.interet.util.tauxParametres.CATauxParametre;
 import globaz.osiris.db.interets.CAGenreInteret;
 import globaz.osiris.db.interets.CAInteretMoratoire;
 import globaz.osiris.db.interets.CAInteretMoratoireManager;
-import java.util.ArrayList;
+
+import java.util.*;
 
 public class CAInteretUtil {
 
     private static final String CS_PARAM_LIMITEIM = "LIMITEIM";
     private static final String CS_PARAM_LIMITEIR = "LIMITEIR";
-    private static final String CS_PARAM_TAUX = "TAUX";
+    public static final String CS_PARAM_TAUX = "TAUX";
+    public static final String CS_PARAM_TAUX_REMU = "TAUXREMU";
     private static final String CS_PARAMETRES_IM = "10200030";
 
     /**
@@ -281,6 +283,131 @@ public class CAInteretUtil {
                     CAInteretUtil.CS_PARAM_TAUX, forDate, "0", 2));
         } else {
             return 0.00;
+        }
+    }
+
+    /**
+     * Return le taux en vigueur pour une année.
+     *
+     * @param session
+     * @param transaction
+     * @param forDate
+     * @return
+     * @throws Exception
+     */
+    public static List<CATauxParametre> getTaux(BTransaction transaction, String debutDate, String finDate, String cleDiff, int nbDigit) throws Exception {
+        List<CATauxParametre> listeTaux = new ArrayList<>();
+        //Récuperation des paramètres (données brutes)
+        FWFindParameterManager mgr = new FWFindParameterManager();
+        mgr.setSession(transaction.getSession());
+        mgr.setIdApplParametre(transaction.getSession().getApplicationId());
+        mgr.setIdCodeSysteme(CAInteretUtil.CS_PARAMETRES_IM);
+        mgr.setIdCleDiffere(cleDiff);
+        if (!JAUtil.isDateEmpty(finDate)) {
+            mgr.setDateDebutValidite(finDate);
+        }
+        mgr.setIdActeurParametre("0");
+        mgr.setPlageValDeParametre("0");
+        mgr.find(transaction);
+
+        //Mapping pour avoir les infos nécessaire pour la découpage des périodes lors d'ajouts des lignes.
+        Date dateDebut = new Date(debutDate);
+        Date dateFin = new Date(finDate);
+        if (mgr.size() == 0) {
+            throw new Exception("Parameter not found:" + CAInteretUtil.CS_PARAMETRES_IM + ", " + cleDiff + ", " + debutDate);
+        } else {
+            for (int i = 0; i < mgr.size(); i++) {
+                FWFindParameter param = (FWFindParameter) mgr.getEntity(i);
+                Date dateDebutParam = new Date(param.getDateDebutValidite());
+                CATauxParametre tauxParam = new CATauxParametre();
+                tauxParam.setLibelle(param.getDesignationParametre());
+                tauxParam.setCleDiff(cleDiff);
+                tauxParam.setCsFamille(param.getIdCodeSysteme());
+                tauxParam.setDateDebut(dateDebutParam);
+                String taux = "";
+                if (param.getValeurNumParametre().trim().length() != 0) {
+                    taux = JAUtil
+                            .formatDecimal(new java.math.BigDecimal(param.getValeurNumParametre()), nbDigit);
+                }
+                tauxParam.setTaux(Double.parseDouble(taux));
+                //Ajouter la date de fin
+                if (!listeTaux.isEmpty()) {
+                    tauxParam.setDateFin(listeTaux.get(i - 1).getDateDebut().addDays(-1));
+                }
+                listeTaux.add(tauxParam);
+            }
+            //Trié par ordre croissant de la date de début
+            Collections.sort(listeTaux, new Comparator<CATauxParametre>() {
+                @Override
+                public int compare(CATauxParametre CATauxParametre, CATauxParametre t1) {
+                    if (JadeDateUtil.isDateBefore(CATauxParametre.getDateDebut().getSwissValue(), t1.getDateDebut().getSwissValue())) {
+                        return -1;
+                    }
+                    if (CATauxParametre.getDateDebut().equals(t1.getDateDebut())) {
+                        return 0;
+                    } else {
+                        return 1;
+                    }
+                }
+            });
+            Iterator<CATauxParametre> it = listeTaux.iterator();
+            //Tri : Ceux qui sont hors de la période
+            //Si la date de début et de la fin n'est pas inclus dans la période du taux => on l'enlève de la liste.
+            CATauxParametre CATauxParametre;
+            while(it.hasNext()){
+                CATauxParametre = it.next();
+//                if (!(checkPeriodeInclusTaux(dateDebut, CATauxParametre)
+//                        || checkPeriodeInclusTaux(dateFin, CATauxParametre))) {
+//                    it.remove();
+//                }
+             if (!checkPeriodeInclusTaux(dateDebut,dateFin, CATauxParametre)) {
+                    it.remove();
+                }
+            }
+        }
+
+
+        return listeTaux;
+    }
+
+    private static boolean checkPeriodeInclusTaux(Date dateDebutInteret,Date dateFinInteret, CATauxParametre tauxParametre) {
+        boolean isIncluded = false;
+        if(tauxParametre.getDateFin() != null){
+            if ((tauxParametre.getDateFin().beforeOrEquals(dateDebutInteret))
+                    || tauxParametre.getDateDebut().afterOrEquals(dateFinInteret)) {
+                return false;
+            } else {
+                return true;
+            }
+        }else{
+            if (tauxParametre.getDateDebut().afterOrEquals(dateFinInteret)) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+    }
+
+
+
+
+
+    private static boolean checkPeriodeInclusTaux(Date date, CATauxParametre CATauxParametre) {
+        boolean isIncluded = false;
+
+
+        if(CATauxParametre.getDateFin() != null){
+            if (date.afterOrEquals(CATauxParametre.getDateDebut()) && date.beforeOrEquals(CATauxParametre.getDateFin())) {
+                return true;
+            } else {
+                return false;
+            }
+        }else{
+            if (date.afterOrEquals(CATauxParametre.getDateDebut()) ) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 }

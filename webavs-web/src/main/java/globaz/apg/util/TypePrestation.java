@@ -46,9 +46,12 @@ public class TypePrestation implements Serializable {
      */
     public static final TypePrestation TYPE_MATERNITE = new TypePrestation(IPRDemande.CS_TYPE_MATERNITE);
 
+    public static final TypePrestation TYPE_PANDEMIE = new TypePrestation(IPRDemande.CS_TYPE_PANDEMIE);
+
     static {
         ACTIONS.put(IPRDemande.CS_TYPE_APG, IAPActions.ACTION_SAISIE_CARTE_APG);
         ACTIONS.put(IPRDemande.CS_TYPE_MATERNITE, IAPActions.ACTION_SAISIE_CARTE_AMAT);
+        ACTIONS.put(IPRDemande.CS_TYPE_PANDEMIE, IAPActions.ACTION_SAISIE_CARTE_PAN);
     }
 
     // ~ Instance fields
@@ -63,13 +66,16 @@ public class TypePrestation implements Serializable {
      * @return l'instance de TypePrestation correspondante (jamais null).
      */
     public static final TypePrestation typePrestationInstanceFor(String typePrestation) {
-        if ("APG".equals(typePrestation)) {
+        switch (typePrestation) {
+            case "APG":
             return TYPE_APG;
-        } else if ("MATERNITE".equals(typePrestation)) {
+            case "MATERNITE":
             return TYPE_MATERNITE;
-        }
-
+            case "PANDEMIE":
+                return TYPE_PANDEMIE;
+            default:
         return TYPE_INCONNU;
+    }
     }
 
     // ~ Constructors
@@ -84,13 +90,16 @@ public class TypePrestation implements Serializable {
      * @return l'instance de TypePrestation correspondante (jamais null).
      */
     public static final TypePrestation typePrestationInstanceForCS(String csTypePrestation) {
-        if (IPRDemande.CS_TYPE_APG.equals(csTypePrestation)) {
+        switch (csTypePrestation) {
+            case IPRDemande.CS_TYPE_APG:
             return TYPE_APG;
-        } else if (IPRDemande.CS_TYPE_MATERNITE.equals(csTypePrestation)) {
+            case IPRDemande.CS_TYPE_MATERNITE:
             return TYPE_MATERNITE;
-        }
-
+            case IPRDemande.CS_TYPE_PANDEMIE:
+                return TYPE_PANDEMIE;
+            default:
         return TYPE_INCONNU;
+    }
     }
 
     // ~ Methods
@@ -161,8 +170,8 @@ public class TypePrestation implements Serializable {
         if (GROUPES.isEmpty()) {
             synchronized (GROUPES) {
                 GROUPES.put(IPRDemande.CS_TYPE_APG, loadNomGroupe(APApplication.PROPERTY_GROUPE_APG_GESTIONNAIRE));
-                GROUPES.put(IPRDemande.CS_TYPE_MATERNITE,
-                        loadNomGroupe(APApplication.PROPERTY_GROUPE_MATERNITE_GESTIONNAIRE));
+                GROUPES.put(IPRDemande.CS_TYPE_MATERNITE, loadNomGroupe(APApplication.PROPERTY_GROUPE_MATERNITE_GESTIONNAIRE));
+                GROUPES.put(IPRDemande.CS_TYPE_PANDEMIE, loadNomGroupe(APApplication.PROPERTY_GROUPE_APG_GESTIONNAIRE));
             }
         }
 

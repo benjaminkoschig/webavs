@@ -3,6 +3,7 @@ package globaz.apg.vb.droits;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APDroitMaternite;
+import globaz.apg.db.droits.APDroitPandemie;
 import globaz.apg.enums.APModeEditionDroit;
 import globaz.apg.util.TypePrestation;
 import globaz.caisse.helper.CaisseHelperFactory;
@@ -26,7 +27,7 @@ import java.util.Vector;
  */
 public abstract class APAbstractDroitProxyViewBean extends PRAbstractViewBeanSupport implements INSSViewBean {
 
-    private static final String ERREUR_GESTIONNAIRES_INTROUVABLE = "GESTIONNAIRES_INTROUVABLE";
+    public static final String ERREUR_GESTIONNAIRES_INTROUVABLE = "GESTIONNAIRES_INTROUVABLE";
     private transient APModeEditionDroit modeEditionDroit;
     private String csEtatCivil = "";
     private String dateNaissance = "";
@@ -313,6 +314,9 @@ public abstract class APAbstractDroitProxyViewBean extends PRAbstractViewBeanSup
             try {
                 if (droit instanceof APDroitMaternite) {
                     responsables = PRGestionnaireHelper.getIdsEtNomsGestionnaires(TypePrestation.TYPE_MATERNITE
+                            .toGroupeGestionnaire());
+                } else if (droit instanceof APDroitPandemie) {
+                    responsables = PRGestionnaireHelper.getIdsEtNomsGestionnaires(TypePrestation.TYPE_APG
                             .toGroupeGestionnaire());
                 } else {
                     responsables = PRGestionnaireHelper.getIdsEtNomsGestionnaires(TypePrestation.TYPE_APG

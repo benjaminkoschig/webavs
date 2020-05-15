@@ -65,8 +65,11 @@ public class APEvaluable extends FWDefaultEval {
         ACTIONS_A_EMPILER.add(IAPActions.ACTION_REPARTITION_PAIEMENTS + "." + FWAction.ACTION_CHERCHER);
         ACTIONS_A_EMPILER.add(IAPActions.ACTION_GENERER_COMM_DEC_AMAT + "." + FWAction.ACTION_AFFICHER);
         ACTIONS_A_EMPILER.add(IAPActions.ACTION_DROIT_LAPG + "." + "actionRecapitulatif");
+        ACTIONS_A_EMPILER.add(IAPActions.ACTION_DROIT_LAPG + "." + "actionEnvoyerMail");
         ACTIONS_A_EMPILER.add(IAPActions.ACTION_ANNONCEAPG + "." + FWAction.ACTION_CHERCHER);
         ACTIONS_A_EMPILER.add(IAPActions.ACTION_ANNONCEAPG + ".choisirType");
+        ACTIONS_A_EMPILER.add(IAPActions.ACTION_GENERER_DROIT_PAN_MENSUEL + "." + FWAction.ACTION_AFFICHER);
+        ACTIONS_A_EMPILER.add(IAPActions.ACTION_PANDEMIE_FIN_DU_DROIT + "." + FWAction.ACTION_AFFICHER);
     }
 
     // ~ Constructors

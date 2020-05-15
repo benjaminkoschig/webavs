@@ -22,6 +22,8 @@ public class APListeControleViewBean extends PRAbstractViewBeanSupport {
     private String descriptionLot = null;
     private String eMailAddress = "";
     private String idLot = "";
+    private String typeImpression = "pdf";
+
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -131,5 +133,14 @@ public class APListeControleViewBean extends PRAbstractViewBeanSupport {
     @Override
     public boolean validate() {
         return true;
+    }
+
+
+    public String getTypeImpression() {
+        return typeImpression;
+    }
+
+    public void setTypeImpression(String typeImpression) {
+        this.typeImpression = typeImpression;
     }
 }

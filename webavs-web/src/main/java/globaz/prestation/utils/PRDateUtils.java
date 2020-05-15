@@ -2,6 +2,8 @@ package globaz.prestation.utils;
 
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.prestation.beans.PRPeriode;
+import org.apache.commons.lang.StringUtils;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -257,7 +259,8 @@ public class PRDateUtils {
                     if (PRDateUtils.isDateDansLaPeriode(periodeReference, periodeTest.getDateDeDebut())) {
                         chevauchement = true;
                     }
-                    if (PRDateUtils.isDateDansLaPeriode(periodeReference, periodeTest.getDateDeFin())) {
+                    if (StringUtils.isNotEmpty(periodeTest.getDateDeFin())
+                        && PRDateUtils.isDateDansLaPeriode(periodeReference, periodeTest.getDateDeFin())) {
                         chevauchement = true;
                     }
                 }

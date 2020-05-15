@@ -257,6 +257,8 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
                 .equals(APISection.ID_TYPE_SECTION_AF))
                 || (getCategorieSection().equals(APISection.ID_CATEGORIE_SECTION_APG) && !getIdTypeSection().equals(
                         APISection.ID_TYPE_SECTION_APG))
+                || (getCategorieSection().equals(APISection.ID_CATEGORIE_SECTION_PANDEMIE) && !getIdTypeSection().equals(
+                APISection.ID_TYPE_SECTION_APG))
                 || (getCategorieSection().equals(APISection.ID_CATEGORIE_SECTION_IJAI) && !getIdTypeSection().equals(
                         APISection.ID_TYPE_SECTION_IJAI))
                 || (getCategorieSection().equals(APISection.ID_CATEGORIE_SECTION_RESTITUTIONS) && !getIdTypeSection()

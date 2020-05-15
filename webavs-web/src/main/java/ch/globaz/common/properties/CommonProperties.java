@@ -70,7 +70,9 @@ public enum CommonProperties implements IProperties {
     SEODOR_WEBSERVICE_NAMESPACE("seodor.webservice.namespace","WebService NameSpace"),
     SEODOR_WEBSERVICE_SEDEX_SENDER_ID("seodor.webservice.sedex.sender.id","Id Sedex Seodor"),
 
-    QR_FACTURE("qrFacture","Permet de changer le mode de facturation QR-Facture/BVR");
+    QR_FACTURE("qrFacture","Permet de changer le mode de facturation QR-Facture/BVR"),
+
+    TAUX_INTERET_PANDEMIE("tauxInteret.pandemie.isActivated","Propriete qui permet de changer le calcul des intérêts moratoires");
 
 
     private String description;

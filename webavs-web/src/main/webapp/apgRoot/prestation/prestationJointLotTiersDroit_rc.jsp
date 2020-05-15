@@ -35,6 +35,9 @@ boolean wantTousEtat="tous".equals(request.getParameter("forEtat"));
 <%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE) {%>
 	<ct:menuChange displayId="menu" menuId="ap-menuprincipalamat" showTab="menu"/>
 	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
+<%} else if (globaz.prestation.tools.PRSessionDataContainerHelper.getData(session, globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION) == IPRDemande.CS_TYPE_PANDEMIE) { %>
+<ct:menuChange displayId="menu" menuId="ap-menuprincipalpan" showTab="menu"/>
+<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 <%}%>
 
 <SCRIPT language="javascript">
@@ -78,6 +81,13 @@ boolean wantTousEtat="tous".equals(request.getParameter("forEtat"));
 		document.forms[0].submit();
 	}
 	
+    function imprimerListePrestationsExcel() {
+        document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_PRESTATION_JOINT_LOT_TIERS_DROIT%>.imprimerListePrestations";
+        document.forms[0].elements('isExcel').value="true";
+        document.forms[0].target = "_main";
+        document.forms[0].submit();
+    }
+
 	var warningObj = new Object();
 	warningObj.text = "";
 	
@@ -119,6 +129,9 @@ boolean wantTousEtat="tous".equals(request.getParameter("forEtat"));
 				<%}%>
 				<%if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)=="52201002") {%>
 				<ct:FWLabel key="JSP_PRESTATIONS_MAT"/>
+<%}%>
+<%if ((String) globaz.prestation.tools.PRSessionDataContainerHelper.getData(session, globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION) == IPRDemande.CS_TYPE_PANDEMIE) {%>
+<ct:FWLabel key="JSP_PRESTATIONS_PAN"/>
 				<%}%>
 				<%-- /tpl:put --%>
 <%@ include file="/theme/find/bodyStart2.jspf" %>
@@ -230,9 +243,19 @@ boolean wantTousEtat="tous".equals(request.getParameter("forEtat"));
 						<TR>
 							<TD><input type="button" onclick="clearFields()" accesskey="C" value="Clear">  [ALT+C]</TD>
 							<td colspan="4">&nbsp;</td>
-							<TD><INPUT type="button" value="<ct:FWLabel key="JSP_IMPRIMER"/> (alt+<ct:FWLabel key="AK_IMPRIMER"/>)" onclick="imprimerListePrestations()" accesskey="<ct:FWLabel key="AK_IMPRIMER"/>"></TD>
+    <TD><INPUT type="button" value="<ct:FWLabel key="JSP_IMPRIMER"/> (alt+<ct:FWLabel key="AK_IMPRIMER"/>)"
+               onclick="imprimerListePrestations()" accesskey="<ct:FWLabel key="AK_IMPRIMER"/>"> &nbsp; &nbsp;<img src="<%=request.getContextPath()%>/images/excel.png"
+                                                                                                     onClick="imprimerListePrestationsExcel()"
+                                                                                                     title="Exporter la liste"
+                                                                                                     border="0"
+                                                                                                     onMouseOver="this.style.cursor='hand';"
+                                                                                                     onMouseOut="this.style.cursor='pointer';"
+                                                                                                     width="20px"
+                                                                                                     height="20px"
+    ></TD>
+
 						</TR>
-						
+<INPUT type="hidden" name="isExcel" value="">
 						
 	 					<%-- /tpl:put --%>
 <%@ include file="/theme/find/bodyButtons.jspf" %>

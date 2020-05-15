@@ -57,6 +57,8 @@
 	<parameter name="P_HEADER_NOM_PAGE2" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="PARAM_SALUTATIONS" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="PARAM_AP_DECOMPTE_DETAIL3" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="PARAM_COPIE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="PARAM_COPIE_NAMES_EMPLOYEURS" isForPrompting="false" class="java.lang.String"/>
 	<field name="FIELD_ASSURE" class="java.lang.String"/>
 	<field name="FIELD_DETAIL_PERIODE" class="java.lang.String"/>
 	<field name="FIELD_MONTANT_APG" class="java.lang.String"/>
@@ -736,7 +738,47 @@
 			</band>
 		</columnFooter>
 		<pageFooter>
-			<band height="0"  isSplitAllowed="false" >
+			<band height="50"  isSplitAllowed="false" >
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="2"
+						width="50"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-48"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_COPIE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="50"
+						y="4"
+						width="136"
+						height="45"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-49"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_COPIE_NAMES_EMPLOYEURS}]]></textFieldExpression>
+				</textField>
 			</band>
 		</pageFooter>
 		<summary>

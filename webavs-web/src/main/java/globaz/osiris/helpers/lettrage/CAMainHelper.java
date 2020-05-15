@@ -48,6 +48,8 @@ import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.adressepaiement.TIAvoirPaiementManager;
 import globaz.pyxis.util.TISQL;
 import globaz.pyxis.util.TIToolBox;
+import org.apache.commons.lang.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -546,6 +548,8 @@ public class CAMainHelper implements IFWHelper {
             nature = CAOrdreGroupe.NATURE_VERSEMENT_AF;
         } else if (APISection.ID_CATEGORIE_SECTION_APG.equals(category)) {
             nature = CAOrdreGroupe.NATURE_VERSEMENT_APG;
+        } else if (StringUtils.equals(APISection.ID_CATEGORIE_SECTION_PANDEMIE,category)) {
+            nature= CAOrdreGroupe.NATURE_VERSEMENT_PANDEMIE;
         }
 
         String type = APIOperationOrdreVersement.VIREMENT;

@@ -12,14 +12,7 @@ import globaz.apg.business.service.APAnnoncesRapgService;
 import globaz.apg.db.annonces.APAnnonceAPG;
 import globaz.apg.db.annonces.APBreakRule;
 import globaz.apg.db.annonces.APBreakRuleManager;
-import globaz.apg.db.droits.APDroitAPG;
-import globaz.apg.db.droits.APDroitLAPG;
-import globaz.apg.db.droits.APDroitMaternite;
-import globaz.apg.db.droits.APEnfantAPG;
-import globaz.apg.db.droits.APEnfantAPGManager;
-import globaz.apg.db.droits.APSituationFamilialeAPG;
-import globaz.apg.db.droits.APSituationProfessionnelle;
-import globaz.apg.db.droits.APSituationProfessionnelleManager;
+import globaz.apg.db.droits.*;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
 import globaz.apg.db.prestation.APRepartitionPaiements;
@@ -48,8 +41,12 @@ public class APGenerateurAnnonceRAPG {
 
         // On va rechercher le bon type de droit
         String idDroit = droit.getIdDroit();
-
-        if (isPrestationMaternite) {
+        if (droit instanceof APDroitPandemie) {
+            droit = new APDroitPandemie();
+            droit.setSession(session);
+            droit.setIdDroit(idDroit);
+            droit.retrieve();
+       } else if (isPrestationMaternite) {
             droit = new APDroitMaternite();
             droit.setSession(session);
             droit.setIdDroit(idDroit);

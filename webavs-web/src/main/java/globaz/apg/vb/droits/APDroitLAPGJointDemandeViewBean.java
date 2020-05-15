@@ -102,6 +102,19 @@ public class APDroitLAPGJointDemandeViewBean extends APDroitLAPGJointDemande imp
         return etatsDroit;
     }
 
+    public Vector getGenreDroitData() {
+        Vector genresDroit = PRCodeSystem.getLibellesPourGroupe(IAPDroitLAPG.CS_GROUPE_GENRE_SERVICE_APG, getSession());
+        for(int i=0; i<genresDroit.size(); i++){
+            String[] a = (String[]) genresDroit.get(i);
+            if(!APGUtils.isTypeAllocationPandemie(a[0])){
+                genresDroit.remove(i);
+                i--;
+            }
+        }
+        genresDroit.add(0, new String[] { APDroitLAPGJointDemandeManager.CLE_GENRE_TOUS, "" });
+        return genresDroit;
+    }
+
     public String getEtatDroitLibelle() {
         return getSession().getCodeLibelle(getEtatDroit());
     }
@@ -217,7 +230,9 @@ public class APDroitLAPGJointDemandeViewBean extends APDroitLAPGJointDemande imp
     }
 
     public String getTitreEcran() {
-        if (getTypePrestation().equals(TypePrestation.TYPE_APG)) {
+        if(getTypePrestation().equals(TypePrestation.TYPE_PANDEMIE)) {
+            return getSession().getLabel("JSP_TITRE_LISTE_PANDEMIE");
+        }else if (getTypePrestation().equals(TypePrestation.TYPE_APG)) {
             return getSession().getLabel("JSP_TITRE_LISTE_APG");
         } else {
             return getSession().getLabel("JSP_TITRE_LISTE_MATERNITE");

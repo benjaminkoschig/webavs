@@ -204,7 +204,7 @@ public class CADetailInteretMoratoire extends BEntity {
             _addError(statement.getTransaction(), getSession().getLabel("7383"));
         } else {
             float taux = new Float(getTaux()).floatValue();
-            if (taux <= 0) {
+            if (taux < 0) {
                 _addError(statement.getTransaction(), getSession().getLabel("7384"));
             }
         }

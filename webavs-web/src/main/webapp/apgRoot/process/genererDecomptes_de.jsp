@@ -20,10 +20,26 @@ idEcran="PAP3001";
 <%-- tpl:put name="zoneBusiness" --%>
 <%-- /tpl:put --%>
 <%@ include file="/theme/process/javascripts.jspf" %>
-<%-- tpl:put name="zoneScripts" --%>
+
+<%@ page import="globaz.prestation.api.IPRDemande" %>
+	<%
+		if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_APG) {
+	%>
+
+	<ct:menuChange displayId="menu" menuId="ap-menuprincipalapg" showTab="menu"/>
+	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
+	<!--sinon, maternité -->
+	<%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE) {%>
 	<ct:menuChange displayId="menu" menuId="ap-menuprincipalamat" showTab="menu"/>
 	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-	
+	<%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)== IPRDemande.CS_TYPE_PANDEMIE) {%>
+	<ct:menuChange displayId="menu" menuId="ap-menuprincipalpan" showTab="menu"/>
+	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
+	<%}%>
+
+
+<%-- tpl:put name="zoneScripts" --%>
+
 	<SCRIPT language="Javascript">
 
 	function isDefinitifChange(){
