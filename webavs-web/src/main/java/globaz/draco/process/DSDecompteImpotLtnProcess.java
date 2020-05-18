@@ -382,9 +382,7 @@ public class DSDecompteImpotLtnProcess extends BProcess {
                     try {
                         // transmission des paramètres et création du document
                         DSDecompteImpotLtn_Doc document = new DSDecompteImpotLtn_Doc(getSession());
-                        if(isCCVS){
-                            document.setWantInfoEmplyoeur(true);
-                        }
+                        document.setWantInfoEmplyoeur(isCCVS);
                         document.setSimulation(getSimulation());
                         document.setTypeImpression(getTypeImpression());
                         document.setEMailAddress(getEMailAddress());
@@ -465,9 +463,7 @@ public class DSDecompteImpotLtnProcess extends BProcess {
                             // transmission des paramètres et création du
                             // document
                             DSDecompteImpotLtn_Doc document = new DSDecompteImpotLtn_Doc(getSession());
-                            if(isCCVS){
-                                document.setWantInfoEmplyoeur(true);
-                            }
+                            document.setWantInfoEmplyoeur(isCCVS);
                             document.setSimulation(getSimulation());
                             document.setTypeImpression(getTypeImpression());
                             document.setEMailAddress(getEMailAddress());
