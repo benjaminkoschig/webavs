@@ -10,6 +10,7 @@ import globaz.draco.db.inscriptions.DSInscriptionsIndividuelles;
 import globaz.draco.db.inscriptions.DSInscriptionsIndividuellesManager;
 import globaz.draco.print.itext.DSDecompteImpotLtn_Doc;
 import globaz.draco.util.DSDecompteLtnBlobUtils;
+import globaz.draco.util.DSUtil;
 import globaz.framework.util.FWMessage;
 import globaz.globall.api.BISession;
 import globaz.globall.api.GlobazSystem;
@@ -69,6 +70,7 @@ public class DSDecompteImpotLtnProcess extends BProcess {
     private boolean simulation = false;
     private String typeImpression = "pdf";
     private static final int AJOUTE_33 = 1;
+    private static final String NO_CAISSE_CCVS = "023";
 
     public DSDecompteImpotLtnProcess() {
         super();
@@ -89,6 +91,7 @@ public class DSDecompteImpotLtnProcess extends BProcess {
     @Override
     protected boolean _executeProcess() throws Exception {
         boolean success = true;
+        boolean isCCVS = NO_CAISSE_CCVS.equalsIgnoreCase(DSUtil.getNoCaisse(getSession()));
         try {
             // Vérification des paramètres
             if (JadeStringUtil.isBlank(getAnnee())) {
@@ -379,6 +382,9 @@ public class DSDecompteImpotLtnProcess extends BProcess {
                     try {
                         // transmission des paramètres et création du document
                         DSDecompteImpotLtn_Doc document = new DSDecompteImpotLtn_Doc(getSession());
+                        if(isCCVS){
+                            document.setWantInfoEmplyoeur(true);
+                        }
                         document.setSimulation(getSimulation());
                         document.setTypeImpression(getTypeImpression());
                         document.setEMailAddress(getEMailAddress());
@@ -459,6 +465,9 @@ public class DSDecompteImpotLtnProcess extends BProcess {
                             // transmission des paramètres et création du
                             // document
                             DSDecompteImpotLtn_Doc document = new DSDecompteImpotLtn_Doc(getSession());
+                            if(isCCVS){
+                                document.setWantInfoEmplyoeur(true);
+                            }
                             document.setSimulation(getSimulation());
                             document.setTypeImpression(getTypeImpression());
                             document.setEMailAddress(getEMailAddress());

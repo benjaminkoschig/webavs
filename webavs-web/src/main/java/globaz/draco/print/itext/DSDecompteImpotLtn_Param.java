@@ -55,4 +55,16 @@ public class DSDecompteImpotLtn_Param extends FWIImportParametre {
     public static final String P_TOTAL_VERSER_LABEL = "P_TOTAL_VERSER_LABEL";
 
     public static final String P_TOTAUX_LABEL = "P_TOTAUX_LABEL";
+
+    public static final String P_COL_EMPLOYEUR_LABEL = "P_COL_EMPLOYEUR_LABEL";
+    public static final String P_NUM_AFF_LABEL = "P_NUM_AFF_LABEL";
+    public static final String P_RAIS_SOC_LABEL = "P_RAIS_SOC_LABEL";
+    public static final String P_NPA_AFF_LABEL = "P_NPA_AFF_LABEL";
+    public static final String P_LIEU_AFF_LABEL = "P_LIEU_AFF_LABEL";
+    public static final String F_NUM_AFF = "F_NUM_AFF";
+    public static final String F_RAIS_SOC = "F_RAIS_SOC";
+    public static final String F_NPA_AFF = "F_NPA_AFF";
+    public static final String F_LIEU_AFF = "F_LIEU_AFF";
+
+
 }

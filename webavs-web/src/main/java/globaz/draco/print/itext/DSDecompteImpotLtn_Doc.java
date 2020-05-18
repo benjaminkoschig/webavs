@@ -7,6 +7,7 @@ import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import globaz.caisse.report.helper.ICaisseReportHelper;
 import globaz.commons.nss.NSUtil;
 import globaz.draco.application.DSApplication;
+import globaz.draco.db.declaration.DSDeclarationViewBean;
 import globaz.draco.db.inscriptions.DSInscriptionsIndividuelles;
 import globaz.framework.printing.itext.FWIDocumentManager;
 import globaz.framework.printing.itext.exception.FWIException;
@@ -22,11 +23,13 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.assurance.AFAssurance;
 import globaz.naos.db.assurance.AFAssuranceManager;
 import globaz.naos.db.assurance.AFCalculAssurance;
 import globaz.naos.db.tauxAssurance.AFTauxAssurance;
 import globaz.naos.translation.CodeSystem;
+import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.adressecourrier.TIAvoirAdresse;
 import globaz.pyxis.db.adressecourrier.TILocalite;
@@ -38,6 +41,8 @@ import globaz.pyxis.db.tiers.TITiers;
 import globaz.pyxis.db.tiers.TITiersViewBean;
 import globaz.webavs.common.CommonExcelmlContainer;
 import globaz.webavs.common.CommonExcelmlUtils;
+import globaz.webavs.common.ICommonConstantes;
+
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -58,6 +63,7 @@ public class DSDecompteImpotLtn_Doc extends FWIDocumentManager {
     private static final String MODEL_NAME = "DRACO_DECOMPTE_IMPOTS_PRELEVES_LTN";
     public static final String NUMERO_REFERENCE_INFOROM = "0199CDS";
     private static final String XLS_DOC_NAME = "ListeDecompteImpotsPrelevesLtn";
+    private static final String XLS_DOC_NAME_EMPLOYEUR = "ListeDecompteImpotsPrelevesLtnEmployeur";
 
     private String annee;
     private AFAssurance assuranceImpotCantonal;
@@ -107,6 +113,21 @@ public class DSDecompteImpotLtn_Doc extends FWIDocumentManager {
 
     private CommonExcelmlContainer xlsContainer = new CommonExcelmlContainer();
 
+    public boolean isWantInfoEmplyoeur() {
+        return wantInfoEmplyoeur;
+    }
+
+    public void setWantInfoEmplyoeur(boolean wantInfoEmplyoeur) {
+        this.wantInfoEmplyoeur = wantInfoEmplyoeur;
+    }
+
+    private boolean wantInfoEmplyoeur = false;
+    private String idDeclarationSalaireCourante = "";
+    private String numeroAffilieEmployeur = "";
+    private String raisonSocialeEmployeur = "";
+    private String npaEmployeur = "";
+    private String localiteEmployeur="";
+
     public DSDecompteImpotLtn_Doc() throws Exception {
         this(new BSession(DSApplication.DEFAULT_APPLICATION_DRACO));
     }
@@ -150,6 +171,10 @@ public class DSDecompteImpotLtn_Doc extends FWIDocumentManager {
                 xlsContainer.put((String) key, (String) param.get(key));
             }
         }
+    }
+
+    private boolean isTypeImpressionExcel(){
+        return "xls".equalsIgnoreCase(getTypeImpression());
     }
 
     @Override
@@ -344,6 +369,14 @@ public class DSDecompteImpotLtn_Doc extends FWIDocumentManager {
         afterTable();
     }
 
+    private void enteteXlsEmployeur(){
+        xlsContainer.put(DSDecompteImpotLtn_Param.P_COL_EMPLOYEUR_LABEL, getSession().getLabel("EMPLOYEUR"));
+        xlsContainer.put(DSDecompteImpotLtn_Param.P_NUM_AFF_LABEL, getSession().getLabel("ENTETE_NUMEROAFFILIE"));
+        xlsContainer.put(DSDecompteImpotLtn_Param.P_RAIS_SOC_LABEL, getSession().getLabel("DRACO_LISTE_RAISON_SOCIALE"));
+        xlsContainer.put(DSDecompteImpotLtn_Param.P_NPA_AFF_LABEL, getSession().getLabel("NPA"));
+        xlsContainer.put(DSDecompteImpotLtn_Param.P_LIEU_AFF_LABEL, getSession().getLabel("LIEU"));
+    }
+
     private void enteteXls() {
 
         xlsContainer.put("NUMERO_INFOROM", DSDecompteImpotLtn_Doc.NUMERO_REFERENCE_INFOROM);
@@ -426,6 +459,14 @@ public class DSDecompteImpotLtn_Doc extends FWIDocumentManager {
         return listInscriptionIndividuelle;
     }
 
+
+    private void fillFieldsEmployeurs(Map<String, String> fields){
+        fields.put(DSDecompteImpotLtn_Param.F_NUM_AFF,numeroAffilieEmployeur);
+        fields.put(DSDecompteImpotLtn_Param.F_RAIS_SOC,raisonSocialeEmployeur);
+        fields.put(DSDecompteImpotLtn_Param.F_NPA_AFF,npaEmployeur);
+        fields.put(DSDecompteImpotLtn_Param.F_LIEU_AFF,localiteEmployeur);
+    }
+
     private List<Map<String, String>> getListLignesSalaries() {
         List<Map<String, String>> lignes = new ArrayList<Map<String, String>>();
         for (int i = 0; i < listInscriptionIndividuelle.size(); i++) {
@@ -434,6 +475,10 @@ public class DSDecompteImpotLtn_Doc extends FWIDocumentManager {
             // récupération sur le salarié en cours et insertion des valeur dans
             // les champs
             recupInfoSalarie();
+
+            if(isWantInfoEmplyoeur() && isTypeImpressionExcel()){
+                fillFieldsEmployeurs(fields);
+            }
 
             fields.put(DSDecompteImpotLtn_Param.F_NSS, getNssSalarie());
             fields.put(DSDecompteImpotLtn_Param.F_DATE_NAISSANCE, getDateNaissanceSalarie());
@@ -563,6 +608,13 @@ public class DSDecompteImpotLtn_Doc extends FWIDocumentManager {
         return false;
     }
 
+
+    private void fillExcelEmployeurContent(Map<String, String> fields){
+        this.remplirColumn(DSDecompteImpotLtn_Param.F_NUM_AFF,fields.get(DSDecompteImpotLtn_Param.F_NUM_AFF),"");
+        this.remplirColumn(DSDecompteImpotLtn_Param.F_RAIS_SOC,fields.get(DSDecompteImpotLtn_Param.F_RAIS_SOC),"");
+        this.remplirColumn(DSDecompteImpotLtn_Param.F_NPA_AFF,fields.get(DSDecompteImpotLtn_Param.F_NPA_AFF),"");
+        this.remplirColumn( DSDecompteImpotLtn_Param.F_LIEU_AFF,fields.get(DSDecompteImpotLtn_Param.F_LIEU_AFF),"");
+    }
     /**
      * Préparation des données pour le document excel
      */
@@ -570,6 +622,11 @@ public class DSDecompteImpotLtn_Doc extends FWIDocumentManager {
 
         BigDecimal totalSalaire = new BigDecimal(0);
         BigDecimal totalImpots = new BigDecimal(0);
+
+        //Ajoute les entêtes de l'employeur si désirées
+        if(isWantInfoEmplyoeur()){
+            enteteXlsEmployeur();
+        }
 
         // Entetes du fichier excel
         enteteXls();
@@ -579,6 +636,10 @@ public class DSDecompteImpotLtn_Doc extends FWIDocumentManager {
         for (int i = 0; i < size; i++) {
 
             Map<String, String> bean = dataSource.get(i);
+
+            if(isWantInfoEmplyoeur()){
+                fillExcelEmployeurContent(bean);
+            }
 
             this.remplirColumn(DSDecompteImpotLtn_Param.F_NSS, bean.get(DSDecompteImpotLtn_Param.F_NSS), "");
             this.remplirColumn(DSDecompteImpotLtn_Param.F_DATE_NAISSANCE,
@@ -617,8 +678,18 @@ public class DSDecompteImpotLtn_Doc extends FWIDocumentManager {
             String xmlModelPath = Jade.getInstance().getExternalModelDir() + DSApplication.DEFAULT_APPLICATION_ROOT
                     + "/model/excelml/" + DSDecompteImpotLtn_Doc.XLS_DOC_NAME + "Modele.xml";
 
+            if(isWantInfoEmplyoeur()){
+                xmlModelPath = Jade.getInstance().getExternalModelDir() + DSApplication.DEFAULT_APPLICATION_ROOT
+                        + "/model/excelml/" + DSDecompteImpotLtn_Doc.XLS_DOC_NAME_EMPLOYEUR + "Modele.xml";
+            }
+
             String xlsDocPath = Jade.getInstance().getPersistenceDir()
                     + JadeFilenameUtil.addOrReplaceFilenameSuffixUID(DSDecompteImpotLtn_Doc.XLS_DOC_NAME + ".xml");
+
+            if(isWantInfoEmplyoeur()){
+                xlsDocPath = Jade.getInstance().getPersistenceDir()
+                        + JadeFilenameUtil.addOrReplaceFilenameSuffixUID(DSDecompteImpotLtn_Doc.XLS_DOC_NAME_EMPLOYEUR + ".xml");
+            }
 
             prepareDataForXLSDoc();
 
@@ -627,6 +698,9 @@ public class DSDecompteImpotLtn_Doc extends FWIDocumentManager {
             JadePublishDocumentInfo docInfoExcel = createDocumentInfo();
             docInfoExcel.setApplicationDomain(DSApplication.DEFAULT_APPLICATION_DRACO);
             docInfoExcel.setDocumentTitle(DSDecompteImpotLtn_Doc.XLS_DOC_NAME);
+            if(isWantInfoEmplyoeur()){
+                docInfoExcel.setDocumentTitle(DSDecompteImpotLtn_Doc.XLS_DOC_NAME_EMPLOYEUR);
+            }
             docInfoExcel.setPublishDocument(true);
             docInfoExcel.setArchiveDocument(false);
             docInfoExcel.setDocumentTypeNumber(DSDecompteImpotLtn_Doc.NUMERO_REFERENCE_INFOROM);
@@ -636,6 +710,43 @@ public class DSDecompteImpotLtn_Doc extends FWIDocumentManager {
         }
     }
 
+    private void recuperationInformationEmployeur(String idDeclarationSalaire) throws Exception {
+
+        numeroAffilieEmployeur = "";
+        raisonSocialeEmployeur = "";
+        npaEmployeur = "";
+        localiteEmployeur="";
+
+        DSDeclarationViewBean declaration = new DSDeclarationViewBean();
+        declaration.setSession(getSession());
+        declaration.setIdDeclaration(idDeclarationSalaire);
+        declaration.retrieve();
+
+        AFAffiliation affiliation = new AFAffiliation();
+        affiliation.setSession(getSession());
+        affiliation.setAffiliationId(declaration.getAffiliationId());
+        affiliation.retrieve();
+
+        TITiersViewBean tiers = new TITiersViewBean();
+        tiers.setSession(getSession());
+        tiers.setIdTiers(affiliation.getIdTiers());
+        tiers.retrieve();
+
+        //On récupère l'adresse de domicile, pas besoin d'héritage
+        TIAdresseDataSource adresseDataSource = tiers.getAdresseAsDataSource(
+                IConstantes.CS_AVOIR_ADRESSE_DOMICILE, IConstantes.CS_APPLICATION_DEFAUT,
+                JACalendar.todayJJsMMsAAAA(), false);
+
+        numeroAffilieEmployeur = affiliation.getAffilieNumero();
+        raisonSocialeEmployeur = affiliation.getRaisonSociale();
+
+        if(adresseDataSource != null){
+            npaEmployeur = adresseDataSource.localiteNpa;
+            localiteEmployeur = adresseDataSource.localiteNom;
+        }
+
+    }
+
     /**
      * Récupère les informations sur le salarié en cours : nss,adresse,salaire avs brut,date de naissance
      */
@@ -643,6 +754,13 @@ public class DSDecompteImpotLtn_Doc extends FWIDocumentManager {
         try {
             inscriptionInd = (DSInscriptionsIndividuelles) listInscriptionIndividuelle
                     .get(indiceInscriptionIndividuelle);
+
+            //récupération des informations de l'employeur uniquement si on change de déclaration de salaires
+            if(isWantInfoEmplyoeur()  && isTypeImpressionExcel() && !idDeclarationSalaireCourante.equalsIgnoreCase(inscriptionInd.getIdDeclaration())){
+                recuperationInformationEmployeur(inscriptionInd.getIdDeclaration());
+            }
+
+            idDeclarationSalaireCourante = inscriptionInd.getIdDeclaration();
 
             // récupération du nss
             nssSalarie = inscriptionInd.getNumeroAvs().toString();
