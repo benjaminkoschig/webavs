@@ -12,7 +12,7 @@ import globaz.framework.util.FWCurrency;
 import globaz.globall.db.*;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeConversionUtil;
-import globaz.jade.client.zip.JadeZipUtil;
+import globaz.jade.client.util.JadeUUIDGenerator;
 import globaz.jade.common.Jade;
 import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
@@ -24,16 +24,20 @@ import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.tiers.TITiers;
 import globaz.pyxis.db.tiers.TITiersManager;
 import globaz.webavs.common.CommonProperties;
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.ZipParameters;
+import net.lingala.zip4j.model.enums.AesKeyStrength;
+import net.lingala.zip4j.model.enums.EncryptionMethod;
+import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class APListePandemieControleOFAS extends BProcess {
     public static final String LABEL_TITRE_DOCUMENT = "";
@@ -47,7 +51,7 @@ public class APListePandemieControleOFAS extends BProcess {
     private static String CS_DOMAINE_PANDEMIE = "19150100";
     private String numCaisse = "";
     private String nomCaisse = "";
-
+    private String path;
     @Override
     protected void _executeCleanUp() {
 
@@ -61,7 +65,7 @@ public class APListePandemieControleOFAS extends BProcess {
             // Pour ne pas envoyer de double mail, un mail d'erreur de validation est déjà généré
             this.setSendCompletionMail(false);
             this.setSendMailOnError(false);
-            LOG.info("ImportAPGPandemie - Start Import - Demandes APG Covid19");
+            LOG.info("APListePandemieControleOFAS - Start Generate List - Prestation APG COVID19");
             // création de la list
             JadePublishDocumentInfo docInfo = new JadePublishDocumentInfo();
             nomCaisse = FWIImportProperties.getInstance().getProperty(docInfo,
@@ -70,7 +74,7 @@ public class APListePandemieControleOFAS extends BProcess {
             List<APListePandemieControleOFASModel> list = createSource();
             if (!list.isEmpty()) {
                 List<String> fichiers = new ArrayList<>();
-                String path = Jade.getInstance().getHomeDir() + "work/";
+                path = Jade.getInstance().getHomeDir() + "work/";
                 JadePublishDocumentInfo docInfoExcel = JadePublishDocumentInfoProvider.newInstance(this);
                 // TODO Changer numéro de document par la suite
                 docInfoExcel.setDocumentTypeNumber("XXXXPAP");
@@ -79,16 +83,16 @@ public class APListePandemieControleOFAS extends BProcess {
                 APListePandemieControleOFASExcel listeExcel = new APListePandemieControleOFASExcel(getSession());
                 listeExcel.setListeSheet(list);
                 listeExcel.creerDocument();
-                fichiers.add(listeExcel.getOutputFile(path, numCaisse));
-//                if (!listEchecComptaToAPG.isEmpty()) {
-//                    String fileCSV = createRejectComptaToAPG(path);
-//                    fichiers.add(fileCSV);
-//                }
                 if(!listEchecAPGtoCompta.isEmpty()){
                     String fileCSV =createRejectAPGToCompta(path);
                     fichiers.add(fileCSV);
                 }
-                JadeSmtpClient.getInstance().sendMail(getEMailAddress(), getEMailObject(), "Liste de contrôle OFAS", JadeConversionUtil.toStringArray(fichiers));
+                String password = generateCommonLangPassword();
+                String id = JadeUUIDGenerator.createStringUUID();
+                String fichierZip = createZIP(listeExcel,id,password);
+                fichiers.add(fichierZip);
+                JadeSmtpClient.getInstance().sendMail(getEMailAddress(), getEMailObject() + " - "+ id, "Liste de contrôle OFAS "+System.lineSeparator()+System.lineSeparator()+"Veuillez utiliser un logiciel de compresssion compatible avec l'encryptage AES-256 comme 7-Zip pour décompresser le fichier", JadeConversionUtil.toStringArray(fichiers));
+                JadeSmtpClient.getInstance().sendMail(getEMailAddress(), getEMailObject()+ " - "+ id+" - PASSWORD", password.trim(),new String[0]);
             }
 
         } catch (Exception e) {
@@ -101,11 +105,29 @@ public class APListePandemieControleOFAS extends BProcess {
         LOG.info("ImportAPGPandemie - END PROCESS");
         return true;
     }
+    String createZIP(APListePandemieControleOFASExcel listeExcel,String id,String password) throws ZipException {
+        try {
+            ZipParameters zipParameters = new ZipParameters();
+            zipParameters.setEncryptFiles(true);
+            zipParameters.setEncryptionMethod(EncryptionMethod.AES);
+            zipParameters.setAesKeyStrength(AesKeyStrength.KEY_STRENGTH_256);
+            File fileFichier = new File(listeExcel.getOutputFile(path, numCaisse));
+            ZipFile zipFile = new ZipFile(path+listeExcel.getFileNameWithoutExtention()+"_"+id+"_"+".zip", password.toCharArray());
+            zipFile.addFile(fileFichier,zipParameters);
+            return zipFile.getFile().getAbsolutePath();
+        } catch (ZipException e) {
+            throw e;
+        }
+
+    }
 
     private String createRejectComptaToAPG(String path) throws IOException {
         Files.deleteIfExists(Paths.get(path + "listRejectComptaToAPG.csv"));
         File outputCSV = new File(path + "listRejectComptaToAPG.csv");
         outputCSV.delete();
+
+
+
         if (!listEchecComptaToAPG.isEmpty()) {
             try (PrintWriter pw = new PrintWriter(outputCSV)) {
                 listEchecComptaToAPG.stream()
@@ -119,19 +141,45 @@ public class APListePandemieControleOFAS extends BProcess {
         }
         return outputCSV.getAbsolutePath();
     }
-
+    public String generateCommonLangPassword() {
+        String upperCaseLetters = RandomStringUtils.random(3, 65, 90, true, true);
+        String lowerCaseLetters = RandomStringUtils.random(3, 97, 122, true, true);
+        String numbers = RandomStringUtils.randomNumeric(2);
+        String specialChar = RandomStringUtils.random(1, 33, 47, false, false);
+        String totalChars = RandomStringUtils.randomAlphanumeric(1);
+        String combinedChars = upperCaseLetters.concat(lowerCaseLetters)
+                .concat(numbers)
+                .concat(specialChar)
+                .concat(totalChars);
+        List<Character> pwdChars = combinedChars.chars()
+                .mapToObj(c -> (char) c)
+                .collect(Collectors.toList());
+        Collections.shuffle(pwdChars);
+        String password = pwdChars.stream()
+                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+                .toString();
+        return password.trim();
+    }
     private String createRejectAPGToCompta(String path) throws IOException {
         Files.deleteIfExists(Paths.get(path + "listRejectAPGToCompta.csv"));
         File outputCSV = new File(path + "listRejectAPGToCompta.csv");
         outputCSV.delete();
+        Collections.sort(listEchecAPGtoCompta, new Comparator<APListePandemieControleOFASModel>() {
+            @Override
+            public int compare(APListePandemieControleOFASModel t1, APListePandemieControleOFASModel t2) {
+                return t1.getNss().compareTo(t2.getNss());
+            }
+        });
+
         if (!listEchecAPGtoCompta.isEmpty()) {
-            try (PrintWriter pw = new PrintWriter(outputCSV)) {
+            PrintWriter pw = new PrintWriter(outputCSV);
+            pw.println("IDEXTERNEROLE;IDTIERSAFF_OU_ASSU;NSSASSU;DATECOMPT;MONTANT;VERSEA");
+            pw.close();
+            FileOutputStream outputCSV2 = new FileOutputStream(path + "listRejectAPGToCompta.csv",true);
+            try (PrintWriter pw2 = new PrintWriter(outputCSV2)) {
                 listEchecAPGtoCompta.stream()
                         .map((APListePandemieControleOFASModel data) -> data.getLineCSV())
-                        .forEach(pw::println);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                throw e;
+                        .forEach(pw2::println);
             }
 
         }

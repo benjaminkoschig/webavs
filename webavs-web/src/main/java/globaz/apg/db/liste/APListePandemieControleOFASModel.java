@@ -253,9 +253,9 @@ public class APListePandemieControleOFASModel {
 
     public String getLineCSV() {
         if(isVerseEmployeur.equals("1")){
-            return numAffilie+";"+idTiersAff+";"+nss+";"+dateComptable+";EMPLOYEUR";
+            return numAffilie+";"+idTiersAff+";"+nss+";"+dateComptable+";"+montantNet+";EMPLOYEUR";
         }else{
-            return numAffilie+";"+idTiers+";"+nss+";"+dateComptable+";ASSURE";
+            return nss+";"+idTiers+";"+nss+";"+dateComptable+";"+montantNet+";ASSURE";
         }
     }
     public String getIsVerseEmployeur() {

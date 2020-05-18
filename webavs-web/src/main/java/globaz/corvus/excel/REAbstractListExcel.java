@@ -94,7 +94,7 @@ public abstract class REAbstractListExcel {
     private HSSFCellStyle styleCenterBorderTop;
     private HSSFCellStyle styleLeftCenterVert;
     private HSSFCellStyle styleRightMontantVert;
-
+    private String fileName="";
 
     /** Workbook, classeur d'Excel */
     private HSSFWorkbook wb;
@@ -376,6 +376,7 @@ public abstract class REAbstractListExcel {
             FileOutputStream out = new FileOutputStream(f);
             wb.write(out);
             out.close();
+            fileName = f.getName();
             return f.getAbsolutePath();
         } catch (Exception e) {
             JadeCodingUtil.catchException(this, "getOutputFile", e);
@@ -383,6 +384,10 @@ public abstract class REAbstractListExcel {
         }
     }
 
+
+    public String getFileNameWithoutExtention(){
+        return fileName.substring(0,fileName.length()-4);
+    }
     /**
      * @return the session
      */
