@@ -964,6 +964,8 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
                 // Test si annonce naissance
                 if (hasAllocationNaissance(droit) && !montNaissaceAfter.isZero()) {
                     ALServiceLocator.getAnnonceRafamCreationService().creerAnnoncesNaissanceOnly(RafamEvDeclencheur.CREATION, droit);
+                } else {
+                    ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(droit.getId());
                 }
             } else {
                 ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(droit.getId());
