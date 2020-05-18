@@ -9,6 +9,7 @@
 		<%@page import="globaz.apg.servlet.IAPActions"%>
 <%@page import="globaz.jade.publish.client.JadePublishDocument"%>
 <%@page import="globaz.framework.bean.FWViewBeanInterface"%>
+<%@ page import="globaz.prestation.api.IPRDemande" %>
 <script type="text/javascript"
 			src="<%=servletContext%>/scripts/nss.js"></script>
 		<%@ taglib uri="/WEB-INF/nss.tld" prefix="ct1" %>
