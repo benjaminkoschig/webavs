@@ -35,6 +35,7 @@ import globaz.hera.api.ISFMembreFamille;
 import globaz.hera.api.ISFRelationFamiliale;
 import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.db.famille.SFApercuEnfant;
+import globaz.hera.db.famille.SFMembreFamille;
 import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
@@ -490,7 +491,64 @@ public class REAnnoncePonctuelleViewBean extends PRAbstractViewBeanSupport {
             String idMembreFamille) throws Exception {
 
         // Voir dans la situation familiale pour setter le NSS des champs complémentaire 1 et 2
+        if(ra.contientCodeCasSpecial("60")){
+            SFMembreFamille mbr = new SFMembreFamille();
+            mbr.setSession(session);
+            mbr.setAlternateKey(SFMembreFamille.ALTERNATE_KEY_IDTIERS);
+            mbr.setIdTiers(ra.getIdTiersBeneficiaire());
+            mbr.setCsDomaineApplication(ISFSituationFamiliale.CS_DOMAINE_RENTES);
+            mbr.retrieve();
+            // si le tiers n'est pas trouvé dans le domaine rente, recherche dans le domaine standard
+            if (mbr.isNew()) {
+                mbr.setCsDomaineApplication(ISFSituationFamiliale.CS_DOMAINE_STANDARD);
+                mbr.retrieve();
+            }
 
+            SFApercuEnfant enf = new SFApercuEnfant();
+            enf.setSession(session);
+            enf.setIdMembreFamille(mbr.getIdMembreFamille());
+            enf.retrieve();
+
+            SFMembreFamille parentLPart1 = null;
+            SFMembreFamille parentLPart2 = null;
+            if (enf.getPere() != null) {
+                if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU
+                        .equals(enf.getPere().getIdMembreFamille())) {
+                    // oui mais on a pas de tiers pour le conjoint inconnu
+                } else {
+                    parentLPart1 = enf.getMere();
+                }
+            }
+
+            // tiersComplementaire2 mere
+            if (enf.getMere() != null) {
+                if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU
+                        .equals(enf.getMere().getIdMembreFamille())) {
+                    // oui mais on a pas de tiers pour le conjoint inconnu
+                } else {
+                    parentLPart2 = enf.getPere();
+                }
+            }
+            if((parentLPart1 != null && parentLPart2 != null) && parentLPart1.getCsSexe().equals(parentLPart2.getCsSexe()) ){
+                if(parentLPart1.getIdTiers().equals(ra.getIdTiersBaseCalcul())){
+                    PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, parentLPart1.getIdTiers());
+                    nssComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+                    idTiersComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
+                    tw = PRTiersHelper.getTiersParId(session, parentLPart2.getIdTiers());
+                    nssComplementaire2 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+                    idTiersComplementaire2 = tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
+                }
+                if(parentLPart2.getIdTiers().equals(ra.getIdTiersBaseCalcul())){
+                    PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, parentLPart2.getIdTiers());
+                    nssComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+                    idTiersComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
+                    tw = PRTiersHelper.getTiersParId(session, parentLPart1.getIdTiers());
+                    nssComplementaire2 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+                    idTiersComplementaire2 = tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
+                }
+            }
+
+        }
         // Pour ayant droit enfant
         if (REGenresPrestations.GENRE_14.equals(ra.getCodePrestation())
                 || REGenresPrestations.GENRE_24.equals(ra.getCodePrestation())

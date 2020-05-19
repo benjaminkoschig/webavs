@@ -1,6 +1,8 @@
 package globaz.corvus.helpers.adaptation;
 
 import java.util.Iterator;
+
+import ch.globaz.corvus.domaine.constantes.CodeCasSpecialRente;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.anakin.AnakinValidationException;
 import globaz.corvus.annonce.REAnnoncesAPersister;
@@ -49,6 +51,7 @@ import globaz.hera.api.ISFMembreFamilleRequerant;
 import globaz.hera.api.ISFRelationFamiliale;
 import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.db.famille.SFApercuEnfant;
+import globaz.hera.db.famille.SFMembreFamille;
 import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -1359,9 +1362,52 @@ public class REAdaptationManuelleHelper extends FWHelper {
             }
         }
 
-        // Voir dans la situation familiale pour setter le NSS des champs complémentaire 1 et 2
 
-        // Pour ayant droit enfant
+        if(ra.contientCodeCasSpecial("60")){
+
+            SFApercuEnfant enf = new SFApercuEnfant();
+            enf.setSession(session);
+            enf.setIdMembreFamille(idMembreFamille);
+            enf.retrieve();
+
+            SFMembreFamille parentLPart1 = null;
+            SFMembreFamille parentLPart2 = null;
+            if (enf.getPere() != null) {
+                if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU
+                        .equals(enf.getPere().getIdMembreFamille())) {
+                    // oui mais on a pas de tiers pour le conjoint inconnu
+                } else {
+                    parentLPart1 = enf.getMere();
+                }
+            }
+
+            // tiersComplementaire2 mere
+            if (enf.getMere() != null) {
+                if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU
+                        .equals(enf.getMere().getIdMembreFamille())) {
+                    // oui mais on a pas de tiers pour le conjoint inconnu
+                } else {
+                    parentLPart2 = enf.getPere();
+                }
+            }
+            if((parentLPart1 != null && parentLPart2 != null) && parentLPart1.getCsSexe().equals(parentLPart2.getCsSexe()) ){
+                if(parentLPart1.getIdTiers().equals(ra.getIdTiersBaseCalcul())){
+                    PRTiersWrapper tw = PRTiersHelper.getTiersParId(session,parentLPart1.getIdTiers());
+                    nssComplementaire.setNssComplementaire1(tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
+                    tw = PRTiersHelper.getTiersParId(session,parentLPart2.getIdTiers());
+                    nssComplementaire.setNssComplementaire2(tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
+                    return nssComplementaire;
+                }
+                if(parentLPart2.getIdTiers().equals(ra.getIdTiersBaseCalcul())){
+                    PRTiersWrapper tw = PRTiersHelper.getTiersParId(session,parentLPart2.getIdTiers());
+                    nssComplementaire.setNssComplementaire1(tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
+                    tw = PRTiersHelper.getTiersParId(session,parentLPart1.getIdTiers());
+                    nssComplementaire.setNssComplementaire2(tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
+                    return nssComplementaire;
+                }
+            }
+
+        }
         if (REGenresPrestations.GENRE_14.equals(ra.getCodePrestation())
                 || REGenresPrestations.GENRE_24.equals(ra.getCodePrestation())
                 || REGenresPrestations.GENRE_34.equals(ra.getCodePrestation())
