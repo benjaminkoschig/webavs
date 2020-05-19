@@ -2,12 +2,15 @@ package globaz.apg.vb.prestation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.enums.APAllPlausibiliteRules;
 import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.pojo.APBreakRulesFromView;
 import globaz.apg.pojo.APErreurValidationPeriode;
 import globaz.apg.pojo.APValidationPrestationAPGContainer;
+import globaz.apg.util.APGSeodorErreurListEntities;
 import globaz.framework.bean.FWViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.jade.client.util.JadeStringUtil;

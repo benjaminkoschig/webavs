@@ -20,6 +20,8 @@ import globaz.globall.api.BISession;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.prestation.beans.PRPeriode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +32,8 @@ import java.util.List;
  * @author vre
  */
 public class APDroitAPGPHelper extends APAbstractDroitPHelper {
+
+    private static final Logger LOG = LoggerFactory.getLogger(APDroitAPGPHelper.class);
 
     /**
      * Finalisation du droit. En gros ça se résume à mettre à jour les breakRules si besoin

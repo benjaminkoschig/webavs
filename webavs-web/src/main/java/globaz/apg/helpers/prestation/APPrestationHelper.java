@@ -36,6 +36,7 @@ import globaz.apg.enums.APTypeCalculPrestation;
 import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.exceptions.APEntityNotFoundException;
 import globaz.apg.exceptions.APWrongViewBeanTypeException;
+import globaz.apg.helpers.droits.APDroitAPGPHelper;
 import globaz.apg.helpers.droits.APSituationProfessionnelleHelper;
 import globaz.apg.module.calcul.*;
 import globaz.apg.module.calcul.constantes.ECanton;

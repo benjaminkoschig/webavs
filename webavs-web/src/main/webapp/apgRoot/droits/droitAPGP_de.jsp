@@ -80,8 +80,10 @@
 	}
 
 	function validate () {
-		if (document.forms[0].elements('_method').value === "read") {
+		var isModifiable = <%=viewBean.isModifiable()%>;
+		if (document.forms[0].elements('_method').value === "read" && !isModifiable) {
 			document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SITUATION_PROFESSIONNELLE%>.chercher";
+			<%--document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_APG%>.next";--%>
 			action(COMMIT);
 		} else {
 			$('#aControler').prop( "checked", true);
@@ -111,11 +113,11 @@
 		<%} else if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.EDITION)){%>
 		document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_APG%>.modifier";
 		<%} else if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.LECTURE)){%>
-		if(EDITION_MODE){
+		if(true || EDITION_MODE){
 			document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_APG%>.modifier";
-		}
-		else {
+		} else {
 			document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SITUATION_PROFESSIONNELLE%>.chercher";
+			upd();
 		}
 		<%}%>
 
@@ -166,6 +168,8 @@
 				click: function () {
 					action(UPDATE);
 					upd();
+					EDITION_MODE = true;
+					repaintTablePeriodes();
 					$(this).dialog("close");
 				}
 			}],
