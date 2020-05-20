@@ -5,6 +5,8 @@ import globaz.corvus.api.annonces.IREAnnonces;
 import globaz.corvus.api.external.arc.REDownloaderException;
 import globaz.corvus.db.annonces.REAnnonce51;
 import globaz.corvus.db.annonces.REAnnonce53;
+import globaz.corvus.db.annonces.REAnnoncesAbstractLevel3A;
+import globaz.corvus.db.annonces.REAnnoncesAbstractLevel3B;
 import globaz.corvus.process.REComparaisonCentraleProcess;
 import globaz.corvus.process.REComparaisonCentraleProcess.KeyRAAnnComparaison;
 import globaz.framework.util.FWCurrency;
@@ -430,13 +432,37 @@ public class REReaderAnnonces51_53 extends REAbstractDownloader {
         listAnn01_02_03.add(ann51_03);
 
         REComparaisonCentraleProcess proc = new REComparaisonCentraleProcess();
-        KeyRAAnnComparaison key = proc.new KeyRAAnnComparaison(ann51.getGenrePrestation(),
-                NSUtil.formatAVSUnknown(ann51.getNoAssAyantDroit()), (new FWCurrency(
-                        ann51.getMensualitePrestationsFrancs())).toString());
+        KeyRAAnnComparaison key = null;
+        //Si il a le code special adoption pour couple LPART alors ajouter une nouvelle clé lié au nss complémentaire
+        if(containsCodeSpecial(ann51,"60")){
+            key = proc.new KeyRAAnnComparaison(ann51.getGenrePrestation(),
+                    NSUtil.formatAVSUnknown(ann51.getNoAssAyantDroit()), (new FWCurrency(
+                    ann51.getMensualitePrestationsFrancs())).toString(),NSUtil.formatAVSUnknown(ann51.getPremierNoAssComplementaire()));
+        }else{
+            key = proc.new KeyRAAnnComparaison(ann51.getGenrePrestation(),
+                    NSUtil.formatAVSUnknown(ann51.getNoAssAyantDroit()), (new FWCurrency(
+                    ann51.getMensualitePrestationsFrancs())).toString(),"");
+        }
+
 
         annoncesCrees.put(key, listAnn01_02_03);
 
         return i;
+    }
+
+    private boolean containsCodeSpecial(REAnnoncesAbstractLevel3A ann, String codeSpecial) {
+        if(ann.getCasSpecial1().equals(codeSpecial)|| ann.getCasSpecial2().equals(codeSpecial)
+                ||ann.getCasSpecial3().equals(codeSpecial)||ann.getCasSpecial4().equals(codeSpecial)||ann.getCasSpecial5().equals(codeSpecial)){
+            return true;
+        }
+        return false;
+    }
+    private boolean containsCodeSpecial(REAnnoncesAbstractLevel3B ann, String codeSpecial) {
+        if(ann.getCasSpecial1().equals(codeSpecial)|| ann.getCasSpecial2().equals(codeSpecial)
+                ||ann.getCasSpecial3().equals(codeSpecial)||ann.getCasSpecial4().equals(codeSpecial)||ann.getCasSpecial5().equals(codeSpecial)){
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -740,9 +766,19 @@ public class REReaderAnnonces51_53 extends REAbstractDownloader {
         listAnn01_02_03.add(ann53_03);
 
         REComparaisonCentraleProcess proc = new REComparaisonCentraleProcess();
-        KeyRAAnnComparaison key = proc.new KeyRAAnnComparaison(ann53.getGenrePrestation(),
-                NSUtil.formatAVSUnknown(ann53.getNoAssAyantDroit()), (new FWCurrency(
-                        ann53.getMensualitePrestationsFrancs())).toString());
+        KeyRAAnnComparaison key;
+        //Si il a le code special adoption pour couple LPART alors ajouter une nouvelle clé lié au nss complémentaire
+        if(containsCodeSpecial(ann53,"60")){
+            key = proc.new KeyRAAnnComparaison(ann53.getGenrePrestation(),
+                    NSUtil.formatAVSUnknown(ann53.getNoAssAyantDroit()), (new FWCurrency(
+                    ann53.getMensualitePrestationsFrancs())).toString(),NSUtil.formatAVSUnknown(ann53.getPremierNoAssComplementaire()));
+        }else{
+            key = proc.new KeyRAAnnComparaison(ann53.getGenrePrestation(),
+                    NSUtil.formatAVSUnknown(ann53.getNoAssAyantDroit()), (new FWCurrency(
+                    ann53.getMensualitePrestationsFrancs())).toString(),"");
+        }
+
+
 
         annoncesCrees.put(key, listAnn01_02_03);
 

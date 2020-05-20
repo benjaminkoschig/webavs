@@ -47,14 +47,16 @@ public class REComparaisonCentraleProcess extends BProcess {
         private String codePrestation = "";
         private String montant = "";
         private String nss = "";
+        private String nssComplementaire1 ="";
 
         /**
          * Crée une nouvelle instance de la classe KeyRAAnnComparaison.
          */
-        public KeyRAAnnComparaison(String codePrestation, String nss, String montant) {
+        public KeyRAAnnComparaison(String codePrestation, String nss, String montant, String nssComplementaire1) {
             this.nss = nss;
             this.codePrestation = codePrestation;
             this.montant = montant;
+            this.nssComplementaire1 = nssComplementaire1;
         }
 
         @Override
@@ -65,7 +67,9 @@ public class REComparaisonCentraleProcess extends BProcess {
                 return codePrestation.compareTo(keyRaAnnComp.codePrestation);
             } else if (montant.compareTo(keyRaAnnComp.montant) != 0) {
                 return montant.compareTo(keyRaAnnComp.montant);
-            } else {
+            } else if(nssComplementaire1.compareTo(keyRaAnnComp.nssComplementaire1) != 0) {
+                return nssComplementaire1.compareTo(keyRaAnnComp.nssComplementaire1);
+            }else{
                 return 0;
             }
         }
@@ -79,12 +83,12 @@ public class REComparaisonCentraleProcess extends BProcess {
             KeyRAAnnComparaison keyRaAnnComp = (KeyRAAnnComparaison) obj;
 
             return ((keyRaAnnComp.nss.equals(nss)) && (keyRaAnnComp.codePrestation.equals(codePrestation)) && (keyRaAnnComp.montant
-                    .equals(montant)));
+                    .equals(montant)) && ( nssComplementaire1.equals(keyRaAnnComp.nssComplementaire1)) );
         }
 
         @Override
         public int hashCode() {
-            return (nss + codePrestation + montant).hashCode();
+            return (nss + codePrestation + montant + nssComplementaire1).hashCode();
         }
 
     }
@@ -144,8 +148,14 @@ public class REComparaisonCentraleProcess extends BProcess {
 
             for (Iterator iterator = raMgr.iterator(); iterator.hasNext();) {
                 REPrestAccJointInfoComptaJointTiers ra = (REPrestAccJointInfoComptaJointTiers) iterator.next();
+                if(ra.contientCodeCasSpecial("60")){
+                    PRTiersWrapper tw = PRTiersHelper.getTiersParId(getSession(), ra.getIdTiersComplementaire1());
+                    String nssComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+                    key = new KeyRAAnnComparaison(ra.getCodePrestation(), ra.getNss(), ra.getMontantPrestation(),nssComplementaire1);
+                }else{
+                    key = new KeyRAAnnComparaison(ra.getCodePrestation(), ra.getNss(), ra.getMontantPrestation(),"");
+                }
 
-                key = new KeyRAAnnComparaison(ra.getCodePrestation(), ra.getNss(), ra.getMontantPrestation());
 
                 mapRentesAcc.put(key, ra);
 

@@ -1497,7 +1497,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
 
             if (estDeLaMemeFamilleQueRenteDecision
                     && beneficiairesDeCetteDecision.contains(uneRenteAccordeeADiminuer.getBeneficiaire().getId())
-                    && !idsRADejaDiminuees.contains(uneRenteAccordeeADiminuer.getId())) {
+                    && !idsRADejaDiminuees.contains(uneRenteAccordeeADiminuer.getId())
+                    && checkConditionSupplementaireSiCode60(session,uneRenteAccordeeADiminuer,rentesDeLaDecision)) {
 
                 REOrdresVersements ov = new REOrdresVersements();
                 ov.setSession(BSessionUtil.getSessionFromThreadContext());
@@ -1543,6 +1544,40 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
             // d'avertissement doit d'afficher
             hasRenteRetenueEnCours(session, transaction, uneRenteAccordeeADiminuer, testRetenue);
         }
+    }
+
+    /**
+     * Vérification supplémentaire pour si la rente à diminuer contient le code 60
+     * Vérifier que les NSS complémentaire 1 de la rente à diminuer et la rente sont les mêmes
+     *
+     * @param session
+     * @param uneRenteAccordeeADiminuer
+     * @param rentesDeLaDecision
+     * @return
+     */
+    private boolean checkConditionSupplementaireSiCode60(BSession session, RenteAccordee uneRenteAccordeeADiminuer, Set<RenteAccordee> rentesDeLaDecision) {
+        for (RenteAccordee uneRenteDeLaDecision : rentesDeLaDecision) {
+            if(uneRenteDeLaDecision.comporteCodeCasSpecial(CodeCasSpecialRente.CODE_CAS_SPECIAL_60)
+                    && uneRenteAccordeeADiminuer.getBeneficiaire().getId().equals(uneRenteDeLaDecision.getBeneficiaire().getId())
+                    && uneRenteAccordeeADiminuer.getCodePrestation().equals(uneRenteDeLaDecision.getCodePrestation())){
+                try {
+                    RERenteAccordee renteADiminuer = new RERenteAccordee();
+                    renteADiminuer.setId(String.valueOf(uneRenteAccordeeADiminuer.getId()));
+                    renteADiminuer.setSession(session);
+                    renteADiminuer.retrieve();
+                    RERenteAccordee renteDecision = new RERenteAccordee();
+                    renteDecision.setId(String.valueOf(uneRenteDeLaDecision.getId()));
+                    renteDecision.setSession(session);
+                    renteDecision.retrieve();
+                    if(!renteADiminuer.getIdTiersComplementaire1().equals(renteDecision.getIdTiersComplementaire1())){
+                        return false;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -2087,7 +2122,6 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
                     .comporteDesRentesAccordeesCommencantAvantCeMois(dateDernierPaiement);
             boolean comporteDesRentesAccordeesCommencantDansLeMois = demande
                     .comporteDesRentesAccordeesCommencantDansCeMois(dateDernierPaiement);
-            boolean contientUnCodeSpecial60 = demande.comporteDesRentesAccordeesAvecCodeCasSpecial(CodeCasSpecialRente.CODE_CAS_SPECIAL_60);
 
             /*
              * S'il y a mélange de rentes rétro (rentes commençant avant ou pendant le mois) et de rentes futures
