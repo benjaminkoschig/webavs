@@ -257,9 +257,6 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
                 boolean goesToSuccessDest = !viewBean.getMsgType().equals(FWViewBeanInterface.ERROR);
 
                 if (goesToSuccessDest) {
-                    // APSituationProfessionnelleViewBean newViewBean = new APSituationProfessionnelleViewBean();
-                    // newViewBean.setIdDroit(viewBean.getIdDroit());
-                    // session.setAttribute("viewBean", newViewBean);
                     request.setAttribute(FWServlet.VIEWBEAN, viewBean);
                     destination = _getDestAjouterSucces(session, request, response, viewBean);
                 } else {
@@ -274,29 +271,6 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
             destination = FWDefaultServletAction.ERROR_PAGE;
         }
 
-        goSendRedirect(destination, request, response);
-    }
-
-    @Override
-    protected void actionFindNext(HttpSession session, HttpServletRequest request, HttpServletResponse response, FWDispatcher mainDispatcher) throws ServletException, IOException{
-
-        APDroitAPGPViewBean viewBean = (APDroitAPGPViewBean) loadViewBean(session);
-        String[] userAction = request.getParameterValues("userAction");
-        String[] methode = request.getParameterValues("_method");
-        FWAction newAction = null;
-
-        if (viewBean.getModeEditionDroit().equals(APModeEditionDroit.CREATION)){
-            newAction = FWAction.newInstance(IAPActions.ACTION_SAISIE_CARTE_APG + ".ajouter");
-        } else if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.EDITION)){
-            newAction = FWAction.newInstance(IAPActions.ACTION_SAISIE_CARTE_APG + ".modifier");
-        } else if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.LECTURE) && ((BSession)mainDispatcher.getSession()).hasRight(IAPActions.ACTION_SAISIE_CARTE_APG + ".modifier", "UPDATE")) {
-            newAction = FWAction.newInstance(IAPActions.ACTION_SAISIE_CARTE_APG + ".modifier");
-        } else {
-            newAction = FWAction.newInstance(IAPActions.ACTION_SITUATION_PROFESSIONNELLE + ".chercher");
-        }
-
-
-        String destination =request.getServletPath() + "?" + PRDefaultAction.USER_ACTION + "=" + newAction;
         goSendRedirect(destination, request, response);
     }
 }

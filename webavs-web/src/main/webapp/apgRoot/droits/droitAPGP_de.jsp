@@ -83,7 +83,6 @@
 		var isModifiable = <%=viewBean.isModifiable()%>;
 		if (document.forms[0].elements('_method').value === "read" && !isModifiable) {
 			document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SITUATION_PROFESSIONNELLE%>.chercher";
-			<%--document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_APG%>.next";--%>
 			action(COMMIT);
 		} else {
 			$('#aControler').prop( "checked", true);
@@ -110,15 +109,9 @@
 
 		<%if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.CREATION)){%>
 		document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_APG%>.ajouter";
-		<%} else if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.EDITION)){%>
+		<%} else if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.EDITION)
+					|| viewBean.getModeEditionDroit().equals(APModeEditionDroit.LECTURE)){%>
 		document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_APG%>.modifier";
-		<%} else if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.LECTURE)){%>
-		if(true || EDITION_MODE){
-			document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_APG%>.modifier";
-		} else {
-			document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SITUATION_PROFESSIONNELLE%>.chercher";
-			upd();
-		}
 		<%}%>
 
 		var tmp = "";
