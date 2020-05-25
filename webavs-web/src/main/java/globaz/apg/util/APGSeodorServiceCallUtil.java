@@ -276,9 +276,11 @@ public class APGSeodorServiceCallUtil {
             LOG.error("La propriété apg.rapg.genre.service.seodor n'a pas été trouvé : ", e);
             messagesError.setMessageErreur(session.getLabel("WEBSERVICE_SEODOR_PROP_MANQUANTE"));
         } catch (DatatypeConfigurationException e) {
-            messagesError.setMessageErreur("Erreur de données lors de l'appel au webService");
+            LOG.error("Erreur de données reçu par le WebService : ", e);
+            messagesError.setMessageErreur(session.getLabel("SEODOR_ERREURS_DONNEES_WS"));
         } catch (ParseException e) {
-            messagesError.setMessageErreur("Erreur de structure des données reçu de la centrale");
+            LOG.error("Structure des données non conforme reçu par le WS : ", e);
+            messagesError.setMessageErreur(session.getLabel("SEODOR_ERREURS_STRUCTURE_CENTRALE"));
         }
 
         return messagesError;
