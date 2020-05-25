@@ -1,12 +1,10 @@
 package globaz.aquila.process.elp;
 
-import ch.globaz.al.business.constantes.ALConstParametres;
-import ch.globaz.param.business.models.ParameterModel;
-import ch.globaz.param.business.service.ParamServiceLocator;
+import globaz.apg.application.APApplication;
 import globaz.globall.util.JACalendar;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
 import globaz.osiris.external.IntRole;
+import globaz.prestation.application.PRAbstractApplication;
+import globaz.webavs.common.CommonProperties;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,12 +26,12 @@ public class COInfoFileELP {
     private String fichier;
 
 
-    public static COInfoFileELP getInfosFromFile(String file) throws JadeApplicationException, JadePersistenceException {
-        ParameterModel nomCaisse = ParamServiceLocator.getParameterModelService().getParameterByName(
-                ALConstParametres.APPNAME, ALConstParametres.NOM_CAISSE,JACalendar.todayJJsMMsAAAA());
+    public static COInfoFileELP getInfosFromFile(String file) throws Exception {
+        int numeroCaisse = Integer.parseInt(PRAbstractApplication.getApplication(APApplication.DEFAULT_APPLICATION_APG)
+                        .getProperty(CommonProperties.KEY_NO_CAISSE));
 
         String regex;
-        if ("FPV".equals(nomCaisse.getValeurAlphaParametre())) {
+        if (110 == numeroCaisse) {
             regex = NAME_FILE_REGEX_FPV;
         } else {
            regex = NAME_FILE_REGEX_FER;

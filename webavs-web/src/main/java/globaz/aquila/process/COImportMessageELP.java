@@ -134,7 +134,7 @@ public class COImportMessageELP extends AbstractDaemon {
      * @param nomFichierDistant
      * @throws JAXBException
      */
-    private void importFile(String nomFichierDistant) throws JAXBException, JadePersistenceException, JadeApplicationException {
+    private void importFile(String nomFichierDistant) throws Exception {
         if (nomFichierDistant.endsWith(XML_EXTENSION)) {
             String tmpLocalWorkFile;
             String nameOriginalFile = FilenameUtils.getName(nomFichierDistant);
