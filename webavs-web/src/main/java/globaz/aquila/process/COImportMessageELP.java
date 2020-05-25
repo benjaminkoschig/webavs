@@ -73,21 +73,6 @@ public class COImportMessageELP extends AbstractDaemon {
     private String error = "";
     private String backupFolder;
 
-//    public static void main(final String[] args) {
-//        try {
-//
-//            COImportMessageELP importMessageELP = new COImportMessageELP();
-//            importMessageELP.setPassword("glob4az");
-//            importMessageELP.setUsername("ccjuglo");
-//            importMessageELP.run();
-//
-//            System.exit(0);
-//
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-//    }
-
     @Override
     public void run() {
 
