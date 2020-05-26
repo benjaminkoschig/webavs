@@ -1,5 +1,6 @@
 package ch.globaz.al.businessimpl.services.rubriques.comptables;
 
+import ch.globaz.al.business.models.dossier.DossierComplexModel;
 import globaz.jade.client.util.JadeCodesSystemsUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
@@ -221,7 +222,7 @@ public class RubriquesComptablesServiceImpl extends ALAbstractBusinessServiceImp
     }
 
     @Override
-    public String getRubriqueForIS(DossierModel dossier, DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
+    public String getRubriqueForIS(DossierComplexModel dossier, String date) throws JadeApplicationException, JadePersistenceException {
         return null;
     }
 

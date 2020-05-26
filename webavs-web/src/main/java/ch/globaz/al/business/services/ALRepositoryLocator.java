@@ -2,10 +2,13 @@ package ch.globaz.al.business.services;
 
 import ch.globaz.al.impotsource.persistence.TauxImpositionRepository;
 import ch.globaz.al.impotsource.persistence.TauxImpositionRepositoryJade;
+import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.external.repositories.tiers.AdministrationRepository;
 import ch.globaz.vulpecula.external.repositories.tiers.AdresseRepository;
+import ch.globaz.vulpecula.external.repositories.tiers.PaysRepository;
 import ch.globaz.vulpecula.external.repositoriesjade.pyxis.AdministrationRepositoryJade;
 import ch.globaz.vulpecula.external.repositoriesjade.pyxis.AdresseRepositoryJade;
+import ch.globaz.vulpecula.external.repositoriesjade.pyxis.PaysRepositoryJade;
 
 public final class ALRepositoryLocator {
 
@@ -64,4 +67,13 @@ public final class ALRepositoryLocator {
         private static final AdresseRepository INSTANCE = new AdresseRepositoryJade();
     }
 
+    public static PaysRepository getPaysRepository() { return PaysRepositoryHolder.INSTANCE; }
+
+    private static class PaysRepositoryHolder {
+        private PaysRepositoryHolder() {
+            throw new UnsupportedOperationException();
+        }
+
+        private static final PaysRepository INSTANCE = new PaysRepositoryJade();
+    }
 }

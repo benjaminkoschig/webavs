@@ -21,6 +21,8 @@ public class PaysConverter {
         pays.setCodeFormatNpa(paysSimpleModel.getCodeFormatNpa());
         pays.setCodeFormatTel(paysSimpleModel.getCodeFormatTel());
         pays.setLibelleFr(paysSimpleModel.getLibelleFr());
+        pays.setLibelleAl(paysSimpleModel.getLibelleAl());
+        pays.setLibelleIt(paysSimpleModel.getLibelleIt());
         pays.setActif(true);
         return pays;
     }

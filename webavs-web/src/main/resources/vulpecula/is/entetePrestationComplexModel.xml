@@ -20,8 +20,6 @@
 			<select-field name="retenueImpot" field-ref="dossierModel.retenueImpot" />
 			<select-field name="periodeDe" field-ref="entetePrestationModel.periodeDe" />
 			<select-field name="periodeA" field-ref="entetePrestationModel.periodeA" />
-<!--			<select-field name="typeFacturation" field-ref="employeurSimpleModel.typeFacturation" />-->
-<!--			<select-field name="referencePermis" field-ref="travailleurSimpleModel.referencePermis" />-->
 			<select-field name="raisonSociale" field-ref="affiliationSimpleModel.raisonSociale" />
 			<select-field name="langue" field-ref="tiersSimpleModel.langue" />
 			<select-field name="idJournal" field-ref="entetePrestationModel.idJournal" />
@@ -31,7 +29,9 @@
 			<select-field name="bonification" field-ref="entetePrestationModel.bonification" />
 			<select-field name="cantonAllocataire" field-ref="allocataireModel.cantonResidence" />
 			<select-field name="montantTotalIS" field-ref="entetePrestationModel.montantTotalIS" />
-		</select-fields>
+			<select-field name="genre" field-ref="personneSimpleModel.sexe" />
+			<select-field name="paysResidence" field-ref="allocataireModel.idPaysResidence" />
+ 		</select-fields>
 		
 		<root-model name="entetePrestationModel"
 			model-ref="ch.globaz.al.business.models.prestation.EntetePrestationModel" select-fields="false"/>

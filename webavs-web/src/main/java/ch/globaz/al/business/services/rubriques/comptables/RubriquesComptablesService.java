@@ -1,11 +1,12 @@
 package ch.globaz.al.business.services.rubriques.comptables;
 
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.service.provider.application.JadeApplicationService;
+import ch.globaz.al.business.models.dossier.DossierComplexModel;
 import ch.globaz.al.business.models.dossier.DossierModel;
 import ch.globaz.al.business.models.prestation.DetailPrestationModel;
 import ch.globaz.al.business.models.prestation.EntetePrestationModel;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.service.provider.application.JadeApplicationService;
 
 import java.util.List;
 
@@ -42,10 +43,8 @@ public interface RubriquesComptablesService extends JadeApplicationService {
     /**
      * Recherche les rubriques liés aux inpôts à la source.
      *
-     * @param dossier
+     * @param dossierComplex
      *            Dossier pour lequel la rubrique doit être déterminée
-     * @param detail
-     *            Détail de la prestation pour laquelle la rubrique doit être déterminée
      * @param date
      *            Date pour laquelle la rubrique doit être déterminée
      * @return la rubrique pour impot ä la source identifiée
@@ -55,8 +54,7 @@ public interface RubriquesComptablesService extends JadeApplicationService {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    String getRubriqueForIS(DossierModel dossier,
-                                DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException;
+    String getRubriqueForIS(DossierComplexModel dossierComplex, String date) throws JadeApplicationException, JadePersistenceException;
 
     /**
      * Recherche les rubriques liés aux inpôts à la source.

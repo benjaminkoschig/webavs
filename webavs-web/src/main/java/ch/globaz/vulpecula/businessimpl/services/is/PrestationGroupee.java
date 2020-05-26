@@ -35,6 +35,9 @@ public class PrestationGroupee implements Serializable {
     private String raisonSociale;
     private Date date;
     private String cantonResidence;
+    private String genre;
+    private String paysResidence;
+    private String idDossier;
 
     public String getNss() {
         return nss;
@@ -198,6 +201,30 @@ public class PrestationGroupee implements Serializable {
 
     public String getCantonResidence() {
         return cantonResidence;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    public String getPaysResidence() {
+        return paysResidence;
+    }
+
+    public void setPaysResidence(String paysResidence) {
+        this.paysResidence = paysResidence;
+    }
+
+    public String getIdDossier() {
+        return idDossier;
+    }
+
+    public void setIdDossier(String idDossier) {
+        this.idDossier = idDossier;
     }
 
     /**

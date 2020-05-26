@@ -17,7 +17,8 @@ public class ALListeISViewBean extends PTListeProcessViewBean {
     private List<Administration> caissesAF;
 
     private String caisseAF;
-    private String annee;
+    private String dateDebut;
+    private String dateFin;
     private String canton;
     private String typeListe;
 
@@ -44,12 +45,20 @@ public class ALListeISViewBean extends PTListeProcessViewBean {
         this.caisseAF = caisseAF;
     }
 
-    public String getAnnee() {
-        return annee;
+    public String getDateDebut() {
+        return dateDebut;
     }
 
-    public void setAnnee(String annee) {
-        this.annee = annee;
+    public void setDateDebut(String dateDebut) {
+        this.dateDebut = dateDebut;
+    }
+
+    public String getDateFin() {
+        return dateFin;
+    }
+
+    public void setDateFin(String dateFin) {
+        this.dateFin = dateFin;
     }
 
     public String getCanton() {

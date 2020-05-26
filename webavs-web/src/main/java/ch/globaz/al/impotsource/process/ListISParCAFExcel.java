@@ -24,7 +24,8 @@ public class ListISParCAFExcel extends AbstractListExcel {
     private Map<String, PrestationGroupee> prestationsAImprimer;
     private Map<String, BigDecimal> listeComptaAux;
 
-    private Annee annee;
+    private String dateDebut;
+    private String dateFin;
     private String canton;
 
     public ListISParCAFExcel(BSession session, String filenameRoot, String documentTitle) {
@@ -69,7 +70,7 @@ public class ListISParCAFExcel extends AbstractListExcel {
 
     private void createTitle() {
         createRow();
-        createCell(getLabel("LISTE_AF_RETENUES_PAR_CAF").replace(":annee", String.valueOf(annee.getValue())));
+        createCell(getLabel("LISTE_AF_RETENUES_PAR_CAF").replace("{0}", dateDebut).replace("{1}",dateFin));
     }
 
     private void createEntetes() {
@@ -99,8 +100,12 @@ public class ListISParCAFExcel extends AbstractListExcel {
         this.prestationsAImprimer = prestationsAImprimer;
     }
 
-    public void setAnnee(Annee annee) {
-        this.annee = annee;
+    public void setDateDebut(String dateDebut) {
+        this.dateDebut = dateDebut;
+    }
+
+    public void setDateFin(String dateFin) {
+        this.dateFin = dateFin;
     }
 
     public String getCanton() {

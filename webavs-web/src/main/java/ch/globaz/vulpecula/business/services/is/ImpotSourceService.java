@@ -110,22 +110,22 @@ public interface ImpotSourceService {
      * @see #getPrestationsForAllocIS(String, Date, Date)
      * @param canton Canton de résidence de l'allocataire
      * @param caisseAF Caisse AF
-     * @param annee Année correspondant à la date de comptabilisation
+     * @param dateDebut date de début
+     * @param dateFin date de fin
      * @return Liste de prestations
      * @throws TauxImpositionNotFoundException
      */
-    Map<String, Collection<PrestationGroupee>> getPrestationsForAllocIS(String canton, String caisseAF, Annee annee)
+    Map<String, Collection<PrestationGroupee>> getPrestationsForAllocIS(String canton, String caisseAF, String dateDebut, String dateFin)
             throws TauxImpositionNotFoundException, PropertiesException;
 
     /**
      * Retourne les prestations AF pour les allocataires qui ne sont pas imposés à la source, soit des prestations en
      * paiements directs ET indirects groupés par caisseAF.
      * 
-     * @param annee Année à laquelle sélectionner les prestations (BASE SUR LA DATE DE COMPTABILISATION)
      * @return Liste de prestations
      */
-    Map<String, PrestationGroupee> getPrestationsForAllocISGroupByCaisseAF(Annee annee, String canton) throws PropertiesException;
+    Map<String, PrestationGroupee> getPrestationsForAllocISGroupByCaisseAF(String dateDebut, String dateFin, String canton) throws PropertiesException;
 
-    Map<String, BigDecimal> getMontantISCaisseAFComptaAux(List<String> caisses, Annee annee) throws Exception;
+    Map<String, BigDecimal> getMontantISCaisseAFComptaAux(List<String> caisses, String dateDebut, String dateFin) throws Exception;
 
 }

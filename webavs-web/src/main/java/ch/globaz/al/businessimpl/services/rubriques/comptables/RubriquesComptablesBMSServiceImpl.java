@@ -1,17 +1,10 @@
 package ch.globaz.al.businessimpl.services.rubriques.comptables;
 
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import ch.globaz.al.business.constantes.ALCSDossier;
 import ch.globaz.al.business.constantes.ALCSDroit;
 import ch.globaz.al.business.constantes.ALCSPrestation;
 import ch.globaz.al.business.constantes.ALConstParametres;
+import ch.globaz.al.business.models.dossier.DossierComplexModel;
 import ch.globaz.al.business.models.dossier.DossierModel;
 import ch.globaz.al.business.models.prestation.DetailPrestationModel;
 import ch.globaz.al.business.models.prestation.EntetePrestationModel;
@@ -25,6 +18,14 @@ import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.external.models.pyxis.Administration;
 import ch.globaz.vulpecula.repositoriesjade.RepositoryJade;
 import ch.globaz.vulpecula.util.RubriqueUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RubriquesComptablesBMSServiceImpl extends RubriquesComptablesServiceImpl implements RubriquesComptablesBMSService {
     public static final String SEPARATOR = ".";
@@ -51,8 +52,8 @@ public class RubriquesComptablesBMSServiceImpl extends RubriquesComptablesServic
     }
 
     @Override
-    public String getRubriqueForIS(DossierModel dossier, DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
-        return getRubriqueForIS(getCodeCAF(dossier, date), date);
+    public String getRubriqueForIS(DossierComplexModel dossierComplex, String date) throws JadeApplicationException, JadePersistenceException {
+        return getRubriqueForIS(getCodeCAF(dossierComplex.getDossierModel(), date), date);
     }
 
     /**

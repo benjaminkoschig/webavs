@@ -1,6 +1,9 @@
 package ch.globaz.al.businessimpl.services.rubriques.comptables;
 
 import ch.globaz.al.business.constantes.*;
+import ch.globaz.al.business.models.dossier.DossierComplexModel;
+import ch.globaz.al.businessimpl.calcul.modes.CalculImpotSource;
+import ch.globaz.al.exception.RubriqueComptableNotFoundException;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import ch.globaz.al.business.models.dossier.DossierModel;
@@ -147,8 +150,10 @@ public class RubriquesComptablesFPVServiceImpl extends RubriquesComptablesServic
     }
 
     @Override
-    public String getRubriqueForIS(DossierModel dossier, DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
-        String canton = getCanton(dossier, detail, date);
+    public String getRubriqueForIS(DossierComplexModel dossierComplex, String date) throws JadeApplicationException, JadePersistenceException {
+        DossierModel dossier = dossierComplex.getDossierModel();
+        AssuranceInfo assurance = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier, date);
+        String canton = CalculImpotSource.getCantonImposition(dossierComplex, assurance.getCanton());
         String codeCaisse = getCodeCAF(dossier, date);
         StringBuilder rubrique = new StringBuilder();
 
@@ -163,7 +168,12 @@ public class RubriquesComptablesFPVServiceImpl extends RubriquesComptablesServic
         if (ALCSDossier.ACTIVITE_SALARIE.equals(dossier.getActiviteAllocataire()) || StringUtils.equals(codeCaisse, "20")) {
             rubrique.append(".").append(canton);
         }
-        return getRubrique(date, rubrique.toString().toLowerCase());
+        String result = getRubrique(date, rubrique.toString().toLowerCase());
+        if (StringUtils.isNotEmpty(result)){
+            return result;
+        } else {
+            throw new RubriqueComptableNotFoundException("La prestation ne peut pas être générée, la rubrique comptable doit être définie pour l'impôt à la source");
+        }
     }
 
     @Override

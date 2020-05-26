@@ -47,10 +47,10 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ImpotSourceServiceImpl.class);
 
     @Override
-    public List<EntetePrestationComplexModel> getEntetesPrestationsIS(String idProcessus)  throws PropertiesException{
+    public List<EntetePrestationComplexModel> getEntetesPrestationsIS(String idProcessus) throws PropertiesException {
         EntetePrestationSearchComplexModel searchModel = new EntetePrestationSearchComplexModel();
         searchModel.setForIdProcessus(idProcessus);
-        if(!ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
+        if (!ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
             searchModel.setForIsRetenueImpot(true);
         } else {
             searchModel.setForIsRetenueImpotSomme("0");
@@ -85,10 +85,9 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
     }
 
     /**
-     * 
      * Cette méthode permet de récupérer tous les cas d'entetes et de details de prestations compris entre une date x et
      * une date y.
-     * 
+     *
      * @param dateDebut
      * @param dateFin
      * @return List<DetailPrestationAF>
@@ -142,7 +141,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
 
     /**
      * Cette méthode permet de préparer une liste d'objets DetailPrestationAF
-     * 
+     *
      * @param queryContentResult
      * @return List<DetailPrestationAF>
      */
@@ -209,24 +208,24 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
     }
 
     @Override
-    public Map<String, PrestationGroupee> getPrestationsForAllocISGroupByCaisseAF(Annee annee, String canton) throws PropertiesException {
-        List<EntetePrestationComplexModel> prestationsAF = getPrestationsISParCAF(annee.getFirstDayOfYear(),
-                annee.getLastDayOfYear(), canton);
+    public Map<String, PrestationGroupee> getPrestationsForAllocISGroupByCaisseAF(String dateDebut, String dateFin, String canton) throws PropertiesException {
+        List<EntetePrestationComplexModel> prestationsAF = getPrestationsISParCAF(dateDebut,
+                dateFin, canton);
         Map<String, Collection<EntetePrestationComplexModel>> prestationsGroupByCaisseAF = groupByCaisseAF(
                 prestationsAF);
-        return createMapPrestationsGroupees(annee.getFirstDayOfYear(), annee.getLastDayOfYear(),
+        return createMapPrestationsGroupees(dateDebut, dateFin,
                 prestationsGroupByCaisseAF);
 
     }
 
     @Override
     public Map<String, Collection<PrestationGroupee>> getPrestationsForAllocIS(String canton, String caisseAF,
-            Annee annee) throws TauxImpositionNotFoundException, PropertiesException {
+                                                                               String dateDebut, String dateFin) throws TauxImpositionNotFoundException, PropertiesException {
         TauxImpositions tauxImpositions = ALRepositoryLocator.getTauxImpositionRepository().findAll();
-        List<EntetePrestationComplexModel> prestations = getPrestationsIS(canton, caisseAF, annee);
+        List<EntetePrestationComplexModel> prestations = getPrestationsIS(dateDebut, dateFin);
         Map<String, List<PrestationGroupee>> prestationGroupees = grouperPrestations(prestations, tauxImpositions);
         List<PrestationGroupee> prestationsMergees = mergeMap(prestationGroupees);
-        return groupByCaisseAFWithIDAssurance(prestationsMergees);
+        return groupByCantons(prestationsMergees);
     }
 
     @Override
@@ -234,7 +233,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
             throws TauxImpositionNotFoundException, PropertiesException {
         TauxImpositions tauxImpositions = ALRepositoryLocator.getTauxImpositionRepository().findAll();
         List<EntetePrestationComplexModel> prestations;
-        if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
+        if (ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
             prestations = filtrePrestationWithIS(getPrestations(idAllocataire, dateDebut, dateFin));
         } else {
             prestations = getPrestationsIS(idAllocataire, dateDebut, dateFin);
@@ -244,10 +243,10 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
         return mergeMap(prestationGroupees);
     }
 
-    List<EntetePrestationComplexModel> filtrePrestationWithIS(List<EntetePrestationComplexModel>  list) {
+    List<EntetePrestationComplexModel> filtrePrestationWithIS(List<EntetePrestationComplexModel> list) {
         List<EntetePrestationComplexModel> prestations = new ArrayList<>();
-        for(EntetePrestationComplexModel prestation : list) {
-            if(!JadeStringUtil.isBlankOrZero(prestation.getMontantTotalIS())){
+        for (EntetePrestationComplexModel prestation : list) {
+            if (!JadeStringUtil.isBlankOrZero(prestation.getMontantTotalIS())) {
                 prestations.add(prestation);
             }
         }
@@ -263,13 +262,13 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
     }
 
     @Override
-    public Map<String, BigDecimal> getMontantISCaisseAFComptaAux(List<String> caisses, Annee annee) throws JadeApplicationException, JadePersistenceException {
+    public Map<String, BigDecimal> getMontantISCaisseAFComptaAux(List<String> caisses, String dateDebut, String dateFin) throws JadeApplicationException, JadePersistenceException {
         Map<String, BigDecimal> mapMontantISComptaAux = new HashMap<>();
-        for(String caisse: caisses) {
-            List<String> rubriques = ALImplServiceLocator.getRubriqueService().getAllRubriquesForIS(caisse, annee.getFirstDayOfYear().getSwissValue());
-            BigDecimal prestationsISByCaisse =  BigDecimal.ZERO;
+        for (String caisse : caisses) {
+            List<String> rubriques = ALImplServiceLocator.getRubriqueService().getAllRubriquesForIS(caisse, dateDebut);
+            BigDecimal prestationsISByCaisse = BigDecimal.ZERO;
             for (String eachRubrique : rubriques) {
-                prestationsISByCaisse = prestationsISByCaisse.add(getPrestationISByRubrique(eachRubrique, annee));
+                prestationsISByCaisse = prestationsISByCaisse.add(getPrestationISByRubrique(eachRubrique, dateDebut, dateFin));
             }
             mapMontantISComptaAux.put(caisse, prestationsISByCaisse);
         }
@@ -277,17 +276,17 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
 
     }
 
-    private BigDecimal getPrestationISByRubrique(String rubrique, Annee annee) throws JadePersistenceException {
+    private BigDecimal getPrestationISByRubrique(String rubrique, String dateDebut, String dateFin) throws JadePersistenceException {
         CARecapRubriquesExcelManager manager = new CARecapRubriquesExcelManager();
         manager.setSession(BSessionUtil.getSessionFromThreadContext());
         manager.setFromIdExterne(rubrique);
-        manager.setFromDateValeur(JadeDateUtil.getYMDDate(JadeDateUtil.getGlobazDate(annee.getFirstDayOfYear().getSwissValue())));
-        manager.setToDateValeur(JadeDateUtil.getYMDDate(JadeDateUtil.getGlobazDate(annee.getLastDayOfYear().getSwissValue())));
+        manager.setFromDateValeur(JadeDateUtil.getYMDDate(JadeDateUtil.getGlobazDate(dateDebut)));
+        manager.setToDateValeur(JadeDateUtil.getYMDDate(JadeDateUtil.getGlobazDate(dateFin)));
         manager.setForSelectionRole(IntRole.ROLE_AF);
         try {
             manager.find(BManager.SIZE_NOLIMIT);
         } catch (Exception e) {
-            throw new JadePersistenceException("Erreur lors de la récupération des rubriques",e);
+            throw new JadePersistenceException("Erreur lors de la récupération des rubriques", e);
         }
 
         BigDecimal montantTotal = BigDecimal.ZERO;
@@ -302,7 +301,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
     /**
      * Groupe les prestations de la manière suivante :
      * Si l'on considère les prestations :
-     * 
+     *
      * <table border="1">
      * <tr>
      * <td>Periode de début</td>
@@ -343,11 +342,11 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
      * <td>200.-</td>
      * </tr>
      * </table>
-     * 
+     *
      * @throws TauxImpositionNotFoundException
      */
     private Map<String, List<PrestationGroupee>> grouperPrestations(List<EntetePrestationComplexModel> prestations,
-            TauxImpositions tauxImpositions) throws TauxImpositionNotFoundException, PropertiesException {
+                                                                    TauxImpositions tauxImpositions) throws TauxImpositionNotFoundException, PropertiesException {
         Map<String, List<PrestationGroupee>> entetesPrestations = new HashMap<>();
 
         // On groupe les cotisations par dossiers
@@ -424,23 +423,23 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
         return entetesPrestations;
     }
 
-    private void addMontantIS (List<Montant> montantTotalIS, EntetePrestationComplexModel entetePrestation,
-                               TauxImpositions tauxImpositions, Date dateDebut, boolean hasImpotSource) throws TauxImpositionNotFoundException {
-        if(hasImpotSource) {
-            if(!JadeStringUtil.isBlankOrZero(entetePrestation.getMontantTotalIS())) {
+    private void addMontantIS(List<Montant> montantTotalIS, EntetePrestationComplexModel entetePrestation,
+                              TauxImpositions tauxImpositions, Date dateDebut, boolean hasImpotSource) throws TauxImpositionNotFoundException {
+        if (hasImpotSource) {
+            if (!JadeStringUtil.isBlankOrZero(entetePrestation.getMontantTotalIS())) {
                 montantTotalIS.add(new Montant(entetePrestation.getMontantTotalIS()));
             }
         } else {
             Montant montant = new Montant(entetePrestation.getMontantTotal());
             montantTotalIS.add(new Montant(montant
-                                .multiply(tauxImpositions.getTauxImpotSource(
-                                    entetePrestation.getCantonResidence(), dateDebut))
-                            .normalize().doubleValue()));
+                    .multiply(tauxImpositions.getTauxImpotSource(
+                            entetePrestation.getCantonResidence(), dateDebut))
+                    .normalize().doubleValue()));
         }
     }
 
     private PrestationGroupee createPrestationGroupee(EntetePrestationComplexModel entetePrestationComplexModel,
-            TauxImpositions tauxImpositions, Adresse adresse, List<Montant> montantTotal, List<Montant> montantTotalIS, Date dateDebut, Date dateFin)
+                                                      TauxImpositions tauxImpositions, Adresse adresse, List<Montant> montantTotal, List<Montant> montantTotalIS, Date dateDebut, Date dateFin)
             throws TauxImpositionNotFoundException, PropertiesException {
         PrestationGroupee entetePrestation = new PrestationGroupee();
         entetePrestation.setNss(entetePrestationComplexModel.getNumAvsActuel());
@@ -452,7 +451,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
         entetePrestation.setFinVersement(dateFin);
         entetePrestation.setMontantPrestations(getSommeMontant(montantTotal));
 
-        if(!montantTotalIS.isEmpty()) {
+        if (!montantTotalIS.isEmpty()) {
             entetePrestation.setImpots(getSommeMontant(montantTotalIS));
         } else if (entetePrestationComplexModel.getRetenueImpot()) {
             Montant impot = Montant.ZERO;
@@ -480,12 +479,17 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
         if (!JadeStringUtil.isEmpty(entetePrestationComplexModel.getLangue())) {
             entetePrestation.setLangue(CodeLangue.fromValue(entetePrestationComplexModel.getLangue()));
         }
+
+        // Dans le cadre de la génération des fichiers Excels, on a besoin de connaitre le genre de l'allocataire et le pays de résidence
+        entetePrestation.setGenre(entetePrestationComplexModel.getGenre());
+        entetePrestation.setPaysResidence(entetePrestationComplexModel.getPaysResidence());
+        entetePrestation.setIdDossier(entetePrestationComplexModel.getIdDossier());
+
         return entetePrestation;
     }
 
     /**
      * @BMS POBMS-623 - AF: Attestation incorrecte en cas de multiples bénéficiaire.
-     *
      */
     private Map<String, List<PrestationGroupee>> grouperPrestationsByBenef(
             List<EntetePrestationComplexModel> prestations, TauxImpositions tauxImpositions)
@@ -638,7 +642,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
     }
 
     private void initList(HashMap<String, List<PrestationGroupee>> liste,
-            EntetePrestationComplexModel entetePrestationComplexModel) {
+                          EntetePrestationComplexModel entetePrestationComplexModel) {
         DetailPrestationComplexSearchModel searchModel = new DetailPrestationComplexSearchModel();
         searchModel.setForIdEntete(entetePrestationComplexModel.getId());
         try {
@@ -732,7 +736,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
     /**
      * Conversion d'un EntetePrestationComplexModel en EntetePrestation avec calcul de l'impôts à la source depuis le
      * paramétrage si celui-ci est soumis.
-     * 
+     *
      * @param entetePrestationComplexModel
      * @param tauxImpositions
      * @param adresse
@@ -743,8 +747,8 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
      * @throws TauxImpositionNotFoundException
      */
     private PrestationGroupee createPrestationGroupee(EntetePrestationComplexModel entetePrestationComplexModel,
-            TauxImpositions tauxImpositions, Adresse adresse, Adresse adresseAffilie, List<Montant> montantTotal,
-            Date dateDebut, Date dateFin) throws TauxImpositionNotFoundException {
+                                                      TauxImpositions tauxImpositions, Adresse adresse, Adresse adresseAffilie, List<Montant> montantTotal,
+                                                      Date dateDebut, Date dateFin) throws TauxImpositionNotFoundException {
         PrestationGroupee entetePrestation = new PrestationGroupee();
         entetePrestation.setNss(entetePrestationComplexModel.getNumAvsActuel());
         entetePrestation.setNom(entetePrestationComplexModel.getNom());
@@ -787,7 +791,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
 
     /**
      * Permet d'additionner les montant d'une liste
-     * 
+     *
      * @param montants La liste des montants à additionner
      * @return Le montant additionné
      */
@@ -800,8 +804,8 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
         return montant;
     }
 
-    private Map<String, PrestationGroupee> createMapPrestationsGroupees(Date dateDebut, Date dateFin,
-            Map<String, Collection<EntetePrestationComplexModel>> prestationsGroupByCaisseAF) throws PropertiesException {
+    private Map<String, PrestationGroupee> createMapPrestationsGroupees(String dateDebut, String dateFin,
+                                                                        Map<String, Collection<EntetePrestationComplexModel>> prestationsGroupByCaisseAF) throws PropertiesException {
         TauxImpositions tauxImpositions = ALRepositoryLocator.getTauxImpositionRepository().findAll();
 
         Map<String, PrestationGroupee> prestationsGroupees = new HashMap<>();
@@ -818,8 +822,8 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
             Montant impot = calculImpots(prestations, tauxImpositions);
             Montant frais = calculFrais(prestations, tauxImpositions);
 
-            PrestationGroupee prestationGroupee = PrestationGroupee.create(montantTotal, impot, frais, dateDebut,
-                    dateFin, adresse, prestationComplexModel.getLibelleCaisseAF(),
+            PrestationGroupee prestationGroupee = PrestationGroupee.create(montantTotal, impot, frais, new Date(dateDebut),
+                    new Date(dateFin), adresse, prestationComplexModel.getLibelleCaisseAF(),
                     prestationComplexModel.getCodeCaisseAF(), prestationComplexModel);
             prestationsGroupees.put(entry.getKey(), prestationGroupee);
         }
@@ -842,7 +846,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
 
     /**
      * Groupe un ensemble de prestations par idDossier.
-     * 
+     *
      * @param prestations Ensemble de prestations
      * @return Map de prestations groupées par idDossier
      */
@@ -858,7 +862,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
 
     /**
      * Groupe un ensemble de prestations par caisseAF.
-     * 
+     *
      * @param prestations Ensemble de prestations
      * @return Map de prestations groupées par caisseAF
      */
@@ -875,9 +879,9 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
 
     /**
      * Groupe un ensemble de prestations par caisseAF.
-     * 
+     * <p>
      * ATTENTION -> Cette fonction est prévue uniquement pour le type d'objet suivant : DetailPrestationAF
-     * 
+     *
      * @param prestations Ensemble de prestations
      * @return Map de prestations groupées par caisseAF
      */
@@ -892,20 +896,46 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
         return Multimaps.index(prestations, funcGroupLibelleCaisseAF).asMap();
     }
 
-    private Map<String, Collection<PrestationGroupee>> groupByCaisseAFWithIDAssurance(
+    private Map<String, Collection<PrestationGroupee>> groupByCantons(
             Collection<PrestationGroupee> prestations) {
-        Function<PrestationGroupee, String> funcGroupLibelleCaisseAF = new Function<PrestationGroupee, String>() {
+        Function<PrestationGroupee, String> funcGroupCanton = new Function<PrestationGroupee, String>() {
             @Override
             public String apply(PrestationGroupee prestationGroupee) {
-                return prestationGroupee.getIdAssurance();
+//                if (StringUtils.equals(prestationGroupee.getPaysResidence(), "100")) {
+                    return prestationGroupee.getCantonResidence();
+//                } else {
+//                    DossierSearchModel dsm = new DossierSearchModel();
+//                    try {
+//                        dsm.setForIdDossier(prestationGroupee.getIdDossier());
+//                        dsm = ALServiceLocator.getDossierModelService().search(dsm);
+//                    } catch (JadeApplicationException e) {
+//                        LOGGER.error("Erreur lors de la récupération du dossier.", e);
+//                    } catch (JadePersistenceException e) {
+//                        LOGGER.error("Erreur lors de la récupération du dossier.", e);
+//                    }
+//                    DossierModel dossierModel = ((DossierModel) dsm.getSearchResults()[0]);
+//
+//                    if (StringUtils.isNotEmpty(dossierModel.getTarifForce()) && !StringUtils.equals("0", dossierModel.getTarifForce())) {
+//                        String cantonImpositionForce = dossierModel.getCantonImposition();
+//                        if (StringUtils.isEmpty(cantonImpositionForce) || StringUtils.equals("0", cantonImpositionForce)) {
+//                            throw new CantonImpositionNotFoundException("Le canton d'imposition forcé n'a pas été trouvé.");
+//                        }
+//                        return dossierModel.getCantonImposition();
+//                    } else {
+//                        cantonImposition = ALImplServiceLocator.getAffiliationService().convertCantonNaos2CantonAF(cantonAffiliation);
+//                    }
+
+//                }
+
+
             }
         };
-        return Multimaps.index(prestations, funcGroupLibelleCaisseAF).asMap();
+        return Multimaps.index(prestations, funcGroupCanton).asMap();
     }
 
     /**
      * Calcul du montant total d'un ensemble de prestation.
-     * 
+     *
      * @param prestations Liste d'opérations
      * @return Montant total des prestations
      */
@@ -924,8 +954,8 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
 
     /**
      * Calcul les frais d'administration
-     * 
-     * @param prestations Liste des prestations sur lesquelles calculer l'IS
+     *
+     * @param prestations     Liste des prestations sur lesquelles calculer l'IS
      * @param tauxImpositions
      * @return Montant des impots
      */
@@ -939,8 +969,8 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
         Montant impot = Montant.ZERO;
         for (EntetePrestationComplexModel prestation : prestations) {
 
-            if(impotSource) {
-                if(!JadeStringUtil.isBlankOrZero(prestation.getMontantTotalIS())){
+            if (impotSource) {
+                if (!JadeStringUtil.isBlankOrZero(prestation.getMontantTotalIS())) {
                     impot = impot.add(new Montant(prestation.getMontantTotalIS()));
                 }
             } else {
@@ -961,12 +991,12 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
     /**
      * Cette méthode permet de vérifier si la prestation est soumise à l'IS et si c'est le cas, la méthode set l'impôt à
      * la source pour le montant de la prestation.
-     * 
+     *
      * @param prestations
      * @param tauxImpositions
      */
     private void calculImpotSourceForAllPrestations(Collection<DetailPrestationAF> prestations,
-            TauxImpositions tauxImpositions) {
+                                                    TauxImpositions tauxImpositions) {
 
         for (DetailPrestationAF prestation : prestations) {
             Taux taux = null;
@@ -988,8 +1018,8 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
 
     /**
      * Calcul des frais d'administation
-     * 
-     * @param prestations Liste des prestations sur lesquelles calculer les frais
+     *
+     * @param prestations     Liste des prestations sur lesquelles calculer les frais
      * @param tauxImpositions Taux d'imposition
      * @return Montant des frais
      */
@@ -1023,25 +1053,25 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
     /**
      * Retourne l'ensemble des prestations comptabilisées relatives aux allocataires imposée à la source.
      * Seules les prestations en bonification "DIRECT" sont retournées.
-     * 
+     *
      * @param dateDebut Date de début à laquelle prendre les prestations
-     * @param dateFin Date de fin à laquelle prendre les prestations
+     * @param dateFin   Date de fin à laquelle prendre les prestations
      * @return Liste des prestations
      */
-    private List<EntetePrestationComplexModel> getPrestationsISParCAF(Date dateDebut, Date dateFin, String canton) throws PropertiesException {
+    private List<EntetePrestationComplexModel> getPrestationsISParCAF(String dateDebut, String dateFin, String canton) throws PropertiesException {
         EntetePrestationSearchComplexModel searchModel = new EntetePrestationSearchComplexModel();
         searchModel.setForDateComptabilisationAfterOrEquals(dateDebut);
         searchModel.setForDateComptabilisationBeforeOrEquals(dateFin);
         searchModel.setForEtat(ALCSPrestation.ETAT_CO);
-        if(!ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
-        searchModel.setForIsRetenueImpot(true);
+        if (!ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
+            searchModel.setForIsRetenueImpot(true);
         } else {
             searchModel.setForIsRetenueImpotSomme("0");
         }
         searchModel.setForCantonResidence(canton);
         List<EntetePrestationComplexModel> prestations = RepositoryJade.searchForAndFetch(searchModel);
-        if(!ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
-        prestations = sortAndExcludePaiementIndirect(prestations);
+        if (!ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
+            prestations = sortAndExcludePaiementIndirect(prestations);
         }
 
         return findCaisseAFAndCantonAffilie(prestations);
@@ -1050,10 +1080,10 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
     /**
      * Retourne l'ensemble des prestations comptabilisées relatives à un allocataire (optionnel) imposée à la source.
      * Seules les prestations en bonification "DIRECT" sont retournées.
-     * 
+     *
      * @param idAllocataire String représentant l'id d'un allocataire
-     * @param dateDebut Date de début à laquelle prendre les prestations
-     * @param dateFin Date de fin à laquelle prendre les prestations
+     * @param dateDebut     Date de début à laquelle prendre les prestations
+     * @param dateFin       Date de fin à laquelle prendre les prestations
      * @return Liste des prestations
      */
     private List<EntetePrestationComplexModel> getPrestationsIS(String idAllocataire, Date dateDebut, Date dateFin) throws PropertiesException {
@@ -1062,8 +1092,8 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
         searchModel.setForDateComptabilisationAfterOrEquals(dateDebut);
         searchModel.setForDateComptabilisationBeforeOrEquals(dateFin);
         searchModel.setForEtat(ALCSPrestation.ETAT_CO);
-        if(!ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
-        searchModel.setForIsRetenueImpot(true);
+        if (!ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
+            searchModel.setForIsRetenueImpot(true);
         } else {
             searchModel.setForIsRetenueImpotSomme("0");
         }
@@ -1076,8 +1106,8 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
      * Seules les prestations en bonification "DIRECT" sont retournées.
      *
      * @param idAllocataire String représentant l'id d'un allocataire
-     * @param dateDebut Date de début à laquelle prendre les prestations
-     * @param dateFin Date de fin à laquelle prendre les prestations
+     * @param dateDebut     Date de début à laquelle prendre les prestations
+     * @param dateFin       Date de fin à laquelle prendre les prestations
      * @return Liste des prestations
      */
     private List<EntetePrestationComplexModel> getPrestations(String idAllocataire, Date dateDebut, Date dateFin) {
@@ -1092,9 +1122,9 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
 
     /**
      * Retourne l'ensemble des prestations en paiements directs relatives à un allocataires NON imposée à la source.
-     * 
+     *
      * @param dateDebut Date de début à laquelle prendre les prestations
-     * @param dateFin Date de fin à laquelle prendre les prestations
+     * @param dateFin   Date de fin à laquelle prendre les prestations
      * @return Liste des prestations
      */
     private List<EntetePrestationComplexModel> getPrestationsDirectsNonIS(Date dateDebut, Date dateFin) throws PropertiesException {
@@ -1102,8 +1132,8 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
         searchModel.setForDateComptabilisationAfterOrEquals(dateDebut);
         searchModel.setForDateComptabilisationBeforeOrEquals(dateFin);
         searchModel.setForEtat(ALCSPrestation.ETAT_CO);
-        if(!ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
-        searchModel.setForIsRetenueImpot(false);
+        if (!ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
+            searchModel.setForIsRetenueImpot(false);
         } else {
             searchModel.setWhereKey("fromDateForNotImpotSource");
         }
@@ -1117,29 +1147,27 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
      * canton
      * (optionnel), une caisseAf (optionnel) et une année. Seules les prestations en bonification "DIRECT" sont
      * retournées.
-     * 
-     * @param canton Code système représentant le canton
-     * @param caisseAF Code système représentant le type de la caisse AF
-     * @param annee Année pour la recherche des écritures
+     *
+     * @param dateDebut date de début
+     * @param dateFin   date de fin
      * @return Liste des prestations
      */
-    private List<EntetePrestationComplexModel> getPrestationsIS(String canton, String caisseAF, Annee annee) throws PropertiesException {
+    private List<EntetePrestationComplexModel> getPrestationsIS(String dateDebut, String dateFin) throws PropertiesException {
         EntetePrestationSearchComplexModel searchModel = new EntetePrestationSearchComplexModel();
-        searchModel.setForDateComptabilisationAfterOrEquals(annee.getFirstDayOfYear());
-        searchModel.setForDateComptabilisationBeforeOrEquals(annee.getLastDayOfYear());
-        searchModel.setForCantonResidence(canton);
+        searchModel.setForDateComptabilisationAfterOrEquals(dateDebut);
+        searchModel.setForDateComptabilisationBeforeOrEquals(dateFin);
         searchModel.setForEtat(ALCSPrestation.ETAT_CO);
-        if(!ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
-        searchModel.setForIsRetenueImpot(true);
+        if (!ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
+            searchModel.setForIsRetenueImpot(true);
         } else {
             searchModel.setForIsRetenueImpotSomme("0");
         }
 
         List<EntetePrestationComplexModel> prestations = RepositoryJade.searchForAndFetch(searchModel);
-        if(!ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
-        prestations = sortAndExcludePaiementIndirect(prestations);
+        if (!ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
+            prestations = sortAndExcludePaiementIndirect(prestations);
         }
-        return findCaisseAFAndCantonAffilie(prestations, caisseAF);
+        return prestations;
     }
 
     private List<EntetePrestationComplexModel> findCaisseAFAndCantonAffilie(
@@ -1150,7 +1178,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
     /**
      * Permet de trier la liste des prestations passée en paramètre et de retirer les objets dont le type de paiement
      * est "INDIRECT"
-     * 
+     *
      * @param listPrestations
      * @return une liste des prestations dont le type de paiement indirect est retiré.
      */
@@ -1170,8 +1198,8 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
     /**
      * Recherche la caisse AF d'une prestation et ne retourne que les prestations qui contiennent la caisse AF passé en
      * paramètre. Si celle-ci est null, toutes les caisses AF sont retournées.
-     * 
-     * @param prestations Liste de prestations
+     *
+     * @param prestations  Liste de prestations
      * @param codeCaisseAF Caisse AF sur laquelle filtrer
      * @return Liste de prestations filtré selon le codeCaisseAF
      */
@@ -1197,7 +1225,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
 
     /**
      * Permet la résolution de la caisse AF pour une liste de prestations passées en paramètres.
-     * 
+     *
      * @param prestations
      * @return List<DetailPrestationAF>
      */

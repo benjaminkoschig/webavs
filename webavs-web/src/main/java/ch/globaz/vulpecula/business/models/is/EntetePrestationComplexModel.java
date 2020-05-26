@@ -36,6 +36,8 @@ public class EntetePrestationComplexModel extends JadeComplexModel {
     private String cantonAllocataire;
     private EntetePrestationModel simpleModel;
     private String montantTotalIS;
+    private String genre;
+    private String paysResidence;
 
     /**
      * Ces attributs ne sont pas récupérés depuis la base de données, ils sont settés grâce au service d'affiliation.
@@ -333,4 +335,19 @@ public class EntetePrestationComplexModel extends JadeComplexModel {
         this.montantTotalIS = montantTotalIS;
     }
 
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    public String getPaysResidence() {
+        return paysResidence;
+    }
+
+    public void setPaysResidence(String paysResidence) {
+        this.paysResidence = paysResidence;
+    }
 }

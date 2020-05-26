@@ -20,7 +20,8 @@ import ch.globaz.vulpecula.util.ExceptionsUtil;
 public class ListeISRetenuesProcess extends BProcessWithContext {
     private static final long serialVersionUID = 2139647038684081597L;
 
-    private Annee annee;
+    private String dateDebut;
+    private String dateFin;
     private String canton;
     private String caisseAF;
     private String idProcessusAF;
@@ -57,7 +58,7 @@ public class ListeISRetenuesProcess extends BProcessWithContext {
     private void retrieve() {
         try {
             prestationsAImprimer = ALServiceLocator.getImpotSourceService().getPrestationsForAllocIS(canton,
-                    caisseAF, annee);
+                    caisseAF, dateDebut, dateFin);
         } catch (TauxImpositionNotFoundException e) {
             getTransaction().addErrors(ExceptionsUtil.translateException(e));
         } catch (PropertiesException e) {
@@ -74,9 +75,9 @@ public class ListeISRetenuesProcess extends BProcessWithContext {
         ListISRetenuesExcel excel = new ListISRetenuesExcel(getSession(),
                 DocumentConstants.LISTES_AF_RETENUES_DOC_NAME, DocumentConstants.LISTES_AF_RETENUES_COMMISSION_NAME);
         excel.setPrestationsAImprimer(prestationsAImprimer);
-        excel.setAnnee(annee);
         excel.setCanton(canton);
-        excel.setCaisseAF(libelleCaisseAF);
+        excel.setDateDebut(dateDebut);
+        excel.setDateFin(dateFin);
         excel.setIdProcessusAF(idProcessusAF);
         excel.setLangueUser(getSession().getIdLangueISO());
         excel.create();
@@ -93,12 +94,20 @@ public class ListeISRetenuesProcess extends BProcessWithContext {
         return GlobazJobQueue.READ_LONG;
     }
 
-    public Annee getAnnee() {
-        return annee;
+    public String getDateDebut() {
+        return dateDebut;
     }
 
-    public void setAnnee(Annee annee) {
-        this.annee = annee;
+    public void setDateDebut(String dateDebut) {
+        this.dateDebut = dateDebut;
+    }
+
+    public String getDateFin() {
+        return dateFin;
+    }
+
+    public void setDateFin(String dateFin) {
+        this.dateFin = dateFin;
     }
 
     public String getCanton() {

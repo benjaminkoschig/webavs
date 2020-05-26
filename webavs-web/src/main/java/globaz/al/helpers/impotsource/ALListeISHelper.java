@@ -19,21 +19,23 @@ public class ALListeISHelper extends FWHelper {
         try {
             ALListeISViewBean vb = (ALListeISViewBean) viewBean;
             TypeListeAF typeListe = TypeListeAF.fromValue(vb.getTypeListe());
-            Annee annee = new Annee(vb.getAnnee());
+
+            String dateDebut = vb.getDateDebut();
+            String dateFin = vb.getDateFin();
             String canton = vb.getCanton();
             String idTiersAdministration = vb.getCaisseAF();
             String email = vb.getEmail();
 
             switch (typeListe) {
                 case LR_RETENUES_PAR_CAF_FISC:
-                    startListeISRetenuesParCAF(annee, canton, email);
+                        startListeISRetenuesParCAF(dateDebut, dateFin, canton, email);
                     break;
                 case LR_RETENUES_PAR_CAF:
-                    startListeISRetenuesProcess(annee, canton, idTiersAdministration, email);
+                    startListeISRetenuesProcess(dateDebut, dateFin, canton, idTiersAdministration, email);
                     break;
                 case TOUS:
-                    startListeISRetenuesProcess(annee, canton, idTiersAdministration, email);
-                    startListeISRetenuesParCAF(annee, canton, email);
+                    startListeISRetenuesProcess(dateDebut, dateFin, canton, idTiersAdministration, email);
+                    startListeISRetenuesParCAF(dateDebut, dateFin, canton, email);
                     break;
             }
         } catch (Exception e) {
@@ -41,20 +43,22 @@ public class ALListeISHelper extends FWHelper {
         }
     }
 
-    private void startListeISRetenuesProcess(Annee annee, String canton, String idTiersAdministration, String email)
+    private void startListeISRetenuesProcess(String dateDebut, String dateFin, String canton, String idTiersAdministration, String email)
             throws Exception {
         ListeISRetenuesProcess process = new ListeISRetenuesProcess();
-        process.setAnnee(annee);
+        process.setDateDebut(dateDebut);
+        process.setDateFin(dateFin);
         process.setCanton(canton);
         process.setCaisseAF(idTiersAdministration);
         process.setEMailAddress(email);
         BProcessLauncher.start(process);
     }
 
-    private void startListeISRetenuesParCAF(Annee annee, String canton, String email) throws Exception {
+    private void startListeISRetenuesParCAF(String dateDebut, String dateFin, String canton, String email) throws Exception {
         ListeISParCAFProcess process = new ListeISParCAFProcess();
         process.setEMailAddress(email);
-        process.setAnnee(annee);
+        process.setDateDebut(dateDebut);
+        process.setDateFin(dateFin);
         process.setCanton(canton);
         BProcessLauncher.start(process);
     }

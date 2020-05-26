@@ -1,5 +1,6 @@
 package ch.globaz.al.businessimpl.services.rubriques;
 
+import ch.globaz.al.business.models.dossier.DossierComplexModel;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import ch.globaz.al.business.models.dossier.DossierModel;
@@ -29,10 +30,9 @@ public class RubriqueServiceImpl extends ALAbstractBusinessServiceImpl implement
     }
 
     @Override
-    public String getRubriqueForIS(DossierModel dossier,
-                                   DetailPrestationModel detail, String date) throws JadePersistenceException, JadeApplicationException {
+    public String getRubriqueForIS(DossierComplexModel dossierComplex, String date) throws JadePersistenceException, JadeApplicationException {
         return (ALImplServiceLocator.getRubriqueComptableService(RubriqueComptableServiceFactory
-                .getServiceRubriqueComptable(date))).getRubriqueForIS(dossier, detail, date);
+                .getServiceRubriqueComptable(date))).getRubriqueForIS(dossierComplex, date);
     }
 
     @Override

@@ -19,7 +19,8 @@ public class ListeISParCAFProcess extends BProcessWithContext {
     private static final String LISTES_AF_RETENUES_PAR_CAF_NAME = "Impots retenus par CAF";
     private static final String LISTES_AF_RETENUES_PAR_CAF_DOC_NAME = "Impots_retenus_par_CAF";
 
-    private Annee annee;
+    private String dateDebut;
+    private String dateFin;
     private String canton;
 
     private Map<String, PrestationGroupee> prestationsAImprimer;
@@ -39,20 +40,20 @@ public class ListeISParCAFProcess extends BProcessWithContext {
     }
 
     private void retrieve() throws Exception {
-        prestationsAImprimer = ALServiceLocator.getImpotSourceService().getPrestationsForAllocISGroupByCaisseAF(
-                annee, canton);
+        prestationsAImprimer = ALServiceLocator.getImpotSourceService().getPrestationsForAllocISGroupByCaisseAF(dateDebut, dateFin, canton);
         List<String> caisses = new ArrayList<>();
         for(PrestationGroupee prestation: prestationsAImprimer.values()) {
             caisses.add(prestation.getCodeCaisseAF());
         }
-        listeComptaAux = ALServiceLocator.getImpotSourceService().getMontantISCaisseAFComptaAux(caisses, annee);
+        listeComptaAux = ALServiceLocator.getImpotSourceService().getMontantISCaisseAFComptaAux(caisses, dateDebut, dateFin);
     }
 
     private void print() throws Exception {
         ListISParCAFExcel listISParCAFExcel = new ListISParCAFExcel(getSession(),LISTES_AF_RETENUES_PAR_CAF_DOC_NAME,LISTES_AF_RETENUES_PAR_CAF_NAME);
         listISParCAFExcel.setPrestationsAImprimer(prestationsAImprimer);
         listISParCAFExcel.setListeComptaAux(listeComptaAux);
-        listISParCAFExcel.setAnnee(annee);
+        listISParCAFExcel.setDateDebut(dateDebut);
+        listISParCAFExcel.setDateFin(dateFin);
         listISParCAFExcel.setCanton(canton);
         listISParCAFExcel.create();
         registerAttachedDocument(JadePublishDocumentInfoProvider.newInstance(this), listISParCAFExcel.getOutputFile());
@@ -68,13 +69,6 @@ public class ListeISParCAFProcess extends BProcessWithContext {
         return GlobazJobQueue.READ_LONG;
     }
 
-    public void setAnnee(Annee annee) {
-        this.annee = annee;
-    }
-
-    public Annee getAnnee() {
-        return annee;
-    }
 
     public String getCanton() {
         return canton;
@@ -84,4 +78,19 @@ public class ListeISParCAFProcess extends BProcessWithContext {
         this.canton = canton;
     }
 
+    public String getDateDebut() {
+        return dateDebut;
+    }
+
+    public void setDateDebut(String dateDebut) {
+        this.dateDebut = dateDebut;
+    }
+
+    public String getDateFin() {
+        return dateFin;
+    }
+
+    public void setDateFin(String dateFin) {
+        this.dateFin = dateFin;
+    }
 }

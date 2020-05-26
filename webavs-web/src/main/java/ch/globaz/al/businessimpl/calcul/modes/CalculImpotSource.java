@@ -81,7 +81,7 @@ public class CalculImpotSource {
             cantonImposition = allocataireModel.getCantonResidence();
         } else {
             DossierModel dossierModel = dossierComplexModel.getDossierModel();
-            if (StringUtils.isNotEmpty(dossierModel.getTarifForce())) {
+            if (StringUtils.isNotEmpty(dossierModel.getTarifForce()) && !StringUtils.equals("0", dossierModel.getTarifForce())) {
                 String cantonImpositionForce = dossierModel.getCantonImposition();
                 if (StringUtils.isEmpty(cantonImpositionForce) || StringUtils.equals("0", cantonImpositionForce)) {
                     throw new CantonImpositionNotFoundException("Le canton d'imposition forcé n'a pas été trouvé.");

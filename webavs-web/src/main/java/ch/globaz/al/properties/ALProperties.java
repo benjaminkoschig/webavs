@@ -43,7 +43,14 @@ public enum ALProperties implements IProperties {
         public boolean isValidValue(final String propertyValue) {
             return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
         }
-    };
+    },
+    BAREME_IMPOT_SOURCE("impotsource.bareme","Indique le type de barème pour les impôts à la source") {
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return true;
+        }
+    }
+    ;
 
     private String description;
     private String propertyName;

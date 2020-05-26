@@ -114,18 +114,21 @@ $(function () {
 				</td>
 			</tr>
 			<tr>
-				<td><ct:FWLabel key="AL0037_PERIODE_ANNEE"/></td>
-				<td>
-					<c:choose>
-						<c:when test="${not empty viewBean.annee}">
-							<input name="annee" value="${viewBean.annee}" data-g-integer="" />
-						</c:when>
-						<c:otherwise>
-							<input name="annee" value="${viewBean.currentYear}" data-g-integer="" />
-						</c:otherwise>
-					</c:choose>
+				<td><ct:FWLabel key="AL0037_PERIODE_DE"/></td>
+				<td colspan="3">
+					<input	type="text"
+							  id="dateDebut"
+							  name="dateDebut"
+							  data-g-calendar="mandatory:true"
+							  value="${viewBean.dateDebut}" />
+				<ct:FWLabel key="AL0037_PERIODE_A"/>
+				<input	type="text"
+						  id="dateFin"
+						  name="dateFin"
+						  data-g-calendar="mandatory:true"
+						  value="${viewBean.dateFin}" />
 				</td>
-			</tr>		
+			</tr>
 			<tr>				
 				<td><ct:FWLabel key="AL0037_TYPE_DE_LISTE"/></td>
 				<td>
