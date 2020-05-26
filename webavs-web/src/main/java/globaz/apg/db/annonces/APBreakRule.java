@@ -16,6 +16,7 @@ public class APBreakRule extends BEntity {
      * 
      */
     private static final long serialVersionUID = 1L;
+    public static String FIELDNAME_BREAK_RULE_LIBELLE = "VRBRLI";
     public static String FIELDNAME_BREAK_RULE_CODE = "VRBRCO";
     public static String FIELDNAME_DATE_QUITTANCE = "VRDATE";
     public static String FIELDNAME_GESTIONNAIRE = "VRGEST";
@@ -24,6 +25,8 @@ public class APBreakRule extends BEntity {
     public static String FIELDNAME_ID_PRESTATION = "VRIDPR";
     public static String TABLE_NAME = "APBRULES";
 
+
+    private String libelleBreakCode = "";
     private String breakRuleCode = "";
     private String dateQuittance = "";
     private String gestionnaire = "";
@@ -64,6 +67,7 @@ public class APBreakRule extends BEntity {
         idBreakRule = statement.dbReadNumeric(APBreakRule.FIELDNAME_ID_BREAK_RULE);
         idDroit = statement.dbReadNumeric(APBreakRule.FIELDNAME_ID_DROIT);
         idPrestation = statement.dbReadNumeric(APBreakRule.FIELDNAME_ID_PRESTATION);
+        libelleBreakCode = statement.dbReadString(APBreakRule.FIELDNAME_BREAK_RULE_LIBELLE);
     }
 
     /*
@@ -105,6 +109,8 @@ public class APBreakRule extends BEntity {
                 this._dbWriteNumeric(statement.getTransaction(), idPrestation, "idPrestation"));
         statement.writeField(APBreakRule.FIELDNAME_BREAK_RULE_CODE,
                 this._dbWriteNumeric(statement.getTransaction(), breakRuleCode, "breakRuleCode"));
+        statement.writeField(APBreakRule.FIELDNAME_BREAK_RULE_LIBELLE,
+                this._dbWriteString(statement.getTransaction(), libelleBreakCode, "libelleBreakCode"));
 
     }
 
@@ -190,4 +196,13 @@ public class APBreakRule extends BEntity {
     public final void setIdPrestation(String idPrestation) {
         this.idPrestation = idPrestation;
     }
+
+    public String getLibelleBreakCode() {
+        return libelleBreakCode;
+    }
+
+    public void setLibelleBreakCode(String libelleBreakCode) {
+        this.libelleBreakCode = libelleBreakCode;
+    }
+
 }

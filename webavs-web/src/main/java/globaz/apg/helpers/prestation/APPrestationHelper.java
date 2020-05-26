@@ -130,8 +130,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             man.setForIdDroit(droit.getIdDroit());
             man.find(BManager.SIZE_NOLIMIT);
 
-            @SuppressWarnings("unchecked")
-            final Iterator<APSituationProfessionnelle> iter = man.iterator();
+            @SuppressWarnings("unchecked") final Iterator<APSituationProfessionnelle> iter = man.iterator();
             while (iter.hasNext()) {
                 final APSituationProfessionnelle sitPro = iter.next();
                 if (sitPro.getHasAcmAlphaPrestations().booleanValue()) {
@@ -155,8 +154,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         man.setForIdDroit(droit.getIdDroit());
         man.find();
 
-        @SuppressWarnings("unchecked")
-        final Iterator<APSituationProfessionnelle> iter = man.iterator();
+        @SuppressWarnings("unchecked") final Iterator<APSituationProfessionnelle> iter = man.iterator();
         while (iter.hasNext()) {
             final APSituationProfessionnelle sitPro = iter.next();
             if (sitPro.getHasLaMatPrestations().booleanValue()) {
@@ -176,7 +174,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @throws Exception
      */
     public static boolean isAffiliationAssuranceMaterniteParIdTiers(final BISession session,
-            final BITransaction transaction, final String idTiers, final APDroitLAPG droit) throws Exception {
+                                                                    final BITransaction transaction, final String idTiers, final APDroitLAPG droit) throws Exception {
         boolean hasOpenedTransaction = false;
         BStatement statement = null;
         APSituationProfessionnelleManager situProfMananger = null;
@@ -248,8 +246,8 @@ public class APPrestationHelper extends PRAbstractHelper {
                     if (BSessionUtil.compareDateFirstLowerOrEqual((BSession) session, cotisations[i].getDateDebut(),
                             droit.getDateDebutDroit())
                             && (BSessionUtil.compareDateFirstGreaterOrEqual((BSession) session,
-                                    cotisations[i].getDateFin(), droit.getDateFinDroit())
-                                    || JadeStringUtil.isEmpty(cotisations[i].getDateFin()))) {
+                            cotisations[i].getDateFin(), droit.getDateFinDroit())
+                            || JadeStringUtil.isEmpty(cotisations[i].getDateFin()))) {
 
                         // on cherche l'assurance
                         final IAFAssurance assurance = (IAFAssurance) session.getAPIFor(IAFAssurance.class);
@@ -293,7 +291,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @throws Exception
      */
     public FWViewBeanInterface actionImporterToutesLesPrestationsACOR(final FWViewBeanInterface viewBean,
-            final FWAction action, final BSession session) throws Exception {
+                                                                      final FWAction action, final BSession session) throws Exception {
 
         if (!(viewBean instanceof APCalculACORViewBean)) {
             throw new APWrongViewBeanTypeException("Wrong viewBean type received for the action ["
@@ -361,7 +359,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @throws Exception
      */
     public APPrestationViewBean calculDesPrestationsAvecCalculateurGlobaz(final FWViewBeanInterface vb,
-            final FWAction action, final BSession session) throws Exception {
+                                                                          final FWAction action, final BSession session) throws Exception {
 
         APPrestationViewBean viewBean = null;
         if (!(vb instanceof APPrestationViewBean)) {
@@ -441,11 +439,11 @@ public class APPrestationHelper extends PRAbstractHelper {
      * dans les APG</br>
      * Pas de prestastions ACM_NE pour la maternité
      *
-     * @see{APProperties.TYPE_DE_PRESTATION_ACM
      * @param session
      * @param transaction
      * @param viewBean
      * @throws Exception
+     * @see{APProperties.TYPE_DE_PRESTATION_ACM
      */
     private void calculerComplement(final BSession session, final BTransaction transaction, final APDroitLAPG droit)
             throws Exception {
@@ -475,7 +473,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         if (donnesPersistencePourCalcul == null
                 || donnesPersistencePourCalcul.getSituationProfessionnelleEmployeur().isEmpty()
                 || !isComplement(session, droit.getIdDroit(),
-                        donnesPersistencePourCalcul.getSituationProfessionnelleEmployeur())) {
+                donnesPersistencePourCalcul.getSituationProfessionnelleEmployeur())) {
             return;
         }
 
@@ -528,14 +526,14 @@ public class APPrestationHelper extends PRAbstractHelper {
      * dans les APG</br>
      * Pas de prestastions ACM_NE pour la maternité
      *
-     * @see{APProperties.TYPE_DE_PRESTATION_ACM
      * @param session
      * @param transaction
      * @param viewBean
      * @throws Exception
+     * @see{APProperties.TYPE_DE_PRESTATION_ACM
      */
     private void calculerPrestationsAcmNe(final BSession session, final BTransaction transaction,
-            final APDroitLAPG droit) throws Exception {
+                                          final APDroitLAPG droit) throws Exception {
 
         /**
          * calcul des ACM NE si la propriété TYPE_DE_PRESTATION_ACM vaut ACM_NE et si nous somme dans les APG Pas de
@@ -591,16 +589,15 @@ public class APPrestationHelper extends PRAbstractHelper {
      * Le calcul sera réalisé pour les situations professionnelle qui le nécéssitent (case à cocher dans l'écran des
      * sit. prof)</br>
      *
-     *
-     * @see APProperties.PRESTATION_ACM_2_ACTIF
-     * @see APProperties#PRESTATION_ACM_2_NOMBRE_JOURS
      * @param session
      * @param transaction
      * @param droit
      * @throws Exception
+     * @see APProperties.PRESTATION_ACM_2_ACTIF
+     * @see APProperties#PRESTATION_ACM_2_NOMBRE_JOURS
      */
     private void calculerPrestationsAcm2(final BSession session, final BTransaction transaction,
-            final APDroitLAPG droitLAPG) throws Exception {
+                                         final APDroitLAPG droitLAPG) throws Exception {
 
         if (droitLAPG == null) {
             // TODO internationaliser
@@ -694,7 +691,7 @@ public class APPrestationHelper extends PRAbstractHelper {
     }
 
     private void genererLesCotisations(final BSession session,
-            List<APPrestationCalculeeAPersister> resultatCalculAPersister) throws Exception {
+                                       List<APPrestationCalculeeAPersister> resultatCalculAPersister) throws Exception {
 
         // Nous allons générer pour chaque répartition de la prestation des cotisations ACM
         for (APPrestationCalculeeAPersister prestationCourant : resultatCalculAPersister) {
@@ -714,7 +711,7 @@ public class APPrestationHelper extends PRAbstractHelper {
     }
 
     private void genererCotisationsPourRepartition(final BSession session, final APPrestationCalculee prestation,
-            final APRepartitionPaiements repartition) throws Exception {
+                                                   final APRepartitionPaiements repartition) throws Exception {
 
         // Génération des cotisations pour la répartition de la prestation courante
         APModuleRepartitionPaiements module = new APModuleRepartitionPaiements();
@@ -737,7 +734,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         mgr.setForIdRepartitionBeneficiairePaiement(repa.getIdRepartitionBeneficiairePaiement());
         mgr.find(BManager.SIZE_NOLIMIT);
 
-        for (Iterator iter = mgr.iterator(); iter.hasNext();) {
+        for (Iterator iter = mgr.iterator(); iter.hasNext(); ) {
             APCotisation element = (APCotisation) iter.next();
 
             result.add(element.getMontant());
@@ -785,7 +782,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      */
 
     public APValidationPrestationViewBean controllerLesPrestation(final FWViewBeanInterface vb, final FWAction action,
-            final BSession session) throws Exception {
+                                                                  final BSession session) throws Exception {
 
         APValidationPrestationViewBean viewBean = null;
         if (!(vb instanceof APValidationPrestationViewBean)) {
@@ -848,19 +845,18 @@ public class APPrestationHelper extends PRAbstractHelper {
 
             // BSessionUtil.initContext(session, this);
             List<String> messageError = checkProperties(session);
-            if(!messageError.isEmpty()){
+            if (!messageError.isEmpty()) {
                 viewBean.setMessagePropError(true);
                 viewBean.getMessagesError().addAll(messageError);
             }
-
             // Validation de chaque annonce par le services des plausi
             final APPlausibilitesApgService plausiService = ApgServiceLocator.getPlausibilitesApgService();
             for (final APValidationPrestationAPGContainer container : containers) {
                 // Exécution des Rules RAPG
                 final List<ViolatedRule> validationErrors = plausiService.checkAnnonce(session, container, tiers);
                 container.setValidationErrors(validationErrors);
-                for(ViolatedRule vRule:validationErrors) {
-                    if(vRule.isPopUp()) {
+                for (ViolatedRule vRule : validationErrors) {
+                    if (vRule.isPopUp()) {
                         viewBean.setMessagePropError(true);
                         viewBean.getMessagesError().add(vRule.getErrorMessagePopUp());
                     }
@@ -871,13 +867,13 @@ public class APPrestationHelper extends PRAbstractHelper {
                 viewBean.setErreursValidationsJoursIsoles(
                         plausiService.controllerPrestationsJoursIsoles(session, prestations, droit));
             } else
-            // Contrôle qu'une prestation existe pour chaque période. Pas de contrôle pour les droits Mat
-            if (!IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())) {
-                final List<APPeriodeAPG> periodesAPG = ApgServiceLocator.getEntityService()
-                        .getPeriodesDuDroitAPG(session, transaction, droit.getIdDroit());
-                viewBean.setErreursValidationPeriodes(
-                        plausiService.controllerPrestationEnFonctionPeriodes(session, droit, periodesAPG, prestations));
-            }
+                // Contrôle qu'une prestation existe pour chaque période. Pas de contrôle pour les droits Mat
+                if (!IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())) {
+                    final List<APPeriodeAPG> periodesAPG = ApgServiceLocator.getEntityService()
+                            .getPeriodesDuDroitAPG(session, transaction, droit.getIdDroit());
+                    viewBean.setErreursValidationPeriodes(
+                            plausiService.controllerPrestationEnFonctionPeriodes(session, droit, periodesAPG, prestations));
+                }
 
             // BSessionUtil.stopUsingContext(this);
 
@@ -913,29 +909,33 @@ public class APPrestationHelper extends PRAbstractHelper {
     private List<String> checkProperties(BSession session) throws PropertiesException {
         List<String> listPropertiesEmpty = new ArrayList<>();
         final String prefix = session.getLabel("PROPERTIES_WEBSERVICE_EMPTY") + "<br>";
-        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_PASSWORD))){
-            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_KEYSTORE_PASSWORD.getPropertyName());
+
+        if (JadeStringUtil.isBlankOrZero(JadePropertiesService.getInstance().getProperty("apg.rapg.activer.webservice"))) {
+            listPropertiesEmpty.add(prefix + "apg.rapg.activer.webservice");
         }
-        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_PATH))){
-            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_KEYSTORE_PATH.getPropertyName());
+        if (JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValueWithoutException(CommonProperties.RAPG_KEYSTORE_PASSWORD))) {
+            listPropertiesEmpty.add(prefix + CommonProperties.RAPG_KEYSTORE_PASSWORD.getPropertyName());
         }
-        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_TYPE))){
-            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_KEYSTORE_TYPE.getPropertyName());
+        if (JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValueWithoutException(CommonProperties.RAPG_KEYSTORE_PATH))) {
+            listPropertiesEmpty.add(prefix + CommonProperties.RAPG_KEYSTORE_PATH.getPropertyName());
         }
-        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_WEBSERVICE_WSDL_PATH))){
-            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_WEBSERVICE_WSDL_PATH.getPropertyName());
+        if (JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValueWithoutException(CommonProperties.RAPG_KEYSTORE_TYPE))) {
+            listPropertiesEmpty.add(prefix + CommonProperties.RAPG_KEYSTORE_TYPE.getPropertyName());
         }
-        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_SSL_CONTEXT_TYPE))){
-            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_SSL_CONTEXT_TYPE.getPropertyName());
+        if (JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValueWithoutException(CommonProperties.RAPG_WEBSERVICE_WSDL_PATH))) {
+            listPropertiesEmpty.add(prefix + CommonProperties.RAPG_WEBSERVICE_WSDL_PATH.getPropertyName());
         }
-        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_WEBSERVICE_NAME))){
-            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_WEBSERVICE_NAME.getPropertyName());
+        if (JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValueWithoutException(CommonProperties.RAPG_SSL_CONTEXT_TYPE))) {
+            listPropertiesEmpty.add(prefix + CommonProperties.RAPG_SSL_CONTEXT_TYPE.getPropertyName());
         }
-        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_WEBSERVICE_NAMESPACE))){
-            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_WEBSERVICE_NAMESPACE.getPropertyName());
+        if (JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValueWithoutException(CommonProperties.RAPG_WEBSERVICE_NAME))) {
+            listPropertiesEmpty.add(prefix + CommonProperties.RAPG_WEBSERVICE_NAME.getPropertyName());
         }
-        if(JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValue(CommonProperties.RAPG_WEBSERVICE_SEDEX_SENDER_ID))){
-            listPropertiesEmpty.add(prefix+CommonProperties.RAPG_WEBSERVICE_SEDEX_SENDER_ID.getPropertyName());
+        if (JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValueWithoutException(CommonProperties.RAPG_WEBSERVICE_NAMESPACE))) {
+            listPropertiesEmpty.add(prefix + CommonProperties.RAPG_WEBSERVICE_NAMESPACE.getPropertyName());
+        }
+        if (JadeStringUtil.isBlankOrZero(CommonPropertiesUtils.getValueWithoutException(CommonProperties.RAPG_WEBSERVICE_SEDEX_SENDER_ID))) {
+            listPropertiesEmpty.add(prefix + CommonProperties.RAPG_WEBSERVICE_SEDEX_SENDER_ID.getPropertyName());
         }
 
         return listPropertiesEmpty;
@@ -1004,7 +1004,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @throws APEntityNotFoundException
      */
     private void decoupageDesPeriodesAPGSiBesoin(final BISession session, final BTransaction transaction,
-            final APDroitLAPG droit)
+                                                 final APDroitLAPG droit)
             throws Exception, JadeApplicationServiceNotAvailableException, APEntityNotFoundException {
         if (!IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())) {
             final List<APPeriodeAPG> periodesApg = ApgServiceLocator.getEntityService()
@@ -1031,7 +1031,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @throws Exception
      */
     public APDeterminerTypeCalculPrestationViewBean determinerLeTypeDeCalculDesPrestations(final FWViewBeanInterface vb,
-            final FWAction action, final BSession session) throws Exception {
+                                                                                           final FWAction action, final BSession session) throws Exception {
 
         if (!(vb instanceof APDeterminerTypeCalculPrestationViewBean)) {
             throw new APWrongViewBeanTypeException(
@@ -1079,13 +1079,13 @@ public class APPrestationHelper extends PRAbstractHelper {
                     // On crée des prestations avec des repartitions a zero.
                     if (!((calendar.compare(droit.getDateDebutDroit(), "01.07.2005") == JACalendar.COMPARE_FIRSTLOWER)
                             && (calendar.compare(droit.getDateFinDroit(),
-                                    "01.07.2001") == JACalendar.COMPARE_FIRSTUPPER)
+                            "01.07.2001") == JACalendar.COMPARE_FIRSTUPPER)
                             && "true".equals(PRAbstractApplication.getApplication(APApplication.DEFAULT_APPLICATION_APG)
-                                    .getProperty("isDroitMaterniteCantonale")))) {
+                            .getProperty("isDroitMaterniteCantonale")))) {
                         viewBean.setTypeCalculPrestation(APTypeCalculPrestation.ACOR);
                     }
                 }
-            } else if(!APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PANDEMIE.equals(apgOuMaternite)) {
+            } else if (!APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PANDEMIE.equals(apgOuMaternite)) {
                 if (APCalculAcorUtil.grantCalulAcorAPG(session, (APDroitAPG) droit)) {
                     viewBean.setTypeCalculPrestation(APTypeCalculPrestation.ACOR);
                 }
@@ -1111,11 +1111,11 @@ public class APPrestationHelper extends PRAbstractHelper {
 
     /**
      * @see globaz.framework.controller.FWHelper#execute(globaz.framework.bean.FWViewBeanInterface,
-     *      globaz.framework.controller.FWAction, globaz.globall.api.BISession)
+     * globaz.framework.controller.FWAction, globaz.globall.api.BISession)
      */
     @Override
     protected FWViewBeanInterface execute(final FWViewBeanInterface viewBean, final FWAction action,
-            final BISession session) {
+                                          final BISession session) {
         return deleguerExecute(viewBean, action, session);
     }
 
@@ -1199,7 +1199,7 @@ public class APPrestationHelper extends PRAbstractHelper {
 
         List<APCotisation> listCotisation = new ArrayList<>();
 
-        for(APRepartitionJointPrestation repartition : repartitionJointRepartitionsFiltree) {
+        for (APRepartitionJointPrestation repartition : repartitionJointRepartitionsFiltree) {
             cotisations.setSession(session);
             cotisations.setForIdRepartitionBeneficiairePaiement(repartition.getId());
             cotisations.find(transaction);
@@ -1254,13 +1254,13 @@ public class APPrestationHelper extends PRAbstractHelper {
                     apSitProJoiEmp.getIdAffilie(), session);
             String idAssuranceEmployeur = null;
             for (IAFAssurance assurance : listAssurance) {
-                if(apSitProJoiEmp.getIndependant()){
+                if (apSitProJoiEmp.getIndependant()) {
                     if (assurance.getAssuranceId().equals(idAssurancePersonnelBE)) {
                         idAssuranceEmployeur = idAssurancePersonnelBE;
                     } else if (assurance.getAssuranceId().equals(idAssurancePersonnelJU)) {
                         idAssuranceEmployeur = idAssurancePersonnelJU;
                     }
-                }else{
+                } else {
                     if (assurance.getAssuranceId().equals(idAssuranceParitaireBE)) {
                         idAssuranceEmployeur = idAssuranceParitaireBE;
                     } else if (assurance.getAssuranceId().equals(idAssuranceParitaireJU)) {
@@ -1308,7 +1308,7 @@ public class APPrestationHelper extends PRAbstractHelper {
     }
 
     private void putMontantMax(BSession session, String date, Map<EMontantsMax, BigDecimal> montantsMax,
-            EMontantsMax eMontantMax) throws Exception {
+                               EMontantsMax eMontantMax) throws Exception {
         montantsMax.put(eMontantMax, new BigDecimal(FWFindParameter.findParameter(session.getCurrentThreadTransaction(),
                 "1", eMontantMax.name(), date, "", 0)));
     }
@@ -1321,7 +1321,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @throws Exception
      */
     private APCalculateurAcmAlphaDonnesPersistence getDonneesPersistancePourCalculAcmNE(final String idDroit,
-            final BISession iSession, final BITransaction iTransaction) throws Exception {
+                                                                                        final BISession iSession, final BITransaction iTransaction) throws Exception {
 
         final BSession session = (BSession) iSession;
         final BTransaction transaction = (BTransaction) iTransaction;
@@ -1386,7 +1386,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @throws Exception
      */
     private ACM2PersistenceInputData getDonneesPersistancePourCalculAcm2(final APDroitMaternite droit,
-            int nombreJoursACM2, final BSession session, final BTransaction transaction) throws Exception {
+                                                                         int nombreJoursACM2, final BSession session, final BTransaction transaction) throws Exception {
 
         final APEntityService servicePersistance = ApgServiceLocator.getEntityService();
 
@@ -1491,7 +1491,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @throws PRACORException
      */
     private APDroitLAPG importerLesPrestations(final BSession bSession, final BTransaction transaction,
-            final FWViewBeanInterface viewBean) throws Exception, PRACORException {
+                                               final FWViewBeanInterface viewBean) throws Exception, PRACORException {
 
         // importer les résultats de ACOR qui nous sont revenus.
         final APCalculACORViewBean caViewBean = (APCalculACORViewBean) viewBean;
@@ -1519,7 +1519,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @throws Exception
      */
     private void persisterResultatCalculPrestation(final List<APPrestationCalculeeAPersister> resultatCalcul,
-            final BSession session, final BTransaction transaction) throws Exception {
+                                                   final BSession session, final BTransaction transaction) throws Exception {
 
         for (final APPrestationCalculeeAPersister prestationCalculee : resultatCalcul) {
 

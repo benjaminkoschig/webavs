@@ -3,6 +3,7 @@
 <%@page import="globaz.apg.db.annonces.APBreakRule"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="globaz.apg.vb.annonces.APBreakRuleListViewBean"%>
+<%@ page import="globaz.jade.client.util.JadeStringUtil" %>
 <%@ page language="java" errorPage="/errorPage.jsp" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/list/header.jspf" %>
@@ -38,9 +39,12 @@
 		<TD class="mtd" nowrap><%=courant.getDateQuittance()%>&nbsp;</TD>
 		<TD class="mtd" nowrap><%=PRGestionnaireHelper.getDetailGestionnaire(objSession, courant.getGestionnaire())%>&nbsp;</TD>
 		<TD class="mtd" nowrap><%=courant.getBreakRuleCode()%>&nbsp;</TD>
+<% if(JadeStringUtil.isBlankOrZero(courant.getLibelleBreakCode())) {  %>
 		<TD class="mtd" nowrap><%=objSession.getLabel(APRulesServiceImpl.PREFIX_LABEL+courant.getBreakRuleCode())%>&nbsp;</TD>
-		
-		<%-- /tpl:insert --%>
+<%} else{  %>
+		<TD class="mtd" nowrap><%=courant.getLibelleBreakCode()%>&nbsp;</TD>
+<%}  %>
+<%-- /tpl:insert --%>
 <%@ include file="/theme/list/lineEnd.jspf" %>
 	<%-- tpl:insert attribute="zoneTableFooter" --%>
 	<%-- /tpl:insert --%>

@@ -1223,6 +1223,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             breakRuleEntity.setBreakRuleCode(breakRule.getCodeAsString());
             breakRuleEntity.setDateQuittance(JadeDateUtil.getGlobazFormattedDate(new Date()));
             breakRuleEntity.setGestionnaire(session.getUserName());
+            breakRuleEntity.setLibelleBreakCode(breakRule.getLibelleBreakRule());
             breakRuleEntity.add(transaction);
         }
     }

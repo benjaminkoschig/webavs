@@ -10,6 +10,7 @@ import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.pojo.APBreakRulesFromView;
 import globaz.apg.pojo.APErreurValidationPeriode;
 import globaz.apg.pojo.APValidationPrestationAPGContainer;
+import globaz.apg.pojo.ViolatedRule;
 import globaz.apg.util.APGSeodorErreurListEntities;
 import globaz.framework.bean.FWViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -171,7 +172,15 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
                         } else {
                             try {
                                 APAllPlausibiliteRules codeEnum = APAllPlausibiliteRules.valueOfCode(code);
-                                breakRules.add(new APBreakRulesFromView(idPrestation, codeEnum.getCode()));
+                                /**
+                                 * Enregistrer le libelle avec la plausi pour la rule 1509
+                                 */
+                                if(code.equals("1509")){
+                                    String libelle = getLibelleFromPrestation(idPrestation,"1509");
+                                    breakRules.add(new APBreakRulesFromView(idPrestation, codeEnum.getCode(),libelle));
+                                }else{
+                                    breakRules.add(new APBreakRulesFromView(idPrestation, codeEnum.getCode()));
+                                }
                             } catch (Exception e) {
                                 throw new IllegalArgumentException("Bad breakRule code  [" + rule
                                         + "]. The breakRule code is not a valid APBreakRule code [" + code
@@ -183,6 +192,19 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
             }
         }
         return breakRules;
+    }
+
+    private String getLibelleFromPrestation(String idPrestation, String ruleCode) {
+        for(APValidationPrestationAPGContainer validationPrestationAPGContainer : prestationValidees){
+            if(validationPrestationAPGContainer.getPrestation().getId().equals(idPrestation)){
+                for(ViolatedRule ruleFromView : validationPrestationAPGContainer.getValidationErrors()){
+                    if(ruleFromView.getErrorCode().equals(ruleCode)){
+                        return ruleFromView.getErrorMessage();
+                    }
+                }
+            }
+        }
+        return "";
     }
 
     // /**

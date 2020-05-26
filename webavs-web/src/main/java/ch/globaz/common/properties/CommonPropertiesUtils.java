@@ -91,6 +91,15 @@ public class CommonPropertiesUtils {
             throw new PropertiesException("Remote Exeption", e);
         }
     }
+    public static String getValueWithoutException(final IProperties properties) throws PropertiesException {
+        try {
+            final String value = CommonPropertiesUtils.getInstance().getPropertyValue(properties);
+
+            return value;
+        } catch (final RemoteException e) {
+            throw new PropertiesException("Remote Exeption", e);
+        }
+    }
 
     protected CommonPropertiesUtils() {
 

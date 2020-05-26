@@ -11,6 +11,7 @@ public class APBreakRulesFromView {
     private int code;
     private String idPrestation;
     private boolean isGlobazBreakRule;
+    private String libelleBreakRule;
 
     public APBreakRulesFromView() {
         code = 0;
@@ -25,6 +26,12 @@ public class APBreakRulesFromView {
     public APBreakRulesFromView(String idPrestation, int code) {
         this.idPrestation = idPrestation;
         this.code = code;
+        this.libelleBreakRule = "";
+    }
+    public APBreakRulesFromView(String idPrestation, int code,String libelleBreakRule) {
+        this.idPrestation = idPrestation;
+        this.code = code;
+        this.libelleBreakRule = libelleBreakRule;
     }
 
     public final int getCode() {
@@ -54,4 +61,12 @@ public class APBreakRulesFromView {
     public void setGlobazBreakRule(boolean isGlobazBreakRule) {
         this.isGlobazBreakRule = isGlobazBreakRule;
     }
+    public String getLibelleBreakRule() {
+        return libelleBreakRule;
+    }
+
+    public void setLibelleBreakRule(String libelleBreakRule) {
+        this.libelleBreakRule = libelleBreakRule;
+    }
+
 }
