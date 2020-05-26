@@ -111,7 +111,21 @@ public class RERenteJoinPersonneAvsManager extends PRAbstractManager {
                 .append(ITIPersonneDefTable.DATE_NAISSANCE).append(",");
 
         sql.append(_getCollection()).append(ITIPersonneAvsDefTable.TABLE_NAME).append(".")
-                .append(ITIPersonneAvsDefTable.NUMERO_AVS_ACTUEL);
+                .append(ITIPersonneAvsDefTable.NUMERO_AVS_ACTUEL).append(",");
+        sql.append(_getCollection()).append(RERenteAccordee.TABLE_NAME_RENTE_ACCORDEE).append(".")
+                .append(RERenteAccordee.FIELDNAME_CODE_CAS_SPECIAUX_1).append(",");
+        sql.append(_getCollection()).append(RERenteAccordee.TABLE_NAME_RENTE_ACCORDEE).append(".")
+                .append(RERenteAccordee.FIELDNAME_CODE_CAS_SPECIAUX_2).append(",");
+        sql.append(_getCollection()).append(RERenteAccordee.TABLE_NAME_RENTE_ACCORDEE).append(".")
+                .append(RERenteAccordee.FIELDNAME_CODE_CAS_SPECIAUX_3).append(",");
+        sql.append(_getCollection()).append(RERenteAccordee.TABLE_NAME_RENTE_ACCORDEE).append(".")
+                .append(RERenteAccordee.FIELDNAME_CODE_CAS_SPECIAUX_4).append(",");
+        sql.append(_getCollection()).append(RERenteAccordee.TABLE_NAME_RENTE_ACCORDEE).append(".")
+                .append(RERenteAccordee.FIELDNAME_CODE_CAS_SPECIAUX_5);
+        sql.append(_getCollection()).append(RERenteAccordee.TABLE_NAME_RENTE_ACCORDEE).append(".")
+                .append(RERenteAccordee.FIELDNAME_ID_TIERS_COMPLEMENTAIRE_1);
+        sql.append(_getCollection()).append(RERenteAccordee.TABLE_NAME_RENTE_ACCORDEE).append(".")
+                .append(RERenteAccordee.FIELDNAME_ID_TIERS_COMPLEMENTAIRE_2);
 
         return sql.toString();
     }
@@ -121,6 +135,13 @@ public class RERenteJoinPersonneAvsManager extends PRAbstractManager {
         StringBuilder sql = new StringBuilder();
 
         sql.append(_getCollection()).append(REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES);
+        sql.append(" INNER JOIN ");
+        sql.append(_getCollection()).append(RERenteAccordee.TABLE_NAME_RENTE_ACCORDEE);
+        sql.append(" ON ");
+        sql.append(_getCollection()).append(RERenteAccordee.TABLE_NAME_RENTE_ACCORDEE).append(".").append(RERenteAccordee.FIELDNAME_ID_RENTE_ACCORDEE);
+        sql.append("=");
+        sql.append(_getCollection()).append(REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES).append(".")
+                .append(REPrestationsAccordees.FIELDNAME_ID_PRESTATION_ACCORDEE);
 
         // jointure entre table des prestations et table des tiers
         sql.append(" INNER JOIN ");

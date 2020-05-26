@@ -1,15 +1,11 @@
 package globaz.corvus.process.liste.rentedouble;
 
+import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
 import globaz.corvus.db.rentesaccordees.RERenteJoinPersonneAvs;
+
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
 import ch.globaz.prestation.domaine.CodePrestation;
 import ch.globaz.prestation.domaine.PrestationAccordee;
 import ch.globaz.prestation.domaine.constantes.DomaineCodePrestation;
@@ -84,6 +80,9 @@ public class REAnalyseurRenteDouble {
 
             Set<PrestationAccordee> prestationsAccordeesDuTiers = prestationsAccordeesPourUnePersonne
                     .getPrestationsAccordees();
+            if (getNombreRenteAVS(prestationsAccordeesDuTiers) > 2 && !RenteEnfantsADoubleLPART(prestationsAccordeesDuTiers)) {
+                continue;
+            }
 
             if (hasDeuxPC(prestationsAccordeesDuTiers) || hasDeuxRFM(prestationsAccordeesDuTiers)
                     || hasDeuxAPI(prestationsAccordeesDuTiers)) {
@@ -103,6 +102,28 @@ public class REAnalyseurRenteDouble {
 
         return rentesDoubles;
     }
+
+    private boolean RenteEnfantsADoubleLPART(Set<PrestationAccordee> prestationsAccordeesDuTiers) {
+        boolean isFirst = true;
+        PrestationAccordee pa1;
+        PrestationAccordee pa2;
+
+        List<PrestationAccordee> listPrestations = new LinkedList<>(prestationsAccordeesDuTiers);
+        for(int i = 0;i<listPrestations.size();i++){
+            pa1 = listPrestations.get(i);
+            for(int j = 0;j<listPrestations.size();j++){
+                pa2 = listPrestations.get(j);
+                if(pa2.isHasCodeSpecial60() && pa1.isHasCodeSpecial60()
+                        && pa1.getCodePrestation().isRenteComplementairePourEnfant() && pa1.getCodePrestation().isRenteComplementairePourEnfant()
+                        && pa1.getCodePrestation().getCodePrestation() == pa2.getCodePrestation().getCodePrestation()
+                        && pa1.getIdTiersNssCompl1().equals(pa2.getIdTiersNssCompl1())
+                        )
+                    return true;
+            }
+        }
+            return false;
+    }
+
 
     private Set<PrestationsAccordeesPourUnePersonne> regrouperPrestationsAccordeesParBeneficiaire(
             List<RERenteJoinPersonneAvs> rentes) {
@@ -133,6 +154,12 @@ public class REAnalyseurRenteDouble {
             beneficiaireRente.setDateNaissance(uneRente.getDateNaissanceBeneficiaire());
 
             prestationAccordee.setBeneficiaire(beneficiaireRente);
+
+            if( uneRente.contientCodeSpecial("60")){
+                prestationAccordee.setHasCodeSpecial60(true);
+                prestationAccordee.setIdTiersNssCompl1(uneRente.getIdTiersNssCompl1());
+                prestationAccordee.setIdTiersNssCompl2(uneRente.getIdTiersNssCompl2());
+            }
 
             if (rentesParTiers.containsKey(beneficiaireRente)) {
                 rentesParTiers.get(beneficiaireRente).entiteBDDpourEntiteDomaine.put(prestationAccordee, uneRente);

@@ -41,6 +41,9 @@ public class PrestationAccordee extends EntiteDeDomaine implements Comparable<Pr
     private BigDecimal montant;
     private String referencePourLePaiement;
     private Set<RepartitionCreance> repartitionsCreance;
+    private boolean hasCodeSpecial60 = false;
+    private String idTiersNssCompl1;
+    private String idTiersNssCompl2;
 
     public PrestationAccordee() {
         super();
@@ -59,6 +62,8 @@ public class PrestationAccordee extends EntiteDeDomaine implements Comparable<Pr
         montant = BigDecimal.ZERO;
         referencePourLePaiement = "";
         repartitionsCreance = new HashSet<RepartitionCreance>();
+        idTiersNssCompl1 ="";
+        idTiersNssCompl2  ="";
     }
 
     @Override
@@ -249,5 +254,28 @@ public class PrestationAccordee extends EntiteDeDomaine implements Comparable<Pr
     public final void setRepartitionCreance(final Set<RepartitionCreance> repartitionsCreance) {
         Checkers.checkNotNull(repartitionsCreance, "prestationAccordee.repartitionsCreance");
         this.repartitionsCreance = repartitionsCreance;
+    }
+    public boolean isHasCodeSpecial60() {
+        return hasCodeSpecial60;
+    }
+
+    public void setHasCodeSpecial60(boolean hasCodeSpecial60) {
+        this.hasCodeSpecial60 = hasCodeSpecial60;
+    }
+
+    public String getIdTiersNssCompl1() {
+        return idTiersNssCompl1;
+    }
+
+    public void setIdTiersNssCompl1(String idTiersNssCompl1) {
+        this.idTiersNssCompl1 = idTiersNssCompl1;
+    }
+
+    public String getIdTiersNssCompl2() {
+        return idTiersNssCompl2;
+    }
+
+    public void setIdTiersNssCompl2(String idTiersNssCompl2) {
+        this.idTiersNssCompl2 = idTiersNssCompl2;
     }
 }

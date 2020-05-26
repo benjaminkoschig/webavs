@@ -10,7 +10,7 @@ import globaz.pyxis.db.tiers.ITITiersDefTable;
 public class RERenteJoinPersonneAvs extends BEntity implements Comparable<RERenteJoinPersonneAvs> {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private String codePrestation;
@@ -28,6 +28,14 @@ public class RERenteJoinPersonneAvs extends BEntity implements Comparable<RERent
     private String nssBeneficiaire;
     private String prenomBeneficiaire;
     private String prenomMajBeneficaire;
+    private String codeSpecial1;
+    private String codeSpecial2;
+    private String codeSpecial3;
+    private String codeSpecial4;
+    private String codeSpecial5;
+
+    private String idTiersNssCompl1;
+    private String idTiersNssCompl2;
 
     public RERenteJoinPersonneAvs() {
         super();
@@ -45,6 +53,13 @@ public class RERenteJoinPersonneAvs extends BEntity implements Comparable<RERent
         nomBeneficiaire = "";
         nssBeneficiaire = "";
         prenomBeneficiaire = "";
+        codeSpecial1 = "";
+        codeSpecial2 = "";
+        codeSpecial3 = "";
+        codeSpecial4 = "";
+        codeSpecial5 = "";
+        idTiersNssCompl1 = "";
+        idTiersNssCompl2 ="";
     }
 
     @Override
@@ -71,6 +86,13 @@ public class RERenteJoinPersonneAvs extends BEntity implements Comparable<RERent
         nssBeneficiaire = statement.dbReadString(ITIPersonneAvsDefTable.NUMERO_AVS_ACTUEL);
         prenomBeneficiaire = statement.dbReadString(ITITiersDefTable.DESIGNATION_2);
         prenomMajBeneficaire = statement.dbReadString(ITITiersDefTable.DESIGNATION_2_MAJ);
+        codeSpecial1 = statement.dbReadString(RERenteAccordee.FIELDNAME_CODE_CAS_SPECIAUX_1);
+        codeSpecial2 = statement.dbReadString(RERenteAccordee.FIELDNAME_CODE_CAS_SPECIAUX_2);
+        codeSpecial3 = statement.dbReadString(RERenteAccordee.FIELDNAME_CODE_CAS_SPECIAUX_3);
+        codeSpecial4 = statement.dbReadString(RERenteAccordee.FIELDNAME_CODE_CAS_SPECIAUX_4);
+        codeSpecial5 = statement.dbReadString(RERenteAccordee.FIELDNAME_CODE_CAS_SPECIAUX_5);
+        idTiersNssCompl1 = statement.dbReadString(RERenteAccordee.FIELDNAME_ID_TIERS_COMPLEMENTAIRE_1);
+        idTiersNssCompl2 =  statement.dbReadString(RERenteAccordee.FIELDNAME_ID_TIERS_COMPLEMENTAIRE_2);
     }
 
     @Override
@@ -222,5 +244,68 @@ public class RERenteJoinPersonneAvs extends BEntity implements Comparable<RERent
 
     public void setPrenomMajBeneficaire(String prenomMajBeneficaire) {
         this.prenomMajBeneficaire = prenomMajBeneficaire;
+    }
+    public String getCodeSpecial1() {
+        return codeSpecial1;
+    }
+
+    public void setCodeSpecial1(String codeSpecial1) {
+        this.codeSpecial1 = codeSpecial1;
+    }
+
+    public String getCodeSpecial2() {
+        return codeSpecial2;
+    }
+
+    public void setCodeSpecial2(String codeSpecial2) {
+        this.codeSpecial2 = codeSpecial2;
+    }
+
+    public String getCodeSpecial3() {
+        return codeSpecial3;
+    }
+
+    public void setCodeSpecial3(String codeSpecial3) {
+        this.codeSpecial3 = codeSpecial3;
+    }
+
+    public String getCodeSpecial4() {
+        return codeSpecial4;
+    }
+
+    public void setCodeSpecial4(String codeSpecial4) {
+        this.codeSpecial4 = codeSpecial4;
+    }
+
+    public String getCodeSpecial5() {
+        return codeSpecial5;
+    }
+
+    public void setCodeSpecial5(String codeSpecial5) {
+        this.codeSpecial5 = codeSpecial5;
+    }
+
+    public boolean contientCodeSpecial(String codeSpecial){
+        if(codeSpecial.equals(codeSpecial1)|| codeSpecial.equals(codeSpecial2)||codeSpecial.equals(codeSpecial3)
+        ||codeSpecial.equals(codeSpecial4)||codeSpecial.equals(codeSpecial5)){
+            return true;
+        }
+        return false;
+    }
+
+    public String getIdTiersNssCompl1() {
+        return idTiersNssCompl1;
+    }
+
+    public void setIdTiersNssCompl1(String idTiersNssCompl1) {
+        this.idTiersNssCompl1 = idTiersNssCompl1;
+    }
+
+    public String getIdTiersNssCompl2() {
+        return idTiersNssCompl2;
+    }
+
+    public void setIdTiersNssCompl2(String idTiersNssCompl2) {
+        this.idTiersNssCompl2 = idTiersNssCompl2;
     }
 }
