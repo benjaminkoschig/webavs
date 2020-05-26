@@ -110,9 +110,8 @@ public class APGSeodorServiceCallUtil {
                     apgSeodorDataBean = new APGSeodorDataBean();
                 }
                 apgSeodorDataBean.setHasTechnicalError(true);
-                String message = session.getLabel("ERROR_REASON_DETAILED_UNEXCEPTED_ERROR");
-//                apgSeodorDataBean.setMessageTechnicalError(session.getLabel("ERROR_REASON_DETAILED_UNEXCEPTED_ERROR"));
-                apgSeodorDataBean.setMessageTechnicalError("Appel SEODOR : Erreur Technique, vérifiez le paramétrage.");
+                String message = session.getLabel("SEODOR_ERREUR_TECHNIQUE_PARAMETRE");
+                apgSeodorDataBean.setMessageTechnicalError(message);
                 //apgSeodorDataBean.setMessageForUser(message);
                 LOG.error(message, e);
             } finally {
