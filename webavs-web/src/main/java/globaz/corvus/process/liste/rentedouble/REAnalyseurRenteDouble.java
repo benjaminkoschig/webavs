@@ -80,7 +80,8 @@ public class REAnalyseurRenteDouble {
 
             Set<PrestationAccordee> prestationsAccordeesDuTiers = prestationsAccordeesPourUnePersonne
                     .getPrestationsAccordees();
-            if (getNombreRenteAVS(prestationsAccordeesDuTiers) > 2 && !RenteEnfantsADoubleLPART(prestationsAccordeesDuTiers)) {
+            if (getNombreRenteAVS(prestationsAccordeesDuTiers) > 2 && RenteEnfantsADoubleLPART(prestationsAccordeesDuTiers)) {
+                rentesDoubles.addAll(prestationsAccordeesPourUnePersonne.getEntitesBDD());
                 continue;
             }
 
@@ -109,19 +110,19 @@ public class REAnalyseurRenteDouble {
         PrestationAccordee pa2;
 
         List<PrestationAccordee> listPrestations = new LinkedList<>(prestationsAccordeesDuTiers);
-        for(int i = 0;i<listPrestations.size();i++){
+        for (int i = 0; i < listPrestations.size(); i++) {
             pa1 = listPrestations.get(i);
-            for(int j = 0;j<listPrestations.size();j++){
+            for (int j = 0; j < listPrestations.size(); j++) {
                 pa2 = listPrestations.get(j);
-                if(pa2.isHasCodeSpecial60() && pa1.isHasCodeSpecial60()
-                        && pa1.getCodePrestation().isRenteComplementairePourEnfant() && pa1.getCodePrestation().isRenteComplementairePourEnfant()
-                        && pa1.getCodePrestation().getCodePrestation() == pa2.getCodePrestation().getCodePrestation()
-                        && pa1.getIdTiersNssCompl1().equals(pa2.getIdTiersNssCompl1())
-                        )
-                    return true;
+                if (pa2.isHasCodeSpecial60() && pa1.isHasCodeSpecial60()) {
+                    if (pa1.getCodePrestation().isRenteComplementairePourEnfant() && pa1.getCodePrestation().isRenteComplementairePourEnfant()
+                            && pa1.getIdTiersNssCompl1().equals(pa2.getIdTiersNssCompl1())) {
+                        return true;
+                    }
+                }
             }
         }
-            return false;
+        return false;
     }
 
 
@@ -155,7 +156,7 @@ public class REAnalyseurRenteDouble {
 
             prestationAccordee.setBeneficiaire(beneficiaireRente);
 
-            if( uneRente.contientCodeSpecial("60")){
+            if (uneRente.contientCodeSpecial("60")) {
                 prestationAccordee.setHasCodeSpecial60(true);
                 prestationAccordee.setIdTiersNssCompl1(uneRente.getIdTiersNssCompl1());
                 prestationAccordee.setIdTiersNssCompl2(uneRente.getIdTiersNssCompl2());
