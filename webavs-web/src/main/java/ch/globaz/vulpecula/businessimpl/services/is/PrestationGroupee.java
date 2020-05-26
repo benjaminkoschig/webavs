@@ -37,7 +37,7 @@ public class PrestationGroupee implements Serializable {
     private String cantonResidence;
     private String genre;
     private String paysResidence;
-    private String idDossier;
+    private String cantonImpotSource;
 
     public String getNss() {
         return nss;
@@ -219,12 +219,12 @@ public class PrestationGroupee implements Serializable {
         this.paysResidence = paysResidence;
     }
 
-    public String getIdDossier() {
-        return idDossier;
+    public String getCantonImpotSource() {
+        return cantonImpotSource;
     }
 
-    public void setIdDossier(String idDossier) {
-        this.idDossier = idDossier;
+    public void setCantonImpotSource(String cantonImpotSource) {
+        this.cantonImpotSource = cantonImpotSource;
     }
 
     /**

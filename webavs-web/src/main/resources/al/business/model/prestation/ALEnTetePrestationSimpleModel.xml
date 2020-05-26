@@ -30,6 +30,7 @@
 			<field name="bonification" column="CSBONI" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Indique si le type de bonification de la prestation (code système)"/>
 			<field name="statut" column="CSTATU" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Statut de la prestation (ADI, ADC, Suisse), code système"/>
 			<field name="montantTotalIS" column="MOIST" type="NUMERIC" dataType="NUMERIC(8,2)" mandatory="true" comment="Montant total impôt à la source de la prestation"/>
+			<field name="cantonImpotSource" column="CSCANIS" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Le canton d'imposition à la source"/>
 		</fields>
 		<search-definition>
 			<search-group operator="AND">

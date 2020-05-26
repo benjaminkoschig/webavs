@@ -108,14 +108,12 @@ public interface ImpotSourceService {
 
     /**
      * @see #getPrestationsForAllocIS(String, Date, Date)
-     * @param canton Canton de résidence de l'allocataire
-     * @param caisseAF Caisse AF
      * @param dateDebut date de début
      * @param dateFin date de fin
      * @return Liste de prestations
      * @throws TauxImpositionNotFoundException
      */
-    Map<String, Collection<PrestationGroupee>> getPrestationsForAllocIS(String canton, String caisseAF, String dateDebut, String dateFin)
+    Map<String, List<PrestationGroupee>> getPrestationsForAllocIS(String dateDebut, String dateFin)
             throws TauxImpositionNotFoundException, PropertiesException;
 
     /**

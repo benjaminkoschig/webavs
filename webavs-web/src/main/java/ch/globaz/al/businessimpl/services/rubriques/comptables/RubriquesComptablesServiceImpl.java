@@ -222,7 +222,7 @@ public class RubriquesComptablesServiceImpl extends ALAbstractBusinessServiceImp
     }
 
     @Override
-    public String getRubriqueForIS(DossierComplexModel dossier, String date) throws JadeApplicationException, JadePersistenceException {
+    public String getRubriqueForIS(DossierModel dossier, String cantonImposition, String date) throws JadeApplicationException, JadePersistenceException {
         return null;
     }
 

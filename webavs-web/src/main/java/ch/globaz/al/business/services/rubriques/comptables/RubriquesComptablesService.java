@@ -43,8 +43,9 @@ public interface RubriquesComptablesService extends JadeApplicationService {
     /**
      * Recherche les rubriques liés aux inpôts à la source.
      *
-     * @param dossierComplex
+     * @param dossier
      *            Dossier pour lequel la rubrique doit être déterminée
+     * @param cantonImposition le canton d'imposition
      * @param date
      *            Date pour laquelle la rubrique doit être déterminée
      * @return la rubrique pour impot ä la source identifiée
@@ -54,7 +55,7 @@ public interface RubriquesComptablesService extends JadeApplicationService {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    String getRubriqueForIS(DossierComplexModel dossierComplex, String date) throws JadeApplicationException, JadePersistenceException;
+    String getRubriqueForIS(DossierModel dossier, String cantonImposition, String date) throws JadeApplicationException, JadePersistenceException;
 
     /**
      * Recherche les rubriques liés aux inpôts à la source.

@@ -36,11 +36,13 @@ import globaz.osiris.db.recaprubriques.CARecapRubriquesExcel;
 import globaz.osiris.db.recaprubriques.CARecapRubriquesExcelManager;
 import globaz.osiris.external.IntRole;
 import globaz.vulpecula.business.exception.VulpeculaException;
+import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ImpotSourceServiceImpl implements ImpotSourceService {
 
@@ -219,8 +221,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
     }
 
     @Override
-    public Map<String, Collection<PrestationGroupee>> getPrestationsForAllocIS(String canton, String caisseAF,
-                                                                               String dateDebut, String dateFin) throws TauxImpositionNotFoundException, PropertiesException {
+    public Map<String, List<PrestationGroupee>> getPrestationsForAllocIS(String dateDebut, String dateFin) throws TauxImpositionNotFoundException, PropertiesException {
         TauxImpositions tauxImpositions = ALRepositoryLocator.getTauxImpositionRepository().findAll();
         List<EntetePrestationComplexModel> prestations = getPrestationsIS(dateDebut, dateFin);
         Map<String, List<PrestationGroupee>> prestationGroupees = grouperPrestations(prestations, tauxImpositions);
@@ -483,7 +484,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
         // Dans le cadre de la génération des fichiers Excels, on a besoin de connaitre le genre de l'allocataire et le pays de résidence
         entetePrestation.setGenre(entetePrestationComplexModel.getGenre());
         entetePrestation.setPaysResidence(entetePrestationComplexModel.getPaysResidence());
-        entetePrestation.setIdDossier(entetePrestationComplexModel.getIdDossier());
+        entetePrestation.setCantonImpotSource(entetePrestationComplexModel.getCantonImpotSource());
 
         return entetePrestation;
     }
@@ -896,41 +897,11 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
         return Multimaps.index(prestations, funcGroupLibelleCaisseAF).asMap();
     }
 
-    private Map<String, Collection<PrestationGroupee>> groupByCantons(
-            Collection<PrestationGroupee> prestations) {
-        Function<PrestationGroupee, String> funcGroupCanton = new Function<PrestationGroupee, String>() {
-            @Override
-            public String apply(PrestationGroupee prestationGroupee) {
-//                if (StringUtils.equals(prestationGroupee.getPaysResidence(), "100")) {
-                    return prestationGroupee.getCantonResidence();
-//                } else {
-//                    DossierSearchModel dsm = new DossierSearchModel();
-//                    try {
-//                        dsm.setForIdDossier(prestationGroupee.getIdDossier());
-//                        dsm = ALServiceLocator.getDossierModelService().search(dsm);
-//                    } catch (JadeApplicationException e) {
-//                        LOGGER.error("Erreur lors de la récupération du dossier.", e);
-//                    } catch (JadePersistenceException e) {
-//                        LOGGER.error("Erreur lors de la récupération du dossier.", e);
-//                    }
-//                    DossierModel dossierModel = ((DossierModel) dsm.getSearchResults()[0]);
-//
-//                    if (StringUtils.isNotEmpty(dossierModel.getTarifForce()) && !StringUtils.equals("0", dossierModel.getTarifForce())) {
-//                        String cantonImpositionForce = dossierModel.getCantonImposition();
-//                        if (StringUtils.isEmpty(cantonImpositionForce) || StringUtils.equals("0", cantonImpositionForce)) {
-//                            throw new CantonImpositionNotFoundException("Le canton d'imposition forcé n'a pas été trouvé.");
-//                        }
-//                        return dossierModel.getCantonImposition();
-//                    } else {
-//                        cantonImposition = ALImplServiceLocator.getAffiliationService().convertCantonNaos2CantonAF(cantonAffiliation);
-//                    }
+    private Map<String, List<PrestationGroupee>> groupByCantons(
+            List<PrestationGroupee> prestations) {
 
-//                }
+        return prestations.stream().collect(Collectors.groupingBy(PrestationGroupee::getCantonImpotSource));
 
-
-            }
-        };
-        return Multimaps.index(prestations, funcGroupCanton).asMap();
     }
 
     /**

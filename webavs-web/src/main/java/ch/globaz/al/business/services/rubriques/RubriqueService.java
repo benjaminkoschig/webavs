@@ -35,14 +35,15 @@ public interface RubriqueService extends JadeApplicationService {
     /**
      * Recherche les rubriques liés aux inpôts à la source.
      *
-     * @param dossierComplex Dossier pour lequel la rubrique doit être déterminée
+     * @param dossier Dossier pour lequel la rubrique doit être déterminée
+     * @param cantonImposition Le canton d'imposition.
      * @param date    Date pour laquelle la rubrique doit être déterminée
      * @return le numéro de la rubrique en fonction
      * @throws JadePersistenceException Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *                                  faire
      * @throws JadeApplicationException Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    String getRubriqueForIS(DossierComplexModel dossierComplex, String date) throws JadePersistenceException, JadeApplicationException;
+    String getRubriqueForIS(DossierModel dossier, String cantonImposition, String date) throws JadePersistenceException, JadeApplicationException;
 
     /**
      * Recherche les rubriques liés aux inpôts à la source.

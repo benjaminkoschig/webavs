@@ -17,8 +17,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.List;
 
 public class ListISRetenuesExcel extends AbstractListExcel {
     private static final Logger LOG = LoggerFactory.getLogger(ListISRetenuesExcel.class);
@@ -49,7 +48,7 @@ public class ListISRetenuesExcel extends AbstractListExcel {
     private String idProcessusAF;
     private String langueUser;
 
-    private Map<String, Collection<PrestationGroupee>> prestationsAImprimer;
+    private List<PrestationGroupee> prestationsAImprimer;
 
     public ListISRetenuesExcel(BSession session, String filenameRoot, String documentTitle) {
         super(session, filenameRoot, documentTitle);
@@ -67,54 +66,52 @@ public class ListISRetenuesExcel extends AbstractListExcel {
             LOG.error("Un problème est survenu lors de la récupération de la propriété barème", e);
         }
 
-        for (Map.Entry<String, Collection<PrestationGroupee>> entry : prestationsAImprimer.entrySet()) {
-            createNewSheet(getCodeLibelle(canton));
-            createCriteres();
+        createNewSheet(getCodeLibelle(canton));
+        createCriteres();
+        createRow();
+        createRow();
+        createEntetes();
+        for (PrestationGroupee eachPrestation : prestationsAImprimer) {
             createRow();
-            createRow();
-            createEntetes();
-            for (PrestationGroupee prestationAImprimer : entry.getValue()) {
-                createRow();
-                createCell(prestationAImprimer.getReferencePermis(), getStyleListLeft());
-                createCell(prestationAImprimer.getNss(), getStyleListLeft());
-                createCell(prestationAImprimer.getNom(), getStyleListLeft());
-                createCell(prestationAImprimer.getPrenom(), getStyleListLeft());
-                createCell(prestationAImprimer.getDateNaissance().getSwissValue(), getStyleListLeft());
-                CodeSystem codeSystemGenre = CodeSystemUtil.getCodeSysteme(prestationAImprimer.getGenre(), langue);
-                createCell(codeSystemGenre.getLibelle(), getStyleListLeft());
-                // N. OFS : inconnu dans WebAF.
-                createCell(StringUtils.EMPTY, getStyleListLeft());
-                createCell(prestationAImprimer.getNpa(), getStyleListLeft());
-                createCell(prestationAImprimer.getLocalite(), getStyleListLeft());
-                if (StringUtils.equals("100", prestationAImprimer.getPaysResidence())) {
-                    CodeSystem codeSystemCanton = CodeSystemUtil.getCodeSysteme(prestationAImprimer.getCantonResidence(), langue);
-                    createCell(codeSystemCanton.getCode(), getStyleListLeft());
-                } else {
-                    Pays paysResidence = ALRepositoryLocator.getPaysRepository().findById(prestationAImprimer.getPaysResidence());
-                    switch (langue) {
-                        case Francais:
-                            createCell(paysResidence.getLibelleFr(), getStyleListLeft());
-                            break;
-                        case Allemand:
-                            createCell(paysResidence.getLibelleAl(), getStyleListLeft());
-                            break;
-                        case Italien:
-                            createCell(paysResidence.getLibelleIt(), getStyleListLeft());
-                            break;
-                        default:
-                            createCell(StringUtils.EMPTY, getStyleListLeft());
-                            break;
-                    }
-
+            createCell(eachPrestation.getReferencePermis(), getStyleListLeft());
+            createCell(eachPrestation.getNss(), getStyleListLeft());
+            createCell(eachPrestation.getNom(), getStyleListLeft());
+            createCell(eachPrestation.getPrenom(), getStyleListLeft());
+            createCell(eachPrestation.getDateNaissance().getSwissValue(), getStyleListLeft());
+            CodeSystem codeSystemGenre = CodeSystemUtil.getCodeSysteme(eachPrestation.getGenre(), langue);
+            createCell(codeSystemGenre.getLibelle(), getStyleListLeft());
+            // N. OFS : inconnu dans WebAF.
+            createCell(StringUtils.EMPTY, getStyleListLeft());
+            createCell(eachPrestation.getNpa(), getStyleListLeft());
+            createCell(eachPrestation.getLocalite(), getStyleListLeft());
+            if (StringUtils.equals("100", eachPrestation.getPaysResidence())) {
+                CodeSystem codeSystemCanton = CodeSystemUtil.getCodeSysteme(eachPrestation.getCantonResidence(), langue);
+                createCell(codeSystemCanton.getCode(), getStyleListLeft());
+            } else {
+                Pays paysResidence = ALRepositoryLocator.getPaysRepository().findById(eachPrestation.getPaysResidence());
+                switch (langue) {
+                    case Francais:
+                        createCell(paysResidence.getLibelleFr(), getStyleListLeft());
+                        break;
+                    case Allemand:
+                        createCell(paysResidence.getLibelleAl(), getStyleListLeft());
+                        break;
+                    case Italien:
+                        createCell(paysResidence.getLibelleIt(), getStyleListLeft());
+                        break;
+                    default:
+                        createCell(StringUtils.EMPTY, getStyleListLeft());
+                        break;
                 }
-                createCell(prestationAImprimer.getDebutVersement().getSwissValue(), getStyleListLeft());
-                createCell(prestationAImprimer.getFinVersement().getSwissValue(), getStyleListLeft());
-                createCell(bareme, getStyleListLeft());
-                createCell(prestationAImprimer.getMontantPrestations().doubleValue(), getStyleMontant());
-                createCell(prestationAImprimer.getImpots().doubleValue(), getStyleMontant());
+
             }
-            createTotaux();
+            createCell(eachPrestation.getDebutVersement().getSwissValue(), getStyleListLeft());
+            createCell(eachPrestation.getFinVersement().getSwissValue(), getStyleListLeft());
+            createCell(bareme, getStyleListLeft());
+            createCell(eachPrestation.getMontantPrestations().doubleValue(), getStyleMontant());
+            createCell(eachPrestation.getImpots().doubleValue(), getStyleMontant());
         }
+        createTotaux();
     }
 
     private void createNewSheet(String name) {
@@ -188,11 +185,11 @@ public class ListISRetenuesExcel extends AbstractListExcel {
         return DocumentConstants.LISTES_AF_RETENUES;
     }
 
-    public Map<String, Collection<PrestationGroupee>> getPrestationsAImprimer() {
+    public List<PrestationGroupee> getPrestationsAImprimer() {
         return prestationsAImprimer;
     }
 
-    public void setPrestationsAImprimer(Map<String, Collection<PrestationGroupee>> prestationsAImprimer) {
+    public void setPrestationsAImprimer(List<PrestationGroupee> prestationsAImprimer) {
         this.prestationsAImprimer = prestationsAImprimer;
     }
 

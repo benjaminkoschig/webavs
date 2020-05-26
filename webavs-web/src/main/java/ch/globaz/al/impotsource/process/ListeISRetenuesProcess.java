@@ -2,20 +2,21 @@ package ch.globaz.al.impotsource.process;
 
 import ch.globaz.al.business.services.ALRepositoryLocator;
 import ch.globaz.al.business.services.ALServiceLocator;
+import ch.globaz.al.exception.TauxImpositionNotFoundException;
 import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.vulpecula.businessimpl.services.is.PrestationGroupee;
+import ch.globaz.vulpecula.documents.DocumentConstants;
+import ch.globaz.vulpecula.external.BProcessWithContext;
+import ch.globaz.vulpecula.util.ExceptionsUtil;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfoProvider;
+import org.apache.commons.lang.StringUtils;
+
 import java.io.IOException;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
-import ch.globaz.vulpecula.businessimpl.services.is.PrestationGroupee;
-import ch.globaz.vulpecula.documents.DocumentConstants;
-import ch.globaz.vulpecula.domain.models.common.Annee;
-import ch.globaz.al.exception.TauxImpositionNotFoundException;
-import ch.globaz.vulpecula.external.BProcessWithContext;
-import ch.globaz.vulpecula.util.ExceptionsUtil;
 
 public class ListeISRetenuesProcess extends BProcessWithContext {
     private static final long serialVersionUID = 2139647038684081597L;
@@ -26,7 +27,7 @@ public class ListeISRetenuesProcess extends BProcessWithContext {
     private String caisseAF;
     private String idProcessusAF;
 
-    private Map<String, Collection<PrestationGroupee>> prestationsAImprimer;
+    private Map<String, List<PrestationGroupee>> prestationsAImprimer;
     private String libelleCaisseAF;
 
     private boolean wantRetrieve = true;
@@ -57,8 +58,7 @@ public class ListeISRetenuesProcess extends BProcessWithContext {
 
     private void retrieve() {
         try {
-            prestationsAImprimer = ALServiceLocator.getImpotSourceService().getPrestationsForAllocIS(canton,
-                    caisseAF, dateDebut, dateFin);
+            prestationsAImprimer = ALServiceLocator.getImpotSourceService().getPrestationsForAllocIS(dateDebut, dateFin);
         } catch (TauxImpositionNotFoundException e) {
             getTransaction().addErrors(ExceptionsUtil.translateException(e));
         } catch (PropertiesException e) {
@@ -72,9 +72,21 @@ public class ListeISRetenuesProcess extends BProcessWithContext {
     }
 
     private void print() throws IOException {
+        if (StringUtils.isNotEmpty(canton)) {
+            List<PrestationGroupee> prestationsGroupees = prestationsAImprimer.get(canton);
+            createExcel(prestationsGroupees, canton);
+        } else {
+            for (Map.Entry<String, List<PrestationGroupee>> eachEntry : prestationsAImprimer.entrySet()) {
+                createExcel(eachEntry.getValue(), eachEntry.getKey());
+            }
+        }
+
+    }
+
+    private void createExcel(List<PrestationGroupee> prestationsGroupees, String canton) throws IOException {
         ListISRetenuesExcel excel = new ListISRetenuesExcel(getSession(),
                 DocumentConstants.LISTES_AF_RETENUES_DOC_NAME, DocumentConstants.LISTES_AF_RETENUES_COMMISSION_NAME);
-        excel.setPrestationsAImprimer(prestationsAImprimer);
+        excel.setPrestationsAImprimer(prestationsGroupees);
         excel.setCanton(canton);
         excel.setDateDebut(dateDebut);
         excel.setDateFin(dateFin);
@@ -126,11 +138,11 @@ public class ListeISRetenuesProcess extends BProcessWithContext {
         this.caisseAF = caisseAF;
     }
 
-    public void setPrestationsAImprimer(Map<String, Collection<PrestationGroupee>> prestationsAImprimer) {
+    public void setPrestationsAImprimer(Map<String, List<PrestationGroupee>> prestationsAImprimer) {
         this.prestationsAImprimer = prestationsAImprimer;
     }
 
-    public Map<String, Collection<PrestationGroupee>> getPrestationsAImprimer() {
+    public Map<String, List<PrestationGroupee>> getPrestationsAImprimer() {
         return prestationsAImprimer;
     }
 

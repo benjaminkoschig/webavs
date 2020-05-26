@@ -12,4 +12,10 @@ REORG TABLE SCHEMA.ALDOS;
 -- S200224_002 ajout d'une propriété jade pour la valeur "barème" dans l'excel d'impôts à la source
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('al.impotsource.bareme','D','20200525120000Globaz    ','20200525120000Globaz    ');
 
+-- S200224_002 ajout d'une colonne CSCANIS (canton d'imposition) dans la table ALENTPRE (EntetePrestationModel)
+ALTER TABLE SCHEMA.ALENTPRE
+ADD COLUMN CSCANIS decimal(8,0);
+REORG TABLE SCHEMA.ALENTPRE;
+
+
 

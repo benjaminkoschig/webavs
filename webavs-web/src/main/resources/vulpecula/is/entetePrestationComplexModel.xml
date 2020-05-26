@@ -31,6 +31,7 @@
 			<select-field name="montantTotalIS" field-ref="entetePrestationModel.montantTotalIS" />
 			<select-field name="genre" field-ref="personneSimpleModel.sexe" />
 			<select-field name="paysResidence" field-ref="allocataireModel.idPaysResidence" />
+			<select-field name="cantonImpotSource" field-ref="entetePrestationModel.cantonImpotSource" />
  		</select-fields>
 		
 		<root-model name="entetePrestationModel"

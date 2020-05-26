@@ -127,6 +127,11 @@ public class EntetePrestationModel extends JadeSimpleModel {
     private String montantTotalIS = null;
 
     /**
+     * Canton d'imposition à la source.
+     */
+    private String cantonImpotSource = null;
+
+    /**
      * @return the bonification
      */
     public String getBonification() {
@@ -560,5 +565,13 @@ public class EntetePrestationModel extends JadeSimpleModel {
      */
     public void setUnite(String unite) {
         this.unite = unite;
+    }
+
+    public String getCantonImpotSource() {
+        return cantonImpotSource;
+    }
+
+    public void setCantonImpotSource(String cantonImpotSource) {
+        this.cantonImpotSource = cantonImpotSource;
     }
 }

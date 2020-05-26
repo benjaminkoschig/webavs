@@ -52,8 +52,8 @@ public class RubriquesComptablesBMSServiceImpl extends RubriquesComptablesServic
     }
 
     @Override
-    public String getRubriqueForIS(DossierComplexModel dossierComplex, String date) throws JadeApplicationException, JadePersistenceException {
-        return getRubriqueForIS(getCodeCAF(dossierComplex.getDossierModel(), date), date);
+    public String getRubriqueForIS(DossierModel dossier, String cantonImposition, String date) throws JadeApplicationException, JadePersistenceException {
+        return getRubriqueForIS(getCodeCAF(dossier, date), date);
     }
 
     /**

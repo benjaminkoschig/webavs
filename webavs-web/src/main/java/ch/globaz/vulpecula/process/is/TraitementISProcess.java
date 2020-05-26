@@ -61,7 +61,7 @@ public class TraitementISProcess extends BProcessWithContext {
     private String idProcessusDirect;
 
     private List<EntetePrestationComplexModel> entetesPaiementsDirects;
-    private final Map<String, Collection<PrestationGroupee>> prestationsAImprimer = new HashMap<String, Collection<PrestationGroupee>>();
+    private final Map<String, List<PrestationGroupee>> prestationsAImprimer = new HashMap<>();
 
     private TauxImpositions tauxGroupByCanton;
 
@@ -191,6 +191,7 @@ public class TraitementISProcess extends BProcessWithContext {
                 new Date(entete.getPeriodeA()), Date.now());
 
         prestation.setCantonResidence(entete.getCantonResidence());
+        prestation.setCantonImpotSource(entete.getCantonImpotSource());
 
         addPrestationToMap(prestation);
 
@@ -198,11 +199,11 @@ public class TraitementISProcess extends BProcessWithContext {
     }
 
     private void addPrestationToMap(PrestationGroupee prestation) {
-        String libelleCaisseAF = prestation.getLibelleCaisseAF();
-        if (!prestationsAImprimer.containsKey(libelleCaisseAF)) {
-            prestationsAImprimer.put(libelleCaisseAF, new ArrayList<PrestationGroupee>());
+        String canton = prestation.getCantonImpotSource();
+        if (!prestationsAImprimer.containsKey(canton)) {
+            prestationsAImprimer.put(canton, new ArrayList<>());
         }
-        Collection<PrestationGroupee> prestations = prestationsAImprimer.get(libelleCaisseAF);
+        Collection<PrestationGroupee> prestations = prestationsAImprimer.get(canton);
         prestations.add(prestation);
     }
 

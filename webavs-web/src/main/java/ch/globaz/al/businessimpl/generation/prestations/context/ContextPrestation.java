@@ -1,6 +1,9 @@
 package ch.globaz.al.businessimpl.generation.prestations.context;
 
+import ch.globaz.al.business.models.dossier.DossierModel;
+import ch.globaz.al.businessimpl.calcul.modes.CalculImpotSource;
 import ch.globaz.al.properties.ALProperties;
+import ch.globaz.naos.business.data.AssuranceInfo;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
@@ -151,8 +154,13 @@ public class ContextPrestation {
                         "01." + contextDossier.getDebutPeriode()));
 
         if(ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue() && !JadeStringUtil.isBlankOrZero(detail.getMontantIS())) {
-            String idExterneIS = ALImplServiceLocator.getRubriqueService().getRubriqueForIS(contextDossier.getDossier(), "01." + contextDossier.getDebutPeriode());
+            DossierModel dossier = contextDossier.getDossier().getDossierModel();
+            String date =  "01." + contextDossier.getDebutPeriode();
+            AssuranceInfo assurance = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier, date);
+            String cantonImposition = CalculImpotSource.getCantonImposition(contextDossier.getDossier(), assurance.getCanton());
+            String idExterneIS = ALImplServiceLocator.getRubriqueService().getRubriqueForIS(dossier, cantonImposition, date);
             detail.setNumeroCompteIS(idExterneIS);
+            entete.setCantonImpotSource(cantonImposition);
             if(JadeStringUtil.isBlank(entete.getMontantTotalIS())) {
                 entete.setMontantTotalIS("0");
             }
