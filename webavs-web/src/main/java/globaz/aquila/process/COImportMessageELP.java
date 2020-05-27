@@ -27,10 +27,7 @@ import globaz.aquila.print.list.elp.COMotifMessageELP;
 import globaz.aquila.print.list.elp.COTypeELPFactory;
 import globaz.aquila.process.elp.*;
 import globaz.aquila.process.exception.ElpProcessException;
-import globaz.globall.db.BManager;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.db.GlobazServer;
+import globaz.globall.db.*;
 import globaz.globall.util.JACalendar;
 import globaz.jade.common.JadeClassCastException;
 import globaz.jade.fs.JadeFsFacade;
@@ -53,7 +50,7 @@ import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.util.*;
 
-public class COImportMessageELP extends AbstractDaemon {
+public class COImportMessageELP extends BProcess {
 
     private static final Logger LOG = LoggerFactory.getLogger(COImportMessageELP.class);
 
@@ -66,40 +63,13 @@ public class COImportMessageELP extends AbstractDaemon {
     private static final String ID_ETAPE_SAISIR_PV_SAISIE = "36";
     private static final String ID_ETAPE_SAISIR_ADB = "21";
 
-    private BSession bsession;
     private COProtocoleELP protocole;
     private String error = "";
     private String backupFolder;
 
-    @Override
-    public void run() {
-
-        try {
-            initBsession();
-            String isActive = JadePropertiesService.getInstance().getProperty(COProperties.RECEPTION_MESSAGES_ELP.getProperty());
-            if ("true".equals(isActive)) {
-                importFiles();
-                generationProtocol();
-            }
-
-        } catch (Exception e) {
-            error = "erreur fatale : " + Throwables.getStackTraceAsString(e);
-            try {
-                sendResultMail(null);
-            } catch (Exception e1) {
-                throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, e1);
-            }
-            throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, e);
-        } finally {
-            closeBsession();
-        }
-    }
 
     private void initBsession() throws Exception {
-        bsession = (BSession) GlobazServer.getCurrentSystem()
-                .getApplication(ICOApplication.DEFAULT_APPLICATION_AQUILA)
-                .newSession(getUsername(), getPassword());
-        BSessionUtil.initContext(bsession, this);
+        BSessionUtil.initContext(getSession(), this);
         protocole = new COProtocoleELP();
     }
 
@@ -280,12 +250,12 @@ public class COImportMessageELP extends AbstractDaemon {
     private COContentieux getContentieux(COInfoFileELP infos) throws ElpProcessException {
         COContentieux result = null;
         COContentieuxManager manager = new COContentieuxManager();
-        manager.setSession(bsession);
+        manager.setSession(getSession());
         manager.setForNumSection(infos.getNoSection());
         manager.setForNumAffilie(infos.getNoAffilie());
         manager.setForSelectionRole(infos.getGenreAffiliation());
         try {
-            manager.find(bsession.getCurrentThreadTransaction(), BManager.SIZE_NOLIMIT);
+            manager.find(getSession().getCurrentThreadTransaction(), BManager.SIZE_NOLIMIT);
         } catch (Exception e) {
             throw new ElpProcessException("Erreur lors de la récupération du contentieux", e);
         }
@@ -320,11 +290,11 @@ public class COImportMessageELP extends AbstractDaemon {
     private COTransition getTransition(COContentieux contentieux, String idEtape) throws ElpProcessException {
         COTransition result = null;
         COTransitionManager transitionManager = new COTransitionManager();
-        transitionManager.setSession(bsession);
+        transitionManager.setSession(getSession());
         transitionManager.setForIdEtapeSuivante(idEtape);
         transitionManager.setForIdEtape(contentieux.getIdEtape());
         try {
-            transitionManager.find(bsession.getCurrentThreadTransaction(), BManager.SIZE_NOLIMIT);
+            transitionManager.find(getSession().getCurrentThreadTransaction(), BManager.SIZE_NOLIMIT);
         } catch (Exception e) {
             throw new ElpProcessException("Erreur lors de la récupération de la transition lié au contentieux", e);
         }
@@ -368,8 +338,8 @@ public class COImportMessageELP extends AbstractDaemon {
      */
     private void executeCOTransitionProcess(COContentieux contentieux, COTransitionAction action, List fraisEtInterets) throws ElpProcessException {
         COProcessEffectuerTransition process = new COProcessEffectuerTransition();
-        process.setSession(bsession);
-        process.setTransaction(bsession.getCurrentThreadTransaction());
+        process.setSession(getSession());
+        process.setTransaction(getSession().getCurrentThreadTransaction());
         process.setContentieux(contentieux);
         process.setRefresh(false);
         process.setLibSequence(contentieux.getLibSequence());
@@ -473,7 +443,7 @@ public class COImportMessageELP extends AbstractDaemon {
      * @return l'objet SpElp
      */
     private COSpElpDto getSpElp(SpType spType, COInfoFileELP infos) throws COELPException {
-        COSpElpDto result = new COSpElpDto(spType, bsession);
+        COSpElpDto result = new COSpElpDto(spType, getSession());
         result.setDateReception(infos.getDate());
         result.setFichier(infos.getFichier());
         return result;
@@ -617,7 +587,7 @@ public class COImportMessageELP extends AbstractDaemon {
             mapFraisEtInterets.put(COTransitionViewBean.MONTANT, rcElpDto.getInterest());
             CAReferenceRubrique ref = new CAReferenceRubrique();
             APIRubrique rubrique;
-            ref.setSession(bsession);
+            ref.setSession(getSession());
             switch (genreAffiliation) {
                 case IntRole.ROLE_AFFILIE_PARITAIRE:
                     rubrique = ref.getRubriqueByCodeReference(APIReferenceRubrique.CONTENTIEUX_INTERET_MORATOIRE_PARITAIRE);
@@ -644,23 +614,65 @@ public class COImportMessageELP extends AbstractDaemon {
      * @throws Exception
      */
     private void generationProtocol() throws Exception {
-        COResultELPExcel listResultELP = new COResultELPExcel(bsession, protocole);
+        COResultELPExcel listResultELP = new COResultELPExcel(getSession(), protocole);
         sendResultMail(listResultELP.getOutputFile());
     }
 
     private void sendResultMail(String filesPath) throws Exception {
-        JadeSmtpClient.getInstance().sendMail(getEMailAddress(), getEMailObject(), error, new String[]{filesPath});
+        JadeSmtpClient.getInstance().sendMail(getEMailAddressELP(), getEMailObject(), error, new String[]{filesPath});
     }
 
+    @Override
     protected String getEMailObject() {
-        return bsession.getLabel(MAIL_SUBJECT) + JACalendar.todayJJsMMsAAAA();
+        return getSession().getLabel(MAIL_SUBJECT) + JACalendar.todayJJsMMsAAAA();
     }
 
-    public final java.lang.String getEMailAddress() {
+    @Override
+    public GlobazJobQueue jobQueue() {
+        return GlobazJobQueue.UPDATE_LONG;
+    }
+
+    @Override
+    protected void _executeCleanUp() {
+        //Nothing to do
+    }
+
+    @Override
+    protected boolean _executeProcess() throws Exception {
+
+        try {
+            //Pas d'envoi de mail automatique du process, tout est géré manuellement
+            this.setSendCompletionMail(false);
+            this.setSendMailOnError(false);
+
+            initBsession();
+
+            String isActive = JadePropertiesService.getInstance().getProperty(COProperties.RECEPTION_MESSAGES_ELP.getProperty());
+            if ("true".equals(isActive)) {
+                importFiles();
+                generationProtocol();
+            }
+
+        } catch (Exception e) {
+            error = "erreur fatale : " + Throwables.getStackTraceAsString(e);
+            try {
+                sendResultMail(null);
+            } catch (Exception e1) {
+                throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, e1);
+            }
+            throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, e);
+        } finally {
+            closeBsession();
+        }
+
+        return true;
+    }
+
+     private String getEMailAddressELP() {
         String eMailAddress = JadePropertiesService.getInstance().getProperty(COProperties.DESTINATAIRE_PROTOCOLE_MESSAGES_ELP.getProperty());
 
-        if (((eMailAddress == null) || (eMailAddress.length() == 0)) && bsession != null) {
-            return bsession.getUserEMail();
+        if (((eMailAddress == null) || (eMailAddress.length() == 0)) && getSession() != null) {
+            return getSession().getUserEMail();
         }
         return eMailAddress;
     }
