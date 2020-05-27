@@ -9,10 +9,10 @@ import ch.globaz.exceptions.GlobazTechnicalException;
 import ch.globaz.vulpecula.daemon.suividecompte.AbstractDaemon;
 import com.google.common.base.Throwables;
 import globaz.aquila.api.ICOApplication;
+import globaz.aquila.api.ICOEtape;
+import globaz.aquila.api.helper.ICOEtapeHelper;
 import globaz.aquila.application.COProperties;
-import globaz.aquila.db.access.batch.COEtapeInfoConfig;
-import globaz.aquila.db.access.batch.COTransition;
-import globaz.aquila.db.access.batch.COTransitionManager;
+import globaz.aquila.db.access.batch.*;
 import globaz.aquila.db.access.batch.transition.CO040SaisirCDP;
 import globaz.aquila.db.access.batch.transition.CO041SaisirActeDefautBien;
 import globaz.aquila.db.access.batch.transition.CO043SaisirPVSaisie;
@@ -202,7 +202,7 @@ public class COImportMessageELP extends BProcess {
                 // Création de l'action
                 CO040SaisirCDP action = createCdpAction(scElpDto);
                 // Récupération de la transition
-                COTransition transition = getTransition(contentieux, ID_ETAPE_SAISIR_CDP);
+                COTransition transition = getTransition(contentieux, ICOEtape.CS_COMMANDEMENT_DE_PAYER_SAISI_SANS_OPPOSITION);
                 if (Objects.nonNull(transition)) {
                     action.setTransition(transition);
                     // Ajout des étapes infos
@@ -283,23 +283,38 @@ public class COImportMessageELP extends BProcess {
      * Méthode de récupération de la transition liée au contentieux. Si on ne parvient pas à trouver une unique transition liée au fichier, on retourne null.
      *
      * @param contentieux : le contentieux.
-     * @param idEtape     : l'id de l'étape à créer.
+     * @param csEtape     : le cs de l'étape à créer.
      * @return la transition s'il en trouve un. null sinon.
      * @throws ElpProcessException Exception lancée si un incident intervient dans la récupération de la transition.
      */
-    private COTransition getTransition(COContentieux contentieux, String idEtape) throws ElpProcessException {
+    private COTransition getTransition(COContentieux contentieux, String csEtape) throws ElpProcessException {
         COTransition result = null;
-        COTransitionManager transitionManager = new COTransitionManager();
-        transitionManager.setSession(getSession());
-        transitionManager.setForIdEtapeSuivante(idEtape);
-        transitionManager.setForIdEtape(contentieux.getIdEtape());
+        COEtapeManager etapeManager = new COEtapeManager();
+        etapeManager.setSession(getSession());
+        etapeManager.setForLibEtape(csEtape);
         try {
-            transitionManager.find(getSession().getCurrentThreadTransaction(), BManager.SIZE_NOLIMIT);
+            etapeManager.find(getSession().getCurrentThreadTransaction(), BManager.SIZE_NOLIMIT);
         } catch (Exception e) {
-            throw new ElpProcessException("Erreur lors de la récupération de la transition lié au contentieux", e);
+            throw new ElpProcessException("Erreur lors de la récupération de l'id étape liée au contentieux", e);
         }
-        if (transitionManager.getContainer().size() == 1) {
-            result = (COTransition) transitionManager.getFirstEntity();
+        if (etapeManager.getContainer().size() == 1) {
+            COEtape etape = (COEtape) etapeManager.getFirstEntity();
+            COTransitionManager transitionManager = new COTransitionManager();
+            transitionManager.setSession(getSession());
+            transitionManager.setForIdEtapeSuivante(etape.getIdEtape());
+            transitionManager.setForIdEtape(contentieux.getIdEtape());
+            try {
+                transitionManager.find(getSession().getCurrentThreadTransaction(), BManager.SIZE_NOLIMIT);
+            } catch (Exception e) {
+                throw new ElpProcessException("Erreur lors de la récupération de la transition liée au contentieux", e);
+            }
+            if (transitionManager.getContainer().size() == 1) {
+                result = (COTransition) transitionManager.getFirstEntity();
+            } else {
+                LOG.error("Erreur lors de la récupération de de la transition liée au contentieux : plusieurs transitions existent.");
+            }
+        } else {
+           LOG.error("Erreur lors de la récupération de l'id étape liée au contentieux : plusieurs étapes existent.");
         }
         return result;
     }
@@ -373,10 +388,10 @@ public class COImportMessageELP extends BProcess {
             COTransition transition;
             if (spElpDto.isADB()) {
                 action = createPvAdbAction(spElpDto);
-                transition = getTransition(contentieux, ID_ETAPE_SAISIR_PV_ADB);
+                transition = getTransition(contentieux, ICOEtape.CS_PV_SAISIE_VALANT_ADB_SAISI);
             } else {
                 action = createPvSaisieAction(spElpDto);
-                transition = getTransition(contentieux, ID_ETAPE_SAISIR_PV_SAISIE);
+                transition = getTransition(contentieux, ICOEtape.CS_PV_DE_SAISIE_SAISI);
             }
             if (Objects.nonNull(transition)) {
                 action.setTransition(transition);
@@ -488,7 +503,7 @@ public class COImportMessageELP extends BProcess {
         COContentieux contentieux = getContentieux(infos);
         if (Objects.nonNull(contentieux)) {
             COTransitionAction action = createAdbAction(rcElpDto);
-            COTransition transition = getTransition(contentieux, ID_ETAPE_SAISIR_ADB);
+            COTransition transition = getTransition(contentieux, ICOEtape.CS_ACTE_DE_DEFAUT_DE_BIEN_SAISI);
             if (Objects.nonNull(transition)) {
                 action.setTransition(transition);
                 // Ajout des étapes infos

@@ -10,4 +10,8 @@ public class ElpProcessException extends JadeProcessException {
     public ElpProcessException(String s, Exception e) {
         super(s,e);
     }
+
+    public ElpProcessException(String s) {
+        super(s);
+    }
 }
