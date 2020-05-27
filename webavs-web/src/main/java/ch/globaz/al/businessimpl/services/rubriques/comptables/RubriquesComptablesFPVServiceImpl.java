@@ -1,18 +1,20 @@
 package ch.globaz.al.businessimpl.services.rubriques.comptables;
 
-import ch.globaz.al.business.constantes.*;
-import ch.globaz.al.business.models.dossier.DossierComplexModel;
-import ch.globaz.al.businessimpl.calcul.modes.CalculImpotSource;
-import ch.globaz.al.exception.RubriqueComptableNotFoundException;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
+import ch.globaz.al.business.constantes.ALCSDossier;
+import ch.globaz.al.business.constantes.ALCSDroit;
+import ch.globaz.al.business.constantes.ALCSPrestation;
+import ch.globaz.al.business.constantes.ALConstRubriques;
 import ch.globaz.al.business.models.dossier.DossierModel;
 import ch.globaz.al.business.models.prestation.DetailPrestationModel;
 import ch.globaz.al.business.models.prestation.EntetePrestationModel;
 import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.business.services.rubriques.comptables.RubriquesComptablesFPVService;
+import ch.globaz.al.exception.RubriqueComptableNotFoundException;
 import ch.globaz.naos.business.data.AssuranceInfo;
 import ch.globaz.param.business.exceptions.ParamException;
+import globaz.jade.client.util.JadeCodesSystemsUtil;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
@@ -163,7 +165,7 @@ public class RubriquesComptablesFPVServiceImpl extends RubriquesComptablesServic
         }
         rubrique.replace(21, 30, codeCaisse);
         if (ALCSDossier.ACTIVITE_SALARIE.equals(dossier.getActiviteAllocataire()) || StringUtils.equals(codeCaisse, "20")) {
-            rubrique.append(".").append(cantonImposition);
+            rubrique.append(".").append(JadeCodesSystemsUtil.getCode(cantonImposition));
         }
         String result = getRubrique(date, rubrique.toString().toLowerCase());
         if (StringUtils.isNotEmpty(result)){
