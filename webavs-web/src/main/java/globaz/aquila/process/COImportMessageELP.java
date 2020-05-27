@@ -33,8 +33,6 @@ import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.GlobazServer;
 import globaz.globall.util.JACalendar;
 import globaz.jade.common.JadeClassCastException;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.fs.JadeFsFacade;
 import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.service.exception.JadeServiceActivatorException;
@@ -227,7 +225,7 @@ public class COImportMessageELP extends AbstractDaemon {
         boolean traitementInSuccess = false;
         // Création de l'objet scElp
         COScElpDto scElpDto = getScElp(scType, infos);
-        if (Objects.nonNull(scElpDto.getDateNotification())) {
+        if (StringUtils.isNotEmpty(scElpDto.getDateNotification())) {
             // Récupération du contentieux
             COContentieux contentieux = getContentieux(infos);
             if (Objects.nonNull(contentieux)) {
