@@ -409,7 +409,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
                         && interetTardif.isTardif(getSession(), getTransaction(), ecriture.getDate())
                         && (isDateEcritureApresDatePoursuite || !isNouveauCDP)) {
                     if (CommonProperties.TAUX_INTERET_PANDEMIE.getBooleanValue()) {
-                        List<Periode> listPeriodeMotifsSurcis = CAInteretUtil.isSectionSurcisPaiementInPandemie(getTransaction(), getSession(), idSection);
+                        List<Periode> listPeriodeMotifsSurcis = CAInteretUtil.isSectionSurcisProgaPaiementInPandemie(getTransaction(), getSession(), idSection);
                         if (!listPeriodeMotifsSurcis.isEmpty()) {
                             montantSoumisSurcisCalcul = montantSoumis;
                             creerInteretForSurcisProro(dateCalculDebutInteret, ecriture.getJADate(), listPeriodeMotifsSurcis, interet);
@@ -492,7 +492,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
                 && (getSession().getApplication().getCalendar().compare(dateCalculDebutInteret, getDateFinAsJADate()) == JACalendar.COMPARE_FIRSTLOWER)) {
 
             if (CommonProperties.TAUX_INTERET_PANDEMIE.getBooleanValue()) {
-                List<Periode> listPeriodeMotifsSurcis = CAInteretUtil.isSectionSurcisPaiementInPandemie(getTransaction(), getSession(), idSection);
+                List<Periode> listPeriodeMotifsSurcis = CAInteretUtil.isSectionSurcisProgaPaiementInPandemie(getTransaction(), getSession(), idSection);
                 if (!listPeriodeMotifsSurcis.isEmpty()) {
                     creerInteretForSurcisProro(dateDebut1erPassage, getDateFinAsJADate(), listPeriodeMotifsSurcis, interet);
                 } else {
@@ -558,6 +558,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
         do {
             periodeMotif = it.next();
             if (isFirst) {
+                //Cas 1.1 : Motif unique et actif
                 if (JadeDateUtil.isDateAfter("01.01.2090", periodeMotif.getDateFin())) {
                     dateFin = dateCalculFin;
                 } else {
@@ -565,7 +566,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
                 }
 
                 mapIntermediaire.put(new Periode(dateCalculDebut.toStr("."), dateFin.toStr(".")), CAInteretUtil.USE_TAUX_SURCIS_PRO);
-                //Cas : Motif unique et pas actif
+                //Cas 1.2 : Motif unique et pas actif
                 if(!it.hasNext() && !dateFin.equals(dateCalculFin)){
                     dateDebut = getSession().getApplication().getCalendar().addDays(dateFin, 1);
                     mapIntermediaire.put(new Periode(dateDebut.toStr("."), dateCalculFin.toStr(".")), CAInteretUtil.USE_TAUX_NORMAL);
@@ -575,11 +576,13 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
                     dateDebutNormal = dateDebut;
                     dateFinNormal = getSession().getApplication().getCalendar().addDays(new JADate(periodeMotif.getDateDebut()), -1);
                     dateDebutSurcisProro = new JADate(periodeMotif.getDateDebut());
+                    //Cas 2.0 : Motif multiple avec le dernier motif actif
                     if (JadeDateUtil.isDateAfter("01.01.2090", periodeMotif.getDateFin())) {
                         dateFinSurcisProro = dateCalculFin;
                     }else{
                         dateFinSurcisProro = new JADate(periodeMotif.getDateFin());
                     }
+                    //Cas 2.1 : Motif multiple avec dates motifs qui se chevauchent ou différence de 1 jour.
                     if(CAInteretUtil.getJoursInterets(getSession(),dateDebutNormal,dateFinNormal) >0) {
                         mapIntermediaire.put(new Periode(dateDebutNormal.toStr("."), dateFinNormal.toStr(".")), CAInteretUtil.USE_TAUX_SURCIS_PRO);
                         mapIntermediaire.put(new Periode(dateDebutSurcisProro.toStr("."), dateFinSurcisProro.toStr(".")), CAInteretUtil.USE_TAUX_SURCIS_PRO);

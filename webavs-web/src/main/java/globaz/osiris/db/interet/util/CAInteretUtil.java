@@ -436,7 +436,17 @@ public class CAInteretUtil {
         }
     }
 
-    public static List<Periode> isSectionSurcisPaiementInPandemie(BTransaction transaction, BSession session, String idSection) throws Exception {
+    /**
+     * Vérifier que la section de l'écriture contient des motifs de surcis ou progations et sort les périodes des motifs
+     *
+     * @param transaction
+     * @param session
+     * @param idSection
+     * @return
+     * @throws Exception
+     */
+
+    public static List<Periode> isSectionSurcisProgaPaiementInPandemie(BTransaction transaction, BSession session, String idSection) throws Exception {
         String[] datePeriodes = JadePropertiesService.getInstance().getProperty("aquila.tauxInteret.pandemie.periodes").split(":");
         List<Periode> listPeriodeMotif = new LinkedList<>();
         Date dateDebutPandemie = null;
@@ -461,6 +471,14 @@ public class CAInteretUtil {
         return listPeriodeMotif;
     }
 
+    /**
+     * Récuperation de la section avec l'id
+     * @param session
+     * @param transaction
+     * @param idSection
+     * @return
+     * @throws Exception
+     */
     public static CASection getSection(BSession session, BTransaction transaction, String idSection) throws Exception {
         CASection section = new CASection();
         section.setSession(session);
@@ -473,6 +491,15 @@ public class CAInteretUtil {
         return section;
     }
 
+    /**
+     *  Mapper les lignes des intérets avec les bons taux
+     * @param session
+     * @param mapIntermediaire
+     * @param mapLigneAInscrire
+     * @param mapTaux
+     * @param mapTauxSurcisProro
+     * @throws Exception
+     */
     public static void createLignesAInscrire(BSession session, Map<Periode, Boolean> mapIntermediaire, Map<Periode, CATauxParametre> mapLigneAInscrire, Map<String, CATauxParametre> mapTaux, Map<String, CATauxParametre> mapTauxSurcisProro) throws Exception {
         JADate dateCalculDebut = null;
         JADate dateCalculFin = null;
