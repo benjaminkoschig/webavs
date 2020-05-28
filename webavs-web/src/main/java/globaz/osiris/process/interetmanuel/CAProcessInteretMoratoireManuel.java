@@ -1,20 +1,20 @@
 package globaz.osiris.process.interetmanuel;
 
+import ch.globaz.common.domaine.Date;
+import ch.globaz.common.domaine.Periode;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.GlobazJobQueue;
-import globaz.globall.util.JACalendar;
-import globaz.globall.util.JACalendarGregorian;
-import globaz.globall.util.JADate;
-import globaz.globall.util.JAException;
+import globaz.globall.util.*;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.osiris.db.comptes.CAJournal;
 import globaz.osiris.db.comptes.CASection;
 import globaz.osiris.db.comptes.impl.CASectionAVS;
+import globaz.osiris.db.contentieux.CAMotifContentieux;
 import globaz.osiris.db.contentieux.CASectionAuxPoursuites;
 import globaz.osiris.db.interet.tardif.CAInteretTardif;
 import globaz.osiris.db.interet.tardif.CAInteretTardifFactory;
@@ -31,21 +31,19 @@ import globaz.osiris.process.interetmanuel.visualcomponent.CAInteretManuelVisual
 import globaz.osiris.utils.CATiersUtil;
 import ch.globaz.common.properties.CommonProperties;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Processus permettant la création d'intérêt tardif manuellement (sur demande pour une date donnée et un numéro de
  * facture donné).<br/>
  * Ce processus peut-être exécuté en mode prévisionnel pour présenter les informations avant ajout à l'utilisateur.<br/>
  * Wizard.
- * 
+ *
  * @author DDA
- * 
  */
 public class CAProcessInteretMoratoireManuel extends BProcess {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private String dateFin = new String();
@@ -58,32 +56,36 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
 
     private CAInteretManuelVisualComponent visualComponent = null;
     private ArrayList<CAInteretManuelVisualComponent> visualComponents = new ArrayList<CAInteretManuelVisualComponent>();
+    Map<Periode, Boolean> mapMotifs;
+    JADate dateCalculDebutInteret;
+    JADate dateDebut1erPassage = dateCalculDebutInteret;
+    private FWCurrency montantSoumisSurcisCalcul;
+    private FWCurrency montantCumuleSurcisCalcul;
 
     /**
-	 *
-	 */
+     *
+     */
     public CAProcessInteretMoratoireManuel() {
         super();
     }
 
     /**
-     * @param parent
-     *            BProcess
+     * @param parent BProcess
      */
     public CAProcessInteretMoratoireManuel(BProcess parent) {
         super(parent);
     }
 
     /**
-	 *
-	 */
+     *
+     */
     @Override
     protected void _executeCleanUp() {
     }
 
     /**
      * Execute la création ou la simulation de l'intérêt moratoire manuel.
-     * 
+     *
      * @return boolean
      */
     @Override
@@ -196,7 +198,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
 
     /**
      * Ajout d'une ligne de détail à l'intérêt.
-     * 
+     *
      * @param interet
      * @param montantSoumis
      * @param taux
@@ -207,7 +209,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
      * @throws Exception
      */
     private CAInteretMoratoire addDetailInteretMoratoire(CAInteretMoratoire interet, FWCurrency montantSoumis,
-            double taux, FWCurrency montantInteret, JADate dateCaculDebutInteret, String tmpDateFin) throws Exception {
+                                                         double taux, FWCurrency montantInteret, JADate dateCaculDebutInteret, String tmpDateFin) throws Exception {
         CADetailInteretMoratoire ligne = new CADetailInteretMoratoire();
         ligne.setSession(getSession());
 
@@ -251,7 +253,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
 
     /**
      * Calculer "manuellement" l'intérêt moratoire.
-     * 
+     *
      * @param interetTardif
      * @throws Exception
      */
@@ -313,7 +315,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
 
     /**
      * Il y a t'il déjà un intéret moratoire soumis ou manuel pour la section (intérêt non facturé actuellement).
-     * 
+     *
      * @throws Exception
      */
     private void checkForInteretMoratoireEnSuspens() throws Exception {
@@ -331,7 +333,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
 
     /**
      * Contrôle le format de l'id externe de la section de facturation des intérêts moratoires.
-     * 
+     *
      * @throws Exception
      */
     private void checkIdExterneSection() throws Exception {
@@ -344,7 +346,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
 
     /**
      * Créer l'intéret moratoire manuel ainsi que sont détails (toutes les lignes liées).
-     * 
+     *
      * @param interetTardif
      * @param plan
      * @param interet
@@ -352,7 +354,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
      * @throws Exception
      */
     private void creerInteret(CAInteretTardif interetTardif, CAPlanParSection plan, CAInteretMoratoire interet,
-            FWCurrency montantSoumis) throws Exception {
+                              FWCurrency montantSoumis) throws Exception {
         JACalendar cal = new JACalendarGregorian();
         JADate dateMaxPourPaiement = cal.addDays(getDateFinAsJADate(), 1);
 
@@ -361,7 +363,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
                 plan.getIdPlan(), getIdSection(), null, dateMaxPourPaiement.toStrAMJ());
 
         FWCurrency montantCumule = new FWCurrency();
-        JADate dateCalculDebutInteret;
+
         // POAVS-223
         boolean aControlerManuellement = false;
         CASectionAuxPoursuites sectionAuxPoursuite = CAInteretTardif.getSectionAuxPoursuites(getSession(),
@@ -393,7 +395,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
         } else {
             dateCalculDebutInteret = interetTardif.getDateCalculDebutInteret(getSession(), getTransaction());
         }
-        JADate dateDebut1erPassage = dateCalculDebutInteret ;
+
         for (int i = 0; i < manager.size(); i++) {
             CAEcritureNonSoumise ecriture = (CAEcritureNonSoumise) manager.get(i);
 
@@ -406,53 +408,61 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
                 if (montantSoumis.isPositive()
                         && interetTardif.isTardif(getSession(), getTransaction(), ecriture.getDate())
                         && (isDateEcritureApresDatePoursuite || !isNouveauCDP)) {
-                    if(CommonProperties.TAUX_INTERET_PANDEMIE.getBooleanValue()){
-                        boolean isFirst =true;
-                        JADate dateCalculDebut = dateCalculDebutInteret;
-                        JADate dateCalculFin =  ecriture.getJADate();
-                        List<CATauxParametre> listTaux = CAInteretUtil.getTaux(getTransaction(),dateCalculDebut.toStr("."), dateCalculFin.toStr(".")  ,CAInteretUtil.CS_PARAM_TAUX,2);
-                        for(CATauxParametre CATauxParametre : listTaux) {
-                            double taux = CATauxParametre.getTaux();
-                            JADate dateDebut;
-                            JADate dateFin;
-                            //Aide pour découpage des périodes après la première ligne
-                            if(isFirst){
-                                dateDebut = dateCalculDebut;
-                                isFirst = false;
-                            }else{
-                                dateDebut = new JADate(CATauxParametre.getDateDebut().getSwissValue());
-                            }
-                            if (CATauxParametre.getDateFin() == null) {
-                                dateFin = dateCalculFin;
-                            } else {
-                                dateFin = new JADate(CATauxParametre.getDateFin().getSwissValue());
-                            }
-                            FWCurrency montantInteret = CAInteretUtil.getMontantInteret(getSession(), montantSoumis,
-                                    dateFin, dateDebut, taux);
-                            if ((montantInteret != null)) {
-                                interet = addDetailInteretMoratoire(interet, montantSoumis, taux, montantInteret,
-                                        dateDebut, dateFin.toStr("."));
-                            }
-                            montantCumule.add(montantInteret);
-                            dateDebut1erPassage =  getSession().getApplication().getCalendar()
-                                    .addDays(dateFin, 1);
-                            // Si il y'a plusieurs écritures.
-                            dateCalculDebutInteret = getSession().getApplication().getCalendar()
-                                    .addDays(dateFin, 1);
+                    if (CommonProperties.TAUX_INTERET_PANDEMIE.getBooleanValue()) {
+                        List<Periode> listPeriodeMotifsSurcis = CAInteretUtil.isSectionSurcisPaiementInPandemie(getTransaction(), getSession(), idSection);
+                        if (!listPeriodeMotifsSurcis.isEmpty()) {
+                            montantSoumisSurcisCalcul = montantSoumis;
+                            creerInteretForSurcisProro(dateCalculDebutInteret, ecriture.getJADate(), listPeriodeMotifsSurcis, interet);
+                            montantSoumis = montantSoumisSurcisCalcul;
+                            montantCumule = montantCumuleSurcisCalcul;
+                        } else {
+                            boolean isFirst = true;
+                            JADate dateCalculDebut = dateCalculDebutInteret;
+                            JADate dateCalculFin = ecriture.getJADate();
+                            List<CATauxParametre> listTaux = CAInteretUtil.getTaux(getTransaction(), dateCalculDebut.toStr("."), dateCalculFin.toStr("."), CAInteretUtil.CS_PARAM_TAUX, 2);
+                            for (CATauxParametre CATauxParametre : listTaux) {
+                                double taux = CATauxParametre.getTaux();
+                                JADate dateDebut;
+                                JADate dateFin;
+                                //Aide pour découpage des périodes après la première ligne
+                                if (isFirst) {
+                                    dateDebut = dateCalculDebut;
+                                    isFirst = false;
+                                } else {
+                                    dateDebut = new JADate(CATauxParametre.getDateDebut().getSwissValue());
+                                }
+                                if (CATauxParametre.getDateFin() == null) {
+                                    dateFin = dateCalculFin;
+                                } else {
+                                    dateFin = new JADate(CATauxParametre.getDateFin().getSwissValue());
+                                }
+                                FWCurrency montantInteret = CAInteretUtil.getMontantInteret(getSession(), montantSoumis,
+                                        dateFin, dateDebut, taux);
+                                if ((montantInteret != null)) {
+                                    interet = addDetailInteretMoratoire(interet, montantSoumis, taux, montantInteret,
+                                            dateDebut, dateFin.toStr("."));
+                                }
+                                montantCumule.add(montantInteret);
+                                dateDebut1erPassage = getSession().getApplication().getCalendar()
+                                        .addDays(dateFin, 1);
+                                // Si il y'a plusieurs écritures.
+                                dateCalculDebutInteret = getSession().getApplication().getCalendar()
+                                        .addDays(dateFin, 1);
 
+                            }
                         }
-                    }else{
-                    double taux = CAInteretUtil.getTaux(getTransaction(), dateCalculDebutInteret.toStr("."));
-                    FWCurrency montantInteret = CAInteretUtil.getMontantInteret(getSession(), montantSoumis,
-                            ecriture.getJADate(), dateCalculDebutInteret, taux);
+                    } else {
+                        double taux = CAInteretUtil.getTaux(getTransaction(), dateCalculDebutInteret.toStr("."));
+                        FWCurrency montantInteret = CAInteretUtil.getMontantInteret(getSession(), montantSoumis,
+                                ecriture.getJADate(), dateCalculDebutInteret, taux);
 
                         interet = addDetailInteretMoratoire(interet, montantSoumis, taux, montantInteret,
                                 dateCalculDebutInteret, ecriture.getJADate().toStr("."));
 
-                    montantCumule.add(montantInteret);
-                    dateCalculDebutInteret = getSession().getApplication().getCalendar()
-                            .addDays(ecriture.getJADate(), 1);
-                }
+                        montantCumule.add(montantInteret);
+                        dateCalculDebutInteret = getSession().getApplication().getCalendar()
+                                .addDays(ecriture.getJADate(), 1);
+                    }
                 }
 
                 montantSoumis.add(ecriture.getMontantToCurrency());
@@ -481,42 +491,147 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
         if (montantSoumis.isPositive()
                 && (getSession().getApplication().getCalendar().compare(dateCalculDebutInteret, getDateFinAsJADate()) == JACalendar.COMPARE_FIRSTLOWER)) {
 
-            if(CommonProperties.TAUX_INTERET_PANDEMIE.getBooleanValue()){
-                JADate dateCalculDebut = dateDebut1erPassage;
-                JADate dateCalculFin =  getDateFinAsJADate();
-                List<CATauxParametre> listTaux = CAInteretUtil.getTaux(getTransaction(),dateCalculDebut.toStr("."), dateCalculFin.toStr("."),CAInteretUtil.CS_PARAM_TAUX,2);
-                boolean isFirst = true;
-                for(CATauxParametre tauxParametre : listTaux){
-                    double taux = tauxParametre.getTaux();
-                    JADate dateDebut;
-                    JADate dateFin;
-                    if(isFirst){
-                        dateDebut = dateCalculDebut;
-                        isFirst = false;
-                    }else{
-                        dateDebut = new JADate(tauxParametre.getDateDebut().getSwissValue());
-                    }
-                    if(tauxParametre.getDateFin() == null){
-                        dateFin= dateCalculFin;
-                    }else{
-                        dateFin = new JADate(tauxParametre.getDateFin().getSwissValue());
-                    }
-                    FWCurrency montantInteret = CAInteretUtil.getMontantInteret(getSession(), montantSoumis,
-                            dateFin, dateDebut, taux);
-                    if ((montantInteret != null)) {
-                        addDetailInteretMoratoire(interet, montantSoumis, taux, montantInteret, dateDebut,
-                                dateFin.toStr("."));
+            if (CommonProperties.TAUX_INTERET_PANDEMIE.getBooleanValue()) {
+                List<Periode> listPeriodeMotifsSurcis = CAInteretUtil.isSectionSurcisPaiementInPandemie(getTransaction(), getSession(), idSection);
+                if (!listPeriodeMotifsSurcis.isEmpty()) {
+                    creerInteretForSurcisProro(dateDebut1erPassage, getDateFinAsJADate(), listPeriodeMotifsSurcis, interet);
+                } else {
+                    JADate dateCalculDebut = dateDebut1erPassage;
+                    JADate dateCalculFin = getDateFinAsJADate();
+                    List<CATauxParametre> listTaux = CAInteretUtil.getTaux(getTransaction(), dateCalculDebut.toStr("."), dateCalculFin.toStr("."), CAInteretUtil.CS_PARAM_TAUX, 2);
+                    boolean isFirst = true;
+                    for (CATauxParametre tauxParametre : listTaux) {
+                        double taux = tauxParametre.getTaux();
+                        JADate dateDebut;
+                        JADate dateFin;
+                        if (isFirst) {
+                            dateDebut = dateCalculDebut;
+                            isFirst = false;
+                        } else {
+                            dateDebut = new JADate(tauxParametre.getDateDebut().getSwissValue());
+                        }
+                        if (tauxParametre.getDateFin() == null) {
+                            dateFin = dateCalculFin;
+                        } else {
+                            dateFin = new JADate(tauxParametre.getDateFin().getSwissValue());
+                        }
+                        FWCurrency montantInteret = CAInteretUtil.getMontantInteret(getSession(), montantSoumis,
+                                dateFin, dateDebut, taux);
+                        if ((montantInteret != null)) {
+                            addDetailInteretMoratoire(interet, montantSoumis, taux, montantInteret, dateDebut,
+                                    dateFin.toStr("."));
+                        }
                     }
                 }
-            }else{
-            double taux = CAInteretUtil.getTaux(getTransaction(), dateCalculDebutInteret.toStr("."));
-            FWCurrency montantInteret = CAInteretUtil.getMontantInteret(getSession(), montantSoumis,
-                    getDateFinAsJADate(), dateCalculDebutInteret, taux);
+            } else {
+                double taux = CAInteretUtil.getTaux(getTransaction(), dateCalculDebutInteret.toStr("."));
+                FWCurrency montantInteret = CAInteretUtil.getMontantInteret(getSession(), montantSoumis,
+                        getDateFinAsJADate(), dateCalculDebutInteret, taux);
 
                 addDetailInteretMoratoire(interet, montantSoumis, taux, montantInteret, dateCalculDebutInteret,
                         getDateFinAsJADate().toStr("."));
             }
         }
+    }
+
+    private void creerInteretForSurcisProro(JADate dateCalculDebut, JADate dateCalculFin, List<Periode> listPeriodeMotifsSurcis, CAInteretMoratoire interet) throws Exception {
+
+        Map<String, CATauxParametre> mapTaux = CAInteretUtil.getTauxInMap(getTransaction(), dateCalculDebut.toStr("."), dateCalculFin.toStr("."), CAInteretUtil.CS_PARAM_TAUX, 2);
+        Map<String, CATauxParametre> mapTauxSurcisProro = CAInteretUtil.getTauxInMap(getTransaction(), dateCalculDebut.toStr("."), dateCalculFin.toStr("."), CAInteretUtil.CS_PARAM_TAUX_SURCIS_PROGATION_PANDEMIE_2020, 2);
+        Map<Periode, Boolean> mapIntermediaire = new LinkedHashMap<>();
+        Map<Periode, CATauxParametre> mapLigneAInscrire = new LinkedHashMap<>();
+        JADate dateDebut = dateCalculDebut;
+        JADate dateFin = dateCalculFin;
+        JADate dateDebutSurcisProro = null;
+        JADate dateFinSurcisProro = null;
+        JADate dateDebutNormal = null;
+        JADate dateFinNormal = null;
+
+        Periode periode;
+        boolean isFirst = true;
+        //Cas 1 : Multiple motif en surcis/prorogation
+        Iterator<Periode> it = listPeriodeMotifsSurcis.iterator();
+        isFirst = true;
+        Periode periodeMotif;
+        Periode periodeLastMotif;
+
+        do {
+            periodeMotif = it.next();
+            if (isFirst) {
+                if (JadeDateUtil.isDateAfter("01.01.2090", periodeMotif.getDateFin())) {
+                    dateFin = dateCalculFin;
+                } else {
+                    dateFin = new JADate(periodeMotif.getDateFin());
+                }
+
+                mapIntermediaire.put(new Periode(dateCalculDebut.toStr("."), dateFin.toStr(".")), CAInteretUtil.USE_TAUX_SURCIS_PRO);
+                //Cas : Motif unique et pas actif
+                if(!it.hasNext() && !dateFin.equals(dateCalculFin)){
+                    dateDebut = getSession().getApplication().getCalendar().addDays(dateFin, 1);
+                    mapIntermediaire.put(new Periode(dateDebut.toStr("."), dateCalculFin.toStr(".")), CAInteretUtil.USE_TAUX_NORMAL);
+                }
+            } else {
+                if (it.hasNext()) {
+                    dateDebutNormal = dateDebut;
+                    dateFinNormal = getSession().getApplication().getCalendar().addDays(new JADate(periodeMotif.getDateDebut()), -1);
+                    dateDebutSurcisProro = new JADate(periodeMotif.getDateDebut());
+                    if (JadeDateUtil.isDateAfter("01.01.2090", periodeMotif.getDateFin())) {
+                        dateFinSurcisProro = dateCalculFin;
+                    }else{
+                        dateFinSurcisProro = new JADate(periodeMotif.getDateFin());
+                    }
+                    if(CAInteretUtil.getJoursInterets(getSession(),dateDebutNormal,dateFinNormal) >0) {
+                        mapIntermediaire.put(new Periode(dateDebutNormal.toStr("."), dateFinNormal.toStr(".")), CAInteretUtil.USE_TAUX_SURCIS_PRO);
+                        mapIntermediaire.put(new Periode(dateDebutSurcisProro.toStr("."), dateFinSurcisProro.toStr(".")), CAInteretUtil.USE_TAUX_SURCIS_PRO);
+                    }else{
+                        periodeLastMotif = (Periode)mapIntermediaire.keySet().toArray()[mapIntermediaire.keySet().size()-1];
+                        dateDebutNormal = new JADate(periodeLastMotif.getDateDebut());
+                        mapIntermediaire.remove(periodeLastMotif);
+                        mapIntermediaire.put(new Periode(dateDebutNormal.toStr("."), dateFinNormal.toStr(".")), CAInteretUtil.USE_TAUX_SURCIS_PRO);
+                    }
+
+                    dateFin = dateFinSurcisProro;
+                } else {
+                    dateDebutNormal = dateDebut;
+                    dateFinNormal = dateCalculFin;
+                    mapIntermediaire.put(new Periode(dateDebutNormal.toStr("."), dateFinNormal.toStr(".")), CAInteretUtil.USE_TAUX_NORMAL);
+                    dateFin = dateFinNormal;
+                }
+            }
+            dateDebut = getSession().getApplication().getCalendar().addDays(dateFin, 1);
+        } while (it.hasNext());
+
+        /**
+         * Préparation des lignes des intérêts avec les bons taux
+         */
+        CAInteretUtil.createLignesAInscrire(getSession(), mapIntermediaire, mapLigneAInscrire, mapTaux, mapTauxSurcisProro);
+
+
+        FWCurrency montantInteret;
+        CATauxParametre taux;
+        montantCumuleSurcisCalcul = new FWCurrency();
+        for (Periode keyAVS : mapLigneAInscrire.keySet()) {
+            taux = mapLigneAInscrire.get(keyAVS);
+            dateDebut = new JADate(keyAVS.getDateDebut());
+            dateFin = new JADate(keyAVS.getDateFin());
+            montantInteret = CAInteretUtil.getMontantInteret(getSession(), montantSoumisSurcisCalcul,
+                    dateFin, dateDebut, taux.getTaux());
+            if ((montantInteret != null)) {
+                interet = addDetailInteretMoratoire(interet, montantSoumisSurcisCalcul, taux.getTaux(), montantInteret,
+                        dateDebut, dateFin.toStr("."));
+            }
+            montantCumuleSurcisCalcul.add(montantInteret);
+        }
+
+
+        dateDebut1erPassage = getSession().getApplication().getCalendar()
+                .addDays(dateFin, 1);
+        // Si il y'a plusieurs écritures.
+        dateCalculDebutInteret = getSession().getApplication().getCalendar()
+                .addDays(dateFin, 1);
+    }
+
+    private void createLignesAInscrire(Map<Periode, Boolean> mapIntermediaire, Map<Periode, CATauxParametre> mapLigneAInscrire) {
     }
 
     public String getDateFin() {
@@ -529,7 +644,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
 
     /**
      * Set le titre de l'email.
-     * 
+     *
      * @return String
      */
     @Override
@@ -558,7 +673,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
 
     /**
      * Return la section en cours sur laquelle les intérêts moratoires doivent être calculées.
-     * 
+     *
      * @return
      * @throws Exception
      */
@@ -591,7 +706,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
     /**
      * Method jobQueue. Cette méthode définit la nature du traitement s'il s'agit d'un processus qui doit-être lancer de
      * jour en de nuit
-     * 
+     *
      * @return GlobazJobQueue
      */
     @Override
@@ -604,8 +719,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
     }
 
     /**
-     * @param idJournal
-     *            the idJournal to set
+     * @param idJournal the idJournal to set
      */
     public void setIdJournal(String idJournal) {
         this.idJournal = idJournal;

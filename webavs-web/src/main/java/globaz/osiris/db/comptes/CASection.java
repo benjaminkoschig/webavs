@@ -56,11 +56,13 @@ import globaz.osiris.db.utils.CARemarque;
 import globaz.osiris.db.utils.IntRemarque;
 import globaz.osiris.exceptions.CATechnicalException;
 import globaz.osiris.translation.CACodeSystem;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author SCH Date de création : (11.12.2001 13:59:54)
@@ -256,15 +258,15 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         if ((getCategorieSection().equals(APISection.ID_CATEGORIE_SECTION_ALLOCATIONS_FAMILIALES) && !getIdTypeSection()
                 .equals(APISection.ID_TYPE_SECTION_AF))
                 || (getCategorieSection().equals(APISection.ID_CATEGORIE_SECTION_APG) && !getIdTypeSection().equals(
-                        APISection.ID_TYPE_SECTION_APG))
+                APISection.ID_TYPE_SECTION_APG))
                 || (getCategorieSection().equals(APISection.ID_CATEGORIE_SECTION_PANDEMIE) && !getIdTypeSection().equals(
                 APISection.ID_TYPE_SECTION_APG))
                 || (getCategorieSection().equals(APISection.ID_CATEGORIE_SECTION_IJAI) && !getIdTypeSection().equals(
-                        APISection.ID_TYPE_SECTION_IJAI))
+                APISection.ID_TYPE_SECTION_IJAI))
                 || (getCategorieSection().equals(APISection.ID_CATEGORIE_SECTION_RESTITUTIONS) && !getIdTypeSection()
-                        .equals(APISection.ID_TYPE_SECTION_RESTITUTION))
+                .equals(APISection.ID_TYPE_SECTION_RESTITUTION))
                 || (getCategorieSection().equals(APISection.ID_CATEGORIE_SECTION_REPARATION_DOMMAGES) && !getIdTypeSection()
-                        .equals(APISection.ID_TYPE_SECTION_ARD))) {
+                .equals(APISection.ID_TYPE_SECTION_ARD))) {
             _addError(transaction, FWMessageFormat.format(getSession().getLabel("SECTION_CONTROLE_TYPE_SECTION"),
                     getCategorieSection().substring(4), getTypeSection().getDescription()));
         }
@@ -315,7 +317,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Cette Méthode retourne la date d'éxecution. En cas d'erreur, retourne "".
-     * 
+     *
      * @return String Date d'éxecution de l'étape
      * @throws Exception
      */
@@ -581,7 +583,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Ajout d'une opération auxiliaire en fonction d'une écriture de base.
-     * 
+     *
      * @param transaction
      * @param compteAnnexe
      * @param journal
@@ -592,7 +594,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
      * @throws Exception
      */
     private String addAuxiliaire(BTransaction transaction, CACompteAnnexe compteAnnexe, CAJournal journal,
-            CASection section, CAAuxiliaire ecritureAuxiliaire, CAEcriture sourceEcriture) throws Exception {
+                                 CASection section, CAAuxiliaire ecritureAuxiliaire, CAEcriture sourceEcriture) throws Exception {
         ecritureAuxiliaire.setSession(getSession());
         ecritureAuxiliaire.setIdJournal(journal.getIdJournal());
         ecritureAuxiliaire.setIdCompteAnnexe(compteAnnexe.getIdCompteAnnexe());
@@ -626,7 +628,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
     /**
      * Ajout d'une opération auxiliaire sans libellé sur la section actuelle. Utile lors de la compensation d'un section
      * par rapport à sa section auxiliaire.
-     * 
+     *
      * @param transaction
      * @param compteAnnexe
      * @param journal
@@ -682,7 +684,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Ajout d'une opération auxiliaire sans libellé sur une section.
-     * 
+     *
      * @param transaction
      * @param compteAnnexe
      * @param journal
@@ -692,7 +694,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
      * @throws Exception
      */
     private void addAuxiliaire(BTransaction transaction, String idCompteAnnexe, CAJournal journal, FWCurrency montant,
-            CASection section) throws Exception {
+                               CASection section) throws Exception {
         CAAuxiliaire auxiliaire = new CAAuxiliaire();
         auxiliaire.setSession(getSession());
         auxiliaire.setIdJournal(journal.getIdJournal());
@@ -723,7 +725,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Ajout d'une écriture sur une section.
-     * 
+     *
      * @param transaction
      * @param compteAnnexe
      * @param journal
@@ -734,8 +736,8 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
      * @throws Exception
      */
     private void addEcriture(BTransaction transaction, CACompteAnnexe compteAnnexe, CAJournal journal,
-            FWCurrency montant, CASection section, String libelle, String referenceRubriqueCompensation,
-            CASection sectionCompensation, String sectionCompensationDeSur) throws Exception {
+                             FWCurrency montant, CASection section, String libelle, String referenceRubriqueCompensation,
+                             CASection sectionCompensation, String sectionCompensationDeSur) throws Exception {
         this.addEcriture(transaction, compteAnnexe, journal, JACalendar.todayJJsMMsAAAA(), montant, section, libelle,
                 referenceRubriqueCompensation, sectionCompensation, sectionCompensationDeSur);
     }
@@ -743,7 +745,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
     /**
      * Ajout d'une écriture sur la section actuelle. Utile pour soldé une section par exemple (fonction Transfert de
      * comptes).
-     * 
+     *
      * @param transaction
      * @param compteAnnexe
      * @param journal
@@ -752,7 +754,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
      * @throws Exception
      */
     public void addEcriture(BTransaction transaction, CACompteAnnexe compteAnnexe, CAJournal journal,
-            FWCurrency montant, String libelle, String referenceRubriqueCompensation) throws Exception {
+                            FWCurrency montant, String libelle, String referenceRubriqueCompensation) throws Exception {
         boolean useOwnTransaction = false;
         try {
             // Refuser si section pas instanciée
@@ -802,19 +804,19 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Ajout d'une écriture sur une section.
-     * 
+     *
      * @param transaction
      * @param compteAnnexe
      * @param journal
      * @param montant
      * @param section
-     * @param libelle Optionnel
+     * @param libelle                       Optionnel
      * @param referenceRubriqueCompensation
      * @throws Exception
      */
     private void addEcriture(BTransaction transaction, CACompteAnnexe compteAnnexe, CAJournal journal, String date,
-            FWCurrency montant, CASection section, String libelle, String referenceRubriqueCompensation,
-            CASection sectionCompensation, String sectionCompensationDeSur) throws Exception {
+                             FWCurrency montant, CASection section, String libelle, String referenceRubriqueCompensation,
+                             CASection sectionCompensation, String sectionCompensationDeSur) throws Exception {
         CAEcriture ecriture = new CAEcriture();
         ecriture.setSession(getSession());
         ecriture.setIdJournal(journal.getIdJournal());
@@ -843,7 +845,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         // Chargement de la rubrique de compensation
         if (!(referenceRubriqueCompensation.equals(APIReferenceRubrique.COMPENSATION_LETTRAGE)
                 || referenceRubriqueCompensation.equals(APIReferenceRubrique.COMPENSATION_LISSAGE) || referenceRubriqueCompensation
-                    .equals(APIReferenceRubrique.COMPENSATION_TRANSFERT_DE_SOLDE))) {
+                .equals(APIReferenceRubrique.COMPENSATION_TRANSFERT_DE_SOLDE))) {
             transaction.addErrors(journal.getSession().getLabel(CASection.LABEL_CODE_REFERENCE_NON_AUTORISE)
                     + referenceRubriqueCompensation);
         }
@@ -877,9 +879,9 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
     /**
      * Insérer une opération dans la section <br />
      * Date de création : (18.01.2002 13:19:50)
-     * 
-     * @return FWMessage null s'il n'y a pas d'erreur, sinon un message d'erreur
+     *
      * @param oper globaz.osiris.db.comptes.CAOperation l'opération à insérer
+     * @return FWMessage null s'il n'y a pas d'erreur, sinon un message d'erreur
      */
     public FWMessage addOperation(CAOperation oper) {
         // Initialiser un nouveau message
@@ -940,13 +942,13 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Exécution du lettrage automatique. La liste des sections sera retourné en fonction du compte annexe.
-     * 
+     *
      * @param transaction
      * @param compteAnnexe
      * @param journal
      */
     public boolean automaticLettrage(BTransaction transaction, CACompteAnnexe compteAnnexe, CAJournal journal,
-            String montantMax) {
+                                     String montantMax) {
         boolean atLeastOne = false;
         boolean useOwnTransaction = false;
         try {
@@ -1001,7 +1003,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Exécute le lettrage des sections.
-     * 
+     *
      * @param transaction
      * @param compteAnnexe
      * @param journal
@@ -1009,7 +1011,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
      * @throws Exception
      */
     private void doLettrage(BTransaction transaction, CACompteAnnexe compteAnnexe, CAJournal journal,
-            Collection<CASection> sectionList, String montantMax, String date) throws Exception {
+                            Collection<CASection> sectionList, String montantMax, String date) throws Exception {
         FWCurrency soldeALettrer = new FWCurrency(montantMax);
         soldeALettrer.abs();
 
@@ -1051,17 +1053,17 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Execute le lettrage des sections en fonction des dates
-     * 
-     * @revision SCO 20 avr. 2010 (mandat inforom 146)
+     *
      * @param transaction
      * @param compteAnnexe
      * @param journal
      * @param it
      * @param montantMax
      * @throws Exception
+     * @revision SCO 20 avr. 2010 (mandat inforom 146)
      */
     private boolean doLettrageSectionParDate(BTransaction transaction, CACompteAnnexe compteAnnexe, CAJournal journal,
-            Collection<CASection> sectionList, String montantMax) throws Exception {
+                                             Collection<CASection> sectionList, String montantMax) throws Exception {
         FWCurrency soldeALettrer = new FWCurrency(montantMax);
         soldeALettrer.abs();
 
@@ -1148,7 +1150,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Duplique l'écriture passée sur la section d'un compte annexe vers la section auxiliaire liée.
-     * 
+     *
      * @param transaction
      * @param compteAnnexe
      * @param journal
@@ -1157,7 +1159,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
      * @throws Exception
      */
     public String duplicateEcritureToAuxiliaire(BTransaction transaction, CACompteAnnexe compteAnnexe,
-            CAJournal journal, CAEcriture ecriture) throws Exception {
+                                                CAJournal journal, CAEcriture ecriture) throws Exception {
         String newIdOperation = "";
 
         boolean useOwnTransaction = false;
@@ -1215,7 +1217,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Extourne les écritures de la section
-     * 
+     *
      * @param transaction
      * @param journal
      * @param text
@@ -1263,7 +1265,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Extourne les opérations
-     * 
+     *
      * @param transaction
      * @param journal
      * @param text
@@ -1302,7 +1304,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Indique s'il y a des ordres de recouvrement(LSV/DD) en attente pour cette section
-     * 
+     *
      * @return attenteLSVDD
      */
     public Boolean getAttenteLSVDD() {
@@ -1373,7 +1375,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Retourne la valeur négative dune devise.
-     * 
+     *
      * @param sourceValue
      * @return
      */
@@ -1432,7 +1434,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
     /**
      * Cette méthode permet de récupérer le premier identifiant de l'événement contentieux non exécuté et modifié
      * manuellement.
-     * 
+     *
      * @return String idEveCon
      * @throws Exception
      */
@@ -1457,7 +1459,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
     /**
      * Cette méthode permet de récupérer le premier identifiant de l'événement contentieux non exécuté et modifié
      * manuellement qui est ignoré.
-     * 
+     *
      * @return String idEveCon
      * @throws Exception
      */
@@ -1481,7 +1483,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Cette méthode retourne le montant des frais de la section
-     * 
+     *
      * @return String frais
      */
     @Override
@@ -1492,7 +1494,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
     /**
      * Retourne la description complète de la section <br />
      * Date de création : (11.03.2002 13:39:01)
-     * 
+     *
      * @return String
      */
     public String getFullDescription() {
@@ -1503,7 +1505,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
     /**
      * Retourne la description complète de la section <br />
      * Date de création : (11.03.2002 13:39:01)
-     * 
+     *
      * @param String codeIsoLangue
      * @return String
      */
@@ -1533,7 +1535,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Cette méthode retourne l'identifiant du dernier événement contentieux effectué
-     * 
+     *
      * @return String identifiant du dernier événement contentieux effectué
      */
     public String getIdLastEtapeCtx() {
@@ -1619,7 +1621,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Récupération de la dernière étape de contentieux Aquila
-     * 
+     *
      * @param sb
      */
     private String getLastEtapeAquila() {
@@ -1672,7 +1674,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
     /**
      * Retourne l'id et le libellé du plan <br />
      * Date de création : (22.01.2002 16:03:24)
-     * 
+     *
      * @return String
      */
     public String getPlan() {
@@ -1687,7 +1689,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Getter de l'objet CAPlanRecouvrement relatif a la section
-     * 
+     *
      * @return
      */
     public CAPlanRecouvrement getPlanRecouvrement() {
@@ -1779,12 +1781,28 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         }
     }
 
+    public List<CAMotifContentieux> getMotifsContentieux() {
+        try {
+            CAMotifContentieuxManager motMgr = new CAMotifContentieuxManager();
+            motMgr.setSession(getSession());
+            motMgr.setForIdSection(getIdSection());
+            motMgr.setFromDateBetweenDebutFin(JACalendar.todayJJsMMsAAAA());
+            motMgr.find();
+            if (!motMgr.isEmpty()) {
+                return motMgr.<CAMotifContentieux>toList();
+            }
+        } catch (Exception e) {
+            JadeLogger.error(this, e);
+        }
+        return new ArrayList<>();
+    }
+
     private void getResumeContentieuxOsiris(StringBuffer sb) {
         // Si contentieux suspendu
         try {
             if (getContentieuxEstSuspendu().booleanValue()
                     && BSessionUtil.compareDateFirstGreater(getSession(), getDateSuspendu(),
-                            JACalendar.format(JACalendar.today(), JACalendar.FORMAT_DDsMMsYYYY))) {
+                    JACalendar.format(JACalendar.today(), JACalendar.FORMAT_DDsMMsYYYY))) {
                 sb.append(getUcMotifContentieuxSuspendu().getLibelle());
                 if (!JAUtil.isDateEmpty(getDateSuspendu())) {
                     sb.append(" -> " + getDateSuspendu());
@@ -1858,7 +1876,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Cette méthode retourne le solde de la section à une date donnée.
-     * 
+     *
      * @param untilDate
      * @return String solde de la section ou null en cas de problème
      * @throws Exception
@@ -1948,7 +1966,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
     /**
      * Retourne vrai si EvenementContentieux contient des données <br />
      * Date de création : (27.05.2002 08:16:14)
-     * 
+     *
      * @return boolean vrai si EvenementContentieux contient des données
      */
     public boolean hasEvenementContentieux() {
@@ -2000,7 +2018,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Retourne vrai si la section contient des opérations Date de création : (22.03.2002 09:49:14)
-     * 
+     *
      * @return boolean vrai si la section contient des opérations
      */
     @Override
@@ -2044,9 +2062,9 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
      * La section est-elle au poursuite ? <br/>
      * Si oui les intérêts moratoires ne doivent pas être facturé car l'office de poursuite s'en charge => état exempté.<br/>
      * Ne tient pas compte si la poursuite est radiée.
-     * 
+     *
      * @param boolean soldeOuvert, true pour ne prendre que les sections qui ont un solde > 0. False, prend toutes les
-     *        sections indépendamment du solde
+     *                sections indépendamment du solde
      * @return true si la section est aux poursuites (RP et ss)
      */
     public boolean isSectionAuxPoursuites(boolean soldeOuvert) {
@@ -2093,8 +2111,8 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * @param soldeOuvert (Boolean) : <br />
-     *            <code>true</code> pour ne prendre que les sections qui ont un solde > 0. <br/>
-     *            <code>false</code> prend toutes les sections indépendamment du solde.
+     *                    <code>true</code> pour ne prendre que les sections qui ont un solde > 0. <br/>
+     *                    <code>false</code> prend toutes les sections indépendamment du solde.
      * @return <code>true</code> si la section est aux poursuites (RP et ss) et n'est pas radiée.
      */
     @Override
@@ -2120,7 +2138,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
     }
 
     private FWCurrency lettrer(BTransaction transaction, CACompteAnnexe compteAnnexe, CAJournal journal,
-            Collection<CASection> sectionList, FWCurrency montant, FWCurrency soldeALettrer, String date)
+                               Collection<CASection> sectionList, FWCurrency montant, FWCurrency soldeALettrer, String date)
             throws Exception {
 
         if (montant.compareTo(soldeALettrer) < 0) {
@@ -2136,13 +2154,13 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Exécution du lettrage sur une section.
-     * 
+     *
      * @param transaction
      * @param section
      * @param journal
      */
     public boolean manualLettrage(BTransaction transaction, CACompteAnnexe compteAnnexe, CASection section,
-            CAJournal journal, String montantMaxALettrer) {
+                                  CAJournal journal, String montantMaxALettrer) {
         boolean useOwnTransaction = false;
         boolean atLeastOneLettrage = false;
         try {
@@ -2208,9 +2226,9 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
     /**
      * Supprimer une opération de la section <br />
      * Date de création : (18.01.2002 13:19:50)
-     * 
-     * @return FWMessage null s'il n'y a pas d'erreur, sinon un message d'erreur
+     *
      * @param oper globaz.osiris.db.comptes.CAOperation l'opération à supprimer
+     * @return FWMessage null s'il n'y a pas d'erreur, sinon un message d'erreur
      */
     public FWMessage removeOperation(CAOperation oper) {
         // Initialiser un nouveau message
@@ -2257,7 +2275,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Récupération du plan de paiement suivant l'id du plan de paiement
-     * 
+     *
      * @return
      */
     private CAPlanRecouvrement retrievePlanRecouvrement() throws Exception {
@@ -2344,7 +2362,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Set le dernier état de la section en fonction du contentieux Aquila
-     * 
+     *
      * @param String idLastEtatAquila (Code système)
      */
     public void setIdLastEtatAquila(String idLastEtatAquila) {
@@ -2353,7 +2371,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Set le mode de compensation de la section
-     * 
+     *
      * @param idModeCompensation (Code Système)
      */
     @Override
@@ -2369,7 +2387,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Cette méthode permet de setter l'identifiant du passage dans lequel le report de la section est pris en compte
-     * 
+     *
      * @param String idPassageComp
      */
     @Override
@@ -2422,7 +2440,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * Setter de l'objet CAPlanRecouvrement
-     * 
+     *
      * @param planRecouvrement
      */
     public void setPlanRecouvrement(CAPlanRecouvrement planRecouvrement) {
@@ -2551,7 +2569,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * S'il s'agit d'une opération contentieux, on met à jour la dernière étape
-     * 
+     *
      * @param oper
      */
     private void updateAddLastEtape(CAOperation oper) {
@@ -2575,7 +2593,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * S'il s'agit d'une écriture, on met à jour le solde du compte annexe
-     * 
+     *
      * @param oper
      */
     private void updateAddSoldeCA(CAOperation oper) {
@@ -2625,7 +2643,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * S'il s'agit d'une écriture, on met à jour le solde de la section
-     * 
+     *
      * @param oper
      */
     private void updateAddSoldeSection(CAOperation oper) {
@@ -2711,7 +2729,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * S'il s'agit d'une opération contentieux, on met à jour la dernière étape
-     * 
+     *
      * @param oper
      */
     private void updateRemoveLastEtape(CAOperation oper) {
@@ -2750,7 +2768,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * S'il s'agit d'une écriture, on met à jour le solde du compte annexe
-     * 
+     *
      * @param oper
      */
     private void updateRemoveSoldeCA(CAOperation oper) {
@@ -2799,7 +2817,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     /**
      * S'il s'agit d'une écriture, on met à jour le solde de la section
-     * 
+     *
      * @param oper
      */
     private void updateRemoveSoldeSection(CAOperation oper) {
