@@ -551,14 +551,14 @@ public class ReferenceQR extends AbstractReference {
 
     public String getCreNom() {
         if (creNom.length() > 70) {
-            return creNom.substring(70, creNom.length());
+            return creNom.substring(0, 70);
         } else return creNom;
     }
 
     public void setCreNom(String creNom) {
         // Limitation du nombre de caractère à 70 ( doc officielle)
         if (creNom.length() > 70) {
-            this.creNom = creNom.substring(70, creNom.length());
+            this.creNom = creNom.substring(0, 70);
         } else this.creNom = creNom;
     }
 
@@ -573,14 +573,14 @@ public class ReferenceQR extends AbstractReference {
     public String getCreRueOuLigneAdresse1() {
         // Limitation du nombre de caractère à 70 ( doc officielle)
         if (creRueOuLigneAdresse1.length() > 70) {
-            return creRueOuLigneAdresse1.substring(70, creRueOuLigneAdresse1.length());
+            return creRueOuLigneAdresse1.substring(0, 70);
         } else return creRueOuLigneAdresse1;
     }
 
     public void setCreRueOuLigneAdresse1(String creRueOuLigneAdresse1) {
         // Limitation du nombre de caractère à 70 ( doc officielle)
         if (creRueOuLigneAdresse1.length() > 70) {
-            this.creRueOuLigneAdresse1 = creRueOuLigneAdresse1.substring(70, creRueOuLigneAdresse1.length());
+            this.creRueOuLigneAdresse1 = creRueOuLigneAdresse1.substring(0, 70);
         } else this.creRueOuLigneAdresse1 = creRueOuLigneAdresse1;
     }
 
@@ -588,12 +588,12 @@ public class ReferenceQR extends AbstractReference {
         if(getCreAdressTyp().equalsIgnoreCase(STRUCTURE)){
             // Limitation du nombre de caractère à 16 pour les adresses structurées ( doc officielle)
             if (creNumMaisonOuLigneAdresse2.length() > 16) {
-                return creNumMaisonOuLigneAdresse2.substring(16, creNumMaisonOuLigneAdresse2.length());
+                return creNumMaisonOuLigneAdresse2.substring(0, 16);
             } else return creNumMaisonOuLigneAdresse2;
         } else {
             // Limitation du nombre de caractère à 70 ( doc officielle)
             if (creNumMaisonOuLigneAdresse2.length() > 70) {
-                return creNumMaisonOuLigneAdresse2.substring(70, creNumMaisonOuLigneAdresse2.length());
+                return creNumMaisonOuLigneAdresse2.substring(0, 70);
             } else return creNumMaisonOuLigneAdresse2;
         }
 
@@ -603,12 +603,12 @@ public class ReferenceQR extends AbstractReference {
         if(getCreAdressTyp().equalsIgnoreCase(STRUCTURE)) {
             // Limitation du nombre de caractère à 16 ( doc officielle)
             if (creNumMaisonOuLigneAdresse2.length() > 16) {
-                this.creNumMaisonOuLigneAdresse2 = creNumMaisonOuLigneAdresse2.substring(16, creNumMaisonOuLigneAdresse2.length());
+                this.creNumMaisonOuLigneAdresse2 = creNumMaisonOuLigneAdresse2.substring(0, 16);
             } else this.creNumMaisonOuLigneAdresse2 = creNumMaisonOuLigneAdresse2;
         } else {
             // Limitation du nombre de caractère à 70 ( doc officielle)
             if (creNumMaisonOuLigneAdresse2.length() > 70) {
-                this.creNumMaisonOuLigneAdresse2 = creNumMaisonOuLigneAdresse2.substring(70, creNumMaisonOuLigneAdresse2.length());
+                this.creNumMaisonOuLigneAdresse2 = creNumMaisonOuLigneAdresse2.substring(0, 70);
             } else this.creNumMaisonOuLigneAdresse2 = creNumMaisonOuLigneAdresse2;
         }
     }
@@ -616,28 +616,28 @@ public class ReferenceQR extends AbstractReference {
     public String getCreCodePostal() {
         // Limitation du nombre de caractère à 16 ( doc officielle)
         if (creCodePostal.length() > 16) {
-            return creCodePostal.substring(16, creCodePostal.length());
+            return creCodePostal.substring(0, 16);
         } else return creCodePostal;
     }
 
     public void setCreCodePostal(String creCodePostal) {
         // Limitation du nombre de caractère à 16 ( doc officielle)
         if (creCodePostal.length() > 16) {
-            this.creCodePostal = creCodePostal.substring(16, creCodePostal.length());
+            this.creCodePostal = creCodePostal.substring(0, 16);
         } else this.creCodePostal = creCodePostal;
     }
 
     public String getCreLieu() {
         // Limitation du nombre de caractère à 35 ( doc officielle)
         if (creLieu.length() > 35) {
-            return creLieu.substring(35, creLieu.length());
+            return creLieu.substring(0, 35);
         } else return creLieu;
     }
 
     public void setCreLieu(String creLieu) {
         // Limitation du nombre de caractère à 35 ( doc officielle)
         if (creLieu.length() > 35) {
-            this.creLieu = creLieu.substring(35, creLieu.length());
+            this.creLieu = creLieu.substring(0, 35);
         } else this.creLieu = creLieu;
 
     }
@@ -674,13 +674,13 @@ public class ReferenceQR extends AbstractReference {
     public String getDebfNom() {
         // Limitation du nombre de caractère à 70 ( doc officielle)
         if (debfNom.length() > 70) {
-            return debfNom.substring(70, debfNom.length());
+            return debfNom.substring(0, 70);
         } else return debfNom;
     }
 
     public void setDebfNom(String debfNom) {
         if (debfNom.length() > 70) {
-            this.debfNom = debfNom.substring(70, debfNom.length());
+            this.debfNom = debfNom.substring(0, 70);
         } else this.debfNom = debfNom;
     }
 
@@ -695,14 +695,15 @@ public class ReferenceQR extends AbstractReference {
     public String getDebfRueOuLigneAdresse1() {
         // Limitation du nombre de caractère à 70 ( doc officielle)
         if (debfRueOuLigneAdresse1.length() > 70) {
-            return debfRueOuLigneAdresse1.substring(70, debfRueOuLigneAdresse1.length());
+            return debfRueOuLigneAdresse1.substring(0, 70);
         } else return debfRueOuLigneAdresse1;
     }
 
     public void setDebfRueOuLigneAdresse1(String debfRueOuLigneAdresse1) {
         // Limitation du nombre de caractère à 70 ( doc officielle)
         if (debfRueOuLigneAdresse1.length() > 70) {
-            this.debfRueOuLigneAdresse1 = debfRueOuLigneAdresse1.substring(70, debfRueOuLigneAdresse1.length());
+//            this.debfRueOuLigneAdresse1 = debfRueOuLigneAdresse1.substring(70, debfRueOuLigneAdresse1.length());
+            this.debfRueOuLigneAdresse1 = debfRueOuLigneAdresse1.substring(0, 70);
         } else this.debfRueOuLigneAdresse1 = debfRueOuLigneAdresse1;
     }
 
@@ -710,12 +711,12 @@ public class ReferenceQR extends AbstractReference {
         if(getCreAdressTyp().equalsIgnoreCase(STRUCTURE)) {
             // Limitation du nombre de caractère à 16 ( doc officielle)
             if (debfNumMaisonOuLigneAdresse2.length() > 16) {
-                return debfNumMaisonOuLigneAdresse2.substring(16, debfNumMaisonOuLigneAdresse2.length());
+                return debfNumMaisonOuLigneAdresse2.substring(0, 16);
             } else return debfNumMaisonOuLigneAdresse2;
         } else {
             // Limitation du nombre de caractère à 70 ( doc officielle)
             if (debfNumMaisonOuLigneAdresse2.length() > 70) {
-                return debfNumMaisonOuLigneAdresse2.substring(70, debfNumMaisonOuLigneAdresse2.length());
+                return debfNumMaisonOuLigneAdresse2.substring(0, 70);
             } else return debfNumMaisonOuLigneAdresse2;
         }
     }
@@ -724,41 +725,48 @@ public class ReferenceQR extends AbstractReference {
         if(getCreAdressTyp().equalsIgnoreCase(STRUCTURE)) {
             // Limitation du nombre de caractère à 16 ( doc officielle)
             if (debfNumMaisonOuLigneAdresse2.length() > 16) {
-                this.debfNumMaisonOuLigneAdresse2 = debfNumMaisonOuLigneAdresse2.substring(16, debfNumMaisonOuLigneAdresse2.length());
+                this.debfNumMaisonOuLigneAdresse2 = debfNumMaisonOuLigneAdresse2.substring(0, 16);
             } else this.debfNumMaisonOuLigneAdresse2 = debfNumMaisonOuLigneAdresse2;
         } else {
+            int indexDepart = 0;
+            if (debfNumMaisonOuLigneAdresse2.indexOf("\n") != -1 && debfNumMaisonOuLigneAdresse2.indexOf("\n") == 0 && debfNumMaisonOuLigneAdresse2.length()>2) {
+                indexDepart = 1;
+            }
+
             // Limitation du nombre de caractère à 70 ( doc officielle)
             if (debfNumMaisonOuLigneAdresse2.length() > 70) {
-                this.debfNumMaisonOuLigneAdresse2 = debfNumMaisonOuLigneAdresse2.substring(70, debfNumMaisonOuLigneAdresse2.length());
-            } else this.debfNumMaisonOuLigneAdresse2 = debfNumMaisonOuLigneAdresse2;
+                this.debfNumMaisonOuLigneAdresse2 = debfNumMaisonOuLigneAdresse2.substring(indexDepart, 70);
+            } else {
+                this.debfNumMaisonOuLigneAdresse2 = debfNumMaisonOuLigneAdresse2.substring(indexDepart, debfNumMaisonOuLigneAdresse2.length());
+            }
         }
     }
 
     public String getDebfCodePostal() {
         // Limitation du nombre de caractère à 16 ( doc officielle)
         if (debfCodePostal.length() > 16) {
-            return debfCodePostal.substring(16, debfCodePostal.length());
+            return debfCodePostal.substring(0, 16);
         } else return debfCodePostal;
     }
 
     public void setDebfCodePostal(String debfCodePostal) {
         // Limitation du nombre de caractère à 16 ( doc officielle)
         if (debfCodePostal.length() > 16) {
-            this.debfCodePostal = debfCodePostal.substring(16, debfCodePostal.length());
+            this.debfCodePostal = debfCodePostal.substring(0, 16);
         } else this.debfCodePostal = debfCodePostal;
     }
 
     public String getDebfLieu() {
         // Limitation du nombre de caractère à 35 ( doc officielle)
         if (debfLieu.length() > 35) {
-            return debfLieu.substring(35, debfLieu.length());
+            return debfLieu.substring(0, 35);
         } else return debfLieu;
     }
 
     public void setDebfLieu(String debfLieu) {
         // Limitation du nombre de caractère à 16 ( doc officielle)
         if (debfLieu.length() > 16) {
-            this.debfLieu = debfLieu.substring(16, debfLieu.length());
+            this.debfLieu = debfLieu.substring(0, 16);
         } else this.debfLieu = debfLieu;
     }
 
@@ -781,14 +789,14 @@ public class ReferenceQR extends AbstractReference {
     public String getCommunicationNonStructuree() {
         // Limitation du nombre de caractère à 140 ( doc officielle)
         if (communicationNonStructuree.length() > 140) {
-            return communicationNonStructuree.substring(140, communicationNonStructuree.length());
+            return communicationNonStructuree.substring(0, 140);
         } else return communicationNonStructuree;
     }
 
     public void setCommunicationNonStructuree(String communicationNonStructuree) {
         // Limitation du nombre de caractère à 140 ( doc officielle)
         if (communicationNonStructuree.length() > 140) {
-            this.communicationNonStructuree = communicationNonStructuree.substring(140, communicationNonStructuree.length());
+            this.communicationNonStructuree = communicationNonStructuree.substring(0, 140);
         } else this.communicationNonStructuree = communicationNonStructuree;
     }
 
@@ -803,42 +811,42 @@ public class ReferenceQR extends AbstractReference {
     public String getInfoFacture() {
         // Limitation du nombre de caractère à 140 ( doc officielle)
         if (infoFacture.length() > 140) {
-            return infoFacture.substring(140, infoFacture.length());
+            return infoFacture.substring(0, 140);
         } else return infoFacture;
     }
 
     public void setInfoFacture(String infoFacture) {
         // Limitation du nombre de caractère à 140 ( doc officielle)
         if (infoFacture.length() > 140) {
-            this.infoFacture = infoFacture.substring(140, infoFacture.length());
+            this.infoFacture = infoFacture.substring(0, 140);
         } else this.infoFacture = infoFacture;
     }
 
     public String getPa1Param() {
         // Limitation du nombre de caractère à 100 ( doc officielle)
         if (pa1Param.length() > 100) {
-            return pa1Param.substring(100, pa1Param.length());
+            return pa1Param.substring(0, 100);
         } else return pa1Param;
     }
 
     public void setPa1Param(String pa1Param) {
         // Limitation du nombre de caractère à 100 ( doc officielle)
         if (pa1Param.length() > 100) {
-            this.pa1Param = pa1Param.substring(100, pa1Param.length());
+            this.pa1Param = pa1Param.substring(0, 100);
         } else this.pa1Param = pa1Param;
     }
 
     public String getPa2Param() {
         // Limitation du nombre de caractère à 100 ( doc officielle)
         if (pa2Param.length() > 100) {
-            return pa2Param.substring(100, pa2Param.length());
+            return pa2Param.substring(0, 100);
         } else return pa2Param;
     }
 
     public void setPa2Param(String pa2Param) {
         // Limitation du nombre de caractère à 100 ( doc officielle)
         if (pa2Param.length() > 100) {
-            this.pa1Param = pa2Param.substring(100, pa2Param.length());
+            this.pa1Param = pa2Param.substring(0, 100);
         } else this.pa2Param = pa2Param;
     }
 
