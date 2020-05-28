@@ -181,9 +181,6 @@ public class APImportationAPGPandemie extends BProcess {
     }
 
     private void initBsession() throws Exception {
-//        bsession = (BSession) GlobazServer.getCurrentSystem()
-//                .getApplication(APApplication.DEFAULT_APPLICATION_APG)
-//                .newSession(getUsername(), getPassword());
         bsession = getSession();
         BSessionUtil.initContext(bsession, this);
     }
