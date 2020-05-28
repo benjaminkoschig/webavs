@@ -606,7 +606,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
                         mapIntermediaire.put(new Periode(dateDebutSurcisProro.toStr("."), dateFinSurcisProro.toStr(".")), CAInteretUtil.USE_TAUX_SURCIS_PRO);
                     }else{
                         //Cas 2.3 : Motifs multiple avec dates modifs du même jours ou croisé
-                        //Prolongation de la période
+                        //Prolongation de la période précédent
                         periodeLastMotif = (Periode)mapIntermediaire.keySet().toArray()[mapIntermediaire.keySet().size()-1];
                         dateDebutNormal = new JADate(periodeLastMotif.getDateDebut());
                         mapIntermediaire.put(new Periode(dateDebutNormal.toStr("."), dateFinNormal.toStr(".")), mapIntermediaire.get(periodeLastMotif));
