@@ -541,7 +541,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
         Map<Periode, Boolean> mapIntermediaire = new LinkedHashMap<>();
         Map<Periode, CATauxParametre> mapLigneAInscrire = new LinkedHashMap<>();
         JADate dateDebut = dateCalculDebut;
-        JADate dateFin;
+        JADate dateFin = null;
         JADate dateDebutSurcisProro;
         JADate dateFinSurcisProro;
         JADate dateDebutNormal;
@@ -556,73 +556,10 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
             }
         }
         Collections.sort(listPeriodeMotifsSurcis);
-        Iterator<Periode> it = listPeriodeMotifsSurcis.iterator();
-        isFirst = true;
-        Periode periodeMotif;
-        Periode periodeLastMotif;
-
-        do {
-            periodeMotif = it.next();
-            if (isFirst) {
-                //Cas 1.1 : Motif unique et actif
-                if (JadeDateUtil.isDateAfter("01.01.2090", periodeMotif.getDateFin())) {
-                    dateFin = dateCalculFin;
-                } else {
-                    //Cas 1.1.1 : Si la date de fin du motif est avant la date du paiement  (cas non-actifs)
-                    if (JadeDateUtil.isDateBefore(periodeMotif.getDateFin(),dateCalculFin.toStr("."))) {
-                        dateFin = new JADate(periodeMotif.getDateFin());
-                    }else{
-                        dateFin = dateCalculFin;
-                    }
-
-                }
-
-                mapIntermediaire.put(new Periode(dateCalculDebut.toStr("."), dateFin.toStr(".")), CAInteretUtil.USE_TAUX_SURCIS_PRO);
-                //Cas 1.2 : Motif unique et pas actif => 2 taux différents.
-                if(!it.hasNext() && !dateFin.equals(dateCalculFin)){
-                    dateDebut = getSession().getApplication().getCalendar().addDays(dateFin, 1);
-                    mapIntermediaire.put(new Periode(dateDebut.toStr("."), dateCalculFin.toStr(".")), CAInteretUtil.USE_TAUX_NORMAL);
-                }
-                isFirst = false;
-            } else {
-                if (it.hasNext()) {
-                    dateDebutNormal = dateDebut;
-                    dateFinNormal = getSession().getApplication().getCalendar().addDays(new JADate(periodeMotif.getDateDebut()), -1);
-                    dateDebutSurcisProro = new JADate(periodeMotif.getDateDebut());
-                    //Cas 2.1 : Motif multiple avec le dernier motif actif
-                    if (JadeDateUtil.isDateAfter("01.01.2090", periodeMotif.getDateFin())) {
-                        dateFinSurcisProro = dateCalculFin;
-                    }else{
-                        //Cas 2.1.1 :  Si la date de fin du motif est avant la date du paiement  (cas non-actifs)
-                        if (JadeDateUtil.isDateBefore(periodeMotif.getDateFin(),dateCalculFin.toStr("."))) {
-                            dateFinSurcisProro = new JADate(periodeMotif.getDateFin());
-                        }else{
-                            dateFinSurcisProro = dateCalculFin;
-                        }
-                    }
-                    //Cas 2.2 : Motif multiple avec dates motifs avec différence de 1+ jours.
-                    if(CAInteretUtil.getJoursInterets(getSession(),dateDebutNormal,dateFinNormal) >0) {
-                        mapIntermediaire.put(new Periode(dateDebutNormal.toStr("."), dateFinNormal.toStr(".")), CAInteretUtil.USE_TAUX_SURCIS_PRO);
-                        mapIntermediaire.put(new Periode(dateDebutSurcisProro.toStr("."), dateFinSurcisProro.toStr(".")), CAInteretUtil.USE_TAUX_SURCIS_PRO);
-                    }else{
-                        //Cas 2.3 : Motifs multiple avec dates modifs du même jours ou croisé
-                        //Prolongation de la période précédent
-                        periodeLastMotif = (Periode)mapIntermediaire.keySet().toArray()[mapIntermediaire.keySet().size()-1];
-                        dateDebutNormal = new JADate(periodeLastMotif.getDateDebut());
-                        mapIntermediaire.put(new Periode(dateDebutNormal.toStr("."), dateFinNormal.toStr(".")), mapIntermediaire.get(periodeLastMotif));
-                        mapIntermediaire.remove(periodeLastMotif);
-                    }
-
-                    dateFin = dateFinSurcisProro;
-                } else {
-                    dateDebutNormal = dateDebut;
-                    dateFinNormal = dateCalculFin;
-                    mapIntermediaire.put(new Periode(dateDebutNormal.toStr("."), dateFinNormal.toStr(".")), CAInteretUtil.USE_TAUX_NORMAL);
-                    dateFin = dateFinNormal;
-                }
-            }
-            dateDebut = getSession().getApplication().getCalendar().addDays(dateFin, 1);
-        } while (it.hasNext());
+        /**
+         * Préparation des différents périodes avec switch sur les 2 types de taux
+         */
+        mapIntermediaire = CAInteretUtil.preparesPeriodeInteretsCovids(getSession(),dateCalculDebut,dateCalculFin,listPeriodeMotifsSurcis);
 
         /**
          * Préparation des lignes des intérêts avec les bons taux
@@ -644,14 +581,13 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
                         dateDebut, dateFin.toStr("."));
             }
             montantCumuleSurcisCalcul.add(montantInteret);
+            dateDebut1erPassage = getSession().getApplication().getCalendar()
+                    .addDays(dateFin, 1);
+            // Si il y'a plusieurs écritures.
+            dateCalculDebutInteret = getSession().getApplication().getCalendar()
+                    .addDays(dateFin, 1);
         }
 
-
-        dateDebut1erPassage = getSession().getApplication().getCalendar()
-                .addDays(dateFin, 1);
-        // Si il y'a plusieurs écritures.
-        dateCalculDebutInteret = getSession().getApplication().getCalendar()
-                .addDays(dateFin, 1);
     }
 
     private void createLignesAInscrire(Map<Periode, Boolean> mapIntermediaire, Map<Periode, CATauxParametre> mapLigneAInscrire) {

@@ -501,12 +501,13 @@ public class CAInteretUtil {
      * @throws Exception
      */
     public static void createLignesAInscrire(BSession session, Map<Periode, Boolean> mapIntermediaire, Map<Periode, CATauxParametre> mapLigneAInscrire, Map<String, CATauxParametre> mapTaux, Map<String, CATauxParametre> mapTauxSurcisProro) throws Exception {
-        JADate dateCalculDebut = null;
         JADate dateCalculFin = null;
         JADate dateDebut = null;
         JADate dateFin = null;
-
+        CATauxParametre taux = null;
+        CATauxParametre tauxLast = null;
         Periode periode;
+        Periode periodeLast = null;
         for(Periode periodeAInscrire: mapIntermediaire.keySet()){
             dateDebut = new JADate(periodeAInscrire.getDateDebut());
             dateFin = new JADate(periodeAInscrire.getDateFin());
@@ -516,13 +517,31 @@ public class CAInteretUtil {
                     Periode periodeTaux = new Periode(keySplit[INDEX_DATE_DEBUT],keySplit[INDEX_DATE_FIN]);
                     if(periodeTaux.isDateDansLaPeriode(dateDebut.toStr("."))){
                         //Si date de fin du taux est avant date de fin => il y'a une autre période avec un taux différent
+                        taux = mapTaux.get(periodeTaux);
                         if(JadeDateUtil.isDateBefore(periodeTaux.getDateFin(),dateFin.toStr("."))){
                             dateFin = new JADate(periodeTaux.getDateFin());
                         }else{
                             dateFin = dateCalculFin;
                         }
-                        periode = new Periode(dateDebut.toStr("."),dateFin.toStr("."));
-                        mapLigneAInscrire.put(periode,mapTauxSurcisProro.get(periode));
+
+                        if(tauxLast == null){
+                            periode = new Periode(dateDebut.toStr("."),dateFin.toStr("."));
+                            mapLigneAInscrire.put(periode,taux);
+                            tauxLast = taux;
+                            periodeLast = periode;
+                        }else{
+                            //Cas : Si taux identique => prolonge la période d'avant
+                            if(tauxLast.getTaux() == taux.getTaux()){
+                                mapLigneAInscrire.remove(periodeLast);
+                                periode = new Periode(periodeLast.getDateDebut(),dateFin.toStr("."));
+                                mapLigneAInscrire.put(periode,taux);
+                            }else{
+                                periode = new Periode(dateDebut.toStr("."),dateFin.toStr("."));
+                                mapLigneAInscrire.put(periode,taux);
+                                tauxLast =taux;
+                                periodeLast = periode;
+                            }
+                        }
                         dateDebut = session.getApplication().getCalendar().addDays(dateFin, 1);
                     }
                 }
@@ -533,21 +552,118 @@ public class CAInteretUtil {
                     Periode periodeTaux = new Periode(keySplit[INDEX_DATE_DEBUT],keySplit[INDEX_DATE_FIN]);
                     if(periodeTaux.isDateDansLaPeriode(dateDebut.toStr("."))){
                         //Si date de fin du taux est avant date de fin => il y'a une autre période avec un taux différent
+                        taux = mapTauxSurcisProro.get(periodeTaux);
                         if(JadeDateUtil.isDateBefore(periodeTaux.getDateFin(),dateFin.toStr("."))){
                             dateFin = new JADate(periodeTaux.getDateFin());
                         }else{
                             dateFin = dateCalculFin;
                         }
-                        periode = new Periode(dateDebut.toStr("."),dateFin.toStr("."));
-                        mapLigneAInscrire.put(periode,mapTauxSurcisProro.get(periode));
-                        dateDebut = session.getApplication().getCalendar().addDays(dateFin, 1);
+
+                        if(tauxLast == null){
+                            periode = new Periode(dateDebut.toStr("."),dateFin.toStr("."));
+                            mapLigneAInscrire.put(periode,taux);
+                            tauxLast = taux;
+                            periodeLast = periode;
+                        }else{
+                            //Cas : Si taux identique => prolonge la période d'avant
+                            if(tauxLast.getTaux() == taux.getTaux()){
+                                mapLigneAInscrire.remove(periodeLast);
+                                periode = new Periode(periodeLast.getDateDebut(),dateFin.toStr("."));
+                                mapLigneAInscrire.put(periode,taux);
+                            }else{
+                                periode = new Periode(dateDebut.toStr("."),dateFin.toStr("."));
+                                mapLigneAInscrire.put(periode,taux);
+                                tauxLast =taux;
+                                periodeLast = periode;
+                            }
+
+                        }
                     }
                 }
             }
         }
     }
 
-    public static int getJoursInterets(BSession session, JADate dateDebut,
+    public static  Map<Periode, Boolean>   preparesPeriodeInteretsCovids(BSession session, JADate dateCalculDebut, JADate dateCalculFin, List<Periode> listPeriodeMotifsSurcis) throws Exception {
+        Map<Periode, Boolean> mapIntermediaire = new LinkedHashMap<>();
+        JADate dateDebut = dateCalculDebut;
+        JADate dateFin;
+        JADate dateDebutSurcisProro;
+        JADate dateFinSurcisProro;
+        JADate dateDebutNormal;
+        JADate dateFinNormal;
+        Iterator<Periode> it = listPeriodeMotifsSurcis.iterator();
+        boolean isFirst = true;
+        Periode periodeMotif;
+        Periode periodeLastMotif;
+        do {
+            periodeMotif = it.next();
+            if (isFirst) {
+                //Cas 1.1 : Motif unique et actif
+                if (JadeDateUtil.isDateAfter("01.01.2090", periodeMotif.getDateFin())) {
+                    dateFin = dateCalculFin;
+                } else {
+                    //Cas 1.1.1 : Si la date de fin du motif est avant la date du paiement  (cas non-actifs)
+                    if (JadeDateUtil.isDateBefore(periodeMotif.getDateFin(),dateCalculFin.toStr("."))) {
+                        dateFin = new JADate(periodeMotif.getDateFin());
+                    }else{
+                        dateFin = dateCalculFin;
+                    }
+
+                }
+
+                mapIntermediaire.put(new Periode(dateCalculDebut.toStr("."), dateFin.toStr(".")), CAInteretUtil.USE_TAUX_SURCIS_PRO);
+                //Cas 1.2 : Motif unique et pas actif => 2 taux différents.
+                if(!it.hasNext() && !dateFin.equals(dateCalculFin)){
+                    dateDebut = session.getApplication().getCalendar().addDays(dateFin, 1);
+                    mapIntermediaire.put(new Periode(dateDebut.toStr("."), dateCalculFin.toStr(".")), CAInteretUtil.USE_TAUX_NORMAL);
+                }
+                isFirst = false;
+            } else {
+                if (it.hasNext()) {
+                    dateDebutNormal = dateDebut;
+                    dateFinNormal = session.getApplication().getCalendar().addDays(new JADate(periodeMotif.getDateDebut()), -1);
+                    dateDebutSurcisProro = new JADate(periodeMotif.getDateDebut());
+                    //Cas 2.1 : Motif multiple avec le dernier motif actif
+                    if (JadeDateUtil.isDateAfter("01.01.2090", periodeMotif.getDateFin())) {
+                        dateFinSurcisProro = dateCalculFin;
+                    }else{
+                        //Cas 2.1.1 :  Si la date de fin du motif est avant la date du paiement  (cas non-actifs)
+                        if (JadeDateUtil.isDateBefore(periodeMotif.getDateFin(),dateCalculFin.toStr("."))) {
+                            dateFinSurcisProro = new JADate(periodeMotif.getDateFin());
+                        }else{
+                            dateFinSurcisProro = dateCalculFin;
+                        }
+                    }
+                    //Cas 2.2 : Motif multiple avec dates motifs avec différence de 1+ jours.
+                    if(CAInteretUtil.getJoursInterets(session,dateDebutNormal,dateFinNormal) >0) {
+                        mapIntermediaire.put(new Periode(dateDebutNormal.toStr("."), dateFinNormal.toStr(".")), CAInteretUtil.USE_TAUX_SURCIS_PRO);
+                        mapIntermediaire.put(new Periode(dateDebutSurcisProro.toStr("."), dateFinSurcisProro.toStr(".")), CAInteretUtil.USE_TAUX_SURCIS_PRO);
+                    }else{
+                        //Cas 2.3 : Motifs multiple avec dates modifs du même jours ou croisé
+                        //Prolongation de la période précédent
+                        periodeLastMotif = (Periode)mapIntermediaire.keySet().toArray()[mapIntermediaire.keySet().size()-1];
+                        dateDebutNormal = new JADate(periodeLastMotif.getDateDebut());
+                        mapIntermediaire.put(new Periode(dateDebutNormal.toStr("."), dateFinNormal.toStr(".")), mapIntermediaire.get(periodeLastMotif));
+                        mapIntermediaire.remove(periodeLastMotif);
+                    }
+
+                    dateFin = dateFinSurcisProro;
+                } else {
+                    dateDebutNormal = dateDebut;
+                    dateFinNormal = dateCalculFin;
+                    mapIntermediaire.put(new Periode(dateDebutNormal.toStr("."), dateFinNormal.toStr(".")), CAInteretUtil.USE_TAUX_NORMAL);
+                    dateFin = dateFinNormal;
+                }
+            }
+            dateDebut = session.getApplication().getCalendar().addDays(dateFin, 1);
+        } while (it.hasNext());
+
+
+
+        return mapIntermediaire;
+    }
+        public static int getJoursInterets(BSession session, JADate dateDebut,
                                                JADate dateFin) throws Exception {
         JACalendarMonth calendar = new JACalendarMonth(30);
         int days = (int) calendar.daysBetween(dateDebut,
