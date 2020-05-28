@@ -571,6 +571,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
                     dateDebut = getSession().getApplication().getCalendar().addDays(dateFin, 1);
                     mapIntermediaire.put(new Periode(dateDebut.toStr("."), dateCalculFin.toStr(".")), CAInteretUtil.USE_TAUX_NORMAL);
                 }
+                isFirst = false;
             } else {
                 if (it.hasNext()) {
                     dateDebutNormal = dateDebut;
