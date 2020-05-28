@@ -600,15 +600,17 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
                             dateFinSurcisProro = dateCalculFin;
                         }
                     }
-                    //Cas 2.2 : Motif multiple avec dates motifs qui se chevauchent ou différence de 1 jour.
+                    //Cas 2.2 : Motif multiple avec dates motifs avec différence de 1+ jours.
                     if(CAInteretUtil.getJoursInterets(getSession(),dateDebutNormal,dateFinNormal) >0) {
                         mapIntermediaire.put(new Periode(dateDebutNormal.toStr("."), dateFinNormal.toStr(".")), CAInteretUtil.USE_TAUX_SURCIS_PRO);
                         mapIntermediaire.put(new Periode(dateDebutSurcisProro.toStr("."), dateFinSurcisProro.toStr(".")), CAInteretUtil.USE_TAUX_SURCIS_PRO);
                     }else{
+                        //Cas 2.3 : Motifs multiple avec dates modifs du même jours ou croisé
+                        //Prolongation de la période
                         periodeLastMotif = (Periode)mapIntermediaire.keySet().toArray()[mapIntermediaire.keySet().size()-1];
                         dateDebutNormal = new JADate(periodeLastMotif.getDateDebut());
+                        mapIntermediaire.put(new Periode(dateDebutNormal.toStr("."), dateFinNormal.toStr(".")), mapIntermediaire.get(periodeLastMotif));
                         mapIntermediaire.remove(periodeLastMotif);
-                        mapIntermediaire.put(new Periode(dateDebutNormal.toStr("."), dateFinNormal.toStr(".")), CAInteretUtil.USE_TAUX_SURCIS_PRO);
                     }
 
                     dateFin = dateFinSurcisProro;
