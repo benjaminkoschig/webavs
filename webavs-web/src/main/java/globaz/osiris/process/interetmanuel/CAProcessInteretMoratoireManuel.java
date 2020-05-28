@@ -593,7 +593,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
                     if (JadeDateUtil.isDateAfter("01.01.2090", periodeMotif.getDateFin())) {
                         dateFinSurcisProro = dateCalculFin;
                     }else{
-                        //Cas 2.1.1 : Motif unique et pas actif => 2 taux différents.
+                        //Cas 2.1.1 :  Si la date de fin du motif est avant la date du paiement  (cas non-actifs)
                         if (JadeDateUtil.isDateBefore(periodeMotif.getDateFin(),dateCalculFin.toStr("."))) {
                             dateFinSurcisProro = new JADate(periodeMotif.getDateFin());
                         }else{
