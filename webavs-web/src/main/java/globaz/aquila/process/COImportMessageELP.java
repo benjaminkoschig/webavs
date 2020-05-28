@@ -6,11 +6,8 @@ import aquila.ch.eschkg.ScType;
 import aquila.ch.eschkg.SpType;
 import ch.globaz.exceptions.ExceptionMessage;
 import ch.globaz.exceptions.GlobazTechnicalException;
-import ch.globaz.vulpecula.daemon.suividecompte.AbstractDaemon;
 import com.google.common.base.Throwables;
-import globaz.aquila.api.ICOApplication;
 import globaz.aquila.api.ICOEtape;
-import globaz.aquila.api.helper.ICOEtapeHelper;
 import globaz.aquila.application.COProperties;
 import globaz.aquila.db.access.batch.*;
 import globaz.aquila.db.access.batch.transition.CO040SaisirCDP;
@@ -27,7 +24,10 @@ import globaz.aquila.print.list.elp.COMotifMessageELP;
 import globaz.aquila.print.list.elp.COTypeELPFactory;
 import globaz.aquila.process.elp.*;
 import globaz.aquila.process.exception.ElpProcessException;
-import globaz.globall.db.*;
+import globaz.globall.db.BManager;
+import globaz.globall.db.BProcess;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JACalendar;
 import globaz.jade.common.JadeClassCastException;
 import globaz.jade.fs.JadeFsFacade;
@@ -58,10 +58,6 @@ public class COImportMessageELP extends BProcess {
     private static final String MAIL_SUBJECT = "ELP_MAIL_SUBJECT";
     private static final String BACKUP_FOLDER = "/backup/";
     private static final String XML_EXTENSION = ".xml";
-    private static final String ID_ETAPE_SAISIR_CDP = "5";
-    private static final String ID_ETAPE_SAISIR_PV_ADB = "34";
-    private static final String ID_ETAPE_SAISIR_PV_SAISIE = "36";
-    private static final String ID_ETAPE_SAISIR_ADB = "21";
 
     private COProtocoleELP protocole;
     private String error = "";
@@ -291,6 +287,7 @@ public class COImportMessageELP extends BProcess {
         COTransition result = null;
         COEtapeManager etapeManager = new COEtapeManager();
         etapeManager.setSession(getSession());
+        etapeManager.setForIdSequence(contentieux.getIdSequence());
         etapeManager.setForLibEtape(csEtape);
         try {
             etapeManager.find(getSession().getCurrentThreadTransaction(), BManager.SIZE_NOLIMIT);
@@ -367,6 +364,7 @@ public class COImportMessageELP extends BProcess {
         } catch (Exception e) {
             throw new ElpProcessException("Erreur lors de la création de la nouvelle étape du contentieux", e);
         }
+
     }
 
     /**
@@ -607,12 +605,12 @@ public class COImportMessageELP extends BProcess {
                 case IntRole.ROLE_AFFILIE_PARITAIRE:
                     rubrique = ref.getRubriqueByCodeReference(APIReferenceRubrique.CONTENTIEUX_INTERET_MORATOIRE_PARITAIRE);
                     mapFraisEtInterets.put(COTransitionViewBean.RUB_DESCRIPTION, rubrique.getDescription());
-                    mapFraisEtInterets.put(COTransitionViewBean.RUBRIQUE, rubrique.getIdRubrique());
+                    mapFraisEtInterets.put(COTransitionViewBean.RUBRIQUE, rubrique.getIdExterne());
                     break;
                 case IntRole.ROLE_AFFILIE_PERSONNEL:
                     rubrique = ref.getRubriqueByCodeReference(APIReferenceRubrique.CONTENTIEUX_INTERET_MORATOIRE_PERSONNEL);
                     mapFraisEtInterets.put(COTransitionViewBean.RUB_DESCRIPTION, rubrique.getDescription());
-                    mapFraisEtInterets.put(COTransitionViewBean.RUBRIQUE, rubrique.getIdRubrique());
+                    mapFraisEtInterets.put(COTransitionViewBean.RUBRIQUE, rubrique.getIdExterne());
                     break;
                 default:
                     throw new COELPException("Ce type de rubrique n'est pas géré automatiquement.");

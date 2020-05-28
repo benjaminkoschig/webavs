@@ -27,7 +27,9 @@ public class CORcElpDto extends COAbstractELP {
             if (Objects.nonNull(loss)) {
                 numAbd = loss.getLossNumber();
                 dateEtablissement = getDate(loss.getDate());
-                interest = loss.getInterest().toString();
+                if (Objects.nonNull(loss.getInterest())) {
+                    interest = loss.getInterest().toString();
+                }
             }
         }
     }
