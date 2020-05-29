@@ -365,6 +365,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
                 plan.getIdPlan(), getIdSection(), null, dateMaxPourPaiement.toStrAMJ());
 
         FWCurrency montantCumule = new FWCurrency();
+        montantCumuleSurcisCalcul = new FWCurrency();
 
         // POAVS-223
         boolean aControlerManuellement = false;
@@ -416,8 +417,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
                             /**
                              * Cas spécial : Quand il y'a des motifs de surcis ou progation
                              */
-                            montantSoumisSurcisCalcul = montantSoumis;
-                            creerInteretForSurcisProro(dateCalculDebutInteret, ecriture.getJADate(), listPeriodeMotifsSurcis, interet);
+                            creerInteretForSurcisProro(dateCalculDebutInteret, ecriture.getJADate(), listPeriodeMotifsSurcis, interet,montantSoumis);
                             montantCumule = montantCumuleSurcisCalcul;
                         } else {
                             boolean isFirst = true;
@@ -498,7 +498,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
             if (CommonProperties.TAUX_INTERET_PANDEMIE.getBooleanValue()) {
                 List<Periode> listPeriodeMotifsSurcis = CAInteretUtil.isSectionSurcisProgaPaiementInPandemie(getTransaction(), getSession(), idSection);
                 if (!listPeriodeMotifsSurcis.isEmpty()) {
-                    creerInteretForSurcisProro(dateDebut1erPassage, getDateFinAsJADate(), listPeriodeMotifsSurcis, interet);
+                    creerInteretForSurcisProro(dateDebut1erPassage, getDateFinAsJADate(), listPeriodeMotifsSurcis, interet,montantSoumis);
                 } else {
                     JADate dateCalculDebut = dateDebut1erPassage;
                     JADate dateCalculFin = getDateFinAsJADate();
@@ -538,7 +538,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
         }
     }
 
-    public void creerInteretForSurcisProro(JADate dateCalculDebut, JADate dateCalculFin, List<Periode> listPeriodeMotifsSurcis, CAInteretMoratoire interet) throws Exception {
+    public void creerInteretForSurcisProro(JADate dateCalculDebut, JADate dateCalculFin, List<Periode> listPeriodeMotifsSurcis, CAInteretMoratoire interet,FWCurrency montantSoumis) throws Exception {
 
         Map<String, CATauxParametre> mapTaux = CAInteretUtil.getTauxInMap(getTransaction(), dateCalculDebut.toStr("."), dateCalculFin.toStr("."), CAInteretUtil.CS_PARAM_TAUX, 2);
         Map<String, CATauxParametre> mapTauxSurcisProro = CAInteretUtil.getTauxInMap(getTransaction(), dateCalculDebut.toStr("."), dateCalculFin.toStr("."), CAInteretUtil.CS_PARAM_TAUX_SURCIS_PROGATION_PANDEMIE_2020, 2);
@@ -568,15 +568,14 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
 
         FWCurrency montantInteret;
         CATauxParametre taux;
-        montantCumuleSurcisCalcul = new FWCurrency();
         for (Periode keyAVS : mapLigneAInscrire.keySet()) {
             taux = mapLigneAInscrire.get(keyAVS);
             dateDebut = new JADate(keyAVS.getDateDebut());
             dateFin = new JADate(keyAVS.getDateFin());
-            montantInteret = CAInteretUtil.getMontantInteret(getSession(), montantSoumisSurcisCalcul,
+            montantInteret = CAInteretUtil.getMontantInteret(getSession(), montantSoumis,
                     dateFin, dateDebut, taux.getTaux());
             if ((montantInteret != null)) {
-                interet = addDetailInteretMoratoire(interet, montantSoumisSurcisCalcul, taux.getTaux(), montantInteret,
+                interet = addDetailInteretMoratoire(interet, montantSoumis, taux.getTaux(), montantInteret,
                         dateDebut, dateFin.toStr("."));
             }
             montantCumuleSurcisCalcul.add(montantInteret);
