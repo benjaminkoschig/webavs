@@ -16,6 +16,7 @@ import globaz.osiris.process.interetmanuel.CAProcessInteretMoratoireManuel;
 import globaz.prestation.tools.PRSession;
 import org.apache.bsf.BSFEngine;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.*;
@@ -30,6 +31,7 @@ public class CAProcessInteretMoratoireManuelTest {
     BSession session;
     BTransaction transaction;
     @Test
+    @Ignore
     public void checkInteretMoratoirePeriodesSurcisProgation_FullTauxSurcisProro() {
         CAProcessInteretMoratoireManuel test = new CAProcessInteretMoratoireManuel();
         mapPeriodeVoulu = new LinkedHashMap<>();
@@ -76,6 +78,7 @@ public class CAProcessInteretMoratoireManuelTest {
 
     }
     @Test
+    @Ignore
     public void checkInteretMoratoirePeriodesSurcisProgation_MixedTaux() {
         CAProcessInteretMoratoireManuel test = new CAProcessInteretMoratoireManuel();
         mapPeriodeVoulu = new LinkedHashMap<>();
