@@ -33,45 +33,18 @@ public class CAProcessInteretMoratoireManuelTest {
     @Test
     @Ignore
     public void checkInteretMoratoirePeriodesSurcisProgation_FullTauxSurcisProro() {
-        CAProcessInteretMoratoireManuel test = new CAProcessInteretMoratoireManuel();
         mapPeriodeVoulu = new LinkedHashMap<>();
         mapPeriodeVoulu.put("01.03.2020-20.03.2020",5.0);
         mapPeriodeVoulu.put("21.03.2020-20.09.2020",0.0);
         mapPeriodeVoulu.put("21.09.2020-30.09.2020",5.0);
-        try {
+        try{
             dateCalculDebut = new JADate("01.03.2020");
             dateCalculFin = new JADate("30.09.2020");
             listPeriodeMotifsSurcis = new ArrayList<>();
             Periode motif1 = new Periode("30.03.2020","30.09.2020");
             listPeriodeMotifsSurcis.add(motif1);
-            session = BSessionUtil.createSession("OSIRIS","globazTEST");
-            JadeThreadActivator.startUsingJdbcContext(this, Init.initContext(session).getContext());
-            transaction = session.getCurrentThreadTransaction();
-            test.setSession(session);
-            test.setTransaction(transaction);
-            test.setSimulationMode(true);
-            interet = new CAInteretMoratoire();
-            interet.setIdJournalCalcul("0");
-            test.setMontantSoumisSurcisCalcul(new FWCurrency(1));
-            test.creerInteretForSurcisProro(dateCalculDebut,dateCalculFin,listPeriodeMotifsSurcis,interet,new FWCurrency("1"));
-            List<CADetailInteretMoratoire> list = test.getVisualComponent().getDetailInteretMoratoire();
-            listPeriodes = new LinkedList<>();
-            listPeriodes.addAll(mapPeriodeVoulu.keySet());
-            if(list.size() ==mapPeriodeVoulu.size()){
-                for(int i=0;i<list.size();i++){
-                    Periode periode = new Periode(list.get(i).getDateDebut(), list.get(i).getDateFin());
-                    String periodeTexteVoulu = listPeriodes.get(i);
-                    if(!periode.equals(new Periode(periodeTexteVoulu.split("-")[0],periodeTexteVoulu.split("-")[1]))){
-                        Assert.fail("Problème de période : Résultat "+periode.getDateDebut()+"-"+periode.getDateFin()+" Attendu : "+periodeTexteVoulu);
-                    }
-                    if(!(mapPeriodeVoulu.get(periodeTexteVoulu).equals(new Double(list.get(i).getTaux())))){
-                        Assert.fail("Problème de taux : Résultat "+list.get(i).getTaux()+" Attendu : "+mapPeriodeVoulu.get(periodeTexteVoulu));
-                    }
-                }
-            }else{
-                Assert.fail("Manque des périodes");
-            }
-        } catch (Exception e) {
+            lanceTest(mapPeriodeVoulu,listPeriodeMotifsSurcis,dateCalculDebut,dateCalculFin);
+        }catch (Exception e){
             System.out.print(e.getMessage());
         }
 
@@ -99,6 +72,15 @@ public class CAProcessInteretMoratoireManuelTest {
             listPeriodeMotifsSurcis.add(motif1);
             listPeriodeMotifsSurcis.add(motif2);
             listPeriodeMotifsSurcis.add(motif3);
+            lanceTest(mapPeriodeVoulu,listPeriodeMotifsSurcis,dateCalculDebut,dateCalculFin);
+        } catch (Exception e) {
+            System.out.print(e.getMessage());
+        }
+
+    }
+    private void lanceTest(Map<String, Double> mapPeriodeVoulu, List<Periode> listPeriodeMotifsSurcis, JADate dateCalculDebut, JADate dateCalculFin) throws Exception{
+
+             CAProcessInteretMoratoireManuel test = new CAProcessInteretMoratoireManuel();
             session = BSessionUtil.createSession("OSIRIS","globazTEST");
             JadeThreadActivator.startUsingJdbcContext(this, Init.initContext(session).getContext());
             transaction = session.getCurrentThreadTransaction();
@@ -108,11 +90,11 @@ public class CAProcessInteretMoratoireManuelTest {
             interet = new CAInteretMoratoire();
             interet.setIdJournalCalcul("0");
             test.setMontantSoumisSurcisCalcul(new FWCurrency(1));
-            test.creerInteretForSurcisProro(dateCalculDebut,dateCalculFin,listPeriodeMotifsSurcis,interet,new FWCurrency("1"));
+            test.creerInteretForSurcisProro(dateCalculDebut, dateCalculFin, listPeriodeMotifsSurcis,interet,new FWCurrency("1"));
             List<CADetailInteretMoratoire> list = test.getVisualComponent().getDetailInteretMoratoire();
             listPeriodes = new LinkedList<>();
             listPeriodes.addAll(mapPeriodeVoulu.keySet());
-            if(list.size() ==mapPeriodeVoulu.size()){
+            if(list.size() == mapPeriodeVoulu.size()){
                 for(int i=0;i<list.size();i++){
                     Periode periode = new Periode(list.get(i).getDateDebut(), list.get(i).getDateFin());
                     String periodeTexteVoulu = listPeriodes.get(i);
@@ -120,15 +102,12 @@ public class CAProcessInteretMoratoireManuelTest {
                         Assert.fail("Problème de période : Résultat "+periode.getDateDebut()+"-"+periode.getDateFin()+" Attendu : "+periodeTexteVoulu);
                     }
                     if(!(mapPeriodeVoulu.get(periodeTexteVoulu).equals(new Double(list.get(i).getTaux())))){
-                        Assert.fail("Problème de taux : Résultat "+list.get(i).getTaux()+" Attendu : "+mapPeriodeVoulu.get(periodeTexteVoulu));
+                        Assert.fail("Problème de taux : Résultat "+list.get(i).getTaux()+" Attendu : "+ mapPeriodeVoulu.get(periodeTexteVoulu));
                     }
                 }
             }else{
                 Assert.fail("Manque des périodes");
             }
-        } catch (Exception e) {
-            System.out.print(e.getMessage());
-        }
 
 
     }
