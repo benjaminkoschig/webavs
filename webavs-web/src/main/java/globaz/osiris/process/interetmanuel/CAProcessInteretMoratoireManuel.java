@@ -59,6 +59,8 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
     Map<Periode, Boolean> mapMotifs;
     JADate dateCalculDebutInteret;
     JADate dateDebut1erPassage = dateCalculDebutInteret;
+
+
     private FWCurrency montantSoumisSurcisCalcul;
     private FWCurrency montantCumuleSurcisCalcul;
 
@@ -411,9 +413,11 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
                     if (CommonProperties.TAUX_INTERET_PANDEMIE.getBooleanValue()) {
                         List<Periode> listPeriodeMotifsSurcis = CAInteretUtil.isSectionSurcisProgaPaiementInPandemie(getTransaction(), getSession(), idSection);
                         if (!listPeriodeMotifsSurcis.isEmpty()) {
+                            /**
+                             * Cas spécial : Quand il y'a des motifs de surcis ou progation
+                             */
                             montantSoumisSurcisCalcul = montantSoumis;
                             creerInteretForSurcisProro(dateCalculDebutInteret, ecriture.getJADate(), listPeriodeMotifsSurcis, interet);
-                            montantSoumis = montantSoumisSurcisCalcul;
                             montantCumule = montantCumuleSurcisCalcul;
                         } else {
                             boolean isFirst = true;
@@ -534,7 +538,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
         }
     }
 
-    private void creerInteretForSurcisProro(JADate dateCalculDebut, JADate dateCalculFin, List<Periode> listPeriodeMotifsSurcis, CAInteretMoratoire interet) throws Exception {
+    public void creerInteretForSurcisProro(JADate dateCalculDebut, JADate dateCalculFin, List<Periode> listPeriodeMotifsSurcis, CAInteretMoratoire interet) throws Exception {
 
         Map<String, CATauxParametre> mapTaux = CAInteretUtil.getTauxInMap(getTransaction(), dateCalculDebut.toStr("."), dateCalculFin.toStr("."), CAInteretUtil.CS_PARAM_TAUX, 2);
         Map<String, CATauxParametre> mapTauxSurcisProro = CAInteretUtil.getTauxInMap(getTransaction(), dateCalculDebut.toStr("."), dateCalculFin.toStr("."), CAInteretUtil.CS_PARAM_TAUX_SURCIS_PROGATION_PANDEMIE_2020, 2);
@@ -542,12 +546,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
         Map<Periode, CATauxParametre> mapLigneAInscrire = new LinkedHashMap<>();
         JADate dateDebut = dateCalculDebut;
         JADate dateFin = null;
-        JADate dateDebutSurcisProro;
-        JADate dateFinSurcisProro;
-        JADate dateDebutNormal;
-        JADate dateFinNormal;
 
-        boolean isFirst = true;
         //Cas 1 : Multiple motif en surcis/prorogation
         Periode periodeCalcul = new Periode(dateCalculDebut.toStr("."),dateCalculFin.toStr("."));
         for(Periode periodeMotifsRaw : listPeriodeMotifsSurcis){
@@ -581,12 +580,12 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
                         dateDebut, dateFin.toStr("."));
             }
             montantCumuleSurcisCalcul.add(montantInteret);
-            dateDebut1erPassage = getSession().getApplication().getCalendar()
-                    .addDays(dateFin, 1);
-            // Si il y'a plusieurs écritures.
-            dateCalculDebutInteret = getSession().getApplication().getCalendar()
-                    .addDays(dateFin, 1);
         }
+        dateDebut1erPassage = getSession().getApplication().getCalendar()
+                .addDays(dateFin, 1);
+        // Si il y'a plusieurs écritures.
+        dateCalculDebutInteret = getSession().getApplication().getCalendar()
+                .addDays(dateFin, 1);
 
     }
 
@@ -704,4 +703,22 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
         this.isRDPProcess = isRDPProcess;
     }
 
+    public FWCurrency getMontantSoumisSurcisCalcul() {
+        return montantSoumisSurcisCalcul;
+    }
+
+    public void setMontantSoumisSurcisCalcul(FWCurrency montantSoumisSurcisCalcul) {
+        this.montantSoumisSurcisCalcul = montantSoumisSurcisCalcul;
+    }
+
+    public FWCurrency getMontantCumuleSurcisCalcul() {
+        return montantCumuleSurcisCalcul;
+    }
+
+    public void setMontantCumuleSurcisCalcul(FWCurrency montantCumuleSurcisCalcul) {
+        this.montantCumuleSurcisCalcul = montantCumuleSurcisCalcul;
+    }
+    public CAInteretManuelVisualComponent getVisualComponent() {
+        return visualComponent;
+    }
 }

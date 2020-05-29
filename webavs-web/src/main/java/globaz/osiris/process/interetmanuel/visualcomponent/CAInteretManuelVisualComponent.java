@@ -8,6 +8,8 @@ import globaz.osiris.db.interets.CAPlanCalculInteret;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Class utilitaire permettant l'affiche des informations de la création manuelle d'un intérêt moratoire avec inserction
@@ -22,7 +24,7 @@ public class CAInteretManuelVisualComponent implements Serializable {
      * 
      */
     private static final long serialVersionUID = 1L;
-    private ArrayList<CADetailInteretMoratoire> detailInteretMoratoire = new ArrayList<CADetailInteretMoratoire>();
+    private List<CADetailInteretMoratoire> detailInteretMoratoire = new LinkedList<CADetailInteretMoratoire>();
     private CAInteretMoratoire interetMoratoire;
     private CAPlanParSection plan;
 
@@ -34,7 +36,7 @@ public class CAInteretManuelVisualComponent implements Serializable {
         detailInteretMoratoire.add(ligne);
     }
 
-    public ArrayList<CADetailInteretMoratoire> getDetailInteretMoratoire() {
+    public List<CADetailInteretMoratoire> getDetailInteretMoratoire() {
         return detailInteretMoratoire;
     }
 
