@@ -53,7 +53,7 @@ public class CAProcessInteretMoratoireManuelTest {
             interet = new CAInteretMoratoire();
             interet.setIdJournalCalcul("0");
             test.setMontantSoumisSurcisCalcul(new FWCurrency(1));
-            test.creerInteretForSurcisProro(dateCalculDebut,dateCalculFin,listPeriodeMotifsSurcis,interet);
+            test.creerInteretForSurcisProro(dateCalculDebut,dateCalculFin,listPeriodeMotifsSurcis,interet,new FWCurrency("1"));
             List<CADetailInteretMoratoire> list = test.getVisualComponent().getDetailInteretMoratoire();
             listPeriodes = new LinkedList<>();
             listPeriodes.addAll(mapPeriodeVoulu.keySet());
@@ -109,7 +109,7 @@ public class CAProcessInteretMoratoireManuelTest {
             interet = new CAInteretMoratoire();
             interet.setIdJournalCalcul("0");
             test.setMontantSoumisSurcisCalcul(new FWCurrency(1));
-            test.creerInteretForSurcisProro(dateCalculDebut,dateCalculFin,listPeriodeMotifsSurcis,interet);
+            test.creerInteretForSurcisProro(dateCalculDebut,dateCalculFin,listPeriodeMotifsSurcis,interet,new FWCurrency("1"));
             List<CADetailInteretMoratoire> list = test.getVisualComponent().getDetailInteretMoratoire();
             listPeriodes = new LinkedList<>();
             listPeriodes.addAll(mapPeriodeVoulu.keySet());
