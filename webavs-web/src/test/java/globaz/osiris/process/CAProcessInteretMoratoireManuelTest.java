@@ -37,8 +37,6 @@ public class CAProcessInteretMoratoireManuelTest {
         mapPeriodeVoulu.put("21.03.2020-20.09.2020",0.0);
         mapPeriodeVoulu.put("21.09.2020-30.09.2020",5.0);
         try {
-            Jade.getInstance();
-            Jade.getInstance().setVerbose(false);
             dateCalculDebut = new JADate("01.03.2020");
             dateCalculFin = new JADate("30.09.2020");
             listPeriodeMotifsSurcis = new ArrayList<>();
@@ -89,8 +87,6 @@ public class CAProcessInteretMoratoireManuelTest {
         mapPeriodeVoulu.put("15.09.2020-20.09.2020",0.0);
         mapPeriodeVoulu.put("21.09.2020-25.09.2020",5.0);
         try {
-            Jade.getInstance();
-            Jade.getInstance().setVerbose(false);
             dateCalculDebut = new JADate("01.03.2020");
             dateCalculFin = new JADate("25.09.2020");
             listPeriodeMotifsSurcis = new ArrayList<>();
