@@ -11,5 +11,5 @@ insert into SCHEMA.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (237600,'F',
 insert into SCHEMA.fwcosp (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values (237601,'OSIREFRUB',1,1,0,0,'CONTENTIEUX_INTERET_MORATOIRE_PERSONNEL',2, 2,2,2,2,2,10200037,0,'spy');
 insert into SCHEMA.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (237601,'D','','[de] Contentieux - Intérêts moratoires personnels','spy');
 insert into SCHEMA.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (237601,'F','','Contentieux - Intérêts moratoires personnels','spy');
-
+--Ajout d'une propriété pour la période COVID spécial pour les contentieux
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('aquila.tauxInteret.pandemieSursisProrogation.periodes','21.03.2020:20.09.2020','20200602120000ccjuglo   ','20200602120000ccjuglo   ');
