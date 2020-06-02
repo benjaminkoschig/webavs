@@ -500,6 +500,9 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
                 if (!listPeriodeMotifsSurcis.isEmpty()) {
                     creerInteretForSurcisProro(dateDebut1erPassage, getDateFinAsJADate(), listPeriodeMotifsSurcis, interet,montantSoumis);
                 } else {
+                    if(dateDebut1erPassage == null){
+                        dateDebut1erPassage = dateCalculDebutInteret;
+                    }
                     JADate dateCalculDebut = dateDebut1erPassage;
                     JADate dateCalculFin = getDateFinAsJADate();
                     List<CATauxParametre> listTaux = CAInteretUtil.getTaux(getTransaction(), dateCalculDebut.toStr("."), dateCalculFin.toStr("."), CAInteretUtil.CS_PARAM_TAUX, 2);
