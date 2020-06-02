@@ -45,13 +45,12 @@ public class CAProcessInteretMoratoireManuelTest {
             listPeriodeMotifsSurcis.add(motif1);
             lanceTest(mapPeriodeVoulu,listPeriodeMotifsSurcis,dateCalculDebut,dateCalculFin);
         }catch (Exception e){
-            System.out.print(e.getMessage());
+            Assert.fail(e.getMessage());
         }
 
 
     }
     @Test
-    @Ignore
     public void checkInteretMoratoirePeriodesSurcisProgation_MixedTaux() {
         CAProcessInteretMoratoireManuel test = new CAProcessInteretMoratoireManuel();
         mapPeriodeVoulu = new LinkedHashMap<>();
@@ -74,7 +73,35 @@ public class CAProcessInteretMoratoireManuelTest {
             listPeriodeMotifsSurcis.add(motif3);
             lanceTest(mapPeriodeVoulu,listPeriodeMotifsSurcis,dateCalculDebut,dateCalculFin);
         } catch (Exception e) {
-            System.out.print(e.getMessage());
+            Assert.fail(e.getMessage());
+        }
+
+    }
+    @Test
+    @Ignore
+    public void checkInteretMoratoirePeriodesSurcisProgation_MixedTaux_1JourDiff() {
+        CAProcessInteretMoratoireManuel test = new CAProcessInteretMoratoireManuel();
+        mapPeriodeVoulu = new LinkedHashMap<>();
+        mapPeriodeVoulu.put("01.03.2020-20.03.2020",5.0);
+        mapPeriodeVoulu.put("21.03.2020-20.09.2020",0.0);
+        mapPeriodeVoulu.put("21.09.2020-25.09.2020",5.0);
+        try {
+            dateCalculDebut = new JADate("01.03.2020");
+            dateCalculFin = new JADate("25.09.2020");
+            listPeriodeMotifsSurcis = new ArrayList<>();
+            Periode motif1 = new Periode("25.03.2020","15.07.2020");
+            Periode motif2 = new Periode("15.07.2020","15.08.2020");
+            listPeriodeMotifsSurcis.add(motif1);
+            listPeriodeMotifsSurcis.add(motif2);
+            lanceTest(mapPeriodeVoulu,listPeriodeMotifsSurcis,dateCalculDebut,dateCalculFin);
+            listPeriodeMotifsSurcis.clear();
+            motif1 = new Periode("25.03.2020","15.07.2020");
+            motif2 = new Periode("16.07.2020","15.05.2020");
+            listPeriodeMotifsSurcis.add(motif1);
+            listPeriodeMotifsSurcis.add(motif2);
+            lanceTest(mapPeriodeVoulu,listPeriodeMotifsSurcis,dateCalculDebut,dateCalculFin);
+        } catch (Exception e) {
+            Assert.fail(e.getMessage());
         }
 
     }
@@ -90,6 +117,7 @@ public class CAProcessInteretMoratoireManuelTest {
             interet = new CAInteretMoratoire();
             interet.setIdJournalCalcul("0");
             test.setMontantSoumisSurcisCalcul(new FWCurrency(1));
+            test.setMontantCumuleSurcisCalcul(new FWCurrency());
             test.creerInteretForSurcisProro(dateCalculDebut, dateCalculFin, listPeriodeMotifsSurcis,interet,new FWCurrency("1"));
             List<CADetailInteretMoratoire> list = test.getVisualComponent().getDetailInteretMoratoire();
             listPeriodes = new LinkedList<>();
@@ -106,7 +134,7 @@ public class CAProcessInteretMoratoireManuelTest {
                     }
                 }
             }else{
-                Assert.fail("Manque des périodes");
+                Assert.fail("Manque des périodes : Résultat  "+ list.size()+" Voulu "+  mapPeriodeVoulu.size());
             }
 
 
