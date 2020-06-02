@@ -542,6 +542,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
                         getDateFinAsJADate().toStr("."));
             }
         }
+        dateDebut1erPassage = null;
     }
 
     public void creerInteretForSurcisProro(JADate dateCalculDebut, JADate dateCalculFin, List<Periode> listPeriodeMotifsSurcis, CAInteretMoratoire interet,FWCurrency montantSoumis) throws Exception {

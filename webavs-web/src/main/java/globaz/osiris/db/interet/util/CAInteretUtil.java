@@ -529,7 +529,8 @@ public class CAInteretUtil {
                 for (String keyPeriodeT : mapTauxToUse.keySet()) {
                     String[] keySplit = keyPeriodeT.split("-");
                     Periode periodeTaux = new Periode(keySplit[INDEX_DATE_DEBUT], keySplit[INDEX_DATE_FIN]);
-                    if (periodeTaux.comparerChevauchement(periodeAInscrire) == Periode.ComparaisonDePeriode.LES_PERIODES_SE_CHEVAUCHENT) {
+                    if (isChevauchement(periodeTaux,periodeAInscrire)) {
+//                    if (periodeTaux.comparerChevauchement(periodeAInscrire) == Periode.ComparaisonDePeriode.LES_PERIODES_SE_CHEVAUCHENT) {
                         //Si date de fin du taux est avant date de fin => il y'a une autre période avec un taux différent
                         taux = mapTauxToUse.get(keyPeriodeT);
                         if (JadeDateUtil.isDateBefore(periodeTaux.getDateFin(), dateCalculFin.toStr("."))) {
@@ -561,6 +562,18 @@ public class CAInteretUtil {
                 }
             }
             mapTauxToUse = null;
+        }
+    }
+
+    private static boolean isChevauchement(Periode periode1, Periode periode2) {
+        Date dateDebutPeriode1 = new Date(periode1.getDateDebut());
+        Date dateFinPeriode1 = new Date(periode1.getDateFin());
+        Date dateDebutPeriode2 = new Date(periode2.getDateDebut());
+        Date dateFinPeriode2 = new Date(periode2.getDateFin());
+        if(dateFinPeriode1.before(dateDebutPeriode2) ||dateFinPeriode2.before(dateDebutPeriode1)){
+            return false;
+        }else{
+            return true;
         }
     }
 
