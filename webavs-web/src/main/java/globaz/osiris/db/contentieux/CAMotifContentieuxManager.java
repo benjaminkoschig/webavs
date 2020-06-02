@@ -21,6 +21,10 @@ public class CAMotifContentieuxManager extends BManager implements Serializable 
      */
     private static final long serialVersionUID = 1L;
     private String forDateDebut = "";
+
+
+
+    private String fromDateDebut = "";
     private String forDateFin = "";
     private String forDateInYear = "";
     private String forIdCompteAnnexe = "";
@@ -134,6 +138,13 @@ public class CAMotifContentieuxManager extends BManager implements Serializable 
                 sqlWhere += " AND ";
             }
             sqlWhere += "DATEDEBUT=" + this._dbWriteDateAMJ(statement.getTransaction(), getForDateDebut());
+        }
+        //Depuis date de début
+        if (getFromDateDebut().length() != 0) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+            sqlWhere += "DATEDEBUT>=" + this._dbWriteDateAMJ(statement.getTransaction(), getFromDateDebut());
         }
         // traitement du positionnement de la date de fin
         if (getForDateFin().length() != 0) {
@@ -284,5 +295,11 @@ public class CAMotifContentieuxManager extends BManager implements Serializable 
     public void setFromIdMotifContentieux(java.lang.String string) {
         fromIdMotifContentieux = string;
     }
+    public String getFromDateDebut() {
+        return fromDateDebut;
+    }
 
+    public void setFromDateDebut(String fromDateDebut) {
+        this.fromDateDebut = fromDateDebut;
+    }
 }

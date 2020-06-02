@@ -461,12 +461,12 @@ public class CAInteretUtil {
             throw new Exception("Problem formatting in property : aquila.tauxInteret.pandemie.periodes");
         }
         CASection section = getSection(session, transaction, idSection);
-        List<CAMotifContentieux> listMotifs = section.getMotifsContentieux();
+        List<CAMotifContentieux> listMotifs = section.getMotifsContentieux(dateDebutPandemie.getSwissValue());
         CAPlanRecouvrement plan = section.getPlanRecouvrement();
         for (CAMotifContentieux motif : listMotifs) {
             dateDebutMotif = new Date(motif.getDateDebut());
             if ((motif.getIdMotifBlocage().equals(CAMotifContentieux.CS_MOTIF_BLOCAGE_SURSIS_AU_PAIEMENT)
-                    || motif.getIdMotifBlocage().equals(CAMotifContentieux.CS_MOTIF_BLOCAGE_PROROGATION_DELAI_PAIEMENT)) && dateDebutMotif.after(dateDebutPandemie)) {
+                    || motif.getIdMotifBlocage().equals(CAMotifContentieux.CS_MOTIF_BLOCAGE_PROROGATION_DELAI_PAIEMENT))) {
                 Periode periodeMotif = new Periode(motif.getDateDebut(), motif.getDateFin());
                 listPeriodeMotif.add(periodeMotif);
             }

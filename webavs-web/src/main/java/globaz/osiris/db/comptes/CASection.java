@@ -1797,6 +1797,22 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return new ArrayList<>();
     }
 
+    public List<CAMotifContentieux> getMotifsContentieux(String dateDebut) {
+        try {
+            CAMotifContentieuxManager motMgr = new CAMotifContentieuxManager();
+            motMgr.setSession(getSession());
+            motMgr.setForIdSection(getIdSection());
+            motMgr.setFromDateDebut(dateDebut);
+            motMgr.find();
+            if (!motMgr.isEmpty()) {
+                return motMgr.<CAMotifContentieux>toList();
+            }
+        } catch (Exception e) {
+            JadeLogger.error(this, e);
+        }
+        return new ArrayList<>();
+    }
+
     private void getResumeContentieuxOsiris(StringBuffer sb) {
         // Si contentieux suspendu
         try {
