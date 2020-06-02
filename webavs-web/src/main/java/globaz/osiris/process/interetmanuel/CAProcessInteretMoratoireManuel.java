@@ -498,6 +498,9 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
             if (CommonProperties.TAUX_INTERET_PANDEMIE.getBooleanValue()) {
                 List<Periode> listPeriodeMotifsSurcis = CAInteretUtil.isSectionSurcisProgaPaiementInPandemie(getTransaction(), getSession(), idSection);
                 if (!listPeriodeMotifsSurcis.isEmpty()) {
+                    if(dateDebut1erPassage == null){
+                        dateDebut1erPassage = dateCalculDebutInteret;
+                    }
                     creerInteretForSurcisProro(dateDebut1erPassage, getDateFinAsJADate(), listPeriodeMotifsSurcis, interet,montantSoumis);
                 } else {
                     if(dateDebut1erPassage == null){
