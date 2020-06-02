@@ -555,12 +555,12 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
         JADate dateFin = null;
 
         //Cas 1 : Multiple motif en surcis/prorogation
-        Periode periodeCalcul = new Periode(dateCalculDebut.toStr("."),dateCalculFin.toStr("."));
-        for(Periode periodeMotifsRaw : listPeriodeMotifsSurcis){
-            if(periodeCalcul.comparerChevauchement(periodeMotifsRaw) == Periode.ComparaisonDePeriode.LES_PERIODES_SONT_INDEPENDANTES){
-                listPeriodeMotifsSurcis.remove(periodeMotifsRaw);
-            }
-        }
+//        Periode periodeCalcul = new Periode(dateCalculDebut.toStr("."),dateCalculFin.toStr("."));
+//        for(Periode periodeMotifsRaw : listPeriodeMotifsSurcis){
+//            if(periodeCalcul.comparerChevauchement(periodeMotifsRaw) == Periode.ComparaisonDePeriode.LES_PERIODES_SONT_INDEPENDANTES){
+//                listPeriodeMotifsSurcis.remove(periodeMotifsRaw);
+//            }
+//        }
         Collections.sort(listPeriodeMotifsSurcis);
         /**
          * Préparation des différents périodes avec switch sur les 2 types de taux
@@ -592,6 +592,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
         // Si il y'a plusieurs écritures.
         dateCalculDebutInteret = getSession().getApplication().getCalendar()
                 .addDays(dateFin, 1);
+        mapLigneAInscrire.clear();
 
     }
 

@@ -34,46 +34,41 @@ public class CAProcessInteretMoratoireManuelTest {
     @Ignore
     public void checkInteretMoratoirePeriodesSurcisProgation_FullTauxSurcisProro() {
         mapPeriodeVoulu = new LinkedHashMap<>();
-        mapPeriodeVoulu.put("01.03.2020-20.03.2020",5.0);
-        mapPeriodeVoulu.put("21.03.2020-20.09.2020",0.0);
+        mapPeriodeVoulu.put("25.03.2020-15.07.2020",0.0);
+        mapPeriodeVoulu.put("16.07.2020-31.07.2020",5.0);
+        mapPeriodeVoulu.put("01.08.2020-20.09.2020",0.0);
         mapPeriodeVoulu.put("21.09.2020-30.09.2020",5.0);
         try{
-            dateCalculDebut = new JADate("01.03.2020");
+            dateCalculDebut = new JADate("25.03.2020");
             dateCalculFin = new JADate("30.09.2020");
             listPeriodeMotifsSurcis = new ArrayList<>();
-            Periode motif1 = new Periode("30.03.2020","30.09.2020");
+            Periode motif1 = new Periode("31.03.2020","15.07.2020");
+            Periode motif2 = new Periode("01.08.2020","31.12.2999");
             listPeriodeMotifsSurcis.add(motif1);
+            listPeriodeMotifsSurcis.add(motif2);
             lanceTest(mapPeriodeVoulu,listPeriodeMotifsSurcis,dateCalculDebut,dateCalculFin);
         }catch (Exception e){
             Assert.fail(e.getMessage());
         }
-
-
     }
     @Test
     @Ignore
     public void checkInteretMoratoirePeriodesSurcisProgation_MixedTaux() {
-        CAProcessInteretMoratoireManuel test = new CAProcessInteretMoratoireManuel();
         mapPeriodeVoulu = new LinkedHashMap<>();
-        mapPeriodeVoulu.put("01.03.2020-20.03.2020",5.0);
-        mapPeriodeVoulu.put("21.03.2020-30.06.2020",0.0);
-        mapPeriodeVoulu.put("01.07.2020-14.07.2020",5.0);
-        mapPeriodeVoulu.put("15.07.2020-10.08.2020",0.0);
-        mapPeriodeVoulu.put("11.08.2020-14.09.2020",5.0);
-        mapPeriodeVoulu.put("15.09.2020-20.09.2020",0.0);
-        mapPeriodeVoulu.put("21.09.2020-25.09.2020",5.0);
-        try {
-            dateCalculDebut = new JADate("01.03.2020");
-            dateCalculFin = new JADate("25.09.2020");
+        mapPeriodeVoulu.put("25.03.2020-15.07.2020",0.0);
+        mapPeriodeVoulu.put("16.07.2020-31.07.2020",5.0);
+        mapPeriodeVoulu.put("01.08.2020-20.09.2020",0.0);
+        mapPeriodeVoulu.put("21.09.2020-30.09.2020",5.0);
+        try{
+            dateCalculDebut = new JADate("25.03.2020");
+            dateCalculFin = new JADate("30.09.2020");
             listPeriodeMotifsSurcis = new ArrayList<>();
-            Periode motif1 = new Periode("23.03.2020","15.04.2020");
-            Periode motif2 = new Periode("15.07.2020","10.08.2020");
-            Periode motif3 = new Periode("15.09.2020","25.09.2020");
+            Periode motif1 = new Periode("31.03.2020","15.07.2020");
+            Periode motif2 = new Periode("01.08.2020","31.12.2999");
             listPeriodeMotifsSurcis.add(motif1);
             listPeriodeMotifsSurcis.add(motif2);
-            listPeriodeMotifsSurcis.add(motif3);
             lanceTest(mapPeriodeVoulu,listPeriodeMotifsSurcis,dateCalculDebut,dateCalculFin);
-        } catch (Exception e) {
+        }catch (Exception e){
             Assert.fail(e.getMessage());
         }
 
@@ -81,29 +76,28 @@ public class CAProcessInteretMoratoireManuelTest {
     @Test
     @Ignore
     public void checkInteretMoratoirePeriodesSurcisProgation_MixedTaux_1JourDiff() {
-        CAProcessInteretMoratoireManuel test = new CAProcessInteretMoratoireManuel();
         mapPeriodeVoulu = new LinkedHashMap<>();
-        mapPeriodeVoulu.put("01.03.2020-20.03.2020",5.0);
-        mapPeriodeVoulu.put("21.03.2020-20.09.2020",0.0);
-        mapPeriodeVoulu.put("21.09.2020-25.09.2020",5.0);
-        try {
-            dateCalculDebut = new JADate("01.03.2020");
-            dateCalculFin = new JADate("25.09.2020");
+        mapPeriodeVoulu.put("25.03.2020-20.09.2020",0.0);
+        mapPeriodeVoulu.put("21.09.2020-30.09.2020",5.0);
+        try{
+            dateCalculDebut = new JADate("25.03.2020");
+            dateCalculFin = new JADate("30.09.2020");
             listPeriodeMotifsSurcis = new ArrayList<>();
-            Periode motif1 = new Periode("25.03.2020","15.07.2020");
-            Periode motif2 = new Periode("15.07.2020","15.08.2020");
+            Periode motif1 = new Periode("31.03.2020","15.07.2020");
+            Periode motif2 = new Periode("15.07.2020","31.12.2999");
             listPeriodeMotifsSurcis.add(motif1);
             listPeriodeMotifsSurcis.add(motif2);
             lanceTest(mapPeriodeVoulu,listPeriodeMotifsSurcis,dateCalculDebut,dateCalculFin);
             listPeriodeMotifsSurcis.clear();
-            motif1 = new Periode("25.03.2020","15.07.2020");
-            motif2 = new Periode("16.07.2020","15.05.2020");
+            motif1 = new Periode("31.03.2020","15.07.2020");
+            motif2 = new Periode("16.07.2020","31.12.2999");
             listPeriodeMotifsSurcis.add(motif1);
             listPeriodeMotifsSurcis.add(motif2);
             lanceTest(mapPeriodeVoulu,listPeriodeMotifsSurcis,dateCalculDebut,dateCalculFin);
-        } catch (Exception e) {
+        }catch (Exception e){
             Assert.fail(e.getMessage());
         }
+
 
     }
     private void lanceTest(Map<String, Double> mapPeriodeVoulu, List<Periode> listPeriodeMotifsSurcis, JADate dateCalculDebut, JADate dateCalculFin) throws Exception{
