@@ -51,6 +51,7 @@ public class CAProcessInteretMoratoireManuelTest {
 
     }
     @Test
+    @Ignore
     public void checkInteretMoratoirePeriodesSurcisProgation_MixedTaux() {
         CAProcessInteretMoratoireManuel test = new CAProcessInteretMoratoireManuel();
         mapPeriodeVoulu = new LinkedHashMap<>();
