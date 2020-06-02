@@ -1,6 +1,6 @@
 /*
  * Créé le 16 janv. 06
- * 
+ *
  * Pour changer le modèle de ce fichier généré, allez à : Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code
  * et commentaires
  */
@@ -8,6 +8,7 @@ package globaz.aquila.util;
 
 import globaz.aquila.api.ICOSequenceConstante;
 import globaz.aquila.db.access.batch.COTransition;
+import globaz.aquila.db.access.batch.transition.COTransitionAction;
 import globaz.aquila.db.access.operation.COOperationContentieuxManager;
 import globaz.aquila.db.access.poursuite.COContentieux;
 import globaz.aquila.db.access.poursuite.COHistorique;
@@ -23,28 +24,25 @@ import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.api.APIEcriture;
 import globaz.osiris.api.APIOperation;
+import globaz.osiris.api.APIRubrique;
 import globaz.osiris.application.CAApplication;
-import globaz.osiris.db.comptes.CAAuxiliaire;
-import globaz.osiris.db.comptes.CACompteAnnexe;
-import globaz.osiris.db.comptes.CAEcriture;
-import globaz.osiris.db.comptes.CAGroupement;
-import globaz.osiris.db.comptes.CAGroupementOperation;
-import globaz.osiris.db.comptes.CAGroupementOperationManager;
-import globaz.osiris.db.comptes.CAJournal;
-import globaz.osiris.db.comptes.CAOperation;
-import globaz.osiris.db.comptes.CAOperationContentieuxAquila;
-import globaz.osiris.db.comptes.CASection;
+import globaz.osiris.db.comptes.*;
 import globaz.osiris.db.interets.CAInteretMoratoire;
 import globaz.osiris.db.interets.CAInteretMoratoireManager;
 import globaz.osiris.process.interetmanuel.visualcomponent.CAInteretManuelVisualComponent;
 import globaz.osiris.process.journal.CAComptabiliserJournal;
 import globaz.osiris.translation.CACodeSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <H1>Description</H1>
- * 
+ *
  * @author vre
  */
 public class COJournalAdapter {
@@ -52,9 +50,11 @@ public class COJournalAdapter {
     public static final String CS_JOURNAL = "5500001";
     public static final String CS_JOURNAL_JOURNALIER = "5500002";
 
+    private static final Logger LOG = LoggerFactory.getLogger(COJournalAdapter.class);
+
     /**
      * Efface ou réinitialise l'idJournalFacturation et la dateFacturation
-     * 
+     *
      * @param transaction
      * @param contentieux
      * @param historique
@@ -62,7 +62,7 @@ public class COJournalAdapter {
      * @throws Exception
      */
     private static void annulerCalculIM(BTransaction transaction, COContentieux contentieux, COHistorique historique,
-            BSession sessionOsiris) throws Exception {
+                                        BSession sessionOsiris) throws Exception {
         CAInteretMoratoireManager mgim = new CAInteretMoratoireManager();
         mgim.setSession(sessionOsiris);
         mgim.setForIdJournalFacturation(historique.getIdJournal());
@@ -89,17 +89,15 @@ public class COJournalAdapter {
      * contexte transactionnel mal défini ! Tenter de modifier la section ou le compte annexe après l'appel de cette
      * méthode entraînera presque certainement un dead-lock !
      * </p>
-     * 
+     *
      * @param session
      * @param transaction
-     * @param contentieux
-     *            le contentieux dont une étape est annulée
-     * @param historique
-     *            l'historique qui est annulé
+     * @param contentieux le contentieux dont une étape est annulée
+     * @param historique  l'historique qui est annulé
      * @throws Exception
      */
     public static void annulerEcritures(BSession session, BTransaction transaction, COContentieux contentieux,
-            COHistorique historique, boolean extourner) throws Exception {
+                                        COHistorique historique, boolean extourner) throws Exception {
         BSession sessionOsiris = COJournalAdapter.createSessionOsiris(session);
 
         if (COJournalAdapter.CS_JOURNAL.equals(historique.getTypeJournal())) {
@@ -192,7 +190,7 @@ public class COJournalAdapter {
      * @throws Exception
      */
     private static void effacerOperationContentieux(CAOperationContentieuxAquila operationContentieuxAquila,
-            BTransaction transaction) throws Exception {
+                                                    BTransaction transaction) throws Exception {
         operationContentieuxAquila.wantAnnulerEtapesContentieux(false);
 
         if (operationContentieuxAquila.getEstComptabilise().booleanValue()) {
@@ -278,17 +276,17 @@ public class COJournalAdapter {
 
     private boolean previsionnel;
 
-    /** session OSIRIS. */
+    /**
+     * session OSIRIS.
+     */
     private BSession session;
 
     /**
      * Crée une nouvelle instance de la classe COJournalAdapter permettant de gérer un journal de comptabilité pour
      * plusieurs contentieux.
-     * 
-     * @param session
-     *            DOCUMENT ME!
-     * @throws Exception
-     *             DOCUMENT ME!
+     *
+     * @param session DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     public COJournalAdapter(BSession session) throws Exception {
         this.session = COJournalAdapter.createSessionOsiris(session);
@@ -298,13 +296,10 @@ public class COJournalAdapter {
     /**
      * Crée une nouvelle instance de la classe COJournalAdapter permettant de gérer un journal de comptabilité pour un
      * seul contentieux.
-     * 
-     * @param session
-     *            DOCUMENT ME!
-     * @param contentieux
-     *            DOCUMENT ME!
-     * @throws Exception
-     *             DOCUMENT ME!
+     *
+     * @param session     DOCUMENT ME!
+     * @param contentieux DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     public COJournalAdapter(BSession session, COContentieux contentieux) throws Exception {
         this.session = COJournalAdapter.createSessionOsiris(session);
@@ -313,7 +308,7 @@ public class COJournalAdapter {
 
     /**
      * Crée l'écriture
-     * 
+     *
      * @param transaction
      * @param contentieux
      * @param montant
@@ -334,7 +329,7 @@ public class COJournalAdapter {
      * @throws Exception
      */
     private void addEcriture(BTransaction transaction, COContentieux contentieux, String montant, String idRubrique,
-            String libelle) throws Exception {
+                             String libelle) throws Exception {
         CAOperation ecriture = createEcriture(contentieux.getCompteAnnexe(), contentieux.getSection());
 
         ecriture.setSession(session);
@@ -378,13 +373,10 @@ public class COJournalAdapter {
      * <p>
      * Note: un journal journalier n'a pas besoin d'etre comptabilisé.
      * </p>
-     * 
-     * @param transaction
-     *            DOCUMENT ME!
-     * @param parent
-     *            DOCUMENT ME!
-     * @throws Exception
-     *             DOCUMENT ME!
+     *
+     * @param transaction DOCUMENT ME!
+     * @param parent      DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     public void comptabiliser(BTransaction transaction, BProcess parent) throws Exception {
         if (!previsionnel && !journalJournalier) {
@@ -394,9 +386,8 @@ public class COJournalAdapter {
 
     /**
      * Crée une écriture comptable ou auxilliaire en fonction du genre de compte annexe.
-     * 
-     * @param compteAnnexe
-     *            le compte annexe pour lequel créer l'opération
+     *
+     * @param compteAnnexe le compte annexe pour lequel créer l'opération
      * @return une {@link CAEcriture} ou {@link CAAuxiliaire}
      */
     private CAOperation createEcriture(CACompteAnnexe compteAnnexe, CASection section) {
@@ -410,15 +401,11 @@ public class COJournalAdapter {
 
     /**
      * cree les ecriture pour la transition.
-     * 
-     * @param transaction
-     *            DOCUMENT ME!
-     * @param contentieux
-     *            DOCUMENT ME!
-     * @param transition
-     *            DOCUMENT ME!
-     * @throws Exception
-     *             DOCUMENT ME!
+     *
+     * @param transaction DOCUMENT ME!
+     * @param contentieux DOCUMENT ME!
+     * @param transition  DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     public void creerEcritures(BTransaction transaction, COContentieux contentieux, COTransition transition)
             throws Exception {
@@ -451,20 +438,15 @@ public class COJournalAdapter {
 
     /**
      * crée un journal de comptabilité du type contentieux.
-     * 
-     * @param transaction
-     *            DOCUMENT ME!
-     * @param previsionnel
-     *            DOCUMENT ME!
-     * @param dateSurDocument
-     *            DOCUMENT ME!
-     * @param libelleJournal
-     *            DOCUMENT ME!
-     * @throws Exception
-     *             DOCUMENT ME!
+     *
+     * @param transaction     DOCUMENT ME!
+     * @param previsionnel    DOCUMENT ME!
+     * @param dateSurDocument DOCUMENT ME!
+     * @param libelleJournal  DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     public void creerJournal(BTransaction transaction, boolean previsionnel, String dateSurDocument,
-            String libelleJournal) throws Exception {
+                             String libelleJournal) throws Exception {
         this.previsionnel = previsionnel;
 
         if (!previsionnel && (journal == null)) {
@@ -498,7 +480,7 @@ public class COJournalAdapter {
     /**
      * Return le journal de compta. aux. Utile pour tester les erreurs après comptabilisation voire
      * COProcessContentieux.
-     * 
+     *
      * @return le journal
      */
     public CAJournal getJournal() {
@@ -507,34 +489,57 @@ public class COJournalAdapter {
 
     /**
      * Impute les frais (les inscrits dans le journal).
-     * 
+     *
      * @param transaction
-     * @param viewBean
+     * @param action
      * @param contentieux
      * @throws Exception
      */
-    public void imputerFraisVariables(BTransaction transaction, COTransitionViewBean viewBean, COContentieux contentieux)
+    public void imputerFraisVariables(BTransaction transaction, COTransitionAction action, COContentieux contentieux)
             throws Exception {
-        if (!previsionnel && (viewBean != null)) {
-            if (!viewBean.getFraisEtInterets().isEmpty()) {
-                for (int i = 0; i < viewBean.getFraisEtInterets().size(); i++) {
-                    this.addEcriture(transaction, contentieux, viewBean.getFraisEtInteretsMontant(i),
-                            viewBean.getFraisEtInteretsIdRubrique(i), viewBean.getFraisEtInteretsLibelle(i));
-                }
+        if (!previsionnel && (action != null)) {
+            for (Object eachFrais : action.getFrais()) {
+                Map<String, String> mapFrais = (HashMap<String, String>) eachFrais;
+                String montant = mapFrais.get(COTransitionViewBean.MONTANT);
+                String libelle = mapFrais.get(COTransitionViewBean.LIBELLE);
+                String idRubrique = getFraisEtInteretsIdRubrique(mapFrais.get(COTransitionViewBean.RUBRIQUE));
+                this.addEcriture(transaction, contentieux, montant,
+                        idRubrique, libelle);
             }
         }
+
+    }
+
+    /**
+     * Permet de récupérer l'id de la rubrique à partir de son code.
+     *
+     * @param codeRubrique : code de la rubrique
+     * @return l'id de la rubrique.
+     */
+    private String getFraisEtInteretsIdRubrique(String codeRubrique) {
+        CARubrique rubrique = new CARubrique();
+        rubrique.setSession(session);
+        rubrique.setAlternateKey(APIRubrique.AK_IDEXTERNE);
+        rubrique.setIdExterne(codeRubrique);
+        try {
+            rubrique.retrieve();
+        } catch (Exception e) {
+            LOG.error("Impossible de récupérer l'id de la rubrique", e);
+            return "";
+        }
+        return rubrique.getIdRubrique();
     }
 
     /**
      * Cérer les écritures d'IM
-     * 
+     *
      * @param transaction
      * @param contentieux
      * @param interet
      * @throws Exception
      */
     public void imputerInteretManuel(BTransaction transaction, COContentieux contentieux,
-            List<CAInteretManuelVisualComponent> interets) throws Exception {
+                                     List<CAInteretManuelVisualComponent> interets) throws Exception {
         if ((interets != null) && !interets.isEmpty()) {
             for (CAInteretManuelVisualComponent im : interets) {
                 this.addEcriture(transaction, contentieux, im.montantInteretTotalCalcule(), im.getInteretMoratoire()
@@ -545,7 +550,7 @@ public class COJournalAdapter {
 
     /**
      * impute les taxes (les inscrits dans le journal).
-     * 
+     *
      * @param transaction
      * @param contentieux
      * @param taxes
@@ -580,9 +585,8 @@ public class COJournalAdapter {
 
     /**
      * insére dans l'historique les informations relatives au journal de comptabilité.
-     * 
-     * @param historique
-     *            l'historique à modifier
+     *
+     * @param historique l'historique à modifier
      * @return l'historique modifié
      */
     public COHistorique renseignerInfosJournal(COHistorique historique) {

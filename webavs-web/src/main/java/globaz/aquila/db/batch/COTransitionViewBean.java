@@ -92,53 +92,6 @@ public class COTransitionViewBean extends COTransition implements FWViewBeanInte
     }
 
     /**
-     * @param i
-     * @return String
-     */
-    public String getFraisEtInteretsIdRubrique(int i) {
-        if (this.getFraisEtInterets().size() > i) {
-
-            CARubrique rubrique = new CARubrique();
-            rubrique.setSession(getSession());
-            rubrique.setAlternateKey(APIRubrique.AK_IDEXTERNE);
-            rubrique.setIdExterne((String) this.getFraisEtInterets(i).get(COTransitionViewBean.RUBRIQUE));
-            try {
-                rubrique.retrieve();
-            } catch (Exception e) {
-                return "";
-            }
-
-            return rubrique.getIdRubrique();
-        } else {
-            return "";
-        }
-    }
-
-    /**
-     * @param i
-     * @return String
-     */
-    public String getFraisEtInteretsLibelle(int i) {
-        if (this.getFraisEtInterets().size() > i) {
-            return (String) this.getFraisEtInterets(i).get(COTransitionViewBean.LIBELLE);
-        } else {
-            return "";
-        }
-    }
-
-    /**
-     * @param i
-     * @return String
-     */
-    public String getFraisEtInteretsMontant(int i) {
-        if (this.getFraisEtInterets(i) != null) {
-            return (String) this.getFraisEtInterets(i).get(COTransitionViewBean.MONTANT);
-        } else {
-            return "";
-        }
-    }
-
-    /**
      * @return the idContentieux
      */
     public String getIdContentieux() {

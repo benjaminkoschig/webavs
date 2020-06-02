@@ -254,7 +254,7 @@ public class COExecuteTransitionService extends COAbstractTransitionService {
         COJournalAdapter journal = createJournal(session, transaction, contentieux);
 
         this.executerTransition(session, transaction, contentieux, action, journal);
-        journal.imputerFraisVariables(transaction, transition, contentieux);
+        journal.imputerFraisVariables(transaction, action, contentieux);
     }
 
     /**
