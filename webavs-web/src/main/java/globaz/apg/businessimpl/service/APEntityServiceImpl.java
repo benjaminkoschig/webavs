@@ -1911,4 +1911,36 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         return JadeStringUtil.toInt(res.getObject(1).toString());
     }
 
+    /**
+     * Récupère les autres droits pour le même nss et le même genre de service
+     *
+     * @param session
+     * @param idDroit
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public List<String> getAutresDroits(BSession session, String idDroit) throws Exception {
+        List<String> listDroit = new ArrayList<>();
+        String sql = "SELECT dr2.VAIDRO as idDroit "
+                + "FROM :schema.APDROIP dr1 "
+                + "INNER JOIN :schema.PRDEMAP dm1 ON dr1.VAIDEM=dm1.WAIDEM "
+                + "INNER JOIN :schema.TITIERP ON dm1.WAITIE=:schema.TITIERP.HTITIE "
+                + "INNER JOIN :schema.PRDEMAP dm2 ON dm2.WAITIE=:schema.TITIERP.HTITIE "
+                + "INNER JOIN :schema.APDROIP dr2 ON dr2.VAIDEM=dm2.WAIDEM "
+                + "and dr2.VAIDRO <> :idDroit and dr2.VAIDRO <> dr1.VAIPAR " // différent du droit en court et du droit parent
+                + "WHERE dr1.VAIDRO=:idDroit and dr2.VATGSE = dr1.VATGSE "
+                + "AND dr2.VADDDR < dr1.VADDDR";
+
+        sql = sql.replace(":schema", Jade.getInstance().getDefaultJdbcSchema());
+        sql = sql.replace(":idDroit", idDroit);
+        BStatement statement = new BStatement(session.getCurrentThreadTransaction());
+        statement.createStatement();
+        ResultSet res = statement.executeQuery(sql);
+        while (res.next()) {
+            listDroit.add(res.getString("idDroit"));
+        }
+        return listDroit;
+    }
+
 }

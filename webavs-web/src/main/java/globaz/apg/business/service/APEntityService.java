@@ -176,4 +176,6 @@ public interface APEntityService extends JadeApplicationService {
     APDroitPanSituation miseAjourDroitPanSituation(BSession session, BTransaction transaction, APDroitPanSituationViewBean viewBean) throws Exception;
 
     int getTotalJourAutreDroit(BSession session, String idDroit) throws Exception;
+
+    List<String> getAutresDroits(BSession session, String idDroit) throws Exception;
 }
