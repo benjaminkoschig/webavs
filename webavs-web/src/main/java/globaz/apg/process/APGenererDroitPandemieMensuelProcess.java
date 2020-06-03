@@ -222,8 +222,14 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
                 APPrestation newPrestation;
                 String action = "";
                 if (prestationMois != null) {
-                    newPrestation = modifyPrestationDroit(prestationMois);
-                    action = APListeDroitPrestationMensuelExcel.ACTION_MODIFIE;
+                    if(IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestationMois.getEtat())
+                            && JadeDateUtil.isDateBefore(prestationMois.getDateFin(), dateDepart)) {
+                        newPrestation = ajoutePrestationDroit(prestationMois);
+                        action = APListeDroitPrestationMensuelExcel.ACTION_AJOUTE;
+                    } else {
+                        newPrestation = modifyPrestationDroit(prestationMois);
+                        action = APListeDroitPrestationMensuelExcel.ACTION_MODIFIE;
+                    }
                 } else {
                     prestationMois = getLastPrestation(entry.getValue());
                     newPrestation = ajoutePrestationDroit(prestationMois);
