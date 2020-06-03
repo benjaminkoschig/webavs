@@ -2,10 +2,13 @@ package globaz.apg.process;
 
 import com.google.common.collect.Lists;
 import globaz.apg.ApgServiceLocator;
+import globaz.apg.api.lots.IAPLot;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.db.droits.*;
 import globaz.apg.db.liste.APListePrestationsMensuellesModel;
+import globaz.apg.db.lots.APLot;
+import globaz.apg.db.lots.APLotManager;
 import globaz.apg.db.prestation.*;
 import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.enums.APPandemieServiceCalcul;
@@ -112,7 +115,9 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
 
         try {
             if(!JadeStringUtil.isEmpty(idDroit)) {
+                isDefinitif = true;
                 setDateFinDroit();
+                setSendCompletionMail(false);
             } else if(!JAUtil.isDateEmpty(dateDepart) && !JAUtil.isDateEmpty(dateArrivee)) {
                 calculDateArriveeDepart();
                 printList();
@@ -219,20 +224,24 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
                 }
             }
             if (!dejaPeriode) {
-                APPrestation newPrestation;
+                APPrestation newPrestation = null;
                 String action = "";
                 if (prestationMois != null) {
-                    if(IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestationMois.getEtat())
-                            && JadeDateUtil.isDateBefore(prestationMois.getDateFin(), dateDepart)) {
-                        newPrestation = ajoutePrestationDroit(prestationMois);
-                        action = APListeDroitPrestationMensuelExcel.ACTION_AJOUTE;
+                    if(IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestationMois.getEtat())) {
+                        if(JadeDateUtil.isDateBefore(prestationMois.getDateFin(), dateDepart)) {
+                            newPrestation = ajoutePrestationDroit(prestationMois, dateDepart, dateArrivee);
+                            action = APListeDroitPrestationMensuelExcel.ACTION_AJOUTE;
+                        } else if(JadeDateUtil.isDateBefore(prestationMois.getDateFin(), dateArrivee)){
+                            calcJourManquant(prestationMois, dateArrivee);
+                        }
                     } else {
                         newPrestation = modifyPrestationDroit(prestationMois);
                         action = APListeDroitPrestationMensuelExcel.ACTION_MODIFIE;
                     }
                 } else {
                     prestationMois = getLastPrestation(entry.getValue());
-                    newPrestation = ajoutePrestationDroit(prestationMois);
+                    calcMoisManquant(prestationMois);
+                    newPrestation = ajoutePrestationDroit(prestationMois, dateDepart, dateArrivee);
                     action = APListeDroitPrestationMensuelExcel.ACTION_AJOUTE;
                 }
                 addModel(prestationMois, newPrestation, action);
@@ -246,6 +255,35 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
                 errors = getTransaction().getErrors().toString();
                 break;
             }
+        }
+    }
+
+    private void calcMoisManquant(APPrestationJointLotTiersDroit lastPrestation) throws Exception {
+        if(!dateFin.isEmpty()) {
+            int nbMonth = JadeDateUtil.getNbMonthsBetween(JadeDateUtil.getFirstDateOfMonth(lastPrestation.getDateFin()), dateDepart);
+            if (nbMonth > 1){
+                calcJourManquant(lastPrestation, JadeDateUtil.getLastDateOfMonth(lastPrestation.getDateFin()));
+                for (int i = 1; i < nbMonth; i++) {
+                    String dateDepart = JadeDateUtil.getFirstDateOfMonth(JadeDateUtil.addMonths(lastPrestation.getDateFin(), i));
+                    String dateArrive = JadeDateUtil.getLastDateOfMonth(dateDepart);
+                    APPrestation newPrestation = ajoutePrestationDroit(lastPrestation, dateDepart, dateArrive);
+                    String action = APListeDroitPrestationMensuelExcel.ACTION_AJOUTE;
+                    addModel(lastPrestation, newPrestation, action);
+                }
+            } else if (nbMonth == 1) {
+                calcJourManquant(lastPrestation, JadeDateUtil.getLastDateOfMonth(lastPrestation.getDateFin()));
+            }
+        }
+    }
+
+    private void calcJourManquant(APPrestationJointLotTiersDroit lastPrestation, String dateFin) throws Exception {
+        int nbDays = JadeDateUtil.getNbDayBetween(lastPrestation.getDateFin(), dateFin);
+        if(nbDays > 0){
+            String dateDepart = JadeDateUtil.addDays(lastPrestation.getDateFin(), 1);
+            String dateArrive = dateFin;
+            APPrestation newPrestation = ajoutePrestationDroit(lastPrestation, dateDepart, dateArrive);
+            String action = APListeDroitPrestationMensuelExcel.ACTION_AJOUTE;
+            addModel(lastPrestation, newPrestation, action);
         }
     }
 
@@ -271,7 +309,7 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
         return last;
     }
 
-    private APPrestation ajoutePrestationDroit(APPrestationJointLotTiersDroit prestationToCopy) throws Exception {
+    private APPrestation ajoutePrestationDroit(APPrestationJointLotTiersDroit prestationToCopy, String dateDepart, String dateArrivee) throws Exception {
         if(prestationToCopy != null) {
             APPrestation prestation = new APPrestation(prestationToCopy);
             prestation.setDatePaiement("");
@@ -281,7 +319,7 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
             prestation.populateSpy(null);
             prestation.add();
             prestation.setDateDebut(dateDepart);
-            setValeursPrestation(prestation);
+            setValeursPrestation(prestation, dateDepart, dateArrivee);
             if(copyRepartition(prestationToCopy.getIdPrestationApg(), prestation.getIdPrestationApg())) {
                 prestation.update();
                 return prestation;
@@ -302,14 +340,14 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
                 prestation.setDateDebut(dateDepart);
             }
 
-            setValeursPrestation(prestation);
+            setValeursPrestation(prestation, dateDepart, dateArrivee);
             prestation.update();
             return prestation;
         }
         return null;
     }
 
-    private void setValeursPrestation(APPrestation prestation) {
+    private void setValeursPrestation(APPrestation prestation, String dateDepart, String dateArrivee) {
         prestation.setDateFin(dateArrivee);
         Integer nbjourSoldes = JadeDateUtil.getNbDaysBetween(dateDepart, dateArrivee) + 1;
         prestation.setNombreJoursSoldes(nbjourSoldes.toString());
@@ -550,10 +588,25 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
                         .map(obj -> (APPrestation) obj)
                         .collect(Collectors.toList());
                 for (APPrestation prestation : list){
-                    if((IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestation.getEtat())
-                            || !JadeStringUtil.isBlankOrZero(prestation.getIdLot()))
+                    if(IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestation.getEtat())
                             && JadeDateUtil.isDateBefore(dateFin, prestation.getDateFin())) {
                         getSession().addError(getSession().getLabel(PROCESS_PERIODE_PAYEE_MANDATORY));
+                    } else if(!IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestation.getEtat())
+                            && !JadeStringUtil.isBlankOrZero(prestation.getIdLot())
+                            && JadeDateUtil.isDateBefore(dateFin, prestation.getDateFin())) {
+
+                        APLot lot = new APLot();
+                        lot.setSession(getSession());
+                        lot.setIdLot((prestation.getIdLot()));
+                        lot.retrieve(getSession().getCurrentThreadTransaction());
+
+                        if (IAPLot.CS_COMPENSE.equals(lot.getEtat())) {
+                            lot.setEtat(IAPLot.CS_OUVERT);
+                            lot.update(getSession().getCurrentThreadTransaction());
+                        }
+                        prestation.setIdLot(null);
+                        prestation.setEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
+                        prestation.update();
                     }
                 }
             }
