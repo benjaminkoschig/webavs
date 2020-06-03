@@ -875,53 +875,24 @@ public class APBasesCalculBuilder {
     }
 
     private Integer ajouterPeriodesPan(String dateDebut, int autreJours, boolean isIndependant) throws Exception {
-        // charger toutes les périodes pour ce droit.
-        APPeriodeAPGManager mgr = new APPeriodeAPGManager();
-        Calendar bCal = getCalendarInstance();
 
-        mgr.setSession(session);
-        mgr.setForIdDroit(droit.getIdDroit());
-        mgr.find(session.getCurrentThreadTransaction());
-
-        int nbJourSoldes = 0;
-        List<APPeriodeComparable> listPeriode = mgr.toList().stream().map(obj -> (APPeriodeAPG) obj).map(ap -> new APPeriodeComparable(ap)).collect(Collectors.toList());
-        Collections.sort(listPeriode);
+        List<APPeriodeComparable> listPeriode = getApPeriodeDroit(droit.getIdDroit());
 
         int delai = autreJours == 0 ? getDelaiSelonService() : 0;
 
-        // pour chaque période
-        for (APPeriodeComparable periode : listPeriode) {
-            boolean dateDebutModif = false;
-            if(!JadeStringUtil.isEmpty(dateDebut) && JadeDateUtil.isDateBefore(periode.getDateDebutPeriode(), dateDebut)) {
-                periode.setDateDebutPeriode(dateDebut);
-                dateDebutModif = true;
-            }
-            // si pas de date fin mettre la fin du mois en cours pour le calcul
-            if (JadeStringUtil.isEmpty(periode.getDateFinPeriode())) {
-                if(IAPDroitLAPG.CS_QUARANTAINE.equals(droit.getGenreService())) {
-                    resolveFinJourMaxParam(periode, APParameter.QUARANTAINE_JOURS_MAX.getParameterName(), delai);
-                } else if (IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS.equals(droit.getGenreService())){
-                    resolveFinJourMaxParam(periode, APParameter.INDEPENDANT_PERTE_DE_GAIN_MAX.getParameterName(), delai);
-                } else {
-                    Calendar cal = Calendar.getInstance();
-                    cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
-                    periode.setDateFinPeriode(JadeDateUtil.getGlobazFormattedDate(cal.getTime()));
-                }
-            }
-
-            if(dateDebutModif && !JadeStringUtil.isBlankOrZero(periode.getNbrJours())){
-                int nbJours = PRDateUtils.getNbDayBetween(periode.getDateDebutPeriode(), periode.getDateFinPeriode()) + 1;
-                if(nbJours < Integer.valueOf(periode.getNbrJours())) {
-                    periode.setNbrJours(Integer.toString(nbJours));
-                }
-            }
+        if(autreJours == 0 && delai > 0) {
+            // vérifie si les jours de carrence n'ont pas été atteind dans d'autres droits
+            delai = calcDelaiForDroits(delai, dateDebut);
         }
+
+        calcDateDebutFin(droit.getIdDroit(), delai, dateDebut, listPeriode);
 
         // ajout d'un délai selon les services
         if(autreJours == 0){
             delaiSelonService(listPeriode, delai);
         }
 
+        int nbJourSoldes = 0;
         // pour chaque période
         for (APPeriodeComparable periode : listPeriode) {
 
@@ -961,6 +932,61 @@ public class APBasesCalculBuilder {
         return nbJourSoldes;
     }
 
+    private int calcDelaiForDroits(int delai, String dateDebut) throws Exception {
+        List<String> listDroit = ApgServiceLocator.getEntityService().getAutresDroits(session, droit.getIdDroit());
+        for(String idDroit:listDroit){
+            List<APPeriodeComparable> listPeriode = getApPeriodeDroit(idDroit);
+            calcDateDebutFin(idDroit, delai, dateDebut, listPeriode);
+            delai = delaiSelonService(listPeriode, delai);
+        }
+        return delai;
+    }
+
+    private void calcDateDebutFin(String idDroit, int delai, String dateDebut, List<APPeriodeComparable> listPeriode) throws Exception {
+
+        // pour chaque période
+        for (APPeriodeComparable periode : listPeriode) {
+            boolean dateDebutModif = false;
+            if(!JadeStringUtil.isEmpty(dateDebut) && JadeDateUtil.isDateBefore(periode.getDateDebutPeriode(), dateDebut)) {
+                periode.setDateDebutPeriode(dateDebut);
+                dateDebutModif = true;
+            }
+            // si pas de date fin mettre la fin du mois en cours pour le calcul
+            if (JadeStringUtil.isEmpty(periode.getDateFinPeriode())) {
+                if(IAPDroitLAPG.CS_QUARANTAINE.equals(droit.getGenreService())) {
+                    resolveFinJourMaxParam(periode, APParameter.QUARANTAINE_JOURS_MAX.getParameterName(), delai);
+                } else if (IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS.equals(droit.getGenreService())){
+                    resolveFinJourMaxParam(periode, APParameter.INDEPENDANT_PERTE_DE_GAIN_MAX.getParameterName(), delai);
+                } else {
+                    Calendar cal = Calendar.getInstance();
+                    cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
+                    periode.setDateFinPeriode(JadeDateUtil.getGlobazFormattedDate(cal.getTime()));
+                }
+            }
+
+            if(dateDebutModif && !JadeStringUtil.isBlankOrZero(periode.getNbrJours())){
+                int nbJours = PRDateUtils.getNbDayBetween(periode.getDateDebutPeriode(), periode.getDateFinPeriode()) + 1;
+                if(nbJours < Integer.valueOf(periode.getNbrJours())) {
+                    periode.setNbrJours(Integer.toString(nbJours));
+                }
+            }
+        }
+    }
+
+    private List<APPeriodeComparable> getApPeriodeDroit(String idDroit) throws Exception {
+        APPeriodeAPGManager mgr = new APPeriodeAPGManager();
+
+        mgr.setSession(session);
+        mgr.setForIdDroit(idDroit);
+        mgr.find(session.getCurrentThreadTransaction());
+
+        List<APPeriodeComparable> listPeriode;
+
+        listPeriode = mgr.toList().stream().map(obj -> (APPeriodeAPG) obj).map(ap -> new APPeriodeComparable(ap)).collect(Collectors.toList());
+        Collections.sort(listPeriode);
+        return listPeriode;
+    }
+
     private int getDelaiSelonService() throws Exception {
         Integer delai = 0;
         String valeur = "";
@@ -994,7 +1020,7 @@ public class APBasesCalculBuilder {
      * Ajout d'un délai selon le genre de service
      * @param listPeriode
      */
-    private void delaiSelonService(List<APPeriodeComparable> listPeriode, int delai) throws Exception {
+    private int delaiSelonService(List<APPeriodeComparable> listPeriode, int delai) throws Exception {
         if(!listPeriode.isEmpty()) {
 
             //décale la date de début ou supprime la période si pas assez de jours
@@ -1015,6 +1041,7 @@ public class APBasesCalculBuilder {
                 }
             }
         }
+        return delai;
     }
 
     private int joursMaxSelonService(int autreJours, int nbJours, APPeriodeComparable periode, boolean independant, String dateDebut) throws Exception {
