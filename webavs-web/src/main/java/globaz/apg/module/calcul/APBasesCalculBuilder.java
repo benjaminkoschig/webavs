@@ -13,6 +13,7 @@ import globaz.apg.db.droits.*;
 import globaz.apg.module.calcul.salaire.APMontantVerse;
 import globaz.apg.module.calcul.salaire.APSalaireAdapter;
 import globaz.apg.properties.APParameter;
+import globaz.apg.utils.APGUtils;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.FWFindParameter;
@@ -485,10 +486,10 @@ public class APBasesCalculBuilder {
                     baseCourante.setSalarie(true);
                 }
 
-                if(IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE.equals(droit.getGenreService())) {
+                if(APGUtils.isTypeAllocationPandemie(droit.getGenreService())) {
                     baseCourante.setAllocationExploitation(false);
                 } else {
-                baseCourante.setAllocationExploitation(sitPro.getIsAllocationExploitation().booleanValue());
+                    baseCourante.setAllocationExploitation(sitPro.getIsAllocationExploitation().booleanValue());
                 }
                 baseCourante.setAllocationMaximum(sitPro.getIsAllocationMax().booleanValue());
 
