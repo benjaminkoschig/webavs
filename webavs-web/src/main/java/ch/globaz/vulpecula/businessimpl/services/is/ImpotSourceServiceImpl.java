@@ -36,7 +36,6 @@ import globaz.osiris.db.recaprubriques.CARecapRubriquesExcel;
 import globaz.osiris.db.recaprubriques.CARecapRubriquesExcelManager;
 import globaz.osiris.external.IntRole;
 import globaz.vulpecula.business.exception.VulpeculaException;
-import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1008,9 +1007,9 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
             Taux tauxIS = null;
 
             try {
-                tauxFrais = tauxImpositions.getTauxComissionPerception(prestation.getCantonResidence(),
+                tauxFrais = tauxImpositions.getTauxComissionPerception(prestation.getCantonImpotSource(),
                         new Date(prestation.getPeriodeDe()));
-                tauxIS = tauxImpositions.getTauxImpotSource(prestation.getCantonResidence(),
+                tauxIS = tauxImpositions.getTauxImpotSource(prestation.getCantonImpotSource(),
                         new Date(prestation.getPeriodeDe()));
             } catch (TauxImpositionNotFoundException ex) {
                 ExceptionsUtil.translateAndThrowUncheckedException(ex);

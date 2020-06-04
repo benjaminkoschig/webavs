@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ListeISRetenuesProcess extends BProcessWithContext {
     private static final long serialVersionUID = 2139647038684081597L;
@@ -44,7 +45,7 @@ public class ListeISRetenuesProcess extends BProcessWithContext {
                 return false;
             }
 
-            if (prestationsAImprimer.size() == 0) {
+            if (prestationsAImprimer.size() == 0 || (StringUtils.isNotEmpty(canton) && Objects.isNull(prestationsAImprimer.get(canton)))) {
                 getTransaction().addErrors(getSession().getLabel("EMAIL_PAS_ELEMENTS"));
                 return false;
             }

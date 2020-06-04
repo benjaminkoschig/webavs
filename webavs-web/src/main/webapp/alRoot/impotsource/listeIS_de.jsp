@@ -44,6 +44,28 @@ function del() {
 function init(){
 }
 
+function showErrorMessage(message) {
+	var html = '<div>';
+	html += message;
+	html += '</div>';
+
+	$html = $(html);
+	$html.dialog({
+		position: 'center',
+		title: "Erreur",
+		width: 400,
+		height: 50,
+		show: "blind",
+		hide: "blind",
+		closeOnEscape: true,
+		buttons: {'Close': popupClose}
+	});
+}
+
+function popupClose() {
+	$html.dialog("close");
+}
+
 function postInit() {
 	$('input').removeProp('disabled');
 	$('select').removeProp('disabled');
@@ -51,6 +73,12 @@ function postInit() {
 
 $(function () {
 	$('#launch').click(function () {
+		var dateDebut = $('#dateDebut').val();
+		var dateFin = $('#dateFin').val();
+		if (!dateDebut || !dateFin) {
+			showErrorMessage("Aucune période n'est renseignée");
+			return;
+		}
 		$(this).prop('disabled', true);
 		document.forms[0].elements('userAction').value="al.impotsource.listeIS.executer";
 		document.forms[0].submit();
