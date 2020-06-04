@@ -451,7 +451,7 @@ public class CAInteretUtil {
      */
 
     public static List<Periode> isSectionSurcisProgaPaiementInPandemie(BTransaction transaction, BSession session, String idSection) throws Exception {
-        String[] datePeriodes = JadePropertiesService.getInstance().getProperty("aquila.tauxInteret.pandemieSursisProrogation.periodes").split(":");
+        String[] datePeriodes = JadePropertiesService.getInstance().getProperty("aquila.tauxInteret.pandemieSurcisProrogation.periodes").split(":");
         List<Periode> listPeriodeMotif = new LinkedList<>();
         Date dateDebutPandemie = null;
         Date dateDebutMotif = null;
@@ -464,7 +464,7 @@ public class CAInteretUtil {
         List<CAMotifContentieux> listMotifs = section.getMotifsContentieux(dateDebutPandemie.getSwissValue());
         CAPlanRecouvrement plan = section.getPlanRecouvrement();
         for (CAMotifContentieux motif : listMotifs) {
-            dateDebutMotif = new Date(motif.getDateDebut());
+//            dateDebutMotif = new Date(motif.getDateDebut());
             if ((motif.getIdMotifBlocage().equals(CAMotifContentieux.CS_MOTIF_BLOCAGE_SURSIS_AU_PAIEMENT)
                     || motif.getIdMotifBlocage().equals(CAMotifContentieux.CS_MOTIF_BLOCAGE_PROROGATION_DELAI_PAIEMENT))) {
                 Periode periodeMotif = new Periode(motif.getDateDebut(), motif.getDateFin());
@@ -574,8 +574,8 @@ public class CAInteretUtil {
         if (dateFinPeriode1.before(dateDebutPeriode2) || dateFinPeriode2.before(dateDebutPeriode1)) {
             return false;
         } else {
-            return true;
-        }
+        return true;
+    }
     }
 
     public static Map<Periode, Boolean> preparesPeriodeInteretsCovids(BSession session, JADate dateCalculDebut, JADate dateCalculFin, List<Periode> listPeriodeMotifsSurcis) throws Exception {
@@ -610,12 +610,10 @@ public class CAInteretUtil {
                 dateFin = new JADate(periodeMotif.getDateFin());
             }
             mapIntermediaire.put(new Periode(dateDebut.toStr("."), dateFin.toStr(".")), CAInteretUtil.USE_TAUX_SURCIS_PRO);
-            if (!it.hasNext()) {
-                if (!dateFin.equals(dateCalculFin)) {
-                    dateDebut = new JADate(session.getApplication().getCalendar().addDays(periodeMotif.getDateFin(), 1));
-                    dateFin = dateCalculFin;
-                    mapIntermediaire.put(new Periode(dateDebut.toStr("."), dateCalculFin.toStr(".")), CAInteretUtil.USE_TAUX_NORMAL);
-                }
+            if (!it.hasNext() && !dateFin.equals(dateCalculFin)) {
+                dateDebut = new JADate(session.getApplication().getCalendar().addDays(periodeMotif.getDateFin(), 1));
+                dateFin = dateCalculFin;
+                mapIntermediaire.put(new Periode(dateDebut.toStr("."), dateCalculFin.toStr(".")), CAInteretUtil.USE_TAUX_NORMAL);
             }
             dateDebut = session.getApplication().getCalendar().addDays(dateFin, 1);
         } while (it.hasNext());
@@ -626,9 +624,7 @@ public class CAInteretUtil {
 
     public static int getJoursInterets(BSession session, JADate dateDebut, JADate dateFin) throws Exception {
         JACalendarMonth calendar = new JACalendarMonth(30);
-        int days = (int) calendar.daysBetween(dateDebut,
+        return (int) calendar.daysBetween(dateDebut,
                 session.getApplication().getCalendar().addDays(dateFin, 1));
-
-        return days;
     }
 }
