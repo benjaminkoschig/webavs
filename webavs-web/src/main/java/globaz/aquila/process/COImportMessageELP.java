@@ -204,9 +204,13 @@ public class COImportMessageELP extends BProcess {
                     // Ajout des étapes infos
                     addCDPEtapeInfos(action, scElpDto);
                     // Création du process
-                    executeCOTransitionProcess(contentieux, action, new ArrayList());
-                    protocole.addMsgTraite(scElpDto);
-                    traitementInSuccess = true;
+                    traitementInSuccess = executeCOTransitionProcess(contentieux, action, new ArrayList());
+                    if (traitementInSuccess) {
+                        protocole.addMsgTraite(scElpDto);
+                    } else {
+                        scElpDto.setMotif(COMotifMessageELP.CDP_NON_TRAITE);
+                        protocole.addnonTraite(scElpDto);
+                    }
                 } else {
                     scElpDto.setMotifWrongStep(contentieux.getIdEtape());
                     protocole.addnonTraite(scElpDto);
@@ -311,7 +315,7 @@ public class COImportMessageELP extends BProcess {
                 LOG.error("Erreur lors de la récupération de de la transition liée au contentieux.");
             }
         } else {
-           LOG.error("Erreur lors de la récupération de l'id étape liée au contentieux.");
+            LOG.error("Erreur lors de la récupération de l'id étape liée au contentieux.");
         }
         return result;
     }
@@ -347,8 +351,9 @@ public class COImportMessageELP extends BProcess {
      * @param action          : l'action liée.
      * @param fraisEtInterets : les frais et intérêts liés.
      * @throws ElpProcessException : Exception lancée si une erreur intervient lors de l'exécution du process.
+     *                             return true si le process s'est exécuté en succès.
      */
-    private void executeCOTransitionProcess(COContentieux contentieux, COTransitionAction action, List fraisEtInterets) throws ElpProcessException {
+    private boolean executeCOTransitionProcess(COContentieux contentieux, COTransitionAction action, List fraisEtInterets) throws ElpProcessException {
         COProcessEffectuerTransition process = new COProcessEffectuerTransition();
         process.setSession(getSession());
         process.setTransaction(getSession().getCurrentThreadTransaction());
@@ -364,7 +369,7 @@ public class COImportMessageELP extends BProcess {
         } catch (Exception e) {
             throw new ElpProcessException("Erreur lors de la création de la nouvelle étape du contentieux", e);
         }
-
+        return process.getReturnCode() == 0;
     }
 
     /**
@@ -398,9 +403,13 @@ public class COImportMessageELP extends BProcess {
                     addPvEtapeInfos(action, spElpDto);
                 }
                 // Création du process
-                executeCOTransitionProcess(contentieux, action, new ArrayList());
-                protocole.addMsgTraite(spElpDto);
-                traitementInSuccess = true;
+                traitementInSuccess = executeCOTransitionProcess(contentieux, action, new ArrayList());
+                if (traitementInSuccess) {
+                    protocole.addMsgTraite(spElpDto);
+                } else {
+                    spElpDto.setMotif(COMotifMessageELP.PV_NON_TRAITE);
+                    protocole.addnonTraite(spElpDto);
+                }
             } else {
                 spElpDto.setMotif(COMotifMessageELP.PV_NON_TRAITE);
                 protocole.addnonTraite(spElpDto);
@@ -515,9 +524,13 @@ public class COImportMessageELP extends BProcess {
                     protocole.addnonTraite(rcElpDto);
                     return false;
                 }
-                executeCOTransitionProcess(contentieux, action, fraisEtInterets);
-                protocole.addMsgTraite(rcElpDto);
-                traitementInSuccess = true;
+                traitementInSuccess = executeCOTransitionProcess(contentieux, action, fraisEtInterets);
+                if (traitementInSuccess) {
+                    protocole.addMsgTraite(rcElpDto);
+                } else {
+                    rcElpDto.setMotif(COMotifMessageELP.ADB_NON_TRAITE);
+                    protocole.addnonTraite(rcElpDto);
+                }
             } else {
                 rcElpDto.setMotif(COMotifMessageELP.ADB_NON_TRAITE);
                 protocole.addnonTraite(rcElpDto);
@@ -681,7 +694,7 @@ public class COImportMessageELP extends BProcess {
         return true;
     }
 
-     private String getEMailAddressELP() {
+    private String getEMailAddressELP() {
         String eMailAddress = JadePropertiesService.getInstance().getProperty(COProperties.DESTINATAIRE_PROTOCOLE_MESSAGES_ELP.getProperty());
 
         if (((eMailAddress == null) || (eMailAddress.length() == 0)) && getSession() != null) {

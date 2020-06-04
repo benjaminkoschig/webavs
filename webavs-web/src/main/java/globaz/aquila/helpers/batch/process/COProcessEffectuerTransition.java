@@ -125,7 +125,7 @@ public class COProcessEffectuerTransition extends BProcess {
         // Rattache les messages au viewBean et fermer la transaction
         transferMessagesToViewBean(getSession(), getTransaction(), contentieux);
 
-        return false;
+        return !getTransaction().hasErrors();
     }
 
     /**
