@@ -121,9 +121,9 @@ public class RERenteJoinPersonneAvsManager extends PRAbstractManager {
         sql.append(_getCollection()).append(RERenteAccordee.TABLE_NAME_RENTE_ACCORDEE).append(".")
                 .append(RERenteAccordee.FIELDNAME_CODE_CAS_SPECIAUX_4).append(",");
         sql.append(_getCollection()).append(RERenteAccordee.TABLE_NAME_RENTE_ACCORDEE).append(".")
-                .append(RERenteAccordee.FIELDNAME_CODE_CAS_SPECIAUX_5);
+                .append(RERenteAccordee.FIELDNAME_CODE_CAS_SPECIAUX_5).append(",");
         sql.append(_getCollection()).append(RERenteAccordee.TABLE_NAME_RENTE_ACCORDEE).append(".")
-                .append(RERenteAccordee.FIELDNAME_ID_TIERS_COMPLEMENTAIRE_1);
+                .append(RERenteAccordee.FIELDNAME_ID_TIERS_COMPLEMENTAIRE_1).append(",");
         sql.append(_getCollection()).append(RERenteAccordee.TABLE_NAME_RENTE_ACCORDEE).append(".")
                 .append(RERenteAccordee.FIELDNAME_ID_TIERS_COMPLEMENTAIRE_2);
 
