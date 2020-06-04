@@ -40,6 +40,7 @@ public class DateTest {
     }
 
     @Test(timeout = 500)
+    @Ignore
     public void given100ThreadsWhichCreate100DatesThenReturnNoException() {
         try {
             create100Times(5);
