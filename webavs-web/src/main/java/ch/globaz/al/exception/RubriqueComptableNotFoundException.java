@@ -11,5 +11,4 @@ public class RubriqueComptableNotFoundException extends JadeApplicationException
     public RubriqueComptableNotFoundException(String message) {
         super(message);
     }
-
 }

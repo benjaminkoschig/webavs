@@ -12,6 +12,7 @@ import ch.globaz.al.business.services.rubriques.comptables.RubriquesComptablesFP
 import ch.globaz.al.exception.RubriqueComptableNotFoundException;
 import ch.globaz.naos.business.data.AssuranceInfo;
 import ch.globaz.param.business.exceptions.ParamException;
+import ch.globaz.param.business.exceptions.models.ParameterModelException;
 import globaz.jade.client.util.JadeCodesSystemsUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
@@ -167,10 +168,9 @@ public class RubriquesComptablesFPVServiceImpl extends RubriquesComptablesServic
         if (ALCSDossier.ACTIVITE_SALARIE.equals(dossier.getActiviteAllocataire()) || StringUtils.equals(codeCaisse, "20")) {
             rubrique.append(".").append(JadeCodesSystemsUtil.getCode(cantonImposition));
         }
-        String result = getRubrique(date, rubrique.toString().toLowerCase());
-        if (StringUtils.isNotEmpty(result)){
-            return result;
-        } else {
+        try {
+            return getRubrique(date, rubrique.toString().toLowerCase());
+        } catch (ParameterModelException e) {
             throw new RubriqueComptableNotFoundException("La prestation ne peut pas être générée, la rubrique comptable doit être définie pour l'impôt à la source");
         }
     }
