@@ -546,6 +546,7 @@ public class REDiminutionRenteAccordeeProcess extends BProcess {
 
         PRTiersWrapper tier = PRTiersHelper.getTiersParId(getSession(), ra.getIdTiersBeneficiaire());
 
+
         if (null == tier) {
             throw new Exception(getSession().getLabel("EXCEPTION_TIERS_REDIMINUTIONLISTERENTEACCORDEE")
                     + " (REDiminutionListeRenteAccordeeProcess)");
@@ -585,6 +586,11 @@ public class REDiminutionRenteAccordeeProcess extends BProcess {
             annonce10Eme.setCodeMutation(getSession().getCode(codeMutation));
             annonce10Eme.setEtat(IREAnnonces.CS_ETAT_OUVERT);
             annonce10Eme.setIdTiers(tier.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+            if(ra.contientCodeCasSpecial("60")){
+                PRTiersWrapper tierCompl1 = PRTiersHelper.getTiersParId(getSession(), ra.getIdTiersComplementaire1());
+                annonce10Eme.setPremierNoAssComplementaire(NSUtil.unFormatAVS(tierCompl1.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
+            }
+
             annonce10Eme.add(transaction);
 
             idAnnonce = annonce10Eme.getIdAnnonce();
@@ -621,7 +627,10 @@ public class REDiminutionRenteAccordeeProcess extends BProcess {
             annonce9Eme.setCodeMutation(getSession().getCode(codeMutation));
             annonce9Eme.setIdTiers(tier.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
             annonce9Eme.setEtat(IREAnnonces.CS_ETAT_OUVERT);
-
+            if(ra.contientCodeCasSpecial("60")){
+                PRTiersWrapper tierCompl1 = PRTiersHelper.getTiersParId(getSession(), ra.getIdTiersComplementaire1());
+                annonce9Eme.setPremierNoAssComplementaire(NSUtil.unFormatAVS(tierCompl1.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
+            }
             annonce9Eme.add(transaction);
 
             idAnnonce = annonce9Eme.getIdAnnonce();

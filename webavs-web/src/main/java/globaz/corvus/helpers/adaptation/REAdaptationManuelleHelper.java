@@ -1105,6 +1105,12 @@ public class REAdaptationManuelleHelper extends FWHelper {
         ann46dim.setCodeMutation("77");
         ann46dim.setEtat(IREAnnonces.CS_ETAT_OUVERT);
         ann46dim.setIdTiers(tier.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+        if(ra.contientCodeCasSpecial("60")){
+            PRTiersWrapper tierCompl = PRTiersHelper.getTiersParId(session,
+                    ra.getIdTiersComplementaire1());
+            ann46dim.setPremierNoAssComplementaire(
+                    NSUtil.unFormatAVS(tierCompl.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
+        }
         ann46dim.add(transaction);
 
         idAnnonce = ann46dim.getIdAnnonce();
@@ -1221,6 +1227,13 @@ public class REAdaptationManuelleHelper extends FWHelper {
         ann43dim.setCodeMutation("77");
         ann43dim.setIdTiers(tier.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
         ann43dim.setEtat(IREAnnonces.CS_ETAT_OUVERT);
+
+        if(ra.contientCodeCasSpecial("60")){
+            PRTiersWrapper tierCompl = PRTiersHelper.getTiersParId(session,
+                    ra.getIdTiersComplementaire1());
+            ann43dim.setPremierNoAssComplementaire(
+                    NSUtil.unFormatAVS(tierCompl.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
+        }
 
         ann43dim.add(transaction);
 

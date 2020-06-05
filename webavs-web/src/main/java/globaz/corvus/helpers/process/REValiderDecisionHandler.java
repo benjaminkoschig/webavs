@@ -1677,6 +1677,12 @@ public class REValiderDecisionHandler {
                                 if (buff.length() > 0) {
                                     throw new Exception(buff.toString());
                                 }
+                                if(raADiminuer.contientCodeCasSpecial("60")){
+                                    PRTiersWrapper tierCompl = PRTiersHelper.getTiersParId(getSession(),
+                                            raADiminuer.getIdTiersComplementaire1());
+                                    annonce10Eme.setPremierNoAssComplementaire(
+                                            NSUtil.unFormatAVS(tierCompl.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
+                                }
 
                                 annonce10Eme.add(transaction);
 
@@ -1728,6 +1734,12 @@ public class REValiderDecisionHandler {
                                 }
                                 if (buff.length() > 0) {
                                     throw new Exception(buff.toString());
+                                }
+                                if(raADiminuer.contientCodeCasSpecial("60")){
+                                    PRTiersWrapper tierCompl = PRTiersHelper.getTiersParId(getSession(),
+                                            raADiminuer.getIdTiersComplementaire1());
+                                    annonce9Eme.setPremierNoAssComplementaire(
+                                            NSUtil.unFormatAVS(tierCompl.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
                                 }
                                 annonce9Eme.add(transaction);
 
