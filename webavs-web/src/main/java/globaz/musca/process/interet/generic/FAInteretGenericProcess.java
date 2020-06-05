@@ -1,5 +1,6 @@
 package globaz.musca.process.interet.generic;
 
+import ch.globaz.common.properties.CommonProperties;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
 import globaz.globall.api.GlobazSystem;
@@ -17,6 +18,7 @@ import globaz.musca.db.interet.generic.montantsoumis.FASumMontantSoumisParPlanMa
 import globaz.musca.process.interet.util.FAInteretGenericUtil;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.interet.util.CAInteretUtil;
+import globaz.osiris.db.interet.util.tauxParametres.CATauxParametre;
 import globaz.osiris.db.interets.CADetailInteretMoratoire;
 import globaz.osiris.db.interets.CADetailInteretMoratoireManager;
 import globaz.osiris.db.interets.CAGenreInteret;
@@ -24,12 +26,15 @@ import globaz.osiris.db.interets.CAInteretMoratoire;
 import globaz.osiris.db.interets.CAPlanCalculInteret;
 import globaz.osiris.db.interets.CAPlanCalculInteretManager;
 
+import java.util.List;
+
 public abstract class FAInteretGenericProcess extends BProcess {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private FAPassage passage = null;
+
 
     /**
      * Commentaire relatif au constructeur CAProcessInteretSurCotArr.
@@ -40,7 +45,7 @@ public abstract class FAInteretGenericProcess extends BProcess {
 
     /**
      * Commentaire relatif au constructeur CAProcessInteretSurCotArr.
-     * 
+     *
      * @param parent
      *            BProcess
      */
@@ -58,7 +63,7 @@ public abstract class FAInteretGenericProcess extends BProcess {
     /**
      * Cette méthode exécute le processus de facturation des intérêts moratoires tardifs. Date de création : (14.02.2002
      * 14:26:51)
-     * 
+     *
      * @return boolean
      */
     @Override
@@ -118,41 +123,90 @@ public abstract class FAInteretGenericProcess extends BProcess {
 
                         montantInteretSoumis = new FWCurrency();
                         montantInteretSoumis.add(montantSoumisPlanEntete.getMontant());
+                        if(CommonProperties.TAUX_INTERET_PANDEMIE.getBooleanValue()){
+                            boolean isFirst =true;
 
-                        double taux = CAInteretUtil.getTaux(getTransaction(),
-                                getDateDebutLigneDetailInteret(calendar, montantSoumisPlanEntete));
-                        FWCurrency montantInteret = CAInteretUtil.getMontantInteret(osirisSession,
-                                montantInteretSoumis, dateFinCalcul,
-                                new JADate(getDateDebutLigneDetailInteret(calendar, montantSoumisPlanEntete)), taux);
-
-                        if ((montantInteret != null) && !montantInteret.isZero()) {
-                            montantInteretCumule.add(montantInteret);
-
-                            interet = addLigneDetailInteret(osirisSession, plan, interet, dateFinCalcul, taux,
-                                    limiteExempte, montantInteretSoumis, montantInteretCumule, montantSoumisPlanEntete,
-                                    montantInteret, calendar);
-
-                            if (!getTransaction().hasErrors()) {
-                                getTransaction().commit();
-                            } else {
-                                throw new Exception(getTransaction().getErrors().toString() + " "
-                                        + montantSoumisPlanEntete.getIdExterneFacture() + " / "
-                                        + montantSoumisPlanEntete.getIdEnteteFacture());
+                            JADate dateCalculDebut = new JADate(getDateDebutLigneDetailInteret(calendar, montantSoumisPlanEntete));
+                            JADate dateCalculFin =  dateFinCalcul;
+                            List<CATauxParametre> listTaux;
+                            if(getIdGenreInteret()!= null && getIdGenreInteret().equals(CAGenreInteret.CS_TYPE_REMUNERATOIRES)){
+                                listTaux= CAInteretUtil.getTaux(getTransaction(),dateCalculDebut.toStr("."),   dateFinCalcul.toStr("."),CAInteretUtil.CS_PARAM_TAUX_REMU,2);
+                            }else{
+                                listTaux = CAInteretUtil.getTaux(getTransaction(),dateCalculDebut.toStr("."),   dateFinCalcul.toStr("."),CAInteretUtil.CS_PARAM_TAUX,2);
                             }
 
-                            // this.addRemarqueEnteteFacture(montantSoumisPlanEntete.getIdEnteteFacture());
-                            // // Bug 5678 - Bugfix 5678
-                            // // if (((CPApplication) CAApplication.getApplicationPhenix()).isFactureParAnnee()) {
-                            // if (((next != null) && (!next.getIdEnteteFacture().equals(
-                            // montantSoumisPlanEntete.getIdEnteteFacture())))
-                            // || (j == manager.size() - 1)) {
-                            // // Si une entête facture par année, nous pouvons garder le système de sommer le
-                            // // détail de l'intérêt du décompte
-                            // this.factureInteret(osirisSession, interet, montantSoumisPlanEntete, null);
-                            // }
-                            // // } else {
-                            // // this.factureInteret(osirisSession, interet, montantSoumisPlanEntete, montantInteret);
-                            // // }
+                            for(CATauxParametre CATauxParametre : listTaux) {
+                                double taux = CATauxParametre.getTaux();
+                                JADate dateDebut;
+                                JADate dateFin;
+                                //Aide pour découpage des périodes après la première ligne
+                                if(isFirst){
+                                    dateDebut = dateCalculDebut;
+                                    isFirst = false;
+                                }else{
+                                    dateDebut = new JADate(CATauxParametre.getDateDebut().getSwissValue());
+                                }
+                                if (CATauxParametre.getDateFin() == null) {
+                                    dateFin = dateCalculFin;
+                                } else {
+                                    dateFin = new JADate(CATauxParametre.getDateFin().getSwissValue());
+                                }
+                                FWCurrency montantInteret = CAInteretUtil.getMontantInteret(getSession(), montantInteretSoumis,
+                                        dateFin, dateDebut, taux);
+                                if ((montantInteret != null)) {
+                                    montantInteretCumule.add(montantInteret);
+
+                                    interet = addLigneDetailInteretNew(osirisSession, plan, interet,dateDebut ,dateFin, taux,
+                                            limiteExempte, montantInteretSoumis, montantInteretCumule, montantSoumisPlanEntete,
+                                            montantInteret, calendar);
+
+                                    if (!getTransaction().hasErrors()) {
+                                        getTransaction().commit();
+                                    } else {
+                                        throw new Exception(getTransaction().getErrors().toString() + " "
+                                                + montantSoumisPlanEntete.getIdExterneFacture() + " / "
+                                                + montantSoumisPlanEntete.getIdEnteteFacture());
+                                    }
+                                }
+
+                            }
+
+                        } else {
+                            double taux = CAInteretUtil.getTaux(getTransaction(),
+                                    getDateDebutLigneDetailInteret(calendar, montantSoumisPlanEntete));
+                            FWCurrency montantInteret = CAInteretUtil.getMontantInteret(osirisSession,
+                                    montantInteretSoumis, dateFinCalcul,
+                                    new JADate(getDateDebutLigneDetailInteret(calendar, montantSoumisPlanEntete)), taux);
+
+                            if ((montantInteret != null) && !montantInteret.isZero()) {
+                                montantInteretCumule.add(montantInteret);
+
+                                interet = addLigneDetailInteret(osirisSession, plan, interet, dateFinCalcul, taux,
+                                        limiteExempte, montantInteretSoumis, montantInteretCumule, montantSoumisPlanEntete,
+                                        montantInteret, calendar);
+
+                                if (!getTransaction().hasErrors()) {
+                                    getTransaction().commit();
+                                } else {
+                                    throw new Exception(getTransaction().getErrors().toString() + " "
+                                            + montantSoumisPlanEntete.getIdExterneFacture() + " / "
+                                            + montantSoumisPlanEntete.getIdEnteteFacture());
+                                }
+
+                                // this.addRemarqueEnteteFacture(montantSoumisPlanEntete.getIdEnteteFacture());
+                                // // Bug 5678 - Bugfix 5678
+                                // // if (((CPApplication) CAApplication.getApplicationPhenix()).isFactureParAnnee()) {
+                                // if (((next != null) && (!next.getIdEnteteFacture().equals(
+                                // montantSoumisPlanEntete.getIdEnteteFacture())))
+                                // || (j == manager.size() - 1)) {
+                                // // Si une entête facture par année, nous pouvons garder le système de sommer le
+                                // // détail de l'intérêt du décompte
+                                // this.factureInteret(osirisSession, interet, montantSoumisPlanEntete, null);
+                                // }
+                                // // } else {
+                                // // this.factureInteret(osirisSession, interet, montantSoumisPlanEntete, montantInteret);
+                                // // }
+                            }
                         }
 
                     } else if ((prev != null)
@@ -214,7 +268,7 @@ public abstract class FAInteretGenericProcess extends BProcess {
 
     /**
      * Ajoute une ligne de détail à l'intérêt.
-     * 
+     *
      * @param osirisSession
      * @param plan
      * @param interet
@@ -230,9 +284,9 @@ public abstract class FAInteretGenericProcess extends BProcess {
      * @throws Exception
      */
     private CAInteretMoratoire addLigneDetailInteret(BSession osirisSession, CAPlanCalculInteret plan,
-            CAInteretMoratoire interet, JADate dateFinCalcul, double taux, FWCurrency limiteExempte,
-            FWCurrency montantInteretSoumisCumule, FWCurrency montantInteretCumule,
-            FASumMontantSoumisParPlan montantSoumisPlanEntete, FWCurrency montantInteret, JACalendarGregorian calendar)
+                                                     CAInteretMoratoire interet, JADate dateFinCalcul, double taux, FWCurrency limiteExempte,
+                                                     FWCurrency montantInteretSoumisCumule, FWCurrency montantInteretCumule,
+                                                     FASumMontantSoumisParPlan montantSoumisPlanEntete, FWCurrency montantInteret, JACalendarGregorian calendar)
             throws Exception {
         CADetailInteretMoratoire ligne = getLigneDetailInteret(osirisSession, montantInteretSoumisCumule,
                 montantSoumisPlanEntete, montantInteret, dateFinCalcul, taux, calendar);
@@ -256,16 +310,43 @@ public abstract class FAInteretGenericProcess extends BProcess {
         return interet;
     }
 
+    private CAInteretMoratoire addLigneDetailInteretNew(BSession osirisSession, CAPlanCalculInteret plan,
+                                                        CAInteretMoratoire interet,JADate dateDebut,JADate dateFin, double taux, FWCurrency limiteExempte,
+                                                        FWCurrency montantInteretSoumisCumule, FWCurrency montantInteretCumule,
+                                                        FASumMontantSoumisParPlan montantSoumisPlanEntete, FWCurrency montantInteret, JACalendarGregorian calendar)
+            throws Exception {
+        CADetailInteretMoratoire ligne = getLigneDetailInteretNew(osirisSession, montantInteretSoumisCumule,
+                montantSoumisPlanEntete, montantInteret, dateDebut,dateFin, taux, calendar);
+
+        if (interet.isNew()) {
+            interet = getInteretMoratoire(osirisSession, getTransaction(), plan.getIdPlanCalculInteret(),
+                    montantSoumisPlanEntete.getIdEnteteFacture());
+
+            interet = setMotifCalculInteret(interet, limiteExempte, montantInteretCumule, montantSoumisPlanEntete);
+
+            interet.add(getTransaction());
+        } else {
+            interet = setMotifCalculInteret(interet, limiteExempte, montantInteretCumule, montantSoumisPlanEntete);
+
+            interet.update(getTransaction());
+        }
+
+        ligne.setIdInteretMoratoire(interet.getIdInteretMoratoire());
+        ligne.add(getTransaction());
+
+        return interet;
+    }
+
     /**
      * Ajoute (si nécessaire) une remarque à l'entête de facture. Cette remarque sera ensuite imprimé sur la facture.
-     * 
+     *
      * @param idEntete
      * @throws Exception
      */
     protected abstract void addRemarqueEnteteFacture(String idEntete) throws Exception;
 
     private void factureInteret(BSession osirisSession, CAInteretMoratoire interet,
-            FASumMontantSoumisParPlan montantSoumisPlanEntete, FWCurrency montantInteret) throws Exception {
+                                FASumMontantSoumisParPlan montantSoumisPlanEntete, FWCurrency montantInteret) throws Exception {
         if (interet.isSoumis()) {
             FAInteretGenericUtil.facturer(getSession(), getTransaction(), osirisSession, getPassage(),
                     montantSoumisPlanEntete.getIdEnteteFacture(), interet, montantInteret);
@@ -281,17 +362,17 @@ public abstract class FAInteretGenericProcess extends BProcess {
 
     /**
      * Return la date (format jour.mois.année) de debut d'une ligne de détail d'un intérêt moratoire.
-     * 
+     *
      * @param calendar
      * @param montantSoumisPlanEntete
      * @return
      */
     protected abstract String getDateDebutLigneDetailInteret(JACalendarGregorian calendar,
-            FASumMontantSoumisParPlan montantSoumisPlanEntete) throws Exception;
+                                                             FASumMontantSoumisParPlan montantSoumisPlanEntete) throws Exception;
 
     /**
      * Return la date de fin pour le calcul des intérêts pour une ligne.
-     * 
+     *
      * @param count
      * @param total
      * @param montantSoumisPlanEntete
@@ -300,12 +381,12 @@ public abstract class FAInteretGenericProcess extends BProcess {
      * @throws Exception
      */
     protected abstract JADate getDateFinCalcul(int count, int total, FASumMontantSoumisParPlan montantSoumisPlanEntete,
-            FASumMontantSoumisParPlan next) throws Exception;
+                                               FASumMontantSoumisParPlan next) throws Exception;
 
     /**
      * Return le motif de calcul par défaut de l'intérêt moratoire.<br/>
      * Pour tout les types le motif est CAInteretMoratoire.CS_EXEMPTE
-     * 
+     *
      * @see CAInteretMoratoire.CS_EXEMPTE
      * @return
      */
@@ -325,7 +406,7 @@ public abstract class FAInteretGenericProcess extends BProcess {
 
     /**
      * Return l'id genre d'interet à générer.
-     * 
+     *
      * @see CAGenreInteret.CS_TYPE_DECOMPTE_FINAL
      * @return
      */
@@ -333,7 +414,7 @@ public abstract class FAInteretGenericProcess extends BProcess {
 
     /**
      * Return un nouvel intérêt (sans ajout dans la base de données).
-     * 
+     *
      * @param session
      * @param transaction
      * @param idPlan
@@ -342,7 +423,7 @@ public abstract class FAInteretGenericProcess extends BProcess {
      * @throws Exception
      */
     private CAInteretMoratoire getInteretMoratoire(BSession session, BTransaction transaction, String idPlan,
-            String idEntete) throws Exception {
+                                                   String idEntete) throws Exception {
         CAInteretMoratoire interet = new CAInteretMoratoire();
         interet.setSession(session);
 
@@ -367,7 +448,7 @@ public abstract class FAInteretGenericProcess extends BProcess {
 
     /**
      * Return une nouvelle ligne de détail d'intérêt (sans ajout dans la base de données).
-     * 
+     *
      * @param osirisSession
      * @param montantSoumisCumuleParInteret
      * @param montantSoumisPlanEntete
@@ -378,8 +459,8 @@ public abstract class FAInteretGenericProcess extends BProcess {
      * @return
      */
     private CADetailInteretMoratoire getLigneDetailInteret(BSession osirisSession,
-            FWCurrency montantSoumisCumuleParInteret, FASumMontantSoumisParPlan montantSoumisPlanEntete,
-            FWCurrency montantInteret, JADate dateFinCalcul, double taux, JACalendarGregorian calendar)
+                                                           FWCurrency montantSoumisCumuleParInteret, FASumMontantSoumisParPlan montantSoumisPlanEntete,
+                                                           FWCurrency montantInteret, JADate dateFinCalcul, double taux, JACalendarGregorian calendar)
             throws Exception {
         CADetailInteretMoratoire ligne = new CADetailInteretMoratoire();
         ligne.setSession(osirisSession);
@@ -401,9 +482,33 @@ public abstract class FAInteretGenericProcess extends BProcess {
         return ligne;
     }
 
+    private CADetailInteretMoratoire getLigneDetailInteretNew(BSession osirisSession,
+                                                              FWCurrency montantSoumisCumuleParInteret, FASumMontantSoumisParPlan montantSoumisPlanEntete,
+                                                              FWCurrency montantInteret,JADate dateDebutCalcul, JADate dateFinCalcul, double taux, JACalendarGregorian calendar)
+            throws Exception {
+        CADetailInteretMoratoire ligne = new CADetailInteretMoratoire();
+        ligne.setSession(osirisSession);
+
+        ligne.setIdJournalFacturation(getPassage().getIdPassage());
+
+        ligne.setMontantInteret(montantInteret.toString());
+
+        ligne.setMontantSoumis(montantSoumisCumuleParInteret.toString());
+
+        ligne.setDateDebut(dateDebutCalcul.toStr("."));
+
+        ligne.setTaux(String.valueOf(taux));
+
+        ligne.setDateFin(dateFinCalcul.toStr("."));
+
+        ligne.setAnneeCotisation(montantSoumisPlanEntete.getAnneeCotisation());
+
+        return ligne;
+    }
+
     /**
      * Return la limite exempté d'un intérêt moratoire ou rénumératoire.
-     * 
+     *
      * @param osirisSession
      * @return
      * @throws Exception
@@ -416,7 +521,7 @@ public abstract class FAInteretGenericProcess extends BProcess {
 
     /**
      * Return le manager qui groupe les entete et afacts et somme montant en fonction d'un plan.
-     * 
+     *
      * @param plan
      * @return
      */
@@ -424,18 +529,18 @@ public abstract class FAInteretGenericProcess extends BProcess {
 
     /**
      * Return true si la ligne (FASumMontantSoumisParPlan) est candidate à intérêt.
-     * 
+     *
      * @param calendar
      * @param plan
      * @return
      */
     protected abstract boolean isLigneCandidatAInteret(JACalendarGregorian calendar,
-            FASumMontantSoumisParPlan montantSoumisPlanEntete) throws Exception;
+                                                       FASumMontantSoumisParPlan montantSoumisPlanEntete) throws Exception;
 
     /**
      * Le montant de l'intérêt (cumulé) est-il supérieur (inférieur pour rénumératoire) par rapport a la limite exempté
      * ?
-     * 
+     *
      * @param limiteExempte
      * @param montantInteretCumule
      * @return
@@ -452,7 +557,7 @@ public abstract class FAInteretGenericProcess extends BProcess {
 
     /**
      * Mise à jour du motif de calcul de l'intérêt.
-     * 
+     *
      * @param interet
      * @param limiteExempte
      * @param montantInteretCumule
@@ -460,7 +565,7 @@ public abstract class FAInteretGenericProcess extends BProcess {
      * @return
      */
     private CAInteretMoratoire setMotifCalculInteret(CAInteretMoratoire interet, FWCurrency limiteExempte,
-            FWCurrency montantInteretCumule, FASumMontantSoumisParPlan planEntete) {
+                                                     FWCurrency montantInteretCumule, FASumMontantSoumisParPlan planEntete) {
         if ((interet.isExempte() && !planEntete.isExempte() && isMontantSoumis(limiteExempte, montantInteretCumule))
                 || (planEntete.isSoumis())) {
             interet.setMotifcalcul(CAInteretMoratoire.CS_SOUMIS);
@@ -471,7 +576,7 @@ public abstract class FAInteretGenericProcess extends BProcess {
 
     /**
      * Method setPassage. Utilise le passage passé en paramètre depuis la facturation
-     * 
+     *
      * @param passage
      *            passage
      */
@@ -484,14 +589,14 @@ public abstract class FAInteretGenericProcess extends BProcess {
      * la date de fin de la dernière ligne de détail de l'intérêt. <br/>
      * Résout problème, si dans un décompte plusieurs années de cotisations sont touchés, mixant soumis et non soumis à
      * intérêt.
-     * 
+     *
      * @param interet
      * @param montantSoumisPlanEntete
      * @param dateFinCalcul
      * @throws Exception
      */
     private void updateDateFin(CAInteretMoratoire interet, FASumMontantSoumisParPlan montantSoumisPlanEntete,
-            JADate dateFinCalcul) throws Exception {
+                               JADate dateFinCalcul) throws Exception {
         CADetailInteretMoratoireManager detailManager = new CADetailInteretMoratoireManager();
         detailManager.setSession(getSession());
 
