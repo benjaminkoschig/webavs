@@ -80,8 +80,7 @@ public class REAnalyseurRenteDouble {
 
             Set<PrestationAccordee> prestationsAccordeesDuTiers = prestationsAccordeesPourUnePersonne
                     .getPrestationsAccordees();
-            if (getNombreRenteAVS(prestationsAccordeesDuTiers) > 2 && RenteEnfantsADoubleLPART(prestationsAccordeesDuTiers)) {
-                rentesDoubles.addAll(prestationsAccordeesPourUnePersonne.getEntitesBDD());
+            if (getNombreRenteAVS(prestationsAccordeesDuTiers) > 1 && !RenteEnfantsADoubleLPART(prestationsAccordeesDuTiers)) {
                 continue;
             }
 
@@ -112,9 +111,9 @@ public class REAnalyseurRenteDouble {
         List<PrestationAccordee> listPrestations = new LinkedList<>(prestationsAccordeesDuTiers);
         for (int i = 0; i < listPrestations.size(); i++) {
             pa1 = listPrestations.get(i);
-            for (int j = 0; j < listPrestations.size(); j++) {
+            for (int j = 1; j < listPrestations.size(); j++) {
                 pa2 = listPrestations.get(j);
-                if (pa2.isHasCodeSpecial60() && pa1.isHasCodeSpecial60()) {
+                if (pa2.isHasCodeSpecial60() && pa1.isHasCodeSpecial60() && pa1.getId() != pa2.getId()) {
                     if (pa1.getCodePrestation().isRenteComplementairePourEnfant() && pa1.getCodePrestation().isRenteComplementairePourEnfant()
                             && pa1.getIdTiersNssCompl1().equals(pa2.getIdTiersNssCompl1())) {
                         return true;
