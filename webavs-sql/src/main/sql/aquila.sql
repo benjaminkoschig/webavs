@@ -119,5 +119,5 @@ WHERE OAICON IN (SELECT OAICON FROM SCHEMA.COCAVSP
                  WHERE ODIETA IN (SELECT ODIETA FROM SCHEMA.COETAPP
                                   WHERE ODTETA IN (SELECT DISTINCT PCOSID FROM SCHEMA.FWCOUP
                                                    WHERE PCOLUT like '%Premier rappel%')
-                                    AND OFISEQ = 1))
+                                    AND OFISEQ = 1));
 --// FIN FERCIAM //////////////////////////////////////////////////////////////////////////////////
