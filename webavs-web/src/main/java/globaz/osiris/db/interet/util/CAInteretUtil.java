@@ -458,7 +458,7 @@ public class CAInteretUtil {
         if (datePeriodes.length == 2) {
             dateDebutPandemie = new Date(datePeriodes[0]);
         } else {
-            throw new Exception("Problem formatting in property : aquila.tauxInteret.pandemie.periodes");
+            throw new Exception("Problem formatting in property : aquila.tauxInteret.pandemieSursisProrogation.periodes");
         }
         CASection section = getSection(session, transaction, idSection);
         List<CAMotifContentieux> listMotifs = section.getMotifsContentieux(dateDebutPandemie.getSwissValue());
