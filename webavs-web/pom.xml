@@ -575,7 +575,7 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
                         <configuration>
-                            <additionalparam>-Xdoclint:none</additionalparam>
+                            <additionalparam></additionalparam>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -964,7 +964,7 @@
 		<dependency>
 			<groupId>ch.globaz</groupId>
 			<artifactId>ListPandemieAPGtoCDF</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.0-RC1</version>
 		</dependency>
 		<dependency>
 			<groupId>net.lingala.zip4j</groupId>
