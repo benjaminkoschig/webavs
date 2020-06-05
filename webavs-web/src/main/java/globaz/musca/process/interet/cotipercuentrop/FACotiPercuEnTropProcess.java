@@ -1,5 +1,6 @@
 package globaz.musca.process.interet.cotipercuentrop;
 
+import ch.globaz.common.properties.CommonProperties;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
 import globaz.globall.api.GlobazSystem;
@@ -29,19 +30,22 @@ import globaz.osiris.db.interet.util.sectionfacturee.CAMontantFacture;
 import globaz.osiris.db.interet.util.sectionfacturee.CAMontantFactureManager;
 import globaz.osiris.db.interet.util.sectionfacturee.CASectionFacturee;
 import globaz.osiris.db.interet.util.sectionfacturee.CASectionFactureeManager;
+import globaz.osiris.db.interet.util.tauxParametres.CATauxParametre;
 import globaz.osiris.db.interets.CADetailInteretMoratoire;
 import globaz.osiris.db.interets.CAGenreInteret;
 import globaz.osiris.db.interets.CAInteretMoratoire;
 import globaz.osiris.db.interets.CAPlanCalculInteret;
 import globaz.osiris.db.interets.CAPlanCalculInteretManager;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeMap;
 
 public class FACotiPercuEnTropProcess extends BProcess {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private static final String ONZE_JANVIER = "0111";
@@ -59,9 +63,8 @@ public class FACotiPercuEnTropProcess extends BProcess {
 
     /**
      * Commentaire relatif au constructeur FACotiPercuEnTropProcess.
-     * 
-     * @param parent
-     *            BProcess
+     *
+     * @param parent BProcess
      */
     public FACotiPercuEnTropProcess(BProcess parent) {
         super(parent);
@@ -76,7 +79,7 @@ public class FACotiPercuEnTropProcess extends BProcess {
 
     /**
      * Cette méthode exécute le processus de facturation des intérêts rémunératoires pour cotisations perçuent en trop.
-     * 
+     *
      * @return boolean
      */
     @Override
@@ -140,7 +143,7 @@ public class FACotiPercuEnTropProcess extends BProcess {
 
     /**
      * Somme les écritures (paiements) par année en les plafonands au montant max de la section.
-     * 
+     *
      * @param lastIdSection
      * @param lastYear
      * @param montantCumuleFactureParSection
@@ -148,8 +151,8 @@ public class FACotiPercuEnTropProcess extends BProcess {
      * @param result
      */
     private void addEcritureToYear(String lastIdSection, String lastYear,
-            TreeMap<String, String> montantCumuleFactureParSection, BigDecimal montantAffecteFactureSomme,
-            TreeMap<String, FWCurrency> result) {
+                                   TreeMap<String, String> montantCumuleFactureParSection, BigDecimal montantAffecteFactureSomme,
+                                   TreeMap<String, FWCurrency> result) {
         // Limite le montant payé sur la section au montant facturé.
         if (montantCumuleFactureParSection.containsKey(lastIdSection)) {
             FWCurrency tmp = new FWCurrency("" + montantCumuleFactureParSection.get(lastIdSection));
@@ -171,7 +174,7 @@ public class FACotiPercuEnTropProcess extends BProcess {
 
     /**
      * Ajoute une ligne de détail à l'intérêt rémunératoire.
-     * 
+     *
      * @param osirisSession
      * @param interet
      * @param keyYear
@@ -183,7 +186,7 @@ public class FACotiPercuEnTropProcess extends BProcess {
      * @throws Exception
      */
     private void addLigneDetailInteret(BSession osirisSession, CAInteretMoratoire interet, String keyYear,
-            FWCurrency tmp, double taux, FWCurrency montantInteret, Object[] keys, int actuelIndex) throws Exception {
+                                       FWCurrency tmp, double taux, FWCurrency montantInteret, Object[] keys, int actuelIndex) throws Exception {
         CADetailInteretMoratoire ligne = new CADetailInteretMoratoire();
         ligne.setSession(osirisSession);
 
@@ -205,12 +208,35 @@ public class FACotiPercuEnTropProcess extends BProcess {
 
         ligne.add(getTransaction());
     }
+    private void addLigneDetailInteretNew(BSession osirisSession, CAInteretMoratoire interet, String keyYear,
+                                          FWCurrency tmp, double taux, FWCurrency montantInteret, JADate dateDebut,JADate dateFin, int actuelIndex) throws Exception {
+        CADetailInteretMoratoire ligne = new CADetailInteretMoratoire();
+        ligne.setSession(osirisSession);
+
+        ligne.setIdJournalFacturation(getPassage().getIdPassage());
+
+        ligne.setMontantInteret(montantInteret.toString());
+
+        ligne.setMontantSoumis(tmp.toString());
+
+        ligne.setDateDebut(dateDebut.toString());
+
+        ligne.setTaux(String.valueOf(taux));
+
+        ligne.setDateFin(dateFin.toString());
+
+        ligne.setIdInteretMoratoire(interet.getIdInteretMoratoire());
+
+        ligne.setAnneeCotisation(keyYear);
+
+        ligne.add(getTransaction());
+    }
 
     /**
      * Complète et retourne la liste des rubriques. Pour un décompte de type cot pers il faudra ajouter la rubrique dont
      * l'assurance (affiliation) = cot pers. <br/>
      * Exemple : CCJU idRubrique = 28
-     * 
+     *
      * @param osirisSession
      * @param plan
      * @param montantSoumisPlanEntete
@@ -221,8 +247,8 @@ public class FACotiPercuEnTropProcess extends BProcess {
      * @throws Exception
      */
     private ArrayList<String> completeListIdRubrique(BSession osirisSession, CAPlanCalculInteret plan,
-            FACotiPercuEnTropParRubrique montantSoumisPlanEntete, FWCurrency montantEffectifCumule,
-            FWCurrency montantDejaFactureCumule, ArrayList<String> listIdRubrique) throws Exception {
+                                                     FACotiPercuEnTropParRubrique montantSoumisPlanEntete, FWCurrency montantEffectifCumule,
+                                                     FWCurrency montantDejaFactureCumule, ArrayList<String> listIdRubrique) throws Exception {
         ArrayList<String> result = new ArrayList<String>();
 
         if ((!montantSoumisPlanEntete.isDecompteTypeCotPers() && !montantSoumisPlanEntete
@@ -256,7 +282,7 @@ public class FACotiPercuEnTropProcess extends BProcess {
 
     /**
      * Créer ou mise à jour du motif de l'intérêt moratoire.
-     * 
+     *
      * @param osirisSession
      * @param limiteExempte
      * @param plan
@@ -267,8 +293,8 @@ public class FACotiPercuEnTropProcess extends BProcess {
      * @throws Exception
      */
     private CAInteretMoratoire createOrUpdateInteret(BSession osirisSession, FWCurrency limiteExempte,
-            CAPlanCalculInteret plan, CAInteretMoratoire interet, FACotiPercuEnTropParRubrique montantSoumisPlanEntete,
-            FWCurrency montantInteretCumule) throws Exception {
+                                                     CAPlanCalculInteret plan, CAInteretMoratoire interet, FACotiPercuEnTropParRubrique montantSoumisPlanEntete,
+                                                     FWCurrency montantInteretCumule) throws Exception {
         if (interet.isNew()) {
             interet.setSession(osirisSession);
 
@@ -305,7 +331,7 @@ public class FACotiPercuEnTropProcess extends BProcess {
 
     /**
      * Execute le process d'intérêt rémunératoire pour cotisations perçu en trop pour un plan.
-     * 
+     *
      * @param osirisSession
      * @param osirisTransaction
      * @param plan
@@ -313,7 +339,7 @@ public class FACotiPercuEnTropProcess extends BProcess {
      * @throws Exception
      */
     private void executeProcessParPlan(BSession osirisSession, BTransaction osirisTransaction,
-            CAPlanCalculInteret plan, FWCurrency limiteExempte) throws Exception {
+                                       CAPlanCalculInteret plan, FWCurrency limiteExempte) throws Exception {
         FACotiPercuEnTropParRubriqueManager manager = getCotiPercuEnTropParPlanManager(plan);
 
         manager.find(getTransaction(), BManager.SIZE_NOLIMIT);
@@ -342,7 +368,7 @@ public class FACotiPercuEnTropProcess extends BProcess {
             if ((next == null)
                     || !next.getIdEnteteFacture().equals(montantSoumisPlanEntete.getIdEnteteFacture())
                     || (next.getIdEnteteFacture().equals(montantSoumisPlanEntete.getIdEnteteFacture()) && !next
-                            .getAnneeCotisation().equals(montantSoumisPlanEntete.getAnneeCotisation()))) {
+                    .getAnneeCotisation().equals(montantSoumisPlanEntete.getAnneeCotisation()))) {
                 listIdRubrique.addAll(completeListIdRubrique(osirisSession, plan, montantSoumisPlanEntete,
                         montantEffectifCumule, montantDejaFactureCumule, listIdRubrique));
 
@@ -400,18 +426,52 @@ public class FACotiPercuEnTropProcess extends BProcess {
 
                                 tmp.round(FWCurrency.ROUND_5CT);
 
-                                double taux = CAInteretUtil.getTaux(getTransaction(), getDateDebutCalcul(keyYear)
-                                        .toString());
-                                FWCurrency montantInteret = CAInteretUtil.getMontantInteret(osirisSession, tmp,
-                                        getDateFinCalcul(keys, k), getDateDebutCalcul(keyYear), taux);
+                                if (CommonProperties.TAUX_INTERET_PANDEMIE.getBooleanValue()) {
+                                    boolean isFirst =true;
+                                    JADate dateCalculDebut = getDateDebutCalcul(keyYear);
+                                    JADate dateCalculFin = getDateFinCalcul(keys, k);
+                                    List<CATauxParametre> listTaux = CAInteretUtil.getTaux(getTransaction(),dateCalculDebut.toStr("."), dateCalculFin.toStr(".")  ,CAInteretUtil.CS_PARAM_TAUX_REMU,2);
+                                    for(CATauxParametre CATauxParametre : listTaux) {
+                                        double taux = CATauxParametre.getTaux();
+                                        JADate dateDebut;
+                                        JADate dateFin;
+                                        //Aide pour découpage des périodes après la première ligne
+                                        if (isFirst) {
+                                            dateDebut = dateCalculDebut;
+                                            isFirst = false;
+                                        } else {
+                                            dateDebut = new JADate(CATauxParametre.getDateDebut().getSwissValue());
+                                        }
+                                        if (CATauxParametre.getDateFin() == null) {
+                                            dateFin = dateCalculFin;
+                                        } else {
+                                            dateFin = new JADate(CATauxParametre.getDateFin().getSwissValue());
+                                        }
+                                        FWCurrency montantInteret = CAInteretUtil.getMontantInteret(osirisSession, tmp,
+                                                dateFin, dateDebut, taux);
+                                        if ((montantInteret != null)) {
+                                            montantInteretCumule.add(montantInteret);
 
-                                if ((montantInteret != null) && !montantInteret.isZero()) {
-                                    montantInteretCumule.add(montantInteret);
+                                            interet = createOrUpdateInteret(osirisSession, limiteExempte, plan, interet,
+                                                    montantSoumisPlanEntete, montantInteretCumule);
+                                            addLigneDetailInteretNew(osirisSession, interet, keyYear, tmp, taux, montantInteret,
+                                                    dateDebut, dateFin, k);
+                                        }
+                                    }
+                                } else {
+                                    double taux = CAInteretUtil.getTaux(getTransaction(), getDateDebutCalcul(keyYear)
+                                            .toString());
+                                    FWCurrency montantInteret = CAInteretUtil.getMontantInteret(osirisSession, tmp,
+                                            getDateFinCalcul(keys, k), getDateDebutCalcul(keyYear), taux);
 
-                                    interet = createOrUpdateInteret(osirisSession, limiteExempte, plan, interet,
-                                            montantSoumisPlanEntete, montantInteretCumule);
-                                    addLigneDetailInteret(osirisSession, interet, keyYear, tmp, taux, montantInteret,
-                                            keys, k);
+                                    if ((montantInteret != null) && !montantInteret.isZero()) {
+                                        montantInteretCumule.add(montantInteret);
+
+                                        interet = createOrUpdateInteret(osirisSession, limiteExempte, plan, interet,
+                                                montantSoumisPlanEntete, montantInteretCumule);
+                                        addLigneDetailInteret(osirisSession, interet, keyYear, tmp, taux, montantInteret,
+                                                keys, k);
+                                    }
                                 }
                             }
                         }
@@ -445,7 +505,7 @@ public class FACotiPercuEnTropProcess extends BProcess {
     /**
      * Return le manager qui groupe les entete et afacts et somme montant en fonction d'un plan, groupé par idrubrique
      * et compte annexe.
-     * 
+     *
      * @param plan
      * @return
      */
@@ -471,7 +531,7 @@ public class FACotiPercuEnTropProcess extends BProcess {
 
     /**
      * Retourne la date de début du calcul de la ligne de l'intérêt rémunératoire.
-     * 
+     *
      * @param year
      * @return
      * @throws Exception
@@ -482,7 +542,7 @@ public class FACotiPercuEnTropProcess extends BProcess {
 
     /**
      * Retourne la date de fin du calcul de la ligne de l'intérêt rémunératoire.
-     * 
+     *
      * @param keys
      * @param actuelIndex
      * @return
@@ -524,7 +584,7 @@ public class FACotiPercuEnTropProcess extends BProcess {
 
     /**
      * Retourne la liste des écritures non soumises (paimements, compensations etc.) pour une liste de section.
-     * 
+     *
      * @param osirisSession
      * @param osirisTransaction
      * @param plan
@@ -534,8 +594,8 @@ public class FACotiPercuEnTropProcess extends BProcess {
      * @throws Exception
      */
     private CAEcritureNonSoumiseParSectionManager getEcritureNonSoumise(BSession osirisSession,
-            BTransaction osirisTransaction, CAPlanCalculInteret plan, ArrayList<String> listIdSection,
-            ArrayList<String> listIdCompteCourant) throws Exception {
+                                                                        BTransaction osirisTransaction, CAPlanCalculInteret plan, ArrayList<String> listIdSection,
+                                                                        ArrayList<String> listIdCompteCourant) throws Exception {
         CAEcritureNonSoumiseParSectionManager manager = new CAEcritureNonSoumiseParSectionManager();
         manager.setSession(osirisSession);
 
@@ -561,7 +621,7 @@ public class FACotiPercuEnTropProcess extends BProcess {
      * années. <br/>
      * Pour calculer ce montant, on somme ces derniers par sections en concidérant que l'on couvre les intérêts en
      * premier et en les plafonands au montant de la facture.
-     * 
+     *
      * @param osirisSession
      * @param osirisTransaction
      * @param montantSoumisPlanEntete
@@ -575,10 +635,10 @@ public class FACotiPercuEnTropProcess extends BProcess {
      * @throws Exception
      */
     private TreeMap<String, FWCurrency> getEcritureNonSoumiseParAnnee(BSession osirisSession,
-            BTransaction osirisTransaction, FACotiPercuEnTropParRubrique montantSoumisPlanEntete,
-            CAPlanCalculInteret plan, ArrayList<String> listIdSection, ArrayList<String> listIdCompteCourant,
-            ArrayList<String> listIdRubrique, FWCurrency montantEffectifCumule,
-            TreeMap<String, String> montantCumuleFactureParSection) throws Exception {
+                                                                      BTransaction osirisTransaction, FACotiPercuEnTropParRubrique montantSoumisPlanEntete,
+                                                                      CAPlanCalculInteret plan, ArrayList<String> listIdSection, ArrayList<String> listIdCompteCourant,
+                                                                      ArrayList<String> listIdRubrique, FWCurrency montantEffectifCumule,
+                                                                      TreeMap<String, String> montantCumuleFactureParSection) throws Exception {
         TreeMap<String, FWCurrency> result = new TreeMap<String, FWCurrency>();
 
         CAEcritureNonSoumiseParSectionManager ecritureManager = getEcritureNonSoumise(osirisSession, osirisTransaction,
@@ -629,7 +689,7 @@ public class FACotiPercuEnTropProcess extends BProcess {
 
     /**
      * Return la limite exempté d'un intérêt rénumératoire.
-     * 
+     *
      * @param osirisSession
      * @return
      * @throws Exception
@@ -640,7 +700,7 @@ public class FACotiPercuEnTropProcess extends BProcess {
 
     /**
      * Retourne la liste des compte courants facturés (touchés)
-     * 
+     *
      * @param sectionManager
      * @return
      * @throws Exception
@@ -661,7 +721,7 @@ public class FACotiPercuEnTropProcess extends BProcess {
 
     /**
      * Retourne la liste des sections facturées (touchées)
-     * 
+     *
      * @param sectionManager
      * @return
      * @throws Exception
@@ -682,7 +742,7 @@ public class FACotiPercuEnTropProcess extends BProcess {
 
     /**
      * Retourne la liste des sections facturées avec cumul des montant facturé
-     * 
+     *
      * @param sectionManager
      * @return
      * @throws Exception
@@ -710,7 +770,7 @@ public class FACotiPercuEnTropProcess extends BProcess {
 
     /**
      * Retourne la liste des sections qui sont touchés. Càd. les sections qui ont déjà été facturées.
-     * 
+     *
      * @param osirisSession
      * @param osirisTransaction
      * @param montantSoumisPlanEntete
@@ -719,7 +779,7 @@ public class FACotiPercuEnTropProcess extends BProcess {
      * @throws Exception
      */
     private CASectionFactureeManager getListSectionFacturee(BSession osirisSession, BTransaction osirisTransaction,
-            FACotiPercuEnTropParRubrique montantSoumisPlanEntete, ArrayList<String> listIdRubrique) throws Exception {
+                                                            FACotiPercuEnTropParRubrique montantSoumisPlanEntete, ArrayList<String> listIdRubrique) throws Exception {
         CASectionFactureeManager manager = new CASectionFactureeManager();
         manager.setSession(osirisSession);
 
@@ -740,7 +800,7 @@ public class FACotiPercuEnTropProcess extends BProcess {
     /**
      * Retourne le montant déjà facturé. Ce montant est résolue en comptabilité auxiliaire, remplace le montant déjà
      * facturé que l'on pourrait sommer dans les afacts-
-     * 
+     *
      * @param osirisSession
      * @param osirisTransaction
      * @param montantSoumisPlanEntete
@@ -751,8 +811,8 @@ public class FACotiPercuEnTropProcess extends BProcess {
      * @throws Exception
      */
     private FWCurrency getMontantDejaFacture(BSession osirisSession, BTransaction osirisTransaction,
-            FACotiPercuEnTropParRubrique montantSoumisPlanEntete, ArrayList<String> listIdSection,
-            ArrayList<String> listIdCompteCourant, ArrayList<String> listIdRubrique) throws Exception {
+                                             FACotiPercuEnTropParRubrique montantSoumisPlanEntete, ArrayList<String> listIdSection,
+                                             ArrayList<String> listIdCompteCourant, ArrayList<String> listIdRubrique) throws Exception {
         CAMontantFactureManager manager = new CAMontantFactureManager();
         manager.setSession(osirisSession);
 
@@ -778,7 +838,7 @@ public class FACotiPercuEnTropProcess extends BProcess {
 
     /**
      * Y-a-t'il une section avec un montant facturé négatif ? Si oui l'intérêt devra être contrôlé.
-     * 
+     *
      * @param sectionManager
      * @return
      * @throws Exception
@@ -812,7 +872,7 @@ public class FACotiPercuEnTropProcess extends BProcess {
 
     /**
      * Mise à jour du motif de calcul de l'intérêt.
-     * 
+     *
      * @param interet
      * @param limiteExempte
      * @param montantInteretCumule
@@ -820,7 +880,7 @@ public class FACotiPercuEnTropProcess extends BProcess {
      * @return
      */
     private CAInteretMoratoire setMotifCalculInteret(CAInteretMoratoire interet, FWCurrency limiteExempte,
-            FWCurrency montantInteretCumule, FASumMontantSoumisParPlan planEntete) {
+                                                     FWCurrency montantInteretCumule, FASumMontantSoumisParPlan planEntete) {
         if ((interet.isExempte() && !planEntete.isExempte() && isMontantSoumis(limiteExempte, montantInteretCumule))
                 || (planEntete.isSoumis())) {
             interet.setMotifcalcul(CAInteretMoratoire.CS_SOUMIS);
@@ -831,9 +891,8 @@ public class FACotiPercuEnTropProcess extends BProcess {
 
     /**
      * Method setPassage. Utilise le passage passé en paramètre depuis la facturation
-     * 
-     * @param passage
-     *            passage
+     *
+     * @param passage passage
      */
     public void setPassage(FAPassage passage) {
         this.passage = passage;
