@@ -16,7 +16,9 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.common.JadeProperties;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.properties.JadePropertiesService;
 import globaz.naos.translation.CodeSystem;
 import globaz.osiris.api.APIRubrique;
 import globaz.osiris.db.comptes.CARubrique;
@@ -30,7 +32,7 @@ import java.util.Map;
 
 /**
  * <H1>Description</H1>
- * 
+ *
  * @author Alexandre Cuva, 18-aug-2004
  */
 public class CO01RequisitionPoursuite extends CODocumentRequisition {
@@ -52,7 +54,7 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
 
     /**
      * Crée une nouvelle instance de la classe CO01RequisitionPoursuite.
-     * 
+     *
      * @throws Exception
      *             DOCUMENT ME!
      */
@@ -61,7 +63,7 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
 
     /**
      * Initialise le document.
-     * 
+     *
      * @param parent
      *            La session parente
      * @throws FWIException
@@ -93,7 +95,7 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
 
     /**
      * Ajoute les IM facturé à cette étape au dataSource
-     * 
+     *
      * @param dataSource
      * @return montant total des IM
      */
@@ -131,7 +133,7 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
     }
 
     /**
-     * 
+     *
      * @param session
      * @return
      */
@@ -147,7 +149,7 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
     }
 
     /**
-     * 
+     *
      * @throws Exception
      */
     private void setParametersEnCommun() throws Exception {
@@ -193,7 +195,7 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
     }
 
     /**
-     * 
+     *
      * @throws Exception
      */
     private void repartitionMontantCreanceNegatif() throws Exception {
@@ -259,7 +261,7 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
     }
 
     /**
-     * 
+     *
      * @param dataSource
      * @return
      * @throws Exception
@@ -383,7 +385,7 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
     }
 
     /**
-     * 
+     *
      * @param infoSection
      * @param historique
      * @throws Exception
@@ -425,20 +427,43 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
         String montantCreance = CORequisitionPoursuiteUtil.getMontantCreanceSoumis(getTransaction(), curContentieux,
                 getDateExecutionPlus1Day());
 
-        if (!JadeStringUtil.isBlankOrZero(montantCreance)) {
-            this.setParametres(
-                    COParameter.L_INTERET,
-                    formatMessage(new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 9, 95)), new Object[] {
-                            formatDate(getDateExecutionPlus1Day()), getCatalogueTextesUtil().texte(getParent(), 3, 2),
-                            formatMontant(montantCreance) }));
-        }
+        String[] datePeriodes = JadePropertiesService.getInstance().getProperty("aquila.tauxInteret.pandemie.periodes").split(":");
+        if(datePeriodes.length == 2){
+            String dateDebut = datePeriodes[0];
+            String dateFin = datePeriodes[1];
+            if(JadeDateUtil.isDateBefore(getDateExecution(),dateDebut)|| JadeDateUtil.isDateAfter(getDateExecution(),dateFin)){
+                if (!JadeStringUtil.isBlankOrZero(montantCreance)) {
+                    this.setParametres(
+                            COParameter.L_INTERET,
+                            formatMessage(new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 9, 95)), new Object[] {
+                                    formatDate(getDateExecutionPlus1Day()), getCatalogueTextesUtil().texte(getParent(), 3, 2),
+                                    formatMontant(montantCreance) }));
+                }
+            }else{
+                if (!JadeStringUtil.isBlankOrZero(montantCreance)) {
+                    this.setParametres(
+                            COParameter.L_INTERET,
+                            formatMessage(new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 10, 1)), new Object[] {
+                                    formatDate(getDateExecutionPlus1Day()), getCatalogueTextesUtil().texte(getParent(), 3, 2),
+                                    formatMontant(montantCreance) }));
+                }
 
+            }
+        }else{
+            if (!JadeStringUtil.isBlankOrZero(montantCreance)) {
+                this.setParametres(
+                        COParameter.L_INTERET,
+                    formatMessage(new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 9, 95)), new Object[] {
+                                formatDate(getDateExecutionPlus1Day()), getCatalogueTextesUtil().texte(getParent(), 3, 2),
+                                formatMontant(montantCreance) }));
+            }
+        }
         // Affichage des lignes dans Titre de la creances et autres
         initFooterNouveauRegime(historique);
     }
 
     /**
-     * 
+     *
      * @param infoSection
      * @param historique
      * @throws Exception
@@ -450,14 +475,40 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
 
         String montantCreance = CORequisitionPoursuiteUtil.getMontantCreanceSoumis(getTransaction(), curContentieux);
         if (!JadeStringUtil.isBlankOrZero(montantCreance)) {
-            this.setParametres(
-                    COParameter.L_INTERET,
-                    formatMessage(
-                            new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 9, 95)),
-                            new Object[] {
-                                    formatDate(CORequisitionPoursuiteUtil.getDateDebutInteretsTardifs(getSession(),
-                                            getTransaction(), curContentieux)),
-                                    getCatalogueTextesUtil().texte(getParent(), 3, 2), formatMontant(montantCreance) }));
+            String[] datePeriodes = JadePropertiesService.getInstance().getProperty("aquila.tauxInteret.pandemie.periodes").split(":");
+            if (datePeriodes.length == 2) {
+                String dateDebut = datePeriodes[0];
+                String dateFin = datePeriodes[1];
+                if (JadeDateUtil.isDateBefore(getDateExecution(), dateDebut) || JadeDateUtil.isDateAfter(getDateExecution(), dateFin)) {
+                    this.setParametres(
+                            COParameter.L_INTERET,
+                            formatMessage(
+                                    new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 9, 95)),
+                                    new Object[] {
+                                            formatDate(CORequisitionPoursuiteUtil.getDateDebutInteretsTardifs(getSession(),
+                                                    getTransaction(), curContentieux)),
+                                            getCatalogueTextesUtil().texte(getParent(), 3, 2), formatMontant(montantCreance) }));
+
+                }else{
+                    this.setParametres(
+                            COParameter.L_INTERET,
+                            formatMessage(
+                                    new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 10, 1)),
+                                    new Object[] {
+                                            formatDate(CORequisitionPoursuiteUtil.getDateDebutInteretsTardifs(getSession(),
+                                                    getTransaction(), curContentieux)),
+                                            getCatalogueTextesUtil().texte(getParent(), 3, 2), formatMontant(montantCreance) }));
+                }
+            }else{
+                this.setParametres(
+                        COParameter.L_INTERET,
+                        formatMessage(
+                                new StringBuilder(getCatalogueTextesUtil().texte(getParent(), 9, 95)),
+                                new Object[] {
+                                        formatDate(CORequisitionPoursuiteUtil.getDateDebutInteretsTardifs(getSession(),
+                                                getTransaction(), curContentieux)),
+                                        getCatalogueTextesUtil().texte(getParent(), 3, 2), formatMontant(montantCreance) }));
+            }
         }
 
         List<Map<String, String>> dataSource = new LinkedList<Map<String, String>>();
@@ -479,7 +530,7 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
 
     /**
      * retourne la date de naissance pour le tiers donné.
-     * 
+     *
      * @param tiers
      * @return retourne la date de naissance pour le tiers donné.
      * @throws Exception
@@ -584,7 +635,7 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
 
     /**
      * Pied de page
-     * 
+     *
      * @param body
      * @throws Exception
      */
@@ -624,7 +675,7 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
 
     /**
      * Pied de page
-     * 
+     *
      * @param historique
      * @throws Exception
      */
