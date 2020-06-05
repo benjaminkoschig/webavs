@@ -451,7 +451,7 @@ public class CAInteretUtil {
      */
 
     public static List<Periode> isSectionSurcisProgaPaiementInPandemie(BTransaction transaction, BSession session, String idSection) throws Exception {
-        String[] datePeriodes = JadePropertiesService.getInstance().getProperty("aquila.tauxInteret.pandemieSurcisProrogation.periodes").split(":");
+        String[] datePeriodes = JadePropertiesService.getInstance().getProperty("aquila.tauxInteret.pandemieSursisProrogation.periodes").split(":");
         List<Periode> listPeriodeMotif = new LinkedList<>();
         Date dateDebutPandemie = null;
         Date dateDebutMotif = null;
