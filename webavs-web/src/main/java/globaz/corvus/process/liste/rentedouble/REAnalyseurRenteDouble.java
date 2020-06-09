@@ -19,6 +19,8 @@ public class REAnalyseurRenteDouble {
     private class PrestationsAccordeesPourUnePersonne {
 
         PersonneAVS beneficiaire;
+
+
         Map<PrestationAccordee, RERenteJoinPersonneAvs> entiteBDDpourEntiteDomaine;
 
         public PrestationsAccordeesPourUnePersonne() {
@@ -46,6 +48,14 @@ public class REAnalyseurRenteDouble {
             }
             return false;
         }
+        public Map<PrestationAccordee, RERenteJoinPersonneAvs> getEntiteBDDpourEntiteDomaine() {
+            return entiteBDDpourEntiteDomaine;
+        }
+
+        public void setEntiteBDDpourEntiteDomaine(Map<PrestationAccordee, RERenteJoinPersonneAvs> entiteBDDpourEntiteDomaine) {
+            this.entiteBDDpourEntiteDomaine = entiteBDDpourEntiteDomaine;
+        }
+
     }
 
     public REAnalyseurRenteDouble() {
@@ -80,8 +90,11 @@ public class REAnalyseurRenteDouble {
 
             Set<PrestationAccordee> prestationsAccordeesDuTiers = prestationsAccordeesPourUnePersonne
                     .getPrestationsAccordees();
-            if (getNombreRenteAVS(prestationsAccordeesDuTiers) > 1 && RenteEnfantsADoubleLPART(prestationsAccordeesDuTiers)) {
-                continue;
+            if (getNombreRenteAVS(prestationsAccordeesDuTiers) > 1 ) {
+                List<PrestationAccordee> list = RenteEnfantsADoubleLPART(prestationsAccordeesDuTiers);
+                for(PrestationAccordee prest : list){
+                    rentesDoubles.add(prestationsAccordeesPourUnePersonne.getEntiteBDDpourEntiteDomaine().get(prest));
+                }
             }
 
             if (hasDeuxPC(prestationsAccordeesDuTiers) || hasDeuxRFM(prestationsAccordeesDuTiers)
@@ -103,10 +116,11 @@ public class REAnalyseurRenteDouble {
         return rentesDoubles;
     }
 
-    private boolean RenteEnfantsADoubleLPART(Set<PrestationAccordee> prestationsAccordeesDuTiers) {
+    private  List<PrestationAccordee>  RenteEnfantsADoubleLPART(Set<PrestationAccordee> prestationsAccordeesDuTiers) {
         PrestationAccordee pa1;
         PrestationAccordee pa2;
-
+        HashMap<PrestationAccordee,String> listPrestationsADoubles = new HashMap<>();
+        List<PrestationAccordee> prestationAccordeesList = new ArrayList<>();
         List<PrestationAccordee> listPrestations = new LinkedList<>(prestationsAccordeesDuTiers);
         for (int i = 0; i < listPrestations.size(); i++) {
             pa1 = listPrestations.get(i);
@@ -114,13 +128,15 @@ public class REAnalyseurRenteDouble {
                 pa2 = listPrestations.get(j);
                 if ((pa2.isHasCodeSpecial60()==true) && (pa1.isHasCodeSpecial60()==true) && pa1.getId() != pa2.getId()) {
                     if (pa1.getCodePrestation().isRenteComplementairePourEnfant() && pa1.getCodePrestation().isRenteComplementairePourEnfant()
-                            && !pa1.getIdTiersNssCompl1().equals(pa2.getIdTiersNssCompl1())) {
-                        return true;
+                            && pa1.getIdTiersNssCompl1().equals(pa2.getIdTiersNssCompl1())) {
+                        listPrestationsADoubles.put(pa1,"");
+                        listPrestationsADoubles.put(pa2,"");
                     }
                 }
             }
         }
-        return false;
+        prestationAccordeesList.addAll(listPrestationsADoubles.keySet());
+        return prestationAccordeesList;
     }
 
 
@@ -224,10 +240,10 @@ public class REAnalyseurRenteDouble {
 
             for (PrestationAccordee uneRenteDuTiers : rentesDuTiers) {
 
-                if (uneRenteDuTiers.getCodePrestation().isRentesComplementairePourEnfantsLieesRenteDeLaMere()) {
+                if (uneRenteDuTiers.getCodePrestation().isRentesComplementairePourEnfantsLieesRenteDeLaMere() && uneRenteDuTiers.isHasCodeSpecial60() ==false ) {
                     hasRenteX4 = true;
                 }
-                if (uneRenteDuTiers.getCodePrestation().isRentesComplementairePourEnfantsLieesRenteDuPere()) {
+                if (uneRenteDuTiers.getCodePrestation().isRentesComplementairePourEnfantsLieesRenteDuPere()  && uneRenteDuTiers.isHasCodeSpecial60() ==false ) {
                     hasRenteX5 = true;
                 }
 
