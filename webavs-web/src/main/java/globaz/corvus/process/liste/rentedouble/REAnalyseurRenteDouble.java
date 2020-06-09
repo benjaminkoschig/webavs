@@ -90,12 +90,12 @@ public class REAnalyseurRenteDouble {
 
             Set<PrestationAccordee> prestationsAccordeesDuTiers = prestationsAccordeesPourUnePersonne
                     .getPrestationsAccordees();
-            if (getNombreRenteAVS(prestationsAccordeesDuTiers) > 1 ) {
-                List<PrestationAccordee> list = RenteEnfantsADoubleLPART(prestationsAccordeesDuTiers);
-                for(PrestationAccordee prest : list){
-                    rentesDoubles.add(prestationsAccordeesPourUnePersonne.getEntiteBDDpourEntiteDomaine().get(prest));
-                }
-            }
+//            if (getNombreRenteAVS(prestationsAccordeesDuTiers) > 1 ) {
+//                List<PrestationAccordee> list = RenteEnfantsADoubleLPART(prestationsAccordeesDuTiers);
+//                for(PrestationAccordee prest : list){
+//                    rentesDoubles.add(prestationsAccordeesPourUnePersonne.getEntiteBDDpourEntiteDomaine().get(prest));
+//                }
+//            }
 
             if (hasDeuxPC(prestationsAccordeesDuTiers) || hasDeuxRFM(prestationsAccordeesDuTiers)
                     || hasDeuxAPI(prestationsAccordeesDuTiers)) {
@@ -240,14 +240,14 @@ public class REAnalyseurRenteDouble {
 
             for (PrestationAccordee uneRenteDuTiers : rentesDuTiers) {
 
-                if (uneRenteDuTiers.getCodePrestation().isRentesComplementairePourEnfantsLieesRenteDeLaMere() && uneRenteDuTiers.isHasCodeSpecial60() ==false ) {
+                if (uneRenteDuTiers.getCodePrestation().isRentesComplementairePourEnfantsLieesRenteDeLaMere() ) {
                     hasRenteX4 = true;
                 }
-                if (uneRenteDuTiers.getCodePrestation().isRentesComplementairePourEnfantsLieesRenteDuPere()  && uneRenteDuTiers.isHasCodeSpecial60() ==false ) {
+                if (uneRenteDuTiers.getCodePrestation().isRentesComplementairePourEnfantsLieesRenteDuPere()  ) {
                     hasRenteX5 = true;
                 }
 
-                if (hasRenteX4 && hasRenteX5) {
+                if (hasRenteX4 && hasRenteX5  && (uneRenteDuTiers.isHasCodeSpecial60() && !(RenteEnfantsADoubleLPART(rentesDuTiers).isEmpty()) )) {
                     return true;
                 }
             }
