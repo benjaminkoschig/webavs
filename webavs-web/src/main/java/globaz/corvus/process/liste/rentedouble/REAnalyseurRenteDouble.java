@@ -246,8 +246,11 @@ public class REAnalyseurRenteDouble {
                 if (uneRenteDuTiers.getCodePrestation().isRentesComplementairePourEnfantsLieesRenteDuPere()  ) {
                     hasRenteX5 = true;
                 }
-
-                if (hasRenteX4 && hasRenteX5  && (uneRenteDuTiers.isHasCodeSpecial60() && !(RenteEnfantsADoubleLPART(rentesDuTiers).isEmpty()) )) {
+                //Si pas de code 60 => Execution normal
+                if (hasRenteX4 && hasRenteX5 && !uneRenteDuTiers.isHasCodeSpecial60()) {
+                    return true;
+                }
+                if( uneRenteDuTiers.isHasCodeSpecial60() && !(RenteEnfantsADoubleLPART(rentesDuTiers).isEmpty())){
                     return true;
                 }
             }
