@@ -2,6 +2,7 @@ package globaz.apg.process;
 
 import com.google.common.collect.Lists;
 import globaz.apg.ApgServiceLocator;
+import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.lots.IAPLot;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
@@ -519,6 +520,9 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
 
     private void updateDroit(APDroitLAPG droit) throws Exception {
         if(JadeStringUtil.isEmpty(droit.getDateFinDroit())) {
+            if(!JadeStringUtil.isEmpty(idDroit)) {
+                droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
+            }
             droit.setDateFinDroit(dateFin);
             droit.update();
         }
