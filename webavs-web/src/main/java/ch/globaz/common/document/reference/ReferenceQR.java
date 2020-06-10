@@ -170,13 +170,7 @@ public class ReferenceQR extends AbstractReference {
                 parameters.put(COParameter.P_MONTANT, JANumberFormatter.format(montant));
                 parameters.put(COParameter.P_INFO_ADD, (communicationNonStructuree + RETOUR_LIGNE + infoFacture).trim());
             }
-            if (!COMBINE.equals(debfAdressTyp)){
-                parameters.put(COParameter.P_PAR, (debfNom + RETOUR_LIGNE + debfRueOuLigneAdresse1 + ESPACE + debfNumMaisonOuLigneAdresse2 + RETOUR_LIGNE + debfCodePostal + ESPACE + debfLieu).trim());
-            } else {
-                parameters.put(COParameter.P_PAR, (debfRueOuLigneAdresse1 + RETOUR_LIGNE + debfNumMaisonOuLigneAdresse2).trim());
-            }
         } else {
-            parameters.put(COParameter.P_PAR, "");
             parameters.put(COParameter.P_INFO_ADD, (communicationNonStructuree + RETOUR_LIGNE + infoFacture).trim());
         }
 
@@ -187,6 +181,11 @@ public class ReferenceQR extends AbstractReference {
             parameters.put(COParameter.P_COMPTE, (compte + RETOUR_LIGNE + creNom + RETOUR_LIGNE + creRueOuLigneAdresse1 + ESPACE + creNumMaisonOuLigneAdresse2 + RETOUR_LIGNE + creCodePostal + ESPACE + creLieu).trim());
         } else {
             parameters.put(COParameter.P_COMPTE, (compte + RETOUR_LIGNE + creRueOuLigneAdresse1 + creNumMaisonOuLigneAdresse2).trim());
+        }
+        if (!COMBINE.equals(debfAdressTyp)){
+            parameters.put(COParameter.P_PAR, (debfNom + RETOUR_LIGNE + debfRueOuLigneAdresse1 + ESPACE + debfNumMaisonOuLigneAdresse2 + RETOUR_LIGNE + debfCodePostal + ESPACE + debfLieu).trim());
+        } else {
+            parameters.put(COParameter.P_PAR, (debfRueOuLigneAdresse1 + RETOUR_LIGNE + debfNumMaisonOuLigneAdresse2).trim());
         }
 
 
