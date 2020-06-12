@@ -17,7 +17,7 @@ import java.util.List;
  * @author dostes Pour changer le modèle de ce commentaire de type généré, allez à :
  *         Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code et commentaires
  */
-public class CO002ExecuterDeuxiemeRappel extends COAbstractEnvoyerDocument {
+public class CO002ExecuterDeuxiemeRappel extends COAbstractDelaiPaiementAction {
 
     /*
      * (non-Javadoc)
@@ -31,6 +31,7 @@ public class CO002ExecuterDeuxiemeRappel extends COAbstractEnvoyerDocument {
         // Génération et envoi du document
         try {
             CO00BRappelPaiement rappel = new CO00BRappelPaiement(transaction.getSession());
+            rappel.setDateDelaiPaiement(dateDelaiPaiement);
             if ((getParent() == null)
                     || JadeStringUtil.isBlank(((COProcessContentieux) getParent()).getUserIdCollaborateur())) {
                 rappel.setCollaborateur(transaction.getSession().getUserInfo());
