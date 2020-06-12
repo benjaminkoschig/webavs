@@ -23,6 +23,7 @@ public class RERenteJoinPersonneAvs extends BEntity implements Comparable<RERent
     private String idPrestationAccordee;
     private String idTiers;
     private String montantPrestation;
+    private String etat;
     private String nomBeneficiaire;
     private String nomMajBeneficiaire;
     private String nssBeneficiaire;
@@ -93,6 +94,7 @@ public class RERenteJoinPersonneAvs extends BEntity implements Comparable<RERent
         codeSpecial5 = statement.dbReadString(RERenteAccordee.FIELDNAME_CODE_CAS_SPECIAUX_5);
         idTiersNssCompl1 = statement.dbReadString(RERenteAccordee.FIELDNAME_ID_TIERS_COMPLEMENTAIRE_1);
         idTiersNssCompl2 =  statement.dbReadString(RERenteAccordee.FIELDNAME_ID_TIERS_COMPLEMENTAIRE_2);
+        etat = statement.dbReadString(REPrestationsAccordees.FIELDNAME_CS_ETAT);
     }
 
     @Override
@@ -308,4 +310,13 @@ public class RERenteJoinPersonneAvs extends BEntity implements Comparable<RERent
     public void setIdTiersNssCompl2(String idTiersNssCompl2) {
         this.idTiersNssCompl2 = idTiersNssCompl2;
     }
+
+    public String getEtat() {
+        return etat;
+    }
+
+    public void setEtat(String etat) {
+        this.etat = etat;
+    }
+
 }

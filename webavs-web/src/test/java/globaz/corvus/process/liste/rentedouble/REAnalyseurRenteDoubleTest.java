@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import ch.globaz.corvus.TestUnitaireAvecGenerateurIDUnique;
 import ch.globaz.prestation.domaine.CodePrestation;
@@ -216,6 +217,42 @@ public class REAnalyseurRenteDoubleTest extends TestUnitaireAvecGenerateurIDUniq
         Assert.assertTrue(laRenteEstPresente(tiers5_R45, rentesDoubles));
 
     }
+    @Ignore
+    @Test
+    public void testGetRentesDoublesLPART() {
+        List<RERenteJoinPersonneAvs> rentes = new ArrayList<RERenteJoinPersonneAvs>();
+
+        // 1er tiers, pas de rentes doubles
+        RERenteJoinPersonneAvs tiers1_R55 = new RERenteJoinPersonneAvs();
+        tiers1_R55.setIdPrestationAccordee("1");
+        tiers1_R55.setCodePrestation("55");
+        tiers1_R55.setDateDebutDroit("05.2010");
+        tiers1_R55.setMontantPrestation("100.00");
+        tiers1_R55.setIdTiers("1");
+        tiers1_R55.setNssBeneficiaire("756.1234.5678.97");
+        tiers1_R55.setIdTiersNssCompl1("165264");
+        tiers1_R55.setCodeSpecial1("60");
+        tiers1_R55.setCsSexeBeneficiaire(ITIPersonne.CS_HOMME);
+        rentes.add(tiers1_R55);
+
+        RERenteJoinPersonneAvs tiers2_R55 = new RERenteJoinPersonneAvs();
+        tiers2_R55.setIdPrestationAccordee("2");
+        tiers2_R55.setCodePrestation("55");
+        tiers2_R55.setDateDebutDroit("05.2010");
+        tiers2_R55.setMontantPrestation("200.00");
+        tiers2_R55.setIdTiers("1");
+        tiers2_R55.setNssBeneficiaire("756.1234.5678.97");
+        tiers2_R55.setIdTiersNssCompl1("179869");
+        tiers1_R55.setCodeSpecial1("60");
+        tiers2_R55.setCsSexeBeneficiaire(ITIPersonne.CS_HOMME);
+        rentes.add(tiers2_R55);
+
+        List<RERenteJoinPersonneAvs> rentesDoubles = testInstance.getRentesDoubles(rentes);
+        Assert.assertFalse(laRenteEstPresente(tiers1_R55, rentesDoubles));
+
+    }
+
+
 
     @Test
     public void testHasDeuxAPI() {

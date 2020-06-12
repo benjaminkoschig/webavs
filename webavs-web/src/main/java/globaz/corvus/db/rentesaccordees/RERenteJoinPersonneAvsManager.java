@@ -37,10 +37,11 @@ public class RERenteJoinPersonneAvsManager extends PRAbstractManager {
     public static void main(String[] args) {
         try {
             BSession session = new BSession(REApplication.DEFAULT_APPLICATION_CORVUS);
-            session.connect("pba", "pba");
+            session.connect("ccjuglo", "glob4az");
             RERenteJoinPersonneAvsManager manager = new RERenteJoinPersonneAvsManager();
             manager.setSession(session);
-            manager.setForDate("11.2011");
+            manager.setForDate("07.2020");
+            manager.setNss("756.5133.1244.89");
             manager.find(BManager.SIZE_NOLIMIT);
 
             System.out.println("\n\nNombre de rentes trouvées : " + manager.size() + "\nRequête : "
@@ -55,6 +56,9 @@ public class RERenteJoinPersonneAvsManager extends PRAbstractManager {
     }
 
     private String forDate = "";
+
+
+    private String nss ="";
 
     public RERenteJoinPersonneAvsManager() {
         super();
@@ -91,6 +95,8 @@ public class RERenteJoinPersonneAvsManager extends PRAbstractManager {
                 .append(REPrestationsAccordees.FIELDNAME_FRACTION_RENTE).append(",");
         sql.append(_getCollection()).append(REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES).append(".")
                 .append(REPrestationsAccordees.FIELDNAME_MONTANT_PRESTATION).append(",");
+        sql.append(_getCollection()).append(REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES).append(".")
+                .append(REPrestationsAccordees.FIELDNAME_CS_ETAT).append(",");
 
         sql.append(_getCollection()).append(ITITiersDefTable.TABLE_NAME).append(".").append(ITITiersDefTable.ID_TIERS)
                 .append(",");
@@ -203,10 +209,19 @@ public class RERenteJoinPersonneAvsManager extends PRAbstractManager {
                     .append(REPrestationsAccordees.FIELDNAME_CS_ETAT);
             sql.append(" IN (");
             sql.append(IREPrestationAccordee.CS_ETAT_VALIDE).append(",");
-            sql.append(IREPrestationAccordee.CS_ETAT_PARTIEL);
+            sql.append(IREPrestationAccordee.CS_ETAT_PARTIEL).append(",");
+            sql.append(IREPrestationAccordee.CS_ETAT_DIMINUE);
             sql.append(")");
+            if(!JadeStringUtil.isBlankOrZero(nss)){
+                sql.append(") AND (");
 
-            sql.append(")");
+                sql.append(_getCollection()).append(ITIPersonneAvsDefTable.TABLE_NAME).append(".")
+                        .append(ITIPersonneAvsDefTable.NUMERO_AVS_ACTUEL).append("=");
+                sql.append("'");
+                sql.append(nss);
+                sql.append("'");
+                sql.append(")");
+            }
         }
 
         return sql.toString();
@@ -247,5 +262,13 @@ public class RERenteJoinPersonneAvsManager extends PRAbstractManager {
 
     public void setForDate(String string) {
         forDate = string;
+    }
+
+    public String getNss() {
+        return nss;
+    }
+
+    public void setNss(String nss) {
+        this.nss = nss;
     }
 }
