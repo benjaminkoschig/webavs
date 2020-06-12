@@ -236,7 +236,7 @@ public abstract class CAInteretTardif {
 
                 ligne.setMontantInteret(montantInteret.toString());
 
-                ligne.setMontantSoumis(montantCumuleSurcisCalcul.toString());
+                ligne.setMontantSoumis(montantSoumis.toString());
 
                 ligne.setDateDebut(dateDebut.toStr("."));
 
