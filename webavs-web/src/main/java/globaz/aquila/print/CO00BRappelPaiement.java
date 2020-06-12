@@ -19,7 +19,7 @@ public class CO00BRappelPaiement extends CODocumentManager {
     // ~ Static fields/initializers
     // -------------------------------------------------------------------------------------
 
-    public static final String NUMERO_REFERENCE_INFOROM = "0020GCO";
+    public static final String NUMERO_REFERENCE_INFOROM = "0334GCO";
     private static final long serialVersionUID = -6253823454355503549L;
     private static final String TEMPLATE_NAME = "CO_00A_RAPPEL_AF";
 
@@ -59,7 +59,7 @@ public class CO00BRappelPaiement extends CODocumentManager {
     public void beforeExecuteReport() throws FWIException {
         super.beforeExecuteReport();
         setTemplateFile(CO00BRappelPaiement.TEMPLATE_NAME);
-        setDocumentTitle(getSession().getLabel("AQUILA_RAPPEL_PAIEMENT"));
+        setDocumentTitle(getSession().getLabel("AQUILA_DEUXIEME_RAPPEL_PAIEMENT"));
         setNumeroReferenceInforom(CO00BRappelPaiement.NUMERO_REFERENCE_INFOROM);
     }
 
