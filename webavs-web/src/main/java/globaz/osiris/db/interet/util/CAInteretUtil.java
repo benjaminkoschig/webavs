@@ -604,7 +604,7 @@ public class CAInteretUtil {
             //Cas 1.1 : Motif unique (actif et soldé/annulé/Inactif)
 
             dateDebut = new JADate(periodeMotif.getDateDebut());
-            if (JadeDateUtil.isDateAfter(periodeMotif.getDateFin(), "01.01.2080")) {
+            if (JadeDateUtil.isDateAfter(periodeMotif.getDateFin(), "01.01.2080") || JadeDateUtil.isDateAfter(periodeMotif.getDateFin(), dateCalculFin.toStr(".")) ) {
                 dateFin = dateCalculFin;
             } else {
                 dateFin = new JADate(periodeMotif.getDateFin());

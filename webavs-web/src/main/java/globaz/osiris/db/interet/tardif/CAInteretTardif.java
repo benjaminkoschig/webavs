@@ -104,6 +104,7 @@ public abstract class CAInteretTardif {
                         if (!listPeriodeMotifsSurcis.isEmpty()) {
                             creerInteretForSurcisProro(session, transaction, dateCalculDebutInteret, ecriture.getJADate(), listPeriodeMotifsSurcis, interet,montantSoumis);
                             montantCumule = montantCumuleSurcisCalcul;
+                            dateCalculDebutInteret = session.getApplication().getCalendar().addDays(ecriture.getJADate(), 1);
                         } else {
                             boolean isFirst = true;
                             JADate dateCalculDebut = dateCalculDebutInteret;
