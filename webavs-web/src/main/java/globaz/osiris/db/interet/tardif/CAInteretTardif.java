@@ -91,6 +91,7 @@ public abstract class CAInteretTardif {
                 plan.getIdPlan(), getIdSection(), null, null);
 
         FWCurrency montantCumule = new FWCurrency();
+        montantCumuleSurcisCalcul = new FWCurrency();
         boolean aControlerManuellement = false;
         JADate dateCalculDebutInteret = getDateCalculDebutInteret(session, transaction);
         for (int i = 0; i < manager.size(); i++) {
@@ -220,7 +221,7 @@ public abstract class CAInteretTardif {
          * Préparation des lignes des intérêts avec les bons taux
          */
         CAInteretUtil.createLignesAInscrire(session, mapIntermediaire, mapLigneAInscrire, mapTaux, mapTauxSurcisProro);
-
+//
 
         FWCurrency montantInteret;
         CATauxParametre taux;
@@ -240,7 +241,7 @@ public abstract class CAInteretTardif {
 
                 ligne.setDateDebut(dateDebut.toStr("."));
 
-                ligne.setTaux(String.valueOf(taux));
+                ligne.setTaux(String.valueOf(taux.getTaux()));
 
                 ligne.setDateFin(dateFin.toStr("."));
 
