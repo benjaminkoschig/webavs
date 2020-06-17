@@ -527,6 +527,9 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
 
         annonces = getLastAnnonceFromRecordNumber(annonces);
 
+        // supprime les annonces "A_TRANSMETTRE" liées au droit
+        ALImplServiceLocator.getAnnonceRafamBusinessService().deleteForEtat(droitComplexModel.getId(), RafamEtatAnnonce.A_TRANSMETTRE);
+
         for (Map.Entry<Periode, Boolean> entry : periodes.entrySet()) {
             annonces = genererAnnonceSelonAnnoncePrecedante(droitComplexModel, annonces, entry.getKey(), entry.getValue());
         }
@@ -595,7 +598,7 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
 
         if (!isZero) {
             DossierComplexModel dossier = ALServiceLocator.getDossierComplexModelService().read(droit.getDroitModel().getIdDossier());
-            ALServiceLocator.getAnnonceRafamCreationService().creerAnnonces(RafamEvDeclencheur.CREATION, RafamEtatAnnonce.A_TRANSMETTRE, dossier, droit);
+            ALServiceLocator.getAnnonceRafamCreationService().creerAnnoncesWithoutDelete(RafamEvDeclencheur.CREATION, RafamEtatAnnonce.A_TRANSMETTRE, dossier, droit);
         }
 
         // restauration des bonnes dates pour les prochains traitements
