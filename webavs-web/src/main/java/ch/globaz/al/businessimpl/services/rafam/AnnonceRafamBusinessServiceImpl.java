@@ -1,5 +1,6 @@
 package ch.globaz.al.businessimpl.services.rafam;
 
+import ch.globaz.al.business.constantes.enumerations.*;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
@@ -11,10 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import ch.globaz.al.business.constantes.ALCSPays;
 import ch.globaz.al.business.constantes.ALCSTiers;
-import ch.globaz.al.business.constantes.enumerations.RafamError;
-import ch.globaz.al.business.constantes.enumerations.RafamEtatAnnonce;
-import ch.globaz.al.business.constantes.enumerations.RafamReturnCode;
-import ch.globaz.al.business.constantes.enumerations.RafamTypeAnnonce;
 import ch.globaz.al.business.exceptions.model.annonces.rafam.ALAnnonceRafamException;
 import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
 import ch.globaz.al.business.models.rafam.AnnonceRafamSearchModel;
@@ -43,8 +40,9 @@ public class AnnonceRafamBusinessServiceImpl extends ALAbstractBusinessServiceIm
     @Override
     public boolean canDelete(AnnonceRafamModel annonce) throws JadeApplicationException, JadePersistenceException {
 
-        if (RafamEtatAnnonce.A_TRANSMETTRE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(annonce.getEtat()))
-                || RafamEtatAnnonce.ENREGISTRE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(annonce.getEtat()))) {
+        if ((RafamEtatAnnonce.A_TRANSMETTRE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(annonce.getEtat()))
+                || RafamEtatAnnonce.ENREGISTRE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(annonce.getEtat())))
+                && !RafamFamilyAllowanceType.ADI.getCode().equals(annonce.getGenrePrestation())) {
             return true;
         } else {
             return false;
