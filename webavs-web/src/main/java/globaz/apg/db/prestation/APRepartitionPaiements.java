@@ -425,7 +425,7 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
         prestation.setIdPrestationApg(getIdPrestationApg());
         prestation.retrieve(transaction);
 
-        APDroitLAPG droit = new APDroitAPG();
+        APDroitLAPG droit = new APDroitLAPG();
         droit.setSession(getSession());
         droit.setIdDroit(prestation.getIdDroit());
         droit.retrieve();
