@@ -156,6 +156,7 @@ public class RubriquesComptablesFPVServiceImpl extends RubriquesComptablesServic
     public String getRubriqueForIS(DossierModel dossier, String cantonImposition, String date) throws JadeApplicationException, JadePersistenceException {
         String codeCaisse = getCodeCAF(dossier, date);
         StringBuilder rubrique = new StringBuilder();
+        String result;
 
         if (ALCSDossier.ACTIVITE_INDEPENDANT.equals(dossier.getActiviteAllocataire())) {
             rubrique.append(ALConstRubriques.RUBRIQUE_CAISSE_INDEPENDANT_IMPOT_SOURCE);
@@ -169,10 +170,14 @@ public class RubriquesComptablesFPVServiceImpl extends RubriquesComptablesServic
             rubrique.append(".").append(JadeCodesSystemsUtil.getCode(cantonImposition));
         }
         try {
-            return getRubrique(date, rubrique.toString().toLowerCase());
+            result = getRubrique(date, rubrique.toString().toLowerCase());
         } catch (ParameterModelException e) {
             throw new RubriqueComptableNotFoundException("La prestation ne peut pas être générée, la rubrique comptable doit être définie pour l'impôt à la source");
         }
+        if (StringUtils.isEmpty(result)) {
+            throw new RubriqueComptableNotFoundException("La prestation ne peut pas être générée, la rubrique comptable doit être définie pour l'impôt à la source");
+        }
+        return result;
     }
 
     @Override

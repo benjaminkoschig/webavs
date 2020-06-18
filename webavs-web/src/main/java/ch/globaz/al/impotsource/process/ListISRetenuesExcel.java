@@ -78,8 +78,13 @@ public class ListISRetenuesExcel extends AbstractListExcel {
             createCell(eachPrestation.getNom(), getStyleListLeft());
             createCell(eachPrestation.getPrenom(), getStyleListLeft());
             createCell(eachPrestation.getDateNaissance().getSwissValue(), getStyleListLeft());
-            CodeSystem codeSystemGenre = CodeSystemUtil.getCodeSysteme(eachPrestation.getGenre(), langue);
-            createCell(codeSystemGenre.getCode(), getStyleListLeft());
+            if (StringUtils.equals(globaz.naos.translation.CodeSystem.SEXE_HOMME, eachPrestation.getGenre())){
+                createCell("M", getStyleListLeft());
+            } else if (StringUtils.equals(globaz.naos.translation.CodeSystem.SEXE_FEMME, eachPrestation.getGenre())) {
+                createCell("F", getStyleListLeft());
+            } else {
+                createCell("", getStyleListLeft());
+            }
             // N. OFS : inconnu dans WebAF.
             createCell(StringUtils.EMPTY, getStyleListLeft());
             createCell(eachPrestation.getNpa(), getStyleListLeft());
