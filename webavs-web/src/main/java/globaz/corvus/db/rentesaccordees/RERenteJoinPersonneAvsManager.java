@@ -41,7 +41,6 @@ public class RERenteJoinPersonneAvsManager extends PRAbstractManager {
             RERenteJoinPersonneAvsManager manager = new RERenteJoinPersonneAvsManager();
             manager.setSession(session);
             manager.setForDate("07.2020");
-            manager.setNss("756.5133.1244.89");
             manager.find(BManager.SIZE_NOLIMIT);
 
             System.out.println("\n\nNombre de rentes trouvées : " + manager.size() + "\nRequête : "
@@ -211,7 +210,7 @@ public class RERenteJoinPersonneAvsManager extends PRAbstractManager {
             sql.append(IREPrestationAccordee.CS_ETAT_VALIDE).append(",");
             sql.append(IREPrestationAccordee.CS_ETAT_PARTIEL).append(",");
             sql.append(IREPrestationAccordee.CS_ETAT_DIMINUE);
-            sql.append(")");
+            sql.append("))");
             if(!JadeStringUtil.isBlankOrZero(nss)){
                 sql.append(") AND (");
 
