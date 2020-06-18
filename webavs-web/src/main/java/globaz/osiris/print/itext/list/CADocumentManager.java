@@ -79,6 +79,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
     public final static String JASP_PROP_BODY_TRI_NUMERO = "body.tri.numero.";
     /** Seuil de l'exécution directe ou différée */
     private static final int JOB_QUEUE_THRESHOLD = 10;
+    protected int factureImpressionNo = 0;
 
     private static final String TEXTE_INTROUVABLE = "[TEXTE INTROUVABLE]";
 
@@ -950,6 +951,10 @@ public abstract class CADocumentManager extends FWIDocumentManager {
             }
 
             // On recharge le data source
+            // Vu que l'on va recharger le dataSource, il faut retirer l'incrément qui a été ajouté
+            if (factureImpressionNo > 0) {
+                --factureImpressionNo;
+            }
             createDataSource();
         } catch (Exception e) {
             getMemoryLog().logMessage("Problème pour déterminer le nb de page total du document : " + e.getMessage(),

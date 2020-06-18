@@ -46,7 +46,6 @@ public class CAILettrePlanRecouvBVR4 extends CADocumentManager {
     private double cumulSolde = 0;
     private String dateRef = "";
     private boolean factureAvecMontantMinime = false;
-    private int factureImpressionNo = 0;
     private String montantSansCentime;
     /** Données du formulaire */
     private CAPlanRecouvrement plan = new CAPlanRecouvrement();
