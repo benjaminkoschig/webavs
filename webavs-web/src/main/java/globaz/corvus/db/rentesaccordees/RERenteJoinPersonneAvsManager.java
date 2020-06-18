@@ -212,7 +212,7 @@ public class RERenteJoinPersonneAvsManager extends PRAbstractManager {
             sql.append(IREPrestationAccordee.CS_ETAT_DIMINUE);
             sql.append("))");
             if(!JadeStringUtil.isBlankOrZero(nss)){
-                sql.append(") AND (");
+                sql.append("AND (");
 
                 sql.append(_getCollection()).append(ITIPersonneAvsDefTable.TABLE_NAME).append(".")
                         .append(ITIPersonneAvsDefTable.NUMERO_AVS_ACTUEL).append("=");
