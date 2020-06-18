@@ -254,7 +254,7 @@ public class REAnalyseurRenteDouble {
     }
 
     boolean hasRX4etRX5(Set<PrestationAccordee> rentesDuTiers) {
-        if (hasDeuxRentesAVS(rentesDuTiers)) {
+        if (hasDeuxRentesAVS(rentesDuTiers) && !hasMin2RentesCode60(rentesDuTiers) ) {
             boolean hasRenteX4 = false;
             boolean hasRenteX5 = false;
 
@@ -266,12 +266,18 @@ public class REAnalyseurRenteDouble {
                 if (uneRenteDuTiers.getCodePrestation().isRentesComplementairePourEnfantsLieesRenteDuPere()) {
                     hasRenteX5 = true;
                 }
-                //Si pas de code 60 => Execution normal
-                if (hasRenteX4 && hasRenteX5 && !uneRenteDuTiers.isHasCodeSpecial60()) {
+
+                if (hasRenteX4 && hasRenteX5 ) {
                     return true;
                 }
             }
         }
-        return false;
+        //Si pas de code 60 => Execution normal
+        if(hasMin2RentesCode60(rentesDuTiers) ){
+            return true;
+        }else{
+            return false;
+        }
+
     }
 }
