@@ -212,7 +212,7 @@ public class COImportMessageELP extends BProcess {
                         protocole.addnonTraite(scElpDto);
                     }
                 } else {
-                    scElpDto.setMotifWrongStep(contentieux.getIdEtape());
+                    scElpDto.setMotifWrongStep(getSession(), contentieux.getIdSequence(), contentieux.getIdEtape());
                     protocole.addnonTraite(scElpDto);
                 }
             } else {
