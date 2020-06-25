@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class APImportationAPGPandemieHistorique extends BEntity {
 
@@ -65,7 +66,7 @@ public class APImportationAPGPandemieHistorique extends BEntity {
         try {
             pstmt = JadeThread.currentJdbcConnection().prepareStatement(sql);
             pstmt.setInt(1, Integer.valueOf(idHistoriqueAPGPandemie));
-            rs =pstmt.executeQuery();
+            rs = pstmt.executeQuery();
             if(rs.next()) {
                 xmlFile = rs.getBinaryStream(FIELDNAME_FICHIER_XML);
             }
@@ -73,6 +74,13 @@ public class APImportationAPGPandemieHistorique extends BEntity {
             LOG.debug("Erreur à l'execution de la requête : " + sql, e);
         } finally {
             closeStatement(pstmt);
+            try {
+                if (Objects.nonNull(rs)) {
+                    rs.close();
+                }
+            } catch (SQLException e) {
+                LOG.debug("Erreur lors de la fermeture du resultSet : " + sql, e);
+            }
         }
 
 
