@@ -18,7 +18,7 @@ public class RpcCalcul {
         this.calcul = calcul;
         this.isCoupleSepare = IPCValeursPlanCalcul.STATUS_CALCUL_SEPARE_MALADIE.equals(calcul.getTypeSeparation());
     }
-    
+
     /**
      * FC7
      */
@@ -101,20 +101,26 @@ public class RpcCalcul {
         // FIXME eclaircir la spec
         // return new Montant(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_SOUS_TOTAL));
     }
-    
-    
+
+
     /**
      * FC27
      */
     public Montant getRentGrossTotal() {
-        return calcul.getDepensesLoyerBrut()
-            .add(calcul.getDepensesLoyerNet())
-            .add(calcul.getDepensesLoyerCharge())
-            .add(calcul.getDepensesLoyerValeurLocativeAppHabite())
-            .add(calcul.getDepensesLoyerChargesForfaitaires())
-            .add(calcul.getDepensesLoyerDroitHabitation())
-            .add(calcul.getDepensesLoyerFraisDeChauffage())
-            .add(calcul.getDepensesLoyerPensionNonReconnue());
+        if(!calcul.getLoyerMontantBrut().isZero()){
+            return calcul.getLoyerMontantBrut();
+        }else{
+            return calcul.getLoyerMontantNet();
+        }
+//        Ancien méthode
+//        return calcul.getDepensesLoyerBrut()
+//            .add(calcul.getDepensesLoyerNet())
+//            .add(calcul.getDepensesLoyerCharge())
+//            .add(calcul.getDepensesLoyerValeurLocativeAppHabite())
+//            .add(calcul.getDepensesLoyerChargesForfaitaires())
+//            .add(calcul.getDepensesLoyerDroitHabitation())
+//            .add(calcul.getDepensesLoyerFraisDeChauffage())
+//            .add(calcul.getDepensesLoyerPensionNonReconnue());
     }
 
     /**
@@ -143,7 +149,7 @@ public class RpcCalcul {
         return divideByTwoIfCoupleSepare(calcul.getRevenusActiviteLucrativeRevenuPrisEnCompte()
                 .add(calcul.getRevenusActiviteLucrativeRevenuPrivilegie()));
     }
-    
+
     /**
      * FC25
      */
@@ -264,24 +270,24 @@ public class RpcCalcul {
         }
         return Montant.ZERO_ANNUEL;
     }
-    
+
     /**
      * FC22
      */
     public Montant getDepensesLoyerValeurLocativeAppHabite() {
         if(getValeurImmeubleHabitation().isZero() || calcul.isHomeDroitHabitation()) {
-            return Montant.ZERO; 
+            return Montant.ZERO;
         } else {
             return calcul.getRevenuValeurLocativeAppHabite();
         }
     }
-    
-    
+
+
     /**
      * FC23
      */
     public Montant getUsufruit() {
-        
+
         if(!calcul.isHomeDroitHabitation()) {
             Montant usuFruit = divideByTwoIfCoupleSepare(calcul.getRevenuDroitHabitation());
             if(getValeurImmeubleHabitation().isZero()) {
@@ -289,8 +295,8 @@ public class RpcCalcul {
             }
             return usuFruit;
         }
-        return Montant.ZERO; 
-        
+        return Montant.ZERO;
+
     }
 
     /**
@@ -350,7 +356,7 @@ public class RpcCalcul {
         somme = somme.add(calcul.getRevenusActiviteLucrativeIndependanteAgricole());
         return somme;
     }
-    
+
     public Montant getRevenusActiviteLucrativeIndependanteAgricole() {
         return calcul.getRevenusActiviteLucrativeIndependanteAgricole();
     }
@@ -433,17 +439,7 @@ public class RpcCalcul {
         return calcul.getDepensesPersonnellesTotal();
     }
 
-    /**
-     * FC27
-     */
-    public Montant getLoyerMontantNet() {
-        Montant loyer = calcul.getLoyerMontantNet();
-        Montant plafond = getLoyerMaximum();
-        if (loyer.greater(plafond)) {
-            return plafond;
-        }
-        return loyer;
-    }
+
 
     /**
      * Depalfonnement de loyer

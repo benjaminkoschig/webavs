@@ -158,12 +158,16 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
         APValidationPrestationViewBean viewBean = (APValidationPrestationViewBean) vb;
         APDroitAPGPViewBean actionAfficherViewBean = null;
         try {
-            actionAfficherViewBean = (APDroitAPGPViewBean) mainDispatcher.dispatch(viewBean, getAction());
+            FWViewBeanInterface vb2 =  mainDispatcher.dispatch(viewBean, getAction());
+            if( vb2.getMsgType() == FWViewBeanInterface.ERROR ){
+                throw new Exception(vb2.getMessage());
+            }
+            actionAfficherViewBean = (APDroitAPGPViewBean) vb2;
             this.saveViewBean(actionAfficherViewBean, session);
             return this.getUserActionURL(request, IAPActions.ACTION_PRESTATION_JOINT_LOT_TIERS_DROIT,
                     "chercher&forIdDroit=" + viewBean.getIdDroit());
         } catch (Exception e) {
-            this.saveViewBean(actionAfficherViewBean, session);
+            this.saveViewBean(vb, session);
             throw e;
         }
     }

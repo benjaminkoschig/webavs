@@ -150,14 +150,14 @@ public class Calcul {
     public Montant getRevenusActiviteLucrativeRevenuPrivilegie() {
         return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE));
     }
-    
+
     /**
      * CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE
      */
     public Montant getRevenusActiviteLucrativeRevenuPrisEnCompte() {
         return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE));
     }
-    
+
 
     /**
      * CLE_REVEN_AUTREREV_ALLOCATIONS_FAMILLIALES
@@ -225,6 +225,14 @@ public class Calcul {
     }
 
     /**
+     * CLE_DEPEN_GR_LOYER_LOYER_BRUT
+     */
+    public Montant getLoyerBrut() {
+        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_LOYER_MONTANT_BRUT));
+    }
+
+
+    /**
      * CLE_FORTU_FOR_IMMO_BIENS_NON_HABIT_PRINCIPALE
      */
     public Montant getFortuneImmoBiensNonHabitablePrincipale() {
@@ -251,7 +259,7 @@ public class Calcul {
     public Montant getRevenusLoyerSousLocationNet() {
         return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_LOYER_SOUS_LOCATION_NET));
     }
-    
+
     /**
      * CLE_REVEN_RENFORMO_REVENUS_SOUS_LOCATIONS
      */
@@ -324,14 +332,14 @@ public class Calcul {
         return Montant.newAnnuel(tuple
                 .getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_VALEUR_LOCATIVE_APP_HABITE));
     }
-    
-    
-     /**
+
+
+    /**
      * CLE_REVEN_RENFORMO_VALEUR_LOCATIVE
      */
-     public Montant getRevenuValeurLocativeAppHabite() {
-         return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_RENFORMO_VALEUR_LOCATIVE));
-     }
+    public Montant getRevenuValeurLocativeAppHabite() {
+        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_RENFORMO_VALEUR_LOCATIVE));
+    }
 
     /**
      * CLE_INTER_HABITATION_PRINCIPALE
@@ -346,14 +354,14 @@ public class Calcul {
     public Montant getRevenuFortuneMobiliereTotal() {
         return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_RENFORMO_TOTAL));
     }
-    
+
     /**
      * CLE_REVEN_RENFORMO_DROIT_HABITATION
      */
     public Montant getRevenuDroitHabitation() {
         return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_RENFORMO_DROIT_HABITATION));
     }
-    
+
     /**
      * CLE_DEPEN_GR_LOYER_TOTAL
      */
@@ -420,7 +428,7 @@ public class Calcul {
 
     /**
      * CLE_REVEN_RENAUTRE_RENTE_ETRANGERE_TAUX_CHANGE
-     * 
+     *
      * @return
      */
     public TupleDonneeRapport getTauxAutresRentesEtranger() {
@@ -501,6 +509,12 @@ public class Calcul {
     public Montant getDepensesPersonnellesTotal() {
         return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_DEPPERSO_TOTAL));
     }
+    /**
+     * CLE_INTER_LOYER_MONTANT_BRUT
+     */
+    public Montant getLoyerMontantBrut() {
+        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_LOYER_MONTANT_BRUT));
+    }
 
     /**
      * CLE_INTER_LOYER_MONTANT_NET
@@ -548,43 +562,43 @@ public class Calcul {
         return Montant.newMensuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_PART_CANTONALE))
                 .annualise();
     }
-    
+
     /**
      * CLE_TOTAL_TYPE_SEPARATION_CC
      */
     public String getTypeSeparation() {
         return tuple.getLegendeEnfant(IPCValeursPlanCalcul.CLE_TOTAL_TYPE_SEPARATION_CC);
     }
-    
+
     /**
      * CLE_DEPEN_GR_LOYER_CHARGES_FORFAITAIRES
      */
     public Montant getDepensesLoyerChargesForfaitaires() {
         return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_CHARGES_FORFAITAIRES));
     }
-    
+
     /**
      * CLE_DEPEN_GR_LOYER_DROIT_HABITATION
      */
     public Montant getDepensesLoyerDroitHabitation() {
         return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_DROIT_HABITATION));
     }
-    
+
     /**
      * CLE_DEPEN_GR_LOYER_FRAIS_CHAUFFAGE
      */
     public Montant getDepensesLoyerFraisDeChauffage() {
         return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_FRAIS_CHAUFFAGE));
     }
-    
+
     /**
      * CLE_DEPEN_GR_LOYER_TAXES_PENSION_NON_RECONNUE
      */
     public Montant getDepensesLoyerPensionNonReconnue() {
         return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_TAXES_PENSION_NON_RECONNUE));
     }
-    
-    
+
+
     public boolean isHomeDroitHabitation() {
         String sommeHomes = tuple.getLegendeEnfant(IPCValeursPlanCalcul.CLE_DEPEN_TAXEHOME_TOTAL);
         TupleDonneeRapport tupleHabitat = tuple.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_HABITATION_PRINCIPALE);

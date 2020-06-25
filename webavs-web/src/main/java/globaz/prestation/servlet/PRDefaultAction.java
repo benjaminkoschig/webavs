@@ -167,9 +167,13 @@ public class PRDefaultAction extends FWDefaultServletAction {
             destination = (String) methode.invoke(this,
                     new Object[] { session, request, response, dispatcher, viewBean });
         } catch (Exception e) {
-            // impossible de trouver une methode avec ce nom et ces parametres
-            // !!!
-            e.printStackTrace();
+            if(e.getMessage() == null){
+                viewBean.setMessage(e.getCause().getMessage());
+            }else{
+                viewBean.setMessage(e.getMessage());
+            }
+
+            viewBean.setMsgType(FWViewBeanInterface.ERROR);
         }
 
         // desactive le forward pour le cas ou la reponse a deja ete flushee

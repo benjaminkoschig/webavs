@@ -1815,7 +1815,7 @@ public class AFIDEUtil {
      * @throws PropertiesException
      * @throws Exception
      */
-    private static AFCotisationManager initCotiManager(BSession session, String idAffiliation)
+    private static AFCotisationManager initCotiManager(BSession session, String idAffiliation, List<String> listIdAffiliationTraite)
             throws PropertiesException, Exception {
         AFCotisationManager cotisMgr = new AFCotisationManager();
         cotisMgr.setSession(session);
@@ -1852,8 +1852,9 @@ public class AFIDEUtil {
                         .getAff_AffiliationId();
 
                 // Si le manager ne trouve pas de cotisation pour le "fils", on recherche des cotisations pour le "père"
-                if (cotisMgr.getCount() == 0) {
-                    cotisMgr = initCotiManager(session, idAffiliationDetientAffilie);
+                if (cotisMgr.getCount() == 0 && !listIdAffiliationTraite.contains(idAffiliation)) {
+                    listIdAffiliationTraite.add(idAffiliation);
+                    cotisMgr = initCotiManager(session, idAffiliationDetientAffilie,listIdAffiliationTraite);
                 }
             }
         }
@@ -1891,7 +1892,7 @@ public class AFIDEUtil {
             return false;
         }
 
-        AFCotisationManager cotisMgr = initCotiManager(session, idAffiliation);
+        AFCotisationManager cotisMgr = initCotiManager(session, idAffiliation, new ArrayList<String>());
 
         cotisMgr.setDateFinGreater(JACalendar.todayJJsMMsAAAA());
 
@@ -1905,7 +1906,7 @@ public class AFIDEUtil {
             return false;
         }
 
-        AFCotisationManager cotisMgr = initCotiManager(session, idAffiliation);
+        AFCotisationManager cotisMgr = initCotiManager(session, idAffiliation, new ArrayList<String>());
 
         cotisMgr.setForDateFin("0");
 
@@ -1920,7 +1921,7 @@ public class AFIDEUtil {
             return false;
         }
 
-        AFCotisationManager cotisMgr = initCotiManager(session, idAffiliation);
+        AFCotisationManager cotisMgr = initCotiManager(session, idAffiliation, new ArrayList<String>());
 
         cotisMgr.setForDateFin("0");
 
@@ -1936,7 +1937,7 @@ public class AFIDEUtil {
             return false;
         }
 
-        AFCotisationManager cotisMgr = initCotiManager(session, idAffiliation);
+        AFCotisationManager cotisMgr = initCotiManager(session, idAffiliation, new ArrayList<String>());
 
         return cotisMgr.getCount() >= 1;
 
@@ -1948,7 +1949,7 @@ public class AFIDEUtil {
             return false;
         }
 
-        AFCotisationManager cotisMgr = initCotiManager(session, idAffiliation);
+        AFCotisationManager cotisMgr = initCotiManager(session, idAffiliation,new ArrayList<String>());
         cotisMgr.setForDateDifferente(Boolean.FALSE);
 
         return cotisMgr.getCount() >= 1;

@@ -6,6 +6,7 @@
  */
 package globaz.prestation.helpers;
 
+import globaz.apg.vb.prestation.APValidationPrestationViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWHelper;
@@ -85,6 +86,10 @@ public class PRAbstractHelper extends FWHelper {
                 } else {
                     JadeLogger.error(ie, ie.getMessage());
                     ((BSession) session).addError(ie.getMessage());
+                }
+                if(viewBean instanceof APValidationPrestationViewBean){
+                    viewBean.setMessage("Unable to execute!!! Reason : " + ie.getCause());
+                    viewBean.setMsgType(FWViewBeanInterface.ERROR);
                 }
             } catch (Exception e) {
                 JadeLogger.error(this, e.getMessage());
