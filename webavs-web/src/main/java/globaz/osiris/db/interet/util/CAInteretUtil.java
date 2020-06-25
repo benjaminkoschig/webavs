@@ -574,8 +574,8 @@ public class CAInteretUtil {
         if (dateFinPeriode1.before(dateDebutPeriode2) || dateFinPeriode2.before(dateDebutPeriode1)) {
             return false;
         } else {
-        return true;
-    }
+            return true;
+        }
     }
 
     public static Map<Periode, Boolean> preparesPeriodeInteretsCovids(BSession session, JADate dateCalculDebut, JADate dateCalculFin, List<Periode> listPeriodeMotifsSurcis) throws Exception {
@@ -593,17 +593,22 @@ public class CAInteretUtil {
             periodeMotif = it.next();
             dateFin = new JADate(session.getApplication().getCalendar().addDays(periodeMotif.getDateDebut(), -1));
             if (isFirst) {
-                mapIntermediaire.put(new Periode(dateCalculDebut.toStr("."), dateFin.toStr(".")), CAInteretUtil.USE_TAUX_NORMAL);
+                if (CAInteretUtil.getJoursInterets(session, dateCalculDebut, dateFin) > 0) {
+                    mapIntermediaire.put(new Periode(dateCalculDebut.toStr("."), dateFin.toStr(".")), CAInteretUtil.USE_TAUX_NORMAL);
+                    dateDebut = new JADate(periodeMotif.getDateDebut());
+                }else{
+                    dateDebut = dateCalculDebut;
+                }
                 isFirst = false;
             } else {
                 if (CAInteretUtil.getJoursInterets(session, dateDebut, dateFin) > 0) {
                     mapIntermediaire.put(new Periode(dateDebut.toStr("."), dateFin.toStr(".")), CAInteretUtil.USE_TAUX_NORMAL);
                 }
+                dateDebut = new JADate(periodeMotif.getDateDebut());
             }
 
             //Cas 1.1 : Motif unique (actif et soldé/annulé/Inactif)
 
-            dateDebut = new JADate(periodeMotif.getDateDebut());
             if (JadeDateUtil.isDateAfter(periodeMotif.getDateFin(), "01.01.2080") || JadeDateUtil.isDateAfter(periodeMotif.getDateFin(), dateCalculFin.toStr(".")) ) {
                 dateFin = dateCalculFin;
             } else {
