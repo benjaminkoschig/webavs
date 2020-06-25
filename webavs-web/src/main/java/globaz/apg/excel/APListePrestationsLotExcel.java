@@ -5,7 +5,6 @@ import globaz.apg.db.prestation.APRepartJointCotJointPrestJointEmployeur;
 import globaz.apg.db.prestation.APRepartJointCotJointPrestJointEmployeurManager;
 import globaz.caisse.report.helper.ACaisseReportHelper;
 import globaz.corvus.excel.REAbstractListExcel;
-import globaz.framework.printing.itext.dynamique.FWITableModel;
 import globaz.framework.printing.itext.fill.FWIImportProperties;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BManager;
@@ -19,13 +18,17 @@ import globaz.prestation.acor.PRACORConst;
 import globaz.pyxis.adresse.datasource.TIAdressePaiementDataSource;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFHeader;
 import org.apache.poi.hssf.util.Region;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class APListePrestationsLotExcel extends REAbstractListExcel {
+
+    private static final Logger LOG = LoggerFactory.getLogger(APListePrestationsLotExcel.class);
+
     List<APPrestationJointLotTiersDroit> list;
 
     //HEADER
@@ -89,6 +92,7 @@ public class APListePrestationsLotExcel extends REAbstractListExcel {
             initPage(true);
             createTotaux();
         }catch(Exception e){
+            LOG.error("Erreur lors de la création du document"+e.getMessage());
             throw e;
         }
 

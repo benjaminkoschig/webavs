@@ -55,6 +55,7 @@ import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRSession;
 
+
 /**
  * <H1>Process de la génération des compensations</H1>
  *
@@ -486,7 +487,6 @@ public class APGenererCompensationsProcessPandemie extends BProcess implements I
                 transaction.rollback();
             } catch (Exception e1) {
                 JadeLogger.info(e1, e1.getMessage());
-                e1.printStackTrace();
             }
 
             getMemoryLog().logMessage(e.getMessage(), "", "");
@@ -600,7 +600,6 @@ public class APGenererCompensationsProcessPandemie extends BProcess implements I
             lot.retrieve();
         } catch (Exception e) {
             JadeLogger.info(e, e.getMessage());
-            e.printStackTrace();
         }
 
         return getSession().getLabel(PROCESS_GENERER_COMPENSATIONS) + " du lot: " + lot.getDescription() + ", status: "
