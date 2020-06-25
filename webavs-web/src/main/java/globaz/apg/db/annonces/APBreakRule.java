@@ -16,7 +16,7 @@ public class APBreakRule extends BEntity {
      * 
      */
     private static final long serialVersionUID = 1L;
-    public static String FIELDNAME_BREAK_RULE_LIBELLE = "VRBRLI";
+    public static final String FIELDNAME_BREAK_RULE_LIBELLE = "VRBRLI";
     public static String FIELDNAME_BREAK_RULE_CODE = "VRBRCO";
     public static String FIELDNAME_DATE_QUITTANCE = "VRDATE";
     public static String FIELDNAME_GESTIONNAIRE = "VRGEST";

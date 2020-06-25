@@ -122,6 +122,7 @@ import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.osiris.api.APICompteAnnexe;
 import globaz.osiris.api.APIPropositionCompensation;
 import globaz.osiris.api.APISection;
@@ -1573,7 +1574,7 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
                         return false;
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    JadeLogger.error(this,e.getMessage());
                 }
             }
         }
