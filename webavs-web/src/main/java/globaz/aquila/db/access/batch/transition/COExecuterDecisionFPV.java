@@ -1,10 +1,14 @@
 package globaz.aquila.db.access.batch.transition;
 
+import globaz.aquila.api.ICOEtape;
 import globaz.aquila.db.access.poursuite.COContentieux;
 import globaz.aquila.print.CODecisionFPV;
 import globaz.aquila.process.COProcessContentieux;
+import globaz.aquila.util.COActionUtils;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.osiris.api.APISection;
+
 import java.util.List;
 
 /**
@@ -45,4 +49,14 @@ public class COExecuterDecisionFPV extends CO002ExecuterDeuxiemeRappel {
         }
     }
 
+    @Override
+    protected void _validate(COContentieux contentieux, BTransaction transaction) throws COTransitionException {
+        // Le mode de compensation "Report" ne doit pas bloquer la création du contentieux lors d'un report de délai.
+        if (!contentieux.getEtape().getLibEtape().equals(ICOEtape.CS_AUCUNE)
+                && APISection.MODE_REPORT.equals(contentieux.getSection().getIdModeCompensation())) {
+            throw new COTransitionException("AQUILA_ERR_SECTION_REPORTEE", COActionUtils.getMessage(contentieux
+                    .getSession(), "AQUILA_ERR_SECTION_REPORTEE", new String[] { contentieux.getSection()
+                    .getIdExterne() }));
+        }
+    }
 }
