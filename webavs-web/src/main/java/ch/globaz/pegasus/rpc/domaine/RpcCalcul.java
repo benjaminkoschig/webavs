@@ -318,9 +318,6 @@ public class RpcCalcul {
     public Montant getPartLoyerTotatBrut() {
         Montant loyer = calcul.getDepensesLoyerTotalNonPlafonne();
         Montant plafond = getLoyerMaximum();
-        if (loyer.greater(plafond)) {
-            return plafond;
-        }
         return loyer;
     }
 
