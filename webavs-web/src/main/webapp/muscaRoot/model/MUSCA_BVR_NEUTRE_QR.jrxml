@@ -522,7 +522,7 @@
 					<reportElement
 						mode="Opaque"
 						x="480"
-						y="31"
+						y="23"
 						width="79"
 						height="18"
 						forecolor="#000000"
@@ -541,7 +541,7 @@
 						x="0"
 						y="2"
 						width="478"
-						height="46"
+						height="38"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="textField"
@@ -559,7 +559,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Page" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="480"
-						y="33"
+						y="25"
 						width="76"
 						height="14"
 						forecolor="#000000"
