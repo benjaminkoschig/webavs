@@ -195,6 +195,10 @@
 	<when attribute="idProcess" operator="eq" value="RFRecapitulationImportationSecutelOO">
 		<doc-id action="set">cygnus/tableaux/_CCVD/secutel/recapSecutel</doc-id>
 	</when>
+
+	<when attribute="idProcess" operator="eq" value="RFRecapitulationImportationTmrOO">
+		<doc-id action="set">cygnus/tableaux/_CCVD/tmr/recapTmr</doc-id>
+	</when>
 			
 	<!-- gestion des lettres d'en tête pour copies et annexes -->
 	<when attribute="idProcess" operator="eq" value="RFMLettreEnTeteOO">
@@ -1103,6 +1107,21 @@
 			<doc-id action="set">cygnus/tableaux/_CCVD/secutel/recapSecutelListeCasRejete</doc-id>
 		</when>
 		<when attribute="isTableauListeCasRejetesSecutel" operator="eq" value="NONE">
+			<doc-id action="nodoc"></doc-id>
+		</when>
+	</doc-selection>
+
+	<!-- gestion des liste détaillées de la récap TMR -->
+	<doc-selection id="recapTmrListeCasTraite">
+		<when attribute="isTableauListeCasTraitesTmr" operator="eq" value="STANDARD">
+			<doc-id action="set">cygnus/tableaux/_CCVD/tmr/recapTmrListeCasTraite</doc-id>
+		</when>
+	</doc-selection>
+	<doc-selection id="recapTmrListeCasRejete">
+		<when attribute="isTableauListeCasRejetesTmr" operator="eq" value="STANDARD">
+			<doc-id action="set">cygnus/tableaux/_CCVD/tmr/recapTmrListeCasRejete</doc-id>
+		</when>
+		<when attribute="isTableauListeCasRejetesTmr" operator="eq" value="NONE">
 			<doc-id action="nodoc"></doc-id>
 		</when>
 	</doc-selection>

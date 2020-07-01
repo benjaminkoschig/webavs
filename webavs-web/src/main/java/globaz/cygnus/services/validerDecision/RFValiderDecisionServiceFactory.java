@@ -14,6 +14,10 @@ public class RFValiderDecisionServiceFactory {
         return new RFValiderDecisionSecutelService();
     }
 
+    public static RFValiderDecisionTmrService getRFValiderDecisionTmrService() {
+        return new RFValiderDecisionTmrService();
+    }
+
     public static RFValiderDecisionNonValideeService getRFValiderDecisionNonValideeService() {
         return new RFValiderDecisionNonValideeService();
     }

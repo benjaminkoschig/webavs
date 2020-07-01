@@ -304,7 +304,24 @@ public class RFUtils {
      * @param logsList
      */
     public static void ajouterLogImportationsSecutel(int typeDeMessage, String numeroLigne, String nss,
-                                                    String msgErreur, List<String[]> logsList) {
+                                                     String msgErreur, List<String[]> logsList) {
+
+        logsList.add(new String[] { Integer.valueOf(typeDeMessage).toString(), numeroLigne, nss, msgErreur });
+
+    }
+
+    /**
+     *
+     * Ajoute une ligne dans le log des importations TMR
+     *
+     * @param typeDeMessage
+     * @param numeroLigne
+     * @param nss
+     * @param msgErreur
+     * @param logsList
+     */
+    public static void ajouterLogImportationsTmr(int typeDeMessage, String numeroLigne, String nss,
+                                                     String msgErreur, List<String[]> logsList) {
 
         logsList.add(new String[] { Integer.valueOf(typeDeMessage).toString(), numeroLigne, nss, msgErreur });
 

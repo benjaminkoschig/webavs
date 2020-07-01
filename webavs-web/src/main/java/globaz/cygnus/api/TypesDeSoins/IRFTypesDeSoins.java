@@ -93,6 +93,7 @@ public interface IRFTypesDeSoins {
     String st_3_LUNETTES_VERRES_DE_CONTACT = "66000208";
     String st_3_MINERVE = "66000207";
     String st_3_SECUTEL = "66000507";
+    String st_3_TMR = "66000508";
     String st_4_RETOUCHES_COUTEUSES_DE_CHAUSSURES = "66000210";
     String st_5_APPAREIL_ACOUSTIQUE = "66000211";
     String st_5_APPAREIL_ORTHOPHONIQUE = "66000216";
