@@ -574,12 +574,12 @@
 			</band>
 		</detail>
 		<columnFooter>
-			<band height="56"  isSplitAllowed="true" >
+			<band height="66"  isSplitAllowed="true" >
 				<rectangle radius="0" >
 					<reportElement
 						mode="Opaque"
 						x="480"
-						y="22"
+						y="32"
 						width="79"
 						height="18"
 						forecolor="#000000"
@@ -618,7 +618,7 @@
 						x="0"
 						y="23"
 						width="478"
-						height="16"
+						height="26"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="textField"
@@ -636,7 +636,7 @@
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true" evaluationTime="Page" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="480"
-						y="25"
+						y="35"
 						width="76"
 						height="14"
 						forecolor="#000000"
