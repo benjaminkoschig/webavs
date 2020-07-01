@@ -1,2 +1,0 @@
--- Ajout propriété pour la connexion au service WIRR
-INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('common.wirr.wsdl.path','wsdl/wirr/NRR-test-query.wsdl','20200127120000Globaz    ','20200127120000Globaz    ');
