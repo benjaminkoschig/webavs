@@ -80,6 +80,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
     /** Seuil de l'exécution directe ou différée */
     private static final int JOB_QUEUE_THRESHOLD = 10;
     protected int factureImpressionNo = 0;
+    protected Boolean computePageActive = false;
 
     private static final String TEXTE_INTROUVABLE = "[TEXTE INTROUVABLE]";
 
@@ -955,7 +956,9 @@ public abstract class CADocumentManager extends FWIDocumentManager {
             if (factureImpressionNo > 0) {
                 --factureImpressionNo;
             }
+            computePageActive = true;
             createDataSource();
+            computePageActive = false;
         } catch (Exception e) {
             getMemoryLog().logMessage("Problème pour déterminer le nb de page total du document : " + e.getMessage(),
                     FWMessage.AVERTISSEMENT, this.getClass().getName());

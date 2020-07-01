@@ -558,8 +558,9 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                 } else {
                     fillBVR();
                 }
-
-                addToHistory();
+                if (!computePageActive) {
+                    addToHistory();
+                }
             } catch (Exception e) {
                 getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, this.getClass().getName());
                 throw new FWIException(e);
