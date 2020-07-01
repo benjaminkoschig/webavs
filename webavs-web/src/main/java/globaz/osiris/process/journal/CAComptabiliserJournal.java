@@ -1156,12 +1156,17 @@ public class CAComptabiliserJournal {
         if ((totalIM == null) || (soldeSection == null)) {
             throw new Exception("Error in CAComptabiliserJournal.interetTauxEcart() : parameter is null !");
         }
-        if (!totalIM.isPositive()) {
-            throw new Exception("Error in CAComptabiliserJournal.interetTauxEcart() : totalIM is not positiv !");
+        if (totalIM.isNegative()) {
+            throw new Exception("Error in CAComptabiliserJournal.interetTauxEcart() : totalIM is negativ !");
         }
-        BigDecimal diff = soldeSection.getBigDecimalValue().abs().subtract(totalIM.getBigDecimalValue());
-        BigDecimal taux = diff.multiply(new BigDecimal("100")).divide(totalIM.getBigDecimalValue(),
-                RoundingMode.HALF_UP);
+        BigDecimal diff = new BigDecimal(0);
+        BigDecimal taux = new BigDecimal(0);
+        if(totalIM.isPositive()) {
+            diff = soldeSection.getBigDecimalValue().abs().subtract(totalIM.getBigDecimalValue());
+            taux = diff.multiply(new BigDecimal("100")).divide(totalIM.getBigDecimalValue(),
+                    RoundingMode.HALF_UP);
+        }
+
         return taux;
     }
 
