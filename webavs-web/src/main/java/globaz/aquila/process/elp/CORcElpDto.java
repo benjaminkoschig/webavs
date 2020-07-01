@@ -17,6 +17,7 @@ public class CORcElpDto extends COAbstractELP {
 
     public CORcElpDto(RcType rcType) {
         this.rcType = rcType;
+        this.numeroStatut = rcType.getStatusInfo().getStatus();
         initialiseParametre();
     }
 

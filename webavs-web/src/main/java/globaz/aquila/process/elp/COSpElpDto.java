@@ -22,10 +22,10 @@ public class COSpElpDto extends COAbstractELP {
     private String typeSaisieLabel;
     private String dateExecution;
     private String delaiVente;
-    private Boolean adb;
 
     public COSpElpDto(SpType spType, BSession session) throws COELPException {
         this.spType = spType;
+        this.numeroStatut = spType.getStatusInfo().getStatus();
         initializeParam(session);
     }
 
@@ -39,12 +39,10 @@ public class COSpElpDto extends COAbstractELP {
                 initialiseTypeSaisie(session, seized);
                 initialiseDelaiVente(seized);
                 dateExecution = getDate(deed.getSeizureDate());
-                adb = false;
             } else if (Objects.nonNull(loss)) {
                 typeSaisieLabel = session.getLabel(ADB_LABEL);
                 dateExecution = getDate(loss.getDate());
                 delaiVente = StringUtils.EMPTY;
-                adb = true;
             }
         }
     }
@@ -124,13 +122,6 @@ public class COSpElpDto extends COAbstractELP {
      */
     public String getDelaiVente() {
         return delaiVente;
-    }
-
-    /**
-     * @return vrai si il s'agit d'un PV ADB. faux s'il s'agit d'un PV de saisi "classique".
-     */
-    public Boolean isADB() {
-        return adb;
     }
 
 }

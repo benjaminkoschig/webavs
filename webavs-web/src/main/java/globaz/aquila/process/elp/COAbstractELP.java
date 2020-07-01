@@ -15,6 +15,7 @@ public abstract class COAbstractELP {
     COMotifMessageELP motif;
     String dateReception;
     String motifAdditional;
+    String numeroStatut;
 
     public COMotifMessageELP getMotif() {
         return motif;
@@ -54,6 +55,10 @@ public abstract class COAbstractELP {
             motifString+= motifAdditional;
         }
         return motifString;
+    }
+
+    public String getNumeroStatut(){
+        return numeroStatut;
     }
 
     public abstract String getRemarque();

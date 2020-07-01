@@ -191,6 +191,38 @@ public class COImportMessageELP extends BProcess {
         boolean traitementInSuccess = false;
         // Création de l'objet scElp
         COScElpDto scElpDto = getScElp(scType, infos);
+        switch (scElpDto.getNumeroStatut()) {
+            case ElpStatut.CDP_SANS_OPPOSITION:
+            case ElpStatut.CDP_AVEC_OPPOSITION:
+                traitementInSuccess = createEtapeCDP(infos, scElpDto);
+                break;
+            case ElpStatut.CDP_NON_DELIVRE:
+                scElpDto.setMotif(COMotifMessageELP.CDP_NON_DELIVRE);
+                protocole.addnonTraite(scElpDto);
+                break;
+            case ElpStatut.PAIEMENT_COMPLET:
+                scElpDto.setMotif(COMotifMessageELP.CDP_PAIEMENT_COMPLET);
+                protocole.addnonTraite(scElpDto);
+                break;
+            default:
+                scElpDto.setMotif(COMotifMessageELP.CDP_NON_TRAITE);
+                protocole.addnonTraite(scElpDto);
+                break;
+        }
+        return traitementInSuccess;
+    }
+
+    /**
+     * Méthode de création de l'étape dans WebAVS.
+     * Retourne vrai si le traitement a été exécuté avec succès.
+     *
+     * @param infos    : les infos du fichier
+     * @param scElpDto : le contenu du fichier
+     * @return vrai si le traitement a été exécuté avec succès.
+     * @throws ElpProcessException
+     */
+    private boolean createEtapeCDP(COInfoFileELP infos, COScElpDto scElpDto) throws ElpProcessException {
+        boolean traitementInSuccess = false;
         if (StringUtils.isNotEmpty(scElpDto.getDateNotification())) {
             // Récupération du contentieux
             COContentieux contentieux = getContentieux(infos);
@@ -384,12 +416,50 @@ public class COImportMessageELP extends BProcess {
         boolean traitementInSuccess = false;
         // Création de l'objet spElp
         COSpElpDto spElpDto = getSpElp(spType, infos);
+        switch (spElpDto.getNumeroStatut()) {
+            case ElpStatut.PV_SAISIE_MOB:
+            case ElpStatut.PV_SAISIE_SAL:
+            case ElpStatut.PV_SAISIE_SAL_MOB:
+            case ElpStatut.PV_SAISIE_ADB:
+                traitementInSuccess = createEtapePVSaisie(infos, spElpDto);
+                break;
+            case ElpStatut.PV_NON_LIEU:
+                spElpDto.setMotif(COMotifMessageELP.PV_NON_LIEU);
+                protocole.addnonTraite(spElpDto);
+                break;
+            case ElpStatut.SOLDE_OP:
+                spElpDto.setMotif(COMotifMessageELP.PV_SOLDE_OP);
+                protocole.addnonTraite(spElpDto);
+                break;
+            case ElpStatut.COMMINATION_FAILLITE:
+                spElpDto.setMotif(COMotifMessageELP.PV_COMMINATION_FAILLITE);
+                protocole.addnonTraite(spElpDto);
+                break;
+            default:
+                spElpDto.setMotif(COMotifMessageELP.PV_NON_TRAITE);
+                protocole.addnonTraite(spElpDto);
+                break;
+        }
+        return traitementInSuccess;
+    }
+
+    /**
+     * Méthode de création de l'étape dans WebAVS.
+     * Retourne vrai si le traitement a été exécuté avec succès.
+     *
+     * @param infos : les infos du fichier
+     * @param spElpDto : le contenu du fichier
+     * @return vrai si le traitement a été exécuté avec succès.
+     * @throws ElpProcessException
+     */
+    private boolean createEtapePVSaisie(COInfoFileELP infos, COSpElpDto spElpDto) throws ElpProcessException {
+        boolean traitementInSuccess = false;
         // Récupération du contentieux
         COContentieux contentieux = getContentieux(infos);
         if (Objects.nonNull(contentieux)) {
             COTransitionAction action;
             COTransition transition;
-            if (spElpDto.isADB()) {
+            if (StringUtils.equals(ElpStatut.PV_SAISIE_ADB, spElpDto.getNumeroStatut())) {
                 action = createPvAdbAction(spElpDto);
                 transition = getTransition(contentieux, ICOEtape.CS_PV_SAISIE_VALANT_ADB_SAISI);
             } else {
@@ -399,7 +469,7 @@ public class COImportMessageELP extends BProcess {
             if (Objects.nonNull(transition)) {
                 action.setTransition(transition);
                 // Ajout des étapes infos
-                if (!spElpDto.isADB()) {
+                if (!StringUtils.equals(ElpStatut.PV_SAISIE_ADB, spElpDto.getNumeroStatut())) {
                     addPvEtapeInfos(action, spElpDto);
                 }
                 // Création du process
@@ -506,6 +576,41 @@ public class COImportMessageELP extends BProcess {
         boolean traitementInSuccess = false;
         // Création de l'objet rcElp
         CORcElpDto rcElpDto = getRcElp(rcType, infos);
+        switch (rcElpDto.getNumeroStatut()) {
+            case ElpStatut.ADB:
+                traitementInSuccess = createEtapeADB(infos, rcElpDto);
+                break;
+            case ElpStatut.REGLEMENT_COMPLET_DETTE:
+                rcElpDto.setMotif(COMotifMessageELP.ADB_REGLEMENT_DETTES);
+                protocole.addnonTraite(rcElpDto);
+                break;
+            case ElpStatut.DEBUT_PROCEDURE_FAILLITE:
+                rcElpDto.setMotif(COMotifMessageELP.ADB_PROCEDURE_FAILLITE);
+                protocole.addnonTraite(rcElpDto);
+                break;
+            case ElpStatut.SURSIS:
+                rcElpDto.setMotif(COMotifMessageELP.ADB_SURSIS);
+                protocole.addnonTraite(rcElpDto);
+                break;
+            default:
+                rcElpDto.setMotif(COMotifMessageELP.ADB_NON_TRAITE);
+                protocole.addnonTraite(rcElpDto);
+                break;
+        }
+        return traitementInSuccess;
+    }
+
+    /**
+     * Méthode de création de l'étape dans WebAVS.
+     * Retourne vrai si le traitement a été exécuté avec succès.
+     *
+     * @param infos : les infos du fichier
+     * @param rcElpDto : le contenu du fichier
+     * @return vrai si le traitement a été exécuté avec succès.
+     * @throws ElpProcessException
+     */
+    private boolean createEtapeADB(COInfoFileELP infos, CORcElpDto rcElpDto) throws ElpProcessException {
+        boolean traitementInSuccess = false;
         // Récupération du contentieux
         COContentieux contentieux = getContentieux(infos);
         if (Objects.nonNull(contentieux)) {
@@ -515,7 +620,7 @@ public class COImportMessageELP extends BProcess {
                 action.setTransition(transition);
                 // Ajout des étapes infos
                 addAdbEtapeInfos(action, rcElpDto);
-                List<Map<String, String>> fraisEtInterets = null;
+                List<Map<String, String>> fraisEtInterets;
                 try {
                     fraisEtInterets = getFraisEtInterets(rcElpDto, infos.getGenreAffiliation());
                 } catch (COELPException e) {

@@ -22,7 +22,7 @@ public enum COTypeMessageELP {
 
     private String value;
 
-    private COTypeMessageELP(String value) {
+    COTypeMessageELP(String value) {
         this.value = value;
     }
 

@@ -20,9 +20,20 @@ public class COScElpDto extends COAbstractELP {
     private ScType scType;
     private String idEtapePoursuiteClassee;
     private String idEtapePoursuiteRadiee;
+    private String opposition;
 
     public COScElpDto(ScType scType) {
         this.scType = scType;
+        this.numeroStatut = scType.getStatusInfo().getStatus();
+        initialiseParam();
+    }
+
+    private void initialiseParam() {
+        if (StringUtils.equals(ElpStatut.CDP_AVEC_OPPOSITION, numeroStatut)) {
+            opposition = "on";
+        } else {
+            opposition = StringUtils.EMPTY;
+        }
     }
 
     @Override
@@ -47,10 +58,7 @@ public class COScElpDto extends COAbstractELP {
     }
 
     public String getOpposition() {
-        Optional<Summon> op = Optional.ofNullable(scType.getOutcome().getSummon());
-        return getDate(op.map(sum -> sum.getObjection().getFull()).map(full -> full.getObjectionDate()) // date du Full
-                .orElse(op.map(sum -> sum.getObjection().getPartial()).map(partial -> partial.getObjectionDate()) // ou date du Partial
-                        .orElse(null)));
+        return opposition;
     }
 
     /**
