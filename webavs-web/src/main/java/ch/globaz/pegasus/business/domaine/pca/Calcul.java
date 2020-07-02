@@ -518,41 +518,41 @@ public class Calcul {
      * CLE_INTER_LOYER_MONTANT_BRUT
      */
     public Montant getLoyerMontantBrut() {
-        return getLoyerMontant(IPCValeursPlanCalcul.CLE_INTER_LOYER_MONTANT_BRUT);
+        return getLoyerMontant(IPCValeursPlanCalcul.CLE_INTER_LOYER_MONTANT_BRUT, IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_LOYER_BRUT);
     }
 
     /**
      * CLE_INTER_LOYER_MONTANT_NET
      */
     public Montant getLoyerMontantNet() {
-        return getLoyerMontant(IPCValeursPlanCalcul.CLE_INTER_LOYER_MONTANT_NET);
+        return getLoyerMontant(IPCValeursPlanCalcul.CLE_INTER_LOYER_MONTANT_NET, IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_LOYER_NET);
     }
 
     /**
      * 64039077
      */
     public Montant getLoyerCharge() {
-        return getLoyerMontant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_ACCOMPTE_CHARGES);
+        return getLoyerMontant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_ACCOMPTE_CHARGES, IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_ACCOMPTE_CHARGES);
     }
 
     /**
      * 64039083
      */
     public Montant getLoyerFraisDeChauffage() {
-        return getLoyerMontant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_FRAIS_CHAUFFAGE);
+        return getLoyerMontant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_FRAIS_CHAUFFAGE, IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_FRAIS_CHAUFFAGE);
     }
 
     /**
      * LOYER_TAXE_JOURNALIERE_PENSION_NON_RECONNUE
      */
     public Montant getLoyerPensionNonReconnue() {
-        return getLoyerMontant(IPCValeursPlanCalcul.CLE_INTER_LOYER_TAXE_JOURNALIERE_PENSION_NON_RECONNUE);
+        return getLoyerMontant(IPCValeursPlanCalcul.CLE_INTER_LOYER_TAXE_JOURNALIERE_PENSION_NON_RECONNUE, IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_TAXES_PENSION_NON_RECONNUE);
     }
 
 
-    private Montant getLoyerMontant(String type) {
+    private Montant getLoyerMontant(String type, String typeCompare) {
         // si les montants au prorata sont à zéro ne pas prendre en compte le loyer
-        if(getDepensesLoyerBrut().add(getDepensesLoyerNet()).isZero()) {
+        if(Montant.newAnnuel(tuple.getValeurEnfant(typeCompare)).isZero()) {
            return Montant.ZERO;
         }
 
