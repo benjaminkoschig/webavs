@@ -1,5 +1,10 @@
 package ch.globaz.pegasus.business.domaine.pca;
 
+import ch.globaz.pegasus.business.constantes.IPCVariableMetier;
+import ch.globaz.pegasus.businessimpl.utils.annonce.annoncelaprams.model.LapramsDataMediator;
+import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext;
+import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.ControlleurVariablesMetier;
+import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.UtilStrategieBienImmobillier;
 import org.apache.commons.lang.math.Fraction;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
@@ -513,14 +518,83 @@ public class Calcul {
      * CLE_INTER_LOYER_MONTANT_BRUT
      */
     public Montant getLoyerMontantBrut() {
-        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_LOYER_MONTANT_BRUT));
+        return getLoyerMontant(IPCValeursPlanCalcul.CLE_INTER_LOYER_MONTANT_BRUT);
     }
 
     /**
      * CLE_INTER_LOYER_MONTANT_NET
      */
     public Montant getLoyerMontantNet() {
-        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_LOYER_MONTANT_NET));
+        return getLoyerMontant(IPCValeursPlanCalcul.CLE_INTER_LOYER_MONTANT_NET);
+    }
+
+    /**
+     * 64039077
+     */
+    public Montant getLoyerCharge() {
+        return getLoyerMontant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_ACCOMPTE_CHARGES);
+    }
+
+    /**
+     * 64039083
+     */
+    public Montant getLoyerFraisDeChauffage() {
+        return getLoyerMontant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_FRAIS_CHAUFFAGE);
+    }
+
+    /**
+     * LOYER_TAXE_JOURNALIERE_PENSION_NON_RECONNUE
+     */
+    public Montant getLoyerPensionNonReconnue() {
+        return getLoyerMontant(IPCValeursPlanCalcul.CLE_INTER_LOYER_TAXE_JOURNALIERE_PENSION_NON_RECONNUE);
+    }
+
+
+    private Montant getLoyerMontant(String type) {
+        // si les montants au prorata sont à zéro ne pas prendre en compte le loyer
+        if(getDepensesLoyerBrut().add(getDepensesLoyerNet()).isZero()) {
+           return Montant.ZERO;
+        }
+
+        // récupération des valeurs avant du tuple LOYER -> valeurs avant prorata
+        TupleDonneeRapport tupleLoyers = tuple.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_LOYERS);
+        if (tupleLoyers != null) {
+            Montant valeur = Montant.ZERO;
+            for (TupleDonneeRapport tupleLoyer : tupleLoyers.getEnfants().values()) {
+                valeur = Montant.newAnnuel(tupleLoyer.getValeurEnfant(type));
+            }
+            return valeur;
+        }
+        return Montant.ZERO;
+    }
+
+    /**
+     * LOYER_TAXE_JOURNALIERE_PENSION_NON_RECONNUE
+     */
+
+    public Montant getLoyerValeurLocativeAppHabite() {
+        TupleDonneeRapport tupleHabitat = tuple.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_HABITATION_PRINCIPALE);
+        Float sommeHomes = tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_NOMBRE_CHAMBRES);
+        if (tupleHabitat != null && !UtilStrategieBienImmobillier.isHomeEtDroitHabitation(sommeHomes, tupleHabitat)) {
+            Montant valeur = Montant.ZERO;
+            valeur = Montant.newAnnuel(tupleHabitat.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_VALEUR_LOCATIVE_APP_HABITE));
+            if(!valeur.isZero()){
+                Montant valeurLoc = Montant.newAnnuel(tuple
+                        .getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_VALEUR_LOCATIVE_APP_HABITE));
+                // si les montants au prorata sont à zéro ne pas prendre en compte le loyer
+                if(valeurLoc.isZero()){
+                    return Montant.ZERO;
+                }
+                // les charges de la valeur locative ne sont pas enregistrés ! Obligation de calculer avec prorata inverse
+                Montant charges = Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_CHARGES_FORFAITAIRES));
+                return valeur.add(calcCharge(valeurLoc, valeur, charges));
+            }
+        }
+        return Montant.ZERO;
+    }
+
+    private Montant calcCharge(Montant valeurLoc, Montant valeurLocTot, Montant charges) {
+        return !valeurLoc.isZero() ? charges.multiply(valeurLocTot).divide(valeurLoc) : Montant.ZERO_ANNUEL;
     }
 
     /**

@@ -5,7 +5,7 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 
 public class UtilStrategieBienImmobillier {
 
-    protected Boolean isHomeEtDroitHabitation(Float sommeHomes, TupleDonneeRapport tupleHabitat) {
+    public static Boolean isHomeEtDroitHabitation(Float sommeHomes, TupleDonneeRapport tupleHabitat) {
 
         if (tupleHabitat != null) {
             return (sommeHomes > 0) && tupleHabitat.getLegende().equals(IPCBienImmoPrincipal.CS_TYPE_DROIT_HABITATION);

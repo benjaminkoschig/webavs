@@ -107,20 +107,12 @@ public class RpcCalcul {
      * FC27
      */
     public Montant getRentGrossTotal() {
-        if(!calcul.getLoyerMontantBrut().isZero()){
-            return calcul.getLoyerMontantBrut();
-        }else{
-            return calcul.getLoyerMontantNet();
-        }
-//        Ancien méthode
-//        return calcul.getDepensesLoyerBrut()
-//            .add(calcul.getDepensesLoyerNet())
-//            .add(calcul.getDepensesLoyerCharge())
-//            .add(calcul.getDepensesLoyerValeurLocativeAppHabite())
-//            .add(calcul.getDepensesLoyerChargesForfaitaires())
-//            .add(calcul.getDepensesLoyerDroitHabitation())
-//            .add(calcul.getDepensesLoyerFraisDeChauffage())
-//            .add(calcul.getDepensesLoyerPensionNonReconnue());
+                return calcul.getLoyerMontantBrut()
+            .add(calcul.getLoyerMontantNet())
+            .add(calcul.getLoyerCharge())
+            .add(calcul.getLoyerFraisDeChauffage())
+            .add(calcul.getLoyerPensionNonReconnue())
+            .add(calcul.getLoyerValeurLocativeAppHabite());
     }
 
     /**
