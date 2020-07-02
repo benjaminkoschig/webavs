@@ -541,10 +541,10 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                 CaisseHeaderReportBean headerBean = new CaisseHeaderReportBean();
                 headerText(headerBean);
                 caisseReportHelper.addHeaderParameters(this, headerBean);
-
-                decalerEcheanceContencieux();
-
-                tableHeader();
+                if (!computePageActive) {
+                    decalerEcheanceContencieux();
+                    tableHeader();
+                }
 
                 if (CommonProperties.QR_FACTURE.getBooleanValue()) {
                     // -- QR
