@@ -164,8 +164,8 @@
 				<subreport  isUsingCache="true">
 					<reportElement
 						mode="Opaque"
-						x="0"
-						y="1"
+						x="-17"
+						y="-16"
 						width="561"
 						height="60"
 						forecolor="#000000"
@@ -431,12 +431,12 @@
 			</band>
 		</detail>
 		<columnFooter>
-			<band height="66"  isSplitAllowed="true" >
+			<band height="76"  isSplitAllowed="true" >
 				<rectangle radius="0" >
 					<reportElement
 						mode="Opaque"
 						x="480"
-						y="32"
+						y="47"
 						width="79"
 						height="18"
 						forecolor="#000000"
@@ -473,9 +473,9 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Page" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="0"
-						y="20"
+						y="24"
 						width="478"
-						height="30"
+						height="40"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="textField"
@@ -493,7 +493,7 @@
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="false" evaluationTime="Page" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="480"
-						y="35"
+						y="49"
 						width="76"
 						height="14"
 						forecolor="#000000"
@@ -515,10 +515,31 @@
 		<pageFooter>
 			<band height="297"  isSplitAllowed="true" >
 				<printWhenExpression><![CDATA[$P{IS_BVR}]]></printWhenExpression>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="24"
+						y="4"
+						width="534"
+						height="20"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-2"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="6" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Caisse de compensation des entrepreneurs | Agence vaudoise 66.1 | Route Ignace Paderewski 2 | Case postale | 1131 Tolochenaz | Suisse | T +41 21 619 20 00 | F +41 21 619 20 09]]></text>
+				</staticText>
 				<subreport  isUsingCache="true">
 					<reportElement
 						mode="Transparent"
-						x="-18"
+						x="-17"
 						y="0"
 						width="594"
 						height="297"

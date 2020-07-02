@@ -10,7 +10,7 @@
 		 pageHeight="842"
 		 columnWidth="535"
 		 columnSpacing="0"
-		 leftMargin="28"
+		 leftMargin="14"
 		 rightMargin="17"
 		 topMargin="17"
 		 bottomMargin="0"
@@ -74,7 +74,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="409"
+						x="429"
 						y="19"
 						width="126"
 						height="0"
@@ -92,7 +92,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="409"
+						x="429"
 						y="22"
 						width="126"
 						height="0"
@@ -109,7 +109,7 @@
 				</line>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="0"
+						x="20"
 						y="29"
 						width="535"
 						height="14"
@@ -129,7 +129,7 @@
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="329"
+						x="349"
 						y="4"
 						width="73"
 						height="13"
@@ -149,7 +149,7 @@
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="409"
+						x="429"
 						y="4"
 						width="22"
 						height="13"
@@ -169,7 +169,7 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="430"
+						x="450"
 						y="4"
 						width="105"
 						height="13"
@@ -190,7 +190,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="409"
+						x="429"
 						y="2"
 						width="126"
 						height="0"
@@ -217,11 +217,11 @@
 			</band>
 		</title>
 		<pageHeader>
-			<band height="177"  isSplitAllowed="true" >
+			<band height="153"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="0"
-						y="157"
+						x="20"
+						y="133"
 						width="533"
 						height="18"
 						forecolor="#000000"
@@ -241,8 +241,8 @@
 				<subreport  isUsingCache="true">
 					<reportElement
 						mode="Opaque"
-						x="0"
-						y="0"
+						x="-14"
+						y="-15"
 						width="549"
 						height="132"
 						forecolor="#000000"
@@ -260,8 +260,8 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="0"
-						y="176"
+						x="20"
+						y="152"
 						width="535"
 						height="0"
 						forecolor="#000000"
@@ -281,7 +281,7 @@
 			<band height="36"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="0"
+						x="20"
 						y="11"
 						width="535"
 						height="20"
@@ -305,7 +305,7 @@
 			<band height="15"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="0"
+						x="20"
 						y="2"
 						width="323"
 						height="13"
@@ -325,7 +325,7 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="430"
+						x="450"
 						y="2"
 						width="105"
 						height="13"
@@ -345,7 +345,7 @@
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="409"
+						x="429"
 						y="2"
 						width="22"
 						height="13"
@@ -367,7 +367,7 @@
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="329"
+						x="349"
 						y="2"
 						width="73"
 						height="13"
@@ -393,10 +393,31 @@
 		</columnFooter>
 		<pageFooter>
 			<band height="297"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="23"
+						y="-6"
+						width="534"
+						height="20"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-3"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="6" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Caisse de compensation des entrepreneurs | Agence vaudoise 66.1 | Route Ignace Paderewski 2 | Case postale | 1131 Tolochenaz | Suisse | T +41 21 619 20 00 | F +41 21 619 20 09]]></text>
+				</staticText>
 				<subreport  isUsingCache="true">
 					<reportElement
 						mode="Transparent"
-						x="-28"
+						x="-14"
 						y="0"
 						width="594"
 						height="297"
@@ -418,12 +439,33 @@
 			</band>
 		</pageFooter>
 		<lastPageFooter>
-			<band height="257"  isSplitAllowed="true" >
+			<band height="281"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="23"
+						y="-37"
+						width="534"
+						height="20"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-4"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="6" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Caisse de compensation des entrepreneurs | Agence vaudoise 66.1 | Route Ignace Paderewski 2 | Case postale | 1131 Tolochenaz | Suisse | T +41 21 619 20 00 | F +41 21 619 20 09]]></text>
+				</staticText>
 				<subreport  isUsingCache="true">
 					<reportElement
 						mode="Transparent"
-						x="-28"
-						y="-40"
+						x="-14"
+						y="0"
 						width="594"
 						height="297"
 						forecolor="#000000"

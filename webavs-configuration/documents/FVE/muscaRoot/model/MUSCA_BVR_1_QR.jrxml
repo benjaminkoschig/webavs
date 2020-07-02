@@ -144,15 +144,15 @@
 			</band>
 		</title>
 		<pageHeader>
-			<band height="236"  isSplitAllowed="true" >
+			<band height="208"  isSplitAllowed="true" >
 				<printWhenExpression><![CDATA[new Boolean( ($V{PAGE_NUMBER}.intValue()==1) || $P{P_HEADER_EACH_PAGE}.booleanValue() )]]></printWhenExpression>
 				<subreport  isUsingCache="true">
 					<reportElement
 						mode="Transparent"
 						x="0"
-						y="0"
+						y="-1"
 						width="561"
-						height="180"
+						height="165"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="subreport-1"
@@ -184,30 +184,10 @@
 					<parametersMapExpression><![CDATA[new java.util.HashMap($P{REPORT_PARAMETERS_MAP})]]></parametersMapExpression>
 					<subreportExpression  class="java.lang.String"><![CDATA[$P{P_SUBREPORT_FOOTER}]]></subreportExpression>
 				</subreport>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
-						mode="Transparent"
-						x="0"
-						y="191"
-						width="342"
-						height="15"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="textField-3"
-						stretchType="NoStretch"
-						positionType="Float"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font fontName="" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_LIBELLE}]]></textFieldExpression>
-				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="0"
-						y="207"
+						y="179"
 						width="342"
 						height="15"
 						forecolor="#000000"
@@ -227,7 +207,7 @@
 				<textField isStretchWithOverflow="true" pattern="#0" isBlankWhenNull="false" evaluationTime="Page" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="1"
-						y="222"
+						y="194"
 						width="106"
 						height="11"
 						forecolor="#000000"
@@ -729,10 +709,31 @@
 		<pageFooter>
 			<band height="297"  isSplitAllowed="true" >
 				<printWhenExpression><![CDATA[$P{IS_BVR}]]></printWhenExpression>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="24"
+						y="4"
+						width="534"
+						height="20"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-2"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="6" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Caisse de compensation des entrepreneurs | Agence vaudoise 66.1 | Route Ignace Paderewski 2 | Case postale | 1131 Tolochenaz | Suisse | T +41 21 619 20 00 | F +41 21 619 20 09]]></text>
+				</staticText>
 				<subreport  isUsingCache="true">
 					<reportElement
 						mode="Transparent"
-						x="-16"
+						x="-17"
 						y="0"
 						width="594"
 						height="297"

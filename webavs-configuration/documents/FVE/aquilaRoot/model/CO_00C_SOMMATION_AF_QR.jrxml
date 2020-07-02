@@ -7,10 +7,10 @@
 		 printOrder="Vertical"
 		 orientation="Portrait"
 		 pageWidth="595"
-		 pageHeight="842"
+		 pageHeight="869"
 		 columnWidth="535"
 		 columnSpacing="0"
-		 leftMargin="28"
+		 leftMargin="14"
 		 rightMargin="17"
 		 topMargin="18"
 		 bottomMargin="0"
@@ -44,11 +44,11 @@
 		<group  name="groupe" isStartNewColumn="false" isStartNewPage="false" isResetPageNumber="false" isReprintHeaderOnEachPage="false" minHeightToStartNewPage="0" >
 			<groupExpression><![CDATA[null]]></groupExpression>
 			<groupHeader>
-			<band height="72"  isSplitAllowed="true" >
+			<band height="67"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="0"
-						y="4"
+						x="13"
+						y="1"
 						width="535"
 						height="58"
 						forecolor="#000000"
@@ -65,16 +65,56 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{T5}]]></textFieldExpression>
 				</textField>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="473"
+						y="64"
+						width="75"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-2"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[new Boolean($F{F4}!=null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="473"
+						y="66"
+						width="75"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-3"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[new Boolean($F{F4}!=null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</line>
 			</band>
 			</groupHeader>
 			<groupFooter>
-			<band height="30"  isSplitAllowed="true" >
+			<band height="27"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="0"
-						y="8"
+						x="13"
+						y="6"
 						width="535"
-						height="16"
+						height="20"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="textField-4"
@@ -97,12 +137,12 @@
 			</band>
 		</background>
 		<title>
-			<band height="229"  isSplitAllowed="true" >
+			<band height="211"  isSplitAllowed="true" >
 				<subreport  isUsingCache="true">
 					<reportElement
 						mode="Opaque"
-						x="0"
-						y="0"
+						x="-14"
+						y="-16"
 						width="533"
 						height="198"
 						forecolor="#000000"
@@ -119,8 +159,8 @@
 				</subreport>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="0"
-						y="207"
+						x="13"
+						y="187"
 						width="533"
 						height="18"
 						forecolor="#000000"
@@ -140,8 +180,8 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="0"
-						y="226"
+						x="13"
+						y="205"
 						width="535"
 						height="0"
 						forecolor="#000000"
@@ -169,8 +209,8 @@
 			<band height="18"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="0"
-						y="4"
+						x="13"
+						y="1"
 						width="294"
 						height="14"
 						forecolor="#000000"
@@ -189,8 +229,8 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="405"
-						y="4"
+						x="418"
+						y="1"
 						width="54"
 						height="14"
 						forecolor="#000000"
@@ -209,8 +249,8 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="460"
-						y="4"
+						x="473"
+						y="1"
 						width="75"
 						height="14"
 						forecolor="#000000"
@@ -229,8 +269,8 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="350"
-						y="4"
+						x="363"
+						y="1"
 						width="54"
 						height="14"
 						forecolor="#000000"
@@ -247,46 +287,6 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{F4}]]></textFieldExpression>
 				</textField>
-				<line direction="TopDown">
-					<reportElement
-						mode="Opaque"
-						x="460"
-						y="1"
-						width="75"
-						height="0"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="line-2"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false">
-							<printWhenExpression><![CDATA[new Boolean($F{F4}!=null)]]></printWhenExpression>
-						</reportElement>
-					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
-				</line>
-				<line direction="TopDown">
-					<reportElement
-						mode="Opaque"
-						x="460"
-						y="3"
-						width="75"
-						height="0"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="line-3"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false">
-							<printWhenExpression><![CDATA[new Boolean($F{F4}!=null)]]></printWhenExpression>
-						</reportElement>
-					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
-				</line>
 			</band>
 		</detail>
 		<columnFooter>
@@ -295,10 +295,31 @@
 		</columnFooter>
 		<pageFooter>
 			<band height="297"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="18"
+						y="0"
+						width="539"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-1"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="6" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Caisse de compensation des entrepreneurs | Agence vaudoise 66.1 | Route Ignace Paderewski 2 | Case postale | 1131 Tolochenaz | Suisse | T +41 21 619 20 00 | F +41 21 619 20 09]]></text>
+				</staticText>
 				<subreport  isUsingCache="true">
 					<reportElement
 						mode="Transparent"
-						x="-28"
+						x="-14"
 						y="0"
 						width="594"
 						height="297"
