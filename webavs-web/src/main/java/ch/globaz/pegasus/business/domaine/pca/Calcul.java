@@ -561,7 +561,7 @@ public class Calcul {
         if (tupleLoyers != null) {
             Montant valeur = Montant.ZERO;
             for (TupleDonneeRapport tupleLoyer : tupleLoyers.getEnfants().values()) {
-                valeur = Montant.newAnnuel(tupleLoyer.getValeurEnfant(type));
+                valeur = valeur.add(Montant.newAnnuel(tupleLoyer.getValeurEnfant(type)));
             }
             return valeur;
         }
@@ -574,27 +574,26 @@ public class Calcul {
 
     public Montant getLoyerValeurLocativeAppHabite() {
         TupleDonneeRapport tupleHabitat = tuple.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_HABITATION_PRINCIPALE);
-        Float sommeHomes = tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_NOMBRE_CHAMBRES);
-        if (tupleHabitat != null && !UtilStrategieBienImmobillier.isHomeEtDroitHabitation(sommeHomes, tupleHabitat)) {
-            Montant valeur = Montant.ZERO;
-            valeur = Montant.newAnnuel(tupleHabitat.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_VALEUR_LOCATIVE_APP_HABITE));
-            if(!valeur.isZero()){
-                Montant valeurLoc = Montant.newAnnuel(tuple
-                        .getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_VALEUR_LOCATIVE_APP_HABITE));
-                // si les montants au prorata sont à zéro ne pas prendre en compte le loyer
-                if(valeurLoc.isZero()){
-                    return Montant.ZERO;
-                }
-                // les charges de la valeur locative ne sont pas enregistrés ! Obligation de calculer avec prorata inverse
-                Montant charges = Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_CHARGES_FORFAITAIRES));
+        if(tupleHabitat != null){
+            Montant valeur = Montant.newAnnuel(tupleHabitat.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_VALEUR_LOCATIVE_APP_HABITE));
+            Montant valeurLoc = Montant.newAnnuel(tuple
+                    .getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_VALEUR_LOCATIVE_APP_HABITE));
+            Montant charges = Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_CHARGES_FORFAITAIRES));
+            // si les montants au prorata sont à zéro ne pas prendre en compte le loyer
+            if(valeurLoc.isZero() && charges.isZero()){
+                return Montant.ZERO;
+            }
+            // les charges de la valeur locative ne sont pas enregistrés ! Obligation de calculer avec prorata inverse
+            if(!valeurLoc.substract(valeur).isZero()) {
                 return valeur.add(calcCharge(valeurLoc, valeur, charges));
             }
+            return valeur.add(charges);
         }
         return Montant.ZERO;
     }
 
     private Montant calcCharge(Montant valeurLoc, Montant valeurLocTot, Montant charges) {
-        return !valeurLoc.isZero() ? charges.multiply(valeurLocTot).divide(valeurLoc) : Montant.ZERO_ANNUEL;
+        return !valeurLoc.isZero() ? charges.multiply(valeurLocTot).divide(valeurLoc) : charges;
     }
 
     /**
