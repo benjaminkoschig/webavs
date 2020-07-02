@@ -22,6 +22,7 @@ import ch.globaz.pegasus.rpc.businessImpl.RpcTechnicalException;
 import ch.globaz.pegasus.rpc.domaine.RpcAddress;
 import ch.globaz.pegasus.rpc.domaine.RpcData;
 import ch.globaz.pyxis.converter.PersonneAvsConverter;
+import globaz.jade.client.util.JadeStringUtil;
 
 public class RpcDatasListConverter implements Iterator<RpcDataConverter>, Iterable<RpcDataConverter> {
 
@@ -103,43 +104,62 @@ public class RpcDatasListConverter implements Iterator<RpcDataConverter>, Iterab
         return annonceData;
     }
 
-    RpcData convertToDomaine(Entry<String, List<RPCDecionsPriseDansLeMois>> entry) {
-        VersionDroit versionDroit = toVersionDroit(entry.getValue().get(0).getSimpleVersionDroit());
-        Dossier dossier = new Dossier();
-        dossier.setId(entry.getValue().get(0).getIdDossier());
-
-        Map<String, List<RPCDecionsPriseDansLeMois>> map = new HashMap<String, List<RPCDecionsPriseDansLeMois>>();
-
-        for (RPCDecionsPriseDansLeMois model : entry.getValue()) {
-            if (!map.containsKey(model.keyForGroup())) {
-                map.put(model.keyForGroup(), new ArrayList<RPCDecionsPriseDansLeMois>());
-                map.get(model.keyForGroup()).add(model);
-            } else if(isSameRequerant(map.get(model.keyForGroup()).get(0), model)) {
-                // 2 pca pour la même personne sur une même version de droit ? A voir avec les retenues/bloquantes 
-                map.put(model.keyForGroup()+"_2", new ArrayList<RPCDecionsPriseDansLeMois>());
-                map.get(model.keyForGroup()+"_2").add(model);
-            } else {
-                map.get(model.keyForGroup()).add(model);
-            }
-        }
-        
+    RpcData convertToDomaine(Entry<String, List<RPCDecionsPriseDansLeMois>> entry, DecisionRefus modelRefus) {
         RpcData annonceData = null;
+        if(entry != null && !entry.getValue().isEmpty()) {
+            VersionDroit versionDroit = toVersionDroit(entry.getValue().get(0).getSimpleVersionDroit());
+            Dossier dossier = new Dossier();
+            dossier.setId(entry.getValue().get(0).getIdDossier());
 
-        for (Entry<String, List<RPCDecionsPriseDansLeMois>> entryDecisions : map.entrySet()) {
-            
-            Demande demande = new Demande();
-            demande.setId(entryDecisions.getValue().get(0).getIdDemande());
-            demande.setIsFratrie(entryDecisions.getValue().get(0).getIsFratrie());
-            if (demande.getIsFratrie() == null) {
-                demande.setIsFratrie(false);
+            Map<String, List<RPCDecionsPriseDansLeMois>> map = new HashMap<String, List<RPCDecionsPriseDansLeMois>>();
+
+            for (RPCDecionsPriseDansLeMois model : entry.getValue()) {
+                if (!map.containsKey(model.keyForGroup())) {
+                    map.put(model.keyForGroup(), new ArrayList<RPCDecionsPriseDansLeMois>());
+                    map.get(model.keyForGroup()).add(model);
+                } else if (isSameRequerant(map.get(model.keyForGroup()).get(0), model)) {
+                    // 2 pca pour la même personne sur une même version de droit ? A voir avec les retenues/bloquantes
+                    map.put(model.keyForGroup() + "_2", new ArrayList<RPCDecionsPriseDansLeMois>());
+                    map.get(model.keyForGroup() + "_2").add(model);
+                } else {
+                    map.get(model.keyForGroup()).add(model);
+                }
             }
-            if(annonceData == null) {
-                annonceData = new RpcData(versionDroit, dossier, demande);
+
+            for (Entry<String, List<RPCDecionsPriseDansLeMois>> entryDecisions : map.entrySet()) {
+
+                Demande demande = new Demande();
+                demande.setId(entryDecisions.getValue().get(0).getIdDemande());
+                demande.setIsFratrie(entryDecisions.getValue().get(0).getIsFratrie());
+                if (demande.getIsFratrie() == null) {
+                    demande.setIsFratrie(false);
+                }
+                if (annonceData == null) {
+                    annonceData = new RpcData(versionDroit, dossier, demande);
+                }
+                demande.setEtat(EtatDemande.fromValue(entryDecisions.getValue().get(0).getEtatDemande()));
+                String dateDebut = entryDecisions.getValue().get(0).getDateFinDemande();
+                String dateFin = entryDecisions.getValue().get(0).getDateFinDemande();
+                demande.setDebut(JadeStringUtil.isEmpty(dateDebut) ? null : new Date(dateDebut));
+                demande.setFin(JadeStringUtil.isEmpty(dateFin) ? null : new Date(dateFin));
+
+                annonceData.add(rpcDecisionRequerantConjoint.convert(entryDecisions.getValue(), versionDroit, demande));
             }
-            
-            annonceData.add(rpcDecisionRequerantConjoint.convert(entryDecisions.getValue(), versionDroit, demande));
         }
+
+
+//        if(modelRefus != null) {
+//            if (annonceData == null) {
+//                Dossier dossierRefus = new Dossier();
+//                dossierRefus.setId(modelRefus.getDemande().getDossier().getId());
+//                Demande demandeRefus = convert(modelRefus.getDemande().getSimpleDemande());
+//                annonceData = new RpcData(dossierRefus, demandeRefus);
+//            }
+//            annonceData.add(rpcDecisionRequerantConjoint.convert(modelRefus));
+//        }
+
         RpcDataDecisionFilter.filtre(annonceData);
+
         return annonceData;
     }
     

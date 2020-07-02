@@ -16,8 +16,13 @@ class AnnonceItems {
     private int nbDecision = 0;
 
     public AnnonceItems(List<AnnonceItem> annonces) {
-        this.annonces = annonces;
-        for (AnnonceItem annonceItem : annonces) {
+        this.annonces = new ArrayList<>();
+        for(AnnonceItem annonceItem : annonces) {
+            if(annonceItem.getAnnonce().getDecisions() != null) {
+                this.annonces.add(annonceItem);
+            }
+        }
+        for (AnnonceItem annonceItem : this.annonces) {
             nbDecision = nbDecision + annonceItem.getAnnonce().getDecisions().size();
             if (annonceItem.getRpcData() != null && !annonceItem.getAnnonce().getEtat().isError()) {
                 summer.sum(annonceItem.getRpcData());
@@ -114,5 +119,13 @@ class AnnonceItems {
 
     public int getNbDecision() {
         return nbDecision;
+    }
+
+    public int getNbAnnonce() {
+        return this.annonces.size();
+    }
+
+    public List<AnnonceItem> getAnnonces() {
+        return annonces;
     }
 }

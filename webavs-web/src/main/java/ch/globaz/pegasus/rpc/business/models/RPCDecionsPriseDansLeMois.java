@@ -21,6 +21,9 @@ public class RPCDecionsPriseDansLeMois extends JadeComplexModel {
     private String idTiersRequerant;
     private String idPlanDeCalculParent;
     private String idPCAccordee;
+    private String etatDemande;
+    private String dateDebutDemande;
+    private String dateFinDemande;
 
     private SimpleDecisionHeader simpleDecisionHeader = new SimpleDecisionHeader();
     private SimpleVersionDroit simpleVersionDroit = new SimpleVersionDroit();
@@ -156,6 +159,30 @@ public class RPCDecionsPriseDansLeMois extends JadeComplexModel {
 
     public void setIsFratrie(Boolean isFratrie) {
         this.isFratrie = isFratrie;
+    }
+
+    public String getEtatDemande() {
+        return etatDemande;
+    }
+
+    public void setEtatDemande(String etatDemande) {
+        this.etatDemande = etatDemande;
+    }
+
+    public String getDateDebutDemande() {
+        return dateDebutDemande;
+    }
+
+    public void setDateDebutDemande(String dateDebutDemande) {
+        this.dateDebutDemande = dateDebutDemande;
+    }
+
+    public String getDateFinDemande() {
+        return dateFinDemande;
+    }
+
+    public void setDateFinDemande(String dateFinDemande) {
+        this.dateFinDemande = dateFinDemande;
     }
 
     @Override

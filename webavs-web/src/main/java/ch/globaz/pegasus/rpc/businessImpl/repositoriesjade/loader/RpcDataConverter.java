@@ -3,6 +3,11 @@ package ch.globaz.pegasus.rpc.businessImpl.repositoriesjade.loader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
+
+import ch.globaz.common.domaine.Date;
+import ch.globaz.pegasus.business.domaine.demande.EtatDemande;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.globaz.pegasus.business.domaine.decision.Decision;
@@ -38,7 +43,7 @@ public class RpcDataConverter {
             return rpcDatasListConverter.convertToDomaine(decisionRefus);
 
         }
-        return rpcDatasListConverter.convertToDomaine(entryDecision);
+        return rpcDatasListConverter.convertToDomaine(entryDecision, decisionRefus);
     }
 
     public boolean isRefus() {
@@ -60,9 +65,19 @@ public class RpcDataConverter {
         if (isRefus()) {
             demande.setId(decisionRefus.getDemande().getId());
             demande.setIsFratrie(decisionRefus.getDemande().getSimpleDemande().getIsFratrie());
+            demande.setEtat(EtatDemande.fromValue(decisionRefus.getDemande().getSimpleDemande().getCsEtatDemande()));
+            String dateDebut = decisionRefus.getDemande().getSimpleDemande().getDateDebut();
+            String dateFin = decisionRefus.getDemande().getSimpleDemande().getDateFin();
+            demande.setDebut(JadeStringUtil.isEmpty(dateDebut) ? null : new Date(dateDebut));
+            demande.setFin(JadeStringUtil.isEmpty(dateFin) ? null : new Date(dateFin));
         } else {
             demande.setId(entryDecision.getValue().get(0).getIdDemande());
             demande.setIsFratrie(entryDecision.getValue().get(0).getIsFratrie());
+            demande.setEtat(EtatDemande.fromValue(entryDecision.getValue().get(0).getEtatDemande()));
+            String dateDebut = entryDecision.getValue().get(0).getDateFinDemande();
+            String dateFin = entryDecision.getValue().get(0).getDateFinDemande();
+            demande.setDebut(JadeStringUtil.isEmpty(dateDebut) ? null : new Date(dateDebut));
+            demande.setFin(JadeStringUtil.isEmpty(dateFin) ? null : new Date(dateFin));
         }
         if (demande.getIsFratrie() == null) {
             demande.setIsFratrie(false);

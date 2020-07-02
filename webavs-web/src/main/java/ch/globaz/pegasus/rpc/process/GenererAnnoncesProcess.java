@@ -188,7 +188,7 @@ public class GenererAnnoncesProcess extends ProcessItemsHandlerJadeJob<AnnonceIt
                 protocol.setSummer(annonceItems.getSummer());
                 protocol.setPlausiSummary(annonceItems.generatePlausiSummary());
                 listPlausis = annonceItems.generateAnnoncesForDisplay();
-                LOG.info("Nb annonce: {}", annonces.size());
+                LOG.info("Nb annonce: {}", annonceItems.getNbAnnonce());
                 LOG.info("Nb lien decision: {}", annonceItems.getNbDecision());
 
                 protocol.setNombreAvecCalcul(annonceItems.countAnnonce101());
@@ -201,9 +201,9 @@ public class GenererAnnoncesProcess extends ProcessItemsHandlerJadeJob<AnnonceIt
 //                LOG.info("Nb item 2469_301: {}", protocol.getNombreAnnulation());
 
                 if (!executionMode.isSimultate()) {
-                    annonceRepo.buildPKproviders(annonces.size(), annonceItems.getNbDecision());
+                    annonceRepo.buildPKproviders(annonceItems.getNbAnnonce(), annonceItems.getNbDecision());
 
-                    for (AnnonceItem annonceItem : annonces) {
+                    for (AnnonceItem annonceItem : annonceItems.getAnnonces()) {
                         annonceRepo.create(annonceItem.getAnnonce());
                     }
                     if (executionMode.mustSendAnnonce()) {

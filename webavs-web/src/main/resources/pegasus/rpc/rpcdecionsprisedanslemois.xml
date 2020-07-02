@@ -13,6 +13,9 @@
 			<select-field name="idTiersRequerant" field-ref="simpleDemandePrestation.idTiers" />
 			<select-field name="idPlanDeCalculParent" field-ref="simplePlanDeCalculParent.idPlanDeCalcul" />
 			<select-field name="idPCAccordee" field-ref="simplePCAccordee.idPCAccordee" />
+			<select-field name="etatDemande" field-ref="simpleDemande.csEtatDemande" />
+			<select-field name="dateDebutDemande" field-ref="simpleDemande.dateDebut" />
+			<select-field name="dateFinDemande" field-ref="simpleDemande.dateFin" />
 		</select-fields>
 		
 		<linked-model name="simpleDecisionApresCalcul" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionApresCalcul" join-type="LEFT_OUTER" select-fields="false"  >

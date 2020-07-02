@@ -2,10 +2,14 @@ package ch.globaz.pegasus.rpc.businessImpl.repositoriesjade.loader;
 
 import ch.globaz.common.domaine.Date;
 import ch.globaz.pegasus.business.domaine.decision.TypeDecision;
+import ch.globaz.pegasus.business.domaine.demande.EtatDemande;
+import ch.globaz.pegasus.business.domaine.droit.EtatDroit;
 import ch.globaz.pegasus.business.domaine.membreFamille.RoleMembreFamille;
 import ch.globaz.pegasus.business.domaine.pca.PcaSituation;
 import ch.globaz.pegasus.rpc.domaine.RpcData;
 import ch.globaz.pegasus.rpc.domaine.RpcDecisionRequerantConjoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,12 +22,23 @@ import java.util.List;
  */
 public class RpcDataDecisionFilter {
 
+    private static final Logger LOG = LoggerFactory.getLogger(RpcDataDecisionFilter.class);
+
     public static void filtre(RpcData rpcData) {
         if (rpcData.getRpcDecisionRequerantConjoints().size() > 1) {
             boolean isSupressionConjoint = analyseSuppression(rpcData);
             if (!isSupressionConjoint) {
                 mergeDecisions(rpcData);
             }
+        }
+        // PR-038 : ne pas annoncer des décisions historisé d'octroie alors que la demande est supprimée
+        if(EtatDemande.SUPPRIME.equals(rpcData.getDemande().getEtat())
+                && EtatDroit.HISTORISE.equals(rpcData.getVersionDroit().getEtat())
+                && hasOnlyOctroie(rpcData.getRpcDecisionRequerantConjoints())
+                && rpcData.getDemande().getFin() != null
+                && rpcData.getDemande().getFin().before(rpcData.getRpcDecisionRequerantConjoints().get(0).getRequerant().getDecision().getDateDebut())) {
+            LOG.info("Pas d'annonce pour le droit : "+rpcData.getVersionDroit().getId() + " - demande : "+rpcData.getDemande().getId());
+            rpcData.getRpcDecisionRequerantConjoints().clear();
         }
     }
 
@@ -104,6 +119,15 @@ public class RpcDataDecisionFilter {
     static boolean isOnlyNegativ(List<RpcDecisionRequerantConjoint> decisions) {
         for (RpcDecisionRequerantConjoint rpcDecisionRequerantConjoint : decisions) {
             if (!rpcDecisionRequerantConjoint.getRequerant().getPca().getEtatCalcul().isRefus()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static boolean hasOnlyOctroie(List<RpcDecisionRequerantConjoint> decisions) {
+        for (RpcDecisionRequerantConjoint rpcDecisionRequerantConjoint : decisions) {
+            if (TypeDecision.SUPPRESSION_SANS_CALCUL.equals(rpcDecisionRequerantConjoint.getRequerant().getDecision().getType())) {
                 return false;
             }
         }

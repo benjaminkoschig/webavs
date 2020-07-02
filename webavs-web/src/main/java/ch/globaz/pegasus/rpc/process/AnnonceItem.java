@@ -87,6 +87,11 @@ class AnnonceItem extends ProcessItem {
     public void treat() throws Exception {
         try {
             rpcData = rpcDataConverter.convert();
+
+            if(rpcData.getRpcDecisionRequerantConjoints().isEmpty()){
+                return;
+            }
+
             results = plausis.buildPlausis(rpcData);
 
             if (rpcDataConverter.isRefus()) {

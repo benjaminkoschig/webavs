@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import ch.globaz.pegasus.business.domaine.demande.EtatDemande;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.globaz.common.domaine.Date;
@@ -281,6 +283,7 @@ class RpcDecisionRequerantConjointConverter {
         Demande demande = new Demande();
         demande.setId(decisionsRefus.getDemande().getId());
         demande.setIsFratrie(decisionsRefus.getDemande().getSimpleDemande().getIsFratrie());
+        demande.setEtat(EtatDemande.fromValue(decisionsRefus.getDemande().getSimpleDemande().getCsEtatDemande()));
 
         PcaDecision pcaDecision = new PcaDecision(decision);
 
