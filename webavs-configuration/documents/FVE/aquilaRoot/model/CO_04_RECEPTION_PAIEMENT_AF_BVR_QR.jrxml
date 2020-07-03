@@ -439,7 +439,7 @@
 			</band>
 		</pageFooter>
 		<lastPageFooter>
-			<band height="281"  isSplitAllowed="true" >
+			<band height="257"  isSplitAllowed="true" >
 				<staticText>
 					<reportElement
 						mode="Opaque"
@@ -465,7 +465,7 @@
 					<reportElement
 						mode="Transparent"
 						x="-14"
-						y="0"
+						y="-40"
 						width="594"
 						height="297"
 						forecolor="#000000"
