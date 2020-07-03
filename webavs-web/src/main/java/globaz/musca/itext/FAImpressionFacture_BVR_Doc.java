@@ -606,6 +606,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
         super.setDocumentTitle(currentDataSource.getEnteteFacture().getIdExterneRole() + " - " + index + " - " + "1_"
                 + currentDataSource.getEnteteFacture().getNomTiers());
         buildReportStartTime = System.currentTimeMillis();
+        computeTotalPage();
     }
 
     @Override
@@ -686,6 +687,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
             _tableHeader();
         }
         _summaryText();
+
 
         // Init montant facture
         // initier les variables pour le montant

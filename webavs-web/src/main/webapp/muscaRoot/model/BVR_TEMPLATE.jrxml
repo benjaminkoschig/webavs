@@ -35,6 +35,10 @@
 	<parameter name="P_PAR" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_VERSE" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_OCR" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TOTAL_ROW2" isForPrompting="false" class="java.lang.Integer"/>
+	<parameter name="P_NOMBRE_PAGES" isForPrompting="false" class="java.lang.Integer"/>
+	<parameter name="P_PAGE_NUMBER" isForPrompting="false" class="java.lang.Integer"/>
+	<field name="COL_ID2" class="java.lang.Integer"/>
 		<background>
 			<band height="0"  isSplitAllowed="true" >
 			</band>
@@ -141,7 +145,7 @@
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="OCR-B New Abacus" pdfFontName="OCR-B New Abacus.ttf" size="12" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="true" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_OCR}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[($P{P_NOMBRE_PAGES}.intValue() > $P{P_PAGE_NUMBER})?"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX":$P{P_OCR}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Page" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -161,7 +165,7 @@
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font reportFont="NORMAL" fontName="Helvetica" size="11"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_FRANC}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[($P{P_NOMBRE_PAGES}.intValue() > $P{P_PAGE_NUMBER})?"X X X X":$P{P_FRANC}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Page" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -181,7 +185,7 @@
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font reportFont="NORMAL" fontName="Helvetica" size="11"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_CENTIME}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[($P{P_NOMBRE_PAGES}.intValue() > $P{P_PAGE_NUMBER})?"X X":$P{P_CENTIME}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Page" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -203,7 +207,7 @@
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font reportFont="NORMAL" fontName="Helvetica" size="11"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_FRANC}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[($P{P_NOMBRE_PAGES}.intValue() > $P{P_PAGE_NUMBER})?"X X X X":$P{P_FRANC}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Page" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -223,7 +227,7 @@
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font reportFont="NORMAL" fontName="Helvetica" size="11"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_CENTIME}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[($P{P_NOMBRE_PAGES}.intValue() > $P{P_PAGE_NUMBER})?"X X":$P{P_CENTIME}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"

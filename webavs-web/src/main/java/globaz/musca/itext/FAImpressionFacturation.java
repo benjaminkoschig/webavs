@@ -65,6 +65,7 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
     protected String adresseDebiteur = "";
     protected boolean factureAvecMontantMinime = false;
     protected ReferenceBVR bvr = null;
+    protected Boolean computePageActive = false;
 
 
     /**
@@ -456,20 +457,20 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
      * Pour cela, on construit en mémoire le document.
      */
     protected void computeTotalPage() {
-        int nbPages = 0;
+        int nbPages = 1;
         FWIImporterInterface importDoc = super.getImporter();
         try {
-            String sourceFilename = importDoc.getImportPath() + "/" + getJasperTemplate() + importDoc.getImportType();
-
-            // On construit le document pour connaitre le nb de page total
-            JasperPrint m_document = JasperFillManager.fillReport(sourceFilename, importDoc.getParametre(),
-                    getDataSource());
-            if ((m_document != null)) {
-                nbPages = m_document.getPages().size();
+            // Compte du nommbre de page - Ce systeme est à amélioré, le computeTotal initial ne fonctionnait pas, et le temps était trés limité.
+            // Des cas peuvent revenir en erreur. il faudra trouver pourquoi le compute ne fonctionne pas.
+            // La première page est limitée à 11 lignes
+            // Les pages suivantes sont limitées à 27 lignes
+            if(currentDataSource.getNbDeLigne()>11 && currentDataSource.getNbDeLigne() < 39) {
+                nbPages = 2;
+            } else if (currentDataSource.getNbDeLigne() > 38) {
+                nbPages = 2;
+                nbPages = nbPages + (int) Math.ceil((Double.valueOf(currentDataSource.getNbDeLigne()-11))/27);
             }
 
-            // On recharge le data source
-            createDataSource();
         } catch (Exception e) {
             getMemoryLog().logMessage("Problème pour déterminer le nb de page total du document : " + e.getMessage(),
                     FWMessage.AVERTISSEMENT, this.getClass().getName());
