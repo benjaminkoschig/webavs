@@ -453,34 +453,6 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
     }
 
     /**
-     * Détermine le total de page d'un document afin de pouvoir gérer les X dans les BVR.
-     * Pour cela, on construit en mémoire le document.
-     */
-    protected void computeTotalPage() {
-        int nbPages = 1;
-        FWIImporterInterface importDoc = super.getImporter();
-        try {
-            // Compte du nommbre de page - Ce systeme est à amélioré, le computeTotal initial ne fonctionnait pas, et le temps était trés limité.
-            // Des cas peuvent revenir en erreur. il faudra trouver pourquoi le compute ne fonctionne pas.
-            // La première page est limitée à 11 lignes
-            // Les pages suivantes sont limitées à 27 lignes
-            if(currentDataSource.getNbDeLigne()>11 && currentDataSource.getNbDeLigne() < 39) {
-                nbPages = 2;
-            } else if (currentDataSource.getNbDeLigne() > 38) {
-                nbPages = 2;
-                nbPages = nbPages + (int) Math.ceil((Double.valueOf(currentDataSource.getNbDeLigne()-11))/27);
-            }
-
-        } catch (Exception e) {
-            getMemoryLog().logMessage("Problème pour déterminer le nb de page total du document : " + e.getMessage(),
-                    FWMessage.AVERTISSEMENT, this.getClass().getName());
-        }
-
-        // On passe le nb de page au document
-        setParametres("P_NOMBRE_PAGES", nbPages);
-    }
-
-    /**
      * Retourne le template Jasper PRINCIPAL utilisé pour générer le document. (p.ex : DOCUMENT_VIDE pour
      * DOCUMENT_VIDE.japser)
      *

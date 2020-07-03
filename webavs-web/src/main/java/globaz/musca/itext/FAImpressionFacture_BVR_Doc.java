@@ -1,5 +1,6 @@
 package globaz.musca.itext;
 
+import globaz.aquila.print.CODecisionFPV;
 import globaz.aquila.print.COParameter;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.caisse.report.helper.ACaisseReportHelper;
@@ -188,6 +189,12 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
 
             // Modification suite à QR-Facture. Choix du footer
             super.setParametres(COParameter.P_SUBREPORT_QR, getImporter().getImportPath() + "BVR_TEMPLATE.jasper");
+            super.setParametres(COParameter.P_SUBREPORT_QR_CURRENT_PAGE, getImporter().getImportPath() + "BVR_TEMPLATE_CURRENT_PAGE.jasper");
+
+            super.setParametres(FWIImportParametre.PARAM_REFERENCE + "_X", CODecisionFPV.REFERENCE_NON_FACTURABLE_DEFAUT);
+            super.setParametres(COParameter.P_OCR + "_X", CODecisionFPV.OCRB_DEFAUT);
+            super.setParametres(COParameter.P_FRANC + "_X", CODecisionFPV.MONTANT_DEFAUT);
+            super.setParametres(COParameter.P_CENTIME + "_X", CODecisionFPV.CENT_DEFAUT);
 
             super.setParametres(FAImpressionFacture_Param.P_ADRESSE,
                     getBvr().getAdresse(currentDataSource.getEnteteFacture().getISOLangueTiers()));
@@ -606,7 +613,6 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
         super.setDocumentTitle(currentDataSource.getEnteteFacture().getIdExterneRole() + " - " + index + " - " + "1_"
                 + currentDataSource.getEnteteFacture().getNomTiers());
         buildReportStartTime = System.currentTimeMillis();
-        computeTotalPage();
     }
 
     @Override
