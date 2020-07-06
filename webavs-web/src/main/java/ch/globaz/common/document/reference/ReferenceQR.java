@@ -20,9 +20,10 @@ import globaz.pyxis.db.adressecourrier.TIAbstractAdresseData;
 import globaz.pyxis.db.adressecourrier.TIAdresseDataManager;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
-
-import static globaz.osiris.print.itext.list.CADocumentManager.formatMontant;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 
 public class ReferenceQR extends AbstractReference {
@@ -34,6 +35,7 @@ public class ReferenceQR extends AbstractReference {
     private static final String LANGUE_PAR_DEFAUT = "FR";
 
     private String subReportQR = "QR_FACTURE_TEMPLATE.jasper";
+    private String subReportQRCurrentPage = "QR_FACTURE_TEMPLATE_CURRENT_PAGE.jasper";
 
     private static final String QR_IBAN = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT,"type.reference.qr.iban");
     private static final String IBAN = JadeI18n.getInstance().getMessage(LANGUE_PAR_DEFAUT,"type.reference.iban");
@@ -149,7 +151,7 @@ public class ReferenceQR extends AbstractReference {
             pInfoAddErreur = getSession().getApplication().getLabel("INFO_ADD_ERREUR", langueDoc);
             parameters.put(COParameter.P_INFO_ADD_ERREUR, pInfoAddErreur);
         } catch (Exception e) {
-            throw new CommonTechnicalException ("Problème à l'initialisation des entêtes QR : ", e);
+            throw new CommonTechnicalException("Problème à l'initialisation des entêtes QR : ", e);
         }
     }
 
@@ -276,7 +278,7 @@ public class ReferenceQR extends AbstractReference {
      * @param idExterne
      * @param idCompteAnnexe
      */
-    public void genererReferenceQR(String idRole, String idExterneRole, Boolean isPlanPaiement, String idTypeSection, String idExterne, String idCompteAnnexe, String solde) throws CATechnicalException{
+    public void genererReferenceQR(String idRole, String idExterneRole, Boolean isPlanPaiement, String idTypeSection, String idExterne, String idCompteAnnexe, String solde) throws CATechnicalException {
 
         try{
             this.reference = genererNumReference(idRole, idExterneRole , isPlanPaiement, idTypeSection, idExterne, idCompteAnnexe);
