@@ -116,6 +116,7 @@
 		<defaultValueExpression ><![CDATA[new Boolean(false)]]></defaultValueExpression>
 	</parameter>
 	<parameter name="P_SUBREPORT_QR" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_SUBREPORT_QR_CURRENT_PAGE" isForPrompting="false" class="java.lang.String"/>
 	<field name="COL_1" class="java.lang.String"/>
 	<field name="COL_2" class="java.lang.Double"/>
 	<field name="COL_3" class="java.lang.Double"/>
@@ -753,10 +754,37 @@
 					<subreportParameter  name="COL_ID2">
 						<subreportParameterExpression><![CDATA[$F{COL_ID}]]></subreportParameterExpression>
 					</subreportParameter>
-					<subreportExpression  class="java.lang.String"><![CDATA[$P{P_SUBREPORT_QR}]]></subreportExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{P_SUBREPORT_QR_CURRENT_PAGE}]]></subreportExpression>
 				</subreport>
 			</band>
 		</pageFooter>
+		<lastPageFooter>
+			<band height="297"  isSplitAllowed="true" >
+				<printWhenExpression><![CDATA[$P{IS_BVR}]]></printWhenExpression>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="-17"
+						y="0"
+						width="594"
+						height="297"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="subreport-4"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<parametersMapExpression><![CDATA[new java.util.HashMap($P{REPORT_PARAMETERS_MAP})]]></parametersMapExpression>
+					<subreportParameter  name="P_PAGE_NUMBER">
+						<subreportParameterExpression><![CDATA[$V{PAGE_NUMBER}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{P_SUBREPORT_QR}]]></subreportExpression>
+				</subreport>
+			</band>
+		</lastPageFooter>
 		<summary>
 			<band height="0"  isSplitAllowed="true" >
 			</band>
