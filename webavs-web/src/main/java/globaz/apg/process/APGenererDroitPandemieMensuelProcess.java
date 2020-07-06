@@ -9,7 +9,6 @@ import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.db.droits.*;
 import globaz.apg.db.liste.APListePrestationsMensuellesModel;
 import globaz.apg.db.lots.APLot;
-import globaz.apg.db.lots.APLotManager;
 import globaz.apg.db.prestation.*;
 import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.enums.APPandemieServiceCalcul;
@@ -26,6 +25,8 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.client.JadePublishDocument;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.publish.document.JadePublishDocumentInfoProvider;
+import globaz.prestation.beans.PRPeriode;
+import globaz.prestation.utils.PRDateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,7 +158,7 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
 
     private void setDateFinDroit() throws Exception {
         dateArrivee=dateFin;
-        dateDepart=JadeDateUtil.getFirstDateOfMonth(dateFin);
+        dateDepart= JadeDateUtil.getFirstDateOfMonth(dateFin);
         listDroit = new ArrayList<>();
         APDroitLAPGManager manager = new APDroitLAPGManager();
         manager.setForIdDroit(idDroit);
@@ -174,7 +175,7 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
 
     private void calculDateFin() throws Exception {
         dateArrivee=dateFin;
-        dateDepart=JadeDateUtil.getFirstDateOfMonth(dateFin);
+        dateDepart= JadeDateUtil.getFirstDateOfMonth(dateFin);
         calculDateArriveeDepart();
         if(!listDroit.isEmpty()) {
             updateLastPeriode();
@@ -216,7 +217,7 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
             for (APPrestationJointLotTiersDroit prestation : entry.getValue()) {
                 if (isPrestationDejaCalcule(prestation)) {
                     dejaPeriode = true;
-                } else if (isPrestationisPrestationDansMois(prestation)) {
+                } else if (isPrestationisPrestationDansPeriode(prestation)) {
                     prestationMois = prestation;
                 } else if (finPandemie && isDateFuture(prestation)) {
                     // Si date Fin Pandémie supprimer les périodes des mois futures
@@ -296,8 +297,8 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
         return dateDepart.equals(prestation.getDateDebut()) && dateArrivee.equals(prestation.getDateFin());
     }
 
-    private boolean isPrestationisPrestationDansMois(APPrestation prestation){
-        return dateDepart.substring(3).equals(prestation.getDateDebut().substring(3));
+    private boolean isPrestationisPrestationDansPeriode(APPrestation prestation){
+        return PRDateUtils.isDateDansLaPeriode(new PRPeriode(prestation.getDateDebut(), prestation.getDateFin()), dateDepart);
     }
 
     private APPrestationJointLotTiersDroit getLastPrestation(List<APPrestationJointLotTiersDroit> listPrestation){
@@ -421,7 +422,9 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
                 break;
             case INDEPENDANT_MANIFESTATION_ANNULEE:
                 manager.setForGenreService(APGenreServiceAPG.IndependantManifAnnulee.getCodeSysteme());
-
+                break;
+            case INDEPENDANT_PERTE_DE_GAIN:
+                manager.setForGenreService(APGenreServiceAPG.IndependantPerteGains.getCodeSysteme());
                 break;
             default:
                 return new ArrayList<>();

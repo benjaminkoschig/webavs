@@ -83,6 +83,12 @@
 <tr>
 	<td/>
 	<td>
+		<input type="radio" name="genreService" onclick="isCatEntChange();" value="<%=APPandemieServiceCalcul.INDEPENDANT_PERTE_DE_GAIN.getValue() %>" ><ct:FWLabel key="JSP_INDEPENDANT_PERTE_DE_GAIN"/>
+	</td>
+</tr>
+<tr>
+	<td/>
+	<td>
 		<input type="radio" name="genreService" onclick="isCatEntChange();" value="<%=APPandemieServiceCalcul.GARDE_PARENTAL.getValue() %>" ><ct:FWLabel key="JSP_GARDE_PARENTALE"/>
 	</td>
 	<td>

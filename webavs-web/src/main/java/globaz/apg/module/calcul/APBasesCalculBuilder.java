@@ -1,6 +1,6 @@
 /*
  * Créé le 3 juin 05
- * 
+ *
  * Pour changer le modèle de ce fichier généré, allez à : Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code
  * et commentaires
  */
@@ -36,17 +36,17 @@ import java.util.stream.Collectors;
 
 /**
  * <H1>Description</H1>
- * 
+ *
  * <p>
  * Charge toutes les informations relatives à un droit et crée les bases de calcul pour les prestations. ATTENTION: pas
  * thread safe !!!! Créer une nouvelle instance de cette classe pour chaque traitement !
  * </p>
- * 
+ *
  * <p>
  * Le principe général de cette classe est de regrouper toutes les informations nécessaire au calcul d'une prestation
  * pour un droit donné et pour une période donnée.
  * </p>
- * 
+ *
  * <p>
  * L'algorithme utilisé pour effectuer cette tâche est du type 'diviser pour mieux règner'. Le problème est divisé en
  * sous-problèmes. Chaque sous-problème est représenté par une classe interne qui implémente
@@ -57,51 +57,51 @@ import java.util.stream.Collectors;
  * prestation) ou un changement de situation familiale (par exemple la naissance d'un enfant) ou, dans le cas des APG,
  * les débuts et fin d'une période de prestation, etc. Le schéma domaine des classes est:
  * </p>
- * 
+ *
  * <p>
  * <img src="doc-files/general.gif" alt="schéma domaine">
  * </p>
- * 
+ *
  * <p>
  * L'algorithme s'effectue en trois étapes:
  * </p>
- * 
+ *
  * <h4>1. Création des commandes</h4>
- * 
+ *
  * <p>
  * Une instance de commande spécifique à chaque sous-problème est créée.
  * </p>
- * 
+ *
  * <p>
  * <img src="doc-files/etape_1.gif" alt="schéma explicatif de l'étape 1">
  * </p>
- * 
+ *
  * <h4>2. tri des commandes</h4>
- * 
+ *
  * <p>
  * les commandes sont ensuite triées par date d'exécution (les commandes sont java.lang.Comparable).
  * </p>
- * 
+ *
  * <p>
  * <img src="doc-files/etape_2.gif" alt="schéma explicatif de l'étape 2">
  * </p>
- * 
+ *
  * <h4>3. exécution des commandes</h4>
- * 
+ *
  * <p>
  * enfin les commandes sont exécutées dans l'ordre pour créer les bases de calcul.
  * </p>
- * 
+ *
  * <p>
  * <img src="doc-files/etape_3.gif" alt="diagramme UML de séquence des étapes 2 et 3">
  * </p>
- * 
+ *
  * <h4>schéma UML (quasi exhaustif)</h4>
- * 
+ *
  * <p>
  * <img src="doc-files/base_calcul_cd.gif" alt="diagramme de classe quasi complet">
  * </p>
- * 
+ *
  * @author vre
  */
 public class APBasesCalculBuilder {
@@ -111,22 +111,22 @@ public class APBasesCalculBuilder {
 
     /*
      * Une commande encapsule toutes les données et toute la logique nécessaire au traitement d'un événement.
-     * 
+     *
      * <p>Le type de l'événement est défini comme une sous-classe de la classe Commande.</p>
-     * 
+     *
      * <p>Par défaut, les informations indispensables à une commande sont une date d'exécution et un booléen indiquant
      * si la commande est le début ou la fin d'une période de modification de prestation. Par exemple, la naissance d'un
      * enfant est un début, la fin d'une période APG est une fin.</p>
-     * 
+     *
      * <p>L'exécution d'une commande affecte potentiellement les variables niveauActivation, baseCourante,
      * derniereBaseCourante et la liste des bases de la classe APBasesCalculBuilder.</p>
-     * 
+     *
      * <p>La variable la plus importante pour le sous-classement de Command ou l'exécution d'une commande est le niveau
      * d'activation. Cette variable permet de contenir le nombre de périodes donnant droit à une prestation à la date
      * courante. Par exemple, pour les droits maternité, cette variable sera incrémentée pour chaque nouveau-né et
      * décrémentée pour chaque fin de droit d'allocation. En fonction de cette variable, bases de calcul seront retenues
      * ou non.</p>
-     * 
+     *
      * @author vre
      */
     private abstract class Command implements Comparable {
@@ -147,7 +147,7 @@ public class APBasesCalculBuilder {
 
         /**
          * Crée une nouvelle instance de la classe Command.
-         * 
+         *
          * @param date
          *            DOCUMENT ME!
          * @param debut
@@ -160,14 +160,14 @@ public class APBasesCalculBuilder {
 
         /**
          * Crée une nouvelle instance de la classe Command.
-         * 
+         *
          * @param date
          *            DOCUMENT ME!
          * @param debut
          *            DOCUMENT ME!
-         * 
+         *
          * @return DOCUMENT ME!
-         * 
+         *
          * @throws ParseException
          *             DOCUMENT ME!
          */
@@ -235,16 +235,16 @@ public class APBasesCalculBuilder {
 
         /**
          * Compare les dates d'exécution de deux commandes et retourne leur ordre naturel.
-         * 
+         *
          * <p>
          * Les null sont considérés comme plus petits que n'importe quelle date.
          * </p>
-         * 
+         *
          * @param o
          *            DOCUMENT ME!
-         * 
+         *
          * @return DOCUMENT ME!
-         * 
+         *
          * @see java.lang.Comparable#compareTo(java.lang.Object)
          */
         @Override
@@ -290,11 +290,11 @@ public class APBasesCalculBuilder {
 
         /**
          * Exécute la logique associée à cette commande.
-         * 
+         *
          * <p>
          * Cette méthode crée ou ferme la base courante si nécessaire.
          * </p>
-         * 
+         *
          * @throws Exception
          *             DOCUMENT ME!
          */
@@ -319,7 +319,7 @@ public class APBasesCalculBuilder {
         /**
          * Cette méthode doit être implémentée par les sous-classes de commandes pour effectuer la logique spécifique au
          * type de commande.
-         * 
+         *
          * @throws Exception
          *             DOCUMENT ME!
          */
@@ -370,9 +370,9 @@ public class APBasesCalculBuilder {
     /*
      * Cette commande encapsule un changement de montant versé par un employeur lors d'une période de prestation par
      * rapport au salaire habituel d'une personne.
-     * 
+     *
      * Lorsqu'elle est exécutée, elle changement le champ montantVerse de la base de calcul.
-     * 
+     *
      * @author vre
      */
     private class EmployeurChangeMontantCommand extends EmployeurCommand {
@@ -387,12 +387,12 @@ public class APBasesCalculBuilder {
 
         /**
          * Crée une nouvelle instance de la classe EmployeurChangeMontantCommand.
-         * 
+         *
          * @param date
          * @param debut
          * @param sitPro
          *            DOCUMENT ME!
-         * 
+         *
          * @throws ParseException
          */
         public EmployeurChangeMontantCommand(String date, boolean debut, APSituationProfessionnelle sitPro)
@@ -432,10 +432,10 @@ public class APBasesCalculBuilder {
 
     /*
      * Cette commande encapsule un changement d'employeur.
-     * 
+     *
      * Lorsqu'elle est exécutée, elle ajoute ou enlève un employeur à la liste des employeurs de la base de calcul. Dans
      * le cas ou elle enleve, la prestation auparavant versée à l'employeur est transférée à l'assuré.
-     * 
+     *
      * @author vre
      */
     private class EmployeurCommand extends Command {
@@ -451,7 +451,7 @@ public class APBasesCalculBuilder {
 
         /**
          * Crée une nouvelle instance de la classe EmployeurCommand.
-         * 
+         *
          * @param date
          *            DOCUMENT ME!
          * @param debut
@@ -460,7 +460,7 @@ public class APBasesCalculBuilder {
          *            DOCUMENT ME!
          * @param sitPro
          *            DOCUMENT ME!
-         * 
+         *
          * @throws ParseException
          */
         public EmployeurCommand(String date, boolean debut, int index, APSituationProfessionnelle sitPro)
@@ -526,9 +526,9 @@ public class APBasesCalculBuilder {
 
     /*
      * Cette commande encapsule un changement du nombre d'enfants (spécifique APG) dans le calcul.
-     * 
+     *
      * Lorsqu'elle est exécutée, elle ajoute ou enlève un enfant à la base de calcul.
-     * 
+     *
      * @author vre
      */
     private class EnfantAPGCommand extends Command {
@@ -538,10 +538,10 @@ public class APBasesCalculBuilder {
 
         /**
          * Crée une nouvelle instance de la classe EnfantAPGCommand.
-         * 
+         *
          * @param date
          * @param debut
-         * 
+         *
          * @throws ParseException
          */
         public EnfantAPGCommand(String date, boolean debut) throws ParseException {
@@ -566,11 +566,11 @@ public class APBasesCalculBuilder {
 
     /*
      * Cette commande encapsule un changement du nombre d'enfants (spécifique maternité) dans le calcul.
-     * 
+     *
      * Lorsqu'elle est exécutée, elle ajoute ou enlève un enfant à la base de calcul.
-     * 
+     *
      * Cette commande est la seule du côté Maternité à modifier le niveau d'activation.
-     * 
+     *
      * @author vre
      */
     private class EnfantMatCommand extends Command {
@@ -580,7 +580,7 @@ public class APBasesCalculBuilder {
 
         /**
          * Crée une nouvelle instance de la classe EnfantMatCommand.
-         * 
+         *
          * @param date
          *            DOCUMENT ME!
          * @param debut
@@ -604,7 +604,7 @@ public class APBasesCalculBuilder {
 
     /*
      * Cette commande ne fait rien de spécifique. Elle sert juste à couper les bases de calcul à une date donnée.
-     * 
+     *
      * @author vre
      */
     private class NouvelleBaseCommand extends Command {
@@ -614,7 +614,7 @@ public class APBasesCalculBuilder {
 
         /**
          * Crée une nouvelle instance de la classe NouvelleBaseCommand.
-         * 
+         *
          * @param date
          * @param debut
          */
@@ -639,9 +639,9 @@ public class APBasesCalculBuilder {
 
     /*
      * Cette commande encapsule un début ou une fin de période de droit à une prestation APG.
-     * 
+     *
      * Cette commande est la seule du côté APG à modifier le niveau d'activation.
-     * 
+     *
      * @author vre
      */
     private class PeriodeAPGCommand extends Command {
@@ -651,10 +651,10 @@ public class APBasesCalculBuilder {
 
         /**
          * Crée une nouvelle instance de la classe PeriodeAPGCommand.
-         * 
+         *
          * @param date
          * @param debut
-         * 
+         *
          * @throws ParseException
          */
         public PeriodeAPGCommand(String date, boolean debut) throws ParseException {
@@ -691,14 +691,14 @@ public class APBasesCalculBuilder {
 
         /**
          * Crée une nouvelle instance de la classe TauxImpositionCommand.
-         * 
+         *
          * @param date
          *            DOCUMENT ME!
          * @param debut
          *            DOCUMENT ME!
          * @param taux
          *            DOCUMENT ME!
-         * 
+         *
          * @throws ParseException
          *             DOCUMENT ME!
          */
@@ -730,7 +730,7 @@ public class APBasesCalculBuilder {
 
     /*
      * cette commande désactive l'ajout des bases de calcul à la liste.
-     * 
+     *
      * @author vre
      */
     private class VersementInterditCommand extends Command {
@@ -740,7 +740,7 @@ public class APBasesCalculBuilder {
 
         /**
          * Crée une nouvelle instance de la classe PreventAddCommand.
-         * 
+         *
          * @param date
          * @param debut
          */
@@ -830,7 +830,7 @@ public class APBasesCalculBuilder {
 
     /**
      * Crée une nouvelle instance de la classe APBasesCalculBuilder.
-     * 
+     *
      * @param session
      *            DOCUMENT ME!
      * @param droit
@@ -956,8 +956,6 @@ public class APBasesCalculBuilder {
             if (JadeStringUtil.isEmpty(periode.getDateFinPeriode())) {
                 if(IAPDroitLAPG.CS_QUARANTAINE.equals(droit.getGenreService())) {
                     resolveFinJourMaxParam(periode, APParameter.QUARANTAINE_JOURS_MAX.getParameterName(), delai);
-                } else if (IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS.equals(droit.getGenreService())){
-                    resolveFinJourMaxParam(periode, APParameter.INDEPENDANT_PERTE_DE_GAIN_MAX.getParameterName(), delai);
                 } else {
                     Calendar cal = Calendar.getInstance();
                     cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
@@ -1058,8 +1056,6 @@ public class APBasesCalculBuilder {
             case IAPDroitLAPG.CS_QUARANTAINE:
                 autreJours = 0;
                 jourMaximum = getJourMax(APParameter.QUARANTAINE_JOURS_MAX.getParameterName());break;
-            case IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS:
-                jourMaximum = getJourMax(APParameter.INDEPENDANT_PERTE_DE_GAIN_MAX.getParameterName());break;
             default:
                 jourMaximum = null;
         }
@@ -1069,7 +1065,7 @@ public class APBasesCalculBuilder {
                 nbJoursNew = jourMaximum - autreJours;
                 periode.setDateFinPeriode(JadeDateUtil.addDays(periode.getDateFinPeriode(), nbJoursNew - nbJours));
             }
-            checkFinPeriode(periode, dateDebut, jourMaximum);
+            // ancienne méthode checkFinPeriode plus utilisé car 403 sans date de fin
         }
 
         return nbJoursNew;
@@ -1225,11 +1221,11 @@ public class APBasesCalculBuilder {
 
     /**
          * couper par mois:
-         * 
+         *
      * allocations par mois, on ajoute donc des com
      *mandes qui vont découper la période de
          * prestation en unités mensuelles.
-         * 
+         *
          * Pour les versements rétro-actifs (c'est-à-dire avant la date du jour), la coupure n'est pas effectuée.
      *
      * @param debut
@@ -1320,10 +1316,10 @@ public class APBasesCalculBuilder {
 
             /*
              * ajouter la commande.
-             * 
+             *
              * Il n'y a pas de date de début de contrat pour les situations professionnelles. Par définition, tous les
              * employeurs saisis sont ceux qui sont nécessaires au calcul de la prestation.
-             * 
+             *
              * On saisit donc une date d'exécution de la commande null. De cette manière, ces commandes seront exécutées
              * en premier (la procédure de tri des commandes le garantit).
              */
@@ -1395,16 +1391,16 @@ public class APBasesCalculBuilder {
 
     /**
      * Crée les bases de calculs pour les prestations.
-     * 
+     *
      * @return une liste (jamais null, peut-être vide) d'instances de APBaseCalcul
-     * 
+     *
      * @throws Exception
      *             si une erreur survient lors du chargement des informations dans la base
      */
     public List createBasesCalcul() throws Exception {
         /*
          * 1. creation des commandes
-         * 
+         *
          * On commence par ajouter tous les événements relatifs à la situation professionnelle, le traitement est
          * identique pour un droit APG ou maternité.
          */
