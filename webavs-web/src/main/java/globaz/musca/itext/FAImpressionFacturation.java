@@ -384,6 +384,8 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
 
         if (isFactureMontantReport() && modeReporterMontantMinime) {
             reporterMontant = true;
+        } else {
+            reporterMontant = false;
         }
 
         // commencer à écrire les paramètres
