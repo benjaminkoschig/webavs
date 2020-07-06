@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -209,41 +210,41 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
     }
 
     private void calculDate(List<APDroitLAPG> listDroit) throws Exception {
-        Map<String, List<APPrestationJointLotTiersDroit>> map = getListPrestation(listDroit);
-        for (Map.Entry<String, List<APPrestationJointLotTiersDroit>> entry : map.entrySet()) {
+        Map<APDroitLAPG, List<APPrestationJointLotTiersDroit>> map = getListPrestation(listDroit);
+        for (Map.Entry<APDroitLAPG, List<APPrestationJointLotTiersDroit>> entry : map.entrySet()) {
             boolean dejaPeriode = false;
-            APPrestationJointLotTiersDroit prestationMois = null;
+            List<APPrestationJointLotTiersDroit> prestationsMois = new ArrayList<>();
             LOG.info(getProgressCounter() + 1 + " - Traitement droit  : " + entry.getKey());
             for (APPrestationJointLotTiersDroit prestation : entry.getValue()) {
                 if (isPrestationDejaCalcule(prestation)) {
                     dejaPeriode = true;
                 } else if (isPrestationisPrestationDansPeriode(prestation)) {
-                    prestationMois = prestation;
+                    prestationsMois.add(prestation);
                 } else if (finPandemie && isDateFuture(prestation)) {
                     // Si date Fin Pandémie supprimer les périodes des mois futures
                     prestation.delete();
                     addModel(prestation, prestation, APListeDroitPrestationMensuelExcel.ACTION_SUPPRIME);
                 }
             }
+            APPrestationJointLotTiersDroit prestationMois = null;
+            String dateDepartDroit = dateDepart;
+            if(JadeDateUtil.isDateAfter(entry.getKey().getDateDebutDroit(), dateArrivee)) {
+                continue;
+            }
+            if(JadeDateUtil.isDateBefore(dateDepart, entry.getKey().getDateDebutDroit())) {
+                dateDepartDroit = entry.getKey().getDateDebutDroit();
+            }
+
             if (!dejaPeriode) {
                 APPrestation newPrestation = null;
                 String action = "";
-                if (prestationMois != null) {
-                    if(IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestationMois.getEtat())) {
-                        if(JadeDateUtil.isDateBefore(prestationMois.getDateFin(), dateDepart)) {
-                            newPrestation = ajoutePrestationDroit(prestationMois, dateDepart, dateArrivee);
-                            action = APListeDroitPrestationMensuelExcel.ACTION_AJOUTE;
-                        } else if(JadeDateUtil.isDateBefore(prestationMois.getDateFin(), dateArrivee)){
-                            calcJourManquant(prestationMois, dateArrivee);
-                        }
-                    } else {
-                        newPrestation = modifyPrestationDroit(prestationMois);
-                        action = APListeDroitPrestationMensuelExcel.ACTION_MODIFIE;
-                    }
+                if (!prestationsMois.isEmpty()) {
+                    calcJourManquantList(prestationsMois, dateDepartDroit, dateArrivee);
+                    prestationMois = prestationsMois.get(0);
                 } else {
                     prestationMois = getLastPrestation(entry.getValue());
-                    calcMoisManquant(prestationMois);
-                    newPrestation = ajoutePrestationDroit(prestationMois, dateDepart, dateArrivee);
+                    calcMoisManquant(prestationMois, dateDepartDroit);
+                    newPrestation = ajoutePrestationDroit(prestationMois, dateDepartDroit, dateArrivee);
                     action = APListeDroitPrestationMensuelExcel.ACTION_AJOUTE;
                 }
                 addModel(prestationMois, newPrestation, action);
@@ -260,25 +261,92 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
         }
     }
 
-    private void calcMoisManquant(APPrestationJointLotTiersDroit lastPrestation) throws Exception {
-        if(!dateFin.isEmpty()) {
-            int nbMonth = JadeDateUtil.getNbMonthsBetween(JadeDateUtil.getFirstDateOfMonth(lastPrestation.getDateFin()), dateDepart);
-            if (nbMonth > 1){
-                calcJourManquant(lastPrestation, JadeDateUtil.getLastDateOfMonth(lastPrestation.getDateFin()));
-                for (int i = 1; i < nbMonth; i++) {
-                    String dateDepart = JadeDateUtil.getFirstDateOfMonth(JadeDateUtil.addMonths(lastPrestation.getDateFin(), i));
-                    String dateArrive = JadeDateUtil.getLastDateOfMonth(dateDepart);
-                    APPrestation newPrestation = ajoutePrestationDroit(lastPrestation, dateDepart, dateArrive);
-                    String action = APListeDroitPrestationMensuelExcel.ACTION_AJOUTE;
-                    addModel(lastPrestation, newPrestation, action);
+    private void calcJourManquantList(List<APPrestationJointLotTiersDroit> prestationsMois, String dateDepart, String dateArrivee) throws Exception {
+        PRPeriode periodeCalcule = new PRPeriode(dateDepart, dateArrivee);
+        APPrestationJointLotTiersDroit lastPrestation = null;
+        List<APPrestationJointLotTiersDroit> prestationsMixer = new ArrayList<>();
+        for(APPrestationJointLotTiersDroit prestation : prestationsMois){
+            lastPrestation = prestation;
+            if(IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestation.getEtat())) {
+                periodeCalcule = calcJourManquant(prestation, periodeCalcule.getDateDeDebut(), periodeCalcule.getDateDeFin());
+            } else {
+                prestationsMixer.add(prestation);
+                periodeCalcule = calcJourManquantMixer(prestation, periodeCalcule.getDateDeDebut(), periodeCalcule.getDateDeFin());
+            }
+
+            // periode déjà dans une prestation -> rien à faire
+            if(periodeCalcule == null){
+                return;
+            }
+        }
+        if(prestationsMixer.isEmpty()) {
+            // il n'y avait que des prestations déjà payées donc il faut ajouter la nouvelle prestation en complément
+            APPrestation newPrestation = ajoutePrestationDroit(lastPrestation, periodeCalcule.getDateDeDebut(), periodeCalcule.getDateDeFin());
+            String action = APListeDroitPrestationMensuelExcel.ACTION_AJOUTE;
+            addModel(lastPrestation, newPrestation, action);
+        } else {
+            APPrestation newPrestation = modifyPrestationDroit(prestationsMixer.get(0), periodeCalcule.getDateDeDebut(), periodeCalcule.getDateDeFin());
+            String action = APListeDroitPrestationMensuelExcel.ACTION_MODIFIE;
+            addModel(lastPrestation, newPrestation, action);
+            prestationsMixer.remove(prestationsMixer.get(0));
+            // suppression des autres prestations non payés fusionnées en une seule prestation
+            if(!prestationsMixer.isEmpty()) {
+                for(APPrestation prestation : prestationsMixer) {
+                    prestation.delete();
                 }
-            } else if (nbMonth == 1) {
-                calcJourManquant(lastPrestation, JadeDateUtil.getLastDateOfMonth(lastPrestation.getDateFin()));
             }
         }
     }
 
-    private void calcJourManquant(APPrestationJointLotTiersDroit lastPrestation, String dateFin) throws Exception {
+    private PRPeriode calcJourManquant(APPrestationJointLotTiersDroit prestation, String dateDebut, String dateFin) {
+        String dateDepart = dateDebut;
+        String dateArrivee = dateFin;
+        if(PRDateUtils.isDateDansLaPeriode(new PRPeriode(prestation.getDateDebut(), prestation.getDateFin()), dateDebut)
+            && PRDateUtils.isDateDansLaPeriode(new PRPeriode(prestation.getDateDebut(), prestation.getDateFin()), dateFin)) {
+            return null;
+        }
+        if(PRDateUtils.isDateDansLaPeriode(new PRPeriode(prestation.getDateDebut(), prestation.getDateFin()), dateDebut)) {
+            dateDepart = JadeDateUtil.addDays(prestation.getDateFin(), 1);
+        } else if (PRDateUtils.isDateDansLaPeriode(new PRPeriode(prestation.getDateDebut(), prestation.getDateFin()), dateFin)) {
+            dateArrivee = JadeDateUtil.addDays(prestation.getDateDebut(), -1);
+        }
+        return new PRPeriode(dateDepart, dateArrivee);
+    }
+
+    private PRPeriode calcJourManquantMixer(APPrestationJointLotTiersDroit prestation, String dateDebut, String dateFin) {
+        String dateDepart = dateDebut;
+        String dateArrivee = dateFin;
+        if(PRDateUtils.isDateDansLaPeriode(new PRPeriode(prestation.getDateDebut(), prestation.getDateFin()), dateDebut)
+                && PRDateUtils.isDateDansLaPeriode(new PRPeriode(prestation.getDateDebut(), prestation.getDateFin()), dateFin)) {
+            return null;
+        }
+        if(PRDateUtils.isDateDansLaPeriode(new PRPeriode(prestation.getDateDebut(), prestation.getDateFin()), dateDebut)) {
+            dateDepart = prestation.getDateDebut();
+        } else if (PRDateUtils.isDateDansLaPeriode(new PRPeriode(prestation.getDateDebut(), prestation.getDateFin()), dateDebut)) {
+            dateArrivee = prestation.getDateFin();
+        }
+        return new PRPeriode(dateDepart, dateArrivee);
+    }
+
+    private void calcMoisManquant(APPrestationJointLotTiersDroit lastPrestation, String dateDepart) throws Exception {
+        if(!dateFin.isEmpty()) {
+            int nbMonth = JadeDateUtil.getNbMonthsBetween(JadeDateUtil.getFirstDateOfMonth(lastPrestation.getDateFin()), dateDepart);
+            if (nbMonth > 1){
+                calcJourManquantMois(lastPrestation, JadeDateUtil.getLastDateOfMonth(lastPrestation.getDateFin()));
+                for (int i = 1; i < nbMonth; i++) {
+                    String dateDepartNew = JadeDateUtil.getFirstDateOfMonth(JadeDateUtil.addMonths(lastPrestation.getDateFin(), i));
+                    String dateArriveNew = JadeDateUtil.getLastDateOfMonth(dateDepartNew);
+                    APPrestation newPrestation = ajoutePrestationDroit(lastPrestation, dateDepartNew, dateArriveNew);
+                    String action = APListeDroitPrestationMensuelExcel.ACTION_AJOUTE;
+                    addModel(lastPrestation, newPrestation, action);
+                }
+            } else if (nbMonth == 1) {
+                calcJourManquantMois(lastPrestation, JadeDateUtil.getLastDateOfMonth(lastPrestation.getDateFin()));
+            }
+        }
+    }
+
+    private void calcJourManquantMois(APPrestationJointLotTiersDroit lastPrestation, String dateFin) throws Exception {
         int nbDays = JadeDateUtil.getNbDayBetween(lastPrestation.getDateFin(), dateFin);
         if(nbDays > 0){
             String dateDepart = JadeDateUtil.addDays(lastPrestation.getDateFin(), 1);
@@ -298,7 +366,10 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
     }
 
     private boolean isPrestationisPrestationDansPeriode(APPrestation prestation){
-        return PRDateUtils.isDateDansLaPeriode(new PRPeriode(prestation.getDateDebut(), prestation.getDateFin()), dateDepart);
+        return PRDateUtils.isDateDansLaPeriode(new PRPeriode(prestation.getDateDebut(), prestation.getDateFin()), dateDepart)
+                || PRDateUtils.isDateDansLaPeriode(new PRPeriode(prestation.getDateDebut(), prestation.getDateFin()), dateArrivee)
+                || PRDateUtils.isDateDansLaPeriode(new PRPeriode(dateDepart, dateArrivee), prestation.getDateDebut())
+                || PRDateUtils.isDateDansLaPeriode(new PRPeriode(dateDepart, dateArrivee), prestation.getDateFin());
     }
 
     private APPrestationJointLotTiersDroit getLastPrestation(List<APPrestationJointLotTiersDroit> listPrestation){
@@ -330,7 +401,7 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
         return null;
     }
 
-    private APPrestation modifyPrestationDroit(APPrestation prestation) throws Exception {
+    private APPrestation modifyPrestationDroit(APPrestation prestation, String dateDepart, String dateArrivee) throws Exception {
         if(!IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestation.getEtat())) {
             if (finPandemie
                     && !JadeStringUtil.isEmpty(prestation.getDateFin())
@@ -448,15 +519,16 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
         return new ArrayList<>();
     }
 
-    private Map<String, List<APPrestationJointLotTiersDroit>> getListPrestation(List<APDroitLAPG> listDroit) throws Exception {
+    private Map<APDroitLAPG, List<APPrestationJointLotTiersDroit>> getListPrestation(List<APDroitLAPG> listDroit) throws Exception {
         List<String> listId = listDroit.stream().map(APDroitLAPG::getIdDroit).collect(Collectors.toList());
+        Map<String, APDroitLAPG> mapDroit = listDroit.stream().collect( Collectors.toMap(APDroitLAPG::getIdDroit, Function.identity()));
         APPrestationJointLotTiersDroitManager manager = new APPrestationJointLotTiersDroitManager();
         manager.setSession(getSession());
         manager.setForIdDroitIn(listId);
         manager.setForTypeDifferentDe(IAPPrestation.CS_TYPE_ANNULATION);
         manager.find(BManager.SIZE_NOLIMIT);
 
-        Map<String, List<APPrestationJointLotTiersDroit>> map = new HashMap<>();
+        Map<APDroitLAPG, List<APPrestationJointLotTiersDroit>> map = new HashMap<>();
         if(manager.size() > 0) {
             List<APPrestationJointLotTiersDroit> list = manager.getContainerAsList().stream()
                     .map(obj -> (APPrestationJointLotTiersDroit) obj)
@@ -465,7 +537,7 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
                 if(!JadeStringUtil.isBlankOrZero(ap.getMontantBrut())
                         && (new FWCurrency(ap.getMontantBrut())).isPositive()
                         && !IAPPrestation.CS_ETAT_PRESTATION_ANNULE.equals(ap.getEtat())) {
-                    map.computeIfAbsent(ap.getIdDroit(), val -> new ArrayList<>()).add(ap);
+                    map.computeIfAbsent(mapDroit.get(ap.getIdDroit()), val -> new ArrayList<>()).add(ap);
                 }
             }
         }
