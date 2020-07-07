@@ -7,7 +7,7 @@
 		 printOrder="Vertical"
 		 orientation="Portrait"
 		 pageWidth="595"
-		 pageHeight="842"
+		 pageHeight="982"
 		 columnWidth="535"
 		 columnSpacing="0"
 		 leftMargin="17"
@@ -646,7 +646,7 @@
 			</band>
 		</detail>
 		<columnFooter>
-			<band height="66"  isSplitAllowed="false" >
+			<band height="76"  isSplitAllowed="false" >
 				<rectangle radius="0" >
 					<reportElement
 						mode="Opaque"
