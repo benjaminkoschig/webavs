@@ -220,7 +220,7 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
                     dejaPeriode = true;
                 } else if (isPrestationisPrestationDansPeriode(prestation)) {
                     prestationsMois.add(prestation);
-                } else if (!JAUtil.isDateEmpty(dateFin) && isDateFuture(prestation)) {
+                } else if (!JAUtil.isDateEmpty(dateFin) && isDateFuture(prestation) && !IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestation.getEtat())) {
                     // Si date Fin Pandémie supprimer les périodes des mois futures
                     prestation.delete();
                     addModel(prestation, prestation, APListeDroitPrestationMensuelExcel.ACTION_SUPPRIME);
