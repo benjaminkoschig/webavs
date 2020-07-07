@@ -574,7 +574,7 @@
 			</band>
 		</detail>
 		<columnFooter>
-			<band height="66"  isSplitAllowed="true" >
+			<band height="76"  isSplitAllowed="true" >
 				<rectangle radius="0" >
 					<reportElement
 						mode="Opaque"
