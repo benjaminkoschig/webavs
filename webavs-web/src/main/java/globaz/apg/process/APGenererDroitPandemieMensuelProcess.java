@@ -214,13 +214,13 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
         for (Map.Entry<APDroitLAPG, List<APPrestationJointLotTiersDroit>> entry : map.entrySet()) {
             boolean dejaPeriode = false;
             List<APPrestationJointLotTiersDroit> prestationsMois = new ArrayList<>();
-            LOG.info(getProgressCounter() + 1 + " - Traitement droit  : " + entry.getKey());
+            LOG.info(getProgressCounter() + 1 + " - Traitement droit  : " + entry.getKey().getIdDroit());
             for (APPrestationJointLotTiersDroit prestation : entry.getValue()) {
                 if (isPrestationDejaCalcule(prestation)) {
                     dejaPeriode = true;
                 } else if (isPrestationisPrestationDansPeriode(prestation)) {
                     prestationsMois.add(prestation);
-                } else if (finPandemie && isDateFuture(prestation)) {
+                } else if (!JAUtil.isDateEmpty(dateFin) && isDateFuture(prestation)) {
                     // Si date Fin Pandémie supprimer les périodes des mois futures
                     prestation.delete();
                     addModel(prestation, prestation, APListeDroitPrestationMensuelExcel.ACTION_SUPPRIME);
