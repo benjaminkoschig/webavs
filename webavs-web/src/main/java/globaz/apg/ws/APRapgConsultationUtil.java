@@ -81,10 +81,15 @@ public class APRapgConsultationUtil {
                         for (final ErreurMessageType error : response.getErrors()) {
                             builder.append(error.getMessage());
                             builder.append(" ");
+
                         }
                         logger.warn(builder.toString());
                     }
-                    return response.getMessage().getContent().getRegisterStatusRecords();
+                    if(response.getMessage() != null){
+                        return response.getMessage().getContent().getRegisterStatusRecords();
+                    } else {
+                        return null;
+                    }
                 case SUCCESS:
                     //6)  Use the RegisterStatus answer
                     JadeLogger.info(APRapgConsultationUtil.class, "Number of Records : " + response.getMessage().getContent().getRegisterStatusRecords().size()); //$NON-NLS-1$
