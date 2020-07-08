@@ -12,6 +12,8 @@ import globaz.jade.client.util.JadeStringUtil;
  */
 public class Rule318 extends Rule {
 
+    private static final String RULE_509 = "509";
+
     /**
      * @param errorCode
      */
@@ -29,11 +31,21 @@ public class Rule318 extends Rule {
     public boolean check(APChampsAnnonce champsAnnonce) throws IllegalArgumentException {
         int typeAnnonce = getTypeAnnonce(champsAnnonce);
         if (typeAnnonce == 1) {
-            if (!JadeStringUtil.isEmpty(champsAnnonce.getBreakRules()) && champsAnnonce.getBreakRules().contains("509")) {
+            if (!JadeStringUtil.isEmpty(champsAnnonce.getBreakRules()) && hasPeriodesChevauvent(champsAnnonce.getBreakRules())) {
                 return false;
             }
         }
         return true;
+    }
+
+    private boolean hasPeriodesChevauvent(String breakrules){
+        String[] values = breakrules.split(",");
+        for (String breakrule : values) {
+            if(RULE_509.equals(breakrule)){
+                return true;
+            }
+        }
+        return false;
     }
 
 }
