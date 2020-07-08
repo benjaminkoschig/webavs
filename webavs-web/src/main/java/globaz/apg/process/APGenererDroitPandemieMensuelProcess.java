@@ -422,7 +422,7 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
 
     private void setValeursPrestation(APPrestation prestation, String dateDepart, String dateArrivee) {
         prestation.setDateFin(dateArrivee);
-        Integer nbjourSoldes = JadeDateUtil.getNbDaysBetween(dateDepart, dateArrivee) + 1;
+        Integer nbjourSoldes = JadeDateUtil.getNbDayBetween(dateDepart, dateArrivee) + 1;
         prestation.setNombreJoursSoldes(nbjourSoldes.toString());
         BigDecimal mb = new BigDecimal(prestation.getMontantJournalier());
         prestation.setMontantBrut(mb.multiply(new BigDecimal(nbjourSoldes)).toString());
@@ -521,7 +521,7 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
 
     private Map<APDroitLAPG, List<APPrestationJointLotTiersDroit>> getListPrestation(List<APDroitLAPG> listDroit) throws Exception {
         List<String> listId = listDroit.stream().map(APDroitLAPG::getIdDroit).collect(Collectors.toList());
-        Map<String, APDroitLAPG> mapDroit = listDroit.stream().collect( Collectors.toMap(APDroitLAPG::getIdDroit, Function.identity()));
+        Map<String, APDroitLAPG> mapDroit = listDroit.stream().collect(Collectors.toMap(APDroitLAPG::getIdDroit, Function.identity()));
         APPrestationJointLotTiersDroitManager manager = new APPrestationJointLotTiersDroitManager();
         manager.setSession(getSession());
         manager.setForIdDroitIn(listId);
@@ -599,6 +599,7 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
                 droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
             }
             droit.setDateFinDroit(dateFin);
+            droit.update();
             droit.update();
         }
     }
