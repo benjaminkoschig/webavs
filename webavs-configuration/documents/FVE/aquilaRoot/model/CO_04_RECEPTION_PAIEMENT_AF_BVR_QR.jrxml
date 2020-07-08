@@ -70,7 +70,7 @@
 			</band>
 			</groupHeader>
 			<groupFooter>
-			<band height="43"  isSplitAllowed="false" >
+			<band height="63"  isSplitAllowed="false" >
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
@@ -397,7 +397,7 @@
 					<reportElement
 						mode="Opaque"
 						x="23"
-						y="-6"
+						y="-26"
 						width="534"
 						height="20"
 						forecolor="#000000"
@@ -440,27 +440,6 @@
 		</pageFooter>
 		<lastPageFooter>
 			<band height="257"  isSplitAllowed="true" >
-				<staticText>
-					<reportElement
-						mode="Opaque"
-						x="23"
-						y="-37"
-						width="534"
-						height="20"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-4"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="6" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<text><![CDATA[Caisse de compensation des entrepreneurs | Agence vaudoise 66.1 | Route Ignace Paderewski 2 | Case postale | 1131 Tolochenaz | Suisse | T +41 21 619 20 00 | F +41 21 619 20 09]]></text>
-				</staticText>
 				<subreport  isUsingCache="true">
 					<reportElement
 						mode="Transparent"
@@ -483,6 +462,27 @@
 					</subreportParameter>
 					<subreportExpression  class="java.lang.String"><![CDATA[$P{P_SUBREPORT_QR}]]></subreportExpression>
 				</subreport>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="23"
+						y="-57"
+						width="534"
+						height="20"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-4"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="6" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Caisse de compensation des entrepreneurs | Agence vaudoise 66.1 | Route Ignace Paderewski 2 | Case postale | 1131 Tolochenaz | Suisse | T +41 21 619 20 00 | F +41 21 619 20 09]]></text>
+				</staticText>
 			</band>
 		</lastPageFooter>
 		<summary>
