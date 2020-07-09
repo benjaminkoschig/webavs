@@ -26,6 +26,7 @@ public enum APAllPlausibiliteRules {
     R_65(false, 65),
     R_66(false, 66),
     R_67(false, 67),
+    R_68(false, 68),
     R_104(false, 104),
     R_105(false, 105),
     R_201(false, 201),
