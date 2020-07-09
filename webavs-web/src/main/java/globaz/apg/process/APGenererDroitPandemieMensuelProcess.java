@@ -478,32 +478,11 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
 
     private List<APDroitLAPG> getListDroit() throws Exception {
         APDroitPandemieDateFinManager manager = new APDroitPandemieDateFinManager();
-        switch (genreService) {
-            case INDEPENDANT_AVEC_MANIFESTATION:
-                manager.setForGenreService(APGenreServiceAPG.IndependantPandemie.getCodeSysteme());
-                manager.setForManifestationAnnulee(true);
-                break;
-            case INDEPENDANT_SANS_MANIFESTATION:
-                manager.setForGenreService(APGenreServiceAPG.IndependantPandemie.getCodeSysteme());
-                manager.setForManifestationAnnulee(false);
-                if(!JadeStringUtil.isEmpty(categorie)) {
-                    manager.setForCategorie(categorie);
-                }
-                break;
-            case GARDE_PARENTAL:
-                manager.setForGenreService(APGenreServiceAPG.GardeParentale.getCodeSysteme());
-                break;
-            case GARDE_PARENTAL_HANDICAP:
-                manager.setForGenreService(APGenreServiceAPG.GardeParentaleHandicap.getCodeSysteme());
-                break;
-            case INDEPENDANT_MANIFESTATION_ANNULEE:
-                manager.setForGenreService(APGenreServiceAPG.IndependantManifAnnulee.getCodeSysteme());
-                break;
-            case INDEPENDANT_PERTE_DE_GAIN:
-                manager.setForGenreService(APGenreServiceAPG.IndependantPerteGains.getCodeSysteme());
-                break;
-            default:
-                return new ArrayList<>();
+        manager.setForGenreService(genreService.getGenre().getCodeSysteme());
+        manager.setForManifestationAnnulee(genreService.getAvecManifestation());
+        if(APPandemieServiceCalcul.INDEPENDANT_SANS_MANIFESTATION.equals(genreService)
+            && !JadeStringUtil.isEmpty(categorie)) {
+            manager.setForCategorie(categorie);
         }
         if(finPandemie) {
             manager.setForDateDeFin(dateFin);

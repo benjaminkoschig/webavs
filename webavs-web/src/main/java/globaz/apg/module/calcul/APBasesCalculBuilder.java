@@ -1139,6 +1139,8 @@ public class APBasesCalculBuilder {
                 valeur = APParameter.INDEPENDANT_PERTE_DE_GAIN_MAX.getParameterName();break;
             case IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE:
                 valeur = APParameter.FERMETURE_EMTREPRISE_DATE_MINI.getParameterName();break;
+            case IAPDroitLAPG.CS_SALARIE_EVENEMENTIEL:
+                valeur = APParameter.SALARIE_EVENEMENTIEL_DATE.getParameterName();break;
 
             default:return dateDebut;
         }
