@@ -4,6 +4,8 @@ import ch.globaz.common.domaine.CodeSystemEnum;
 import ch.globaz.common.domaine.CodeSystemEnumUtils;
 
 public enum EtatDemande implements CodeSystemEnum<EtatDemande> {
+    CS_EN_ATTENTE_JUSTIFICATIFS("64001001"),
+    CS_EN_ATTENTE_CALCUL("64001002"),
     OCTROYE("64001003"),
     REOUVERT("64001009"),
     REFUSE("64001007"),
