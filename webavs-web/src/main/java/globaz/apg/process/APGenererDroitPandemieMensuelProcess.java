@@ -212,51 +212,56 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
     private void calculDate(List<APDroitLAPG> listDroit) throws Exception {
         Map<APDroitLAPG, List<APPrestationJointLotTiersDroit>> map = getListPrestation(listDroit);
         for (Map.Entry<APDroitLAPG, List<APPrestationJointLotTiersDroit>> entry : map.entrySet()) {
-            boolean dejaPeriode = false;
-            List<APPrestationJointLotTiersDroit> prestationsMois = new ArrayList<>();
-            LOG.info(getProgressCounter() + 1 + " - Traitement droit  : " + entry.getKey().getIdDroit());
-            for (APPrestationJointLotTiersDroit prestation : entry.getValue()) {
-                if (isPrestationDejaCalcule(prestation)) {
-                    dejaPeriode = true;
-                } else if (isPrestationisPrestationDansPeriode(prestation)) {
-                    prestationsMois.add(prestation);
-                } else if (!JAUtil.isDateEmpty(dateFin) && isDateFuture(prestation) && !IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestation.getEtat())) {
-                    // Si date Fin Pandémie supprimer les périodes des mois futures
-                    prestation.delete();
-                    addModel(prestation, prestation, APListeDroitPrestationMensuelExcel.ACTION_SUPPRIME);
+            try {
+                boolean dejaPeriode = false;
+                List<APPrestationJointLotTiersDroit> prestationsMois = new ArrayList<>();
+                LOG.info(getProgressCounter() + 1 + " - Traitement droit  : " + entry.getKey().getIdDroit());
+                for (APPrestationJointLotTiersDroit prestation : entry.getValue()) {
+                    if (isPrestationDejaCalcule(prestation)) {
+                        dejaPeriode = true;
+                    } else if (isPrestationisPrestationDansPeriode(prestation)) {
+                        prestationsMois.add(prestation);
+                    } else if (!JAUtil.isDateEmpty(dateFin) && isDateFuture(prestation) && !IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestation.getEtat())) {
+                        // Si date Fin Pandémie supprimer les périodes des mois futures
+                        prestation.delete();
+                        addModel(prestation, prestation, APListeDroitPrestationMensuelExcel.ACTION_SUPPRIME);
+                    }
                 }
-            }
-            APPrestationJointLotTiersDroit prestationMois = null;
-            String dateDepartDroit = dateDepart;
-            if(JadeDateUtil.isDateAfter(entry.getKey().getDateDebutDroit(), dateArrivee)) {
-                continue;
-            }
-            if(JadeDateUtil.isDateBefore(dateDepart, entry.getKey().getDateDebutDroit())) {
-                dateDepartDroit = entry.getKey().getDateDebutDroit();
-            }
-
-            if (!dejaPeriode) {
-                APPrestation newPrestation = null;
-                String action = "";
-                if (!prestationsMois.isEmpty()) {
-                    calcJourManquantList(prestationsMois, dateDepartDroit, dateArrivee);
-                    prestationMois = prestationsMois.get(0);
-                } else {
-                    prestationMois = getLastPrestation(entry.getValue());
-                    calcMoisManquant(prestationMois, dateDepartDroit);
-                    newPrestation = ajoutePrestationDroit(prestationMois, dateDepartDroit, dateArrivee);
-                    action = APListeDroitPrestationMensuelExcel.ACTION_AJOUTE;
+                APPrestationJointLotTiersDroit prestationMois = null;
+                String dateDepartDroit = dateDepart;
+                if(JadeDateUtil.isDateAfter(entry.getKey().getDateDebutDroit(), dateArrivee)) {
+                    continue;
                 }
-                addModel(prestationMois, newPrestation, action);
-            }
+                if(JadeDateUtil.isDateBefore(dateDepart, entry.getKey().getDateDebutDroit())) {
+                    dateDepartDroit = entry.getKey().getDateDebutDroit();
+                }
 
-            incProgressCounter();
-            if (isAborted()) {
-                break;
-            }
-            if(getTransaction().hasErrors()) {
-                errors = getTransaction().getErrors().toString();
-                break;
+                if (!dejaPeriode) {
+                    APPrestation newPrestation = null;
+                    String action = "";
+                    if (!prestationsMois.isEmpty()) {
+                        calcJourManquantList(prestationsMois, dateDepartDroit, dateArrivee);
+                        prestationMois = prestationsMois.get(0);
+                    } else {
+                        prestationMois = getLastPrestation(entry.getValue());
+                        calcMoisManquant(prestationMois, dateDepartDroit);
+                        newPrestation = ajoutePrestationDroit(prestationMois, dateDepartDroit, dateArrivee);
+                        action = APListeDroitPrestationMensuelExcel.ACTION_AJOUTE;
+                    }
+                    addModel(prestationMois, newPrestation, action);
+                }
+
+                incProgressCounter();
+                if (isAborted()) {
+                    break;
+                }
+                if(getTransaction().hasErrors()) {
+                    errors = getTransaction().getErrors().toString();
+                    break;
+                }
+            } catch (Exception e) {
+                LOG.error("Une erreur est intervenue lors du traitement du droit : " + entry.getKey().getIdDroit() + " - Erreur : " + e.getMessage(), e);
+                getMemoryLog().logMessage("Une erreur est intervenue lors du traitement du droit : " + entry.getKey().getIdDroit() + " - Erreur : " + e.getMessage(), FWMessage.ERREUR, e.getMessage());
             }
         }
     }

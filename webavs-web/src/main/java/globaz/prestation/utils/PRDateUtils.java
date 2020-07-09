@@ -206,13 +206,13 @@ public class PRDateUtils {
             throw new IllegalArgumentException("The PRPeriode is null");
         }
         if (!JadeDateUtil.isGlobazDate(periode.getDateDeDebut())) {
-            throw new IllegalArgumentException("The PRPeriode.dateDeDebut is not a valid Globaz Date format");
+            throw new IllegalArgumentException("The PRPeriode.dateDeDebut is not a valid Globaz Date format : "+periode.getDateDeDebut());
         }
         if (!JadeDateUtil.isGlobazDate(periode.getDateDeFin())) {
-            throw new IllegalArgumentException("The PRPeriode.dateDeDebut is not a valid Globaz Date format");
+            throw new IllegalArgumentException("The PRPeriode.dateDeFin is not a valid Globaz Date format : "+periode.getDateDeFin());
         }
         if (!JadeDateUtil.isGlobazDate(date)) {
-            throw new IllegalArgumentException("The date is not a valid Globaz Date format");
+            throw new IllegalArgumentException("The date is not a valid Globaz Date format : "+date);
         }
 
         boolean r1 = false;
