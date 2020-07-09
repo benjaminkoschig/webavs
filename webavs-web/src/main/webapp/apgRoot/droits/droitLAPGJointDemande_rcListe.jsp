@@ -10,6 +10,7 @@
 <%@ page import="globaz.apg.properties.APProperties" %>
 <%@ page import="java.util.Objects" %>
 <%@ page import="java.util.Arrays" %>
+<%@ page import="globaz.apg.utils.APGUtils" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 
@@ -147,8 +148,7 @@
         }
     %>
     <%
-        if (!(Arrays.asList(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF, IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL).contains(courant.getEtatDroit()) && Arrays.asList(IAPDroitLAPG.CS_GARDE_PARENTALE, IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE, IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP, IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE, IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS).contains(courant.getGenreService())
-                && courant.getDateFinDroit().isEmpty())) {
+        if (!(Arrays.asList(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF, IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL).contains(courant.getEtatDroit()) && APGUtils.isGenreServiceAvecDateFin(courant.getGenreService()) && courant.getDateFinDroit().isEmpty())) {
     %> <ct:menuExcludeNode nodeId="finDeDroit"/>
     <%
         }

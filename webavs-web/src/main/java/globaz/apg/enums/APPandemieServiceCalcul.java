@@ -7,7 +7,7 @@ public enum APPandemieServiceCalcul {
     GARDE_PARENTAL_HANDICAP("4", APGenreServiceAPG.GardeParentaleHandicap, null),
     INDEPENDANT_MANIFESTATION_ANNULEE("5", APGenreServiceAPG.IndependantManifAnnulee, null),
     INDEPENDANT_PERTE_DE_GAIN("6", APGenreServiceAPG.IndependantPerteGains, null),
-    SALARIE_EVENEMENTIEL("7", APGenreServiceAPG.SalairieEvenementiel, null);
+    SALARIE_EVENEMENTIEL("7", APGenreServiceAPG.SalarieEvenementiel, null);
 
     String code;
     APGenreServiceAPG genre;

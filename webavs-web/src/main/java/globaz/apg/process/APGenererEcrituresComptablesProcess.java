@@ -473,6 +473,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
     private APIRubrique INDEMN_CAS_RIGUEUR_10k_90k;
     private APIRubrique INDEMN_GARDE_ENFANT_HANDICAP_SALARIE;
     private APIRubrique INDEMN_GARDE_ENFANT_HANDICAP_INDEPENDANT;
+    private APIRubrique INDEMN_SALARIE_EVENEMENTIEL;
     private APIRubrique RESTIT_GARDE_ENFANT_SALARIE;
     private APIRubrique RESTIT_GARDE_ENFANT_INDEPENDANT;
     private APIRubrique RESTIT_QUARANTAINE_SALARIE;
@@ -482,6 +483,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
     private APIRubrique RESTIT_CAS_RIGUEUR_10k_90k;
     private APIRubrique RESTIT_GARDE_ENFANT_HANDICAP_SALARIE;
     private APIRubrique RESTIT_GARDE_ENFANT_HANDICAP_INDEPENDANT;
+    private APIRubrique RESTIT_SALARIE_EVENEMENTIEL;
 
     private String dateComptable = "";
     private String dateSurDocument = "";
@@ -3180,67 +3182,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 }
             }
         } else if (APTypeDePrestation.PANDEMIE.isCodeSystemEqual(genrePrestation)) {
-            if (isRestitution) {
-                if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_GARDE_PARENTALE)) {
-                    if (isIndependant) {
-                        rubrique = RESTIT_GARDE_ENFANT_INDEPENDANT;
-                    } else {
-                        rubrique = RESTIT_GARDE_ENFANT_SALARIE;
-                    }
-                } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_QUARANTAINE)) {
-                    if (isIndependant) {
-                        rubrique = RESTIT_QUARANTAINE_INDEPENDANT;
-                    } else {
-                        rubrique = RESTIT_QUARANTAINE_SALARIE;
-                    }
-                } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE)) {
-                    if (isManifestationAnnulee) {
-                        rubrique = RESTIT_INTERDICTION_MANIFESTATION;
-                    } else {
-                        rubrique = RESTIT_FERMETURE_FORCEE;
-                    }
-                } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS)) {
-                    rubrique = RESTIT_CAS_RIGUEUR_10k_90k;
-                } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP)) {
-                    if (isIndependant) {
-                        rubrique = RESTIT_GARDE_ENFANT_HANDICAP_INDEPENDANT;
-                    } else {
-                        rubrique = RESTIT_GARDE_ENFANT_HANDICAP_SALARIE;
-                    }
-                } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE)) {
-                    rubrique = RESTIT_INTERDICTION_MANIFESTATION;
-                }
-            } else {
-                if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_GARDE_PARENTALE)) {
-                    if (isIndependant) {
-                        rubrique = INDEMN_GARDE_ENFANT_INDEPENDANT;
-                    } else {
-                        rubrique = INDEMN_GARDE_ENFANT_SALARIE;
-                    }
-                } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_QUARANTAINE)) {
-                    if (isIndependant) {
-                        rubrique = INDEMN_QUARANTAINE_INDEPENDANT;
-                    } else {
-                        rubrique = INDEMN_QUARANTAINE_SALARIE;
-                    }
-                } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE)) {
-                    if (isManifestationAnnulee) {
-                        rubrique = INDEMN_INTERDICTION_MANIFESTATION;
-                    } else {
-                        rubrique = INDEMN_FERMETURE_FORCEE;
-                    }
-                } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS)) {
-                    rubrique = INDEMN_CAS_RIGUEUR_10k_90k;
-                } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP)) {
-                    if (isIndependant) {
-                        rubrique = INDEMN_GARDE_ENFANT_HANDICAP_INDEPENDANT;
-                    } else {
-                        rubrique = INDEMN_GARDE_ENFANT_HANDICAP_SALARIE;
-                    }
-                } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE)) {
-                    rubrique = INDEMN_INTERDICTION_MANIFESTATION;
-                }
-            }
+            rubrique = getRubriquePandemie(isIndependant, isRestitution, genreSerivce, isManifestationAnnulee, rubrique);
         } else if (isRestitution) {
             if (isLamat) {
                 if (GenreDestinataire.INDEPENDANT.equals(destinataire)) {
@@ -3324,6 +3266,85 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             }
         }
 
+        return rubrique;
+    }
+
+    /**
+     * permet de récupérer la rubrique pour les APG pandémie en fonction du genre de service.
+     *
+     * @param isIndependant
+     * @param isRestitution
+     * @param genreSerivce
+     * @param isManifestationAnnulee
+     * @param rubrique
+     * @return
+     */
+    private APIRubrique getRubriquePandemie(boolean isIndependant, boolean isRestitution, String genreSerivce, boolean isManifestationAnnulee, APIRubrique rubrique) {
+        if (isRestitution) {
+            if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_GARDE_PARENTALE)) {
+                if (isIndependant) {
+                    rubrique = RESTIT_GARDE_ENFANT_INDEPENDANT;
+                } else {
+                    rubrique = RESTIT_GARDE_ENFANT_SALARIE;
+                }
+            } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_QUARANTAINE)) {
+                if (isIndependant) {
+                    rubrique = RESTIT_QUARANTAINE_INDEPENDANT;
+                } else {
+                    rubrique = RESTIT_QUARANTAINE_SALARIE;
+                }
+            } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE)) {
+                if (isManifestationAnnulee) {
+                    rubrique = RESTIT_INTERDICTION_MANIFESTATION;
+                } else {
+                    rubrique = RESTIT_FERMETURE_FORCEE;
+                }
+            } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS)) {
+                rubrique = RESTIT_CAS_RIGUEUR_10k_90k;
+            } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP)) {
+                if (isIndependant) {
+                    rubrique = RESTIT_GARDE_ENFANT_HANDICAP_INDEPENDANT;
+                } else {
+                    rubrique = RESTIT_GARDE_ENFANT_HANDICAP_SALARIE;
+                }
+            } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE)) {
+                rubrique = RESTIT_INTERDICTION_MANIFESTATION;
+            } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_SALARIE_EVENEMENTIEL)) {
+                rubrique = RESTIT_SALARIE_EVENEMENTIEL;
+            }
+        } else {
+            if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_GARDE_PARENTALE)) {
+                if (isIndependant) {
+                    rubrique = INDEMN_GARDE_ENFANT_INDEPENDANT;
+                } else {
+                    rubrique = INDEMN_GARDE_ENFANT_SALARIE;
+                }
+            } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_QUARANTAINE)) {
+                if (isIndependant) {
+                    rubrique = INDEMN_QUARANTAINE_INDEPENDANT;
+                } else {
+                    rubrique = INDEMN_QUARANTAINE_SALARIE;
+                }
+            } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE)) {
+                if (isManifestationAnnulee) {
+                    rubrique = INDEMN_INTERDICTION_MANIFESTATION;
+                } else {
+                    rubrique = INDEMN_FERMETURE_FORCEE;
+                }
+            } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS)) {
+                rubrique = INDEMN_CAS_RIGUEUR_10k_90k;
+            } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP)) {
+                if (isIndependant) {
+                    rubrique = INDEMN_GARDE_ENFANT_HANDICAP_INDEPENDANT;
+                } else {
+                    rubrique = INDEMN_GARDE_ENFANT_HANDICAP_SALARIE;
+                }
+            } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE)) {
+                rubrique = INDEMN_INTERDICTION_MANIFESTATION;
+            } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_SALARIE_EVENEMENTIEL)) {
+                rubrique = INDEMN_SALARIE_EVENEMENTIEL;
+            }
+        }
         return rubrique;
     }
 
@@ -3479,6 +3500,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             INDEMN_CAS_RIGUEUR_10k_90k = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_CAS_RIGUEUR_10k_90k);
             INDEMN_GARDE_ENFANT_HANDICAP_SALARIE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_INDEMN_GARDE_ENFANTS_HANDICAP_POUR_SALARIE);
             INDEMN_GARDE_ENFANT_HANDICAP_INDEPENDANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_INDEMN_GARDE_ENFANTS_HANDICAP_POUR_INDEPENDANT);
+            INDEMN_SALARIE_EVENEMENTIEL = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_INDEMN_SALARIE_EVENEMENTIEL);
 
             RESTIT_GARDE_ENFANT_SALARIE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_RESTIT_GARDE_ENFANTS_POUR_SALARIE);
             RESTIT_GARDE_ENFANT_INDEPENDANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_RESTIT_GARDE_ENFANTS_POUR_INDEPENDANT);
@@ -3489,6 +3511,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             RESTIT_CAS_RIGUEUR_10k_90k = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_RESTIT_CAS_RIGUEUR_10k_90k);
             RESTIT_GARDE_ENFANT_HANDICAP_SALARIE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_RESTIT_GARDE_ENFANTS_HANDICAP_POUR_SALARIE);
             RESTIT_GARDE_ENFANT_HANDICAP_INDEPENDANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_RESTIT_GARDE_ENFANTS_HANCICAP_POUR_INDEPENDANT);
+            RESTIT_SALARIE_EVENEMENTIEL = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_RESTIT_SALARIE_EVENEMENTIEL);
 
             COT_AVS_ASSURE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_COT_AVS_ASSURE);
             COT_AVS_INDEPENDANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_COT_AVS_INDEPENDANT);

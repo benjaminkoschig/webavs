@@ -868,6 +868,7 @@
 									<ct:excludeCode code="<%=IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS%>"/>
 									<ct:excludeCode code="<%=IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP%>"/>
 									<ct:excludeCode code="<%=IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE%>"/>
+									<ct:excludeCode code="<%=IAPDroitLAPG.CS_SALARIE_EVENEMENTIEL%>"/>
 								</ct:optionsCodesSystems>
 							</ct:select>
 						</td>

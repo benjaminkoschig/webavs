@@ -110,9 +110,31 @@ public class APGUtils {
                 || APGenreServiceAPG.DecesDemiJour.getCodePourAnnonce().equals(serviceType);
     }
 
+    /**
+     * Méthode filtrant les genres de service de type pandémie.
+     *
+     * @param csTypeAllocation
+     * @return
+     */
     public static Boolean isTypeAllocationPandemie(String csTypeAllocation) {
         return (IAPDroitLAPG.CS_GARDE_PARENTALE.equals(csTypeAllocation)
                 || IAPDroitLAPG.CS_QUARANTAINE.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE.equals(csTypeAllocation))
+                || IAPDroitLAPG.CS_SALARIE_EVENEMENTIEL.equals(csTypeAllocation);
+    }
+
+
+    /**
+     * Méthode filtrant les genres de service qui peuvent avoir une date de fin de droit.
+     *
+     * @param csTypeAllocation
+     * @return
+     */
+    public static Boolean isGenreServiceAvecDateFin(String csTypeAllocation) {
+        return (IAPDroitLAPG.CS_GARDE_PARENTALE.equals(csTypeAllocation)
                 || IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE.equals(csTypeAllocation)
                 || IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS.equals(csTypeAllocation)
                 || IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP.equals(csTypeAllocation)
