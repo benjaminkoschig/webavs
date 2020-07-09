@@ -116,7 +116,8 @@ public class APGUtils {
                 || IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE.equals(csTypeAllocation)
                 || IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS.equals(csTypeAllocation)
                 || IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP.equals(csTypeAllocation)
-                || IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE.equals(csTypeAllocation));
+                || IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE.equals(csTypeAllocation))
+                || IAPDroitLAPG.CS_SALARIE_EVENEMENTIEL.equals(csTypeAllocation);
     }
 
     public static String getCSDomaineFromTypeDemande(String typePrestation) {
