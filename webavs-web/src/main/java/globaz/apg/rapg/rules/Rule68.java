@@ -43,7 +43,7 @@ public class Rule68 extends Rule {
     public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException {
         String serviceType = champsAnnonce.getServiceType();
 
-        if (serviceType.equals(APGenreServiceAPG.SalairieEvenementiel.getCodePourAnnonce())) {
+        if (serviceType.equals(APGenreServiceAPG.SalarieEvenementiel.getCodePourAnnonce())) {
             try {
 
 
