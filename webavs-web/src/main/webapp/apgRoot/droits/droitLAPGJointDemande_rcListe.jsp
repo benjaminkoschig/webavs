@@ -147,7 +147,7 @@
         }
     %>
     <%
-        if (!(Arrays.asList(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF, IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL).contains(courant.getEtatDroit()) && Arrays.asList(IAPDroitLAPG.CS_GARDE_PARENTALE, IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE, IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP, IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE).contains(courant.getGenreService())
+        if (!(Arrays.asList(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF, IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL).contains(courant.getEtatDroit()) && Arrays.asList(IAPDroitLAPG.CS_GARDE_PARENTALE, IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE, IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP, IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE, IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS).contains(courant.getGenreService())
                 && courant.getDateFinDroit().isEmpty())) {
     %> <ct:menuExcludeNode nodeId="finDeDroit"/>
     <%
