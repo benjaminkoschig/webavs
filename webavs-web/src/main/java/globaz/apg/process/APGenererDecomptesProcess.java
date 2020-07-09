@@ -17,6 +17,7 @@ import globaz.apg.db.prestation.APPrestationManager;
 import globaz.apg.itext.decompte.APDecompteGenerationProcess;
 import globaz.apg.properties.APProperties;
 import globaz.apg.properties.APPropertyTypeDePrestationAcmValues;
+import globaz.apg.utils.APGUtils;
 import globaz.framework.util.FWMessage;
 import globaz.framework.util.FWMessageFormat;
 import globaz.globall.api.BITransaction;
@@ -548,13 +549,13 @@ public class APGenererDecomptesProcess extends BProcess {
             droitLAPG.setIdDroit((iterator.next()));
             droitLAPG.retrieve(transaction);
 
-            if (Arrays.asList(IAPDroitLAPG.CS_GARDE_PARENTALE,IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE, IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP, IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE).contains(droitLAPG.getGenreService())) {
+            if (APGUtils.isGenreServiceAvecDateFin(droitLAPG.getGenreService())) {
                 if (StringUtils.isEmpty(droitLAPG.getDateFinDroit())) {
                     droitLAPG.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL);
                 } else {
                     droitLAPG.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
                 }
-            } else if (Arrays.asList(IAPDroitLAPG.CS_QUARANTAINE,IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS).contains(droitLAPG.getGenreService())) {
+            } else if (Arrays.asList(IAPDroitLAPG.CS_QUARANTAINE).contains(droitLAPG.getGenreService())) {
                 final APPrestationManager prestationManager = new APPrestationManager();
                 prestationManager.setSession(session);
                 prestationManager.setForIdDroit(droitLAPG.getIdDroit());
