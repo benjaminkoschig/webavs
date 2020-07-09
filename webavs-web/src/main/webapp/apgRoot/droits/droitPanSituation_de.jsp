@@ -124,6 +124,10 @@
         document.getElementById("dateFinManifAnnulee").disabled = true;
         document.getElementById("dateDebutFermeture").disabled = true;
         document.getElementById("dateFinFermeture").disabled = true;
+        <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_SALARIE_EVENEMENTIEL)) { %>
+        for (i = 0; i < document.forms[0].length; i++) {
+            document.forms[0].elements[i].disabled = true;
+        }
         <%}%>
     }
 
@@ -256,7 +260,11 @@
         document.getElementById("dateFinManifAnnulee").disabled = true;
         document.getElementById("dateDebutFermeture").disabled = true;
         document.getElementById("dateFinFermeture").disabled = true;
-        <%}%>
+        <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_SALARIE_EVENEMENTIEL)) { %>
+        for (i = 0; i < document.forms[0].length; i++) {
+            document.forms[0].elements[i].disabled = true;
+        }
+        <%} %>
         <%} else {%>
         for (i = 0; i < document.forms[0].length; i++) {
             document.forms[0].elements[i].disabled = true;

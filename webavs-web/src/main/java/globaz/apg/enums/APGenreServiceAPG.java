@@ -35,7 +35,8 @@ public enum APGenreServiceAPG {
     IndependantPandemie("402", IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE),
     IndependantPerteGains("403", IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS),
     GardeParentaleHandicap("404", IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP),
-    IndependantManifAnnulee("405", IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE);
+    IndependantManifAnnulee("405", IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE),
+    SalaireEvenementiel("406", IAPDroitLAPG.CS_SALARIE_EVENEMENTIEL);
 
 
     public static APGenreServiceAPG resoudreGenreParCodeSystem(final String codeSystem) {
@@ -76,7 +77,7 @@ public enum APGenreServiceAPG {
             return false;
         }
         for (APGenreServiceAPG gs : Arrays.asList(APGenreServiceAPG.GardeParentale, APGenreServiceAPG.Quarantaine,  APGenreServiceAPG.IndependantPandemie,
-                APGenreServiceAPG.IndependantPerteGains, APGenreServiceAPG.GardeParentaleHandicap, APGenreServiceAPG.IndependantManifAnnulee)) {
+                APGenreServiceAPG.IndependantPerteGains, APGenreServiceAPG.GardeParentaleHandicap, APGenreServiceAPG.IndependantManifAnnulee, APGenreServiceAPG.SalaireEvenementiel)) {
             if (gs.getCodePourAnnonce().equals(genreService)) {
                 return true;
             }
