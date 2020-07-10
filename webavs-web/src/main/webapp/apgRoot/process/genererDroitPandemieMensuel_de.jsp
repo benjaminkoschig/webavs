@@ -110,6 +110,12 @@
 		<input type="radio" name="genreService" onclick="isCatEntChange();" value="<%=APPandemieServiceCalcul.INDEPENDANT_MANIFESTATION_ANNULEE.getValue() %>" ><ct:FWLabel key="JSP_INDEPENDANT_MANIFESTATION_ANNULEE"/>
 	</td>
 </tr>
+<tr>
+	<td/>
+	<td>
+		<input type="radio" name="genreService" onclick="isCatEntChange();" value="<%=APPandemieServiceCalcul.SALARIE_EVENEMENTIEL.getValue() %>" ><ct:FWLabel key="JSP_SALARIE_EVENEMENTIEL"/>
+	</td>
+</tr>
 <tr><td>&nbsp;</td></tr>
 <tr>
 	<td style="text-align: center" colspan="4">
