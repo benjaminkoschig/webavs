@@ -426,6 +426,8 @@ public abstract class Rule implements APRuleDBDataProvider {
                     valeur = APParameter.INDEPENDANT_PERTE_DE_GAIN_MAX.getParameterName();break;
                 case IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE:
                     valeur = APParameter.INDEPENDANT_JOURS_SANS_INDEMISATION.getParameterName();break;
+                default:
+                    valeur = "";
             }
 
             if(!valeur.isEmpty()) {
