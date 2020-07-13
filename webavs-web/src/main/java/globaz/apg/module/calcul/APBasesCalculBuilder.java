@@ -945,10 +945,12 @@ public class APBasesCalculBuilder {
 
     private void calcDateDebutFin(String idDroit, int delai, String dateDebut, List<APPeriodeComparable> listPeriode) throws Exception {
 
+
         // pour chaque période
         for (APPeriodeComparable periode : listPeriode) {
             boolean dateDebutModif = false;
-            if(!JadeStringUtil.isEmpty(dateDebut) && JadeDateUtil.isDateBefore(periode.getDateDebutPeriode(), dateDebut)) {
+            if(!JadeStringUtil.isEmpty(dateDebut) && JadeDateUtil.isDateBefore(periode.getDateDebutPeriode(), dateDebut)
+                && (JadeStringUtil.isEmpty(periode.getDateFinPeriode()) || JadeDateUtil.isDateAfter(periode.getDateFinPeriode(), dateDebut))) {
                 periode.setDateDebutPeriode(dateDebut);
                 dateDebutModif = true;
             }
