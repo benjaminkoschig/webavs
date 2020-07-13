@@ -11,6 +11,7 @@ public class APListePandemieControleModel {
     String idDemande = "";
     String idDroit = "";
     String idTiers = "";
+    String typeAPG = "";
 
 
     public String getDateDebut() {
@@ -88,6 +89,13 @@ public class APListePandemieControleModel {
 
     public void setNbreJours(String nbreJours) {
         this.nbreJours = nbreJours;
+    }
+    public String getTypeAPG() {
+        return typeAPG;
+    }
+
+    public void setTypeAPG(String typeAPG) {
+        this.typeAPG = typeAPG;
     }
 
 }

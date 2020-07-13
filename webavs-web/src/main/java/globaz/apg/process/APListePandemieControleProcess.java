@@ -3,9 +3,11 @@ package globaz.apg.process;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Periode;
 import ch.globaz.common.sql.QueryExecutor;
+import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.db.liste.APListePandemieControleV2Model;
 import globaz.apg.db.liste.APListePandemieControleModel;
 import globaz.apg.db.liste.APListePandemieSuiviDossierModel;
+import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.excel.APListePandemieControleExcel;
 import globaz.apg.excel.APListePandemieSuiviDossierExcel;
 import globaz.framework.util.FWMessage;
@@ -171,7 +173,7 @@ public class APListePandemieControleProcess extends BProcess {
                 for(int j=i+1;j<listModels.size();j++){
                     model1 = listModels.get(i);
                     model2 = listModels.get(j);
-                    if (isChevauchement(model1,model2)){
+                    if (isChevauchement(model1,model2) && controleTypeAPG(model1,model2)){
                         mapTriParNSS.add(model1);
                         mapTriParNSS.add(model2);
                     }
@@ -183,6 +185,34 @@ public class APListePandemieControleProcess extends BProcess {
 
         
         return listTrie;
+    }
+
+    private boolean controleTypeAPG(APListePandemieControleModel model1, APListePandemieControleModel model2) {
+        /**
+         * CAS1 : Contrôle d'un sens
+         */
+        if(model1.getTypeAPG().equals(APTypeDePrestation.STANDARD.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.ACM_ALFA.getCodesystemString())||
+                model1.getTypeAPG().equals(APTypeDePrestation.STANDARD.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.ACM2_ALFA.getCodesystemString())||
+                model1.getTypeAPG().equals(APTypeDePrestation.STANDARD.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.ACM_NE.getCodesystemString())||
+                model1.getTypeAPG().equals(APTypeDePrestation.STANDARD.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.LAMAT.getCodesystemString())||
+                model1.getTypeAPG().equals(APTypeDePrestation.STANDARD.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.COMPCIAB.getCodesystemString())
+        ){
+            return false;
+        }
+        /**
+         * CAS2 : Contrôle de l'autre sens
+         * */
+        if(model1.getTypeAPG().equals(APTypeDePrestation.ACM_ALFA.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.STANDARD.getCodesystemString())||
+                model1.getTypeAPG().equals(APTypeDePrestation.LAMAT.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.STANDARD.getCodesystemString())||
+                model1.getTypeAPG().equals(APTypeDePrestation.ACM_NE.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.STANDARD.getCodesystemString())||
+                model1.getTypeAPG().equals(APTypeDePrestation.ACM2_ALFA.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.STANDARD.getCodesystemString())||
+                model1.getTypeAPG().equals(APTypeDePrestation.COMPCIAB.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.STANDARD.getCodesystemString())
+        ){
+            return false;
+        }
+
+        return true;
+
     }
 
     private boolean isChevauchement(APListePandemieControleModel model1, APListePandemieControleModel model2) {
@@ -322,7 +352,8 @@ public class APListePandemieControleProcess extends BProcess {
         sql.append("vateta as \"ETAT\", ");
         sql.append("vaidem as \"IDDEMANDE\", ");
         sql.append("vaidro as \"IDDROIT\", ");
-        sql.append("dem1.waitie as \"IDTIERS\" ");
+        sql.append("dem1.waitie as \"IDTIERS\", ");
+        sql.append("vhtgen as \"TYPEAPG\"");
         sql.append("FROM schema.prdemap  as dem1 ");
         sql.append("inner join schema.tipavsp as tip on dem1.waitie = tip.htitie ");
         sql.append("inner join schema.apdroip as dr1 on dem1.waidem = dr1.vaidem ");
@@ -330,7 +361,6 @@ public class APListePandemieControleProcess extends BProcess {
         sql.append("inner join schema.appresp as prest on dr1.vaidro = prest.vhidro ");
         sql.append("where ");
         sql.append("dr1.vateta in (52003007,52003003,52003002) ");
-        sql.append("and vhtgen not in (52015002,52015004,52015005,52015006) ");
         sql.append("and vhdmob > 0 ");
         sql.append("and vhddeb > 20200301 ");
         sql.append("and dr1.vaidro not in (select dr1.vaidro from schema.apdroip as dr4 where dr4.vaipar = dr1.vaidro) ");
