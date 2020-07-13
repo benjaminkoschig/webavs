@@ -329,7 +329,7 @@ public class APListePrestationsLotExcel extends REAbstractListExcel {
                 retValue = new TIAdressePaiementBeneficiaireFormater().format(source);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Erreur lors de l'appel de la méthode getPaiementAdresseBeneficiaireFormate : "+e.getMessage());
         }
 
         return retValue;
