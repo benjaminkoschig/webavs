@@ -195,7 +195,9 @@ public class APListePandemieControleProcess extends BProcess {
                 model1.getTypeAPG().equals(APTypeDePrestation.STANDARD.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.ACM2_ALFA.getCodesystemString())||
                 model1.getTypeAPG().equals(APTypeDePrestation.STANDARD.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.ACM_NE.getCodesystemString())||
                 model1.getTypeAPG().equals(APTypeDePrestation.STANDARD.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.LAMAT.getCodesystemString())||
-                model1.getTypeAPG().equals(APTypeDePrestation.STANDARD.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.COMPCIAB.getCodesystemString())
+                model1.getTypeAPG().equals(APTypeDePrestation.STANDARD.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.COMPCIAB.getCodesystemString())||
+               model1.getTypeAPG().equals(APTypeDePrestation.ACM_ALFA.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.LAMAT.getCodesystemString()) ||
+                model1.getTypeAPG().equals(APTypeDePrestation.ACM_NE.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.LAMAT.getCodesystemString())
         ){
             return false;
         }
@@ -206,7 +208,9 @@ public class APListePandemieControleProcess extends BProcess {
                 model1.getTypeAPG().equals(APTypeDePrestation.LAMAT.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.STANDARD.getCodesystemString())||
                 model1.getTypeAPG().equals(APTypeDePrestation.ACM_NE.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.STANDARD.getCodesystemString())||
                 model1.getTypeAPG().equals(APTypeDePrestation.ACM2_ALFA.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.STANDARD.getCodesystemString())||
-                model1.getTypeAPG().equals(APTypeDePrestation.COMPCIAB.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.STANDARD.getCodesystemString())
+                model1.getTypeAPG().equals(APTypeDePrestation.COMPCIAB.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.STANDARD.getCodesystemString())||
+                model1.getTypeAPG().equals(APTypeDePrestation.LAMAT.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.ACM_ALFA.getCodesystemString()) ||
+                model1.getTypeAPG().equals(APTypeDePrestation.LAMAT.getCodesystemString()) && model2.getTypeAPG().equals(APTypeDePrestation.ACM_NE.getCodesystemString())
         ){
             return false;
         }
