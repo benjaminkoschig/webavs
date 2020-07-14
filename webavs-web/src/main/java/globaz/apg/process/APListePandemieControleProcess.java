@@ -366,7 +366,7 @@ public class APListePandemieControleProcess extends BProcess {
         sql.append("where ");
         sql.append("dr1.vateta in (52003007,52003003,52003002) ");
         sql.append("and vhdmob > 0 ");
-        sql.append("and vhddeb > 20200301 ");
+        sql.append("and (vhddeb > 20200301 OR vhdfin > 20200301 ) ");
         sql.append("and dr1.vaidro not in (select dr1.vaidro from schema.apdroip as dr4 where dr4.vaipar = dr1.vaidro) ");
         sql.append("and prest.vhteta in (52006002,52006003,52006004,52006005) ");
         return sql.toString();
