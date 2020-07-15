@@ -344,10 +344,10 @@ public class COImportMessageELP extends BProcess {
             if (transitionManager.getContainer().size() == 1) {
                 result = (COTransition) transitionManager.getFirstEntity();
             } else {
-                LOG.error("Erreur lors de la récupération de de la transition liée au contentieux.");
+                LOG.warn("Erreur lors de la récupération de de la transition liée au contentieux.");
             }
         } else {
-            LOG.error("Erreur lors de la récupération de l'id étape liée au contentieux.");
+            LOG.warn("Erreur lors de la récupération de l'id étape liée au contentieux.");
         }
         return result;
     }
