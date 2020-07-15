@@ -10,7 +10,7 @@ import ch.globaz.jade.process.businessimpl.models.JadeProcessExecut;
 import ch.globaz.jade.process.utils.JadeProcessCommonUtils;
 import globaz.cygnus.api.demandes.IRFDemande;
 import globaz.cygnus.db.demandes.RFDemande;
-import globaz.cygnus.db.demandes.RFDemandeMai13;
+import globaz.cygnus.db.demandes.RFDemandeFra16;
 import globaz.cygnus.db.demandes.RFDemandeManager;
 import globaz.cygnus.db.motifsDeRefus.RFAssMotifsRefusDemandeManager;
 import globaz.cygnus.exceptions.RFXmlmlException;
@@ -18,7 +18,6 @@ import globaz.cygnus.mappingXmlml.IRFImportationTmrListeColumns;
 import globaz.cygnus.mappingXmlml.RFXmlmlMappingLogImportationTmr;
 import globaz.cygnus.process.importationTmr.RFProcessImportationTmrEnum;
 import globaz.cygnus.process.importationTmr.RFTmrException;
-import globaz.cygnus.process.importationTmr.RFProcessImportationTmrEnum;
 import globaz.cygnus.utils.*;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BSession;
@@ -275,13 +274,13 @@ public class RFImportDemandesCmsCreation implements JadeProcessStepInterface, Ja
                 if (rfDemCour != null) {
                     if (rfDemCour.getCsEtat().equals(IRFDemande.ENREGISTRE)) {
 
-                        RFDemandeMai13 rfDemandeMai13 = new RFDemandeMai13();
-                        rfDemandeMai13.setSession(BSessionUtil.getSessionFromThreadContext());
-                        rfDemandeMai13.setIdDemandeMaintienDom13(rfDemCour.getIdDemande());
+                        RFDemandeFra16 rfDemandeFra16 = new RFDemandeFra16();
+                        rfDemandeFra16.setSession(BSessionUtil.getSessionFromThreadContext());
+                        rfDemandeFra16.setIdDemandeFra16(rfDemCour.getIdDemande());
 
-                        rfDemandeMai13.retrieve();
-                        if (!rfDemandeMai13.isNew()) {
-                            rfDemandeMai13.delete(transaction);
+                        rfDemandeFra16.retrieve();
+                        if (!rfDemandeFra16.isNew()) {
+                            rfDemandeFra16.delete(transaction);
 
                             RFDemande rfDemande = new RFDemande();
                             rfDemande.setSession(BSessionUtil.getSessionFromThreadContext());
@@ -304,7 +303,7 @@ public class RFImportDemandesCmsCreation implements JadeProcessStepInterface, Ja
                         RFAssMotifsRefusDemandeManager rfAssMotifsRefusMgr = new RFAssMotifsRefusDemandeManager();
                         rfAssMotifsRefusMgr.setSession(BSessionUtil.getSessionFromThreadContext());
                         rfAssMotifsRefusMgr.changeManagerSize(0);
-                        rfAssMotifsRefusMgr.setForIdDemande(rfDemandeMai13.getIdDemande());
+                        rfAssMotifsRefusMgr.setForIdDemande(rfDemandeFra16.getIdDemande());
 
                         rfAssMotifsRefusMgr.delete(transaction);
 

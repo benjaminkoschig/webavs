@@ -11,6 +11,7 @@ import globaz.cygnus.api.TypesDeSoins.IRFTypesDeSoins;
 import globaz.cygnus.api.demandes.IRFDemande;
 import globaz.cygnus.application.RFApplication;
 import globaz.cygnus.db.demandes.RFDemande;
+import globaz.cygnus.db.demandes.RFDemandeFra16;
 import globaz.cygnus.db.demandes.RFDemandeMai13;
 import globaz.cygnus.db.demandes.RFPrDemandeJointDossier;
 import globaz.cygnus.process.RFImportDemandesCmsData;
@@ -144,13 +145,12 @@ public class RFImportDemandesCmsCreationHandler implements JadeProcessEntityInte
 
             rfDemande.add(BSessionUtil.getSessionFromThreadContext().getCurrentThreadTransaction());
 
-            RFDemandeMai13 rfDema13 = new RFDemandeMai13();
-            rfDema13.setSession(BSessionUtil.getSessionFromThreadContext());
+            RFDemandeFra16 rfDema16 = new RFDemandeFra16();
+            rfDema16.setSession(BSessionUtil.getSessionFromThreadContext());
 
-            rfDema13.setNombreHeure("");
-            rfDema13.setIdDemandeMaintienDom13(rfDemande.getIdDemande());
+            rfDema16.setIdDemandeFra16(rfDemande.getIdDemande());
 
-            rfDema13.add(BSessionUtil.getSessionFromThreadContext().getCurrentThreadTransaction());
+            rfDema16.add(BSessionUtil.getSessionFromThreadContext().getCurrentThreadTransaction());
 
             logInfos("RFImportDemandesCmsCreationHandler.addDemandeRFM()", BSessionUtil.getSessionFromThreadContext()
                     .getLabel("RF_IMPORT_TMR_PROCESS_CREATION_DEMANDE")
