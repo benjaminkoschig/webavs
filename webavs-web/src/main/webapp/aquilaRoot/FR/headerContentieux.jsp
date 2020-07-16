@@ -24,7 +24,7 @@
 <jsp:include flush="true" page="headerContentieuxMin.jsp"/>
 <TR>
 	<TD>N° poursuite</TD>
-	<TD colspan="3"><INPUT type="text" value="<%=numPoursuite%>" class="dateDisabled" readonly></TD>
+	<TD colspan="3"><INPUT type="text" value="<%=numPoursuite%>" class="libelleLongDisabled" readonly></TD>
 	<% if (!JadeStringUtil.isDecimalEmpty(compteAnnexeInformation)) { %> 
            	<TD nowrap>Information</TD>
            	<TD nowrap colspan="2">
