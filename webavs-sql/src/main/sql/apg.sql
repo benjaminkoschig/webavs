@@ -22,4 +22,4 @@ DELETE from SCHEMA.CGPCAVP WHERE numero in(3056) and exists (select 0 from SCHEM
 insert into SCHEMA.CGPCAVP (TYPE, NUMERO, ESTCLASSE, LIBELLEFR, LIBELLEDE, LIBELLEIT) values (3, 3056, NULL, 'Indemnités pour salarié événementiel', 'Entschädigung für Event-Angestellter', NULL);
 
 DELETE from SCHEMA.CGPCAVP WHERE numero in(4676) and exists (select 0 from SCHEMA.CGPCAVP WHERE numero in (4676));
-insert into SCHEMA.CGPCAVP (TYPE, NUMERO, ESTCLASSE, LIBELLEFR, LIBELLEDE, LIBELLEIT) values (3, 4676, NULL, 'Indemnités pour salarié événementiel à restituer', 'Entschädigung für Event-Angestellter', NULL);
+insert into SCHEMA.CGPCAVP (TYPE, NUMERO, ESTCLASSE, LIBELLEFR, LIBELLEDE, LIBELLEIT) values (3, 4676, NULL, 'Indemnités pour salarié événementiel à restituer', 'Angestellter für Veranstaltungen zurückzuerstatten', NULL);
