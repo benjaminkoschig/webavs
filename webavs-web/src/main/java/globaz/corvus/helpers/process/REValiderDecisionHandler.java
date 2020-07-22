@@ -3,14 +3,8 @@
 package globaz.corvus.helpers.process;
 
 import java.math.BigDecimal;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
+
 import ch.admin.ofit.anakin.donnee.AnnonceErreur;
 import ch.globaz.corvus.domaine.constantes.TypeOrdreVersement;
 import ch.globaz.prestation.domaine.CodePrestation;
@@ -105,7 +99,7 @@ public class REValiderDecisionHandler {
      * @throws Exception
      */
     public static void createAnnonce4x(final BSession session, final BTransaction transaction,
-            final Long idRenteAccordee) throws Exception {
+                                       final Long idRenteAccordee) throws Exception {
 
         RERenteAccordee ra = new RERenteAccordee();
         ra.setSession(session);
@@ -134,7 +128,7 @@ public class REValiderDecisionHandler {
      * @throws Exception
      */
     public static void createAnnonce4x(final BSession session, final BTransaction transaction,
-            final Long idRenteAccordee, final String moisRapport) throws Exception {
+                                       final Long idRenteAccordee, final String moisRapport) throws Exception {
 
         RERenteAccordee ra = new RERenteAccordee();
         ra.setSession(session);
@@ -265,7 +259,7 @@ public class REValiderDecisionHandler {
     }
 
     private static String formatXPosAppendWithZero(final int nombrePos, final boolean isAppendLeft,
-            final String value) {
+                                                   final String value) {
         StringBuffer result = new StringBuffer();
 
         if (JadeStringUtil.isEmpty(value)) {
@@ -294,8 +288,8 @@ public class REValiderDecisionHandler {
     }
 
     private static REAnnoncesAbstractLevel2A remplirEnregistrement01(final REAnnoncesAbstractLevel2A annonce_01,
-            final BSession session, final BTransaction transaction, final RERenteAccordee ra,
-            final String dateMoisRapport, final boolean isRefugie) throws Exception {
+                                                                     final BSession session, final BTransaction transaction, final RERenteAccordee ra,
+                                                                     final String dateMoisRapport, final boolean isRefugie) throws Exception {
 
         CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(ra.getCodePrestation()));
 
@@ -409,8 +403,8 @@ public class REValiderDecisionHandler {
                     NSUtil.unFormatAVS(tierComp1.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
         } else if (codePrestation.isRenteComplementairePourEnfant()
                 || (!ISFSituationFamiliale.CS_ETAT_CIVIL_CELIBATAIRE.equals(csEtatCivil)
-                        && !ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_DISSOUS_JUDICIAIREMENT.equals(csEtatCivil)
-                        && !ISFSituationFamiliale.CS_ETAT_CIVIL_DIVORCE.equals(csEtatCivil))) {
+                && !ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_DISSOUS_JUDICIAIREMENT.equals(csEtatCivil)
+                && !ISFSituationFamiliale.CS_ETAT_CIVIL_DIVORCE.equals(csEtatCivil))) {
             annonce_01.setPremierNoAssComplementaire("00000000000");
         } else {
             annonce_01.setPremierNoAssComplementaire("");
@@ -594,7 +588,7 @@ public class REValiderDecisionHandler {
     }
 
     private static REAnnoncesAugmentationModification10Eme remplirEnregistrement02API(final BSession session,
-            final BTransaction transaction, final REDemandeRente dr, final RERenteAccordee ra) throws Exception {
+                                                                                      final BTransaction transaction, final REDemandeRente dr, final RERenteAccordee ra) throws Exception {
 
         REDemandeRenteAPI api = new REDemandeRenteAPI();
         api.setSession(session);
@@ -867,7 +861,7 @@ public class REValiderDecisionHandler {
     }
 
     private REAnnoncesAugmentationModification9Eme createAnnonce41(final BSession session,
-            final REAnnoncesAugmentationModification9Eme annonce41) throws Exception {
+                                                                   final REAnnoncesAugmentationModification9Eme annonce41) throws Exception {
 
         REAnnoncesAugmentationModification9Eme annonce41new = new REAnnoncesAugmentationModification9Eme();
         annonce41new.setSession(getSession());
@@ -936,7 +930,7 @@ public class REValiderDecisionHandler {
     }
 
     private REAnnoncesAugmentationModification10Eme createAnnonce44(final BSession session,
-            final REAnnoncesAugmentationModification10Eme annonce44) throws Exception {
+                                                                    final REAnnoncesAugmentationModification10Eme annonce44) throws Exception {
 
         REAnnoncesAugmentationModification10Eme annonce44new = new REAnnoncesAugmentationModification10Eme();
         annonce44new.setSession(getSession());
@@ -1301,7 +1295,7 @@ public class REValiderDecisionHandler {
     }
 
     private void doMiseEnLot(final BSession session, final BTransaction transaction, RELot lot,
-            final REDecisionEntity decision) throws Exception {
+                             final REDecisionEntity decision) throws Exception {
 
         // Récupération de la prestation pour la mettre dans le lot (s'il y en
         // a)
@@ -1351,7 +1345,7 @@ public class REValiderDecisionHandler {
     }
 
     private REValiderDecisionVO doPreparationMAJDemandeRente(final REValiderDecisionVO vo, final REDemandeRente demande,
-            final String csTypeValidation) throws Exception {
+                                                             final String csTypeValidation) throws Exception {
 
         // Lors de la validation de plusieurs décisions pour une même demande,
         // la demande doit être maj lors du dernier traitement uniquement,
@@ -1782,7 +1776,7 @@ public class REValiderDecisionHandler {
      * @throws Exception
      */
     private boolean doTraitementAnnoncesPourRetro(final BSession session, final BTransaction transaction,
-            final REAnnonceRente annonce, final REDecisionEntity decision) throws Exception {
+                                                  final REAnnonceRente annonce, final REDecisionEntity decision) throws Exception {
 
         boolean isDecisionForCourantFound = true;
 
@@ -1969,7 +1963,7 @@ public class REValiderDecisionHandler {
      * Validation de la décision (Type = COURANT)
      */
     protected REValiderDecisionVO doTraitementCourant(REValiderDecisionVO vo, final REDecisionEntity decision,
-            final BTransaction transaction) throws Exception {
+                                                      final BTransaction transaction) throws Exception {
         // Pour une demande avec 2 rente accordée, il est possible que le RA1
         // ait du rétro et pas la RA2.
         // Il est donc nécessaire de distinguer le rétro par rente accordée, du
@@ -2101,7 +2095,7 @@ public class REValiderDecisionHandler {
      * Validation de la décision (Type = RETRO)
      */
     protected REValiderDecisionVO doTraitementRetro(REValiderDecisionVO vo, final REDecisionEntity decision,
-            final BTransaction transaction) throws Exception {
+                                                    final BTransaction transaction) throws Exception {
 
         REDemandeRente demande = null;
 
@@ -2123,41 +2117,50 @@ public class REValiderDecisionHandler {
             }
 
             for (REAnnonceRente annonce : annonceMgr.getContainerAsList()) {
+                REAnnonceHeader annonceHeader = new REAnnonceHeader();
+                annonceHeader.setSession(getSession());
+                annonceHeader.setIdAnnonce(annonce.getId());
+                annonceHeader.retrieve();
 
-                if (!JadeStringUtil.isBlankOrZero(annonce.getIdDecision())) {
+                if (Objects.nonNull(annonceHeader) && (annonceHeader.getCodeApplication()=="41" || annonceHeader.getCodeApplication()=="44")) {
+                    if (!JadeStringUtil.isBlankOrZero(annonce.getIdDecision())) {
 
-                    REDecisionEntity decCourant = new REDecisionEntity();
-                    decCourant.setSession(getSession());
-                    decCourant.setIdDecision(annonce.getIdDecision());
-                    decCourant.retrieve(transaction);
-                    PRAssert.notIsNew(decCourant, null);
-                    if (!IREDecision.CS_TYPE_DECISION_COURANT.equals(decCourant.getCsTypeDecision())) {
-                        continue;
-                    } else {
-                        doTraitementAnnoncesPourRetro(getSession(), transaction, annonce, decision);
+                        REDecisionEntity decCourant = new REDecisionEntity();
+                        decCourant.setSession(getSession());
+                        decCourant.setIdDecision(annonce.getIdDecision());
+                        decCourant.retrieve(transaction);
+                        PRAssert.notIsNew(decCourant, null);
+
+
+
+                        if (!IREDecision.CS_TYPE_DECISION_COURANT.equals(decCourant.getCsTypeDecision())) {
+                            continue;
+                        } else {
+                            doTraitementAnnoncesPourRetro(getSession(), transaction, annonce, decision);
+                        }
                     }
-                }
-                // Pas d'annonce pour le courant. Peut arriver, si que de rétro,
-                // pour un des enfants par exemple!!!!
-                else {
+                    // Pas d'annonce pour le courant. Peut arriver, si que de rétro,
+                    // pour un des enfants par exemple!!!!
+                    else {
 
-                    REAnnoncesAbstractLevel1A ann = new REAnnoncesAbstractLevel1A();
-                    ann.setSession(getSession());
-                    ann.setIdAnnonce(annonce.getIdAnnonceHeader());
-                    ann.retrieve(transaction);
+                        REAnnoncesAbstractLevel1A ann = new REAnnoncesAbstractLevel1A();
+                        ann.setSession(getSession());
+                        ann.setIdAnnonce(annonce.getIdAnnonceHeader());
+                        ann.retrieve(transaction);
 
-                    if (!ann.isNew() && !IREAnnonces.CS_ETAT_ENVOYE.equals(ann.getEtat())) {
-                        ann.setMoisRapport(PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
-                                .convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateDernierPmt(getSession()))));
+                        if (!ann.isNew() && !IREAnnonces.CS_ETAT_ENVOYE.equals(ann.getEtat())) {
+                            ann.setMoisRapport(PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
+                                    .convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateDernierPmt(getSession()))));
 
-                        ann.update(transaction);
+                            ann.update(transaction);
 
-                        annonce.retrieve(transaction);
-                        annonce.setIdDecision(decision.getIdDecision());
-                        annonce.update(transaction);
+                            annonce.retrieve(transaction);
+                            annonce.setIdDecision(decision.getIdDecision());
+                            annonce.update(transaction);
 
-                    } else if (ann.isNew()) {
-                        throw new Exception("Error #665978 : Annonce not found");
+                        } else if (ann.isNew()) {
+                            throw new Exception("Error #665978 : Annonce not found");
+                        }
                     }
                 }
             }
@@ -2240,7 +2243,7 @@ public class REValiderDecisionHandler {
      * Validation de la décision (Type = STANDARD)
      */
     protected REValiderDecisionVO doTraitementStandard(REValiderDecisionVO vo, final REDecisionEntity decision,
-            final BTransaction transaction) throws Exception {
+                                                       final BTransaction transaction) throws Exception {
 
         REDemandeRente demande = null;
 
@@ -2436,7 +2439,7 @@ public class REValiderDecisionHandler {
      * @throws Exception
      */
     private RERenteAccordee initCodeMutation(final RERenteAccordee raCourante, final RERenteAccordee raADiminuer,
-            final boolean isChangementEtatCivil) throws Exception {
+                                             final boolean isChangementEtatCivil) throws Exception {
 
         if (raCourante.getIdTiersBeneficiaire().equals(raADiminuer.getIdTiersBeneficiaire())) {
 

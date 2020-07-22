@@ -42,7 +42,7 @@ public class Rule500 extends Rule {
             testDateNotEmptyAndValid(startOfPeriod, "startOfPeriod");
             try {
                 int age = PRDateUtils.getAge(insurantBirthDate, startOfPeriod);
-                if (age > 26) {
+                if (age > 25) {
                     return false;
                 }
             } catch (DateException e) {
