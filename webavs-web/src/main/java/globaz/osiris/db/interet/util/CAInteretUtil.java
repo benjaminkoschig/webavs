@@ -580,50 +580,27 @@ public class CAInteretUtil {
 
     public static Map<Periode, Boolean> preparesPeriodeInteretsCovids(BSession session, JADate dateCalculDebut, JADate dateCalculFin, List<Periode> listPeriodeMotifsSurcis) throws Exception {
         Map<Periode, Boolean> mapIntermediaire = new LinkedHashMap<>();
-        JADate dateDebut = dateCalculDebut;
-        JADate dateFin;
-        JADate dateDebutSurcisProro;
-        JADate dateFinSurcisProro;
-        JADate dateDebutNormal;
-        JADate dateFinNormal;
-        Iterator<Periode> it = listPeriodeMotifsSurcis.iterator();
-        boolean isFirst = true;
-        Periode periodeMotif;
-        do {
-            periodeMotif = it.next();
-            dateFin = new JADate(session.getApplication().getCalendar().addDays(periodeMotif.getDateDebut(), -1));
-            if (isFirst) {
-                if (CAInteretUtil.getJoursInterets(session, dateCalculDebut, dateFin) > 0) {
-                    mapIntermediaire.put(new Periode(dateCalculDebut.toStr("."), dateFin.toStr(".")), CAInteretUtil.USE_TAUX_NORMAL);
-                    dateDebut = new JADate(periodeMotif.getDateDebut());
-                }else{
-                    dateDebut = dateCalculDebut;
+        Date debutCalcul = new Date(dateCalculDebut.toStrAMJ());
+        Date finCalcul = new Date(dateCalculFin.toStrAMJ());
+        Periode periodeCalcul = new Periode(debutCalcul.getSwissValue(), finCalcul.getSwissValue());
+        Date dateDebutTmp = new Date(dateCalculDebut.toStrAMJ()) ;
+        for(Periode periodeProrogation : listPeriodeMotifsSurcis) {
+            Periode periodeIntersection = periodeCalcul.intersection(periodeProrogation);
+            if(periodeIntersection != null){
+                Date debutIntersection = new Date(periodeIntersection.getDateDebut());
+                Date finIntersection = new Date(periodeIntersection.getDateFin());
+                if(dateDebutTmp.before(debutIntersection)){
+                    mapIntermediaire.put(new Periode(dateDebutTmp.getSwissValue(), debutIntersection.addDays(-1).getSwissValue()), CAInteretUtil.USE_TAUX_NORMAL);
                 }
-                isFirst = false;
-            } else {
-                if (CAInteretUtil.getJoursInterets(session, dateDebut, dateFin) > 0) {
-                    mapIntermediaire.put(new Periode(dateDebut.toStr("."), dateFin.toStr(".")), CAInteretUtil.USE_TAUX_NORMAL);
-                }
-                dateDebut = new JADate(periodeMotif.getDateDebut());
+                //Toute intersection est créé
+                mapIntermediaire.put(periodeIntersection, CAInteretUtil.USE_TAUX_SURCIS_PRO);
+                dateDebutTmp = finIntersection.addDays(1);
             }
-
-            //Cas 1.1 : Motif unique (actif et soldé/annulé/Inactif)
-
-            if (JadeDateUtil.isDateAfter(periodeMotif.getDateFin(), "01.01.2080") || JadeDateUtil.isDateAfter(periodeMotif.getDateFin(), dateCalculFin.toStr(".")) ) {
-                dateFin = dateCalculFin;
-            } else {
-                dateFin = new JADate(periodeMotif.getDateFin());
-            }
-            mapIntermediaire.put(new Periode(dateDebut.toStr("."), dateFin.toStr(".")), CAInteretUtil.USE_TAUX_SURCIS_PRO);
-            if (!it.hasNext() && !dateFin.equals(dateCalculFin)) {
-                dateDebut = new JADate(session.getApplication().getCalendar().addDays(periodeMotif.getDateFin(), 1));
-                dateFin = dateCalculFin;
-                mapIntermediaire.put(new Periode(dateDebut.toStr("."), dateCalculFin.toStr(".")), CAInteretUtil.USE_TAUX_NORMAL);
-            }
-            dateDebut = session.getApplication().getCalendar().addDays(dateFin, 1);
-        } while (it.hasNext());
-
-
+        }
+        if(dateDebutTmp.before(finCalcul)){
+            mapIntermediaire.put(new Periode(dateDebutTmp.getSwissValue(), finCalcul.getSwissValue()), CAInteretUtil.USE_TAUX_NORMAL);
+        }
+        dateCalculDebut = new JADate(finCalcul.addDays(1).getSwissValue());
         return mapIntermediaire;
     }
 
