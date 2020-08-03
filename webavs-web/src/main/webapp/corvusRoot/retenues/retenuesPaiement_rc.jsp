@@ -5,7 +5,6 @@
 <%@ taglib uri="/corvusRoot/corvustaglib.tld" prefix="re" %>
 <%
 	// Les labels de cette page commence par la préfix "JSP_RET_R"
-
 	idEcran="PRE0020";
 
 	globaz.corvus.vb.retenues.RERetenuesPaiementViewBean viewBean = (globaz.corvus.vb.retenues.RERetenuesPaiementViewBean) request.getAttribute("viewBean");
@@ -47,7 +46,7 @@
 	String menuOptionToLoad = request.getParameter("menuOptionToLoad");
 
 	IFrameListHeight 	= "170";
-	IFrameDetailHeight 	= "400";
+	IFrameDetailHeight 	= "600";
 
 	actionNew += "&forIdTiersBeneficiaire="+idTiersBeneficiaire+"&forIdRenteAccordee="+idRenteAccordee+
 	             "&montantRenteAccordee="+montantRenteAccordee+"&menuOptionToLoad="+menuOptionToLoad;
