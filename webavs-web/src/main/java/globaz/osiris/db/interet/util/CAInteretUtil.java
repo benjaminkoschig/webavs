@@ -454,9 +454,11 @@ public class CAInteretUtil {
         String[] datePeriodes = JadePropertiesService.getInstance().getProperty("aquila.tauxInteret.pandemieSursisProrogation.periodes").split(":");
         List<Periode> listPeriodeMotif = new LinkedList<>();
         Date dateDebutPandemie = null;
+        Date dateFinPandemie = null;
         Date dateDebutMotif = null;
         if (datePeriodes.length == 2) {
             dateDebutPandemie = new Date(datePeriodes[0]);
+            dateFinPandemie = new Date(datePeriodes[1]);
         } else {
             throw new Exception("Problem formatting in property : aquila.tauxInteret.pandemieSursisProrogation.periodes");
         }
@@ -464,7 +466,9 @@ public class CAInteretUtil {
         List<CAMotifContentieux> listMotifs = section.getMotifsContentieux(dateDebutPandemie.getSwissValue());
         CAPlanRecouvrement plan = section.getPlanRecouvrement();
         for (CAMotifContentieux motif : listMotifs) {
-//            dateDebutMotif = new Date(motif.getDateDebut());
+            if(dateFinPandemie.before(new Date(motif.getDateDebut()))){
+                continue;
+            }
             if ((motif.getIdMotifBlocage().equals(CAMotifContentieux.CS_MOTIF_BLOCAGE_SURSIS_AU_PAIEMENT)
                     || motif.getIdMotifBlocage().equals(CAMotifContentieux.CS_MOTIF_BLOCAGE_PROROGATION_DELAI_PAIEMENT))) {
                 Periode periodeMotif = new Periode(motif.getDateDebut(), motif.getDateFin());
@@ -472,6 +476,18 @@ public class CAInteretUtil {
             }
         }
         Collections.sort(listPeriodeMotif);
+
+        if(listPeriodeMotif.size() >= 2) {
+            for (int i = 0; i < (listPeriodeMotif.size() - 1); i++) {
+                Periode unionPeriode = listPeriodeMotif.get(i).union(listPeriodeMotif.get(i + 1));
+                if (unionPeriode != null) {
+                    listPeriodeMotif.set(i, unionPeriode);
+                    listPeriodeMotif.remove(i + 1);
+                    i--;
+                }
+
+            }
+        }
         return listPeriodeMotif;
     }
 
