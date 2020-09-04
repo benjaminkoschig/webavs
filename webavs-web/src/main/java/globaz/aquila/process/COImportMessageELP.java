@@ -45,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
@@ -63,8 +64,40 @@ public class COImportMessageELP extends BProcess {
     private String error = "";
     private String backupFolder;
 
+    @Override
+    protected boolean _executeProcess() throws Exception {
+
+        try {
+            LOG.info("Lancement du process eLP-Box.");
+            //Pas d'envoi de mail automatique du process, tout est géré manuellement
+            this.setSendCompletionMail(false);
+            this.setSendMailOnError(false);
+
+            initBsession();
+
+            String isActive = JadePropertiesService.getInstance().getProperty(COProperties.RECEPTION_MESSAGES_ELP.getProperty());
+            if ("true".equals(isActive)) {
+                importFiles();
+                generationProtocol();
+            }
+
+        } catch (Exception e) {
+            error = "erreur fatale : " + Throwables.getStackTraceAsString(e);
+            try {
+                sendResultMail(null);
+            } catch (Exception e1) {
+                throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, e1);
+            }
+            throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, e);
+        } finally {
+            closeBsession();
+        }
+
+        return true;
+    }
 
     private void initBsession() throws Exception {
+        LOG.info("Initialisation de la session");
         BSessionUtil.initContext(getSession(), this);
         protocole = new COProtocoleELP();
     }
@@ -78,7 +111,7 @@ public class COImportMessageELP extends BProcess {
      */
     private void importFiles() {
         try {
-
+            LOG.info("Importation des fichiers.");
             String urlFichiersELP = JadePropertiesService.getInstance().getProperty(COProperties.REPERTOIRE_GESTION_MESSAGES_ELP.getProperty());
             List<String> repositoryELP = JadeFsFacade.getFolderChildren(urlFichiersELP);
             backupFolder = new File(urlFichiersELP).getAbsolutePath() + BACKUP_FOLDER;
@@ -144,6 +177,7 @@ public class COImportMessageELP extends BProcess {
      * @param infos
      */
     private boolean traitementFichier(Document doc, COInfoFileELP infos) {
+        LOG.info("Traitement du fichier " + infos.getFichier());
         boolean resultTraitement = Boolean.FALSE;
         try {
             if (doc.getSC() != null) {
@@ -173,6 +207,7 @@ public class COImportMessageELP extends BProcess {
      * @throws JadeClassCastException
      */
     private void movingFile(String nomFichierDistant, String tmpLocalWorkFile, String nameOriginalFile) throws JadeServiceLocatorException, JadeServiceActivatorException, JadeClassCastException {
+        LOG.info("Déplacement du fichier après traitement.");
         if (!JadeFsFacade.exists(backupFolder)) {
             JadeFsFacade.createFolder(backupFolder);
         }
@@ -188,6 +223,7 @@ public class COImportMessageELP extends BProcess {
      * @param infos  : les infos sur le fichier xml
      */
     private boolean traitement(ScType scType, COInfoFileELP infos) throws ElpProcessException {
+        LOG.info("Traitement SC du fichier " + infos.getFichier());
         boolean traitementInSuccess = false;
         // Création de l'objet scElp
         COScElpDto scElpDto = getScElp(scType, infos);
@@ -222,6 +258,7 @@ public class COImportMessageELP extends BProcess {
      * @throws ElpProcessException
      */
     private boolean createEtapeCDP(COInfoFileELP infos, COScElpDto scElpDto) throws ElpProcessException {
+        LOG.info("Création de l'étape Commandement de payer pour le fichier " + infos.getFichier());
         boolean traitementInSuccess = false;
         if (StringUtils.isNotEmpty(scElpDto.getDateNotification())) {
             // Récupération du contentieux
@@ -413,15 +450,20 @@ public class COImportMessageELP extends BProcess {
      * @throws COELPException      Exception lancée si un incident intervient lors de la récupération du type de saisie.
      */
     private Boolean traitement(SpType spType, COInfoFileELP infos) throws ElpProcessException, COELPException {
+        LOG.info("Traitement SP du fichier " + infos.getFichier());
         boolean traitementInSuccess = false;
         // Création de l'objet spElp
-        COSpElpDto spElpDto = getSpElp(spType, infos);
+        List<COSpElpDto> spElpDtoList = getSpElp(spType, infos);
+        for (COSpElpDto spElpDto : spElpDtoList) {
         switch (spElpDto.getNumeroStatut()) {
             case ElpStatut.PV_SAISIE_MOB:
             case ElpStatut.PV_SAISIE_SAL:
             case ElpStatut.PV_SAISIE_SAL_MOB:
             case ElpStatut.PV_SAISIE_ADB:
                 traitementInSuccess = createEtapePVSaisie(infos, spElpDto);
+                    if (!traitementInSuccess) {
+                        return false;
+                    }
                 break;
             case ElpStatut.PV_NON_LIEU:
                 spElpDto.setMotif(COMotifMessageELP.PV_NON_LIEU);
@@ -440,6 +482,7 @@ public class COImportMessageELP extends BProcess {
                 protocole.addnonTraite(spElpDto);
                 break;
         }
+        }
         return traitementInSuccess;
     }
 
@@ -453,6 +496,7 @@ public class COImportMessageELP extends BProcess {
      * @throws ElpProcessException
      */
     private boolean createEtapePVSaisie(COInfoFileELP infos, COSpElpDto spElpDto) throws ElpProcessException {
+        LOG.info("Création de l'étape PV de saisie du fichier " + infos.getFichier());
         boolean traitementInSuccess = false;
         // Récupération du contentieux
         COContentieux contentieux = getContentieux(infos);
@@ -528,16 +572,51 @@ public class COImportMessageELP extends BProcess {
     }
 
     /**
-     * Création de l'objet SpElp à partir du fichier XML.
+     * Création de la liste des objets SpElp à partir du fichier XML.
      *
      * @param spType : la classe de cast
      * @param infos  : les infos sur le fichier
-     * @return l'objet SpElp
+     * @return la liste d'objet SpElp
      */
-    private COSpElpDto getSpElp(SpType spType, COInfoFileELP infos) throws COELPException {
+    private List<COSpElpDto> getSpElp(SpType spType, COInfoFileELP infos) throws COELPException {
+        List<COSpElpDto> spElpDtoList = new ArrayList<>();
+        Set<String> typesDeSaisie = getTypeSaisie(spType);
+        if (typesDeSaisie.isEmpty()) {
         COSpElpDto result = new COSpElpDto(spType, getSession());
         result.setDateReception(infos.getDate());
         result.setFichier(infos.getFichier());
+            spElpDtoList.add(result);
+        } else {
+            for (String typeSaisie : typesDeSaisie) {
+                COSpElpDto result = new COSpElpDto(spType, typeSaisie, getSession());
+                result.setDateReception(infos.getDate());
+                result.setFichier(infos.getFichier());
+                spElpDtoList.add(result);
+            }
+        }
+        return spElpDtoList;
+    }
+
+    /**
+     * Méthode permettant de récupérer tous les types de saisie contenus dans
+     *
+     * @param spType : la classe de cast
+     * @return la liste des codes systèmes du type de saisie.
+     */
+    private Set<String> getTypeSaisie(SpType spType) {
+        Set<String> result = new HashSet<>();
+        SpType.Outcome.Seizure seizure = spType.getOutcome().getSeizure();
+        if (Objects.nonNull(seizure)) {
+            SpType.Outcome.Seizure.Deed deed = seizure.getDeed();
+            if (Objects.nonNull(deed)) {
+                SpType.Outcome.Seizure.Deed.Seized seized = deed.getSeized();
+                for (JAXBElement eachPart : seized.getContent()) {
+                    String localpart = eachPart.getName().getLocalPart();
+                    String codeSytem = CODeedTypeSaisie.getCodeSystemFromCodeXml(localpart.substring(0, 2));
+                    result.add(codeSytem);
+                }
+            }
+        }
         return result;
     }
 
@@ -573,6 +652,7 @@ public class COImportMessageELP extends BProcess {
      * @param infos
      */
     private Boolean traitement(RcType rcType, COInfoFileELP infos) throws ElpProcessException {
+        LOG.info("Traitement RC du fichier " + infos.getFichier());
         boolean traitementInSuccess = false;
         // Création de l'objet rcElp
         CORcElpDto rcElpDto = getRcElp(rcType, infos);
@@ -610,6 +690,7 @@ public class COImportMessageELP extends BProcess {
      * @throws ElpProcessException
      */
     private boolean createEtapeADB(COInfoFileELP infos, CORcElpDto rcElpDto) throws ElpProcessException {
+        LOG.info("Création de l'étape Acte de défaut de bien du fichier " + infos.getFichier());
         boolean traitementInSuccess = false;
         // Récupération du contentieux
         COContentieux contentieux = getContentieux(infos);
@@ -768,36 +849,6 @@ public class COImportMessageELP extends BProcess {
         //Nothing to do
     }
 
-    @Override
-    protected boolean _executeProcess() throws Exception {
-
-        try {
-            //Pas d'envoi de mail automatique du process, tout est géré manuellement
-            this.setSendCompletionMail(false);
-            this.setSendMailOnError(false);
-
-            initBsession();
-
-            String isActive = JadePropertiesService.getInstance().getProperty(COProperties.RECEPTION_MESSAGES_ELP.getProperty());
-            if ("true".equals(isActive)) {
-                importFiles();
-                generationProtocol();
-            }
-
-        } catch (Exception e) {
-            error = "erreur fatale : " + Throwables.getStackTraceAsString(e);
-            try {
-                sendResultMail(null);
-            } catch (Exception e1) {
-                throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, e1);
-            }
-            throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, e);
-        } finally {
-            closeBsession();
-        }
-
-        return true;
-    }
 
     private String getEMailAddressELP() {
         String eMailAddress = JadePropertiesService.getInstance().getProperty(COProperties.DESTINATAIRE_PROTOCOLE_MESSAGES_ELP.getProperty());

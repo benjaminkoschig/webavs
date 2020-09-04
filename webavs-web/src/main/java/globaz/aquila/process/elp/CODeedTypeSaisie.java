@@ -28,4 +28,13 @@ public enum CODeedTypeSaisie {
         return null;
     }
 
+    public static String getCodeXmlFromCodeSystem(String codeSystem) {
+        for (final CODeedTypeSaisie type : CODeedTypeSaisie.values()) {
+            if (type.codeSystem.equals(codeSystem)) {
+                return type.codeXml;
+            }
+        }
+        return null;
+    }
+
 }

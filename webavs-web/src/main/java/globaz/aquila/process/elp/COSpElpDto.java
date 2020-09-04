@@ -26,44 +26,77 @@ public class COSpElpDto extends COAbstractELP {
     public COSpElpDto(SpType spType, BSession session) throws COELPException {
         this.spType = spType;
         this.numeroStatut = spType.getStatusInfo().getStatus();
-        initializeParam(session);
+        initializeADBParam(session);
     }
 
-    private void initializeParam(BSession session) throws COELPException {
+    public COSpElpDto(SpType spType, String typeSaisie, BSession session) throws COELPException {
+        this.spType = spType;
+        this.numeroStatut = spType.getStatusInfo().getStatus();
+        initializePVSaisieParam(typeSaisie, session);
+    }
+
+    /**
+     * Initialisation des paramètres dans le cadre d'un pv valant pour ADB.
+     *
+     * @param session
+     * @throws COELPException
+     */
+    private void initializeADBParam(BSession session) throws COELPException {
         Seizure seizure = spType.getOutcome().getSeizure();
         if (Objects.nonNull(seizure)) {
-            Seizure.Deed deed = seizure.getDeed();
             LossType loss = seizure.getLoss();
-            if (Objects.nonNull(deed)) {
-                Seizure.Deed.Seized seized = deed.getSeized();
-                initialiseTypeSaisie(session, seized);
-                initialiseDelaiVente(seized);
-                dateExecution = getDate(deed.getSeizureDate());
-            } else if (Objects.nonNull(loss)) {
+            if (Objects.nonNull(loss)) {
                 typeSaisieLabel = session.getLabel(ADB_LABEL);
                 dateExecution = getDate(loss.getDate());
                 delaiVente = StringUtils.EMPTY;
+            } else {
+                throw new COELPException("Erreur de cast du fichier xml : impossible de récupérer la balise Loss dans le cadre d'un PV de saisie valant ADB.");
             }
+        } else {
+            throw new COELPException("Erreur de cast du fichier xml : impossible de récupérer la balise Seizure dans le cadre d'un PV de saisie valant ADB.");
+        }
+
+    }
+
+    /**
+     * Initialisation des paramètres pour un PV de saisie (salaire, mobilier, immobilier).
+     *
+     * @param typeSaisie : le code de type de saisie.
+     * @param session
+     * @throws COELPException
+     */
+    private void initializePVSaisieParam(String typeSaisie, BSession session) throws COELPException {
+        Seizure seizure = spType.getOutcome().getSeizure();
+        if (Objects.nonNull(seizure)) {
+            Seizure.Deed deed = seizure.getDeed();
+            if (Objects.nonNull(deed)) {
+                Seizure.Deed.Seized seized = deed.getSeized();
+                initialiseTypeSaisie(session, typeSaisie);
+                initialiseDelaiVente(seized, typeSaisie);
+                dateExecution = getDate(deed.getSeizureDate());
+            } else {
+                throw new COELPException("Erreur de cast du fichier xml : impossible de récupérer la balise Deed dans le cadre d'un PV de saisie.");
+            }
+        } else {
+            throw new COELPException("Erreur de cast du fichier xml : impossible de récupérer la balise Seizure dans le cadre d'un PV de saisie.");
         }
     }
 
     /**
-     * Récupère le type de saisie depuis le fichier xml.
+     * Récupère le type de saisie depuis le code système.
      *
      * @param session la session courante.
-     * @param seized  l'objet xml.
+     * @param typeSaisie le code système.
      * @throws COELPException : Exception lancée si une erreur se produit lors de lors de la récupération du code système.
      */
-    private void initialiseTypeSaisie(BSession session, Seizure.Deed.Seized seized) throws COELPException {
-        String localpart = seized.getContent().get(0).getName().getLocalPart();
-        String codeSytem = CODeedTypeSaisie.getCodeSystemFromCodeXml(localpart.substring(0, 2));
+    private void initialiseTypeSaisie(BSession session, String typeSaisie) throws COELPException {
         FWParametersUserCode code = new FWParametersUserCode();
-        code.setIdCodeSysteme(codeSytem);
+        code.setIdCodeSysteme(typeSaisie);
         code.setIdLangue(session.getIdLangue());
         try {
             code.retrieve();
         } catch (Exception e) {
-            throw new COELPException("Erreur lors de la récupération des codes systèmes de type de saisie : " + codeSytem + "/n", e);
+            throw new COELPException("Erreur lors de la récupération des codes systèmes de type de saisie : " + typeSaisie + "/n", e);
         }
         csTypeSaisie = code.getIdCodeSysteme();
         typeSaisieLabel = code.getLibelle();
@@ -73,10 +106,11 @@ public class COSpElpDto extends COAbstractELP {
      * Récupère le délai de vente depuis le fichier xml.
      *
      * @param seized l'objet xml.
+     * @param typeSaisie le code système du type de saisie.
      */
-    private void initialiseDelaiVente(Seizure.Deed.Seized seized) {
+    private void initialiseDelaiVente(Seizure.Deed.Seized seized, String typeSaisie) {
         for (JAXBElement eachElement : seized.getContent()) {
-            if (StringUtils.equals("To", eachElement.getName().getLocalPart().substring(2, 4))) {
+            if (StringUtils.equals("To", eachElement.getName().getLocalPart().substring(2, 4)) && StringUtils.equals(CODeedTypeSaisie.getCodeXmlFromCodeSystem(typeSaisie), eachElement.getName().getLocalPart().substring(0, 2))) {
                 delaiVente = getDate((XMLGregorianCalendar) eachElement.getValue());
                 break;
             }
@@ -101,7 +135,6 @@ public class COSpElpDto extends COAbstractELP {
     }
 
     /**
-     *
      * @return le label du type de saisie
      */
     public String getTypeSaisieLabel(){
