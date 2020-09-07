@@ -964,7 +964,7 @@
 		<dependency>
 			<groupId>ch.globaz</groupId>
 			<artifactId>ListPandemieAPGtoCDF</artifactId>
-			<version>1.0.0-RC1</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>net.lingala.zip4j</groupId>
