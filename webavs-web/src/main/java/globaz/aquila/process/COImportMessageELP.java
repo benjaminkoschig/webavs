@@ -507,7 +507,7 @@ public class COImportMessageELP extends BProcess {
                 action = createPvAdbAction(spElpDto);
                 transition = getTransition(contentieux, ICOEtape.CS_PV_SAISIE_VALANT_ADB_SAISI);
             } else {
-                action = createPvSaisieAction(spElpDto);
+                action = createPvSaisieAction(spElpDto, contentieux);
                 transition = getTransition(contentieux, ICOEtape.CS_PV_DE_SAISIE_SAISI);
             }
             if (Objects.nonNull(transition)) {
@@ -636,12 +636,15 @@ public class COImportMessageELP extends BProcess {
      * Créé l'action en fonction des paramètres du fichier xml.
      *
      * @param spElpDto
+     * @param contentieux
      * @return l'action PV de saisie
      */
-    private COTransitionAction createPvSaisieAction(COSpElpDto spElpDto) {
+    private COTransitionAction createPvSaisieAction(COSpElpDto spElpDto, COContentieux contentieux) {
         CO043SaisirPVSaisie action = new CO043SaisirPVSaisie();
         action.setCsTypeSaisie(spElpDto.getCsTypeDeSaisie());
         action.setDateExecutionSaisie(spElpDto.getDateExecution());
+        contentieux.setDateExecution(spElpDto.getDateExecution());
+        action.setDateExecution(contentieux.getDateExecution());
         return action;
     }
 
