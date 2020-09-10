@@ -1,9 +1,6 @@
 package globaz.aquila.process;
 
-import aquila.ch.eschkg.Document;
-import aquila.ch.eschkg.RcType;
-import aquila.ch.eschkg.ScType;
-import aquila.ch.eschkg.SpType;
+import aquila.ch.eschkg.*;
 import ch.globaz.exceptions.ExceptionMessage;
 import ch.globaz.exceptions.GlobazTechnicalException;
 import com.google.common.base.Throwables;
@@ -24,10 +21,7 @@ import globaz.aquila.print.list.elp.COMotifMessageELP;
 import globaz.aquila.print.list.elp.COTypeELPFactory;
 import globaz.aquila.process.elp.*;
 import globaz.aquila.process.exception.ElpProcessException;
-import globaz.globall.db.BManager;
-import globaz.globall.db.BProcess;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.db.GlobazJobQueue;
+import globaz.globall.db.*;
 import globaz.globall.util.JACalendar;
 import globaz.jade.common.JadeClassCastException;
 import globaz.jade.fs.JadeFsFacade;
@@ -504,7 +498,7 @@ public class COImportMessageELP extends BProcess {
             COTransitionAction action;
             COTransition transition;
             if (StringUtils.equals(ElpStatut.PV_SAISIE_ADB, spElpDto.getNumeroStatut())) {
-                action = createPvAdbAction(spElpDto);
+                action = createPvAdbAction(spElpDto, contentieux);
                 transition = getTransition(contentieux, ICOEtape.CS_PV_SAISIE_VALANT_ADB_SAISI);
             } else {
                 action = createPvSaisieAction(spElpDto, contentieux);
@@ -624,11 +618,13 @@ public class COImportMessageELP extends BProcess {
      * Création de l'action en fonction des paramètres du fichier xml.
      *
      * @param spElpDto
+     * @param contentieux
      * @return l'action PV Saisie pour Acte de défaut de bien
      */
-    private COTransitionAction createPvAdbAction(COSpElpDto spElpDto) {
+    private COTransitionAction createPvAdbAction(COSpElpDto spElpDto, COContentieux contentieux) {
         CO041SaisirActeDefautBien action = new CO041SaisirActeDefautBien();
-        action.setDateExecution(spElpDto.getDateExecution());
+        contentieux.setDateExecution(spElpDto.getDateExecution());
+        action.setDateExecution(contentieux.getDateExecution());
         return action;
     }
 
@@ -698,7 +694,7 @@ public class COImportMessageELP extends BProcess {
         // Récupération du contentieux
         COContentieux contentieux = getContentieux(infos);
         if (Objects.nonNull(contentieux)) {
-            COTransitionAction action = createAdbAction(rcElpDto);
+            COTransitionAction action = createAdbAction(rcElpDto, contentieux);
             COTransition transition = getTransition(contentieux, ICOEtape.CS_ACTE_DE_DEFAUT_DE_BIEN_SAISI);
             if (Objects.nonNull(transition)) {
                 action.setTransition(transition);
@@ -749,11 +745,14 @@ public class COImportMessageELP extends BProcess {
      * Créé l'action en fonction des paramètres du fichier xml.
      *
      * @param rcElpDto
+     * @param contentieux
      * @return l'action Acte de défaut de bien.
      */
-    private COTransitionAction createAdbAction(CORcElpDto rcElpDto) {
+    private COTransitionAction createAdbAction(CORcElpDto rcElpDto, COContentieux contentieux) {
         CO041SaisirActeDefautBien adbAction = new CO041SaisirActeDefautBien();
         adbAction.setNumeroADB(rcElpDto.getNoAbd());
+        contentieux.setDateExecution(rcElpDto.getDateEtablissement());
+        adbAction.setDateExecution(contentieux.getDateExecution());
         return adbAction;
     }
 
