@@ -205,24 +205,17 @@ public abstract class CAInteretTardif {
         JADate dateDebut = dateCalculDebut;
         JADate dateFin = null;
         boolean isFirst = true;
-        //Cas 1 : Multiple motif en surcis/prorogation
-//        Periode periodeCalcul = new Periode(dateCalculDebut.toStr("."), dateCalculFin.toStr("."));
-//        for (Periode periodeMotifsRaw : listPeriodeMotifsSurcis) {
-//            if (periodeCalcul.comparerChevauchement(periodeMotifsRaw) == Periode.ComparaisonDePeriode.LES_PERIODES_SONT_INDEPENDANTES) {
-//                listPeriodeMotifsSurcis.remove(periodeMotifsRaw);
-//            }
-//        }
+
         Collections.sort(listPeriodeMotifsSurcis);
         /**
          * Préparation des différents périodes avec switch sur les 2 types de taux
          */
-        mapIntermediaire = CAInteretUtil.preparesPeriodeInteretsCovids(session, dateCalculDebut, dateCalculFin, listPeriodeMotifsSurcis);
+        mapIntermediaire = CAInteretUtil.preparesPeriodeInteretsCovids(dateCalculDebut, dateCalculFin, listPeriodeMotifsSurcis);
 
         /**
          * Préparation des lignes des intérêts avec les bons taux
          */
         CAInteretUtil.createLignesAInscrire(session, mapIntermediaire, mapLigneAInscrire, mapTaux, mapTauxSurcisProro);
-//
 
         FWCurrency montantInteret;
         CATauxParametre taux;

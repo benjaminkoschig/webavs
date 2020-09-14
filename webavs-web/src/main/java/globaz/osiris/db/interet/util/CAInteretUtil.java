@@ -594,7 +594,7 @@ public class CAInteretUtil {
         }
     }
 
-    public static Map<Periode, Boolean> preparesPeriodeInteretsCovids(BSession session, JADate dateCalculDebut, JADate dateCalculFin, List<Periode> listPeriodeMotifsSurcis) throws Exception {
+    public static Map<Periode, Boolean> preparesPeriodeInteretsCovids(JADate dateCalculDebut, JADate dateCalculFin, List<Periode> listPeriodeMotifsSurcis) throws Exception {
         Map<Periode, Boolean> mapIntermediaire = new LinkedHashMap<>();
         Date debutCalcul = new Date(dateCalculDebut.toStrAMJ());
         Date finCalcul = new Date(dateCalculFin.toStrAMJ());
