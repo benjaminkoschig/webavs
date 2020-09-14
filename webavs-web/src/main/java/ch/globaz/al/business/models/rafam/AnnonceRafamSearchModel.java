@@ -61,6 +61,8 @@ public class AnnonceRafamSearchModel extends JadeSearchSimpleModel {
      */
     private Collection<String> inTypeAnnonce = null;
 
+    private Collection<String> inGenreAnnonce = null;
+
     private String likeInternalOffice = null;
 
     private String betweenDateDebut = null;
@@ -198,5 +200,13 @@ public class AnnonceRafamSearchModel extends JadeSearchSimpleModel {
 
     public void setBetweenDateFin(String betweenDateFin) {
         this.betweenDateFin = betweenDateFin;
+    }
+
+    public Collection<String> getInGenreAnnonce() {
+        return inGenreAnnonce;
+    }
+
+    public void setInGenreAnnonce(Collection<String> inGenreAnnonce) {
+        this.inGenreAnnonce = inGenreAnnonce;
     }
 }

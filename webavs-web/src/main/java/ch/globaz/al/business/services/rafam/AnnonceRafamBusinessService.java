@@ -1,5 +1,6 @@
 package ch.globaz.al.business.services.rafam;
 
+import ch.globaz.al.business.constantes.enumerations.RafamFamilyAllowanceType;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
@@ -7,6 +8,8 @@ import ch.globaz.al.business.constantes.enumerations.RafamEtatAnnonce;
 import ch.globaz.al.business.constantes.enumerations.RafamTypeAnnonce;
 import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
 import ch.globaz.al.businessimpl.rafam.ContextAnnonceRafam;
+
+import java.util.List;
 
 /**
  * Services métier des annonces RAFAM
@@ -103,12 +106,27 @@ public interface AnnonceRafamBusinessService extends JadeApplicationService {
             JadePersistenceException;
 
     /**
-     * Supprime les annonces non transmises pour un droit
+     * Supprime les annonces non transmises pour un droit et des genres
      * 
      * @param idDroit
      *            id du droit pour lequel supprimer les annonces
      * @return nombre d'annonces supprimées
      * 
+     * @throws JadePersistenceException
+     *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
+     *             faire
+     * @throws JadeApplicationException
+     *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
+     */
+    public int deleteNotSentforGenre(String idDroit, List<RafamFamilyAllowanceType> genres) throws JadeApplicationException, JadePersistenceException;
+
+    /**
+     * Supprime les annonces non transmises pour un droit
+     *
+     * @param idDroit
+     *            id du droit pour lequel supprimer les annonces
+     * @return nombre d'annonces supprimées
+     *
      * @throws JadePersistenceException
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire

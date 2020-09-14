@@ -69,6 +69,7 @@
 				<search-field name="inEtatAnnonce" field-ref="etat" operation="IN"/>
 				<search-field name="forEtatAnnonce" field-ref="etat" operation="EQUALS"/>
 				<search-field name="inTypeAnnonce" field-ref="typeAnnonce" operation="IN"/>
+				<search-field name="inGenreAnnonce" field-ref="genrePrestation" operation="IN"/>
 				<search-field name="forTypeAnnonce" field-ref="typeAnnonce" operation="EQUALS"/>
 				<search-field name="forCodeRetour" field-ref="codeRetour" operation="EQUALS"/>
 				<search-field name="betweenDateDebut" field-ref="debutDroit" operation="GREATER_OR_EQUALS"/>

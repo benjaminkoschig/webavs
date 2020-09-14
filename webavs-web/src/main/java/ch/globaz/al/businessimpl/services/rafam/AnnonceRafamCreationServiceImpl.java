@@ -44,6 +44,7 @@ import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
@@ -951,24 +952,29 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
         List<RafamFamilyAllowanceType> types = ALServiceLocator.getAnnonceRafamCreationService().getTypesAllocationForAnnulation(dossier.getDossierModel(), droit);
 
         if(!types.isEmpty()) {
-            AnnonceRafamModel lastAnnonce = ALImplServiceLocator.getAnnoncesRafamSearchService().getLastActive(droit.getId(), types.get(0));
+            //I200805_014 - K200806_001
+            RafamFamilyAllowanceType type = manageType(types);
+            AnnonceRafamModel lastAnnonce = ALImplServiceLocator.getAnnoncesRafamSearchService().getLastActive(droit.getId(), type);
 
             Montant montAfter = new Montant(montants.get(0));
             Montant montNaissaceAfter = new Montant(montants.get(1));
 
             if (montAfter.isZero()) {
                 if(lastAnnonce.getTypeAnnonce()!= null) {
-                    if (RafamTypeAnnonce._68C_ANNULATION.equals(RafamTypeAnnonce.getRafamTypeAnnonce(lastAnnonce.getTypeAnnonce()))) {
+                    if (RafamTypeAnnonce._68C_ANNULATION.equals(RafamTypeAnnonce.getRafamTypeAnnonce(lastAnnonce.getTypeAnnonce()))
+                            && isEtatActive(RafamEtatAnnonce.getRafamEtatAnnonceCS(lastAnnonce.getEtat()))) {
                         ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(droit.getId());
                     } else { //RafamTypeAction.CREATION + RafamTypeAction.MODIFICATION
                         ALServiceLocator.getAnnonceRafamCreationService().creerAnnonces(RafamEvDeclencheur.ANNULATION, droit);
                     }
+                }else {
+                    ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(droit.getId());
                 }
                 // Test si annonce naissance
                 if (hasAllocationNaissance(droit) && !montNaissaceAfter.isZero()) {
                     ALServiceLocator.getAnnonceRafamCreationService().creerAnnoncesNaissanceOnly(RafamEvDeclencheur.CREATION, droit);
                 } else {
-                    ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(droit.getId());
+                    ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSentforGenre(droit.getId(), getGenresNaissAdoption());
                 }
             } else {
                 ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(droit.getId());
@@ -982,6 +988,62 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
                 }
             }
         }
+    }
+
+    private List<RafamFamilyAllowanceType> getGenresNaissAdoption() {
+        List<RafamFamilyAllowanceType> genres = new ArrayList<>();
+        genres.add(RafamFamilyAllowanceType.NAISSANCE);
+        genres.add(RafamFamilyAllowanceType.ADOPTION);
+        return genres;
+    }
+
+    private RafamFamilyAllowanceType manageType(List<RafamFamilyAllowanceType> types) {
+        RafamFamilyAllowanceType type = types.get(0);
+        if(types.size() > 1){
+            if(hasTypeNaissanceEtEnfant(types) || hasTypeAdoptionEtEnfant(types)){
+                type = RafamFamilyAllowanceType.ENFANT;
+            }else if(hasTypeNaissance(types)){
+                return types.get(types.size()-1);
+            }
+        }
+        return type;
+    }
+
+    private boolean hasTypeNaissance(List<RafamFamilyAllowanceType> types) {
+        for(RafamFamilyAllowanceType type : types){
+            if(StringUtils.equals(RafamFamilyAllowanceType.NAISSANCE.getCodeCentrale(),type.getCodeCentrale())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean hasTypeNaissanceEtEnfant(List<RafamFamilyAllowanceType> types) {
+        boolean hasTypeNaissance = false;
+        boolean hasTypeEnfant = false;
+        for(RafamFamilyAllowanceType type : types){
+            if(StringUtils.equals(RafamFamilyAllowanceType.ENFANT.getCodeCentrale(),type.getCodeCentrale())){
+                hasTypeEnfant = true;
+            }
+            if(StringUtils.equals(RafamFamilyAllowanceType.NAISSANCE.getCodeCentrale(),type.getCodeCentrale())){
+                hasTypeNaissance = true;
+            }
+        }
+        return hasTypeEnfant && hasTypeNaissance;
+    }
+
+    private boolean hasTypeAdoptionEtEnfant(List<RafamFamilyAllowanceType> types) {
+        boolean hasTypeNaissance = false;
+        boolean hasTypeEnfant = false;
+        for(RafamFamilyAllowanceType type : types){
+            if(StringUtils.equals(RafamFamilyAllowanceType.ENFANT.getCodeCentrale(),type.getCodeCentrale())){
+                hasTypeEnfant = true;
+            }
+            if(StringUtils.equals(RafamFamilyAllowanceType.ADOPTION.getCodeCentrale(),type.getCodeCentrale())){
+                hasTypeNaissance = true;
+            }
+        }
+        return hasTypeEnfant && hasTypeNaissance;
     }
 
     private boolean hasAllocationNaissance(DroitComplexModel droit) {

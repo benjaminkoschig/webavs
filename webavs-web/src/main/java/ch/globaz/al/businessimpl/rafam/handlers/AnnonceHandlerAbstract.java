@@ -1,6 +1,7 @@
 package ch.globaz.al.businessimpl.rafam.handlers;
 
 import ch.globaz.al.business.constantes.enumerations.*;
+import ch.globaz.common.domaine.Periode;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
@@ -89,7 +90,7 @@ public abstract class AnnonceHandlerAbstract {
      * @throws JadeApplicationException Exception lev�e par la couche m�tier lorsqu'elle n'a pu effectuer l'op�ration souhait�e
      * @throws JadePersistenceException Exception lev�e lorsque le chargement ou la mise � jour en DB par la couche de persistence n'a pu se
      *                                  faire
-     * @see AnnonceHandlerAbstract#isRadiation(AnnonceRafamModel)
+     * @see AnnonceHandlerAbstract#isRadiation()
      */
     protected void doCreation() throws JadeApplicationException, JadePersistenceException {
 
@@ -113,7 +114,7 @@ public abstract class AnnonceHandlerAbstract {
      * @throws JadeApplicationException Exception lev�e par la couche m�tier lorsqu'elle n'a pu effectuer l'op�ration souhait�e
      * @throws JadePersistenceException Exception lev�e lorsque le chargement ou la mise � jour en DB par la couche de persistence n'a pu se
      *                                  faire
-     * @see AnnonceHandlerAbstract#isRadiation(AnnonceRafamModel)
+     * @see AnnonceHandlerAbstract#isRadiation()
      */
     protected void doModification() throws JadeApplicationException, JadePersistenceException {
 
@@ -176,13 +177,21 @@ public abstract class AnnonceHandlerAbstract {
     public void creerAnnonce() throws JadeApplicationException, JadePersistenceException {
 
         if (context.getEvenementDeclencheur().equals(RafamEvDeclencheur.CREATION)) {
-            doCreation();
+            if(isCreation()){
+                doCreation();
+            }else{
+                doModification();
+            }
         } else if (context.getEvenementDeclencheur().equals(RafamEvDeclencheur.ANNULATION)) {
             doAnnulation();
         } else {
             switch (getAction()) {
                 case CREATION:
-                    doCreation();
+                    if(isCreation()){
+                        doCreation();
+                    }else{
+                        doModification();
+                    }
                     break;
 
                 case MODIFICATION:
@@ -197,6 +206,25 @@ public abstract class AnnonceHandlerAbstract {
                     throw new ALRafamException("AnnonceHandlerAbstract#execute : this action is not supported");
             }
         }
+    }
+
+    /**
+     * Permet de tester si la dernière annonce active du droit nécessite une annonce de création 68a.
+     * C'est le cas s'il n'y pas encore d'annonce de ce type ou si la dernière annonce active est une annulation 68c
+     *
+     * @return true s'il y a nécessité de créer une annonce de type création 68a
+     * @throws JadePersistenceException
+     * @throws JadeApplicationException
+     */
+    private boolean isCreation() throws JadePersistenceException, JadeApplicationException {
+        AnnonceRafamModel annonce;
+        if(RafamFamilyAllowanceType.ADI.equals(context.getType())){
+            Periode periode = new Periode(context.getDroit().getDroitModel().getDebutDroit(), context.getDroit().getDroitModel().getFinDroitForcee());
+            annonce = ALImplServiceLocator.getAnnoncesRafamSearchService().getLastActive(context.getDroit().getId(), context.getType(), periode);
+        } else {
+            annonce = ALImplServiceLocator.getAnnoncesRafamSearchService().getLastActive(context.getDroit().getId(), context.getType());
+        }
+        return annonce.isNew() || RafamTypeAnnonce._68C_ANNULATION.equals(RafamTypeAnnonce.getRafamTypeAnnonce(annonce.getTypeAnnonce()));
     }
 
     protected void updateNSSAnnonces() throws JadeApplicationException, JadePersistenceException {
@@ -340,7 +368,6 @@ public abstract class AnnonceHandlerAbstract {
      * Dans le cas d'une annonce de modification, si la date de radiation est ant�rieur � la date de d�but du droit, une
      * annonce d'annulation est enregistr�e.
      *
-     * @param annonce l'annonce � traiter
      * @return <code>true</code> si un cas de radiation a �t� trait� par la m�thode, <code>false</code> si rien n'a �t�
      * fait
      * @throws JadeApplicationException Exception lev�e par la couche m�tier lorsqu'elle n'a pu effectuer l'op�ration souhait�e

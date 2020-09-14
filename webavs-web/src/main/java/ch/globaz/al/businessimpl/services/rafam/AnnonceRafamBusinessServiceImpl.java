@@ -174,6 +174,29 @@ public class AnnonceRafamBusinessServiceImpl extends ALAbstractBusinessServiceIm
         return JadePersistenceManager.delete(search);
     }
 
+    @Override
+    public int deleteNotSentforGenre(String idDroit, List<RafamFamilyAllowanceType> genres) throws JadeApplicationException, JadePersistenceException {
+
+        if (JadeNumericUtil.isEmptyOrZero(idDroit)) {
+            throw new ALAnnonceRafamException("AnnonceRafamBusinessServiceImpl#deleteNotSent : idDroit is not defined");
+        }
+
+        AnnonceRafamSearchModel search = new AnnonceRafamSearchModel();
+        List<String> etats = new ArrayList<String>();
+        etats.add(RafamEtatAnnonce.ENREGISTRE.getCS());
+        etats.add(RafamEtatAnnonce.A_TRANSMETTRE.getCS());
+        List<String> genreAnnonces = new ArrayList<>();
+        for(RafamFamilyAllowanceType genre: genres){
+            genreAnnonces.add(genre.getCode());
+        }
+        search.setInGenreAnnonce(genreAnnonces);
+        search.setInEtatAnnonce(etats);
+        search.setForIdDroit(idDroit);
+        search.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+
+        return JadePersistenceManager.delete(search);
+    }
+
     /*
      * (non-Javadoc)
      * 
