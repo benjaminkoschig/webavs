@@ -105,6 +105,9 @@ public abstract class APAbstractRecapitulatifDroit extends BEntity {
     protected String dateDebutDroit = "";
 
     /** DOCUMENT ME! */
+    protected String dateFinDroit = "";
+
+    /** DOCUMENT ME! */
     protected transient JAVector employeurs = null;
 
     /** DOCUMENT ME! */
@@ -194,6 +197,7 @@ public abstract class APAbstractRecapitulatifDroit extends BEntity {
         etat = statement.dbReadNumeric(APDroitLAPG.FIELDNAME_ETAT);
         genreService = statement.dbReadNumeric(APDroitLAPG.FIELDNAME_GENRESERVICE);
         dateDebutDroit = statement.dbReadDateAMJ(APDroitLAPG.FIELDNAME_DATEDEBUTDROIT);
+        dateFinDroit = statement.dbReadDateAMJ(APDroitLAPG.FIELDNAME_DATEFINDROIT);
         noAVS = NSUtil.formatAVSUnknown(statement.dbReadString(APDroitLAPGJointDemande.FIELDNAME_NUM_AVS));
         nom = statement.dbReadString(APDroitLAPGJointDemande.FIELDNAME_NOM);
         prenom = statement.dbReadString(APDroitLAPGJointDemande.FIELDNAME_PRENOM);
@@ -230,6 +234,15 @@ public abstract class APAbstractRecapitulatifDroit extends BEntity {
      */
     public String getDateDebutDroit() {
         return dateDebutDroit;
+    }
+
+    /**
+     * getter pour l'attribut date fin droit
+     *
+     * @return la valeur courante de l'attribut date fin droit
+     */
+    public String getDateFinDroit() {
+        return dateFinDroit;
     }
 
     /**
@@ -321,6 +334,16 @@ public abstract class APAbstractRecapitulatifDroit extends BEntity {
      */
     public void setDateDebutDroit(String string) {
         dateDebutDroit = string;
+    }
+
+    /**
+     * setter pour l'attribut date fin droit
+     *
+     * @param string
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setDateFinDroit(String string) {
+        dateFinDroit = string;
     }
 
     /**
