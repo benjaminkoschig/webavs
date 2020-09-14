@@ -81,7 +81,7 @@ public class ALFomationUtils {
                     return getDateDebutFormatte(JadeDateUtil.addMonths(dateDebut,-1),0);
                 } else {
                     // si 15 ans après le 31.07.2020
-                    return getDateDebutFormatte(dateNaissance, age);
+                    return getDateDebutFormatte(JadeDateUtil.addMonths(dateNaissance, -1), age);
                 }
             }
             currentAge = age;
