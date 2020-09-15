@@ -438,6 +438,7 @@ public class CodeSystem {
     public final static String TYPE_ASS_FFPP = "812009";
     public final static String TYPE_ASS_FFPP_MASSE = "812027";
     public final static String TYPE_ASS_FRAIS_ADMIN = "812003";
+    public final static String TYPE_ASS_FRAIS_ADMIN_MAJ = "812028";
     public final static String TYPE_ASS_IMPOT_SOURCE = "812018";
     public static final String TYPE_ASS_LAA = "812008";
     public final static String TYPE_ASS_LAE = "812026";
