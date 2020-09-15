@@ -84,6 +84,15 @@
 		
 			</search-group>
 		</search-definition>
+
+		<search-definition name="searchCotisationActiveAndNotActive">
+			<search-group operator="AND">
+				<search-field name="forGenreAssurance" field-ref="assurance.assuranceGenre" operation="EQUALS" />
+				<search-field name="forTypeAssurance" field-ref="assurance.typeAssurance" operation="EQUALS" />
+				<search-field name="forNumeroAffilie" field-ref="affiliation.affilieNumero" operation="EQUALS" />
+				<search-field name="forValeurNumParamAssurance" field-ref="parametreAssurance.valeurNum" operation="EQUALS" />
+			</search-group>
+		</search-definition>
 		
 		<search-definition name="searchCotisationCAPCGASToUpdateAfterDecision">
 			<search-group operator="AND">
