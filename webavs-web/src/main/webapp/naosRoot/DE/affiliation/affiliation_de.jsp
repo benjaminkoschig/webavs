@@ -26,6 +26,7 @@
     String linkNoga = viewBean.getSession().getApplication().getProperty("exploitation.codeNOGA.URL") + "/Default?lang=" + langue + "-CH";
 %>
 <%@page import="globaz.jade.client.util.JadeStringUtil" %>
+<%@ page import="globaz.draco.db.declaration.MajFADHelper" %>
 <SCRIPT language="JavaScript">
 </SCRIPT>
 <%-- /tpl:put --%>
@@ -940,10 +941,20 @@ Erfassung - Detail
                     Provisorische Erfassung
                 </TD>
                 <!--TD nowrap>&nbsp;Bonus/malus</TD>
-								<TD nowrap> 
+								<TD nowrap>
 									<INPUT type="checkbox" name="bonusMalus" <%=(viewBean.getBonusMalus().booleanValue())? "checked" : ""%>>
 								</TD-->
             </TR>
+
+            <%if (MajFADHelper.getTypesDeclarationDepuisProprietes().size() > 0) { %>
+            <TR id="isMajorationDeclarationManuelleActive">
+                <TD nowrap width="161"><ct:FWLabel key="MAJ_FAD"/></TD>
+                <TD nowrap colspan="2">
+                    <INPUT id="majFAD" type="checkbox"
+                           name="majFAD" <%=(viewBean.isMajFADAndUpdate().booleanValue())? "checked" : ""%> >
+                </TD>
+            </TR>
+            <%}%>
 
             <%if (viewBean.isEbusinessConnected() && viewBean.isWantDisplayIsAffilieEbusiness()) { %>
             <TR id="isEBusiness">

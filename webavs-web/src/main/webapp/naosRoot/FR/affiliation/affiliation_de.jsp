@@ -27,6 +27,7 @@
 %>
 <%@page import="globaz.jade.client.util.JadeStringUtil" %>
 <%@ page import="globaz.framework.util.FWMessageFormat" %>
+<%@ page import="globaz.draco.db.declaration.MajFADHelper" %>
 <SCRIPT language="JavaScript">
 </SCRIPT>
 <%-- /tpl:put --%>
@@ -965,6 +966,16 @@ Affiliation - D&eacute;tail
 									<INPUT type="checkbox" name="bonusMalus" <%=(viewBean.getBonusMalus().booleanValue())? "checked" : ""%>>
 								</TD-->
             </TR>
+
+            <%if (MajFADHelper.getTypesDeclarationDepuisProprietes().size() > 0) { %>
+            <TR id="isMajorationDeclarationManuelleActive">
+                <TD nowrap width="161"><ct:FWLabel key="MAJ_FAD"/></TD>
+                <TD nowrap colspan="2">
+                    <INPUT id="majFAD" type="checkbox"
+                           name="majFAD" <%=(viewBean.isMajFADAndUpdate().booleanValue())? "checked" : ""%> >
+                </TD>
+            </TR>
+            <%}%>
 
             <%if (viewBean.isEbusinessConnected() && viewBean.isWantDisplayIsAffilieEbusiness()) { %>
             <TR id="isEBusiness">
