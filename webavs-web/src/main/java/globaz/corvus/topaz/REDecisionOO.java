@@ -2371,9 +2371,10 @@ public class REDecisionOO extends REAbstractJobOO {
 
         // Insertion des informations
         data.addData("TITRE_INFORMATION", getTexte(catalogeDeTexteDecision, 7, 1));
-
         // si c'est une demande AI
-        if (demandeRente.getCsTypeDemandeRente().equals(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE)) {
+
+        // si le genrePrestation de la rente accordé est de type invalidité
+        if (typeDecision.startsWith("INV")) {
             buffer.append(getTexte(catalogeDeTexteDecision, 7, 2));
             buffer.append("\r\r");
         }
@@ -2858,7 +2859,6 @@ public class REDecisionOO extends REAbstractJobOO {
                     ra.setSession(getSession());
                     ra.setIdPrestationAccordee(benefs[0].getIdRenteAccordee().toString());
                     ra.retrieve();
-
                     if ((cal.compare(new JADate(keyPeriode.dateDebut), lastDateDebutRADecision)) == JACalendar.COMPARE_FIRSTUPPER) {
                         lastDateDebutRADecision = new JADate(keyPeriode.dateDebut);
                         idLastBCDecision = ra.getIdBaseCalcul();
