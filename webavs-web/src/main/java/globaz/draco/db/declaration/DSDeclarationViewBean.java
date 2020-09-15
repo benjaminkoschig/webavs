@@ -12,16 +12,7 @@ import globaz.framework.util.FWCurrency;
 import globaz.globall.api.BIApplication;
 import globaz.globall.api.BISession;
 import globaz.globall.api.GlobazSystem;
-import globaz.globall.db.BConstants;
-import globaz.globall.db.BEntity;
-import globaz.globall.db.BManager;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.db.BStatement;
-import globaz.globall.db.BTransaction;
-import globaz.globall.db.FWFindParameter;
-import globaz.globall.db.FWFindParameterManager;
-import globaz.globall.db.GlobazServer;
+import globaz.globall.db.*;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JANumberFormatter;
@@ -87,10 +78,15 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
     // Type declaration
     public static final String CS_PRINCIPALE = "122001";
 
+    private MajFADHelper majFADHelper = new MajFADHelper();
+
     public static final String CS_SALAIRE_DIFFERES = "122007";
     private static final String ELEMENT_NOT_INTERET_CHOIX = "except.draco.declaration.notInteretChoix";
+    public static final String PROVENANCE_PUCS = "1";
+    public static final String PROVENANCE_DAN = "2";
     public static final String PROVENANCE_PUCS_CCJU = "3";
     public static final String PROVENANCE_SWISSDEC = "4";
+    public static final String PROVENANCE_MANUELLE = "5";
     private static final long serialVersionUID = 1L;
     private AFAffiliation _affiliation = null;
     private CACompteAnnexe _compteAnnexe = null;
@@ -194,7 +190,6 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
     private String totalControleAf = new String();
     /** TAMCON */
     private String totalControleDS = new String();
-
     private String tri = "";
 
     private String triEcran = "";
@@ -213,6 +208,14 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
      */
     public DSDeclarationViewBean() {
         super();
+    }
+
+    public MajFADHelper getMajFADHelper() {
+        return majFADHelper;
+    }
+
+    public void setMajFADHelper(MajFADHelper majFADHelper) {
+        this.majFADHelper = majFADHelper;
     }
 
     @Override
@@ -383,6 +386,9 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
         setIdDeclaration(this._incCounter(transaction, "0"));
         // Lors d'un ajout on force l'état à ouvert
         setEtat(DSDeclarationViewBean.CS_OUVERT);
+        // Update le boolean majFAD sur l'affiliation et ajoute si besoin la cotisation à l'assurance de majoration des frais d'admin
+        getMajFADHelper().updateMajFADAvecDeclaration(transaction, getAffiliation(), getProvenance(), getTypeDeclaration(), getAnnee());
+        //transaction.getErrors()
         if (isSaisieEcran()) {
             // Lors de saisie à l'écran
             setCodeSuspendu(DSDeclarationViewBean.CS_MANUELLE);
@@ -1155,7 +1161,7 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
     /**
      * Permet de récupérer un affilié
      * 
-     * @return Returns a AFAffiliation
+     * @return un AFAffiliation
      */
     public AFAffiliation getAffiliation() {
         // Si affiliation n'est pas déjà instanciée
@@ -1542,14 +1548,16 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
             return labelReturn;
         }
 
-        if ("1".equals(provenance)) {
+        if (DSDeclarationViewBean.PROVENANCE_PUCS.equalsIgnoreCase(provenance)) {
             labelReturn = session.getLabel("PROVENANCE_PUCS");
-        } else if ("2".equals(provenance)) {
+        } else if (DSDeclarationViewBean.PROVENANCE_DAN.equalsIgnoreCase(provenance)) {
             labelReturn = session.getLabel("PROVENANCE_DAN");
         } else if (DSDeclarationViewBean.PROVENANCE_PUCS_CCJU.equalsIgnoreCase(provenance)) {
             labelReturn = session.getLabel("PROVENANCE_PUCS_CCJU");
         } else if (DSDeclarationViewBean.PROVENANCE_SWISSDEC.equalsIgnoreCase(provenance)) {
             labelReturn = session.getLabel("PROVENANCE_SWISSDEC");
+        } else if (DSDeclarationViewBean.PROVENANCE_MANUELLE.equalsIgnoreCase(provenance)) {
+            labelReturn = session.getLabel("PROVENANCE_MANUELLE");
         }
         return labelReturn;
     }

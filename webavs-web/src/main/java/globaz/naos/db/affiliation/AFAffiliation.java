@@ -4,6 +4,7 @@ import globaz.commons.nss.NSUtil;
 import globaz.draco.application.DSApplication;
 import globaz.draco.db.declaration.DSDeclarationListViewBean;
 import globaz.draco.db.declaration.DSDeclarationViewBean;
+import globaz.draco.db.declaration.MajFADHelper;
 import globaz.draco.db.preimpression.DSPreImpressionDeclarationViewBean;
 import globaz.draco.process.DSProcessValidation;
 import globaz.draco.util.DSUtil;
@@ -12,17 +13,7 @@ import globaz.framework.util.FWMessage;
 import globaz.framework.util.FWMessageFormat;
 import globaz.ged.AirsConstants;
 import globaz.globall.api.BIApplication;
-import globaz.globall.db.BApplication;
-import globaz.globall.db.BEntity;
-import globaz.globall.db.BIEntityExternalService;
-import globaz.globall.db.BManager;
-import globaz.globall.db.BProcess;
-import globaz.globall.db.BProcessLauncher;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.db.BStatement;
-import globaz.globall.db.BTransaction;
-import globaz.globall.db.GlobazServer;
+import globaz.globall.db.*;
 import globaz.globall.format.IFormatData;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.parameters.FWParametersSystemCodeManager;
@@ -140,15 +131,26 @@ public class AFAffiliation extends BEntity implements Serializable {
     public static final String FIELDNAME_AFFILIATION_ID = "MAIAFF";
     public static final String FIELDNAME_AFFILIATION_TYPE = "MATTAF";
     public static final String FIELDNAME_TIER_ID = "HTITIE";
+    public static final String FIELDNAME_MAJ_FAD = "MAJFAD";
     public static final String LIEN_AGENCE = "507007";
     public static final String LIEN_AGENCE_PRIVE = "507008";
     public static String SECURE_CODE = "SecureCode";
 
+    private MajFADHelper majFADHelper = new MajFADHelper();
+
     public static final String TABLE_NAME = "AFAFFIP";
+
+    public void setMajFADHelper(MajFADHelper majFADHelper) {
+        this.majFADHelper = majFADHelper;
+    }
+
+    public MajFADHelper getMajFADHelper() {
+        return majFADHelper;
+    }
 
     /**
      * Retour l'IdCotisation de la première Cotisation qui correspond au critères de recherche.
-     * 
+     *
      * @param transaction
      * @param idAffiliation
      * @param type
@@ -206,7 +208,7 @@ public class AFAffiliation extends BEntity implements Serializable {
     /**
      * retourne l'affilié en fonction du numéro d'affilié. si forParitaire et forPersonnel sont à false aucun filtre
      * n'est effectué
-     * 
+     *
      * @param session
      * @param numeroAffilie
      * @param forParitaire
@@ -286,6 +288,7 @@ public class AFAffiliation extends BEntity implements Serializable {
     private java.lang.Boolean exonerationGenerale = new Boolean(false);
     // Primary and Foreign Key
     private java.lang.String idTiers = new String();
+    private java.lang.Boolean majFAD = new Boolean(false);
     private java.lang.Boolean irrecouvrable = new Boolean(false);
     private java.lang.Boolean liquidation = new Boolean(false);
     private java.lang.String masseAnnuelle = new String();
@@ -333,6 +336,8 @@ public class AFAffiliation extends BEntity implements Serializable {
     private boolean isAnnonceIdeCreationToAdd = false;
     private boolean rulesByPass = false;
 
+    private boolean saisieSysteme = Boolean.FALSE;
+
     // D0181 - avenant IDE champ activité
     private String activite = "";
     private boolean confirmerAnnonceActivite = false;
@@ -340,6 +345,18 @@ public class AFAffiliation extends BEntity implements Serializable {
     private String warningMessageAnnonceIdeCreationNotAdded = "";
 
     private String idAnnonceIdeCreationLiee = "";
+
+    /**
+     * Permet de définir si une modification de l'affiliation est faite depuis l'écran ou par le système
+     *
+     */
+    public boolean isSaisieSysteme() {
+        return saisieSysteme;
+    }
+
+    public void setSaisieSysteme(boolean saisieSysteme) {
+        this.saisieSysteme = saisieSysteme;
+    }
 
     public String getIdAnnonceIdeCreationLiee() {
         return idAnnonceIdeCreationLiee;
@@ -396,7 +413,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Effectue des traitements après un ajout dans la BD.
-     * 
+     *
      * @see globaz.globall.db.BEntity#_afterAdd(globaz.globall.db.BTransaction)
      */
     @Override
@@ -558,7 +575,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Effectue des traitements après une lecture dans la BD.
-     * 
+     *
      * @see globaz.globall.db.BEntity#_afterRetrieve(globaz.globall.db.BTransaction)
      */
     @Override
@@ -569,11 +586,16 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Effectue des traitements après une mise à jour dans la BD.
-     * 
+     *
      * @see globaz.globall.db.BEntity#_afterUpdate(globaz.globall.db.BTransaction)
      */
     @Override
     protected void _afterUpdate(BTransaction transaction) throws Exception {
+
+        if(!isSaisieSysteme()) {
+            // Update le boolean majFAD sur l'affiliation et ajoute si besoin la cotisation à l'assurance de majoration des frais d'admin
+            getMajFADHelper().updateMajFADSansDeclaration(getSession().getCurrentThreadTransaction(), this);
+        }
 
         if (isWantGenerationSuiviLAALPP()) {
             if (getEnvoiAutomatiqueLAA().booleanValue()) {
@@ -920,7 +942,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Effectue des traitements avant un ajout dans la BD.
-     * 
+     *
      * @see globaz.globall.db.BEntity#_beforeAdd(globaz.globall.db.BTransaction)
      */
     @Override
@@ -1022,7 +1044,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Effectue des traitements avant une mise à jour dans la BD.
-     * 
+     *
      * @see globaz.globall.db.BEntity#_beforeUpdate(globaz.globall.db.BTransaction)
      */
     @Override
@@ -1211,7 +1233,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Cette méthode retourne une cotisation active, c'est une cotisation qui n'a pas de date de fin
-     * 
+     *
      * @param transaction
      * @param idAffiliation
      * @param genreCotisation
@@ -1245,7 +1267,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Retourne la Cotisation qui correspond au critères de recherche.
-     * 
+     *
      * @param transaction
      * @param idAffiliation
      * @param genre
@@ -1314,7 +1336,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Retourne la Cotisation qui correspond au critères de recherche.
-     * 
+     *
      * @param transaction
      * @param idAffiliation
      * @param genre
@@ -1355,7 +1377,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Création d'une Affiliation.
-     * 
+     *
      * @param transaction
      * @param session
      * @param dateDebut
@@ -1411,7 +1433,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Retourne l'affiliation précédente.
-     * 
+     *
      * @return l'affiliation précédente
      */
     public AFAffiliation _getDerniereAffiliation() {
@@ -1451,7 +1473,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Cette méthode retourne la description du tiers à savoir : nom, adresse et localité
-     * 
+     *
      * @return Une String contenant la description du tiers
      */
     public String _getDescriptionTiers() {
@@ -1481,7 +1503,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Retourne le genre d'affiliation paritaire ou personnel en fonction du type d'affiliation
-     * 
+     *
      * @return le genre d'affiliation PARITAIRE, PERSONNEL, PARITAIRE ET PERSONNEL, AUTRE
      */
     public Genre _getGenre() {
@@ -1510,7 +1532,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Retourne l'affiliation précédente par rapport a la cotisation.
-     * 
+     *
      * @param session
      * @param currentCotisation
      * @return l'affiliation précédent
@@ -1540,7 +1562,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Retour le nom de la Table.
-     * 
+     *
      * @see globaz.globall.db.BEntity#_getTableName()
      */
     @Override
@@ -1550,7 +1572,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * On vérifie que deux affiliations de même type (paritaire, personnel) portant le même numéro ne se chevauchent pas
-     * 
+     *
      * @param affiliation
      *            l'affiliation à vérifier
      * @return true si les affiliations se chevauchent, false sinon
@@ -1603,7 +1625,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Lit dans la DB les valeurs des propriétés de l'entité.
-     * 
+     *
      * @see globaz.globall.db.BEntity#_readProperties(globaz.globall.db.BStatement)
      */
     @Override
@@ -1662,11 +1684,12 @@ public class AFAffiliation extends BEntity implements Serializable {
         ideRaisonSociale = statement.dbReadString("MATRSO");
         // D0181 - activité
         activite = statement.dbReadString("MATACT");
+        majFAD = statement.dbReadBoolean(AFAffiliation.FIELDNAME_MAJ_FAD);
     }
 
     /**
      * Retour l'Affiliation qui correspond au critères de recherche.
-     * 
+     *
      * @param transaction
      * @param noAffilie
      * @param annee
@@ -1725,7 +1748,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Retour l'Affiliation qui correspond au critères de recherche.
-     * 
+     *
      * @param transaction
      * @param noAffilie
      * @param dateDebutCP
@@ -1827,7 +1850,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Retour l'IdAffiliation de l'Affiliation qui correspond au critères de recherche.
-     * 
+     *
      * @param transaction
      * @param noAffilie
      * @param annee
@@ -1880,7 +1903,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Retour l'IdAffiliation de l'Affiliation qui correspond au critères de recherche.
-     * 
+     *
      * @param transaction
      * @param noAffilie
      * @param dateDebutCP
@@ -1939,7 +1962,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Retour le nombre d'affiliation qui correspond au critères de recherche.
-     * 
+     *
      * @param transaction
      * @param noAffilie
      * @param annee
@@ -1985,7 +2008,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Valide le contenu de l'entité.
-     * 
+     *
      * @see globaz.globall.db.BEntity#_validate(globaz.globall.db.BStatement)
      */
     @Override
@@ -2199,7 +2222,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Control les dates de début et de fin d'affiliation avec les autres affiliations pour le meme affilié.
-     * 
+     *
      * @param transaction
      *            la transaction a utiliser
      * @return true - Si les dates sont valides
@@ -2339,7 +2362,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Sauvegarde les valeurs des propriétés composant la clé primaire de l'entité.
-     * 
+     *
      * @see globaz.globall.db.BEntity#_writePrimaryKey(globaz.globall.db.BStatement)
      */
     @Override
@@ -2349,7 +2372,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Sauvegarde dans la DB les valeurs des propriétés de l'entité.
-     * 
+     *
      * @see globaz.globall.db.BEntity#_writeProperties(globaz.globall.db.BStatement)
      */
     @Override
@@ -2449,12 +2472,13 @@ public class AFAffiliation extends BEntity implements Serializable {
                 this._dbWriteString(statement.getTransaction(), getIdeRaisonSociale(), "ideRaisonSociale"));
         // D0181 - activité
         statement.writeField("MATACT", this._dbWriteString(statement.getTransaction(), getActivite(), "activite"));
-
+        statement.writeField("MAJFAD ", this._dbWriteBoolean(statement.getTransaction(), isMajFAD(),
+                BConstants.DB_TYPE_BOOLEAN_NUMERIC, "majFAD"));
     }
 
     /**
      * Ajoute un suivi à la liste des suivis à traiter de manière groupée
-     * 
+     *
      * @param process
      *            le suivi à suspendre
      */
@@ -2464,7 +2488,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Créer un suivi sur le contrôle LAA si pas déjà présent
-     * 
+     *
      * @throws Exception
      *             si problème de création
      */
@@ -2478,7 +2502,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Créer un suivi sur le contrôle LPP si pas déjà présent
-     * 
+     *
      * @throws Exception
      *             si problème de création
      */
@@ -2492,7 +2516,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Créer un suivi sur le contrôle LPP si pas déjà présent avec le module de provenance défini
-     * 
+     *
      * @throws Exception
      *             si problème de création
      */
@@ -2512,7 +2536,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Test si la date de fin de l'exception doit être mise à jour
-     * 
+     *
      * @param dateFinException
      * @return
      * @throws Exception
@@ -2612,7 +2636,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Methode utilisée par les API.
-     * 
+     *
      * @param params
      * @return
      * @throws Exception
@@ -2643,7 +2667,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Indique si l'affilié donné est valide pour les prestations AF
-     * 
+     *
      * @param date
      *            date à laquelle le test doit s'effectuer. Renvoie false si non rensignée
      * @param typeAllocataire
@@ -2664,7 +2688,7 @@ public class AFAffiliation extends BEntity implements Serializable {
      * "Succursale de" est recherché afin de retrouver l'affiliation maison mère.<br>
      * Dans le cas où le lien "Succursale de" n'est pas applicable, il est également possible d'utiliser le type de lien
      * "Décompte AF sous" que cette méthode tentera également d'utiliser pour rechercher l'affiliation de facturation.
-     * 
+     *
      * @param date
      *            la date utilisée pour la recherche.
      * @return l'affiliation à laquelle les cotisations AF sont facturées ou null si inconnu.
@@ -2688,7 +2712,7 @@ public class AFAffiliation extends BEntity implements Serializable {
      * "Succursale de" est recherché afin de retrouver l'affiliation maison mère.<br>
      * Dans le cas où le lien "Succursale de" n'est pas applicable, il est également possible d'utiliser le type de lien
      * "Décompte AF sous" que cette méthode tentera également d'utiliser pour rechercher l'affiliation de facturation.
-     * 
+     *
      * @param date
      *            la date utilisée pour la recherche.
      * @param typeAllocataire
@@ -2718,7 +2742,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Retourne une liste d'Assurances pour une Affiliation données.
-     * 
+     *
      * @param httpSession
      * @param IdAffiliation
      * @return
@@ -2759,7 +2783,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Retourne une liste d'Assurances pour une Affiliation données.
-     * 
+     *
      * @param httpSession
      * @param IdAffiliation
      * @return
@@ -2820,7 +2844,7 @@ public class AFAffiliation extends BEntity implements Serializable {
     /**
      * Retourne le canton défini pour les AF. Si le canton est spécifié dans la cotisation AF, celui-ci est retourné.
      * Sinon, c'est le canton de l'adresse de l'affilié qui est utilisé
-     * 
+     *
      * @param date
      *            la date utilisée pour la recherche
      * @return e canton défini pour les AF
@@ -2933,7 +2957,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Retour les "Code System" a exclure pour la sélection du "Motif de fin" d'affiliation.
-     * 
+     *
      * @return
      */
     public HashSet<String> getExceptMotifFin() {
@@ -2968,7 +2992,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Renvoie le Manager de l'entité.
-     * 
+     *
      * @return
      */
     protected BManager getManager() {
@@ -3042,7 +3066,7 @@ public class AFAffiliation extends BEntity implements Serializable {
     /**
      * conversion Base64 : Une raison sociale peut contenir des caractères non autorisé en get
      * utilisé pour transiter la raison sociale vers la recherche ide
-     * 
+     *
      * @return la raison sociale en B64
      */
     public String getRaisonSocialeb64() {
@@ -3068,7 +3092,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Détermine si l'affiliation est l'objet d'un lien d'affiliation de type 'taxé sous': x --taxé sous--> this
-     * 
+     *
      * @deprecated utilier AFAffiliationUtil.getTaxationPrincipale()
      */
     @Deprecated
@@ -3086,7 +3110,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Rechercher le tiers de l'affiliastion en fonction de son ID.
-     * 
+     *
      * @return le tiers
      */
     public TITiersViewBean getTiers() {
@@ -3115,7 +3139,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Méthode getTiersNom en fonction de son ID.
-     * 
+     *
      * @return le tiers
      */
     public java.lang.String getTiersNom() {
@@ -3155,7 +3179,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Test si l'affiliation contient une information sur la caisse LAA
-     * 
+     *
      * @param annee
      *            l'année concernée
      * @return true si caisse trouvée
@@ -3170,7 +3194,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Test si l'affiliation contient une information sur la caisse LPP
-     * 
+     *
      * @param annee
      *            l'année concernée
      * @return true si caisse trouvée
@@ -3240,7 +3264,7 @@ public class AFAffiliation extends BEntity implements Serializable {
     /**
      * indique si un user à un niveau de droit (complément codeSecure) suffisant par rapport au niveau de sécurité sur
      * l'affiliation
-     * 
+     *
      * @return vrai si le user à le droit >= à la sécurité de l'affiliation
      */
     public boolean hasRightAccesSecurity() {
@@ -3308,6 +3332,20 @@ public class AFAffiliation extends BEntity implements Serializable {
         return irrecouvrable;
     }
 
+    /**
+     * @return retourne l'état de la case a cocher et synchronise la cotisation a la majoration des frais d'admin
+     */
+    public java.lang.Boolean isMajFADAndUpdate() {
+        return isMajFAD();
+    }
+
+    /**
+     * @return true si les frais d'admin doivent être majoré
+     */
+    public java.lang.Boolean isMajFAD() {
+        return majFAD;
+    }
+
     public java.lang.Boolean isLiquidation() {
         return liquidation;
     }
@@ -3330,7 +3368,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Retourne si les suivis sont retenus pour leur traitement
-     * 
+     *
      * @return
      */
     public boolean isSuivisSuspendu() {
@@ -3339,7 +3377,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Détermine si l'affiliation est l'objet d'un lien d'affiliation de type 'taxé sous': x --taxé sous--> this
-     * 
+     *
      * @deprecated utilier AFAffiliationUtil.isTaxationPrincipale()
      */
     @Deprecated
@@ -3349,7 +3387,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Détermine si l'affiliation est l'objet d'un lien d'affiliation de type 'taxé sous': x --taxé sous--> this
-     * 
+     *
      * @deprecated utilier AFAffiliationUtil.isTaxationPrincipale()
      */
     @Deprecated
@@ -3498,7 +3536,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * conversion Base64 : Une raison sociale peut contenir des caractères non autorisé en get
-     * 
+     *
      * @param iDE_raisonSociale
      */
     public void setIdeRaisonSocialeb64(String iDE_raisonSociale) {
@@ -3519,6 +3557,10 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     public void setIrrecouvrable(java.lang.Boolean newIrrecouvrable) {
         irrecouvrable = newIrrecouvrable;
+    }
+
+    public void setMajFAD(java.lang.Boolean majFAD) {
+        this.majFAD = majFAD;
     }
 
     public void setLiquidation(java.lang.Boolean newLiquidation) {
@@ -3608,7 +3650,7 @@ public class AFAffiliation extends BEntity implements Serializable {
     /**
      * Permet de ne pas générer le suivi LAA LPP
      * Exemple en cas de mise à jour de l'affiliation par un process (ex traitement swissdec)
-     * 
+     *
      * @param wantGenerationSuiviLAALPP
      */
     public void setWantGenerationSuiviLAALPP(boolean varBoolean) {
@@ -3664,7 +3706,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Contrôle si les champs obligatoires sont renseignés et valides.
-     * 
+     *
      * @return Une String vide si les champs obligatoires sont renseignés et valides ou Une String contenant les erreurs
      * @throws Exception
      */
@@ -3809,7 +3851,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Getter de codeSUVA
-     * 
+     *
      * @return the codeSUVA
      */
     public String getCodeSUVA() {
@@ -3818,7 +3860,7 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     /**
      * Setter de codeSUVA
-     * 
+     *
      * @param codeSUVA the codeSUVA to set
      */
     public void setCodeSUVA(String codeSUVA) {
@@ -3829,7 +3871,7 @@ public class AFAffiliation extends BEntity implements Serializable {
      * Retourne <br>
      * - true si la date de fin est présente (l'affiliation est terminée,radiée)<br>
      * - false si l'affiliation est en cours (date de fin non renseignée).
-     * 
+     *
      * @return true or false
      */
     public boolean isRadie() {
@@ -3840,7 +3882,7 @@ public class AFAffiliation extends BEntity implements Serializable {
      * Retourne <br>
      * - false si la date de fin est présente (l'affiliation est terminée,radiée)<br>
      * - true si l'affiliation est en cours (date de fin non renseignée).
-     * 
+     *
      * @return true or false
      */
     public boolean isEnCours() {
@@ -3851,7 +3893,7 @@ public class AFAffiliation extends BEntity implements Serializable {
      * Retourne <br>
      * - true si le numéro IDE à le status définitif
      * - false sinon
-     * 
+     *
      * return true or false
      */
     public boolean isIdeDefinitif() {
@@ -3862,7 +3904,7 @@ public class AFAffiliation extends BEntity implements Serializable {
      * Retourne <br>
      * - true si le numéro IDE à le status provisoire
      * - false sinon
-     * 
+     *
      * return true or false
      */
     public boolean isIdeProvisoire() {

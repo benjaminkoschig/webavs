@@ -1,6 +1,7 @@
 package globaz.draco.servlet;
 
 import globaz.draco.db.declaration.DSDeclarationViewBean;
+import globaz.draco.db.declaration.MajFADHelper;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWDispatcher;
@@ -21,6 +22,24 @@ public class DSActionDeclaration extends DSActionCustomFind {
 
     public DSActionDeclaration(FWServlet servlet) {
         super(servlet);
+    }
+
+    @Override
+    protected FWViewBeanInterface beforeNouveau(HttpSession session, HttpServletRequest request, HttpServletResponse response, FWViewBeanInterface viewBean) {
+        if (viewBean instanceof DSDeclarationViewBean) {
+            updateProvenanceDeclaration((DSDeclarationViewBean) viewBean);
+        }
+        return super.beforeNouveau(session, request, response, viewBean);
+    }
+
+    /**
+     * Update la provenance à MANUELLE en fonction de la propriété
+     * système draco.majoration.declaration.manuelle.active
+     */
+    private void updateProvenanceDeclaration(DSDeclarationViewBean viewBean) {
+        if (MajFADHelper.getTypesDeclarationDepuisProprietes().size() > 0) {
+            viewBean.setProvenance(DSDeclarationViewBean.PROVENANCE_MANUELLE);
+        }
     }
 
     @Override
