@@ -1,13 +1,17 @@
 package ch.globaz.naos.business.service;
 
+import ch.globaz.naos.business.model.*;
+import ch.globaz.naos.exception.MajorationFraisAdminException;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BTransaction;
+import globaz.globall.util.JAException;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
 import ch.globaz.naos.business.data.AssuranceInfo;
-import ch.globaz.naos.business.model.AffiliationAssuranceSearchComplexModel;
-import ch.globaz.naos.business.model.AffiliationSearchSimpleModel;
-import ch.globaz.naos.business.model.AffiliationSimpleModel;
-import ch.globaz.naos.business.model.AffiliationTiersSearchComplexModel;
+import globaz.naos.db.affiliation.AFAffiliation;
+
+import java.util.HashSet;
 
 public interface AffiliationService extends JadeApplicationService {
 
@@ -61,8 +65,7 @@ public interface AffiliationService extends JadeApplicationService {
     /**
      * Renvoie la maison mère, ou null si il n'y a pas de maison mère
      * 
-     * @param le
-     *            numéro d'affilié formatte
+     * @param numeroAffilieFormatte le numéro d'affilié formatte
      * @return la maison mère, ou null si il n'y a pas de maison mère
      * @throws JadePersistenceException
      * @throws JadeApplicationException
@@ -71,10 +74,9 @@ public interface AffiliationService extends JadeApplicationService {
             JadeApplicationException;
 
     /**
-     * Renvoi le nombre de succzrsale de la maison mère.
+     * Renvoi le nombre de succursale de la maison mère.
      * 
-     * @param le
-     *            numéro d'affilié formatte
+     * @param numeroAffilieFormatte le numéro d'affilié formatte
      * @return le nombre de succzrsale de la maison mère.
      * @throws JadePersistenceException
      * @throws JadeApplicationException
@@ -153,16 +155,47 @@ public interface AffiliationService extends JadeApplicationService {
     /**
      * lit un enregistrement DB sur la table affiliation en fonction de l'id passé en paramètre
      * 
-     * @param idAffiliation
-     *            l'id de l'enregistrement à lire
+     * @param idAffiliation l'id de l'enregistrement à lire
      * @return le modèle représentant l'enregistrement
      * @throws JadePersistenceException
      * @throws JadeApplicationException
      */
     public AffiliationSimpleModel read(String idAffiliation) throws JadePersistenceException, JadeApplicationException;
 
+    /**
+     * La méthode principale de recherche sur le AffiliationAssuranceSearchComplexModel
+     *
+     * @param searchModel le AffiliationAssuranceSearchComplexModel
+     * @return le modèle représentant l'enregistrement
+     * @throws JadePersistenceException
+     */
     public AffiliationAssuranceSearchComplexModel searchAffiliationAssurance(
             AffiliationAssuranceSearchComplexModel searchModel) throws JadePersistenceException;
+
+    /**
+     * Permet de retourner les ids des assurances associées aux cotisations d'un affilié
+     *
+     * @param session Une session
+     * @param forNumeroAffilie l'id de l'affiliation
+     * @return Tous les ids des assurance pour toutes les cotisations d'un affilié
+     */
+    public HashSet<String> getIdsAssurancesAffiliation(BSession session, String forNumeroAffilie);
+
+    /**
+     * Recherche la cotisation à l'assurance de majoration l'active si elle existe ou la crée s'il elle n'existe pas
+     *
+     * @param transaction la transaction
+     * @param afAffiliation l'affiliation
+     */
+    public void addOrActivateCotisationAssuranceMajoration(BTransaction transaction, AFAffiliation afAffiliation, String anneeDeclSalaire) throws MajorationFraisAdminException, JAException;
+
+    /**
+     * Recherche la cotisation à l'assurance de majoration et la désactive si elle existe
+     *
+     * @param transaction la transaction
+     * @param afAffiliation l'affiliation
+     */
+    public void deactivateCotisationAssuranceMajoration(BTransaction transaction, AFAffiliation afAffiliation) throws MajorationFraisAdminException;
 
     /**
      * Recherche d'affiliation complexe

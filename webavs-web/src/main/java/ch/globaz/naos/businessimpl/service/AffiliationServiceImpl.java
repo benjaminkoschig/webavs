@@ -1,46 +1,334 @@
 package ch.globaz.naos.businessimpl.service;
 
+import ch.globaz.naos.business.model.*;
+import ch.globaz.naos.exception.MajorationFraisAdminException;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BTransaction;
 import globaz.globall.db.GlobazServer;
 import globaz.globall.format.IFormatData;
 import globaz.globall.util.JACalendar;
+import globaz.globall.util.JAException;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThreadActivator;
+import globaz.jade.context.JadeThreadContext;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.naos.db.affiliation.AFAffiliation;
+import globaz.naos.db.affiliation.AFAffiliationUtil;
+import globaz.naos.db.assurance.AFAssurance;
+import globaz.naos.db.assurance.AFAssuranceManager;
+import globaz.naos.db.cotisation.AFCotisation;
 import globaz.naos.translation.CodeSystem;
 import globaz.pyxis.application.TIApplication;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
+
 import ch.globaz.al.business.constantes.ALCSTiers;
 import ch.globaz.al.business.constantes.ALConstCaisse;
 import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.naos.business.data.AssuranceInfo;
-import ch.globaz.naos.business.model.AffiliationAssuranceComplexModel;
-import ch.globaz.naos.business.model.AffiliationAssuranceSearchComplexModel;
-import ch.globaz.naos.business.model.AffiliationSearchSimpleModel;
-import ch.globaz.naos.business.model.AffiliationSimpleModel;
-import ch.globaz.naos.business.model.AffiliationTiersSearchComplexModel;
-import ch.globaz.naos.business.model.AssuranceCouverteComplexModel;
-import ch.globaz.naos.business.model.AssuranceCouverteSearchComplexModel;
-import ch.globaz.naos.business.model.LienAffiliationComplexModel;
-import ch.globaz.naos.business.model.LienAffiliationSearchComplexModel;
-import ch.globaz.naos.business.model.PlanAffiliationCotisationComplexModel;
-import ch.globaz.naos.business.model.PlanAffiliationCotisationSearchComplexModel;
 import ch.globaz.naos.business.service.AFBusinessServiceLocator;
 import ch.globaz.naos.business.service.AffiliationService;
 import ch.globaz.naos.exception.NaosException;
 import ch.globaz.pyxis.business.model.AdresseTiersDetail;
 import ch.globaz.pyxis.business.service.AdresseService;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
  * Service pour le domaine Affiliation
  */
 public class AffiliationServiceImpl implements AffiliationService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AffiliationServiceImpl.class);
+
+    public void addOrActivateCotisationAssuranceMajoration(BTransaction transaction, AFAffiliation afAffiliation, String anneeDeclSalaire) throws MajorationFraisAdminException, JAException {
+        CotisationSimpleModel cotisationAssuranceFraisAdmin = getCotisationAssuranceFraisAdmin(transaction.getSession(), afAffiliation.getAffilieNumero(), anneeDeclSalaire);
+        CotisationSimpleModel cotisationAssuranceMajoration = getCotisationAssuranceMajoration(transaction.getSession(), afAffiliation.getAffilieNumero());
+
+        if (cotisationAssuranceMajoration != null) {
+            activateCotisationAssuranceMajoration(transaction, cotisationAssuranceFraisAdmin, cotisationAssuranceMajoration, anneeDeclSalaire);
+        } else if (cotisationAssuranceFraisAdmin != null) {
+            addCotisationAssuranceMajoration(transaction, afAffiliation, cotisationAssuranceFraisAdmin, anneeDeclSalaire);
+        }
+    }
+
+    public void deactivateCotisationAssuranceMajoration(BTransaction transaction, AFAffiliation afAffiliation) throws MajorationFraisAdminException {
+        CotisationSimpleModel cotisationAssuranceMajoration = getCotisationAssuranceMajoration(transaction.getSession(), afAffiliation.getAffilieNumero());
+        if (cotisationAssuranceMajoration != null) {
+            deactivateCotisationAssuranceMajoration(transaction, cotisationAssuranceMajoration);
+        }
+    }
+
+    /**
+     * Désactive la cotisation à l'assurance de majoration des frais d'admin ur l'affiliation
+     *
+     * @param transaction la transaction
+     * @param cotisationAssuranceMajoration la cotisation à l'assurance de majoration des frais d'admin
+     */
+    private void deactivateCotisationAssuranceMajoration(BTransaction transaction, CotisationSimpleModel cotisationAssuranceMajoration) throws MajorationFraisAdminException {
+        try {
+            // initialisation du thread context et utilisation du contextjdbc
+            JadeThreadContext threadContext = AFAffiliationUtil.initContext(transaction.getSession());
+            JadeThreadActivator.startUsingJdbcContext(Thread.currentThread(), threadContext.getContext());
+
+            cotisationAssuranceMajoration.setDateFin(cotisationAssuranceMajoration.getDateDebut());
+            cotisationAssuranceMajoration.setMotifFin(CodeSystem.MOTIF_FIN_FIN_COUV_ASSURANCE);
+            JadePersistenceManager.update(cotisationAssuranceMajoration);
+        } catch (Exception e) {
+            String message = "Erreur durant la désactivation de la cotisation à l'assurance de majoration des frais d'admin.";
+            LOGGER.error(message, e);
+            throw new MajorationFraisAdminException(message, e);
+        } finally {
+            JadeThreadActivator.stopUsingContext(Thread.currentThread());
+        }
+    }
+
+    /**
+     * Active la cotisation à l'assurance de majoration des frais d'admin sur l'affiliation
+     *
+     * @param transaction la transaction
+     * @param cotisationAssuranceFraisAdmin la cotisation à l'assurance de frais d'admin
+     * @param cotisationAssuranceMajoration la cotisation à l'assurance de majoration des frais d'admin
+     */
+    private void activateCotisationAssuranceMajoration(BTransaction transaction, CotisationSimpleModel cotisationAssuranceFraisAdmin, CotisationSimpleModel cotisationAssuranceMajoration, String anneeDeclSalaire) throws MajorationFraisAdminException {
+        try {
+            // initialisation du thread context et utilisation du contextjdbc
+            JadeThreadContext threadContext = AFAffiliationUtil.initContext(transaction.getSession());
+            JadeThreadActivator.startUsingJdbcContext(Thread.currentThread(), threadContext.getContext());
+
+            // Update de la cotisation de majoration des frais d'admin avec les valeures de la cotisations au frais d'admin
+            cotisationAssuranceMajoration.setDateDebut(anneeDeclSalaire != null
+                    ? "01.01." + anneeDeclSalaire
+                    : cotisationAssuranceFraisAdmin.getDateDebut());
+            cotisationAssuranceMajoration.setDateFin(cotisationAssuranceFraisAdmin.getDateFin());
+            // Ne reprends pas le motif de fin exception autrement il faudrait créer une deuxième cotisation utilisé comme référence pour l'exception
+            cotisationAssuranceMajoration.setMotifFin(cotisationAssuranceFraisAdmin.getMotifFin().equals(CodeSystem.MOTIF_FIN_EXCEPTION)
+                    ? CodeSystem.MOTIF_FIN_FIN_COUV_ASSURANCE
+                    : cotisationAssuranceFraisAdmin.getMotifFin());
+            cotisationAssuranceMajoration.setPeriodicite(cotisationAssuranceFraisAdmin.getPeriodicite());
+            cotisationAssuranceMajoration.setPlanAffiliationId(cotisationAssuranceFraisAdmin.getPlanAffiliationId());
+            cotisationAssuranceMajoration.setPlanCaisseId(cotisationAssuranceFraisAdmin.getPlanCaisseId());
+            cotisationAssuranceMajoration.setAnneeDecision(cotisationAssuranceFraisAdmin.getAnneeDecision());
+            cotisationAssuranceMajoration.setMasseAnnuelle(cotisationAssuranceFraisAdmin.getMasseAnnuelle());
+            //cotisationAssuranceMajoration.setMiseAjourDepuisEcran(Boolean.FALSE);
+            cotisationAssuranceMajoration.setMaisonMere(String.valueOf(cotisationAssuranceFraisAdmin.getMaisonMere()));
+            cotisationAssuranceMajoration.setMontantTrimestriel(cotisationAssuranceFraisAdmin.getMontantTrimestriel());
+            cotisationAssuranceMajoration.setMontantMensuel(cotisationAssuranceFraisAdmin.getMontantMensuel());
+            cotisationAssuranceMajoration.setMontantAnnuel(cotisationAssuranceFraisAdmin.getMontantAnnuel());
+            //cotisationAssuranceMajoration.setAffiliationId(afAffiliation.getAffiliationId());
+
+            // Update de la cotisation
+            JadePersistenceManager.update(cotisationAssuranceMajoration);
+
+        } catch (Exception e) {
+            String message = "Error durant l'activation de la cotisation à l'assurance de majoration des frais d'admin.";
+            LOGGER.error(message, e);
+            throw new MajorationFraisAdminException(message, e);
+        } finally {
+            JadeThreadActivator.stopUsingContext(Thread.currentThread());
+        }
+    }
+
+    /**
+     * Ajoute la cotisation à l'assurance de majoration des frais d'admin sur l'affiliation
+     *
+     * @param transaction la transaction
+     * @param afAffiliation l'affiliation
+     * @param cotisationAssuranceFraisAdmin la cotisation a l'assurance de frais d'admin
+     */
+    private void addCotisationAssuranceMajoration(BTransaction transaction, AFAffiliation afAffiliation, CotisationSimpleModel cotisationAssuranceFraisAdmin, String anneeDeclSalaire) throws MajorationFraisAdminException {
+        try {
+            // Création d'une nouvelle cotisation de majoration des frais d'admin avec les valeures de la cotisation aux frais d'admin
+            AFCotisation cotisationAssuranceMajoration = new AFCotisation();
+            cotisationAssuranceMajoration.setSession(transaction.getSession());
+            cotisationAssuranceMajoration.setDateDebut(anneeDeclSalaire != null
+                    ? "01.01." + anneeDeclSalaire
+                    : cotisationAssuranceFraisAdmin.getDateDebut());
+            cotisationAssuranceMajoration.setDateFin(cotisationAssuranceFraisAdmin.getDateFin());
+            // Ne reprends pas le motif de fin exception autrement il faudrait créer une deuxième cotisation utilisé comme référence pour l'exception
+            cotisationAssuranceMajoration.setMotifFin(cotisationAssuranceFraisAdmin.getMotifFin().equals(CodeSystem.MOTIF_FIN_EXCEPTION)
+                    ? CodeSystem.MOTIF_FIN_FIN_COUV_ASSURANCE
+                    : cotisationAssuranceFraisAdmin.getMotifFin());
+            cotisationAssuranceMajoration.setPeriodicite(cotisationAssuranceFraisAdmin.getPeriodicite());
+            cotisationAssuranceMajoration.setPlanAffiliationId(cotisationAssuranceFraisAdmin.getPlanAffiliationId());
+            cotisationAssuranceMajoration.setPlanCaisseId(cotisationAssuranceFraisAdmin.getPlanCaisseId());
+            cotisationAssuranceMajoration.setAnneeDecision(cotisationAssuranceFraisAdmin.getAnneeDecision());
+            cotisationAssuranceMajoration.setMasseAnnuelle(cotisationAssuranceFraisAdmin.getMasseAnnuelle());
+            cotisationAssuranceMajoration.setMiseAjourDepuisEcran(Boolean.FALSE);
+            cotisationAssuranceMajoration.setMaisonMere(Boolean.valueOf(cotisationAssuranceFraisAdmin.getMaisonMere()));
+            cotisationAssuranceMajoration.setMontantTrimestriel(cotisationAssuranceFraisAdmin.getMontantTrimestriel());
+            cotisationAssuranceMajoration.setMontantMensuel(cotisationAssuranceFraisAdmin.getMontantMensuel());
+            cotisationAssuranceMajoration.setMontantAnnuel(cotisationAssuranceFraisAdmin.getMontantAnnuel());
+            cotisationAssuranceMajoration.setAffiliationId(afAffiliation.getAffiliationId());
+
+            //Recherche l'assurance de majoration des frais d'admin
+            AFAssurance afAssuranceFraisAdminMajoration = getAssuranceFraisAdminMajoration(transaction);
+
+            //Set l'id de l'assurance de frais de majoration dans la cotisation
+            cotisationAssuranceMajoration.setAssuranceId(afAssuranceFraisAdminMajoration.getAssuranceId());
+
+            //Sauvegarde la nouvelle cotisation
+            cotisationAssuranceMajoration.save(transaction);
+
+        } catch (Exception e) {
+            String message = "Error durant la création de la cotisation à l'assurance de majoration des frais d'admin.";
+            LOGGER.error(message, e);
+            throw new MajorationFraisAdminException(message, e);
+        }
+    }
+
+    /**
+     * Permet de retourner l'assurance de majoration des frais d'admin
+     * en fonction du genre de l'assurance de frais d'admin
+     *
+     * @param transaction la transaction
+     * @return L'assurance de type majoration des frais d'administration
+     */
+    private AFAssurance getAssuranceFraisAdminMajoration(BTransaction transaction) throws Exception {
+        AFAssuranceManager assMng = new AFAssuranceManager();
+        AFAssurance afAssuranceFraisAdminMajoration = null;
+        assMng.setSession(transaction.getSession());
+        assMng.setForTypeAssurance(CodeSystem.TYPE_ASS_FRAIS_ADMIN_MAJ);
+        assMng.setForGenreAssurance(CodeSystem.GENRE_ASS_PARITAIRE);
+        assMng.find();
+        if (assMng.size() > 0) {
+            afAssuranceFraisAdminMajoration = (AFAssurance) assMng.getFirstEntity();
+        } else {
+            LOGGER.warn("Impossible de trouver l'assurance de majoration des frais d'admin.");
+        }
+
+        return afAssuranceFraisAdminMajoration;
+    }
+
+    /**
+     * Permet de retourner l'assurance de frais d'amin
+     * en fonction de l'id d'assurance
+     *
+     * @param transaction la transaction
+     * @param assuranceId l'id de l'assurance à rechercher
+     * @return L'assurance de frais d'administration
+     */
+    private AFAssurance getAssuranceFraisAdmin(BTransaction transaction, String assuranceId) throws Exception {
+        AFAssuranceManager assMng = new AFAssuranceManager();
+        AFAssurance afAssuranceFraisAdmin = null;
+        assMng.setSession(transaction.getSession());
+        assMng.setForIdAssurance(assuranceId);
+        assMng.setForTypeAssurance(CodeSystem.TYPE_ASS_FRAIS_ADMIN);
+        assMng.find();
+        if (assMng.size() > 0) {
+            afAssuranceFraisAdmin = (AFAssurance) assMng.getFirstEntity();
+        } else {
+            LOGGER.warn("Impossible de trouver une assurance de frais d'admin");
+        }
+
+        return afAssuranceFraisAdmin;
+    }
+
+    public HashSet<String> getIdsAssurancesAffiliation(BSession session, String forNumeroAffilie) {
+        AffiliationAssuranceSearchComplexModel affiliationAssuranceSearchComplexModel = new AffiliationAssuranceSearchComplexModel();
+        affiliationAssuranceSearchComplexModel.setForNumeroAffilie(forNumeroAffilie);
+
+        HashSet<String> results = new HashSet<String>();
+        HashSet<CotisationSimpleModel> cotisationSimpleModels = searchCotisationS(session, affiliationAssuranceSearchComplexModel);
+        for (CotisationSimpleModel cotisationSimpleModel : cotisationSimpleModels) {
+            results.add(cotisationSimpleModel.getAssuranceId());
+        }
+
+        return results;
+    }
+
+    /**
+     * Permet de retourner la cotisation associé a l'assurance de type frais de majoration d'un affilié
+     *
+     * @param session une session
+     * @param forNumeroAffilie le numéro de l'affiliation
+     * @return Une cotisation a l'assurance de type frais de majoration d'un affilié
+     */
+    private CotisationSimpleModel getCotisationAssuranceMajoration(BSession session, String forNumeroAffilie) {
+        AffiliationAssuranceSearchComplexModel affiliationAssuranceSearchComplexModel = new AffiliationAssuranceSearchComplexModel();
+        affiliationAssuranceSearchComplexModel.setForNumeroAffilie(forNumeroAffilie);
+        affiliationAssuranceSearchComplexModel.setForTypeAssurance(CodeSystem.TYPE_ASS_FRAIS_ADMIN_MAJ);
+        affiliationAssuranceSearchComplexModel.setForGenreAssurance(CodeSystem.GENRE_ASS_PARITAIRE);
+        affiliationAssuranceSearchComplexModel.setWhereKey("searchCotisationActiveAndNotActive");
+
+        CotisationSimpleModel cotisation = null;
+        HashSet<CotisationSimpleModel> cotisationSimpleModels = searchCotisationS(session, affiliationAssuranceSearchComplexModel);
+        Iterator<CotisationSimpleModel> it = cotisationSimpleModels.iterator();
+        if (it.hasNext()) {
+            cotisation = it.next();
+        } else {
+            LOGGER.warn("Impossible de trouver une cotisation à l'assurance de majoration des frais d'admin");
+        }
+
+        return cotisation;
+    }
+
+    /**
+     * Permet de retourner la cotisation associé a l'assurance de type frais d'administration d'un affilié
+     *
+     * @param session une session
+     * @param forNumeroAffilie le numéro de l'affiliation
+     * @return Une cotisation l'assurance de type frais d'administrationd'un affilié
+     */
+    private CotisationSimpleModel getCotisationAssuranceFraisAdmin(BSession session, String forNumeroAffilie, String anneeDeclSalaire) throws JAException {
+        AffiliationAssuranceSearchComplexModel affiliationAssuranceSearchComplexModel = new AffiliationAssuranceSearchComplexModel();
+        affiliationAssuranceSearchComplexModel.setForNumeroAffilie(forNumeroAffilie);
+        affiliationAssuranceSearchComplexModel.setForTypeAssurance(CodeSystem.TYPE_ASS_FRAIS_ADMIN);
+        affiliationAssuranceSearchComplexModel.setForGenreAssurance(CodeSystem.GENRE_ASS_PARITAIRE);
+        affiliationAssuranceSearchComplexModel.setForDateCotisation((anneeDeclSalaire != null ? "31.12." + anneeDeclSalaire : JACalendar.todayJJsMMsAAAA()));
+
+        CotisationSimpleModel cotisation = null;
+        HashSet<CotisationSimpleModel> cotisationSimpleModels = searchCotisationS(session, affiliationAssuranceSearchComplexModel);
+        Iterator<CotisationSimpleModel> it = cotisationSimpleModels.iterator();
+        if (it.hasNext()) {
+            cotisation = it.next();
+        } else {
+            LOGGER.warn("Impossible de trouver une cotisation à l'assurance de frais d'admin");
+        }
+
+        return cotisation;
+    }
+
+
+    /**
+     * Permet de retourner les cotisations en fonction du searchComplexModel fourni en paramètre
+     *
+     * @param session Une session
+     * @param searchComplexModel le search model
+     * @return Les cotisations de l'affilié en fonction du searchModel
+     */
+    private HashSet<CotisationSimpleModel> searchCotisationS(BSession session, AffiliationAssuranceSearchComplexModel searchComplexModel) {
+        HashSet<CotisationSimpleModel> cotisations = new HashSet<CotisationSimpleModel>();
+
+        try {
+            // initialisation du thread context et utilisation du contextjdbc
+            JadeThreadContext threadContext = AFAffiliationUtil.initContext(session);
+            JadeThreadActivator.startUsingJdbcContext(Thread.currentThread(), threadContext.getContext());
+
+            searchComplexModel = this.searchAffiliationAssurance(searchComplexModel);
+
+            if (searchComplexModel.getSize() <= 0) {
+                LOGGER.info("Aucune cotisation n'a été trouvé pour les critères de recherche passé en parametre: " + searchComplexModel.getForNumeroAffilie());
+            } else {
+                for (JadeAbstractModel element : searchComplexModel.getSearchResults()) {
+                    cotisations.add((((AffiliationAssuranceComplexModel) element).getCotisation()));
+                }
+            }
+
+        } catch (Exception e) {
+            LOGGER.error("Error durant la recherche de la cotisation.", e);
+        } finally {
+            JadeThreadActivator.stopUsingContext(Thread.currentThread());
+        }
+
+        return cotisations;
+    }
 
     private String _getCantonAFTiers(String idTiers, String date) throws JadePersistenceException,
             JadeApplicationException {
@@ -160,7 +448,7 @@ public class AffiliationServiceImpl implements AffiliationService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seech.globaz.naos.business.service.AffiliationService# findAllForNumeroAffilieLike(java.lang.String)
      */
     @Override
@@ -255,7 +543,7 @@ public class AffiliationServiceImpl implements AffiliationService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.naos.business.service.AffiliationService#getAssuranceInfo(java .lang.String, java.lang.String,
      * java.lang.String, java.lang.String, java.lang.String)
      */
@@ -314,13 +602,13 @@ public class AffiliationServiceImpl implements AffiliationService {
     }
 
     /**
-     * 
+     *
      * Permet de savoir si une assurance est couverte ou non
-     * 
+     *
      * @param numeroAffilie
      * @param date
-     * @param isSuccursale
-     * @param numeroAffilieSuccursale
+     * @param typeDossier
+     * @param numeroAffilie
      * @return un objet de type AssuranceInfo qui contient le résultat
      * @throws JadePersistenceException
      *             si une erreur technique lié à la persistence des données survient lors de la recherche
@@ -582,7 +870,7 @@ public class AffiliationServiceImpl implements AffiliationService {
 
     /**
      * retourne si cotiAF active pour la date donnée mais sans adhésion
-     * 
+     *
      * @param idAffiliation
      * @param date
      * @return
@@ -613,7 +901,7 @@ public class AffiliationServiceImpl implements AffiliationService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.naos.business.service.AffiliationService#isAffiliationExists (java.lang.String)
      */
     @Override
@@ -650,7 +938,7 @@ public class AffiliationServiceImpl implements AffiliationService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.naos.business.service.AffiliationService#isNumeroAffilieValide (java.lang.String)
      */
     @Override
@@ -682,7 +970,7 @@ public class AffiliationServiceImpl implements AffiliationService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.naos.business.service.AffiliationService#isAffiliationExists (java.lang.String)
      */
     @Override
