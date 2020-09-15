@@ -19,7 +19,7 @@ detailLink = "draco?userAction=draco.declaration.ligneDeclaration.afficher&selec
             
 <%@page import="globaz.jade.client.util.JadeStringUtil"%>
 			<TH nowrap width="100" align="left">Assurance</TH>            
-            <TH align="right">Année</TH>
+            <TH align="right">Annï¿½e</TH>
             <TH align="right">Masse effective</TH>
             <TH align="right">Taux</TH>
             <TH align="right">Fraction</TH>
@@ -52,7 +52,7 @@ detailLink = "draco?userAction=draco.declaration.ligneDeclaration.afficher&selec
             <%if (!JAUtil.isStringEmpty(entity.getTauxAssuranceDeclaration())){%>
             <TD class="mtd" onClick="<%=actionDetail%>" align="right"><%=entity.getTauxAssuranceDeclaration()%></TD>
             <%} else {%>
-            <TD class="mtd" onClick="<%=actionDetail%>" align="right"><%=JANumberFormatter.fmt(entity.getTauxAssurance(),true,true,true,5)%></TD>            
+            <TD class="mtd" onClick="<%=actionDetail%>" align="right"><%=JANumberFormatter.fmt(entity.getTauxAssurance(),true,true,true,5)%></TD>
             <%}%>
             <%if (!JAUtil.isStringEmpty(entity.getFractionAssuranceDeclaration())){%>
             <TD class="mtd" onClick="<%=actionDetail%>" align="right"><%=entity.getFractionAssuranceDeclaration()%></TD>

@@ -68,6 +68,7 @@ top.document.title = "Web@AVS - <ct:FWLabel key='CDS0002_TITRE_ECRAN'/>";
 	        <OPTION value="2"><ct:FWLabel key="PROVENANCE_DAN"/></OPTION>
 	        <OPTION value="3"><ct:FWLabel key="PROVENANCE_PUCS_CCJU"/></OPTION>
 	        <OPTION value="4"><ct:FWLabel key="PROVENANCE_SWISSDEC"/></OPTION>
+			<OPTION value="5"><ct:FWLabel key="PROVENANCE_MANUELLE"/></OPTION>
     	</SELECT>
     </TD>  
 </TR>

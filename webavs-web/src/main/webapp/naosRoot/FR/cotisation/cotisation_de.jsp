@@ -241,7 +241,13 @@ function checkMasseLimit(masse) {
 											<INPUT type="hidden" name="planAffiliationId" value='<%=viewBean.getPlanAffiliationId()%>'>
 										</TD>
 									</TR>
-									<TR> 
+
+									<TR>
+										<TD nowrap width="175" height="31"><ct:FWLabel key="ID_ASSURANCE"/></TD>
+										<TD nowrap colspan="2"><%=viewBean.getAssuranceId()%></TD>
+									</TR>
+
+									<TR>
 										<TD nowrap width="175" height="31">Plan d'affiliation</TD>
 										
 										<TD nowrap width="270">

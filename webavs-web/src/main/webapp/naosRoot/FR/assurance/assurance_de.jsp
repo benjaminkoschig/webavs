@@ -92,6 +92,11 @@ function onChangeHasAssuranceReference() {
 							<TD nowrap colspan="3">&nbsp;</TD>
 						</TR>
 						<TR>
+							<TD nowrap width="125" height="31"><ct:FWLabel key="ID_ASSURANCE"/></TD>
+							<TD width="30" ></TD>
+							<TD nowrap colspan="2"><%=viewBean.getAssuranceId()%></TD>
+						</TR>
+						<TR>
 							<TD nowrap width="125" height="31">Libell&eacute; court</TD>
 							<TD width="30" ></TD>
 							<TD nowrap colspan="2">
