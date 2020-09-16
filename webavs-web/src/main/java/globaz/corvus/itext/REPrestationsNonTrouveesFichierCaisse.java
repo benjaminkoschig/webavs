@@ -4,10 +4,7 @@ import globaz.caisse.report.helper.ACaisseReportHelper;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.api.topaz.IRENoDocumentInfoRom;
 import globaz.corvus.application.REApplication;
-import globaz.corvus.db.annonces.IREAnnonceAdaptation;
-import globaz.corvus.db.annonces.REAnnoncesAbstractLevel2B;
-import globaz.corvus.db.annonces.REAnnoncesDiminution10EmeManager;
-import globaz.corvus.db.annonces.REAnnoncesDiminution9EmeManager;
+import globaz.corvus.db.annonces.*;
 import globaz.framework.printing.itext.dynamique.FWIAbstractDocumentList;
 import globaz.framework.printing.itext.exception.FWIException;
 import globaz.framework.printing.itext.fill.FWIImportProperties;
@@ -18,6 +15,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
@@ -438,8 +436,8 @@ public class REPrestationsNonTrouveesFichierCaisse extends FWIAbstractDocumentLi
         } else {
             _addCell("");
         }
-
-        _addCell(uneAnnonce.getGenrePrestation());
+        String fraction = getFraction(uneAnnonce);
+        _addCell(uneAnnonce.getGenrePrestation()+"."+fraction);
 
         FWCurrency ancienMontant = new FWCurrency(uneAnnonce.getAncienMontantMensuel());
         _addCell(ancienMontant.toStringFormat());
@@ -469,6 +467,19 @@ public class REPrestationsNonTrouveesFichierCaisse extends FWIAbstractDocumentLi
         _addCell((new FWCurrency(result).toStringFormat()));
 
         _addCell(getSession().getLabel("PROCESS_LISTE_ERR_RA_INEX_CAISSE"));
+    }
+
+    private String getFraction(IREAnnonceAdaptation uneAnnonce) {
+        String fraction = "";
+        if(uneAnnonce instanceof REAnnonce51Adaptation){
+            fraction = ((REAnnonce51Adaptation) uneAnnonce).getFractionRente();
+        }else if(uneAnnonce instanceof REAnnonce53Adaptation){
+            fraction = ((REAnnonce53Adaptation) uneAnnonce).getFractionRente();
+        }
+        if(JadeStringUtil.isBlank(fraction)){
+            return "0";
+        }
+        return fraction;
     }
 
     public void setMapPrestationsNonTrouveesFichierCaisse(

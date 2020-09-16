@@ -1,54 +1,54 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="menuHtml.xslt"?>
 <menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
-<!--
-	Menu principal Corvus
+	<!--
+        Menu principal Corvus
 
-	Regroupant :	- Demandes
-					- Rentes accordées
-					- Décisions
-					- Validation des décisions
-					- Lots
-					- Annonces
-					- Avances
-					Listes
-						- Demandes en attente
-						- Décisions validées
-						- Etat des rentes
-						- Liste des annonces
-						- Impôts à la source
-						- Liste CI add.
-						- Echéances
-						- Listes AB
-						- Comparaison avec la centrale
-						- Attestation fiscale
-						- Restitution
-					Paiement mensuel
-						- Autoriser les validations
-						- Interdire les validations
-						- Listes de vérification
-						- Exécuter paiement mensuel
-						- Charger récap
-						- Visu récap
-					Adaptation
-						- Circulaire
-						- Paiement fictif
-						- Importer annonces 51/53
-						- Liste d'erreurs
-						- Mise à jour des prestations
-						- Liste des prestations augmentées
-						- Rentes adaptées
-						- Récapitulation
-						- Liste récapitulative de l'adaptation
-						- Liste des annonces subséquentes
-						- Envoi des annonces subséquentes
-						- Import et comparaison 2ème livraison
-					Paramètres
-						- Taux
-						- Catalogues de textes
-						- Paramétrage API
-						- Anakin
--->
+        Regroupant :	- Demandes
+                        - Rentes accordées
+                        - Décisions
+                        - Validation des décisions
+                        - Lots
+                        - Annonces
+                        - Avances
+                        Listes
+                            - Demandes en attente
+                            - Décisions validées
+                            - Etat des rentes
+                            - Liste des annonces
+                            - Impôts à la source
+                            - Liste CI add.
+                            - Echéances
+                            - Listes AB
+                            - Comparaison avec la centrale
+                            - Attestation fiscale
+                            - Restitution
+                        Paiement mensuel
+                            - Autoriser les validations
+                            - Interdire les validations
+                            - Listes de vérification
+                            - Exécuter paiement mensuel
+                            - Charger récap
+                            - Visu récap
+                        Adaptation
+                            - Circulaire
+                            - Paiement fictif
+                            - Importer annonces 51/53
+                            - Liste d'erreurs
+                            - Mise à jour des prestations
+                            - Liste des prestations augmentées
+                            - Rentes adaptées
+                            - Récapitulation
+                            - Liste récapitulative de l'adaptation
+                            - Liste des annonces subséquentes
+                            - Envoi des annonces subséquentes
+                            - Import et comparaison 2ème livraison
+                        Paramètres
+                            - Taux
+                            - Catalogues de textes
+                            - Paramétrage API
+                            - Anakin
+    -->
 	<menu id="corvus-menuprincipal">
 		<label refId="MENU_PRINCIPAL" />
 		<nodes>
@@ -242,15 +242,15 @@
 						</action>
 					</node>
 					<node>
-						<label refId="MENU_OPTION_PAIEMENT_FIC" />
-						<action command="/corvus" responseTarget="fr_main">
-							<parameter name="userAction" value="corvus.adaptation.pmtFictif.afficher" />
-						</action>
-					</node>
-					<node>
 						<label refId="MENU_OPTION_LISTE_ERREURS_ADAP" />
 						<action command="/corvus" responseTarget="fr_main">
 							<parameter name="userAction" value="corvus.adaptation.listeErreurs.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_PAIEMENT_FIC" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.adaptation.pmtFictif.afficher" />
 						</action>
 					</node>
 					<node>
@@ -290,15 +290,15 @@
 						</action>
 					</node>
 					<node>
-						<label refId="MENU_OPTION_ENV_ANN_SUB" />
-						<action command="/corvus" responseTarget="fr_main">
-							<parameter name="userAction" value="corvus.adaptation.envoiAnnoncesSubsequentes.afficher" />
-						</action>
-					</node>
-					<node>
 						<label refId="MENU_OPTION_IMP_2_ANN_LST" />
 						<action command="/corvus" responseTarget="fr_main">
 							<parameter name="userAction" value="corvus.adaptation.deuxiemeLivraisonCentrale.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_ENV_ANN_SUB" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.adaptation.envoiAnnoncesSubsequentes.afficher" />
 						</action>
 					</node>
 				</nodes>
@@ -484,9 +484,9 @@
 			<node id="attestationFiscale">
 				<label refId="MENU_ATTESTATION_FISCALE" />
 				<action command="/corvus" responseTarget="fr_main">
-						<parameter name="userAction" value="corvus.process.genererAttestationFiscale.afficher" />
-						<parameter name="numNSS" />
-						<parameter name="isDepuisDemande" value="true" />
+					<parameter name="userAction" value="corvus.process.genererAttestationFiscale.afficher" />
+					<parameter name="numNSS" />
+					<parameter name="isDepuisDemande" value="true" />
 				</action>
 			</node>
 			<node id="copiesDefaut">
@@ -513,7 +513,7 @@
 					<parameter name="noDemandeRente" />
 					<parameter name="selectedId" />
 				</action>
-			</node>			
+			</node>
 			<node id="communicationMutationOAI">
 				<label refId="MENU_OPTION_COMMUNICATION_MUTATION_OAI_DEMANDE" />
 				<action command="/corvus" responseTarget="fr_main">
@@ -521,7 +521,7 @@
 					<parameter name="noDemandeRente" />
 					<parameter name="selectedId" />
 				</action>
-			</node>			
+			</node>
 		</nodes>
 	</menu>
 
@@ -1430,7 +1430,7 @@
 			</node>
 		</nodes>
 	</menu>
-	
+
 	<!-- Menu Option Rentes adaptées -->
 	<menu id="corvus-optionsrentesadaptees">
 		<label refId="MENU_OPTION_TITRE" />
