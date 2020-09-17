@@ -30,6 +30,7 @@ public class ReferenceQR extends AbstractReference {
 
     public static final String DEVISE_DEFAUT = "CHF";
     private static final String CHAR_FIN_LIGNE = "\r\n";
+    private static final String CHAR_FIN_LIGNE_DEB = "\n";
     private static final String CODE_PAYS_DEFAUT = "CH";
     private static final String ESPACE = " ";
     private static final String LANGUE_PAR_DEFAUT = "FR";
@@ -89,7 +90,7 @@ public class ReferenceQR extends AbstractReference {
     private String debfPays = StringUtils.EMPTY;
     private String typeReference = StringUtils.EMPTY;
     private String communicationNonStructuree = StringUtils.EMPTY;
-    private String trailer = StringUtils.EMPTY;
+    private String trailer = END_OF_PAYMENT;
     private String infoFacture = StringUtils.EMPTY;
     private String pa1Param = StringUtils.EMPTY;
     private String pa2Param = StringUtils.EMPTY;
@@ -200,22 +201,26 @@ public class ReferenceQR extends AbstractReference {
         builder.append(version).append(CHAR_FIN_LIGNE);
         builder.append(codingType).append(CHAR_FIN_LIGNE);
         builder.append(compte).append(CHAR_FIN_LIGNE);
-        builder.append(creNom).append(CHAR_FIN_LIGNE);
+
         builder.append(creAdressTyp).append(CHAR_FIN_LIGNE);
+        builder.append(creNom.isEmpty()?creRueOuLigneAdresse1.replace(CHAR_FIN_LIGNE, " ") : creNom ).append(CHAR_FIN_LIGNE);
 
         // replace des CHAR_FIN_LIGNE compris dans le string.
-        builder.append(creRueOuLigneAdresse1.replace(CHAR_FIN_LIGNE, " ")).append(CHAR_FIN_LIGNE);
-        builder.append(creNumMaisonOuLigneAdresse2).append(CHAR_FIN_LIGNE);
+        builder.append(creNom.isEmpty()? "" : creRueOuLigneAdresse1).append(CHAR_FIN_LIGNE);
+        builder.append(creNumMaisonOuLigneAdresse2.replace(CHAR_FIN_LIGNE, " ")).append(CHAR_FIN_LIGNE);
         builder.append((Objects.equals(creAdressTyp, COMBINE) ? StringUtils.EMPTY : creCodePostal)).append(CHAR_FIN_LIGNE);
         builder.append((Objects.equals(creAdressTyp, COMBINE) ? StringUtils.EMPTY : creLieu)).append(CHAR_FIN_LIGNE);
         builder.append(Objects.isNull(getCrePays())? CODE_PAYS_DEFAUT : crePays).append(CHAR_FIN_LIGNE);
-        builder.append(crefNom).append(CHAR_FIN_LIGNE);
+
         builder.append(crefAdressTyp).append(CHAR_FIN_LIGNE);
-        builder.append(crefRueOuLigneAdresse1).append(CHAR_FIN_LIGNE);
-        builder.append(crefNumMaisonOuLigneAdresse2).append(CHAR_FIN_LIGNE);
+        builder.append(crefNom.isEmpty()? crefRueOuLigneAdresse1.replace(CHAR_FIN_LIGNE, " ").replace(CHAR_FIN_LIGNE_DEB, " ") : crefNom ).append(CHAR_FIN_LIGNE);
+        builder.append(crefNom.isEmpty() ? "" : crefRueOuLigneAdresse1).append(CHAR_FIN_LIGNE);
+        builder.append(crefNumMaisonOuLigneAdresse2.replace(CHAR_FIN_LIGNE, " ").replace(CHAR_FIN_LIGNE_DEB, " ")).append(CHAR_FIN_LIGNE);
         builder.append((Objects.equals(crefAdressTyp, COMBINE) ? StringUtils.EMPTY : crefCodePostal)).append(CHAR_FIN_LIGNE);
         builder.append((Objects.equals(crefAdressTyp, COMBINE) ? StringUtils.EMPTY : crefLieu)).append(CHAR_FIN_LIGNE);
-        builder.append(crefPays).append(CHAR_FIN_LIGNE);
+        builder.append(Objects.isNull(getCrePays())? CODE_PAYS_DEFAUT : crefPays).append(CHAR_FIN_LIGNE);
+
+        // Débiteur final
         if (qrNeutre) {
             builder.append(StringUtils.EMPTY).append(CHAR_FIN_LIGNE);
             builder.append(monnaie).append(CHAR_FIN_LIGNE);
@@ -228,28 +233,34 @@ public class ReferenceQR extends AbstractReference {
         } else {
             if (new Montant(montant).isNegative()) {
                 builder.append("0.00").append(CHAR_FIN_LIGNE);
-                builder.append(pInfoAddErreur + " " +communicationNonStructuree).append(CHAR_FIN_LIGNE);
             } else {
                 builder.append(montant).append(CHAR_FIN_LIGNE);
-                builder.append(communicationNonStructuree).append(CHAR_FIN_LIGNE);
             }
-
             builder.append(monnaie).append(CHAR_FIN_LIGNE);
-            builder.append(debfNom).append(CHAR_FIN_LIGNE);
             builder.append(debfAdressTyp).append(CHAR_FIN_LIGNE);
-            builder.append(debfRueOuLigneAdresse1).append(CHAR_FIN_LIGNE);
-            builder.append(debfNumMaisonOuLigneAdresse2).append(CHAR_FIN_LIGNE);
+            builder.append(debfNom.isEmpty()?debfRueOuLigneAdresse1.replace(CHAR_FIN_LIGNE, " ").replace(CHAR_FIN_LIGNE_DEB, " ") : debfNom).append(CHAR_FIN_LIGNE);
+            builder.append(debfNom.isEmpty()? "" : debfNom).append(CHAR_FIN_LIGNE);
+            builder.append(debfNumMaisonOuLigneAdresse2.replace(CHAR_FIN_LIGNE, " ").replace(CHAR_FIN_LIGNE_DEB, " ")).append(CHAR_FIN_LIGNE);
             builder.append((Objects.equals(debfAdressTyp, COMBINE) ? StringUtils.EMPTY : debfCodePostal)).append(CHAR_FIN_LIGNE);
             builder.append((Objects.equals(debfAdressTyp, COMBINE) ? StringUtils.EMPTY : debfLieu)).append(CHAR_FIN_LIGNE);
         }
-        builder.append(debfPays).append(CHAR_FIN_LIGNE);
+        builder.append(Objects.isNull(getCrePays())? CODE_PAYS_DEFAUT : debfPays).append(CHAR_FIN_LIGNE);
+
+        // Référence paiement
         builder.append(typeReference).append(CHAR_FIN_LIGNE);
         builder.append(getReferenceNonFormatte()).append(CHAR_FIN_LIGNE);
 
+        // Info Supp
+        if (qrNeutre && new Montant(montant).isNegative()) {
+            builder.append(pInfoAddErreur + " " +communicationNonStructuree).append(CHAR_FIN_LIGNE);
+        } else {
+            builder.append(communicationNonStructuree).append(CHAR_FIN_LIGNE);
+        }
         builder.append(trailer).append(CHAR_FIN_LIGNE);
         builder.append(infoFacture).append(CHAR_FIN_LIGNE);
+        // Procédure alternative
         builder.append(pa1Param).append(CHAR_FIN_LIGNE);
-        builder.append(pa2Param).append(CHAR_FIN_LIGNE);
+        builder.append(pa2Param);
 
         return builder.toString();
     }
@@ -290,7 +301,7 @@ public class ReferenceQR extends AbstractReference {
         if (StringUtils.isEmpty(reference)) {
             this.typeReference = SANS_REF;
         } else {
-            this.typeReference = IBAN;
+            this.typeReference = QR_IBAN;
         }
 
         if (JadeStringUtil.isDecimalEmpty(montant)) {
