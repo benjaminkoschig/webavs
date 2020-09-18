@@ -41,7 +41,10 @@
 		</search-definition>
 		<order-by name="default">
 			<order-field field-ref="dateDebutValidite" order="DESC"/>
-		</order-by> 	
+		</order-by>
+		<order-by name="dateDebutValiditeAsc">
+			<order-field field-ref="dateDebutValidite" order="ASC"/>
+		</order-by>
 		<order-by name="fromEcranGestion">
 			<order-field field-ref="idCleDiffere" order="ASC"/>
 		</order-by> 	
