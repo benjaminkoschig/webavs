@@ -492,11 +492,8 @@ public class REAdaptationManuelleHelper extends FWHelper {
     private void suppressionAnnoncePonctuelle10emeRevisionExistante(BSession session, BTransaction transaction,
             int genrePrestation, String dateDernierPaiement, PRTiersWrapper tier) throws Exception {
 
-        String moisRapport = JadeDateUtil.addMonths("01." + dateDernierPaiement, 1);
-        moisRapport = moisRapport.substring(3);
-
         REAnnoncesAugmentationModification10EmeManager annAug10Mgr = new REAnnoncesAugmentationModification10EmeManager();
-        annAug10Mgr.setForMoisRapport(moisRapport);
+        annAug10Mgr.setForMoisRapport(dateDernierPaiement);
         annAug10Mgr.setForNss(NSUtil.unFormatAVS(tier.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
         annAug10Mgr.setForCodePrestation(String.valueOf(genrePrestation));
         annAug10Mgr.setSession(session);
@@ -525,15 +522,9 @@ public class REAdaptationManuelleHelper extends FWHelper {
     private boolean isAnnonceDiminution10emeRevisionExistante(BSession session, BTransaction transaction,
             int genrePrestation, String dateDernierPaiement, PRTiersWrapper tier) throws Exception {
 
-        // Mois rapport
-        JADate moisRapport = new JADate(new JACalendarGregorian().addMonths(dateDernierPaiement, 1));
-        String moisRapportFormatte = String.valueOf(moisRapport.getMonth()) + "."
-                + String.valueOf(moisRapport.getYear());
-
         boolean annonceDiminutionExistante = false;
-
         REAnnoncesAugmentationModification10EmeManager annAug10Mgr = new REAnnoncesAugmentationModification10EmeManager();
-        annAug10Mgr.setForMoisRapport(moisRapportFormatte);
+        annAug10Mgr.setForMoisRapport(dateDernierPaiement);
         annAug10Mgr.setForNss(NSUtil.unFormatAVS(tier.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
         annAug10Mgr.setForCodePrestation(String.valueOf(genrePrestation));
         annAug10Mgr.setSession(session);
@@ -610,9 +601,9 @@ public class REAdaptationManuelleHelper extends FWHelper {
                 .setNumeroAgence(generalReader.convertNumeroAgence(session.getApplication().getProperty("noAgence")));
         annoncePonctuelle9Eme.setUtilisateurPourReferenceCaisseInterne(session.getUserId().toUpperCase());
 
-        annoncePonctuelle9Eme.setDebutDroit(new JADate(new JACalendarGregorian().addMonths(dateDernierPaiement, 1)));
+        annoncePonctuelle9Eme.setDebutDroit(new JADate(ra.getDateDebutDroit()));
         annoncePonctuelle9Eme.setFinDroit(null);
-        annoncePonctuelle9Eme.setMoisRapport(new JADate(new JACalendarGregorian().addMonths(dateDernierPaiement, 1)));
+        annoncePonctuelle9Eme.setMoisRapport(new JADate(dateDernierPaiement));
         // rapport
         annoncePonctuelle9Eme.setCodeMutation(78);
 
@@ -864,9 +855,9 @@ public class REAdaptationManuelleHelper extends FWHelper {
                 .setNumeroAgence(converter.convertNumeroAgence(session.getApplication().getProperty("noAgence")));
         annoncePonctuelle10Eme.setUtilisateurPourReferenceCaisseInterne(session.getUserId().toUpperCase());
 
-        annoncePonctuelle10Eme.setDebutDroit(new JADate(new JACalendarGregorian().addMonths(dateDernierPaiement, 1)));
+        annoncePonctuelle10Eme.setDebutDroit(new JADate(ra.getDateDebutDroit()));
         annoncePonctuelle10Eme.setFinDroit(null);
-        annoncePonctuelle10Eme.setMoisRapport(new JADate(new JACalendarGregorian().addMonths(dateDernierPaiement, 1)));
+        annoncePonctuelle10Eme.setMoisRapport(new JADate(dateDernierPaiement));
         // rapport
         annoncePonctuelle10Eme.setCodeMutation(78);
 
@@ -1087,11 +1078,12 @@ public class REAdaptationManuelleHelper extends FWHelper {
             montant = "0" + montant;
         }
         ann46dim.setMensualitePrestationsFrancs(montant);
+        JADate dateMoinsPrecedent = new JADate(new JACalendarGregorian().addMonths(ra.getDateDebutDroit(), -1));
         ann46dim.setFinDroit(PRDateFormater
-                .convertDate_AAAAMM_to_MMAA(PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(dateRapportEtFin)));
+                .convertDate_AAAAMM_to_MMAA(PRDateFormater.convertDate_AAAAMMJJ_to_AAAAMM(dateMoinsPrecedent.toStrAMJ())));
 
         // Mois rapport
-        JADate moisRapport = new JADate(new JACalendarGregorian().addMonths(dateRapportEtFin, 1));
+        JADate moisRapport = new JADate(dateRapportEtFin);
         String moisRapportFormatte;
         if (moisRapport.getMonth() > 9) {
             moisRapportFormatte = String.valueOf(moisRapport.getYear()) + String.valueOf(moisRapport.getMonth());
@@ -1210,11 +1202,14 @@ public class REAdaptationManuelleHelper extends FWHelper {
         }
 
         ann43dim.setMensualitePrestationsFrancs(montant);
+
+
+        JADate dateMoinsPrecedent = new JADate(new JACalendarGregorian().addMonths(ra.getDateDebutDroit(), -1));
         ann43dim.setFinDroit(PRDateFormater
-                .convertDate_AAAAMM_to_MMAA(PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(dateRapportEtFin)));
+                .convertDate_AAAAMM_to_MMAA(PRDateFormater.convertDate_AAAAMMJJ_to_AAAAMM(dateMoinsPrecedent.toStrAMJ())));
 
         // Mois rapport
-        JADate moisRapport = new JADate(new JACalendarGregorian().addMonths(dateRapportEtFin, 1));
+        JADate moisRapport = new JADate(dateRapportEtFin);
         String moisRapportFormatte;
         if (moisRapport.getMonth() > 9) {
             moisRapportFormatte = String.valueOf(moisRapport.getYear()) + String.valueOf(moisRapport.getMonth());
@@ -1261,11 +1256,8 @@ public class REAdaptationManuelleHelper extends FWHelper {
     private void suppressionAnnoncePonctuelle9emeRevisionExistante(BSession session, BTransaction transaction,
             int genrePrestation, String dateDernierPaiement, PRTiersWrapper tier) throws Exception {
 
-        String moisRapport = JadeDateUtil.addMonths("01." + dateDernierPaiement, 1);
-        moisRapport = moisRapport.substring(3);
-
         REAnnoncesAugmentationModification9EmeManager annAug9Mgr = new REAnnoncesAugmentationModification9EmeManager();
-        annAug9Mgr.setForMoisRapport(moisRapport);
+        annAug9Mgr.setForMoisRapport(dateDernierPaiement);
         annAug9Mgr.setForNss(NSUtil.unFormatAVS(tier.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
         annAug9Mgr.setForCodePrestation(String.valueOf(genrePrestation));
         annAug9Mgr.setSession(session);
@@ -1294,14 +1286,9 @@ public class REAdaptationManuelleHelper extends FWHelper {
     private boolean isAnnonceDiminution9emeRevisionExistante(BSession session, BTransaction transaction,
             int genrePrestation, String dateDernierPaiement, PRTiersWrapper tier) throws Exception {
 
-        // Mois rapport
-        JADate moisRapport = new JADate(new JACalendarGregorian().addMonths(dateDernierPaiement, 1));
-        String moisRapportFormatte = String.valueOf(moisRapport.getMonth()) + "."
-                + String.valueOf(moisRapport.getYear());
-
         boolean annonceDiminutionExistante = false;
         REAnnoncesAugmentationModification9EmeManager annAug9Mgr = new REAnnoncesAugmentationModification9EmeManager();
-        annAug9Mgr.setForMoisRapport(moisRapportFormatte);
+        annAug9Mgr.setForMoisRapport(dateDernierPaiement);
         annAug9Mgr.setForNss(NSUtil.unFormatAVS(tier.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
         annAug9Mgr.setForCodePrestation(String.valueOf(genrePrestation));
         annAug9Mgr.setSession(session);
