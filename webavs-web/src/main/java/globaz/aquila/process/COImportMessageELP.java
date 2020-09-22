@@ -24,6 +24,7 @@ import globaz.aquila.process.exception.ElpProcessException;
 import globaz.globall.db.*;
 import globaz.globall.util.JACalendar;
 import globaz.jade.common.JadeClassCastException;
+import globaz.jade.context.JadeThread;
 import globaz.jade.fs.JadeFsFacade;
 import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.service.exception.JadeServiceActivatorException;
@@ -100,6 +101,14 @@ public class COImportMessageELP extends BProcess {
         BSessionUtil.stopUsingContext(this);
     }
 
+    private void clearErrorsWarning() {
+        getSession().getErrors();
+        getTransaction().clearErrorBuffer();
+        getTransaction().clearWarningBuffer();
+        getMemoryLog().clear();
+        JadeThread.logClear();
+    }
+
     /**
      * Traitement des fichiers eLP
      */
@@ -139,6 +148,10 @@ public class COImportMessageELP extends BProcess {
                         boolean traitementInSucces = traitementFichier(getDocument(eLPFile), infos);
                         if (traitementInSucces) {
                             movingFile(nomFichierDistant, tmpLocalWorkFile, nameOriginalFile);
+                        }
+                        if (getSession().hasErrors()) {
+                            LOG.error("Une erreur est intervenue durant le traitement du fichier " + nomFichierDistant + " : " + getSession().getErrors());
+                            clearErrorsWarning();
                         }
                     }
                 } catch (JadeServiceLocatorException | JadeClassCastException | JadeServiceActivatorException e) {
@@ -271,18 +284,25 @@ public class COImportMessageELP extends BProcess {
                     if (traitementInSuccess) {
                         protocole.addMsgTraite(scElpDto);
                     } else {
+                        LOG.warn("La nouvelle étape du contentieux n'a pas été créée.");
+                        if (getSession().hasErrors()) {
+                            scElpDto.setMotifAdditional("\n" + getSession().getErrors().toString());
+                        }
                         scElpDto.setMotif(COMotifMessageELP.CDP_NON_TRAITE);
                         protocole.addnonTraite(scElpDto);
                     }
                 } else {
+                    LOG.warn("La transition n'a pas pu être récupérée.");
                     scElpDto.setMotifWrongStep(getSession(), contentieux.getIdSequence(), contentieux.getIdEtape());
                     protocole.addnonTraite(scElpDto);
                 }
             } else {
+                LOG.warn("Le contentieux n'a pas pu être récupéré.");
                 scElpDto.setMotif(COMotifMessageELP.REF_INCOMPATIBLE);
                 protocole.addMsgIncoherent(scElpDto);
             }
         } else {
+            LOG.warn("La date de notification est vide.");
             scElpDto.setMotif(COMotifMessageELP.CDP_NON_NOTIFIE);
             protocole.addnonTraite(scElpDto);
         }
@@ -378,7 +398,7 @@ public class COImportMessageELP extends BProcess {
                 LOG.warn("Erreur lors de la récupération de de la transition liée au contentieux.");
             }
         } else {
-            LOG.warn("Erreur lors de la récupération de l'id étape liée au contentieux.");
+            LOG.warn("Erreur lors de la récupération de l'étape à créer.");
         }
         return result;
     }
@@ -419,7 +439,6 @@ public class COImportMessageELP extends BProcess {
     private boolean executeCOTransitionProcess(COContentieux contentieux, COTransitionAction action, List fraisEtInterets) throws ElpProcessException {
         COProcessEffectuerTransition process = new COProcessEffectuerTransition();
         process.setSession(getSession());
-        process.setTransaction(getSession().getCurrentThreadTransaction());
         process.setContentieux(contentieux);
         process.setRefresh(false);
         process.setLibSequence(contentieux.getLibSequence());
@@ -515,14 +534,20 @@ public class COImportMessageELP extends BProcess {
                 if (traitementInSuccess) {
                     protocole.addMsgTraite(spElpDto);
                 } else {
+                    LOG.warn("La nouvelle étape du contentieux n'a pas été créée.");
+                    if (getSession().hasErrors()) {
+                        spElpDto.setMotifAdditional("\n" + getSession().getErrors().toString());
+                    }
                     spElpDto.setMotif(COMotifMessageELP.PV_NON_TRAITE);
                     protocole.addnonTraite(spElpDto);
                 }
             } else {
+                LOG.warn("La transition n'a pas pu être récupérée");
                 spElpDto.setMotif(COMotifMessageELP.PV_NON_TRAITE);
                 protocole.addnonTraite(spElpDto);
             }
         } else {
+            LOG.warn("Le contentieux n'a pas pu être récupéré.");
             spElpDto.setMotif(COMotifMessageELP.REF_INCOMPATIBLE);
             protocole.addMsgIncoherent(spElpDto);
         }
@@ -713,14 +738,20 @@ public class COImportMessageELP extends BProcess {
                 if (traitementInSuccess) {
                     protocole.addMsgTraite(rcElpDto);
                 } else {
+                    LOG.warn("La nouvelle étape du contentieux n'a pas été créée.");
+                    if (getSession().hasErrors()) {
+                        rcElpDto.setMotifAdditional("\n" + getSession().getErrors().toString());
+                    }
                     rcElpDto.setMotif(COMotifMessageELP.ADB_NON_TRAITE);
                     protocole.addnonTraite(rcElpDto);
                 }
             } else {
+                LOG.warn("La transition n'a pas pu être récupérée.");
                 rcElpDto.setMotif(COMotifMessageELP.ADB_NON_TRAITE);
                 protocole.addnonTraite(rcElpDto);
             }
         } else {
+            LOG.warn("Le contentieux n'a pas pu être récupéré.");
             rcElpDto.setMotif(COMotifMessageELP.REF_INCOMPATIBLE);
             protocole.addMsgIncoherent(rcElpDto);
         }

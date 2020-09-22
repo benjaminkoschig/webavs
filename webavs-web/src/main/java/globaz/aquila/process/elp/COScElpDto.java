@@ -97,7 +97,7 @@ public class COScElpDto extends COAbstractELP {
         if (etapeManager.getContainer().size() == 1) {
             result = ((COEtape) etapeManager.getFirstEntity()).getIdEtape();
         } else {
-            throw new ElpProcessException("Erreur lors de la récupération de l'id étape :" + csEtape);
+            throw new ElpProcessException("L'id étape du code système " + csEtape + " ne peut pas être récupéré.");
         }
         return result;
     }
