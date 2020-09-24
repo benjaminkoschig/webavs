@@ -44,13 +44,13 @@ public class MajFADHelper {
             List<String> idsAssurancesDepuisPropriete = getIdsAssurancesDepuisProprietes(idsAssurancesTous);
 
             if (typesDeclarationDepuisPropriete.size() > 0
+                    && typesDeclarationDepuisPropriete.contains(typeDeclaration)
                     && idsAssurancesDepuisPropriete.size() > 0
                     && idsAssurancesAffiliation.size() > 0
                     && idsAssurancesAffiliation.stream()
                     .anyMatch(id -> idsAssurancesDepuisPropriete.contains(id))) {
 
-                if (typesDeclarationDepuisPropriete.contains(typeDeclaration)
-                        && provenance.equals(DSDeclarationViewBean.PROVENANCE_MANUELLE)) {
+                if (provenance.equals(DSDeclarationViewBean.PROVENANCE_MANUELLE)) {
                     afAffiliation.setMajFAD(true);
                     afAffiliation.setSaisieSysteme(true);
                     afAffiliation.update();
