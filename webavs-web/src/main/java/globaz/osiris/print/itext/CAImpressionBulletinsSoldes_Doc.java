@@ -5,6 +5,7 @@ import ch.globaz.vulpecula.documents.DocumentConstants;
 import globaz.aquila.api.ICOApplication;
 import globaz.aquila.api.ICOEtape;
 import globaz.aquila.api.ICOGestionContentieuxExterne;
+import globaz.aquila.print.CODecisionFPV;
 import globaz.aquila.print.COParameter;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
@@ -630,6 +631,13 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
             // Modification suite à QR-Facture. Choix du footer
             super.setParametres(COParameter.P_SUBREPORT_QR, getImporter().getImportPath() + "BVR_TEMPLATE.jasper");
+            super.setParametres(COParameter.P_SUBREPORT_QR_CURRENT_PAGE, getImporter().getImportPath() + "BVR_TEMPLATE_CURRENT_PAGE.jasper");
+
+            super.setParametres(FWIImportParametre.PARAM_REFERENCE + "_X", CODecisionFPV.REFERENCE_NON_FACTURABLE_DEFAUT);
+            super.setParametres(COParameter.P_OCR + "_X", CODecisionFPV.OCRB_DEFAUT);
+            super.setParametres(COParameter.P_FRANC + "_X", CODecisionFPV.MONTANT_DEFAUT);
+            super.setParametres(COParameter.P_CENTIME + "_X", CODecisionFPV.CENT_DEFAUT);
+
 
             super.setParametres(CAImpressionBulletinsSoldes_Param.P_ADRESSE, getBvr().getAdresse());
             super.setParametres(CAImpressionBulletinsSoldes_Param.P_ADRESSECOPY, getBvr().getAdresse());
