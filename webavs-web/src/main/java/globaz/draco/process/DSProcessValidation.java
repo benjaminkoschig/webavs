@@ -344,15 +344,6 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
             }
             if (DSDeclarationViewBean.CS_PRINCIPALE.equals(decl.getTypeDeclaration())) {
                 if ("true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER))) {
-
-                    DSLigneDeclarationViewBean ligneAssCotiAvsAi = null;
-                    for (int i = 0; i < ligneManager.size(); i++) {
-                        DSLigneDeclarationViewBean ligne = (DSLigneDeclarationViewBean) ligneManager.get(i);
-                        if (CodeSystem.TYPE_ASS_COTISATION_AVS_AI.equals(ligne.getAssurance().getTypeAssurance())) {
-                            ligneAssCotiAvsAi = ligne;
-                        }
-                    }
-
                     for (int i = 0; i < ligneManager.size(); i++) {
                         DSLigneDeclarationViewBean ligne = (DSLigneDeclarationViewBean) ligneManager.get(i);
                         String annee = "";
@@ -363,20 +354,26 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
                         }
                         AFTauxAssurance taux = ligne.getTauxLigne("31.12." + annee);
 
-                        // Modif. calcul du taux moyen pour report dans NAOS
+                        //ESVE calculer le taux moyen
                         if (CodeSystem.GEN_VALEUR_ASS_TAUX_VARIABLE.equals(taux.getGenreValeur())) {
-                            // Pour les frais d'admin le taux moyen se calcule sur la masses de l'assurance AVS/AI
-                            if (CodeSystem.TYPE_ASS_FRAIS_ADMIN.equals(ligne.getAssurance().getTypeAssurance()) && CodeSystem.GENRE_ASS_PARITAIRE.equals(ligne.getAssurance().getAssuranceGenre())) {
-                                AFCalculAssurance.calculTauxMoyen((BSession) getSessionNaos(getSession()),
-                                        decl.getAffiliation().getAffiliationId(), ligne.getAssuranceId(),
-                                        ligneAssCotiAvsAi.getMontantDeclaration(), annee);
-                            } else { // Autrement le taux moyen se calcule sur la masses de la ligne
-                                AFCalculAssurance.calculTauxMoyen((BSession) getSessionNaos(getSession()),
-                                        decl.getAffiliation().getAffiliationId(), ligne.getAssuranceId(),
-                                        ligne.getMontantDeclaration(), annee);
+                            if (CodeSystem.TYPE_ASS_FRAIS_ADMIN.equals(ligne.getAssurance().getTypeAssurance()) && CodeSystem.GENRE_ASS_PARITAIRE.equals(ligne.getAssurance().getAssuranceGenre())
+                                    && "true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER, "false"))
+                                    && "true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_AFFICHE_TAUX_PAR_PALIER, "false"))) {
+                                // Pour les frais d'admin le taux moyen se calcule sur la masses salariale
+                                AFCalculAssurance.calculTauxMoyen((BSession) getSessionNaos(getSession())
+                                        , decl.getAffiliation().getAffiliationId()
+                                        , ligne.getAssuranceId()
+                                        , decl.getMasseSalTotal()
+                                        , annee);
+                            } else {
+                                // Autrement le taux moyen se calcule sur la masses de la ligne
+                                AFCalculAssurance.calculTauxMoyen((BSession) getSessionNaos(getSession())
+                                        , decl.getAffiliation().getAffiliationId()
+                                        , ligne.getAssuranceId()
+                                        , ligne.getMontantDeclaration()
+                                        , annee);
                             }
                         }
-
                     }
                 }
 
@@ -684,7 +681,7 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
         return remoteSession;
     }
 
-    public BISession getSessionNaos(BSession local) throws Exception {
+    public static BISession getSessionNaos(BSession local) throws Exception {
         BISession remoteSession = (BISession) local.getAttribute("sessionNaos");
         if (remoteSession == null) {
             // pas encore de session pour l'application demandé
