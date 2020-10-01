@@ -41,19 +41,16 @@ import globaz.globall.parameters.FWParametersManager;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
+import globaz.globall.util.JATime;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+
+import java.io.*;
+import java.util.*;
+
 import org.apache.log4j.Logger;
 import ch.admin.ofit.anakin.commum.Session;
 import ch.admin.ofit.anakin.donnee.Annonce10eme;
@@ -74,6 +71,7 @@ public class REMiseAJourPrestProcess extends BProcess {
     private String pourcentA = "";
     private String pourcentDe = "";
     private final HashMap<String, Object> prestationsAugmentees = new HashMap<String, Object>();
+    private List<String> erreursArena = new ArrayList<>();
 
     public REMiseAJourPrestProcess() {
         super();
@@ -184,6 +182,9 @@ public class REMiseAJourPrestProcess extends BProcess {
 
             this.mergePDF(info, true, 500, false, null);
 
+            //Crée l'email avec les erreurs Arena
+            ajouterEmailErreursArena();
+
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.setRollbackOnly();
@@ -196,6 +197,28 @@ public class REMiseAJourPrestProcess extends BProcess {
 
         return true;
 
+    }
+
+    /**
+     * Créee un document contenant les erreurs Arena et l'ajoute pour
+     * l'envoi par email en fin de processus
+     */
+    private void ajouterEmailErreursArena() throws IOException {
+        if (!erreursArena.isEmpty()) {
+            File file = File.createTempFile("Erreurs ARENA adaptation des rentes " + moisAnnee.substring(3) + " ", ".txt");
+            file.deleteOnExit();
+            try (FileOutputStream fichier = new FileOutputStream(file)) {
+                try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fichier))) {
+                    for (String erreurArena : erreursArena) {
+                        bw.write(erreurArena + "\n");
+                    }
+                }
+            }
+            JadePublishDocumentInfo info = createDocumentInfo();
+            info.setPublishDocument(true);
+            info.setArchiveDocument(false);
+            this.registerAttachedDocument(info, file.getAbsolutePath());
+        }
     }
 
     private void ajouterPrestationsNonAdaptees(final BITransaction transaction,
@@ -268,6 +291,9 @@ public class REMiseAJourPrestProcess extends BProcess {
 
             rad.setRemarquesAdaptation(ra.getRemarquesAdaptation());
 
+            // Sauvegardes les remarques Arena dans une liste pour l'email en fin de processus
+            saveArenaErreurs(ra);
+
             // Recherche du RAM dans la bc
             REBasesCalcul bc = new REBasesCalcul();
             bc.setSession(getSession());
@@ -296,6 +322,17 @@ public class REMiseAJourPrestProcess extends BProcess {
 
         }
 
+    }
+
+    /**
+     * Sauvegardes les erreurs Arena dans une liste
+     *
+     * @param ra
+     */
+    private void saveArenaErreurs(REPrestAccJointInfoComptaJointTiers ra) {
+        String jour = JACalendar.format(JACalendar.today(), JACalendar.FORMAT_DDsMMsYYYY);
+        String heure = new JATime(JACalendar.now()).toStr(JACalendar.getTimeSeparator());
+        erreursArena.add(jour + " " + heure + " " + ra.getNss() + " " + ra.getRemarquesAdaptation());
     }
 
     @Override
@@ -509,7 +546,6 @@ public class REMiseAJourPrestProcess extends BProcess {
 
                 mapPrestationsNonTrouveesCentrale.get(keyRA).setRemarquesAdaptation(
                         getSession().getLabel("PROCESS_MAJ_PREST_LABEL_5") + " " + idRA);
-
                 mapPrestationsNonTrouveesCentrale2.put(keyRA, mapPrestationsNonTrouveesCentrale.get(keyRA));
 
             }
