@@ -60,6 +60,51 @@ public class REPmtMensuel {
     }
 
     /**
+     * @param
+     * @return La date du dernier pmt mensuel avec un mois fixe, au format mm.aaaa
+     */
+    public static String getDateDernierPmtMoisFixe(String moisFixe, String dernierPaiement) {
+        return moisFixe + "." + PRDateFormater.convertDate_MMxAAAA_to_AAAA(dernierPaiement);
+    }
+
+    /**
+     * @param session la session
+     * @param moisFixe le mois fixé
+     * @return La date dernier pmt mensuel avec un mois fixe moins 1 années, au format mm.aaaa
+     */
+    public static String getDateDernierPmtMoisFixeMoinsUneAnnee(BSession session, String moisFixe) {
+        String dernierPaiement = REPmtMensuel.getDateDernierPmt(session);
+
+        JACalendar cal = new JACalendarGregorian();
+        String dernierPaiementMoinsUneAnnee;
+
+        try {
+            dernierPaiementMoinsUneAnnee = cal.addYears("01." + dernierPaiement, -1);
+            return moisFixe + "." + PRDateFormater.convertDate_JJxMMxAAAA_to_AAAA(dernierPaiementMoinsUneAnnee);
+        } catch (JAException e) {
+            return "01.1970";
+        }
+    }
+
+    /**
+     * @param session la session
+     * @return La date dernier pmt mensuel moins 1 mois, au format mm.aaaa
+     */
+    public static String getDateDernierPmtMoinsUnMois(BSession session) {
+        String dernierPaiement = REPmtMensuel.getDateDernierPmt(session);
+
+        JACalendar cal = new JACalendarGregorian();
+        String dernierPaiementMoinsUnMois;
+
+        try {
+            dernierPaiementMoinsUnMois = cal.addMonths("01." + dernierPaiement, -1);
+            return PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(dernierPaiementMoinsUnMois);
+        } catch (JAException e) {
+            return "01.1970";
+        }
+    }
+
+    /**
      * @param session
      * @return La date du prochain pmt mensuel, au format mm.aaaa
      */

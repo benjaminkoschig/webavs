@@ -1,7 +1,9 @@
 package globaz.corvus.vb.adaptation;
 
+import globaz.globall.util.JACalendar;
 import globaz.hermes.db.gestion.HELotListViewBean;
 import globaz.hermes.db.gestion.HELotViewBean;
+import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.vb.PRAbstractViewBeanSupport;
 import java.util.Iterator;
 
@@ -69,6 +71,10 @@ public class REDeuxiemeLivraisonCentraleViewBean extends PRAbstractViewBeanSuppo
 
     public void setMoisAnnee(String moisAnnee) {
         this.moisAnnee = moisAnnee;
+    }
+
+    public String getMoisAnneeActuelle() throws Exception {
+        return PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(JACalendar.todayJJsMMsAAAA());
     }
 
     @Override

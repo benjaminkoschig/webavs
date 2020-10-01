@@ -41,7 +41,7 @@
 							<input	id="moisAnnee"
 									name="moisAnnee"
 									data-g-calendar="type:month"
-									value="<%=REPmtMensuel.getDateDernierPmt(viewBean.getSession())%>" />
+									value="<%=REPmtMensuel.getDateDernierPmtMoisFixeMoinsUneAnnee(viewBean.getSession(), "12")%>" />
 						</TD>
 					</TR>				
 

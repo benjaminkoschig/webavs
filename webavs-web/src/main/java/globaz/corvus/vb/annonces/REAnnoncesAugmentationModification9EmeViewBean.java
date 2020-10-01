@@ -36,6 +36,14 @@ public class REAnnoncesAugmentationModification9EmeViewBean extends REAnnoncesAu
     // ~ Methods
     // -----------------------------------------------------------------------------------------
 
+    public boolean isAnnonceDiminution() {
+        if (this.getDebutDroit().isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public String getCodeEnr02CodeEnregistrement01() {
         return codeEnr02CodeEnregistrement01;
     }

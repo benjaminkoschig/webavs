@@ -43,7 +43,7 @@
 							<input	id="moisAnnee"
 									name="moisAnnee"
 									data-g-calendar="type:month"
-									value="<%=REPmtMensuel.getDateProchainPmt(viewBean.getSession())%>" />
+									value="<%=viewBean.getMoisAnneeActuelle()%>" />
 						</TD>
 					</TR>				
 						<TR>

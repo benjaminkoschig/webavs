@@ -43,16 +43,7 @@
 										data-g-calendar="type:month"
 										value="<%=REPmtMensuel.getDateProchainPmt(viewBean.getSession())%>" />
 							</TD>
-						</TR>											
-						<TR>
-							<TD>&nbsp;</TD>
-							<TD><ct:FWLabel key="JSP_LIST_ERR_ADA_P_DE"/></TD>
-							<TD>
-								<input type="text" class="montantMini" name="pourcentDe" style="size: 4;"/>&nbsp;&nbsp;
-								<ct:FWLabel key="JSP_LIST_ERR_ADA_P_A"/>&nbsp;&nbsp;
-								<input type="text" class="montantMini" name="pourcentA" style="size: 4;"/>
-							</TD>
-						</TR>	
+						</TR>
 						<%-- /tpl:put --%>
 <%@ include file="/theme/process/footer.jspf" %>
 <%-- tpl:put name="zoneEndPage" --%><%	if (request.getParameter("_back") != null && request.getParameter("_back").equals("sl")) { %> <%	}%> <%-- /tpl:put --%>

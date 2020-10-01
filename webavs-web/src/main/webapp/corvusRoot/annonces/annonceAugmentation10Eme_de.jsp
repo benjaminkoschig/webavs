@@ -91,7 +91,12 @@
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf"%>
 <%-- tpl:put name="zoneTitle" --%>
-<ct:FWLabel key="JSP_ANN_D_TITRE_AUG_10" />
+<% if (viewBean.isAnnonceDiminution()) {%>
+	<ct:FWLabel key="JSP_ANN_D_TITRE_DIM_10" />
+<% } else { %>
+	<ct:FWLabel key="JSP_ANN_D_TITRE_AUG_10" />
+<% } %>
+
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart2.jspf"%>
 <%-- tpl:put name="zoneMain" --%>
