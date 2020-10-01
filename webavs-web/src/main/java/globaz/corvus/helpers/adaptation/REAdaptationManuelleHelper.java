@@ -2,7 +2,7 @@ package globaz.corvus.helpers.adaptation;
 
 import java.util.Iterator;
 
-import ch.globaz.corvus.domaine.constantes.CodeCasSpecialRente;
+import ch.globaz.prestation.domaine.CodePrestation;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.anakin.AnakinValidationException;
 import globaz.corvus.annonce.REAnnoncesAPersister;
@@ -32,6 +32,7 @@ import globaz.corvus.db.demandes.REDemandeRenteManager;
 import globaz.corvus.db.rentesaccordees.REPrestationDue;
 import globaz.corvus.db.rentesaccordees.REPrestationsDuesManager;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
+import globaz.corvus.helpers.process.REValiderDecisionHandler;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.utils.enumere.genre.prestations.REGenrePrestationEnum;
 import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
@@ -448,7 +449,7 @@ public class REAdaptationManuelleHelper extends FWHelper {
      * @param vb
      * @param ra
      * @param session
-     * @param dateRapportEtFin
+     * @param dateDernierPaiement
      * @param tier
      * @throws Exception
      */
@@ -483,9 +484,9 @@ public class REAdaptationManuelleHelper extends FWHelper {
     /**
      * @param session
      * @param transaction
-     * @param vb
+     * @param genrePrestation
+     * @param dateDernierPaiement
      * @param tier
-     * @param annonceDiminutionExistante
      * @return
      * @throws Exception
      */
@@ -513,9 +514,9 @@ public class REAdaptationManuelleHelper extends FWHelper {
     /**
      * @param session
      * @param transaction
-     * @param vb
+     * @param genrePrestation
+     * @param dateDernierPaiement
      * @param tier
-     * @param annonceDiminutionExistante
      * @return
      * @throws Exception
      */
@@ -719,9 +720,11 @@ public class REAdaptationManuelleHelper extends FWHelper {
             annoncePonctuelle9Eme.setEchelleRente(baseDeCalculReader.readEchelleRente(bc.getEchelleRente()));
 
             annoncePonctuelle9Eme.setDureeCotManquante48_72(
-                    baseDeCalculReader.readDureeCotManquante48_72(bc.getMoisAppointsAvant73()));
+                    baseDeCalculReader.readDureeCotManquante48_72(
+                            REValiderDecisionHandler.formatXPosAppendWithZero(2, true, bc.getMoisAppointsAvant73())));
             annoncePonctuelle9Eme.setDureeCotManquante73_78(
-                    baseDeCalculReader.readDureeCotManquante73_78(bc.getMoisAppointsDes73()));
+                    baseDeCalculReader.readDureeCotManquante73_78(
+                            REValiderDecisionHandler.formatXPosAppendWithZero(2, true, bc.getMoisAppointsDes73())));
             annoncePonctuelle9Eme.setRamDeterminant(baseDeCalculReader.readRamDeterminant(bc.getRevenuAnnuelMoyen()));
             annoncePonctuelle9Eme
                     .setAnneeCotClasseAge(baseDeCalculReader.readAnneeCotClasseAge(bc.getAnneeCotiClasseAge()));
@@ -878,7 +881,12 @@ public class REAdaptationManuelleHelper extends FWHelper {
                 .setNbreAnneeAnticipation(renteAccordeeReader.convertNbreAnneeAnticipation(ra.getAnneeAnticipation()));
         annoncePonctuelle10Eme.setReductionAnticipation(
                 renteAccordeeReader.convertReductionAnticipation(ra.getMontantReducationAnticipation()));
-        annoncePonctuelle10Eme.setSurvivant(renteAccordeeReader.convertIsSurvivant(ra.getCodeSurvivantInvalide()));
+
+        CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(ra.getCodePrestation()));
+        if (codePrestation.isSurvivant() && codePrestation.isRentePrincipale()) {
+            annoncePonctuelle10Eme.setSurvivant(renteAccordeeReader.convertIsSurvivant(ra.getCodeSurvivantInvalide()));
+        }
+
         annoncePonctuelle10Eme.setReduction(renteAccordeeReader.convertReduction(ra.getReductionFauteGrave()));
         annoncePonctuelle10Eme.setCasSpecial1(renteAccordeeReader.convertCasSpecial(ra.getCodeCasSpeciaux1()));
         annoncePonctuelle10Eme.setCasSpecial2(renteAccordeeReader.convertCasSpecial(ra.getCodeCasSpeciaux2()));
@@ -976,9 +984,11 @@ public class REAdaptationManuelleHelper extends FWHelper {
             annoncePonctuelle10Eme.setEchelleRente(baseDeCalculReader.readEchelleRente(bc.getEchelleRente()));
             annoncePonctuelle10Eme.setCodeRevenuSplitte(bc.getIsPartageRevenuCalcul());
             annoncePonctuelle10Eme.setDureeCotManquante48_72(
-                    baseDeCalculReader.readDureeCotManquante48_72(bc.getMoisAppointsAvant73()));
+                    baseDeCalculReader.readDureeCotManquante48_72(
+                            REValiderDecisionHandler.formatXPosAppendWithZero(2, true, bc.getMoisAppointsAvant73())));
             annoncePonctuelle10Eme.setDureeCotManquante73_78(
-                    baseDeCalculReader.readDureeCotManquante73_78(bc.getMoisAppointsDes73()));
+                    baseDeCalculReader.readDureeCotManquante73_78(
+                            REValiderDecisionHandler.formatXPosAppendWithZero(2, true, bc.getMoisAppointsDes73())));
             annoncePonctuelle10Eme.setRamDeterminant(baseDeCalculReader.readRamDeterminant(bc.getRevenuAnnuelMoyen()));
             annoncePonctuelle10Eme
                     .setAnneeCotClasseAge(baseDeCalculReader.readAnneeCotClasseAge(bc.getAnneeCotiClasseAge()));
@@ -1046,12 +1056,12 @@ public class REAdaptationManuelleHelper extends FWHelper {
      * @param vb
      * @param ra
      * @param session
-     * @param dateRapportEtFin
+     * @param dateDernierPaiement
      * @param tier
      * @throws Exception
      */
     private void creerAnnonceDiminution10emeRevision(BSession session, BTransaction transaction,
-            REAdaptationManuelleViewBean vb, RERenteAccordee ra, String dateRapportEtFin, PRTiersWrapper tier)
+            REAdaptationManuelleViewBean vb, RERenteAccordee ra, String dateDernierPaiement, PRTiersWrapper tier)
             throws Exception {
         // Annonce de diminution
         String idAnnonce = "";
@@ -1077,22 +1087,15 @@ public class REAdaptationManuelleHelper extends FWHelper {
         for (int i = 0; i < nbZeroAajouter; i++) {
             montant = "0" + montant;
         }
+
         ann46dim.setMensualitePrestationsFrancs(montant);
-        JADate dateMoinsPrecedent = new JADate(new JACalendarGregorian().addMonths(ra.getDateDebutDroit(), -1));
+
+        JADate dateMoisPrecedent = new JADate(new JACalendarGregorian().addMonths(ra.getDateDebutDroit(), -1));
         ann46dim.setFinDroit(PRDateFormater
-                .convertDate_AAAAMM_to_MMAA(PRDateFormater.convertDate_AAAAMMJJ_to_AAAAMM(dateMoinsPrecedent.toStrAMJ())));
+                .convertDate_AAAAMM_to_MMAA(PRDateFormater.convertDate_AAAAMMJJ_to_AAAAMM(dateMoisPrecedent.toStrAMJ())));
 
         // Mois rapport
-        JADate moisRapport = new JADate(dateRapportEtFin);
-        String moisRapportFormatte;
-        if (moisRapport.getMonth() > 9) {
-            moisRapportFormatte = String.valueOf(moisRapport.getYear()) + String.valueOf(moisRapport.getMonth());
-        } else {
-            moisRapportFormatte = String.valueOf(moisRapport.getYear()) + "0" + String.valueOf(moisRapport.getMonth());
-
-        }
-        moisRapportFormatte = PRDateFormater.convertDate_AAAAMM_to_MMAA(moisRapportFormatte);
-        ann46dim.setMoisRapport(moisRapportFormatte);
+        ann46dim.setMoisRapport(PRDateFormater.convertDate_MMxAAAA_to_MMAA(dateDernierPaiement));
 
         ann46dim.setCodeMutation("77");
         ann46dim.setEtat(IREAnnonces.CS_ETAT_OUVERT);
@@ -1131,7 +1134,7 @@ public class REAdaptationManuelleHelper extends FWHelper {
      * @param vb
      * @param ra
      * @param session
-     * @param dateRapportEtFin
+     * @param dateDernierPaiement
      * @param tier
      * @throws Exception
      */
@@ -1170,12 +1173,12 @@ public class REAdaptationManuelleHelper extends FWHelper {
      * @param vb
      * @param ra
      * @param session
-     * @param dateRapportEtFin
+     * @param dateDernierPaiement
      * @param tier
      * @throws Exception
      */
     private void creerAnnonceDiminution9emeRevision(BSession session, BTransaction transaction,
-            REAdaptationManuelleViewBean vb, RERenteAccordee ra, String dateRapportEtFin, PRTiersWrapper tier)
+            REAdaptationManuelleViewBean vb, RERenteAccordee ra, String dateDernierPaiement, PRTiersWrapper tier)
             throws Exception {
         String idAnnonce = "";
 
@@ -1203,21 +1206,12 @@ public class REAdaptationManuelleHelper extends FWHelper {
 
         ann43dim.setMensualitePrestationsFrancs(montant);
 
-
         JADate dateMoinsPrecedent = new JADate(new JACalendarGregorian().addMonths(ra.getDateDebutDroit(), -1));
         ann43dim.setFinDroit(PRDateFormater
                 .convertDate_AAAAMM_to_MMAA(PRDateFormater.convertDate_AAAAMMJJ_to_AAAAMM(dateMoinsPrecedent.toStrAMJ())));
 
         // Mois rapport
-        JADate moisRapport = new JADate(dateRapportEtFin);
-        String moisRapportFormatte;
-        if (moisRapport.getMonth() > 9) {
-            moisRapportFormatte = String.valueOf(moisRapport.getYear()) + String.valueOf(moisRapport.getMonth());
-        } else {
-            moisRapportFormatte = String.valueOf(moisRapport.getYear()) + "0" + String.valueOf(moisRapport.getMonth());
-        }
-        moisRapportFormatte = PRDateFormater.convertDate_AAAAMM_to_MMAA(moisRapportFormatte);
-        ann43dim.setMoisRapport(moisRapportFormatte);
+        ann43dim.setMoisRapport(PRDateFormater.convertDate_MMxAAAA_to_MMAA(dateDernierPaiement));
 
         ann43dim.setCodeMutation("77");
         ann43dim.setIdTiers(tier.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
@@ -1245,11 +1239,11 @@ public class REAdaptationManuelleHelper extends FWHelper {
     }
 
     /**
-     * @param transaction
-     * @param vb
      * @param session
+     * @param transaction
+     * @param genrePrestation
+     * @param dateDernierPaiement
      * @param tier
-     * @param annonceDiminutionExistante
      * @return
      * @throws Exception
      */
@@ -1275,11 +1269,11 @@ public class REAdaptationManuelleHelper extends FWHelper {
     }
 
     /**
-     * @param transaction
-     * @param vb
      * @param session
+     * @param transaction
+     * @param genrePrestation
+     * @param dateDernierPaiement
      * @param tier
-     * @param annonceDiminutionExistante
      * @return
      * @throws Exception
      */

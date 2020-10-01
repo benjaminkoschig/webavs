@@ -258,7 +258,7 @@ public class REValiderDecisionHandler {
         return chaineZero + montantToString.substring(0, montantToString.length() - 3);
     }
 
-    private static String formatXPosAppendWithZero(final int nombrePos, final boolean isAppendLeft,
+    public static String formatXPosAppendWithZero(final int nombrePos, final boolean isAppendLeft,
                                                    final String value) {
         StringBuffer result = new StringBuffer();
 
@@ -820,7 +820,7 @@ public class REValiderDecisionHandler {
 
     /**
      * @param prestationDue
-     * @param dateDecisionDu
+     * @param decisionDu
      *            format : mm.aaaa
      * @return -1 : il y a du courant, mais n'est pas validé 1 : il y a du courant qui est validé 0 : il n'y a pas de
      *         courant
@@ -1769,9 +1769,9 @@ public class REValiderDecisionHandler {
 
     /**
      * @param session
-     * @param getTransaction
-     *            ()
+     * @param transaction
      * @param annonce
+     * @param decision
      * @return true si l'annonce liée à la decision du courant à été trouvée.
      * @throws Exception
      */
