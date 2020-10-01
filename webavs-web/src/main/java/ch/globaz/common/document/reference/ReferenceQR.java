@@ -344,7 +344,7 @@ public class ReferenceQR extends AbstractReference {
         if (StringUtils.isEmpty(reference)) {
             this.typeReference = SANS_REF;
         } else {
-            this.typeReference = IBAN;
+            this.typeReference = QR_IBAN;
         }
 
         JABVR bvr = null;
