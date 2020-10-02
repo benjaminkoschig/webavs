@@ -34,6 +34,9 @@ public class PCGroupeDepensesHandler extends PCGroupeAbstractHandler {
             IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_TOTAL_NON_PLAFONNE, IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_PLAFOND };
     String[] DEP_PENSION_ALIM_VERSE = { IPCValeursPlanCalcul.CLE_DEPEN_PENSVERS_TOTAL };
 
+    String[] DEP_FRAIS_GARDE = { IPCValeursPlanCalcul.CLE_DEPEN_FRAIS_GARDE_TOTAL };
+    String[] DEP_PRIME_ASSURANCE_MALADIE = { IPCValeursPlanCalcul.CLE_DEPEN_PRIME_ASSURANCE_MALADIE_TOTAL };
+    String[] DEP_SEJOUR_MOIS_PARTIEL = { IPCValeursPlanCalcul.CLE_DEPEN_SEJOUR_MOIS_PARTIEL_TOTAL };
     /************************ FIN CONSTANTES CATEGORIE ***********************************************/
     String[] DEP_PRIMES_MOY_ASS_MALADIE = { IPCValeursPlanCalcul.CLE_TOTAL_PRIMEMAL_TOTAL };
     String[] DEP_TAXES_JOURNALIERE_HOME = { IPCValeursPlanCalcul.CLE_DEPEN_TAXEHOME_TOTAL,
@@ -75,7 +78,7 @@ public class PCGroupeDepensesHandler extends PCGroupeAbstractHandler {
     }
 
     private void dealBlocFraisImmeuble() {
-
+        //A voir si utiliser
     }
 
     /**
@@ -83,6 +86,44 @@ public class PCGroupeDepensesHandler extends PCGroupeAbstractHandler {
      */
     private void dealCategorieCotisationsPSAL() {
         String[] tabCategorie = DEP_COTISATIONS_PSAL;
+        // Test du totale de groupe
+        String cs = tabCategorie[0];// recup code systeme
+        Float val = getValeur(cs);// recup valeur
+        String leg = getLegende(cs);
+        // SI valeur diff de 0
+        if (getValeur(cs) != 0f) {
+            groupList.add(createLigneForGroupeList(cs, leg, val, 2));
+        }
+    }
+    private void dealCategorieFraisGarde() {
+        String[] tabCategorie = DEP_FRAIS_GARDE;
+        // Test du totale de groupe
+        String cs = tabCategorie[0];// recup code systeme
+        Float val = getValeur(cs);// recup valeur
+        String leg = getLegende(cs);
+        // SI valeur diff de 0
+        if (getValeur(cs) != 0f) {
+            groupList.add(createLigneForGroupeList(cs, leg, val, 2));
+        }
+    }
+
+    private void dealCategorieSejourMoisPartiel() {
+        String[] tabCategorie = DEP_SEJOUR_MOIS_PARTIEL;
+        // Test du totale de groupe
+        String cs = tabCategorie[0];// recup code systeme
+        Float val = getValeur(cs);// recup valeur
+        String leg = getLegende(cs);
+        // SI valeur diff de 0
+        if (getValeur(cs) != 0f) {
+            groupList.add(createLigneForGroupeList(cs, leg, val, 2));
+        }
+    }
+
+    /**
+     * Traitement de la catégorie frais Assurance Maladie
+     */
+    private void dealCategoriePrimeAssuranceMaladie() {
+        String[] tabCategorie = DEP_PRIME_ASSURANCE_MALADIE;
         // Test du totale de groupe
         String cs = tabCategorie[0];// recup code systeme
         Float val = getValeur(cs);// recup valeur
@@ -341,14 +382,16 @@ public class PCGroupeDepensesHandler extends PCGroupeAbstractHandler {
      */
     private void generateLigneProcess() {
         dealCategorieCouvertureBesoinsVitaux();
+        dealCategoriePrimeAssuranceMaladie();
         dealCategoriePrimesMoyennesAssMaladie();
         dealcategorieTaxesJournaliereHomes();
         dealCategorieDepensesPersonelles();
 
         dealCategoriePensionAlimentaireVerse();
+        dealCategorieFraisGarde();
         dealCategorieCotisationsPSAL();
+        dealCategorieSejourMoisPartiel();
         dealCategorieLoyer();
-
         dealCategorieFraisImmobiliers();
         // this.dealCategorieRevenusDessaisis();
 

@@ -3,6 +3,7 @@
  */
 package ch.globaz.pegasus.businessimpl.services.models.decision;
 
+import ch.globaz.pegasus.business.models.decision.*;
 import globaz.babel.api.ICTDocument;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeDateUtil;
@@ -32,17 +33,6 @@ import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
 import ch.globaz.pegasus.business.exceptions.models.pmtmensuel.PmtMensuelException;
-import ch.globaz.pegasus.business.models.decision.CopiesDecision;
-import ch.globaz.pegasus.business.models.decision.CopiesDecisionSearch;
-import ch.globaz.pegasus.business.models.decision.DecisionApresCalcul;
-import ch.globaz.pegasus.business.models.decision.DecisionApresCalculOO;
-import ch.globaz.pegasus.business.models.decision.DecisionApresCalculSearch;
-import ch.globaz.pegasus.business.models.decision.ForDeleteDecision;
-import ch.globaz.pegasus.business.models.decision.ForDeleteDecisionSearch;
-import ch.globaz.pegasus.business.models.decision.SimpleAnnexesDecision;
-import ch.globaz.pegasus.business.models.decision.SimpleAnnexesDecisionSearch;
-import ch.globaz.pegasus.business.models.decision.SimpleDecisionHeader;
-import ch.globaz.pegasus.business.models.decision.SimpleValidationDecision;
 import ch.globaz.pegasus.business.models.pcaccordee.PCAccordee;
 import ch.globaz.pegasus.business.models.pcaccordee.PCAccordeeSearch;
 import ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul;
@@ -64,7 +54,7 @@ import ch.globaz.topaz.datajuicer.DocumentData;
  */
 public class DecisionApresCalculServiceImpl extends PegasusAbstractServiceImpl implements DecisionApresCalculService {
 
-    private final static String DEMANDE_DU = "{date_demande}";
+    public final static String DEMANDE_DU = "{date_demande}";
 
     @Override
     public DocumentData buildPlanCalculDocumentData(String idDecisionApresCalcul, boolean isWithMemmbreFamilles)
@@ -517,8 +507,12 @@ public class DecisionApresCalculServiceImpl extends PegasusAbstractServiceImpl i
                 SimplePlanDeCalculSearch plancalculsearch = new SimplePlanDeCalculSearch();
                 plancalculsearch.setForIdPCAccordee(pcAccordee.getSimplePCAccordee().getIdPCAccordee());
                 plancalculsearch = PegasusImplServiceLocator.getSimplePlanDeCalculService().search(plancalculsearch);
-
-                decisionACreer.setPlanCalcul((SimplePlanDeCalcul) plancalculsearch.getSearchResults()[0]);
+                for(JadeAbstractModel model : plancalculsearch.getSearchResults()){
+                    SimplePlanDeCalcul planDeCalcul = (SimplePlanDeCalcul)model;
+                    if(planDeCalcul.getIsPlanRetenu()){
+                        decisionACreer.setPlanCalcul(planDeCalcul);
+                    }
+                }
                 // on set les dates debut et fin d'après les pca
                 decisionACreer.getDecisionHeader().getSimpleDecisionHeader()
                         .setDateDebutDecision(pcAccordee.getSimplePCAccordee().getDateDebut());
@@ -880,10 +874,57 @@ public class DecisionApresCalculServiceImpl extends PegasusAbstractServiceImpl i
                 PegasusServiceLocator.getCopiesDecisionsService().create(copie);
             }
 
+            try {
+                updateProvisoire(decision);
+            } catch (Exception e) {
+                throw new DecisionException("Erreur lors de la mise à jour de l'état provisoire : "+ e.toString(), e);
+            }
+
         } catch (JadeApplicationServiceNotAvailableException e) {
             throw new DecisionException("Service not available - " + e.toString(), e);
         }
         return decision;
+    }
+
+    private void updateProvisoire(DecisionApresCalcul decision) throws Exception {
+        boolean decisionProvisoire = decision.getDecisionHeader().getSimpleDecisionHeader().getDecisionProvisoire();
+        boolean pcaProvisoire = decision.getPcAccordee().getSimplePCAccordee().getIsProvisoire();
+        if(decisionProvisoire != pcaProvisoire){
+            decision.getPcAccordee().getSimplePCAccordee().setIsProvisoire(decisionProvisoire);
+            PegasusImplServiceLocator.getSimplePCAccordeeService().update(decision.getPcAccordee().getSimplePCAccordee());
+            // recherche d'autre décision pour la même pca (conjoint)
+            DecisionApresCalculSearch search = new DecisionApresCalculSearch();
+            search.setForIdPcAccordee(decision.getPcAccordee().getId());
+            search = (DecisionApresCalculSearch) JadePersistenceManager.search(search);
+            if (search.getSize() > 1) {
+                for (JadeAbstractModel decisionResult : search.getSearchResults()) {
+                    DecisionApresCalcul decisionPca = (DecisionApresCalcul) decisionResult;
+                    if(!decisionPca.getDecisionHeader().getId().equals(decision.getDecisionHeader().getId())){
+                        decisionPca.getDecisionHeader().getSimpleDecisionHeader().setDecisionProvisoire(decisionProvisoire);
+                        decisionPca.getSimpleDecisionApresCalcul().setIntroduction(getLabelRemarqueForProvisoire(decisionPca, decisionProvisoire));
+                        PegasusImplServiceLocator.getSimpleDecisionApresCalculService().update(decisionPca.getSimpleDecisionApresCalcul());
+                        PegasusImplServiceLocator.getSimpleDecisionHeaderService().update(decisionPca.getDecisionHeader().getSimpleDecisionHeader());
+                    }
+                }
+            }
+        }
+    }
+
+    private String getLabelRemarqueForProvisoire(DecisionApresCalcul decision, boolean provisoire) throws Exception {
+        Map<Langues, CTDocumentImpl>  documentsBabel = BabelServiceLocator.getPCCatalogueTexteService()
+                .searchForTypeDecision(IPCCatalogueTextes.BABEL_DOC_NAME_APRES_CALCUL);
+        CTDocumentImpl document = documentsBabel.get(LanguageResolver.resolveISOCode(decision.getDecisionHeader().getPersonneEtendue().getTiers().getLangue()));
+        String text;
+        if(provisoire) {
+            text = PRStringUtils.replaceString(document.getTextes(2).getTexte(40).getDescription(),
+                    DecisionApresCalculServiceImpl.DEMANDE_DU, decision
+                            .getVersionDroit().getSimpleVersionDroit().getDateAnnonce());
+        } else {
+            text = PRStringUtils.replaceString(document.getTextes(2).getTexte(10).getDescription(),
+                    DecisionApresCalculServiceImpl.DEMANDE_DU, decision
+                            .getVersionDroit().getSimpleVersionDroit().getDateAnnonce());
+        }
+        return text;
     }
 
     /**

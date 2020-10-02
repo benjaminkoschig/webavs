@@ -10,4 +10,12 @@ public class UtilStrategieFinalFortuneImmobiliere {
             return montant;
         }
     }
+    protected static float plafondDeductionDetteHypo(float montantValeur, float montantDette) {
+
+        if (montantValeur > montantDette) {
+            return montantValeur-montantDette;
+        } else {
+            return 0f;
+        }
+    }
 }

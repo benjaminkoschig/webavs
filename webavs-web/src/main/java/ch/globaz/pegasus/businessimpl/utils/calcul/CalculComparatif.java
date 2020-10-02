@@ -3,13 +3,10 @@
  */
 package ch.globaz.pegasus.businessimpl.utils.calcul;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
+
+import java.util.*;
 
 /**
  * @author ECO
@@ -34,6 +31,10 @@ public class CalculComparatif implements ICalculComparatif {
     private String nbEnfants;
     private List<PersonnePCAccordee> personnes = null;
     private String primeMoyenneAssMaladie = null;
+    private boolean isReformePc = false;
+    private boolean comparer = false;
+    private boolean refusFortune = false;
+    private String fortune = null;
 
     /**
 	 * 
@@ -294,6 +295,11 @@ public class CalculComparatif implements ICalculComparatif {
             }
         }
         this.nbEnfants = String.valueOf(nbEnfants);
+
+        if(montants.containsValeurEnfant(IPCValeursPlanCalcul.CLE_REFUS_SEUIL_FORTUNE)){
+            this.refusFortune = true;
+            this.fortune = String.valueOf(montants.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL_AVANT_FRACTION));
+        }
     }
 
     /**
@@ -316,4 +322,35 @@ public class CalculComparatif implements ICalculComparatif {
         this.primeMoyenneAssMaladie = primeMoyenneAssMaladie;
     }
 
+    public boolean isReformePc() {
+        return isReformePc;
+    }
+
+    public void setReformePc(boolean reformePc) {
+        isReformePc = reformePc;
+    }
+
+    public boolean isComparer() {
+        return comparer;
+    }
+
+    public void setComparer(boolean comparer) {
+        this.comparer = comparer;
+    }
+
+    public boolean isRefusFortune() {
+        return this.refusFortune;
+    }
+
+    public void setRefusFortune(boolean refusFortune) {
+        this.refusFortune = refusFortune;
+    }
+
+    public String getFortune() {
+        return fortune;
+    }
+
+    public void setFortune(String fortune) {
+        this.fortune = fortune;
+    }
 }

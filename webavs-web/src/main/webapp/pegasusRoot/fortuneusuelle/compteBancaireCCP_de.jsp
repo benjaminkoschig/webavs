@@ -60,10 +60,13 @@
 <%@page import="globaz.pegasus.utils.PCDroitHandler"%>
 
 
-<%@page import="globaz.pegasus.utils.PCCommonHandler"%><script language="JavaScript">
+<%@page import="globaz.pegasus.utils.PCCommonHandler"%>
+<%@ page import="globaz.pegasus.enums.TypeDivestedWealth" %>
+<script language="JavaScript">
 	var JSP_DELETE_MESSAGE_INFO="<ct:FWLabel key='JSP_DELETE_MESSAGE_INFO'/>";
 	var PAGE_ID_DROIT="<%=viewBean.getId() %>";
 	var ACTION_AJAX_COMPTE_BANCAIRE_CCP="<%=IPCActions.ACTION_DROIT_COMPTE_BANCAIRE_CCP_AJAX%>";
+	var items = <%=TypeDivestedWealth.getJsonListTypeDivestedWealth(objSession)%>;
 
 	
 	if($('.montantInteret').val()=="" || $('.montantInteret').val()=="0.00") 
@@ -232,9 +235,10 @@ $(function(){
 											<td class="montantFraisTd"><ct:FWLabel key="JSP_PC_COMPTE_BANCAIRE_CCP_D_MONTANT_FRAIS"/></td>
 											<td class="montantFraisTd"><input type="text" class="montantFrais" data-g-amount='mandatory:true, periodicity:Y'/></td>																														
 										</tr>
-										<tr>
+										<tr class="classDessaisissementFortune">
 											<td><ct:FWLabel key="JSP_PC_COMPTE_BANCAIRE_CCP_D_DESSAISISSEMENT_FORTUNE"/></td>
-											<td><input type="checkbox" class="dessaisissementFortune" /></td>
+											<td><input type="checkbox" class="dessaisissementFortune" />
+											<select id="typeDessaisissementFortune" style="display: none;"></select></td>
 											<td><ct:FWLabel key="JSP_PC_COMPTE_BANCAIRE_CCP_D_DESSAISISSEMENT_REVENU"/></td>
 											<td><input type="checkbox" class="dessaisissementRevenu" /></td>
 										</tr>

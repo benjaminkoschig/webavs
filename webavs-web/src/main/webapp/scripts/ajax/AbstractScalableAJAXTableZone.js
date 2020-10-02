@@ -331,6 +331,14 @@ var AbstractScalableAJAXTableZone = {
 		}
 		this.mainContainer.triggerHandler(eventConstant.AJAX_VALIDATE_EDITION);		
 	},
+	validateEditionV2: function () {
+		if (this.selectedEntityId) {
+			this.ajaxUpdateEntityV2(this.selectedEntityId);
+		} else {
+			this.ajaxAddEntityWithLog();
+		}
+		this.mainContainer.triggerHandler(eventConstant.AJAX_VALIDATE_EDITION);
+	},
 	
 	addNoCache : function  (data) {
 		//data.noCache = globazNotation.utilsDate.toDayInStringJadeFormate() + (new Date()).getMilliseconds();
@@ -372,6 +380,14 @@ var AbstractScalableAJAXTableZone = {
 	
 	hasError: function (data) {
 		return ajaxUtils.hasError(data);
+	},
+	hasErrorNew: function (data) {
+		var log = $(data).find('messageError').text();
+		if (log) {
+			return true;
+		}else{
+			return false;
+		}
 	},
 	
 	onLoadAjaxData: function (data, b_loadViewBean, idEntity) {
@@ -432,7 +448,26 @@ var AbstractScalableAJAXTableZone = {
 			type: "POST"
 		});
 	},
+	ajaxUpdateEntityV2: function (idEntity) {
+		ajaxUtils.beforeAjax(this.mainContainer);
+		var that = this;
+		var parametres = this.getParametres();
+		parametres.userAction = this.ACTION_AJAX + ".modifierAJAX";
+		parametres.viewBean = this.currentViewBean;
+		parametres.parentViewBean = this.getParentViewBean();
+		//this.n_offset = 0;
+		parametres = this.addParmetresForPagination(parametres);
+		$.ajax({
+			data: parametres,
+			contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+			context: that,
+			success: function (data) {
+				this.onUpdateAjaxCompleteV2(data, idEntity);
+			},
+			type: "POST"
+		});
 
+	},
 
 	onUpdateAjaxComplete: function (data, n_idEntity) {
 		var $tree = $(data), n_currentIdEntity = "";
@@ -485,10 +520,60 @@ var AbstractScalableAJAXTableZone = {
 			}
 		}
 	},
-	
+	onUpdateAjaxCompleteV2: function (data, n_idEntity) {
+		var $tree = $(data), n_currentIdEntity = "";
+		if (this.hasErrorNew(data)) {
+			ajaxUtils.displayLogsIfExisteV2(data,'error');
+			ajaxUtils.afterAjaxComplete(this.mainContainer);
+			return;
+		} else  {
+			ajaxUtils.displayLogsIfExisteV2(data,'warn');
+		}
+
+
+		ajaxUtils.afterAjaxComplete(this.mainContainer);
+		if ($tree.find(this.XML_DETAIL_TAG).length > 0) {
+			var xmlData = this.getXMLData($tree, this.XML_LIST_TAG);
+			var $tbody = this.table.find('tbody');
+			$tbody.children().remove().end().append(xmlData);
+
+			this.$trInTbody = $tbody.find('tr');
+			this.setParentViewBean($tree.find('viewBean').text());
+			this.onAddTableEvent();
+			this.colorTableRows();
+			this.mainContainer.triggerHandler(eventConstant.AJAX_UPDATE_COMPLETE);
+			this.stopEdition();
+			n_currentIdEntity = $tree.find('message').attr('currentIdEntity');
+			if (n_currentIdEntity != undefined && n_currentIdEntity.length) {
+				n_idEntity = n_currentIdEntity;
+			}
+			if (this.b_wantReloadEntityAfterUpdate && n_idEntity && !globazNotation.utils.isEmpty(n_idEntity)) {
+				if($tree.find("idEntity").length > 0){
+					n_idEntity = $tree.find('idEntity').text();
+				}
+				this.displayLoadDetail(n_idEntity);
+			}
+			this.activeDesactiveButtonPagination();
+			this.changeNbResultPagination();
+			this.fixSizeToThInTable();
+			notationManager.addNotationOnFragment($tbody);
+		} else {
+			if (typeof data.error === "undefined") {
+				ajaxUtils.displayError(data);
+			}
+		}
+
+		if(typeof this.afterUpdate === "function"){
+			if(data.viewBean){
+				this.afterUpdate(data.viewBean);
+			} else {
+				this.afterUpdate(data);
+			}
+		}
+	},
 	onFindAjaxComplete: function (data, n_idEntity) {
 		var $tree = $(data), n_currentIdEntity = "";
-		if (this.hasError(data)) {
+		if (this.hasErrorNew(data)) {
 			ajaxUtils.displayError(data);
 			ajaxUtils.afterAjaxComplete(this.mainContainer);
 			return;
@@ -550,7 +635,24 @@ var AbstractScalableAJAXTableZone = {
 			type: "POST"
 		});					
 	},
-	
+
+	ajaxAddEntityWithLog: function () {
+		ajaxUtils.beforeAjax(this.mainContainer);
+		var that = this;
+		var parametres = this.getParametres();
+		parametres.parentViewBean = this.getParentViewBean();
+		parametres.userAction = this.ACTION_AJAX + ".ajouterAJAX";
+		this.n_offset = 0;
+		parametres = this.addParmetresForPagination(parametres);
+		$.ajax({
+			data: parametres,
+			context: that,
+			success: function (data) {
+				this.onUpdateAjaxCompleteV2(data);
+			},
+			type: "POST"
+		});
+	},
 	addParmetresForPagination: function (parametres) {
 		if (this.b_pagination) {
 			parametres.offset = this.n_offset;

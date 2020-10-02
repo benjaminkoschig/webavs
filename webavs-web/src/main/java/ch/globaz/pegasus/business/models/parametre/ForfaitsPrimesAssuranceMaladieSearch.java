@@ -21,6 +21,7 @@ public class ForfaitsPrimesAssuranceMaladieSearch extends JadeSearchComplexModel
     private String forIdForfaitsPrimesAssuranceMaladie = null;
 
     private String forIdZoneForfaits = null;
+    private String forType = null;
 
     /**
      * @return the forCsTypePrime
@@ -73,6 +74,14 @@ public class ForfaitsPrimesAssuranceMaladieSearch extends JadeSearchComplexModel
      */
     public void setForIdZoneForfaits(String forIdZoneFofaits) {
         forIdZoneForfaits = forIdZoneFofaits;
+    }
+
+    public String getForType() {
+        return forType;
+    }
+
+    public void setForType(String forType) {
+        this.forType = forType;
     }
 
     @Override

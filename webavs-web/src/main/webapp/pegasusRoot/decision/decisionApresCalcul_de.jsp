@@ -34,6 +34,7 @@
 <%@page import="ch.globaz.pegasus.business.constantes.decision.DecisionTypes"%>
 <%@page import="globaz.jade.log.business.JadeBusinessMessageLevels"%>
 <%@page import="java.text.MessageFormat"%>
+<%@ page import="globaz.globall.db.BConstants" %>
 
 <script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
 <link rel="stylesheet" type="text/css" href="<%=servletContext%><%=(mainServletPath+"Root")%>/css/decision/detail.css"/>
@@ -52,7 +53,7 @@
 	String alertEmptyString = objSession.getLabel("JSP_PC_DECALCUL_ERRORMSG_ANNEXE");
 	String titleErroxBox = objSession.getLabel("JSP_GLOBAL_ERROR_BOX_TITLE");//titre box erreur
 	//Message erreur si saisie annexe vide
-	
+
 	//viewbean
 	PCDecisionApresCalculViewBean viewBean = (PCDecisionApresCalculViewBean) session.getAttribute("viewBean");
 	//error PopUp
@@ -120,11 +121,14 @@ var actionMethod;
 var userAction;
 //Définit si la decision a une attestation billag auto (vdroit=1)
 var hasBillagAuto = <%= viewBean.hasBillagAuto()%>;
+var remarqueNormal = "<%= viewBean.getTextRemarqueNormal()%>";
+var remarqueProvisoire = "<%= viewBean.getTextRemarqueProvisoire()%>";
 // variables pour l'objet notation navigator
 var currentId = <%= viewBean.getIdDecision()%>;
 var actionNavigator = "pegasus?userAction=pegasus.decision.decisionApresCalcul.afficher&idDroit=<%= viewBean.getIdDroit()%>&idVersionDroit=<%= viewBean.getIdVersionDroit()%>&noVersion=<%=viewBean.getNoVersion()%>&idDecision=";
 var lotDecisions = "<%= viewBean.getLotDecision() %>";
 var lotPagination = lotDecisions.split(",");
+
 //Libelle Billag a afficher automatiquement
 <%
 String prop = objSession.getApplication().getProperty(IPCDecision.DESTINATAIRE_REDEVANCE);
@@ -209,6 +213,8 @@ $(function () {
 		setDeValidBouton(<%= viewBean.isDevalidable()%>,"<%= deValidLibelle %>","<%= lblBtnConfirmer %>","<%= lblBtnAnnuler%>");
 		//gestion liens conjoints
 		setConjointLink(<%= viewBean.getIdDecisionConjoint()%>,actionNavigator);
+
+		initZoneDecisoinProvisoire();
 		
 		},500)
 	});
@@ -387,7 +393,13 @@ var openGedWindow = function (url){
 				</div>
 				<div id="lignePersonneRef">
 						<span class="label"><ct:FWLabel key="JSP_PC_DECALCUL_D_PERSONEREF"/></span>
-						<ct:FWListSelectTag data="<%=PCGestionnaireHelper.getResponsableData(objSession)%>" defaut="<%=viewBean.getGestionnaire()%>" name="decisionApresCalcul.decisionHeader.simpleDecisionHeader.preparationPar"/>
+						<span id="valResponsableData"><ct:FWListSelectTag data="<%=PCGestionnaireHelper.getResponsableData(objSession)%>" defaut="<%=viewBean.getGestionnaire()%>" name="decisionApresCalcul.decisionHeader.simpleDecisionHeader.preparationPar"/></span>
+
+						<span class="label" id="lblDecisionProv"><ct:FWLabel key="JSP_PC_DECALCUL_D_DECISION_PROV"/></span>
+						<span id="valDecisionProvisoire">
+							<input type="radio" id="radioProvOui" <%=viewBean.isDecisoinProvisoire()?"checked":"" %> name="decisionProvisoire" value="true"/><ct:FWLabel key="JSP_PC_DECALCUL_D_DECISION_PROV_OUI"/>
+							<input type="radio" id="radioProvNon" <%=viewBean.isDecisoinProvisoire()?"":"checked" %> name="decisionProvisoire" value="false"/><ct:FWLabel key="JSP_PC_DECALCUL_D_DECISION_PROV_NON"/>
+						</span>
 				</div>
 			</div>
 			
@@ -398,7 +410,7 @@ var openGedWindow = function (url){
 				
 				<span id="lblremarque" class="label2"><ct:FWLabel key="JSP_PC_DECALCUL_D_REMARQUE"></ct:FWLabel></span>
 				<div id="boxRemarques">
-					<textarea data-g-string="sizeMax:1024" rows="3" cols="90" name="decisionApresCalcul.simpleDecisionApresCalcul.introduction"><%= viewBean.getDecisionApresCalcul().getSimpleDecisionApresCalcul().getIntroduction() %></textarea>
+					<textarea id="textRemarque" data-g-string="sizeMax:1024" rows="3" cols="90" name="decisionApresCalcul.simpleDecisionApresCalcul.introduction"><%= viewBean.getDecisionApresCalcul().getSimpleDecisionApresCalcul().getIntroduction() %></textarea>
 				</div>
 			<!--  jours d'appoint -->	
 			<% if (EPCProperties.GESTION_JOURS_APPOINTS.getBooleanValue()){ %>

@@ -8,7 +8,7 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.DonneeFinanciereType;
 
 public class RevenuActiviteLucrativeDependanteTest {
     private static final RevenuActiviteLucrativeDependante df = new RevenuActiviteLucrativeDependante(
-            new Montant(1000), new Montant(50), new Montant(5), new Montant(15), BuilderDf.createDF());
+            new Montant(1000), new Montant(50), new Montant(5),new Montant(5), new Montant(15), BuilderDf.createDF());
 
     @Test
     public void testDefinedTypeDonneeFinanciere() throws Exception {
@@ -20,6 +20,7 @@ public class RevenuActiviteLucrativeDependanteTest {
         assertTrue(df.getMontant().isAnnuel());
         assertTrue(df.getDeductionLpp().isAnnuel());
         assertTrue(df.getDeductionSociale().isAnnuel());
+        assertTrue(df.getFraisDeGarde().isAnnuel());
         assertTrue(df.getFrais().isAnnuel());
     }
 

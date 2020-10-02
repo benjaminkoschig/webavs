@@ -22,6 +22,7 @@ globaz.globall.db.BSession objSession = (globaz.globall.db.BSession)controller.g
 	<liste>
 		<%
 		FWCurrency montantRevenu = new FWCurrency("0.00");
+		FWCurrency fraisDeGarde = new FWCurrency("0.00");
 		String idGroup=null;
 		String currentId = "-1";
 		for(Iterator itDonnee=viewBean.iterator();itDonnee.hasNext();){			
@@ -37,7 +38,8 @@ globaz.globall.db.BSession objSession = (globaz.globall.db.BSession)controller.g
 			if(!donnee.getSimpleDonneeFinanciereHeader().getIdEntityGroup().equals(idGroup)){
 				idGroup=null;
 			}
-				montantRevenu = new FWCurrency(donnee.getSimpleRevenuActiviteLucrativeIndependante().getMontantRevenu());								
+				montantRevenu = new FWCurrency(donnee.getSimpleRevenuActiviteLucrativeIndependante().getMontantRevenu());
+				fraisDeGarde = new FWCurrency(donnee.getSimpleRevenuActiviteLucrativeIndependante().getFraisDeGarde());
 			%>
 
 			<tr idEntity="<%=donnee.getId() %>" idGroup="<%=donnee.getSimpleDonneeFinanciereHeader().getIdEntityGroup() %>" header="<%=idGroup==null?"true":"false"%>">
@@ -45,6 +47,7 @@ globaz.globall.db.BSession objSession = (globaz.globall.db.BSession)controller.g
 				<td><%=objSession.getCodeLibelle(donnee.getSimpleRevenuActiviteLucrativeIndependante().getCsDeterminationRevenu()) %></td>
 				<td><%=objSession.getCodeLibelle(donnee.getSimpleRevenuActiviteLucrativeIndependante().getCsGenreRevenu()) %></td>
 				<td style="text-align:right;"><%=montantRevenu.toStringFormat() %></td>
+				<td style="text-align:right;"><%=fraisDeGarde.toStringFormat() %></td>
 				<td><%=nomAffilie %></td>
 				<td><%=nomCaisse %></td>
 								<td align="center" ><% if(donnee.getSimpleDonneeFinanciereHeader().getIsDessaisissementRevenu().booleanValue()){%>
@@ -60,5 +63,5 @@ globaz.globall.db.BSession objSession = (globaz.globall.db.BSession)controller.g
 		}
 		%>
 	</liste>
-	<%@ include file="/pegasusRoot/ajax/commonListDonneeFinanciere.jspf" %>
+	<%@ include file="/pegasusRoot/ajax/commonListDonneeFinanciereWithWarning.jspf" %>
 </message>

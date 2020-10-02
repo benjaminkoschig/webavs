@@ -12,6 +12,7 @@
 <link type="text/css" href="<%=servletContext%>/theme/jquery/jquery-ui.css" rel="stylesheet" />
 <link rel="stylesheet" type="text/css" href="<%=servletContext%>/theme/ajax/templateZoneAjax.css"/>
 <script type="text/javascript" src="<%=servletContext%>/scripts/jquery.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jquery.noty.packaged.min.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/scripts/jquery-ui.js"></script>
 <SCRIPT type="text/javascript" src="<%=servletContext%>/scripts/menu.js"></SCRIPT>
 <SCRIPT type="text/javascript" src="<%=servletContext%>/scripts/ValidationGroups.js"></SCRIPT>

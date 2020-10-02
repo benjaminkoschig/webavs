@@ -488,7 +488,7 @@ public class PCProcessStatistiqueOFASEntityHandler implements JadeProcessEntityI
         }
 
         depense.setAutresDepenses(tupleRoot.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_PENSVERS_TOTAL)
-                + tupleRoot.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_COT_PSAL_TOTAL));
+                + tupleRoot.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_COT_PSAL_TOTAL) + tupleRoot.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_FRAIS_GARDE_TOTAL) );
 
         return depense;
 

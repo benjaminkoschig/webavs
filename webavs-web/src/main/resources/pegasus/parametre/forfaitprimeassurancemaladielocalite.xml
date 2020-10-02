@@ -63,6 +63,7 @@
 						<search-field name="forDateFin" operation="NULL" field-ref="simpleForfaitPrimesAssuranceMaladie.dateFin"/>
 					</search-group> 
 				</search-group>
+				<search-field name="forType" operation="EQUALS" field-ref="simpleZoneForfaits.type"/>
 			</search-group>
 		</search-definition>
 		

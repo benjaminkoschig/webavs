@@ -7,6 +7,7 @@ public class PCAMembreFamilleVO {
     private String dateNaissance = null;
     private String idTiers = null;
     private Boolean isComprisDansCalcul = null;
+    private Boolean isRentier = null;
     private Boolean isRequerantEnfant = Boolean.FALSE;
     private String nom = null;
     private String nss = null;
@@ -92,4 +93,11 @@ public class PCAMembreFamilleVO {
         this.prenom = prenom;
     }
 
+    public Boolean getIsRentier() {
+        return isRentier;
+    }
+
+    public void setIsRentier(Boolean rentier) {
+        isRentier = rentier;
+    }
 }

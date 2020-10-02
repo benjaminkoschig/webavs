@@ -35,6 +35,31 @@ function CompteBancaireCCPPart(container){
 		 
 		 requirements(this.detail);
 		 this.addSpy($data);
+
+		var $element = this.detail.find('#typeDessaisissementFortune');
+			//$('.areaDFDetail').first().find('#typeDessaisissementFortune');
+
+		$element.empty();
+		$.each(items, function (i, item) {
+			$element.append($('<option>', {
+				value: item,
+				text: i
+			}));
+		});
+
+		 if (this.detail.find('.dessaisissementFortune').attr('checked')) {
+			 $element.show();
+			 var tmp = $data.find('typeDessaisissementFortune').text();
+
+			 if (tmp == "") {
+				 $element.find('option[value=1]').attr('selected', true);
+			 } else {
+				 $element.find('option[value='+tmp+']').attr('selected', true);
+			 }
+
+		 } else {
+			 $element.hide();
+		 }
 		 
 	};
 	
@@ -50,6 +75,7 @@ function CompteBancaireCCPPart(container){
 			'compteBancaireCCP.simpleCompteBancaireCCP.montantInteret':this.detail.find('.montantInteret').val(),
 			'compteBancaireCCP.simpleCompteBancaireCCP.montantFraisBancaire':this.detail.find('.montantFrais').val(),			
 			'compteBancaireCCP.simpleDonneeFinanciereHeader.isDessaisissementFortune':this.detail.find('.dessaisissementFortune').prop('checked'),
+			'compteBancaireCCP.simpleDonneeFinanciereHeader.typeDessaisissementFortune':this.detail.find('#typeDessaisissementFortune').children("option:selected").val(),
 			'compteBancaireCCP.simpleDonneeFinanciereHeader.isDessaisissementRevenu':this.detail.find('.dessaisissementRevenu').prop('checked'),
 			'compteBancaireCCP.simpleDonneeFinanciereHeader.dateDebut':this.detail.find('[name=dateDebut]').val(),
 			'compteBancaireCCP.simpleDonneeFinanciereHeader.dateFin':this.detail.find('[name=dateFin]').val(),
@@ -154,7 +180,4 @@ $(function(){
 		}).end();
 		
 	});
-	
-	
-	
 });

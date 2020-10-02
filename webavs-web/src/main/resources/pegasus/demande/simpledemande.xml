@@ -19,6 +19,7 @@
 			<field name="isPurRetro" column="BCBRET" type="BOOLEAN" mandatory="FALSE" comment="IS_PUR_RETRO"/>
 			<field name="dateProchaineRevision" column="BBDPRV" type="MONTH_YEAR" mandatory="false" comment="DATE_PROCHAINE_REVISION"/>
 			<field name="motifProchaineRevision" column="BBLMPR" type="STRING" dataType="VARCHAR(512)" mandatory="false" comment="MOTIF_PROCHAINE_REVISION"/>
+			<field name="forcerCalculTransitoire" column="BBCATR" type="BOOLEAN" mandatory="false" comment="FORCE_CALCUL_TRANSITOIRE"/>
 		</fields>
 		<search-definition name="demandeInCsEtat">
 			<search-group operator="AND">

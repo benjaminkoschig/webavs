@@ -1997,7 +1997,18 @@ public class PRTiersHelper {
         Map<String, String> cpMap = getCommunePolitique(setIdTiers, date, session);
         return cpMap.get(idTiers);
     }
+    /**
+     * Retourne le nom de la commune politique
+     */
+    public static String getCommunePolitiqueNom(String idTiers, Date date, BSession session)
+            throws IllegalArgumentException {
 
+        Set<String> setIdTiers = new HashSet<String>();
+        setIdTiers.add(idTiers);
+
+        Map<String, String> cpMap = getCommunePolitiqueNom(setIdTiers, date, session);
+        return cpMap.get(idTiers);
+    }
     /**
      * Récupère les codes des communes politiques pour la liste d'idTiers <code>idTiers</code></br>
      * La recherche est réalisée part lot de mille idTiers(limitation de la clause SQL 'IN'</br>
@@ -2029,7 +2040,18 @@ public class PRTiersHelper {
 
         return mapCommuneParIdTiers;
     }
+    public static Map<String, String> getCommunePolitiqueNom(Set<String> setIdTiers, Date date, BSession session)
+            throws IllegalStateException {
 
+        Map<String, CommunePolitiqueBean> mapCommuneBeanParIdTiers = findCommunePolitique(setIdTiers, date, session);
+        Map<String, String> mapCommuneParIdTiers = new HashMap<String, String>();
+
+        for (Map.Entry<String, CommunePolitiqueBean> entry : mapCommuneBeanParIdTiers.entrySet()) {
+            mapCommuneParIdTiers.put(entry.getKey(), entry.getValue().getNom());
+        }
+
+        return mapCommuneParIdTiers;
+    }
     /**
      * Récupère un objet {@link CommunePolitiqueBean} pour la liste d'idTiers <code>idTiers</code></br>
      * La recherche est réalisée part lot de mille idTiers(limitation de la clause SQL 'IN'</br>

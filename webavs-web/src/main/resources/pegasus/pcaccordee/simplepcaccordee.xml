@@ -24,6 +24,7 @@
 			<field name="isCalculManuel" column="CUBCMA" type="BOOLEAN" mandatory="true" comment="IS_CALCUL_MANUEL"/>
 			<field name="isCalculRetro" column="CUBRET" type="BOOLEAN" mandatory="false" comment="IS_CALCUL_RETROACTIF"/>
 			<field name="isDateFinForce" column="CUBDFF" type="BOOLEAN" mandatory="false" comment="IS_DATE_FIN_FORCE"/>
+			<field name="isProvisoire" column="CUPROV" type="BOOLEAN" mandatory="false" comment="IS_PROVISOIRE"/>
 		</fields>
 		<search-definition>
 			<search-group operator="AND">

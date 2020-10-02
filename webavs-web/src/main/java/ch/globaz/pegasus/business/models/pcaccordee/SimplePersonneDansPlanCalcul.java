@@ -12,6 +12,7 @@ public class SimplePersonneDansPlanCalcul extends JadeSimpleModel {
     private String idPersonneDansPlanCalcul = null;
     private String idPlanDeCalcul = null;
     private Boolean isComprisDansCalcul = null;
+    private Boolean isRentier = null;
 
     /*
      * (non-Javadoc)
@@ -65,4 +66,11 @@ public class SimplePersonneDansPlanCalcul extends JadeSimpleModel {
         this.isComprisDansCalcul = isComprisDansCalcul;
     }
 
+    public void setIsRentier(Boolean rentier) {
+        this.isRentier = rentier;
+    }
+
+    public Boolean getIsRentier() {
+        return isRentier;
+    }
 }

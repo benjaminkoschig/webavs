@@ -1,5 +1,7 @@
 package ch.globaz.pegasus.business.services.models.habitat;
 
+import ch.globaz.pegasus.business.exceptions.models.habitat.SejourMoisPartielHomeException;
+import ch.globaz.pegasus.business.models.habitat.SejourMoisPartielHome;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
@@ -50,6 +52,23 @@ public interface HabitatService extends JadeApplicationService {
     public TaxeJournaliereHome createTaxeJournaliereHome(SimpleVersionDroit simpleVersionDroit,
             DroitMembreFamille droitMembreFamille, TaxeJournaliereHome taxeJournaliereHome)
             throws TaxeJournaliereHomeException, JadePersistenceException, DonneeFinanciereException;
+
+    /**
+     * Permet de créer un SejourMoisPartielHome <b>ATTENTION en utilisant cette fonction on ne passe pas par la
+     * validation du droit (auncune verification du spy)</b>. De plus aucun trigger ne sera déclanché. A utilsé en toute
+     * connaissance de cause! A utiliser surtout dans des traitement de mass tell que la copie des données finacière.
+     *
+     * @param simpleVersionDroit
+     * @param droitMembreFamille
+     * @param sejourMoisPartielHome
+     * @return TaxeJournaliereHome
+     * @throws SejourMoisPartielHomeException
+     * @throws JadePersistenceException
+     * @throws DonneeFinanciereException
+     */
+    SejourMoisPartielHome createSejourMoisPartielHome(SimpleVersionDroit simpleVersionDroit,
+                                                             DroitMembreFamille droitMembreFamille, SejourMoisPartielHome sejourMoisPartielHome)
+            throws SejourMoisPartielHomeException, JadePersistenceException, DonneeFinanciereException;
 
     /**
      * Suppression des entitées "Habitat" en fonction d'une version de droit dans les données financière header

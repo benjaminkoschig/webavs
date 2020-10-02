@@ -3,6 +3,10 @@ package ch.globaz.pegasus.rpc.businessImpl.repositoriesjade.loader;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenuActiviteLucrativeIndependante.RevenuActiviteLucrativeIndependante;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenueActiviteLucrativeDependante.RevenuActiviteLucrativeDependante;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenueHypothtique.RevenuHypothtique;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.globaz.common.domaine.Date;
@@ -122,6 +126,8 @@ public class PersonneElementsCalculConverter {
                 .add(dfFiltre.getPensionsAlimentaireByType(PensionAlimentaireType.VERSEE).sumDepense()));
         TaxeJournaliereHome taxeJournaliereHome = dfFiltre.getTaxesJournaliereHome().resolveCurrentTaxejournaliere();
         Montant entretienViager = Montant.ZERO;
+
+        perElCal.setFraisGarde(resolveFraisGarde(df));
 
         if (taxeJournaliereHome != null) {
 
@@ -414,6 +420,23 @@ public class PersonneElementsCalculConverter {
             sum = sum.add(variableMetier.getMontant());
         }
         return sum;
+    }
+
+    private Montant resolveFraisGarde(DonneesFinancieresContainer df){
+        Montant fraisGarde = Montant.ZERO_ANNUEL;
+        for (RevenuHypothtique revenuHypothetique : df.getRevenusHypothtique().getList()) {
+            fraisGarde.add(revenuHypothetique.getFraisGarde());
+        }
+
+        for (RevenuActiviteLucrativeDependante revenuDependant : df.getRevenusActiviteLucrativeDependante().getList()) {
+            fraisGarde.add(revenuDependant.getFraisDeGarde());
+        }
+
+        for (RevenuActiviteLucrativeIndependante revenuIndependant : df.getRevenusActiviteLucrativeIndependante().getList()) {
+            fraisGarde.add(revenuIndependant.getFraisDeGarde());
+        }
+
+        return fraisGarde;
     }
 
 }

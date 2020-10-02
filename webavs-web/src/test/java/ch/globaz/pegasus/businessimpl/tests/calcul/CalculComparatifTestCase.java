@@ -224,7 +224,7 @@ public class CalculComparatifTestCase {
         // .consolideCacheDonneesPersonnes(this.listePCAccordes,
         // this.cacheDonneesBD, this.listePersonnes);
 
-        PegasusImplServiceLocator.getCalculComparatifService().calculePCAccordes(droit, listePCAccordes);
+        PegasusImplServiceLocator.getCalculComparatifService().calculePCAccordes(droit, listePCAccordes, false);
 
         // crée temp dir si besoin
         File tempDir = new File("c://temp");

@@ -22,16 +22,16 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.DonneesHorsDr
  */
 public interface CalculComparatifService extends JadeApplicationService {
 
-    public void calculePCAccordes(Droit droit, List<PeriodePCAccordee> listePCAccordes) throws CalculException;
+    public void calculePCAccordes(Droit droit, List<PeriodePCAccordee> listePCAccordes, boolean isReforme) throws CalculException;
 
     public void calculJoursAppoint(List<PeriodePCAccordee> listePCAccordes,
             CalculPcaReplaceSearch calculPcaReplaceSearch) throws CalculException;
 
     public void consolideCacheDonneesPersonnes(List<PeriodePCAccordee> listePCAccordes,
-            Map<String, JadeAbstractSearchModel> cacheDonneesBD, Map<String, CalculMembreFamille> listePersonnes,
-            String dateFinPlageCalcul, DonneesHorsDroitsProvider containerGlobal) throws CalculException;
+                                               Map<String, JadeAbstractSearchModel> cacheDonneesBD, Map<String, CalculMembreFamille> listePersonnes,
+                                               String dateFinPlageCalcul, DonneesHorsDroitsProvider containerGlobal, boolean isReforme, boolean isFratrie) throws CalculException;
 
     public void loadDonneesCalculComparatif(Droit droit, Map<String, JadeAbstractSearchModel> cacheDonnees,
-            List<PeriodePCAccordee> periodes, Map<String, CalculMembreFamille> listePersonnes, String debutPlage)
+            List<PeriodePCAccordee> periodes, Map<String, CalculMembreFamille> listePersonnes, String debutPlage, String dateFinPlage)
             throws CalculException, JadePersistenceException, TaxeJournaliereHomeException, HomeException;
 }

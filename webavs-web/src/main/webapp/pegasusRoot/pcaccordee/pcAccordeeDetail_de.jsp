@@ -28,6 +28,7 @@
 <c:url var="imgCalculNonDispo" value="/images/calcule_nondispo.png" scope="page"/>
 <c:url var="imgEnfantCompri" value="/images/small_good.png" scope="page"/>
 <c:url var="imgEnfantExclu" value="/images/small_error.png" scope="page"/>
+<c:url var="valideReforme" value="/images/small_good.png" scope="page"/>
 
 <head>
 	<%-- ********************************** META ****************************--%>
@@ -575,6 +576,7 @@
 								</th>
 								<th class="casretenus"><ct:FWLabel key="JSP_PCACCORDE_D_PART_CANT"/></th>
 								<th class="casretenus"><ct:FWLabel key="JSP_PCACCORDE_D_AFFICHER"/></th>
+                                <th class="casretenus"><ct:FWLabel key="JSP_PCACCORDE_D_REFORME_PC"/></th>
 							</tr>
 							
 							<!--  debut des lignes de plan de calcul -->
@@ -647,7 +649,14 @@
 										</td>
 									</c:otherwise>
 								</c:choose>
-							</tr>	
+									<td class="pcantonale ${isRetenu?'retenu':''}" style="text-align:center">
+										<c:choose>
+											<c:when test="${planCalcul.reformePc}">
+												<img src="${valideReforme}"/>
+											</c:when>
+										</c:choose>
+									</td>
+								</tr>
 						</c:forEach>
 						
 							<c:if test="${compteur>nbTrDisplay}">

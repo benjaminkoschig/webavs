@@ -1,5 +1,6 @@
 package ch.globaz.pegasus.businessimpl.tests.parametre;
 
+import ch.globaz.pegasus.business.constantes.EPCForfaitType;
 import junit.framework.Assert;
 import ch.globaz.pegasus.business.models.parametre.ForfaitPrimeAssuranceMaladieLocaliteSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
@@ -37,6 +38,7 @@ public class ParametreTestCase {
         search.setForDateDebut("01.01.2008");
         search.setForDateFin("01.11.2008");
         search.setForIdLocalite("5296");
+        search.setForType(EPCForfaitType.LAMAL.getCode().toString());
         search = fofaitLocaliteService.search(search);
         Assert.assertNotNull(search.getSearchResults());
         Assert.assertEquals(3, search.getSize());

@@ -46,6 +46,8 @@ public class PersonElementsCalcul {
 
     private String typeRenteCS;
 
+    private Montant fraisGarde;
+
     public Montant getValeurLocativeProprietaire() {
         return valeurLocativeProprietaire;
     }
@@ -181,6 +183,14 @@ public class PersonElementsCalcul {
 
     public void addRevenuBrutHypothetique(PersonElementsCalcul elementsCalcul) {
         revenuBrutHypothetique = revenuBrutHypothetique.add(elementsCalcul.getRevenuBrutHypothetique());
+    }
+
+    public void setFraisGarde(Montant fraisGarde) {
+        this.fraisGarde = fraisGarde;
+    }
+
+    public void addFraisGarde(PersonElementsCalcul elementsCalcul) {
+        fraisGarde = fraisGarde.add(elementsCalcul.getFraisGarde());
     }
 
     public void setHomeTaxeHomeTotal(Montant homeTaxeHomeTotal) {
@@ -403,5 +413,9 @@ public class PersonElementsCalcul {
 
     public boolean hasResidenceContributions() {
         return !getHomeParticipationAuxCoutDesPatients().isZero();
+    }
+
+    public Montant getFraisGarde() {
+        return fraisGarde;
     }
 }

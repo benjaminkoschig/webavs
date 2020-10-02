@@ -19,6 +19,8 @@ public class SimplePlanDeCalcul extends JadeSimpleModel {
 
     private byte[] resultatCalcul = null;
 
+    private Boolean reformePc = false;
+
     public String getEtatPC() {
         return etatPC;
     }
@@ -118,4 +120,11 @@ public class SimplePlanDeCalcul extends JadeSimpleModel {
         this.resultatCalcul = resultatCalcul;
     }
 
+    public Boolean getReformePc() {
+        return reformePc;
+    }
+
+    public void setReformePc(Boolean reformePc) {
+        this.reformePc = reformePc;
+    }
 }

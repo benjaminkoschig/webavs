@@ -20,6 +20,7 @@ public class Sedex2469_101 extends AbstractSedex<Message> implements SedexMessag
     private static final int MESSAGE_TYPE = 2469;
     private static final String SUBJECT = MESSAGE_TYPE + "/" + SUB_MESSAGE_TYPE + " - ";
     private static final Logger LOG = LoggerFactory.getLogger(Sedex2469_101.class);
+    private static final String RPC_XSD_101_FILENAME = "eahv-iv-2469-000101-2-1.xsd";
 
     private HeaderType validationHeader;
     private final String recipientId;
@@ -30,7 +31,7 @@ public class Sedex2469_101 extends AbstractSedex<Message> implements SedexMessag
 
     public Sedex2469_101(SedexSender sedexSender, InfoCaisse infoCaisse, SendingApplicationType applicationType,
             String directoryName) {
-        super(sedexSender, directoryName, infoCaisse, Message.class, "eahv-iv-2469-000101-1-5.xsd");
+        super(sedexSender, directoryName, infoCaisse, Message.class, RPC_XSD_101_FILENAME);
         recipientId = sedexSender.getRecipientId();
         this.applicationType = applicationType;
     }

@@ -31,6 +31,7 @@ public class DecisionConverter {
         motifConverter.put("64045017", MotifDecision.MARIAGE);
         motifConverter.put("64045018", MotifDecision.DIVORCE);
         motifConverter.put("64045019", MotifDecision.AUTRE);
+        motifConverter.put("64045020", MotifDecision.SEUIL_FORTUNE_DEPASSE_SUPRESSION);
 
         motifConverter.put("64043001", MotifDecision.JUSTIFICATIFS_DEMANDES_INITIAL);
         motifConverter.put("64043002", MotifDecision.PARTIS_SANS_ADRESSE_INITIAL);
@@ -44,6 +45,7 @@ public class DecisionConverter {
         motifConverter.put("64043011", MotifDecision.ENFANT_PARENT_RENTIER);
         motifConverter.put("64043012", MotifDecision.DELAI_CARENCE);
         motifConverter.put("64043013", MotifDecision.RENONCIATION);
+        motifConverter.put("64043014", MotifDecision.SEUIL_FORTUNE_DEPASSE);
     }
 
     public Decision convertToDomain(SimpleDecisionHeader simpleDecisionHeader, String csMotif) {

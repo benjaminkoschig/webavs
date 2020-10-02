@@ -1,178 +1,237 @@
+<%@ page import="org.apache.commons.lang.StringUtils" %>
 <body onload="initPage();">
-	
-	
-	<!--  zone bouton blob et format -->
-	<div id="blobZone">
-		<%=viewBean.getTupleRoot().toString()%><br/>
-	</div>
-	
-	<!-- Header ayant droit et periode -->
-	<div id="adHeader">
-	 	<span id="adInfos" class="labelInfos"><ct:FWLabel key="JSP_PC_PLANCALCUL_D_AYANTDROIT"/></span><span class="infos"><%= viewBean.getRequerantInfos() %></span><br />
-		<span id="nssInfos" class="labelInfos"><ct:FWLabel key="JSP_PC_PLANCALCUL_D_NSS"/></span><span class="infos"><%= viewBean.getNssInfos() %></span>
-	   <% if(viewBean.getDesignationHome() !=null) {%>
-	   
-		<br/><span id="homeInfos" class="labelInfos"><ct:FWLabel key="JSP_PC_PLANCALCUL_D_HOME"/></span><span class="infos"><%=viewBean.getDesignationHome()%></span>
-		<%} %>
-	</div>
-	
-	<hr/>
-	
-	<!-- conjoint -->
-	<div id="conjointInfos">
-		<span id="adInfos" class="labelInfos"><ct:FWLabel key="JSP_PC_PLANCALCUL_D_CONJOINT"/></span><span id="infoConjoint" class="infos"><%= viewBean.getConjointInfos() %></span><br />
-		<hr/>
-	</div>
-	<!--  enfants compris -->
-	<div id="enfantsInfos">
-		<span class="labelInfos"><ct:FWLabel key="JSP_PC_PLANCALCUL_D_ENFANTCOMPRIS"/></span>
-		<% int cpt = 0;
-			for(String membres:viewBean.getEnfantsCompris()){
-				if(cpt==0){
-			%><span class="enfantpremier"><%= membres.toString() %></span><br/>
-			<%
-			cpt++;
-			}else{
-				%><span class="enfantsuite"><%= membres.toString() %></span><br/><% 
-			}
-		} %>
-		<hr/>
-	</div>
-	
-	<div id="planCalculHeader">
-		<span id="dateVal"><%= viewBean.getValiditeInfos() %></span>
-	</div>
-	
-	<%
-		String monnaie = viewBean.getMonnaie();
-	%>
-		
-	<div id="wrapper">
-		<div id="zoneFortune" class="zone">
-			<div class="titreBloc"><ct:FWLabel key="JSP_PC_PLANCALCUL_D_FORTUNE"/></div>
-			<table>
-					
-			<%
-				for(PCLignePlanCalculHandler ligne:planCalcul.getBlocFortune()){
-					//traitement description 
-					//String libelle[] = objSession.getCodeLibelle(ligne.getCsCode()).split("@");
-					
-			%>
-				<tr>
-					<td class="libelle <%=ligne.getCssClass().toString() %>"><%= ligne.getLibelle() %></td>
-					<td class="libelleMonnaie <%=ligne.getValCol1().getCssClass().toString()%>"><%= (ligne.getValCol1().getStrValeur().equals(""))?"":monnaie %></td>
-					<td class="montant <%=ligne.getValCol1().getCssClass().toString() %>" data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol1().getStrValeur().toString() %></td>
-					<td class="libelleMonnaie <%=ligne.getValCol2().getCssClass().toString()%>"><%= (ligne.getValCol2().getStrValeur().equals(""))?"":monnaie %></td>
-					<td class="montant <%=ligne.getValCol2().getCssClass().toString() %>" data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol2().getStrValeur().toString() %></td>
-					<td class="libelleMonnaie <%=ligne.getCssClass().toString()+" "+ligne.getValCol3().getCssClass().toString() %>"><%= (ligne.getValCol3().getStrValeur().equals(""))?"":monnaie %></td>
-					<td class="montant <%=ligne.getCssClass().toString()+" "+ligne.getValCol3().getCssClass().toString() %>" data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol3().getStrValeur().toString() %></td>
-				</tr>
-			<%} %>
-			</table>
-		</div>
-		
-		<div id="zoneRevenusDeterminants" class="zone">
-			<div class="titreBloc"><ct:FWLabel key="JSP_PC_PLANCALCUL_D_REV_DET"/></div>
-			<table>
-				
-				<%
-				for(PCLignePlanCalculHandler ligne:planCalcul.getBlocRevenusDeterminants()){
-					//traitement description 
-					
-					
-			%>
-				
-				<tr>
-					<td class="libelle <%=ligne.getCssClass().toString() %>"><%= ligne.getLibelle() %></td>
-					<td class="libelleMonnaie <%=ligne.getValCol1().getCssClass().toString()%>"><%= (ligne.getValCol1().getStrValeur().equals(""))?"":monnaie %></td>
-					<td class="montant <%=ligne.getValCol1().getCssClass().toString() %>" data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol1().getStrValeur().toString() %></td>
-					<td class="libelleMonnaie <%=ligne.getValCol2().getCssClass().toString() %>"><%= (ligne.getValCol2().getStrValeur().equals(""))?"":monnaie %></td>
-					<td class="montant <%=ligne.getValCol2().getCssClass().toString() %>" data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol2().getStrValeur().toString() %></td>
-					<td class="libelleMonnaie <%=ligne.getCssClass().toString()+" "+ligne.getValCol3().getCssClass().toString() %>"><%= (ligne.getValCol3().getStrValeur().equals(""))?"":monnaie %></td>
-					<td class="montant <%=ligne.getCssClass().toString()+" "+ligne.getValCol3().getCssClass().toString() %>" data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol3().getStrValeur().toString() %></td>
-				</tr>
-				<%} %>
-			</table>
-		</div>
-				
-		
-		
-		<div id="zoneDepensesReconnues" class="zone">
-			<div class="titreBloc"><ct:FWLabel key="JSP_PC_PLANCALCUL_D_DEPENSES"/></div>
-			<table>
-			<%
-			for(PCLignePlanCalculHandler ligne:planCalcul.getBlocDepensesReconnues()){
-				//traitement description 
-				
-			%>
-				<tr>
-					<td class="libelle <%=ligne.getCssClass().toString() %>"><%= ligne.getLibelle() %></td>
-					<td class="libelleMonnaie <%=ligne.getValCol1().getCssClass().toString()%>"><%= (ligne.getValCol1().getStrValeur().equals(""))?"":monnaie %></td>
-					<td class="montant <%=ligne.getValCol1().getCssClass().toString() %>" data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol1().getStrValeur().toString() %></td>
-					<td class="libelleMonnaie <%=ligne.getValCol2().getCssClass().toString() %>"><%= (ligne.getValCol2().getStrValeur().equals(""))?"":monnaie %></td>
-					<td class="montant <%=ligne.getValCol2().getCssClass().toString() %>" data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol2().getStrValeur().toString() %></td>
-					<td class="libelleMonnaie <%=ligne.getCssClass().toString()+" "+ligne.getValCol3().getCssClass().toString() %>"><%= (ligne.getValCol3().getStrValeur().equals(""))?"":monnaie %></td>
-					<td class="montant <%=ligne.getCssClass().toString()+" "+ligne.getValCol3().getCssClass().toString() %>" data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol3().getStrValeur().toString() %></td>
-				</tr>
-					<%} %>
-			</table>
-		</div>
-		
-		<div id="zoneResume" class="zone">
-			
-			<table>
-			<%
-				for(PCLignePlanCalculHandler ligne:planCalcul.getBlocResume()){
-				
-			%>
-				<tr>
-					<td class="libelle <%=ligne.getCssClass().toString() %>"><%= ligne.getLibelle() %></td>
-					<td class="libelleMonnaie <%=ligne.getValCol1().getCssClass().toString()%>"><%= (ligne.getValCol1().getStrValeur().equals(""))?"":monnaie %></td>
-					<td class="montant <%=ligne.getValCol1().getCssClass().toString() %>" data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol1().getStrValeur().toString() %></td>
-					<td class="libelleMonnaie <%=ligne.getValCol2().getCssClass().toString() %>"><%= (ligne.getValCol2().getStrValeur().equals(""))?"":monnaie %></td>
-					<td class="montant <%=ligne.getValCol2().getCssClass().toString() %>" data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol2().getStrValeur().toString() %></td>
-					<td class="libelleMonnaie <%=ligne.getCssClass().toString()+" "+ligne.getValCol3().getCssClass().toString() %>"><%= (ligne.getValCol3().getStrValeur().equals(""))?"":monnaie %></td>
-					<td class="montant <%=ligne.getCssClass().toString()+" "+ligne.getValCol3().getCssClass().toString() %>" data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol3().getStrValeur().toString() %></td>
-				</tr>
-					<%} %>
-			</table>
-		</div>
-		
-		<!-- Zone double versement -->
-		<% if(viewBean.hasDoubleVersement()){ %>
-			<div id="detailVersement" >
-				<table id="tableDoubleVersement">
-					<tr>
-						<td colspan="7" class=" italic"><ct:FWLabel key="JSP_PC_PLANCALCUL_D_VERSEMENT"/></td>
-					</tr>
-					<tr>
-						<td class="libelle gras"><%= viewBean.getLibelleVersementInfo(IPCDroits.CS_ROLE_FAMILLE_REQUERANT) %></td>
-						<td class="libelleMonnaie"></td>
-						<td class="montant"></td>
-						<td class="libelleMonnaie"></td>
-						<td class="montant"></td>
-						<td class="libelleMonnaie gras">CHF</td>
-						<td class="montant gras"><%= new FWCurrency(viewBean.getMontantVersement(IPCDroits.CS_ROLE_FAMILLE_REQUERANT)) %></td>
-					</tr>
-					<tr>
-						<td class="libelle gras"><%= viewBean.getLibelleVersementInfo(IPCDroits.CS_ROLE_FAMILLE_CONJOINT) %></td>
-						<td class="libelleMonnaie"></td>
-						<td class="montant"></td>
-						<td class="libelleMonnaie"></td>
-						<td class="montant"></td>
-						<td class="libelleMonnaie gras">CHF</td>
-						<td class="montant gras"><%= new FWCurrency(viewBean.getMontantVersement(IPCDroits.CS_ROLE_FAMILLE_CONJOINT)) %></td>
-					</tr>
-					
-				</table>
-			</div>
-		<%} %><!--  fin afficharhe plan calcul -->
-	</div>
-	
-	<button id="btnPrint" onclick="printPage()">Imprimer</button>
-		
-	<div>
-	</div>
-	
-	
-	</body>
+
+
+<!--  zone bouton blob et format -->
+<div id="blobZone">
+    <%=viewBean.getTupleRoot().toString()%><br/>
+</div>
+
+<!-- Header ayant droit et periode -->
+<div id="adHeader">
+    <span id="adInfos" class="labelInfos"><ct:FWLabel key="JSP_PC_PLANCALCUL_D_AYANTDROIT"/></span><span
+        class="infos"><%= viewBean.getRequerantInfos() %></span><br/>
+    <span id="nssInfos" class="labelInfos"><ct:FWLabel key="JSP_PC_PLANCALCUL_D_NSS"/></span><span
+        class="infos"><%= viewBean.getNssInfos() %></span>
+    <% if (viewBean.getDesignationHome() != null) {%>
+
+    <br/><span id="homeInfos" class="labelInfos"><ct:FWLabel key="JSP_PC_PLANCALCUL_D_HOME"/></span><span
+        class="infos"><%=viewBean.getDesignationHome()%></span>
+    <%} %>
+</div>
+
+<hr/>
+
+<!-- conjoint -->
+<div id="conjointInfos">
+    <span id="adInfos" class="labelInfos"><ct:FWLabel key="JSP_PC_PLANCALCUL_D_CONJOINT"/></span><span id="infoConjoint"
+                                                                                                       class="infos"><%= viewBean.getConjointInfos() %></span><br/>
+    <hr/>
+</div>
+<!--  enfants compris -->
+<div id="enfantsInfos">
+    <span class="labelInfos"><ct:FWLabel key="JSP_PC_PLANCALCUL_D_ENFANTCOMPRIS"/></span>
+    <% int cpt = 0;
+        for (String membres : viewBean.getEnfantsCompris()) {
+            if (cpt == 0) {
+    %><span class="enfantpremier"><%= membres.toString() %></span><br/>
+    <%
+        cpt++;
+    } else {
+    %><span class="enfantsuite"><%= membres.toString() %></span><br/><%
+        }
+    } %>
+    <hr/>
+</div>
+
+<div id="planCalculHeader">
+    <span id="dateVal"><%= viewBean.getValiditeInfos() %></span>
+</div>
+
+<%
+    String monnaie = viewBean.getMonnaie();
+%>
+
+<div id="wrapper">
+    <div id="zoneFortune" class="zone">
+        <div class="titreBloc"><ct:FWLabel key="JSP_PC_PLANCALCUL_D_FORTUNE"/></div>
+        <table>
+
+            <%
+                for (PCLignePlanCalculHandler ligne : planCalcul.getBlocFortune()) {
+                    //traitement description
+                    //String libelle[] = objSession.getCodeLibelle(ligne.getCsCode()).split("@");
+
+            %>
+            <tr>
+                <td class="libelle <%=ligne.getCssClass().toString() %>"><%= ligne.getLibelle() %>
+                </td>
+                <td class="libelleMonnaie <%=ligne.getValCol1().getCssClass().toString()%>"><%= (ligne.getValCol1().getStrValeur().equals("")) ? "" : monnaie %>
+                </td>
+                <td class="montant <%=ligne.getValCol1().getCssClass().toString() %>"
+                    data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol1().getStrValeur().toString() %>
+                </td>
+                <td class="libelleMonnaie <%=ligne.getValCol2().getCssClass().toString()%>"><%= (ligne.getValCol2().getStrValeur().equals("")) ? "" : monnaie %>
+                </td>
+                <td class="montant <%=ligne.getValCol2().getCssClass().toString() %>"
+                    data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol2().getStrValeur().toString() %>
+                </td>
+                <td class="libelleMonnaie <%=ligne.getCssClass().toString()+" "+ligne.getValCol3().getCssClass().toString() %>"><%= (ligne.getValCol3().getStrValeur().equals("")) ? "" : monnaie %>
+                </td>
+                <td class="montant <%=ligne.getCssClass().toString()+" "+ligne.getValCol3().getCssClass().toString() %>"
+                    data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol3().getStrValeur().toString() %>
+                </td>
+            </tr>
+            <%} %>
+        </table>
+    </div>
+
+    <div id="zoneRevenusDeterminants" class="zone">
+        <div class="titreBloc"><ct:FWLabel key="JSP_PC_PLANCALCUL_D_REV_DET"/></div>
+        <table>
+
+            <%
+                for (PCLignePlanCalculHandler ligne : planCalcul.getBlocRevenusDeterminants()) {
+                    //traitement description
+
+
+            %>
+
+            <tr>
+                <td class="libelle <%=ligne.getCssClass().toString() %>"><%= ligne.getLibelle() %>
+                </td>
+                <td class="libelleMonnaie <%=ligne.getValCol1().getCssClass().toString()%>"><%= (ligne.getValCol1().getStrValeur().equals("")) ? "" : monnaie %>
+                </td>
+                <td class="montant <%=ligne.getValCol1().getCssClass().toString() %>"
+                    data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol1().getStrValeur().toString() %>
+                </td>
+                <td class="libelleMonnaie <%=ligne.getValCol2().getCssClass().toString() %>"><%= (ligne.getValCol2().getStrValeur().equals("")) ? "" : monnaie %>
+                </td>
+                <td class="montant <%=ligne.getValCol2().getCssClass().toString() %>"
+                    data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol2().getStrValeur().toString() %>
+                </td>
+                <td class="libelleMonnaie <%=ligne.getCssClass().toString()+" "+ligne.getValCol3().getCssClass().toString() %>"><%= (ligne.getValCol3().getStrValeur().equals("")) ? "" : monnaie %>
+                </td>
+                <td class="montant <%=ligne.getCssClass().toString()+" "+ligne.getValCol3().getCssClass().toString() %>"
+                    data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol3().getStrValeur().toString() %>
+                </td>
+            </tr>
+            <%} %>
+        </table>
+    </div>
+
+
+    <div id="zoneDepensesReconnues" class="zone">
+        <div class="titreBloc"><ct:FWLabel key="JSP_PC_PLANCALCUL_D_DEPENSES"/></div>
+        <table>
+            <%
+                for (PCLignePlanCalculHandler ligne : planCalcul.getBlocDepensesReconnues()) {
+                    //traitement description
+            %>
+            <tr>
+                <td class="libelle <%=ligne.getCssClass().toString() %>"><%= ligne.getLibelle() %>
+                </td>
+                <td class="libelleMonnaie <%=ligne.getValCol1().getCssClass().toString()%>"><%= (ligne.getValCol1().getStrValeur().equals("")) ? "" : monnaie %>
+                </td>
+                <td class="montant <%=ligne.getValCol1().getCssClass().toString() %>"
+                    data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol1().getStrValeur().toString() %>
+                </td>
+                <td class="libelleMonnaie <%=ligne.getValCol2().getCssClass().toString() %>"><%= (ligne.getValCol2().getStrValeur().equals("")) ? "" : monnaie %>
+                </td>
+                <td class="montant <%=ligne.getValCol2().getCssClass().toString() %>"
+                    data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol2().getStrValeur().toString() %>
+                </td>
+                <td class="libelleMonnaie <%=ligne.getCssClass().toString()+" "+ligne.getValCol3().getCssClass().toString() %>"><%= (ligne.getValCol3().getStrValeur().equals("")) ? "" : monnaie %>
+                </td>
+                <td class="montant <%=ligne.getCssClass().toString()+" "+ligne.getValCol3().getCssClass().toString() %>"
+                    data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol3().getStrValeur().toString() %>
+                </td>
+            </tr>
+            <%} %>
+        </table>
+    </div>
+
+    <div id="zoneResume" class="zone">
+
+        <table>
+            <%
+                for (PCLignePlanCalculHandler ligne : planCalcul.getBlocResume()) {
+                    if (StringUtils.equals(IPCValeursPlanCalcul.MONTANT_VERSE_CAISSE_MALADIE, ligne.getValCol3().getCodeSysteme())) {
+            %>
+            <tr>
+                <td colspan="5" class="<%=ligne.getCssClass() %>"><%= ligne.getLibelle() %>
+                </td>
+                <td class="libelleMonnaie <%=ligne.getCssClass().toString()+" "+ligne.getValCol3().getCssClass().toString() %>"><%= (ligne.getValCol3().getStrValeur().equals("")) ? "" : monnaie %>
+                </td>
+                <td class="montant <%=ligne.getCssClass().toString()+" "+ligne.getValCol3().getCssClass().toString() %>"
+                    data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol3().getStrValeur().toString() %>
+                </td>
+            </tr>
+            <%
+                } else {
+            %>
+            <tr>
+                <td class="libelle <%=ligne.getCssClass().toString() %>"><%= ligne.getLibelle() %>
+                </td>
+                <td class="libelleMonnaie <%=ligne.getValCol1().getCssClass().toString()%>"><%= (ligne.getValCol1().getStrValeur().equals("")) ? "" : monnaie %>
+                </td>
+                <td class="montant <%=ligne.getValCol1().getCssClass().toString() %>"
+                    data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol1().getStrValeur().toString() %>
+                </td>
+                <td class="libelleMonnaie <%=ligne.getValCol2().getCssClass().toString() %>"><%= (ligne.getValCol2().getStrValeur().equals("")) ? "" : monnaie %>
+                </td>
+                <td class="montant <%=ligne.getValCol2().getCssClass().toString() %>"
+                    data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol2().getStrValeur().toString() %>
+                </td>
+                <td class="libelleMonnaie <%=ligne.getCssClass().toString()+" "+ligne.getValCol3().getCssClass().toString() %>"><%= (ligne.getValCol3().getStrValeur().equals("")) ? "" : monnaie %>
+                </td>
+                <td class="montant <%=ligne.getCssClass().toString()+" "+ligne.getValCol3().getCssClass().toString() %>"
+                    data-g-amountformatter="blankAsZero:false"><%= ligne.getValCol3().getStrValeur().toString() %>
+                </td>
+            </tr>
+            <%}} %>
+        </table>
+    </div>
+
+    <!-- Zone double versement -->
+    <% if (viewBean.hasDoubleVersement()) { %>
+    <div id="detailVersement">
+        <table id="tableDoubleVersement">
+            <tr>
+                <td colspan="7" class=" italic"><ct:FWLabel key="JSP_PC_PLANCALCUL_D_VERSEMENT"/></td>
+            </tr>
+            <tr>
+                <td class="libelle gras"><%= viewBean.getLibelleVersementInfo(IPCDroits.CS_ROLE_FAMILLE_REQUERANT) %>
+                </td>
+                <td class="libelleMonnaie"></td>
+                <td class="montant"></td>
+                <td class="libelleMonnaie"></td>
+                <td class="montant"></td>
+                <td class="libelleMonnaie gras">CHF</td>
+                <td class="montant gras"><%= new FWCurrency(viewBean.getMontantVersement(IPCDroits.CS_ROLE_FAMILLE_REQUERANT)) %>
+                </td>
+            </tr>
+            <tr>
+                <td class="libelle gras"><%= viewBean.getLibelleVersementInfo(IPCDroits.CS_ROLE_FAMILLE_CONJOINT) %>
+                </td>
+                <td class="libelleMonnaie"></td>
+                <td class="montant"></td>
+                <td class="libelleMonnaie"></td>
+                <td class="montant"></td>
+                <td class="libelleMonnaie gras">CHF</td>
+                <td class="montant gras"><%= new FWCurrency(viewBean.getMontantVersement(IPCDroits.CS_ROLE_FAMILLE_CONJOINT)) %>
+                </td>
+            </tr>
+
+        </table>
+    </div>
+    <%} %><!--  fin afficharhe plan calcul -->
+</div>
+
+<button id="btnPrint" onclick="printPage()">Imprimer</button>
+
+<div>
+</div>
+
+
+</body>

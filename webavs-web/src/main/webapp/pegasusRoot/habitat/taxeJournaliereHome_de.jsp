@@ -140,6 +140,7 @@ var dialogMontantLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOM
 											<th><ct:FWLabel key="JSP_PC_TAXE_JOURNALIERE_HOME_L_PRIME_A_PAYER"/></th>
 											<th><ct:FWLabel key="JSP_PC_TAXE_JOURNALIERE_HOME_L_ASSUREUR_MALADIE"/></th>
 											<th data-g-cellformatter="css:formatCellIcon" ><ct:FWLabel key="JSP_PC_TITRE_L_DR"/></th>
+											<th data-g-cellformatter="css:formatCellIcon" ><ct:FWLabel key="JSP_PC_TITRE_L_VD"/></th>
 											<th><ct:FWLabel key="JSP_PC_TAXE_JOURNALIERE_HOME_L_DATE_ECHCANCE"/></th>
 											<th data-g-periodformatter=" "><ct:FWLabel key="JSP_PC_TAXE_JOURNALIERE_HOME_L_PERIODE"/></th>
 										</tr>
@@ -178,6 +179,12 @@ var dialogMontantLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOM
 												<%} else {
 													%>&nbsp;<%
 												}%>
+											</td>
+											<td><% if(donnee.getSimpleTaxeJournaliereHome().getIsVersementDirect().booleanValue()){%>
+												<img src="<%=request.getContextPath()+"/images/ok.gif" %>"/>
+												<%} else {
+												%>&nbsp;<%
+													}%>
 											</td>
 											<td><%=donnee.getSimpleTaxeJournaliereHome().getDateEcheance() %></td>
 											<td><%=dfHeader.getDateDebut() %> - <%=dfHeader.getDateFin() %></td>
@@ -287,6 +294,10 @@ var dialogMontantLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOM
 										<td class="charge"><input name="dateEcheance" value="" data-g-calendar=" "/></td>
 										<td><ct:FWLabel key="JSP_PC_TITRE_D_DESSAISISSEMENT_REVENU"/></td>
 										<td><input type="checkbox" class="dessaisissementRevenu" /></td>
+									</tr>
+									<tr>
+									<td><ct:FWLabel key="JSP_PC_HABITAT_VERSEMENT_HOME" /></td>
+									<td><input type="checkbox" class="isVersementDirect" /></td >
 									</tr>
 									<%if(EPCProperties.GESTION_JOURS_APPOINTS.getBooleanValue()) {%>
 									<tr>

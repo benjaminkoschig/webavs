@@ -1,8 +1,14 @@
 package ch.globaz.pegasus.businessimpl.checkers.habitat;
 
+import ch.globaz.pegasus.business.models.home.Home;
+import ch.globaz.pegasus.business.services.PegasusServiceLocator;
+import ch.globaz.pyxis.business.model.AdresseTiersDetail;
+import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
+import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import ch.globaz.pegasus.business.exceptions.models.habitat.LoyerException;
@@ -12,6 +18,8 @@ import ch.globaz.pegasus.business.models.habitat.SimpleTaxeJournaliereHome;
 import ch.globaz.pegasus.business.models.home.SimpleHomeSearch;
 import ch.globaz.pegasus.businessimpl.checkers.PegasusAbstractChecker;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
+
+import static globaz.externe.IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE;
 
 public class SimpleTaxeJournaliereHomeChecker extends PegasusAbstractChecker {
 
@@ -88,6 +96,22 @@ public class SimpleTaxeJournaliereHomeChecker extends PegasusAbstractChecker {
                 JadeThread.logError(taxeJournaliereHome.getClass().getName(),
                         "pegasus.simpleTaxeJournalierHome.montantJournalierLCA.mandatory");
             }
+        }
+        if(taxeJournaliereHome.getIsVersementDirect()){
+            try {
+                Home home = PegasusServiceLocator.getHomeService().read(taxeJournaliereHome.getIdHome());
+                AdresseTiersDetail homeAdressePaiementFormatee = TIBusinessServiceLocator.getAdresseService().getAdressePaiementTiers(home.getSimpleHome().getIdTiersHome(), Boolean.TRUE, TIERS_CS_DOMAINE_APPLICATION_RENTE, JACalendar.todayJJsMMsAAAA(), "");
+                if (homeAdressePaiementFormatee.getAdresseFormate() == null){
+                 JadeThread.logError(taxeJournaliereHome.getClass().getName(),
+                        "pegasus.simpleTaxeJournalierHome.versementDirect.mandatory");
+                }
+            } catch (JadePersistenceException e) {
+                JadeThread.logError(taxeJournaliereHome.getClass().getName(),e.getMessage());
+            } catch (JadeApplicationException e) {
+                JadeThread.logError(taxeJournaliereHome.getClass().getName(),e.getMessage());
+            }
+
+
         }
     }
 

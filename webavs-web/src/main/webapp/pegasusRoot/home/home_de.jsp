@@ -164,13 +164,15 @@
 							</TD>
 						</TR>
 						<tr>
-							<td>&nbsp;</td>
-							<td width="372px">
+							<td></td>
+							<td width="372px" valign="top">
+								<span class="titreHome"><ct:FWLabel key="JSP_PC_ADRESSE_DOMICILE"/></span>
 								<PRE><span class="detailAdresseTiers"><%=viewBean.getHomeAdresseFormatee()%></span></PRE>
 									<input type="hidden" id="home.simpleHome.idTiersHome" value="<%=JadeStringUtil.toNotNullString(viewBean.getHome().getSimpleHome().getIdTiersHome())%>">
 							</TD>
 							<td valign="top">
-							
+								<span class="titreHome"><ct:FWLabel key="JSP_PC_ADRESSE_PAIEMENT"/></span>
+								<PRE><span class="detailAdresseTiers"><%=viewBean.getHomeAdressePaiementFormatee()%></span></PRE>
 							</td>
 						</TR>
 						<TR><TD colspan="3">&nbsp;</TD></TR>		

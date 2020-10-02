@@ -1,6 +1,7 @@
 package ch.globaz.pegasus.rpc.domaine.annonce;
 
 import ch.globaz.common.domaine.Montant;
+import ch.globaz.pegasus.rpc.businessImpl.converter.ConverterRentRegion;
 import ch.globaz.pegasus.rpc.domaine.RpcDecisionAnnonceComplete;
 
 public class AnnonceRents {
@@ -13,6 +14,7 @@ public class AnnonceRents {
     protected Montant rentGrossTotal;
     protected Montant rentGrossTotalPart;
     protected Montant maxRent;
+    protected String rentRegion;
 
     public AnnonceRents(RpcDecisionAnnonceComplete annonce) {
         grossRental = annonce.getRpcCalcul().getLoyerBrutEnCompte();
@@ -21,6 +23,7 @@ public class AnnonceRents {
         rentGrossTotal = annonce.resolveLoyerTotalBrut();
         rentGrossTotalPart = annonce.getRpcCalcul().getPartLoyerTotatBrut();
         maxRent = annonce.getRpcCalcul().getLoyerMaximum();
+        rentRegion = ConverterRentRegion.convert(annonce.getRpcCalcul().getLoyerRegion());
     }
 
     public Montant getGrossRental() {
@@ -41,5 +44,9 @@ public class AnnonceRents {
 
     public Montant getMaxRent() {
         return maxRent;
+    }
+
+    public String getRentRegion() {
+        return rentRegion;
     }
 }

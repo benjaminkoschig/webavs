@@ -3,6 +3,9 @@
  */
 package ch.globaz.pegasus.businessimpl.services.models.calcul;
 
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.pegasus.business.constantes.*;
+import ch.globaz.pyxis.business.model.LocaliteSimpleModel;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadePersistenceException;
@@ -10,21 +13,11 @@ import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
 import ch.globaz.hera.business.exceptions.models.PeriodeException;
-import ch.globaz.pegasus.business.constantes.ConstantesCalcul;
-import ch.globaz.pegasus.business.constantes.IPCDemandes;
-import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCApiAvsAi;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
@@ -405,59 +398,14 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
             // récupère primes moyennes assurance maladie
             DonneesPersonnellesSearch donneesPersonnellesSearch = new DonneesPersonnellesSearch();
             donneesPersonnellesSearch.setForIdDroit(droit.getSimpleDroit().getId());
-            donneesPersonnellesSearch.setDefinedSearchSize(1);
+            //donneesPersonnellesSearch.setDefinedSearchSize();
             donneesPersonnellesSearch.setWhereKey(DonneesPersonnellesSearch.FOR_DROIT);
             donneesPersonnellesSearch = PegasusServiceLocator.getDroitService().searchDonneesPersonnelles(
                     donneesPersonnellesSearch);
-            if (donneesPersonnellesSearch.getSize() > 0) {
-                JadeAbstractModel[] l = donneesPersonnellesSearch.getSearchResults();
-                String idDerniereLocalite = ((DonneesPersonnelles) l[0]).getLocalite().getIdLocalite();
 
-                ForfaitPrimeAssuranceMaladieLocaliteSearch assuranceMaladieLocaliteSearch = new ForfaitPrimeAssuranceMaladieLocaliteSearch();
-                assuranceMaladieLocaliteSearch.setForIdLocalite(idDerniereLocalite);
+            result.put(ConstantesCalcul.CONTAINTER_DONNEES_PERSONNELLES, donneesPersonnellesSearch);
 
-                String forDateDebut = debutPlage;
-                String forDateFin = JadeDateUtil.addDays(dateFinPlage, 1);
-                assuranceMaladieLocaliteSearch.setForDateDebut(forDateDebut);
-                assuranceMaladieLocaliteSearch.setForDateFin(forDateFin);
-                assuranceMaladieLocaliteSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
-                assuranceMaladieLocaliteSearch = PegasusServiceLocator.getParametreServicesLocator()
-                        .getForfaitPrimeAssuranceMaladieLocaliteService().search(assuranceMaladieLocaliteSearch);
-
-                // si aucun forfait n'est trouvé pour la localité du requerant, inutile de continuer le calcul
-                if (assuranceMaladieLocaliteSearch.getSize() == 0) {
-                    DonneesPersonnelles dp;
-                    try {
-                        DroitMembreFamilleSearch searchModel = new DroitMembreFamilleSearch();
-                        searchModel.setForIdDroit(droit.getSimpleDroit().getIdDroit());
-                        searchModel.setForCsRoletMembreFamilleIn(new ArrayList<String>() {
-                            /**
-                             * 
-                             */
-                            private static final long serialVersionUID = 1L;
-
-                            {
-                                this.add(IPCDroits.CS_ROLE_FAMILLE_REQUERANT);
-                            }
-                        });
-                        searchModel = PegasusImplServiceLocator.getDroitMembreFamilleService().search(searchModel);
-                        if (searchModel.getSize() == 0) {
-                            throw new CalculException("No requerant found!");
-                        }
-
-                        DroitMembreFamille dmf = (DroitMembreFamille) searchModel.getSearchResults()[0];
-                        dp = PegasusImplServiceLocator.getDonneesPersonnellesService().read(
-                                dmf.getSimpleDroitMembreFamille().getIdDonneesPersonnelles());
-                    } catch (Exception e) {
-                        throw new CalculException("Failed to gather information for a calculBusinessException!", e);
-                    }
-                    String nomLocalite = dp.getLocalite().getNumPostal();
-                    throw new CalculBusinessException("pegasus.calcul.primeAssurance.forfait.mandatory", nomLocalite,
-                            forDateDebut, forDateFin);
-                }
-
-                result.put(ConstantesCalcul.CONTAINTER_PRIME_MOYENNE_ASSURANCE_MALADIE, assuranceMaladieLocaliteSearch);
-            }
+            getPrimeLamal(droit, debutPlage, dateFinPlage, result, donneesPersonnellesSearch);
 
             AutreRenteCalculSearch autreRenteCalculSearch = new AutreRenteCalculSearch();
             autreRenteCalculSearch.setWhereKey("calcul");
@@ -472,6 +420,59 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
         }
 
         return result;
+    }
+
+    public static void getPrimeLamal(Droit droit, String debutPlage, String dateFinPlage, Map<String, JadeAbstractSearchModel> result, DonneesPersonnellesSearch donneesPersonnellesSearch) throws ForfaitsPrimesAssuranceMaladieException, JadePersistenceException, JadeApplicationServiceNotAvailableException, CalculException {
+        if (donneesPersonnellesSearch.getSize() > 0) {
+            JadeAbstractModel[] l = donneesPersonnellesSearch.getSearchResults();
+            String idDerniereLocalite = ((DonneesPersonnelles) l[0]).getLocalite().getIdLocalite();
+
+            ForfaitPrimeAssuranceMaladieLocaliteSearch assuranceMaladieLocaliteSearch = new ForfaitPrimeAssuranceMaladieLocaliteSearch();
+            assuranceMaladieLocaliteSearch.setForIdLocalite(idDerniereLocalite);
+
+            String forDateDebut = debutPlage;
+            String forDateFin = JadeDateUtil.addDays(dateFinPlage, 1);
+            assuranceMaladieLocaliteSearch.setForDateDebut(forDateDebut);
+            assuranceMaladieLocaliteSearch.setForDateFin(forDateFin);
+            assuranceMaladieLocaliteSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+            assuranceMaladieLocaliteSearch.setForType(EPCForfaitType.LAMAL.getCode().toString());
+            assuranceMaladieLocaliteSearch = PegasusServiceLocator.getParametreServicesLocator()
+                    .getForfaitPrimeAssuranceMaladieLocaliteService().search(assuranceMaladieLocaliteSearch);
+
+            // si aucun forfait n'est trouvé pour la localité du requerant, inutile de continuer le calcul
+            if (assuranceMaladieLocaliteSearch.getSize() == 0) {
+                DonneesPersonnelles dp;
+                try {
+                    DroitMembreFamilleSearch searchModel = new DroitMembreFamilleSearch();
+                    searchModel.setForIdDroit(droit.getSimpleDroit().getIdDroit());
+                    searchModel.setForCsRoletMembreFamilleIn(new ArrayList<String>() {
+                        /**
+                         *
+                         */
+                        private static final long serialVersionUID = 1L;
+
+                        {
+                            this.add(IPCDroits.CS_ROLE_FAMILLE_REQUERANT);
+                        }
+                    });
+                    searchModel = PegasusImplServiceLocator.getDroitMembreFamilleService().search(searchModel);
+                    if (searchModel.getSize() == 0) {
+                        throw new CalculException("No requerant found!");
+                    }
+
+                    DroitMembreFamille dmf = (DroitMembreFamille) searchModel.getSearchResults()[0];
+                    dp = PegasusImplServiceLocator.getDonneesPersonnellesService().read(
+                            dmf.getSimpleDroitMembreFamille().getIdDonneesPersonnelles());
+                } catch (Exception e) {
+                    throw new CalculException("Failed to gather information for a calculBusinessException!", e);
+                }
+                String nomLocalite = dp.getLocalite().getNumPostal();
+                throw new CalculBusinessException("pegasus.calcul.primeAssurance.forfait.mandatory", nomLocalite,
+                        forDateDebut, forDateFin);
+            }
+
+            result.put(ConstantesCalcul.CONTAINTER_PRIME_MOYENNE_ASSURANCE_MALADIE, assuranceMaladieLocaliteSearch);
+        }
     }
 
     /*

@@ -167,9 +167,9 @@ public class DemandeAReviserTest {
         container.add(new AutreDetteProuvee(M_2000, DF_CONJ));
         container.add(new AutreDetteProuvee(M_2000, DF_ENF));
 
-        container.add(new RevenuActiviteLucrativeDependante(M_2000, M_20, M_15, M_5, DF_REQ));
-        container.add(new RevenuActiviteLucrativeDependante(M_2000, M_20, M_15, M_5, DF_CONJ));
-        container.add(new RevenuActiviteLucrativeDependante(M_2000, M_20, M_15, M_5, DF_ENF));
+        container.add(new RevenuActiviteLucrativeDependante(M_2000, M_20, M_15, M_5,M_5, DF_REQ));
+        container.add(new RevenuActiviteLucrativeDependante(M_2000, M_20, M_15, M_5,M_5, DF_CONJ));
+        container.add(new RevenuActiviteLucrativeDependante(M_2000, M_20, M_15, M_5,M_5, DF_ENF));
 
         container.add(new RevenuHypothtique(M_2000, Montant.ZERO_ANNUEL, M_20, M_15, M_5,
                 RevenuHypothtiqueMotif.MOTIF_REVENU_HYPO_14A_OPC, DF_REQ));
@@ -178,11 +178,11 @@ public class DemandeAReviserTest {
         container.add(new RevenuHypothtique(M_2000, Montant.ZERO_ANNUEL, M_20, M_15, M_5,
                 RevenuHypothtiqueMotif.MOTIF_REVENU_HYPO_14A_OPC, DF_ENF));
 
-        container.add(new RevenuActiviteLucrativeIndependante(M_1000,
+        container.add(new RevenuActiviteLucrativeIndependante(M_1000,M_5,
                 RevenuActiviteLucrativeIndependanteGenreRevenu.GENRE_REVENU_ACT_LUCR_AGRICOLE_FORESTIER, DF_REQ));
-        container.add(new RevenuActiviteLucrativeIndependante(M_1000,
+        container.add(new RevenuActiviteLucrativeIndependante(M_1000,M_5,
                 RevenuActiviteLucrativeIndependanteGenreRevenu.GENRE_REVENU_ACT_LUCR_AGRICOLE_FORESTIER, DF_ENF));
-        container.add(new RevenuActiviteLucrativeIndependante(M_1000,
+        container.add(new RevenuActiviteLucrativeIndependante(M_1000,M_5,
                 RevenuActiviteLucrativeIndependanteGenreRevenu.GENRE_REVENU_ACT_LUCR_AGRICOLE_FORESTIER, DF_CONJ));
 
         container.add(new AutreRevenu(M_2000, "Test", DF_REQ));

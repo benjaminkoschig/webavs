@@ -91,6 +91,7 @@ public class SimpleZoneForfaitsChecker {
         SimpleZoneForfaitsSearch search = new SimpleZoneForfaitsSearch();
         search.setForCsCanton(simpleZoneForfait.getCsCanton());
         search.setForDesignation(simpleZoneForfait.getDesignation());
+        search.setForType(simpleZoneForfait.getType());
         count = PegasusImplServiceLocator.getSimpleZoneForfaitsService().count(search);
         return count > 0;
     }

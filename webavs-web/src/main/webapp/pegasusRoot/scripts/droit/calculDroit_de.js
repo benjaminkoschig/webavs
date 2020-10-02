@@ -13,7 +13,7 @@ function init(){}
   
 
 /**
- * Affichage de la boite de dialogue de confirmation du clacul avec modifciation des données financières
+ * Affichage de la boite de dialogue de confirmation du calcul avec modifciation des données financières
  * @returns
  */
 var showConfirmDialogForModifDFs = function () {

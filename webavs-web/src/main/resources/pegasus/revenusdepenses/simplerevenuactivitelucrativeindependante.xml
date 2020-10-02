@@ -12,6 +12,7 @@
 			<field name="idTiersAffilie" column="BXLNAF" type="NUMERIC" comment="ID_TIERS_AFFILIE"/>
 			<field name="idCaisseCompensation" column="BXICCO" type="NUMERIC" comment="ID_CAISSE_COMPENSATION"/>						
 			<field name="idAffiliation" column="BXIDAF" type="NUMERIC" mandatory="false" comment="ID_AFFILIATION"/>
+			<field name="fraisDeGarde" column="BXIFDG" type="NUMERIC" dataType="NUMERIC(15,2)" comment="FRAIS_DE_GARDE"/>
 		</fields>
 		<search-definition>
 			<search-group operator="AND">

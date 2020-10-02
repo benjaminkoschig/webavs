@@ -21,7 +21,7 @@ import ch.globaz.pegasus.business.constantes.IPCDecision;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.constantes.IPCPCAccordee;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
-import ch.globaz.pegasus.business.vo.pcaccordee.PCAAccordeePlanClaculeAndMembreFamilleVO;
+import ch.globaz.pegasus.business.vo.pcaccordee.PCAccordeePlanCalculAndMembreFamilleVO;
 import ch.globaz.pegasus.business.vo.pcaccordee.PCAMembreFamilleVO;
 
 /**
@@ -33,8 +33,8 @@ public class RFRetrieveInfoDroitPCService {
     public static final String RENTE_COMPLEMENTAIRE = "complementaire";
     public static final String RENTE_PRINCIPALE = "principale";
 
-    private String getMontantExcedent(PCAAccordeePlanClaculeAndMembreFamilleVO pcAccPlaCalAndMemFamVOCourant,
-            String typeDeDecisionPc, String CsEtatPc, boolean isAdaptationAnnuelle) {
+    private String getMontantExcedent(PCAccordeePlanCalculAndMembreFamilleVO pcAccPlaCalAndMemFamVOCourant,
+                                      String typeDeDecisionPc, String CsEtatPc, boolean isAdaptationAnnuelle) {
 
         boolean hasMontantExcedent = false;
         String montantExcedendDeRecette = "";
@@ -159,15 +159,15 @@ public class RFRetrieveInfoDroitPCService {
         RFPCAccordeeWithCalculeRetenuService rfPcAccWitCalRetSer = new RFPCAccordeeWithCalculeRetenuService(
                 (BTransaction) transaction);
 
-        List<PCAAccordeePlanClaculeAndMembreFamilleVO> pcAccPlaCalAndMemFamVOList = rfPcAccWitCalRetSer
+        List<PCAccordeePlanCalculAndMembreFamilleVO> pcAccPlaCalAndMemFamVOList = rfPcAccWitCalRetSer
                 .getPCAccordeeWithCalculeRetenuVO(idTiers, date);
 
         if (isAdaptationAnnuelle) {
-            List<PCAAccordeePlanClaculeAndMembreFamilleVO> pcAccPlaCalAndMemFamVOAdaptationAnnuelleList = new ArrayList<PCAAccordeePlanClaculeAndMembreFamilleVO>();
+            List<PCAccordeePlanCalculAndMembreFamilleVO> pcAccPlaCalAndMemFamVOAdaptationAnnuelleList = new ArrayList<PCAccordeePlanCalculAndMembreFamilleVO>();
 
             // On parse la liste pour supprimmer toutes les PC accordées qui ne commencent pas par le début de l'année
             // de l'adaptation
-            for (PCAAccordeePlanClaculeAndMembreFamilleVO pcVoCourante : pcAccPlaCalAndMemFamVOList) {
+            for (PCAccordeePlanCalculAndMembreFamilleVO pcVoCourante : pcAccPlaCalAndMemFamVOList) {
                 if (pcVoCourante.getDateDebut().equals("01." + String.valueOf(JACalendar.today().getYear() + 1))) {
                     pcAccPlaCalAndMemFamVOAdaptationAnnuelleList.add(pcVoCourante);
                 }
@@ -183,7 +183,7 @@ public class RFRetrieveInfoDroitPCService {
             String idDossierPcAcc = "";
             boolean premiereIteration = true;
             boolean isCoupleSepare = false;
-            for (PCAAccordeePlanClaculeAndMembreFamilleVO pcVoCourante : pcAccPlaCalAndMemFamVOList) {
+            for (PCAccordeePlanCalculAndMembreFamilleVO pcVoCourante : pcAccPlaCalAndMemFamVOList) {
                 if (!premiereIteration) {
                     if (idDossierPcAcc.equals(pcVoCourante.getIdDossier())) {
                         isCoupleSepare = true;
@@ -194,11 +194,11 @@ public class RFRetrieveInfoDroitPCService {
             }
 
             if (!isCoupleSepare) {
-                List<PCAAccordeePlanClaculeAndMembreFamilleVO> pcAccPlaCalAndMemFamVOTiersComprisDsPlsCalulList = new ArrayList<PCAAccordeePlanClaculeAndMembreFamilleVO>();
+                List<PCAccordeePlanCalculAndMembreFamilleVO> pcAccPlaCalAndMemFamVOTiersComprisDsPlsCalulList = new ArrayList<PCAccordeePlanCalculAndMembreFamilleVO>();
 
                 // On parse la liste pour supprimmer toutes les PC accordées dont le tiers n'est pas compris dans le
                 // calcul
-                for (PCAAccordeePlanClaculeAndMembreFamilleVO pcVoCourante : pcAccPlaCalAndMemFamVOList) {
+                for (PCAccordeePlanCalculAndMembreFamilleVO pcVoCourante : pcAccPlaCalAndMemFamVOList) {
                     if (isTiersQdComprisDansCalcul(idTiers, pcVoCourante.getListMembreFamilleVO())) {
                         pcAccPlaCalAndMemFamVOTiersComprisDsPlsCalulList.add(pcVoCourante);
                     }
@@ -215,7 +215,7 @@ public class RFRetrieveInfoDroitPCService {
 
                 resultat = new RFRetrieveInfoDroitPCServiceData[1];
 
-                PCAAccordeePlanClaculeAndMembreFamilleVO pcAccPlaCalAndMemFamVOCourant = pcAccPlaCalAndMemFamVOList
+                PCAccordeePlanCalculAndMembreFamilleVO pcAccPlaCalAndMemFamVOCourant = pcAccPlaCalAndMemFamVOList
                         .get(0);
 
                 if (null != pcAccPlaCalAndMemFamVOCourant) {
@@ -326,7 +326,7 @@ public class RFRetrieveInfoDroitPCService {
                 boolean hasPCAccordeeHome = false;
                 boolean hasPCAccordeeDom = false;
                 int i = 0;
-                for (PCAAccordeePlanClaculeAndMembreFamilleVO pcAccPlaCalAndMemFamVOCourant : pcAccPlaCalAndMemFamVOList) {
+                for (PCAccordeePlanCalculAndMembreFamilleVO pcAccPlaCalAndMemFamVOCourant : pcAccPlaCalAndMemFamVOList) {
 
                     if (null != pcAccPlaCalAndMemFamVOCourant) {
 

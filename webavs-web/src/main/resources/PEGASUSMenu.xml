@@ -138,6 +138,8 @@
 								<action command="/pegasus" responseTarget="fr_main">
 									<parameter name="userAction"
 										value="pegasus.parametre.zoneForfaits.chercher" />
+									<parameter name="type"
+											   value="LAMAL" />
 								</action>
 							</node>
 							<node>
@@ -145,6 +147,8 @@
 								<action command="/pegasus" responseTarget="fr_main">
 									<parameter name="userAction"
 										value="pegasus.parametre.zoneLocalite.chercher" />
+									<parameter name="type"
+											   value="LAMAL" />
 								</action>
 							</node>
 							<node>
@@ -152,6 +156,27 @@
 								<action command="/pegasus" responseTarget="fr_main">
 									<parameter name="userAction"
 										value="pegasus.parametre.forfaitPrimesAssuranceMaladie.chercher" />
+									<parameter name="type"
+											   value="LAMAL" />
+								</action>
+							</node>
+						</nodes>
+					</node>
+					<node open="no">
+						<label refId="MENU_PLAFOND_LOYER" />
+						<nodes>
+							<node>
+								<label refId="MENU_LIEN_REGION_LOCALITE_LOYER" />
+								<action command="/pegasus" responseTarget="fr_main">
+									<parameter name="userAction"
+											   value="pegasus.parametre.zoneLocaliteLoyer.chercher" />
+								</action>
+							</node>
+							<node>
+								<label refId="MENU_MONTANT_PLAFOND_LOYER" />
+								<action command="/pegasus" responseTarget="fr_main">
+									<parameter name="userAction"
+											   value="pegasus.parametre.forfaitLoyer.chercher" />
 								</action>
 							</node>
 						</nodes>
@@ -192,6 +217,13 @@
 						<action command="/fx" responseTarget="fr_main">
 							<parameter name="userAction" value="fx.process.jadeProcessList.afficher" />
 							<parameter name="keyProcess" value="Pegasus.AdaptationHomePC" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PROCESS_ADAPTATION_PRIME_LAMAL" />
+						<action command="/fx" responseTarget="fr_main">
+							<parameter name="userAction" value="fx.process.jadeProcessList.afficher" />
+							<parameter name="keyProcess" value="Pegasus.AdaptationPrimeLAmalPC" />
 						</action>
 					</node>
 					<node>
@@ -254,6 +286,13 @@
 								value="pegasus.liste.listeRepartitionCommunePolitique.afficher" />
 						</action>
 					</node>
+					<node>
+						<label refId="MENU_LISTE_ECHEANCE_ENFANT_11_ANS" />
+						<action command="/pegasus" responseTarget="fr_main">
+							<parameter name="userAction"
+									   value="pegasus.liste.listeEcheanceEnfants11Ans.afficher" />
+						</action>
+					</node>
 				</nodes>
 			</node>
 		</nodes>
@@ -282,6 +321,13 @@
 				<label refId="MENU_OPTION_DOSSIERS_DECISION" />
 				<action command="/pegasus" responseTarget="fr_main">
 					<parameter name="userAction" value="pegasus.decision.decision.chercher" />
+					<parameter name="idDossier" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_DOSSIERS_RESTITUTION" />
+				<action command="/pegasus" responseTarget="fr_main">
+					<parameter name="userAction" value="pegasus.restitution.restitution.afficher" />
 					<parameter name="idDossier" />
 				</action>
 			</node>
@@ -590,6 +636,20 @@
 					<parameter name="idVersionDroit" />
 					<parameter name="idTitreMenu" value="MENU_OPTION_DROITS_HABITAT" />
 					<parameter name="idTitreOnglet" value="MENU_ONGLET_DROITS_LOYER" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_ASSURANCE_MALADIE" />
+				<action command="/pegasus" responseTarget="fr_main">
+					<parameter name="userAction" value="pegasus.assurancemaladie.primeAssuranceMaladie.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idDemandePc" />
+					<parameter name="idDossier" />
+					<parameter name="idDroit" />
+					<parameter name="noVersion" />
+					<parameter name="idVersionDroit" />
+					<parameter name="idTitreMenu" value="MENU_OPTION_ASSURANCE_MALADIE" />
+					<parameter name="idTitreOnglet" value="MENU_ONGLET_PRIME_ASSURANCE_MALADIE_EFFECTIVE" />
 				</action>
 			</node>
 			<node>

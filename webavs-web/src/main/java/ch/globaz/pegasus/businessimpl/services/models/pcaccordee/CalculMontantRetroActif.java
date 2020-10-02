@@ -7,6 +7,7 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -15,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.constantes.IPCPCAccordee;
 import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
@@ -27,7 +29,6 @@ import ch.globaz.pegasus.business.vo.decompte.PCAccordeeDecompteVO;
 
 /**
  * @author DMA
- * 
  */
 public class CalculMontantRetroActif {
 
@@ -75,7 +76,7 @@ public class CalculMontantRetroActif {
     }
 
     private void addPCAinMap(HashMap<String, CalculRetro> moisOldPCAccordeRequerant, CalculRetro CalculRetro,
-            String dateMois) throws PCAccordeeException {
+                             String dateMois) throws PCAccordeeException {
         if (moisOldPCAccordeRequerant.containsKey(dateMois)) {
             throw new PCAccordeeException("The key '" + dateMois
                     + "' is already used that mean exist many pca for the same periode");
@@ -239,7 +240,7 @@ public class CalculMontantRetroActif {
 
     /**
      * Decoupe les prestation acc en mois
-     * 
+     *
      * @throws JadeApplicationServiceNotAvailableException
      * @throws PmtMensuelException
      * @throws JadePersistenceException
@@ -303,139 +304,139 @@ public class CalculMontantRetroActif {
 
             if (IPCDroits.CS_ROLE_FAMILLE_REQUERANT.equals(calculRetro.getCsRoleBeneficiaire())) {
 
-                retro = new BigDecimal(0);
-                int nbMonth = nbMonth(calculRetro);
-                PCAccordeeDecompteVO pcaVoReq = new PCAccordeeDecompteVO();
-                PCAccordeeDecompteVO pcaVoConj = new PCAccordeeDecompteVO();
+            retro = new BigDecimal(0);
+            int nbMonth = nbMonth(calculRetro);
+            PCAccordeeDecompteVO pcaVoReq = new PCAccordeeDecompteVO();
+            PCAccordeeDecompteVO pcaVoConj = new PCAccordeeDecompteVO();
 
-                Integer nbMonthRequ = 0;
-                for (int i = 0; i < nbMonth; i++) {
-                    String keyDate = this.createDateForMap(calculRetro, i);
-                    calculRetroConojoint = moisPCAccordeConjoint.get(keyDate);
+            Integer nbMonthRequ = 0;
+            for (int i = 0; i < nbMonth; i++) {
+                String keyDate = this.createDateForMap(calculRetro, i);
+                calculRetroConojoint = moisPCAccordeConjoint.get(keyDate);
 
-                    if (mapMoisOldPCAccordeRequerant.get(keyDate) != null) {
+                if (mapMoisOldPCAccordeRequerant.get(keyDate) != null) {
 
-                        montantMoisRequerant = new BigDecimal(calculRetro.getMontantPCMensuelle())
-                                .subtract(new BigDecimal(mapMoisOldPCAccordeRequerant.get(keyDate)
-                                        .getMontantPCMensuelle()));
-                        // Retro effectif brut
-                        montantMoisRequerantBrut = new BigDecimal(calculRetro.getMontantPCMensuelle());
+                    montantMoisRequerant = new BigDecimal(calculRetro.getMontantPCMensuelle())
+                            .subtract(new BigDecimal(mapMoisOldPCAccordeRequerant.get(keyDate)
+                                    .getMontantPCMensuelle()));
+                    // Retro effectif brut
+                    montantMoisRequerantBrut = new BigDecimal(calculRetro.getMontantPCMensuelle());
 
-                        montantAlreadyPaidReq = montantAlreadyPaidReq.add(new BigDecimal(mapMoisOldPCAccordeRequerant
-                                .get(keyDate).getMontantPCMensuelle()));
+                    montantAlreadyPaidReq = montantAlreadyPaidReq.add(new BigDecimal(mapMoisOldPCAccordeRequerant
+                            .get(keyDate).getMontantPCMensuelle()));
 
-                        fillOldPcaVo(mapMoisOldPCAccordeRequerant,
-                                new BigDecimal(mapMoisOldPCAccordeRequerant.get(keyDate).getMontantPCMensuelle()),
+                    fillOldPcaVo(mapMoisOldPCAccordeRequerant,
+                            new BigDecimal(mapMoisOldPCAccordeRequerant.get(keyDate).getMontantPCMensuelle()),
+                            keyDate);
+                    retroRequerant = retroRequerant.add(montantMoisRequerant);
+                    // Retro effectif brut
+
+                    retroRequerantBrut = retroRequerantBrut.add(montantMoisRequerantBrut);
+                    // droitInitial
+                } else if (calculRetro.getNoVersion().equals("1")) {
+
+                    BigDecimal montanPCMensuel = new BigDecimal(calculRetro.getMontantPCMensuelle());
+                    fillOldPcaVo(mapMoisOldPCAccordeRequerant, montanPCMensuel, keyDate);
+                    retroRequerant = retroRequerant.add(montanPCMensuel);
+                    // Retro effectif brut
+                    retroRequerantBrut = retroRequerantBrut.add(montanPCMensuel);
+
+                } else {
+
+                    // ATTENTION: normalement se cas ne devrai pas arrivé. Mais du a la reprise de donné on peut
+                    // tomber dans ce cas
+                    // On n'a pas trouvé d'ancien PCA. On ne peut donc pas faire de deduction
+                    montantMoisRequerantBrut = new BigDecimal(calculRetro.getMontantPCMensuelle());
+
+                    retroRequerant = retroRequerant.add(montantMoisRequerantBrut);
+
+                    // Retro effectif brut
+                    retroRequerantBrut = retroRequerantBrut.add(montantMoisRequerantBrut);
+                    fillOldPcaVo(mapMoisOldPCAccordeRequerant, montantMoisRequerantBrut, keyDate);
+                    // throw new PCAccordeeException("Any pca founded for this date " + keyDate);
+                }
+
+                if (calculRetroConojoint != null) {
+                    if (mapMoisOldPCAccordeConjoint.get(keyDate) != null) {
+
+                        retroConjoint = retroConjoint.add(new BigDecimal(calculRetroConojoint
+                                .getMontantPCMensuelle()).subtract(new BigDecimal(mapMoisOldPCAccordeConjoint.get(
+                                keyDate).getMontantPCMensuelle())));
+                        // montant brut retro effectif conjoint
+                        retroConjointBrut = retroConjointBrut.add(new BigDecimal(calculRetroConojoint
+                                .getMontantPCMensuelle()));
+                        montantAlreadyPaidCon = montantAlreadyPaidCon.add(new BigDecimal(
+                                mapMoisOldPCAccordeConjoint.get(keyDate).getMontantPCMensuelle()));
+
+                        fillOldPcaVo(mapMoisOldPCAccordeConjoint,
+                                (new BigDecimal(mapMoisOldPCAccordeConjoint.get(keyDate).getMontantPCMensuelle())),
                                 keyDate);
-                        retroRequerant = retroRequerant.add(montantMoisRequerant);
-                        // Retro effectif brut
 
-                        retroRequerantBrut = retroRequerantBrut.add(montantMoisRequerantBrut);
                         // droitInitial
                     } else if (calculRetro.getNoVersion().equals("1")) {
+                        retroConjoint = retroConjoint.add(new BigDecimal(calculRetroConojoint
+                                .getMontantPCMensuelle()));
+                        // montant brut retro effectif conjoint
+                        retroConjointBrut = retroConjointBrut.add(new BigDecimal(calculRetroConojoint
+                                .getMontantPCMensuelle()));
 
-                        BigDecimal montanPCMensuel = new BigDecimal(calculRetro.getMontantPCMensuelle());
-                        fillOldPcaVo(mapMoisOldPCAccordeRequerant, montanPCMensuel, keyDate);
-                        retroRequerant = retroRequerant.add(montanPCMensuel);
-                        // Retro effectif brut
-                        retroRequerantBrut = retroRequerantBrut.add(montanPCMensuel);
+                        fillOldPcaVo(mapMoisOldPCAccordeConjoint,
+                                new BigDecimal(calculRetroConojoint.getMontantPCMensuelle()), keyDate);
+                    } else { // on est dans le cas ou la séparation (maladie) vient d'ariver.
+                        // On n'a donc pas d'ancien pca pour comparer on prend la pca du requerant.
+                        BigDecimal montantMoisConjoint = new BigDecimal(
+                                calculRetroConojoint.getMontantPCMensuelle());
+                        // montant brut effectif SANS DEDUCTION!!!
+                        // retroConjointBrut = retroConjointBrut.add(montantMoisConjoint);
+                        // Si on a pas tout pris aux requrant on prend le reste
+                        if (montantMoisRequerant.doubleValue() < 0) {
+                            montantMoisConjoint = montantMoisConjoint.add(montantMoisRequerant);
+                            if (montantMoisConjoint.doubleValue() < 0) {
+                                // On remet le retro a 0
+                                retroRequerant.subtract(montantMoisRequerant);
+                            }
+                        }
+                        retroConjoint = retroConjoint.add(montantMoisConjoint);
+                        retroConjointBrut = retroConjointBrut.add(new BigDecimal(calculRetroConojoint
+                                .getMontantPCMensuelle()));
 
-                    } else {
+                        fillOldPcaVo(mapMoisOldPCAccordeConjoint,
+                                new BigDecimal(calculRetroConojoint.getMontantPCMensuelle()), keyDate);
 
-                        // ATTENTION: normalement se cas ne devrai pas arrivé. Mais du a la reprise de donné on peut
-                        // tomber dans ce cas
-                        // On n'a pas trouvé d'ancien PCA. On ne peut donc pas faire de deduction
-                        montantMoisRequerantBrut = new BigDecimal(calculRetro.getMontantPCMensuelle());
-
-                        retroRequerant = retroRequerant.add(montantMoisRequerantBrut);
-
-                        // Retro effectif brut
-                        retroRequerantBrut = retroRequerantBrut.add(montantMoisRequerantBrut);
-                        fillOldPcaVo(mapMoisOldPCAccordeRequerant, montantMoisRequerantBrut, keyDate);
-                        // throw new PCAccordeeException("Any pca founded for this date " + keyDate);
                     }
-
+                } else {
+                    calculRetroConojoint = mapMoisOldPCAccordeConjoint.get(keyDate);
+                    // On vas traité le cas d'un passage d'un couple séparé par la maladie à un DOM2R
                     if (calculRetroConojoint != null) {
-                        if (mapMoisOldPCAccordeConjoint.get(keyDate) != null) {
+                        BigDecimal montantMoisConjoint = new BigDecimal(
+                                calculRetroConojoint.getMontantPCMensuelle());
+                        fillOldPcaVo(mapMoisOldPCAccordeConjoint, montantMoisConjoint, keyDate);
 
-                            retroConjoint = retroConjoint.add(new BigDecimal(calculRetroConojoint
-                                    .getMontantPCMensuelle()).subtract(new BigDecimal(mapMoisOldPCAccordeConjoint.get(
-                                    keyDate).getMontantPCMensuelle())));
-                            // montant brut retro effectif conjoint
-                            retroConjointBrut = retroConjointBrut.add(new BigDecimal(calculRetroConojoint
-                                    .getMontantPCMensuelle()));
-                            montantAlreadyPaidCon = montantAlreadyPaidCon.add(new BigDecimal(
-                                    mapMoisOldPCAccordeConjoint.get(keyDate).getMontantPCMensuelle()));
-
-                            fillOldPcaVo(mapMoisOldPCAccordeConjoint,
-                                    (new BigDecimal(mapMoisOldPCAccordeConjoint.get(keyDate).getMontantPCMensuelle())),
-                                    keyDate);
-
-                            // droitInitial
-                        } else if (calculRetro.getNoVersion().equals("1")) {
-                            retroConjoint = retroConjoint.add(new BigDecimal(calculRetroConojoint
-                                    .getMontantPCMensuelle()));
-                            // montant brut retro effectif conjoint
-                            retroConjointBrut = retroConjointBrut.add(new BigDecimal(calculRetroConojoint
-                                    .getMontantPCMensuelle()));
-
-                            fillOldPcaVo(mapMoisOldPCAccordeConjoint,
-                                    new BigDecimal(calculRetroConojoint.getMontantPCMensuelle()), keyDate);
-                        } else { // on est dans le cas ou la séparation (maladie) vient d'ariver.
-                                 // On n'a donc pas d'ancien pca pour comparer on prend la pca du requerant.
-                            BigDecimal montantMoisConjoint = new BigDecimal(
-                                    calculRetroConojoint.getMontantPCMensuelle());
-                            // montant brut effectif SANS DEDUCTION!!!
-                            // retroConjointBrut = retroConjointBrut.add(montantMoisConjoint);
-                            // Si on a pas tout pris aux requrant on prend le reste
-                            if (montantMoisRequerant.doubleValue() < 0) {
-                                montantMoisConjoint = montantMoisConjoint.add(montantMoisRequerant);
-                                if (montantMoisConjoint.doubleValue() < 0) {
-                                    // On remet le retro a 0
-                                    retroRequerant.subtract(montantMoisRequerant);
-                                }
-                            }
-                            retroConjoint = retroConjoint.add(montantMoisConjoint);
-                            retroConjointBrut = retroConjointBrut.add(new BigDecimal(calculRetroConojoint
-                                    .getMontantPCMensuelle()));
-
-                            fillOldPcaVo(mapMoisOldPCAccordeConjoint,
-                                    new BigDecimal(calculRetroConojoint.getMontantPCMensuelle()), keyDate);
-
+                        montantAlreadyPaidCon = montantAlreadyPaidCon.add(montantMoisConjoint);
+                        retroRequerant = retroRequerant.subtract(montantMoisConjoint);
+                        // Si le rétro est positif il faut déduire le montant
+                        if (retroRequerant.signum() == 1) {
+                            // retroRequerant.subtract(montantMoisConjoint);
+                            // } else {
+                            // retroRequerant.add(montantMoisConjoint);
                         }
-                    } else {
-                        calculRetroConojoint = mapMoisOldPCAccordeConjoint.get(keyDate);
-                        // On vas traité le cas d'un passage d'un couple séparé par la maladie à un DOM2R
-                        if (calculRetroConojoint != null) {
-                            BigDecimal montantMoisConjoint = new BigDecimal(
-                                    calculRetroConojoint.getMontantPCMensuelle());
-                            fillOldPcaVo(mapMoisOldPCAccordeConjoint, montantMoisConjoint, keyDate);
 
-                            montantAlreadyPaidCon = montantAlreadyPaidCon.add(montantMoisConjoint);
-                            retroRequerant = retroRequerant.subtract(montantMoisConjoint);
-                            // Si le rétro est positif il faut déduire le montant
-                            if (retroRequerant.signum() == 1) {
-                                // retroRequerant.subtract(montantMoisConjoint);
-                                // } else {
-                                // retroRequerant.add(montantMoisConjoint);
-                            }
-
-                        }
                     }
-                }
-
-                mapMontantRetro.put(calculRetro.getIdPCAccordee(), retroRequerant.toString());
-                // Montant retro brut effectif
-                mapMontantRetroBrut.put(calculRetro.getIdPCAccordee(), retroRequerantBrut.toString());
-                mapMontantVerse.put(calculRetro.getIdPCAccordee(), montantAlreadyPaidReq.toString());
-                if (calculRetroConojoint != null) {
-                    mapMontantRetro.put(calculRetroConojoint.getIdPCAccordee(), retroConjoint.toString());
-                    // Montant retro brut effectif
-                    mapMontantRetroBrut.put(calculRetroConojoint.getIdPCAccordee(), retroConjointBrut.toString());
-                    mapMontantVerse.put(calculRetroConojoint.getIdPCAccordee(), montantAlreadyPaidCon.toString());
-
                 }
             }
+
+            mapMontantRetro.put(calculRetro.getIdPCAccordee(), retroRequerant.toString());
+            // Montant retro brut effectif
+            mapMontantRetroBrut.put(calculRetro.getIdPCAccordee(), retroRequerantBrut.toString());
+            mapMontantVerse.put(calculRetro.getIdPCAccordee(), montantAlreadyPaidReq.toString());
+            if (calculRetroConojoint != null) {
+                mapMontantRetro.put(calculRetroConojoint.getIdPCAccordee(), retroConjoint.toString());
+                // Montant retro brut effectif
+                mapMontantRetroBrut.put(calculRetroConojoint.getIdPCAccordee(), retroConjointBrut.toString());
+                mapMontantVerse.put(calculRetroConojoint.getIdPCAccordee(), montantAlreadyPaidCon.toString());
+
+            }
+        }
         }
     }
 
@@ -615,7 +616,7 @@ public class CalculMontantRetroActif {
     }
 
     private void splitPCAInMois(HashMap<String, CalculRetro> moisPCAccordeRequerant,
-            HashMap<String, CalculRetro> moisPCAccordeConjoint, CalculRetroSearch CalculRetroSearch)
+                                HashMap<String, CalculRetro> moisPCAccordeConjoint, CalculRetroSearch CalculRetroSearch)
             throws PmtMensuelException, JadeApplicationServiceNotAvailableException, DecisionException,
             JadePersistenceException, PCAccordeeException {
         for (JadeAbstractModel model : CalculRetroSearch.getSearchResults()) {

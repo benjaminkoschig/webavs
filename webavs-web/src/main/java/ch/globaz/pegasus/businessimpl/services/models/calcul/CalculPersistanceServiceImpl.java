@@ -3,6 +3,32 @@
  */
 package ch.globaz.pegasus.businessimpl.services.models.calcul;
 
+import ch.globaz.common.properties.CommonProperties;
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.corvus.business.exceptions.CorvusException;
+import ch.globaz.corvus.business.exceptions.models.RentesAccordeesException;
+import ch.globaz.corvus.business.models.rentesaccordees.SimpleInformationsComptabilite;
+import ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees;
+import ch.globaz.corvus.business.models.ventilation.SimpleVentilation;
+import ch.globaz.corvus.business.services.CorvusServiceLocator;
+import ch.globaz.pegasus.business.constantes.*;
+import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
+import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
+import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
+import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
+import ch.globaz.pegasus.business.models.calcul.CalculPcaReplace;
+import ch.globaz.pegasus.business.models.calcul.CalculPcaReplaceSearch;
+import ch.globaz.pegasus.business.models.droit.Droit;
+import ch.globaz.pegasus.business.models.droit.DroitMembreFamille;
+import ch.globaz.pegasus.business.models.pcaccordee.*;
+import ch.globaz.pegasus.business.services.PegasusServiceLocator;
+import ch.globaz.pegasus.business.services.models.calcul.CalculPersistanceService;
+import ch.globaz.pegasus.businessimpl.services.PegasusAbstractServiceImpl;
+import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
+import ch.globaz.pegasus.businessimpl.services.determineSousCodePrestation.DetermineSousCodePrestation;
+import ch.globaz.pegasus.businessimpl.utils.PCproperties;
+import ch.globaz.pegasus.businessimpl.utils.calcul.*;
+import ch.globaz.pegasus.businessimpl.utils.calcul.PeriodePCAccordee.TypeSeparationCC;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.corvus.db.ventilation.constantes.REVentilationType;
 import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
@@ -20,6 +46,7 @@ import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.persistence.util.JadePersistenceUtil;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.ByteArrayInputStream;
@@ -29,47 +56,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import ch.globaz.common.properties.CommonProperties;
-import ch.globaz.common.properties.PropertiesException;
-import ch.globaz.corvus.business.exceptions.CorvusException;
-import ch.globaz.corvus.business.exceptions.models.RentesAccordeesException;
-import ch.globaz.corvus.business.models.rentesaccordees.SimpleInformationsComptabilite;
-import ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees;
-import ch.globaz.corvus.business.models.ventilation.SimpleVentilation;
-import ch.globaz.corvus.business.services.CorvusServiceLocator;
-import ch.globaz.pegasus.business.constantes.Compteurs;
-import ch.globaz.pegasus.business.constantes.ConstantesCalcul;
-import ch.globaz.pegasus.business.constantes.EPCProperties;
-import ch.globaz.pegasus.business.constantes.IPCDroits;
-import ch.globaz.pegasus.business.constantes.IPCPCAccordee;
-import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
-import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
-import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
-import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
-import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
-import ch.globaz.pegasus.business.models.calcul.CalculPcaReplace;
-import ch.globaz.pegasus.business.models.calcul.CalculPcaReplaceSearch;
-import ch.globaz.pegasus.business.models.droit.Droit;
-import ch.globaz.pegasus.business.models.droit.DroitMembreFamille;
-import ch.globaz.pegasus.business.models.pcaccordee.PCAccordeePlanCalcul;
-import ch.globaz.pegasus.business.models.pcaccordee.PcaRetenue;
-import ch.globaz.pegasus.business.models.pcaccordee.PcaRetenueSearch;
-import ch.globaz.pegasus.business.models.pcaccordee.SimpleJoursAppoint;
-import ch.globaz.pegasus.business.models.pcaccordee.SimpleJoursAppointSearch;
-import ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee;
-import ch.globaz.pegasus.business.models.pcaccordee.SimplePersonneDansPlanCalcul;
-import ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul;
-import ch.globaz.pegasus.business.services.PegasusServiceLocator;
-import ch.globaz.pegasus.business.services.models.calcul.CalculPersistanceService;
-import ch.globaz.pegasus.businessimpl.services.PegasusAbstractServiceImpl;
-import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
-import ch.globaz.pegasus.businessimpl.services.determineSousCodePrestation.DetermineSousCodePrestation;
-import ch.globaz.pegasus.businessimpl.utils.calcul.CalculComparatif;
-import ch.globaz.pegasus.businessimpl.utils.calcul.ICalculComparatif;
-import ch.globaz.pegasus.businessimpl.utils.calcul.PeriodePCAccordee;
-import ch.globaz.pegasus.businessimpl.utils.calcul.PeriodePCAccordee.TypeSeparationCC;
-import ch.globaz.pegasus.businessimpl.utils.calcul.PersonnePCAccordee;
-import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 
 /**
  * @author ECO
@@ -146,15 +132,15 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
     }
 
     private PCAccordeePlanCalcul createPCAccordee(Droit droit, PeriodePCAccordee periode,
-            CalculPcaReplaceSearch anciennesPCAccordees, SimplePrestationsAccordees spa, boolean isConjoint,
-            String idEntityGroupPCA) throws CalculException, JadePersistenceException, PCAccordeeException,
+                                                  CalculPcaReplaceSearch anciennesPCAccordees, SimplePrestationsAccordees spa, boolean isConjoint,
+                                                  String idEntityGroupPCA) throws CalculException, JadePersistenceException, PCAccordeeException,
             JadeApplicationServiceNotAvailableException {
         return this.createPCAccordee(droit, periode, anciennesPCAccordees, spa, null, isConjoint, idEntityGroupPCA);
     }
 
     private PCAccordeePlanCalcul createPCAccordee(Droit droit, PeriodePCAccordee periode,
-            CalculPcaReplaceSearch anciennesPCAccordees, SimplePrestationsAccordees spa,
-            SimplePrestationsAccordees spaConjoint, boolean isConjoint, String idEntityGroupPCA)
+                                                  CalculPcaReplaceSearch anciennesPCAccordees, SimplePrestationsAccordees spa,
+                                                  SimplePrestationsAccordees spaConjoint, boolean isConjoint, String idEntityGroupPCA)
             throws CalculException, JadePersistenceException, PCAccordeeException,
             JadeApplicationServiceNotAvailableException {
 
@@ -255,6 +241,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
             simplePlanCalcul.setPrimeMoyenneAssMaladie(cc.getPrimeMoyenneAssMaladie());
             simplePlanCalcul.setEtatPC(cc.getEtatPC());
             simplePlanCalcul.setIsPlanCalculAccessible(Boolean.TRUE);
+            simplePlanCalcul.setReformePc(cc.isReformePc());
 
             if (cc.isPlanRetenu()) {
                 pcAccordeePlanCalcul.setSimplePlanDeCalcul(simplePlanCalcul);
@@ -270,6 +257,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
                 simplePersonneBD.setIdDroitMembreFamille(personne.getIdDroitPersonne());
                 simplePersonneBD.setIdPlanDeCalcul(simplePlanCalcul.getId());
                 simplePersonneBD.setIsComprisDansCalcul(cc.getPersonnes().contains(personne));
+                simplePersonneBD.setIsRentier(!personne.isSansRente());
                 PegasusImplServiceLocator.getSimplePersonneDansPlanCalculService().create(simplePersonneBD);
             }
 
@@ -301,8 +289,8 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
     }
 
     private List<SimplePrestationsAccordees> createPrestationAccordee(Droit droit, PeriodePCAccordee periode,
-            List<SimpleInformationsComptabilite> simpleInformationsComptabilite,
-            CalculPcaReplaceSearch anciennesPCAccordees) throws CalculException, JadePersistenceException,
+                                                                      List<SimpleInformationsComptabilite> simpleInformationsComptabilite,
+                                                                      CalculPcaReplaceSearch anciennesPCAccordees) throws CalculException, JadePersistenceException,
             JadeApplicationException, JadeApplicationServiceNotAvailableException {
 
         List<SimplePrestationsAccordees> result = new ArrayList<SimplePrestationsAccordees>(2);
@@ -347,7 +335,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
     }
 
     private SimpleVentilation createVentilationPartCantonalePC(PeriodePCAccordee periode, String idPrestatoinAccordee,
-            boolean isConjoint, String montantPartCantonale) throws CorvusException,
+                                                               boolean isConjoint, String montantPartCantonale) throws CorvusException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException {
         // S160704_002 : si on a une part cantonale on créé une écriture dans la table de ventilation des rentes /
         // prestations accordées
@@ -382,8 +370,8 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
     }
 
     private SimplePrestationsAccordees createSimplePrestationAccordee(PeriodePCAccordee periode,
-            SimpleInformationsComptabilite simpleInfoCompta, CalculComparatif ccRetenu, boolean isConjoint,
-            CalculPcaReplace calculPcaReplace) throws CalculException, JadePersistenceException,
+                                                                      SimpleInformationsComptabilite simpleInfoCompta, CalculComparatif ccRetenu, boolean isConjoint,
+                                                                      CalculPcaReplace calculPcaReplace) throws CalculException, JadePersistenceException,
             JadeApplicationException, JadeApplicationServiceNotAvailableException {
 
         SimplePrestationsAccordees spa = new SimplePrestationsAccordees();
@@ -515,7 +503,9 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
         search.setOrderKey(CalculPcaReplaceSearch.ORDER_BY_DATE_DEBUT);
         String date = dateDebutPlage.substring(3);
         // On fait moins un mois pour les jours d'appoints car on a besoin de l'ancienne pca pour les calculer
-        if (EPCProperties.GESTION_JOURS_APPOINTS.getBooleanValue()) {
+        if (EPCProperties.GESTION_JOURS_APPOINTS.getBooleanValue()
+        //    && PCproperties.isJourAppoint(dateDebutPlage)
+        ) {
             date = JadeDateUtil.addMonths(dateDebutPlage, -1).substring(3);
         }
         search.setForDateFin(date);
@@ -533,7 +523,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
      * @throws JadeApplicationServiceNotAvailableException
      */
     private void reporterLaRetenuSiExistant(CalculPcaReplaceSearch anciennesPCAccordees, PCAccordeePlanCalcul pca,
-            boolean isForDom2R) throws JadePersistenceException, JadeApplicationException,
+                                            boolean isForDom2R) throws JadePersistenceException, JadeApplicationException,
             JadeApplicationServiceNotAvailableException {
         CalculPcaReplace anciennePCACourante;
         String idPcaOld;
@@ -638,7 +628,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
 
     @Override
     public List<PCAccordeePlanCalcul> sauvePCAccordee(Droit droit, PeriodePCAccordee periode,
-            CalculPcaReplaceSearch anciennesPCAccordees) throws JadePersistenceException, JadeApplicationException {
+                                                      CalculPcaReplaceSearch anciennesPCAccordees) throws JadePersistenceException, JadeApplicationException {
         PCAccordeePlanCalcul pca;
         // Création des informations comptable
         List<SimpleInformationsComptabilite> simpleInformationsComptabilite = createInformationsComptabilite(droit,

@@ -129,7 +129,7 @@ public class CalculMoisSuivant extends JadeComplexModel {
     private String dateFinDonneeFinanciere = null;
 
     private String dessaisissementFortuneDeductions = null;
-
+    private String dessaisissementFortuneType = null;
     private String dessaisissementFortuneMontant = null;
 
     private String dessaisissementRevenuDeductions = null;
@@ -228,11 +228,11 @@ public class CalculMoisSuivant extends JadeComplexModel {
     private String revenuActiviteLucrativeDependanteDeductionsLPP = null;
     private String revenuActiviteLucrativeDependanteDeductionsSociales = null;
     private String revenuActiviteLucrativeDependanteMontant = null;
-
+    private String revenuActiviteLucrativeDependanteMontantFraisDeGarde = null;
     private String revenuActiviteLucrativeDependanteMontantFraisEffectifs = null;
     private String revenuActiviteLucrativeIndependanteCSGenreRevenu = null;
-
     private String revenuActiviteLucrativeIndependanteMontant = null;
+    private String revenuActiviteLucrativeIndependanteMontantFraisDeGarde = null;
     private String revenuHypothetiqueMontantDeductionsLPP = null;
 
     private String revenuHypothetiqueMontantDeductionsSociales = null;
@@ -250,6 +250,9 @@ public class CalculMoisSuivant extends JadeComplexModel {
     private String taxeJournaliereIdHome = null;
 
     private String taxeJournaliereIdTypeChambre = null;
+
+    private Boolean taxeJournaliereIsVersementDirect = false;
+
 
     // private Boolean taxeJournaliereIsParticipationLCA = null;
 
@@ -278,6 +281,21 @@ public class CalculMoisSuivant extends JadeComplexModel {
     private String vehiculeFractionNumerateur = null;
 
     private String vehiculeMontant = null;
+
+
+    private String fraisGardeLibelle = null;
+
+    private String fraisGardeMontant = null;
+
+    private String primeAssuranceMaladieMontant = null;
+
+    private String subsideAssuranceMaladieMontant = null;
+
+    private String sejourMoisPartielPrixJournalier = null;
+
+    private String sejourMoisPartielFraisNourriture = null;
+
+    private String sejourMoisPartielNombreJour = null;
 
     public CalculMoisSuivant() {
         super();
@@ -2308,6 +2326,84 @@ public class CalculMoisSuivant extends JadeComplexModel {
         this.vehiculeMontant = vehiculeMontant;
     }
 
+
+    public String getFraisGardeLibelle() {
+        return fraisGardeLibelle;
+    }
+
+    public void setFraisGardeLibelle(String fraisGardeLibelle) {
+        this.fraisGardeLibelle = fraisGardeLibelle;
+    }
+
+    public String getFraisGardeMontant() {
+        return fraisGardeMontant;
+    }
+
+    public void setFraisGardeMontant(String fraisGardeMontant) {
+        this.fraisGardeMontant = fraisGardeMontant;
+    }
+
+    public String getPrimeAssuranceMaladieMontant() {
+        return primeAssuranceMaladieMontant;
+    }
+
+    public void setPrimeAssuranceMaladieMontant(String primeAssuranceMaladieMontant) {
+        this.primeAssuranceMaladieMontant = primeAssuranceMaladieMontant;
+    }
+
+    public String getSubsideAssuranceMaladieMontant() {
+        return subsideAssuranceMaladieMontant;
+    }
+
+    public void setSubsideAssuranceMaladieMontant(String subsideAssuranceMaladieMontant) {
+        this.subsideAssuranceMaladieMontant = subsideAssuranceMaladieMontant;
+    }
+    public String getRevenuActiviteLucrativeDependanteMontantFraisDeGarde() {
+        return revenuActiviteLucrativeDependanteMontantFraisDeGarde;
+    }
+
+    public void setRevenuActiviteLucrativeDependanteMontantFraisDeGarde(String revenuActiviteLucrativeDependanteMontantFraisDeGarde) {
+        this.revenuActiviteLucrativeDependanteMontantFraisDeGarde = revenuActiviteLucrativeDependanteMontantFraisDeGarde;
+    }
+    public String getRevenuActiviteLucrativeIndependanteMontantFraisDeGarde() {
+        return revenuActiviteLucrativeIndependanteMontantFraisDeGarde;
+    }
+
+    public void setRevenuActiviteLucrativeIndependanteMontantFraisDeGarde(String revenuActiviteLucrativeIndependanteMontantFraisDeGarde) {
+        this.revenuActiviteLucrativeIndependanteMontantFraisDeGarde = revenuActiviteLucrativeIndependanteMontantFraisDeGarde;
+    }
+
+
+    public String getSejourMoisPartielPrixJournalier() {
+        return sejourMoisPartielPrixJournalier;
+    }
+
+    public void setSejourMoisPartielPrixJournalier(String sejourMoisPartielPrixJournalier) {
+        this.sejourMoisPartielPrixJournalier = sejourMoisPartielPrixJournalier;
+    }
+
+    public String getSejourMoisPartielFraisNourriture() {
+        return sejourMoisPartielFraisNourriture;
+    }
+
+    public void setSejourMoisPartielFraisNourriture(String sejourMoisPartielFraisNourriture) {
+        this.sejourMoisPartielFraisNourriture = sejourMoisPartielFraisNourriture;
+    }
+
+    public String getSejourMoisPartielNombreJour() {
+        return sejourMoisPartielNombreJour;
+    }
+
+    public void setSejourMoisPartielNombreJour(String sejourMoisPartielNombreJour) {
+        this.sejourMoisPartielNombreJour = sejourMoisPartielNombreJour;
+    }
+    public Boolean getTaxeJournaliereIsVersementDirect() {
+        return taxeJournaliereIsVersementDirect;
+    }
+
+    public void setTaxeJournaliereIsVersementDirect(Boolean taxeJournaliereIsVersementDirect) {
+        this.taxeJournaliereIsVersementDirect = taxeJournaliereIsVersementDirect;
+    }
     /*
      * (non-Javadoc)
      * 
@@ -2318,4 +2414,11 @@ public class CalculMoisSuivant extends JadeComplexModel {
         return CalculMoisSuivant.class.getSimpleName() + "(" + csTypeDonneeFinanciere + ")@" + hashCode();
     }
 
+    public String getDessaisissementFortuneType() {
+        return dessaisissementFortuneType;
+    }
+
+    public void setDessaisissementFortuneType(String dessaisissementFortuneType) {
+        this.dessaisissementFortuneType = dessaisissementFortuneType;
+    }
 }

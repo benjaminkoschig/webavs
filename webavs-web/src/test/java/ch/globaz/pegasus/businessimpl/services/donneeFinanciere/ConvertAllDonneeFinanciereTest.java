@@ -419,9 +419,10 @@ public class ConvertAllDonneeFinanciereTest {
         dr.setRevenuActiviteLucrativeIndependanteCSGenreRevenu(RevenuActiviteLucrativeIndependanteGenreRevenu.GENRE_REVENU_ACT_LUCR_AGRICOLE_FORESTIER
                 .getValue());
         dr.setRevenuActiviteLucrativeIndependanteMontant("1500");
+        dr.setRevenuActiviteLucrativeIndependanteFraisDeGarde("8");
         RevenuActiviteLucrativeIndependante result = convert(dr).getRevenusActiviteLucrativeIndependante().get(0);
 
-        RevenuActiviteLucrativeIndependante expected = new RevenuActiviteLucrativeIndependante(M_1500,
+        RevenuActiviteLucrativeIndependante expected = new RevenuActiviteLucrativeIndependante(M_1500,M_8,
                 RevenuActiviteLucrativeIndependanteGenreRevenu.GENRE_REVENU_ACT_LUCR_AGRICOLE_FORESTIER,
                 BuilderDf.createDF());
 
@@ -543,11 +544,12 @@ public class ConvertAllDonneeFinanciereTest {
         DonneeFinanciereComplexModel dr = createBaseDonneFinanciere(type);
         dr.setRevenuActiviteLucrativeDependanteDeductionsLPP("15");
         dr.setRevenuActiviteLucrativeDependanteDeductionsSociales("8");
+        dr.setRevenuActiviteLucrativeDependanteFraisDeGarde("8");
         dr.setRevenuActiviteLucrativeDependanteMontant("1500");
         dr.setRevenuActiviteLucrativeDependanteMontantFraisEffectifs("20");
 
         RevenuActiviteLucrativeDependante result = convert(dr).getRevenusActiviteLucrativeDependante().get(0);
-        RevenuActiviteLucrativeDependante expected = new RevenuActiviteLucrativeDependante(M_1500, M_15, M_8, M_20,
+        RevenuActiviteLucrativeDependante expected = new RevenuActiviteLucrativeDependante(M_1500, M_15, M_8,M_8,M_20,
                 BuilderDf.createDF());
 
         assertEquals(expected, result);

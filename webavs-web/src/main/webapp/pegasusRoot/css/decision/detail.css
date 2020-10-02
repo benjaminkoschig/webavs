@@ -341,6 +341,15 @@ margin-left:208px;
 #lblGenreDecRef{
 	margin-left:245px;
 }
+
+#lblDecisionProv{
+	margin-left:120px;
+}
+#valDecisionProvisoire{
+	text-align:left;
+	float:left;
+	font-weight:normal !important;
+}
 /*****************************/
 /* ******************************************************* */
 

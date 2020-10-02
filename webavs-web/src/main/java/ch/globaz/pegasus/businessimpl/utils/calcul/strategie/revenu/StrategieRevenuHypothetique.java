@@ -29,16 +29,13 @@ public class StrategieRevenuHypothetique extends StrategieCalculRevenu {
 
         if (revenuNet == 0) {
             revenuNet = checkAmoutAndParseAsFloat(donnee.getRevenuHypothetiqueMontantRevenuBrut());
-
-            // TODO créer une clé pour montant frais de garde
-            this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_FRAIS_OBTENTION_REVENU,
-                    checkAmountAndParseAsFloat(donnee.getRevenuHypothetiqueMontantFraisGarde()));
-
             this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_DEDUCTION_SOCIALES,
                     donnee.getRevenuHypothetiqueMontantDeductionsSociales());
             this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_DEDUCTION_LPP,
                     donnee.getRevenuHypothetiqueMontantDeductionsLPP());
         }
+        this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_FRAIS_OBTENTION_REVENU,
+                checkAmountAndParseAsFloat(donnee.getRevenuHypothetiqueMontantFraisGarde()));
         this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_HYPOTHETIQUE, revenuNet);
 
         return resultatExistant;

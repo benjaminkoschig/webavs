@@ -29,6 +29,7 @@ function TaxeJournaliereHome (container) {
 				.find('[name=dateEntreeHome]').val($data.find('dateEntreeHome').text()).end()
 				.find('.libelleHome').val($data.find('libelleHome').text()).change().end()
 				.find('.dessaisissementRevenu').attr('checked', $data.find('DR').text() == 'true').end().find('.csDestinationSortie').val($data.find('csDestinationSortie').text()).end()
+			    .find('.isVersementDirect').attr('checked', $data.find('isVersementDirect').text() == 'true').end()
 				.find('.libelleAssureurMaladie').val($data.find('libelleAssureurMaladie').text()).change().end()
 				.find('[name=idTypeChambre]').val(this.idTypeChambre).attr('disabled', 'disabled').end()
 				.find('.toHomeLink').attr('href', 'pegasus?userAction=pegasus.home.home.afficher&selectedId=' + idHome).end()
@@ -61,6 +62,7 @@ function TaxeJournaliereHome (container) {
 			'taxeJournaliereHome.simpleTaxeJournaliereHome.dateEntreeHome': this.detail.find('[name=dateEntreeHome]').val(),
 			'taxeJournaliereHome.simpleTaxeJournaliereHome.isDeplafonner' : this.detail.find('.isDeplafonner').prop('checked'),
 			'taxeJournaliereHome.simpleTaxeJournaliereHome.montantFraisLongueDuree' : this.detail.find('.montantFraisLongueDuree').val(),
+			'taxeJournaliereHome.simpleTaxeJournaliereHome.isVersementDirect' : this.detail.find('.isVersementDirect').val(),
 			'doAddPeriode': this.doAddPeriode,
 			'idDroitMembreFamille': this.membreId
 		};

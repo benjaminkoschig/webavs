@@ -59,6 +59,8 @@ public class StrategieFinalDepenseTotalReconnuVS extends StrategieFinalDepenseTo
 
         donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_DEPEN_DEP_RECO_TOTAL, somme));
 
+        checkSejourMoisPartiel(context, donnee);
+
     }
 
     @Override

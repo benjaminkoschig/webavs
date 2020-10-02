@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--  fichier de mapping du modele simple SimpleLoyer -->
+<!--  DMA, 7.2010 -->
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.habitat.SimpleSejourMoisPartielHome">
+		<description>Modele de la table taxe journaliere home</description>
+		<table name="PC_SEJOUR_MOIS_PARTIEL_HOME" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idSejourMoisPartielHome" column="ID" />
+			<field name="idDonneeFinanciereHeader" column="ID_DONNEE_FINANCIERE" type="NUMERIC"  mandatory="true"  />
+			<field name="prixJournalier" column="PRIX_JOURNALIER" type="NUMERIC"  dataType="NUMERIC(15,2)" mandatory="false" />
+			<field name="fraisNourriture" column="FRAIS_NOURRITURE" type="NUMERIC"   dataType="NUMERIC(15,2)" mandatory="false" />
+			<field name="nbJours" column="NOMBRE_JOURS" type="NUMERIC"   dataType="NUMERIC(6,0)" mandatory="false" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+				<search-field name="forIdDonneeFinanciere" operation="EQUALS" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	
+	</simple-model>
+</model-mapping>

@@ -8,6 +8,7 @@
 			<field name="idPlanDeCalcul" column="CXIPLC" type="NUMERIC" mandatory="true" comment="ID_PLAN_DE_CALCUL"/>
 			<field name="idDroitMembreFamille" column="CXIDMF" type="NUMERIC" mandatory="true" comment="ID_DROIT_MEMBRE_FAMILLE"/>
 			<field name="isComprisDansCalcul" column="CXBCDC" type="BOOLEAN" mandatory="true" comment="IS_COMPRIS_DANS_CALCUL"/>
+			<field name="isRentier" column="CXRENTE" type="BOOLEAN" mandatory="false" comment="IS_RENTIER"/>
 		</fields>
 		<search-definition>
 			<search-group operator="AND">

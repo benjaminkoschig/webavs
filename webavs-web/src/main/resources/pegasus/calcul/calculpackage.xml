@@ -12,4 +12,5 @@
 	<model-mapping import="pegasus/calcul/calculdernierepca.xml"/>
 	<model-mapping import="pegasus/calcul/calculmembrefamille.xml"/>
 	<model-mapping import="pegasus/calcul/calculpcareplace.xml"/>
+	<model-mapping import="pegasus/calcul/calculdonneesfraisgarde.xml"/>
 </model-mapping>

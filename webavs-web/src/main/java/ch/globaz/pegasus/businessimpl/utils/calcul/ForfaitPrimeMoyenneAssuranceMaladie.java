@@ -12,21 +12,23 @@ public class ForfaitPrimeMoyenneAssuranceMaladie {
     };
 
     private String csTypePersonne = null;
-
-    private float montant;
+    private float montantPrimeMoy;
+    private float montantPrimeReductionMaxCanton;
 
     /**
      * Constructeur
      * 
      * @param csTypePersonne
      *            le type de prime
-     * @param montant
-     *            le montant de la prime
+     * @param montantPrimeMoy
+     *            le montant de la prime moyenne
+     * @param montantPrimeReductionMaxCanton le montant de la prime de réduction max cantonale
      */
-    public ForfaitPrimeMoyenneAssuranceMaladie(String csTypePersonne, float montant) {
+    public ForfaitPrimeMoyenneAssuranceMaladie(String csTypePersonne, float montantPrimeMoy, float montantPrimeReductionMaxCanton) {
         super();
         this.csTypePersonne = csTypePersonne;
-        this.montant = montant;
+        this.montantPrimeMoy = montantPrimeMoy;
+        this.montantPrimeReductionMaxCanton = montantPrimeReductionMaxCanton;
     }
 
     /**
@@ -34,11 +36,41 @@ public class ForfaitPrimeMoyenneAssuranceMaladie {
      * 
      * @param csTypePrime
      *            le type de prime
-     * @param montant
+     * @param montantPrimeMoy
      *            le montant de la prime, en texte
+     *
+     * @param montantPrimeReductionMaxCanton le montant de la prime de réduction max cantonale
+     *
      */
-    public ForfaitPrimeMoyenneAssuranceMaladie(String csTypePrime, String montant) {
-        this(csTypePrime, Float.parseFloat(montant));
+    public ForfaitPrimeMoyenneAssuranceMaladie(String csTypePrime, String montantPrimeMoy, String montantPrimeReductionMaxCanton) {
+        this(csTypePrime, Float.parseFloat(montantPrimeMoy), Float.parseFloat(montantPrimeReductionMaxCanton));
+    }
+
+    /**
+     * Constructeur
+     *
+     * @param csTypePersonne
+     *            le type de prime
+     * @param montantPrimeMoy
+     *            le montant de la prime moyenne
+     */
+    public ForfaitPrimeMoyenneAssuranceMaladie(String csTypePersonne, float montantPrimeMoy) {
+        super();
+        this.csTypePersonne = csTypePersonne;
+        this.montantPrimeMoy = montantPrimeMoy;
+    }
+
+    /**
+     * Constructeur
+     *
+     * @param csTypePrime
+     *            le type de prime
+     * @param montantPrimeMoy
+     *            le montant de la prime, en texte
+     *
+     */
+    public ForfaitPrimeMoyenneAssuranceMaladie(String csTypePrime, String montantPrimeMoy) {
+        this(csTypePrime, Float.parseFloat(montantPrimeMoy));
     }
 
     /**
@@ -51,8 +83,8 @@ public class ForfaitPrimeMoyenneAssuranceMaladie {
     /**
      * @return the montant
      */
-    public float getMontant() {
-        return montant;
+    public float getMontantPrimeMoy() {
+        return montantPrimeMoy;
     }
 
     /**
@@ -64,11 +96,18 @@ public class ForfaitPrimeMoyenneAssuranceMaladie {
     }
 
     /**
-     * @param montant
+     * @param montantPrimeMoy
      *            the montant to set
      */
-    public void setMontant(float montant) {
-        this.montant = montant;
+    public void setMontantPrimeMoy(float montantPrimeMoy) {
+        this.montantPrimeMoy = montantPrimeMoy;
     }
 
+    public float getMontantPrimeReductionMaxCanton() {
+        return montantPrimeReductionMaxCanton;
+    }
+
+    public void setMontantPrimeReductionMaxCanton(float montantPrimeReductionMaxCanton) {
+        this.montantPrimeReductionMaxCanton = montantPrimeReductionMaxCanton;
+    }
 }

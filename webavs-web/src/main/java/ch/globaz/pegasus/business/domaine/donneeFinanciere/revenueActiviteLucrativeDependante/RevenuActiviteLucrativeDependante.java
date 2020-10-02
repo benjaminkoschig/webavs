@@ -9,15 +9,17 @@ public class RevenuActiviteLucrativeDependante extends DonneeFinanciere implemen
     private Montant montant;
     private Montant deductionLpp;
     private Montant deductionSociale;
+    private Montant fraisDeGarde;
     private Montant frais;
 
-    public RevenuActiviteLucrativeDependante(Montant montant, Montant deductionLpp, Montant deductionSociale,
+    public RevenuActiviteLucrativeDependante(Montant montant, Montant deductionLpp, Montant deductionSociale, Montant fraisDeGarde,
             Montant frais, DonneeFinanciere donneeFinanciere) {
         super(donneeFinanciere);
 
         this.montant = montant.addAnnuelPeriodicity();
         this.deductionLpp = deductionLpp.addAnnuelPeriodicity();
         this.deductionSociale = deductionSociale.addAnnuelPeriodicity();
+        this.fraisDeGarde = fraisDeGarde.addAnnuelPeriodicity();
         this.frais = frais.addAnnuelPeriodicity();
     }
 
@@ -55,7 +57,7 @@ public class RevenuActiviteLucrativeDependante extends DonneeFinanciere implemen
     @Override
     public String toString() {
         return "RevenueActiviteLucrativeDependante [montant=" + montant + ", deductionLpp=" + deductionLpp
-                + ", deductionSociale=" + deductionSociale + ", frais=" + frais + "]";
+                + ", deductionSociale=" + deductionSociale + ", fraisDeGarde=" + fraisDeGarde +", frais=" + frais + "]";
     }
 
     @Override
@@ -65,6 +67,7 @@ public class RevenuActiviteLucrativeDependante extends DonneeFinanciere implemen
         result = prime * result + ((deductionLpp == null) ? 0 : deductionLpp.hashCode());
         result = prime * result + ((deductionSociale == null) ? 0 : deductionSociale.hashCode());
         result = prime * result + ((frais == null) ? 0 : frais.hashCode());
+        result = prime * result + ((fraisDeGarde == null) ? 0 : fraisDeGarde.hashCode());
         result = prime * result + ((montant == null) ? 0 : montant.hashCode());
         return result;
     }
@@ -102,6 +105,13 @@ public class RevenuActiviteLucrativeDependante extends DonneeFinanciere implemen
         } else if (!frais.equals(other.frais)) {
             return false;
         }
+        if (fraisDeGarde == null) {
+            if (other.fraisDeGarde != null) {
+                return false;
+            }
+        } else if (!fraisDeGarde.equals(other.fraisDeGarde)) {
+            return false;
+        }
         if (montant == null) {
             if (other.montant != null) {
                 return false;
@@ -110,6 +120,13 @@ public class RevenuActiviteLucrativeDependante extends DonneeFinanciere implemen
             return false;
         }
         return true;
+    }
+    public Montant getFraisDeGarde() {
+        return fraisDeGarde;
+    }
+
+    public void setFraisDeGarde(Montant fraisDeGarde) {
+        this.fraisDeGarde = fraisDeGarde;
     }
 
 }

@@ -33,8 +33,12 @@ function Loyer(container){
 					.find('.taxeJournalierePensionNonReconnue').val($data.find('taxeJournalierePensionNonReconnue').text()).change().end()
 					.find('[name=dateDebut]').val($data.find('dateDebut').text()).end()
 					.find('[name=dateFin]').val($data.find('dateFin').text()).end()
+					.find('.selecteurCommune').val($data.find('nomCommune').text()).end()
+					.find('.commune').val($data.find('commune').text()).end()
+					.find('.textLibre').val($data.find('textLibre').text()).end()
 		 			.find('[name=csDeplafonnementAppartementPartage]').val($data.find('csDeplafonnementAppartementPartage').text()).change().end();
-		 this.detail.find('.lblCompagnie').text($data.find('nomBailleurRegie').text());
+		 this.detail.find('.lblCompagnie').text($data.find('nomBailleurRegie').text())
+			 .find('[name=csTypeLoyer]').val($data.find('csTypeLoyer').text()).end();
 		//this.showOrHideDetail();
 		this.checkIfAppartementProtegeAlreadySet($data.find('csDeplafonnementAppartementPartage').text());
 		this.calculSurAn();
@@ -84,6 +88,8 @@ function Loyer(container){
 			'loyer.simpleDonneeFinanciereHeader.dateDebut':this.detail.find('[name=dateDebut]').val(),
 			'loyer.simpleDonneeFinanciereHeader.dateFin':this.detail.find('[name=dateFin]').val(),
 			'loyer.simpleLoyer.csDeplafonnementAppartementPartage': csDeplafonnement,
+			'loyer.simpleLoyer.idLocalite': this.detail.find('.commune').val(),
+			'loyer.simpleLoyer.textLibre': this.detail.find('.textLibre').val(),
 			'doAddPeriode':this.doAddPeriode,
 			'idDroitMembreFamille':this.membreId
 		};

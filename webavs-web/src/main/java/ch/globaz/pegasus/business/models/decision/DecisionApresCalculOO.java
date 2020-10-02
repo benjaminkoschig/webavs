@@ -65,6 +65,10 @@ public class DecisionApresCalculOO extends JadeComplexModel {
 
     }
 
+    public boolean isDecisionProvisoire() {
+        return getDecisionHeader().getSimpleDecisionHeader().isDecisionProvisoire();
+    }
+
     /**
      * @return the simpleDecisionHeader
      */

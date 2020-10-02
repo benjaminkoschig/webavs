@@ -38,6 +38,24 @@
 				<join-field name="idVersionDroit" operation="EQUALS" field-ref="simpleDonneesFinanciereHeader.idVersionDroit"/>
 			</join-group>
 		</linked-model>
+
+		<linked-model name="simpleDroitMembreFamille" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroitMembreFamille" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDroitMembreFamille" operation="EQUALS" field-ref="simpleDonneesFinanciereHeader.idDroitMembreFamille"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simpleDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroit" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDroit" operation="EQUALS" field-ref="simpleVersionDroit.idDroit"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simpleMembreFamille" model-ref="ch.globaz.hera.business.models.famille.SimpleMembreFamille" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idMembreFamille" operation="EQUALS" field-ref="simpleDroitMembreFamille.idMembreFamilleSF"/>
+			</join-group>
+		</linked-model>
 		
 		<select-fields>
 			<select-field name="idDDF" field-ref="simpleDonneesFinanciereHeader.idDonneeFinanciereHeader"/>
@@ -63,8 +81,12 @@
 			<select-field name="dateFinPrixChambre" field-ref="simplePrixChambre.dateFin"/>
 			<select-field name="isDeplafonner" field-ref="simpleTaxesJournaliereHome.isDeplafonner"/>
 			<select-field name="montantFraisLongueDuree" field-ref="simpleTaxesJournaliereHome.montantFraisLongueDuree"/>
-			
-			
+			<select-field name="isVersementDirect" field-ref="simpleTaxesJournaliereHome.isVersementDirect"/>
+			<select-field name="idAdressePaiement" field-ref="simpleTaxesJournaliereHome.idAdressePaiement"/>
+			<select-field name="csRoleFamille" field-ref="simpleDroitMembreFamille.csRoleFamillePC"/>
+			<select-field name="idTiersHome" field-ref="simpleHome.idTiersHome"/>
+			<select-field name="idDemande" field-ref="simpleDroit.idDemandePC"/>
+			<select-field name="idTiersRegroupement" field-ref="simpleMembreFamille.idTiers"/>
 		</select-fields>
 		
 		<search-definition>

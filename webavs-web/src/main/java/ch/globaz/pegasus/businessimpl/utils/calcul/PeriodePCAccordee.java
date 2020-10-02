@@ -1,25 +1,9 @@
 /**
- * 
+ *
  */
 package ch.globaz.pegasus.businessimpl.utils.calcul;
 
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import ch.globaz.pegasus.business.constantes.IPCDroits;
-import ch.globaz.pegasus.business.constantes.IPCPCAccordee;
-import ch.globaz.pegasus.business.constantes.IPCTypePrimeAssuranceMaladie;
-import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
-import ch.globaz.pegasus.business.constantes.IPCVariableMetier;
+import ch.globaz.pegasus.business.constantes.*;
 import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCRenteAvsAi;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
@@ -38,22 +22,31 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.ControlleurMo
 import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.ControlleurVariablesMetier;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategie.StrategieCalcul;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategie.StrategiesFactory;
-import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.StrategieCalculFinalisation;
-import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.StrategieCalculFusion;
-import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.StrategiesCoupleSepareFinalisationFactory;
-import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.StrategiesCoupleSepareFusionFactory;
-import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.StrategiesFinalisationFactory;
+import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.*;
+import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.fortune.strategiesFinalFortuneImmobiliere.UtilFortune;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * @author ECO
- * 
+ *
  */
 public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Pourcentage d'abattement utiliser pour calcul la pc minimal à partir de la prime moyenne
+     */
+    private static final float POURCENTAGE_PRIME_MOY_PC_MINIMAL = 0.6f;
+
 
     private enum TypeCalculCC {
         CALCUL_CC_NON_SEPARE,
@@ -82,12 +75,18 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
     private static final int AGE_JEUNE_ADULTE = 19;
 
-    private final static StrategiesFactory[] factories = { StrategiesFactory.getDepenseFactory(),
-            StrategiesFactory.getFortuneFactory(), StrategiesFactory.getRevenuFactory() };
+    private final static StrategiesFactory[] factories = {StrategiesFactory.getDepenseFactory(),
+            StrategiesFactory.getFortuneFactory(), StrategiesFactory.getRevenuFactory()};
+
+    private final static StrategiesFactory[] conjointFactories = {StrategiesFactory.getDepenseFactory(),
+            StrategiesFactory.getFortuneFactory(), StrategiesFactory.getRevenuConjointFacotry()};
+
+    private final static StrategiesFactory[] enfantFactories = {StrategiesFactory.getDepenseFactory(),
+            StrategiesFactory.getFortuneFactory(), StrategiesFactory.getRevenuEnfantFacotry()};
 
     private final static Map<String, Attribut> mappageLegendesVarMetFinalisation = new HashMap<String, Attribut>() {
         /**
-         * 
+         *
          */
         private static final long serialVersionUID = 1L;
 
@@ -104,6 +103,10 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
                     Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_HOME_LEGENDE);
             put(IPCVariableMetier.CS_FRACTIONS_FORTUNE_VIEILLESSE_MAISON,
                     Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_MAISON_LEGENDE);
+            put(IPCVariableMetier.CS_REFORME_FRACTIONS_FORTUNE_SEPARE_VIEILLESSE_HOME,
+                    Attribut.CS_REFORME_FRACTIONS_FORTUNE_SEPARE_VIEILLESSE_HOME);
+            put(IPCVariableMetier.CS_REFORME_FRACTIONS_FORTUNE_SEPARE_NON_VIEILLESSE_HOME,
+                    Attribut.CS_REFORME_FRACTIONS_FORTUNE_SEPARE_NON_VIEILLESSE_HOME);
             put(IPCVariableMetier.CS_FRACTION_REVENUS_PRIVILEGIES, Attribut.CS_FRACTION_REVENUS_PRIVILEGIES_LEGENDE);
             put(IPCVariableMetier.CS_PLAFOND_ANNUEL_EMS, Attribut.CS_PLAFOND_ANNUEL_EMS);
             put(IPCVariableMetier.CS_PLAFOND_ANNUEL_INSTITUTION, Attribut.CS_PLAFOND_ANNUEL_INSTITUTION);
@@ -111,12 +114,18 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
             ;
             put(IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_EPS, Attribut.MONTANT_TYPE_CHAMBRE_EPS);
+            put(IPCVariableMetier.CS_REFORME_FRACTIONS_FORTUNE_HOME, Attribut.CS_REFORME_FRACTIONS_FORTUNE_HOME_LEGENDE);
+            put(IPCVariableMetier.CS_REFORME_FRACTIONS_FORTUNE_RESIDENT, Attribut.CS_REFORME_FRACTIONS_FORTUNE_RESIDENT_LEGENDE);
+            put(IPCVariableMetier.CS_REFORME_FRACTIONS_FORTUNE_MOITIE, Attribut.CS_REFORME_FRACTIONS_FORTUNE_MOITIE_LEGENDE);
+            put(IPCVariableMetier.CS_REFORME_TAUX_REVENUS_NON_RENTIER, Attribut.CS_REFORME_TAUX_REVENUS_NON_RENTIER_LEGENDE);
+            put(IPCVariableMetier.CS_REFORME_TAUX_REVENUS_IJAI, Attribut.CS_REFORME_TAUX_REVENUS_IJAI_LEGENDE);
+            put(IPCVariableMetier.CS_REFORME_FRACTION_REVENUS_PRIVILEGIES_ENFANT, Attribut.CS_REFORME_FRACTION_REVENUS_PRIVILEGIES_ENFANT_LEGENDE);
         }
     };
 
     private final static Map<String, Attribut> mappageVarMet = new HashMap<String, Attribut>() {
         /**
-         * 
+         *
          */
         private static final long serialVersionUID = 1L;
 
@@ -142,11 +151,22 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             put(IPCVariableMetier.TAUX_IMPUTATIONS_VALEUR_LOCATIVE_BRUT_M10,
                     Attribut.TAUX_BIEN_IMMO_FRACTION_VALEUR_LOCATIVE_BRUTE_M10);
             put(IPCVariableMetier.TAUX_IMPUTATIONS_LOYER_EFFECTIF, Attribut.TAUX_BIEN_IMMO_FRACTION_LOYER_EFFECTIF);
+            put(IPCVariableMetier.CS_REFORME_SEUIL_FORTUNE_SEUL, Attribut.CS_REFORME_SEUIL_FORTUNE_SEUL);
+            put(IPCVariableMetier.CS_REFORME_SEUIL_FORTUNE_COUPLE, Attribut.CS_REFORME_SEUIL_FORTUNE_COUPLE);
+            put(IPCVariableMetier.CS_REFORME_SEUIL_FORTUNE_ENFANT, Attribut.CS_REFORME_SEUIL_FORTUNE_ENFANT);
+            put(IPCVariableMetier.CS_REFORME_BESOINS_VITAUX_AGE_MOINS_11_ENFANTS_1, Attribut.CS_REFORME_BESOINS_VITAUX_AGE_MOINS_11_ENFANTS_1);
+            put(IPCVariableMetier.CS_REFORME_BESOINS_VITAUX_AGE_MOINS_11_ENFANTS_2, Attribut.CS_REFORME_BESOINS_VITAUX_AGE_MOINS_11_ENFANTS_2);
+            put(IPCVariableMetier.CS_REFORME_BESOINS_VITAUX_AGE_MOINS_11_ENFANTS_3, Attribut.CS_REFORME_BESOINS_VITAUX_AGE_MOINS_11_ENFANTS_3);
+            put(IPCVariableMetier.CS_REFORME_BESOINS_VITAUX_AGE_MOINS_11_ENFANTS_4, Attribut.CS_REFORME_BESOINS_VITAUX_AGE_MOINS_11_ENFANTS_4);
+            put(IPCVariableMetier.CS_REFORME_BESOINS_VITAUX_AGE_MOINS_11_ENFANTS_5, Attribut.CS_REFORME_BESOINS_VITAUX_AGE_MOINS_11_ENFANTS_5);
+            put(IPCVariableMetier.CS_REFORME_BESOINS_VITAUX_AGE_PLUS_OU_EGAL_11_ENFANTS_2, Attribut.CS_REFORME_BESOINS_VITAUX_AGE_PLUS_OU_EGAL_11_ENFANTS_2);
+            put(IPCVariableMetier.CS_REFORME_BESOINS_VITAUX_AGE_PLUS_OU_EGAL_11_ENFANTS_4, Attribut.CS_REFORME_BESOINS_VITAUX_AGE_PLUS_OU_EGAL_11_ENFANTS_4);
+            put(IPCVariableMetier.CS_REFORME_BESOINS_VITAUX_AGE_PLUS_OU_EGAL_11_ENFANTS_5, Attribut.CS_REFORME_BESOINS_VITAUX_AGE_PLUS_OU_EGAL_11_ENFANTS_5);
         }
     };
     private final static Map<String, Attribut> mappageVarMetFinalisation = new HashMap<String, Attribut>() {
         /**
-         * 
+         *
          */
         private static final long serialVersionUID = 1L;
 
@@ -168,6 +188,10 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             put(IPCVariableMetier.CS_FRACTIONS_FORTUNE_VIEILLESSE_HOME, Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_HOME);
             put(IPCVariableMetier.CS_FRACTIONS_FORTUNE_VIEILLESSE_MAISON,
                     Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_MAISON);
+            put(IPCVariableMetier.CS_REFORME_FRACTIONS_FORTUNE_SEPARE_VIEILLESSE_HOME,
+                    Attribut.CS_REFORME_FRACTIONS_FORTUNE_SEPARE_VIEILLESSE_HOME);
+            put(IPCVariableMetier.CS_REFORME_FRACTIONS_FORTUNE_SEPARE_NON_VIEILLESSE_HOME,
+                    Attribut.CS_REFORME_FRACTIONS_FORTUNE_SEPARE_NON_VIEILLESSE_HOME);
             put(IPCVariableMetier.CS_FRANCHISE_REVENUS_PRIVILEGIERS_CELIBATAIRES,
                     Attribut.CS_FRANCHISE_REVENUS_PRIVILEGIERS_CELIBATAIRES);
             put(IPCVariableMetier.CS_FRANCHISE_REVENUS_PRIVILEGIERS_FAMILLE,
@@ -193,6 +217,8 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             put(IPCVariableMetier.DEPENSE_LOYER_PLAFOND_CELIBATAIRE, Attribut.DEPENSE_LOYER_PLAFOND_CELIBATAIRE);
             put(IPCVariableMetier.DEPENSE_LOYER_PLAFOND_FAUTEUIL_ROULANT,
                     Attribut.DEPENSE_LOYER_PLAFOND_FAUTEUIL_ROULANT);
+            put(IPCVariableMetier.CS_REFORME_DEPENSE_LOYER_PLAFOND_FAUTEUIL_ROULANT,
+                    Attribut.CS_REFORME_DEPENSE_LOYER_PLAFOND_FAUTEUIL_ROULANT);
             put(IPCVariableMetier.MONTANT_MINIMALE_PC, Attribut.MONTANT_MINIMALE_PC);
             put(IPCVariableMetier.CS_FORFAIT_REVENU_NATURE_TENUE_MENAGE, Attribut.CS_FORFAIT_REVENU_NATURE_TENUE_MENAGE);
             put(IPCVariableMetier.CS_DEDUCTION_FORAITAIRE_IMMOBILIER_ASSURE_HOME_API,
@@ -216,15 +242,39 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             put(IPCVariableMetier.TAUX_IMPUTATIONS_LOYER_EFFECTIF, Attribut.TAUX_BIEN_IMMO_FRACTION_LOYER_EFFECTIF);
             put(IPCVariableMetier.CS_PLAFOND_ANNUEL_INSTITUTION, Attribut.CS_PLAFOND_ANNUEL_INSTITUTION);
             put(IPCVariableMetier.CS_PLAFOND_ANNUEL_LITS_ATTENTE, Attribut.CS_PLAFOND_ANNUEL_LITS_ATTENTE);
-
+            put(IPCVariableMetier.CS_REFORME_FRACTIONS_FORTUNE_HOME, Attribut.CS_REFORME_FRACTIONS_FORTUNE_HOME);
+            put(IPCVariableMetier.CS_REFORME_FRACTIONS_FORTUNE_RESIDENT, Attribut.CS_REFORME_FRACTIONS_FORTUNE_RESIDENT);
+            put(IPCVariableMetier.CS_REFORME_FRACTIONS_FORTUNE_MOITIE, Attribut.CS_REFORME_FRACTIONS_FORTUNE_MOITIE);
+            put(IPCVariableMetier.CS_REFORME_SEUIL_FORTUNE_SEUL, Attribut.CS_REFORME_SEUIL_FORTUNE_SEUL);
+            put(IPCVariableMetier.CS_REFORME_SEUIL_FORTUNE_COUPLE, Attribut.CS_REFORME_SEUIL_FORTUNE_COUPLE);
+            put(IPCVariableMetier.CS_REFORME_SEUIL_FORTUNE_ENFANT, Attribut.CS_REFORME_SEUIL_FORTUNE_ENFANT);
+            put(IPCVariableMetier.CS_REFORME_BESOINS_VITAUX_AGE_MOINS_11_ENFANTS_1, Attribut.CS_REFORME_BESOINS_VITAUX_AGE_MOINS_11_ENFANTS_1);
+            put(IPCVariableMetier.CS_REFORME_BESOINS_VITAUX_AGE_MOINS_11_ENFANTS_2, Attribut.CS_REFORME_BESOINS_VITAUX_AGE_MOINS_11_ENFANTS_2);
+            put(IPCVariableMetier.CS_REFORME_BESOINS_VITAUX_AGE_MOINS_11_ENFANTS_3, Attribut.CS_REFORME_BESOINS_VITAUX_AGE_MOINS_11_ENFANTS_3);
+            put(IPCVariableMetier.CS_REFORME_BESOINS_VITAUX_AGE_MOINS_11_ENFANTS_4, Attribut.CS_REFORME_BESOINS_VITAUX_AGE_MOINS_11_ENFANTS_4);
+            put(IPCVariableMetier.CS_REFORME_BESOINS_VITAUX_AGE_MOINS_11_ENFANTS_5, Attribut.CS_REFORME_BESOINS_VITAUX_AGE_MOINS_11_ENFANTS_5);
+            put(IPCVariableMetier.CS_REFORME_BESOINS_VITAUX_AGE_PLUS_OU_EGAL_11_ENFANTS_2, Attribut.CS_REFORME_BESOINS_VITAUX_AGE_PLUS_OU_EGAL_11_ENFANTS_2);
+            put(IPCVariableMetier.CS_REFORME_BESOINS_VITAUX_AGE_PLUS_OU_EGAL_11_ENFANTS_4, Attribut.CS_REFORME_BESOINS_VITAUX_AGE_PLUS_OU_EGAL_11_ENFANTS_4);
+            put(IPCVariableMetier.CS_REFORME_BESOINS_VITAUX_AGE_PLUS_OU_EGAL_11_ENFANTS_5, Attribut.CS_REFORME_BESOINS_VITAUX_AGE_PLUS_OU_EGAL_11_ENFANTS_5);
+            put(IPCVariableMetier.CS_REFORME_TAUX_REVENUS_NON_RENTIER, Attribut.CS_REFORME_TAUX_REVENUS_NON_RENTIER);
+            put(IPCVariableMetier.CS_REFORME_TAUX_REVENUS_IJAI, Attribut.CS_REFORME_TAUX_REVENUS_IJAI);
+            put(IPCVariableMetier.CS_REFORME_FRACTION_REVENUS_PRIVILEGIES_ENFANT, Attribut.CS_REFORME_FRACTION_REVENUS_PRIVILEGIES_ENFANT);
         }
     };
 
-    private final static StrategiesFactory[] mixteFactories = { StrategiesFactory.getRevenuMixteFactory() };
+    private final static StrategiesFactory[] mixteFactories = {StrategiesFactory.getRevenuMixteFactory()};
 
-    final private List<CalculComparatif> calculsComparatifs = new ArrayList<CalculComparatif>();
+    final private List<CalculComparatif> calculsComparatifs = new ArrayList<>();
 
-    final private List<CalculComparatif> calculsComparatifsConjoint = new ArrayList<CalculComparatif>();
+    final private List<CalculComparatif> calculsComparatifsConjoint = new ArrayList<>();
+
+    final private List<CalculComparatif> calculsComparatifsReforme = new ArrayList<>();
+
+    final private List<CalculComparatif> calculsComparatifsConjointReforme = new ArrayList<>();
+
+    private boolean calculReforme = false;
+
+    private boolean isFratrie = false;
 
     private String codeRente = null;
 
@@ -254,8 +304,8 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
     private boolean isHome = false;
 
     /**
-	 * 
-	 */
+     *
+     */
     private SimpleJoursAppoint joursAppointConjoint = null;
     private SimpleJoursAppoint joursAppointRequerant = null;
 
@@ -277,7 +327,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
     /**
      * Ajoute un forfait de primes moyennes d'assurance maladie à la liste de forfaits concernant la période
-     * 
+     *
      * @param simpleForfaitPrimesAssuranceMaladie
      *            le forfait à ajouter
      * @throws CalculException
@@ -287,7 +337,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             throws CalculException {
         final String csTypePrime = simpleForfaitPrimesAssuranceMaladie.getCsTypePrime();
 
-        TypesForfait typeForfait = null;
+        TypesForfait typeForfait;
         if (IPCTypePrimeAssuranceMaladie.CS_TYPE_PRIME_ADULTE.equals(csTypePrime)) {
             typeForfait = TypesForfait.FORFAIT_ADULTE;
         } else if (IPCTypePrimeAssuranceMaladie.CS_TYPE_PRIME_JEUNE_ADULTE.equals(csTypePrime)) {
@@ -297,16 +347,20 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
         } else {
             throw new CalculException("Unknown type of Prime Assurance Maladie : " + csTypePrime);
         }
+        ForfaitPrimeMoyenneAssuranceMaladie forfait;
+        if (StringUtils.isNotEmpty(simpleForfaitPrimesAssuranceMaladie.getMontantPrimeReductionMaxCanton())) {
+            forfait = new ForfaitPrimeMoyenneAssuranceMaladie(csTypePrime, simpleForfaitPrimesAssuranceMaladie.getMontantPrimeMoy(), simpleForfaitPrimesAssuranceMaladie.getMontantPrimeReductionMaxCanton());
+        } else {
+            forfait = new ForfaitPrimeMoyenneAssuranceMaladie(csTypePrime, simpleForfaitPrimesAssuranceMaladie.getMontantPrimeMoy());
+        }
 
-        ForfaitPrimeMoyenneAssuranceMaladie forfait = new ForfaitPrimeMoyenneAssuranceMaladie(csTypePrime,
-                simpleForfaitPrimesAssuranceMaladie.getMontant());
         forfaitsPrimeMaladie.put(typeForfait, forfait);
 
     }
 
     /**
      * Ajoute les variables metier dans le contexte
-     * 
+     *
      * @param context
      *            contexte de calcul
      */
@@ -332,7 +386,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
     /**
      * Execute le calcul du PCA pour la combinaison de personnes donnée en paramètre
-     * 
+     *
      * @param typeCalculCC
      *            type de calcul
      * @param combinaisonPersonnes
@@ -344,8 +398,26 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
      *             en cas d'erreur de calcul
      */
     private CalculComparatif calculeCC(TypeCalculCC typeCalculCC, List<PersonnePCAccordee> combinaisonPersonnes,
-            CalculContext context) throws CalculException {
-        TupleDonneeRapport root = prepareCalculCC(combinaisonPersonnes, context);
+                                       CalculContext context) throws CalculException {
+        return calculeCC(typeCalculCC, combinaisonPersonnes, context, null);
+    }
+
+    /**
+     * Execute le calcul du PCA pour la combinaison de personnes donnée en paramètre
+     *
+     * @param typeCalculCC
+     *            type de calcul
+     * @param combinaisonPersonnes
+     *            liste de personnes incluses dans le calcul
+     * @param context
+     *            contexte de calcul
+     * @return le résultat de calcul
+     * @throws CalculException
+     *             en cas d'erreur de calcul
+     */
+    private CalculComparatif calculeCC(TypeCalculCC typeCalculCC, List<PersonnePCAccordee> combinaisonPersonnes,
+                                       CalculContext context, PersonnePCAccordee personneEnCours) throws CalculException {
+        TupleDonneeRapport root = prepareCalculCC(combinaisonPersonnes, context, personneEnCours);
         switch (typeCalculCC) {
             case CALCUL_CC_NON_SEPARE:
                 CalculFinal(context, root);
@@ -365,93 +437,130 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
     /**
      * Determine et stocke dans le contexte le nombre de personnes et la repartition des enfants/parents
-     * 
+     *
      * @param combinaisonPersonnes
      *            liste de personnes
      * @param context
      *            contexte du calcul
      */
-    private void calculeNombrePersonnes(List<PersonnePCAccordee> combinaisonPersonnes, CalculContext context) {
+    private void calculeNombrePersonnes(List<PersonnePCAccordee> combinaisonPersonnes, CalculContext context) throws CalculException {
         // determine le nombre d'enfants et parents et stocke les resultats en
         // memoire de contexte
         context.put(CalculContext.Attribut.NB_PERSONNES, combinaisonPersonnes.size());
-
+        String dateDebutPeriode = (String) context.get(Attribut.DATE_DEBUT_PERIODE);
         int nbParents = 0;
         int nbEnfants = 0;
+        int nbEnfantsSup11 = 0;
+        int nbEnfantsInf11 = 0;
         for (PersonnePCAccordee personnePCAccordee : combinaisonPersonnes) {
             if (IPCDroits.CS_ROLE_FAMILLE_REQUERANT.equals(personnePCAccordee.getCsRoleFamille())
                     || IPCDroits.CS_ROLE_FAMILLE_CONJOINT.equals(personnePCAccordee.getCsRoleFamille())) {
+                if (((Boolean) context.get(Attribut.IS_FRATRIE) && IPCDroits.CS_ROLE_FAMILLE_REQUERANT.equals(personnePCAccordee.getCsRoleFamille()))) {
+                    if (JadeDateUtil.getNbYearsBetween(personnePCAccordee.getDateNaissance(), dateDebutPeriode) < 11) {
+                        nbEnfantsInf11++;
+                    } else {
+                        nbEnfantsSup11++;
+                    }
+                }
                 nbParents++;
             } else if (IPCDroits.CS_ROLE_FAMILLE_ENFANT.equals(personnePCAccordee.getCsRoleFamille())) {
                 nbEnfants++;
+                if (JadeDateUtil.getNbYearsBetween(personnePCAccordee.getDateNaissance(), dateDebutPeriode) < 11) {
+                    nbEnfantsInf11++;
+                } else {
+                    nbEnfantsSup11++;
+                }
             }
         }
 
         context.put(CalculContext.Attribut.NB_PARENTS, nbParents);
         context.put(CalculContext.Attribut.NB_ENFANTS, nbEnfants);
+        context.put(CalculContext.Attribut.NB_ENFANTS_INF_11, nbEnfantsInf11);
+        context.put(CalculContext.Attribut.NB_ENFANTS_EGAL_SUP_11, nbEnfantsSup11);
+
     }
 
     /**
      * Calcule la prime moyenne des assurances maladie du groupe
-     * 
+     *
      * @param combinaisonPersonnes
      *            liste de personnes
      * @throws CalculException
      */
-    private float[] CalculePrimeAssuranceMaladie(List<PersonnePCAccordee> combinaisonPersonnes) throws CalculException {
-        // calcul de la prime moyenne d'assurance maladie
-        Calendar calPeriode = Calendar.getInstance();
-        calPeriode.setTime(dateDebut);
-        Calendar calPersonne;
+    private float[] calculePrimeAssuranceMaladie(List<PersonnePCAccordee> combinaisonPersonnes) throws CalculException {
+
         float[] montantPrimeAssuranceMaladie = new float[2];
 
         for (PersonnePCAccordee personnePCAccordee : combinaisonPersonnes) {
-            calPersonne = JadeDateUtil.getGlobazCalendar(personnePCAccordee.getDateNaissance());
-            if (calPersonne == null) {
-
-                DroitMembreFamille dmfe;
-                try {
-                    dmfe = PegasusImplServiceLocator.getDroitMembreFamilleService().read(
-                            personnePCAccordee.getIdDroitPersonne());
-                } catch (Exception e) {
-                    throw new CalculException("Failed to gather information for a calculBusinessException!", e);
-                }
-                throw new CalculBusinessException("pegasus.calcul.primeAssurance.dateNaissance.mandatory", dmfe
-                        .getMembreFamille().getPrenom() + " " + dmfe.getMembreFamille().getNom());
-            }
-            int age = calPeriode.get(Calendar.YEAR) - calPersonne.get(Calendar.YEAR);
-            ForfaitPrimeMoyenneAssuranceMaladie forfait;
-            if (age < PeriodePCAccordee.AGE_JEUNE_ADULTE) {
-                forfait = forfaitsPrimeMaladie.get(TypesForfait.FORFAIT_ENFANT);
-            } else if (age < PeriodePCAccordee.AGE_ADULTE) {
-                forfait = forfaitsPrimeMaladie.get(TypesForfait.FORFAIT_JEUNE_ADULTE);
-            } else {
-                forfait = forfaitsPrimeMaladie.get(TypesForfait.FORFAIT_ADULTE);
-            }
-            if (forfait == null) {
-                DonneesPersonnelles dp;
-                try {
-                    SimpleDroitMembreFamille dmf = PegasusImplServiceLocator.getSimpleDroitMembreFamilleService().read(
-                            personnePCAccordee.getIdDroitPersonne());
-                    dp = PegasusImplServiceLocator.getDonneesPersonnellesService().read(dmf.getIdDonneesPersonnelles());
-                } catch (Exception e) {
-                    throw new CalculException("Failed to gather information for a calculBusinessException!", e);
-                }
-                String nomLocalite = dp.getLocalite().getNumPostal();
-                throw new CalculBusinessException("pegasus.calcul.primeAssurance.forfait.mandatory", nomLocalite,
-                        strDateDebut, strDateFin);
-            }
+            ForfaitPrimeMoyenneAssuranceMaladie forfait = getForfaitPrimeMoyenneAssuranceMaladie(personnePCAccordee);
             // si requerant ajout de la valeur requerant aussi
             if (IPCDroits.CS_ROLE_FAMILLE_REQUERANT.equals(personnePCAccordee.getCsRoleFamille())) {
-                montantPrimeAssuranceMaladie[0] = forfait.getMontant();
+                montantPrimeAssuranceMaladie[0] = forfait.getMontantPrimeMoy();
             }
-            montantPrimeAssuranceMaladie[1] += forfait.getMontant();
+            montantPrimeAssuranceMaladie[1] += forfait.getMontantPrimeMoy();
+
+            // Plafonnement de la prime d'assurance maladie
+            TupleDonneeRapport personneRoot = personnePCAccordee.getRootDonneesConsolidees();
+
+            float somme = personneRoot.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_PRIME_ASSURANCE_MALADIE_TOTAL);
+            if (forfait.getMontantPrimeMoy() < somme) {
+                personneRoot.getOrCreateEnfant(IPCValeursPlanCalcul.CLE_DEPEN_PRIME_ASSURANCE_MALADIE_TOTAL).setValeur(forfait.getMontantPrimeMoy());
+            }
+
         }
         return montantPrimeAssuranceMaladie;
     }
 
+    /**
+     * Méthode permettant de récupérer le forfait de prime moyenne d'assurance maladie pour la personne et la période donnée.
+     *
+     * @param personnePCAccordee
+     * @return
+     * @throws CalculException
+     */
+    private ForfaitPrimeMoyenneAssuranceMaladie getForfaitPrimeMoyenneAssuranceMaladie(PersonnePCAccordee personnePCAccordee) throws CalculException {
+        Calendar calPeriode = Calendar.getInstance();
+        calPeriode.setTime(dateDebut);
+        Calendar calPersonne = JadeDateUtil.getGlobazCalendar(personnePCAccordee.getDateNaissance());
+        if (calPersonne == null) {
+
+            DroitMembreFamille dmfe;
+            try {
+                dmfe = PegasusImplServiceLocator.getDroitMembreFamilleService().read(
+                        personnePCAccordee.getIdDroitPersonne());
+            } catch (Exception e) {
+                throw new CalculException("Failed to gather information for a calculBusinessException!", e);
+            }
+            throw new CalculBusinessException("pegasus.calcul.primeAssurance.dateNaissance.mandatory", dmfe
+                    .getMembreFamille().getPrenom() + " " + dmfe.getMembreFamille().getNom());
+        }
+        int age = calPeriode.get(Calendar.YEAR) - calPersonne.get(Calendar.YEAR);
+        ForfaitPrimeMoyenneAssuranceMaladie forfait;
+        if (age < PeriodePCAccordee.AGE_JEUNE_ADULTE) {
+            forfait = forfaitsPrimeMaladie.get(TypesForfait.FORFAIT_ENFANT);
+        } else if (age < PeriodePCAccordee.AGE_ADULTE) {
+            forfait = forfaitsPrimeMaladie.get(TypesForfait.FORFAIT_JEUNE_ADULTE);
+        } else {
+            forfait = forfaitsPrimeMaladie.get(TypesForfait.FORFAIT_ADULTE);
+        }
+        if (forfait == null) {
+            DonneesPersonnelles dp;
+            try {
+                SimpleDroitMembreFamille dmf = PegasusImplServiceLocator.getSimpleDroitMembreFamilleService().read(
+                        personnePCAccordee.getIdDroitPersonne());
+                dp = PegasusImplServiceLocator.getDonneesPersonnellesService().read(dmf.getIdDonneesPersonnelles());
+            } catch (Exception e) {
+                throw new CalculException("Failed to gather information for a calculBusinessException!", e);
+            }
+            String nomLocalite = dp.getLocalite().getNumPostal();
+            throw new CalculBusinessException("pegasus.calcul.primeAssurance.forfait.mandatory", nomLocalite,
+                    strDateDebut, strDateFin);
+        }
+        return forfait;
+    }
+
     private void calculeStrategiesFinales(List<PersonnePCAccordee> enfants, List<PersonnePCAccordee> parents,
-            CalculContext context) throws CalculException {
+                                          CalculContext context) throws CalculException {
 
         // traite chaque possibilité de calculs comparatifs
         int nbEnfants = enfants.size();
@@ -466,7 +575,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
             // lance le calcul pour la combinaison
             CalculComparatif cc = calculeCC(TypeCalculCC.CALCUL_CC_NON_SEPARE, combinaisonPersonnes, context);
-            calculsComparatifs.add(cc);
+            getCalculsComparatifs().add(cc);
 
         } else {
             for (int idxCC = 0; idxCC < Math.pow(2, nbEnfants); idxCC++) {
@@ -481,14 +590,14 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
                 // lance le calcul pour la combinaison
                 CalculComparatif cc = calculeCC(TypeCalculCC.CALCUL_CC_NON_SEPARE, combinaisonPersonnes, context);
-                calculsComparatifs.add(cc);
+                getCalculsComparatifs().add(cc);
             }
         }
 
     }
 
     private void calculeStrategiesFinalesAvecSeparation(List<PersonnePCAccordee> enfants,
-            List<PersonnePCAccordee> parents, CalculContext context) throws CalculException {
+                                                        List<PersonnePCAccordee> parents, CalculContext context) throws CalculException {
 
         List<PersonnePCAccordee> combinaisonPersonnesCommun = new ArrayList<PersonnePCAccordee>();
         combinaisonPersonnesCommun.addAll(parents);
@@ -505,10 +614,9 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             int nbEnfants = enfants.size();
             for (int idxCC = 0; idxCC < Math.pow(2, nbEnfants); idxCC++) {
 
-                combinaisonPersonnesSepare.clear();
+                combinaisonPersonnesSepare = new ArrayList<>();
                 combinaisonPersonnesSepare.add(parent);
-                combinaisonPersonnesCommun.clear();
-                combinaisonPersonnesCommun.addAll(parents);
+                combinaisonPersonnesCommun = new ArrayList<>(parents);
 
                 for (int idxEnfant = 0; idxEnfant < nbEnfants; idxEnfant++) {
                     if ((idxCC & (int) Math.pow(2, idxEnfant)) > 0) {
@@ -521,27 +629,27 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
                 CalculComparatif ccSepare = calculeCC(TypeCalculCC.CALCUL_CC_SEPARE_AVEC_ENFANTS,
                         combinaisonPersonnesSepare, context);
                 CalculComparatif ccCommun = calculeCC(TypeCalculCC.CALCUL_CC_SEPARE_COMMUN, combinaisonPersonnesCommun,
-                        context);
+                        context, parent);
 
                 // fusionne les 2 cc
 
                 CalculComparatif ccFusionne = fusionneCC(ccSeul, ccSepare, ccCommun, context);
 
-                calculsComparatifs.add(ccFusionne);
+                getCalculsComparatifs().add(ccFusionne);
 
                 // distingue les résultats du conjoint, tout en gardant une copie dans calculsComparatifs afin de
                 // traiter les cc indistinctement
                 if (IPCDroits.CS_ROLE_FAMILLE_CONJOINT.equals(parent.getCsRoleFamille())) {
-                    calculsComparatifsConjoint.add(ccFusionne);
+                    getCalculsComparatifsConjoint().add(ccFusionne);
                 }
 
             }
         }
 
         // rassemble les cc par pair
-        for (CalculComparatif cc : calculsComparatifs) {
+        for (CalculComparatif cc : getCalculsComparatifs()) {
             if (cc.getCcConjoint() == null) {
-                for (CalculComparatif ccAutre : calculsComparatifs) {
+                for (CalculComparatif ccAutre : getCalculsComparatifs()) {
                     if ((ccAutre != cc) && (ccAutre.getCcConjoint() == null)
                             && (cc.getPersonnes().equals(ccAutre.getPersonnes()))) {
                         cc.setCcConjoint(ccAutre);
@@ -555,7 +663,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
     /**
      * execution des strategies de calcul de la dernière étape du calcul, impliquant les sommes des clés calculées
-     * 
+     *
      * @param context
      *            contexte du calcul
      * @param root
@@ -623,6 +731,16 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
         }
     }
 
+    private List<CalculComparatif> rechercheReforme(Set<CalculComparatif> ccEgaux) {
+        List<CalculComparatif> ccReforme = new ArrayList<>();
+        for (CalculComparatif cc : ccEgaux) {
+            if (cc.isReformePc()) {
+                ccReforme.add(cc);
+            }
+        }
+        return ccReforme;
+    }
+
     private CalculComparatif chercheCCCadet(Set<CalculComparatif> ccEgaux) throws CalculException {
         int ageCCRetenu = -1;
         final String currentDate = JadeDateUtil.getGlobazFormattedDate(new Date());
@@ -668,7 +786,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
     /**
      * Consolide les données en vue du calcul final
-     * 
+     *
      * @throws CalculException
      *             en cas d'erreur lors du calcul
      */
@@ -686,7 +804,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
         for (String cleVarMet : PeriodePCAccordee.mappageVarMet.keySet()) {
             if (controlleurVariablesMetier.get(cleVarMet) != null) {
                 context.getValeurs().put(PeriodePCAccordee.mappageVarMet.get(cleVarMet),
-                // Float.valueOf(this.variablesMetier.get(cleVarMet)));
+                        // Float.valueOf(this.variablesMetier.get(cleVarMet)));
                         controlleurVariablesMetier.get(cleVarMet));
 
             }
@@ -699,12 +817,30 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
         context.put(Attribut.DATE_DEBUT_PERIODE, getStrDateDebut());
 
+        if (calculReforme) {
+            context.put(CalculContext.Attribut.REFORME, true);
+            HashMap<String, String> map = new LinkedHashMap<>();
+            String dateDebutPeriode = (String) context.get(Attribut.DATE_DEBUT_PERIODE);
+            for (PersonnePCAccordee personne : personnes.values()) {
+                if ((JadeDateUtil.getNbYearsBetween(personne.getDateNaissance(), dateDebutPeriode) >= 11)
+                        && (IPCDroits.CS_ROLE_FAMILLE_ENFANT.equals(personne.getCsRoleFamille())
+                        || ((IPCDroits.CS_ROLE_FAMILLE_REQUERANT.equals(personne.getCsRoleFamille()) || IPCDroits.CS_ROLE_FAMILLE_CONJOINT.equals(personne.getCsRoleFamille())) && isFratrie))) {
+                    map.put(personne.getIdPersonne(), personne.getDateNaissance());
+                }
+            }
+            context.put(CalculContext.Attribut.LIST_ENFANTS_SUP_11, map);
+        }
+
         setIsHome(false);
 
         // execution des strategies de calcul
 
         for (PersonnePCAccordee personne : personnes.values()) {
             TupleDonneeRapport tupleRoot = personne.getRootDonneesConsolidees();
+
+            boolean personneSansRente = isSansRente(personne.getDonneesBD());
+            boolean personneAvecIJAI = hasIJAI(personne.getDonneesBD());
+
             for (CalculDonneesCC donnee : personne.getDonneesBD()) {
 
                 boolean dealDonneeWithoutDessaisissementFotune = !donnee.getIsDessaisissementFortune();
@@ -718,27 +854,19 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
                     StrategieCalcul strategie = StrategiesFactory.getStrategieDessaisissementRevenu();
                     strategie.calcule(donnee, context, tupleRoot);
                 }
-                if (dealDonneeWithoutDessaisissementFotune) {
-                    for (StrategiesFactory factory : PeriodePCAccordee.factories) {
 
-                        StrategieCalcul strategie = factory.getStrategie(donnee.getCsTypeDonneeFinanciere(),
-                                getStrDateDebut());
-                        if (strategie != null) {
-                            strategie.calcule(donnee, context, tupleRoot);
-                        }
+                if (dealDonneeWithoutDessaisissementFotune) {
+                    if (calculReforme && personne.isConjoint() && (personneSansRente || personneAvecIJAI)) {
+                        callStrategies(context, tupleRoot, donnee, PeriodePCAccordee.conjointFactories);
+                    } else if (calculReforme && personne.isEnfant() && !this.isFratrie) {
+                        callStrategies(context, tupleRoot, donnee, PeriodePCAccordee.enfantFactories);
+                    } else {
+                        callStrategies(context, tupleRoot, donnee, PeriodePCAccordee.factories);
                     }
                 }
 
                 // Strategies mixtes
-                for (StrategiesFactory factory : PeriodePCAccordee.mixteFactories) {
-
-                    StrategieCalcul strategieMixte = factory.getStrategieMixte(donnee.getCsTypeDonneeFinanciere(),
-                            getStrDateDebut());
-                    if (strategieMixte != null) {
-                        strategieMixte.calcule(donnee, context, tupleRoot);
-                    }
-
-                }
+                callStrategies(context, tupleRoot, donnee, PeriodePCAccordee.mixteFactories);
 
             }
             // ON set le homme pour la période --Ce qui va définir le type de séparation
@@ -760,8 +888,44 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
     }
 
     /**
+     * Appel des différentes stratégies en fonction des factories de stratégies passées en paramètre.
+     * @param context
+     * @param tupleRoot
+     * @param donnee
+     * @param strategiesFactory
+     * @throws CalculException
+     */
+    private void callStrategies(CalculContext context, TupleDonneeRapport tupleRoot, CalculDonneesCC donnee, StrategiesFactory[] strategiesFactory) throws CalculException {
+        for (StrategiesFactory factory : strategiesFactory) {
+            StrategieCalcul strategie = factory.getStrategie(donnee.getCsTypeDonneeFinanciere(),
+                    getStrDateDebut());
+            if (strategie != null) {
+                strategie.calcule(donnee, context, tupleRoot);
+            }
+        }
+    }
+
+    /**
+     * Méthode permettant de déterminer si la personne n'a pas de rente dans les données passées en paramètres.
+     * @param donneesBD
+     * @return vrai si la personnne n'a pas de rentes dans les données.
+     */
+    private boolean isSansRente(List<CalculDonneesCC> donneesBD) {
+        return !donneesBD.stream().anyMatch(calculDonneesCC -> StringUtils.isNotEmpty(calculDonneesCC.getRenteAVSAICsType()) || StringUtils.isNotEmpty(calculDonneesCC.getAPIAVSCsType()) || StringUtils.isNotEmpty(calculDonneesCC.getIJAPGGenre()));
+    }
+
+    /**
+     * Méthode permettant de déterminer si la personne a une IJAI dans les données passées en paramètres.
+     * @param donneesBD
+     * @return vrai si la personnne a une IJAI dans les données.
+     */
+    private boolean hasIJAI(List<CalculDonneesCC> donneesBD) {
+        return donneesBD.stream().anyMatch(calculDonneesCC -> StringUtils.equals(IPCDroits.CS_IJAI, calculDonneesCC.getCsTypeDonneeFinanciere()));
+    }
+
+    /**
      * consolide et somme tous les tuples ayant la même clé entre les différentes personnes
-     * 
+     *
      * @param combinaisonPersonnes
      *            liste de personnes incluses dans le calcul
      * @return tuple racine de tous les tuples additionnés
@@ -783,7 +947,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
                 throw new CalculException("found null tuple(s)");
             }
             for (TupleDonneeRapport tuple : personneRoot.getEnfants().values()) {
-                if(!IPCValeursPlanCalcul.CLE_REVEN_RENAUTRE_RENTE_ETRANGERE_TAUX_CHANGE.equals(tuple.getLabel())) {
+                if (!IPCValeursPlanCalcul.CLE_REVEN_RENAUTRE_RENTE_ETRANGERE_TAUX_CHANGE.equals(tuple.getLabel())) {
                     sumTuple(root, tuple);
                 } else {
                     mixTuple(root, tuple);
@@ -803,12 +967,16 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
     }
 
     public void determineCCFavorable() throws CalculException {
+        determineCCFavorable(getCalculsComparatifs());
+    }
 
-        switch (calculsComparatifs.size()) {
+    public void determineCCFavorable(List<CalculComparatif> calculComparatifs) throws CalculException {
+
+        switch (calculComparatifs.size()) {
             case 0:
                 throw new CalculException("No calcul comparatif found!");
             case 1:
-                calculsComparatifs.get(0).setPlanRetenu(true);
+                calculComparatifs.get(0).setPlanRetenu(true);
                 break;
             default:
                 // ajout des cc dans les containers, TypePC, Listecc, instanciation
@@ -818,7 +986,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
                 listeCC.put(IPCValeursPlanCalcul.STATUS_REFUS, new ArrayList<CalculComparatif>());
 
                 // iteration sur les cc et depot dans les containers adequats
-                for (CalculComparatif cc : calculsComparatifs) {
+                for (CalculComparatif cc : calculComparatifs) {
                     // Ajout du cc dans la bonne liste
                     listeCC.get(cc.getEtatPC()).add(cc);
                 }
@@ -840,7 +1008,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
     }
 
     private CalculComparatif finaliseCalculCC(List<PersonnePCAccordee> combinaisonPersonnesCommun,
-            TupleDonneeRapport root) {
+                                              TupleDonneeRapport root) {
         // les données sont finalisées
 
         CalculComparatif cc = new CalculComparatif();
@@ -854,10 +1022,10 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
     /**
      * Execute le calcul final de la PC Accordée, incluant de calculer pour toutes les combinaisons de personnes
-     * 
+     *
      * @param droit
      *            TODO
-     * 
+     *
      * @throws CalculException
      *             en cas d'erreur de calcul
      */
@@ -876,18 +1044,12 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             }
         }
 
-        // filtrage des enfants non considérables
-        for (Iterator<PersonnePCAccordee> iterator = enfants.iterator(); iterator.hasNext();) {
-            PersonnePCAccordee enfant = iterator.next();
-            if (enfant.isSansRente()) {
-                iterator.remove();
-            }
-        }
-
         // initialise contexte
         CalculContext context = CalculContext.getNewInstance();
 
         context.put(Attribut.TYPE_RENTE_REQUERANT, getTypeRenteRequerant());
+
+        context.put(Attribut.FAMILY_SIZE, personnes.size());
 
         // Si fratrie
         context.put(Attribut.IS_FRATRIE, droit.getDemande().getSimpleDemande().getIsFratrie());
@@ -899,6 +1061,27 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
         setTypeSeparationCC(parents.size());
         context.put(Attribut.TYPE_SEPARATION_CC, getTypeSeparationCC());
+
+        if (calculReforme) {
+            context.put(Attribut.REFORME, true);
+        }
+        context.put(CalculContext.Attribut.NB_PARENTS, parents.size());
+        context.put(CalculContext.Attribut.NB_ENFANTS, enfants.size());
+        int enfantSansRente = 0;
+
+        // filtrage des enfants non considérables
+        for (Iterator<PersonnePCAccordee> iterator = enfants.iterator(); iterator.hasNext(); ) {
+            PersonnePCAccordee enfant = iterator.next();
+            if (enfant.isSansRente()) {
+                iterator.remove();
+                enfantSansRente++;
+            } else if (UtilFortune.isRefusChildFortune(enfant.getRootDonneesConsolidees(), context)) {
+                iterator.remove();
+            }
+
+        }
+        // nb personne dans le calcul (on retire les enfants sans rente pas ceux qui ne seront pas pris dans le calcul lors du comparatif)
+        context.put(Attribut.NB_PERSONNES_CALCUL, personnes.size() - enfantSansRente);
 
         if (getTypeSeparationCC() == TypeSeparationCC.CALCUL_SEPARE_MALADIE) {
             // cas de couple séparé par la maladie
@@ -913,7 +1096,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
     /**
      * Recherche le type de rente du requérant.
      * Nécessaire car plan de calcul retenu non disponible
-     * 
+     *
      * @return le type de rente du requérant, un code système
      */
     private String getTypeRenteRequerant() {
@@ -935,7 +1118,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
     /**
      * Recherche si le conjoint à une rente principale afin de définir si on est dans le cas d'un couple à dom avec 2
      * rentes principales (requerant rentes principales obligatoire!)
-     * 
+     *
      * @return true si couple a dom2Rentes principales
      */
     private final Boolean findIsDom2RentesPrincipal() {
@@ -950,7 +1133,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
     /**
      * Execute les stratégies de fusion
-     * 
+     *
      * @param ccSeul
      *            resultat de calcul lorsque la personne est seule sans enfants
      * @param ccSepare
@@ -962,7 +1145,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
      *             en cas d'erreur de calcul
      */
     private CalculComparatif fusionneCC(CalculComparatif ccSeul, CalculComparatif ccSepare, CalculComparatif ccCommun,
-            CalculContext context) throws CalculException {
+                                        CalculContext context) throws CalculException {
 
         CalculComparatif ccResultat = new CalculComparatif();
 
@@ -981,7 +1164,9 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
         ccResultat.setMontants(root);
         return ccResultat;
-    };
+    }
+
+    ;
 
     @Override
     public ICalculComparatif[] getCalculComparatifRetenus() {
@@ -992,20 +1177,21 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
      * @return the calculsComparatifs
      */
     public List<CalculComparatif> getCalculsComparatifs() {
-        return calculsComparatifs;
+        return calculReforme ? calculsComparatifsReforme : calculsComparatifs;
     }
 
     public List<CalculComparatif> getCalculsComparatifsConjoint() {
-        return calculsComparatifsConjoint;
+        return calculReforme ? calculsComparatifsConjointReforme : calculsComparatifsConjoint;
     }
+
 
     public CalculComparatif[] getCCRetenu() {
         // TODO return aussi cc retenu du conjoint
         CalculComparatif[] result = new CalculComparatif[2];
 
-        for (CalculComparatif cc : calculsComparatifs) {
+        for (CalculComparatif cc : getCalculsComparatifs()) {
             if (cc.isPlanRetenu()) {
-                result[(calculsComparatifsConjoint.contains(cc) ? 1 : 0)] = cc;
+                result[(getCalculsComparatifsConjoint().contains(cc) ? 1 : 0)] = cc;
             }
         }
         return result;
@@ -1024,7 +1210,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
     /**
      * @return the variablesMetier
-     * 
+     *
      *         public Map<String, String> getVariablesMetier() { return this.variablesMetier; }
      */
     public Map<String, ControlleurVariablesMetier> getControlleurVariablesMetier() {
@@ -1098,7 +1284,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
     /**
      * Retourne le nombre de jours dans la période
-     * 
+     *
      * @return the nbJoursPeriode Le nombre de jours
      * @throws CalculException
      *             si les dates de début et de fin sont incorrect, ce qui ne devrait pas être possible à cette étape.
@@ -1133,7 +1319,9 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
         }
         return null;
 
-    };
+    }
+
+    ;
 
     /**
      * @return the personnes
@@ -1159,7 +1347,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
     public String getTypePc() throws CalculException {
         String typeRentePc = null;
 
-        for (CalculComparatif cc : calculsComparatifs) {
+        for (CalculComparatif cc : getCalculsComparatifs()) {
             // TODO gérer cas de couple séparé par maladie
             if (cc.isPlanRetenu()) {
                 try {
@@ -1212,25 +1400,87 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
     }
 
     private TupleDonneeRapport prepareCalculCC(List<PersonnePCAccordee> combinaisonPersonnesCommun,
-            CalculContext context) throws CalculException {
+                                               CalculContext context, PersonnePCAccordee personneEnCours) throws CalculException {
         calculeNombrePersonnes(combinaisonPersonnesCommun, context);
+        //Prepation des varibles pour savoir si le couple a des rentes ou ij/AI
+        prepareDonneeIJAI(combinaisonPersonnesCommun, context);
+
+
+        float[] primesAssuranceMaladie = calculePrimeAssuranceMaladie(combinaisonPersonnesCommun);
 
         // calcul des elements unitaires/atomiques
         TupleDonneeRapport root = consolideTuples(combinaisonPersonnesCommun);
 
-        float[] primesAssuranceMaladie = CalculePrimeAssuranceMaladie(combinaisonPersonnesCommun);
         // ajout primes maladies (requerant, total) dans le tuple
         root.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_TOTAL_PRIMEMAL_REQUERANT,
                 primesAssuranceMaladie[0]));
         root.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_TOTAL_PRIMEMAL_TOTAL,
                 primesAssuranceMaladie[1]));
 
-        return root;
+        if (isCalculReforme()) {
+            // check prime assurance maladie
+            controlePrimeAssuranceMaladie(combinaisonPersonnesCommun);
 
+            // calcul de la PC minimale
+            float pcMinale = calculPCMinale(combinaisonPersonnesCommun);
+            root.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.PC_MINIMALE, pcMinale));
+        }
+        if (personneEnCours != null) {
+            root.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.PERSONNE_EN_COURS, 0.0f, personneEnCours.getIdPersonne()));
+            root.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.PERSONNE_EN_COURS_ISHOME, personneEnCours.getIsHome() ? 1.0f : 0.0f));
+            root.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.PERSONNE_EN_COURS_ISREQUERANT, personneEnCours.isRequerant() ? 1.0f : 0.0f));
+        }
+
+        return root;
+    }
+
+    private void prepareDonneeIJAI(List<PersonnePCAccordee> combinaisonPersonnes, CalculContext context) {
+        for (PersonnePCAccordee personnePCAccordee : combinaisonPersonnes) {
+            if (IPCDroits.CS_ROLE_FAMILLE_REQUERANT.equals(personnePCAccordee.getCsRoleFamille())) {
+                if (personnePCAccordee.hasIJAI()) {
+                    context.put(Attribut.REQUERANT_HAS_IJAI, true);
+                }
+            }
+            if (IPCDroits.CS_ROLE_FAMILLE_CONJOINT.equals(personnePCAccordee.getCsRoleFamille())) {
+                if (personnePCAccordee.hasIJAI()) {
+                    context.put(Attribut.CONJOINT_HAS_IJAI, true);
+                }
+            }
+        }
+    }
+
+    /**
+     * Méthode permettant de contrôler que toutes les personnes dans le calcul possède une prime d'assurance maladie.
+     * @param combinaisonPersonnesCommun
+     * @return vrai si toutes les personnes ont une prime d'assurance maladie.
+     */
+    private void controlePrimeAssuranceMaladie(List<PersonnePCAccordee> combinaisonPersonnesCommun) throws CalculException {
+        for (PersonnePCAccordee eachPersonne : combinaisonPersonnesCommun) {
+            if (!eachPersonne.getRootDonneesConsolidees().containsValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_PRIME_ASSURANCE_MALADIE_TOTAL)) {
+                throw new CalculException("pegasus.primeassurancemaladie.reforme.mandatory", eachPersonne.getIdPersonne());
+            }
+        }
+    }
+
+    /**
+     * Méthode permettant de calculer la PC minimale en fonction des personnes dans la PC accordée.
+     *
+     * @return la valeur de la PC minimale
+     */
+    private float calculPCMinale(List<PersonnePCAccordee> combinaisonPersonnes) throws CalculException {
+        float pcMinimaleTotal = 0f;
+        double pcMinimale;
+
+        for (PersonnePCAccordee personnePCAccordee : combinaisonPersonnes) {
+            ForfaitPrimeMoyenneAssuranceMaladie forfait = getForfaitPrimeMoyenneAssuranceMaladie(personnePCAccordee);
+            pcMinimale = Math.max(forfait.getMontantPrimeMoy() * POURCENTAGE_PRIME_MOY_PC_MINIMAL, forfait.getMontantPrimeReductionMaxCanton());
+            pcMinimaleTotal += pcMinimale;
+        }
+        return pcMinimaleTotal;
     }
 
     public void setCalculComparatifByDefaut(CalculComparatif cc) {
-        calculsComparatifs.add(cc);
+        getCalculsComparatifs().add(cc);
     }
 
     public void setCalculRetro(boolean isCalculRetro) {
@@ -1261,9 +1511,20 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             }
         }
 
-        // si plusieurs cc retenus ont le même montant, choisir celui dont les enfants sont les plus jeunes
+        // si plusieurs cc retenus ont le même montant, privilégié ceux de la réforme
         if (ccEgaux.size() > 1) {
-            ccRetenu = chercheCCCadet(ccEgaux);
+            List<CalculComparatif> rechercheReforme = rechercheReforme(ccEgaux);
+            if (!rechercheReforme.isEmpty()) {
+                if (rechercheReforme.size() > 1) {
+                    // si plusieurs cc retenus ont le même montant, choisir celui dont les enfants sont les plus jeunes
+                    ccRetenu = chercheCCCadet(new HashSet(rechercheReforme));
+                } else {
+                    ccRetenu = rechercheReforme.get(0);
+                }
+            } else {
+                // si plusieurs cc retenus ont le même montant, choisir celui dont les enfants sont les plus jeunes
+                ccRetenu = chercheCCCadet(ccEgaux);
+            }
         }
 
         // Si ccRetenu défini
@@ -1374,7 +1635,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
     /**
      * Fonction récursive qui somme 2 tuples ensemble, ainsi que leurs enfants. Si deux enfants ont un identifiant
      * commun, ils sont sommés
-     * 
+     *
      * @param base
      *            le tuple auquel sera ajouté les valeurs de l'autre tuple
      * @param tupleAjoute
@@ -1396,11 +1657,11 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             sumTuple(tuple, enfant);
         }
     }
-       
+
     /**
      * Fonction récursive qui mix 2 tuples ensemble, ainsi que leurs enfants. Si deux enfants ont un identifiant
      * commun, seul le premier est gardé
-     * 
+     *
      * @param base
      *            le tuple auquel sera mixé les valeurs de l'autre tuple
      * @param tupleAjoute
@@ -1423,7 +1684,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -1434,6 +1695,22 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
         sb.append("varmet=").append(controlleurVariablesMetier).append(";");
         sb.append("}");
         return sb.toString();
+    }
+
+    public boolean isCalculReforme() {
+        return calculReforme;
+    }
+
+    public void setCalculReforme(boolean calculReforme) {
+        this.calculReforme = calculReforme;
+    }
+
+    public boolean isFratrie() {
+        return isFratrie;
+    }
+
+    public void setFratrie(boolean fratrie) {
+        isFratrie = fratrie;
     }
 
 }

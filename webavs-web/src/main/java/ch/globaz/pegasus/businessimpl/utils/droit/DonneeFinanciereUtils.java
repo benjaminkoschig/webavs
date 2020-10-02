@@ -14,6 +14,7 @@ public class DonneeFinanciereUtils {
         sf.setDateDebut(simpleDonneeFinanciereHeader.getDateDebut());
         sf.setDateFin(simpleDonneeFinanciereHeader.getDateFin());
         sf.setIsDessaisissementFortune(simpleDonneeFinanciereHeader.getIsDessaisissementFortune());
+        sf.setTypeDessaisissementFortune(simpleDonneeFinanciereHeader.getTypeDessaisissementFortune());
         sf.setIsDessaisissementRevenu(simpleDonneeFinanciereHeader.getIsDessaisissementRevenu());
         return sf;
     }

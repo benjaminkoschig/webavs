@@ -225,6 +225,14 @@ public class AnnonceDecision {
         return calculationElements.getMortgageDebts();
     }
 
+    public Montant getMortgageDebtsRealProperty() {
+        return calculationElements.getMortgageDebtsRealProperty();
+    }
+
+    public Montant geMortgageDebtsSelfInhabited() {
+        return calculationElements.getMortgageDebtsSelfinhabited();
+    }
+
     public Montant getPropertyIncome() {
         return calculationElements.getPropertyIncome();
     }

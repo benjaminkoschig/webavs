@@ -13,5 +13,7 @@ public final class ConstantesCalcul {
     public static final String CONTAINER_DONNEES_VARIABLES_METIER = "variablesMetier";
     public static final String CONTAINER_STRATEGIES = "csTypesDonneesFinancieres"; // TODO inutilisé
     public static final String CONTAINTER_PRIME_MOYENNE_ASSURANCE_MALADIE = "primeMoyenneAssuranceMaladie";
+    public static final String CONTAINTER_LOYER_MAX_REFORME = "loyerMaxReforme";
+    public static final String CONTAINTER_DONNEES_PERSONNELLES = "donneesPersonnelles";
 
 }

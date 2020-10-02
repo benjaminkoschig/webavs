@@ -1,24 +1,8 @@
 /**
- * 
+ *
  */
 package ch.globaz.pegasus.businessimpl.services.models.calcul;
 
-import globaz.globall.db.BSessionUtil;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.persistence.model.JadeAbstractModel;
-import globaz.jade.persistence.model.JadeAbstractSearchModel;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.pegasus.business.constantes.ConstantesCalcul;
 import ch.globaz.pegasus.business.constantes.EPCProperties;
@@ -33,14 +17,7 @@ import ch.globaz.pegasus.business.exceptions.models.habitat.TaxeJournaliereHomeE
 import ch.globaz.pegasus.business.exceptions.models.home.HomeException;
 import ch.globaz.pegasus.business.exceptions.models.home.PeriodeServiceEtatException;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
-import ch.globaz.pegasus.business.models.calcul.CalculDonneesCC;
-import ch.globaz.pegasus.business.models.calcul.CalculDonneesCCSearch;
-import ch.globaz.pegasus.business.models.calcul.CalculDonneesDroitSearch;
-import ch.globaz.pegasus.business.models.calcul.CalculDonneesHome;
-import ch.globaz.pegasus.business.models.calcul.CalculDonneesHomeSearch;
-import ch.globaz.pegasus.business.models.calcul.CalculMembreFamille;
-import ch.globaz.pegasus.business.models.calcul.CalculMembreFamilleSearch;
-import ch.globaz.pegasus.business.models.calcul.CalculPcaReplaceSearch;
+import ch.globaz.pegasus.business.models.calcul.*;
 import ch.globaz.pegasus.business.models.droit.Droit;
 import ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader;
 import ch.globaz.pegasus.business.models.habitat.SimpleTaxeJournaliereHome;
@@ -62,15 +39,21 @@ import ch.globaz.pegasus.businessimpl.utils.PCproperties;
 import ch.globaz.pegasus.businessimpl.utils.PegasusDateUtil;
 import ch.globaz.pegasus.businessimpl.utils.calcul.PeriodePCAccordee;
 import ch.globaz.pegasus.businessimpl.utils.calcul.PersonnePCAccordee;
-import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.ControlleurMonnaieEtrangere;
-import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.ControlleurVariablesMetier;
-import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.DonneesHorsDroitsProvider;
-import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.PersonneTypeChambre;
-import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.VariableMetier;
+import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.*;
+import globaz.globall.db.BSessionUtil;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * Classe de calcul des PC Accordées.
- * 
+ *
  * @author ECO
  * @author SCE
  */
@@ -79,11 +62,9 @@ public class CalculComparatifServiceImpl extends PegasusAbstractServiceImpl impl
     /**
      * Mise à jour des jours d'appoint. Dans le cas ou la propriété boolééen est activée, un calcul de sjours d'appoint
      * doit être effectué
-     * 
+     *
      * @param newPca
      *            la nouvelle pcAccordée
-     * @param oldMontant
-     *            l'ancien montant
      * @return la nouvelle pc avec les jours d'appoints calculé
      * @throws PCAccordeeException
      * @throws JadeApplicationServiceNotAvailableException
@@ -131,18 +112,30 @@ public class CalculComparatifServiceImpl extends PegasusAbstractServiceImpl impl
      * Calcul des pcAccordées
      */
     @Override
-    public void calculePCAccordes(Droit droit, List<PeriodePCAccordee> listePCAccordes) throws CalculException {
+    public void calculePCAccordes(Droit droit, List<PeriodePCAccordee> listePCAccordes, boolean determineCCFavorable) throws CalculException {
 
+        String dateReforme = null;
+        try {
+            dateReforme = EPCProperties.DATE_REFORME_PC.getValue();
+        } catch (PropertiesException e) {
+            throw new CalculException("Unbale to obtain properties for reforme pc", e);
+        }
         for (PeriodePCAccordee periodePCAccordee : listePCAccordes) {
-            periodePCAccordee.finaliseCC(droit);
-            periodePCAccordee.determineCCFavorable();
+            if (!periodePCAccordee.isCalculReforme() || !JadeDateUtil.isDateBefore(JadeDateUtil.getGlobazFormattedDate(periodePCAccordee.getDateDebut()), dateReforme)) {
+                periodePCAccordee.finaliseCC(droit);
+
+                if (determineCCFavorable) {
+                    // determine maintenant le calcul le plus favorable, sinon pour comparaison ancien/nouveau(reforme) sera fait plus tard
+                    periodePCAccordee.determineCCFavorable();
+                }
+            }
         }
 
     }
 
     @Override
     public void calculJoursAppoint(List<PeriodePCAccordee> listePCAccordes,
-            CalculPcaReplaceSearch calculPcaReplaceSearch) throws CalculException {
+                                   CalculPcaReplaceSearch calculPcaReplaceSearch) throws CalculException {
         PrepareDonneForJourAppoint donneForJourAppoint = new PrepareDonneForJourAppoint();
 
         donneForJourAppoint.addJourAppointInPeriodeIfNeeded(listePCAccordes, calculPcaReplaceSearch);
@@ -150,13 +143,13 @@ public class CalculComparatifServiceImpl extends PegasusAbstractServiceImpl impl
 
     /**
      * Consolidations des variables métiers. Via le provider
-     * 
+     *
      * @param listePCAccordes
      * @param cacheDonneesBD
-     * @param varMetProvider
+     * @param containerGlobal
      */
     private void consolidationVariablesMetier(List<PeriodePCAccordee> listePCAccordes,
-            Map<String, JadeAbstractSearchModel> cacheDonneesBD, DonneesHorsDroitsProvider containerGlobal) {
+                                              Map<String, JadeAbstractSearchModel> cacheDonneesBD, DonneesHorsDroitsProvider containerGlobal) {
 
         // VariableMetierProvider varMetProvider = containerGlobal.;
         // date du premier taux OFAS, si pas de valeurs
@@ -181,8 +174,12 @@ public class CalculComparatifServiceImpl extends PegasusAbstractServiceImpl impl
 
     @Override
     public void consolideCacheDonneesPersonnes(List<PeriodePCAccordee> listePCAccordes,
-            Map<String, JadeAbstractSearchModel> cacheDonneesBD, Map<String, CalculMembreFamille> listePersonnes,
-            String dateFinPlage, DonneesHorsDroitsProvider containerGlobal) throws CalculException {
+                                               Map<String, JadeAbstractSearchModel> cacheDonneesBD, Map<String, CalculMembreFamille> listePersonnes,
+                                               String dateFinPlage, DonneesHorsDroitsProvider containerGlobal, boolean isReforme, boolean isFratrie) throws CalculException {
+        for (PeriodePCAccordee periodePCAccordee : listePCAccordes) {
+            periodePCAccordee.setCalculReforme(isReforme);
+            periodePCAccordee.setFratrie(isFratrie);
+        }
 
         consolideDonneesFinancieres(listePCAccordes, cacheDonneesBD, listePersonnes, dateFinPlage);
 
@@ -217,13 +214,16 @@ public class CalculComparatifServiceImpl extends PegasusAbstractServiceImpl impl
     }
 
     private void consolideDonneesFinancieres(List<PeriodePCAccordee> listePCAccordes,
-            Map<String, JadeAbstractSearchModel> cacheDonneesBD, Map<String, CalculMembreFamille> listePersonnes,
-            String dateFinPlage) {
+                                             Map<String, JadeAbstractSearchModel> cacheDonneesBD, Map<String, CalculMembreFamille> listePersonnes,
+                                             String dateFinPlage) {
         CalculDonneesCCSearch searchModel = (CalculDonneesCCSearch) cacheDonneesBD
                 .get(ConstantesCalcul.CONTAINER_DONNEES_DROIT_CC);
 
         // Map de relation periode --> ListType de chambre pour une période
         Map<PeriodePCAccordee, List<PersonneTypeChambre>> mapIdTypeChambre = new HashMap<PeriodePCAccordee, List<PersonneTypeChambre>>();
+
+        Integer sizeFamille = cacheDonneesBD
+                .get(ConstantesCalcul.CONTAINER_DONNEES_PERSONNE).getSize();
 
         // parcourt liste de données de persistance
         for (globaz.jade.persistence.model.JadeAbstractModel absDonnee : searchModel.getSearchResults()) {
@@ -279,9 +279,10 @@ public class CalculComparatifServiceImpl extends PegasusAbstractServiceImpl impl
                             mapIdTypeChambre.put(periodePCAccordee, personnesTypeChambre);
                         }
                     }
-
                 }
             }
+            donnee.setNbTotalFamille(sizeFamille.toString());
+
         }
 
         // Ajout du conjoint dans la liste des personnes le cas échéant --> si pas de données financières
@@ -334,7 +335,7 @@ public class CalculComparatifServiceImpl extends PegasusAbstractServiceImpl impl
                                 String periodeDateFin = periodePCAccordee.getStrDateFin();
                                 if (isIntersecting(dateDebutHome, dateFinHome, periodeDateDebut, periodeDateFin)
                                         && isIntersecting(dateDebutChambre, dateFinChambre, periodeDateDebut,
-                                                periodeDateFin)) {
+                                        periodeDateFin)) {
                                     periodePCAccordee.getDonneesHomes().add(donnee);
 
                                     for (JadeAbstractModel membre : mbrFamSearch.getSearchResults()) {
@@ -358,7 +359,7 @@ public class CalculComparatifServiceImpl extends PegasusAbstractServiceImpl impl
     }
 
     private void consolideMonnaiesEtrangeres(List<PeriodePCAccordee> listePCAccordes,
-            Map<String, JadeAbstractSearchModel> cacheDonneesBD, DonneesHorsDroitsProvider containerGlobalCalcul)
+                                             Map<String, JadeAbstractSearchModel> cacheDonneesBD, DonneesHorsDroitsProvider containerGlobalCalcul)
             throws CalculException {
 
         for (PeriodePCAccordee periodePCA : listePCAccordes) {
@@ -376,9 +377,9 @@ public class CalculComparatifServiceImpl extends PegasusAbstractServiceImpl impl
     /**
      * Test la cohérence entre la liste des types de chambres et le modèle de recheche des homes. rendu nécessaire par
      * le fait qu'un home peut avoir été saisi sans prix pour la période.
-     * 
+     *
      * @param homeSearch
-     * @param listIdTypeChambre
+     * @param listTypeChambre
      * @return
      * @throws JadePersistenceException
      * @throws JadeApplicationServiceNotAvailableException
@@ -386,7 +387,7 @@ public class CalculComparatifServiceImpl extends PegasusAbstractServiceImpl impl
      * @throws TaxeJournaliereHomeException
      */
     private ArrayList<String> dealHomeCoherenceError(CalculDonneesHomeSearch homeSearch,
-            List<CalculDonneesCC> listTypeChambre) throws TaxeJournaliereHomeException, HomeException,
+                                                     List<CalculDonneesCC> listTypeChambre) throws TaxeJournaliereHomeException, HomeException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException {
         ArrayList<String> errorList = new ArrayList<String>();
         // Si recherche vide, on traite les erreurs
@@ -486,7 +487,7 @@ public class CalculComparatifServiceImpl extends PegasusAbstractServiceImpl impl
 
     /**
      * Check if two ranges of date are intersecting.
-     * 
+     *
      * @param date1Start
      *            Start date of the first range (doesn't need to be the oldest range). Throws a NullPointerException if
      *            null or invalid.
@@ -526,7 +527,7 @@ public class CalculComparatifServiceImpl extends PegasusAbstractServiceImpl impl
 
     @Override
     public void loadDonneesCalculComparatif(Droit droit, Map<String, JadeAbstractSearchModel> cacheDonnees,
-            List<PeriodePCAccordee> periodes, Map<String, CalculMembreFamille> listePersonnes, String debutPlage)
+                                            List<PeriodePCAccordee> periodes, Map<String, CalculMembreFamille> listePersonnes, String debutPlage, String dateFinPlage)
             throws CalculException, JadePersistenceException, TaxeJournaliereHomeException, HomeException {
         // Liste des membres de famille
         Set<String> listeFamille = new HashSet<String>();
@@ -561,6 +562,7 @@ public class CalculComparatifServiceImpl extends PegasusAbstractServiceImpl impl
             // récupère données homes
             List<String> listIdTypeChambre = new ArrayList<String>();
             List<CalculDonneesCC> listTypeChambre = new ArrayList<CalculDonneesCC>();
+            List<String> listIdLocalite = new ArrayList<>();
 
             for (JadeAbstractModel absDonnee : searchDonneesCalculModel.getSearchResults()) {
                 CalculDonneesCC donnee = (CalculDonneesCC) absDonnee;
@@ -594,6 +596,14 @@ public class CalculComparatifServiceImpl extends PegasusAbstractServiceImpl impl
 
             // Si rtype de chambre dans la liste et pas de dop
             // 1 si taille serach model != homeSearch --> exception
+
+            for (JadeAbstractModel absDonnee : searchDonneesCalculModel.getSearchResults()) {
+                CalculDonneesCC donnee = (CalculDonneesCC) absDonnee;
+                if (IPCTaxeJournaliere.CS_TYPE_DONNEE_FINANCIERE.equals(donnee.getCsTypeDonneeFinanciere())) {
+
+                    listTypeChambre.add(donnee);
+                }
+            }
 
         } catch (JadeApplicationServiceNotAvailableException e) {
             throw new CalculException("Service not available - " + e.getMessage());

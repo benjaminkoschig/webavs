@@ -55,6 +55,7 @@
 	<%} else {%>
 		<ct:menuActivateNode active="yes" nodeId="DETAIL_DECISION"/>
 		<ct:menuSetAllParams key="idDecision" value="<%= idDecision %>"/>
+		<ct:menuSetAllParams key="idVersionDroit" value="<%=viewBean.getCurrentVersionedDroit().getIdVersionDroit()%>"/>
 	<%}%> 
 </ct:menuChange>
 
@@ -230,7 +231,7 @@
 			
 		<tr>
 			<td class='libelle strong'><ct:FWLabel key="JSP_PC_CREANCIE_ACCORDEE_D_MONTANT_TOTAL_DETTE" /></td> 
-			<td  class='strong tailleMontant'  data-g-amountformatter=" ">-<%=viewBean.getMontantDette() %></t
+			<td  class='strong tailleMontant'  data-g-amountformatter=" ">-<%=viewBean.getMontantDette() %></td>
 		</tr>
 			
 			<!--  soustraction à disposition -->
@@ -274,6 +275,7 @@
  	</td>
  </tr>
  <INPUT type="hidden" name="idDecision" value="<%=idDecision%>">
+ <input type="hidden" name="idVersionDroit" value="<%=viewBean.getCurrentVersionedDroit().getIdVersionDroit()%>"/>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
 <%-- tpl:insert attribute="zoneButtons" --%>
 <%-- /tpl:insert --%>

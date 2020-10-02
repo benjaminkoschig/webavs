@@ -57,6 +57,12 @@ globaz.globall.db.BSession objSession = (globaz.globall.db.BSession)controller.g
 							%>&#160;<%
 						}%>
 					</td>
+					<td><% if(donnee.getSimpleTaxeJournaliereHome().getIsVersementDirect().booleanValue()){%>
+						<img src="<%=request.getContextPath()+"/images/ok.gif" %>"/>
+						<%} else {
+						%>&#160;<%
+							}%>
+					</td>
 					<td><%=donnee.getSimpleTaxeJournaliereHome().getDateEcheance() %></td>
 					<td><%=donnee.getSimpleDonneeFinanciereHeader().getDateDebut() %> - <%=donnee.getSimpleDonneeFinanciereHeader().getDateFin() %></td>
 				</tr>

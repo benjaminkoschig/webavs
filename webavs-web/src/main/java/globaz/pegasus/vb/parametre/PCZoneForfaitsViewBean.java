@@ -1,5 +1,6 @@
 package globaz.pegasus.vb.parametre;
 
+import ch.globaz.pegasus.business.constantes.EPCForfaitType;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
@@ -11,11 +12,13 @@ import ch.globaz.pegasus.business.services.PegasusServiceLocator;
  * @date 12 nov. 2010
  */
 public class PCZoneForfaitsViewBean extends BJadePersistentObjectViewBean {
+    final EPCForfaitType type = EPCForfaitType.LAMAL;
     SimpleZoneForfaits simpleZoneForfaits = null;
 
     public PCZoneForfaitsViewBean() {
         super();
         simpleZoneForfaits = new SimpleZoneForfaits();
+        simpleZoneForfaits.setType(type.getCode().toString());
     }
 
     public PCZoneForfaitsViewBean(SimpleZoneForfaits simpleZoneForfaits) {
@@ -25,6 +28,7 @@ public class PCZoneForfaitsViewBean extends BJadePersistentObjectViewBean {
 
     @Override
     public void add() throws Exception {
+        simpleZoneForfaits.setType(type.getCode().toString());
         PegasusServiceLocator.getParametreServicesLocator().getSimpleZoneForfaitsService().create(simpleZoneForfaits);
     }
 
@@ -87,5 +91,4 @@ public class PCZoneForfaitsViewBean extends BJadePersistentObjectViewBean {
         PegasusServiceLocator.getParametreServicesLocator().getSimpleZoneForfaitsService().update(simpleZoneForfaits);
 
     }
-
 }

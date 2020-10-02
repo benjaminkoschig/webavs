@@ -189,6 +189,36 @@ public final class ConditionPartageFactory {
                 return dates;
             }
         });
+        // condition d'enfant atteinte 11 ans (Frais de garde)
+        listeConditions.add(new IConditionPartagePeriode() {
+
+            @Override
+            public Collection<String> calculateDates(String dateDebut,
+                                                     Map<String, JadeAbstractSearchModel> cacheDonnees, DonneesHorsDroitsProvider containerGlobal) {
+
+                final String maintenant = JadeDateUtil.getGlobazFormattedDate(new Date());
+                final int dureePlage = JadeDateUtil.getNbYearsBetween(dateDebut, maintenant);
+
+                Set<String> dates = new HashSet<String>();
+                CalculDonneesDroitSearch searchModel = (CalculDonneesDroitSearch) cacheDonnees
+                        .get(ConstantesCalcul.CONTAINER_DONNEES_DROIT);
+                for (JadeAbstractModel abstractDonnee : searchModel.getSearchResults()) {
+                    CalculDonneesDroit donnee = (CalculDonneesDroit) abstractDonnee;
+                    final String dateNaissance = donnee.getDateNaissance();
+                    final int age = JadeDateUtil.getNbYearsBetween(dateNaissance, maintenant)
+                            - IPCCalcul.AGE_FRAIS_DE_GARDE_ENFANTS_11_ANS;
+
+                    if ((dateNaissance != null)
+                            && (JadeDateUtil.isDateAfter(dateNaissance, dateDebut) || ((age >= 0) && (age <= dureePlage)))) {
+
+                        dates.add(ConditionPartageFactory.ceilDate(dateNaissance.substring(0,6)+maintenant.substring(6)));
+                    }
+
+                }
+                return dates;
+            }
+        });
+
 
         // condition de enfant arrivant à échéance (fin d'études)
 

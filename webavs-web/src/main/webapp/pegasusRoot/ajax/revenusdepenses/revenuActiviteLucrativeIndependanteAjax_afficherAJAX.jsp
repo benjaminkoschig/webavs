@@ -13,7 +13,7 @@ PCRevenuActiviteLucrativeIndependanteAjaxViewBean viewBean = (PCRevenuActiviteLu
 SimpleRevenuActiviteLucrativeIndependante entity=viewBean.getRevenuActiviteLucrativeIndependante().getSimpleRevenuActiviteLucrativeIndependante();
 
 FWCurrency montantRevenu = new FWCurrency(entity.getMontantRevenu());
-	
+FWCurrency fraisDeGarde = new FWCurrency(entity.getFraisDeGarde());
 %>
 
 <message>
@@ -21,6 +21,7 @@ FWCurrency montantRevenu = new FWCurrency(entity.getMontantRevenu());
 		<csDeterminationRevenu><%=JadeStringUtil.isBlankOrZero(entity.getCsDeterminationRevenu())?"":entity.getCsDeterminationRevenu()%></csDeterminationRevenu>	
 		<csGenreRevenu><%=JadeStringUtil.isBlankOrZero(entity.getCsGenreRevenu())?"":entity.getCsGenreRevenu()%></csGenreRevenu>
 		<montant><%=montantRevenu.toStringFormat()%></montant>
+		<fraisDeGarde><%=fraisDeGarde.toStringFormat()%></fraisDeGarde>
 		<idTiersAffilie><%=entity.getIdTiersAffilie()%></idTiersAffilie>
 		<nomAffilie><%=viewBean.getNomAffilie() %></nomAffilie>		
 		<noAffilie><%=viewBean.getNoAffilie()%></noAffilie>

@@ -39,6 +39,10 @@ public enum DonneeFinanciereType implements CodeSystemEnum<DonneeFinanciereType>
     BIEN_IMMOBILIER_SERVANT_HABITATION_PRINCIPALE("64007032"),
     BIEN_IMMOBILIER_NON_HABITABLE("64007033"),
     BIEN_IMMOBILIER_HABITATION_NON_PRINCIPALE("64007034"),
+    FRAIS_GARDE("64007035"),
+    PRIME_ASSURANCE_MALADIE("64007036"),
+    SUBSIDE_ASSURANCE_MALADIE("64007037"),
+    SEJOUR_MOIS_PARTIEL_HOME("64007038"),
     UNDIFINED("0");
 
     private String value;
@@ -185,6 +189,22 @@ public enum DonneeFinanciereType implements CodeSystemEnum<DonneeFinanciereType>
 
     public boolean isBienImmobilierNonPrincipale() {
         return equals(BIEN_IMMOBILIER_HABITATION_NON_PRINCIPALE);
+    }
+
+    public boolean isPrimeAssuranceMaladie() {
+        return equals(PRIME_ASSURANCE_MALADIE);
+    }
+
+    public boolean isSubsideAssuranceMaladie() {
+        return equals(SUBSIDE_ASSURANCE_MALADIE);
+    }
+
+    public boolean isFraisDeGarde() {
+        return equals(FRAIS_GARDE);
+    }
+
+    public boolean isSejourMoisPartiel()  {
+        return equals(SEJOUR_MOIS_PARTIEL_HOME);
     }
 
     @Override

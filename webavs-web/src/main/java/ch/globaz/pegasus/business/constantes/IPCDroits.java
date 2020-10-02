@@ -55,6 +55,7 @@ public interface IPCDroits {
     public static final String CS_ETAT_DROIT = "PCETATDRO";
     // FRAIS OBTENTION REVENU
     public static final String CS_FRAIS_OBTENTION = "PCFROBRE";
+    public static final String CS_FRAIS_GARDE = "64007035";
     // REVENU ACTIVITE LUCRATIVE DEPENDANTE
     public static final String CS_GENRE_REVENU = "PCGRALD";
     public static final String CS_GENRE_REVENU_ACT_LUCR_DEP_ESPECE = "64036001";
@@ -85,6 +86,7 @@ public interface IPCDroits {
     public static final String CS_MOTIF_DROIT_DEPART_ETRANGER = "64063016";
     public static final String CS_MOTIF_DROIT_DECES = "64063013";
     public static final String CS_MOTIF_DROIT_MODIFICATION_RETOUR_REGISTRE = "64063017";
+    public static final String CS_MOTIF_DROIT_SEUIL_FORTUNE_DEPASSE = "64063018";
     public static final String CS_NUMERAIRES = "64007017";
 
     public static final String CS_PENSIONS_ALIMENTAIRES = "64007028";
@@ -119,6 +121,10 @@ public interface IPCDroits {
     public static final String CS_VEHICULE = "64007019";
 
     public static final String CS_ANNULE = "64003007";
+
+    // ASSURANCE MALADIE
+    public static final String CS_PRIME_ASSURANCE_MALADIE = "64007036";
+    public static final String CS_SUBSIDE_ASSURANCE_MALADIE = "64007037";
 
     // ONGLETS DE MENU DESSAISISSEMENT
     public static final String[][] ONGLETS_DESSAISISSEMENTS = {
@@ -163,7 +169,16 @@ public interface IPCDroits {
     public static final String[][] ONGLETS_HABITAT = {
             { "MENU_ONGLET_DROITS_LOYER", "MENU_ONGLET_DROITS_LOYER_ABREV", IPCActions.ACTION_DROIT_LOYER },
             { "MENU_ONGLET_DROITS_TAXE_JOURNALIERE", "MENU_ONGLET_DROITS_TAXE_JOURNALIERE_ABREV",
-                    IPCActions.ACTION_DROIT_TAXE_JOURNALIERE_HOME } };
+                    IPCActions.ACTION_DROIT_TAXE_JOURNALIERE_HOME },
+            { "MENU_ONGLET_DROITS_SEJOUR_MOIS_PARTIEL", "MENU_ONGLET_DROITS_SEJOUR_MOIS_PARTIEL_ABREV",
+                    IPCActions.ACTION_DROIT_SEJOUR_MOIS_PARTIEL_HOME },};
+
+    // ONGLETS DU MENU PRIME ASSURANCE MALADIE
+    public static final String[][] ONGLETS_ASSURANCE_MALADIE = {
+            { "MENU_ONGLET_PRIME_ASSURANCE_MALADIE_EFFECTIVE", "MENU_ONGLET_PRIME_ASSURANCE_MALADIE_EFFECTIVE_ABREV",
+                    IPCActions.ACTION_DROIT_ASSURANCE_MALADIE },
+            { "MENU_ONGLET_SUBSIDE_RETRO_ACCORDE", "MENU_ONGLET_SUBSIDE_RETRO_ACCORDE_ABREV", IPCActions.ACTION_DROIT_SUBSIDE_RETRO_ACCORDE }};
+
     // ONGLETS DU MENU RENTES-IJ-API
     public static final String[][] ONGLETS_RENTES_IJAPI = {
             { "MENU_ONGLET_DROITS_RENTE_AVS_API", "MENU_ONGLET_DROITS_RENTE_AVS_API_ABREV",
@@ -195,6 +210,8 @@ public interface IPCDroits {
                     IPCActions.ACTION_DROIT_AUTRES_REVENUS },
             { "MENU_ONGLET_DROITS_COTISATIONS_PSAL", "MENU_ONGLET_DROITS_COTISATIONS_PSAL_ABREV",
                     IPCActions.ACTION_DROIT_COTISATIONS_PSAL },
+            { "MENU_ONGLET_DROITS_FRAIS_GARDE", "MENU_ONGLET_DROITS_FRAIS_GARDE_ABREV",
+                    IPCActions.ACTION_DROIT_FRAIS_GARDE },
             { "MENU_ONGLET_DROITS_PENSION_ALIMENTAIRE", "MENU_ONGLET_DROITS_PENSION_ALIMENTAIRE_ABREV",
                     IPCActions.ACTION_DROIT_PENSION_ALIMENTAIRE } };
 

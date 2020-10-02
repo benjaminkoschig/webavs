@@ -26,10 +26,11 @@ public class Sedex2469_301 extends AbstractSedex<Message> implements SedexMessag
     private final String recipientId;
     private final SendingApplicationType applicationType;
     private final ObjectFactory factory = new ObjectFactory();
+    private static final String RPC_XSD_301_FILENAME = "eahv-iv-2469-000301-2-1.xsd";
 
     public Sedex2469_301(SedexSender sedexSender, InfoCaisse infoCaisse, SendingApplicationType applicationType,
             String directoryName) {
-        super(sedexSender, directoryName, infoCaisse, Message.class, "eahv-iv-2469-000301-1-5.xsd");
+        super(sedexSender, directoryName, infoCaisse, Message.class, RPC_XSD_301_FILENAME);
         recipientId = sedexSender.getRecipientId();
         this.applicationType = applicationType;
         validationHeader = createHeader(MESSAGE_TYPE, SUB_MESSAGE_TYPE, "Nom, Prénom");

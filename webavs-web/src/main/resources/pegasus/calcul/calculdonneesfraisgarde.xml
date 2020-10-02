@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+    <complexe-model className="ch.globaz.pegasus.business.models.calcul.CalculDonneesFraisGarde">
+        <root-model name="simpleDroitMembreFamille" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroitMembreFamille" select-fields="false" />
+        <select-fields>
+            <select-field name="csRoleFamille" field-ref="simpleDroitMembreFamille.csRoleFamillePC"/>
+            <select-field name="csTypeDonneeFinanciere" field-ref="simpleDonneeFinanciereHeader.csTypeDonneeFinanciere"/>
+            <select-field name="dateDebutDonneeFinanciere" field-ref="simpleDonneeFinanciereHeader.dateDebut" />
+            <select-field name="dateFinDonneeFinanciere" field-ref="simpleDonneeFinanciereHeader.dateFin" />
+            <select-field name="idDonneeFinanciereHeader" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+            <select-field name="idDroitMembreFamille" field-ref="simpleDroitMembreFamille.idDroitMembreFamille"/>
+            <select-field name="idMembreFamilleSF" field-ref="simpleDroitMembreFamille.idMembreFamilleSF"/>
+            <select-field name="revenuActiviteLucrativeDependanteMontantFraisDeGarde" field-ref="simpleRevenuActiviteLucrativeDependante.fraisDeGarde"/>
+            <select-field name="revenuActiviteLucrativeIndependanteMontantFraisDeGarde" field-ref="simpleRevenuActiviteLucrativeIndependante.fraisDeGarde"/>
+            <select-field name="revenuHypothetiqueMontantFraisGarde" field-ref="simpleRevenuHypothetique.fraisDeGarde"/>
+            <select-field name="depenseMontantFraisDeGarde" field-ref="simpleFraisGarde.montant"/>
+        </select-fields>
+        <linked-model name="simpleDonneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader" join-type="INNER" select-fields="false">
+            <join-group operator="AND">
+                <join-field name="idDroitMembreFamille" operation="EQUALS" field-ref="simpleDroitMembreFamille.idDroitMembreFamille"/>
+            </join-group>
+        </linked-model>
+        <linked-model name="simpleRevenuActiviteLucrativeDependante" model-ref="ch.globaz.pegasus.business.models.revenusdepenses.SimpleRevenuActiviteLucrativeDependante" join-type="LEFT_OUTER" select-fields="false">
+            <join-group operator="AND">
+                <join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+            </join-group>
+        </linked-model>
+        <linked-model name="simpleRevenuActiviteLucrativeIndependante" model-ref="ch.globaz.pegasus.business.models.revenusdepenses.SimpleRevenuActiviteLucrativeIndependante" join-type="LEFT_OUTER" select-fields="false">
+            <join-group operator="AND">
+                <join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+            </join-group>
+        </linked-model>
+        <linked-model name="simpleRevenuHypothetique" model-ref="ch.globaz.pegasus.business.models.revenusdepenses.SimpleRevenuHypothetique" join-type="LEFT_OUTER" select-fields="false">
+            <join-group operator="AND">
+                <join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+            </join-group>
+        </linked-model>
+        <linked-model name="simpleFraisGarde" model-ref="ch.globaz.pegasus.business.models.revenusdepenses.SimpleFraisGarde" join-type="LEFT_OUTER" select-fields="false">
+            <join-group operator="AND">
+                <join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+            </join-group>
+        </linked-model>
+        <search-definition>
+            <search-group operator="AND">
+                <search-field name="forIdDroitMembreFamille" operation="IN" field-ref="simpleDroitMembreFamille.idDroitMembreFamille" />
+                <search-field name="forIsSupprime" field-ref="simpleDonneeFinanciereHeader.isSupprime" operation="EQUALS" value="2"/>
+                <search-field name="forIdDroit" operation="EQUALS" field-ref="simpleDroitMembreFamille.idDroit" />
+                <search-field name="inCsTypeDonneeFinanciere" operation="IN" field-ref="simpleDonneeFinanciereHeader.csTypeDonneeFinanciere" value="64007022, 64007023, 64007031, 64007035"/>
+                <search-group operator="AND">
+                    <!--  avec date de fin plus petite ou égale OU nulle -->
+                    <search-group operator="OR">
+                        <search-field name="forDateFin" operation="GREATER_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+                        <search-field name="forDateFin" operation="NULL" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+                    </search-group>
+                </search-group>
+            </search-group>
+        </search-definition>
+        <search-definition name="checkFraisGardeExists">
+            <search-group operator="AND">
+                <search-field name="forIdDroitMembreFamille" operation="IN" field-ref="simpleDroitMembreFamille.idDroitMembreFamille" />
+                <search-field name="forIsSupprime" field-ref="simpleDonneeFinanciereHeader.isSupprime" operation="EQUALS" value="2"/>
+                <search-field name="forIdDroit" operation="EQUALS" field-ref="simpleDroitMembreFamille.idDroit" />
+                <search-field name ="forNotCsTypeDonneeFinanciere" operation="NOT_EQUALS" field-ref="simpleDonneeFinanciereHeader.csTypeDonneeFinanciere" />
+                <search-literal><![CDATA[(
+					    #{simpleRevenuActiviteLucrativeDependante.fraisDeGarde} > 0 or
+						#{simpleRevenuActiviteLucrativeIndependante.fraisDeGarde} > 0 or
+						#{simpleRevenuHypothetique.fraisDeGarde} > 0 or
+						#{simpleFraisGarde.montant} > 0)
+					 ]]>
+                </search-literal>
+            </search-group>
+        </search-definition>
+
+    </complexe-model>
+</model-mapping>

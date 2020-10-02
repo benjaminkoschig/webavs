@@ -59,7 +59,9 @@ public enum EPCProperties implements IProperties {
     RPC_GROUPE_RESPONSABLE("rpc.groupresponsable"),
     RPC_LIMIT_DAY_GENERATION("rpc.limit.day.generation"),
     AFFICHAGE_FORCER_ANNULER("application.ForcerAnnuler.afficher"),
-    RPC_SIMULATION("rpc.simulation");
+    RPC_SIMULATION("rpc.simulation"),
+    REFORME_PC("activer.reforme.pc"),
+    DATE_REFORME_PC("date.reforme.pc");
 
     private String property;
 

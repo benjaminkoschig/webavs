@@ -14,6 +14,7 @@ public class Habitat extends JadeComplexModel {
     private SimpleDonneeFinanciereHeader simpleDonneeFinanciereHeader = null;
     private SimpleLoyer simpleLoyer = null;
     private TaxeJournaliereHome taxeJournaliereHome = null;
+    private SejourMoisPartielHome sejourMoisPartielHome = null;
 
     public Habitat() {
         super();
@@ -21,12 +22,14 @@ public class Habitat extends JadeComplexModel {
         simpleLoyer = new SimpleLoyer();
         taxeJournaliereHome = new TaxeJournaliereHome();
         simpleDonneeFinanciereHeader = new SimpleDonneeFinanciereHeader();
+        sejourMoisPartielHome = new SejourMoisPartielHome();
     }
 
     public JadeAbstractModel getDonneeFinanciere() {
         JadeAbstractModel result = null;
         result = (simpleLoyer.isNew() ? result : simpleLoyer);
         result = (taxeJournaliereHome.isNew() ? result : taxeJournaliereHome);
+        result = (sejourMoisPartielHome.isNew() ? result : sejourMoisPartielHome);
         return result;
     }
 
@@ -106,4 +109,11 @@ public class Habitat extends JadeComplexModel {
         this.taxeJournaliereHome = taxeJournaliereHome;
     }
 
+    public SejourMoisPartielHome getSejourMoisPartielHome() {
+        return sejourMoisPartielHome;
+    }
+
+    public void setSejourMoisPartielHome(SejourMoisPartielHome sejourMoisPartielHome) {
+        this.sejourMoisPartielHome = sejourMoisPartielHome;
+    }
 }

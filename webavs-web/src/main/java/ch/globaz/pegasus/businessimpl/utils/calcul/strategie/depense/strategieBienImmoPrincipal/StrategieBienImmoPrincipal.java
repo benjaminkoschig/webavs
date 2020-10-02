@@ -68,6 +68,13 @@ public class StrategieBienImmoPrincipal extends StrategieCalculDepense {
                         checkAmoutAndParseAsFloat(donnee.getBienImmoPrincipalMontantInteretHypothecaire()) * fraction);
             }
 
+            // plafond des loyers réforme PC
+            if(context.contains(Attribut.REFORME)) {
+                this.getOrCreateChild(tupleHabitatPrincipal, IPCValeursPlanCalcul.PLAFOND_LOYER_LOCALITE, donnee.getBienImmoPrincipalIdLocalite());
+                this.getOrCreateChild(tupleHabitatPrincipal, IPCValeursPlanCalcul.PLAFOND_LOYER_NBTOTALFAMILLE, donnee.getNbTotalFamille());
+                this.getOrCreateChild(tupleHabitatPrincipal, IPCValeursPlanCalcul.PLAFOND_LOYER_DATEDEBUT, 0f).setLegende(donnee.getDateDebutDonneeFinanciere());
+            }
+
         }
 
         return resultatExistant;

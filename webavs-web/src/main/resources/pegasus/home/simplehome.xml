@@ -9,7 +9,6 @@
 			<field name="nomBatiment" column="BLLBAT" type="STRING"  mandatory="false"/>
 			<field name="numeroIdentification" column="BLLID" type="STRING" mandatory="false"/>
 			<field name="isHorsCanton" column="BLBHOC" type="BOOLEAN" mandatory="false"/>
-			
 		</fields>
 		<search-definition>
 			<search-group operator="AND">

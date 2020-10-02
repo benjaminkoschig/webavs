@@ -71,7 +71,7 @@ $(function(){
 </script>
 
 <script type="text/javascript" src="<%=servletContext%><%=(mainServletPath + "Root")%>/scripts/droit/RevenuActiviteLucrativeIndependante_MembrePart.js" /></script>
-<script type="text/javascript"src="<%=servletContext%><%=(mainServletPath + "Root")%>/scripts/droit/RevenuActiviteLucrativeIndependante_de.js" /></script>
+<script type="text/javascript" src="<%=servletContext%><%=(mainServletPath + "Root")%>/scripts/droit/RevenuActiviteLucrativeIndependante_de.js" /></script>
 
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail_ajax/bodyStart.jspf"%>
@@ -80,6 +80,7 @@ $(function(){
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail_ajax/bodyStart2.jspf"%>
 <%-- tpl:put name="zoneMain" --%>
+<div class="informations" style="float:right; width: 30%" >
 <TR>
 	<td colspan="4">
 	<div class="conteneurDF">
@@ -108,6 +109,7 @@ $(function(){
 				<th><ct:FWLabel	key="JSP_PC_ACTIVITE_LUCRATIVE_INDEPENDANTE_L_DETERMINATION_REVENU" /></th>
 				<th><ct:FWLabel key="JSP_PC_ACTIVITE_LUCRATIVE_INDEPENDANTE_L_GENRE_REVENU" /></th>
 				<th><ct:FWLabel	key="JSP_PC_ACTIVITE_LUCRATIVE_INDEPENDANTE_L_MONTANT" /></th>
+				<th><ct:FWLabel key="JSP_PC_ACTIVITE_LUCRATIVE_INDEPENDANTE_L_FRAIS_DE_GARDE"/></th>
 				<th><ct:FWLabel key="JSP_PC_ACTIVITE_LUCRATIVE_INDEPENDANTE_L_NUMERO_AFFILIE" /></th>
 				<th><ct:FWLabel key="JSP_PC_ACTIVITE_LUCRATIVE_INDEPENDANTE_L_CAISSE" /></th>				
 				<th data-g-cellformatter="css:formatCellIcon"><ct:FWLabel key="JSP_PC_ACTIVITE_LUCRATIVE_INDEPENDANTE_L_DR" /></th>
@@ -117,7 +119,7 @@ $(function(){
 		<tbody>
 			<%
 					FWCurrency montantRevenu = new FWCurrency("0.00");
-			
+					FWCurrency fraisDeGarde = new FWCurrency("0.00");
 					String currentId = "-1";
 					String idGroup=null;
 					for(Iterator itDonnee=viewBean.getDonnees(membreFamille.getId()).iterator();itDonnee.hasNext();){						
@@ -143,7 +145,8 @@ $(function(){
 						
 						if(!donneeALDComplexe.getRevenuActiviteLucrativeIndependante().getSimpleRevenuActiviteLucrativeIndependante().getIdRevenuActiviteLucrativeIndependante().equals(currentId)){
 							currentId = donneeALDComplexe.getRevenuActiviteLucrativeIndependante().getSimpleRevenuActiviteLucrativeIndependante().getIdRevenuActiviteLucrativeIndependante();							
-							montantRevenu = new FWCurrency(donnee.getSimpleRevenuActiviteLucrativeIndependante().getMontantRevenu());							
+							montantRevenu = new FWCurrency(donnee.getSimpleRevenuActiviteLucrativeIndependante().getMontantRevenu());
+							fraisDeGarde =  new FWCurrency(donnee.getSimpleRevenuActiviteLucrativeIndependante().getFraisDeGarde());
 
 			%>		
 			<tr idEntity="<%=donnee.getId() %>" idGroup="<%=dfHeader.getIdEntityGroup() %>" header="<%=idGroup==null?"true":"false"%>">
@@ -151,6 +154,7 @@ $(function(){
 				<td><%=objSession.getCodeLibelle(donnee.getSimpleRevenuActiviteLucrativeIndependante().getCsDeterminationRevenu()) %></td>
 				<td><%=objSession.getCodeLibelle(donnee.getSimpleRevenuActiviteLucrativeIndependante().getCsGenreRevenu()) %></td>
 				<td style="text-align:right;"><%=montantRevenu.toStringFormat()%></td>
+				<td style="text-align:right;"><%=fraisDeGarde.toStringFormat()%></td>
 				<td><%=nomAffilie %></td>
 				<td><%=nomCaisse%></td>
 				<td align="center" ><% if(donnee.getSimpleDonneeFinanciereHeader().getIsDessaisissementRevenu().booleanValue()){%>
@@ -187,8 +191,7 @@ $(function(){
 			<td>
 				<ct:FWLabel	key="JSP_PC_ACTIVITE_LUCRATIVE_INDEPENDANTE_D_MONTANT" />
 			</td>
-			<td><input type="text" class="montant" data-g-amount="mandatory:true, periodicity:Y"/></td>	
-			
+			<td><input type="text" class="montant" data-g-amount="mandatory:true, periodicity:Y"/></td>
 			<td><ct:FWLabel key="JSP_PC_ACTIVITE_LUCRATIVE_INDEPENDANTE_D_CAISSE" /></td>
 			<td>
 				<input type="hidden" class="caisse" />	
@@ -208,8 +211,13 @@ $(function(){
 					</ct:widgetService>
 				</ct:widget>			
 			</td>	
-		</tr>		
-		
+		</tr>
+		<tr>
+			<td>
+				<ct:FWLabel	key="JSP_PC_ACTIVITE_LUCRATIVE_INDEPENDANTE_D_FRAIS_DE_GARDE" />
+			</td>
+			<td><input type="text" class="fraisDeGarde" data-g-amount="mandatory:false, periodicity:Y"/></td>
+		</tr>
 		<tr>
 					<td><ct:FWLabel key="JSP_D_DATE_ECHEANCE" /></td>		
 			<td><input class="dateEcheance" name="dateEcheance" value="" 

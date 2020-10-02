@@ -49,7 +49,7 @@
 				<join-field name="idPrestationAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPrestationAccordee"/>
 			</join-group>
 		</linked-model>
-		
+
 		<linked-model name="simplePrestationsAccordeesConjoint" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees" join-type="LEFT_OUTER" select-fields="false">
 			<join-group operator="AND">
 				<join-field name="idPrestationAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPrestationAccordeeConjoint"/>
@@ -68,7 +68,6 @@
 				<join-field name="idInfoCompta" operation="EQUALS" field-ref="simplePrestationsAccordees.idInfoCompta" />
 			</join-group>
 		</linked-model>
-		
 		
 		<search-definition>
 			<search-group operator="AND">

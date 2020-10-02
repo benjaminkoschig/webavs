@@ -33,7 +33,7 @@
 	<%-- tpl:put name="zoneMain" --%>
 		<TR>
 		<TD>
-			<TABLE border="0" cellspacing="0" cellpadding="0" width="900">
+			<TABLE border="0" cellspacing="0" cellpadding="0" width="1300">
 				<TR>
 					<TD><label for="du"><ct:FWLabel key="JSP_PC_PARAM_VARMET_R_DATE_VALABLE"/></label></TD>
 					<TD><input type="text" name="variableMetierSearch.forDateValable" value="" data-g-calendar="mandatory:false,type:month"/></TD>

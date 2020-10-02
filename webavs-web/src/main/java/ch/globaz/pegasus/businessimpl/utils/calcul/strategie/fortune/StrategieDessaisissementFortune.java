@@ -107,6 +107,19 @@ public class StrategieDessaisissementFortune extends StrategieCalculFortune {
                 // cas de dessaisissement manuel
                 totalDF = checkAmoutAndParseAsFloat(donnee.getDessaisissementFortuneMontant())
                         - checkAmoutAndParseAsFloat(donnee.getDessaisissementFortuneDeductions());
+
+                if (IPCDessaisissementFortune.CS_MOTIF_DESSAISI_CONSOMMATION_EXCESSIVE.equals(donnee.getDessaisissementFortuneType())) {
+                    // Si l'on est sur un déssaisissement de fortune pour motif consommation excessive
+                    // On fixe les clé pour Registre PC
+                    this.ecraseChildExistant(resultatExistant, IPCValeursPlanCalcul.CLE_IS_DIVESTED_WEALTH,
+                            Boolean.TRUE);
+                    // 2 = consommation excessive
+                    // TODO mettre un enum
+                    this.ecraseChildExistant(resultatExistant, IPCValeursPlanCalcul.CLE_TYPE_DIVESTED_WEALTH,
+                            "2");
+
+                }
+
             }
 
         } else {
@@ -132,6 +145,12 @@ public class StrategieDessaisissementFortune extends StrategieCalculFortune {
                 // calcul de la contre prestation
                 totalDF += calculeContrePrestationAuto(donnee);
             }
+
+            this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_IS_DIVESTED_WEALTH,
+                    donnee.getIsDessaisissementFortune());
+
+            this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_TYPE_DIVESTED_WEALTH,
+                    donnee.getTypeDessaisissementFortune());
 
         }
         TupleDonneeRapport tupleRoot = this.getOrCreateChild(resultatExistant,

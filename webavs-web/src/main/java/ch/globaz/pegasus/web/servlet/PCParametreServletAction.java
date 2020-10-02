@@ -1,13 +1,16 @@
 package ch.globaz.pegasus.web.servlet;
 
+import ch.globaz.pegasus.business.constantes.EPCForfaitType;
+import ch.globaz.pegasus.business.models.parametre.SimpleLienZoneLocalite;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.servlets.FWServlet;
 import globaz.pegasus.vb.parametre.PCConversionRenteViewBean;
+import globaz.pegasus.vb.parametre.PCZoneForfaitsViewBean;
 import globaz.pegasus.vb.parametre.PCZoneLocaliteViewBean;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import ch.globaz.pegasus.business.models.parametre.SimpleLienZoneLocalite;
 
 public class PCParametreServletAction extends PCAbstractServletAction {
 

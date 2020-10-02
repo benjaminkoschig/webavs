@@ -8,7 +8,7 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.DonneeFinanciereType;
 
 public class RevenuActiviteLucrativeIndependanteTest {
     private static final RevenuActiviteLucrativeIndependante df = new RevenuActiviteLucrativeIndependante(new Montant(
-            1000), RevenuActiviteLucrativeIndependanteGenreRevenu.GENRE_REVENU_ACT_LUCR_AGRICOLE_FORESTIER,
+            1000),new Montant(100), RevenuActiviteLucrativeIndependanteGenreRevenu.GENRE_REVENU_ACT_LUCR_AGRICOLE_FORESTIER,
             BuilderDf.createDF());
 
     @Test

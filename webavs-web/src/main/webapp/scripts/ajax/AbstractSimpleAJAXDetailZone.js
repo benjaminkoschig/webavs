@@ -113,6 +113,29 @@ var AbstractSimpleAJAXDetailZone = {
 			type: "POST"
 		});					
 	},
+
+	ajaxUpdatePropertiesImport: function () {
+		var that = this;
+		var parametres = properties.propertiesObject.getParametres();
+		parametres["jadeProcessProperties.PATH_CSV_TO_IMPORT"] = $('#PATH_CSV_TO_IMPORT').val();
+		ajaxUtils.beforeAjax(this.mainContainer);
+		parametres.userAction = this.ACTION_AJAX + ".modifierAJAX";
+		parametres.viewBean = this.currentViewBean;
+		parametres.parentViewBean = this.getParentViewBean;
+
+		$.ajax({
+			data: parametres,
+			contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+			success: function (data) {
+
+				that.currentViewBean = data.viewBeanSerialized;
+				data = data.viewBean;
+				// properties.propertiesObject.onUpdate(data,"update");
+				that.onUpdateAjaxComplete(data,'update');
+			},
+			type: "POST"
+		});
+	},
 	
 	validateEdition: function () {
 		if (this.selectedEntityId && this.selectedEntityId !== "null") {

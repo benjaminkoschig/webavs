@@ -20,6 +20,7 @@
 				<search-field name="forIdDroit" operation="EQUALS" field-ref="droitMbrFam.idDroit"/>
 				<search-field name="forIdDroitMembreFamille" operation="EQUALS" field-ref="droitMbrFam.idDroitMembreFamille"/>
 				<search-field name="forCsRoleFamillePC" operation="EQUALS" field-ref="droitMbrFam.csRoleFamillePC"/>
+				<search-field name="forIdDonneesPersonnelles" operation="EQUALS" field-ref="droitMbrFam.idDonneesPersonnelles"/>
  			</search-group>
 		</search-definition>
 		

@@ -15,6 +15,7 @@ public class ZoneLocaliteSearch extends JadeSearchComplexModel {
     private String forIdZoneForfait = null;
 
     private String likeNumPostal = null;
+    private String forType = null;
 
     /**
      * @return the forDateDebut
@@ -105,4 +106,11 @@ public class ZoneLocaliteSearch extends JadeSearchComplexModel {
         return ZoneLocalite.class;
     }
 
+    public String getForType() {
+        return forType;
+    }
+
+    public void setForType(String forType) {
+        this.forType = forType;
+    }
 }

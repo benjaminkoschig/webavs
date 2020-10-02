@@ -15,7 +15,7 @@ import java.sql.SQLException;
 import java.util.List;
 import ch.globaz.hera.common.SessionProvider;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
-import ch.globaz.pegasus.business.vo.pcaccordee.PCAAccordeePlanClaculeAndMembreFamilleVO;
+import ch.globaz.pegasus.business.vo.pcaccordee.PCAccordeePlanCalculAndMembreFamilleVO;
 
 /**
  * author jje
@@ -28,8 +28,8 @@ public class RFPCAccordeeWithCalculeRetenuService {
         this.transaction = transaction;
     }
 
-    public List<PCAAccordeePlanClaculeAndMembreFamilleVO> getPCAccordeeWithCalculeRetenuVO(String idTiers,
-            String dateJJMMAAAA) throws JadeApplicationException {
+    public List<PCAccordeePlanCalculAndMembreFamilleVO> getPCAccordeeWithCalculeRetenuVO(String idTiers,
+                                                                                         String dateJJMMAAAA) throws JadeApplicationException {
 
         boolean hasContext = true;
 
@@ -45,7 +45,7 @@ public class RFPCAccordeeWithCalculeRetenuService {
 
             ctx.storeTemporaryObject(SessionProvider.OBJ_BSESSION, transaction.getSession());
 
-            List<PCAAccordeePlanClaculeAndMembreFamilleVO> searchPCAccordeeWithCalculeRetenuVO = PegasusServiceLocator
+            List<PCAccordeePlanCalculAndMembreFamilleVO> searchPCAccordeeWithCalculeRetenuVO = PegasusServiceLocator
                     .getPCAccordeeService().searchPCAccordeeWithCalculeRetenuVO(idTiers,
                             PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(dateJJMMAAAA));
 

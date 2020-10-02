@@ -1,5 +1,7 @@
 package ch.globaz.pegasus.business.services;
 
+import ch.globaz.pegasus.business.services.models.assurancemaladie.AssuranceMaladieService;
+import ch.globaz.pegasus.business.services.models.restitution.SimpleRestitutionService;
 import globaz.jade.service.provider.JadeApplicationServiceLocator;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import ch.globaz.pegasus.business.services.annonce.annoncelaprams.AnnonceLapramsBuilderProviderService;
@@ -331,6 +333,15 @@ public abstract class PegasusServiceLocator {
     }
 
     /**
+     * @return Implémentation du service de gestion de droit
+     * @throws JadeApplicationServiceNotAvailableException
+     *             Levée lorsque le service n'est pas disponible - n'arrive qu'en remote
+     */
+    public static AssuranceMaladieService getAssuranceMaladieService() throws JadeApplicationServiceNotAvailableException {
+        return (AssuranceMaladieService) JadeApplicationServiceLocator.getInstance().getServiceImpl(AssuranceMaladieService.class);
+    }
+
+    /**
      * @return Implémentation du service de gestion de EnfantDansCalcul
      * @throws JadeApplicationServiceNotAvailableException
      *             Levée lorsque le service n'est pas disponible - n'arrive qu'en remote
@@ -639,5 +650,14 @@ public abstract class PegasusServiceLocator {
      */
     public static RpcService getRpcService() throws JadeApplicationServiceNotAvailableException {
         return (RpcService) JadeApplicationServiceLocator.getInstance().getServiceImpl(RpcService.class);
+    }
+
+    /**
+     *
+     * @return implémentation du service de gestion des restitutions PC.
+     * @throws JadeApplicationServiceNotAvailableException
+     */
+    public static SimpleRestitutionService getRestitutionService() throws JadeApplicationServiceNotAvailableException {
+        return (SimpleRestitutionService) JadeApplicationServiceLocator.getInstance().getServiceImpl(SimpleRestitutionService.class);
     }
 }

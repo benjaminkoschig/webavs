@@ -1,5 +1,7 @@
 package ch.globaz.pegasus.businessimpl.utils.topazbuilder.decisions;
 
+import ch.globaz.common.business.language.LanguageResolver;
+import ch.globaz.pyxis.business.model.TiersSimpleModel;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.externe.IPRConstantesExternes;
 import globaz.jade.client.util.JadeStringUtil;
@@ -37,6 +39,8 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
     public final static String IS_FTP_PREVALID_AUTO = "isDacPreValidFtpAuto";
     public final static String IS_FTP_VALID_AUTO = "isDacValidFtpAuto";
     private final static String IS_VALID = "isDecisionValidee";
+    private final static String IS_PROVISOIRE = "isDecisionProvisoire";
+    private final static String IS_PROVISOIRE_DE = "isDecisionProvisoireDe";
 
     /* Container pour l 'impression des decuments */
     JadePrintDocumentContainer allDoc = new JadePrintDocumentContainer();
@@ -226,6 +230,10 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
 
         // pour l'ajout de la watermark decision non validee
         toMerge.setDocumentProperty(DecisionApresCalculBuilder.IS_VALID, getEtatValidationDecision());
+        // pour l'ajout de la watermark decision provisoire
+        toMerge.setDocumentProperty(DecisionApresCalculBuilder.IS_PROVISOIRE, getEtatValidationProvisoire());
+        // pour l'ajout de la watermark decision provisoire allemand
+        toMerge.setDocumentProperty(DecisionApresCalculBuilder.IS_PROVISOIRE_DE, getEtatValidationProvisoireDe());
         // Remplissage des propriétés du document pour le tiers (clés pixis.*)
         TIDocumentInfoHelper.fill(toMerge, getIdTiers(), getSession(), null, null, null);
 
@@ -270,6 +278,43 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
     }
 
     /**
+     * Retourne true/false si une decision est provisoire
+     *
+     * @return
+     */
+    private String getEtatValidationProvisoire() throws Exception {
+
+        for (String decision : handlerGlobal.getDecisionsId()) {
+            if (IPCDecision.CS_ETAT_DECISION_VALIDE.equals(listeDAC.get(decision).getDecisionHeader()
+                    .getSimpleDecisionHeader().getCsEtatDecision())
+                    && listeDAC.get(decision).getDecisionHeader().getSimpleDecisionHeader().isDecisionProvisoire()) {
+                if(!Langues.Allemand.equals(LanguageResolver.resolveISOCode(getTiers().getLangue()))) {
+                    return "true";
+                }
+            }
+        }
+        return "false";
+    }
+
+    /**
+     * Retourne true/false si une decision est provisoire en allemand
+     *
+     * @return
+     */
+    private String getEtatValidationProvisoireDe() throws Exception {
+        for (String decision : handlerGlobal.getDecisionsId()) {
+            if (IPCDecision.CS_ETAT_DECISION_VALIDE.equals(listeDAC.get(decision).getDecisionHeader()
+                    .getSimpleDecisionHeader().getCsEtatDecision())
+                    && listeDAC.get(decision).getDecisionHeader().getSimpleDecisionHeader().isDecisionProvisoire()) {
+                if(Langues.Allemand.equals(LanguageResolver.resolveISOCode(getTiers().getLangue()))){
+                    return "true";
+                }
+            }
+        }
+        return "false";
+    }
+
+    /**
      * Retourne l'idTier de la decision
      * 
      * @return
@@ -278,6 +323,21 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
         for (DecisionApresCalculOO dac : listeDAC.values()) {
             String idTier = dac.getDecisionHeader().getPersonneEtendue().getPersonneEtendue().getIdTiers();
             if (!JadeStringUtil.isBlank(idTier)) {
+                return idTier;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Retourne l'idTier de la decision
+     *
+     * @return
+     */
+    private TiersSimpleModel getTiers() {
+        for (DecisionApresCalculOO dac : listeDAC.values()) {
+            TiersSimpleModel idTier = dac.getDecisionHeader().getPersonneEtendue().getTiers();
+            if (idTier != null) {
                 return idTier;
             }
         }

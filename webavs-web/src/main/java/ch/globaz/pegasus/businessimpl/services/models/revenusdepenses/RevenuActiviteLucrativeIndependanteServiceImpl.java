@@ -1,5 +1,8 @@
 package ch.globaz.pegasus.businessimpl.services.models.revenusdepenses;
 
+import ch.globaz.pegasus.business.constantes.IPCDroits;
+import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.RevenuHypothetiqueException;
+import ch.globaz.pegasus.businessimpl.checkers.revenusdepenses.RevenusFraisGardeChecker;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
@@ -49,6 +52,9 @@ public class RevenuActiviteLucrativeIndependanteServiceImpl extends PegasusAbstr
         }
 
         try {
+            if(!JadeStringUtil.isBlankOrZero(revenuActiviteLucrativeIndependante.getSimpleRevenuActiviteLucrativeIndependante().getFraisDeGarde())){
+                RevenusFraisGardeChecker.checkSupositionFraisGarde(revenuActiviteLucrativeIndependante.getSimpleDonneeFinanciereHeader(), IPCDroits.CS_REVENU_ACTIVITE_LUCRATIVE_INDEPENDANTE);
+            }
             revenuActiviteLucrativeIndependante.setSimpleDonneeFinanciereHeader(PegasusImplServiceLocator
                     .getSimpleDonneeFinanciereHeaderService().create(
                             revenuActiviteLucrativeIndependante.getSimpleDonneeFinanciereHeader()));
@@ -173,6 +179,9 @@ public class RevenuActiviteLucrativeIndependanteServiceImpl extends PegasusAbstr
         }
 
         try {
+            if(!JadeStringUtil.isBlankOrZero(revenuActiviteLucrativeIndependante.getSimpleRevenuActiviteLucrativeIndependante().getFraisDeGarde())){
+                RevenusFraisGardeChecker.checkSupositionFraisGarde(revenuActiviteLucrativeIndependante.getSimpleDonneeFinanciereHeader(), IPCDroits.CS_REVENU_ACTIVITE_LUCRATIVE_INDEPENDANTE);
+            }
             revenuActiviteLucrativeIndependante.setSimpleRevenuActiviteLucrativeIndependante(PegasusImplServiceLocator
                     .getSimpleRevenuActiviteLucrativeIndependanteService().update(
                             revenuActiviteLucrativeIndependante.getSimpleRevenuActiviteLucrativeIndependante()));

@@ -171,6 +171,7 @@ public class PCMainServlet extends FWJadeServlet {
 
         registerActionMapping("pegasus.dettecomptatcompense", PCDetteComptatCompenseServletAction.class);
 
+        registerActionMapping("pegasus.assurancemaladie", PCDroitServletAction.class);
         registerActionMapping("pegasus.droit", PCDroitServletAction.class);
         registerActionMapping("pegasus.fortuneparticuliere", PCDroitServletAction.class);
         registerActionMapping("pegasus.revenusdepenses", PCDroitServletAction.class);
@@ -203,6 +204,7 @@ public class PCMainServlet extends FWJadeServlet {
         registerActionMapping("pegasus.avance", PCAvanceServletAction.class);
         registerActionMapping("pegasus.blocage", PCBlocageServletAction.class);
         registerActionMapping("pegasus.liste", FWDefaultServletAction.class);
+        registerActionMapping("pegasus.restitution", PCRestitutionServletAction.class);
     }
 
     /**

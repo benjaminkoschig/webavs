@@ -1,10 +1,6 @@
 package ch.globaz.pegasus.business.domaine.pca;
 
-import ch.globaz.pegasus.business.constantes.IPCVariableMetier;
-import ch.globaz.pegasus.businessimpl.utils.annonce.annoncelaprams.model.LapramsDataMediator;
-import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext;
-import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.ControlleurVariablesMetier;
-import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.UtilStrategieBienImmobillier;
+import ch.globaz.pegasus.business.constantes.EPCRegionLoyer;
 import org.apache.commons.lang.math.Fraction;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
@@ -256,6 +252,36 @@ public class Calcul {
      */
     public Montant getFortuneDetteHypothequaireTotal() {
         return new Montant(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_TOTAL));
+    }
+
+    /**
+     * CLE_FORTU_DETE_HYP_REAL_PROPERTY
+     */
+    public Montant getFortuneDetteHypothequaireRealProperty() {
+        return new Montant(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_REAL_PROPERTY));
+    }
+
+    /**
+     * CLE_FORTU_DETE_HYP_SELF_INHABITED
+     */
+    public Montant getFortuneDetteHypothequaireTotalSelfinhabited() {
+        return new Montant(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_SELF_INHABITED));
+    }
+
+    /**
+     * CLE_FORTU_DETE_HYP_NOT_HABITED
+     */
+    public Montant getFortuneDetteHypothequaireTotalNothabited() {
+        return new Montant(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_NOT_HABITED));
+    }
+
+    /**
+     * CLE_FAMILY_SIZE
+     */
+    public long getFamilySize() {
+        String familySize = String.valueOf(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_FAMILY_SIZE));
+        familySize = familySize.substring(0, familySize.indexOf("."));
+        return Long.parseLong(familySize);
     }
 
     /**
@@ -518,7 +544,7 @@ public class Calcul {
      * CLE_INTER_LOYER_MONTANT_BRUT
      */
     public Montant getLoyerMontantBrut() {
-        return getLoyerMontant(IPCValeursPlanCalcul.CLE_INTER_LOYER_MONTANT_BRUT, IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_LOYER_BRUT);
+        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_LOYER_MONTANT_NET));
     }
 
     /**
@@ -681,5 +707,28 @@ public class Calcul {
         return false;
     }
 
+    /**
+     * CLE_REGION
+     */
+    public EPCRegionLoyer getLoyerRegion() {
+        String regionLoyer = tuple.getLegendeEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_ZONE);
+        return EPCRegionLoyer.fromValue(regionLoyer);
+    }
+
+
+    /**
+     * CLE_IS_DIVESTED_WEALTH
+     */
+    public boolean isDivestedWealth() {
+        return tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_IS_DIVESTED_WEALTH).toString().equals("1.0");
+    }
+
+    /**
+     * CLE_TYPE_DIVESTED_WEALTH
+     */
+    public String getTypeDivestedWealth() {
+        String typeDivestedWealth = String.valueOf(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_TYPE_DIVESTED_WEALTH));
+        return typeDivestedWealth.substring(0, typeDivestedWealth.indexOf("."));
+    }
 
 }

@@ -92,7 +92,7 @@
 		<td><label for="variableMetier.simpleVariableMetier.montant"><ct:FWLabel key="JSP_PC_PARAM_VARMET_D_MONTANT"/></label></td>
 		<td>
 
-		 <input name="variableMetier.simpleVariableMetier.montant" class="valueNumeric" data-g-amount=" " value="<%=viewBean.getMontantFormated() %>" type="text"/>
+		 <input name="variableMetier.simpleVariableMetier.montant" class="valueNumeric" value="<%=viewBean.getMontantFormated() %>" type="text"/>
 		 </td>
 		<td><label for="variableMetier.simpleVariableMetier.taux">
 		 <ct:FWLabel key="JSP_PC_PARAM_VARMET_D_TAUX"/></label></TD>

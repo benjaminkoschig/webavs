@@ -6,9 +6,14 @@ import globaz.globall.db.BSpy;
 import globaz.globall.util.JACalendar;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.pegasus.utils.PCHomeHelper;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import ch.globaz.pegasus.business.models.home.Home;
 import ch.globaz.pegasus.business.models.home.PeriodeServiceEtat;
 import ch.globaz.pegasus.business.models.home.PeriodeServiceEtatSearch;
@@ -16,9 +21,11 @@ import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pyxis.business.service.AdresseService;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 
+import static globaz.externe.IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE;
+
 public class PCHomeViewBean extends BJadePersistentObjectViewBean {
 
-    private static final Object[] METHODES_SEL_TIERS = new Object[] { new String[] { "idTiersHomePyxis", "getIdTiers" } };
+    private static final Object[] METHODES_SEL_TIERS = new Object[]{new String[]{"idTiersHomePyxis", "getIdTiers"}};
 
     public static Object[] getMethodesSelTiers() {
         return PCHomeViewBean.METHODES_SEL_TIERS;
@@ -35,6 +42,11 @@ public class PCHomeViewBean extends BJadePersistentObjectViewBean {
      * L'adresse formatee du home
      */
     private String homeAdresseFormatee = null;
+
+    /**
+     * L'adresse formatee du home
+     */
+    private String homeAdressePaiementFormatee = null;
 
     /**
      * La liste des modele de periodes de services de l'etat
@@ -58,7 +70,7 @@ public class PCHomeViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#add()
      */
     @Override
@@ -67,7 +79,7 @@ public class PCHomeViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#delete()
      */
     @Override
@@ -83,7 +95,7 @@ public class PCHomeViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Donne le modele du home
-     * 
+     *
      * @return the home
      */
     public Home getHome() {
@@ -92,16 +104,24 @@ public class PCHomeViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Méthode qui retourne l'adresse formatee d'un home par son tiers
-     * 
+     *
      * @return adresse de domicile du tiers
      */
     public String getHomeAdresseFormatee() {
         return JadeStringUtil.toNotNullString(homeAdresseFormatee);
     }
+    /**
+     * Méthode qui retourne l'adresse de paiement formatee d'un home par son tiers
+     *
+     * @return adresse de paiement du tiers
+     */
+    public String getHomeAdressePaiementFormatee() {
+        return JadeStringUtil.toNotNullString(homeAdressePaiementFormatee);
+    }
 
     /**
      * Méthode qui retourne la description du home
-     * 
+     *
      * @return la description du home
      */
     public String getHomeDescription() {
@@ -111,7 +131,7 @@ public class PCHomeViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#getId()
      */
     @Override
@@ -121,7 +141,7 @@ public class PCHomeViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Méthode qui retourne le libellé du canton par rapport a l'id canton
-     * 
+     *
      * @return le libellé du canton
      */
     public String getLibelleCanton() {
@@ -141,7 +161,7 @@ public class PCHomeViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.vb.BJadePersistentObjectViewBean#getSpy()
      */
     @Override
@@ -152,7 +172,7 @@ public class PCHomeViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Charge l'adresse de domicile formatee d'un home
-     * 
+     *
      * @throws Exception
      */
     public void initHomeAdresseFormatee() throws Exception {
@@ -164,11 +184,15 @@ public class PCHomeViewBean extends BJadePersistentObjectViewBean {
                 .getAdresseFormate();
     }
 
+    private void initHomeAdressePaiementFormatee() throws JadeApplicationException, JadePersistenceException {
+        homeAdressePaiementFormatee = TIBusinessServiceLocator.getAdresseService().getAdressePaiementTiers(home.getSimpleHome().getIdTiersHome(), Boolean.TRUE,   TIERS_CS_DOMAINE_APPLICATION_RENTE,JACalendar.todayJJsMMsAAAA(),"").getAdresseFormate();
+    }
     /*
      * Initialisation de l'adresse du home et de la liste des periodes de service de l'etat
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#retrieve()
      */
+
     /**
      * @return the retourDepuisPyxis
      */
@@ -191,6 +215,9 @@ public class PCHomeViewBean extends BJadePersistentObjectViewBean {
         // on recherche l'adresse formatee du home
         initHomeAdresseFormatee();
 
+        // on recherche l'adresse du paiement formaté du home
+        initHomeAdressePaiementFormatee();
+
         // les periodes de service de l'etat du home
         PeriodeServiceEtatSearch periodeServiceEtatSearch = new PeriodeServiceEtatSearch();
         periodeServiceEtatSearch.setForIdHome(home.getSimpleHome().getIdHome());
@@ -202,17 +229,16 @@ public class PCHomeViewBean extends BJadePersistentObjectViewBean {
         }
     }
 
+
     /**
-     * @param ajaxViewBean
-     *            the ajaxViewBean to set
+     * @param ajaxViewBean the ajaxViewBean to set
      */
     public void setAjaxViewBean(PCHomeAjaxViewBean ajaxViewBean) {
         this.ajaxViewBean = ajaxViewBean;
     }
 
     /**
-     * @param home
-     *            the home to set
+     * @param home the home to set
      */
     public void setHome(Home home) {
         this.home = home;
@@ -220,7 +246,7 @@ public class PCHomeViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#setId(java.lang.String)
      */
     @Override
@@ -230,7 +256,7 @@ public class PCHomeViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Mise a jour de l'idTiersHome apres le retour de pyxis
-     * 
+     *
      * @param idTiersHome
      */
     public void setIdTiersHomePyxis(String idTiersHome) {
@@ -239,8 +265,7 @@ public class PCHomeViewBean extends BJadePersistentObjectViewBean {
     }
 
     /**
-     * @param retourDepuisPyxis
-     *            the retourDepuisPyxis to set
+     * @param retourDepuisPyxis the retourDepuisPyxis to set
      */
     public void setRetourDepuisPyxis(boolean retourDepuisPyxis) {
         this.retourDepuisPyxis = retourDepuisPyxis;
@@ -248,10 +273,11 @@ public class PCHomeViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#update()
      */
     @Override
     public void update() throws Exception {
     }
+
 }

@@ -1,8 +1,6 @@
 package ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.coupleSepare.fusion;
 
-import java.util.Date;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
-import ch.globaz.pegasus.business.constantes.IPCVariableMetier;
 import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCRenteAvsAi;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
@@ -13,7 +11,8 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.TypeRenteMap;
 import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.ControlleurVariablesMetier;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.StrategieCalculFusion;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
+
+import java.util.Date;
 
 public class StrategieFusionRevenuTotalDeterminant implements StrategieCalculFusion {
 
@@ -22,21 +21,31 @@ public class StrategieFusionRevenuTotalDeterminant implements StrategieCalculFus
             TupleDonneeRapport donneeSeul, TupleDonneeRapport donneeFusionne, CalculContext context, Date dateDebut)
             throws CalculException {
 
+        boolean hasImputationFortuneCoupleSepare = donneeCommun.getLegendeEnfant(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL_PART) != null;
+
         // ajout de l'imputation de la fortune nette
-        TupleDonneeRapport tupleImputationFortuneNette = getFractionFortuneTuple(context, donneeFusionne);
+        TupleDonneeRapport tupleImputationFortuneNette = context.contains(Attribut.REFORME) ? getFractionFortuneReformeTuple(context, donneeFusionne) : getFractionFortuneTuple(context, donneeFusionne);
         donneeFusionne.addEnfantTuple(tupleImputationFortuneNette);
 
-        float sommeRevenuCommun = calculRevenuCommun(donneeFusionne, donneeCommun, context,
-                tupleImputationFortuneNette.getValeur());
+        float fortuneCommun = 0.0f;
+        if(!hasImputationFortuneCoupleSepare) {
+            fortuneCommun = tupleImputationFortuneNette.getValeur();
+        }
+
+        float sommeRevenuCommun = calculRevenuCommun(donneeFusionne, donneeCommun, context, fortuneCommun
+                );
 
         float sommeRevenuPropre = calculRevenuCommun(donneeFusionne, donneeAvecEnfants, context, 0);
 
         float sommeFinale = (sommeRevenuCommun / 2) + sommeRevenuPropre;
 
+        if(hasImputationFortuneCoupleSepare) {
+            sommeFinale += tupleImputationFortuneNette.getValeur();
+        }
+
         donneeFusionne.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_REVEN_REV_SOUS_TOTAL_RECONNU,
                 sommeFinale));
-        // donneeFusionne.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_DEPEN_DEP_RECO_SOUS_TOTAL,
-        // sommeFinale));
+
         donneeFusionne
                 .addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_REVEN_REV_DETE_TOTAL, sommeFinale));
 
@@ -62,7 +71,28 @@ public class StrategieFusionRevenuTotalDeterminant implements StrategieCalculFus
         // ajout du rendement de la fortune immobiliere
         sommeRevenuCommun += donneeCommun.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_RENFORMO_TOTAL);
 
-        sommeRevenuCommun += donneeCommun.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE);
+        float revenuPrivilegie = Math.round(donneeCommun.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE));
+        if(revenuPrivilegie == 0.f){
+            revenuPrivilegie = Math.round(donneeCommun.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE));
+        }
+        sommeRevenuCommun += revenuPrivilegie;
+
+        if (context.contains(Attribut.REFORME)) {
+
+            float revenuPrivilegieConjoint = Math.round(donneeCommun.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE_CONJOINT));
+            //CAS : Fraction 1
+            if(revenuPrivilegieConjoint == 0.0){
+                revenuPrivilegieConjoint = Math.round(donneeCommun.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE_CONJOINT));
+            }
+            float revenuPrivilegieEnfant = Math.round(donneeCommun.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE_ENFANT));
+            //CAS : Fraction 1
+            if(revenuPrivilegieEnfant == 0.0){
+                revenuPrivilegieEnfant = Math.round(donneeCommun.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE_ENFANT));
+            }
+
+            sommeRevenuCommun += revenuPrivilegieConjoint;
+            sommeRevenuCommun += revenuPrivilegieEnfant;
+        }
         // ajout du revenu de l'activité lucrative
         // float revenuPrivilegie =
         // Math.round(donneeCommun.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_TOTAL)
@@ -119,7 +149,7 @@ public class StrategieFusionRevenuTotalDeterminant implements StrategieCalculFus
         // D0173
         int nbPersonnes = (Integer) context.get(Attribut.NB_PARENTS);
         float nbHomes = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_NOMBRE_CHAMBRES);
-        boolean isAllHome = ((int) nbHomes >= nbPersonnes);
+        boolean isHome = ((int) nbHomes >= nbPersonnes);
 
         Float fractionFortune = null;
 
@@ -139,7 +169,7 @@ public class StrategieFusionRevenuTotalDeterminant implements StrategieCalculFus
         } else if (TypeRenteMap.listeCsRenteSurvivant.contains(typeRenteRequerant)
                 || TypeRenteMap.listeCsRenteInvalidite.contains(typeRenteRequerant)) {
             // rente survivant ou invalidite
-            if (isAllHome) {
+            if (isHome) {
                 fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
                         .get(Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_HOME)).getValeurCourante());
                 legende = Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_HOME;
@@ -152,7 +182,7 @@ public class StrategieFusionRevenuTotalDeterminant implements StrategieCalculFus
             // rente vieillesse
 
             if (TypeRenteMap.listeCsRenteInvalidite.contains(typeRenteConjoint)) {
-                if (isAllHome) {
+                if (isHome) {
                     fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
                             .get(Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_HOME)).getValeurCourante());
                     legende = Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_HOME;
@@ -162,7 +192,7 @@ public class StrategieFusionRevenuTotalDeterminant implements StrategieCalculFus
                     legende = Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_MAISON;
                 }
             } else {
-                if (isAllHome) {
+                if (isHome) {
                     fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
                             .get(Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_HOME)).getValeurCourante());
                     legende = Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_HOME;
@@ -190,10 +220,107 @@ public class StrategieFusionRevenuTotalDeterminant implements StrategieCalculFus
             tupleImputationFortuneNette.setLegende(legendeValue);
         } else {
             tupleImputationFortuneNette
-                .setLegende(((ControlleurVariablesMetier) context.get(legende)).getLegendeCourante());
+                    .setLegende(((ControlleurVariablesMetier) context.get(legende)).getLegendeCourante());
         }
 
         return tupleImputationFortuneNette;
     }
+
+
+    private TupleDonneeRapport getFractionFortuneReformeTuple(CalculContext context, TupleDonneeRapport donnee)
+            throws CalculException {
+
+        Attribut legende = null;
+        String legendeValue = null;
+
+        boolean isHome = donnee.getValeurEnfant(IPCValeursPlanCalcul.PERSONNE_EN_COURS_ISHOME) > 0;
+        boolean isRequerant = donnee.getValeurEnfant(IPCValeursPlanCalcul.PERSONNE_EN_COURS_ISREQUERANT) > 0;
+
+        String typeRenteRequerant;
+        if (donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_INTER_TYPE_RENTE_REQUERANT)) {
+            typeRenteRequerant = donnee.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_TYPE_RENTE_REQUERANT)
+                    .getLegende();
+        } else {
+            String dateDebutPeriode = (String) context.get(Attribut.DATE_DEBUT_PERIODE);
+            throw new CalculBusinessException("pegasus.calcul.strategie.revenuTotal.typeRenteRequerant.integrity",
+                    dateDebutPeriode);
+        }
+        String typeRenteConjoint = null;
+        if (donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_INTER_TYPE_RENTE_CONJOINT)) {
+            typeRenteConjoint = donnee.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_TYPE_RENTE_CONJOINT)
+                    .getLegende();
+        }
+
+        String typeRentePersonneEnCours = typeRenteRequerant;
+        if(!isRequerant && typeRenteConjoint != null) {
+            typeRentePersonneEnCours = typeRenteConjoint;
+        }
+
+        if (typeRenteRequerant == null) {
+            throw new CalculException("TypeRenteRequerant should not be null");
+        }
+
+        Float fractionFortune = null;
+
+        if(IPCRenteAvsAi.CS_TYPE_RENTE_13.equals(typeRentePersonneEnCours)) {
+            if(JadeStringUtil.isEmpty(donnee.getLegendeEnfant(IPCValeursPlanCalcul.CLE_REVEN_IMP_FORT_TOTAL))) {
+                throw new CalculBusinessException("pegasus.simpleRenteAvsAi.imputationFortune.mandatory");
+            } else {
+                String value = donnee.getLegendeEnfant(IPCValeursPlanCalcul.CLE_REVEN_IMP_FORT_TOTAL);
+                legendeValue = value;
+                if (value.contains("/")) {
+                    String[] rat = value.split("/");
+                    fractionFortune =  Float.parseFloat(rat[0]) / Float.parseFloat(rat[1]);
+                } else {
+                    fractionFortune =  Float.parseFloat(value);
+                }
+            }
+        } else if (TypeRenteMap.listeCsRenteSurvivant.contains(typeRentePersonneEnCours)
+                || TypeRenteMap.listeCsRenteInvalidite.contains(typeRentePersonneEnCours)) {
+            // rente survivant ou invalidite
+            if (isHome) {
+                fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
+                        .get(Attribut.CS_REFORME_FRACTIONS_FORTUNE_SEPARE_NON_VIEILLESSE_HOME)).getValeurCourante());
+                legende = Attribut.CS_REFORME_FRACTIONS_FORTUNE_SEPARE_NON_VIEILLESSE_HOME;
+            } else {
+                fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
+                        .get(Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_MAISON)).getValeurCourante());
+                legende = Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_MAISON;
+            }
+        } else if (TypeRenteMap.listeCsRenteVieillesse.contains(typeRentePersonneEnCours)) {
+            // rente vieillesse
+            if (isHome) {
+                fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
+                        .get(Attribut.CS_REFORME_FRACTIONS_FORTUNE_SEPARE_VIEILLESSE_HOME)).getValeurCourante());
+                legende = Attribut.CS_REFORME_FRACTIONS_FORTUNE_SEPARE_VIEILLESSE_HOME;
+            } else {
+                fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
+                        .get(Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_MAISON)).getValeurCourante());
+                legende = Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_MAISON;
+            }
+
+        } else {
+            // sans rente
+            fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
+                    .get(Attribut.CS_REFORME_FRACTIONS_FORTUNE_SEPARE_VIEILLESSE_HOME)).getValeurCourante());
+            legende = Attribut.CS_REFORME_FRACTIONS_FORTUNE_SEPARE_VIEILLESSE_HOME;
+        }
+
+        float somme = Math.round(donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL)
+                * fractionFortune);
+
+        TupleDonneeRapport tupleImputationFortuneNette = new TupleDonneeRapport(
+                IPCValeursPlanCalcul.CLE_REVEN_IMP_FORT_TOTAL, somme);
+
+        if(legendeValue != null) {
+            tupleImputationFortuneNette.setLegende(legendeValue);
+        } else {
+            tupleImputationFortuneNette
+                    .setLegende(((ControlleurVariablesMetier) context.get(legende)).getLegendeCourante());
+        }
+
+        return tupleImputationFortuneNette;
+    }
+
 
 }

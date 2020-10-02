@@ -7,7 +7,8 @@
 			<primary-key name="idForfaitPrimesAssuranceMaladie" column="DCIDFP" comment="ID_FORFAIT_PRIMES_ASSURANCE_MALADIE" />
 			<field name="idZoneForfait" column="DCIDZF" type="NUMERIC" mandatory="true" comment="ID_ZONE_FORFAIT" />
 			<field name="csTypePrime" column="DCTPRI" type="NUMERIC"  mandatory="true" comment="CS_TYPE_PRIME" />
-			<field name="montant" column="DCMMON" type="NUMERIC" dataType="NUMERIC(15,2)"  mandatory="true" comment="MONTANT" />
+			<field name="montantPrimeMoy" column="DCMMON" type="NUMERIC" dataType="NUMERIC(15,2)"  mandatory="true" comment="MONTANT" />
+			<field name="montantPrimeReductionMaxCanton" column="DCMONREDMAX" type="NUMERIC" dataType="NUMERIC(15,2)"  mandatory="false" comment="MONTANT" />
 			<field name="dateDebut" column="DCDDEB" type="DATE"  mandatory="true" comment="DATE_DEBUT" />
 			<field name="dateFin" column="DCDFIN" type="DATE"  mandatory="true" comment="DATE_FIN" />
 		</fields>

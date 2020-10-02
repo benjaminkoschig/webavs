@@ -101,7 +101,7 @@ public class ValiderDecisionAcChecker {
             }
             SimplePlanDeCalcul planDeCalcul = null;
             if (mapDecisions.containsKey(retenuePayement.getIdRenteAccordee())) {
-                if (retenuePayement.getIdRenteAccordee().length() > 1) {
+                if ( mapDecisions.get(retenuePayement.getIdRenteAccordee()).size() > 1) {
                     throw new RetenuePayementException("Too many planClacule was resolved with this ids pca: "
                             + retenuePayement.getIdRenteAccordee());
                 }
@@ -157,7 +157,7 @@ public class ValiderDecisionAcChecker {
                 new JadeListUtil.Key<DecisionApresCalcul>() {
                     @Override
                     public String exec(DecisionApresCalcul e) {
-                        return e.getPcAccordee().getSimplePCAccordee().getIdPCAccordee();
+                        return e.getPcAccordee().getSimplePCAccordee().getIdPrestationAccordee();
                     }
                 });
         return mapDecisions;

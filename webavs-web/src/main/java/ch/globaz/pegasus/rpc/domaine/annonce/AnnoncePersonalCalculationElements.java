@@ -32,6 +32,7 @@ public class AnnoncePersonalCalculationElements {
     protected Montant hcEffectiveHelp;
     protected Montant otherExpenses;
     protected Montant disabledAllowance;
+    protected Montant childrenCostsAssitanceNet;
 
     protected AnnoncePensionCategory pensionCategory;
     protected AnnonceResidenceCosts residenceCosts;
@@ -68,6 +69,7 @@ public class AnnoncePersonalCalculationElements {
             hcEffectiveHelp = NOT_MAPPED_UNKNOWN_DATA;
         }
         otherExpenses = personData.getAutresDepenses();
+        childrenCostsAssitanceNet = personData.getFraisGarde();
     }
 
     private boolean hcEffectiveHelp() {
@@ -135,4 +137,7 @@ public class AnnoncePersonalCalculationElements {
         return disabledAllowance;
     }
 
+    public Montant getChildrenCostsAssitanceNet() {
+        return childrenCostsAssitanceNet;
+    }
 }

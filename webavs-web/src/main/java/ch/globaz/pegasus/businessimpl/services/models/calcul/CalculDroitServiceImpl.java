@@ -1,5 +1,42 @@
 package ch.globaz.pegasus.businessimpl.services.models.calcul;
 
+import ch.globaz.common.domaine.Checkers;
+import ch.globaz.common.domaine.GroupePeriodes;
+import ch.globaz.common.domaine.Montant;
+import ch.globaz.common.domaine.Periode;
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.corvus.business.models.pcaccordee.SimpleRetenuePayement;
+import ch.globaz.pegasus.business.constantes.*;
+import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
+import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
+import ch.globaz.pegasus.business.exceptions.models.crancier.CreancierException;
+import ch.globaz.pegasus.business.exceptions.models.demande.DemandeException;
+import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
+import ch.globaz.pegasus.business.exceptions.models.habitat.TaxeJournaliereHomeException;
+import ch.globaz.pegasus.business.exceptions.models.home.HomeException;
+import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
+import ch.globaz.pegasus.business.exceptions.models.pmtmensuel.PmtMensuelException;
+import ch.globaz.pegasus.business.models.calcul.*;
+import ch.globaz.pegasus.business.models.creancier.CreanceAccordee;
+import ch.globaz.pegasus.business.models.creancier.Creancier;
+import ch.globaz.pegasus.business.models.creancier.SimpleCreanceAccordee;
+import ch.globaz.pegasus.business.models.creancier.SimpleCreancier;
+import ch.globaz.pegasus.business.models.droit.Droit;
+import ch.globaz.pegasus.business.models.pcaccordee.*;
+import ch.globaz.pegasus.business.services.PegasusServiceLocator;
+import ch.globaz.pegasus.business.services.models.calcul.CalculDroitService;
+import ch.globaz.pegasus.businessimpl.services.PegasusAbstractServiceImpl;
+import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
+import ch.globaz.pegasus.businessimpl.services.models.calcul.donneeInterne.DonneeInterneHomeVersement;
+import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
+import ch.globaz.pegasus.businessimpl.utils.calcul.CalculComparatif;
+import ch.globaz.pegasus.businessimpl.utils.calcul.IPeriodePCAccordee;
+import ch.globaz.pegasus.businessimpl.utils.calcul.PeriodePCAccordee;
+import ch.globaz.pegasus.businessimpl.utils.calcul.PersonnePCAccordee;
+import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.DonneesHorsDroitsProvider;
+import ch.globaz.utils.periode.GroupePeriodesResolver;
+import ch.globaz.utils.periode.GroupePeriodesResolver.EachPeriode;
+import globaz.externe.IPRConstantesExternes;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
@@ -8,47 +45,11 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.business.JadeBusinessMessage;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
 import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import ch.globaz.common.domaine.Checkers;
-import ch.globaz.common.domaine.GroupePeriodes;
-import ch.globaz.pegasus.business.constantes.ConstantesCalcul;
-import ch.globaz.pegasus.business.constantes.IPCDroits;
-import ch.globaz.pegasus.business.constantes.IPCPCAccordee;
-import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
-import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
-import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
-import ch.globaz.pegasus.business.exceptions.models.demande.DemandeException;
-import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
-import ch.globaz.pegasus.business.exceptions.models.habitat.TaxeJournaliereHomeException;
-import ch.globaz.pegasus.business.exceptions.models.home.HomeException;
-import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
-import ch.globaz.pegasus.business.exceptions.models.pmtmensuel.PmtMensuelException;
-import ch.globaz.pegasus.business.models.calcul.CalculMembreFamille;
-import ch.globaz.pegasus.business.models.calcul.CalculMoisSuivantSearch;
-import ch.globaz.pegasus.business.models.calcul.CalculPcaReplace;
-import ch.globaz.pegasus.business.models.calcul.CalculPcaReplaceSearch;
-import ch.globaz.pegasus.business.models.droit.Droit;
-import ch.globaz.pegasus.business.models.pcaccordee.PCAccordeePlanCalcul;
-import ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee;
-import ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordeeSearch;
-import ch.globaz.pegasus.business.services.PegasusServiceLocator;
-import ch.globaz.pegasus.business.services.models.calcul.CalculDroitService;
-import ch.globaz.pegasus.businessimpl.services.PegasusAbstractServiceImpl;
-import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
-import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
-import ch.globaz.pegasus.businessimpl.utils.calcul.CalculComparatif;
-import ch.globaz.pegasus.businessimpl.utils.calcul.IPeriodePCAccordee;
-import ch.globaz.pegasus.businessimpl.utils.calcul.PeriodePCAccordee;
-import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.DonneesHorsDroitsProvider;
-import ch.globaz.utils.periode.GroupePeriodesResolver;
-import ch.globaz.utils.periode.GroupePeriodesResolver.EachPeriode;
+
+import java.util.*;
 
 /**
  * @author ECO
@@ -94,28 +95,16 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 List<PeriodePCAccordee> listePCAccordes = calculeDroitPartagePeriodes(droit, dateDebutPlageCalcul,
                         dateFinPlageCalcul, cacheDonneesBD, containerGlobal, isDateFinForce);
 
+                List<PeriodePCAccordee> listePCAccordesReforme = calculeDroitPartagePeriodes(droit, dateDebutPlageCalcul,
+                        dateFinPlageCalcul, cacheDonneesBD, containerGlobal, isDateFinForce);
                 // procède au calcul à proprement dit
-                calculeDroitTraitement(droit, cacheDonneesBD, listePCAccordes, dateDebutPlageCalcul,
+                calculeDroitTraitement(droit, cacheDonneesBD, listePCAccordes, listePCAccordesReforme, dateDebutPlageCalcul,
                         dateFinPlageCalcul, containerGlobal);
 
                 // récupère anciennes pc accordées
                 PegasusImplServiceLocator.getCalculPersistanceService().recupereAnciensPCAccordee(dateDebutPlageCalcul,
                         droit, cacheDonneesBD);
-
-                // calcul des éventuels jours d'appoint
-                PegasusImplServiceLocator.getCalculComparatifService().calculJoursAppoint(
-                        listePCAccordes,
-                        (CalculPcaReplaceSearch) cacheDonneesBD
-                                .get(ConstantesCalcul.CONTAINER_DONNEES_PCACCORDEES_REPLACED));
-
-                calculeDroitPersistence(droit, retroactif, listePCAccordes, cacheDonneesBD);
-
-                if (retroactif) {
-                    CalculAllocationNoel calculAllocationNoel = new CalculAllocationNoel();
-
-                    calculAllocationNoel.calculAndSaveAllocationDeNoel(listePCAccordes, droit, containerGlobal,
-                            dateDebutPlageCalcul);
-                }
+                calculFinalise(droit, retroactif, dateDebutPlageCalcul, containerGlobal, cacheDonneesBD, listePCAccordes);
 
                 // Gestion de date de debut des périodes pour le cas du calcul mois suivant, et dans le sversions > 1
                 int noVersion = Integer.parseInt(droit.getSimpleVersionDroit().getNoVersion());
@@ -132,6 +121,23 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
 
         return droit;
 
+    }
+
+    private void calculFinalise(Droit droit, boolean retroactif, String dateDebutPlageCalcul, DonneesHorsDroitsProvider containerGlobal, Map<String, JadeAbstractSearchModel> cacheDonneesBD, List<PeriodePCAccordee> listePCAccordes) throws JadePersistenceException, JadeApplicationException {
+        // calcul des éventuels jours d'appoint
+        PegasusImplServiceLocator.getCalculComparatifService().calculJoursAppoint(
+                listePCAccordes,
+                (CalculPcaReplaceSearch) cacheDonneesBD
+                        .get(ConstantesCalcul.CONTAINER_DONNEES_PCACCORDEES_REPLACED));
+
+        calculeDroitPersistence(droit, retroactif, listePCAccordes, cacheDonneesBD);
+
+        if (retroactif) {
+            CalculAllocationNoel calculAllocationNoel = new CalculAllocationNoel();
+
+            calculAllocationNoel.calculAndSaveAllocationDeNoel(listePCAccordes, droit, containerGlobal,
+                    dateDebutPlageCalcul);
+        }
     }
 
     @Override
@@ -176,13 +182,13 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                     datePlageCalcul);
         }
 
-        return new String[] { datePlageCalcul, dateFinPlageCalcul };
+        return new String[]{datePlageCalcul, dateFinPlageCalcul};
 
     }
 
     @Override
     public IPeriodePCAccordee calculDroitPourComparaison(Droit droit, Collection<String> listeIdPersonnes,
-            DonneesHorsDroitsProvider containerGlobal, boolean persistCalcul, boolean retroactif)
+                                                         DonneesHorsDroitsProvider containerGlobal, boolean persistCalcul, boolean retroactif)
             throws CalculException, JadePersistenceException, JadeApplicationException {
 
         List<PeriodePCAccordee> list = this.calculDroitPourComparaison(droit, listeIdPersonnes, containerGlobal,
@@ -191,10 +197,12 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
     }
 
     private List<PeriodePCAccordee> calculDroitPourComparaison(Droit droit, Collection<String> listeIdPersonnes,
-            DonneesHorsDroitsProvider containerGlobal, boolean persistCalcul, boolean retroactif,
-            String dateDebutPeriodeForce) throws CalculException, JadePersistenceException, JadeApplicationException {
+                                                               DonneesHorsDroitsProvider containerGlobal, boolean persistCalcul, boolean retroactif,
+                                                               String dateDebutPeriodeForce) throws CalculException, JadePersistenceException, JadeApplicationException {
 
         List<PeriodePCAccordee> listePCAccordes = null;
+
+        List<PeriodePCAccordee> listePCAccordesReforme = null;
         try {
             if ((droit == null) || droit.isNew()) {
                 throw new CalculException("Unable to calcul droit, the model is null or new!");
@@ -210,7 +218,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 String[] datesPlageCalcul = calculDroitPlageCalcul(droit, retroactif);
                 dateDebutPlageCalcul = datesPlageCalcul[0];
                 dateFinPlageCalcul = datesPlageCalcul[1]; // date de fin par défaut utilisée dans les calculs dans le
-                                                          // cas périodes sans fin
+                // cas périodes sans fin
             } else {
                 dateDebutPlageCalcul = "01." + dateDebutPeriodeForce;
 
@@ -233,62 +241,18 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 listePCAccordes = calculeDroitPartagePeriodes(droit, dateDebutPlageCalcul, dateFinPlageCalcul,
                         cacheDonneesBD, containerGlobal, false);
 
+                listePCAccordesReforme = calculeDroitPartagePeriodes(droit, dateDebutPlageCalcul, dateFinPlageCalcul,
+                        cacheDonneesBD, containerGlobal, false);
+
                 if ((listePCAccordes.size() > 2) || (listePCAccordes.size() < 1)) {
                     throw new CalculException("Expected 1 or 2 PC Accordee!");
                 }
 
                 // procède au calcul à proprement dit
-                calculeDroitTraitement(droit, cacheDonneesBD, listePCAccordes, dateDebutPlageCalcul,
+                calculeDroitTraitement(droit, cacheDonneesBD, listePCAccordes, listePCAccordesReforme, dateDebutPlageCalcul,
                         dateFinPlageCalcul, containerGlobal);
 
-                for (PeriodePCAccordee periode : listePCAccordes) {
-                    // choisit si possible le CC dont la combinaison de personnes coincide avec celle donnée en
-                    // paramètre
-                    CalculComparatif[] anciensCCRetenus = periode.getCCRetenu();
-                    // Cas retenus par le calculateur
-                    CalculComparatif ccDefautByCalculator = anciensCCRetenus[0].copyCC();
-                    // Cas retenus par la comparaison
-                    CalculComparatif ccDefautByComparaison = null;
-
-                    List<CalculComparatif> calculsComparatifs = periode.getCalculsComparatifs();
-                    boolean isCCTrouve = false;
-                    // boolean isCCRetenusDouble = false;
-
-                    // Si il n'y a pas de calcul comparatif pour le conjoint, CAS COUPLE SEPARE PAR LA MALADIE
-                    if (periode.getCalculsComparatifsConjoint().size() == 0) {
-                        for (CalculComparatif cc : calculsComparatifs) {
-                            // boolean isPlanRetenu = cc.getIsPlanretenu();
-                            // on met le plan retenu a false
-                            cc.setPlanRetenu(Boolean.FALSE);
-
-                            if (!isCCTrouve) {
-                                boolean listeEquals = cc.equalsPersonnes(listeIdPersonnes);
-                                cc.setPlanRetenu(listeEquals);
-                                // isCCTrouve = true;
-                                isCCTrouve = listeEquals;
-                                // Si retenus
-                                if (isCCTrouve) {
-                                    ccDefautByComparaison = cc.copyCC();
-                                }
-                            }
-                        }
-
-                        // Cas ou aucun plan n'est retenu, la liste des personnes ne concordent jamais
-                        // On va setter, par défaut le cas retenus par le calculateur
-                        if (!isCCTrouve) {
-                            periode.setCalculComparatifByDefaut(ccDefautByCalculator);
-                            JadeThread.logWarn(this.getClass().toString(),
-                                    "pegasus.calcul.adptation.calculcomparatifretenu.nontrouve.integrity");
-                        } else {
-                            // Si les id plan calcul différents
-                            if (!ccDefautByCalculator.getPersonnes().equals(ccDefautByComparaison.getPersonnes())) {
-                                JadeThread.logWarn(this.getClass().toString(),
-                                        "pegasus.calcul.adptation.calculcomparatifretenu.nonfavorable.integrity");
-                            }
-                        }
-                    }
-
-                }
+                dertermineFavorableCombinaisonPersonne(listeIdPersonnes, listePCAccordes);
 
                 // calcul des éventuels jours d'appoint
                 PegasusImplServiceLocator.getCalculComparatifService().calculJoursAppoint(
@@ -317,9 +281,144 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
 
     }
 
+    private void dertermineFavorableCombinaisonPersonne(Collection<String> listeIdPersonnes, List<PeriodePCAccordee> listePCAccordes) throws CalculException {
+        if(listePCAccordes == null || listePCAccordes.isEmpty()){
+            return;
+        }
+        for (PeriodePCAccordee periode : listePCAccordes) {
+            // choisit si possible le CC dont la combinaison de personnes coincide avec celle donnée en
+            // paramètre
+            CalculComparatif[] anciensCCRetenus = periode.getCCRetenu();
+            // Cas retenus par le calculateur
+            CalculComparatif ccDefautByCalculator = anciensCCRetenus[0].copyCC();
+            // Cas retenus par la comparaison
+            CalculComparatif ccDefautByComparaison = null;
+
+            List<CalculComparatif> calculsComparatifs = periode.getCalculsComparatifs();
+            boolean isCCTrouve = false;
+            // boolean isCCRetenusDouble = false;
+
+            List<CalculComparatif> calculsComparatifsComparaison = new ArrayList<>();
+
+            // Si il n'y a pas de calcul comparatif pour le conjoint, CAS COUPLE SEPARE PAR LA MALADIE
+            if (periode.getCalculsComparatifsConjoint().size() == 0) {
+                for (CalculComparatif cc : calculsComparatifs) {
+                    // boolean isPlanRetenu = cc.getIsPlanretenu();
+                    // on met le plan retenu a false
+                    cc.setPlanRetenu(Boolean.FALSE);
+
+                    boolean listeEquals = cc.equalsPersonnes(listeIdPersonnes);
+                    isCCTrouve = listeEquals;
+                    // Si retenus
+                    if (isCCTrouve) {
+                        calculsComparatifsComparaison.add(cc);
+                        cc.setComparer(true);
+                    }
+                }
+
+                if (calculsComparatifsComparaison.size() == 1) {
+                    // 1 seul cas avant ou aprés réforme pas de comparaison sur le montant
+                    CalculComparatif ccTrouve = calculsComparatifsComparaison.get(0);
+                    ccDefautByComparaison = ccTrouve.copyCC();
+                    ccTrouve.setPlanRetenu(true);
+                } else if(calculsComparatifsComparaison.size() > 1) {
+                    // comparaison avant et aprés réforme
+                    periode.determineCCFavorable(calculsComparatifsComparaison);
+                    ccDefautByComparaison = periode.getCCRetenu()[0].copyCC();
+                }
+
+                // Cas ou aucun plan n'est retenu, la liste des personnes ne concordent jamais
+                // On va setter, par défaut le cas retenus par le calculateur
+                if (!isCCTrouve) {
+                    periode.setCalculComparatifByDefaut(ccDefautByCalculator);
+                    JadeThread.logWarn(this.getClass().toString(),
+                            "pegasus.calcul.adptation.calculcomparatifretenu.nontrouve.integrity");
+                } else {
+                    // Si les id plan calcul différents
+                    if (!ccDefautByCalculator.getPersonnes().equals(ccDefautByComparaison.getPersonnes())) {
+                        JadeThread.logWarn(this.getClass().toString(),
+                                "pegasus.calcul.adptation.calculcomparatifretenu.nonfavorable.integrity");
+                    }
+                }
+            }
+        }
+    }
+
+    private void fusionneCalcul(List<PeriodePCAccordee> listePCAccordes, List<PeriodePCAccordee> listePCAccordesReforme, String dateReforme) throws CalculException {
+
+        if (listePCAccordesReforme.isEmpty()) {
+            // pas de fusion seul les calculs avant réforme compte
+            return;
+        } else if (listePCAccordes.isEmpty()) {
+            // pas de fusion : on remplace la liste ancienne avec les données de la liste calcul réforme
+            // flag les calculs en réforme
+            for (PeriodePCAccordee pcAccordesReforme : listePCAccordesReforme) {
+                getCalculReforme(pcAccordesReforme.getCalculsComparatifs());
+                if(isRefusFortune(pcAccordesReforme)) {
+                    throw new CalculException("pegasus.calcul.seuil.fortune.depasse", pcAccordesReforme.getCalculsComparatifs().get(0).getFortune());
+                }
+            }
+            listePCAccordes.addAll(listePCAccordesReforme);
+            return;
+        }
+
+        if (listePCAccordes.size() != listePCAccordesReforme.size()) {
+            throw new CalculException("Les nombres de PCA avant réforme et après réforme ne sont pas identique !");
+        }
+
+        for (int i = 0; i < listePCAccordes.size(); i++) {
+            PeriodePCAccordee pcAccordes = listePCAccordes.get(i);
+            PeriodePCAccordee pcAccordesReforme = listePCAccordesReforme.get(i);
+            Date dateDebut = pcAccordesReforme.getDateDebut();
+            if(JadeDateUtil.isDateBefore(JadeDateUtil.getGlobazFormattedDate(dateDebut),dateReforme)
+                    || isRefusFortune(pcAccordesReforme)) {
+                // periode de cette pca avant la réforme à ne pas comparer ou refus seuil de fortune sur le calcul réforme
+                pcAccordes.determineCCFavorable();
+                continue;
+            }
+
+            for(CalculComparatif calculComparatifs : pcAccordes.getCCRetenu()) {
+                if(calculComparatifs!= null) {
+                    calculComparatifs.setPlanRetenu(false);
+                }
+            }
+            for(CalculComparatif calculComparatifsReforme : pcAccordesReforme.getCCRetenu()) {
+                if(calculComparatifsReforme!= null) {
+                    calculComparatifsReforme.setPlanRetenu(false);
+                }
+            }
+            pcAccordes.getCalculsComparatifs().addAll(getCalculReforme(pcAccordesReforme.getCalculsComparatifs()));
+            pcAccordes.getCalculsComparatifsConjoint().addAll(getCalculReforme(pcAccordesReforme.getCalculsComparatifsConjoint()));
+            fusionnePersonne(pcAccordes, pcAccordesReforme);
+            pcAccordes.getPersonnes().putAll(pcAccordesReforme.getPersonnes());
+            pcAccordes.determineCCFavorable();
+        }
+    }
+
+    private boolean isRefusFortune(PeriodePCAccordee pcAccordesReforme) {
+        return pcAccordesReforme.getCalculsComparatifs().get(0).isRefusFortune();
+    }
+
+    private void fusionnePersonne(PeriodePCAccordee pcAccordes, PeriodePCAccordee pcAccordesReforme) {
+        for (CalculComparatif calcul : pcAccordes.getCalculsComparatifs()) {
+            List<PersonnePCAccordee> list = new ArrayList<>();
+            for (PersonnePCAccordee personne : calcul.getPersonnes()) {
+                list.add(pcAccordesReforme.getPersonnes().get(personne.getIdPersonne()));
+            }
+            calcul.setPersonnes(list);
+        }
+    }
+
+    private List<CalculComparatif> getCalculReforme(List<CalculComparatif> listCalcul) {
+        for (CalculComparatif calcul : listCalcul) {
+            calcul.setReformePc(true);
+        }
+        return listCalcul;
+    }
+
     private List<PeriodePCAccordee> calculeDroitPartagePeriodes(Droit droit, String dateDebutPlageCalcul,
-            String dateFinPlageCalcul, Map<String, JadeAbstractSearchModel> cacheDonneesBD,
-            DonneesHorsDroitsProvider containerGlobal, boolean isDateFinForce) throws CalculException,
+                                                                String dateFinPlageCalcul, Map<String, JadeAbstractSearchModel> cacheDonneesBD,
+                                                                DonneesHorsDroitsProvider containerGlobal, boolean isDateFinForce) throws CalculException,
             JadePersistenceException, JadeApplicationServiceNotAvailableException {
         List<PeriodePCAccordee> listePCAccordes;
 
@@ -329,7 +428,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
     }
 
     private void calculeDroitPersistence(Droit droit, boolean retroactif, List<PeriodePCAccordee> listePCAccordes,
-            Map<String, JadeAbstractSearchModel> cacheDonneesBD) throws PCAccordeeException,
+                                         Map<String, JadeAbstractSearchModel> cacheDonneesBD) throws PCAccordeeException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException, JadeApplicationException,
             DroitException {
         JadeBusinessMessage[] calculProcessWarns = null;
@@ -350,6 +449,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
 
         List<SimplePCAccordee> allNewPca = new ArrayList<SimplePCAccordee>();
         List<PCAccordeePlanCalcul> pcas = new ArrayList<PCAccordeePlanCalcul>();
+        List<DonneeInterneHomeVersement> homeVersementList = new ArrayList<>();
         // sauve les resultats en BD
         for (PeriodePCAccordee pcAccordee : listePCAccordes) {
             pcAccordee.setCalculRetro(retroactif);
@@ -358,12 +458,36 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
         }
 
         for (PCAccordeePlanCalcul pca : pcas) {
-            allNewPca.add(pca.getSimplePCAccordee());
+            SimplePCAccordee simplePCAccordee = pca.getSimplePCAccordee();
+            simplePCAccordee.setMontantMensuel(pca.getSimplePlanDeCalcul().getMontantPCMensuelle());
+            allNewPca.add(simplePCAccordee);
         }
 
         for (CalculPcaReplace pca : copies) {
             allNewPca.add(pca.getSimplePCAccordee());
         }
+
+        CalculDonneesHomeSearch homeReplaced = (CalculDonneesHomeSearch) cacheDonneesBD
+                .get(ConstantesCalcul.CONTAINER_DONNEES_HOMES);
+
+        /**
+         * Gestion des versement en home (futur,retenus)
+         */
+        if (homeReplaced != null) {
+            mappingHomes(homeVersementList, homeReplaced, allNewPca);
+        }
+        boolean isVersementHome = false;
+        if (homeVersementList != null && homeVersementList.size() > 0) {
+            isVersementHome = true;
+        }
+
+
+        for (SimplePCAccordee simplePCAccordee : allNewPca) {
+            updateOldRetenuWithDateEnd(pcaReplaced, simplePCAccordee, isVersementHome);
+        }
+        createRetenusForVersementsHome(homeVersementList);
+
+        createCreancierForVersementsHome(homeVersementList);
 
         GeneratePcaToDelete generatePcaToDelete = new GeneratePcaToDelete(allNewPca, pcaReplaced);
         copiesGenerate.persist(generatePcaToDelete.generate());
@@ -377,7 +501,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 ids = ids + copie.getSimplePCAccordee().getIdPcaParent() + "-";
             }
             // On fait un warn pour ne pas bloquer l'utilisateur.
-            JadeThread.logWarn(this.getClass().getName(), "pegasus.calcul.copie.tooMutch", new String[] { ids });
+            JadeThread.logWarn(this.getClass().getName(), "pegasus.calcul.copie.tooMutch", new String[]{ids});
         }
 
         checkIfWarnForRFM(pcas, pcaReplaced);
@@ -390,6 +514,196 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             }
         }
     }
+
+    private void createCreancierForVersementsHome(List<DonneeInterneHomeVersement> homeVersementList) throws JadeApplicationServiceNotAvailableException, PmtMensuelException, CreancierException, JadePersistenceException {
+        String dateDebut = "";
+        String dateFin = "";
+        for (DonneeInterneHomeVersement calculDonneesHome : homeVersementList) {
+            if (calculDonneesHome.getCsTypeVersement().equals(DonneeInterneHomeVersement.TYPE_CREANCIER)) {
+                if (JadeStringUtil.isBlankOrZero(calculDonneesHome.getDateFin())) {
+                    dateFin = JadeDateUtil.getLastDateOfMonth(PegasusServiceLocator.getPmtMensuelService().getDateDernierPmt());
+                } else {
+                    dateFin = JadeDateUtil.getLastDateOfMonth(calculDonneesHome.getDateFin());
+                }
+                dateDebut = JadeDateUtil.getFirstDateOfMonth(calculDonneesHome.getDateDebut());
+                int nbreJours = JadeDateUtil.getNbDaysBetween(dateDebut, dateFin);
+                Float montantTotalCreancier = nbreJours * Float.parseFloat(calculDonneesHome.getMontantPrixChambre());
+                Creancier creancier = new Creancier();
+                SimpleCreancier simpleCreancier = new SimpleCreancier();
+                simpleCreancier.setCsEtat(IPCDroits.CS_ETAT_CREANCE_A_PAYE);
+                simpleCreancier.setCsTypeCreance(IPCCreancier.CS_TYPE_CREANCE_TIERS);
+                simpleCreancier.setIdDemande(calculDonneesHome.getIdDemande());
+                simpleCreancier.setIdDomaineApplicatif(IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE);
+                simpleCreancier.setIdTiers(calculDonneesHome.getIdTiersHome());
+                simpleCreancier.setIdTiersAdressePaiement(calculDonneesHome.getIdTiersHome());
+                simpleCreancier.setIdTiersRegroupement(calculDonneesHome.getIdTiersRegroupement());
+                simpleCreancier.setMontant(montantTotalCreancier.toString());
+                creancier.setSimpleCreancier(simpleCreancier);
+                creancier = PegasusServiceLocator.getCreancierService().create(creancier);
+                CreanceAccordee creanceAccordee = new CreanceAccordee();
+                SimpleCreanceAccordee simpleCreanceAccordee = new SimpleCreanceAccordee();
+                simpleCreanceAccordee.setIdCreancier(creancier.getId());
+                simpleCreanceAccordee.setIdPCAccordee(calculDonneesHome.getIdPca());
+                Float montantMensuel = Float.parseFloat(calculDonneesHome.getMontantMensuel());
+                if(montantMensuel<montantTotalCreancier){
+                    simpleCreanceAccordee.setMontant(montantMensuel.toString());
+                }else{
+                    simpleCreanceAccordee.setMontant(montantTotalCreancier.toString());
+                }
+                creanceAccordee.setSimpleCreanceAccordee(simpleCreanceAccordee);
+                PegasusServiceLocator.getCreanceAccordeeService().create(creanceAccordee);
+            }
+        }
+    }
+
+    private void createRetenusForVersementsHome(List<DonneeInterneHomeVersement> homeVersementList) throws JadeApplicationException, JadePersistenceException {
+        for (DonneeInterneHomeVersement calculDonneesHome : homeVersementList) {
+            PcaRetenue pcaRetenue = new PcaRetenue();
+            if (calculDonneesHome.getCsTypeVersement().equals(DonneeInterneHomeVersement.TYPE_RETENUS)) {
+                pcaRetenue.setIdPCAccordee(calculDonneesHome.getIdPca());
+                pcaRetenue.setCsRoleFamillePC(calculDonneesHome.getCsRoleBeneficiaire());
+                SimpleRetenuePayement retenue = new SimpleRetenuePayement();
+                retenue.setCsTypeRetenue(IPCRetenues.CS_ADRESSE_PAIEMENT);
+                retenue.setDateDebutRetenue(calculDonneesHome.getDateDebut());
+                retenue.setDateFinRetenue(calculDonneesHome.getDateFin());
+                retenue.setIdTiersAdressePmt(calculDonneesHome.getIdTiersHome());
+                retenue.setIdRenteAccordee(calculDonneesHome.getIdRenteAccordee());
+                retenue.setIdDomaineApplicatif(IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE);
+                //TODO: Ajouter le vrai montant après calcul
+                retenue.setMontantRetenuMensuel("100.00");
+                retenue.setMontantTotalARetenir("999'999.00");
+                pcaRetenue.setSimpleRetenue(retenue);
+                PegasusServiceLocator.getRetenueService().createWithOutCheck(pcaRetenue);
+            }
+        }
+    }
+
+    private void mappingHomes(List<DonneeInterneHomeVersement> homeVersementList, CalculDonneesHomeSearch listHomes, List<SimplePCAccordee> allNewPca) throws JadeApplicationServiceNotAvailableException, PmtMensuelException {
+
+
+        for (JadeAbstractModel model : listHomes.getSearchResults()) {
+            CalculDonneesHome home = (CalculDonneesHome) model;
+            if (home.getIsVersementDirect()) {
+                DonneeInterneHomeVersement donnee;
+                for (SimplePCAccordee simplePCAccordee : allNewPca) {
+                    if (simplePCAccordee.getCsRoleBeneficiaire().equals(home.getCsRoleFamille())
+                            && simplePCAccordee.getDateDebut().equals(home.getDateDebutDFH())) {
+                        Map<Periode,String> mapPeriode = createPeriodeVersementHome(home.getDateDebutDFH(),home.getDateFinDFH());
+                        for(Map.Entry<Periode,String> entry  :mapPeriode.entrySet()){
+                            String csTypeVersement = entry.getValue();
+                            Periode periode = entry.getKey();
+                            donnee = new DonneeInterneHomeVersement();
+                            donnee.setIdRenteAccordee(simplePCAccordee.getIdPrestationAccordee());
+                            donnee.setIdPca(simplePCAccordee.getIdPCAccordee());
+                            donnee.setIdAdressePaiement(home.getIdAdressePaiement());
+                            donnee.setIdTiersHome(home.getIdTiersHome());
+                            donnee.setMontantPrixChambre(home.getPrixJournalier());
+                            donnee.setIdDemande(home.getIdDemande());
+                            donnee.setIdTiersHome(home.getIdTiersHome());
+                            donnee.setIdTiersAdressePaiement(home.getIdTiersHome());
+                            donnee.setIdTiersRegroupement(home.getIdTiersRegroupement());
+                            donnee.setMontantMensuel(simplePCAccordee.getMontantMensuel());
+                            if (JadeStringUtil.isBlankOrZero(simplePCAccordee.getIdPrestationAccordeeConjoint())) {
+                                donnee.setCsRoleBeneficiaire(IPCDroits.CS_ROLE_FAMILLE_REQUERANT);
+                            } else {
+                                donnee.setCsRoleBeneficiaire(simplePCAccordee.getCsRoleBeneficiaire());
+                            }
+                            donnee.setCsTypeVersement(csTypeVersement);
+                            donnee.setDateDebut(periode.getDateDebut());
+                            donnee.setDateFin(periode.getDateFin());
+                            homeVersementList.add(donnee);
+                        }
+                    }
+                }
+            }
+
+        }
+
+
+    }
+
+    private Map<Periode, String> createPeriodeVersementHome(String dateDebutDFH, String dateFinDFH) throws JadeApplicationServiceNotAvailableException, PmtMensuelException {
+        Map<Periode,String> map = new HashMap<>();
+        Periode periode;
+
+        /**
+         *  CAS 1 : Entrée en home à partir du mois du prochain paiement
+         */
+        if (isDateAfterOrEquals(dateDebutDFH, PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt())) {
+            periode = new Periode(dateDebutDFH,dateFinDFH);
+            map.put(periode,DonneeInterneHomeVersement.TYPE_RETENUS);
+        } else {
+            /**
+             *  CAS 2 : Entrée en home avant le mois du prochain paiement et termine après ce même mois.
+             */
+            if(JadeStringUtil.isBlankOrZero(dateFinDFH) || (!JadeStringUtil.isBlankOrZero(dateFinDFH) && isDateAfterOrEquals(dateFinDFH, PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt()))){
+                periode = new Periode(dateDebutDFH,PegasusServiceLocator.getPmtMensuelService().getDateDernierPmt());
+                map.put(periode,DonneeInterneHomeVersement.TYPE_CREANCIER);
+                periode = new Periode( PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt(),dateFinDFH);
+                map.put(periode,DonneeInterneHomeVersement.TYPE_RETENUS);
+            }else{
+                /**
+                 *  CAS 3 : Entrée en home avant le mois du prochain paiement et termine avant ce même mois.
+                 */
+                periode = new Periode(dateDebutDFH,dateFinDFH);
+                map.put(periode,DonneeInterneHomeVersement.TYPE_CREANCIER);
+            }
+
+        }
+
+        return map;
+
+    }
+
+    private boolean isDateAfterOrEquals(String dateDebutDFH, String dateProchainPmt) {
+        if (JadeDateUtil.isDateAfter(dateProchainPmt, dateDebutDFH) || dateDebutDFH.equals(dateProchainPmt)) {
+            return true;
+        }
+        return false;
+
+    }
+
+    private void updateOldRetenuWithDateEnd(CalculPcaReplaceSearch anciennesPCAccordees, SimplePCAccordee simplePCAccordee, Boolean isVersementHome) throws JadeApplicationException, JadePersistenceException {
+        CalculPcaReplace anciennePCACourante;
+        String idPcaOld;
+        String dateProchainPaiement = PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt();
+        if (JadeStringUtil.isBlankOrZero(simplePCAccordee.getDateFin())) {
+            for (JadeAbstractModel absDonnee : anciennesPCAccordees.getSearchResults()) {
+                CalculPcaReplace ancienneDonnee = (CalculPcaReplace) absDonnee;
+                // On recherche la pca courante (Qui n'a pas de date fin)
+                if (JadeStringUtil.isBlankOrZero(ancienneDonnee.getSimplePCAccordee().getDateFin())
+                        && IPCPCAccordee.CS_ETAT_PCA_VALIDE.equals(ancienneDonnee.getSimplePCAccordee().getCsEtatPC())) {
+                    anciennePCACourante = ancienneDonnee;
+                    if (anciennePCACourante.getSimplePrestationsAccordees().getIsRetenues()) {
+                        idPcaOld = ancienneDonnee.getSimplePCAccordee().getIdPCAccordee();
+                        PcaRetenueSearch search = new PcaRetenueSearch();
+                        search.setForIdPca(idPcaOld);
+                        search = PegasusServiceLocator.getRetenueService().search(search);
+                        for (JadeAbstractModel model : search.getSearchResults()) {
+                            PcaRetenue retenue = (PcaRetenue) model;
+                            /**
+                             * CAS 1 : Si il y'a un versement home, alors on cloture tout les retenus de l'ancien PCA
+                             */
+                            if (isVersementHome && JadeStringUtil.isBlankOrZero(retenue.getSimpleRetenue().getDateFinRetenue())) {
+                                retenue.getSimpleRetenue().setDateFinRetenue(dateProchainPaiement);
+                                PegasusServiceLocator.getRetenueService().update(retenue);
+                            }
+                            /**
+                             * CAS 2 : Si il y'a pas de versement home, alors on remet comme avant les retenus de l'ancien PCA si il a été ajouté lors d'une calcul.
+                             */
+                            if (!isVersementHome && retenue.getSimpleRetenue().getDateFinRetenue().equals(dateProchainPaiement)) {
+                                retenue.getSimpleRetenue().setDateFinRetenue("");
+                                PegasusServiceLocator.getRetenueService().update(retenue);
+                            }
+
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+
 
     /**
      * Log un warning pour les prestations accordées dans les RFM
@@ -419,28 +733,80 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
     }
 
     private void calculeDroitTraitement(Droit droit, Map<String, JadeAbstractSearchModel> cacheDonneesBD,
-            List<PeriodePCAccordee> listePCAccordes, String dateDebutPlageCalcul, String dateFinPlageCalcul,
-            DonneesHorsDroitsProvider containerGlobal) throws CalculException,
+                                        List<PeriodePCAccordee> listePCAccordes, List<PeriodePCAccordee> listePCAccordesReforme, String dateDebutPlageCalcul, String dateFinPlageCalcul,
+                                        DonneesHorsDroitsProvider containerGlobal) throws CalculException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException, TaxeJournaliereHomeException,
             HomeException {
         Map<String, CalculMembreFamille> listePersonnes = new HashMap<String, CalculMembreFamille>();
         // charge les données financières et autres
         PegasusImplServiceLocator.getCalculComparatifService().loadDonneesCalculComparatif(droit, cacheDonneesBD,
-                listePCAccordes, listePersonnes, dateDebutPlageCalcul);
+                listePCAccordes, listePersonnes, dateDebutPlageCalcul, dateFinPlageCalcul);
 
         // trie et consolide les données brutes du cache de données de
         // persistence
-        PegasusImplServiceLocator.getCalculComparatifService().consolideCacheDonneesPersonnes(listePCAccordes,
-                cacheDonneesBD, listePersonnes, dateFinPlageCalcul, containerGlobal);
+        boolean isFratrie = droit.getDemande().getSimpleDemande().getIsFratrie();
+        String dateReforme;
 
-        // procède aux calcul comparatifs
-        PegasusImplServiceLocator.getCalculComparatifService().calculePCAccordes(droit, listePCAccordes);
+        try {
+            dateReforme = EPCProperties.DATE_REFORME_PC.getValue();
+            dertermineCalculs(droit, listePCAccordes, listePCAccordesReforme, dateFinPlageCalcul, dateReforme);
+        } catch (PropertiesException e) {
+            throw new CalculException("Unbale to obtain properties for reforme pc", e);
+        }
 
+        boolean calculsComparatifsImmediats = listePCAccordes.isEmpty() || listePCAccordesReforme.isEmpty();
+
+        if (!listePCAccordes.isEmpty()) {
+            // trie et consolide les données brutes du cache de données de persistence
+            PegasusImplServiceLocator.getCalculComparatifService().consolideCacheDonneesPersonnes(listePCAccordes,
+                    cacheDonneesBD, listePersonnes, dateFinPlageCalcul, containerGlobal, false, isFratrie);
+            // procède aux calcul comparatifs
+            PegasusImplServiceLocator.getCalculComparatifService().calculePCAccordes(droit, listePCAccordes, calculsComparatifsImmediats);
+        }
+
+        if (!listePCAccordesReforme.isEmpty()) {
+            // S170908_002 : ajout calcul réforme PC
+            // trie et consolide les données brutes du cache de données de persistence
+            PegasusImplServiceLocator.getCalculComparatifService().consolideCacheDonneesPersonnes(listePCAccordesReforme,
+                    cacheDonneesBD, listePersonnes, dateFinPlageCalcul, containerGlobal, true, isFratrie);
+
+            // procède aux calcul comparatifs
+            PegasusImplServiceLocator.getCalculComparatifService().calculePCAccordes(droit, listePCAccordesReforme, calculsComparatifsImmediats);
+        }
+        fusionneCalcul(listePCAccordes, listePCAccordesReforme, dateReforme);
+    }
+
+    /**
+     * Détermine quels sont les calculs à effectuer :
+     * - uniquement avant réforme
+     * - uniquement après réforme
+     * - calcul comparatif entre avant et après
+     *
+     * @param droit
+     * @param listePCAccordes
+     * @param listePCAccordesReforme
+     * @param dateFinPlageCalcul
+     * @param dateReforme
+     * @throws PropertiesException
+     */
+    private void dertermineCalculs(Droit droit, List<PeriodePCAccordee> listePCAccordes, List<PeriodePCAccordee> listePCAccordesReforme,
+                                   String dateFinPlageCalcul, String dateReforme) throws PropertiesException {
+        String dateDemande = droit.getDemande().getSimpleDemande().getDateDepot();
+        Boolean reforme = EPCProperties.REFORME_PC.getBooleanValue();
+        if (JadeDateUtil.isDateBefore(dateFinPlageCalcul, dateReforme) || !reforme) {
+            // calcul sur ancien calculateur uniquement
+            listePCAccordesReforme.clear();
+        } else if (!droit.getDemande().getSimpleDemande().getForcerCalculTransitoire() &&
+                (dateDemande.equals(dateReforme) || JadeDateUtil.isDateAfter(dateDemande, dateReforme))) {
+            // calcul uniquement calcul réforme
+            listePCAccordes.clear();
+        }
+        // sinon on garde les 2 listes pour le calcul comparatif
     }
 
     @Override
     public IPeriodePCAccordee calculWithoutPersist(Droit droit, Collection<String> listeIdPersonnes,
-            DonneesHorsDroitsProvider containerGlobal, String dateDebutPeriodeForce) throws CalculException,
+                                                   DonneesHorsDroitsProvider containerGlobal, String dateDebutPeriodeForce) throws CalculException,
             JadePersistenceException, JadeApplicationException {
 
         List<PeriodePCAccordee> list = this.calculDroitPourComparaison(droit, listeIdPersonnes, containerGlobal, false,
@@ -559,7 +925,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
     }
 
     private void persistCalculForComparaison(Droit droit, boolean retroactif, List<PeriodePCAccordee> listePCAccordes,
-            Map<String, JadeAbstractSearchModel> cacheDonneesBD) throws PCAccordeeException, DroitException,
+                                             Map<String, JadeAbstractSearchModel> cacheDonneesBD) throws PCAccordeeException, DroitException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException, JadeApplicationException {
         calculeDroitPersistence(droit, retroactif, listePCAccordes, cacheDonneesBD);
     }
@@ -595,7 +961,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 new EachPeriode<SimplePCAccordee>() {
                     @Override
                     public String[] dateDebutFin(SimplePCAccordee t) {
-                        return new String[] { t.getDateDebut(), t.getDateFin() };
+                        return new String[]{t.getDateDebut(), t.getDateFin()};
                     }
                 });
 

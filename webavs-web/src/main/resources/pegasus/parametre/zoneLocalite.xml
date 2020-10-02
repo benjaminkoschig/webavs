@@ -22,9 +22,10 @@
 				<search-field name="forIdLocalite" operation="EQUALS" field-ref="simpleLienZoneLocalite.idLocalite"/>
 				<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="simpleLienZoneLocalite.dateDebut"/>
 				<search-field name="likeNumPostal" operation="LIKE" field-ref="localiteSimpleModel.numPostal"/>
+				<search-field name="forType" operation="EQUALS" field-ref="simpleZoneForfaits.type"/>
 			</search-group>
 		</search-definition>
-		
+
 	    <search-definition name="withDateValable">
 			<search-group operator="AND">
 			<search-field name="likeNumPostal" operation="LIKE" field-ref="localiteSimpleModel.numPostal"/>

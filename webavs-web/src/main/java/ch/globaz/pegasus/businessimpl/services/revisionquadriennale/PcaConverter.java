@@ -33,12 +33,12 @@ public class PcaConverter {
             pca.setIsSupprime(simplePCAccordee.getIsSupprime());
             pca.setSousCode(sousCode);
             pca.setIdVersionDroit(simplePCAccordee.getIdVersionDroit());
-
             if (simplePlanDeCalcul != null) {
                 if (!simplePlanDeCalcul.getMontantPCMensuelle().trim().isEmpty()) {
                     pca.setMontant(Montant.newMensuel(simplePlanDeCalcul.getMontantPCMensuelle()));
                 }
                 pca.setEtatCalcul(PcaEtatCalcul.fromValue(simplePlanDeCalcul.getEtatPC()));
+                pca.setReformePC(simplePlanDeCalcul.getReformePc());
             }
 
             pca.setRoleBeneficiaire(RoleMembreFamille.fromValue(simplePCAccordee.getCsRoleBeneficiaire()));

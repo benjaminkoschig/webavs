@@ -10,6 +10,7 @@ public class SimpleZoneForfaits extends JadeSimpleModel {
     private String csCanton = null;
     private String designation = null;
     private String idZoneForfait = null;
+    private String type = null;
 
     /**
      * @return the csCanton
@@ -57,6 +58,14 @@ public class SimpleZoneForfaits extends JadeSimpleModel {
     public void setId(String id) {
         idZoneForfait = id;
 
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     /**

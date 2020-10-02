@@ -2,9 +2,15 @@ package globaz.pegasus.vb.droit;
 
 import globaz.globall.vb.BJadePersistentObjectViewBean;
 import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.i18n.JadeI18n;
+import globaz.jade.log.business.JadeBusinessMessage;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
 import ch.globaz.pegasus.business.models.droit.DroitMembreFamille;
 import ch.globaz.pegasus.business.models.droit.ModificateurDroitDonneeFinanciere;
@@ -116,4 +122,54 @@ public abstract class PCDonneeFinanciereAjaxViewBean extends BJadePersistentObje
         this.idDroitMembreFamille = idDroitMembreFamille;
     }
 
+
+
+    public JadeBusinessMessage[] getMessageInfosTabs(int niveauErreur){
+        JadeBusinessMessage[] tabs =  JadeThread.logMessages();
+        List<JadeBusinessMessage> listTri = new ArrayList<>();
+        if(tabs != null) {
+            for(int i= 0 ; i< tabs.length;i++){
+                JadeBusinessMessage message =tabs[i];
+                if(message.getLevel() == niveauErreur){
+                    listTri.add(message);
+                }
+            }
+        }
+        JadeBusinessMessage[] tabsTri = new JadeBusinessMessage[listTri.size()];
+        for(int i = 0 ;i<listTri.size();i++){
+            tabsTri[i] = listTri.get(i);
+        }
+        return tabsTri;
+    }
+
+    public JadeBusinessMessage[] getMessageInfosTabs(){
+        JadeBusinessMessage[] tabs =  JadeThread.logMessages();
+        return tabs;
+    }
+    public String getMessages(int niveauErreur){
+        StringBuffer stringBuffer = new StringBuffer();
+        JadeBusinessMessage[] tabs =  JadeThread.logMessages();
+        if(tabs != null) {
+            for(int i= 0 ; i< tabs.length;i++){
+                JadeBusinessMessage message =tabs[i];
+                if(message.getLevel() == niveauErreur){
+                    stringBuffer.append(JadeI18n.getInstance().getMessage(JadeThread.currentLanguage(), message.getMessageId(), message.getParameters()));
+                    stringBuffer.append("\n");
+                }
+            }
+        }
+        return stringBuffer.toString();
+    }
+    public String getMessages(){
+        StringBuffer stringBuffer = new StringBuffer();
+        JadeBusinessMessage[] tabs =  JadeThread.logMessages();
+        if(tabs != null) {
+            for(int i= 0 ; i< tabs.length;i++){
+                JadeBusinessMessage message =tabs[i];
+                    stringBuffer.append(JadeI18n.getInstance().getMessage(JadeThread.currentLanguage(), message.getMessageId(), message.getParameters()));
+                    stringBuffer.append("<br>");
+            }
+        }
+        return stringBuffer.toString();
+    }
 }

@@ -29,6 +29,7 @@ PCRevenuActiviteLucrativeDependanteAjaxListViewBean listViewBean = new PCRevenuA
 		FWCurrency montantActiviteLucrative = new FWCurrency("0.00");
 		FWCurrency deductionsSociales = new FWCurrency("0.00");
 		FWCurrency deductionsLPP = new FWCurrency("0.00");
+		FWCurrency fraisDeGarde = new FWCurrency("0.00");
 		FWCurrency montantFrais = new FWCurrency("0.00");		
 		String idGroup=null;
 		listViewBean = (PCRevenuActiviteLucrativeDependanteAjaxListViewBean)viewBean.getListViewBean();
@@ -46,6 +47,7 @@ PCRevenuActiviteLucrativeDependanteAjaxListViewBean listViewBean = new PCRevenuA
 				deductionsSociales = new FWCurrency(donnee.getSimpleRevenuActiviteLucrativeDependante().getDeductionsSociales());
 				deductionsLPP = new FWCurrency(donnee.getSimpleRevenuActiviteLucrativeDependante().getDeductionsLpp());
 				montantFrais = new FWCurrency(donnee.getSimpleRevenuActiviteLucrativeDependante().getMontantFrais());
+				fraisDeGarde = new FWCurrency(donnee.getSimpleRevenuActiviteLucrativeDependante().getFraisDeGarde());
 				
 				// l'id contratEntretienViager du CEV
 				String idCev = donnee.getSimpleRevenuActiviteLucrativeDependante().getId();
@@ -73,9 +75,10 @@ PCRevenuActiviteLucrativeDependanteAjaxListViewBean listViewBean = new PCRevenuA
 				<td><%=JadeStringUtil.escapeXML(nomEmployeur)%></td>
 				<td style="text-align:right;"><%=montantActiviteLucrative.toStringFormat() %></td>
 				<td style="text-align:right;"><%=deductionsSociales.toStringFormat() %></td>
-				<td style="text-align:right;"><%=deductionsLPP.toStringFormat() %></td>				
+				<td style="text-align:right;"><%=deductionsLPP.toStringFormat() %></td>
 				<td><%=listeFrais %></td>
-				<td style="text-align:right;"><%=montantFrais.toStringFormat() %></td>	
+				<td style="text-align:right;"><%=montantFrais.toStringFormat() %></td>
+				<td style="text-aligh:right;"><%=fraisDeGarde.toStringFormat()%></td>
 				<td align="center" ><% if(donnee.getSimpleDonneeFinanciereHeader().getIsDessaisissementRevenu().booleanValue()){%>
 					<IMG src="<%=request.getContextPath()+"/images/ok.gif" %>"/>
 					<%} else {
@@ -88,5 +91,5 @@ PCRevenuActiviteLucrativeDependanteAjaxListViewBean listViewBean = new PCRevenuA
 		idGroup=donnee.getSimpleDonneeFinanciereHeader().getIdEntityGroup();
 		}%>
 	</liste>
-	<%@ include file="/pegasusRoot/ajax/commonListDonneeFinanciere.jspf" %>
+	<%@ include file="/pegasusRoot/ajax/commonListDonneeFinanciereWithWarning.jspf" %>
 </message>

@@ -545,7 +545,13 @@ function postInit(){
 									data-g-commutator="condition:($(this).prop('checked')),
                            	 							actionTrue:¦show('#forDisplayDateReto')¦,
                             							actionFalse:¦clear('.clear'),hide('#forDisplayDateReto')¦"></td>
-					<td colspan="4"></td>
+					<td><label class="standardLabel" for="forFocerCalcul"><ct:FWLabel key="JSP_PC_DEM_R_FOCER_CALCUL"/></label></td>
+					<td>
+					<input type="checkbox" name="forcerCalculTransitoire"
+						<%=viewBean.getDemande().getSimpleDemande().getForcerCalculTransitoire() !=null
+								&& viewBean.getDemande().getSimpleDemande().getForcerCalculTransitoire()?" checked='checked' ":"" %>
+						   id="forForcerCalcul" value="on"
+					</td>
 				</tr>
 				<tr id="forDisplayDateReto">
 					<td><label class="standardLabel" for="forDateDebut"><ct:FWLabel key="JSP_PC_DEM_R_DATE_DEBUT"/></label></td>

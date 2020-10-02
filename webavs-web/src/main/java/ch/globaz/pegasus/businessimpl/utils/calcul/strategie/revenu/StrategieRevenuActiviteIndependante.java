@@ -31,7 +31,7 @@ public class StrategieRevenuActiviteIndependante extends StrategieCalculRevenu i
     @Override
     protected TupleDonneeRapport calculeRevenu(CalculDonneesCC donnee, CalculContext context,
             TupleDonneeRapport resultatExistant) throws CalculException {
-
+        String cleRevenuActiviteFraisObtention = IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_FRAIS_OBTENTION_REVENU;
         String csGenre = donnee.getRevenuActiviteLucrativeIndependanteCSGenreRevenu();
         resultatExistant.setLegende(csGenre);
         // aiguillage selon le genre de revenu, standard ou agricole/forestier
@@ -43,7 +43,10 @@ public class StrategieRevenuActiviteIndependante extends StrategieCalculRevenu i
             this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_INDEPENDANTE,
                     donnee.getRevenuActiviteLucrativeIndependanteMontant());
         }
-
+        if(context.contains(CalculContext.Attribut.REFORME)){
+            this.getOrCreateChild(resultatExistant, cleRevenuActiviteFraisObtention,
+                    donnee.getRevenuActiviteLucrativeIndependanteMontantFraisDeGarde());
+        }
         return resultatExistant;
     }
 

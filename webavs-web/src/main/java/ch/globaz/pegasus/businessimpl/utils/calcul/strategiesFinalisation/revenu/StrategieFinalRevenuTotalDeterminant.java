@@ -1,6 +1,7 @@
 package ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.revenu;
 
 import java.util.Date;
+
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.constantes.IPCVariableMetier;
 import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCRenteAvsAi;
@@ -48,24 +49,26 @@ public class StrategieFinalRevenuTotalDeterminant implements StrategieCalculFina
         somme += donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_RENFORMO_TOTAL);
 
         // ajout du revenu de l'activité lucrative arrondi si aucunes IJAJ ET activite lucrative simultanément
-        float revenuPrivilegie = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_TOTAL);
-        TupleDonneeRapport tupleActiviteLucrativeRevenuPrivilegie;
+        float revenuPrivilegie = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE);
+        if(revenuPrivilegie== 0.f){
+            revenuPrivilegie = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE);
 
-        if (donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_IJAI)) {
-            tupleActiviteLucrativeRevenuPrivilegie = new TupleDonneeRapport(
-                    IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE, revenuPrivilegie);
-
-        } else {
-            revenuPrivilegie = Math.round(donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_TOTAL)
-                    * TAUX_REVENU_ACTIVITE_LUCRATIVE);
-
-            tupleActiviteLucrativeRevenuPrivilegie = new TupleDonneeRapport(
-                    IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE, revenuPrivilegie);
-            tupleActiviteLucrativeRevenuPrivilegie.setLegende(TAUX_REVENU_ACTIVITE_LUCRATIVE_LEGENDE);
         }
-        donnee.addEnfantTuple(tupleActiviteLucrativeRevenuPrivilegie);
-
         somme += revenuPrivilegie;
+
+        // ajout du conjoint non rentier et des enfants
+        if (context.contains(Attribut.REFORME)) {
+            float revenuPrivilegieConjoint = Math.round(donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE_CONJOINT));
+            if(revenuPrivilegieConjoint== 0.f){
+                revenuPrivilegieConjoint = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE_CONJOINT);
+            }
+            float revenuPrivilegieEnfant = Math.round(donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE_ENFANT));
+            if(revenuPrivilegieEnfant== 0.f){
+                revenuPrivilegieEnfant = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE_ENFANT);
+            }
+            somme += revenuPrivilegieConjoint;
+            somme += revenuPrivilegieEnfant;
+        }
 
         // ajout des rentes avs ai
         somme += donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_RENAVSAI_TOTAL);
@@ -81,6 +84,10 @@ public class StrategieFinalRevenuTotalDeterminant implements StrategieCalculFina
 
         // ajout revenu loyer
         somme += donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_LOYER_SOUS_LOCATION_NET);
+
+        // ajout des subsides d'assurance maladie
+        somme += donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_SUBSIDE_ASSURANCE_MALADIE_TOTAL);
+
         // TODO clé à verifier
         donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_REVEN_REV_SOUS_TOTAL_RECONNU, somme));
 
@@ -90,14 +97,11 @@ public class StrategieFinalRevenuTotalDeterminant implements StrategieCalculFina
 
     /**
      * Calcule la fraction d'imputation de la fortune
-     * 
-     * @param context
-     *            contexte de calcul
-     * @param donnee
-     *            tuple root des resultats de calcul
+     *
+     * @param context contexte de calcul
+     * @param donnee  tuple root des resultats de calcul
      * @return tuple de la fraction (est pas ajouté automatiquement au tuple root)
-     * @throws CalculException
-     *             en cas d'erreur de calcul
+     * @throws CalculException en cas d'erreur de calcul
      */
     private TupleDonneeRapport getFractionFortuneTuple(CalculContext context, TupleDonneeRapport donnee)
             throws CalculException {
@@ -113,7 +117,7 @@ public class StrategieFinalRevenuTotalDeterminant implements StrategieCalculFina
             // K141111_003 si on a une SR avec une IJAJ on met un message d'erreur
             if ((typeRenteRequerant.equals(IPCRenteAvsAi.CS_TYPE_SANS_RENTE_INVALIDITE)
                     || typeRenteRequerant.equals(IPCRenteAvsAi.CS_TYPE_SANS_RENTE_VIEILLESSE) || typeRenteRequerant
-                        .equals(IPCRenteAvsAi.CS_TYPE_SANS_RENTE_SURVIVANT))
+                    .equals(IPCRenteAvsAi.CS_TYPE_SANS_RENTE_SURVIVANT))
                     && donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_IJAI)) {
                 throw new CalculBusinessException("pegasus.calcul.strategie.revenuTotal.typeRenteRequerant.srijai");
             }
@@ -143,17 +147,17 @@ public class StrategieFinalRevenuTotalDeterminant implements StrategieCalculFina
         // détermination de la fraction pour
         Float fractionFortune = null;
 
-        if(IPCRenteAvsAi.CS_TYPE_RENTE_13.equals(typeRenteRequerant)){
-            if(JadeStringUtil.isEmpty(donnee.getLegendeEnfant(IPCValeursPlanCalcul.CLE_REVEN_IMP_FORT_TOTAL))) {
+        if (IPCRenteAvsAi.CS_TYPE_RENTE_13.equals(typeRenteRequerant)) {
+            if (JadeStringUtil.isEmpty(donnee.getLegendeEnfant(IPCValeursPlanCalcul.CLE_REVEN_IMP_FORT_TOTAL))) {
                 throw new CalculBusinessException("pegasus.simpleRenteAvsAi.imputationFortune.mandatory");
             } else {
                 String value = donnee.getLegendeEnfant(IPCValeursPlanCalcul.CLE_REVEN_IMP_FORT_TOTAL);
                 legendeValue = value;
                 if (value.contains("/")) {
                     String[] rat = value.split("/");
-                    fractionFortune =  Float.parseFloat(rat[0]) / Float.parseFloat(rat[1]);
+                    fractionFortune = Float.parseFloat(rat[0]) / Float.parseFloat(rat[1]);
                 } else {
-                    fractionFortune =  Float.parseFloat(value);
+                    fractionFortune = Float.parseFloat(value);
                 }
             }
         } else if ((Boolean) context.get(Attribut.IS_FRATRIE)) {
@@ -246,11 +250,11 @@ public class StrategieFinalRevenuTotalDeterminant implements StrategieCalculFina
         TupleDonneeRapport tupleImputationFortuneNette = new TupleDonneeRapport(
                 IPCValeursPlanCalcul.CLE_REVEN_IMP_FORT_TOTAL, somme);
 
-        if(legendeValue != null) {
+        if (legendeValue != null) {
             tupleImputationFortuneNette.setLegende(legendeValue);
         } else {
             tupleImputationFortuneNette
-                .setLegende(((ControlleurVariablesMetier) context.get(legende)).getLegendeCourante());
+                    .setLegende(((ControlleurVariablesMetier) context.get(legende)).getLegendeCourante());
         }
 
         return tupleImputationFortuneNette;

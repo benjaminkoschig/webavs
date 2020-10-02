@@ -25,7 +25,7 @@ import ch.globaz.pegasus.business.models.pcaccordee.PlanDeCalculWitMembreFamille
 import ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul;
 import ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalculSearch;
 import ch.globaz.pegasus.business.models.pcaccordee.VersionDroitPCAPlanDeCaculeSearch;
-import ch.globaz.pegasus.business.vo.pcaccordee.PCAAccordeePlanClaculeAndMembreFamilleVO;
+import ch.globaz.pegasus.business.vo.pcaccordee.PCAccordeePlanCalculAndMembreFamilleVO;
 import ch.globaz.pegasus.business.vo.pcaccordee.PCAccordeePlanCalculRetenuEnfantsDansCalculVO;
 import ch.globaz.pegasus.businessimpl.services.models.pcaccordee.CalculMontantRetroActif;
 
@@ -319,7 +319,7 @@ public interface PCAccordeeService extends JadeApplicationService {
      * @throws JadePersistenceException
      * @throws PCAccordeeException
      */
-    public List<PCAAccordeePlanClaculeAndMembreFamilleVO> searchPCAccordeeWithCalculeRetenuVO(
+    public List<PCAccordeePlanCalculAndMembreFamilleVO> searchPCAccordeeWithCalculeRetenuVO(
             String idTiersMembreFamille, String dateValable) throws PCAccordeeException, JadePersistenceException;
 
     /**

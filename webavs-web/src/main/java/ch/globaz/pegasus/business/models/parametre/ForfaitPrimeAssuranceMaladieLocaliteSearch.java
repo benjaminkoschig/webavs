@@ -17,6 +17,7 @@ public class ForfaitPrimeAssuranceMaladieLocaliteSearch extends JadeSearchSimple
     private Collection<String> forIdsLocalite;
     private String forDateValable;
     private String forIdLocalite;
+    private String forType = null;
 
     /**
      * @return the forCsTypePrime
@@ -99,6 +100,14 @@ public class ForfaitPrimeAssuranceMaladieLocaliteSearch extends JadeSearchSimple
 
     public void setForIdsLocalite(Collection<String> forIdsLocalite) {
         this.forIdsLocalite = forIdsLocalite;
+    }
+
+    public String getForType() {
+        return forType;
+    }
+
+    public void setForType(String forType) {
+        this.forType = forType;
     }
 
     @Override

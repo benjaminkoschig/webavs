@@ -28,6 +28,9 @@ public class DonneeFinanciereComplexModel extends JadeComplexModel {
     private String autresDettesProuveesMontant = null;
     private String autresApiCsDegre = null;
 
+    private String primeAssuranceMaladie = null;
+    private String subsideAssuranceMaladie = null;
+
     private String autresRentesAutreGenre = null;
     private String autresRentesCsGenre = null;
     private String autresRentesCsType = null;
@@ -107,6 +110,7 @@ public class DonneeFinanciereComplexModel extends JadeComplexModel {
     private String IJAPGAutreGenre = null;
     private String idDroit = null;
     private String idVersionDroit;
+    private String montantFraisDeGarde;
 
     public String getIdDroit() {
         return idDroit;
@@ -139,6 +143,8 @@ public class DonneeFinanciereComplexModel extends JadeComplexModel {
     private String IJAPGtauxAA = null;
     private String IJAPGtauxAVS = null;
     private Boolean isDessaisissementFortune = Boolean.FALSE;
+    private String typeDessaisissementFortune = null;
+
     private Boolean isDessaisissementRevenu = Boolean.FALSE;
     private String loyerCsTypeLoyer = null;
     private Boolean loyerIsFauteuilRoulant = null;
@@ -199,10 +205,12 @@ public class DonneeFinanciereComplexModel extends JadeComplexModel {
 
     private String revenuActiviteLucrativeDependanteDeductionsLPP = null;
     private String revenuActiviteLucrativeDependanteDeductionsSociales = null;
+    private String revenuActiviteLucrativeDependanteFraisDeGarde = null;
     private String revenuActiviteLucrativeDependanteMontant = null;
     private String revenuActiviteLucrativeDependanteMontantFraisEffectifs = null;
     private String revenuActiviteLucrativeIndependanteCSGenreRevenu = null;
     private String revenuActiviteLucrativeIndependanteMontant = null;
+    private String revenuActiviteLucrativeIndependanteFraisDeGarde = null;
 
     private String revenuHypothetiqueMontantDeductionsLPP = null;
     private String revenuHypothetiqueMontantDeductionsSociales = null;
@@ -217,6 +225,10 @@ public class DonneeFinanciereComplexModel extends JadeComplexModel {
     private String taxeJournaliereMontantJournalierLCA = null;
     private String taxeJournalierePrimeAPayer = null;
     private String taxeJournaliereLongueDuree = null;
+
+    private String sejourMoisPartielPrixJournalier = null;
+    private String sejourMoisPartielFraisNourriture = null;
+    private String sejourMoisPartielNombreJour = null;
 
     private String titreCsTypePropriete = null;
 
@@ -801,6 +813,10 @@ public class DonneeFinanciereComplexModel extends JadeComplexModel {
 
     public Boolean getIsDessaisissementFortune() {
         return isDessaisissementFortune;
+    }
+
+    public String getTypeDessaisissementFortune(){
+        return typeDessaisissementFortune;
     }
 
     public Boolean getIsDessaisissementRevenu() {
@@ -1620,6 +1636,14 @@ public class DonneeFinanciereComplexModel extends JadeComplexModel {
         this.cotisationPSALMontantAnnuel = cotisationPSALMontantAnnuel;
     }
 
+    public String getMontantFraisDeGarde() {
+        return montantFraisDeGarde;
+    }
+
+    public void setMontantFraisDeGarde(String montantFraisDeGarde) {
+        this.montantFraisDeGarde = montantFraisDeGarde;
+    }
+
     /**
      * @param csRoleFamille
      *            the csRoleFamille to set
@@ -1771,6 +1795,10 @@ public class DonneeFinanciereComplexModel extends JadeComplexModel {
 
     public void setIsDessaisissementFortune(Boolean isDessaisissementFortune) {
         this.isDessaisissementFortune = isDessaisissementFortune;
+    }
+
+    public void setTypeDessaisissementFortune(String typeDessaisissementFortune){
+        this.typeDessaisissementFortune = typeDessaisissementFortune;
     }
 
     public void setIsDessaisissementRevenu(Boolean isDessaisissementRevenu) {
@@ -2240,4 +2268,58 @@ public class DonneeFinanciereComplexModel extends JadeComplexModel {
         APIAVSCsDegre = aPIAVSCsDegre;
     }
 
+    public String getPrimeAssuranceMaladie() {
+        return primeAssuranceMaladie;
+    }
+
+    public void setPrimeAssuranceMaladie(String primeAssuranceMaladie) {
+        this.primeAssuranceMaladie = primeAssuranceMaladie;
+    }
+
+    public String getSubsideAssuranceMaladie() {
+        return subsideAssuranceMaladie;
+    }
+
+    public void setSubsideAssuranceMaladie(String subsideAssuranceMaladie) {
+        this.subsideAssuranceMaladie = subsideAssuranceMaladie;
+    }
+
+    public String getRevenuActiviteLucrativeDependanteFraisDeGarde() {
+        return revenuActiviteLucrativeDependanteFraisDeGarde;
+    }
+
+    public void setRevenuActiviteLucrativeDependanteFraisDeGarde(String revenuActiviteLucrativeDependanteFraisDeGarde) {
+        this.revenuActiviteLucrativeDependanteFraisDeGarde = revenuActiviteLucrativeDependanteFraisDeGarde;
+    }
+    public String getRevenuActiviteLucrativeIndependanteFraisDeGarde() {
+        return revenuActiviteLucrativeIndependanteFraisDeGarde;
+    }
+
+    public void setRevenuActiviteLucrativeIndependanteFraisDeGarde(String revenuActiviteLucrativeIndependanteFraisDeGarde) {
+        this.revenuActiviteLucrativeIndependanteFraisDeGarde = revenuActiviteLucrativeIndependanteFraisDeGarde;
+    }
+
+    public String getSejourMoisPartielPrixJournalier() {
+        return sejourMoisPartielPrixJournalier;
+    }
+
+    public void setSejourMoisPartielPrixJournalier(String sejourMoisPartielPrixJournalier) {
+        this.sejourMoisPartielPrixJournalier = sejourMoisPartielPrixJournalier;
+    }
+
+    public String getSejourMoisPartielFraisNourriture() {
+        return sejourMoisPartielFraisNourriture;
+    }
+
+    public void setSejourMoisPartielFraisNourriture(String sejourMoisPartielFraisNourriture) {
+        this.sejourMoisPartielFraisNourriture = sejourMoisPartielFraisNourriture;
+    }
+
+    public String getSejourMoisPartielNombreJour() {
+        return sejourMoisPartielNombreJour;
+    }
+
+    public void setSejourMoisPartielNombreJour(String sejourMoisPartielNombreJour) {
+        this.sejourMoisPartielNombreJour = sejourMoisPartielNombreJour;
+    }
 }

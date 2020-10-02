@@ -34,6 +34,7 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
     private Boolean comptabilisationAuto = false;
     private Map<String, String> membresFamille = new HashMap<String, String>();
     private Boolean forcerAnnulerActif;
+    private Boolean forcerCalculTransitoire;
 
     public PCDemandeDetailViewBean() {
         super();
@@ -320,5 +321,13 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
 
     public void setIsDateReduc(Boolean isDateReduc) {
         this.isDateReduc = isDateReduc;
+    }
+
+    public Boolean getForcerCalculTransitoire() {
+        return demande.getSimpleDemande().getForcerCalculTransitoire();
+    }
+
+    public void setForcerCalculTransitoire(Boolean forcerCalculTransitoire) {
+        demande.getSimpleDemande().setForcerCalculTransitoire(forcerCalculTransitoire);
     }
 }

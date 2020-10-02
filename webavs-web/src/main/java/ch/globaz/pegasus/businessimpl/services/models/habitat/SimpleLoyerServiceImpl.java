@@ -24,7 +24,9 @@ public class SimpleLoyerServiceImpl extends PegasusServiceLocator implements Sim
         if (simpleLoyer == null) {
             throw new LoyerException("Unable to create simpleLoyer, the model passed is null!");
         }
-        SimpleLoyerChecker.checkForCreate(simpleLoyer);
+        if(!simpleLoyer.isCopy()) {
+            SimpleLoyerChecker.checkForCreate(simpleLoyer);
+        }
         return (SimpleLoyer) JadePersistenceManager.add(simpleLoyer);
     }
 

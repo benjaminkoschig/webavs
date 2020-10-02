@@ -1,5 +1,6 @@
 package ch.globaz.pegasus.businessimpl.services.loader;
 
+import ch.globaz.pegasus.business.constantes.EPCForfaitType;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import java.util.List;
@@ -32,6 +33,7 @@ class ForfaitsPrimesAssuranceMaladieLoader {
         ForfaitPrimeAssuranceMaladieLocaliteSearch assuranceMaladieLocaliteSearch = new ForfaitPrimeAssuranceMaladieLocaliteSearch();
         assuranceMaladieLocaliteSearch.setForDateDebut("01.01.2000");
         assuranceMaladieLocaliteSearch.setForIdsLocalite(idsLocalite);
+        assuranceMaladieLocaliteSearch.setForType(EPCForfaitType.LAMAL.getCode().toString());
         // ajout d'une année pour reprendre les forfais pour les decisions futures
         // la date de fin est obligatoire
         assuranceMaladieLocaliteSearch.setForDateFin(new Date().addYear(1).getSwissValue());
@@ -69,7 +71,7 @@ class ForfaitsPrimesAssuranceMaladieLoader {
         forfaitPrimeAssuranceMaladie.setId(model.getSimpleLienZoneLocalite().getId());
         forfaitPrimeAssuranceMaladie.setIdLocalite(model.getSimpleLienZoneLocalite().getIdLocalite());
         forfaitPrimeAssuranceMaladie
-                .setMontant(new Montant(model.getSimpleForfaitPrimesAssuranceMaladie().getMontant()));
+                .setMontant(new Montant(model.getSimpleForfaitPrimesAssuranceMaladie().getMontantPrimeMoy()));
         forfaitPrimeAssuranceMaladie.setType(typConverter.convert(model.getSimpleForfaitPrimesAssuranceMaladie()
                 .getCsTypePrime()));
         return forfaitPrimeAssuranceMaladie;

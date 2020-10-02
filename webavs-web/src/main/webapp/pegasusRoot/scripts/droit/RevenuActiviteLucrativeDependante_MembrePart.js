@@ -39,9 +39,10 @@ function RevenuActiviteLucrativeDependantePart(container){
 					.find('.employeur').val($data.find('idEmployeur').text()).end()
 					.find('.montant').val($data.find('montant').text()).end()
 					.find('.deductionsSociales').val($data.find('deductionSociale').text()).end()
-					.find('.deductionsLpp').val($data.find('deductionsLpp').text()).end()																			
-					.find('.autres').val($data.find('autreFraisObtentionRevenu').text()).end()
-					.find('.montantFrais').val($data.find('montantFrais').text()).end()					
+					.find('.deductionsLpp').val($data.find('deductionsLpp').text()).end()
+			 		.find('.autres').val($data.find('autreFraisObtentionRevenu').text()).end()
+					.find('.montantFrais').val($data.find('montantFrais').text()).end()
+			        .find('.fraisDeGarde').val($data.find('fraisDeGarde').text()).end()
 					.find('.dessaisissementRevenu').attr('checked',$data.find('DR').text()=='true').end()
 					.find('[name=dateDebut]').val($data.find('dateDebut').text()).end()
 					.find('[name=dateFin]').val($data.find('dateFin').text()).end()		 		
@@ -122,12 +123,13 @@ function RevenuActiviteLucrativeDependantePart(container){
 			'revenuActiviteLucrativeDependante.simpleRevenuActiviteLucrativeDependante.idEmployeur':this.detail.find('.employeur').val(),
 			'revenuActiviteLucrativeDependante.simpleRevenuActiviteLucrativeDependante.montantActiviteLucrative':this.detail.find('.montant').val(),
 			'revenuActiviteLucrativeDependante.simpleRevenuActiviteLucrativeDependante.deductionsSociales':this.detail.find('.deductionsSociales').val(),
-			'revenuActiviteLucrativeDependante.simpleRevenuActiviteLucrativeDependante.deductionsLpp':this.detail.find('.deductionsLpp').val(),			
+			'revenuActiviteLucrativeDependante.simpleRevenuActiviteLucrativeDependante.deductionsLpp':this.detail.find('.deductionsLpp').val(),
 			'revenuActiviteLucrativeDependante.simpleRevenuActiviteLucrativeDependante.idAffiliation':this.detail.find('.idAffiliation').val(),
 			'simpleTypeFraisObtentionRevenu.csFraisObtentionRevenu':typeFrais,			
 			
 			'revenuActiviteLucrativeDependante.simpleRevenuActiviteLucrativeDependante.autreFraisObtentionRevenu':this.detail.find('.autres').val(),
-			'revenuActiviteLucrativeDependante.simpleRevenuActiviteLucrativeDependante.montantFrais':this.detail.find('.montantFrais').val(),						
+			'revenuActiviteLucrativeDependante.simpleRevenuActiviteLucrativeDependante.montantFrais':this.detail.find('.montantFrais').val(),
+			'revenuActiviteLucrativeDependante.simpleRevenuActiviteLucrativeDependante.fraisDeGarde':this.detail.find('.fraisDeGarde').val(),
 			'revenuActiviteLucrativeDependante.simpleDonneeFinanciereHeader.isDessaisissementRevenu':this.detail.find('.dessaisissementRevenu').prop('checked'),
 			'revenuActiviteLucrativeDependante.simpleDonneeFinanciereHeader.dateDebut':this.detail.find('[name=dateDebut]').val(),
 			'revenuActiviteLucrativeDependante.simpleDonneeFinanciereHeader.dateFin':this.detail.find('[name=dateFin]').val(),
@@ -137,7 +139,7 @@ function RevenuActiviteLucrativeDependantePart(container){
 	};		
 	
 	this.clearFields=function(){
-		 this.detail.find('[name=genreRevenu],.revenuNature,.selecteurEmployeur,.montant,.deductionsSociales,.deductionsLpp,.autres,.montantFrais,[name=dateDebut],[name=dateFin]').val('').end()
+		 this.detail.find('[name=genreRevenu],.revenuNature,.selecteurEmployeur,.montant,.deductionsSociales,.deductionsLpp,.autres,.montantFrais,.fraisDeGarde,[name=dateDebut],[name=dateFin]').val('').end()
 					.find('.dessaisissementRevenu').attr('checked',false);	
 		
 		 this.detail.find(".fraisObtentionId").next('.multiSelectOptions').find('INPUT').attr("checked",false);
@@ -244,7 +246,7 @@ $(function(){
 			zone.stopEdition();
 		}).end()
 		.find('.btnAjaxValidate').click(function(){
-			zone.validateEdition();
+			zone.validateEditionV2();
 		}).end()
 		.find('.btnAjaxDelete').click(function(){
 				zone.ajaxDeleteEntity(zone.selectedEntityId);
@@ -257,7 +259,7 @@ $(function(){
 		}).end()
 		.find('.btnAjaxValidateNouvellePeriode').click(function(){
 			zone.doAddPeriode=true;
-			zone.validateEdition();
+			zone.validateEditionV2();
 		}).end();	
 		
 		

@@ -23,7 +23,7 @@ public class RevenusDepenses extends JadeComplexModel {
     private SimpleLibelleContratEntretienViager simpleLibelleContratEntretienViager = null;
     private SimpleRevenuHypothetique simpleRevenuHypothetique = null;
     private SimpleTypeFraisObtentionRevenu simpleTypeFraisObtentionRevenu = null;
-
+    private SimpleFraisGarde simpleFraisGarde = null;
     /**
 	 * 
 	 */
@@ -36,6 +36,7 @@ public class RevenusDepenses extends JadeComplexModel {
         simpleAutresRevenus = new SimpleAutresRevenus();
         simpleContratEntretienViager = new SimpleContratEntretienViager();
         cotisationsPsal = new CotisationsPsal();
+        simpleFraisGarde = new SimpleFraisGarde();
         pensionAlimentaire = new PensionAlimentaire();
         simpleRevenuHypothetique = new SimpleRevenuHypothetique();
         simpleDonneeFinanciereHeader = new SimpleDonneeFinanciereHeader();
@@ -59,6 +60,7 @@ public class RevenusDepenses extends JadeComplexModel {
         result = (simpleAutresRevenus.isNew() ? result : simpleAutresRevenus);
         result = (simpleContratEntretienViager.isNew() ? result : simpleContratEntretienViager);
         result = (cotisationsPsal.isNew() ? result : cotisationsPsal);
+        result = (simpleFraisGarde.isNew() ? result : simpleFraisGarde);
         result = (pensionAlimentaire.isNew() ? result : pensionAlimentaire);
         result = (simpleRevenuHypothetique.isNew() ? result : simpleRevenuHypothetique);
 
@@ -182,4 +184,11 @@ public class RevenusDepenses extends JadeComplexModel {
         getDonneeFinanciere().setSpy(spy);
     }
 
+    public SimpleFraisGarde getSimpleFraisGarde() {
+        return simpleFraisGarde;
+    }
+
+    public void setSimpleFraisGarde(SimpleFraisGarde simpleFraisGarde) {
+        this.simpleFraisGarde = simpleFraisGarde;
+    }
 }

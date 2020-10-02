@@ -41,7 +41,8 @@ public enum PCProcessAdapationEnum {
     OLD_RENTE_AVS_AI_CONJOINT("pegasus.process.adaptation.oldRenteAvsAiConjoint"),
     PSAL_MONTANT_ANCIEN("pegasus.process.adaptation.ancienMontantPSAL"),
     PSAL_MONTANT_NOUVEAU("pegasus.process.adaptation.nouveauMontantPSAL"),
-    DATE_DOCUMENT_IMPRESSION("pegasus.process.adaptation.dateDocImpression");
+    DATE_DOCUMENT_IMPRESSION("pegasus.process.adaptation.dateDocImpression"),
+    PATH_CSV_TO_IMPORT("pegasus.process.adaptation.pathCsvToImport");
 
     private final String idLabel;
 

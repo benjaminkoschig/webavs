@@ -24,7 +24,7 @@ public interface IPCDemandes {
 
     public final static String CS_OCTROYE = "64001003";
     public final static String CS_REOUVERT = "64001009";
-    public final static String CS_REFUSE = "64001007";
+        public final static String CS_REFUSE = "64001007";
     public final static String CS_RENONCE = "64001006";
     public final static String CS_REVISION = "64001008";
     public final static String CS_SUPPRIME = "64001004";

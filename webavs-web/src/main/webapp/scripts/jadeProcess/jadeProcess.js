@@ -46,6 +46,23 @@ var buttonExecut = {
 			}
 		});
 	},
+
+	addCsvToProcess: function (f_ok, s_text) {
+		$('#dialogConfirm').dialog({
+			resizable: false,
+			height: 200,
+			modal: true,
+			title: s_text,
+			buttons: {
+				"Valider": function () {
+					f_ok();
+				},
+				"Annuler": function () {
+					$(this).dialog("destroy");
+				}
+			}
+		});
+	},
 	
 	execute: function (o_data, f_callBack,f_errorCallBack) {
 		o_data.keyProcess = S_KEY_PROCESS;
@@ -85,15 +102,38 @@ var buttonExecut = {
 			$(".currentInfosTimeTrForProcess").hide();
 		}
 		that.$executeStep.click(function () {
+			$('#messageErreurCsv').empty();
 			var element = this;
-			that.confirm(function () {
-				that.$executeStep.button({disabled: true});
-				that.$abortStep.button({disabled: false});
-				that.$validerStep.button({disabled: true});
-				that.execute({}, function (data) {that.filProgressBar(element, true, "getInfos"); } ); 
-				$(".currentInfosTimeTrForProcess").show();
-				overlayProgress.changOverlay();
-			},"Voulez-vous éxecuter l'étape ?");
+			if ($('#isStepImportPrime').val() != 'true') {
+				that.confirm(function () {
+					that.$executeStep.button({disabled: true});
+					that.$abortStep.button({disabled: false});
+					that.$validerStep.button({disabled: true});
+					that.execute({}, function (data) {that.filProgressBar(element, true, "getInfos"); } );
+					$(".currentInfosTimeTrForProcess").show();
+					overlayProgress.changOverlay();
+				},"Voulez-vous éxecuter l'étape ?");
+			} else {
+				that.addCsvToProcess(function () {
+					var ext = $('#PATH_CSV_TO_IMPORT').val().split(".").pop().toLowerCase();
+					if (ext == "csv") {
+						if (notationManager.validateAndDisplayError()) {
+							properties.propertiesObject.ajaxUpdatePropertiesImport();
+						}
+						that.$executeStep.button({disabled: true});
+						that.$abortStep.button({disabled: false});
+						that.$validerStep.button({disabled: true});
+						that.execute({}, function (data) {
+							that.filProgressBar(element, true, "getInfos");
+						} );
+						$(".currentInfosTimeTrForProcess").show();
+						overlayProgress.changOverlay();
+						$('.ui-dialog-content').dialog("destroy");
+					} else {
+						$('#messageErreurCsv').html('<b>Un fichier .csv doit être selectionné</b>');
+					}
+				},"Importation du fichier CSV");
+			}
 		});
 		 
 		this.$createEntitys.click(function (event) {

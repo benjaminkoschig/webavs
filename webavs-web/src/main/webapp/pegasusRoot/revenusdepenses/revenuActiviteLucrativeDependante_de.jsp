@@ -197,6 +197,7 @@ $(function(){
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail_ajax/bodyStart2.jspf"%>
 <%-- tpl:put name="zoneMain" --%>
+<div class="informations" style="float:right; width: 30%" >
 <TR>
 	<td colspan="4">
 	<div class="conteneurDF">
@@ -228,7 +229,8 @@ $(function(){
 				<th><ct:FWLabel key="JSP_PC_ACTIVITE_LUCRATIVE_DEPENDANTE_L_DEDUCTIONS_SOCIALES" /></th>
 				<th><ct:FWLabel	key="JSP_PC_ACTIVITE_LUCRATIVE_DEPENDANTE_L_DEDUCTIONS_LPP" /></th>
 				<th><ct:FWLabel	key="JSP_PC_ACTIVITE_LUCRATIVE_DEPENDANTE_L_FRAIS_OBTENTION" /></th>
-				<th><ct:FWLabel	key="JSP_PC_ACTIVITE_LUCRATIVE_DEPENDANTE_L_MONTANT_FRAIS" /></th>					
+				<th><ct:FWLabel	key="JSP_PC_ACTIVITE_LUCRATIVE_DEPENDANTE_L_MONTANT_FRAIS" /></th>
+				<th><ct:FWLabel key="JSP_PC_ACTIVITE_LUCRATIVE_DEPENDANTE_L_FRAIS_DE_GARDE"/></th>
 				<th data-g-cellformatter="css:formatCellIcon"><ct:FWLabel key="JSP_PC_ACTIVITE_LUCRATIVE_DEPENDANTE_L_DR" /></th>
 				<th data-g-periodformatter=" " data-g-deallaterperiod=" "><ct:FWLabel key="JSP_PC_ACTIVITE_LUCRATIVE_DEPENDANTE_L_PERIODE" /></th>
 			</tr>
@@ -239,6 +241,7 @@ $(function(){
 					FWCurrency deductionsSociales = new FWCurrency("0.00");
 					FWCurrency deductionsLPP = new FWCurrency("0.00");
 					FWCurrency montantFrais = new FWCurrency("0.00");
+					FWCurrency fraisDeGarde = new FWCurrency("0.00");
 								
 					String idGroup=null;
 					int k = 0;
@@ -263,7 +266,8 @@ $(function(){
 						montantActiviteLucrative = new FWCurrency(donnee.getSimpleRevenuActiviteLucrativeDependante().getMontantActiviteLucrative());
 						deductionsSociales = new FWCurrency(donnee.getSimpleRevenuActiviteLucrativeDependante().getDeductionsSociales());
 						deductionsLPP = new FWCurrency(donnee.getSimpleRevenuActiviteLucrativeDependante().getDeductionsLpp());
-						montantFrais = new FWCurrency(donnee.getSimpleRevenuActiviteLucrativeDependante().getMontantFrais());	
+						montantFrais = new FWCurrency(donnee.getSimpleRevenuActiviteLucrativeDependante().getMontantFrais());
+						fraisDeGarde = new FWCurrency(donnee.getSimpleRevenuActiviteLucrativeDependante().getFraisDeGarde());
 						
 						//récupération des frais
 						StringBuffer listeFrais = new StringBuffer(); 
@@ -289,7 +293,8 @@ $(function(){
 				<td style="text-align:right;"><%=deductionsLPP.toStringFormat()%></td>				
 				<!-- les éléments frais obtention revenu -->
         		<td><%=listeFrais.toString() %><div class="cacher"><%=donnee.getSimpleRevenuActiviteLucrativeDependante().getAutreFraisObtentionRevenu()%></div></td>												
-				<td style="text-align:right;"><%=montantFrais.toStringFormat()%></td>	
+				<td style="text-align:right;"><%=montantFrais.toStringFormat()%></td>
+				<td style="text-align:right;"><%=fraisDeGarde.toStringFormat()%></td>
 				<td align="center" ><% if(dfHeader.getIsDessaisissementRevenu().booleanValue()){%>
 					<IMG src="<%=request.getContextPath()+"/images/ok.gif" %>"/>
 					<%} else {
@@ -400,7 +405,9 @@ $(function(){
 			<td><ct:FWLabel key="JSP_PC_ACTIVITE_LUCRATIVE_DEPENDANTE_D_DEDUCTIONS_SOCIALES" /></td>
 			<td><input type="text" style="text-align: right;" class="deductionsSociales" data-g-amount="mandatory:false, periodicity:Y"/></td>
 			<td><ct:FWLabel key="JSP_PC_ACTIVITE_LUCRATIVE_DEPENDANTE_D_DEDUCTIONS_LPP" /></td>
-			<td><input type="text" style="text-align: right;" class="deductionsLpp" data-g-amount="mandatory:false, periodicity:Y"/></td>					
+			<td><input type="text" style="text-align: right;" class="deductionsLpp" data-g-amount="mandatory:false, periodicity:Y"/></td>
+			<td><ct:FWLabel key="JSP_PC_ACTIVITE_LUCRATIVE_DEPENDANTE_D_FRAIS_DE_GARDE"/></td>
+			<td><input type="text" class="fraisDeGarde" data-g-amount="mandatory:false, periodicity:Y"/></td>
 		</tr>
 		<tr>
 			<td><ct:FWLabel key="JSP_PC_ACTIVITE_LUCRATIVE_DEPENDANTE_D_FRAIS_OBTENTION" /></td>

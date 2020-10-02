@@ -21,6 +21,7 @@ public enum MotifDecision {
     DIVORCE(false),
     AUTRE(false),
     INDEFINIT(false),
+    SEUIL_FORTUNE_DEPASSE_SUPRESSION(false),
 
     JUSTIFICATIFS_DEMANDES_INITIAL(true),
     PARTIS_SANS_ADRESSE_INITIAL(true),
@@ -33,7 +34,8 @@ public enum MotifDecision {
     DROIT_INDEMNITE_AI(true),
     ENFANT_PARENT_RENTIER(true),
     DELAI_CARENCE(true),
-    RENONCIATION(true);
+    RENONCIATION(true),
+    SEUIL_FORTUNE_DEPASSE(true);
 
     private boolean isRefus;
 

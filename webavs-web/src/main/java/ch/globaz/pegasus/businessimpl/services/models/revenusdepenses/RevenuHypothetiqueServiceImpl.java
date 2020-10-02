@@ -1,5 +1,9 @@
 package ch.globaz.pegasus.businessimpl.services.models.revenusdepenses;
 
+import ch.globaz.pegasus.business.constantes.IPCDroits;
+import ch.globaz.pegasus.businessimpl.checkers.PegasusAbstractChecker;
+import ch.globaz.pegasus.businessimpl.checkers.revenusdepenses.RevenusFraisGardeChecker;
+import ch.globaz.pegasus.businessimpl.checkers.revenusdepenses.SimpleRevenuHypothetiqueChecker;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
@@ -45,6 +49,7 @@ public class RevenuHypothetiqueServiceImpl extends PegasusAbstractServiceImpl im
         }
 
         try {
+            RevenusFraisGardeChecker.checkSupositionFraisGarde(revenuHypothetique.getSimpleDonneeFinanciereHeader(), IPCDroits.CS_REVENU_HYPOTHETIQUE);
             revenuHypothetique.setSimpleDonneeFinanciereHeader(PegasusImplServiceLocator
                     .getSimpleDonneeFinanciereHeaderService().create(
                             revenuHypothetique.getSimpleDonneeFinanciereHeader()));
@@ -160,11 +165,14 @@ public class RevenuHypothetiqueServiceImpl extends PegasusAbstractServiceImpl im
         }
 
         try {
-            revenuHypothetique.setSimpleRevenuHypothetique(PegasusImplServiceLocator
-                    .getSimpleRevenuHypothetiqueService().update(revenuHypothetique.getSimpleRevenuHypothetique()));
-            revenuHypothetique.setSimpleDonneeFinanciereHeader(PegasusImplServiceLocator
-                    .getSimpleDonneeFinanciereHeaderService().update(
-                            revenuHypothetique.getSimpleDonneeFinanciereHeader()));
+            if(!JadeStringUtil.isBlankOrZero(revenuHypothetique.getSimpleRevenuHypothetique().getFraisDeGarde())){
+                RevenusFraisGardeChecker.checkSupositionFraisGarde(revenuHypothetique.getSimpleDonneeFinanciereHeader(), IPCDroits.CS_REVENU_HYPOTHETIQUE);
+            }
+                revenuHypothetique.setSimpleRevenuHypothetique(PegasusImplServiceLocator
+                        .getSimpleRevenuHypothetiqueService().update(revenuHypothetique.getSimpleRevenuHypothetique()));
+                revenuHypothetique.setSimpleDonneeFinanciereHeader(PegasusImplServiceLocator
+                        .getSimpleDonneeFinanciereHeaderService().update(
+                                revenuHypothetique.getSimpleDonneeFinanciereHeader()));
         } catch (JadeApplicationServiceNotAvailableException e) {
             throw new RevenuHypothetiqueException("Service not available - " + e.getMessage());
         }

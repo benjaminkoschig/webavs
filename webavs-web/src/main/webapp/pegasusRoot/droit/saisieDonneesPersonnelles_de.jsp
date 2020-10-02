@@ -94,7 +94,7 @@ $(function(){
 <%-- BODY PAGE --%>
 <div class="conteneurDF">
 
-		<div id="areaAssure"">
+		<div id="areaAssure">
 		   <%=viewBean.getRequerantDetail(objSession) %>
 		</div>
 

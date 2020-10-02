@@ -18,6 +18,7 @@ public class SimpleDonneeFinanciereHeader extends JadeSimpleModel {
     private String idVersionDroit = null;
     private Boolean isCopieFromPreviousVersion = Boolean.FALSE;
     private Boolean isDessaisissementFortune = Boolean.FALSE;
+    private String typeDessaisissementFortune = null;
 
     private Boolean isDessaisissementRevenu = Boolean.FALSE;
     private Boolean isPeriodeClose = Boolean.FALSE;
@@ -207,6 +208,19 @@ public class SimpleDonneeFinanciereHeader extends JadeSimpleModel {
      */
     public void setIsDessaisissementFortune(Boolean isDessaisissementFortune) {
         this.isDessaisissementFortune = isDessaisissementFortune;
+    }
+
+    /**
+     * Type de dessaisissement de fortune
+     *
+     * @return typeDessaisissementFortune
+     */
+    public String getTypeDessaisissementFortune() {
+        return typeDessaisissementFortune;
+    }
+
+    public void setTypeDessaisissementFortune(String typeDessaisissementFortune) {
+        this.typeDessaisissementFortune = typeDessaisissementFortune;
     }
 
     /**

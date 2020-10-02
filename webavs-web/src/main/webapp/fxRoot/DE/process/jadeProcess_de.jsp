@@ -37,6 +37,7 @@
 <script type="text/javascript" src="<%=servletContext%>/scripts/jadeProcess/jadeTabs.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/scripts/jadeProcess/jadeProperties.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/scripts/jadeProcess/jadeProcessParameter.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazUpload.js"></script>
 
 <link rel="stylesheet" type="text/css" href="<%=rootPath %>/css/porcess.css"/>
 
@@ -111,6 +112,24 @@
 	
 	var S_LOG_PROCESS_ERROR = "<%= JadeProcessLogInfoTypeEnum.PROCESS_ERROR%>";
 	var S_LOG_PROCESS_WARNING= "<%= JadeProcessLogInfoTypeEnum.PROCESS_WARNING%>";
+
+	function callBackUpload(data) {
+		$("#PATH_CSV_TO_IMPORT").prop("disabled", false);
+		$("#PATH_CSV_TO_IMPORT").val(data.path+"/"+data.fileName);
+		$("#protocol").addClass("notSend");
+	}
+	function validate() {
+		//initValidate();
+		if($("#PATH_CSV_TO_IMPORT").val()== ""){
+			//alert("<=viewBean.getSession().getLabel("JSP_RF_IMPORT_AVASAD_ERREUR_IMPORT")%>");
+
+			alert("<ct:FWLabel key="JSP_RF_IMPORT_AVASAD_ERREUR_IMPORT"/>");
+
+			return false;
+		}else{
+			return true;
+		}
+	}
 </script>
 
 <%-- /tpl:put --%>
@@ -304,6 +323,7 @@
 													<label>Nb en erreurs:</label>
 													<span class="nbEntiteOnError"> <%= viewBean.getProcessInfos().getNbEntiteOnError()%></span>
 												</td>
+												<div id="currentName" style="display:none"><%=entry.getKey()%></div>
 										 	</tr>
 									 	<% }%>
 									 		<%if(JadeProcessStepStateEnum.VALIDATE.equals(step.getSimpleStep().getCsState())) {%>
@@ -328,6 +348,11 @@
 					</div>
 				</div>
 				<div id="confirm" style="display:none">Voulez-vous éxecuter l'étape ?</div>
+				<div id="dialogConfirm" style="display:none">
+					<input type ="hidden" name="PATH_CSV_TO_IMPORT" id="PATH_CSV_TO_IMPORT" />
+					<input name="PATH_CSV_TO_IMPORT_FRONT" id='PATH_CSV_TO_IMPORT_FRONT' type='file' data-g-upload="callBack: callBackUpload, protocole:jdbc">
+					<div id='messageErreurCsv'></div>
+				</div>
 			</td>
 			<td>&nbsp;</td>
 		</tr>

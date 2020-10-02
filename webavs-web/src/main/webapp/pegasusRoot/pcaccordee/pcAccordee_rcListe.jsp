@@ -18,7 +18,7 @@
 
 	PCPcAccordeeListViewBean viewBean = (PCPcAccordeeListViewBean) request.getAttribute("viewBean");
 	size = viewBean.getSize();
-	
+
 	detailLink = "pegasus?userAction="+IPCActions.ACTION_PCACCORDEE_DETAIL+ ".afficher&selectedId=";
 
 	FWController controllerbis = (FWController) session.getAttribute("objController");
@@ -69,6 +69,7 @@ var openGedWindow = function (url){
    	<TH><ct:FWLabel key="JSP_PC_PCACCORDEE_L_ALOCATION_NOEL"/></TH>
    	<%} %>
    	<TH><ct:FWLabel key="JSP_PC_PCACCORDEE_L_CC"/></TH>
+	<TH><ct:FWLabel key="JSP_PC_PCACCORDEE_L_PROV"/></TH>
    	<TH><ct:FWLabel key="JSP_PC_PCACCORDEE_L_MONTANT"/></TH>
    	<TH><ct:FWLabel key="JSP_PC_PCACCORDEE_L_PART_CANTONALE"/></TH>
    	<TH><ct:FWLabel key="JSP_PC_PCACCORDEE_L_BLOCAGE"/></TH>
@@ -116,7 +117,7 @@ var openGedWindow = function (url){
 	     			<ct:menuParam key="selectedId" value="<%= line.getPcAccordee().getSimplePCAccordee().getIdPcaParent() %>"/>
 	     			<ct:menuParam key="idChild" value="<%=line.getId() %>"/>
 	     		<%} %>
-				<% if(!line.getPcAccordee().getSimplePlanDeCalcul().getEtatPC().equals(IPCValeursPlanCalcul.STATUS_OCTROI)) {%>
+				<% if(!IPCValeursPlanCalcul.STATUS_OCTROI.equals(line.getPcAccordee().getSimplePlanDeCalcul().getEtatPC())) {%>
 	     		<ct:menuExcludeNode nodeId="pcRetenues"/>
 	     		<% } %>
 	     		<ct:menuExcludeNode nodeId="pcEnfant"/>
@@ -167,6 +168,11 @@ var openGedWindow = function (url){
    		<%} %>
 		<TD class="mtd <%= cssToTd %>" nowrap onClick="<%=detailUrl%>"><% if(line.getPcAccordee().getSimplePCAccordee().getHasCalculComparatif()){%>
 		<IMG src="<%=request.getContextPath()+"/images/ok.gif" %>"/><%}else {%>&nbsp;<%}%></TD>
+		<TD class="mtd <%= cssToTd %>" nowrap onClick="<%=detailUrl%>">
+			<% if(line.getPcAccordee().getSimplePCAccordee().getIsProvisoire()){%>
+			<IMG src="<%=request.getContextPath()+"/images/ok.gif" %>"/>
+			<%}%>
+		</TD>
 		<TD class="mtd <%= cssToTd %>" style="text-align:right;" nowrap onClick="<%=detailUrl%>" data-g-amountformatter=" "><%= line.getPCAResultState() %></TD>
 		<TD class="mtd <%= cssToTd %>" style="text-align:right;" nowrap onClick="<%=detailUrl%>" data-g-amountformatter="blankAsZero:false"><%= line.getPartCantonale()%></TD>				
 		<TD class="mtd <%= cssToTd %>" nowrap onClick="<%=detailUrl%>"><%=line.getRetenueBlocageLibelle()%>&nbsp;</TD>

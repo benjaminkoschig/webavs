@@ -1,5 +1,6 @@
 package globaz.pegasus.vb.parametre;
 
+import ch.globaz.pegasus.business.constantes.EPCForfaitType;
 import globaz.globall.db.BIPersistentObject;
 import globaz.globall.vb.BJadePersistentObjectListViewBean;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
@@ -12,11 +13,13 @@ import ch.globaz.pegasus.business.services.PegasusServiceLocator;
  * @date 11 nov. 2010
  */
 public class PCZoneForfaitsListViewBean extends BJadePersistentObjectListViewBean {
+    final EPCForfaitType type = EPCForfaitType.LAMAL;
     SimpleZoneForfaitsSearch simpleZoneForfaitsSearch = null;
 
     public PCZoneForfaitsListViewBean() {
         super();
         simpleZoneForfaitsSearch = new SimpleZoneForfaitsSearch();
+        simpleZoneForfaitsSearch.setForType(type.getCode().toString());
     }
 
     @Override

@@ -25,6 +25,7 @@ SimpleCompteBancaireCCP entity=viewBean.getCompteBancaireCCP().getSimpleCompteBa
 		<montantFrais><%=entity.getMontantFraisBancaire()%></montantFrais>
 		<DF><%=viewBean.getCompteBancaireCCP().getSimpleDonneeFinanciereHeader().getIsDessaisissementFortune()%></DF>
 		<DR><%=viewBean.getCompteBancaireCCP().getSimpleDonneeFinanciereHeader().getIsDessaisissementRevenu()%></DR>
+		<typeDessaisissementFortune><%=viewBean.getCompteBancaireCCP().getSimpleDonneeFinanciereHeader().getTypeDessaisissementFortune()%></typeDessaisissementFortune>
 		<%@ include file="/pegasusRoot/ajax/commonDonneeFinanciere.jsp" %>
 	</contenu>
 	<ct:serializeObject destination="xml"/>

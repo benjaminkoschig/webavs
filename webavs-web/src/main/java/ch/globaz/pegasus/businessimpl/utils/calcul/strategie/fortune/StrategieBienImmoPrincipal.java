@@ -41,6 +41,10 @@ public class StrategieBienImmoPrincipal extends StrategieCalculFortune implement
                     checkAmoutAndParseAsFloat(donnee.getBienImmoPrincipalMontantValeurFiscale()) * fraction);
             this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_TOTAL,
                     checkAmoutAndParseAsFloat(donnee.getBienImmoPrincipalMontantDetteHypothecaire()) * fraction);
+            if(context.contains(CalculContext.Attribut.REFORME)){
+                this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_REAL_PROPERTY,checkAmoutAndParseAsFloat(donnee.getBienImmoPrincipalMontantDetteHypothecaire()) * fraction);
+            }
+
         }
 
         return resultatExistant;

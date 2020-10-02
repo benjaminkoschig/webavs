@@ -4,6 +4,7 @@
 package ch.globaz.pegasus.business.models.pcaccordee;
 
 import globaz.globall.db.BConstants;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.persistence.model.JadeComplexModel;
 import ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees;
 import ch.globaz.pegasus.business.models.demande.SimpleDemande;
@@ -51,6 +52,8 @@ public class ListPCAccordee extends JadeComplexModel {
 
     private SimplePrestationsAccordees simplePrestationsAccordees = null;
     private SimpleVersionDroit simpleVersionDroit = null;
+
+    private String provisoire = null;
 
     public ListPCAccordee() {
         super();
@@ -287,6 +290,18 @@ public class ListPCAccordee extends JadeComplexModel {
 
     public void set_isRetenuesConjoint(String _isRetenuesConjoint) {
         this._isRetenuesConjoint = _isRetenuesConjoint;
+    }
+
+    public String getProvisoire() {
+        return provisoire;
+    }
+
+    public void setProvisoire(String provisoire) {
+        this.provisoire = provisoire;
+    }
+
+    public boolean isProvisoire() {
+        return !JadeStringUtil.isEmpty(provisoire) && BConstants.DB_BOOLEAN_TRUE.equals(provisoire);
     }
 
 }

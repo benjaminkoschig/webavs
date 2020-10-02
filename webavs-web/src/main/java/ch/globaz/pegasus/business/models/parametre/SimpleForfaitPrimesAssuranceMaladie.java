@@ -13,7 +13,8 @@ public class SimpleForfaitPrimesAssuranceMaladie extends JadeSimpleModel {
     private String dateFin = null;
     private String idForfaitPrimesAssuranceMaladie = null;
     private String idZoneForfait = null;
-    private String montant = null;
+    private String montantPrimeMoy = null;
+    private String montantPrimeReductionMaxCanton = null;
 
     /**
      * @return the csTypePrime
@@ -52,8 +53,15 @@ public class SimpleForfaitPrimesAssuranceMaladie extends JadeSimpleModel {
     /**
      * @return the montant
      */
-    public String getMontant() {
-        return montant;
+    public String getMontantPrimeReductionMaxCanton() {
+        return montantPrimeReductionMaxCanton;
+    }
+
+    /**
+     * @return the montant
+     */
+    public String getMontantPrimeMoy() {
+        return montantPrimeMoy;
     }
 
     /**
@@ -97,8 +105,16 @@ public class SimpleForfaitPrimesAssuranceMaladie extends JadeSimpleModel {
      * @param montant
      *            the montant to set
      */
-    public void setMontant(String montant) {
-        this.montant = montant;
+    public void setMontantPrimeMoy(String montant) {
+        this.montantPrimeMoy = montant;
+    }
+
+    /**
+     * @param montant
+     *            the montant to set
+     */
+    public void setMontantPrimeReductionMaxCanton(String montant) {
+        this.montantPrimeReductionMaxCanton = montant;
     }
 
 }

@@ -36,7 +36,7 @@ public class ConverterDecisionCause {
 
                 case REVISION_QUADRIENNALE:
                     return toBigInt(5);
-
+                case SEUIL_FORTUNE_DEPASSE:
                 case REPRISE_ADAPTATION_ERRONE:
                 default:
                     return toBigInt(6);

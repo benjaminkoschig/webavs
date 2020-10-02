@@ -7,14 +7,8 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.couple
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.coupleSepare.revenu.StrategieFinalRevenuImmobiliereCommun;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.coupleSepare.revenu.StrategieFinalRevenuImmobiliereSeul;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.coupleSepare.revenu.StrategieFinalRevenuSuppressionSeul;
-import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense.ProxyFinalDepenseTotalReconnu;
-import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense.ProxyStrategieFinalDepensesFraisImmobilier;
-import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense.StrategieFinalDepenseHome;
-import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense.StrategieFinalDepenseLoyer;
-import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.revenu.StrategieFinalRevenuAPI;
-import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.revenu.StrategieFinalRevenuActiviteLucrative;
-import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.revenu.StrategieFinalRevenuAutresRentes;
-import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.revenu.StrategieFinalRevenuMobiliere;
+import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense.*;
+import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.revenu.*;
 
 public class StrategiesCoupleSepareFinalisationFactory {
 
@@ -26,6 +20,7 @@ public class StrategiesCoupleSepareFinalisationFactory {
         // depense
         StrategiesCoupleSepareFinalisationFactory.strategiesSeulDepense.add(new StrategieFinalDepenseLoyer());
         StrategiesCoupleSepareFinalisationFactory.strategiesSeulDepense.add(new StrategieFinalDepenseHome());
+        StrategiesCoupleSepareFinalisationFactory.strategiesSeulDepense.add(new StrategieFinalPrimeAssuranceMaladie());
         StrategiesCoupleSepareFinalisationFactory.strategiesSeulDepense
                 .add(new ProxyStrategieFinalDepensesFraisImmobilier());
         StrategiesCoupleSepareFinalisationFactory.strategiesSeulDepense.add(new ProxyFinalDepenseTotalReconnu());
@@ -36,6 +31,10 @@ public class StrategiesCoupleSepareFinalisationFactory {
                 .add(new StrategieFinalRevenuImmobiliereCommun());
         StrategiesCoupleSepareFinalisationFactory.strategiesRevenuCommun
                 .add(new StrategieFinalRevenuActiviteLucrative());
+        StrategiesCoupleSepareFinalisationFactory.strategiesRevenuCommun
+                .add(new StrategieFinalRevenuActiviteLucrativeConjoint());
+        StrategiesCoupleSepareFinalisationFactory.strategiesRevenuCommun
+                .add(new StrategieFinalRevenuActiviteLucrativeEnfant());
         StrategiesCoupleSepareFinalisationFactory.strategiesRevenuCommun.add(new StrategieFinalRevenuAutresRentes());
         StrategiesCoupleSepareFinalisationFactory.strategiesRevenuCommun.add(new StrategieFinalRevenuAutresCommun());
 
@@ -46,6 +45,8 @@ public class StrategiesCoupleSepareFinalisationFactory {
                 .add(new StrategieFinalRevenuImmobiliereSeul());
         StrategiesCoupleSepareFinalisationFactory.strategiesAvecEnfantsRevenu.add(new StrategieFinalRevenuAPI());
         StrategiesCoupleSepareFinalisationFactory.strategiesAvecEnfantsRevenu.add(new StrategieFinalRevenuAutresSeul());
+        StrategiesCoupleSepareFinalisationFactory.strategiesAvecEnfantsRevenu.add(new StrategieFinalRevenuSubsideAssuranceMaladie());
+        StrategiesCoupleSepareFinalisationFactory.strategiesAvecEnfantsRevenu.add(new StrategieFinalRevenuActiviteLucrativeEnfant());
 
     }
 

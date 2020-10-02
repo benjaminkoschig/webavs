@@ -1,5 +1,8 @@
 package ch.globaz.pegasus.businessimpl.services.donneeFinanciere;
 
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.assurancemaladie.PrimeAssuranceMaladie;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.assurancemaladie.SubsideAssuranceMaladie;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.fraisdegarde.FraisDeGarde;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.util.List;
@@ -304,9 +307,9 @@ class ConvertAllDonneeFinanciere {
             Montant montant = toMontant(dr.getRevenuActiviteLucrativeIndependanteMontant());
             RevenuActiviteLucrativeIndependanteGenreRevenu revenuActiviteLucrativeIndependanteGenreRevenu = RevenuActiviteLucrativeIndependanteGenreRevenu
                     .fromValue(dr.getRevenuActiviteLucrativeIndependanteCSGenreRevenu());
-
+            Montant fraisDeGarde = toMontant(dr.getRevenuActiviteLucrativeIndependanteFraisDeGarde());
             RevenuActiviteLucrativeIndependante revenuActiviteLucrativeIndependante = new RevenuActiviteLucrativeIndependante(
-                    montant, revenuActiviteLucrativeIndependanteGenreRevenu, df);
+                    montant,fraisDeGarde, revenuActiviteLucrativeIndependanteGenreRevenu, df);
             list.add(revenuActiviteLucrativeIndependante);
 
         } else if (dft.isRevenueHypothtique()) {
@@ -376,9 +379,10 @@ class ConvertAllDonneeFinanciere {
             Montant deductionLpp = toMontant(dr.getRevenuActiviteLucrativeDependanteDeductionsLPP());
             Montant deductionSociale = toMontant(dr.getRevenuActiviteLucrativeDependanteDeductionsSociales());
             Montant frais = toMontant(dr.getRevenuActiviteLucrativeDependanteMontantFraisEffectifs());
+            Montant fraisDeGarde = toMontant(dr.getRevenuActiviteLucrativeDependanteFraisDeGarde());
 
             RevenuActiviteLucrativeDependante revenueActiviteLucrativeDependante = new RevenuActiviteLucrativeDependante(
-                    montant, deductionLpp, deductionSociale, frais, df);
+                    montant, deductionLpp, deductionSociale,fraisDeGarde, frais, df);
 
             list.add(revenueActiviteLucrativeDependante);
         } else if (dft.isBienImmobilierServantHbitationPrincipale()) {
@@ -436,6 +440,25 @@ class ConvertAllDonneeFinanciere {
 
             list.add(bienImmobilierNonPrincipale);
 
+        } else if (dft.isPrimeAssuranceMaladie()) {
+            Montant montant = toMontant(dr.getPrimeAssuranceMaladie());
+
+            PrimeAssuranceMaladie primeAssuranceMaladie = new PrimeAssuranceMaladie(montant, df);
+            list.add(primeAssuranceMaladie);
+
+        } else if (dft.isSubsideAssuranceMaladie()) {
+            Montant montant = toMontant(dr.getSubsideAssuranceMaladie());
+
+            SubsideAssuranceMaladie subsideAssuranceMaladie = new SubsideAssuranceMaladie(montant, df);
+            list.add(subsideAssuranceMaladie);
+
+        } else if (dft.isFraisDeGarde()) {
+
+            // TODO : gérer les frais de gardes
+            Montant montant = toMontant(dr.getMontantFraisDeGarde());
+
+            FraisDeGarde fraisDeGarde = new FraisDeGarde(montant, df);
+            list.add(fraisDeGarde);
         } else {
             throw new IllegalArgumentException("Imposible de détérminer le type de donnée financière: " + df);
         }

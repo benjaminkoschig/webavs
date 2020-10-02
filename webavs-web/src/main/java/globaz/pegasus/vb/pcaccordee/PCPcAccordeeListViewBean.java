@@ -1,5 +1,6 @@
 package globaz.pegasus.vb.pcaccordee;
 
+import ch.globaz.pegasus.business.models.pcaccordee.*;
 import globaz.globall.db.BIPersistentObject;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
@@ -18,10 +19,6 @@ import ch.globaz.pegasus.business.domaine.dossier.IdDossier;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.AllocationDeNoelException;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
 import ch.globaz.pegasus.business.models.droit.SimpleVersionDroit;
-import ch.globaz.pegasus.business.models.pcaccordee.ListPCAccordee;
-import ch.globaz.pegasus.business.models.pcaccordee.ListPCAccordeeSearch;
-import ch.globaz.pegasus.business.models.pcaccordee.SimpleAllocationNoel;
-import ch.globaz.pegasus.business.models.pcaccordee.SimpleAllocationNoelSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
 import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
@@ -37,6 +34,7 @@ public class PCPcAccordeeListViewBean extends BJadePersistentObjectListViewBean 
     private String idVersionDroit;
     private String noVersion = null;
     private ListPCAccordeeSearch pcAccordeesSearch = null;
+    private List<ListPCAccordee> list = null;
     private String whereKey = null;
 
     public PCPcAccordeeListViewBean() {
@@ -93,11 +91,26 @@ public class PCPcAccordeeListViewBean extends BJadePersistentObjectListViewBean 
 
         filtrePcCourante();
 
+//        filtrePCDouble();
+
         if (EPCProperties.ALLOCATION_NOEL.getBooleanValue()) {
             Map<String, SimpleAllocationNoel> map = findAllocationNoelAndCreateMapByIdPca();
             allocationNoels = map;
         }
     }
+
+//    private void filtrePCDouble() {
+//        List<ListPCAccordee> pcas = PersistenceUtil.typeSearch(pcAccordeesSearch, ListPCAccordee.class);
+//        Map<String,ListPCAccordee> pcAccordeeMap = new HashMap<>();
+//        for(JadeAbstractModel model :  pcAccordeesSearch.getSearchResults()) {
+//            ListPCAccordee pca = (ListPCAccordee) model;
+//            if (!pcAccordeeMap.containsKey(pca.getSimplePCAccordee().getIdEntity())) {
+//                pcAccordeeMap.put(pca.getSimplePCAccordee().getIdEntity(), pca);
+//            }
+//        }
+//
+//        list = new ArrayList(pcAccordeeMap.values());
+//    }
 
     /**
      * Stocke dans une liste les pca courantes pour le dossier, cà.d:

@@ -2,26 +2,23 @@
 <model-mapping>
 	<complexe-model className="ch.globaz.pegasus.business.models.home.Home">
 		<root-model name="simpleHome" model-ref="ch.globaz.pegasus.business.models.home.SimpleHome"/>
-		
 		<linked-model name="adresse" model-ref="ch.globaz.pyxis.business.model.Adresse" join-type="INNER">
 			<join-group operator="AND">
 				<join-field name="avoirAdresse.idTiers" operation="EQUALS" field-ref="simpleHome.idTiersHome"/>
 				<join-field name="avoirAdresse.typeAdresse" operation="EQUALS" value="508008"/>
-
 				<join-group operator="AND">
 					<join-group operator="OR">
 						<join-field name="avoirAdresse.dateDebutRelation" operation="LESS_OR_EQUALS" variable="today"/>
-						<join-field name="avoirAdresse.dateDebutRelation" operation="NULL"/> 
+						<join-field name="avoirAdresse.dateDebutRelation" operation="NULL"/>
 					</join-group>
 					<join-group operator="OR">
 						<join-field name="avoirAdresse.dateFinRelation" operation="GREATER_OR_EQUALS" variable="today"/>
-						<join-field name="avoirAdresse.dateFinRelation" operation="NULL"/> 
+						<join-field name="avoirAdresse.dateFinRelation" operation="NULL"/>
 					</join-group>
 				</join-group>
-
 			</join-group>
 		</linked-model>
-		
+
 		<search-definition>
 			<search-group operator="AND">
 				<search-field name="likeDesignation" operation="LIKE" field-ref="adresse.tiers.designationUpper1"/>

@@ -6,6 +6,8 @@ package ch.globaz.pegasus.businessimpl.utils.plancalcul;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.api.BISession;
 import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
@@ -32,6 +34,7 @@ import ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 import ch.globaz.pegasus.utils.PCApplicationUtil;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Classe encapsulant les information nécessaires à l'affichage du plan de calcul pc
@@ -82,7 +85,7 @@ public class PCPlanCalculHandler {
      * 
      * @param session
      *            l'instance de BSession
-     * @param idPca
+     * @param idPcal
      *            l'identifiant de la pcAccordée
      * @param idBeneficiaire
      *            l'id tiers bénéficiaire de la pc
@@ -206,6 +209,7 @@ public class PCPlanCalculHandler {
 
     public ArrayList<PCLignePlanCalculHandler> createBlocDepensesReconnues(String langueTiers) throws Exception {
         PCGroupeDepensesHandler groupeDepenses = new PCGroupeDepensesHandler(tupleRoot);
+        groupeDepenses.setReforme(planDeCalcul.getReformePc());
         return dealLibelle(groupeDepenses.getGroupList(), false, langueTiers);
     }
 
@@ -217,6 +221,7 @@ public class PCPlanCalculHandler {
      */
     public ArrayList<PCLignePlanCalculHandler> createBlocFortune(String langueTiers) throws Exception {
         PCGroupeFortuneHandler groupeFortune = new PCGroupeFortuneHandler(tupleRoot);
+        groupeFortune.setReforme(planDeCalcul.getReformePc());
         return dealLibelle(groupeFortune.getGroupList(), false, langueTiers);
     }
 
@@ -227,11 +232,13 @@ public class PCPlanCalculHandler {
      */
     public ArrayList<PCLignePlanCalculHandler> createBlocResume(String langueTiers) throws Exception {
         PCGroupeTotalHandler groupeTotal = new PCGroupeTotalHandler(tupleRoot);
+        groupeTotal.setReforme(planDeCalcul.getReformePc());
         return dealLibelle(groupeTotal.getGroupList(langueTiers), true, langueTiers);
     }
 
     public ArrayList<PCLignePlanCalculHandler> createBlocRevenusDeterminants(String langueTiers) throws Exception {
         PCGroupeRevenusHandler groupeRevenus = new PCGroupeRevenusHandler(tupleRoot);
+        groupeRevenus.setReforme(planDeCalcul.getReformePc());
 
         return dealLibelle(groupeRevenus.getGroupList(), false, langueTiers);
 
@@ -262,8 +269,13 @@ public class PCPlanCalculHandler {
 
                     // Test des ligne ayant une legende
                     if (ligne.getCsCode().equals(IPCValeursPlanCalcul.CLE_REVEN_IMP_FORT_TOTAL)
-                            || ligne.getCsCode().equals(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE)) {
+                            || ligne.getCsCode().equals(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE)
+                            || StringUtils.equals(ligne.getCsCode(),IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE_ENFANT)) {
                         lib[0] = lib[0].replace("{fraction}", ligne.getLegende());
+                    }
+
+                    if (ligne.getCsCode().equals(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE_CONJOINT)) {
+                        lib[0] = lib[0].replace("{taux}", ligne.getLegende());
                     }
 
                     if (ligne.getCsCode().equals(IPCValeursPlanCalcul.CLE_DEPEN_FRAISIMM_FRAIS_ENTRETIEN_IMMEUBLE)) {
@@ -293,6 +305,15 @@ public class PCPlanCalculHandler {
                         lib[0] = lib[0].replace("{libelle}",
                                 getLibelleForValeurLocative(LanguageResolver.resolveISOCode(langueTiers)));
                     }
+
+                    if (ligne.getCsCode().equals(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL_PART)) {
+                        lib[0] = lib[0].replace("{fraction}", ligne.getLegende());
+                    }
+
+                    if (ligne.getCsCode().equals(IPCValeursPlanCalcul.CLE_DEPEN_PRIME_ASSURANCE_MALADIE_TOTAL)) {
+                        lib[0] = lib[0].replace("{Montant}", new FWCurrency(ligne.getLegende()).toStringFormat());
+                    }
+
                     // si une ligne libelle, pas description
                     if (lib.length == 1) {
                         libelle = lib[0];

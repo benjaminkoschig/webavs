@@ -18,7 +18,8 @@ SimpleTypeFraisObtentionRevenu simpleTypeFraisObtentionRevenu = new SimpleTypeFr
 FWCurrency montantActiviteLucrative = new FWCurrency(entity.getMontantActiviteLucrative());
 FWCurrency deductionsSociales = new FWCurrency(entity.getDeductionsSociales());
 FWCurrency montantFrais = new FWCurrency(entity.getMontantFrais());	
-FWCurrency deductionsLpp = new FWCurrency(entity.getDeductionsLpp());	
+FWCurrency deductionsLpp = new FWCurrency(entity.getDeductionsLpp());
+FWCurrency fraisDeGarde = new FWCurrency(entity.getFraisDeGarde());
 %>
 
 <%@page import="ch.globaz.pegasus.business.models.revenusdepenses.SimpleTypeFraisObtentionRevenu"%><message>
@@ -30,7 +31,8 @@ FWCurrency deductionsLpp = new FWCurrency(entity.getDeductionsLpp());
 		<noAffilie><%=viewBean.getNoAffilie()%></noAffilie>
 		<montant><%=montantActiviteLucrative.toStringFormat() %></montant>
 		<deductionSociale><%=deductionsSociales.toStringFormat()%></deductionSociale>
-		<deductionsLpp><%=deductionsLpp.toStringFormat()%></deductionsLpp>				
+		<deductionsLpp><%=deductionsLpp.toStringFormat()%></deductionsLpp>
+		<fraisDeGarde><%=fraisDeGarde.toStringFormat()%></fraisDeGarde>
 		<autreFraisObtentionRevenu><%=entity.getAutreFraisObtentionRevenu()%></autreFraisObtentionRevenu>
 		<!-- les éléments frais obtention revenu -->
 		<fraisObtention>

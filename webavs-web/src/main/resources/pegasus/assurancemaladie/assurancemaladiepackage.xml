@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="pegasus/assurancemaladie/primeassurancemaladie.xml"/>
+	<model-mapping import="pegasus/assurancemaladie/simpleprimeassurancemaladie.xml"/>
+	<model-mapping import="pegasus/assurancemaladie/subsideassurancemaladie.xml"/>
+	<model-mapping import="pegasus/assurancemaladie/simplesubsideassurancemaladie.xml"/>
+
+	<model-mapping import="pegasus/assurancemaladie/assurancemaladie.xml"/>
+</model-mapping>

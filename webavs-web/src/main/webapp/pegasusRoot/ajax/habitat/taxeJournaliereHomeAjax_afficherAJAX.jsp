@@ -44,6 +44,7 @@
 		<test><%=viewBean.getAfficheTypeChambre() +" s "+  typeChambreSearch.getSize()%> </test>
 		<csDestinationSortie><%=viewBean.getTaxeJournaliereHome().getSimpleTaxeJournaliereHome().getCsDestinationSortie()%></csDestinationSortie>
 		<isDeplafonner><%=viewBean.getTaxeJournaliereHome().getSimpleTaxeJournaliereHome().getIsDeplafonner()%></isDeplafonner>
+		<isVersementDirect><%=viewBean.getTaxeJournaliereHome().getSimpleTaxeJournaliereHome().getIsVersementDirect()%></isVersementDirect>
 		<montantFraisLongueDuree><%=viewBean.getTaxeJournaliereHome().getSimpleTaxeJournaliereHome().getMontantFraisLongueDuree()%></montantFraisLongueDuree>
 		
 		<%@ include file="/pegasusRoot/ajax/commonDonneeFinanciere.jsp" %>

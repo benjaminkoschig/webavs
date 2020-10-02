@@ -37,6 +37,12 @@ public class CalculDonneesHome extends JadeComplexModel {
     private String prixJournalier = null;
     private Boolean isDeplafonner = null;
     private String montantFraisLongueDuree = null;
+    private Boolean isVersementDirect = null;
+    private String idAdressePaiement = null;
+    private String idTiersHome = null;
+    private String csRoleFamille = null;
+    private String idDemande = null;
+    private String idTiersRegroupement = null;
 
     public String getCsCategorieArgentPoche() {
         return csCategorieArgentPoche;
@@ -256,6 +262,52 @@ public class CalculDonneesHome extends JadeComplexModel {
     public void setSpy(String spy) {
         // TODO Auto-generated method stub
 
+    }
+
+    public Boolean getIsVersementDirect() {
+        return isVersementDirect;
+    }
+
+    public void setIsVersementDirect(Boolean versementDirect) {
+        isVersementDirect = versementDirect;
+    }
+
+    public String getIdAdressePaiement() {
+        return idAdressePaiement;
+    }
+
+    public void setIdAdressePaiement(String idAdressePaiement) {
+        this.idAdressePaiement = idAdressePaiement;
+    }
+
+    public String getCsRoleFamille() {
+        return csRoleFamille;
+    }
+
+    public void setCsRoleFamille(String csRoleFamille) {
+        this.csRoleFamille = csRoleFamille;
+    }
+
+    public String getIdTiersHome() {
+        return idTiersHome;
+    }
+
+    public void setIdTiersHome(String idTiersHome) {
+        this.idTiersHome = idTiersHome;
+    }
+    public String getIdDemande() {
+        return idDemande;
+    }
+
+    public void setIdDemande(String idDemande) {
+        this.idDemande = idDemande;
+    }
+    public String getIdTiersRegroupement() {
+        return idTiersRegroupement;
+    }
+
+    public void setIdTiersRegroupement(String idTiersRegroupement) {
+        this.idTiersRegroupement = idTiersRegroupement;
     }
 
 }

@@ -1,44 +1,24 @@
 package ch.globaz.pegasus.rpc.businessImpl.converter;
 
-import java.math.BigDecimal;
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.AddressType;
-import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.CalculationElementsType;
-import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.CaseType;
-import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.CompensationOfficeType;
-import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.ContentType;
-import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.DecisionType;
-import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.DecisionsType;
-import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.ElAmountsType;
-import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.HousingOwnerType;
-import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.ObjectFactory;
-import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.PensionType;
-import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.PersonType;
-import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.PersonalCalculationElementsType;
-import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.PersonalCalculationElementsType.PensionCategory;
-import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.PersonsType;
-import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.RealPropertyType;
-import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.RentsType;
-import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.ResidenceCostsType;
-import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_common._1.DeliveryOfficeType;
-import rpc.ch.ech.xmlns.ech_0007._5.CantonAbbreviationType;
 import ch.globaz.naos.ree.tools.InfoCaisse;
 import ch.globaz.pegasus.rpc.domaine.PersonElementsCalcul;
 import ch.globaz.pegasus.rpc.domaine.RpcAddress;
 import ch.globaz.pegasus.rpc.domaine.RpcData;
 import ch.globaz.pegasus.rpc.domaine.RpcDecisionAnnonceComplete;
-import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceCalculationElements;
-import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceCase;
-import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceDecision;
-import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceHousingOwner;
-import ch.globaz.pegasus.rpc.domaine.annonce.AnnoncePensionCategory;
-import ch.globaz.pegasus.rpc.domaine.annonce.AnnoncePerson;
-import ch.globaz.pegasus.rpc.domaine.annonce.AnnoncePersonalCalculationElements;
-import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceRealProperty;
-import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceRents;
-import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceResidenceCosts;
+import ch.globaz.pegasus.rpc.domaine.annonce.*;
+import globaz.pegasus.enums.TypeDivestedWealth;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.*;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.CommonPersonalCalculationElementsType.PensionCategory;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_common._1.CommonDecisionType;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_common._1.DeliveryOfficeType;
+import rpc.ch.ech.xmlns.ech_0007._5.CantonAbbreviationType;
+import rpc.ch.ech.xmlns.ech_0007._5.CantonFlAbbreviationType;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
 
 public class Converter2469_101 implements Converter<RpcData, ContentType> {
     private static final String XSD_RENTCATEGORY_ANNUAL_GROSS = "ANNUAL_GROSS";
@@ -48,6 +28,10 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
     private static final String XSD_PCC_PARTIE_DE_LA_TAXE_HOME = "INSIDE_RESIDENCE_COSTS";
     private static final String XSD_PCC_EN_SUS_DE_LA_TAXE_HOME = "IN_ADDITION_RESIDENCE_COSTS";
     private static final String XSD_PCC_NON_PRIS_EN_COMPTE = "IGNORED";
+
+    private static final String XSD_TYPE_DIVESTED_WEALTH_SANS_CONTREPARTIE = "noEquivalentCompensation";
+    private static final String XSD_TYPE_DIVESTED_WEALTH_CONSOMMATION_EXCESSIVE = "excessivelyConsume";
+
     public static final int XSD_ELLIMIT_PLAFONNEMENT_CAS_MINIMUM = 2;
     public static final int XSD_ELLIMIT_PAS_DE_PLAFONNEMENT = 0;
     public static final int XSD_ELLIMIT_PLAFONNEMENT = 1;
@@ -58,7 +42,6 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
 
     /**
      * @param infoCaisse
-     * @param session
      */
     public Converter2469_101(InfoCaisse infoCaisse) {
         currentCaisse = infoCaisse;
@@ -79,18 +62,28 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
         caseType.setBusinessCaseIdRPC(annonceCase.getBusinessCaseIdRPC());
 
         for (AnnonceDecision annonceDecision : annonceCase.getDecisions()) {
-            DecisionType xmlDeci = convertDecision(annonceDecision);
-            decisionsType.getDecision().add(xmlDeci);
+            CommonDecisionType xmlCommDeci = convertCommDecisionType(annonceDecision, annonceDecision.getAnnonce().getPcaDecision().getPca().getReformePC());
+            if(xmlCommDeci instanceof DecisionTypeRef1){
+                DecisionTypeRef1 xmlDeci = convertDecisionRef1(annonceDecision, xmlCommDeci);
+                decisionsType.getDecisionRef1().add(xmlDeci);
+            }else{
+                DecisionTypeRef0 xmlDeci = convertDecisionRef0(annonceDecision, xmlCommDeci);
+                decisionsType.getDecisionRef0().add(xmlDeci);
+            }
         }
         caseType.setDecisions(decisionsType);
         masterData.setCase(caseType);
         return masterData;
     }
 
-    private DecisionType convertDecision(AnnonceDecision annonceDecision) {
+    private CommonDecisionType convertCommDecisionType(AnnonceDecision annonceDecision, boolean isReformePC) {
         rpc.ch.eahv_iv.xmlns.eahv_iv_2469_common._1.ObjectFactory commonFactory = new rpc.ch.eahv_iv.xmlns.eahv_iv_2469_common._1.ObjectFactory();
-
-        DecisionType xmlDeci = factory.createDecisionType();
+        CommonDecisionType xmlDeci;
+        if(isReformePC) {
+            xmlDeci = factory.createDecisionTypeRef1();
+        }else{
+            xmlDeci = factory.createDecisionTypeRef0();
+        }
         xmlDeci.setDecisionId(annonceDecision.getDecisionId());
         xmlDeci.setDecisionDate(XmlConverters.convertDateToXMLGregorianCalendar(annonceDecision.getDecisionDate()));
         xmlDeci.setValidFrom(XmlConverters.convertDateToXMLGregorianCalendar(annonceDecision.getValidFrom()));
@@ -100,6 +93,12 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
         dot.setElAgency(annonceDecision.getDeliveryOffice().getElAgency());
         xmlDeci.setDeliveryOffice(dot);
 
+        return xmlDeci;
+    }
+
+    private DecisionTypeRef1 convertDecisionRef1(AnnonceDecision annonceDecision, CommonDecisionType xmlCommDeci) {
+        DecisionTypeRef1 xmlDeci = (DecisionTypeRef1) xmlCommDeci;
+
         xmlDeci.setDecisionKind(annonceDecision.getDecisionKind());
         xmlDeci.setDecisionCause(annonceDecision.getDecisionCause());
         if (annonceDecision.getValidTo() != null) {
@@ -107,75 +106,157 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
         }
 
         if (annonceDecision.getElAmounts() != null) {
-            ElAmountsType elAmount = factory.createElAmountsType();
-            elAmount.setAmountNoHC(annonceDecision.getElAmounts().getAmountNoHC().longValue());
-            elAmount.setAmountWithHC(annonceDecision.getElAmounts().getAmountWithHC().longValue());
+            ElAmountsTypeRef1 elAmount = (ElAmountsTypeRef1) createCommElAmountsType(annonceDecision, true);
             elAmount.setElLimit(annonceDecision.getElAmounts().getElLimit());
             xmlDeci.setElAmounts(elAmount);
         }
-        CalculationElementsType calcElmnt = convertCalculationElement(annonceDecision.getCalculationElements());
+        CommonCalculationElementsType commCalculationElementsType = createCommCalculationElementsType(annonceDecision.getCalculationElements(), true);
+        CalculationElementsTypeRef1 calcElmnt = convertCalculationElementRef1(annonceDecision.getCalculationElements(), commCalculationElementsType);
         xmlDeci.setCalculationElements(calcElmnt);
-        PersonsType persons = convertPersons(annonceDecision.getPersons());
+
+        PersonsTypeRef1 persons = convertPersonsRef1(annonceDecision.getPersons());
         xmlDeci.setPersons(persons);
         xmlDeci.setDecisionIdPartnerDecision(annonceDecision.getDecisionIdPartnerDecision());
         return xmlDeci;
     }
 
-    private PersonsType convertPersons(List<AnnoncePerson> lPersons) {
-        PersonsType persons = factory.createPersonsType();
-        for (AnnoncePerson annoncePerson : lPersons) {
-            PersonType person = factory.createPersonType();
-            person.setVn(annoncePerson.getVn());
-            person.setRepresentative(annoncePerson.getRepresentative());
-            person.setPensionKind(annoncePerson.getPensionKind());
-            person.setVitalNeedsCategory(annoncePerson.getVitalNeedsCategory().name());
-            person.setMaritalStatus(annoncePerson.getMaritalStatus());
-            person.setHousingMode(annoncePerson.getHousingMode().isDomicile() ? XSD_HOUSINGMODE_DOMICILE
-                    : XSD_HOUSINGMODE_RESIDENCE);
-            AddressType legalAdr = factory.createAddressType();
-            if (annoncePerson.getLegalAddress() != null) { // personData.isValidLegalAddress()
-                legalAdr.setCanton(getValidCantonAbreviationType(annoncePerson.getLegalAddress().getAddress()));
-                legalAdr.setMunicipality(annoncePerson.getLegalAddress().getMunicipality());
-            }
-            person.setLegalAddress(legalAdr);
-            if (annoncePerson.getLivingAddress() != null) { // personData.isValidLivingAddress()
-                AddressType livingAddr = factory.createAddressType();
+    private DecisionTypeRef0 convertDecisionRef0(AnnonceDecision annonceDecision, CommonDecisionType xmlCommDeci) {
+        DecisionTypeRef0 xmlDeci = (DecisionTypeRef0) xmlCommDeci;
 
-                livingAddr.setCanton(getValidCantonAbreviationType(annoncePerson.getLivingAddress().getAddress()));
-                livingAddr.setMunicipality(annoncePerson.getLivingAddress().getMunicipality());
-                person.setLivingAddress(livingAddr);
-            }
-            PersonalCalculationElementsType pce = factory.createPersonalCalculationElementsType();
+        xmlDeci.setDecisionKind(annonceDecision.getDecisionKind());
+        xmlDeci.setDecisionCause(annonceDecision.getDecisionCause());
+        if (annonceDecision.getValidTo() != null) {
+            xmlDeci.setValidTo(XmlConverters.convertDateToXMLGregorianCalendar(annonceDecision.getValidTo()));
+        }
+
+        if (annonceDecision.getElAmounts() != null) {
+            ElAmountsTypeRef0 elAmount = (ElAmountsTypeRef0) createCommElAmountsType(annonceDecision, false);
+            elAmount.setElLimit(annonceDecision.getElAmounts().getElLimit());
+            xmlDeci.setElAmounts(elAmount);
+        }
+        CommonCalculationElementsType commCalculationElementsType = createCommCalculationElementsType(annonceDecision.getCalculationElements(), false);
+        CalculationElementsTypeRef0 calcElmnt = convertCalculationElementRef0(annonceDecision.getCalculationElements(), commCalculationElementsType);
+        xmlDeci.setCalculationElements(calcElmnt);
+
+        PersonsTypeRef0 persons = convertPersonsRef0(annonceDecision.getPersons());
+        xmlDeci.setPersons(persons);
+        xmlDeci.setDecisionIdPartnerDecision(annonceDecision.getDecisionIdPartnerDecision());
+        return xmlDeci;
+    }
+
+    private CommonElAmountsType createCommElAmountsType(AnnonceDecision annonceDecision, boolean isReformePC) {
+        CommonElAmountsType commElAmout;
+        if(isReformePC){
+            commElAmout = factory.createElAmountsTypeRef1();
+        }else{
+            commElAmout = factory.createElAmountsTypeRef0();
+        }
+        commElAmout.setAmountNoHC(annonceDecision.getElAmounts().getAmountNoHC().longValue());
+        commElAmout.setAmountWithHC(annonceDecision.getElAmounts().getAmountWithHC().longValue());
+        return commElAmout;
+    }
+
+    private PersonsTypeRef1 convertPersonsRef1(List<AnnoncePerson> lPersons) {
+        PersonsTypeRef1 persons = factory.createPersonsTypeRef1();
+        for (AnnoncePerson annoncePerson : lPersons) {
+            PersonTypeRef1 person = (PersonTypeRef1)createCommPersonType(annoncePerson, true);
+            person.setVitalNeedsCategory(annoncePerson.getVitalNeedsCategory().name());
+
+            PersonalCalculationElementsTypeRef1 pce = (PersonalCalculationElementsTypeRef1) createCommPersonalCalculationElementsType(annoncePerson, true);
             AnnoncePersonalCalculationElements apce = annoncePerson.getPersonalCalculationElements();
-            PensionCategory pcepc = resolvePensionCategory(apce.getPensionCategory());
-            pce.setPensionCategory(pcepc);
-            pce.setHcLcaAllowance(apce.getHcLcaAllowance().longValue());
-            pce.setLucrativeGrossIncome(apce.getLucrativeGrossIncome().longValue());
-            pce.setHypotheticalGrossIncome(apce.getHypotheticalGrossIncome().longValue());
-            pce.setTotalPension(apce.getTotalPension().longValue());
-            if (apce.getLppPension() != null) { // personData.hasLppPension()
-                pce.setLppPension(apce.getLppPension().longValue());
-            }
-            if (apce.getForeignPension() != null) { // personData.hasForeignPension()
-                pce.setForeignPension(apce.getForeignPension().longValue());
-            }
-            pce.setOtherIncomes(apce.getOtherIncomes().longValue());
-            // Non ne disposons pas de cette info
-            pce.setLppWithdrawalAmount(apce.getLppWithdrawalAmount().longValue());
-            pce.setPatientContributionCategory(apce.getPatientContributionCategory());
-            pce.setHcFlatHelp(apce.getHcFlatHelp().longValue());
             if (apce.getHcEffectiveHelp() != null) { // n'existe pas encore
                 pce.setHcEffectiveHelp(apce.getHcEffectiveHelp().longValue());
-            }
-            pce.setOtherExpenses(apce.getOtherExpenses().longValue());
-            if (apce.getResidenceCosts() != null) { // personData.hasResidenceCosts()
-                pce.setResidenceCosts(resolveResidenceCosts(apce.getResidenceCosts()));
             }
             person.setPersonalCalculationElements(pce);
             persons.getPerson().add(person);
         }
 
         return persons;
+    }
+
+    private PersonsTypeRef0 convertPersonsRef0(List<AnnoncePerson> lPersons) {
+        PersonsTypeRef0 persons = factory.createPersonsTypeRef0();
+        for (AnnoncePerson annoncePerson : lPersons) {
+            PersonTypeRef0 person = (PersonTypeRef0) createCommPersonType(annoncePerson, false);
+            person.setVitalNeedsCategory(annoncePerson.getVitalNeedsCategory().name());
+
+            PersonalCalculationElementsTypeRef0 pce = (PersonalCalculationElementsTypeRef0) createCommPersonalCalculationElementsType(annoncePerson, false);
+            AnnoncePersonalCalculationElements apce = annoncePerson.getPersonalCalculationElements();
+            if (apce.getHcEffectiveHelp() != null) { // n'existe pas encore
+                pce.setHcEffectiveHelp(apce.getHcEffectiveHelp().longValue());
+            }
+            person.setPersonalCalculationElements(pce);
+            persons.getPerson().add(person);
+        }
+
+        return persons;
+    }
+
+    private CommonPersonalCalculationElementsType createCommPersonalCalculationElementsType(AnnoncePerson annoncePerson, boolean isReformePC) {
+        CommonPersonalCalculationElementsType pce;
+        if(isReformePC){
+            pce = factory.createPersonalCalculationElementsTypeRef1();
+        }else{
+            pce = factory.createPersonalCalculationElementsTypeRef0();
+        }
+        AnnoncePersonalCalculationElements apce = annoncePerson.getPersonalCalculationElements();
+        PensionCategory pcepc = resolvePensionCategory(apce.getPensionCategory());
+        pce.setPensionCategory(pcepc);
+        pce.setHcLcaAllowance(apce.getHcLcaAllowance().longValue());
+        pce.setLucrativeGrossIncome(apce.getLucrativeGrossIncome().longValue());
+        pce.setHypotheticalGrossIncome(apce.getHypotheticalGrossIncome().longValue());
+        pce.setTotalPension(apce.getTotalPension().longValue());
+        if (apce.getLppPension() != null) { // personData.hasLppPension()
+            pce.setLppPension(apce.getLppPension().longValue());
+        }
+        if (apce.getForeignPension() != null) { // personData.hasForeignPension()
+            pce.setForeignPension(apce.getForeignPension().longValue());
+        }
+        pce.setOtherIncomes(apce.getOtherIncomes().longValue());
+        // Non ne disposons pas de cette info
+        pce.setLppWithdrawalAmount(apce.getLppWithdrawalAmount().longValue());
+        pce.setPatientContributionCategory(apce.getPatientContributionCategory());
+        pce.setHcFlatHelp(apce.getHcFlatHelp().longValue());
+        pce.setOtherExpenses(apce.getOtherExpenses().longValue());
+        if (apce.getResidenceCosts() != null) { // personData.hasResidenceCosts()
+            pce.setResidenceCosts(resolveResidenceCosts(apce.getResidenceCosts()));
+        }
+        if(pce instanceof PersonalCalculationElementsTypeRef1) {
+            PersonalCalculationElementsTypeRef1 pce1 = (PersonalCalculationElementsTypeRef1) pce;
+            pce1.setChildrenCostsAssistanceNet(apce.getChildrenCostsAssitanceNet().longValue());
+        }
+        //TODO nouveau champ à false par défaut
+//        pce.setDisabledAllowanceRecipient();
+        return pce;
+    }
+
+    private CommonPersonType createCommPersonType(AnnoncePerson annoncePerson, boolean isReformePC) {
+        CommonPersonType person;
+        if(isReformePC){
+            person = factory.createPersonTypeRef1();
+        }else{
+            person = factory.createPersonTypeRef0();
+        }
+        person.setVn(annoncePerson.getVn());
+        person.setRepresentative(annoncePerson.getRepresentative());
+        person.setPensionKind(annoncePerson.getPensionKind());
+        person.setMaritalStatus(annoncePerson.getMaritalStatus());
+        person.setHousingMode(annoncePerson.getHousingMode().isDomicile() ? XSD_HOUSINGMODE_DOMICILE
+                : XSD_HOUSINGMODE_RESIDENCE);
+        CommonPersonType.LegalAddress legalAdr = factory.createCommonPersonTypeLegalAddress();
+        if (annoncePerson.getLegalAddress() != null) { // personData.isValidLegalAddress()
+            legalAdr.setCanton(getValidCantonAbreviationType(annoncePerson.getLegalAddress().getAddress()));
+            legalAdr.setMunicipality(annoncePerson.getLegalAddress().getMunicipality());
+        }
+        person.setLegalAddress(legalAdr);
+        if (annoncePerson.getLivingAddress() != null) { // personData.isValidLivingAddress()
+            CommonPersonType.LivingAddress livingAddr = factory.createCommonPersonTypeLivingAddress();
+
+            livingAddr.setCanton(getValidCantonFIAbreviationType(annoncePerson.getLivingAddress().getAddress()));
+            livingAddr.setMunicipality(annoncePerson.getLivingAddress().getMunicipality());
+            person.setLivingAddress(livingAddr);
+        }
+        return person;
     }
 
     private String resolvePatientContributionCategory(RpcDecisionAnnonceComplete annonce,
@@ -212,7 +293,7 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
     }
 
     private PensionCategory resolvePensionCategory(AnnoncePensionCategory pensionCat) {
-        PensionCategory pcepc = factory.createPersonalCalculationElementsTypePensionCategory();
+        PensionCategory pcepc = factory.createCommonPersonalCalculationElementsTypePensionCategory();
         if (pensionCat.getPension() != null) {// personData.hasPension()
             PensionType pension = factory.createPensionType();
 
@@ -243,6 +324,16 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
         }
     }
 
+    private CantonFlAbbreviationType getValidCantonFIAbreviationType(RpcAddress address) {
+        try {
+            return CantonFlAbbreviationType.valueOf(address.getCanton().getAbreviation());
+        } catch (IllegalArgumentException e) {
+            LOG.debug("Le canton de l'adresse ne match pas à la liste reconnu par la xsd", e);
+            throw new RpcBusinessException("pegasus.rpc.address.canton.introuvable", address.getCanton()
+                    .getAbreviation(), address.toString());
+        }
+    }
+
     private boolean residenceCostsPatientContribution() {
         return false;
     }
@@ -264,49 +355,127 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
         return false;
     }
 
-    private CalculationElementsType convertCalculationElement(AnnonceCalculationElements calculationElements) {
-        CalculationElementsType calcElmnt = factory.createCalculationElementsType();
-        calcElmnt.setOtherWealth(calculationElements.getOtherWealth().longValue());
-        calcElmnt.setDivestedWealth(calculationElements.getDivestedWealth().longValue());
-        calcElmnt.setOtherDebts(calculationElements.getOtherDebts().longValue());
-        calcElmnt.setWealthDeductible(calculationElements.getWealthDeductible().longValue());
-        calcElmnt.setWealthConsidered(calculationElements.getWealthConsidered().longValue());
-        calcElmnt.setWealthIncome(calculationElements.getWealthIncome().longValue());
-        calcElmnt.setUsufructIncome(calculationElements.getUsufructIncome().longValue());
-        calcElmnt.setWealthIncomeConsidered(calculationElements.getWealthIncomeConsidered().longValue());
-        calcElmnt.setIncomeConsideredTotal(calculationElements.getIncomeConsideredTotal().longValue());
-        calcElmnt.setWealthIncomeRate(calculationElements.getWealthIncomeRate().movePointRight(2)
+    private CommonCalculationElementsType createCommCalculationElementsType(AnnonceCalculationElements calculationElements, boolean isReformePC) {
+        CommonCalculationElementsType commCalElmnt;
+        if(isReformePC){
+            commCalElmnt = factory.createCalculationElementsTypeRef1();
+        }else{
+            commCalElmnt = factory.createCalculationElementsTypeRef0();
+        }
+        commCalElmnt.setOtherWealth(calculationElements.getOtherWealth().longValue());
+        commCalElmnt.setDivestedWealth(calculationElements.getDivestedWealth().longValue());
+        commCalElmnt.setOtherDebts(calculationElements.getOtherDebts().longValue());
+        commCalElmnt.setWealthDeductible(calculationElements.getWealthDeductible().longValue());
+        commCalElmnt.setWealthConsidered(calculationElements.getWealthConsidered().longValue());
+        commCalElmnt.setWealthIncome(calculationElements.getWealthIncome().longValue());
+        commCalElmnt.setUsufructIncome(calculationElements.getUsufructIncome().longValue());
+        commCalElmnt.setWealthIncomeConsidered(calculationElements.getWealthIncomeConsidered().longValue());
+        commCalElmnt.setIncomeConsideredTotal(calculationElements.getIncomeConsideredTotal().longValue());
+        commCalElmnt.setWealthIncomeRate(calculationElements.getWealthIncomeRate().movePointRight(2)
                 .setScale(2, BigDecimal.ROUND_HALF_UP));
-        calcElmnt.setVitalNeeds(calculationElements.getVitalNeeds().longValue());
-        calcElmnt.setChildren(calculationElements.getChildren());
+        commCalElmnt.setVitalNeeds(calculationElements.getVitalNeeds().longValue());
+        commCalElmnt.setChildren(calculationElements.getChildren());
+        //TODO créer et sélectionner la bonne énumération
+        commCalElmnt.setLivingSituation("normal");
+        return  commCalElmnt;
+    }
+
+    private CalculationElementsTypeRef1 convertCalculationElementRef1(AnnonceCalculationElements calculationElements, CommonCalculationElementsType commCalculationElementsType) {
+        CalculationElementsTypeRef1 calcElmnt = (CalculationElementsTypeRef1)commCalculationElementsType;
         if (calculationElements.isProperty()) { //
-            RealPropertyType realProp = factory.createRealPropertyType();
-            realProp.setRealProperty(calculationElements.getRealProperty().longValue());
-            realProp.setMortgageDebts(calculationElements.getMortgageDebts().longValue());
-            realProp.setPropertyIncome(calculationElements.getPropertyIncome().longValue());
-            realProp.setMortgageInterest(calculationElements.getMortgageInterest().longValue());
-            realProp.setMaintenanceFees(calculationElements.getMaintenanceFees().longValue());
-            realProp.setInterestFeesEligible(calculationElements.getInterestFeesEligible().longValue());
+            RealPropertyTypeRef1 realProp = (RealPropertyTypeRef1) createCommRealPropertyType(calculationElements, true);
+            realProp.setMortgageDebtsRealProperty(calculationElements.getMortgageDebtsRealProperty().longValue());
             calcElmnt.setRealProperty(realProp);
         }
         if (calculationElements.isHousingOwner()) { // annonce.isProrietaire()
-            HousingOwnerType housingOwner = factory.createHousingOwnerType();
-            housingOwner.setSelfInhabitedProperty(calculationElements.getSelfInhabitedProperty().longValue());
-            housingOwner.setSelfInhabitedPropertyDeductible(calculationElements.getSelfInhabitedPropertyDeductible()
-                    .longValue());
-            housingOwner.setRentalValue(calculationElements.getRentalValue().longValue());
+            HousingOwnerTypeRef1 housingOwner = (HousingOwnerTypeRef1)createHousingOwnerTypeRef(calculationElements, true);
+            housingOwner.setMortgageDebtsSelfinhabited(calculationElements.getMortgageDebtsSelfinhabited().longValue());
             calcElmnt.setHousingOwner(housingOwner);
         }
         if (calculationElements.isRent()) {// annonce.hasLoyers()
-            RentsType rents = factory.createRentsType();
-            rents.setGrossRental(calculationElements.getGrossRental().longValue());
-            rents.setRentCategory(calculationElements.getRentCategory());
-            rents.setRentGrossTotal(calculationElements.getRentGrossTotal().longValue());
-            rents.setRentGrossTotalPart(calculationElements.getRentGrossTotalPart().longValue());
-            rents.setMaxRent(calculationElements.getMaxRent().longValue());
+            RentsTypeRef1 rents = (RentsTypeRef1)createRentsTypeRef(calculationElements, true);
+            rents.setRentRegion("CITY");
+            rents.setFamilySize(calculationElements.getFamilySize());
+            calcElmnt.setRents(rents);
+        }
+
+        if (calculationElements.isDivestedWealth()) { //si Dessaisissement fortune cochée
+            // Alternative
+//            calcElmnt.setTypeOfDivestedWealth(calculationElements.getTypeDivestedWealth().equals("1")? XSD_TYPE_DIVESTED_WEALTH_SANS_CONTREPARTIE : XSD_TYPE_DIVESTED_WEALTH_CONSOMMATION_EXCESSIVE);
+
+            TypeDivestedWealth typeDivestedWealth = TypeDivestedWealth.fromCode(calculationElements.getTypeDivestedWealth());
+            if (Objects.nonNull(typeDivestedWealth)) {
+                calcElmnt.setTypeOfDivestedWealth(typeDivestedWealth.getXsdKey());
+            }
+        }
+
+
+
+        return calcElmnt;
+    }
+
+    private HousingOwnerTypeRef0 createHousingOwnerTypeRef(AnnonceCalculationElements calculationElements, boolean isReformePC) {
+        HousingOwnerTypeRef0 housingOwner;
+        if(isReformePC){
+            housingOwner = factory.createHousingOwnerTypeRef1();
+        }else{
+            housingOwner = factory.createHousingOwnerTypeRef0();
+        }
+        housingOwner.setSelfInhabitedProperty(calculationElements.getSelfInhabitedProperty().longValue());
+        housingOwner.setSelfInhabitedPropertyDeductible(calculationElements.getSelfInhabitedPropertyDeductible()
+                .longValue());
+        housingOwner.setRentalValue(calculationElements.getRentalValue().longValue());
+        return housingOwner;
+    }
+
+    private CalculationElementsTypeRef0 convertCalculationElementRef0(AnnonceCalculationElements calculationElements, CommonCalculationElementsType commCalculationElementsType) {
+        CalculationElementsTypeRef0 calcElmnt = (CalculationElementsTypeRef0)commCalculationElementsType;
+        if (calculationElements.isProperty()) { //
+            RealPropertyTypeRef0 realProp = (RealPropertyTypeRef0)createCommRealPropertyType(calculationElements, false);
+            realProp.setMortgageDebts(calculationElements.getMortgageDebts().longValue());
+            calcElmnt.setRealProperty(realProp);
+        }
+        if (calculationElements.isHousingOwner()) { // annonce.isProrietaire()
+            HousingOwnerTypeRef0 housingOwner = createHousingOwnerTypeRef(calculationElements, false);
+            calcElmnt.setHousingOwner(housingOwner);
+        }
+        if (calculationElements.isRent()) {// annonce.hasLoyers()
+            RentsTypeRef0 rents = createRentsTypeRef(calculationElements, false);
             calcElmnt.setRents(rents);
         }
         return calcElmnt;
+    }
+
+    private RentsTypeRef0 createRentsTypeRef(AnnonceCalculationElements calculationElements, boolean isReformePC) {
+        RentsTypeRef0 rents;
+        if(isReformePC){
+            rents = factory.createRentsTypeRef1();
+        }else{
+            rents = factory.createRentsTypeRef0();
+        }
+        rents.setGrossRental(calculationElements.getGrossRental().longValue());
+        rents.setRentCategory(calculationElements.getRentCategory());
+        rents.setRentGrossTotal(calculationElements.getRentGrossTotal().longValue());
+        rents.setRentGrossTotalPart(calculationElements.getRentGrossTotalPart().longValue());
+        rents.setMaxRent(calculationElements.getMaxRent().longValue());
+        // TODO nouveau champ à false par défaut
+//        rents.setWheelchairSurcharge();
+        return rents;
+    }
+
+    private CommonRealPropertyType createCommRealPropertyType(AnnonceCalculationElements calculationElements, boolean isReformePC) {
+        CommonRealPropertyType commRealProp;
+        if(isReformePC){
+            commRealProp = factory.createRealPropertyTypeRef1();
+        }else{
+            commRealProp = factory.createRealPropertyTypeRef0();
+        }
+        commRealProp.setRealProperty(calculationElements.getRealProperty().longValue());
+        commRealProp.setPropertyIncome(calculationElements.getPropertyIncome().longValue());
+        commRealProp.setMortgageInterest(calculationElements.getMortgageInterest().longValue());
+        commRealProp.setMaintenanceFees(calculationElements.getMaintenanceFees().longValue());
+        commRealProp.setInterestFeesEligible(calculationElements.getInterestFeesEligible().longValue());
+        return commRealProp;
     }
 
 }

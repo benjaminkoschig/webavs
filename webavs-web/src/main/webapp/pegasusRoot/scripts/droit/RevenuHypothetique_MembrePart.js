@@ -137,7 +137,7 @@ $(function(){
 			zone.stopEdition();
 		}).end()
 		.find('.btnAjaxValidate').click(function(){
-			zone.validateEdition();
+			zone.validateEditionV2();
 		}).end()
 		.find('.btnAjaxDelete').click(function(){
 				zone.ajaxDeleteEntity(zone.selectedEntityId);
@@ -148,7 +148,7 @@ $(function(){
 		}).end()
 		.find('.btnAjaxValidateNouvellePeriode').click(function(){
 			zone.doAddPeriode=true;
-			zone.validateEdition();
+			zone.validateEditionV2();
 		}).end();	
 	});
 	

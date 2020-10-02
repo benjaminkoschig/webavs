@@ -36,6 +36,9 @@ SimpleLoyer entity= viewBean.getLoyer().getSimpleLoyer();
 		<revenuSousLocation><%=entity.getRevenuSousLocation()%></revenuSousLocation>
 		<taxeJournalierePensionNonReconnue><%=entity.getTaxeJournalierePensionNonReconnue()%></taxeJournalierePensionNonReconnue>
 		<csDeplafonnementAppartementPartage><%=entity.getCsDeplafonnementAppartementPartage()%></csDeplafonnementAppartementPartage>
+		<nomCommune><%=viewBean.getNomCommune(entity.getIdLocalite())%></nomCommune>
+		<commune><%=entity.getIdLocalite()%></commune>
+		<textLibre><%=entity.getTextLibre()%></textLibre>
 		<%@ include file="/pegasusRoot/ajax/commonDonneeFinanciere.jsp" %>>
 	</contenu>
 	<ct:serializeObject destination="xml"/>

@@ -66,6 +66,10 @@ public class SimpleLoyerChecker extends PegasusAbstractChecker {
             JadeThread.logError(simpleLoyer.getClass().getName(), "pegasus.simpleLoyer.nombrepersonnes.mandatory");
         }
 
+        if (JadeStringUtil.isBlankOrZero(simpleLoyer.getIdLocalite())) {
+            JadeThread.logError(simpleLoyer.getClass().getName(), "pegasus.simpleLoyer.commune.mandatory");
+        }
+
         // if (JadeStringUtil.isEmpty( JadeStringUtil.isBlankOrZero IPCHabitat
 
         if (simpleLoyer.getCsTypeLoyer().equalsIgnoreCase(IPCHabitat.CS_LOYER_NET_AVEC_CHARGE)) {

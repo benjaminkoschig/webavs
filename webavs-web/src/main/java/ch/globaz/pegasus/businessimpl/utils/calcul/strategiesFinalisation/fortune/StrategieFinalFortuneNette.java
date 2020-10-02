@@ -1,8 +1,12 @@
 package ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.fortune;
 
 import java.util.Date;
+import java.util.List;
+
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
+import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
+import ch.globaz.pegasus.business.models.calcul.CalculDonneesHome;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext.Attribut;
 import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
@@ -19,13 +23,13 @@ public class StrategieFinalFortuneNette implements StrategieCalculFinalisation {
         somme += donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_FOR_IMMO_TOTAL);
 
         donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_FORTU_SOUS_TOTAL, somme));
+        if(!context.contains(Attribut.REFORME)){
+            somme -= donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_TOTAL);
+        }
 
-        somme -= donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_TOTAL);
         somme -= donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_AUT_DETT_TOTAL);
 
-        // final float MONTANT_DEDUCTION_CELIBATAIRE = (Float) context.get(Attribut.CS_DEDUCTION_FORTUNE_CELIBATAIRE);
-        // final float MONTANT_DEDUCTION_COUPLE = (Float) context.get(Attribut.CS_DEDUCTION_FORTUNE_COUPLE);
-        // final float MONTANT_DEDUCTION_ENFANT = (Float) context.get(Attribut.CS_DEDUCTION_FORTUNE_ENFANT);
+        donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL_AVANT_FRACTION, somme));
 
         final float MONTANT_DEDUCTION_CELIBATAIRE = Float.parseFloat(((ControlleurVariablesMetier) context
                 .get(Attribut.CS_DEDUCTION_FORTUNE_CELIBATAIRE)).getValeurCourante());
@@ -53,7 +57,48 @@ public class StrategieFinalFortuneNette implements StrategieCalculFinalisation {
         // plafonnement à zero pour eviter une fortune négative
         somme = Math.max(somme, 0);
 
+        if (context.contains(Attribut.REFORME)) {
+            int nbPersonnes = (Integer) context.get(Attribut.NB_PARENTS);
+            int nbHomes = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_NOMBRE_CHAMBRES).intValue();
+            boolean isAllHome = ( nbHomes >= nbPersonnes);
+            if(nbPersonnes > 1) {
+                Float fraction;
+                String legende;
+                if(!isAllHome && nbHomes !=  0 && donnee.getValeurEnfant(IPCValeursPlanCalcul.PERSONNE_EN_COURS_ISHOME) != null
+                    && hasPersonneHabitationPrincipal(donnee)) {
+                    if(donnee.getValeurEnfant(IPCValeursPlanCalcul.PERSONNE_EN_COURS_ISHOME) > 0) {
+                        fraction = Float.parseFloat(((ControlleurVariablesMetier) context
+                            .get(Attribut.CS_REFORME_FRACTIONS_FORTUNE_HOME)).getValeurCourante());
+                        legende = ((ControlleurVariablesMetier) context
+                                .get(Attribut.CS_REFORME_FRACTIONS_FORTUNE_HOME)).getLegendeCourante();
+                    } else {
+                        fraction = Float.parseFloat(((ControlleurVariablesMetier) context
+                                .get(Attribut.CS_REFORME_FRACTIONS_FORTUNE_RESIDENT)).getValeurCourante());
+                        legende = ((ControlleurVariablesMetier) context
+                                .get(Attribut.CS_REFORME_FRACTIONS_FORTUNE_RESIDENT)).getLegendeCourante();
+                    }
+                    somme = somme * fraction;
+                    TupleDonneeRapport tupleImputationFortunePart = new TupleDonneeRapport(
+                            IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL_PART, 0.0f, legende);
+                    donnee.addEnfantTuple(tupleImputationFortunePart);
+
+                }
+            }
+        }
+
         donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL, somme));
+    }
+
+    private boolean hasPersonneHabitationPrincipal(TupleDonneeRapport donnee){
+        TupleDonneeRapport tupleHabitatPrincipal = donnee.getEnfants().get(
+                IPCValeursPlanCalcul.CLE_INTER_HABITATION_PRINCIPALE);
+        boolean immoPrincipal = donnee.containsValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_FOR_IMMO_BIENS_IMMO_HABIT_PRINCIPALE);
+        if(tupleHabitatPrincipal != null && immoPrincipal) {
+            float nbPersonnesImmoPrincipal = tupleHabitatPrincipal
+                    .getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_HABITATION_PRINCIPALE_NBPERSONNES);
+            return nbPersonnesImmoPrincipal > 0;
+        }
+        return false;
     }
 
 }

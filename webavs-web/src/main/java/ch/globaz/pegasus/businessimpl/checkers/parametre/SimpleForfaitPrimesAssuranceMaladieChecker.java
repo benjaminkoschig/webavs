@@ -82,9 +82,9 @@ public class SimpleForfaitPrimesAssuranceMaladieChecker {
                     "pegasus.simpleforfaitprimesassurancemaladie.cstype.mandatory");
 
         }
-        if (JadeStringUtil.isEmpty(simpleForfaitPrimesAssuranceMaladie.getMontant())) {
+        if (JadeStringUtil.isEmpty(simpleForfaitPrimesAssuranceMaladie.getMontantPrimeMoy())) {
             JadeThread.logError(simpleForfaitPrimesAssuranceMaladie.getClass().getName(),
-                    "pegasus.simpleforfaitprimesassurancemaladie.montant.mandatory");
+                    "pegasus.simpleforfaitprimesassurancemaladie.montantprimemoy.mandatory");
 
         }
         if (JadeStringUtil.isEmpty(simpleForfaitPrimesAssuranceMaladie.getDateDebut())) {

@@ -9,6 +9,7 @@
 			<field name="idLocalite" column="DBIDLO" type="NUMERIC"  mandatory="true" comment="ID_LOCALITE" />
 			<field name="dateDebut" column="DBDDE1" type="DATE"  mandatory="true" comment="DATE_DEBUT" />
 			<field name="dateFin" column="DBDFI1" type="DATE" mandatory="false" comment="DATE_FIN" />
+			<field name="pourcentage" column="DBPRCT" type="NUMERIC" mandatory="false"  dataType="NUMERIC(15,5)" comment="POURCENTAGE" />
 		</fields>
 		
 		<search-definition>

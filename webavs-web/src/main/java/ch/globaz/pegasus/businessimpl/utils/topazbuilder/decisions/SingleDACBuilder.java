@@ -619,7 +619,9 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         buildBlocInformations(data);
 
         // Moyen de droits
-        if (copie.getMoyensDeDroit() && !isProforma()) {
+        if (copie.getMoyensDeDroit()
+                && !isProforma()
+                && !isProvisoire()) {
             buildBlocMoyensDroits(data);
         }
 
@@ -737,7 +739,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         // Informations, p9
         buildBlocInformations(data);
         // Moyen de droits
-        if (!isProforma()) {
+        if (!isProforma() && !isProvisoire()) {
             buildBlocMoyensDroits(data);
         }
         // Salutations
@@ -821,7 +823,6 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         data.addData("POLITESSE", resolveFormulePolitesse(tiersBeneficiaire));
 
         // intro
-
         data.addData("INTRO", dacOO.getSimpleDecisionApresCalcul().getIntroduction());
 
         // suite
@@ -1464,6 +1465,16 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
      */
     private Boolean isProforma() {
         return dacOO.getSimpleDecisionApresCalcul().getCsTypePreparation().equals(IPCDecision.CS_GENRE_PROFORMA);
+    }
+
+    /**
+     * Retourne true su la decision est provisoire
+     *
+     * @return
+     */
+    private Boolean isProvisoire() {
+        return dacOO.getDecisionHeader().getSimpleDecisionHeader().isDecisionProvisoire() != null
+                && dacOO.getDecisionHeader().getSimpleDecisionHeader().isDecisionProvisoire();
     }
 
     /**

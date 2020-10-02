@@ -1,5 +1,8 @@
 package ch.globaz.pegasus.businessimpl.services.models.habitat;
 
+import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCSejourMoisPartielHome;
+import ch.globaz.pegasus.business.exceptions.models.habitat.SejourMoisPartielHomeException;
+import ch.globaz.pegasus.business.models.habitat.*;
 import globaz.globall.util.JAException;
 import globaz.jade.exception.JadeCloneModelException;
 import globaz.jade.exception.JadePersistenceException;
@@ -19,10 +22,6 @@ import ch.globaz.pegasus.business.models.droit.Droit;
 import ch.globaz.pegasus.business.models.droit.DroitMembreFamille;
 import ch.globaz.pegasus.business.models.droit.DroitMembreFamilleSearch;
 import ch.globaz.pegasus.business.models.droit.SimpleVersionDroit;
-import ch.globaz.pegasus.business.models.habitat.Habitat;
-import ch.globaz.pegasus.business.models.habitat.HabitatSearch;
-import ch.globaz.pegasus.business.models.habitat.Loyer;
-import ch.globaz.pegasus.business.models.habitat.TaxeJournaliereHome;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.business.services.models.habitat.HabitatService;
 import ch.globaz.pegasus.businessimpl.services.PegasusAbstractServiceImpl;
@@ -79,6 +78,10 @@ public class HabitatServiceImpl extends PegasusAbstractServiceImpl implements Ha
                                 && IPCTaxeJournaliere.CS_TYPE_DONNEE_FINANCIERE.equals(csType)) {
                             copyTaxeJournaliereHome(habitat, newDroit, droitMembreFamille);
                         }
+                        if(habitat.getSejourMoisPartielHome() != null
+                                && IPCSejourMoisPartielHome.CS_TYPE_DONNEE_FINANCIERE.equals(csType)) {
+                            copySejourMoisPartielHome(habitat, newDroit, droitMembreFamille);
+                        }
                     }
                 } catch (JadeCloneModelException e) {
                     throw new DonneeFinanciereException("Unable to clone (habitat) for the copy ", e);
@@ -100,6 +103,7 @@ public class HabitatServiceImpl extends PegasusAbstractServiceImpl implements Ha
         try {
             loyer.setSimpleDonneeFinanciereHeader(habitat.getSimpleDonneeFinanciereHeader());
             loyer.setSimpleLoyer(habitat.getSimpleLoyer());
+            habitat.getSimpleLoyer().setCopy(true);
             loyer = createLoyer(newDroit.getSimpleVersionDroit(), droitMembreFamille, loyer);
             return loyer;
         } catch (LoyerException e) {
@@ -120,6 +124,22 @@ public class HabitatServiceImpl extends PegasusAbstractServiceImpl implements Ha
             return taxeJournaliereHome;
         } catch (TaxeJournaliereHomeException e) {
             throw new DonneeFinanciereException("Unable to copy the betail", e);
+        }
+    }
+
+    private SejourMoisPartielHome copySejourMoisPartielHome(Habitat habitat, Droit newDroit,
+                                                        DroitMembreFamille droitMembreFamille) throws DonneeFinanciereException,
+            JadeApplicationServiceNotAvailableException, JadePersistenceException {
+        SejourMoisPartielHome sejourMoisPartielHome = new SejourMoisPartielHome();
+        try {
+            sejourMoisPartielHome.setSimpleDonneeFinanciereHeader(habitat.getSimpleDonneeFinanciereHeader());
+            sejourMoisPartielHome.setSimpleSejourMoisPartielHome(habitat.getSejourMoisPartielHome()
+                    .getSimpleSejourMoisPartielHome());
+            sejourMoisPartielHome = createSejourMoisPartielHome(newDroit.getSimpleVersionDroit(), droitMembreFamille,
+                    sejourMoisPartielHome);
+            return sejourMoisPartielHome;
+        } catch (SejourMoisPartielHomeException e) {
+            throw new DonneeFinanciereException("Unable to copy sejourMoisPartielHomeHome", e);
         }
     }
 
@@ -179,6 +199,36 @@ public class HabitatServiceImpl extends PegasusAbstractServiceImpl implements Ha
         return taxeJournaliereHome;
     }
 
+    @Override
+    public SejourMoisPartielHome createSejourMoisPartielHome(SimpleVersionDroit simpleVersionDroit,
+                                                             DroitMembreFamille droitMembreFamille, SejourMoisPartielHome sejourMoisPartielHome)
+            throws SejourMoisPartielHomeException, JadePersistenceException, DonneeFinanciereException {
+        if ((droitMembreFamille == null) || droitMembreFamille.isNew()) {
+            throw new SejourMoisPartielHomeException(
+                    "Unable to create sejourMoisPartielHome, the droitMembreFamille is null or new");
+        }
+        if (sejourMoisPartielHome == null) {
+            throw new SejourMoisPartielHomeException("Unable to create taxeJournaliereHome, the model is null");
+        }
+        if (simpleVersionDroit == null) {
+            throw new SejourMoisPartielHomeException(
+                    "Unable to create taxeJournaliereHome, the simpleVersionDroit is null ");
+        }
+
+        sejourMoisPartielHome.getSimpleDonneeFinanciereHeader().setCsTypeDonneeFinanciere(
+                IPCSejourMoisPartielHome.CS_TYPE_DONNEE_FINANCIERE);
+        try {
+            sejourMoisPartielHome.setSimpleDonneeFinanciereHeader(PegasusImplServiceLocator
+                    .getDonneeFinanciereHeaderService().setDonneeFinanciereHeaderForCreation(simpleVersionDroit,
+                            droitMembreFamille, sejourMoisPartielHome.getSimpleDonneeFinanciereHeader()));
+
+            sejourMoisPartielHome = PegasusImplServiceLocator.getSejourMoisPartielHomeService().create(sejourMoisPartielHome);
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new SejourMoisPartielHomeException("Service not available - " + e.getMessage(), e);
+        }
+        return sejourMoisPartielHome;
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -194,6 +244,9 @@ public class HabitatServiceImpl extends PegasusAbstractServiceImpl implements Ha
         }
         if (typeDonneFinianciere.contains("-" + IPCTaxeJournaliere.CS_TYPE_DONNEE_FINANCIERE + "-")) {
             PegasusImplServiceLocator.getSimpleTaxeJournaliereHomeService().deleteParListeIdDoFinH(idsDonneFinanciere);
+        }
+        if (typeDonneFinianciere.contains("-" + IPCSejourMoisPartielHome.CS_TYPE_DONNEE_FINANCIERE + "-")) {
+            PegasusImplServiceLocator.getSimpleSejourMoisPartielHomeService().deleteParListeIdDoFinH(idsDonneFinanciere);
         }
     }
 

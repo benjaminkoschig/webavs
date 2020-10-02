@@ -4,6 +4,7 @@
 	<model-mapping import="pegasus/revenusdepenses/simpleautresrevenus.xml"/>
 	<model-mapping import="pegasus/revenusdepenses/simplecontratentretienviager.xml"/>
 	<model-mapping import="pegasus/revenusdepenses/simplecotisationspsal.xml"/>
+	<model-mapping import="pegasus/revenusdepenses/simplefraisgarde.xml"/>
 	<model-mapping import="pegasus/revenusdepenses/simplepensionalimentaire.xml"/>
 	<model-mapping import="pegasus/revenusdepenses/simplerevenuactivitelucrativedependante.xml"/>
 	<model-mapping import="pegasus/revenusdepenses/simplerevenuactivitelucrativeindependante.xml"/>
@@ -15,6 +16,7 @@
 	<model-mapping import="pegasus/revenusdepenses/autresrevenus.xml"/>
 	<model-mapping import="pegasus/revenusdepenses/contratentretienviager.xml"/>
 	<model-mapping import="pegasus/revenusdepenses/cotisationspsal.xml"/>
+	<model-mapping import="pegasus/revenusdepenses/fraisgarde.xml"/>
 	<model-mapping import="pegasus/revenusdepenses/pensionalimentaire.xml"/>
 	<model-mapping import="pegasus/revenusdepenses/revenuactivitelucrativeindependante.xml"/>
 	<model-mapping import="pegasus/revenusdepenses/revenuactivitelucrativeindependanteetendu.xml"/>

@@ -21,6 +21,7 @@
 			<field name="dateDebutDecision" column="DHDDDR" type="MONTH_YEAR" mandatory="false" comment="DATE_DEBUT_DECISION"/>
 			<field name="dateFinDecision" column="DHFDDR" type="MONTH_YEAR" mandatory="false" comment="DATE_FIN_DECISION"/>
 			<field name="idDecisionConjoint" column="DHIDCO" type="NUMERIC" mandatory="false" comment="ID_DECISION_HEADER_CONJOINT_LIE"/>
+			<field name="decisionProvisoire" column="DHPROV" type="BOOLEAN" mandatory="false" comment="DECISION_PROVISOIRE"/>
 			
 		</fields>
 		<search-definition>

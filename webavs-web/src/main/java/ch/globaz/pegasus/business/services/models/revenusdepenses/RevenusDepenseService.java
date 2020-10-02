@@ -5,31 +5,17 @@ package ch.globaz.pegasus.business.services.models.revenusdepenses;
  * @author DMA
  * @date 5 nov. 2010
  */
+import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.*;
+import ch.globaz.pegasus.business.models.revenusdepenses.*;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.util.List;
 import ch.globaz.pegasus.business.exceptions.models.droit.DonneeFinanciereException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.AllocationsFamilialesException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.AutresRevenusException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.ContratEntretienViagerException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.CotisationsPsalException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.PensionAlimentaireException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.RevenuActiviteLucrativeDependanteException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.RevenuActiviteLucrativeIndependanteException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.RevenuHypothetiqueException;
 import ch.globaz.pegasus.business.models.droit.Droit;
 import ch.globaz.pegasus.business.models.droit.DroitMembreFamille;
 import ch.globaz.pegasus.business.models.droit.DroitMembreFamilleSearch;
 import ch.globaz.pegasus.business.models.droit.SimpleVersionDroit;
-import ch.globaz.pegasus.business.models.revenusdepenses.AllocationsFamiliales;
-import ch.globaz.pegasus.business.models.revenusdepenses.AutresRevenus;
-import ch.globaz.pegasus.business.models.revenusdepenses.ContratEntretienViager;
-import ch.globaz.pegasus.business.models.revenusdepenses.CotisationsPsal;
-import ch.globaz.pegasus.business.models.revenusdepenses.PensionAlimentaire;
-import ch.globaz.pegasus.business.models.revenusdepenses.RevenuActiviteLucrativeDependante;
-import ch.globaz.pegasus.business.models.revenusdepenses.RevenuActiviteLucrativeIndependante;
-import ch.globaz.pegasus.business.models.revenusdepenses.RevenuHypothetique;
 
 public interface RevenusDepenseService extends JadeApplicationService {
 
@@ -188,4 +174,7 @@ public interface RevenusDepenseService extends JadeApplicationService {
     public void deleteParListeIdDoFinH(List<String> idsDonneFinanciere, String typeDonneFinianciere)
             throws JadeApplicationServiceNotAvailableException, JadePersistenceException,
             RevenuActiviteLucrativeDependanteException;
+
+    public FraisGarde createFraisGarde(SimpleVersionDroit simpleVersionDroit, DroitMembreFamille instanceDroitMembreFamille, FraisGarde fraisGarde) throws FraisGardeException,
+            JadePersistenceException, DonneeFinanciereException, FraisGardeException;
 }

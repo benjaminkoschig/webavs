@@ -7,15 +7,16 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.Revenu;
 
 public class RevenuActiviteLucrativeIndependante extends DonneeFinanciere implements Revenu {
     private final Montant montant;
+    private Montant fraisDeGarde;
     private final RevenuActiviteLucrativeIndependanteGenreRevenu revenuActiviteLucrativeIndependanteGenreRevenu;
 
-    public RevenuActiviteLucrativeIndependante(Montant montant,
+    public RevenuActiviteLucrativeIndependante(Montant montant,Montant fraisDeGarde,
             RevenuActiviteLucrativeIndependanteGenreRevenu revenuActiviteLucrativeIndependanteGenreRevenu,
             DonneeFinanciere donneeFinanciere) {
         super(donneeFinanciere);
 
         this.revenuActiviteLucrativeIndependanteGenreRevenu = revenuActiviteLucrativeIndependanteGenreRevenu;
-
+        this.fraisDeGarde = fraisDeGarde.addAnnuelPeriodicity();
         this.montant = montant.addAnnuelPeriodicity();
     }
 
@@ -44,7 +45,7 @@ public class RevenuActiviteLucrativeIndependante extends DonneeFinanciere implem
 
     @Override
     public String toString() {
-        return "RevenuActiviteLucrativeIndependante [montant=" + montant
+        return "RevenuActiviteLucrativeIndependante [montant=" + montant+", fraisDeGarde=" + fraisDeGarde +","
                 + ", revenuActiviteLucrativeIndependanteGenreRevenu=" + revenuActiviteLucrativeIndependanteGenreRevenu
                 + "]";
     }
@@ -54,6 +55,7 @@ public class RevenuActiviteLucrativeIndependante extends DonneeFinanciere implem
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((montant == null) ? 0 : montant.hashCode());
+        result = prime * result + ((fraisDeGarde == null) ? 0 : fraisDeGarde.hashCode());
         result = prime
                 * result
                 + ((revenuActiviteLucrativeIndependanteGenreRevenu == null) ? 0
@@ -80,10 +82,24 @@ public class RevenuActiviteLucrativeIndependante extends DonneeFinanciere implem
         } else if (!montant.equals(other.montant)) {
             return false;
         }
+        if (fraisDeGarde == null) {
+            if (other.fraisDeGarde != null) {
+                return false;
+            }
+        } else if (!fraisDeGarde.equals(other.fraisDeGarde)) {
+            return false;
+        }
         if (revenuActiviteLucrativeIndependanteGenreRevenu != other.revenuActiviteLucrativeIndependanteGenreRevenu) {
             return false;
         }
         return true;
+    }
+    public Montant getFraisDeGarde() {
+        return fraisDeGarde;
+    }
+
+    public void setFraisDeGarde(Montant fraisDeGarde) {
+        this.fraisDeGarde = fraisDeGarde;
     }
 
 }

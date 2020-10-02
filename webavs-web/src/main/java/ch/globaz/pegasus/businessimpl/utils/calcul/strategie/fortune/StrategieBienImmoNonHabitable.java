@@ -35,6 +35,10 @@ public class StrategieBienImmoNonHabitable extends StrategieCalculFortune implem
                     checkAmoutAndParseAsFloat(donnee.getBienImmoNonHabitableMontantValeurVenale()) * fraction);
             this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_TOTAL,
                     checkAmoutAndParseAsFloat(donnee.getBienImmoNonHabitableMontantDetteHypothecaire()) * fraction);
+            if(context.contains(CalculContext.Attribut.REFORME)) {
+                this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_NOT_HABITED,
+                        checkAmoutAndParseAsFloat(donnee.getBienImmoNonHabitableMontantDetteHypothecaire()) * fraction);
+            }
         }
 
         return resultatExistant;

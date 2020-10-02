@@ -7,12 +7,14 @@
 			<primary-key name="idZoneForfait" column="DAIDZF" comment="ID_ZONE_DE_FORFAITS" />
 			<field name="csCanton" column="DATCAN" type="NUMERIC"  mandatory="true" comment="CS_CANTON" />
 			<field name="designation" column="DALDES" type="STRING" mandatory="true" comment="DESIGNATION" />
+			<field name="type" column="DATYPE" type="NUMERIC" mandatory="true" comment="TYPE" />
 		</fields>
 		<search-definition>
 			<search-group operator="AND">
 				<search-field name="forCsCanton"  operation="EQUALS" field-ref="csCanton"/>
 				<search-field name="forIdZoneForfait"  operation="EQUALS" field-ref="idZoneForfait"/>
 				<search-field name="forDesignation"  operation="EQUALS" field-ref="designation"/>
+				<search-field name="forType"  operation="EQUALS" field-ref="type"/>
 			</search-group>
 		</search-definition>
 	</simple-model>

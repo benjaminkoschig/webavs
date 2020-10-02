@@ -1,5 +1,7 @@
 package ch.globaz.pegasus.businessimpl.services.models.revenusdepenses;
 
+import ch.globaz.pegasus.business.constantes.IPCDroits;
+import ch.globaz.pegasus.businessimpl.checkers.revenusdepenses.RevenusFraisGardeChecker;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
@@ -54,6 +56,10 @@ public class RevenuActiviteLucrativeDependanteServiceImpl extends PegasusAbstrac
         }
 
         try {
+            if(!JadeStringUtil.isBlankOrZero(revenuActiviteLucrativeDependante.getSimpleRevenuActiviteLucrativeDependante().getFraisDeGarde())){
+                RevenusFraisGardeChecker.checkSupositionFraisGarde(revenuActiviteLucrativeDependante.getSimpleDonneeFinanciereHeader(), IPCDroits.CS_REVENU_ACTIVITE_LUCRATIVE_DEPENDANTE);
+            }
+
             revenuActiviteLucrativeDependante.setSimpleDonneeFinanciereHeader(PegasusImplServiceLocator
                     .getSimpleDonneeFinanciereHeaderService().create(
                             revenuActiviteLucrativeDependante.getSimpleDonneeFinanciereHeader()));
@@ -213,6 +219,9 @@ public class RevenuActiviteLucrativeDependanteServiceImpl extends PegasusAbstrac
         }
 
         try {
+            if(!JadeStringUtil.isBlankOrZero(revenuActiviteLucrativeDependante.getSimpleRevenuActiviteLucrativeDependante().getFraisDeGarde())){
+                RevenusFraisGardeChecker.checkSupositionFraisGarde(revenuActiviteLucrativeDependante.getSimpleDonneeFinanciereHeader(), IPCDroits.CS_REVENU_ACTIVITE_LUCRATIVE_DEPENDANTE);
+            }
             revenuActiviteLucrativeDependante.setSimpleRevenuActiviteLucrativeDependante(PegasusImplServiceLocator
                     .getSimpleRevenuActiviteLucrativeDependanteService().update(
                             revenuActiviteLucrativeDependante.getSimpleRevenuActiviteLucrativeDependante()));

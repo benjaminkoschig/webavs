@@ -1,6 +1,13 @@
 package ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense;
 
+import ch.globaz.pegasus.business.constantes.EPCForfaitType;
+import ch.globaz.pegasus.business.constantes.EPCPlafondLoyer;
+import ch.globaz.pegasus.business.exceptions.models.parametre.ForfaitsPrimesAssuranceMaladieException;
+import ch.globaz.pegasus.business.models.parametre.ForfaitPrimeAssuranceMaladieLocalite;
+import ch.globaz.pegasus.business.models.parametre.ForfaitPrimeAssuranceMaladieLocaliteSearch;
+import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
@@ -18,6 +25,8 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.ControlleurVariablesMetier;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.StrategieCalculFinalisation;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.UtilStrategieBienImmobillier;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier implements StrategieCalculFinalisation {
 
@@ -34,13 +43,16 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
     public void calcule(TupleDonneeRapport donnee, CalculContext context, Date dateDebut) throws CalculException {
 
         final int nbPersonnesCalcul = (Integer) context.get(Attribut.NB_PERSONNES);
+        final int nbPersonnesCalculSansRenteUniquement = (Integer) context.get(Attribut.NB_PERSONNES_CALCUL);
 
         final float plafondCouple = Float.parseFloat(((ControlleurVariablesMetier) context
                 .get(Attribut.DEPENSE_LOYER_PLAFOND_COUPLE)).getValeurCourante());
         final float plafondCelibataire = Float.parseFloat(((ControlleurVariablesMetier) context
                 .get(Attribut.DEPENSE_LOYER_PLAFOND_CELIBATAIRE)).getValeurCourante());
         final float plafondFauteuil = Float.parseFloat(((ControlleurVariablesMetier) context
-                .get(Attribut.DEPENSE_LOYER_PLAFOND_FAUTEUIL_ROULANT)).getValeurCourante());
+                .get(context.contains(Attribut.REFORME) ?
+                        Attribut.CS_REFORME_DEPENSE_LOYER_PLAFOND_FAUTEUIL_ROULANT : Attribut.DEPENSE_LOYER_PLAFOND_FAUTEUIL_ROULANT))
+                .getValeurCourante());
         float plafond = 0f;
         boolean isFauteuilRoulant = false;
 
@@ -115,6 +127,21 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
                         charges * prorata);
                 donnee.getOrCreateEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_FRAIS_CHAUFFAGE).addValeur(
                         forfaitFraisChauffage * prorata);
+                if(context.contains(Attribut.REFORME)) {
+                    plafond = getPlafondReforme(tupleLoyer, nbHabitants, nbPersonnesCalcul, nbPersonnesCalculSansRenteUniquement);
+                    if (isFauteuilRoulant) {
+                        plafond += plafondFauteuil * prorata;
+                    }
+                }
+
+                String familySize = String.valueOf(nbHabitants);
+                familySize = familySize.substring(0, familySize.indexOf("."));
+
+                if (Integer.valueOf(familySize) > (Integer) context.get(Attribut.FAMILY_SIZE)) {
+                    donnee.getOrCreateEnfant(IPCValeursPlanCalcul.CLE_FAMILY_SIZE).addValeur((Integer) context.get(Attribut.FAMILY_SIZE));
+                } else {
+                    donnee.getOrCreateEnfant(IPCValeursPlanCalcul.CLE_FAMILY_SIZE).addValeur(nbHabitants);
+                }
 
             }
         }
@@ -142,20 +169,25 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
             // charges forfaitaires
             donnee.getOrCreateEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_CHARGES_FORFAITAIRES).addValeur(forfait);
 
+            if(context.contains(Attribut.REFORME)) {
+                plafond = getPlafondReforme(tupleHabitatPrincipal, nbPersonnes, nbPersonnesCalcul, nbPersonnesCalculSansRenteUniquement);
+            }
         }
 
-        // calcul du plafond max
-        int nbPersonnes = (Integer) context.get(Attribut.NB_PERSONNES);
-        if (nbPersonnes > 1) {
-            plafond = plafondCouple;
-        } else {
-            plafond = plafondCelibataire;
+        if(!context.contains(Attribut.REFORME)) {
+            // calcul du plafond max
+            int nbPersonnes = (Integer) context.get(Attribut.NB_PERSONNES);
+            if (nbPersonnes > 1) {
+                plafond = plafondCouple;
+            } else {
+                plafond = plafondCelibataire;
+            }
+            if (isFauteuilRoulant) {
+                plafond += plafondFauteuil;
+            }
         }
-        
-        if (isFauteuilRoulant) {
-            plafond += plafondFauteuil;
-        }
-        
+
+
         donnee.getOrCreateEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_PLAFOND_FEDERAL).addValeur(plafond);
 
         if (!csAppartementProtege.isEmpty() && !csAppartementProtege.equals("0")) {
@@ -191,12 +223,59 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
 
     }
 
+    private float getPlafondReforme(TupleDonneeRapport donneeLoyer, float nbHabitants, float nbPersonnesCalcul, float nbPersonnesCalculSansRenteUniquement) throws CalculException {
+        //return donneeLoyer.getValeurEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER);
+
+        ForfaitPrimeAssuranceMaladieLocaliteSearch loyerMaxLocaliteSearch = new ForfaitPrimeAssuranceMaladieLocaliteSearch();
+        String idLocalite = Integer.toString(donneeLoyer.getValeurEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_LOCALITE).intValue());
+        if(JadeStringUtil.isBlankOrZero(idLocalite)) {
+            throw new CalculException("pegasus.calcul.commune.mandatory", idLocalite);
+        }
+        loyerMaxLocaliteSearch.setForIdLocalite(idLocalite);
+        String dateDebut = donneeLoyer.getLegendeEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_DATEDEBUT);
+        String dateDeDebut = JadeDateUtil.getFirstDateOfMonth(dateDebut);
+        String dateDeFin = JadeDateUtil.addMonths(dateDeDebut, 1);
+        loyerMaxLocaliteSearch.setForDateDebut(dateDeDebut);
+        loyerMaxLocaliteSearch.setForDateFin(dateDeFin);
+        loyerMaxLocaliteSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+        loyerMaxLocaliteSearch.setForType(EPCForfaitType.LOYER.getCode().toString());
+
+        int nbPersonne;
+        if(nbPersonnesCalculSansRenteUniquement == 1 && nbHabitants > 1) {
+            // Personne seule dans la famille et plusieurs personne dans l'habitat : communaute d'habitation
+            nbPersonne = 0;
+        } else {
+            nbPersonne = (int) nbPersonnesCalcul;
+        }
+        String csType = EPCPlafondLoyer.getEnumByNbPersonne(nbPersonne).getCode();
+
+        loyerMaxLocaliteSearch.setForCsTypePrime(csType);
+        try {
+            loyerMaxLocaliteSearch = PegasusServiceLocator.getParametreServicesLocator()
+                    .getForfaitPrimeAssuranceMaladieLocaliteService().search(loyerMaxLocaliteSearch);
+        } catch (ForfaitsPrimesAssuranceMaladieException | JadeApplicationServiceNotAvailableException | JadePersistenceException e) {
+            throw new CalculException("pegasus.calcul.loyer.max.mandatory", idLocalite,
+                    dateDebut, csType);
+        }
+        if(loyerMaxLocaliteSearch.getSearchResults().length > 0) {
+            ForfaitPrimeAssuranceMaladieLocalite plafond = (ForfaitPrimeAssuranceMaladieLocalite) loyerMaxLocaliteSearch.getSearchResults()[0];
+            donneeLoyer.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.PLAFOND_LOYER_ZONE, 0.0f, plafond.getSimpleForfaitPrimesAssuranceMaladie().getIdZoneForfait()));
+            Float montantPlafond = Float.valueOf(plafond.getSimpleForfaitPrimesAssuranceMaladie().getMontantPrimeMoy());
+            Float pourcentage = Float.valueOf(plafond.getSimpleLienZoneLocalite().getPourcentage());
+            Float montantPourcent = montantPlafond * pourcentage / 100;
+            return montantPlafond + montantPourcent;
+        } else {
+            throw new CalculException("pegasus.calcul.loyer.max.mandatory", idLocalite,
+                    dateDebut, csType);
+        }
+    }
+
     /***
      * Méthode qui calcul la différence apporté par la part cantonale en CHF, pour calculer le pourcentage plus loin
      * dans le calcul
      * 
      * @param deplafonnementAppartementProtege
-     * @param plafond
+     * @param plafondAvecDeplafonnement
      * @param sommeLoyers
      * @return
      */

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
+import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCIJAPG;
 import ch.globaz.pegasus.business.models.calcul.CalculDonneesCC;
 import ch.globaz.pegasus.business.models.calcul.CalculDonneesHome;
 
@@ -21,6 +22,7 @@ public class PersonnePCAccordee implements Serializable {
     private String idDroitPersonne = null;
     private String idPersonne = null;
     private Boolean isHome = null;
+    private String idLocalite = null;
     final private TupleDonneeRapport rootDonneesConsolidees;
     private String typeRenteRequerant = null;
 
@@ -45,6 +47,10 @@ public class PersonnePCAccordee implements Serializable {
 
     public boolean isConjoint() {
         return IPCDroits.CS_ROLE_FAMILLE_CONJOINT.equals(getCsRoleFamille());
+    }
+
+    public boolean isEnfant() {
+        return IPCDroits.CS_ROLE_FAMILLE_ENFANT.equals(getCsRoleFamille());
     }
 
     public boolean isRequerant() {
@@ -110,6 +116,15 @@ public class PersonnePCAccordee implements Serializable {
         return result == 0;
     }
 
+    public boolean hasIJAI() {
+        for(CalculDonneesCC donnee:  donneesBD){
+            if(donnee.getCsTypeDonneeFinanciere().equals(IPCDroits.CS_IJAI)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * @param dateNaissance
      *            the dateNaissance to set
@@ -138,6 +153,14 @@ public class PersonnePCAccordee implements Serializable {
         this.isHome = isHome;
     }
 
+    public String getIdLocalite() {
+        return idLocalite;
+    }
+
+    public void setIdLocalite(String idLocalite) {
+        this.idLocalite = idLocalite;
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -159,5 +182,6 @@ public class PersonnePCAccordee implements Serializable {
             return 0;
         }
     }
+
 
 }

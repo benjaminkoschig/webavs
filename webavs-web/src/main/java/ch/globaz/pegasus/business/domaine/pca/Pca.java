@@ -26,6 +26,7 @@ public class Pca {
     private String sousCode;
     private Calcul calcul;
     private Date dateAnnonceComptable;
+    private Boolean reformePC = false;
 
     private Montant montant = Montant.ZERO;
 
@@ -207,4 +208,11 @@ public class Pca {
                 + isSupprime + ", sousCode=" + sousCode + ", Calcul=" + calcul + ", montant=" + montant + "]";
     }
 
+    public Boolean getReformePC() {
+        return reformePC;
+    }
+
+    public void setReformePC(Boolean reformePC) {
+        this.reformePC = reformePC;
+    }
 }

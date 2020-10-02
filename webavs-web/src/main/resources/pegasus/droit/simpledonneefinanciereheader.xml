@@ -15,6 +15,7 @@
 			<field name="dateDebut" column="BGDDDE" type="MONTH_YEAR" mandatory="true" comment="DATE_DEBUT"/>
 			<field name="dateFin" column="BGDDFI" type="MONTH_YEAR" mandatory="false" comment="DATE_FIN"/>
 			<field name="isDessaisissementFortune" column="BGBDFO" type="BOOLEAN" mandatory="false" comment="IS_DESSAISISSEMENT_FORTUNE"/>
+			<field name="typeDessaisissementFortune" column="BGBDTY" type="NUMERIC" mandatory="false" comment="TYPE_DESSAISISSEMENT_FORTUNE"/>
 			<field name="isDessaisissementRevenu" column="BGBDRE" type="BOOLEAN" mandatory="false" comment="IS_DESSAISISSEMENT__REVENU"/>
 			<field name="isCopieFromPreviousVersion" column="BGBICP" type="BOOLEAN" mandatory="false" comment="IS_COPIE_FROM_PREVIOUS_VERSION"/> 
 			<field name="isPeriodeClose" column="BGBCLO" type="BOOLEAN" mandatory="true" comment="PERIODE_DE_DF_CLOSE"/>

@@ -20,6 +20,7 @@ public class SimpleRevenuActiviteLucrativeIndependante extends JadeSimpleModel {
     private String idDonneeFinanciereHeader = null;
     private String idRevenuActiviteLucrativeIndependante = null;
     private String idTiersAffilie = null;
+    private String fraisDeGarde = null;
     private String montantRevenu = null;
 
     public String getCsDeterminationRevenu() {
@@ -104,5 +105,11 @@ public class SimpleRevenuActiviteLucrativeIndependante extends JadeSimpleModel {
     public void setMontantRevenu(String montantRevenu) {
         this.montantRevenu = montantRevenu;
     }
+    public String getFraisDeGarde() {
+        return fraisDeGarde;
+    }
 
+    public void setFraisDeGarde(String fraisDeGarde) {
+        this.fraisDeGarde = fraisDeGarde;
+    }
 }

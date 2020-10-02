@@ -7,4 +7,6 @@
 	<model-mapping import="pegasus/habitat/simpleloyer.xml"/>
 	<model-mapping import="pegasus/habitat/loyer.xml"/>
 	<model-mapping import="pegasus/habitat/taxejournalierehomedroit.xml"/>
+	<model-mapping import="pegasus/habitat/simplesejourmoispartielhome.xml"/>
+	<model-mapping import="pegasus/habitat/sejourmoispartielhome.xml"/>
 </model-mapping>

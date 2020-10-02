@@ -24,6 +24,7 @@ public class SimpleRevenuActiviteLucrativeDependante extends JadeSimpleModel {
     private String idRevenuActiviteLucrativeDependante = null;
     private String montantActiviteLucrative = null;
     private String montantFrais = null;
+    private String fraisDeGarde = null;
     private String typeRevenu = null;
 
     public String getAutreFraisObtentionRevenu() {
@@ -141,4 +142,11 @@ public class SimpleRevenuActiviteLucrativeDependante extends JadeSimpleModel {
         this.typeRevenu = typeRevenu;
     }
 
+    public String getFraisDeGarde() {
+        return fraisDeGarde;
+    }
+
+    public void setFraisDeGarde(String fraisDeGarde) {
+        this.fraisDeGarde = fraisDeGarde;
+    }
 }

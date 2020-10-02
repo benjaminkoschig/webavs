@@ -26,6 +26,8 @@ public class SimpleLienZoneLocalite extends JadeSimpleModel {
         return dateFin;
     }
 
+    private String pourcentage = null;
+
     @Override
     public String getId() {
         return idLienZoneLocalite;
@@ -89,4 +91,11 @@ public class SimpleLienZoneLocalite extends JadeSimpleModel {
         this.idZoneForfait = idZoneForfait;
     }
 
+    public String getPourcentage() {
+        return pourcentage;
+    }
+
+    public void setPourcentage(String pourcentage) {
+        this.pourcentage = pourcentage;
+    }
 }

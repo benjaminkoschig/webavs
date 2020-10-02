@@ -392,6 +392,17 @@ var manipTable = {
 		
 };
 //*******************************************************************************
+//*******************************Init zone decision provisoire ************************
+var initZoneDecisoinProvisoire = function () {
+	$('#radioProvOui').click(function(){
+		$('#textRemarque').val(remarqueProvisoire);
+	});
+	$('#radioProvNon').click(function(){
+		$('#textRemarque').val(remarqueNormal);
+	});
+}
+
+//*******************************************************************************
 //*********************************** Gestion bouton preValid *******************
 var setPreValidBouton = function (preValid,libelle) {
 	if(!preValid){

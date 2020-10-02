@@ -2,18 +2,18 @@
 <%@page import="globaz.jade.client.util.JadeStringUtil"%>
 <%@page import="globaz.framework.ajax.utils.RenderTransportJson"%>
 <%@page import="globaz.jade.log.business.renderer.JadeBusinessMessageRenderer"%>
+<%@ page import="globaz.jade.log.business.JadeBusinessMessageLevels" %>
 
-	<ct:serializeObject objectName="viewBean.droit" destination="xml"/>
+<ct:serializeObject objectName="viewBean.droit" destination="xml"/>
 	
 	<%if(!JadeStringUtil.isBlankOrZero(viewBean.getMessage())){%>
 		<errorJson>
 			<%=RenderTransportJson.renderTransport(viewBean.getMessage())%>
 		</errorJson>
-	<%} else {%>
-
-	<error>
-		<%=JadeBusinessMessageRenderer.getInstance().getDefaultAdapter().render(JadeThread.logMessages(), JadeThread.currentLanguage())%>
-	</error>
+	<%}else{%>
+		<error>
+			<%=JadeBusinessMessageRenderer.getInstance().getDefaultAdapter().render(JadeThread.logMessages(), JadeThread.currentLanguage())%>
+		</error>
 	<%}%>
 	
 	<idEntity><%=viewBean.getId()%></idEntity>

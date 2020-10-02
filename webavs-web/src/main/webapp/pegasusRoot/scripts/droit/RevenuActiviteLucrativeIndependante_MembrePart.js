@@ -22,6 +22,7 @@ function RevenuActiviteLucrativeIndependantePart(container){
 		 this.detail.find('[name=determinationRevenu]').val($data.find('csDeterminationRevenu').text()).end()
 					.find('[name=genreRevenu]').val($data.find('csGenreRevenu').text()).end()
 					.find('.montant').val($data.find('montant').text()).end()
+			 		.find('.fraisDeGarde').val($data.find('fraisDeGarde').text()).end()
 					.find('.idTiersAffilie').val($data.find('idTiersAffilie').text()).end()
 					.find('.caisse').val($data.find('idCaisseCompensation').text()).end()	
 					.find('.selecteurCaisse').val($data.find('nomCaisse').text()).end()					
@@ -37,6 +38,7 @@ function RevenuActiviteLucrativeIndependantePart(container){
 			'revenuActiviteLucrativeIndependante.simpleRevenuActiviteLucrativeIndependante.csDeterminationRevenu':this.detail.find('[name=determinationRevenu]').val(),
 			'revenuActiviteLucrativeIndependante.simpleRevenuActiviteLucrativeIndependante.csGenreRevenu':this.detail.find('[name=genreRevenu]').val(),
 			'revenuActiviteLucrativeIndependante.simpleRevenuActiviteLucrativeIndependante.montantRevenu':this.detail.find('.montant').val(),
+			'revenuActiviteLucrativeIndependante.simpleRevenuActiviteLucrativeIndependante.fraisDeGarde':this.detail.find('.fraisDeGarde').val(),
 			'revenuActiviteLucrativeIndependante.simpleRevenuActiviteLucrativeIndependante.idTiersAffilie':this.detail.find('.idTiersAffilie').val(),
 			'revenuActiviteLucrativeIndependante.simpleRevenuActiviteLucrativeIndependante.idCaisseCompensation':this.detail.find('.caisse').val(),
 			'revenuActiviteLucrativeIndependante.simpleDonneeFinanciereHeader.isDessaisissementRevenu':this.detail.find('.dessaisissementRevenu').prop('checked'),
@@ -49,7 +51,7 @@ function RevenuActiviteLucrativeIndependantePart(container){
 	};	
 	
 	this.clearFields=function(){
-		 this.detail.find('[name=determinationRevenu],[name=genreRevenu],.montant,.selecteurAffilie,.selecteurCaisse,[name=dateDebut],[name=dateFin]').val('').end()
+		 this.detail.find('[name=determinationRevenu],[name=genreRevenu],.montant,.fraisDeGarde,.selecteurAffilie,.selecteurCaisse,[name=dateDebut],[name=dateFin]').val('').end()
 					.find('.dessaisissementRevenu').attr('checked',false);		
 		
 	};
@@ -97,7 +99,7 @@ $(function(){
 			
 		}).end()
 		.find('.btnAjaxValidate').click(function(){
-			zone.validateEdition();
+			zone.validateEditionV2();
 		}).end()
 		.find('.btnAjaxDelete').click(function(){
 				zone.ajaxDeleteEntity(zone.selectedEntityId);
@@ -110,7 +112,7 @@ $(function(){
 		}).end()		
 		.find('.btnAjaxValidateNouvellePeriode').click(function(){
 			zone.doAddPeriode=true;
-			zone.validateEdition();
+			zone.validateEditionV2();
 		}).end();	
 	});
 });

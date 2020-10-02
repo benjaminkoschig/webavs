@@ -36,6 +36,9 @@
 <%@page import="globaz.pegasus.utils.PCCommonHandler"%>
 
 <%@page import="globaz.jade.properties.JadePropertiesService"%>
+<%@page import="ch.globaz.pyxis.business.service.AdresseService"%>
+<%@ page import="ch.globaz.pyxis.business.model.LocaliteSimpleModel" %>
+<%@ page import="globaz.jade.persistence.JadePersistenceManager" %>
 <%
 	//Les labels de cette page commencent par le préfix "JSP_PC_HABITAT"
 	idEcran="PPC0013";
@@ -201,6 +204,35 @@
 										</td>
 										<td><ct:FWLabel key="JSP_PC_HABITAT_NB_PERSONNES"/></td>
 										<td><input type="text" class="nbPersonnes" data-g-integer="mandatory:true" /></td>
+										<td rowspan="2">
+                                        	<textarea  data-g-string="sizeMax:255" rows="3" cols="60" class="textLibre"></textarea>
+										</td>
+									</tr>
+
+									<tr>
+										<td><ct:FWLabel key="JSP_PC_HABITAT_COMMUNE"/></td>
+										<td>
+											<input type="hidden" class="commune"/>
+											<ct:widget id='<%="communeWidget"+membreFamille.getId()%>'
+													   notation='data-g-string="mandatory:true"'
+													   name='<%="communeWidget"+membreFamille.getId()%>' styleClass="libelleLong selecteurCommune">
+												<ct:widgetService methodName="findLocalite" className="<%=AdresseService.class.getName()%>">
+													<ct:widgetCriteria criteria="forNpaLike" label="JSP_PC_PARAM_HOMES_W_TIERS_NPA"/>
+													<ct:widgetCriteria criteria="forLocaliteUpperLike" label="JSP_PC_PARAM_HOMES_W_TIERS_LOCALITE"/>
+													<ct:widgetLineFormatter format="#{numPostal}, #{localite}"/>
+													<ct:widgetJSReturnFunction>
+														<script type="text/javascript">
+															function(element){
+																$(this).val($(element).attr('numPostal')+', '+$(element).attr('localite'));
+																$(this).parents('.areaMembre').find('.commune').val($(element).attr('idLocalite'));
+															}
+														</script>
+													</ct:widgetJSReturnFunction>
+												</ct:widgetService>
+											</ct:widget>
+										</td>
+										<td colspan="2"></td>
+										<td></td>
 									</tr>
 									
 									<tr class="nonPensionNonReconnue">

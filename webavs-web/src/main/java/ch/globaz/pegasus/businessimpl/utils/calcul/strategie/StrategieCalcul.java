@@ -148,6 +148,22 @@ public abstract class StrategieCalcul {
         return result;
     }
 
+
+    protected TupleDonneeRapport ecraseChildExistant(TupleDonneeRapport base, String cle, String valeur) throws CalculException {
+        TupleDonneeRapport result = base.getEnfants().get(cle);
+
+        result.setValeur(checkAmoutAndParseAsFloat(valeur));
+
+        return result;
+    }
+
+    protected TupleDonneeRapport ecraseChildExistant(TupleDonneeRapport base, String cle, boolean valeur) {
+        TupleDonneeRapport result = base.getEnfants().get(cle);
+
+        result.setValeur(TupleDonneeRapport.writeBoolean(valeur));
+        return result;
+    }
+
     protected ChargesLoyer getMontantChargesLoyer(String csTypeLoyer, CalculContext context,
             float montantChargesMensuels) throws CalculBusinessException, NumberFormatException, CalculException {
         // calcul du montant de charge

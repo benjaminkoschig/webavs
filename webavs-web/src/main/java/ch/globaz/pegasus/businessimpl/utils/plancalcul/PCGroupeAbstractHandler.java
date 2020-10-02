@@ -30,6 +30,9 @@ abstract class PCGroupeAbstractHandler {
     public final String SOUSTRACTION = "-";
     /* tuple root bd */
     public TupleDonneeRapport tupleRoot = null;
+
+    private boolean isReforme = false;
+
     /* valeur vide par defaut */
     public final PCValeurPlanCalculHandler VALEUR_VIDE = new PCValeurPlanCalculHandler("", "", "", "");
 
@@ -209,5 +212,13 @@ abstract class PCGroupeAbstractHandler {
             valeur.setCssClass("souligne");
         }
         return createLignePlanCalcul(cs, getLegende(cs), null, null, valeur);
+    }
+
+    public boolean isReforme() {
+        return isReforme;
+    }
+
+    public void setReforme(boolean reforme) {
+        isReforme = reforme;
     }
 }

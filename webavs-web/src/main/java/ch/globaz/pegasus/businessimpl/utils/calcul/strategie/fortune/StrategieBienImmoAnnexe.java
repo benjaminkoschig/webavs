@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package ch.globaz.pegasus.businessimpl.utils.calcul.strategie.fortune;
 
@@ -12,19 +12,19 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.strategie.IStrategieDessaisis
 
 /**
  * @author ECO
- * 
+ *
  */
 public class StrategieBienImmoAnnexe extends StrategieCalculFortune implements IStrategieDessaisissable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.pegasus.businessimpl.utils.calcul.strategie.StrategieCalcul #calculeFortune
      * (ch.globaz.pegasus.businessimpl.utils.calcul.CalculComparatif, java.util.Map)
      */
     @Override
     protected TupleDonneeRapport calculeFortune(CalculDonneesCC donnee, CalculContext context,
-            TupleDonneeRapport resultatExistant) throws CalculException {
+                                                TupleDonneeRapport resultatExistant) throws CalculException {
 
         if (!isUsufruit(donnee.getBienImmoAnnexeCsTypePropriete())
                 && !isNuProprietaire(donnee.getBienImmoAnnexeCsTypePropriete())) {
@@ -35,6 +35,9 @@ public class StrategieBienImmoAnnexe extends StrategieCalculFortune implements I
                     checkAmoutAndParseAsFloat(donnee.getBienImmoAnnexeMontantValeurVenale()) * fraction);
             this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_TOTAL,
                     checkAmoutAndParseAsFloat(donnee.getBienImmoAnnexeMontantDetteHypothecaire()) * fraction);
+            if (context.contains(CalculContext.Attribut.REFORME)) {
+                this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_SELF_INHABITED, checkAmoutAndParseAsFloat(donnee.getBienImmoAnnexeMontantDetteHypothecaire()) * fraction);
+            }
         }
 
         return resultatExistant;

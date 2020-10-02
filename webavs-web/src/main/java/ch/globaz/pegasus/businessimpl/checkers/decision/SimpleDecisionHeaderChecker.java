@@ -3,12 +3,6 @@
  */
 package ch.globaz.pegasus.businessimpl.checkers.decision;
 
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
-import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import ch.globaz.common.mail.MailDebugInfo;
 import ch.globaz.pegasus.business.constantes.EPCProperties;
 import ch.globaz.pegasus.business.domaine.decision.EtatDecision;
@@ -22,6 +16,12 @@ import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.businessimpl.checkers.PegasusAbstractChecker;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
 import ch.globaz.pegasus.businessimpl.services.adresse.TechnicalExceptionWithTiers;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 /**
  * @author SCE
@@ -234,6 +234,7 @@ public class SimpleDecisionHeaderChecker extends PegasusAbstractChecker {
         if (JadeStringUtil.isEmpty(decision.getPreparationPar())) {
             JadeThread.logError(decision.getClass().getName(), "pegasus.simpleDecisionHeader.preparationPar.integrity");
         }
+
     }
 
     /**

@@ -27,6 +27,9 @@ public class SimpleLoyer extends JadeSimpleModel {
     private String revenuSousLocation;
     private String taxeJournalierePensionNonReconnue;
     private String csDeplafonnementAppartementPartage;
+    private String idLocalite;
+    private String textLibre;
+    private boolean isCopy = false;
 
     /**
      * @return the csMotifChangementLoyer
@@ -254,5 +257,29 @@ public class SimpleLoyer extends JadeSimpleModel {
 
     public void setCsDeplafonnementAppartementPartage(String csDeplafonnementAppartementPartage) {
         this.csDeplafonnementAppartementPartage = csDeplafonnementAppartementPartage;
+    }
+
+    public String getIdLocalite() {
+        return idLocalite;
+    }
+
+    public void setIdLocalite(String idLocalite) {
+        this.idLocalite = idLocalite;
+    }
+
+    public boolean isCopy() {
+        return isCopy;
+    }
+
+    public void setCopy(boolean copy) {
+        isCopy = copy;
+    }
+
+    public String getTextLibre() {
+        return textLibre;
+    }
+
+    public void setTextLibre(String textLibre) {
+        this.textLibre = textLibre;
     }
 }

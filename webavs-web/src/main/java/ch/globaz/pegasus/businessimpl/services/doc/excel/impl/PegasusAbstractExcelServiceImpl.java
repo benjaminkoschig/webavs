@@ -24,6 +24,7 @@ public abstract class PegasusAbstractExcelServiceImpl extends PegasusAbstractSer
         }
     }
 
+
     public abstract String getModelName();
 
     public abstract String getOutPutName();

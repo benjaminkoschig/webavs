@@ -1,5 +1,12 @@
 package ch.globaz.pegasus.businessimpl.services.models.droit;
 
+import ch.globaz.pegasus.business.exceptions.models.assurancemaladie.PrimeAssuranceMaladieException;
+import ch.globaz.pegasus.business.exceptions.models.assurancemaladie.SubsideAssuranceMaladieException;
+import ch.globaz.pegasus.business.exceptions.models.habitat.SejourMoisPartielHomeException;
+import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.*;
+import ch.globaz.pegasus.business.models.assurancemaladie.*;
+import ch.globaz.pegasus.business.models.habitat.*;
+import ch.globaz.pegasus.business.models.revenusdepenses.*;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.hera.api.ISFSituationFamiliale;
@@ -70,17 +77,6 @@ import ch.globaz.pegasus.business.exceptions.models.renteijapi.AutreRenteExcepti
 import ch.globaz.pegasus.business.exceptions.models.renteijapi.IjApgException;
 import ch.globaz.pegasus.business.exceptions.models.renteijapi.IndemniteJournaliereAiException;
 import ch.globaz.pegasus.business.exceptions.models.renteijapi.RenteAvsAiException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.AllocationsFamilialesException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.AutresRevenusException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.ContratEntretienViagerException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.CotisationsPsalException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.PensionAlimentaireException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.RevenuActiviteLucrativeDependanteException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.RevenuActiviteLucrativeIndependanteException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.RevenuHypothetiqueException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.SimpleLibelleContratEntretienViagerException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.SimpleTypeFraisObtentionRevenuException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.TypeFraisObtentionRevenuException;
 import ch.globaz.pegasus.business.models.decision.DecisionSuppression;
 import ch.globaz.pegasus.business.models.decision.DecisionSuppressionSearch;
 import ch.globaz.pegasus.business.models.demande.Demande;
@@ -141,12 +137,6 @@ import ch.globaz.pegasus.business.models.fortuneusuelle.CompteBancaireCCPSearch;
 import ch.globaz.pegasus.business.models.fortuneusuelle.FortuneUsuelleSearch;
 import ch.globaz.pegasus.business.models.fortuneusuelle.Titre;
 import ch.globaz.pegasus.business.models.fortuneusuelle.TitreSearch;
-import ch.globaz.pegasus.business.models.habitat.HabitatSearch;
-import ch.globaz.pegasus.business.models.habitat.Loyer;
-import ch.globaz.pegasus.business.models.habitat.LoyerSearch;
-import ch.globaz.pegasus.business.models.habitat.TaxeJournaliereHome;
-import ch.globaz.pegasus.business.models.habitat.TaxeJournaliereHomeDroitSearch;
-import ch.globaz.pegasus.business.models.habitat.TaxeJournaliereHomeSearch;
 import ch.globaz.pegasus.business.models.renteijapi.AllocationImpotent;
 import ch.globaz.pegasus.business.models.renteijapi.AllocationImpotentSearch;
 import ch.globaz.pegasus.business.models.renteijapi.AutreApi;
@@ -160,28 +150,6 @@ import ch.globaz.pegasus.business.models.renteijapi.IndemniteJournaliereAiSearch
 import ch.globaz.pegasus.business.models.renteijapi.RenteAvsAi;
 import ch.globaz.pegasus.business.models.renteijapi.RenteAvsAiSearch;
 import ch.globaz.pegasus.business.models.renteijapi.RenteIjApiSearch;
-import ch.globaz.pegasus.business.models.revenusdepenses.AllocationsFamiliales;
-import ch.globaz.pegasus.business.models.revenusdepenses.AllocationsFamilialesSearch;
-import ch.globaz.pegasus.business.models.revenusdepenses.AutresRevenus;
-import ch.globaz.pegasus.business.models.revenusdepenses.AutresRevenusSearch;
-import ch.globaz.pegasus.business.models.revenusdepenses.ContratEntretienViager;
-import ch.globaz.pegasus.business.models.revenusdepenses.ContratEntretienViagerSearch;
-import ch.globaz.pegasus.business.models.revenusdepenses.CotisationsPsal;
-import ch.globaz.pegasus.business.models.revenusdepenses.CotisationsPsalSearch;
-import ch.globaz.pegasus.business.models.revenusdepenses.PensionAlimentaire;
-import ch.globaz.pegasus.business.models.revenusdepenses.PensionAlimentaireSearch;
-import ch.globaz.pegasus.business.models.revenusdepenses.RevenuActiviteLucrativeDependante;
-import ch.globaz.pegasus.business.models.revenusdepenses.RevenuActiviteLucrativeDependanteSearch;
-import ch.globaz.pegasus.business.models.revenusdepenses.RevenuActiviteLucrativeIndependante;
-import ch.globaz.pegasus.business.models.revenusdepenses.RevenuActiviteLucrativeIndependanteSearch;
-import ch.globaz.pegasus.business.models.revenusdepenses.RevenuHypothetique;
-import ch.globaz.pegasus.business.models.revenusdepenses.RevenuHypothetiqueSearch;
-import ch.globaz.pegasus.business.models.revenusdepenses.RevenusDepensesSearch;
-import ch.globaz.pegasus.business.models.revenusdepenses.SimpleLibelleContratEntretienViager;
-import ch.globaz.pegasus.business.models.revenusdepenses.SimpleLibelleContratEntretienViagerSearch;
-import ch.globaz.pegasus.business.models.revenusdepenses.SimpleTypeFraisObtentionRevenu;
-import ch.globaz.pegasus.business.models.revenusdepenses.SimpleTypeFraisObtentionRevenuSearch;
-import ch.globaz.pegasus.business.models.revenusdepenses.TypeFraisObtentionRevenu;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.business.services.models.droit.AbstractDonneeFinanciereService;
 import ch.globaz.pegasus.business.services.models.droit.DroitService;
@@ -1591,6 +1559,33 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
     }
 
     @Override
+    public SejourMoisPartielHome createAndCloseSejourMoisPartielHome(ModificateurDroitDonneeFinanciere droit,
+                                                                         SejourMoisPartielHome newDonneeFinanciere, boolean forceClose) throws SejourMoisPartielHomeException,
+            JadePersistenceException, DroitException, DonneeFinanciereException {
+
+        if (newDonneeFinanciere == null) {
+            throw new DroitException("Unable to create taxeJournaliereHome, the model is null");
+        }
+        if ((droit == null) || droit.isNew()) {
+            throw new DroitException("Unable to create taxeJournaliereHome, the droit is null or new");
+        }
+
+        this.updateDroitForDonneeFinanciere(droit);
+
+        try {
+            newDonneeFinanciere = (SejourMoisPartielHome) this.updateAncienneDonneeFinanciere(newDonneeFinanciere, droit,
+                    SejourMoisPartielHomeSearch.class, PegasusImplServiceLocator.getSejourMoisPartielHomeService(),
+                    SejourMoisPartielHome.class, forceClose);
+
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new DroitException("Service not available - " + e.getMessage());
+        } catch (SecurityException e) {
+            throw new DroitException("Security exception was raised!", e);
+        }
+        return newDonneeFinanciere;
+    }
+
+    @Override
     public Titre createAndCloseTitre(ModificateurDroitDonneeFinanciere droit, Titre newDonneeFinanciere,
             boolean forceClose) throws TitreException, JadePersistenceException, DroitException,
             DonneeFinanciereException {
@@ -2387,6 +2382,25 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
             throw new DroitException("Service not available - " + e.getMessage());
         }
         return taxeJournaliereHome;
+    }
+
+    @Override
+    public SejourMoisPartielHome createSejourMoisPartielHome(ModificateurDroitDonneeFinanciere droit,
+                                                             DroitMembreFamille droitMembreFamille, SejourMoisPartielHome sejourMoisPartielHome)
+            throws SejourMoisPartielHomeException, JadePersistenceException, DroitException, DonneeFinanciereException {
+        if ((droit == null) || droit.isNew()) {
+            throw new DroitException("Unable to create sejourMoisPartielHome, the droit is null or new");
+        }
+
+        this.updateDroitForDonneeFinanciere(droit);
+
+        try {
+            sejourMoisPartielHome = PegasusImplServiceLocator.getHabitatService().createSejourMoisPartielHome(
+                    droit.getSimpleVersionDroit(), droitMembreFamille, sejourMoisPartielHome);
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new DroitException("Service not available - " + e.getMessage());
+        }
+        return sejourMoisPartielHome;
     }
 
     @Override
@@ -3190,6 +3204,25 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
     }
 
     @Override
+    public SejourMoisPartielHome deleteSejourMoisPartielHome(ModificateurDroitDonneeFinanciere droit,
+                                                             SejourMoisPartielHome sejourMoisPartielHome) throws DroitException, JadePersistenceException, DonneeFinanciereException, SejourMoisPartielHomeException {
+        if (sejourMoisPartielHome == null) {
+            throw new DroitException("Unable to delete sejourMoisPartielHome, the model is null");
+        }
+
+        this.updateDroitForDonneeFinanciere(droit);
+
+        try {
+            sejourMoisPartielHome = PegasusImplServiceLocator.getSejourMoisPartielHomeService()
+                    .delete(sejourMoisPartielHome);
+
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new DroitException("Service not available - " + e.getMessage());
+        }
+        return sejourMoisPartielHome;
+    }
+
+    @Override
     public Titre deleteTitre(ModificateurDroitDonneeFinanciere droit, Titre titre) throws TitreException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
         if (titre == null) {
@@ -3321,6 +3354,8 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
         return PersistenceUtil.typeSearch(droitSearch);
     }
+
+
 
     /**
      * Test si on peut synchroniser les membre de famille. Le droit doit étre en version initiale et il ne doit pas étre
@@ -3714,6 +3749,14 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
         taxeJournaliereHome.setId(idTaxeJournaliereHome);
 
         return (TaxeJournaliereHome) JadePersistenceManager.read(taxeJournaliereHome);
+    }
+
+    @Override
+    public SejourMoisPartielHome readSejourMoisPartielHome(String idSejourMoisPartielHome) throws JadePersistenceException {
+        SejourMoisPartielHome sejourMoisPartielHome = new SejourMoisPartielHome();
+        sejourMoisPartielHome.setId(idSejourMoisPartielHome);
+
+        return (SejourMoisPartielHome) JadePersistenceManager.read(sejourMoisPartielHome);
     }
 
     @Override
@@ -4249,6 +4292,15 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
             throw new DroitException("Unable to search loyer, the search model passed is null!");
         }
         return (TaxeJournaliereHomeSearch) JadePersistenceManager.search(searchModel);
+    }
+
+    @Override
+    public SejourMoisPartielHomeSearch searchSejourMoisPartielHome(SejourMoisPartielHomeSearch searchModel)
+            throws JadePersistenceException, DroitException{
+        if (searchModel == null) {
+            throw new DroitException("Unable to search sejourMoisPartiel, the search model passed is null!");
+        }
+        return (SejourMoisPartielHomeSearch) JadePersistenceManager.search(searchModel);
     }
 
     @Override
@@ -5552,6 +5604,32 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
     }
 
     @Override
+    public SejourMoisPartielHome updateSejourMoisPartielHome(ModificateurDroitDonneeFinanciere droit,
+                                                      DroitMembreFamille droitMembreFamille, SejourMoisPartielHome sejourMoisPartielHome)
+            throws JadePersistenceException, DroitException {
+        if ((droit == null) || droit.isNew()) {
+            throw new DroitException("Unable to update taxeJournaliereHome, the droit is null or new");
+        }
+        if ((droitMembreFamille == null) || droitMembreFamille.isNew()) {
+            throw new DroitException(
+                    "Unable to update taxeJournaliereHome, the droitMembreFamilleEtendu is null or new");
+        }
+        if (sejourMoisPartielHome == null) {
+            throw new DroitException("Unable to update taxeJournaliereHome, the model is null");
+        }
+
+        this.updateDroitForDonneeFinanciere(droit);
+        sejourMoisPartielHome.getSimpleDonneeFinanciereHeader().setIdDroitMembreFamille(droitMembreFamille.getId());
+        try {
+            sejourMoisPartielHome = (SejourMoisPartielHome) saveDonneeFinanciere(droit.getSimpleVersionDroit(),
+                    sejourMoisPartielHome, PegasusImplServiceLocator.getSejourMoisPartielHomeService());
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new DroitException("Service not available - " + e.getMessage());
+        }
+        return sejourMoisPartielHome;
+    }
+
+    @Override
     public Titre updateTitre(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille instanceDroitMembreFamille,
             Titre titre) throws TitreException, JadePersistenceException, DroitException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
@@ -5617,6 +5695,319 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
             throw new DroitException("Service not available - " + e.getMessage());
         }
         return vehicule;
+    }
+    /**
+     * PC-REFORME : AJOUT FRAIS DE GARDE
+     */
+    @Override
+    public FraisGardeSearch searchFraisGarde(FraisGardeSearch searchModel) throws JadePersistenceException,
+            DroitException {
+        if (searchModel == null) {
+            throw new DroitException("Unable to search fraisGarde, the search model passed is null!");
+        }
+        return (FraisGardeSearch) JadePersistenceManager.search(searchModel);
+    }
+
+
+    @Override
+    public FraisGarde createFraisGarde(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille instanceDroitMembreFamille, FraisGarde fraisGarde)
+            throws FraisGardeException, JadePersistenceException, DroitException, DonneeFinanciereException {
+        if ((droit == null) || droit.isNew()) {
+            throw new DroitException("Unable to create FraisGarde, the droit is null or new");
+        }
+
+        this.updateDroitForDonneeFinanciere(droit);
+
+        try {
+            fraisGarde = PegasusImplServiceLocator.getRevenusDepensesService().createFraisGarde(
+                    droit.getSimpleVersionDroit(), instanceDroitMembreFamille, fraisGarde);
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new DroitException("Service not available - " + e.getMessage());
+        }
+
+        return fraisGarde;
+
+    }
+
+    @Override
+    public FraisGarde updateFraisGarde(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille droitMembreFamille, FraisGarde fraisGarde) throws FraisGardeException, JadePersistenceException, DroitException, DonneeFinanciereException {
+        if ((droit == null) || droit.isNew()) {
+            throw new DroitException("Unable to update fraisGarde, the droit is null or new");
+        }
+        if ((droitMembreFamille == null) || droitMembreFamille.isNew()) {
+            throw new DroitException("Unable to update fraisGarde, the droitMembreFamilleEtendu is null or new");
+        }
+        if (fraisGarde == null) {
+            throw new DroitException("Unable to update fraisGarde, the model is null");
+        }
+
+        this.updateDroitForDonneeFinanciere(droit);
+        fraisGarde.getSimpleDonneeFinanciereHeader().setIdDroitMembreFamille(droitMembreFamille.getId());
+        try {
+            fraisGarde = (FraisGarde) saveDonneeFinanciere(droit.getSimpleVersionDroit(), fraisGarde,
+                    PegasusImplServiceLocator.getFraisGardeService());
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new DroitException("Service not available - " + e.getMessage());
+        }
+        return fraisGarde;
+    }
+
+    @Override
+    public FraisGarde deleteFraisGarde(ModificateurDroitDonneeFinanciere droit, FraisGarde fraisGarde) throws FraisGardeException, JadePersistenceException, DroitException, DonneeFinanciereException {
+        if (fraisGarde == null) {
+            throw new DroitException("Unable to delete fraisGarde, the model is null");
+        }
+
+        this.updateDroitForDonneeFinanciere(droit);
+
+        try {
+            fraisGarde.getSimpleDonneeFinanciereHeader().setIsSupprime(Boolean.TRUE);
+
+            fraisGarde = (FraisGarde) saveDonneeFinanciere(droit.getSimpleVersionDroit(), fraisGarde,
+                    PegasusImplServiceLocator.getFraisGardeService());
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new DroitException("Service not available - " + e.getMessage());
+        }
+        return fraisGarde;
+    }
+
+    @Override
+    public FraisGarde readFraisGarde(String id) throws JadePersistenceException, DroitException {
+        FraisGarde fraisGarde = new FraisGarde();
+        fraisGarde.setId(id);
+
+        return (FraisGarde) JadePersistenceManager.read(fraisGarde);
+    }
+
+    @Override
+    public FraisGarde createAndCloseFraisGarde(ModificateurDroitDonneeFinanciere droit, FraisGarde newDonneeFinanciere, boolean forceClose) throws FraisGardeException, JadePersistenceException, DroitException, DonneeFinanciereException {
+
+        if (newDonneeFinanciere == null) {
+            throw new DroitException("Unable to create FraisGarde, the model is null");
+        }
+        if ((droit == null) || droit.isNew()) {
+            throw new DroitException("Unable to create FraisGarde, the droit is null or new");
+        }
+
+        this.updateDroitForDonneeFinanciere(droit);
+
+        try {
+            newDonneeFinanciere = (FraisGarde) this.updateAncienneDonneeFinanciere(newDonneeFinanciere, droit,
+                    FraisGardeSearch.class, PegasusImplServiceLocator.getFraisGardeService(),
+                    FraisGarde.class, forceClose);
+
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new DroitException("Service not available - " + e.getMessage());
+        } catch (SecurityException e) {
+            throw new DroitException("Security exception was raised!", e);
+        }
+        return newDonneeFinanciere;
+    }
+
+    @Override
+    public AssuranceMaladieSearch searchAssuranceMaladie(AssuranceMaladieSearch search) throws DroitException,
+            JadePersistenceException {
+        if (search == null) {
+            throw new DroitException("Unable to search revenus/depenses, the search model passed is null!");
+        }
+        return (AssuranceMaladieSearch) JadePersistenceManager.search(search);
+    }
+
+    @Override
+    public PrimeAssuranceMaladie updatePrimeAssuranceMaladie(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille droitMembreFamille, PrimeAssuranceMaladie primeAssuranceMaladie)
+            throws PrimeAssuranceMaladieException, JadePersistenceException, DroitException, DonneeFinanciereException {
+        if ((droit == null) || droit.isNew()) {
+            throw new DroitException("Unable to update primeAssuranceMaladie, the droit is null or new");
+        }
+        if ((droitMembreFamille == null) || droitMembreFamille.isNew()) {
+            throw new DroitException("Unable to update primeAssuranceMaladie, the droitMembreFamilleEtendu is null or new");
+        }
+        if (primeAssuranceMaladie == null) {
+            throw new DroitException("Unable to update primeAssuranceMaladie, the model is null");
+        }
+
+        this.updateDroitForDonneeFinanciere(droit);
+        primeAssuranceMaladie.getSimpleDonneeFinanciereHeader().setIdDroitMembreFamille(droitMembreFamille.getId());
+        try {
+            primeAssuranceMaladie = (PrimeAssuranceMaladie) saveDonneeFinanciere(droit.getSimpleVersionDroit(), primeAssuranceMaladie,
+                    PegasusImplServiceLocator.getPrimeAssuranceMaladieService());
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new DroitException("Service not available - " + e.getMessage());
+        }
+        return primeAssuranceMaladie;
+    }
+
+    @Override
+    public PrimeAssuranceMaladie deletePrimeAssuranceMaladie(ModificateurDroitDonneeFinanciere droit, PrimeAssuranceMaladie primeAssuranceMaladie) throws PrimeAssuranceMaladieException, JadePersistenceException, DroitException, DonneeFinanciereException {
+        if (primeAssuranceMaladie == null) {
+            throw new DroitException("Unable to delete primeAssuranceMaladie, the model is null");
+        }
+
+        this.updateDroitForDonneeFinanciere(droit);
+
+        try {
+            primeAssuranceMaladie.getSimpleDonneeFinanciereHeader().setIsSupprime(Boolean.TRUE);
+
+            primeAssuranceMaladie = (PrimeAssuranceMaladie) saveDonneeFinanciere(droit.getSimpleVersionDroit(), primeAssuranceMaladie,
+                    PegasusImplServiceLocator.getPrimeAssuranceMaladieService());
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new DroitException("Service not available - " + e.getMessage());
+        }
+        return primeAssuranceMaladie;
+    }
+
+    @Override
+    public PrimeAssuranceMaladie createPrimeAssuranceMaladie(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille instanceDroitMembreFamille, PrimeAssuranceMaladie primeAssuranceMaladie)
+            throws DroitException, PrimeAssuranceMaladieException, JadePersistenceException, DonneeFinanciereException{
+        if ((droit == null) || droit.isNew()) {
+            throw new DroitException("Unable to create FraisGarde, the droit is null or new");
+        }
+
+        this.updateDroitForDonneeFinanciere(droit);
+
+        try {
+            primeAssuranceMaladie = PegasusImplServiceLocator.getAssuranceMaladieService().createPrimeAssuranceMaladie(
+                    droit.getSimpleVersionDroit(), instanceDroitMembreFamille, primeAssuranceMaladie);
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new DroitException("Service not available - " + e.getMessage());
+        }
+
+        return primeAssuranceMaladie;
+    }
+
+    @Override
+    public PrimeAssuranceMaladie createPrimeAssuranceMaladie(PrimeAssuranceMaladie primeAssuranceMaladie)
+            throws DroitException, PrimeAssuranceMaladieException, JadePersistenceException, DonneeFinanciereException{
+
+
+        try {
+            primeAssuranceMaladie = PegasusImplServiceLocator.getAssuranceMaladieService().createPrimeAssuranceMaladie(primeAssuranceMaladie);
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new DroitException("Service not available - " + e.getMessage());
+        }
+        return primeAssuranceMaladie;
+    }
+
+    @Override
+    public PrimeAssuranceMaladie createAndClosePrimeAssuranceMaladie(ModificateurDroitDonneeFinanciere droit, PrimeAssuranceMaladie primeAssuranceMaladie, boolean forceClose) throws DroitException, JadePersistenceException, DonneeFinanciereException {
+
+        if (primeAssuranceMaladie == null) {
+            throw new DroitException("Unable to create PrimeAssuranceMaladie, the model is null");
+        }
+        if ((droit == null) || droit.isNew()) {
+            throw new DroitException("Unable to create PrimeAssuranceMaladie, the droit is null or new");
+        }
+
+        this.updateDroitForDonneeFinanciere(droit);
+
+        try {
+            primeAssuranceMaladie = (PrimeAssuranceMaladie) this.updateAncienneDonneeFinanciere(primeAssuranceMaladie, droit,
+                    PrimeAssuranceMaladieSearch.class, PegasusImplServiceLocator.getPrimeAssuranceMaladieService(), PrimeAssuranceMaladie.class,
+                    forceClose);
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new DroitException("Service not available - " + e.getMessage());
+        } catch (SecurityException e) {
+            throw new DroitException("Security exception was raised!", e);
+        }
+        return primeAssuranceMaladie;
+    }
+
+    @Override
+    public SubsideAssuranceMaladie updateSubsideAssuranceMaladie(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille droitMembreFamille, SubsideAssuranceMaladie subsideAssuranceMaladie)
+            throws SubsideAssuranceMaladieException, JadePersistenceException, DroitException, DonneeFinanciereException {
+        if ((droit == null) || droit.isNew()) {
+            throw new DroitException("Unable to update SubsideAssuranceMaladie, the droit is null or new");
+        }
+        if ((droitMembreFamille == null) || droitMembreFamille.isNew()) {
+            throw new DroitException("Unable to update SubsideAssuranceMaladie, the droitMembreFamilleEtendu is null or new");
+        }
+        if (subsideAssuranceMaladie == null) {
+            throw new DroitException("Unable to update SubsideAssuranceMaladie, the model is null");
+        }
+
+        this.updateDroitForDonneeFinanciere(droit);
+        subsideAssuranceMaladie.getSimpleDonneeFinanciereHeader().setIdDroitMembreFamille(droitMembreFamille.getId());
+        try {
+            subsideAssuranceMaladie = (SubsideAssuranceMaladie) saveDonneeFinanciere(droit.getSimpleVersionDroit(), subsideAssuranceMaladie,
+                    PegasusImplServiceLocator.getSubsideAssuranceMaladieService());
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new DroitException("Service not available - " + e.getMessage());
+        }
+        return subsideAssuranceMaladie;
+    }
+
+    @Override
+    public SubsideAssuranceMaladie deleteSubsideAssuranceMaladie(ModificateurDroitDonneeFinanciere droit, SubsideAssuranceMaladie subsideAssuranceMaladie) throws SubsideAssuranceMaladieException, JadePersistenceException, DroitException, DonneeFinanciereException {
+        if (subsideAssuranceMaladie == null) {
+            throw new DroitException("Unable to delete SubsideAssuranceMaladie, the model is null");
+        }
+
+        this.updateDroitForDonneeFinanciere(droit);
+
+        try {
+            subsideAssuranceMaladie.getSimpleDonneeFinanciereHeader().setIsSupprime(Boolean.TRUE);
+
+            subsideAssuranceMaladie = (SubsideAssuranceMaladie) saveDonneeFinanciere(droit.getSimpleVersionDroit(), subsideAssuranceMaladie,
+                    PegasusImplServiceLocator.getSubsideAssuranceMaladieService());
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new DroitException("Service not available - " + e.getMessage());
+        }
+        return subsideAssuranceMaladie;
+    }
+
+    @Override
+    public SubsideAssuranceMaladie createSubsideAssuranceMaladie(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille instanceDroitMembreFamille, SubsideAssuranceMaladie subsideAssuranceMaladie)
+            throws DroitException, SubsideAssuranceMaladieException, JadePersistenceException, DonneeFinanciereException{
+        if ((droit == null) || droit.isNew()) {
+            throw new DroitException("Unable to create FraisGarde, the droit is null or new");
+        }
+
+        this.updateDroitForDonneeFinanciere(droit);
+
+        try {
+            subsideAssuranceMaladie = PegasusImplServiceLocator.getAssuranceMaladieService().createSubsideAssuranceMaladie(
+                    droit.getSimpleVersionDroit(), instanceDroitMembreFamille, subsideAssuranceMaladie);
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new DroitException("Service not available - " + e.getMessage());
+        }
+
+        return subsideAssuranceMaladie;
+    }
+
+    @Override
+    public SubsideAssuranceMaladie createSubsideAssuranceMaladie(SubsideAssuranceMaladie subsideAssuranceMaladie)
+            throws DroitException, SubsideAssuranceMaladieException, JadePersistenceException, DonneeFinanciereException{
+
+
+        try {
+            subsideAssuranceMaladie = PegasusImplServiceLocator.getAssuranceMaladieService().createSubsideAssuranceMaladie(subsideAssuranceMaladie);
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new DroitException("Service not available - " + e.getMessage());
+        }
+        return subsideAssuranceMaladie;
+    }
+
+    @Override
+    public SubsideAssuranceMaladie createAndCloseSubsideAssuranceMaladie(ModificateurDroitDonneeFinanciere droit, SubsideAssuranceMaladie subsideAssuranceMaladie, boolean forceClose) throws DroitException, JadePersistenceException, DonneeFinanciereException {
+        if (subsideAssuranceMaladie == null) {
+            throw new DroitException("Unable to create SubsideAssuranceMaladie, the model is null");
+        }
+        if ((droit == null) || droit.isNew()) {
+            throw new DroitException("Unable to create SubsideAssuranceMaladie, the droit is null or new");
+        }
+
+        this.updateDroitForDonneeFinanciere(droit);
+
+        try {
+            subsideAssuranceMaladie = (SubsideAssuranceMaladie) this.updateAncienneDonneeFinanciere(subsideAssuranceMaladie, droit,
+                    SubsideAssuranceMaladieSearch.class, PegasusImplServiceLocator.getSubsideAssuranceMaladieService(), SubsideAssuranceMaladie.class,
+                    forceClose);
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new DroitException("Service not available - " + e.getMessage());
+        } catch (SecurityException e) {
+            throw new DroitException("Security exception was raised!", e);
+        }
+        return subsideAssuranceMaladie;
     }
 
 }

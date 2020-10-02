@@ -91,4 +91,5 @@ public class SimpleHome extends JadeSimpleModel {
     public void setNumeroIdentification(String numeroIdentification) {
         this.numeroIdentification = numeroIdentification;
     }
+
 }

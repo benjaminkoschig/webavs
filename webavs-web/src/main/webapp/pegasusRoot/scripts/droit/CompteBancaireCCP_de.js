@@ -27,4 +27,28 @@ $(function(){
 			this.value=("1 / 1");
 		}
 	});
+
+
+	$('.dessaisissementFortune').each(function () {
+		var $element = $(this).closest('.classDessaisissementFortune').find('#typeDessaisissementFortune');
+
+		$element.empty();
+		$.each(items, function (i, item) {
+			$element.append($('<option>', {
+				value: item,
+				text: i
+			}));
+		});
+
+
+		$(this).click(function () {
+			if ($(this).attr('checked')) {
+				//$('#typeDessaisissementFortune').show();
+				$element.show();
+			} else {
+				$element.hide();
+			}
+		})
+	});
+
 });

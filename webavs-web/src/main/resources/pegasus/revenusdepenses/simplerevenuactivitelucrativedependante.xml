@@ -14,8 +14,9 @@
 			<field name="deductionsLpp" column="BYNLPP" type="NUMERIC" dataType="NUMERIC(15,2)" comment="DEDUCTIONS_LPP"/>
 			<field name="csFraisObtentionRevenu" column="BYTFOR" type="NUMERIC" comment="CS_FRAIS_OBTENTION_REVENU"/>
 			<field name="autreFraisObtentionRevenu" column="BYLFOR" type="STRING" comment="AUTRE_FRAIS_OBTENTION_REVENU"/>
-			<field name="montantFrais" column="BYNMFR" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_FRAIS"/>						
+			<field name="montantFrais" column="BYNMFR" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_FRAIS"/>
 			<field name="idAffiliation" column="BYIDAF" type="NUMERIC" mandatory="false" comment="ID_AFFILIATION"/>
+			<field name="fraisDeGarde" column="BYNFDG" type="NUMERIC" dataType="NUMERIC(15,2)" comment="FRAIS_DE_GARDE"/>
 		</fields>
 		<search-definition>
 			<search-group operator="AND">

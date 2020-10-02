@@ -29,6 +29,7 @@ public class SimpleDemande extends JadeSimpleModel {
     private Boolean isPurRetro = false;
     private String motifProchaineRevision = null;
     private String typeDemande = null;
+    private Boolean forcerCalculTransitoire = null;
 
     /**
      * @return the csEtatDemande
@@ -247,4 +248,11 @@ public class SimpleDemande extends JadeSimpleModel {
         this.dateFinInitial = dateFinInitial;
     }
 
+    public Boolean getForcerCalculTransitoire() {
+        return forcerCalculTransitoire;
+    }
+
+    public void setForcerCalculTransitoire(Boolean forcerCalculTransitoire) {
+        this.forcerCalculTransitoire = forcerCalculTransitoire;
+    }
 }

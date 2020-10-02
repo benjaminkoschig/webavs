@@ -75,6 +75,7 @@
 			<select-field name="bienImmoPrincipalPartDenominateur" field-ref="simpleBienImmoPrincipal.partProprieteDenominateur"/>
 			<select-field name="bienImmoPrincipalPartNumerateur" field-ref="simpleBienImmoPrincipal.partProprieteNumerateur"/>
 			<select-field name="bienImmoPrincipalNombrePersonnes" field-ref="simpleBienImmoPrincipal.nombrePersonnes"/>
+			<select-field name="bienImmoPrincipalIdLocalite" field-ref="simpleBienImmoPrincipal.idCommuneDuBien"/>
 
 			<select-field name="isBienImmoPrincipalDeMoinsDe10Ans" field-ref="simpleBienImmoPrincipal.isConstructionMoinsDixAns"/>
 			<select-field name="isBienImmoAnnexeDeMoinsDe10Ans" field-ref="simpleBienImmoAnnexe.isConstructionMoinsDixAns"/>
@@ -105,7 +106,9 @@
 			<select-field name="revenuActiviteLucrativeDependanteDeductionsSociales" field-ref="simpleRevenuActiviteLucrativeDependante.deductionsSociales"/>
 			<select-field name="revenuActiviteLucrativeDependanteDeductionsLPP" field-ref="simpleRevenuActiviteLucrativeDependante.deductionsLpp"/>
 			<select-field name="revenuActiviteLucrativeDependanteMontantFraisEffectifs" field-ref="simpleRevenuActiviteLucrativeDependante.montantFrais"/>
+			<select-field name="revenuActiviteLucrativeDependanteMontantFraisDeGarde" field-ref="simpleRevenuActiviteLucrativeDependante.fraisDeGarde"/>
 			<select-field name="revenuActiviteLucrativeIndependanteMontant" field-ref="simpleRevenuActiviteLucrativeIndependante.montantRevenu"/>
+			<select-field name="revenuActiviteLucrativeIndependanteMontantFraisDeGarde" field-ref="simpleRevenuActiviteLucrativeIndependante.fraisDeGarde"/>
 			<select-field name="revenuActiviteLucrativeIndependanteCSGenreRevenu" field-ref="simpleRevenuActiviteLucrativeIndependante.csGenreRevenu"/>
 			<select-field name="revenuHypothetiqueMontantRevenuNet" field-ref="simpleRevenuHypothetique.montantRevenuHypothetiqueNet"/>
 			<select-field name="revenuHypothetiqueMontantRevenuBrut" field-ref="simpleRevenuHypothetique.montantRevenuHypothetiqueBrut"/>
@@ -144,6 +147,7 @@
 			<select-field name="dessaisissementRevenuMontant" field-ref="simpleDessaisissementRevenu.montantBrut"/>
 			<select-field name="dessaisissementRevenuDeductions" field-ref="simpleDessaisissementRevenu.deductionMontantDessaisi"/>
 			<select-field name="dessaisissementFortuneMontant" field-ref="simpleDessaisissementFortune.montantBrut"/>
+			<select-field name="dessaisissementFortuneType" field-ref="simpleDessaisissementFortune.csMotifDessaisissement"/>
 			<select-field name="dessaisissementFortuneDeductions" field-ref="simpleDessaisissementFortune.deductionMontantDessaisi"/>
 			<select-field name="cotisationPSALMontantAnnuel" field-ref="simpleCotisationPSAL.montantCotisationsAnnuelles"/>
 			<select-field name="autresDettesProuveesMontant" field-ref="simpleAutresDettesProuvees.montantDette"/>
@@ -154,6 +158,9 @@
 			<select-field name="taxeJournaliereDateEntreeHome" field-ref="simpleTaxeJournaliereHome.dateEntreeHome"/>
 			<select-field name="taxeJournaliereIsDeplafonner" field-ref="simpleTaxeJournaliereHome.isDeplafonner"/>
 			<select-field name="taxeJournaliereMontantFraisLongueDuree" field-ref="simpleTaxeJournaliereHome.montantFraisLongueDuree"/>
+			<select-field name="sejourMoisPartielPrixJournalier" field-ref="simpleSejourMoisPartielHome.prixJournalier"/>
+			<select-field name="sejourMoisPartielFraisNourriture" field-ref="simpleSejourMoisPartielHome.fraisNourriture"/>
+			<select-field name="sejourMoisPartielNombreJour" field-ref="simpleSejourMoisPartielHome.nbJours"/>
 			<select-field name="loyerMontant" field-ref="simpleLoyer.montantLoyerNet"/>
 			<select-field name="loyerMontantCharges" field-ref="simpleLoyer.montantCharges"/>
 			<select-field name="loyerIsFauteuilRoulant" field-ref="simpleLoyer.isFauteuilRoulant"/>
@@ -163,10 +170,19 @@
 			<select-field name="loyerNbPersonnes" field-ref="simpleLoyer.nbPersonnes"/>
 			<select-field name="loyerTaxeJournalierePensionNonReconnue" field-ref="simpleLoyer.taxeJournalierePensionNonReconnue"/>
 			<select-field name="loyerCsDeplafonnementAppartementPartage" field-ref="simpleLoyer.csDeplafonnementAppartementPartage"/>
+			<select-field name="idLocalite" field-ref="simpleLoyer.idLocalite"/>
 			<select-field name="isDessaisissementFortune" field-ref="simpleDonneeFinanciereHeader.isDessaisissementFortune"/>
+			<select-field name="typeDessaisissementFortune" field-ref="simpleDonneeFinanciereHeader.typeDessaisissementFortune"/>
 			<select-field name="isDessaisissementRevenu" field-ref="simpleDonneeFinanciereHeader.isDessaisissementRevenu"/>
 			<select-field name="autreRentesEtrangeresCSTypeDevise" field-ref="simpleAutreRente.csMonnaie"/>
-			<select-field name="imputationFortune" field-ref="simpleRenteAVSAI.imputationFortune"/> 
+			<select-field name="imputationFortune" field-ref="simpleRenteAVSAI.imputationFortune"/>
+			<select-field name="fraisGardeLibelle" field-ref="simpleFraisGarde.libelle"/>
+			<select-field name="fraisGardeMontant" field-ref="simpleFraisGarde.montant"/>
+			<select-field name="primeAssuranceMaladieMontant" field-ref="simplePrimeAssuranceMaladie.montant"/>
+			<select-field name="subsideAssuranceMaladieMontant" field-ref="simpleSubsideAssuranceMaladie.montant"/>
+			<select-field name="fraisGardeMontant" field-ref="simpleFraisGarde.montant"/>
+			<select-field name="primeAssuranceMaladieMontant" field-ref="simplePrimeAssuranceMaladie.montant"/>
+			<select-field name="subsideAssuranceMaladieMontant" field-ref="simpleSubsideAssuranceMaladie.montant"/>
 		</select-fields>
 		
 		<linked-model name="simpleDonneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader" join-type="INNER" select-fields="false">
@@ -372,13 +388,36 @@
 				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
 			</join-group>
 		</linked-model>
+
+		<linked-model name="simpleSejourMoisPartielHome" model-ref="ch.globaz.pegasus.business.models.habitat.SimpleSejourMoisPartielHome" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
 		
 		<linked-model name="simpleLoyer" model-ref="ch.globaz.pegasus.business.models.habitat.SimpleLoyer" join-type="LEFT_OUTER" select-fields="false">
 			<join-group operator="AND">
 				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
 			</join-group>
 		</linked-model>
-				
+
+		<linked-model name="simpleFraisGarde" model-ref="ch.globaz.pegasus.business.models.revenusdepenses.SimpleFraisGarde" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simplePrimeAssuranceMaladie" model-ref="ch.globaz.pegasus.business.models.assurancemaladie.SimplePrimeAssuranceMaladie" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simpleSubsideAssuranceMaladie" model-ref="ch.globaz.pegasus.business.models.assurancemaladie.SimpleSubsideAssuranceMaladie" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
 
 		<search-definition>
 			<search-group operator="AND">
@@ -395,7 +434,7 @@
 				<search-literal>
 					<declare-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
 					<declare-model name="donneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader"/>
-					<![CDATA[ 
+					<![CDATA[
 					    #{simpleDonneeFinanciereHeader.isSupprime} = 2 AND
 						#{simpleDonneeFinanciereHeader.idVersionDroit} =
 							(
@@ -406,7 +445,6 @@
 					 ]]>
 				</search-literal>
 			</search-group>
-		</search-definition>		
-		
+		</search-definition>
 	</complexe-model>
 </model-mapping>

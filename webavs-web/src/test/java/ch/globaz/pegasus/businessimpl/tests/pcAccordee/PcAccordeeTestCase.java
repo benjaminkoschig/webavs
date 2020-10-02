@@ -6,7 +6,7 @@ import junit.framework.Assert;
 import ch.globaz.pegasus.business.models.pcaccordee.PCAWithCalculMembreFamilleAndPrestationSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.business.vo.donneeFinanciere.RenteAvsAiVO;
-import ch.globaz.pegasus.business.vo.pcaccordee.PCAAccordeePlanClaculeAndMembreFamilleVO;
+import ch.globaz.pegasus.business.vo.pcaccordee.PCAccordeePlanCalculAndMembreFamilleVO;
 
 public class PcAccordeeTestCase {
     /*
@@ -33,13 +33,13 @@ public class PcAccordeeTestCase {
     }
 
     public final void testSearch_PCAWithCalculMembreFamilleAndPrestationSearchVO() throws Exception {
-        List<PCAAccordeePlanClaculeAndMembreFamilleVO> list = new ArrayList<PCAAccordeePlanClaculeAndMembreFamilleVO>();
+        List<PCAccordeePlanCalculAndMembreFamilleVO> list = new ArrayList<PCAccordeePlanCalculAndMembreFamilleVO>();
         list = PegasusServiceLocator.getPCAccordeeService()
                 .searchPCAccordeeWithCalculeRetenuVO("1667535", "02.01.2011");
         Assert.assertEquals(list.size(), 1);
         // 20100101
 
-        List<PCAAccordeePlanClaculeAndMembreFamilleVO> list2 = new ArrayList<PCAAccordeePlanClaculeAndMembreFamilleVO>();
+        List<PCAccordeePlanCalculAndMembreFamilleVO> list2 = new ArrayList<PCAccordeePlanCalculAndMembreFamilleVO>();
         list2 = PegasusServiceLocator.getPCAccordeeService().searchPCAccordeeWithCalculeRetenuVO("1000022",
                 "01.01.2010");
         Assert.assertEquals(list2.size(), 1);

@@ -9,6 +9,7 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.api.avsAi.ApiAvsAi;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.assuranceRenteViagere.AssuranceRenteViagere;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.assuranceRenteViagere.AssurancesRenteViagere;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.assuranceVie.AssuranceVie;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.assurancemaladie.SubsideAssuranceMaladie;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.autreDetteProuvee.AutreDetteProuvee;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.autreFortuneMobiliere.AutreFortuneMobiliere;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.autreRente.AutreRente;
@@ -30,6 +31,7 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.contratEntretienViage
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.cotisationPsal.CotisationPsal;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.dessaisissementFortune.DessaisissementFortune;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.dessaisissementRevenu.DessaisissementRevenu;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.fraisdegarde.FraisDeGarde;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.iJAi.IjAi;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.iJAi.IjsAi;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.indeminteJournaliereApg.IndemniteJournaliereApg;
@@ -54,12 +56,15 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.vehicule.Vehicule;
 import ch.globaz.pegasus.business.domaine.membreFamille.MembreFamille;
 import ch.globaz.pegasus.business.domaine.membreFamille.RoleMembreFamille;
 import ch.globaz.pegasus.businessimpl.services.revisionquadriennale.Regimes;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.assurancemaladie.PrimeAssuranceMaladie;
 
 public class DonneesFinancieresContainer {
     private DonneesFinancieresListBase<AllocationFamilliale> allocationsFamilliale = new DonneesFinancieresListBase<AllocationFamilliale>();
     private DonneesFinancieresListBase<ApiAvsAi> apisAvsAi = new DonneesFinancieresListBase<ApiAvsAi>();
     private AssurancesRenteViagere assurancesRentesViageres = new AssurancesRenteViagere();
     private DonneesFinancieresListBase<AssuranceVie> assurancesVie = new DonneesFinancieresListBase<AssuranceVie>();
+    private DonneesFinancieresListBase<PrimeAssuranceMaladie> primeAssuranceMaladie = new DonneesFinancieresListBase<PrimeAssuranceMaladie>();
+    private DonneesFinancieresListBase<SubsideAssuranceMaladie> subsideAssuranceMaladie = new DonneesFinancieresListBase<SubsideAssuranceMaladie>();
     private DonneesFinancieresListBase<AutreApi> autresApi = new DonneesFinancieresListBase<AutreApi>();
     private DonneesFinancieresListBase<AutreDetteProuvee> autresDettesProuvees = new DonneesFinancieresListBase<AutreDetteProuvee>();
     private DonneesFinancieresListBase<AutreFortuneMobiliere> autresFortunesMobilieres = new DonneesFinancieresListBase<AutreFortuneMobiliere>();
@@ -90,6 +95,7 @@ public class DonneesFinancieresContainer {
     private DonneesFinancieresListBase<Titre> titres = new DonneesFinancieresListBase<Titre>();
     private DonneesFinancieresListBase<Vehicule> vehicules = new DonneesFinancieresListBase<Vehicule>();
     private DonneesFinancieresListBase<Regime> regimes = new DonneesFinancieresListBase<Regime>();
+    private DonneesFinancieresListBase<FraisDeGarde> fraisDeGarde = new DonneesFinancieresListBase<>();
 
     public boolean add(AllocationFamilliale e) {
         return allocationsFamilliale.add(e);
@@ -105,6 +111,14 @@ public class DonneesFinancieresContainer {
 
     public boolean add(AssuranceVie e) {
         return assurancesVie.add(e);
+    }
+
+    public boolean add(PrimeAssuranceMaladie e) {
+        return primeAssuranceMaladie.add(e);
+    }
+
+    public boolean add(SubsideAssuranceMaladie e) {
+        return subsideAssuranceMaladie.add(e);
     }
 
     public boolean add(AutreApi e) {
@@ -221,6 +235,10 @@ public class DonneesFinancieresContainer {
 
     public boolean add(Vehicule e) {
         return vehicules.add(e);
+    }
+
+    public boolean add(FraisDeGarde e) {
+        return fraisDeGarde.add(e);
     }
 
     public DonneesFinancieresListBase<AllocationFamilliale> getAllocationsFamilliale() {
@@ -361,6 +379,10 @@ public class DonneesFinancieresContainer {
 
     public DonneesFinancieresListBase<Vehicule> getVehicules() {
         return vehicules;
+    }
+
+    public DonneesFinancieresListBase<FraisDeGarde> getFraisDeGarde() {
+        return fraisDeGarde;
     }
 
     public BiensImmobiliersListBase getAllBiensImmobilier() {
@@ -559,7 +581,8 @@ public class DonneesFinancieresContainer {
                 + ", revenusActiviteLucrativeIndependante=" + revenusActiviteLucrativeIndependante.size()
                 + ", revenuesActiviteLucrativeDependante=" + revenusActiviteLucrativeDependante.size()
                 + ", revenuesHypothtique=" + revenusHypothtique.size() + ", titres=" + titres.size() + ", vehicules="
-                + vehicules.size() + "]";
+                + vehicules.size()  + ", fraisDeGarde="
+                + fraisDeGarde.size() + "]";
     }
 
     public boolean addAll(Regimes regimesRfm) {

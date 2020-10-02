@@ -482,6 +482,7 @@ public class CalculMoisSuivantBuilder {
         String designation = pchambre.getTypeChambre().getSimpleTypeChambre().getDesignation();
         String type = pchambre.getTypeChambre().getSimpleTypeChambre().getCsCategorie();
         String descHome = pchambre.getTypeChambre().getHome().getSimpleHome().getNomBatiment();
+        Boolean isVersement = donneeTaxesJournaliereHome.getTaxeJournaliereIsVersementDirect();
 
         // Construction de la propriété montant
         htmlStr.append("<div class=\"span2 cell-prop\">")
@@ -496,8 +497,18 @@ public class CalculMoisSuivantBuilder {
         // Valeur
         StringBuilder valueDesc = new StringBuilder(descHome).append(" - ").append(designation).append("/")
                 .append(CalculMoisSuivantBuilder.getLibelle(type));
-        htmlStr.append("<div class=\"span4\">").append(valueDesc.toString())
+        htmlStr.append("<div class=\"span2\">").append(valueDesc.toString())
                 .append(CalculMoisSuivantBuilder.HTML_DIV_CLOSE);
+        //Valeur Versement Direct
+        if(isVersement){
+            htmlStr.append("<div class=\"span2 cell-prop\">")
+                    .append(CalculMoisSuivantBuilder.getLabel("JSP_CMS_64007008_VERSEMENT_DIRECT"))
+                    .append(CalculMoisSuivantBuilder.HTML_DIV_CLOSE);
+            htmlStr.append("<div class=\"span1\">").append(CalculMoisSuivantBuilder.getLabel("JSP_CMS_64007008_VERSEMENT_DIRECT_COCHE")).append(CalculMoisSuivantBuilder.HTML_DIV_CLOSE);
+        }
+
+
+
 
         return htmlStr.toString();
     }

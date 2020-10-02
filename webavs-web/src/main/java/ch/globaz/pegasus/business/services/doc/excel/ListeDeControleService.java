@@ -6,21 +6,21 @@ import ch.globaz.pegasus.business.exceptions.doc.DocException;
 
 public interface ListeDeControleService extends JadeApplicationService {
 
-    public String createListeAllocationsFamiliales(String date) throws Exception;
+    String createListeAllocationsFamiliales(String date) throws Exception;
 
-    public String createListeControleAllocationNoel(String idExecutiontProcess) throws Exception;
+    String createListeControleAllocationNoel(String idExecutiontProcess) throws Exception;
 
-    public String createListeDecisionsValidees(String dateDebut, String dateFin) throws Exception;
+    String createListeDecisionsValidees(String dateDebut, String dateFin) throws Exception;
 
-    public String createListeDemandesPC(String dateDebut, String dateFin, String idGestionnaire) throws Exception;
+    String createListeDemandesPC(String dateDebut, String dateFin, String idGestionnaire) throws Exception;
 
-    public String createListeMutationMontantPCA(String date) throws Exception;
+    String createListeMutationMontantPCA(String date) throws Exception;
 
-    public ExcelmlWorkbook createListeOrdreDeVersement(String idLot) throws DocException;
+    ExcelmlWorkbook createListeOrdreDeVersement(String idLot) throws DocException;
 
-    public String createListeOrdreDeVersementAndSave(String idLot) throws Exception;
+    String createListeOrdreDeVersementAndSave(String idLot) throws Exception;
 
-    public String createListeRecap(String date) throws Exception;
+    String createListeRecap(String date) throws Exception;
 
     /**
      * Cree la liste de revision pour une periode donnee (un mois ou toute une annee).
@@ -32,7 +32,11 @@ public interface ListeDeControleService extends JadeApplicationService {
      * @return
      * @throws Exception
      */
-    public String createListeRevisions(String annee, String moisAnnee) throws Exception;
+    String createListeRevisions(String annee, String moisAnnee) throws Exception;
 
     String createListeControleProcessAdaptation(String idExecutiontProcess) throws Exception;
+
+    String createListeEnfants11Ans(String dateDebut, String dateFin) throws Exception;
+
+
 }

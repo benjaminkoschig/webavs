@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.revenusdepenses.SimpleFraisGarde">
+		<description>FRAIS_GARDE</description>
+		<table name="PCFRAISGARDE" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idFraisGarde" column="FGIARE" comment="ID_FRAIS_GARDE"/>
+			<field name="idDonneeFinanciereHeader" mandatory="true" column="FGIDFH" type="NUMERIC" comment="DONNEE_FINANCIERE_HEADER"/>
+			<field name="libelle" mandatory="true" column="FGLLIB" type="STRING" comment="LIBELLE"/>
+			<field name="montant" mandatory="true" column="FGNMON" dataType="NUMERIC(15,2)" type="NUMERIC" comment="MONTANT"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

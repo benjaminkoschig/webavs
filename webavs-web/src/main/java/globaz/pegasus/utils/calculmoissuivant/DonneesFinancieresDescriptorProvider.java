@@ -1,44 +1,12 @@
 package globaz.pegasus.utils.calculmoissuivant;
 
+import ch.globaz.pegasus.business.constantes.donneesfinancieres.*;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import ch.globaz.pegasus.business.constantes.IPCActions;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCAllocationsFamiliales;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCApiAvsAi;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCAssuranceRenteViagere;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCAssuranceVie;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCAutreFortuneMobiliere;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCAutresAPI;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCAutresDettesProuvees;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCAutresRentes;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCAutresRevenus;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCBetail;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCBienImmoAnnexe;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCBienImmoNonHabitable;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCBienImmoPrincipal;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCCapitalLPP;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCCompteBancaireCPP;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCContratEntretienViager;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCCotisationPSAL;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCDessaisissementFortune;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCDessaisissementRevenu;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCIJAI;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCIJAPG;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCLoyer;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCMarchandiseStock;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCNumeraire;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCPensionAlimentaire;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCPretEnversTiers;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCRenteAvsAi;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCRevenuActiviteDependante;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCRevenuActiviteIndependante;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCRevenuHypothetique;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCTaxeJournaliere;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCTitre;
-import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCVehicule;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
 
 /**
@@ -172,6 +140,7 @@ public class DonneesFinancieresDescriptorProvider {
         }
         DonneesFinancieresDescriptorProvider.donneFinanciereDroitDescriptor.put(IPCLoyer.CS_TYPE_DONNEE_FINANCIERE,
                 descripteur);
+
         /******************************************** Taxes journalieres homes ****************************************************/
         dfProperties = new ArrayList<DonneeFinancierePropertiesDescriptor>();
         dfProperties.add(new DonneeFinancierePropertiesDescriptor("taxeJournaliereMontantJournalierLCA",
@@ -189,6 +158,52 @@ public class DonneesFinancieresDescriptorProvider {
         }
         DonneesFinancieresDescriptorProvider.donneFinanciereDroitDescriptor.put(
                 IPCTaxeJournaliere.CS_TYPE_DONNEE_FINANCIERE, descripteur);
+
+        /******************************************** Séjour passager en homes ****************************************************/
+        dfProperties = new ArrayList<DonneeFinancierePropertiesDescriptor>();
+        dfProperties.add(new DonneeFinancierePropertiesDescriptor("sejourMoisPartielPrixJournalier",
+                "JSP_CMS_64007038_PRIX_JOURNALIER", 1));
+        dfProperties.add(new DonneeFinancierePropertiesDescriptor("sejourMoisPartielFraisNourriture",
+                "JSP_CMS_64007038_FRAIS_NOURRITURE", 2));
+        dfProperties.add(new DonneeFinancierePropertiesDescriptor("sejourMoisPartielNombreJour",
+                "JSP_CMS_64007038_NOMBRE_JOUR", 3));
+        try {
+            descripteur = new DonneeFinanciereDescriptor(38, dfProperties, "MENU_OPTION_DROITS_HABITAT",
+                    "MENU_ONGLET_DROITS_SEJOUR_MOIS_PARTIEL", IPCActions.ACTION_DROIT_SEJOUR_MOIS_PARTIEL_HOME,
+                    PegasusImplServiceLocator.getSejourMoisPartielHomeService());
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            JadeLogger.error(null, "Service not vailable " + e.getMessage());
+        }
+        DonneesFinancieresDescriptorProvider.donneFinanciereDroitDescriptor.put(
+                IPCSejourMoisPartielHome.CS_TYPE_DONNEE_FINANCIERE, descripteur);
+
+        /************************************************* ### ASSURANCE MALADIE ### ********************************************************/
+        /************************************************* Subside ********************************************************/
+        dfProperties = new ArrayList<DonneeFinancierePropertiesDescriptor>();
+        dfProperties
+                .add(new DonneeFinancierePropertiesDescriptor("subsideAssuranceMaladieMontant", "JSP_CMS_64007037_MONTANT", 1));
+        try {
+            descripteur = new DonneeFinanciereDescriptor(37, dfProperties, "MENU_OPTION_ASSURANCE_MALADIE",
+                    "MENU_ONGLET_SUBSIDE_RETRO_ACCORDE", IPCActions.ACTION_DROIT_SUBSIDE_RETRO_ACCORDE,
+                    PegasusImplServiceLocator.getSubsideAssuranceMaladieService());
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            JadeLogger.error(null, "Service not vailable " + e.getMessage());
+        }
+        DonneesFinancieresDescriptorProvider.donneFinanciereDroitDescriptor.put(
+                IPCSubsideAssuranceMaladie.CS_TYPE_DONNEE_FINANCIERE, descripteur);
+        /*********************************************** Prime ********************************************************/
+        dfProperties = new ArrayList<DonneeFinancierePropertiesDescriptor>();
+        dfProperties
+                .add(new DonneeFinancierePropertiesDescriptor("primeAssuranceMaladieMontant", "JSP_CMS_64007036_MONTANT", 1));
+        try {
+            descripteur = new DonneeFinanciereDescriptor(36, dfProperties, "MENU_OPTION_ASSURANCE_MALADIE",
+                    "MENU_ONGLET_PRIME_ASSURANCE_MALADIE_EFFECTIVE", IPCActions.ACTION_DROIT_ASSURANCE_MALADIE,
+                    PegasusImplServiceLocator.getPrimeAssuranceMaladieService());
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            JadeLogger.error(null, "Service not vailable " + e.getMessage());
+        }
+        DonneesFinancieresDescriptorProvider.donneFinanciereDroitDescriptor.put(IPCPrimeAssuranceMaladie.CS_TYPE_DONNEE_FINANCIERE,
+                descripteur);
 
         /******************************************** ### FORTUNE USUELLE ### ****************************************************/
         /******************************************** CPP CB ****************************************************/
@@ -456,6 +471,8 @@ public class DonneesFinancieresDescriptorProvider {
                 "JSP_CMS_64007031_DEDLPP", 3));
         dfProperties.add(new DonneeFinancierePropertiesDescriptor(
                 "revenuActiviteLucrativeDependanteMontantFraisEffectifs", "JSP_CMS_64007031_FRAISEFFECTIFS", 4));
+        dfProperties.add(new DonneeFinancierePropertiesDescriptor(
+                "revenuActiviteLucrativeDependanteMontantFraisDeGarde", "JSP_CMS_64007031_FRAISGARDE", 5));
         try {
             descripteur = new DonneeFinanciereDescriptor(24, dfProperties, "MENU_OPTION_DROITS_REVENUS_DEPENSES",
                     "MENU_ONGLET_DROITS_REVENU_ACTIVITE_LUCRATIVE_DEPENDANTE",
@@ -472,7 +489,8 @@ public class DonneesFinancieresDescriptorProvider {
                 "JSP_CMS_64007022_MONTANT", 1));
         dfProperties.add(new DonneeFinancierePropertiesDescriptor("revenuActiviteLucrativeIndependanteCSGenreRevenu",
                 "JSP_CMS_64007022_GENREREVENU", 2, true));
-
+        dfProperties.add(new DonneeFinancierePropertiesDescriptor(
+                "revenuActiviteLucrativeIndependanteMontantFraisDeGarde", "JSP_CMS_64007022_FRAISGARDE", 3));
         try {
             descripteur = new DonneeFinanciereDescriptor(25, dfProperties, "MENU_OPTION_DROITS_REVENUS_DEPENSES",
                     "MENU_ONGLET_DROITS_REVENU_ACTIVITE_LUCRATIVE_INDEPENDANTE",
@@ -557,6 +575,21 @@ public class DonneesFinancieresDescriptorProvider {
         }
         DonneesFinancieresDescriptorProvider.donneFinanciereDroitDescriptor.put(
                 IPCCotisationPSAL.CS_TYPE_DONNEE_FINANCIERE, descripteur);
+        /************************************** FRAIS GARDE ***************************************************/
+        dfProperties = new ArrayList<DonneeFinancierePropertiesDescriptor>();
+        dfProperties
+                .add(new DonneeFinancierePropertiesDescriptor("fraisGardeMontant", "JSP_CMS_64007026_MONTANT", 1));
+        dfProperties
+                .add(new DonneeFinancierePropertiesDescriptor("FraisGardeLibelle", "JSP_CMS_64007026_LIBELLE", 2));
+        try {
+            descripteur = new DonneeFinanciereDescriptor(31, dfProperties, "MENU_OPTION_DROITS_REVENUS_DEPENSES",
+                    "MENU_ONGLET_DROITS_FRAIS_GARDE", IPCActions.ACTION_DROIT_FRAIS_GARDE,
+                    PegasusImplServiceLocator.getFraisGardeService());
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            JadeLogger.error(null, "Service not vailable " + e.getMessage());
+        }
+        DonneesFinancieresDescriptorProvider.donneFinanciereDroitDescriptor.put(
+                IPCFraisGarde.CS_TYPE_DONNEE_FINANCIERE, descripteur);
         /************************************** pension alimentaire ***************************************************/
         dfProperties = new ArrayList<DonneeFinancierePropertiesDescriptor>();
         dfProperties.add(new DonneeFinancierePropertiesDescriptor("pensionAlimentaireMontant",
@@ -567,7 +600,7 @@ public class DonneesFinancieresDescriptorProvider {
         dfProperties.add(new DonneeFinancierePropertiesDescriptor("pensionAlimentaireMontantRenteEnfant",
                 "JSP_CMS_64007026_MONTANTRENTEENFANT", 4));
         try {
-            descripteur = new DonneeFinanciereDescriptor(31, dfProperties, "MENU_OPTION_DROITS_REVENUS_DEPENSES",
+            descripteur = new DonneeFinanciereDescriptor(32, dfProperties, "MENU_OPTION_DROITS_REVENUS_DEPENSES",
                     "MENU_ONGLET_DROITS_PENSION_ALIMENTAIRE", IPCActions.ACTION_DROIT_PENSION_ALIMENTAIRE,
                     PegasusImplServiceLocator.getPensionAlimentaireService());
         } catch (JadeApplicationServiceNotAvailableException e) {
@@ -583,7 +616,7 @@ public class DonneesFinancieresDescriptorProvider {
         dfProperties.add(new DonneeFinancierePropertiesDescriptor("dessaisissementRevenuDeductions",
                 "JSP_CMS_64007030_DEDUCTIONS", 2));
         try {
-            descripteur = new DonneeFinanciereDescriptor(32, dfProperties, "MENU_OPTION_DROITS_DESSAISISSEMENTS",
+            descripteur = new DonneeFinanciereDescriptor(33, dfProperties, "MENU_OPTION_DROITS_DESSAISISSEMENTS",
                     "MENU_ONGLET_DROITS_DESSAISISSEMENT_REVENU", IPCActions.ACTION_DROIT_DESSAISISSEMENT_REVENU,
                     PegasusImplServiceLocator.getDessaisissementRevenuService());
         } catch (JadeApplicationServiceNotAvailableException e) {
@@ -598,7 +631,7 @@ public class DonneesFinancieresDescriptorProvider {
         dfProperties.add(new DonneeFinancierePropertiesDescriptor("dessaisissementFortuneDeductions",
                 "JSP_CMS_64007029_DEDUCTIONS", 2));
         try {
-            descripteur = new DonneeFinanciereDescriptor(33, dfProperties, "MENU_OPTION_DROITS_DESSAISISSEMENTS",
+            descripteur = new DonneeFinanciereDescriptor(34, dfProperties, "MENU_OPTION_DROITS_DESSAISISSEMENTS",
                     "MENU_ONGLET_DROITS_DESSAISISSEMENT_REVENU", IPCActions.ACTION_DROIT_DESSAISISSEMENT_FORTUNE,
                     PegasusImplServiceLocator.getDessaisissementFortuneService());
         } catch (JadeApplicationServiceNotAvailableException e) {

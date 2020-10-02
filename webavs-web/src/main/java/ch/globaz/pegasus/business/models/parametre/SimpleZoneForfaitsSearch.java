@@ -10,6 +10,7 @@ public class SimpleZoneForfaitsSearch extends JadeSearchSimpleModel {
     private String forCsCanton = null;
     private String forDesignation = null;
     private String forIdZoneForfait = null;
+    private String forType = null;
 
     /**
      * @return the forCsCanton
@@ -54,6 +55,14 @@ public class SimpleZoneForfaitsSearch extends JadeSearchSimpleModel {
      */
     public void setForIdZoneForfait(String forIdZoneForfait) {
         this.forIdZoneForfait = forIdZoneForfait;
+    }
+
+    public String getForType() {
+        return forType;
+    }
+
+    public void setForType(String forType) {
+        this.forType = forType;
     }
 
     @Override

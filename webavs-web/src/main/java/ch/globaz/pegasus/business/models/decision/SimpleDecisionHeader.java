@@ -3,9 +3,11 @@
  */
 package ch.globaz.pegasus.business.models.decision;
 
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.persistence.model.JadeSimpleModel;
 import ch.globaz.pegasus.business.domaine.decision.EtatDecision;
 import ch.globaz.pegasus.business.domaine.decision.TypeDecision;
+import globaz.jade.persistence.sql.JadeSqlConstantes;
 
 /**
  * @author SCE Modèle simple pour les header des décisions 14 juil. 2010
@@ -34,6 +36,7 @@ public class SimpleDecisionHeader extends JadeSimpleModel {
     private String noDecision = null;// no dec
     private String preparationPar = null;// personne qui a prepare
     private String validationPar = null;// personne qui a valide
+    private Boolean decisionProvisoire = false;
 
     /**
      * Retourne l'état de la déicision (enregistré, prévalidé, validé)
@@ -282,4 +285,15 @@ public class SimpleDecisionHeader extends JadeSimpleModel {
         return EtatDecision.fromValue(csEtatDecision);
     }
 
+    public Boolean getDecisionProvisoire() {
+        return decisionProvisoire;
+    }
+
+    public void setDecisionProvisoire(Boolean decisionProvisoire) {
+        this.decisionProvisoire = decisionProvisoire;
+    }
+
+    public Boolean isDecisionProvisoire() {
+        return decisionProvisoire;
+    }
 }

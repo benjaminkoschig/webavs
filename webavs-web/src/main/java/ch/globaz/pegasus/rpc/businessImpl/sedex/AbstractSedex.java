@@ -25,7 +25,7 @@ public class AbstractSedex<T> implements Closeable {
      */
     protected static final String MARSHALLED_XML_EXT = ".xml";
     protected static final String FILENAME_SEPARATOR = "-";
-    protected static final BigInteger IMPLEMENTED_MESSAGE_MINOR_VERSION = BigInteger.valueOf(5);
+    protected static final int IMPLEMENTED_MESSAGE_MINOR_VERSION = 1;
 
     protected AbstractSedex(SedexSender sedexSender, InfoCaisse infoCaisse, Class<T> clazz, String xsdFileName,
             SedexInfo sInfo) {

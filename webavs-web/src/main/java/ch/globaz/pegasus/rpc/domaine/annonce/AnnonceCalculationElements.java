@@ -8,7 +8,6 @@ public class AnnonceCalculationElements {
     
     private static final String XSD_RENTCATEGORY_ANNUAL_GROSS = "ANNUAL_GROSS";
     private static final String XSD_RENTCATEGORY_RENTAL_VALUE = "RENTAL_VALUE";
-    private static final String XSD_RENTCATEGORY_NO_RENTE = "NO_RENT";
 
     protected Montant otherWealth;
     protected Montant divestedWealth;
@@ -22,20 +21,24 @@ public class AnnonceCalculationElements {
     protected BigDecimal wealthIncomeRate;
     protected Montant vitalNeeds;
     protected int children;
-
+    
     protected boolean property;
     protected Montant realProperty;
     protected Montant mortgageDebts;
+    protected Montant mortgageDebtsRealProperty;
+    protected Montant mortgageDebtsSelfinhabited;
     protected Montant propertyIncome;
     protected Montant mortgageInterest;
     protected Montant maintenanceFees;
     protected Montant interestFeesEligible;
 
+    protected long familySize;
+    
     protected boolean housingOwner;
     protected Montant selfInhabitedProperty;
     protected Montant selfInhabitedPropertyDeductible;
     protected Montant rentalValue;
-
+    
     protected boolean rent;
     protected Montant grossRental;
     protected String rentCategory;
@@ -43,10 +46,18 @@ public class AnnonceCalculationElements {
     protected Montant rentGrossTotalPart;
     protected Montant maxRent;
 
+    protected boolean isDivestedWealth = Boolean.FALSE;
+    protected String typeDivestedWealth;
+
     public AnnonceCalculationElements(RpcDecisionAnnonceComplete annonce) {
 
         otherWealth = annonce.getRpcCalcul().getAutreFortunes();
         divestedWealth = annonce.getRpcCalcul().getFortuneDessaisie();
+
+        isDivestedWealth = annonce.getRpcCalcul().isDivestedWealth();
+        if (isDivestedWealth) {
+            typeDivestedWealth = annonce.getRpcCalcul().getTypeDivestedWealth();
+        }
         otherDebts = annonce.getRpcCalcul().getAutresDettes();
         wealthDeductible = annonce.getRpcCalcul().getFranchiseSurFortune();
         wealthConsidered = annonce.getRpcCalcul().getFortuneAPrendreEnCompte();
@@ -57,27 +68,33 @@ public class AnnonceCalculationElements {
         vitalNeeds = annonce.getRpcCalcul().getBesoinsVitaux();
         children = annonce.getMembresFamilleWithDonneesFinanciere().getNombreEnfants();
 
+        familySize = annonce.getRpcCalcul().getFamilySize();
+        
         realProperty = setZeroIfNull(annonce.getRpcCalcul().getFortuneImmobiliere());
         mortgageDebts = setZeroIfNull(annonce.getRpcCalcul().getDettesHypothequaires());
+
+        mortgageDebtsSelfinhabited = setZeroIfNull(annonce.getRpcCalcul().getDettesHypothequairesSelfinhabited());
+        mortgageDebtsRealProperty = setZeroIfNull(annonce.getRpcCalcul().getDettesHypothequairesRealProperty());
+
         mortgageInterest = setZeroIfNull(annonce.getRpcCalcul().getInteretsHypothequaires());
         maintenanceFees = setZeroIfNull(annonce.getRpcCalcul().getFraisEntretien());
         interestFeesEligible = setZeroIfNull(annonce.getRpcCalcul().getInteretsHypothequairesFraisMaintenance());
         propertyIncome = setZeroIfNull(annonce.getRpcCalcul().getRevenusFortuneImmobiliere());
-
+         
         selfInhabitedProperty = setZeroIfNull(annonce.getRpcCalcul().getValeurImmeubleHabitation());
         selfInhabitedPropertyDeductible = setZeroIfNull(annonce.getRpcCalcul().getFranchiseImmeubleHabitation());
         usufructIncome = setZeroIfNull(annonce.getRpcCalcul().getUsufruit());
         rentalValue = setZeroIfNull(annonce.getRpcCalcul().getDepensesLoyerValeurLocativeAppHabite());
-
+        
         grossRental = setZeroIfNull(annonce.getRpcCalcul().getLoyerBrutEnCompte());
         rentCategory = annonce.getMembresFamilleWithDonneesFinanciere().isLoyerValeurLocative() ? XSD_RENTCATEGORY_RENTAL_VALUE
                 : XSD_RENTCATEGORY_ANNUAL_GROSS;
         rentGrossTotal = setZeroIfNull(annonce.resolveLoyerTotalBrut());
         rentGrossTotalPart = setZeroIfNull(annonce.getRpcCalcul().getPartLoyerTotatBrut());
         maxRent = setZeroIfNull(annonce.getRpcCalcul().getLoyerMaximum());
-
-
-        if (!realProperty.isZero() || !mortgageDebts.isZero() || !mortgageInterest.isZero()
+        
+        
+        if (!realProperty.isZero() || !mortgageDebtsRealProperty.isZero() || !mortgageInterest.isZero()
                 || !maintenanceFees.isZero() || !interestFeesEligible.isZero() || !propertyIncome.isZero()) {
             property = true;
         } else {
@@ -89,11 +106,10 @@ public class AnnonceCalculationElements {
             housingOwner = false;
         }
 
-        if (!grossRental.isZero() || !selfInhabitedPropertyDeductible.isZero() || !rentGrossTotalPart.isZero()) {
+        if (!grossRental.isZero() || !selfInhabitedPropertyDeductible.isZero() || !rentGrossTotalPart.isZero() || !maxRent.isZero()) {
             rent = true;
         } else {
-            rentCategory = XSD_RENTCATEGORY_NO_RENTE;
-            rent = true;
+            rent = false;
         }
         
     }
@@ -170,6 +186,18 @@ public class AnnonceCalculationElements {
         return mortgageDebts;
     }
 
+    public Montant getMortgageDebtsRealProperty() {
+        return mortgageDebtsRealProperty;
+    }
+
+    public Montant getMortgageDebtsSelfinhabited() {
+        return mortgageDebtsSelfinhabited;
+    }
+
+    public long getFamilySize() {
+        return familySize;
+    }
+
     public Montant getPropertyIncome() {
         return propertyIncome;
     }
@@ -216,6 +244,12 @@ public class AnnonceCalculationElements {
     
     public boolean isRent() {
         return rent;
+    }
+
+    public boolean isDivestedWealth(){return isDivestedWealth;}
+
+    public String getTypeDivestedWealth() {
+        return typeDivestedWealth;
     }
     
 }

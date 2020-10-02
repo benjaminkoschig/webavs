@@ -16,7 +16,7 @@
 	<model-mapping import="pegasus/pcaccordee/versiondroitpcaplandecacule.xml"/>
 	<model-mapping import="pegasus/pcaccordee/simpleallocationnoel.xml"/>
 	<model-mapping import="pegasus/pcaccordee/pcaccordeeidmembresretenus.xml"/>
-	<model-mapping import="pegasus/pcaccordee/claculeretro.xml"/>
+	<model-mapping import="pegasus/pcaccordee/calculretro.xml"/>
 	<model-mapping import="pegasus/pcaccordee/pcaccordeeadaptationimpressionancienne.xml"/>
 	<model-mapping import="pegasus/pcaccordee/demandepcapersonnedanscal.xml"/>
 	<model-mapping import="pegasus/pcaccordee/pcaprestation.xml"/>

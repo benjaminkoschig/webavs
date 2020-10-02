@@ -109,13 +109,29 @@
 							</map>
 						</property>
 					</bean>
-				</entry> 
+				</entry>
 				<entry key="5">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="ch.globaz.pegasus.process.adaptationPrimeAssuranceMaladie.executeImport.PCProcessImportationPrimeAssuranceMaladieStep" />
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="4" />
+						<property name="order" value="5" />
+						<property name="isEntityInjectable" value="true" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Importation des primes LAmal" />
+								<entry key="DE" value="[de]Importation des primes LAmal" />
+								<entry key="IT" value="[it]Importation des primes LAmal" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="6">
 					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
 						<property name="classNameStep" value="ch.globaz.pegasus.process.adaptation.step1.PCProcessAdaptationStep" />
 						<property name="hasRollback" value="true" />
 						<property name="nbThread" value="4" />
-						<property name="order" value="5" />
+						<property name="order" value="6" />
 						<property name="isEntityInjectable" value="true" />
 						<property name="description">
 							<map>
@@ -126,12 +142,12 @@
 						</property>
 					</bean>
 				</entry>
-				<entry key="6">
+				<entry key="7">
 					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
 						<property name="classNameStep" value="ch.globaz.pegasus.process.adaptation.step2.PCProcessAdaptationStep" />
 						<property name="hasRollback" value="false" />
 						<property name="nbThread" value="4" />
-						<property name="order" value="6" />
+						<property name="order" value="7" />
 						<property name="description">
 							<map>
 								<entry key="FR" value="Valider les décisions" />
@@ -141,12 +157,12 @@
 						</property>
 					</bean>
 				</entry>
-				<entry key="7"> 
+				<entry key="8">
 					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
 						<property name="classNameStep" value="ch.globaz.pegasus.process.adaptation.imprimerDecisions.PCProcessAdaptationStep" />
 						<property name="hasRollback" value="true" />
 						<property name="nbThread" value="4" />
-						<property name="order" value="7" />
+						<property name="order" value="8" />
 						<property name="description">
 							<map>
 								<entry key="FR" value="Imprimer les décisions" />
@@ -162,7 +178,7 @@
 						<property name="classNameStep" value="ch.globaz.pegasus.process.adaptation.laprams.PCProcessAdaptationStep" />
 						<property name="hasRollback" value="false" />
 						<property name="nbThread" value="6" />
-						<property name="order" value="8" />
+						<property name="order" value="9" />
 						<property name="isOptional" value="true" /> 
 						<property name="description">
 							<map>
@@ -352,6 +368,109 @@
 								<entry key="FR" value="Valider les décisions" />
 								<entry key="DE" value="[de]Valider les décisions" />
 								<entry key="IT" value="[fr]Valider les décisionsns" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<!-- Adaptation pour l'importation des primes LAmal -->
+	<bean id="Pegasus.AdaptationPrimeLAmalPC"
+		  class="ch.globaz.jade.process.business.conf.JadeProcessDefinitionBean">
+		<property name="classNamePopulation" value="ch.globaz.pegasus.process.adaptationPrimeAssuranceMaladie.PCProcessAdaptationPrimeAssuranceMaladiePopulation" />
+		<property name="description">
+			<map>
+				<entry key="FR">
+					<value>
+						<![CDATA[<h1>Adaptation des primes LAmal</h1>
+						   <p>Paramètres d'entrée du processus:</p>
+						   <ul>
+						   	<li>Mois adaptation (MM.AAAA)</li>
+						   </ul>
+						   <p>
+								La population du processus contient toutes les PCA « en cours » dans le mois d'adaptation donné en paramètre<br />
+								Puis, les étapes suivantes sont exécutées :
+						   </p>
+						   <ol>
+						   		<li>Importation des primes LAmal (date début au mois d'adaptation)</li>
+								<li>Calcul des nouvelles PCA (date début au mois d'adaptation)</li>
+								<li>Création et validation des décisions d'adaptation</li>
+								<li>Impression des décisions « light » <strong>(après l'adaptation des RFM)</strong></li>
+						   </ol>
+						   <p>
+								Une étape doit être validée pour pouvoir exécuter l'étape suivante.
+						   </p>
+						]]>
+					</value>
+				</entry>
+			</map>
+		</property>
+
+		<!--  lien pour entites dans applis -->
+		<property name="urlEntite" value="pegasus?userAction=pegasus.droit.droit.chercher" />
+		<!--  jsp pour passer param -->
+		<property name="urlProperties" value="pegasus?pegasus.process.adaptationPrimeAssuranceMaladie.afficher" />
+
+		<property name="steps">
+			<map>
+				<entry key="importationPrimeLAmal">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="ch.globaz.pegasus.process.adaptationPrimeAssuranceMaladie.executeImport.PCProcessImportationPrimeAssuranceMaladieStep" />
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="4" />
+						<property name="order" value="1" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Importation des primes LAmal" />
+								<entry key="DE" value="[de]Importation des primes LAmal" />
+								<entry key="IT" value="[it]Importation des primes LAmal" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="calculePrestation">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="ch.globaz.pegasus.process.adaptationPrimeAssuranceMaladie.executeCalcule.PCProcessImportationPrimeAssuranceMaladieStep" />
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="4" />
+						<property name="order" value="2" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Calculer des nouvelles prestations" />
+								<entry key="DE" value="[de]Calculer des nouvelles prestations" />
+								<entry key="IT" value="[it]Calculer des nouvelles prestations" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="calculDecision">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="ch.globaz.pegasus.process.adaptation.step2.PCProcessAdaptationStep" />
+						<property name="hasRollback" value="false" />
+						<property name="nbThread" value="4" />
+						<property name="order" value="3" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Valider les décisions" />
+								<entry key="DE" value="[de]Valider les décisions" />
+								<entry key="IT" value="[it]Valider les décisionsns" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="imprimerDecision">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="ch.globaz.pegasus.process.adaptation.imprimerDecisions.PCProcessAdaptationStep" />
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="4" />
+						<property name="order" value="4" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Imprimer les décisions" />
+								<entry key="DE" value="[de]Imprimer les décisions" />
+								<entry key="IT" value="[it]Imprimer les décisions" />
 							</map>
 						</property>
 					</bean>

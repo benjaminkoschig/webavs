@@ -28,7 +28,7 @@ import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeExcepti
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PersonneDansPlanCalculException;
 import ch.globaz.pegasus.business.exceptions.models.pmtmensuel.PmtMensuelException;
 import ch.globaz.pegasus.business.models.annonce.SimpleCommunicationOCCSearch;
-import ch.globaz.pegasus.business.models.creancier.SimpleCreanceAccordeeSearch;
+import ch.globaz.pegasus.business.models.creancier.*;
 import ch.globaz.pegasus.business.models.decision.DecisionSuppressionSearch;
 import ch.globaz.pegasus.business.models.decision.ForDeleteDecision;
 import ch.globaz.pegasus.business.models.decision.ForDeleteDecisionSearch;
@@ -36,31 +36,10 @@ import ch.globaz.pegasus.business.models.decision.ValidationDecisionSearch;
 import ch.globaz.pegasus.business.models.demande.SimpleDemande;
 import ch.globaz.pegasus.business.models.dettecomptatcompense.SimpleDetteComptatCompenseSearch;
 import ch.globaz.pegasus.business.models.droit.Droit;
-import ch.globaz.pegasus.business.models.pcaccordee.DemandePcaPersonneDansCal;
-import ch.globaz.pegasus.business.models.pcaccordee.DemandePcaPersonneDansCalSearch;
-import ch.globaz.pegasus.business.models.pcaccordee.ListPCAccordee;
-import ch.globaz.pegasus.business.models.pcaccordee.ListPCAccordeeSearch;
-import ch.globaz.pegasus.business.models.pcaccordee.PCAIdMembreFamilleRetenuSearch;
-import ch.globaz.pegasus.business.models.pcaccordee.PCAWithCalculMembreFamilleAndPrestation;
-import ch.globaz.pegasus.business.models.pcaccordee.PCAWithCalculMembreFamilleAndPrestationSearch;
-import ch.globaz.pegasus.business.models.pcaccordee.PCAccordee;
-import ch.globaz.pegasus.business.models.pcaccordee.PCAccordeeIdMembresRetenusSearch;
-import ch.globaz.pegasus.business.models.pcaccordee.PCAccordeePlanCalculSearch;
-import ch.globaz.pegasus.business.models.pcaccordee.PCAccordeeSearch;
-import ch.globaz.pegasus.business.models.pcaccordee.PcaForDecompte;
-import ch.globaz.pegasus.business.models.pcaccordee.PersonneDansPlanCalcul;
-import ch.globaz.pegasus.business.models.pcaccordee.PersonneDansPlanCalculSearch;
-import ch.globaz.pegasus.business.models.pcaccordee.PlanDeCalculWitMembreFamilleSearch;
-import ch.globaz.pegasus.business.models.pcaccordee.SimpleAllocationNoelSearch;
-import ch.globaz.pegasus.business.models.pcaccordee.SimpleJoursAppoint;
-import ch.globaz.pegasus.business.models.pcaccordee.SimpleJoursAppointSearch;
-import ch.globaz.pegasus.business.models.pcaccordee.SimplePersonneDansPlanCalculSearch;
-import ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul;
-import ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalculSearch;
-import ch.globaz.pegasus.business.models.pcaccordee.VersionDroitPCAPlanDeCaculeSearch;
+import ch.globaz.pegasus.business.models.pcaccordee.*;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.business.services.models.pcaccordee.PCAccordeeService;
-import ch.globaz.pegasus.business.vo.pcaccordee.PCAAccordeePlanClaculeAndMembreFamilleVO;
+import ch.globaz.pegasus.business.vo.pcaccordee.PCAccordeePlanCalculAndMembreFamilleVO;
 import ch.globaz.pegasus.business.vo.pcaccordee.PCAMembreFamilleVO;
 import ch.globaz.pegasus.business.vo.pcaccordee.PCAccordeePlanCalculRetenuEnfantsDansCalculVO;
 import ch.globaz.pegasus.business.vo.pcaccordee.PCAccordeeVO;
@@ -72,6 +51,7 @@ import ch.globaz.pegasus.businessimpl.services.models.decision.validation.suppre
 import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ComptabilisationUtil;
 import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
 import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
+import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
@@ -206,6 +186,7 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
             if (pcAccordeeSearch.getSize() > 0) {
                 for (JadeAbstractModel d : pcAccordeeSearch.getSearchResults()) {
                     PCAccordee pcAccordee = (PCAccordee) d;
+                    clearOldCreancier(pcAccordee.getId());
                     delete(pcAccordee);
                     idPca.add(pcAccordee.getId());
                 }
@@ -216,6 +197,20 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
              * search.setInIdsPca(idPca); PegasusImplServiceLocator.getSimpleJoursAppointService().delete(search) }
              */
         }
+    }
+
+    private void clearOldCreancier(String id) throws JadeApplicationServiceNotAvailableException, CreancierException, JadePersistenceException {
+        CreanceAccordeeSearch creancierAccordeeSearch = new CreanceAccordeeSearch();
+        creancierAccordeeSearch.setForIdPCAccordee(id);
+        creancierAccordeeSearch = PegasusServiceLocator.getCreanceAccordeeService().search(creancierAccordeeSearch);
+        for (JadeAbstractModel model : creancierAccordeeSearch.getSearchResults()) {
+            CreanceAccordee creanceAccordee = (CreanceAccordee) model;
+            Creancier creancierToDelte = PegasusServiceLocator.getCreancierService().read(creanceAccordee.getSimpleCreancier().getIdCreancier());
+            PegasusServiceLocator.getCreanceAccordeeService().delete(creanceAccordee);
+            PegasusServiceLocator.getCreancierService().delete(creancierToDelte);
+
+        }
+
     }
 
     @Override
@@ -747,7 +742,7 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
      * .lang.String, java.lang.String)
      */
     @Override
-    public List<PCAAccordeePlanClaculeAndMembreFamilleVO> searchPCAccordeeWithCalculeRetenuVO(
+    public List<PCAccordeePlanCalculAndMembreFamilleVO> searchPCAccordeeWithCalculeRetenuVO(
             String idTiersMembreFamille, String dateValable) throws PCAccordeeException, JadePersistenceException {
         if (idTiersMembreFamille == null) {
             throw new PCAccordeeException("Unable to searchCalculeRetenuVO, the idTiersMembreFamille passed is null!");
@@ -758,7 +753,7 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
         }
 
         PCAWithCalculMembreFamilleAndPrestationSearch search = new PCAWithCalculMembreFamilleAndPrestationSearch();
-        PCAAccordeePlanClaculeAndMembreFamilleVO pcaAccordeePlanClaculeAndMembreFamilleVO = null;
+        PCAccordeePlanCalculAndMembreFamilleVO pcaccordeePlanCalculAndMembreFamilleVO = null;
         String idPca = null;
         search.setForIdTiersMembreFamille(idTiersMembreFamille);
         search.setWhereKey(
@@ -769,38 +764,38 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
         search.setForCsEtatPcAccordee(IPCPCAccordee.CS_ETAT_PCA_VALIDE);
         search = this.search(search);
 
-        List<PCAAccordeePlanClaculeAndMembreFamilleVO> listPCA = new ArrayList<PCAAccordeePlanClaculeAndMembreFamilleVO>();
+        List<PCAccordeePlanCalculAndMembreFamilleVO> listPCA = new ArrayList<PCAccordeePlanCalculAndMembreFamilleVO>();
 
         for (JadeAbstractModel model : search.getSearchResults()) {
             PCAWithCalculMembreFamilleAndPrestation pca = (PCAWithCalculMembreFamilleAndPrestation) model;
 
             if (!pca.getSimplePCAccordee().getId().equals(idPca)) {
                 if (idPca != null) {
-                    listPCA.add(pcaAccordeePlanClaculeAndMembreFamilleVO);
+                    listPCA.add(pcaccordeePlanCalculAndMembreFamilleVO);
                 }
-                pcaAccordeePlanClaculeAndMembreFamilleVO = new PCAAccordeePlanClaculeAndMembreFamilleVO();
-                pcaAccordeePlanClaculeAndMembreFamilleVO.setCsGenrePC(pca.getSimplePCAccordee().getCsGenrePC());
-                pcaAccordeePlanClaculeAndMembreFamilleVO.setCsTypePC(pca.getSimplePCAccordee().getCsTypePC());
-                pcaAccordeePlanClaculeAndMembreFamilleVO.setDateDebut(pca.getSimplePCAccordee().getDateDebut());
-                pcaAccordeePlanClaculeAndMembreFamilleVO.setDateFin(pca.getSimplePCAccordee().getDateFin());
-                pcaAccordeePlanClaculeAndMembreFamilleVO.setIdDossier(pca.getIdDossier());
+                pcaccordeePlanCalculAndMembreFamilleVO = new PCAccordeePlanCalculAndMembreFamilleVO();
+                pcaccordeePlanCalculAndMembreFamilleVO.setCsGenrePC(pca.getSimplePCAccordee().getCsGenrePC());
+                pcaccordeePlanCalculAndMembreFamilleVO.setCsTypePC(pca.getSimplePCAccordee().getCsTypePC());
+                pcaccordeePlanCalculAndMembreFamilleVO.setDateDebut(pca.getSimplePCAccordee().getDateDebut());
+                pcaccordeePlanCalculAndMembreFamilleVO.setDateFin(pca.getSimplePCAccordee().getDateFin());
+                pcaccordeePlanCalculAndMembreFamilleVO.setIdDossier(pca.getIdDossier());
 
-                pcaAccordeePlanClaculeAndMembreFamilleVO.setExcedentPCAnnuel(
+                pcaccordeePlanCalculAndMembreFamilleVO.setExcedentPCAnnuel(
                         pca.getPlanDeCalculWitMembreFamille().getSimplePlanDeCalcul().getExcedentPCAnnuel());
 
-                pcaAccordeePlanClaculeAndMembreFamilleVO.setMontantPCMensuelle(
+                pcaccordeePlanCalculAndMembreFamilleVO.setMontantPCMensuelle(
                         pca.getPlanDeCalculWitMembreFamille().getSimplePlanDeCalcul().getMontantPCMensuelle());
-                pcaAccordeePlanClaculeAndMembreFamilleVO.setMontantPrimeMoyenAssMaladie(
+                pcaccordeePlanCalculAndMembreFamilleVO.setMontantPrimeMoyenAssMaladie(
                         pca.getPlanDeCalculWitMembreFamille().getSimplePlanDeCalcul().getPrimeMoyenneAssMaladie());
 
-                pcaAccordeePlanClaculeAndMembreFamilleVO
+                pcaccordeePlanCalculAndMembreFamilleVO
                         .setCsEtatPC(pca.getPlanDeCalculWitMembreFamille().getSimplePlanDeCalcul().getEtatPC());
 
-                pcaAccordeePlanClaculeAndMembreFamilleVO
+                pcaccordeePlanCalculAndMembreFamilleVO
                         .setIdTiersBeneficiair(pca.getSimplePrestationsAccordees().getIdTiersBeneficiaire());
 
-                pcaAccordeePlanClaculeAndMembreFamilleVO.setIdPcAccordee(pca.getSimplePCAccordee().getId());
-                pcaAccordeePlanClaculeAndMembreFamilleVO
+                pcaccordeePlanCalculAndMembreFamilleVO.setIdPcAccordee(pca.getSimplePCAccordee().getId());
+                pcaccordeePlanCalculAndMembreFamilleVO
                         .setIdVersionDroitPC(pca.getSimplePCAccordee().getIdVersionDroit());
             }
 
@@ -821,15 +816,15 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
                     .getMembreFamille().getCsNationalite());
             membreFamilleVO.setCsSexe(
                     pca.getPlanDeCalculWitMembreFamille().getDroitMembreFamille().getMembreFamille().getCsSexe());
-
             membreFamilleVO.setIsComprisDansCalcul(
                     pca.getPlanDeCalculWitMembreFamille().getSimplePersonneDansPlanCalcul().getIsComprisDansCalcul());
-            pcaAccordeePlanClaculeAndMembreFamilleVO.getListMembreFamilleVO().add(membreFamilleVO);
+            membreFamilleVO.setIsRentier(pca.getPlanDeCalculWitMembreFamille().getSimplePersonneDansPlanCalcul().getIsRentier());
+            pcaccordeePlanCalculAndMembreFamilleVO.getListMembreFamilleVO().add(membreFamilleVO);
             idPca = pca.getId();
         }
 
-        if (null != pcaAccordeePlanClaculeAndMembreFamilleVO) {
-            listPCA.add(pcaAccordeePlanClaculeAndMembreFamilleVO);
+        if (null != pcaccordeePlanCalculAndMembreFamilleVO) {
+            listPCA.add(pcaccordeePlanCalculAndMembreFamilleVO);
         }
 
         return listPCA;

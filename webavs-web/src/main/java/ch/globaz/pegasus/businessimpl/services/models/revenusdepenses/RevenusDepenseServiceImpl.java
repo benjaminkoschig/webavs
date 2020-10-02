@@ -1,5 +1,7 @@
 package ch.globaz.pegasus.businessimpl.services.models.revenusdepenses;
 
+import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.*;
+import ch.globaz.pegasus.business.models.revenusdepenses.*;
 import globaz.globall.util.JAException;
 import globaz.jade.exception.JadeCloneModelException;
 import globaz.jade.exception.JadePersistenceException;
@@ -12,34 +14,10 @@ import java.util.List;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.exceptions.models.droit.DonneeFinanciereException;
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.AllocationsFamilialesException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.AutresRevenusException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.ContratEntretienViagerException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.CotisationsPsalException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.PensionAlimentaireException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.RevenuActiviteLucrativeDependanteException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.RevenuActiviteLucrativeIndependanteException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.RevenuHypothetiqueException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.SimpleLibelleContratEntretienViagerException;
-import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.SimpleTypeFraisObtentionRevenuException;
 import ch.globaz.pegasus.business.models.droit.Droit;
 import ch.globaz.pegasus.business.models.droit.DroitMembreFamille;
 import ch.globaz.pegasus.business.models.droit.DroitMembreFamilleSearch;
 import ch.globaz.pegasus.business.models.droit.SimpleVersionDroit;
-import ch.globaz.pegasus.business.models.revenusdepenses.AllocationsFamiliales;
-import ch.globaz.pegasus.business.models.revenusdepenses.AutresRevenus;
-import ch.globaz.pegasus.business.models.revenusdepenses.ContratEntretienViager;
-import ch.globaz.pegasus.business.models.revenusdepenses.CotisationsPsal;
-import ch.globaz.pegasus.business.models.revenusdepenses.PensionAlimentaire;
-import ch.globaz.pegasus.business.models.revenusdepenses.RevenuActiviteLucrativeDependante;
-import ch.globaz.pegasus.business.models.revenusdepenses.RevenuActiviteLucrativeIndependante;
-import ch.globaz.pegasus.business.models.revenusdepenses.RevenuHypothetique;
-import ch.globaz.pegasus.business.models.revenusdepenses.RevenusDepenses;
-import ch.globaz.pegasus.business.models.revenusdepenses.RevenusDepensesSearch;
-import ch.globaz.pegasus.business.models.revenusdepenses.SimpleLibelleContratEntretienViager;
-import ch.globaz.pegasus.business.models.revenusdepenses.SimpleLibelleContratEntretienViagerSearch;
-import ch.globaz.pegasus.business.models.revenusdepenses.SimpleTypeFraisObtentionRevenu;
-import ch.globaz.pegasus.business.models.revenusdepenses.SimpleTypeFraisObtentionRevenuSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.business.services.models.revenusdepenses.RevenusDepenseService;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
@@ -127,6 +105,21 @@ public class RevenusDepenseServiceImpl implements RevenusDepenseService {
             throw new DonneeFinanciereException("Unable to copy the cotisationsPsal", e);
         }
     }
+    //REFORME PC
+    private FraisGarde copyFraisGarde(RevenusDepenses revenusDepenses, Droit newDroit,
+                                                DroitMembreFamille droitMembreFamille) throws DonneeFinanciereException,
+            JadeApplicationServiceNotAvailableException, JadePersistenceException {
+        FraisGarde fraisGarde = new FraisGarde();
+        try {
+            fraisGarde.setSimpleDonneeFinanciereHeader(revenusDepenses.getSimpleDonneeFinanciereHeader());
+            fraisGarde.setSimpleFraisGarde(revenusDepenses.getSimpleFraisGarde());
+            fraisGarde = createFraisGarde(newDroit.getSimpleVersionDroit(), droitMembreFamille, fraisGarde);
+            return fraisGarde;
+        } catch (FraisGardeException e) {
+            throw new DonneeFinanciereException("Unable to copy the fraisGarde", e);
+        }
+    }
+
 
     private PensionAlimentaire copyPensionAlimentaire(RevenusDepenses revenusDepenses, Droit newDroit,
             DroitMembreFamille droitMembreFamille) throws DonneeFinanciereException,
@@ -297,6 +290,10 @@ public class RevenusDepenseServiceImpl implements RevenusDepenseService {
                         if ((revenusDepenses.getCotisationsPsal() != null)
                                 && IPCDroits.CS_COTISATIONS_PSAL.equals(csType)) {
                             copyCotisationsPsal(revenusDepenses, newDroit, droitMembreFamille);
+                        }
+                        if ((revenusDepenses.getSimpleFraisGarde() != null)
+                                && IPCDroits.CS_FRAIS_GARDE.equals(csType)) {
+                            copyFraisGarde(revenusDepenses, newDroit, droitMembreFamille);
                         }
                         if ((revenusDepenses.getPensionAlimentaire() != null)
                                 && IPCDroits.CS_PENSIONS_ALIMENTAIRES.equals(csType)) {
@@ -623,6 +620,10 @@ public class RevenusDepenseServiceImpl implements RevenusDepenseService {
             PegasusImplServiceLocator.getSimpleCotisationsPsalService().deleteParListeIdDoFinH(idsDonneFinanciere);
 
         }
+        if (typeDonneFinianciere.contains("-" + IPCDroits.CS_FRAIS_GARDE + "-")) {
+            PegasusImplServiceLocator.getSimpleFraisGardeService().deleteParListeIdDoFinH(idsDonneFinanciere);
+
+        }
         if (typeDonneFinianciere.contains("-" + IPCDroits.CS_PENSIONS_ALIMENTAIRES + "-")) {
             PegasusImplServiceLocator.getSimplePensionAlimentaireService().deleteParListeIdDoFinH(idsDonneFinanciere);
 
@@ -641,6 +642,35 @@ public class RevenusDepenseServiceImpl implements RevenusDepenseService {
             PegasusImplServiceLocator.getSimpleRevenuHypothetiqueService().deleteParListeIdDoFinH(idsDonneFinanciere);
 
         }
+    }
+    //REFORME PC
+    @Override
+    public FraisGarde createFraisGarde(SimpleVersionDroit simpleVersionDroit, DroitMembreFamille droitMembreFamille, FraisGarde fraisGarde)
+            throws FraisGardeException, JadePersistenceException, DonneeFinanciereException {
+        if ((droitMembreFamille == null) || droitMembreFamille.isNew()) {
+            throw new DonneeFinanciereException(
+                    "Unable to create fraisGarde, the droitMembreFamille is null or new");
+        }
+        if (fraisGarde == null) {
+            throw new DonneeFinanciereException("Unable to create fraisGarde, the model is null");
+        }
+        if (simpleVersionDroit == null) {
+            throw new DonneeFinanciereException("Unable to create fraisGarde, the simpleVersionDroit is null");
+        }
+
+        fraisGarde.getSimpleDonneeFinanciereHeader().setCsTypeDonneeFinanciere(IPCDroits.CS_FRAIS_GARDE);
+
+        try {
+            fraisGarde.setSimpleDonneeFinanciereHeader(PegasusImplServiceLocator
+                    .getDonneeFinanciereHeaderService().setDonneeFinanciereHeaderForCreation(simpleVersionDroit,
+                            droitMembreFamille, fraisGarde.getSimpleDonneeFinanciereHeader()));
+
+            fraisGarde = PegasusImplServiceLocator.getFraisGardeService().create(fraisGarde);
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new DonneeFinanciereException("Service not available - " + e.getMessage());
+        }
+
+        return fraisGarde;
     }
 
 }

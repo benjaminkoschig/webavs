@@ -1,5 +1,10 @@
 package ch.globaz.pegasus.businessimpl.services;
 
+import ch.globaz.pegasus.business.models.assurancemaladie.SimplePrimeAssuranceMaladie;
+import ch.globaz.pegasus.business.services.models.assurancemaladie.*;
+import ch.globaz.pegasus.business.services.models.calcul.*;
+import ch.globaz.pegasus.business.services.models.habitat.*;
+import ch.globaz.pegasus.business.services.models.revenusdepenses.*;
 import globaz.jade.service.provider.JadeApplicationServiceLocator;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
@@ -17,17 +22,6 @@ import ch.globaz.pegasus.business.services.models.blocage.DeblocageDetteService;
 import ch.globaz.pegasus.business.services.models.blocage.DeblocageService;
 import ch.globaz.pegasus.business.services.models.blocage.PcaBloqueService;
 import ch.globaz.pegasus.business.services.models.blocage.SimpleLigneDeblocageService;
-import ch.globaz.pegasus.business.services.models.calcul.AutreRenteCalculService;
-import ch.globaz.pegasus.business.services.models.calcul.CalculComparatifService;
-import ch.globaz.pegasus.business.services.models.calcul.CalculDonneesCCService;
-import ch.globaz.pegasus.business.services.models.calcul.CalculDonneesDroitService;
-import ch.globaz.pegasus.business.services.models.calcul.CalculDonneesHomeService;
-import ch.globaz.pegasus.business.services.models.calcul.CalculDroitService;
-import ch.globaz.pegasus.business.services.models.calcul.CalculMembreFamilleService;
-import ch.globaz.pegasus.business.services.models.calcul.CalculMoisSuivantService;
-import ch.globaz.pegasus.business.services.models.calcul.CalculPersistanceService;
-import ch.globaz.pegasus.business.services.models.calcul.CalculVariableMetierService;
-import ch.globaz.pegasus.business.services.models.calcul.PeriodesService;
 import ch.globaz.pegasus.business.services.models.creancier.SimpleCreanceAccordeeService;
 import ch.globaz.pegasus.business.services.models.creancier.SimpleCreancierService;
 import ch.globaz.pegasus.business.services.models.decision.CleanDecisionsService;
@@ -98,12 +92,6 @@ import ch.globaz.pegasus.business.services.models.fortuneusuelle.SimpleCapitalLP
 import ch.globaz.pegasus.business.services.models.fortuneusuelle.SimpleCompteBancaireCCPService;
 import ch.globaz.pegasus.business.services.models.fortuneusuelle.SimpleTitreService;
 import ch.globaz.pegasus.business.services.models.fortuneusuelle.TitreService;
-import ch.globaz.pegasus.business.services.models.habitat.HabitatService;
-import ch.globaz.pegasus.business.services.models.habitat.LoyerService;
-import ch.globaz.pegasus.business.services.models.habitat.SimpleLoyerService;
-import ch.globaz.pegasus.business.services.models.habitat.SimpleTaxeJournaliereHomeService;
-import ch.globaz.pegasus.business.services.models.habitat.TaxeJournaliereHomeEtenduService;
-import ch.globaz.pegasus.business.services.models.habitat.TaxeJournaliereHomeService;
 import ch.globaz.pegasus.business.services.models.home.ChambreMedicaliseeService;
 import ch.globaz.pegasus.business.services.models.home.PeriodeServiceEtatService;
 import ch.globaz.pegasus.business.services.models.home.PrixChambreService;
@@ -143,28 +131,6 @@ import ch.globaz.pegasus.business.services.models.renteijapi.SimpleAutreRenteSer
 import ch.globaz.pegasus.business.services.models.renteijapi.SimpleIjApgService;
 import ch.globaz.pegasus.business.services.models.renteijapi.SimpleIndemniteJournaliereAiService;
 import ch.globaz.pegasus.business.services.models.renteijapi.SimpleRenteAvsAiService;
-import ch.globaz.pegasus.business.services.models.revenusdepenses.AllocationsFamilialesEtenduService;
-import ch.globaz.pegasus.business.services.models.revenusdepenses.AllocationsFamilialesService;
-import ch.globaz.pegasus.business.services.models.revenusdepenses.AutresRevenusService;
-import ch.globaz.pegasus.business.services.models.revenusdepenses.ContratEntretienViagerService;
-import ch.globaz.pegasus.business.services.models.revenusdepenses.CotisationsPsalService;
-import ch.globaz.pegasus.business.services.models.revenusdepenses.PensionAlimentaireService;
-import ch.globaz.pegasus.business.services.models.revenusdepenses.RevenuActiviteLucrativeDependanteService;
-import ch.globaz.pegasus.business.services.models.revenusdepenses.RevenuActiviteLucrativeIndependanteEtenduService;
-import ch.globaz.pegasus.business.services.models.revenusdepenses.RevenuActiviteLucrativeIndependanteService;
-import ch.globaz.pegasus.business.services.models.revenusdepenses.RevenuHypothetiqueService;
-import ch.globaz.pegasus.business.services.models.revenusdepenses.RevenusDepenseService;
-import ch.globaz.pegasus.business.services.models.revenusdepenses.SimpleAllocationsFamilialesService;
-import ch.globaz.pegasus.business.services.models.revenusdepenses.SimpleAutresRevenusService;
-import ch.globaz.pegasus.business.services.models.revenusdepenses.SimpleContratEntretienViagerService;
-import ch.globaz.pegasus.business.services.models.revenusdepenses.SimpleCotisationsPsalService;
-import ch.globaz.pegasus.business.services.models.revenusdepenses.SimpleLibelleContratEntretienViagerService;
-import ch.globaz.pegasus.business.services.models.revenusdepenses.SimplePensionAlimentaireService;
-import ch.globaz.pegasus.business.services.models.revenusdepenses.SimpleRevenuActiviteLucrativeDependanteService;
-import ch.globaz.pegasus.business.services.models.revenusdepenses.SimpleRevenuActiviteLucrativeIndependanteService;
-import ch.globaz.pegasus.business.services.models.revenusdepenses.SimpleRevenuHypothetiqueService;
-import ch.globaz.pegasus.business.services.models.revenusdepenses.SimpleTypeFraisObtentionRevenuService;
-import ch.globaz.pegasus.business.services.models.revenusdepenses.TypeFraisObtentionRevenuService;
 import ch.globaz.pegasus.business.services.models.transfert.SimpleTransfertDossierSuppressionService;
 import ch.globaz.pegasus.business.services.models.variablemetier.SimpleVariableMetierService;
 import ch.globaz.pegasus.business.services.process.adaptation.AdaptationService;
@@ -358,6 +324,11 @@ public abstract class PegasusImplServiceLocator extends PegasusServiceLocator {
         return (CalculDonneesDroitService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
                 CalculDonneesDroitService.class);
     }
+    public static CalculDonneesFraisGardeService getCalculDonneesFraisGardeService()
+            throws JadeApplicationServiceNotAvailableException {
+        return (CalculDonneesFraisGardeService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
+                CalculDonneesFraisGardeService.class);
+    }
 
     public static CalculDonneesCCService getCalculDonneesEnfantsService()
             throws JadeApplicationServiceNotAvailableException {
@@ -475,6 +446,9 @@ public abstract class PegasusImplServiceLocator extends PegasusServiceLocator {
         return (CotisationsPsalService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
                 CotisationsPsalService.class);
     }
+
+
+
 
     public static DeblocageDetteService getDeblocageDetteService() throws JadeApplicationServiceNotAvailableException {
         return (DeblocageDetteService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
@@ -704,6 +678,15 @@ public abstract class PegasusImplServiceLocator extends PegasusServiceLocator {
      */
     public static LoyerService getLoyerService() throws JadeApplicationServiceNotAvailableException {
         return (LoyerService) JadeApplicationServiceLocator.getInstance().getServiceImpl(LoyerService.class);
+    }
+
+    /**
+     * @return Implémentation du service de gestion assurance maladie
+     * @throws JadeApplicationServiceNotAvailableException
+     *             Levée lorsque le service n'est pas disponible - n'arrive qu'en remote
+     */
+    public static AssuranceMaladieService getAssuranceMaladieService() throws JadeApplicationServiceNotAvailableException {
+        return (AssuranceMaladieService) JadeApplicationServiceLocator.getInstance().getServiceImpl(AssuranceMaladieService.class);
     }
 
     /**
@@ -1099,6 +1082,8 @@ public abstract class PegasusImplServiceLocator extends PegasusServiceLocator {
         return (SimpleCotisationsPsalService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
                 SimpleCotisationsPsalService.class);
     }
+
+
 
     /**
      * @return Implémentation du service SimpleCreanceAccordee
@@ -1570,6 +1555,18 @@ public abstract class PegasusImplServiceLocator extends PegasusServiceLocator {
 
     }
 
+    /**
+     *
+     * @return Implémentation des séjours mois partiel (home)
+     * @throws JadeApplicationServiceNotAvailableException
+     */
+    public static SimpleSejourMoisPartielHomeService getSimpleSejourMoisPartielHomeService()
+            throws JadeApplicationServiceNotAvailableException {
+        return (SimpleSejourMoisPartielHomeService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
+                SimpleSejourMoisPartielHomeService.class);
+
+    }
+
     public static SimpleTitreService getSimpleTitreService() throws JadeApplicationServiceNotAvailableException {
         return (SimpleTitreService) JadeApplicationServiceLocator.getInstance()
                 .getServiceImpl(SimpleTitreService.class);
@@ -1677,6 +1674,18 @@ public abstract class PegasusImplServiceLocator extends PegasusServiceLocator {
 
     }
 
+    /**
+     *
+     * @return Implémentation des séjours mois partiel (home)
+     * @throws JadeApplicationServiceNotAvailableException
+     */
+    public static SejourMoisPartielHomeService getSejourMoisPartielHomeService()
+            throws JadeApplicationServiceNotAvailableException {
+        return (SejourMoisPartielHomeService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
+                SejourMoisPartielHomeService.class);
+
+    }
+
     public static TitreService getTitreService() throws JadeApplicationServiceNotAvailableException {
         return (TitreService) JadeApplicationServiceLocator.getInstance().getServiceImpl(TitreService.class);
     }
@@ -1721,5 +1730,38 @@ public abstract class PegasusImplServiceLocator extends PegasusServiceLocator {
      */
     public static VehiculeService getVehiculeService() throws JadeApplicationServiceNotAvailableException {
         return (VehiculeService) JadeApplicationServiceLocator.getInstance().getServiceImpl(VehiculeService.class);
+    }
+
+
+    //REFORME PC
+
+    public static FraisGardeService getFraisGardeService() throws JadeApplicationServiceNotAvailableException {
+        return (FraisGardeService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
+                FraisGardeService.class);
+    }
+    public static SimpleFraisGardeService getSimpleFraisGardeService()
+            throws JadeApplicationServiceNotAvailableException {
+        return (SimpleFraisGardeService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
+                SimpleFraisGardeService.class);
+    }
+
+    public static PrimeAssuranceMaladieService getPrimeAssuranceMaladieService() throws JadeApplicationServiceNotAvailableException {
+        return (PrimeAssuranceMaladieService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
+                PrimeAssuranceMaladieService.class);
+    }
+    public static SimplePrimeAssuranceMaladieService getSimplePrimeAssuranceMaladieService()
+            throws JadeApplicationServiceNotAvailableException {
+        return (SimplePrimeAssuranceMaladieService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
+                SimplePrimeAssuranceMaladieService.class);
+    }
+
+    public static SubsideAssuranceMaladieService getSubsideAssuranceMaladieService() throws JadeApplicationServiceNotAvailableException {
+        return (SubsideAssuranceMaladieService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
+                SubsideAssuranceMaladieService.class);
+    }
+    public static SimpleSubsideAssuranceMaladieService getSimpleSubsideAssuranceMaladieService()
+            throws JadeApplicationServiceNotAvailableException {
+        return (SimpleSubsideAssuranceMaladieService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
+                SimpleSubsideAssuranceMaladieService.class);
     }
 }

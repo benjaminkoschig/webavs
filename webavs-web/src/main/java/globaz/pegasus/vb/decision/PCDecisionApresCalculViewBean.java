@@ -3,15 +3,13 @@
  */
 package globaz.pegasus.vb.decision;
 
+import ch.globaz.pegasus.businessimpl.services.models.decision.DecisionApresCalculServiceImpl;
 import globaz.babel.api.ICTDocument;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.framework.util.FWCurrency;
-import globaz.globall.db.BIPersistentObject;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.db.BSpy;
+import globaz.globall.db.*;
 import globaz.globall.util.JACalendar;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
 import globaz.jade.client.util.JadeStringUtil;
@@ -80,6 +78,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
     private static final String DATE_DECISION_AMAL_REPLACE = "{date_decision_amal}";
     // Etat de la zone annexe du formualaire
     private String annexesIsChanged = "0";
+    Map<Langues, CTDocumentImpl> documentsBabel;
     private ICTDocument babelDoc = null;
     private String blocReductionAmal = null;
     // Liste personnes comprises
@@ -113,6 +112,10 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
     private int nbresPersonnesComprises = 0;
     private DecisionApresCalculSearch search = null;
     private SimpleAllocationNoel simpleAllocationNoel = new SimpleAllocationNoel();
+    private Boolean decisionProvisoire = null;
+
+    private String textRemarqueNormal = null;
+    private String textRemarqueProvisoire = null;
 
     // gestion des utilisateurs-gestionnaire, à voir
     // private JadeUser[] users = null;
@@ -131,6 +134,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
         ERROR_ADRESS_MESSAGE = "<div class='noAdresse ui-state-error ui-corner-all'>"
                 + "<span class='ui-icon ui-icon-alert' style='float: left; margin-right: .3em;'></span>" + "<span>"
                 + ((BSession) getISession()).getLabel("JSP_PC_ADRESSE_INTROUVABLE") + "</span>" + "</div>";
+
     }
 
     protected void _update(FWViewBeanInterface viewBean, FWAction action, globaz.globall.api.BISession session)
@@ -1097,6 +1101,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
         setBlocReductionPrimesAssMaladieAsString();
         searchSimpleAllocationNoelAndSetItIUsed();
+        setLabelRemarqueForProvisoire(decisionApresCalcul);
     }
 
     private void searchSimpleAllocationNoelAndSetItIUsed() throws PropertiesException, JadePersistenceException,
@@ -1108,6 +1113,17 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
                 simpleAllocationNoel = allocationNoel;
             }
         }
+    }
+
+    private void setLabelRemarqueForProvisoire(DecisionApresCalcul decision) {
+        CTDocumentImpl document = documentsBabel.get(LanguageResolver.resolveISOCode(decisionApresCalcul.getDecisionHeader().getPersonneEtendue().getTiers().getLangue()));
+
+        textRemarqueNormal = PRStringUtils.replaceString(document.getTextes(2).getTexte(10).getDescription(),
+                DecisionApresCalculServiceImpl.DEMANDE_DU, decision
+                        .getVersionDroit().getSimpleVersionDroit().getDateAnnonce());
+        textRemarqueProvisoire = PRStringUtils.replaceString(document.getTextes(2).getTexte(40).getDescription(),
+                DecisionApresCalculServiceImpl.DEMANDE_DU, decision
+                .getVersionDroit().getSimpleVersionDroit().getDateAnnonce());
     }
 
     /**
@@ -1130,7 +1146,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
             JadeApplicationServiceNotAvailableException, Exception {
         // TODO : langue ??? On a l'info mais il faut voir sur qui on récupère la langue
 
-        Map<Langues, CTDocumentImpl> documentsBabel = BabelServiceLocator.getPCCatalogueTexteService()
+        documentsBabel = BabelServiceLocator.getPCCatalogueTexteService()
                 .searchForTypeDecision(IPCCatalogueTextes.BABEL_DOC_NAME_APRES_CALCUL);
         babelDoc = documentsBabel.get(Langues.Francais);
         // Etat dec
@@ -1246,6 +1262,35 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     public void setSearch(DecisionApresCalculSearch search) {
         this.search = search;
+    }
+
+    public Boolean getDecisionProvisoire() {
+        return decisionProvisoire;
+    }
+
+    public Boolean isDecisoinProvisoire(){
+        return decisionApresCalcul.getDecisionHeader().getSimpleDecisionHeader().isDecisionProvisoire();
+    }
+
+    public void setDecisionProvisoire(Boolean decisionProvisoire) {
+        this.decisionProvisoire = decisionProvisoire;
+        decisionApresCalcul.getDecisionHeader().getSimpleDecisionHeader().setDecisionProvisoire(decisionProvisoire);
+    }
+
+    public String getTextRemarqueNormal() {
+        return textRemarqueNormal;
+    }
+
+    public void setTextRemarqueNormal(String textRemarqueNormal) {
+        this.textRemarqueNormal = textRemarqueNormal;
+    }
+
+    public String getTextRemarqueProvisoire() {
+        return textRemarqueProvisoire;
+    }
+
+    public void setTextRemarqueProvisoire(String textRemarqueProvisoire) {
+        this.textRemarqueProvisoire = textRemarqueProvisoire;
     }
 
     /**

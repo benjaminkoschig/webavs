@@ -1,5 +1,6 @@
 package globaz.pegasus.vb.habitat;
 
+import ch.globaz.pyxis.business.model.LocaliteSimpleModel;
 import globaz.framework.bean.FWAJAXViewBeanInterface;
 import globaz.framework.bean.FWListViewBeanInterface;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -7,8 +8,10 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import globaz.globall.util.JAException;
 import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.pegasus.vb.droit.PCDonneeFinanciereAjaxViewBean;
 import java.util.ArrayList;
@@ -225,5 +228,21 @@ public class PCLoyerAjaxViewBean extends PCDonneeFinanciereAjaxViewBean implemen
 
             }
         }
+    }
+
+    public String getNomCommune(String idLocalite){
+        String nomCommune="";
+        if(JadeStringUtil.isBlankOrZero(idLocalite)) {
+            return nomCommune;
+        }
+        LocaliteSimpleModel localite = new LocaliteSimpleModel();
+        try{
+            localite.setId(idLocalite);
+            localite = (LocaliteSimpleModel) JadePersistenceManager.read(localite);
+            nomCommune=localite.getLocalite();
+        }catch(NullPointerException | JadePersistenceException e){
+            nomCommune="";
+        }
+        return nomCommune;
     }
 }

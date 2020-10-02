@@ -13,6 +13,7 @@
 			<field name="resultatCalcul" column="CVORES" type="BLOB" mandatory="false" comment="RESULTAT_CALCUL"/>
 			<field name="primeMoyenneAssMaladie" column="CVMAML" type="NUMERIC" mandatory="false" comment="PRIME_MOYENNE_ASS_MALADIE"/>
 			<field name="isPlanCalculAccessible" column="CVBPLA" type="BOOLEAN" mandatory="true" comment="PLAN CALCUL ACCESSIBLE PCA OU PARENT"/>
+			<field name="reformePc" column="CVBRPC" type="BOOLEAN" mandatory="true" comment="REFORME PC"/>
 		</fields>
 		<search-definition>
 			<search-group operator="AND">

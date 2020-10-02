@@ -24,6 +24,9 @@ public class SimpleTaxeJournaliereHome extends JadeSimpleModel {
     private String primeAPayer = null;
     private Boolean isDeplafonner = null;
     private String montantFraisLongueDuree = null;
+    private Boolean isVersementDirect = Boolean.FALSE;
+
+    private String idAdressePaiement = null;
 
     public Boolean getIsDeplafonner() {
         return isDeplafonner;
@@ -201,5 +204,19 @@ public class SimpleTaxeJournaliereHome extends JadeSimpleModel {
     public void setMontantFraisLongueDuree(String montantFraisLongueDuree) {
         this.montantFraisLongueDuree = montantFraisLongueDuree;
     }
+    public Boolean getIsVersementDirect() {
+        return isVersementDirect;
+    }
 
+    public void setIsVersementDirect(Boolean isVersementDirect) {
+        this.isVersementDirect = isVersementDirect;
+    }
+
+    public String getIdAdressePaiement() {
+        return idAdressePaiement;
+    }
+
+    public void setIdAdressePaiement(String idAdressePaiement) {
+        this.idAdressePaiement = idAdressePaiement;
+    }
 }

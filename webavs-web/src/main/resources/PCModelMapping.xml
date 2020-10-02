@@ -28,6 +28,8 @@
 	<model-mapping import="pegasus/revisionquadriennale/revisionquadriennalepackage.xml"/>
 	<model-mapping import="pegasus/donneeFianciere/donneeFiancierePackage.xml"/>
 	<model-mapping import="pegasus/externalmodule/externalmodulepackage.xml"/>
-	<model-mapping import="pegasus/rpc/rpcpackage.xml"/>	
-	
+	<model-mapping import="pegasus/rpc/rpcpackage.xml"/>
+	<model-mapping import="pegasus/assurancemaladie/assurancemaladiepackage.xml"/>
+	<model-mapping import="pegasus/restitution/restitutionpackage.xml"/>
+
 </model-mapping> 

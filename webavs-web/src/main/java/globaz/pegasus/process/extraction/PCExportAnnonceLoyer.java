@@ -116,7 +116,7 @@ public class PCExportAnnonceLoyer extends BProcess {
     /**
      * Return le document XML : unmarshall depuis le fichier
      *
-     * @param eLPFile
+     * @param xmlFile
      * @return
      * @throws JAXBException
      */
@@ -134,19 +134,18 @@ public class PCExportAnnonceLoyer extends BProcess {
     /**
      * Traitement fichier selon le type
      *
-     * @param doc
-     * @param infos
+     * @param xml
      */
     private boolean traitementFichier(Message xml) {
         CaseType typeCase = xml.getContent().getCase();
-        for(DecisionType decision : typeCase.getDecisions().getDecision()){
+        for(DecisionTypeRef0 decision : typeCase.getDecisions().getDecisionRef0()){
             if(decision.getCalculationElements().getRents() != null
                 && decision.getCalculationElements().getRents().getGrossRental() > 0) {
                 PCExportAnnonceLoyerDonne donne = new PCExportAnnonceLoyerDonne();
 
-                PersonType personne = null;
+                PersonTypeRef0 personne = null;
                 int nbEnfant = 0;
-                for(PersonType pt : decision.getPersons().getPerson()){
+                for(PersonTypeRef0 pt : decision.getPersons().getPerson()){
                     if(pt.isRepresentative()) {
                         personne = pt;
                     }
@@ -160,7 +159,7 @@ public class PCExportAnnonceLoyer extends BProcess {
                 donne.setCsbe(personne.getVitalNeedsCategory());
                 donne.setCsak_t(decision.getDeliveryOffice().getElOffice().toString());
 
-                RentsType rents = decision.getCalculationElements().getRents();
+                RentsTypeRef0 rents = decision.getCalculationElements().getRents();
                 Long maxRente = rents.getMaxRent();
                 Long montant = rents.getGrossRental();
                 Long rentGrossTotal = rents.getRentGrossTotal();

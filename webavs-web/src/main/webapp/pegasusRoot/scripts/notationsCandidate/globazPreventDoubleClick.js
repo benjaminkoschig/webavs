@@ -1,7 +1,7 @@
 globazNotation.preventdoubleclick = {
 
 	$element:'',
-	IMG_LOADER_PATH:'/webavs/images/loader_horizontal.gif',
+	IMG_LOADER_PATH:'./images/loader_horizontal.gif',
 	author: 'SCE',
 	forTagHtml: 'button,input',
 	type: globazNotation.typesNotation.TECHNICAL_NOTATION,

@@ -24,7 +24,8 @@ public enum MotifDroit implements CodeSystemEnum<MotifDroit> {
     TRANSFERT_HORS_CANTON(IPCDroits.CS_MOTIF_DROIT_TRANSFERT_HORS_CANTON),
     VEUVAGE(IPCDroits.CS_MOTIF_DROIT_VEUVAGE),
     DEPART_ETRANGER("64063016"),
-    DECES(IPCDroits.CS_MOTIF_DROIT_DECES);
+    DECES(IPCDroits.CS_MOTIF_DROIT_DECES),
+    SEUIL_FORTUNE_DEPASSE(IPCDroits.CS_MOTIF_DROIT_SEUIL_FORTUNE_DEPASSE);
 
     private String value;
 
@@ -47,6 +48,7 @@ public enum MotifDroit implements CodeSystemEnum<MotifDroit> {
         motifsDroitSuppression.add(MotifDroit.TRANSFERT_CLARENS);
         motifsDroitSuppression.add(MotifDroit.DECES);
         motifsDroitSuppression.add(MotifDroit.VEUVAGE);
+        motifsDroitSuppression.add(MotifDroit.SEUIL_FORTUNE_DEPASSE);
         return motifsDroitSuppression.contains(this);
     }
 

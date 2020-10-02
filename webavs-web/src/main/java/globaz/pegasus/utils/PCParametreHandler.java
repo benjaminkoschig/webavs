@@ -1,5 +1,6 @@
 package globaz.pegasus.utils;
 
+import ch.globaz.pegasus.business.constantes.EPCForfaitType;
 import globaz.globall.db.BSession;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.model.JadeAbstractModel;
@@ -23,6 +24,15 @@ public class PCParametreHandler {
     public static JadeAbstractModel[] getListZoneFofaits() throws ForfaitsPrimesAssuranceMaladieException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException {
         SimpleZoneForfaitsSearch search = new SimpleZoneForfaitsSearch();
+        search.setForType(EPCForfaitType.LAMAL.getCode().toString());
+        PegasusServiceLocator.getParametreServicesLocator().getSimpleZoneForfaitsService().search(search);
+        return search.getSearchResults();
+    }
+
+    public static JadeAbstractModel[] getListZoneFofaitsLoyer() throws ForfaitsPrimesAssuranceMaladieException,
+            JadeApplicationServiceNotAvailableException, JadePersistenceException {
+        SimpleZoneForfaitsSearch search = new SimpleZoneForfaitsSearch();
+        search.setForType(EPCForfaitType.LOYER.getCode().toString());
         PegasusServiceLocator.getParametreServicesLocator().getSimpleZoneForfaitsService().search(search);
         return search.getSearchResults();
     }

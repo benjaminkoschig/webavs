@@ -65,6 +65,13 @@ public class StrategieBienImmoPrincipalVS extends StrategieCalculDepense {
                     IPCValeursPlanCalcul.CLE_INTER_HABITATION_PRINCIPALE_NBPERSONNES,
                     donnee.getBienImmoPrincipalNombrePersonnes());
 
+            // plafond des loyers réforme PC
+            if(context.contains(Attribut.REFORME)) {
+                this.getOrCreateChild(tupleHabitatPrincipal, IPCValeursPlanCalcul.PLAFOND_LOYER_LOCALITE, donnee.getBienImmoPrincipalIdLocalite());
+                this.getOrCreateChild(tupleHabitatPrincipal, IPCValeursPlanCalcul.PLAFOND_LOYER_NBTOTALFAMILLE, donnee.getNbTotalFamille());
+                this.getOrCreateChild(tupleHabitatPrincipal, IPCValeursPlanCalcul.PLAFOND_LOYER_DATEDEBUT, 0f).setLegende(donnee.getDateDebutDonneeFinanciere());
+            }
+
             // Gestion des intérêts hypothécaire, sauf droit d'habitation
             if (!isDroitHabitation(donnee.getBienImmoPrincipalCSPropriete())) {
 

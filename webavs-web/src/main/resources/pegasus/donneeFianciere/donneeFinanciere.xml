@@ -110,7 +110,9 @@
 			<select-field name="revenuActiviteLucrativeDependanteDeductionsSociales" field-ref="simpleRevenuActiviteLucrativeDependante.deductionsSociales"/>
 			<select-field name="revenuActiviteLucrativeDependanteDeductionsLPP" field-ref="simpleRevenuActiviteLucrativeDependante.deductionsLpp"/>
 			<select-field name="revenuActiviteLucrativeDependanteMontantFraisEffectifs" field-ref="simpleRevenuActiviteLucrativeDependante.montantFrais"/>
+			<select-field name="revenuActiviteLucrativeDependanteFraisDeGarde" field-ref="simpleRevenuActiviteLucrativeDependante.fraisDeGarde"/>
 			<select-field name="revenuActiviteLucrativeIndependanteMontant" field-ref="simpleRevenuActiviteLucrativeIndependante.montantRevenu"/>
+			<select-field name="revenuActiviteLucrativeIndependanteFraisDeGarde" field-ref="simpleRevenuActiviteLucrativeIndependante.fraisDeGarde"/>
 			<select-field name="revenuActiviteLucrativeIndependanteCSGenreRevenu" field-ref="simpleRevenuActiviteLucrativeIndependante.csGenreRevenu"/>
 			
 			<select-field name="revenuHypothetiqueMontantRevenuNet" field-ref="simpleRevenuHypothetique.montantRevenuHypothetiqueNet"/>
@@ -163,6 +165,9 @@
 			<select-field name="taxeJournalierePrimeAPayer" field-ref="simpleTaxeJournaliereHome.primeAPayer"/>
 			<select-field name="taxeJournaliereDateEntreeHome" field-ref="simpleTaxeJournaliereHome.dateEntreeHome"/>
 			<select-field name="taxeJournaliereLongueDuree" field-ref="simpleTaxeJournaliereHome.montantFraisLongueDuree"/>
+			<select-field name="sejourMoisPartielPrixJournalier" field-ref="simpleSejourMoisPartielHome.prixJournalier"/>
+			<select-field name="sejourMoisPartielFraisNourriture" field-ref="simpleSejourMoisPartielHome.fraisNourriture"/>
+			<select-field name="sejourMoisPartielNombreJour" field-ref="simpleSejourMoisPartielHome.nbJours"/>
 			<select-field name="loyerMontant" field-ref="simpleLoyer.montantLoyerNet"/>
 			<select-field name="loyerMontantCharges" field-ref="simpleLoyer.montantCharges"/>
 			<select-field name="loyerIsFauteuilRoulant" field-ref="simpleLoyer.isFauteuilRoulant"/>
@@ -388,6 +393,12 @@
 		</linked-model>
 
 		<linked-model name="simpleTaxeJournaliereHome" model-ref="ch.globaz.pegasus.business.models.habitat.SimpleTaxeJournaliereHome" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simpleSejourMoisPartielHome" model-ref="ch.globaz.pegasus.business.models.habitat.SimpleSejourMoisPartielHome" join-type="LEFT_OUTER" select-fields="false">
 			<join-group operator="AND">
 				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
 			</join-group>

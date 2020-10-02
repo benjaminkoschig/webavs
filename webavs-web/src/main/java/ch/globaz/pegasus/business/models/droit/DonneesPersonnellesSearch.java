@@ -18,6 +18,7 @@ public class DonneesPersonnellesSearch extends JadeSearchComplexModel {
     private String forCsRoleFamillePC = null;
     private String forIdDroit = null;
     private String forIdDroitMembreFamille = null;
+    private String forIdDonneesPersonnelles = null;
 
     public String getForCsRoleFamillePC() {
         return forCsRoleFamillePC;
@@ -81,5 +82,11 @@ public class DonneesPersonnellesSearch extends JadeSearchComplexModel {
     public Class<DonneesPersonnelles> whichModelClass() {
         return DonneesPersonnelles.class;
     }
+    public String getForIdDonneesPersonnelles() {
+        return forIdDonneesPersonnelles;
+    }
 
+    public void setForIdDonneesPersonnelles(String foridDonneesPersonnelles) {
+        this.forIdDonneesPersonnelles = foridDonneesPersonnelles;
+    }
 }

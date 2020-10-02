@@ -81,6 +81,7 @@
 <%-- tpl:put name="zoneTitle" --%>
 <%=PCCommonHandler.getTitre(objSession,request)%>
 <%@ include file="/theme/detail_ajax/bodyStart2.jspf" %>
+<div class="informations" style="float:right; width: 30%" >
 <%-- tpl:put name="zoneMain" --%>
 			<TR>		
 				<td colspan="4">
@@ -216,8 +217,8 @@
 											<td class="cacherBrut"><input type="text" class="deductionsSociales" data-g-amount="mandatory:false, periodicity:Y"></td>
 											<td class="cacherBrut"><ct:FWLabel key="JSP_PC_REVENU_HYPOTHETIQUE_D_DEDUCTIONS_LPP"/></td>
 											<td class="cacherBrut"><input type="text" class="deductionLPP" data-g-amount="mandatory:false, periodicity:Y"/></td>
-											<td class="cacherBrut"><ct:FWLabel key="JSP_PC_REVENU_HYPOTHETIQUE_D_FRAIS_DE_GARDE"/></td>
-											<td class="cacherBrut"><input type="text" class="fraisDeGarde" data-g-amount="mandatory:false, periodicity:Y"/></td>										
+											<td><ct:FWLabel key="JSP_PC_REVENU_HYPOTHETIQUE_D_FRAIS_DE_GARDE"/></td>
+											<td><input type="text" class="fraisDeGarde" data-g-amount="mandatory:false, periodicity:Y"/></td>
 										</tr>
 										<tr>
 											<td><ct:FWLabel key="JSP_D_DATE_ECHEANCE" /></td>		

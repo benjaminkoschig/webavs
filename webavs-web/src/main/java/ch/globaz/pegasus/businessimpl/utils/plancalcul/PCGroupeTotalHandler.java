@@ -1,18 +1,20 @@
 /**
- * 
+ *
  */
 package ch.globaz.pegasus.businessimpl.utils.plancalcul;
 
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
+
 import java.util.ArrayList;
+
 import ch.globaz.common.business.language.LanguageResolver;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 
 /**
  * @author SCE
- * 
+ *
  *         29 nov. 2010
  */
 public class PCGroupeTotalHandler extends PCGroupeAbstractHandler {
@@ -35,6 +37,18 @@ public class PCGroupeTotalHandler extends PCGroupeAbstractHandler {
         super(tupleRoot);
     }
 
+    private PCLignePlanCalculHandler generateAssuranceMaladieReformeLigne(String langue, BSession session) {
+        // Valeur CCTotal
+        String csAssMal = IPCValeursPlanCalcul.MONTANT_VERSE_CAISSE_MALADIE;
+        Float valAssMall = getValeur(csAssMal);
+        PCValeurPlanCalculHandler valeurAssMal = createValeurPlanCalcul(csAssMal, valAssMall.toString(), SOUSTRACTION,
+                NO_CSS_CLASS);
+        String libellePCAmal = LanguageResolver
+                .resolveLibelleFromLabel(langue, "JSP_PC_PLANCALCUL_D_PC_PAMAL_REFORME", session);
+
+        return (createLignePlanCalcul(libellePCAmal, "", VALEUR_VIDE, VALEUR_VIDE, valeurAssMal));
+    }
+
     private PCLignePlanCalculHandler generateAssuranceMaladieLigne(String langue, BSession session) {
         // Valeur CCTotal
         String csAssMal = PCGroupeTotalHandler.ASSURANCE_MALADIE;
@@ -49,7 +63,7 @@ public class PCGroupeTotalHandler extends PCGroupeAbstractHandler {
 
     /**
      * Création de la derniere ligne du bloc resume
-     * 
+     *
      * @return
      */
     private PCLignePlanCalculHandler generateLastLigne(String langue, BSession session) {
@@ -107,7 +121,7 @@ public class PCGroupeTotalHandler extends PCGroupeAbstractHandler {
 
     /***
      * Génère une ligne précisant la part cantonale d'une PC
-     * 
+     *
      * @param langueTiers
      * @param session
      */
@@ -136,19 +150,53 @@ public class PCGroupeTotalHandler extends PCGroupeAbstractHandler {
 
     private void generateLignesProcess(String langueTiers, BSession session) {
         groupList.add(generateMainLigne(langueTiers, session));
-
-        // TODO a voir normalement pas de code métier ici
-        // si cc annuel > 0 on traite les assurance maladies
-        if (getValeur(PCGroupeTotalHandler.TOTAL_CC) < 0) {
-            groupList.add(generateAssuranceMaladieLigne(langueTiers, session));
+        if (isReforme()) {
+            if (getValeur(PCGroupeTotalHandler.TOTAL_CC) > 0) {
+                groupList.add(generateAssuranceMaladieReformeLigne(langueTiers, session));
+                groupList.add(generateLastLigne(langueTiers, session));
+            }
+        } else {
+            // TODO a voir normalement pas de code métier ici
+            // si cc annuel > 0 on traite les assurance maladies
+            if (getValeur(PCGroupeTotalHandler.TOTAL_CC) < 0) {
+                groupList.add(generateAssuranceMaladieLigne(langueTiers, session));
+            }
+            groupList.add(generateLastLigne(langueTiers, session));
         }
-        groupList.add(generateLastLigne(langueTiers, session));
 
         // S160704_002 : ajout de la ligne pour la part cantonale
         PCLignePlanCalculHandler partCantonaleLigne = generatePartCantonaleLigne(langueTiers, session);
         if (partCantonaleLigne != null) {
             groupList.add(partCantonaleLigne);
         }
+    }
+
+    private PCLignePlanCalculHandler generateMainReformeLigne(String langue, BSession session) {
+        PCLignePlanCalculHandler ligne;
+        String cs = PCGroupeTotalHandler.TOTAL_CC;// recup code systeme
+        Float val = getValeur(cs);// recup valeur
+
+        // Valeurs dépenses
+        String csDepenses = PCGroupeTotalHandler.DEPENSES_RECONNUES;
+        Float valDepenses = getValeur(csDepenses);
+        PCValeurPlanCalculHandler valeurDepenses = createValeurPlanCalcul(csDepenses, valDepenses.toString(), ADDITION,
+                NO_CSS_CLASS);
+
+        // Valeurs revenus
+        String csRevenus = PCGroupeTotalHandler.REVENUS_DETERMINANTS;
+        Float valRevenus = getValeur(csRevenus);
+        PCValeurPlanCalculHandler valeurRevenus = createValeurPlanCalcul(csRevenus, valRevenus.toString(),
+                PCGroupeTotalHandler.SOUSTRACTION, NO_CSS_CLASS);
+
+        String csExcedentDepense = LanguageResolver.resolveLibelleFromLabel(langue,
+                "JSP_PC_PLANCALCUL_D_EXCEDENT_DEPENSES", session);
+        // Valeur
+        PCValeurPlanCalculHandler valeurCCAnnuel = createValeurPlanCalcul(csExcedentDepense,
+                getValeur(PCGroupeTotalHandler.TOTAL_CC).toString(), ADDITION, "");
+        // Ligne
+        ligne = createLignePlancalcul(csExcedentDepense, "", CSS_GRAS, valeurDepenses, valeurRevenus,
+                valeurCCAnnuel);
+        return ligne;
     }
 
     /**

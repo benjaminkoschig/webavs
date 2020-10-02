@@ -27,7 +27,9 @@
 			<order-field field-ref="membreFamille.personneEtendue.tiers.designation1"/>
 			<order-field field-ref="membreFamille.personneEtendue.tiers.designation2"/>
 		</order-by>
-		
+		<order-by name="orderByIdDroit">
+			<order-field field-ref="simpleDroitMembreFamille.idDroit"/>
+		</order-by>
 		
 			
 	</complexe-model>

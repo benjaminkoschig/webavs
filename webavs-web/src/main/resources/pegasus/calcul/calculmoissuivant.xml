@@ -69,7 +69,11 @@
 			<select-field name="taxeJournalierePrimeAPayer" field-ref="simpleTaxeJournaliereHome.primeAPayer"/>
 			<select-field name="taxeJournaliereDateEntreeHome" field-ref="simpleTaxeJournaliereHome.dateEntreeHome"/>-->
 			<select-field name="taxeJournaliereIdHome" field-ref="simpleTaxeJournaliereHome.idHome"/>
-			
+			<select-field name="taxeJournaliereIsVersementDirect" field-ref="simpleTaxeJournaliereHome.isVersementDirect"/>
+			<select-field name="sejourMoisPartielPrixJournalier" field-ref="simpleSejourMoisPartielHome.prixJournalier"/>
+			<select-field name="sejourMoisPartielFraisNourriture" field-ref="simpleSejourMoisPartielHome.fraisNourriture"/>
+			<select-field name="sejourMoisPartielNombreJour" field-ref="simpleSejourMoisPartielHome.nbJours"/>
+
 			<!--  ********************************* Fortune usuelle  ********************************* -->
 			<!-- ********** Cb CPP   ********** -->
 			<select-field name="compteBancaireCPPMontant" field-ref="simpleCompteBancaireCCP.montant"/>
@@ -177,9 +181,11 @@
 			<select-field name="revenuActiviteLucrativeDependanteDeductionsSociales" field-ref="simpleRevenuActiviteLucrativeDependante.deductionsSociales"/>
 			<select-field name="revenuActiviteLucrativeDependanteDeductionsLPP" field-ref="simpleRevenuActiviteLucrativeDependante.deductionsLpp"/>
 			<select-field name="revenuActiviteLucrativeDependanteMontantFraisEffectifs" field-ref="simpleRevenuActiviteLucrativeDependante.montantFrais"/>
+			<select-field name="revenuActiviteLucrativeDependanteMontantFraisDeGarde" field-ref="simpleRevenuActiviteLucrativeDependante.fraisDeGarde"/>
 			<!-- ******** activite lucrative independante ********-->
 			<select-field name="revenuActiviteLucrativeIndependanteMontant" field-ref="simpleRevenuActiviteLucrativeIndependante.montantRevenu"/>
 			<select-field name="revenuActiviteLucrativeIndependanteCSGenreRevenu" field-ref="simpleRevenuActiviteLucrativeIndependante.csGenreRevenu"/>
+			<select-field name="revenuActiviteLucrativeIndependanteMontantFraisDeGarde" field-ref="simpleRevenuActiviteLucrativeIndependante.fraisDeGarde"/>
 			<!-- ******** revenu hypothetique ********-->
 			<select-field name="revenuHypothetiqueMontantRevenuNet" field-ref="simpleRevenuHypothetique.montantRevenuHypothetiqueNet"/>
 			<select-field name="revenuHypothetiqueMontantRevenuBrut" field-ref="simpleRevenuHypothetique.montantRevenuHypothetiqueBrut"/>
@@ -195,6 +201,12 @@
 			<select-field name="autresRevenusMontant" field-ref="simpleAutreRevenu.montant"/>
 			<!-- ******** cotisations PSAL ********-->
 			<select-field name="cotisationPSALMontantAnnuel" field-ref="simpleCotisationPSAL.montantCotisationsAnnuelles"/>
+			<!-- ******** frais garde ********-->
+			<select-field name="fraisGardeLibelle" field-ref="simpleFraisGarde.libelle"/>
+			<select-field name="fraisGardeMontant" field-ref="simpleFraisGarde.montant"/>
+			<!-- ******** AssuranceMaladie ********-->
+			<select-field name="primeAssuranceMaladieMontant" field-ref="simplePrimeAssuranceMaladie.montant"/>
+			<select-field name="subsideAssuranceMaladieMontant" field-ref="simpleSubsideAssuranceMaladie.montant"/>
 			<!-- ******** pension alimentaire ********-->
 			<select-field name="pensionAlimentaireMontant" field-ref="simplePensionAlimentaire.montantPensionAlimentaire"/>
 			<select-field name="pensionAlimentaireCsTypePension" field-ref="simplePensionAlimentaire.csTypePension"/>
@@ -208,6 +220,7 @@
 			<select-field name="dessaisissementRevenuDeductions" field-ref="simpleDessaisissementRevenu.deductionMontantDessaisi"/>
 			<!-- ******** dessesiseement fortune ********-->
 			<select-field name="dessaisissementFortuneMontant" field-ref="simpleDessaisissementFortune.montantBrut"/>
+			<select-field name="dessaisissementFortuneType" field-ref="simpleDessaisissementFortune.csMotifDessaisissement"/>
 			<select-field name="dessaisissementFortuneDeductions" field-ref="simpleDessaisissementFortune.deductionMontantDessaisi"/>
 		</select-fields>
 		
@@ -406,6 +419,23 @@
 				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
 			</join-group>
 		</linked-model>
+		<linked-model name="simpleFraisGarde" model-ref="ch.globaz.pegasus.business.models.revenusdepenses.SimpleFraisGarde" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simplePrimeAssuranceMaladie" model-ref="ch.globaz.pegasus.business.models.assurancemaladie.SimplePrimeAssuranceMaladie" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simpleSubsideAssuranceMaladie" model-ref="ch.globaz.pegasus.business.models.assurancemaladie.SimpleSubsideAssuranceMaladie" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
 
 		<linked-model name="simpleDessaisissementRevenu" model-ref="ch.globaz.pegasus.business.models.dessaisissement.SimpleDessaisissementRevenu" join-type="LEFT_OUTER" select-fields="false">
 			<join-group operator="AND">
@@ -438,6 +468,12 @@
 		</linked-model>
 
 		<linked-model name="simpleTaxeJournaliereHome" model-ref="ch.globaz.pegasus.business.models.habitat.SimpleTaxeJournaliereHome" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simpleSejourMoisPartielHome" model-ref="ch.globaz.pegasus.business.models.habitat.SimpleSejourMoisPartielHome" join-type="LEFT_OUTER" select-fields="false">
 			<join-group operator="AND">
 				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
 			</join-group>

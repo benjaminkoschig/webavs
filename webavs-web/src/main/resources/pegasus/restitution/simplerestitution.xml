@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+    <simple-model className="ch.globaz.pegasus.business.models.restitution.SimpleRestitution">
+        <description>Restitution PC</description>
+        <table name="PC_RESTIT" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+        <fields>
+            <primary-key name="idResitution" column="RESPC_ID_RESTIT" comment=""/>
+            <field name="idDossier" column="RESPC_ID_DOS" type="NUMERIC" mandatory="true" comment=""/>
+            <field name="montantRestitutionPCAvsFederal" column="RESPC_MONTANT_AVS_FED" type="STRING" mandatory="false" comment=""/>
+            <field name="montantRestitutionPCAIFederal" column="RESPC_MONTANT_AI_FED" type="STRING" mandatory="false" comment=""/>
+            <field name="montantRestitutionPCAvsSubside" column="RESPC_MONTANT_AVS_SUB" type="STRING" mandatory="false" comment=""/>
+            <field name="montantRestitutionPCAISubside" column="RESPC_MONTANT_AI_SUB" type="STRING" mandatory="false" comment=""/>
+            <field name="montantRestitutionPCAvsCantonal" column="RESPC_MONTANT_AVS_CAN" type="STRING" mandatory="false" comment=""/>
+            <field name="montantRestitutionPCAICantonal" column="RESPC_MONTANT_AI_CAN" type="STRING" mandatory="false" comment=""/>
+            <field name="montantRestitutionPCRfmAvs" column="RESPC_MONTANT_RFM_AVS" type="STRING" mandatory="false" comment=""/>
+            <field name="montantRestitutionPCRfmAI" column="RESPC_MONTANT_RFM_AI" type="STRING" mandatory="false" comment=""/>
+        </fields>
+        <search-definition>
+            <search-group operator="AND">
+                <search-field name="forIdDossier" field-ref="idDossier" operation="EQUALS"/>
+            </search-group>
+        </search-definition>
+    </simple-model>
+</model-mapping>

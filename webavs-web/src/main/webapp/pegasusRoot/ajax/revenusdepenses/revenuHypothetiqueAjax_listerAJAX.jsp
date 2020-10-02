@@ -58,5 +58,5 @@ String motifAutreLbl = objSession.getCodeLibelle(IPCRevenuHypothetique.CS_MOTIF_
 			idGroup=donnee.getSimpleDonneeFinanciereHeader().getIdEntityGroup();
 		}%>
 	</liste>
-	<%@ include file="/pegasusRoot/ajax/commonListDonneeFinanciere.jspf" %>
+	<%@ include file="/pegasusRoot/ajax/commonListDonneeFinanciereWithWarning.jspf" %>
 </message>

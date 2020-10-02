@@ -28,6 +28,10 @@ public class SimplePCAccordee extends JadeSimpleModel {
     private Boolean isCalculRetro = null;
     private Boolean isSupprime = null;
     private Boolean isDateFinForce = false;
+    private Boolean isProvisoire = false;
+
+    //NOT IN DB
+    private String montantMensuel = "";
 
     public String getCodeRente() {
         return codeRente;
@@ -223,4 +227,18 @@ public class SimplePCAccordee extends JadeSimpleModel {
         this.isDateFinForce = isDateFinForce;
     }
 
+    public Boolean getIsProvisoire() {
+        return isProvisoire;
+    }
+
+    public void setIsProvisoire(Boolean isProvisoire) {
+        this.isProvisoire = isProvisoire;
+    }
+    public String getMontantMensuel() {
+        return montantMensuel;
+    }
+
+    public void setMontantMensuel(String montantMensuel) {
+        this.montantMensuel = montantMensuel;
+    }
 }

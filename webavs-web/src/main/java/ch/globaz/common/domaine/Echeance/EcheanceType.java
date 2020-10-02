@@ -18,7 +18,8 @@ public enum EcheanceType implements CodeSysteme<EcheanceType> {
     /**
      * BIEN_IMMOBILIER_HABITATION_PRINCIPALE
      */
-    BIEN_IMMOBILIER_HABITATION_PRINCIPALE("52205014");
+    BIEN_IMMOBILIER_HABITATION_PRINCIPALE("52205014"),
+    FRAIS_GARDE("52205015");
 
     private String id;
 

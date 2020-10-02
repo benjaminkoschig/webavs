@@ -22,6 +22,8 @@
 			<field name="pensionNonReconnue" column="CRLPNR" type="STRING"  mandatory="false"  comment="PENSION_NON_RECONNUE"/>
 			<field name="taxeJournalierePensionNonReconnue" column="CRMTPN" type="NUMERIC"  mandatory="false"  comment="TAXE_JOURNALIERE_PENSION_NON_RECONNUE"/>
 			<field name="csDeplafonnementAppartementPartage" column="CRDAPA" type="NUMERIC" mandatory="false" comment="CS_DEPLAFONNEMENT_APPARTEMENT_PARTAGE" />
+			<field name="idLocalite" column="CRLOCA" type="NUMERIC" mandatory="false" comment="ID_LOCALITE" />
+			<field name="textLibre" column="CRTXLB" type="STRING" mandatory="false" comment="TEXT_LIBRE" />
 		</fields>
 		<search-definition>
 			<search-group operator="AND">
