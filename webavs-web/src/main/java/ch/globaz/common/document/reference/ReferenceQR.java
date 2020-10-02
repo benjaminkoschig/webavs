@@ -238,8 +238,8 @@ public class ReferenceQR extends AbstractReference {
             }
             builder.append(monnaie).append(CHAR_FIN_LIGNE);
             builder.append(debfAdressTyp).append(CHAR_FIN_LIGNE);
-            builder.append(debfNom.isEmpty()?debfRueOuLigneAdresse1.replace(CHAR_FIN_LIGNE, " ").replace(CHAR_FIN_LIGNE_DEB, " ") : debfNom).append(CHAR_FIN_LIGNE);
-            builder.append(debfNom.isEmpty()? "" : debfNom).append(CHAR_FIN_LIGNE);
+            builder.append(debfNom.isEmpty()? debfRueOuLigneAdresse1.replace(CHAR_FIN_LIGNE, " ").replace(CHAR_FIN_LIGNE_DEB, " ") : debfNom).append(CHAR_FIN_LIGNE);
+            builder.append(debfNom.isEmpty()? "" : debfRueOuLigneAdresse1).append(CHAR_FIN_LIGNE);
             builder.append(debfNumMaisonOuLigneAdresse2.replace(CHAR_FIN_LIGNE, " ").replace(CHAR_FIN_LIGNE_DEB, " ")).append(CHAR_FIN_LIGNE);
             builder.append((Objects.equals(debfAdressTyp, COMBINE) ? StringUtils.EMPTY : debfCodePostal)).append(CHAR_FIN_LIGNE);
             builder.append((Objects.equals(debfAdressTyp, COMBINE) ? StringUtils.EMPTY : debfLieu)).append(CHAR_FIN_LIGNE);
