@@ -1,7 +1,5 @@
 package ch.globaz.pegasus.business.domaine.donneeFinanciere;
 
-import java.util.ArrayList;
-import java.util.List;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.allocationFamilliale.AllocationFamilliale;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.api.autreApi.AutreApi;
@@ -9,6 +7,7 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.api.avsAi.ApiAvsAi;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.assuranceRenteViagere.AssuranceRenteViagere;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.assuranceRenteViagere.AssurancesRenteViagere;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.assuranceVie.AssuranceVie;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.assurancemaladie.PrimeAssuranceMaladie;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.assurancemaladie.SubsideAssuranceMaladie;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.autreDetteProuvee.AutreDetteProuvee;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.autreFortuneMobiliere.AutreFortuneMobiliere;
@@ -49,6 +48,7 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.renteAvsAi.RenteAvsAi
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenuActiviteLucrativeIndependante.RevenuActiviteLucrativeIndependante;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenueActiviteLucrativeDependante.RevenuActiviteLucrativeDependante;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenueHypothtique.RevenuHypothtique;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.sejourmoispartiel.SejourMoisPartiel;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.taxeJournalierHome.TaxeJournaliereHome;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.taxeJournalierHome.TaxesJournalieresHome;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.titre.Titre;
@@ -56,7 +56,9 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.vehicule.Vehicule;
 import ch.globaz.pegasus.business.domaine.membreFamille.MembreFamille;
 import ch.globaz.pegasus.business.domaine.membreFamille.RoleMembreFamille;
 import ch.globaz.pegasus.businessimpl.services.revisionquadriennale.Regimes;
-import ch.globaz.pegasus.business.domaine.donneeFinanciere.assurancemaladie.PrimeAssuranceMaladie;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DonneesFinancieresContainer {
     private DonneesFinancieresListBase<AllocationFamilliale> allocationsFamilliale = new DonneesFinancieresListBase<AllocationFamilliale>();
@@ -96,6 +98,7 @@ public class DonneesFinancieresContainer {
     private DonneesFinancieresListBase<Vehicule> vehicules = new DonneesFinancieresListBase<Vehicule>();
     private DonneesFinancieresListBase<Regime> regimes = new DonneesFinancieresListBase<Regime>();
     private DonneesFinancieresListBase<FraisDeGarde> fraisDeGarde = new DonneesFinancieresListBase<>();
+    private DonneesFinancieresListBase<SejourMoisPartiel> sejourMoisPartiel = new DonneesFinancieresListBase<>();
 
     public boolean add(AllocationFamilliale e) {
         return allocationsFamilliale.add(e);
@@ -239,6 +242,10 @@ public class DonneesFinancieresContainer {
 
     public boolean add(FraisDeGarde e) {
         return fraisDeGarde.add(e);
+    }
+
+    public boolean add(SejourMoisPartiel e) {
+        return sejourMoisPartiel.add(e);
     }
 
     public DonneesFinancieresListBase<AllocationFamilliale> getAllocationsFamilliale() {
@@ -385,6 +392,10 @@ public class DonneesFinancieresContainer {
         return fraisDeGarde;
     }
 
+    public DonneesFinancieresListBase<SejourMoisPartiel> getSejourMoisPartiel() {
+        return sejourMoisPartiel;
+    }
+
     public BiensImmobiliersListBase getAllBiensImmobilier() {
         List<BienImmobilier> list = new ArrayList<BienImmobilier>();
         list.addAll(biensImmobiliersNonHabitable.getList());
@@ -455,6 +466,7 @@ public class DonneesFinancieresContainer {
         container.titres = titres.filtreForMembreFamille(membreFamille);
         container.vehicules = vehicules.filtreForMembreFamille(membreFamille);
         container.regimes = regimes.filtreForMembreFamille(membreFamille);
+        container.sejourMoisPartiel = sejourMoisPartiel.filtreForMembreFamille(membreFamille);
 
         return container;
     }
@@ -505,6 +517,7 @@ public class DonneesFinancieresContainer {
         container.titres = titres.filtreForRole(roleMembreFamille);
         container.vehicules = vehicules.filtreForRole(roleMembreFamille);
         container.regimes = regimes.filtreForRole(roleMembreFamille);
+        container.sejourMoisPartiel = sejourMoisPartiel.filtreForRole(roleMembreFamille);
 
         return container;
     }
@@ -555,6 +568,7 @@ public class DonneesFinancieresContainer {
         container.titres = titres.filtreForPeriode(debut, fin);
         container.vehicules = vehicules.filtreForPeriode(debut, fin);
         container.regimes = regimes.filtreForPeriode(debut, fin);
+        container.sejourMoisPartiel = sejourMoisPartiel.filtreForPeriode(debut, fin);
 
         return container;
     }
@@ -582,7 +596,8 @@ public class DonneesFinancieresContainer {
                 + ", revenuesActiviteLucrativeDependante=" + revenusActiviteLucrativeDependante.size()
                 + ", revenuesHypothtique=" + revenusHypothtique.size() + ", titres=" + titres.size() + ", vehicules="
                 + vehicules.size()  + ", fraisDeGarde="
-                + fraisDeGarde.size() + "]";
+                + fraisDeGarde.size() + ", sejourMoisPartiel="
+                + sejourMoisPartiel.size()+ "]";
     }
 
     public boolean addAll(Regimes regimesRfm) {

@@ -1,11 +1,5 @@
 package ch.globaz.pegasus.businessimpl.services.donneeFinanciere;
 
-import ch.globaz.pegasus.business.domaine.donneeFinanciere.assurancemaladie.PrimeAssuranceMaladie;
-import ch.globaz.pegasus.business.domaine.donneeFinanciere.assurancemaladie.SubsideAssuranceMaladie;
-import ch.globaz.pegasus.business.domaine.donneeFinanciere.fraisdegarde.FraisDeGarde;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import java.util.List;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.domaine.Part;
@@ -25,6 +19,8 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.api.avsAi.ApiAvsAi;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.api.avsAi.ApiType;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.assuranceRenteViagere.AssuranceRenteViagere;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.assuranceVie.AssuranceVie;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.assurancemaladie.PrimeAssuranceMaladie;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.assurancemaladie.SubsideAssuranceMaladie;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.autreDetteProuvee.AutreDetteProuvee;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.autreFortuneMobiliere.AutreFortuneMobiliere;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.autreFortuneMobiliere.AutreFortuneMobiliereTypeDeFortune;
@@ -44,6 +40,7 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.contratEntretienViage
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.cotisationPsal.CotisationPsal;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.dessaisissementFortune.DessaisissementFortune;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.dessaisissementRevenu.DessaisissementRevenu;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.fraisdegarde.FraisDeGarde;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.iJAi.IjAi;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.indeminteJournaliereApg.IndemniteJournaliereApg;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.indeminteJournaliereApg.IndemniteJournaliereApgGenre;
@@ -63,12 +60,17 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenuActiviteLucrati
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenueActiviteLucrativeDependante.RevenuActiviteLucrativeDependante;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenueHypothtique.RevenuHypothtique;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenueHypothtique.RevenuHypothtiqueMotif;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.sejourmoispartiel.SejourMoisPartiel;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.taxeJournalierHome.TaxeJournaliereHome;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.titre.Titre;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.vehicule.Vehicule;
 import ch.globaz.pegasus.business.domaine.parametre.monnaieEtrangere.MonnaieEtrangereType;
 import ch.globaz.pegasus.business.models.revisionquadriennale.DonneeFinanciereComplexModel;
 import ch.globaz.pegasus.businessimpl.services.adresse.TechnicalExceptionWithTiers;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+
+import java.util.List;
 
 class ConvertAllDonneeFinanciere {
 
@@ -117,7 +119,7 @@ class ConvertAllDonneeFinanciere {
     }
 
     private void convert(DonneesFinancieresContainer list, DonneeFinanciereConverter donneeFinanciereConverter,
-            DonneeFinanciereComplexModel dr) {
+                         DonneeFinanciereComplexModel dr) {
         DonneeFinanciere df = donneeFinanciereConverter.convertToDomain(dr);
         DonneeFinanciereType dft = DonneeFinanciereType.fromValue(dr.getCsTypeDonneeFinanciere());
         if (dft.isRenteAvsAi()) {
@@ -459,6 +461,15 @@ class ConvertAllDonneeFinanciere {
 
             FraisDeGarde fraisDeGarde = new FraisDeGarde(montant, df);
             list.add(fraisDeGarde);
+
+        } else if (dft.isSejourMoisPartiel()) {
+            Montant prixJournalier = toMontant(dr.getSejourMoisPartielPrixJournalier());
+            Montant fraisNourriture = toMontant(dr.getSejourMoisPartielFraisNourriture());
+            Montant nombreJours = toMontant(dr.getSejourMoisPartielNombreJour());
+
+            SejourMoisPartiel sejourMoisPartiel = new SejourMoisPartiel(prixJournalier, fraisNourriture, nombreJours, df);
+            list.add(sejourMoisPartiel);
+
         } else {
             throw new IllegalArgumentException("Imposible de détérminer le type de donnée financière: " + df);
         }
