@@ -7,13 +7,8 @@ import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.db.droits.APSituationProfessionnelle;
-import globaz.apg.db.prestation.APCotisation;
-import globaz.apg.db.prestation.APCotisationManager;
-import globaz.apg.db.prestation.APPrestation;
-import globaz.apg.db.prestation.APRepartitionJointPrestation;
-import globaz.apg.db.prestation.APRepartitionJointPrestationJointLotManager;
-import globaz.apg.db.prestation.APRepartitionPaiements;
-import globaz.apg.db.prestation.APRepartitionPaiementsManager;
+import globaz.apg.db.prestation.*;
+import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.itext.APAttestations;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWCurrency;
@@ -23,15 +18,12 @@ import globaz.globall.db.BStatement;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.prestation.api.IPRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * @author hpe
@@ -124,6 +116,8 @@ public class APGenererAttestationsProcess extends BProcess {
 
     private String totalMontantAPG = "";
 
+    private String typePrestation = "";
+
     /**
      * Crée une nouvelle instance de la classe APGenererAttestationsProcess.
      */
@@ -173,7 +167,7 @@ public class APGenererAttestationsProcess extends BProcess {
         String dateDebut = annee + "0101";
         String dateFin = annee + "1231";
 
-        APRepartitionJointPrestationJointLotManager mgr = new APRepartitionJointPrestationJointLotManager();
+        APRepartitionJointPrestationJointLotDemandeManager mgr = new APRepartitionJointPrestationJointLotDemandeManager();
 
         // Prendre les répartitions qui ont été comptabilisées durant l'année
         // passée en paramètre
@@ -182,7 +176,10 @@ public class APGenererAttestationsProcess extends BProcess {
         mgr.setForDateDebutComptaLot(dateDebut);
         mgr.setForDateFinComptaLot(dateFin);
         mgr.setForEtatPrestation(IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF);
+        mgr.setForTypeDemande(typePrestation);
         mgr.setOrderBy(APPrestation.FIELDNAME_DATEDEBUT + "," + APPrestation.FIELDNAME_DATEFIN);
+
+        List<String> typeDePrestations = new ArrayList<>();
 
         if (getIsGenerationUnique().booleanValue()) {
             tiers = PRTiersHelper.getTiers(getSession(), getNSS());
@@ -427,6 +424,7 @@ public class APGenererAttestationsProcess extends BProcess {
         attestations.setParent(this);
         attestations.setTailleLot(1);
         attestations.setIsSendToGED(getIsSendToGed());
+        attestations.setType(typePrestation);
         attestations.executeProcess();
 
         // mergedDocInfo = createDocumentInfo();
@@ -519,4 +517,11 @@ public class APGenererAttestationsProcess extends BProcess {
         NSS = string;
     }
 
+    public String getTypePrestation() {
+        return typePrestation;
+    }
+
+    public void setTypePrestation(String typePrestation) {
+        this.typePrestation = typePrestation;
+    }
 }

@@ -67,6 +67,7 @@ public class APGenererAttestationsHelper extends PRAbstractHelper {
         process.setAnnee(gaViewBean.getAnnee());
         process.setEMailAddress(gaViewBean.getEmail());
         process.setIsSendToGed(gaViewBean.getIsSendToGed());
+        process.setTypePrestation(gaViewBean.getTypePrestation());
         process.start();
     }
 }

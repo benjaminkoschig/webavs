@@ -30,6 +30,7 @@ public class APGenererAttestationsViewBean extends PRAbstractViewBeanSupport imp
     private Boolean isGenerationUnique = Boolean.TRUE;
     private Boolean isSendToGed = Boolean.FALSE;
     private String NSS = "";
+    private String typePrestation = "";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -411,4 +412,12 @@ public class APGenererAttestationsViewBean extends PRAbstractViewBeanSupport imp
         return false;
     }
 
+
+    public String getTypePrestation() {
+        return typePrestation;
+    }
+
+    public void setTypePrestation(String typePrestation) {
+        this.typePrestation = typePrestation;
+    }
 }

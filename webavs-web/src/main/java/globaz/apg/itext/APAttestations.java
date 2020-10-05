@@ -36,6 +36,7 @@ import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.osiris.external.IntRole;
+import globaz.prestation.api.IPRDemande;
 import globaz.prestation.interfaces.babel.PRBabelHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
@@ -125,6 +126,8 @@ public class APAttestations extends FWIDocumentManager {
     public FWCurrency totalMontantImpot = new FWCurrency();
 
     public FWCurrency totalVentilation = new FWCurrency();
+
+    private String type;
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -646,8 +649,19 @@ public class APAttestations extends FWIDocumentManager {
             // chargement du catalogue de texte
             if (documentHelper == null) {
                 documentHelper = PRBabelHelper.getDocumentHelper(getISession());
-                documentHelper.setCsDomaine(IAPCatalogueTexte.CS_APG);
-                documentHelper.setCsTypeDocument(IAPCatalogueTexte.CS_ATTESTATION_FISCALE_APG);
+                if(IPRDemande.CS_TYPE_APG.equals(type)) {
+                    documentHelper.setCsDomaine(IAPCatalogueTexte.CS_APG);
+                    documentHelper.setCsTypeDocument(IAPCatalogueTexte.CS_ATTESTATION_FISCALE_APG);
+                    documentHelper.setNom(IAPCatalogueTexte.CS_ATTESTATION_FISCALE_PAN);
+                    documentHelper.setNom("normal");
+                } else if(IPRDemande.CS_TYPE_MATERNITE.equals(type)) {
+                    documentHelper.setCsDomaine(IAPCatalogueTexte.CS_MATERNITE);
+                    documentHelper.setCsTypeDocument(IAPCatalogueTexte.CS_ATTESTATION_FISCALE_MAT);
+                } else if(IPRDemande.CS_TYPE_PANDEMIE.equals(type)) {
+                    documentHelper.setCsDomaine(IAPCatalogueTexte.CS_APG);
+                    documentHelper.setCsTypeDocument(IAPCatalogueTexte.CS_ATTESTATION_FISCALE_APG);
+                    documentHelper.setNom("attestation_pandemie");
+                }
                 documentHelper.setDefault(Boolean.TRUE);
                 documentHelper.setActif(Boolean.TRUE);
             }
@@ -964,6 +978,14 @@ public class APAttestations extends FWIDocumentManager {
 
     public void setTotalMontantCoti(FWCurrency totalMontantCoti) {
         this.totalMontantCoti = totalMontantCoti;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     private List traitementRegroupementPeriode(List listObjects) {

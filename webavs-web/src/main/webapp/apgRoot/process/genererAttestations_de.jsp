@@ -108,6 +108,10 @@
 										    <INPUT type="text" name="email" value="<%=viewBean.getEmail()%>">
 										</TD>
 									</TR>
+									<TR>
+										<TD><INPUT type="hidden" name="typePrestation" value="<%=globaz.prestation.tools.PRSessionDataContainerHelper.getData(session, globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)%>"></TD>
+										<TD>&nbsp;</TD>
+									</TR>
 								</table>
 							</td>
 						</tr>

@@ -601,6 +601,12 @@
 						</action>
 					</node>
 					<node>
+						<label refId="MENU_OPTION_ATTESTATIONS_FISCALES" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.genererAttestations.afficher" />
+						</action>
+					</node>
+					<node>
 						<label refId="MENU_OPTION_LISTE_PRESTATION_VERSEE" />
 						<action command="/apg" responseTarget="fr_main">
 							<parameter name="userAction" value="apg.process.listePrestationVersee.afficher" />
@@ -688,6 +694,18 @@
 				<action command="/apg" responseTarget="fr_main">
 					<parameter name="userAction" value="apg.lots.lot.chercher" />
 				</action>
+			</node>
+			<!-- Menu Listes -->
+			<node>
+				<label refId="MENU_LISTES" />
+				<nodes>
+					<node>
+						<label refId="MENU_OPTION_ATTESTATIONS_FISCALES" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.genererAttestations.afficher" />
+						</action>
+					</node>
+				</nodes>
 			</node>
 			<!-- Menu Traitements -->
 			<node>
