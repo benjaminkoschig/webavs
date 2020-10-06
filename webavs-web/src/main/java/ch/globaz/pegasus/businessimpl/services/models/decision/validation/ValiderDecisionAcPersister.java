@@ -1,5 +1,7 @@
 package ch.globaz.pegasus.businessimpl.services.models.decision.validation;
 
+import ch.globaz.pegasus.business.exceptions.models.crancier.CreancierException;
+import ch.globaz.pegasus.business.models.creancier.CreanceAccordee;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
@@ -143,7 +145,11 @@ public class ValiderDecisionAcPersister {
         updatePcaCopie();
         updatePcaSupprimer();
         updateDecisionHeader();
+        updateCreanciers();
+
     }
+
+
 
     private void setIdComptesAnnexe() throws DecisionException {
 
@@ -182,6 +188,15 @@ public class ValiderDecisionAcPersister {
             }
         } catch (DecisionException e) {
             throw new DecisionException("Unable to udpate the simpleDecisionHeader", e);
+        }
+    }
+    private void updateCreanciers() throws JadeApplicationServiceNotAvailableException, CreancierException, JadePersistenceException {
+        try {
+            for (CreanceAccordee ca : data.getCreanciers()) {
+                PegasusImplServiceLocator.getSimpleCreancierService().update(ca.getSimpleCreancier());
+            }
+        } catch (CreancierException e) {
+            throw new CreancierException("Unable to udpate the simpleDecisionHeader", e);
         }
     }
 
