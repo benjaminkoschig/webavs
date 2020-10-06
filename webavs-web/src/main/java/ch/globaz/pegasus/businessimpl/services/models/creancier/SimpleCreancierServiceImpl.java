@@ -40,6 +40,13 @@ public class SimpleCreancierServiceImpl extends PegasusAbstractServiceImpl imple
         SimpleCreancierChecker.checkForDelete(simpleCreancier);
         return (SimpleCreancier) JadePersistenceManager.delete(simpleCreancier);
     }
+    @Override
+    public SimpleCreancier deleteWithoutControl(SimpleCreancier simpleCreancier) throws CreancierException, JadePersistenceException {
+        if (simpleCreancier == null) {
+            throw new CreancierException("Unable to delete simpleCreancier, the model passed is null!");
+        }
+        return (SimpleCreancier) JadePersistenceManager.delete(simpleCreancier);
+    }
 
     @Override
     public SimpleCreancier read(String idSimpleCreancier) throws CreancierException, JadePersistenceException {

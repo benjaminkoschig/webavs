@@ -3,6 +3,10 @@
  */
 package ch.globaz.pegasus.businessimpl.services.models.decision;
 
+import ch.globaz.pegasus.business.exceptions.models.crancier.CreancierException;
+import ch.globaz.pegasus.business.models.creancier.CreanceAccordee;
+import ch.globaz.pegasus.business.models.creancier.CreanceAccordeeSearch;
+import ch.globaz.pegasus.business.models.creancier.SimpleCreancier;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.corvus.api.lots.IRELot;
 import globaz.jade.client.util.JadeDateUtil;
@@ -130,6 +134,22 @@ public class DecisionServiceImpl extends PegasusAbstractServiceImpl implements D
             listeIdPrestationsAccordees.add(pca.getIdPrestationAccordee());
             listeIdPrestationsAccordees.add(pca.getIdPrestationAccordeeConjoint());
             pca = PegasusImplServiceLocator.getSimplePCAccordeeService().update(pca);
+        }
+
+        for (JadeAbstractModel absModel : simplePCAccordeeSearch.getSearchResults()) {
+            SimplePCAccordee pca = (SimplePCAccordee) absModel;
+            String idPCAccorde = pca.getIdPCAccordee();
+            CreanceAccordeeSearch creanceAccordeeSearch = new CreanceAccordeeSearch();
+            creanceAccordeeSearch.setForIdPCAccordee(idPCAccorde);
+            creanceAccordeeSearch = PegasusServiceLocator.getCreanceAccordeeService().search(creanceAccordeeSearch);
+            for (JadeAbstractModel model : creanceAccordeeSearch.getSearchResults()) {
+                CreanceAccordee creanceAccordee = (CreanceAccordee) model;
+                if(!creanceAccordee.getSimpleCreancier().getIsCalcule()){
+                    SimpleCreancier simpleCreancier = creanceAccordee.getSimpleCreancier();
+                    simpleCreancier.setIsCalcule(true);
+                    PegasusImplServiceLocator.getSimpleCreancierService().update(simpleCreancier);
+                }
+            }
         }
 
         // modifie prestations accordées -> état calculé

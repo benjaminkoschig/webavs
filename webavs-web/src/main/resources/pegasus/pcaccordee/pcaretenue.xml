@@ -48,7 +48,9 @@
 		
 		<search-definition>
 			<search-group operator="AND">
-				<search-field name="forIdPca" operation="EQUALS" field-ref="simplePCAccordee.idPCAccordee"/>	
+				<search-field name="forIdPca" operation="EQUALS" field-ref="simplePCAccordee.idPCAccordee"/>
+				<search-field name="forNoVersion" operation="EQUALS" field-ref="simpleVersionDroit.noVersion"/>
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="simpleVersionDroit.idDroit"/>
 			</search-group>
 		</search-definition>
 		

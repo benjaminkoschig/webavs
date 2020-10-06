@@ -15,7 +15,8 @@
 			<field name="csTypeCreance" column="DDCSTC" type="NUMERIC" mandatory="false" comment="CS_TYPE_CREANCE"/>
 			<field name="montant" column="DDMMON" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="MONTANT"/>
 			<field name="referencePaiement" column="DDLREP" type="STRING" dataType="VARCHAR(40)" mandatory="false" comment="REFERANCE_PAIEMENT"/>	
-			<field name="isBloque" column="DDBBLO" type="BOOLEAN" mandatory="false" comment="ID_TIER"/>				
+			<field name="isBloque" column="DDBBLO" type="BOOLEAN" mandatory="false" comment="ID_TIER"/>
+			<field name="isCalcule" column="DDISCALCULE" type="BOOLEAN" mandatory="false" comment="VERSEMENT_HOME"/>
 		</fields>
 	</simple-model>
 </model-mapping>

@@ -52,6 +52,8 @@ import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.Compt
 import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
 import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
 import globaz.framework.util.FWCurrency;
+import globaz.globall.db.BProcessLauncher;
+import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
@@ -60,15 +62,16 @@ import globaz.globall.util.JAException;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeListUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-
 public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements PCAccordeeService {
 
+    private String idCreancier = "";
     /*
      * (non-Javadoc)
      *
@@ -134,7 +137,9 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
         decisionSuppressionSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
         PegasusImplServiceLocator.getDecisionSuppressionService().delete(decisionSuppressionSearch);
 
+        deleteCreancierByIdPcAccordee(pcAccordee.getSimplePCAccordee().getIdPCAccordee());
         deleteCreanceByIdPcAccordee(pcAccordee.getSimplePCAccordee().getIdPCAccordee());
+
 
         // suppression des dettes comptat compensés
         SimpleDetteComptatCompenseSearch detteComptatCompenseSearch = new SimpleDetteComptatCompenseSearch();
@@ -169,6 +174,7 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
         return null;
     }
 
+
     @Override
     public void deleteByIdVersionDroit(Droit droit)
             throws JadePersistenceException, PCAccordeeException, JadeApplicationException {
@@ -186,7 +192,7 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
             if (pcAccordeeSearch.getSize() > 0) {
                 for (JadeAbstractModel d : pcAccordeeSearch.getSearchResults()) {
                     PCAccordee pcAccordee = (PCAccordee) d;
-                    clearOldCreancier(pcAccordee.getId());
+//                    clearOldCreancier(pcAccordee.getId());
                     delete(pcAccordee);
                     idPca.add(pcAccordee.getId());
                 }
@@ -199,19 +205,6 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
         }
     }
 
-    private void clearOldCreancier(String id) throws JadeApplicationServiceNotAvailableException, CreancierException, JadePersistenceException {
-        CreanceAccordeeSearch creancierAccordeeSearch = new CreanceAccordeeSearch();
-        creancierAccordeeSearch.setForIdPCAccordee(id);
-        creancierAccordeeSearch = PegasusServiceLocator.getCreanceAccordeeService().search(creancierAccordeeSearch);
-        for (JadeAbstractModel model : creancierAccordeeSearch.getSearchResults()) {
-            CreanceAccordee creanceAccordee = (CreanceAccordee) model;
-            Creancier creancierToDelte = PegasusServiceLocator.getCreancierService().read(creanceAccordee.getSimpleCreancier().getIdCreancier());
-            PegasusServiceLocator.getCreanceAccordeeService().delete(creanceAccordee);
-            PegasusServiceLocator.getCreancierService().delete(creancierToDelte);
-
-        }
-
-    }
 
     @Override
     public void deleteByIdVersionDroit(String idDroit) throws JadePersistenceException, JadeApplicationException {
@@ -236,6 +229,21 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
             throw new PCAccordeeException("Unable to delete the creance accordee", e1);
         }
     }
+
+    private void deleteCreancierByIdPcAccordee(String idPCAccordee) throws JadeApplicationServiceNotAvailableException, CreancierException, JadePersistenceException {
+        CreanceAccordeeSearch creanceAccordeeSearch = new CreanceAccordeeSearch();
+        creanceAccordeeSearch.setForIdPCAccordee(idPCAccordee);
+        creanceAccordeeSearch = PegasusImplServiceLocator.getCreanceAccordeeService().search(creanceAccordeeSearch);
+        for (JadeAbstractModel model : creanceAccordeeSearch.getSearchResults()) {
+            CreanceAccordee simpleCreance = (CreanceAccordee) model;
+            if(simpleCreance.getSimpleCreancier().getIsCalcule()){
+                PegasusImplServiceLocator.getSimpleCreancierService().deleteWithoutControl(
+                        simpleCreance.getSimpleCreancier());
+            }
+
+        }
+    }
+
 
     private void deleteDecisionsApresCalculByIdPdAccordee(String idPcAccordee, String idVersionDroit)
             throws JadePersistenceException, JadeApplicationServiceNotAvailableException, PCAccordeeException,

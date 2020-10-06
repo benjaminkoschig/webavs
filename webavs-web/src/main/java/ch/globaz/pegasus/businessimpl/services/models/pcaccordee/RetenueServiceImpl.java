@@ -153,8 +153,16 @@ public class RetenueServiceImpl implements RetenueService {
             retenue.getSimpleRetenue()
                     .setIdRenteAccordee(pca.getSimplePrestationsAccordees().getIdPrestationAccordee());
         } else if (isConjoint(retenue)) {
-            retenue.getSimpleRetenue().setIdRenteAccordee(
-                    pca.getSimplePrestationsAccordeesConjoint().getIdPrestationAccordee());
+            /**
+             * Contrôle si c'est un PC où il y'a une séparation du couple, alors l'info est dans le requérant pour le conjoint
+             */
+            if(!JadeStringUtil.isBlankOrZero(pca.getSimplePrestationsAccordeesConjoint().getIdPrestationAccordee())){
+                retenue.getSimpleRetenue().setIdRenteAccordee(
+                        pca.getSimplePrestationsAccordeesConjoint().getIdPrestationAccordee());
+            }else{
+                retenue.getSimpleRetenue()
+                        .setIdRenteAccordee(pca.getSimplePrestationsAccordees().getIdPrestationAccordee());
+            }
         } else {
             throw new SimpleRetenuePayementException("Unable to add the retenu this csRoleMembreFamille: "
                     + retenue.getCsRoleFamillePC() + "is not threat by the systeme");

@@ -1,5 +1,10 @@
 package ch.globaz.pegasus.businessimpl.services.models.decision.validation;
 
+import ch.globaz.pegasus.business.exceptions.models.crancier.CreancierException;
+import ch.globaz.pegasus.business.models.creancier.CreanceAccordee;
+import ch.globaz.pegasus.business.models.creancier.CreanceAccordeeSearch;
+import ch.globaz.pegasus.business.models.creancier.SimpleCreancier;
+import ch.globaz.pegasus.business.models.creancier.SimpleCreancierSearch;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.corvus.api.prestations.IREPrestations;
 import globaz.globall.util.JACalendar;
@@ -7,13 +12,16 @@ import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.persistence.util.JadePersistenceUtil;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees;
 import ch.globaz.pegasus.business.constantes.IPCDecision;
@@ -128,6 +136,16 @@ public class ValiderDecisionAcTreat {
             String csEtat = resolvedEtatPca(csDecision);
             pca.getSimplePCAccordee().setCsEtatPC(csEtat);
         }
+    }
+
+    private void changeEtatCreancier() throws JadeApplicationServiceNotAvailableException, CreancierException, JadePersistenceException {
+            for (JadeAbstractModel model : data.getCreanciers()) {
+                CreanceAccordee creanceAccordee = (CreanceAccordee) model;
+                if(creanceAccordee.getSimpleCreancier().getIsCalcule()){
+                    SimpleCreancier simpleCreancier = creanceAccordee.getSimpleCreancier();
+                    simpleCreancier.setIsCalcule(false);
+                }
+            }
     }
 
     private void changeEtatPcaReplacedsToHistorisee() throws JadeApplicationServiceNotAvailableException,
@@ -346,7 +364,7 @@ public class ValiderDecisionAcTreat {
         return !(IPCDemandes.CS_SUPPRIME.equals(data.getSimpleDemande().getCsEtatDemande())
                 || IPCDemandes.CS_REFUSE.equals(data.getSimpleDemande().getCsEtatDemande())
                 || IPCDemandes.CS_TRANSFERE.equals(data.getSimpleDemande().getCsEtatDemande()) || IPCDemandes.CS_ANNULE
-                    .equals(data.getSimpleDemande().getCsEtatDemande()));
+                .equals(data.getSimpleDemande().getCsEtatDemande()));
     }
 
     private String resolvedDateDernierPaiement() {
@@ -416,6 +434,10 @@ public class ValiderDecisionAcTreat {
 
         changeRetourAnnonce();
 
+        changeEtatCreancier();
+
         return data;
     }
+
+
 }

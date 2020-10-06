@@ -50,6 +50,7 @@ public interface SimpleCreancierService extends JadeApplicationService {
      *             Levée en cas de problème dans la couche de persistence
      */
     public SimpleCreancier delete(SimpleCreancier simpleCreancier) throws CreancierException, JadePersistenceException;
+    public SimpleCreancier deleteWithoutControl(SimpleCreancier simpleCreancier) throws CreancierException, JadePersistenceException;
 
     /**
      * Permet de charger en mémoire une simpleCreancier PC

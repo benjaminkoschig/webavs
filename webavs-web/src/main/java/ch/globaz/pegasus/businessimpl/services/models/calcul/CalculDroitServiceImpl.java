@@ -538,6 +538,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 simpleCreancier.setIdTiersAdressePaiement(calculDonneesHome.getIdTiersHome());
                 simpleCreancier.setIdTiersRegroupement(calculDonneesHome.getIdTiersRegroupement());
                 simpleCreancier.setMontant(montantTotalCreancier.toString());
+                simpleCreancier.setIsCalcule(true);
                 creancier.setSimpleCreancier(simpleCreancier);
                 creancier = PegasusServiceLocator.getCreancierService().create(creancier);
                 CreanceAccordee creanceAccordee = new CreanceAccordee();

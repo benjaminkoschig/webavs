@@ -1,11 +1,15 @@
 package ch.globaz.pegasus.businessimpl.services.models.droit;
 
+import ch.globaz.pegasus.business.constantes.*;
 import ch.globaz.pegasus.business.exceptions.models.assurancemaladie.PrimeAssuranceMaladieException;
 import ch.globaz.pegasus.business.exceptions.models.assurancemaladie.SubsideAssuranceMaladieException;
 import ch.globaz.pegasus.business.exceptions.models.habitat.SejourMoisPartielHomeException;
 import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.*;
 import ch.globaz.pegasus.business.models.assurancemaladie.*;
+import ch.globaz.pegasus.business.models.calcul.CalculPcaReplace;
 import ch.globaz.pegasus.business.models.habitat.*;
+import ch.globaz.pegasus.business.models.pcaccordee.PcaRetenue;
+import ch.globaz.pegasus.business.models.pcaccordee.PcaRetenueSearch;
 import ch.globaz.pegasus.business.models.revenusdepenses.*;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
@@ -25,6 +29,7 @@ import globaz.jade.persistence.util.JadePersistenceUtil;
 import globaz.jade.service.provider.application.JadeApplicationService;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.pegasus.utils.PCUserHelper;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -33,15 +38,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import ch.globaz.common.domaine.Checkers;
 import ch.globaz.hera.business.exceptions.HeraException;
 import ch.globaz.hera.business.exceptions.models.MembreFamilleException;
 import ch.globaz.hera.business.services.HeraServiceLocator;
 import ch.globaz.hera.business.vo.famille.MembreFamilleVO;
-import ch.globaz.pegasus.business.constantes.Compteurs;
-import ch.globaz.pegasus.business.constantes.IPCDecision;
-import ch.globaz.pegasus.business.constantes.IPCDemandes;
-import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.exceptions.PegasusException;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
@@ -165,13 +167,11 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     /**
      * convertit le code systeme LIEN AVEC REQUERANT PC (PCLIEREQ)au code systeme ROLE FAMILLE PC (PCROLEFAM)
-     * 
-     * @param csLienFamille
-     *            code systeme du lien avec le requerant
-     * @param isRequerant
-     *            doit être true s'il s'agit actuellement du requerant
+     *
+     * @param csLienFamille code systeme du lien avec le requerant
+     * @param isRequerant   doit être true s'il s'agit actuellement du requerant
      * @return code systeme du role en famille, ou null si le membre n'est pas dans la famille proche (conjoint ou
-     *         enfant)
+     * enfant)
      */
     public final static String convertCsRoleFamillePC(String csLienFamille, boolean isRequerant) {
 
@@ -192,7 +192,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.pegasus.business.services.models.droit.DroitService#calculerDroit
      * (ch.globaz.pegasus.business.models.droit.Droit)
      */
@@ -264,7 +264,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     /**
      * Copie seulement les donneés fiancière et les donneés personnelles
-     * 
+     *
      * @param newDroit
      * @throws DonneesPersonnellesException
      * @throws JadeApplicationServiceNotAvailableException
@@ -328,7 +328,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.pegasus.business.services.models.droit.DroitService#corrigerDroit
      * (ch.globaz.pegasus.business.models.droit.Droit)
      */
@@ -358,7 +358,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public Droit corrigerDroitEnCasDeDeces(Droit droit, String dateAnnonce, String csMotif, String dateSuppression,
-            String dateDecision, String currentUserId, boolean comptabilisationAuto, String mailAdressCompta)
+                                           String dateDecision, String currentUserId, boolean comptabilisationAuto, String mailAdressCompta)
             throws DroitException, JadePersistenceException, JadeApplicationServiceNotAvailableException {
 
         BSession session = BSessionUtil.getSessionFromThreadContext();
@@ -432,7 +432,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public Droit corrigerDroitAnnulation(Droit droit, String dateAnnonce, String dateSuppression, String dateDecision,
-            String currentUserId, boolean comptabilisationAuto, String mailAdressCompta) throws DroitException,
+                                         String currentUserId, boolean comptabilisationAuto, String mailAdressCompta) throws DroitException,
             JadePersistenceException, JadeApplicationServiceNotAvailableException {
 
         BSession session = BSessionUtil.getSessionFromThreadContext();
@@ -508,7 +508,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public Droit corrigerDroitDateReduction(Droit droit, Demande demande, String dateAnnonce, String dateSuppression,
-            String dateDecision, String currentUserId, boolean comptabilisationAuto, String mailAdressCompta)
+                                            String dateDecision, String currentUserId, boolean comptabilisationAuto, String mailAdressCompta)
             throws DroitException, JadePersistenceException, JadeApplicationServiceNotAvailableException,
             DecisionException, DonneeFinanciereException {
         BSession session = BSessionUtil.getSessionFromThreadContext();
@@ -592,7 +592,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AllocationImpotent createAllocationImpotent(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, AllocationImpotent newAllocationImpotent) throws DroitException,
+                                                       DroitMembreFamille droitMembreFamille, AllocationImpotent newAllocationImpotent) throws DroitException,
             JadePersistenceException, AllocationImpotentException, DonneeFinanciereException {
         if (droit.isNew()) {
             throw new DroitException("Unable to create Allocation impotent, the droit is new");
@@ -620,7 +620,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AllocationsFamiliales createAllocationsFamiliales(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille instanceDroitMembreFamille, AllocationsFamiliales allocationsFamiliales)
+                                                             DroitMembreFamille instanceDroitMembreFamille, AllocationsFamiliales allocationsFamiliales)
             throws AllocationsFamilialesException, JadePersistenceException, DroitException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to create allocationsFamiliales, the droit is null or new");
@@ -640,7 +640,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public void createAndCloseAllocationImpotent(Droit droit, AllocationImpotent newApi, AllocationImpotent oldApi,
-            boolean forClosePeriode) throws DroitException, DonneeFinanciereException, JadePersistenceException {
+                                                 boolean forClosePeriode) throws DroitException, DonneeFinanciereException, JadePersistenceException {
         if (oldApi == null) {
             throw new DroitException("Unable to create RenteAvsAi, the oldApi is null");
         }
@@ -669,7 +669,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AllocationImpotent createAndCloseAllocationImpotent(ModificateurDroitDonneeFinanciere droit,
-            AllocationImpotent newDonneeFinanciere, boolean forceClose) throws AllocationImpotentException,
+                                                               AllocationImpotent newDonneeFinanciere, boolean forceClose) throws AllocationImpotentException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -696,7 +696,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AllocationsFamiliales createAndCloseAllocationsFamiliales(ModificateurDroitDonneeFinanciere droit,
-            AllocationsFamiliales newDonneeFinanciere, boolean forceClose) throws AllocationsFamilialesException,
+                                                                     AllocationsFamiliales newDonneeFinanciere, boolean forceClose) throws AllocationsFamilialesException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -724,7 +724,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AssuranceRenteViagere createAndCloseAssuranceRenteViagere(ModificateurDroitDonneeFinanciere droit,
-            AssuranceRenteViagere newDonneeFinanciere, boolean forceClose) throws AssuranceRenteViagereException,
+                                                                     AssuranceRenteViagere newDonneeFinanciere, boolean forceClose) throws AssuranceRenteViagereException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -752,7 +752,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AssuranceVie createAndCloseAssuranceVie(ModificateurDroitDonneeFinanciere droit,
-            AssuranceVie newDonneeFinanciere, boolean forceClose) throws AssuranceVieException,
+                                                   AssuranceVie newDonneeFinanciere, boolean forceClose) throws AssuranceVieException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -779,7 +779,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AutreApi createAndCloseAutreApi(ModificateurDroitDonneeFinanciere droit, AutreApi newDonneeFinanciere,
-            boolean forceClose) throws AutreApiException, JadePersistenceException, DroitException,
+                                           boolean forceClose) throws AutreApiException, JadePersistenceException, DroitException,
             DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -805,7 +805,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AutreFortuneMobiliere createAndCloseAutreFortuneMobiliere(ModificateurDroitDonneeFinanciere droit,
-            AutreFortuneMobiliere newDonneeFinanciere, boolean forceClose) throws AutreFortuneMobiliereException,
+                                                                     AutreFortuneMobiliere newDonneeFinanciere, boolean forceClose) throws AutreFortuneMobiliereException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -833,7 +833,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AutreRente createAndCloseAutreRente(ModificateurDroitDonneeFinanciere droit, AutreRente newDonneeFinanciere,
-            boolean forceClose) throws AutreRenteException, JadePersistenceException, DroitException,
+                                               boolean forceClose) throws AutreRenteException, JadePersistenceException, DroitException,
             DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -860,7 +860,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AutresDettesProuvees createAndCloseAutresDettesProuvees(ModificateurDroitDonneeFinanciere droit,
-            AutresDettesProuvees newDonneeFinanciere, boolean forceClose) throws AutresDettesProuveesException,
+                                                                   AutresDettesProuvees newDonneeFinanciere, boolean forceClose) throws AutresDettesProuveesException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -887,7 +887,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AutresRevenus createAndCloseAutresRevenus(ModificateurDroitDonneeFinanciere droit,
-            AutresRevenus newDonneeFinanciere, boolean forceClose) throws AutresRevenusException,
+                                                     AutresRevenus newDonneeFinanciere, boolean forceClose) throws AutresRevenusException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -914,7 +914,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public Betail createAndCloseBetail(ModificateurDroitDonneeFinanciere droit, Betail newDonneeFinanciere,
-            boolean forceClose) throws BetailException, JadePersistenceException, DroitException,
+                                       boolean forceClose) throws BetailException, JadePersistenceException, DroitException,
             DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -969,7 +969,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public BienImmobilierNonHabitable createAndCloseBienImmobilierNonHabitable(ModificateurDroitDonneeFinanciere droit,
-            BienImmobilierNonHabitable newDonneeFinanciere, boolean forceClose)
+                                                                               BienImmobilierNonHabitable newDonneeFinanciere, boolean forceClose)
             throws BienImmobilierNonHabitableException, JadePersistenceException, DroitException,
             DonneeFinanciereException {
 
@@ -1028,7 +1028,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public CapitalLPP createAndCloseCapitalLPP(ModificateurDroitDonneeFinanciere droit, CapitalLPP newDonneeFinanciere,
-            boolean forceClose) throws CapitalLPPException, JadePersistenceException, DroitException,
+                                               boolean forceClose) throws CapitalLPPException, JadePersistenceException, DroitException,
             DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -1056,7 +1056,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
     // ici Fin
     @Override
     public CompteBancaireCCP createAndCloseCompteBancaireCCP(ModificateurDroitDonneeFinanciere droit,
-            CompteBancaireCCP newDonneeFinanciere, boolean forceClose) throws CompteBancaireCCPException,
+                                                             CompteBancaireCCP newDonneeFinanciere, boolean forceClose) throws CompteBancaireCCPException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -1083,7 +1083,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public ContratEntretienViager createAndCloseContratEntretienViager(ModificateurDroitDonneeFinanciere droit,
-            ContratEntretienViager newDonneeFinanciere, boolean forceClose) throws ContratEntretienViagerException,
+                                                                       ContratEntretienViager newDonneeFinanciere, boolean forceClose) throws ContratEntretienViagerException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -1111,7 +1111,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public CotisationsPsal createAndCloseCotisationsPsal(ModificateurDroitDonneeFinanciere droit,
-            CotisationsPsal newDonneeFinanciere, boolean forceClose) throws CotisationsPsalException,
+                                                         CotisationsPsal newDonneeFinanciere, boolean forceClose) throws CotisationsPsalException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -1139,7 +1139,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public CotisationsPsal createAndCloseCotisationsPsal(ModificateurDroitDonneeFinanciere droit,
-            CotisationsPsal newCotisationsPsal, CotisationsPsal oldCotisationsPsal, boolean forceClose)
+                                                         CotisationsPsal newCotisationsPsal, CotisationsPsal oldCotisationsPsal, boolean forceClose)
             throws CotisationsPsalException, JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if (newCotisationsPsal == null) {
@@ -1170,7 +1170,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public DessaisissementRevenu createAndCloseDessaisissementRevenu(ModificateurDroitDonneeFinanciere droit,
-            DessaisissementRevenu newDonneeFinanciere, boolean forceClose)
+                                                                     DessaisissementRevenu newDonneeFinanciere, boolean forceClose)
             throws RevenuActiviteLucrativeDependanteException, JadePersistenceException, DroitException,
             DonneeFinanciereException {
 
@@ -1199,7 +1199,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public IjApg createAndCloseIjApg(ModificateurDroitDonneeFinanciere droit, IjApg newDonneeFinanciere,
-            boolean forceClose) throws IjApgException, JadePersistenceException, DroitException,
+                                     boolean forceClose) throws IjApgException, JadePersistenceException, DroitException,
             DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -1225,7 +1225,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public IndemniteJournaliereAi createAndCloseIndemniteJournaliereAi(ModificateurDroitDonneeFinanciere droit,
-            IndemniteJournaliereAi newDonneeFinanciere, boolean forceClose) throws IndemniteJournaliereAiException,
+                                                                       IndemniteJournaliereAi newDonneeFinanciere, boolean forceClose) throws IndemniteJournaliereAiException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -1253,7 +1253,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public Loyer createAndCloseLoyer(ModificateurDroitDonneeFinanciere droit, Loyer newDonneeFinanciere,
-            boolean forceClose) throws LoyerException, JadePersistenceException, DroitException,
+                                     boolean forceClose) throws LoyerException, JadePersistenceException, DroitException,
             DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -1280,7 +1280,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public MarchandisesStock createAndCloseMarchandisesStock(ModificateurDroitDonneeFinanciere droit,
-            MarchandisesStock newDonneeFinanciere, boolean forceClose) throws MarchandisesStockException,
+                                                             MarchandisesStock newDonneeFinanciere, boolean forceClose) throws MarchandisesStockException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -1308,7 +1308,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public Numeraire createAndCloseNumeraire(ModificateurDroitDonneeFinanciere droit, Numeraire newDonneeFinanciere,
-            boolean forceClose) throws NumeraireException, JadePersistenceException, DroitException,
+                                             boolean forceClose) throws NumeraireException, JadePersistenceException, DroitException,
             DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -1335,7 +1335,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public PensionAlimentaire createAndClosePensionAlimentaire(ModificateurDroitDonneeFinanciere droit,
-            PensionAlimentaire newDonneeFinanciere, boolean forceClose) throws PensionAlimentaireException,
+                                                               PensionAlimentaire newDonneeFinanciere, boolean forceClose) throws PensionAlimentaireException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -1363,7 +1363,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public PretEnversTiers createAndClosePretEnversTiers(ModificateurDroitDonneeFinanciere droit,
-            PretEnversTiers newDonneeFinanciere, boolean forceClose) throws PretEnversTiersException,
+                                                         PretEnversTiers newDonneeFinanciere, boolean forceClose) throws PretEnversTiersException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -1390,7 +1390,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public RenteAvsAi createAndCloseRenteAvsAi(Droit droit, RenteAvsAi newDonneeFinanciere,
-            RenteAvsAi oldDonneeFinanciere, boolean forClosePeriode) throws RenteAvsAiException,
+                                               RenteAvsAi oldDonneeFinanciere, boolean forClosePeriode) throws RenteAvsAiException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if (oldDonneeFinanciere == null) {
@@ -1420,7 +1420,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public RenteAvsAi createAndCloseRenteAvsAi(ModificateurDroitDonneeFinanciere droit, RenteAvsAi newDonneeFinanciere,
-            boolean forceClose) throws RenteAvsAiException, JadePersistenceException, DroitException,
+                                               boolean forceClose) throws RenteAvsAiException, JadePersistenceException, DroitException,
             DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -1506,7 +1506,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public RevenuHypothetique createAndCloseRevenuHypothetique(ModificateurDroitDonneeFinanciere droit,
-            RevenuHypothetique newDonneeFinanciere, boolean forceClose) throws RevenuHypothetiqueException,
+                                                               RevenuHypothetique newDonneeFinanciere, boolean forceClose) throws RevenuHypothetiqueException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -1533,7 +1533,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public TaxeJournaliereHome createAndCloseTaxeJournaliereHome(ModificateurDroitDonneeFinanciere droit,
-            TaxeJournaliereHome newDonneeFinanciere, boolean forceClose) throws TaxeJournaliereHomeException,
+                                                                 TaxeJournaliereHome newDonneeFinanciere, boolean forceClose) throws TaxeJournaliereHomeException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -1560,7 +1560,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public SejourMoisPartielHome createAndCloseSejourMoisPartielHome(ModificateurDroitDonneeFinanciere droit,
-                                                                         SejourMoisPartielHome newDonneeFinanciere, boolean forceClose) throws SejourMoisPartielHomeException,
+                                                                     SejourMoisPartielHome newDonneeFinanciere, boolean forceClose) throws SejourMoisPartielHomeException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -1587,7 +1587,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public Titre createAndCloseTitre(ModificateurDroitDonneeFinanciere droit, Titre newDonneeFinanciere,
-            boolean forceClose) throws TitreException, JadePersistenceException, DroitException,
+                                     boolean forceClose) throws TitreException, JadePersistenceException, DroitException,
             DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -1613,7 +1613,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public Vehicule createAndCloseVehicule(ModificateurDroitDonneeFinanciere droit, Vehicule newDonneeFinanciere,
-            boolean forceClose) throws VehiculeException, JadePersistenceException, DroitException,
+                                           boolean forceClose) throws VehiculeException, JadePersistenceException, DroitException,
             DonneeFinanciereException {
 
         if (newDonneeFinanciere == null) {
@@ -1639,7 +1639,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AssuranceRenteViagere createAssuranceRenteViagere(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, AssuranceRenteViagere newAssuranceRenteViagere)
+                                                             DroitMembreFamille droitMembreFamille, AssuranceRenteViagere newAssuranceRenteViagere)
             throws DroitException, JadePersistenceException, AssuranceRenteViagereException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to create assurance rente viagere, the droit is null or new");
@@ -1659,7 +1659,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AssuranceVie createAssuranceVie(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille instanceDroitMembreFamille, AssuranceVie assuranceVie) throws AssuranceVieException,
+                                           DroitMembreFamille instanceDroitMembreFamille, AssuranceVie assuranceVie) throws AssuranceVieException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if ((droit == null) || droit.isNew()) {
@@ -1680,7 +1680,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AutreApi createAutreApi(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille droitMembreFamille,
-            AutreApi newAutreApi) throws AutreApiException, JadePersistenceException, DroitException,
+                                   AutreApi newAutreApi) throws AutreApiException, JadePersistenceException, DroitException,
             DonneeFinanciereException {
 
         if ((droit == null) || droit.isNew()) {
@@ -1698,7 +1698,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AutreFortuneMobiliere createAutreFortuneMobiliere(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, AutreFortuneMobiliere newAutreFortuneMobiliere)
+                                                             DroitMembreFamille droitMembreFamille, AutreFortuneMobiliere newAutreFortuneMobiliere)
             throws DroitException, JadePersistenceException, AutreFortuneMobiliereException, DonneeFinanciereException {
 
         if ((droit == null) || droit.isNew()) {
@@ -1719,7 +1719,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AutreRente createAutreRente(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille droitMembreFamille,
-            AutreRente newAutreRente) throws DroitException, JadePersistenceException, AutreRenteException,
+                                       AutreRente newAutreRente) throws DroitException, JadePersistenceException, AutreRenteException,
             DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to create autreRente, the droit is null or new");
@@ -1739,7 +1739,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AutresDettesProuvees createAutresDettesProuvees(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille instanceDroitMembreFamille, AutresDettesProuvees autresDettesProuvees)
+                                                           DroitMembreFamille instanceDroitMembreFamille, AutresDettesProuvees autresDettesProuvees)
             throws AutresDettesProuveesException, JadePersistenceException, DroitException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to create autresDettesProuvees, the droit is null or new");
@@ -1759,7 +1759,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AutresRevenus createAutresRevenus(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille instanceDroitMembreFamille, AutresRevenus autresRevenus) throws AutresRevenusException,
+                                             DroitMembreFamille instanceDroitMembreFamille, AutresRevenus autresRevenus) throws AutresRevenusException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to create AutresRevenus, the droit is null or new");
@@ -1780,7 +1780,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public Betail createBetail(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille droitMembreFamille,
-            Betail newBetail) throws DroitException, JadePersistenceException, BetailException,
+                               Betail newBetail) throws DroitException, JadePersistenceException, BetailException,
             DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to create betail, the droit is null or new");
@@ -1822,7 +1822,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public BienImmobilierNonHabitable createBienImmobilierNonHabitable(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille instanceDroitMembreFamille, BienImmobilierNonHabitable bienImmobilierNonHabitable)
+                                                                       DroitMembreFamille instanceDroitMembreFamille, BienImmobilierNonHabitable bienImmobilierNonHabitable)
             throws BienImmobilierNonHabitableException, JadePersistenceException, DroitException,
             DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
@@ -1869,7 +1869,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public CapitalLPP createCapitalLPP(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille instanceDroitMembreFamille, CapitalLPP capitalLPP) throws CapitalLPPException,
+                                       DroitMembreFamille instanceDroitMembreFamille, CapitalLPP capitalLPP) throws CapitalLPPException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if ((droit == null) || droit.isNew()) {
@@ -1890,7 +1890,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public CompteBancaireCCP createCompteBancaireCCP(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille instanceDroitMembreFamille, CompteBancaireCCP compteBancaireCCP)
+                                                     DroitMembreFamille instanceDroitMembreFamille, CompteBancaireCCP compteBancaireCCP)
             throws CompteBancaireCCPException, JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if ((droit == null) || droit.isNew()) {
@@ -1911,7 +1911,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public ContratEntretienViager createContratEntretienViager(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, ContratEntretienViager newContratEntretienViager)
+                                                               DroitMembreFamille droitMembreFamille, ContratEntretienViager newContratEntretienViager)
             throws ContratEntretienViagerException, JadePersistenceException, DroitException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to create allocationsFamiliales, the droit is null or new");
@@ -1932,7 +1932,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public CotisationsPsal createCotisationsPsal(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille instanceDroitMembreFamille, CotisationsPsal cotisationsPsal)
+                                                 DroitMembreFamille instanceDroitMembreFamille, CotisationsPsal cotisationsPsal)
             throws CotisationsPsalException, JadePersistenceException, DroitException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to create cotisationsPsal, the droit is null or new");
@@ -1952,7 +1952,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public DessaisissementFortune createDessaisissementFortune(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, DessaisissementFortune dessaisissementFortune)
+                                                               DroitMembreFamille droitMembreFamille, DessaisissementFortune dessaisissementFortune)
             throws DroitException, JadePersistenceException, DessaisissementFortuneException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to create dessaisissement fortune, the droit is null or new");
@@ -1972,7 +1972,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public DessaisissementRevenu createDessaisissementRevenu(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, DessaisissementRevenu dessaisissementRevenu) throws DroitException,
+                                                             DroitMembreFamille droitMembreFamille, DessaisissementRevenu dessaisissementRevenu) throws DroitException,
             JadePersistenceException, DessaisissementRevenuException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to create dessaisissement revenu, the droit is null or new");
@@ -1991,7 +1991,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seech.globaz.pegasus.business.services.models.droit.DroitService#
      * createDroitInitial(ch.globaz.pegasus.business.models.demande.Demande)
      */
@@ -2039,7 +2039,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     /**
      * Creation du droit initial pour les fratries, sans la synchronisations
-     * 
+     *
      * @param demande
      * @return
      * @throws JadePersistenceException
@@ -2066,7 +2066,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
     }
 
     private void createDroitMembreFamille(SimpleDroit simpleDroit, String idTiersRequerant,
-            MembreFamilleVO membreFamille, Boolean requerantIsEnfant) throws DonneesPersonnellesException,
+                                          MembreFamilleVO membreFamille, Boolean requerantIsEnfant) throws DonneesPersonnellesException,
             JadePersistenceException, JadeApplicationServiceNotAvailableException, DroitException {
         // création de données personnelles
 
@@ -2121,7 +2121,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public IndemniteJournaliereAi createIndemniteJournaliereAi(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, IndemniteJournaliereAi newIndemniteJournaliereAi)
+                                                               DroitMembreFamille droitMembreFamille, IndemniteJournaliereAi newIndemniteJournaliereAi)
             throws DroitException, JadePersistenceException, IndemniteJournaliereAiException, DonneeFinanciereException {
 
         if ((droit == null) || droit.isNew()) {
@@ -2160,7 +2160,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public MarchandisesStock createMarchandisesStock(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, MarchandisesStock newMarchandisesStock)
+                                                     DroitMembreFamille droitMembreFamille, MarchandisesStock newMarchandisesStock)
             throws MarchandisesStockException, JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if ((droit == null) || droit.isNew()) {
@@ -2180,7 +2180,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public Numeraire createNumeraire(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille droitMembreFamille,
-            Numeraire newNumeraire) throws DroitException, JadePersistenceException, NumeraireException,
+                                     Numeraire newNumeraire) throws DroitException, JadePersistenceException, NumeraireException,
             DonneeFinanciereException {
 
         if ((droit == null) || droit.isNew()) {
@@ -2201,7 +2201,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public PensionAlimentaire createPensionAlimentaire(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille instanceDroitMembreFamille, PensionAlimentaire pensionAlimentaire)
+                                                       DroitMembreFamille instanceDroitMembreFamille, PensionAlimentaire pensionAlimentaire)
             throws PensionAlimentaireException, JadePersistenceException, DroitException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to create pensionAlimentaire, the droit is null or new");
@@ -2221,7 +2221,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public PretEnversTiers createPretEnversTiers(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, PretEnversTiers newPretEnversTiers) throws PretEnversTiersException,
+                                                 DroitMembreFamille droitMembreFamille, PretEnversTiers newPretEnversTiers) throws PretEnversTiersException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if ((droit == null) || droit.isNew()) {
@@ -2241,7 +2241,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public RenteAvsAi createRenteAvsAi(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille droitMembreFamille,
-            RenteAvsAi newRenteAvsAi) throws DroitException, JadePersistenceException, RenteAvsAiException,
+                                       RenteAvsAi newRenteAvsAi) throws DroitException, JadePersistenceException, RenteAvsAiException,
             DonneeFinanciereException {
 
         if ((droit == null) || droit.isNew()) {
@@ -2308,7 +2308,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public RevenuHypothetique createRevenuHypothetique(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, RevenuHypothetique newRevenuHypothetique)
+                                                       DroitMembreFamille droitMembreFamille, RevenuHypothetique newRevenuHypothetique)
             throws RevenuHypothetiqueException, JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if ((droit == null) || droit.isNew()) {
@@ -2367,7 +2367,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public TaxeJournaliereHome createTaxeJournaliereHome(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, TaxeJournaliereHome taxeJournaliereHome)
+                                                         DroitMembreFamille droitMembreFamille, TaxeJournaliereHome taxeJournaliereHome)
             throws TaxeJournaliereHomeException, JadePersistenceException, DroitException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to create taxeJournaliereHome, the droit is null or new");
@@ -2405,7 +2405,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public Titre createTitre(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille instanceDroitMembreFamille,
-            Titre titre) throws TitreException, JadePersistenceException, DroitException, DonneeFinanciereException {
+                             Titre titre) throws TitreException, JadePersistenceException, DroitException, DonneeFinanciereException {
 
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to create titre, the droit is null or new");
@@ -2425,7 +2425,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public TypeFraisObtentionRevenu createTypeFraisObtentionRevenu(String idRevenuActiviteLucrativeDependante,
-            TypeFraisObtentionRevenu typeFraisObtentionRevenu) throws DroitException, JadePersistenceException,
+                                                                   TypeFraisObtentionRevenu typeFraisObtentionRevenu) throws DroitException, JadePersistenceException,
             TypeFraisObtentionRevenuException, DonneeFinanciereException {
         if (typeFraisObtentionRevenu == null) {
             throw new DroitException("Unable to create TypeFraisObtentionRevenu, the model is null");
@@ -2442,7 +2442,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public Vehicule createVehicule(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille droitMembreFamille,
-            Vehicule newVehicule) throws DroitException, JadePersistenceException, VehiculeException,
+                                   Vehicule newVehicule) throws DroitException, JadePersistenceException, VehiculeException,
             DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to create betail, the droit is null or new");
@@ -2494,7 +2494,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AllocationImpotent deleteAllocationImpotent(ModificateurDroitDonneeFinanciere droit,
-            AllocationImpotent allocationImpotent) throws DroitException, JadePersistenceException,
+                                                       AllocationImpotent allocationImpotent) throws DroitException, JadePersistenceException,
             AllocationImpotentException {
         if (allocationImpotent == null) {
             throw new DroitException("Unable to deleterente allocationImpotent, the model is null");
@@ -2516,7 +2516,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AllocationsFamiliales deleteAllocationsFamiliales(ModificateurDroitDonneeFinanciere droit,
-            AllocationsFamiliales allocationsFamiliales) throws AllocationsFamilialesException,
+                                                             AllocationsFamiliales allocationsFamiliales) throws AllocationsFamilialesException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
         if (allocationsFamiliales == null) {
             throw new DroitException("Unable to delete allocationsFamiliales, the model is null");
@@ -2537,7 +2537,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AssuranceRenteViagere deleteAssuranceRenteViagere(ModificateurDroitDonneeFinanciere droit,
-            AssuranceRenteViagere assuranceRenteViagere) throws DroitException, JadePersistenceException,
+                                                             AssuranceRenteViagere assuranceRenteViagere) throws DroitException, JadePersistenceException,
             AssuranceRenteViagereException {
         if (assuranceRenteViagere == null) {
             throw new DroitException("Unable to delete assurance rente viagere, the model is null");
@@ -2598,7 +2598,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AutreFortuneMobiliere deleteAutreFortuneMobiliere(ModificateurDroitDonneeFinanciere droit,
-            AutreFortuneMobiliere autreFortuneM) throws DroitException, JadePersistenceException,
+                                                             AutreFortuneMobiliere autreFortuneM) throws DroitException, JadePersistenceException,
             AutreFortuneMobiliereException {
         if (autreFortuneM == null) {
             throw new DroitException("Unable to delete autre fortune mobiliere, the model is null");
@@ -2639,7 +2639,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AutresDettesProuvees deleteAutresDettesProuvees(ModificateurDroitDonneeFinanciere droit,
-            AutresDettesProuvees autresDettesProuvees) throws AutresDettesProuveesException, JadePersistenceException,
+                                                           AutresDettesProuvees autresDettesProuvees) throws AutresDettesProuveesException, JadePersistenceException,
             DroitException, DonneeFinanciereException {
         if (autresDettesProuvees == null) {
             throw new DroitException("Unable to delete AutresDettesProuvees, the model is null");
@@ -2724,7 +2724,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public BienImmobilierNonHabitable deleteBienImmobilierNonHabitable(ModificateurDroitDonneeFinanciere droit,
-            BienImmobilierNonHabitable bienImmobilierNonHabitable) throws BienImmobilierNonHabitableException,
+                                                                       BienImmobilierNonHabitable bienImmobilierNonHabitable) throws BienImmobilierNonHabitableException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
         if (bienImmobilierNonHabitable == null) {
             throw new DroitException("Unable to delete bienImmobilierNonHabitable, the model is null");
@@ -2790,7 +2790,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public CompteBancaireCCP deleteCompteBancaireCCP(ModificateurDroitDonneeFinanciere droit,
-            CompteBancaireCCP compteBancaireCCP) throws CompteBancaireCCPException, JadePersistenceException,
+                                                     CompteBancaireCCP compteBancaireCCP) throws CompteBancaireCCPException, JadePersistenceException,
             DroitException, DonneeFinanciereException {
         if (compteBancaireCCP == null) {
             throw new DroitException("Unable to delete compteBancaireCCP, the model is null");
@@ -2811,7 +2811,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public ContratEntretienViager deleteContratEntretienViager(ModificateurDroitDonneeFinanciere droit,
-            ContratEntretienViager contratEntretienViager) throws ContratEntretienViagerException,
+                                                               ContratEntretienViager contratEntretienViager) throws ContratEntretienViagerException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
         if (contratEntretienViager == null) {
             throw new DroitException("Unable to delete allocationsFamiliales, the model is null");
@@ -2832,7 +2832,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public CotisationsPsal deleteCotisationsPsal(ModificateurDroitDonneeFinanciere droit,
-            CotisationsPsal cotisationsPsal) throws CotisationsPsalException, JadePersistenceException, DroitException,
+                                                 CotisationsPsal cotisationsPsal) throws CotisationsPsalException, JadePersistenceException, DroitException,
             DonneeFinanciereException {
         if (cotisationsPsal == null) {
             throw new DroitException("Unable to delete CotisationsPsal, the model is null");
@@ -2853,7 +2853,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public DessaisissementFortune deleteDessaisissementFortune(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, DessaisissementFortune dessaisissementFortune)
+                                                               DroitMembreFamille droitMembreFamille, DessaisissementFortune dessaisissementFortune)
             throws DroitException, JadePersistenceException {
         if (dessaisissementFortune == null) {
             throw new DroitException("Unable to delete dessaisissement fortune, the model is null");
@@ -2876,7 +2876,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public DessaisissementRevenu deleteDessaisissementRevenu(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, DessaisissementRevenu dessaisissementRevenu) throws DroitException,
+                                                             DroitMembreFamille droitMembreFamille, DessaisissementRevenu dessaisissementRevenu) throws DroitException,
             JadePersistenceException {
         if (dessaisissementRevenu == null) {
             throw new DroitException("Unable to delete dessaisissement revenu, the model is null");
@@ -2919,7 +2919,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public IndemniteJournaliereAi deleteIndemniteJournaliereAi(ModificateurDroitDonneeFinanciere droit,
-            IndemniteJournaliereAi indemniteJournaliereAi) throws DroitException, JadePersistenceException,
+                                                               IndemniteJournaliereAi indemniteJournaliereAi) throws DroitException, JadePersistenceException,
             IndemniteJournaliereAiException {
         if (indemniteJournaliereAi == null) {
             throw new DroitException("Unable to delete indemniteJournaliereAi, the model is null");
@@ -2962,7 +2962,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public MarchandisesStock deleteMarchandisesStock(ModificateurDroitDonneeFinanciere droit,
-            MarchandisesStock marchandisesStock) throws MarchandisesStockException, JadePersistenceException,
+                                                     MarchandisesStock marchandisesStock) throws MarchandisesStockException, JadePersistenceException,
             DroitException, DonneeFinanciereException {
         if (marchandisesStock == null) {
             throw new DroitException("Unable to delete marchandises/stock, the model is null");
@@ -3005,7 +3005,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public PensionAlimentaire deletePensionAlimentaire(ModificateurDroitDonneeFinanciere droit,
-            PensionAlimentaire pensionAlimentaire) throws PensionAlimentaireException, JadePersistenceException,
+                                                       PensionAlimentaire pensionAlimentaire) throws PensionAlimentaireException, JadePersistenceException,
             DroitException, DonneeFinanciereException {
         if (pensionAlimentaire == null) {
             throw new DroitException("Unable to delete pensionAlimentaire, the model is null");
@@ -3026,7 +3026,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public PretEnversTiers deletePretEnversTiers(ModificateurDroitDonneeFinanciere droit,
-            PretEnversTiers pretEnversTiers) throws PretEnversTiersException, JadePersistenceException, DroitException,
+                                                 PretEnversTiers pretEnversTiers) throws PretEnversTiersException, JadePersistenceException, DroitException,
             DonneeFinanciereException {
         if (pretEnversTiers == null) {
             throw new DroitException("Unable to delete pret envers tiers, the model is null");
@@ -3121,7 +3121,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public RevenuHypothetique deleteRevenuHypothetique(ModificateurDroitDonneeFinanciere droit,
-            RevenuHypothetique revenuHypothetique) throws RevenuHypothetiqueException, JadePersistenceException,
+                                                       RevenuHypothetique revenuHypothetique) throws RevenuHypothetiqueException, JadePersistenceException,
             DroitException, DonneeFinanciereException {
         if (revenuHypothetique == null) {
             throw new DroitException("Unable to delete revenuHypothetique, the model is null");
@@ -3164,7 +3164,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public SimpleTypeFraisObtentionRevenu deleteSimpleTypeFraisObtentionRevenu(ModificateurDroitDonneeFinanciere droit,
-            SimpleTypeFraisObtentionRevenu simpleTypeFraisObtentionRevenu)
+                                                                               SimpleTypeFraisObtentionRevenu simpleTypeFraisObtentionRevenu)
             throws SimpleTypeFraisObtentionRevenuException, JadePersistenceException, DroitException,
             DonneeFinanciereException {
         if (simpleTypeFraisObtentionRevenu == null) {
@@ -3184,7 +3184,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public TaxeJournaliereHome deleteTaxeJournaliereHome(ModificateurDroitDonneeFinanciere droit,
-            TaxeJournaliereHome taxeJournaliereHome) throws DroitException, JadePersistenceException {
+                                                         TaxeJournaliereHome taxeJournaliereHome) throws DroitException, JadePersistenceException {
         if (taxeJournaliereHome == null) {
             throw new DroitException("Unable to delete taxeJournaliereHome, the model is null");
         }
@@ -3244,7 +3244,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public TypeFraisObtentionRevenu deleteTypeFraisObtentionRevenu(ModificateurDroitDonneeFinanciere droit,
-            TypeFraisObtentionRevenu typeFraisObtentionRevenu) throws TypeFraisObtentionRevenuException,
+                                                                   TypeFraisObtentionRevenu typeFraisObtentionRevenu) throws TypeFraisObtentionRevenuException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
         if (typeFraisObtentionRevenu == null) {
             throw new DroitException("Unable to delete assurance rente viagere, the model is null");
@@ -3290,7 +3290,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
     /**
      * Permet de trouver le droit a copier Il est possible que cette fonction ne retour pas de droit, Comme on fait un
      * filtre sur les dates.
-     * 
+     *
      * @param droit
      * @return
      * @throws DonneeFinanciereException
@@ -3356,11 +3356,10 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
     }
 
 
-
     /**
      * Test si on peut synchroniser les membre de famille. Le droit doit étre en version initiale et il ne doit pas étre
      * dans l'état octroyer ou historiser, pour être syncroniser.
-     * 
+     *
      * @param droit
      * @return boolean
      */
@@ -3583,7 +3582,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.pegasus.business.services.models.droit.DroitService#readDroit (java.lang.String)
      */
     @Override
@@ -3621,7 +3620,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seech.globaz.pegasus.business.services.models.droit.DroitService# readDroitMembreFamille(java.lang.String)
      */
     @Override
@@ -3785,7 +3784,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seech.globaz.pegasus.business.services.models.droit.DroitService# readVersionDroit(java.lang.String)
      */
     @Override
@@ -3799,7 +3798,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
     }
 
     private AbstractDonneeFinanciereModel saveDonneeFinanciere(SimpleVersionDroit versionDroit,
-            AbstractDonneeFinanciereModel donneeFinanciere, JadeApplicationService service) throws DroitException {
+                                                               AbstractDonneeFinanciereModel donneeFinanciere, JadeApplicationService service) throws DroitException {
         Method method = null;
         try {
             donneeFinanciere.getSimpleDonneeFinanciereHeader().setIsCopieFromPreviousVersion(Boolean.FALSE);
@@ -3807,14 +3806,14 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
             if (donneeFinanciere.getSimpleDonneeFinanciereHeader().getIdVersionDroit()
                     .equals(versionDroit.getIdVersionDroit())) {
                 // Va rechercher la méthode update
-                method = service.getClass().getMethod("update", new Class[] { donneeFinanciere.getClass() });
+                method = service.getClass().getMethod("update", new Class[]{donneeFinanciere.getClass()});
             } else {
                 donneeFinanciere.setIsNew();
                 donneeFinanciere.getSimpleDonneeFinanciereHeader().setIdVersionDroit(versionDroit.getIdVersionDroit());
                 // Va rechercher la méthode create
-                method = service.getClass().getMethod("create", new Class[] { donneeFinanciere.getClass() });
+                method = service.getClass().getMethod("create", new Class[]{donneeFinanciere.getClass()});
             }
-            return (AbstractDonneeFinanciereModel) method.invoke(service, new Object[] { donneeFinanciere });
+            return (AbstractDonneeFinanciereModel) method.invoke(service, new Object[]{donneeFinanciere});
         } catch (Exception e) {
             throw new DroitException("Unable to save donnee financiere !", e);
         }
@@ -3822,7 +3821,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     /**
      * Point d'entrée publique pour la creation des données fincières devant être mise à jour pour une version de droit
-     * 
+     *
      * @param versionDroit
      * @param donneeFinanciere
      * @param service
@@ -3830,13 +3829,13 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
      */
     @Override
     public void saveDonneefinanciereCalculMoisSuivant(AbstractDonneeFinanciereModel donneeFinanciere,
-            JadeApplicationService service) throws DroitException {
+                                                      JadeApplicationService service) throws DroitException {
         Method method = null;
 
         // Va rechercher la méthode create, et invocation
         try {
-            method = service.getClass().getMethod("create", new Class[] { donneeFinanciere.getClass() });
-            method.invoke(service, new Object[] { donneeFinanciere });
+            method = service.getClass().getMethod("create", new Class[]{donneeFinanciere.getClass()});
+            method.invoke(service, new Object[]{donneeFinanciere});
 
         } catch (Exception e) {
             throw new DroitException(
@@ -4058,7 +4057,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.pegasus.business.services.models.droit.DroitService#searchDroit
      * (ch.globaz.pegasus.business.models.droit.DroitSearch)
      */
@@ -4296,7 +4295,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public SejourMoisPartielHomeSearch searchSejourMoisPartielHome(SejourMoisPartielHomeSearch searchModel)
-            throws JadePersistenceException, DroitException{
+            throws JadePersistenceException, DroitException {
         if (searchModel == null) {
             throw new DroitException("Unable to search sejourMoisPartiel, the search model passed is null!");
         }
@@ -4357,13 +4356,37 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
             // suppression du droit si il y une seule version
             SimpleVersionDroitSearch search = new SimpleVersionDroitSearch();
             search.setForIdDroit(droit.getSimpleDroit().getIdDroit());
+            search = PegasusImplServiceLocator.getSimpleVersionDroitService().search(search);
             if (PegasusImplServiceLocator.getSimpleVersionDroitService().count(search) == 0) {
                 PegasusImplServiceLocator.getDroitMembreFamilleService().deleteByIdDroit(
                         droit.getSimpleDroit().getIdDroit());
                 PegasusImplServiceLocator.getSimpleDroitService().delete(droit.getSimpleDroit());
             }
-
+            PcaRetenueSearch pcaRetenueSearch = new PcaRetenueSearch();
+            pcaRetenueSearch.setForIdDroit(droit.getId());
+            int noVersion = Integer.parseInt(droit.getSimpleVersionDroit().getNoVersion());
+            if (noVersion > 1) {
+                noVersion--;
+            }
+            pcaRetenueSearch.setForNoVersion(String.valueOf(noVersion));
+            pcaRetenueSearch = PegasusServiceLocator.getRetenueService().search(pcaRetenueSearch);
+            String dateProchainPaiement = null;
+            try {
+                dateProchainPaiement = PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt();
+                for (JadeAbstractModel absDonnee : pcaRetenueSearch.getSearchResults()) {
+                    PcaRetenue retenue = (PcaRetenue) absDonnee;
+                    if (retenue.getSimpleRetenue().getDateFinRetenue().equals(dateProchainPaiement)) {
+                        retenue.getSimpleRetenue().setDateFinRetenue("");
+                        PegasusServiceLocator.getRetenueService().update(retenue);
+                    }
+                }
+            } catch (PmtMensuelException e) {
+                throw new DroitException("Unable to delete PCAccordee", e);
+            } catch (JadeApplicationException e) {
+                throw new DroitException("Unable to delete PCAccordee", e);
+            }
         }
+
 
         return droit;
     }
@@ -4468,7 +4491,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
                 if (!IPCDroits.CS_ROLE_FAMILLE_ENFANT.equals(csRoleFamillePC)
 
                         || (droit.getDemande().getSimpleDemande().getIsFratrie() && idTiersRequerant
-                                .equals(membreFamDispo.getIdTiers()))
+                        .equals(membreFamDispo.getIdTiers()))
 
                         || (JadeDateUtil.isDateMonthYearBefore(dateDepot, dateMax) || dateDepot.equals(dateMax))) {
                     mfFiltre.add(membreFamDispo);
@@ -4495,7 +4518,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
                 // si le membre n'est pas trouvé et s'il n'est pas de type conjoint inconnu, l'ajouter
                 if (!membreTrouve
                         && !ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU.equals(membreFamDispo
-                                .getIdMembreFamille())) {
+                        .getIdMembreFamille())) {
                     hasUpdate = true;
                     createDroitMembreFamille(droit.getSimpleDroit(), idTiersRequerant, membreFamDispo, false);
                 }
@@ -4529,7 +4552,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AllocationImpotent updateAllocationImpotent(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, AllocationImpotent newAllocationImpotent) throws DroitException,
+                                                       DroitMembreFamille droitMembreFamille, AllocationImpotent newAllocationImpotent) throws DroitException,
             JadePersistenceException, AllocationImpotentException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update allocationsImpotents, the droit is null or new");
@@ -4556,7 +4579,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AllocationsFamiliales updateAllocationsFamiliales(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille instanceDroitMembreFamille, AllocationsFamiliales allocationsFamiliales)
+                                                             DroitMembreFamille instanceDroitMembreFamille, AllocationsFamiliales allocationsFamiliales)
             throws AllocationsFamilialesException, JadePersistenceException, DroitException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update allocationsFamiliales, the droit is null or new");
@@ -4600,8 +4623,8 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
             Method updateServiceMethod;
             Method createServiceMethod;
             try {
-                updateServiceMethod = service.getClass().getDeclaredMethod("update", new Class[] { dataModelClass });
-                createServiceMethod = service.getClass().getDeclaredMethod("create", new Class[] { dataModelClass });
+                updateServiceMethod = service.getClass().getDeclaredMethod("update", new Class[]{dataModelClass});
+                createServiceMethod = service.getClass().getDeclaredMethod("create", new Class[]{dataModelClass});
             } catch (SecurityException e) {
                 throw new DroitException("Error while trying to find method of the service "
                         + service.getClass().getName(), e);
@@ -4640,7 +4663,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
             // nouvelle période
             if (JadeStringUtil.isEmpty(oldDF.getSimpleDonneeFinanciereHeader().getDateFin())
                     && (JadeDateUtil.isDateMonthYearAfter(newDonneeFinanciere.getSimpleDonneeFinanciereHeader()
-                            .getDateDebut(), oldDF.getSimpleDonneeFinanciereHeader().getDateDebut()) || forClosePeriode)) {
+                    .getDateDebut(), oldDF.getSimpleDonneeFinanciereHeader().getDateDebut()) || forClosePeriode)) {
                 String oldDateFin = newDonneeFinanciere.getSimpleDonneeFinanciereHeader().getDateFin();
 
                 // oldDF.getSimpleDonneeFinanciereHeader().getDateDebut()//.equalsIgnoreCase(oldDF.getSimpleDonneeFinanciereHeader().getDateDebut())
@@ -4659,7 +4682,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
                 if (simpleVersionDroit.getId().equals(oldDF.getSimpleDonneeFinanciereHeader().getIdVersionDroit())) {
                     oldDF.getSimpleDonneeFinanciereHeader().setDateFin(oldDateFin);
 
-                    oldDF = (AbstractDonneeFinanciereModel) updateServiceMethod.invoke(service, new Object[] { oldDF });
+                    oldDF = (AbstractDonneeFinanciereModel) updateServiceMethod.invoke(service, new Object[]{oldDF});
                 } else {
                     AbstractDonneeFinanciereModel dfCorrige = (AbstractDonneeFinanciereModel) JadePersistenceUtil
                             .clone(oldDF);
@@ -4669,7 +4692,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
                     dfCorrige.getSimpleDonneeFinanciereHeader().setIsCopieFromPreviousVersion(Boolean.TRUE);
                     dfCorrige.getSimpleDonneeFinanciereHeader().setIsCopieFromPreviousVersion(true);
                     dfCorrige = (AbstractDonneeFinanciereModel) createServiceMethod.invoke(service,
-                            new Object[] { dfCorrige });
+                            new Object[]{dfCorrige});
                 }
             }
 
@@ -4683,7 +4706,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
                 // crée la nouvelle entité
                 newDonneeFinanciere = (AbstractDonneeFinanciereModel) createServiceMethod.invoke(service,
-                        new Object[] { newDonneeFinanciere });
+                        new Object[]{newDonneeFinanciere});
             }
 
         } catch (JadeCloneModelException e) {
@@ -4740,7 +4763,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AssuranceRenteViagere updateAssuranceRenteViagere(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, AssuranceRenteViagere assuranceRenteViagere) throws DroitException,
+                                                             DroitMembreFamille droitMembreFamille, AssuranceRenteViagere assuranceRenteViagere) throws DroitException,
             JadePersistenceException, AssuranceRenteViagereException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update assurance rente viagere, the droit is null or new");
@@ -4766,7 +4789,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AssuranceVie updateAssuranceVie(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille instanceDroitMembreFamille, AssuranceVie assuranceVie) throws AssuranceVieException,
+                                           DroitMembreFamille instanceDroitMembreFamille, AssuranceVie assuranceVie) throws AssuranceVieException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update AssuranceVie, the droit is null or new");
@@ -4792,7 +4815,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AutreApi updateAutreApi(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille droitMembreFamille,
-            AutreApi autreApi) throws DroitException, JadePersistenceException, DonneeFinanciereException {
+                                   AutreApi autreApi) throws DroitException, JadePersistenceException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update vehicule, the droit is null or new");
         }
@@ -4816,7 +4839,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AutreFortuneMobiliere updateAutreFortuneMobiliere(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, AutreFortuneMobiliere autreFortuneMobiliere) throws DroitException,
+                                                             DroitMembreFamille droitMembreFamille, AutreFortuneMobiliere autreFortuneMobiliere) throws DroitException,
             JadePersistenceException, AutreFortuneMobiliereException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update betail, the droit is null or new");
@@ -4841,7 +4864,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AutreRente updateAutreRente(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille droitMembreFamille,
-            AutreRente autreRente) throws AutreRenteException, JadePersistenceException, DroitException,
+                                       AutreRente autreRente) throws AutreRenteException, JadePersistenceException, DroitException,
             DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update autreRente, the droit is null or new");
@@ -4866,7 +4889,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AutresDettesProuvees updateAutresDettesProuvees(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille instanceDroitMembreFamille, AutresDettesProuvees autresDettesProuvees)
+                                                           DroitMembreFamille instanceDroitMembreFamille, AutresDettesProuvees autresDettesProuvees)
             throws AutresDettesProuveesException, JadePersistenceException, DroitException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update AutresDettesProuvees, the droit is null or new");
@@ -4894,7 +4917,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public AutresRevenus updateAutresRevenus(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille instanceDroitMembreFamille, AutresRevenus autresRevenus) throws AutresRevenusException,
+                                             DroitMembreFamille instanceDroitMembreFamille, AutresRevenus autresRevenus) throws AutresRevenusException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update autresRevenus, the droit is null or new");
@@ -4920,7 +4943,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public Betail updateBetail(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille droitMembreFamille,
-            Betail betail) throws DroitException, JadePersistenceException, BetailException, DonneeFinanciereException {
+                               Betail betail) throws DroitException, JadePersistenceException, BetailException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update betail, the droit is null or new");
         }
@@ -4975,7 +4998,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public BienImmobilierNonHabitable updateBienImmobilierNonHabitable(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille instanceDroitMembreFamille, BienImmobilierNonHabitable bienImmobilierNonHabitable)
+                                                                       DroitMembreFamille instanceDroitMembreFamille, BienImmobilierNonHabitable bienImmobilierNonHabitable)
             throws BienImmobilierNonHabitableException, JadePersistenceException, DroitException,
             DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
@@ -5037,7 +5060,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public CapitalLPP updateCapitalLPP(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille instanceDroitMembreFamille, CapitalLPP capitalLPP) throws CapitalLPPException,
+                                       DroitMembreFamille instanceDroitMembreFamille, CapitalLPP capitalLPP) throws CapitalLPPException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update CapitalLPP, the droit is null or new");
@@ -5063,7 +5086,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public CompteBancaireCCP updateCompteBancaireCCP(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille instanceDroitMembreFamille, CompteBancaireCCP compteBancaireCCP)
+                                                     DroitMembreFamille instanceDroitMembreFamille, CompteBancaireCCP compteBancaireCCP)
             throws CompteBancaireCCPException, JadePersistenceException, DroitException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update compteBancaireCCP, the droit is null or new");
@@ -5089,7 +5112,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public ContratEntretienViager updateContratEntretienViager(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, ContratEntretienViager contratEntretienViager)
+                                                               DroitMembreFamille droitMembreFamille, ContratEntretienViager contratEntretienViager)
             throws ContratEntretienViagerException, JadePersistenceException, DroitException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update contratEntretienViager, the droit is null or new");
@@ -5116,7 +5139,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public CotisationsPsal updateCotisationsPsal(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille instanceDroitMembreFamille, CotisationsPsal cotisationsPsal)
+                                                 DroitMembreFamille instanceDroitMembreFamille, CotisationsPsal cotisationsPsal)
             throws CotisationsPsalException, JadePersistenceException, DroitException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update cotisationsPsal, the droit is null or new");
@@ -5142,7 +5165,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public DessaisissementFortune updateDessaisissementFortune(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, DessaisissementFortune dessaisissementFortune)
+                                                               DroitMembreFamille droitMembreFamille, DessaisissementFortune dessaisissementFortune)
             throws DessaisissementFortuneException, DonneeFinanciereException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException, DroitException {
         if ((droit == null) || droit.isNew()) {
@@ -5170,7 +5193,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public DessaisissementRevenu updateDessaisissementRevenu(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, DessaisissementRevenu dessaisissementRevenu)
+                                                             DroitMembreFamille droitMembreFamille, DessaisissementRevenu dessaisissementRevenu)
             throws DessaisissementRevenuException, DonneeFinanciereException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException, DroitException {
         if ((droit == null) || droit.isNew()) {
@@ -5274,7 +5297,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public IndemniteJournaliereAi updateIndemniteJournaliereAi(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, IndemniteJournaliereAi newIndemniteJournaliereAi)
+                                                               DroitMembreFamille droitMembreFamille, IndemniteJournaliereAi newIndemniteJournaliereAi)
             throws DroitException, JadePersistenceException, IndemniteJournaliereAiException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update IndemniteJournaliereAi, the droit is null or new");
@@ -5324,7 +5347,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public MarchandisesStock updateMarchandisesStock(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, MarchandisesStock marchandisesStock)
+                                                     DroitMembreFamille droitMembreFamille, MarchandisesStock marchandisesStock)
             throws MarchandisesStockException, JadePersistenceException, DroitException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update marchandises/stock, the droit is null or new");
@@ -5350,7 +5373,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public Numeraire updateNumeraire(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille droitMembreFamille,
-            Numeraire numeraire) throws DroitException, JadePersistenceException, NumeraireException,
+                                     Numeraire numeraire) throws DroitException, JadePersistenceException, NumeraireException,
             DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update numeraire, the droit is null or new");
@@ -5375,7 +5398,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public PensionAlimentaire updatePensionAlimentaire(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille instanceDroitMembreFamille, PensionAlimentaire pensionAlimentaire)
+                                                       DroitMembreFamille instanceDroitMembreFamille, PensionAlimentaire pensionAlimentaire)
             throws PensionAlimentaireException, JadePersistenceException, DroitException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update pensionAlimentaire, the droit is null or new");
@@ -5402,7 +5425,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public PretEnversTiers updatePretEnversTiers(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, PretEnversTiers pretEnversTiers) throws PretEnversTiersException,
+                                                 DroitMembreFamille droitMembreFamille, PretEnversTiers pretEnversTiers) throws PretEnversTiersException,
             JadePersistenceException, DroitException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update pret envers tiers, the droit is null or new");
@@ -5428,7 +5451,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public RenteAvsAi updateRenteAvsAi(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille droitMembreFamille,
-            RenteAvsAi newRenteAvsAi) throws DroitException, JadePersistenceException, RenteAvsAiException,
+                                       RenteAvsAi newRenteAvsAi) throws DroitException, JadePersistenceException, RenteAvsAiException,
             DonneeFinanciereException {
 
         if ((droit == null) || droit.isNew()) {
@@ -5516,7 +5539,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public RevenuHypothetique updateRevenuHypothetique(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, RevenuHypothetique revenuHypothetique)
+                                                       DroitMembreFamille droitMembreFamille, RevenuHypothetique revenuHypothetique)
             throws RevenuHypothetiqueException, JadePersistenceException, DroitException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update revenuHypothetique, the droit is null or new");
@@ -5561,7 +5584,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public SimpleTypeFraisObtentionRevenu updateSimpleTypeFraisObtentionRevenu(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, SimpleTypeFraisObtentionRevenu simpleTypeFraisObtentionRevenu)
+                                                                               DroitMembreFamille droitMembreFamille, SimpleTypeFraisObtentionRevenu simpleTypeFraisObtentionRevenu)
             throws SimpleTypeFraisObtentionRevenuException, JadePersistenceException, DroitException,
             DonneeFinanciereException {
 
@@ -5579,7 +5602,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public TaxeJournaliereHome updateTaxeJournaliereHome(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, TaxeJournaliereHome taxeJournaliereHome)
+                                                         DroitMembreFamille droitMembreFamille, TaxeJournaliereHome taxeJournaliereHome)
             throws TaxeJournaliereHomeException, JadePersistenceException, DroitException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update taxeJournaliereHome, the droit is null or new");
@@ -5605,7 +5628,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public SejourMoisPartielHome updateSejourMoisPartielHome(ModificateurDroitDonneeFinanciere droit,
-                                                      DroitMembreFamille droitMembreFamille, SejourMoisPartielHome sejourMoisPartielHome)
+                                                             DroitMembreFamille droitMembreFamille, SejourMoisPartielHome sejourMoisPartielHome)
             throws JadePersistenceException, DroitException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update taxeJournaliereHome, the droit is null or new");
@@ -5631,7 +5654,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public Titre updateTitre(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille instanceDroitMembreFamille,
-            Titre titre) throws TitreException, JadePersistenceException, DroitException, DonneeFinanciereException {
+                             Titre titre) throws TitreException, JadePersistenceException, DroitException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update Titre, the droit is null or new");
         }
@@ -5656,7 +5679,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public TypeFraisObtentionRevenu updateTypeFraisObtentionRevenu(ModificateurDroitDonneeFinanciere droit,
-            DroitMembreFamille droitMembreFamille, TypeFraisObtentionRevenu typeFraisObtentionRevenu)
+                                                                   DroitMembreFamille droitMembreFamille, TypeFraisObtentionRevenu typeFraisObtentionRevenu)
             throws TypeFraisObtentionRevenuException, JadePersistenceException, DroitException,
             DonneeFinanciereException {
 
@@ -5674,7 +5697,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public Vehicule updateVehicule(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille droitMembreFamille,
-            Vehicule vehicule) throws DroitException, JadePersistenceException, VehiculeException,
+                                   Vehicule vehicule) throws DroitException, JadePersistenceException, VehiculeException,
             DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to update vehicule, the droit is null or new");
@@ -5696,6 +5719,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
         }
         return vehicule;
     }
+
     /**
      * PC-REFORME : AJOUT FRAIS DE GARDE
      */
@@ -5858,7 +5882,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public PrimeAssuranceMaladie createPrimeAssuranceMaladie(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille instanceDroitMembreFamille, PrimeAssuranceMaladie primeAssuranceMaladie)
-            throws DroitException, PrimeAssuranceMaladieException, JadePersistenceException, DonneeFinanciereException{
+            throws DroitException, PrimeAssuranceMaladieException, JadePersistenceException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to create FraisGarde, the droit is null or new");
         }
@@ -5877,7 +5901,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public PrimeAssuranceMaladie createPrimeAssuranceMaladie(PrimeAssuranceMaladie primeAssuranceMaladie)
-            throws DroitException, PrimeAssuranceMaladieException, JadePersistenceException, DonneeFinanciereException{
+            throws DroitException, PrimeAssuranceMaladieException, JadePersistenceException, DonneeFinanciereException {
 
 
         try {
@@ -5957,7 +5981,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public SubsideAssuranceMaladie createSubsideAssuranceMaladie(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille instanceDroitMembreFamille, SubsideAssuranceMaladie subsideAssuranceMaladie)
-            throws DroitException, SubsideAssuranceMaladieException, JadePersistenceException, DonneeFinanciereException{
+            throws DroitException, SubsideAssuranceMaladieException, JadePersistenceException, DonneeFinanciereException {
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Unable to create FraisGarde, the droit is null or new");
         }
@@ -5976,7 +6000,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public SubsideAssuranceMaladie createSubsideAssuranceMaladie(SubsideAssuranceMaladie subsideAssuranceMaladie)
-            throws DroitException, SubsideAssuranceMaladieException, JadePersistenceException, DonneeFinanciereException{
+            throws DroitException, SubsideAssuranceMaladieException, JadePersistenceException, DonneeFinanciereException {
 
 
         try {
