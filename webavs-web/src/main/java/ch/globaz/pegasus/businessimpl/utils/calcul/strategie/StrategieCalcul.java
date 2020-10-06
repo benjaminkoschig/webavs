@@ -1,11 +1,13 @@
 /**
- * 
+ *
  */
 package ch.globaz.pegasus.businessimpl.utils.calcul.strategie;
 
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
+
 import java.util.Map;
+
 import ch.globaz.pegasus.business.constantes.ConstantesCalcul;
 import ch.globaz.pegasus.business.constantes.IPCHabitat;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
@@ -28,9 +30,9 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.ControlleurVa
  * catégorie de stratégies, laquelle aura des implémentations finales pour chaque stratégie. Cette architecture permet
  * une meilleure lisibilité du fait que la classe finale d'une stratégie spécifie dans sa méthode de calcul son type
  * (revenu, dépense ou fortune).
- * 
+ *
  * @author ECO
- * 
+ *
  */
 public abstract class StrategieCalcul {
 
@@ -40,7 +42,7 @@ public abstract class StrategieCalcul {
     /**
      * ajoute un montant à la valeur d'un tuple. Si le tuple est null, il est créé avec la clé et le montant en
      * paramètre.
-     * 
+     *
      * @param base
      *            le tuple auquel le montant est ajouté.
      * @param cle
@@ -64,7 +66,7 @@ public abstract class StrategieCalcul {
     /**
      * ajoute un montant à la valeur d'un tuple. Si le tuple est null, il est créé avec la clé et le montant en
      * paramètre.
-     * 
+     *
      * @param base
      *            le tuple auquel le montant est ajouté.
      * @param cle
@@ -85,7 +87,7 @@ public abstract class StrategieCalcul {
      * des données BD brut. Cette méthode ne devrait être implémentée que par des sous-classes abstraites spécifiques à
      * une catégorie de stratégie pour appeller leur propre méthode abstraite de calcul avec une signature de méthode
      * plus explicite.
-     * 
+     *
      * @param donnee
      *            La donnée à calculer, selon l'implémentation finale de la stratégie.
      * @param context
@@ -97,11 +99,11 @@ public abstract class StrategieCalcul {
      *             si il se produit une erreur durant le calcul.
      */
     public abstract TupleDonneeRapport calcule(CalculDonneesCC donnee, CalculContext context,
-            TupleDonneeRapport resultatExistant) throws CalculException;
+                                               TupleDonneeRapport resultatExistant) throws CalculException;
 
     /**
      * Méthode qui s'assure que le montant ne soit pas vide. Leve une CalculException dans le cas contraire
-     * 
+     *
      * @param amount
      * @throws CalculException
      */
@@ -117,7 +119,7 @@ public abstract class StrategieCalcul {
     /**
      * Convertit un texte en float. Si null ou vide, retourne 0. Si le format n'est pas valide, un FormatNumberException
      * est levé.
-     * 
+     *
      * @param value
      * @return
      */
@@ -132,7 +134,7 @@ public abstract class StrategieCalcul {
     /**
      * Méthode qui convertir en float un montant précédémmnet checker afin qu'il ne soit pas vide. Leve une calcul
      * Exception dans le cas contaire.
-     * 
+     *
      * @param amount
      * @return
      * @throws CalculException
@@ -165,14 +167,18 @@ public abstract class StrategieCalcul {
     }
 
     protected ChargesLoyer getMontantChargesLoyer(String csTypeLoyer, CalculContext context,
-            float montantChargesMensuels) throws CalculBusinessException, NumberFormatException, CalculException {
+                                                  float montantChargesMensuels) throws CalculBusinessException, NumberFormatException, CalculException {
         // calcul du montant de charge
         float montantChargesAnnuels = 0f;
         String cleDepenseMontantCharges = null;
 
         if (IPCHabitat.CS_LOYER_NET_AVEC_CHARGE_FORFAITAIRES.equals(csTypeLoyer)) {
-            montantChargesAnnuels = Float.parseFloat(((ControlleurVariablesMetier) context
-                    .get(Attribut.CS_FORFAIT_FRAIS_CHAUFFAGE)).getValeurCourante());
+            if (context.contains(Attribut.REFORME)) {
+                montantChargesAnnuels = Float.parseFloat(((ControlleurVariablesMetier) context.get(Attribut.CS_REFORME_FORFAIT_FRAIS_CHAUFFAGE)).getValeurCourante());
+            } else {
+                montantChargesAnnuels = Float.parseFloat(((ControlleurVariablesMetier) context.get(Attribut.CS_FORFAIT_FRAIS_CHAUFFAGE)).getValeurCourante());
+            }
+
             cleDepenseMontantCharges = IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_FRAIS_CHAUFFAGE;
         } else if (IPCHabitat.CS_VALEUR_LOCATIVE_CHEZ_PROPRIETAIRE.equals(csTypeLoyer)) {
             // verification integrité données
@@ -181,8 +187,12 @@ public abstract class StrategieCalcul {
             }
             context.put(Attribut.HAS_HABITAT_CHEZ_PROPRIETAIRE, true);
 
-            montantChargesAnnuels = Float.parseFloat(((ControlleurVariablesMetier) context
-                    .get(Attribut.CS_FORFAIT_CHARGES)).getValeurCourante());
+            if (context.contains(Attribut.REFORME)) {
+                montantChargesAnnuels = Float.parseFloat(((ControlleurVariablesMetier) context.get(Attribut.CS_REFORME_FORFAIT_CHARGES)).getValeurCourante());
+            } else {
+                montantChargesAnnuels = Float.parseFloat(((ControlleurVariablesMetier) context.get(Attribut.CS_FORFAIT_CHARGES)).getValeurCourante());
+            }
+
             cleDepenseMontantCharges = IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_FRAIS_CHAUFFAGE;
         } else if (IPCHabitat.CS_LOYER_NET_AVEC_CHARGE.equals(csTypeLoyer)) {
             // annualise le montant des charges
@@ -196,7 +206,7 @@ public abstract class StrategieCalcul {
     /**
      * Récupère le tuple associé à une clé et ajoute au montant existant la somme en paramètre. Si la clé n'existe pas,
      * elle est créé avec comme montant initial la somme en paramètre.
-     * 
+     *
      * @param base
      *            le tuple parent
      * @param cle
@@ -218,7 +228,7 @@ public abstract class StrategieCalcul {
     /**
      * Récupère le tuple associé à la clé/valeur. Si la clé n'existe pas,
      * elle est créé avec comme valeur '0' qui représente <code>false</code>.
-     * 
+     *
      * @param base
      * @param cle
      * @param value
@@ -239,7 +249,7 @@ public abstract class StrategieCalcul {
     /**
      * Récupère le tuple associé à une clé et ajoute au montant existant la somme en paramètre. Si la clé n'existe pas,
      * elle est créé avec comme montant initial la somme en paramètre.
-     * 
+     *
      * @param base
      *            le tuple parent
      * @param cle

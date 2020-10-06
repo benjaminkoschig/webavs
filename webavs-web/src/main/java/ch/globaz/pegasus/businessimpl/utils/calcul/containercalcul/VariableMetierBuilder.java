@@ -16,8 +16,10 @@ import ch.globaz.pegasus.business.models.calcul.CalculVariableMetier;
 public class VariableMetierBuilder implements ICalculDonneesHorsDroitBuilder {
 
     private final static List<String> champsVariableMetier = Arrays.asList(new String[]{
-            IPCVariableMetier.CS_2091_DPC, IPCVariableMetier.CS_FORFAIT_FRAIS_CHAUFFAGE,
-            IPCVariableMetier.CS_FORFAIT_CHARGES, IPCVariableMetier.CS_DEDUCTION_FORAITAIRE_FORTUNE_COUPLES,
+            IPCVariableMetier.CS_2091_DPC,
+            IPCVariableMetier.CS_FORFAIT_FRAIS_CHAUFFAGE,
+            IPCVariableMetier.CS_FORFAIT_CHARGES,
+            IPCVariableMetier.CS_DEDUCTION_FORAITAIRE_FORTUNE_COUPLES,
             IPCVariableMetier.CS_DEDUCTION_FORAITAIRE_FORTUNE_CELIBATAIRES,
             IPCVariableMetier.CS_DEDUCTION_FORAITAIRE_FORTUNE_ENFANTS,
             IPCVariableMetier.CS_DEDUCTION_FORAITAIRE_IMMOBILIER_ASSURE,
@@ -72,7 +74,11 @@ public class VariableMetierBuilder implements ICalculDonneesHorsDroitBuilder {
             IPCVariableMetier.CS_REFORME_BESOINS_VITAUX_AGE_MOINS_11_ENFANTS_5,
             IPCVariableMetier.CS_REFORME_BESOINS_VITAUX_AGE_PLUS_OU_EGAL_11_ENFANTS_2,
             IPCVariableMetier.CS_REFORME_BESOINS_VITAUX_AGE_PLUS_OU_EGAL_11_ENFANTS_4,
-            IPCVariableMetier.CS_REFORME_BESOINS_VITAUX_AGE_PLUS_OU_EGAL_11_ENFANTS_5});
+            IPCVariableMetier.CS_REFORME_BESOINS_VITAUX_AGE_PLUS_OU_EGAL_11_ENFANTS_5,
+            IPCVariableMetier.CS_REFORME_DEDUCTION_FORAITAIRE_FORTUNE_CELIBATAIRES,
+            IPCVariableMetier.CS_REFORME_DEDUCTION_FORAITAIRE_FORTUNE_COUPLES,
+            IPCVariableMetier.CS_REFORME_FORFAIT_FRAIS_CHAUFFAGE,
+            IPCVariableMetier.CS_REFORME_FORFAIT_CHARGES});
     private final static List<String> champsVariableMetierAvecFraction = Arrays.asList(new String[]{
             IPCVariableMetier.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE,
             IPCVariableMetier.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_HOME,

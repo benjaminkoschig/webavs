@@ -176,6 +176,14 @@ public class CalculComparatifServiceImpl extends PegasusAbstractServiceImpl impl
     public void consolideCacheDonneesPersonnes(List<PeriodePCAccordee> listePCAccordes,
                                                Map<String, JadeAbstractSearchModel> cacheDonneesBD, Map<String, CalculMembreFamille> listePersonnes,
                                                String dateFinPlage, DonneesHorsDroitsProvider containerGlobal, boolean isReforme, boolean isFratrie) throws CalculException {
+
+        String dateReforme;
+        try {
+            dateReforme = EPCProperties.DATE_REFORME_PC.getValue();
+        } catch (PropertiesException e) {
+            throw new CalculException("Unbale to obtain properties for reforme pc", e);
+        }
+
         for (PeriodePCAccordee periodePCAccordee : listePCAccordes) {
             periodePCAccordee.setCalculReforme(isReforme);
             periodePCAccordee.setFratrie(isFratrie);
@@ -206,7 +214,7 @@ public class CalculComparatifServiceImpl extends PegasusAbstractServiceImpl impl
 
             // parcourt les périodes pour executer les stratégies
             // cherche par la même occasion les entrées en home (requiert que les pca soient triés par date).
-            periodePCAccordee.consolideDonnees();
+            periodePCAccordee.consolideDonnees(dateReforme);
         }
 
         // les données consolidées sont maintenant prêtes à être calculées

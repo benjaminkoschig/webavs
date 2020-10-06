@@ -12,7 +12,9 @@ import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
+
 import java.util.Date;
+
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
@@ -30,14 +32,14 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 
 public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier implements StrategieCalculFinalisation {
 
-    private final static String[] champs = { IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_LOYER_BRUT,
+    private final static String[] champs = {IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_LOYER_BRUT,
             IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_LOYER_NET,
             IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_ACCOMPTE_CHARGES,
             IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_CHARGES_FORFAITAIRES,
             IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_VALEUR_LOCATIVE_APP_HABITE,
             IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_FRAIS_CHAUFFAGE,
             IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_DROIT_HABITATION,
-            IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_TAXES_PENSION_NON_RECONNUE };
+            IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_TAXES_PENSION_NON_RECONNUE};
 
     @Override
     public void calcule(TupleDonneeRapport donnee, CalculContext context, Date dateDebut) throws CalculException {
@@ -127,7 +129,7 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
                         charges * prorata);
                 donnee.getOrCreateEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_FRAIS_CHAUFFAGE).addValeur(
                         forfaitFraisChauffage * prorata);
-                if(context.contains(Attribut.REFORME)) {
+                if (context.contains(Attribut.REFORME)) {
                     plafond = getPlafondReforme(tupleLoyer, nbHabitants, nbPersonnesCalcul, nbPersonnesCalculSansRenteUniquement);
                     if (isFauteuilRoulant) {
                         plafond += plafondFauteuil * prorata;
@@ -161,20 +163,25 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
                     .getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_HABITATION_PRINCIPALE_NBPERSONNES);
             float prorata = checkAndCreateProrataForPersonns(nbPersonnes, nbPersonnesCalcul, false, roleHabitant);
 
-            float forfait = Float.parseFloat(((ControlleurVariablesMetier) (context.get(Attribut.CS_FORFAIT_CHARGES)))
-                    .getValeurCourante()) * prorata;
+            float forfait;
+            if (context.contains(Attribut.REFORME)) {
+                forfait = Float.parseFloat(((ControlleurVariablesMetier) (context.get(Attribut.CS_REFORME_FORFAIT_CHARGES))).getValeurCourante()) * prorata;
+            } else {
+                forfait = Float.parseFloat(((ControlleurVariablesMetier) (context.get(Attribut.CS_FORFAIT_CHARGES))).getValeurCourante()) * prorata;
+            }
+
             // Cle valeur locative au prorata nbre personnes
             donnee.getOrCreateEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_VALEUR_LOCATIVE_APP_HABITE).addValeur(
                     montantValLocative * prorata);
             // charges forfaitaires
             donnee.getOrCreateEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_CHARGES_FORFAITAIRES).addValeur(forfait);
 
-            if(context.contains(Attribut.REFORME)) {
+            if (context.contains(Attribut.REFORME)) {
                 plafond = getPlafondReforme(tupleHabitatPrincipal, nbPersonnes, nbPersonnesCalcul, nbPersonnesCalculSansRenteUniquement);
             }
         }
 
-        if(!context.contains(Attribut.REFORME)) {
+        if (!context.contains(Attribut.REFORME)) {
             // calcul du plafond max
             int nbPersonnes = (Integer) context.get(Attribut.NB_PERSONNES);
             if (nbPersonnes > 1) {
@@ -228,7 +235,7 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
 
         ForfaitPrimeAssuranceMaladieLocaliteSearch loyerMaxLocaliteSearch = new ForfaitPrimeAssuranceMaladieLocaliteSearch();
         String idLocalite = Integer.toString(donneeLoyer.getValeurEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_LOCALITE).intValue());
-        if(JadeStringUtil.isBlankOrZero(idLocalite)) {
+        if (JadeStringUtil.isBlankOrZero(idLocalite)) {
             throw new CalculException("pegasus.calcul.commune.mandatory", idLocalite);
         }
         loyerMaxLocaliteSearch.setForIdLocalite(idLocalite);
@@ -241,7 +248,7 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
         loyerMaxLocaliteSearch.setForType(EPCForfaitType.LOYER.getCode().toString());
 
         int nbPersonne;
-        if(nbPersonnesCalculSansRenteUniquement == 1 && nbHabitants > 1) {
+        if (nbPersonnesCalculSansRenteUniquement == 1 && nbHabitants > 1) {
             // Personne seule dans la famille et plusieurs personne dans l'habitat : communaute d'habitation
             nbPersonne = 0;
         } else {
@@ -257,7 +264,7 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
             throw new CalculException("pegasus.calcul.loyer.max.mandatory", idLocalite,
                     dateDebut, csType);
         }
-        if(loyerMaxLocaliteSearch.getSearchResults().length > 0) {
+        if (loyerMaxLocaliteSearch.getSearchResults().length > 0) {
             ForfaitPrimeAssuranceMaladieLocalite plafond = (ForfaitPrimeAssuranceMaladieLocalite) loyerMaxLocaliteSearch.getSearchResults()[0];
             donneeLoyer.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.PLAFOND_LOYER_ZONE, 0.0f, plafond.getSimpleForfaitPrimesAssuranceMaladie().getIdZoneForfait()));
             Float montantPlafond = Float.valueOf(plafond.getSimpleForfaitPrimesAssuranceMaladie().getMontantPrimeMoy());
@@ -273,14 +280,14 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
     /***
      * Méthode qui calcul la différence apporté par la part cantonale en CHF, pour calculer le pourcentage plus loin
      * dans le calcul
-     * 
+     *
      * @param deplafonnementAppartementProtege
      * @param plafondAvecDeplafonnement
      * @param sommeLoyers
      * @return
      */
     private float calculDiffPartCantonale(float deplafonnementAppartementProtege, float plafondAvecDeplafonnement,
-            float sommeLoyers) {
+                                          float sommeLoyers) {
         float diffPartCantonale;
 
         if (sommeLoyers < plafondAvecDeplafonnement - deplafonnementAppartementProtege) {
@@ -300,7 +307,7 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
     }
 
     private float checkAndCreateProrataForPersonns(float nbHabitants, int nbPersonnesCalcul, boolean forLoyer,
-            String roleHabitant) throws CalculException {
+                                                   String roleHabitant) throws CalculException {
 
         float prorata = 1;
         // Si nombre pas cohérent
