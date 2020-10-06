@@ -9,7 +9,6 @@ import ch.globaz.pegasus.primeassurancemaladie.PrimeAssuranceMaladieFromCSV;
 import ch.globaz.pegasus.process.adaptation.PCAdaptationUtils;
 import ch.globaz.pegasus.process.adaptation.PCProcessAdapationEnum;
 import ch.globaz.simpleoutputlist.exception.TechnicalException;
-import ch.globaz.vulpecula.comptabilite.importationcg.csv.CsvFileHelper;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.JadeClassCastException;
 import globaz.jade.context.JadeThread;
@@ -19,11 +18,15 @@ import globaz.jade.fs.JadeFsFacade;
 import globaz.jade.service.exception.JadeServiceActivatorException;
 import globaz.jade.service.exception.JadeServiceLocatorException;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.exolab.castor.persist.ClassMolderHelper.LOG;
 
@@ -103,18 +106,15 @@ public class PCProcessImportationPrimeAssuranceMaladieStep implements JadeProces
             String fileName = JadeFsFacade.readFile(nomFichierCsvDistant);
             reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
 
-            boolean first = true;
             String line;
             while ((line = reader.readLine()) != null) {
 
-                // On saute les lignes vides et les lignes commentées
-                if (line.length() == 0 || line.startsWith("#")) {
-                    continue;
-                }
+                // Regex des NSS pour s'assurer sur la ligne du CSV commence bien par un NSS.
+                Pattern patternRegexNss = Pattern.compile("[0-9]{1,3}.[0-9]{1,4}.[0-9]{1,4}.[0-9]{1,2}");
+                Matcher matcherRegexNss = patternRegexNss.matcher(line) ;
+                boolean isLineStartWithNSS = matcherRegexNss.lookingAt() ;
 
-                if (first) {
-                    first = false;
-                } else {
+                if (isLineStartWithNSS) {
                     // On extrait les éléments de la ligne
                     PrimeAssuranceMaladieFromCSV assuranceMaladie = extractDataFromCSV(line);
                     listePrimeAssuranceMaladieFromCSV.put(assuranceMaladie.getNss(), assuranceMaladie);
