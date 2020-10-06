@@ -21,7 +21,7 @@ public class PCProcessImportationPrimeAssuranceMaladieEntityHandler extends Adap
 
     @Override
     public boolean hasRetroactif() {
-        return true;
+        return false;
     }
 
     @Override
