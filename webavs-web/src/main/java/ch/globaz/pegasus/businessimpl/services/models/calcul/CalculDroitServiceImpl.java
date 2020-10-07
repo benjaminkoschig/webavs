@@ -465,16 +465,23 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                     Float montantDepensePersonnel = cc.getMontants().getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_DEPPERSO_TOTAL);
                     for (PersonnePCAccordee personnePCAccordee : cc.getPersonnes()) {
                         if (personnePCAccordee.getIsHome()) {
-                            if (personnePCAccordee.getCsRoleFamille().equals(RoleMembreFamille.CONJOINT.getValue())) {
-                                if (!JadeStringUtil.isBlankOrZero(montantTotalHome)) {
-                                    mapMontantTotalHome.put(CONJOINT_HOME, montantTotalHome);
-                                    mapMontantTotalHome.put(CONJOINT_DEP_PERS, montantDepensePersonnel.toString());
-                                }
-                            } else {
-                                if (!JadeStringUtil.isBlankOrZero(montantTotalHome)) {
-                                    mapMontantTotalHome.put(REQUERANT_HOME, montantTotalHome);
-                                    mapMontantTotalHome.put(REQUERANT_DEP_PERS, montantDepensePersonnel.toString());
-                                }
+                            if (!JadeStringUtil.isBlankOrZero(montantTotalHome)) {
+                                mapMontantTotalHome.put(REQUERANT_HOME, montantTotalHome);
+                                mapMontantTotalHome.put(REQUERANT_DEP_PERS, montantDepensePersonnel.toString());
+                            }
+                        }
+                    }
+                }
+            }
+            for (CalculComparatif cc : pcAccordee.getCalculsComparatifsConjoint()) {
+                if (cc.getIsPlanretenu()) {
+                    String montantTotalHome = cc.getMontantPrixHome();
+                    Float montantDepensePersonnel = cc.getMontants().getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_DEPPERSO_TOTAL);
+                    for (PersonnePCAccordee personnePCAccordee : cc.getPersonnes()) {
+                        if (personnePCAccordee.getIsHome()) {
+                            if (!JadeStringUtil.isBlankOrZero(montantTotalHome)) {
+                                mapMontantTotalHome.put(CONJOINT_HOME, montantTotalHome);
+                                mapMontantTotalHome.put(CONJOINT_DEP_PERS, montantDepensePersonnel.toString());
                             }
                         }
                     }
@@ -548,10 +555,10 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
         CalculPcaReplace anciennePCACourante;
         DonneeInterneHomeVersement donneeInterneHomeVersementNew;
         String idPcaOld;
-        Map<String,DonneeInterneHomeVersement> mapNewRetenues = new HashMap<>();
+        Map<String, DonneeInterneHomeVersement> mapNewRetenues = new HashMap<>();
         for (DonneeInterneHomeVersement donneeInterneHomeVersement : donneeInterneHomeVersements) {
             if (donneeInterneHomeVersement.getCsTypeVersement().equals(DonneeInterneHomeVersement.TYPE_RETENUS)) {
-                mapNewRetenues.put(donneeInterneHomeVersement.getIdTiersAdressePaiement(),donneeInterneHomeVersement);
+                mapNewRetenues.put(donneeInterneHomeVersement.getIdTiersAdressePaiement(), donneeInterneHomeVersement);
             }
         }
         if (JadeStringUtil.isBlankOrZero(simplePCAccordee.getDateFin())) {
@@ -566,7 +573,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                         search = PegasusServiceLocator.getRetenueService().search(search);
                         for (JadeAbstractModel model : search.getSearchResults()) {
                             PcaRetenue retenueAncienne = (PcaRetenue) model;
-                            if(mapNewRetenues.containsKey(retenueAncienne.getSimpleRetenue().getIdTiersAdressePmt())){
+                            if (mapNewRetenues.containsKey(retenueAncienne.getSimpleRetenue().getIdTiersAdressePmt())) {
                                 donneeInterneHomeVersementNew = mapNewRetenues.get(retenueAncienne.getSimpleRetenue().getIdTiersAdressePmt());
                                 Float montantAVerser = getMontantHome(donneeInterneHomeVersementNew.getMontantHomes(), 1);
                                 Float montantAVerserOld = Float.parseFloat(retenueAncienne.getSimpleRetenue().getMontantRetenuMensuel());
@@ -584,7 +591,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                                     PegasusServiceLocator.getRetenueService().createWithOutCheck(retenue);
                                     donneeInterneHomeVersements.remove(donneeInterneHomeVersementNew);
                                 }
-                            }else{
+                            } else {
                                 if (retenueAncienne.getCsRoleFamillePC().equals(simplePCAccordee.getCsRoleBeneficiaire())) {
                                     PcaRetenue retenue;
                                     try {
@@ -758,53 +765,58 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
     }
 
     private void mappingHomes(List<DonneeInterneHomeVersement> homeVersementList, CalculDonneesHomeSearch listHomes, List<SimplePCAccordee> allNewPca, Map<String, String> mapMontantTotalHome) throws JadeApplicationServiceNotAvailableException, PmtMensuelException {
+        int ID_PCA = 0;
+        int ROLE_BENEF = 1;
+        int MONTANT_MENSUEL = 2;
+        String idPcAccordee = "";
+        String csRoleBenef = "";
+        String montantMensuelPC = "";
+        DonneeInterneHomeVersement donnee;
+        SimplePCAccordee simplePCAccordee;
+        Map<String, SimplePCAccordee> mapToIDPCA = new HashMap<>();
+        for (SimplePCAccordee pca : allNewPca) {
+            if (!JadeStringUtil.isBlankOrZero(pca.getMontantMensuel())) {
+                mapToIDPCA.put(pca.getIdTiersBeneficiaire(), pca);
+            }
+        }
         for (JadeAbstractModel model : listHomes.getSearchResults()) {
             CalculDonneesHome home = (CalculDonneesHome) model;
             if (home.getIsVersementDirect()) {
-                DonneeInterneHomeVersement donnee;
-                for (SimplePCAccordee simplePCAccordee : allNewPca) {
-                    if (simplePCAccordee.getCsRoleBeneficiaire().equals(home.getCsRoleFamille()) && simplePCAccordee.getIdTiersBeneficiaire().equals(home.getIdTiersRegroupement())) {
-                        Map<Periode, String> mapPeriode = createPeriodeVersementHome(home.getDateDebutDFH(), home.getDateFinDFH());
-                        if (!JadeStringUtil.isBlankOrZero(simplePCAccordee.getMontantMensuel())) {
-                            for (Map.Entry<Periode, String> entry : mapPeriode.entrySet()) {
-                                String csTypeVersement = entry.getValue();
-                                Periode periode = entry.getKey();
-                                donnee = new DonneeInterneHomeVersement();
-                                donnee.setIdRenteAccordee(simplePCAccordee.getIdPrestationAccordee());
-                                donnee.setIdPca(simplePCAccordee.getIdPCAccordee());
-                                donnee.setIdAdressePaiement(home.getIdAdressePaiement());
-                                donnee.setIdTiersHome(home.getIdTiersHome());
-                                donnee.setMontantPCMensuel(simplePCAccordee.getMontantMensuel());
-                                donnee.setIdDemande(home.getIdDemande());
-                                donnee.setIdTiersHome(home.getIdTiersHome());
-                                donnee.setIdTiersAdressePaiement(home.getIdTiersHome());
-                                donnee.setIdTiersRegroupement(home.getIdTiersRegroupement());
-
-                                if (JadeStringUtil.isBlankOrZero(simplePCAccordee.getIdPrestationAccordeeConjoint())) {
-                                    donnee.setCsRoleBeneficiaire(IPCDroits.CS_ROLE_FAMILLE_REQUERANT);
-                                } else {
-                                    donnee.setCsRoleBeneficiaire(simplePCAccordee.getCsRoleBeneficiaire());
-                                }
-                                //Cas séperation où le conjoint est devenu requérant.
-                                if (donnee.getCsRoleBeneficiaire().equals(RoleMembreFamille.REQUERANT.getValue()) && !JadeStringUtil.isBlankOrZero(mapMontantTotalHome.get(REQUERANT_HOME))) {
-                                    donnee.setMontantHomes(mapMontantTotalHome.get(REQUERANT_HOME));
-                                    donnee.setMontantDepenses(mapMontantTotalHome.get(REQUERANT_DEP_PERS));
-                                } else {
-                                    donnee.setMontantHomes(mapMontantTotalHome.get(CONJOINT_HOME));
-                                    donnee.setMontantDepenses(mapMontantTotalHome.get(CONJOINT_DEP_PERS));
-                                }
-                                donnee.setCsTypeVersement(csTypeVersement);
-                                donnee.setDateDebut(periode.getDateDebut());
-                                donnee.setDateFin(periode.getDateFin());
-                                homeVersementList.add(donnee);
-                            }
+                if (mapToIDPCA.containsKey(home.getIdTiersRegroupement())) {
+                    Map<Periode, String> mapPeriode = createPeriodeVersementHome(home.getDateDebutDFH(), home.getDateFinDFH());
+                    simplePCAccordee = mapToIDPCA.get(home.getIdTiersRegroupement());
+                    for (Map.Entry<Periode, String> entry : mapPeriode.entrySet()) {
+                        String csTypeVersement = entry.getValue();
+                        Periode periode = entry.getKey();
+                        donnee = new DonneeInterneHomeVersement();
+                        donnee.setIdRenteAccordee(simplePCAccordee.getIdPrestationAccordee());
+                        donnee.setIdPca(simplePCAccordee.getIdPCAccordee());
+                        donnee.setIdAdressePaiement(home.getIdAdressePaiement());
+                        donnee.setIdTiersHome(home.getIdTiersHome());
+                        donnee.setMontantPCMensuel(simplePCAccordee.getMontantMensuel());
+                        donnee.setIdDemande(home.getIdDemande());
+                        donnee.setIdTiersHome(home.getIdTiersHome());
+                        donnee.setIdTiersAdressePaiement(home.getIdTiersHome());
+                        donnee.setIdTiersRegroupement(home.getIdTiersRegroupement());
+                        donnee.setCsRoleBeneficiaire(simplePCAccordee.getCsRoleBeneficiaire());
+                        //Cas séperation où le conjoint est devenu requérant.
+                        if (donnee.getCsRoleBeneficiaire().equals(RoleMembreFamille.REQUERANT.getValue())) {
+                            donnee.setMontantHomes(mapMontantTotalHome.get(REQUERANT_HOME));
+                            donnee.setMontantDepenses(mapMontantTotalHome.get(REQUERANT_DEP_PERS));
+                        } else {
+                            donnee.setMontantHomes(mapMontantTotalHome.get(CONJOINT_HOME));
+                            donnee.setMontantDepenses(mapMontantTotalHome.get(CONJOINT_DEP_PERS));
                         }
+                        donnee.setCsTypeVersement(csTypeVersement);
+                        donnee.setDateDebut(periode.getDateDebut());
+                        donnee.setDateFin(periode.getDateFin());
+                        homeVersementList.add(donnee);
+
                     }
+
                 }
             }
-
         }
-
 
     }
 
