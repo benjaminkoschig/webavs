@@ -29,6 +29,8 @@ public class SimplePCAccordee extends JadeSimpleModel {
     private Boolean isSupprime = null;
     private Boolean isDateFinForce = false;
     private Boolean isProvisoire = false;
+    //LOCAL
+    private String idTiersBeneficiaire = "";
 
     //NOT IN DB
     private String montantMensuel = "";
@@ -240,5 +242,12 @@ public class SimplePCAccordee extends JadeSimpleModel {
 
     public void setMontantMensuel(String montantMensuel) {
         this.montantMensuel = montantMensuel;
+    }
+    public String getIdTiersBeneficiaire() {
+        return idTiersBeneficiaire;
+    }
+
+    public void setIdTiersBeneficiaire(String idTiersBeneficiaire) {
+        this.idTiersBeneficiaire = idTiersBeneficiaire;
     }
 }

@@ -7,10 +7,12 @@ import ch.globaz.pegasus.business.exceptions.models.habitat.SejourMoisPartielHom
 import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.*;
 import ch.globaz.pegasus.business.models.assurancemaladie.*;
 import ch.globaz.pegasus.business.models.calcul.CalculPcaReplace;
+import ch.globaz.pegasus.business.models.creancier.*;
 import ch.globaz.pegasus.business.models.habitat.*;
 import ch.globaz.pegasus.business.models.pcaccordee.PcaRetenue;
 import ch.globaz.pegasus.business.models.pcaccordee.PcaRetenueSearch;
 import ch.globaz.pegasus.business.models.revenusdepenses.*;
+import globaz.externe.IPRConstantesExternes;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.hera.api.ISFSituationFamiliale;
@@ -4375,9 +4377,40 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
                 dateProchainPaiement = PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt();
                 for (JadeAbstractModel absDonnee : pcaRetenueSearch.getSearchResults()) {
                     PcaRetenue retenue = (PcaRetenue) absDonnee;
+                    CreanceAccordeeSearch creancierSearch = new CreanceAccordeeSearch();
+                    creancierSearch.setForIdPCAccordee(retenue.getIdPCAccordee());
+                    creancierSearch.setForIsHome("true");
+                    int nbreResult = PegasusServiceLocator.getCreanceAccordeeService().count(creancierSearch);
                     if (retenue.getSimpleRetenue().getDateFinRetenue().equals(dateProchainPaiement)) {
                         retenue.getSimpleRetenue().setDateFinRetenue("");
                         PegasusServiceLocator.getRetenueService().update(retenue);
+                    }
+
+                    if(nbreResult==0){
+                        SimpleCreancierHystoriqueSearch simpleCreancierHystoriqueSearch = new SimpleCreancierHystoriqueSearch();
+                        simpleCreancierHystoriqueSearch.setForIdPcAccordee(retenue.getIdPCAccordee());
+                        simpleCreancierHystoriqueSearch = PegasusImplServiceLocator.getSimpleCreancierHystoriqueService().search(simpleCreancierHystoriqueSearch);
+                        for(JadeAbstractModel model : simpleCreancierHystoriqueSearch.getSearchResults()){
+                            SimpleCreancierHystorique simpleCreancierHystorique = (SimpleCreancierHystorique) model;
+                            SimpleCreancier simpleCreancier = new SimpleCreancier();
+                            simpleCreancier.setId(simpleCreancierHystorique.getIdCreancier());
+                            simpleCreancier.setCsEtat(simpleCreancierHystorique.getCsEtat());
+                            simpleCreancier.setCsTypeCreance(simpleCreancierHystorique.getCsTypeCreance());
+                            simpleCreancier.setIdDemande(simpleCreancierHystorique.getIdDemande());
+                            simpleCreancier.setIdDomaineApplicatif(simpleCreancierHystorique.getIdDomaineApplicatif());
+                            simpleCreancier.setIdTiers(simpleCreancierHystorique.getIdTiers());
+                            simpleCreancier.setIdTiersAdressePaiement(simpleCreancierHystorique.getIdTiersAdressePaiement());
+                            simpleCreancier.setIdTiersRegroupement(simpleCreancierHystorique.getIdTiersRegroupement());
+                            simpleCreancier.setMontant(simpleCreancierHystorique.getMontantCreancier());
+                            simpleCreancier.setIsCalcule(false);
+                            simpleCreancier.setIsHome(true);
+                            simpleCreancier = PegasusImplServiceLocator.getSimpleCreancierService().create(simpleCreancier);
+                            SimpleCreanceAccordee simpleCreanceAccordee = new SimpleCreanceAccordee();
+                            simpleCreanceAccordee.setIdCreancier(simpleCreancier.getId());
+                            simpleCreanceAccordee.setIdPCAccordee(simpleCreancierHystorique.getIdPCAccordee());
+                            simpleCreanceAccordee.setMontant(simpleCreancierHystorique.getMontantCreancieAccordee());
+                            PegasusImplServiceLocator.getSimpleCreanceAccordeeService().create(simpleCreanceAccordee);
+                        }
                     }
                 }
             } catch (PmtMensuelException e) {

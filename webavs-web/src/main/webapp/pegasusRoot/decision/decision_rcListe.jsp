@@ -87,8 +87,11 @@ $(function () {
 		 	<% if(!decision.hasDecompte()){%>
 		 		<ct:menuExcludeNode nodeId="DECOMPTE"/>
 		 		<ct:menuExcludeNode nodeId="DETTE_EN_COMPTAT"/> 
-		 		<ct:menuExcludeNode nodeId="CREANCE_ACCORDEE"/> 
-		 	<%}%>
+
+		 	<%}else%>
+				<% if(!decision.hasCreancier()){%>
+				<ct:menuExcludeNode nodeId="CREANCE_ACCORDEE"/>
+				<%}%>
 		 	<ct:menuExcludeNode nodeId="DECISION_DETAIL"/> 		 	
 		 	<ct:menuExcludeNode nodeId="RETOUR_LIST"/>
 		 	<ct:menuParam key="idVersionDroit" value="<%=decision.getIdVersionDroit()%>"/>

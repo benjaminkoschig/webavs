@@ -3,6 +3,7 @@
  */
 package globaz.pegasus.vb.decision;
 
+import ch.globaz.pegasus.business.models.creancier.CreancierSearch;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
@@ -242,6 +243,18 @@ public class PCDecisionViewBean extends BJadePersistentObjectViewBean {
         } else {
             return false;
         }
+    }
+
+    public boolean hasCreancier() throws Exception {
+        CreancierSearch creanceAccordeeSearch = new CreancierSearch();
+        creanceAccordeeSearch.setForIdDemande(decision.getSimpleDroit().getIdDemandePC());
+        creanceAccordeeSearch = PegasusServiceLocator.getCreancierService().search(creanceAccordeeSearch);
+        if (PegasusServiceLocator.getCreancierService().count(creanceAccordeeSearch) > 0) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     public String isDacComingFromRepriseClassCss() {

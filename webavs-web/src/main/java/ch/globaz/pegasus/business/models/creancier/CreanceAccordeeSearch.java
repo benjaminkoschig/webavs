@@ -12,6 +12,7 @@ public class CreanceAccordeeSearch extends JadeSearchComplexModel {
     private String forIdDroit = null;
     private String forIdPCAccordee = null;
     private String forIdVersionDroit = null;
+    private String forIsHome = null;
 
     public String getForIdCreancier() {
         return forIdCreancier;
@@ -66,6 +67,14 @@ public class CreanceAccordeeSearch extends JadeSearchComplexModel {
     public void setForIdVersionDroit(String forIdVersionDroit) {
         this.forIdVersionDroit = forIdVersionDroit;
     }
+    public String getForIsHome() {
+        return forIsHome;
+    }
+
+    public void setForIsHome(String forIsHome) {
+        this.forIsHome = forIsHome;
+    }
+
 
     @Override
     public Class<CreanceAccordee> whichModelClass() {

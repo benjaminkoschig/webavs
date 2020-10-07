@@ -24,6 +24,7 @@ public class SimpleCreancier extends JadeSimpleModel {
     private String montant = null;
     private String referencePaiement = null;
     private Boolean isCalcule = false;
+    private Boolean isHome = false;
 
     /**
      * @return the csEtat
@@ -221,6 +222,14 @@ public class SimpleCreancier extends JadeSimpleModel {
 
     public void setIsCalcule(Boolean isCalcule) {
         this.isCalcule = isCalcule;
+    }
+
+    public Boolean getIsHome() {
+        return isHome;
+    }
+
+    public void setIsHome(Boolean home) {
+        isHome = home;
     }
 
 }

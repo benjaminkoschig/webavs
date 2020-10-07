@@ -96,7 +96,12 @@
 		<ct:menuActivateNode active="no" nodeId="DECOMPTE"/>  
 		<ct:menuActivateNode active="no" nodeId="DETTE_EN_COMPTAT"/>
 		<ct:menuActivateNode active="no" nodeId="CREANCE_ACCORDEE"/>
-	<%}%> 
+	<%}%>
+	<%if (viewBean.hasCreancier()) {%>
+	<ct:menuActivateNode active="yes" nodeId="CREANCE_ACCORDEE"/>
+	<%} else {%>
+	<ct:menuActivateNode active="no" nodeId="CREANCE_ACCORDEE"/>
+	<%}%>
 	<ct:menuActivateNode active="yes" nodeId="IMPRESSIONS"/>
 	<ct:menuSetAllParams key="idVersionDroit" value="<%=viewBean.getIdVersionDroit()%>"/>
 	<ct:menuSetAllParams key="idDroit" value="<%=viewBean.getIdDroit()%>"/>

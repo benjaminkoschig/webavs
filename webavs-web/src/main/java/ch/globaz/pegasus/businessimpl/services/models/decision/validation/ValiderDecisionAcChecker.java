@@ -27,7 +27,7 @@ public class ValiderDecisionAcChecker {
 
         if (!ValiderDecisionAcChecker.checkIfCoherenceRetenue(data.getDecisionsApresCalcul(),
                 data.getRentuesPayements())) {
-            throw new DecisionException("pegasus.validationDecision.coherenceRetenue");
+            JadeThread.logWarn(ValiderDecisionAcChecker.class.getClass().getName(),"pegasus.validationDecision.coherenceRetenue");
         }
 
         if (!ValiderDecisionAcChecker.checkIfWithoutRetroCoherence(data)) {

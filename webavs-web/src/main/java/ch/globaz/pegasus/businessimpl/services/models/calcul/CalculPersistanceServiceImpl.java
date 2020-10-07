@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package ch.globaz.pegasus.businessimpl.services.models.calcul;
 
@@ -217,6 +217,8 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
 
         periode.setIdSimplePcAccordee(simplePcAccordee.getIdPCAccordee());
 
+        simplePcAccordee.setIdTiersBeneficiaire(spa.getIdTiersBeneficiaire());
+
         pcAccordeePlanCalcul.setSimplePCAccordee(simplePcAccordee);
 
         // ajout des plans de calcul
@@ -278,7 +280,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
                     // on froce une date fin pour le couple séparé par la maladie seulement si les 2 PCA sont en refsu.
                     if ((ccConjoint == null)
                             || ((ccConjoint != null) && IPCValeursPlanCalcul.STATUS_REFUS
-                                    .equals(ccConjoint.getEtatPC()))) {
+                            .equals(ccConjoint.getEtatPC()))) {
                         simplePcAccordee.setDateFin("12."
                                 + JadeDateUtil.convertDateMonthYear(periode.getStrDateDebut()).substring(3));
                         simplePcAccordee.setIsDateFinForce(true);
@@ -308,7 +310,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
         // prerequis: le simpleinfocompta[0] est toujours celui du requerant. le 2e est celui du conjoint.
         SimplePrestationsAccordees simplePrestationAccordeeRequerant = createSimplePrestationAccordee(periode,
 
-        simpleInformationsComptabilite.get(0), periode.getCCRetenu()[0], false, anciennePcaRequerant);
+                simpleInformationsComptabilite.get(0), periode.getCCRetenu()[0], false, anciennePcaRequerant);
         result.add(simplePrestationAccordeeRequerant); // pour requerant
         createVentilationPartCantonalePC(periode, simplePrestationAccordeeRequerant.getId(), false,
                 periode.getCCRetenu()[0].getMontantPartCantonale());
@@ -415,7 +417,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
 
         if ((calculPcaReplace != null)
                 && !(IPCValeursPlanCalcul.STATUS_REFUS.equals(ccRetenu.getEtatPC()) || IPCValeursPlanCalcul.STATUS_OCTROI_PARTIEL
-                        .equals(ccRetenu.getEtatPC()))) {
+                .equals(ccRetenu.getEtatPC()))) {
             if (calculPcaReplace.getSimplePrestationsAccordees().getIsPrestationBloquee()) {
                 spa.setIsPrestationBloquee(true);
             } else {
@@ -432,7 +434,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.pegasus.business.services.models.calcul.CalculPersistanceService
      * #deserialiseDonneesCcXML(ch.globaz.pegasus.businessimpl.utils.calcul. CalculComparatif, java.lang.String)
      */
@@ -464,7 +466,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
 
     /**
      * Remise à zéro des id et spy de l'information compta pour persister
-     * 
+     *
      * @param infoCompta
      */
     private void generateNewInfoComptaForPersist(SimpleInformationsComptabilite infoCompta) {
@@ -476,7 +478,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
 
         final Map<String, String> mappage = new HashMap<String, String>() {
             /**
-             * 
+             *
              */
             private static final long serialVersionUID = 1L;
 
@@ -495,7 +497,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
 
     @Override
     public void recupereAnciensPCAccordee(String dateDebutPlage, Droit droit,
-            Map<String, JadeAbstractSearchModel> cacheDonneesBD) throws PCAccordeeException, JadePersistenceException,
+                                          Map<String, JadeAbstractSearchModel> cacheDonneesBD) throws PCAccordeeException, JadePersistenceException,
             CalculException, PropertiesException {
         CalculPcaReplaceSearch search = new CalculPcaReplaceSearch();
         search.setForIdDroit(droit.getSimpleDroit().getIdDroit());
@@ -504,7 +506,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
         String date = dateDebutPlage.substring(3);
         // On fait moins un mois pour les jours d'appoints car on a besoin de l'ancienne pca pour les calculer
         if (EPCProperties.GESTION_JOURS_APPOINTS.getBooleanValue()
-        //    && PCproperties.isJourAppoint(dateDebutPlage)
+            //    && PCproperties.isJourAppoint(dateDebutPlage)
         ) {
             date = JadeDateUtil.addMonths(dateDebutPlage, -1).substring(3);
         }
@@ -515,7 +517,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
 
     /**
      * Permet de reporter le blocage des anciennes pca dans la nouvelle ansi que les retenues
-     * 
+     *
      * @param anciennesPCAccordees
      * @param spas
      * @throws JadePersistenceException
@@ -543,57 +545,62 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
                         BigDecimal montantNewPca = new BigDecimal(pca.getSimplePlanDeCalcul().getMontantPCMensuelle());
                         CheckReportRetenue checkReportRetenue = new CheckReportRetenue(anciennePCACourante,
                                 montantNewPca, search, isForDom2R);
-                        if (checkReportRetenue.isReporteRetenuePossible()) {
-
+                        if (checkReportRetenue.hasRetenue()) {
                             for (JadeAbstractModel model : search.getSearchResults()) {
-                                PcaRetenue retenue;
-                                try {
-                                    retenue = (PcaRetenue) JadePersistenceUtil.clone(model);
-                                } catch (JadeCloneModelException e) {
-                                    throw new PCAccordeeException("Unable to clone this PCA id: "
-                                            + pca.getSimplePCAccordee().getIdPCAccordee());
+                                PcaRetenue retenueAncienne = (PcaRetenue) model;
+//                                Float montantAVerser = getMontantHome(donneeInterneHomeVersement.getMontantHomes(), 1);
+                                Float montantAVerserOld = Float.parseFloat(retenueAncienne.getSimpleRetenue().getMontantRetenuMensuel());
+                                if(retenueAncienne.getCsRoleFamillePC().equals(pca.getSimplePCAccordee().getCsRoleBeneficiaire())){
+                                    PcaRetenue retenue;
+                                    try {
+                                        retenue = (PcaRetenue) JadePersistenceUtil.clone(model);
+                                    } catch (JadeCloneModelException e) {
+                                        throw new PCAccordeeException("Unable to clone this PCA id: "
+                                                + pca.getSimplePCAccordee().getIdPCAccordee());
+                                    }
+                                    retenue.setIdPCAccordee(pca.getSimplePCAccordee().getIdPCAccordee());
+                                    retenue.getSimpleRetenue().setDateDebutRetenue(
+                                            PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt());
+                                    PegasusServiceLocator.getRetenueService().createWithOutCheck(retenue);
                                 }
-                                retenue.setIdPCAccordee(pca.getSimplePCAccordee().getIdPCAccordee());
-                                retenue.getSimpleRetenue().setDateDebutRetenue(
-                                        PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt());
-                                PegasusServiceLocator.getRetenueService().createWithOutCheck(retenue);
-                            }
-                        } else {
-                            String[] param = new String[3];
-
-                            if (isForDom2R) {
-                                if (!checkReportRetenue.isMontantPresationSuffisantRequerant()) {
-                                    param[0] = new FWCurrency(checkReportRetenue.getSumRetenueRequerant().toString())
-                                            .toStringFormat();
-                                    param[1] = new FWCurrency(pca.getSimplePlanDeCalcul().getMontantPCMensuelle())
-                                            .toStringFormat();
-                                    param[2] = BSessionUtil.getSessionFromThreadContext().getCodeLibelle(
-                                            IPCDroits.CS_ROLE_FAMILLE_REQUERANT);
-                                    JadeThread.logWarn(this.getClass().getName(),
-                                            "pegasus.calcul.persistance.retenu.montantInsufisant", param);
-                                }
-                                if (!checkReportRetenue.isMontantPresationSuffisantConjoint()) {
-                                    param[0] = new FWCurrency(checkReportRetenue.getSumRetenueConjoint().toString())
-                                            .toStringFormat();
-                                    param[1] = new FWCurrency(pca.getSimplePlanDeCalcul().getMontantPCMensuelle())
-                                            .toStringFormat();
-                                    param[2] = BSessionUtil.getSessionFromThreadContext().getCodeLibelle(
-                                            IPCDroits.CS_ROLE_FAMILLE_CONJOINT);
-                                    JadeThread.logWarn(this.getClass().getName(),
-                                            "pegasus.calcul.persistance.retenu.montantInsufisant", param);
-                                }
-                            } else {
-                                param[0] = new FWCurrency(checkReportRetenue.getSumRetenueRequerant().toString())
-                                        .toStringFormat();
-                                param[1] = new FWCurrency(pca.getSimplePlanDeCalcul().getMontantPCMensuelle())
-                                        .toStringFormat();
-                                param[2] = BSessionUtil.getSessionFromThreadContext().getCodeLibelle(
-                                        IPCDroits.CS_ROLE_FAMILLE_REQUERANT);
-                                JadeThread.logWarn(this.getClass().getName(),
-                                        "pegasus.calcul.persistance.retenu.montantInsufisant", param);
 
                             }
                         }
+//                        } else{
+//                            String[] param = new String[3];
+//
+//                            if (isForDom2R) {
+//                                if (!checkReportRetenue.isMontantPresationSuffisantRequerant()) {
+//                                    param[0] = new FWCurrency(checkReportRetenue.getSumRetenueRequerant().toString())
+//                                            .toStringFormat();
+//                                    param[1] = new FWCurrency(pca.getSimplePlanDeCalcul().getMontantPCMensuelle())
+//                                            .toStringFormat();
+//                                    param[2] = BSessionUtil.getSessionFromThreadContext().getCodeLibelle(
+//                                            IPCDroits.CS_ROLE_FAMILLE_REQUERANT);
+//                                    JadeThread.logWarn(this.getClass().getName(),
+//                                            "pegasus.calcul.persistance.retenu.montantInsufisant", param);
+//                                }
+//                                if (!checkReportRetenue.isMontantPresationSuffisantConjoint()) {
+//                                    param[0] = new FWCurrency(checkReportRetenue.getSumRetenueConjoint().toString())
+//                                            .toStringFormat();
+//                                    param[1] = new FWCurrency(pca.getSimplePlanDeCalcul().getMontantPCMensuelle())
+//                                            .toStringFormat();
+//                                    param[2] = BSessionUtil.getSessionFromThreadContext().getCodeLibelle(
+//                                            IPCDroits.CS_ROLE_FAMILLE_CONJOINT);
+//                                    JadeThread.logWarn(this.getClass().getName(),
+//                                            "pegasus.calcul.persistance.retenu.montantInsufisant", param);
+//                                }
+//                            } else {
+//                                param[0] = new FWCurrency(checkReportRetenue.getSumRetenueRequerant().toString())
+//                                        .toStringFormat();
+//                                param[1] = new FWCurrency(pca.getSimplePlanDeCalcul().getMontantPCMensuelle())
+//                                        .toStringFormat();
+//                                param[2] = BSessionUtil.getSessionFromThreadContext().getCodeLibelle(
+//                                        IPCDroits.CS_ROLE_FAMILLE_REQUERANT);
+//                                JadeThread.logWarn(this.getClass().getName(),
+//                                        "pegasus.calcul.persistance.retenu.montantInsufisant", param);
+//
+//                            }
                     }
                 }
             }
@@ -649,7 +656,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
                             spas.get(CalculPersistanceServiceImpl.ID_SIMPLE_PRESTATION_ACCORDEE_REQUERANT),
                             spas.get(CalculPersistanceServiceImpl.ID_SIMPLE_PRESTATION_ACCORDEE_CONJOINT), false,
                             idEntityGroup);
-            reporterLaRetenuSiExistant(anciennesPCAccordees, pca, true);
+//            reporterLaRetenuSiExistant(anciennesPCAccordees, pca, true);
             newPca.add(pca);
         } else {
             // cherche cas de couple séparé
@@ -658,7 +665,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
                 pca = this.createPCAccordee(droit, periode, anciennesPCAccordees,
                         spas.get(CalculPersistanceServiceImpl.ID_SIMPLE_PRESTATION_ACCORDEE_CONJOINT), true,
                         idEntityGroup);
-                reporterLaRetenuSiExistant(anciennesPCAccordees, pca, false);
+//                reporterLaRetenuSiExistant(anciennesPCAccordees, pca, false);
                 if (periode.getJoursAppointConjoint() != null) {
                     periode.getJoursAppointConjoint().setIdPCAccordee(pca.getId());
                     SimpleJoursAppoint sjaConjoint = PegasusImplServiceLocator.getSimpleJoursAppointService().create(
@@ -669,7 +676,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
             pca = this.createPCAccordee(droit, periode, anciennesPCAccordees,
                     spas.get(CalculPersistanceServiceImpl.ID_SIMPLE_PRESTATION_ACCORDEE_REQUERANT), false,
                     idEntityGroup);
-            reporterLaRetenuSiExistant(anciennesPCAccordees, pca, false);
+//            reporterLaRetenuSiExistant(anciennesPCAccordees, pca, false);
             if (periode.getJoursAppointRequerant() != null) {
                 periode.getJoursAppointRequerant().setIdPCAccordee(pca.getId());
                 periode.getJoursAppointRequerant().setIdPCAccordee(pca.getId());
@@ -794,7 +801,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.pegasus.business.services.models.calcul.CalculPersistanceService
      * #serialiseDonneesCcXML(ch.globaz.pegasus.businessimpl.utils.calcul. CalculComparatif)
      */

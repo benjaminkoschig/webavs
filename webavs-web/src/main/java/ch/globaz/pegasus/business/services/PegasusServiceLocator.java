@@ -167,6 +167,7 @@ public abstract class PegasusServiceLocator {
         return (CreancierService) JadeApplicationServiceLocator.getInstance().getServiceImpl(CreancierService.class);
     }
 
+
     /**
      * @return Implémentation du service DecisionAdaptation
      * @throws JadeApplicationServiceNotAvailableException
@@ -660,4 +661,6 @@ public abstract class PegasusServiceLocator {
     public static SimpleRestitutionService getRestitutionService() throws JadeApplicationServiceNotAvailableException {
         return (SimpleRestitutionService) JadeApplicationServiceLocator.getInstance().getServiceImpl(SimpleRestitutionService.class);
     }
+
+
 }

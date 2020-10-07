@@ -1,8 +1,11 @@
 /**
- * 
+ *
  */
 package globaz.pegasus.vb.decision;
 
+import ch.globaz.pegasus.business.exceptions.models.crancier.CreancierException;
+import ch.globaz.pegasus.business.models.creancier.CreanceAccordeeSearch;
+import ch.globaz.pegasus.business.models.creancier.CreancierSearch;
 import ch.globaz.pegasus.businessimpl.services.models.decision.DecisionApresCalculServiceImpl;
 import globaz.babel.api.ICTDocument;
 import globaz.externe.IPRConstantesExternes;
@@ -20,12 +23,14 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 import globaz.pegasus.utils.PCUserHelper;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.prestation.tools.nnss.PRNSSUtil;
+
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import ch.globaz.babel.business.exception.CatalogueTexteException;
 import ch.globaz.babel.business.services.BabelServiceLocator;
 import ch.globaz.common.business.language.LanguageResolver;
@@ -124,7 +129,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Constructeur simple
-     * 
+     *
      * @throws JadePersistenceException
      */
     public PCDecisionApresCalculViewBean() throws JadePersistenceException, RemoteException {
@@ -148,7 +153,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Retourne l'état de la décision refus, octroi ou partiel
-     * 
+     *
      * @return, contante enum de EtatDecision
      * @throws DecisionException
      */
@@ -166,7 +171,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#add()
      */
     @Override
@@ -175,7 +180,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Retourne une chaine de caractère comprenant les membres de familles compris dans le calcul
-     * 
+     *
      * @return chaine de caractère
      * @throws PersonneDansPlanCalculException
      * @throws JadeApplicationServiceNotAvailableException
@@ -199,7 +204,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
                 String csRole = IPCDroits.CS_ROLE_FAMILLE_CONJOINT;
                 if (isForConjointDom2R()
                         || decisionApresCalcul.getPcAccordee().getSimplePCAccordee().getCsRoleBeneficiaire()
-                                .equals(IPCDroits.CS_ROLE_FAMILLE_CONJOINT)) {
+                        .equals(IPCDroits.CS_ROLE_FAMILLE_CONJOINT)) {
                     csRole = IPCDroits.CS_ROLE_FAMILLE_REQUERANT;
                 }
                 // Conjoint
@@ -245,7 +250,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#delete()
      */
     @Override
@@ -254,7 +259,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Check si décision ok, pas de la reprise
-     * 
+     *
      * @throws PCAccordeeException
      * @throws JadeApplicationServiceNotAvailableException
      * @throws DecisionException
@@ -276,7 +281,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Retourne l'adresse de courier du tiers
-     * 
+     *
      * @return String, adresse de courrier
      * @throws JadeApplicationServiceNotAvailableException
      * @throws JadePersistenceException
@@ -295,7 +300,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Retourne l'adresse de paiement du tiers
-     * 
+     *
      * @return String, adresse de paiement
      * @throws JadePersistenceException
      * @throws JadeApplicationException
@@ -357,7 +362,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Retourne le code système du genre de la decision
-     * 
+     *
      * @return
      */
     public String getCsGenreDecision() {
@@ -373,7 +378,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Retourne le tyoe de la decision
-     * 
+     *
      * @return
      */
     public String getDecisionType() {
@@ -394,7 +399,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Retourne le gestionnaire
-     * 
+     *
      * @return String, nom du gestionnaire
      */
     public String getGestionnaire() {
@@ -403,7 +408,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#getId()
      */
     @Override
@@ -425,7 +430,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Reroune l'id de la decision lié, le cas échéant, 0 dans le cas contraire
-     * 
+     *
      * @return
      */
     public String getIdDecisionConjoint() {
@@ -440,7 +445,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Retourn l'id du header de la decision
-     * 
+     *
      * @return
      */
     public String getIdDecisionHeader() {
@@ -449,7 +454,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Retourne l'id de la demande PC
-     * 
+     *
      * @return
      */
     public String getIdDemandePc() {
@@ -491,7 +496,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Si l'idTier de la demande n'est pas egal a l'idTiers Beneficiaire de la decision, alors conjoint
-     * 
+     *
      * @return
      */
     private Boolean isForConjointDom2R() {
@@ -503,7 +508,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
     /**
      * Retourne un chaine correspondant à la description de la somme des jours d'appoint, si il y en a, ou un message
      * aucun JA
-     * 
+     *
      * @return chaine de caractère
      */
     public String getJoursAppoint() {
@@ -527,10 +532,10 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Retourne la liste des annexes liés à la décision
-     * 
+     *
      * @return
      */
-    public ArrayList<SimpleAnnexesDecision> getListeAnnexes() {       
+    public ArrayList<SimpleAnnexesDecision> getListeAnnexes() {
         return decisionApresCalcul.getDecisionHeader().getListeAnnexes();
     }
 
@@ -543,7 +548,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Retourne la liste des copies
-     * 
+     *
      * @return
      */
     public ArrayList<CopiesDecision> getListeCopies() {
@@ -552,7 +557,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Retourne le lot de la décision
-     * 
+     *
      * @return
      */
     public String getLotDecision() {
@@ -561,7 +566,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Retourne la monnaie
-     * 
+     *
      * @return
      */
     public String getMonnaie() {
@@ -603,7 +608,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Retourne l'état de la pca en fonction du résultat du plan de calcul PARTIEL, OCTROI, ou montant si octroyé
-     * 
+     *
      * @return
      */
     public String getPCAResultState() {
@@ -630,7 +635,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Retourne le modele simple de la personne
-     * 
+     *
      * @return personneSimpleModel
      */
     private PersonneSimpleModel getPersonne(String membre) {
@@ -653,7 +658,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Retourne le modele complex de la personne
-     * 
+     *
      * @return personneComplexModel
      */
     private PersonneEtendueSimpleModel getPersonneEtendue(String membre) {
@@ -698,7 +703,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Retourne l'objet session
-     * 
+     *
      * @return objet BSession
      */
     public BSession getSession() {
@@ -707,7 +712,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.vb.BJadePersistentObjectViewBean#getSpy()
      */
     @Override
@@ -717,7 +722,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Retourne le Tiers
-     * 
+     *
      * @return
      */
     public TiersSimpleModel getTiers(String membre) {
@@ -735,7 +740,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Formatte une chaine de caratere pour afficher les infos du requérant
-     * 
+     *
      * @return
      */
     public String getTiersInfosAsString(String membre) {
@@ -763,7 +768,6 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
     // public String getValidAction() {
     // return this.validAction;
     // }
-
     public String getValiditeInfos() {
         String debut = decisionApresCalcul.getDecisionHeader().getSimpleDecisionHeader().getDateDebutDecision();
         String fin = decisionApresCalcul.getDecisionHeader().getSimpleDecisionHeader().getDateFinDecision();
@@ -788,9 +792,9 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Retourne l'état (true/false) de létat d'insertion de l'att Billag (auto ou manuel)
-     * 
+     *
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     public boolean hasBillagAuto() throws Exception {
         // if (!isPcaEnRefus()) {
@@ -799,9 +803,9 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
                 Langues langueTiers = LanguageResolver.resolveISOCode(decisionApresCalcul.getPcAccordee().getPersonneEtendue().getTiers()
                         .getLangue());
                 String prop = getSession().getApplication().getProperty(IPCDecision.DESTINATAIRE_REDEVANCE);
-                String message = 
+                String message =
                         MessageFormat.format(LanguageResolver.resolveLibelleFromLabel(
-                        langueTiers.getCodeIso(), IPCDecision.BILLAG_ANNEXES_STRING, getSession()), prop);
+                                langueTiers.getCodeIso(), IPCDecision.BILLAG_ANNEXES_STRING, getSession()), prop);
                 annexe.setValeur(message);
                 return true;
             }
@@ -821,6 +825,17 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
                 && decisionApresCalcul.getPcAccordee().getSimplePCAccordee().getIsCalculRetro();
     }
 
+    public boolean hasCreancier() throws Exception {
+        CreancierSearch creanceAccordeeSearch = new CreancierSearch();
+        creanceAccordeeSearch.setForIdDemande(decisionApresCalcul.getPcAccordee().getSimpleDroit().getIdDemandePC());
+        if (PegasusServiceLocator.getCreancierService().count(creanceAccordeeSearch) > 0) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
     public Boolean hasPersonnesComprises() {
         return nbresPersonnesComprises > 0;
     }
@@ -828,7 +843,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
     /**
      * Retourne true si la decision est prete pour la validation Condition: doit etre une decision apres calcul, et
      * pré-validé
-     * 
+     *
      * @return
      */
     public Boolean isDecisionReadyForValidation() {
@@ -842,12 +857,12 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
         return isValider()
                 && isLotOuvert
                 && !IPCDemandes.CS_REOUVERT.equals(decisionApresCalcul.getVersionDroit().getDemande()
-                        .getSimpleDemande().getCsEtatDemande());
+                .getSimpleDemande().getCsEtatDemande());
     }
 
     /**
      * Retourne true si la decision est la plus recente du lot
-     * 
+     *
      * @return
      */
     public Boolean isMostRecentDecision() {
@@ -858,14 +873,14 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Retourne vrai si etat pre valider
-     * 
+     *
      * @return Boolean etat pre valider
      */
     public Boolean isPreValider() {
         return IPCDecision.CS_ETAT_PRE_VALIDE.equals(decisionApresCalcul.getDecisionHeader().getSimpleDecisionHeader()
                 .getCsEtatDecision())
                 || IPCDecision.CS_VALIDE.equals(decisionApresCalcul.getDecisionHeader().getSimpleDecisionHeader()
-                        .getCsEtatDecision());
+                .getCsEtatDecision());
     }
 
     private Boolean isRequerant() {
@@ -879,7 +894,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Retourne true si la decision est valider
-     * 
+     *
      * @return
      */
     public Boolean isValider() {
@@ -892,14 +907,14 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
         return "1".equals(getNoVersion())
                 && PegasusImplServiceLocator.getSimpleDemandeService().isDemandeInitial(
-                        decisionApresCalcul.getVersionDroit().getDemande().getSimpleDemande(),
-                        decisionApresCalcul.getPcAccordee().getSimplePCAccordee().getDateDebut());
+                decisionApresCalcul.getVersionDroit().getDemande().getSimpleDemande(),
+                decisionApresCalcul.getPcAccordee().getSimplePCAccordee().getDateDebut());
     }
 
     /**
      * Custom action prévalidation Impression ftp auto des documents si properties Changement de l'état du header
      * -->Prévalidation
-     * 
+     *
      * @throws Exception
      */
     public void prevalider() throws Exception {
@@ -916,11 +931,11 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
                 .equals(IPCDecision.CS_TYPE_REFUS_AC)) {
             PegasusServiceLocator.getValidationDecisionService().checkAdresses(decisionApresCalcul);
         }
-        
-        ListDecisionsSearch listSecisionsSearch =  new ListDecisionsSearch();
+
+        ListDecisionsSearch listSecisionsSearch = new ListDecisionsSearch();
         listSecisionsSearch.setForVersionDroitApc(decisionApresCalcul.getVersionDroit().getId());
-        listSecisionsSearch.setForVersionDroitSup(decisionApresCalcul.getVersionDroit().getId()); 
-        
+        listSecisionsSearch.setForVersionDroitSup(decisionApresCalcul.getVersionDroit().getId());
+
         List<String> decisions = new ArrayList<>();
         listSecisionsSearch = PegasusServiceLocator.getDecisionService().searchDecisions(listSecisionsSearch);
         for (JadeAbstractModel model : listSecisionsSearch.getSearchResults()) {
@@ -928,12 +943,12 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
             decisions.add(decision.getDecisionHeader().getId());
         }
 
-        if(decisions.size() > 1) {
+        if (decisions.size() > 1) {
             checkPlausi(decisions.toArray(new String[decisions.size()]));
         } else {
-            checkPlausi(decisionApresCalcul.getDecisionHeader().getId());    
+            checkPlausi(decisionApresCalcul.getDecisionHeader().getId());
         }
-        
+
 
         // update
         decisionApresCalcul = PegasusServiceLocator.getDecisionApresCalculService().update(decisionApresCalcul);
@@ -941,10 +956,10 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Methode de test des plausi
-     * 
+     *
      * @throws JadeApplicationServiceNotAvailableException
-     * @throws JadePersistenceException 
-     * @throws VariableMetierException 
+     * @throws JadePersistenceException
+     * @throws VariableMetierException
      */
     public void checkPlausi(String... idDecision) throws JadeApplicationServiceNotAvailableException, VariableMetierException, JadePersistenceException {
         PegasusServiceLocator.getRpcService().testPlausiForDecision(idDecision);
@@ -1027,7 +1042,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#retrieve()
      */
     @Override
@@ -1123,7 +1138,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
                         .getVersionDroit().getSimpleVersionDroit().getDateAnnonce());
         textRemarqueProvisoire = PRStringUtils.replaceString(document.getTextes(2).getTexte(40).getDescription(),
                 DecisionApresCalculServiceImpl.DEMANDE_DU, decision
-                .getVersionDroit().getSimpleVersionDroit().getDateAnnonce());
+                        .getVersionDroit().getSimpleVersionDroit().getDateAnnonce());
     }
 
     /**
@@ -1136,7 +1151,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /**
      * Retourne le texte de description de la reduction de primes dans l'assurance maladie
-     * 
+     *
      * @return
      * @throws CatalogueTexteException
      * @throws JadeApplicationServiceNotAvailableException
@@ -1211,7 +1226,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#setId(java.lang.String)
      */
     @Override
@@ -1268,7 +1283,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
         return decisionProvisoire;
     }
 
-    public Boolean isDecisoinProvisoire(){
+    public Boolean isDecisoinProvisoire() {
         return decisionApresCalcul.getDecisionHeader().getSimpleDecisionHeader().isDecisionProvisoire();
     }
 
@@ -1303,7 +1318,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#update()
      */
     @Override

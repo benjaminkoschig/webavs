@@ -192,7 +192,7 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
             if (pcAccordeeSearch.getSize() > 0) {
                 for (JadeAbstractModel d : pcAccordeeSearch.getSearchResults()) {
                     PCAccordee pcAccordee = (PCAccordee) d;
-//                    clearOldCreancier(pcAccordee.getId());
+                    revertCreancier(pcAccordee.getId());
                     delete(pcAccordee);
                     idPca.add(pcAccordee.getId());
                 }
@@ -203,6 +203,9 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
              * search.setInIdsPca(idPca); PegasusImplServiceLocator.getSimpleJoursAppointService().delete(search) }
              */
         }
+    }
+
+    private void revertCreancier(String id) {
     }
 
 

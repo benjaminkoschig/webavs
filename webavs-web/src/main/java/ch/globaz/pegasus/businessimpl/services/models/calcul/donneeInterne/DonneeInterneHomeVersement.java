@@ -21,9 +21,9 @@ public class DonneeInterneHomeVersement {
     private String idTiersRegroupement ="";
 
     //MONTANT
-    private String montantPrixChambre = "";
-
-    private String montantMensuel = "";
+    private String montantPCMensuel = "";
+    private String montantHomes = "";
+    private String montantDepenses = "";
 
 
     public String getIdPca() {
@@ -112,19 +112,28 @@ public class DonneeInterneHomeVersement {
     public void setIdTiersRegroupement(String idTiersRegroupement) {
         this.idTiersRegroupement = idTiersRegroupement;
     }
-    public String getMontantPrixChambre() {
-        return montantPrixChambre;
+
+    public String getMontantHomes() {
+        return montantHomes;
     }
 
-    public void setMontantPrixChambre(String montantPrixChambre) {
-        this.montantPrixChambre = montantPrixChambre;
+    public void setMontantHomes(String montantHomes) {
+        this.montantHomes = montantHomes;
     }
 
-    public String getMontantMensuel() {
-        return montantMensuel;
+    public String getMontantPCMensuel() {
+        return montantPCMensuel;
     }
 
-    public void setMontantMensuel(String montantMensuel) {
-        this.montantMensuel = montantMensuel;
+    public void setMontantPCMensuel(String montantPCMensuel) {
+        this.montantPCMensuel = montantPCMensuel;
+    }
+
+    public String getMontantDepenses() {
+        return montantDepenses;
+    }
+
+    public void setMontantDepenses(String montantDepenses) {
+        this.montantDepenses = montantDepenses;
     }
 }

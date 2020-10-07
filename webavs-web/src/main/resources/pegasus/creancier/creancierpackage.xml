@@ -3,6 +3,7 @@
 	<!-- modeles simple -->
 	<model-mapping import="pegasus/creancier/simplecreancier.xml"/>
 	<model-mapping import="pegasus/creancier/simplecreanceaccordee.xml"/>
+	<model-mapping import="pegasus/creancier/simplecreancierhistorique.xml"/>
 	<!-- modeles complexes -->
 	<model-mapping import="pegasus/creancier/creancier.xml"/>
 	<model-mapping import="pegasus/creancier/creanceaccordee.xml"/>

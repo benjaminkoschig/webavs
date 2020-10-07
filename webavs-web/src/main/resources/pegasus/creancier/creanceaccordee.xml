@@ -29,6 +29,7 @@
 				<search-field name="forIdDroit" operation="EQUALS" field-ref="simpleVersionDroit.idDroit"/>
 				<search-field name="forIdCreancier" operation="EQUALS" field-ref="simpleCreanceAccordee.idCreancier"/>
 				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="simpleVersionDroit.idVersionDroit"/>
+				<search-field name="forIsHome" operation="EQUALS" field-ref="simpleCreancier.isHome"/>
 			</search-group>
 		</search-definition>
 		

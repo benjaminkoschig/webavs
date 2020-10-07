@@ -58,7 +58,7 @@ public class RetenueServiceImpl implements RetenueService {
         BigDecimal sommeRetenue = sumMontantRetenu(retenue);
         sommeRetenue = sommeRetenue.add(newMontant);
         if (new Float(pca.getSimplePrestationsAccordees().getMontantPrestation()) < sommeRetenue.floatValue()) {
-            throw new SimpleRetenuePayementException(
+            JadeThread.logWarn(this.getClass().getName(),
                     "SimpleRetenuePayementException: le montant total des retenue sont trop important par rapport a la PCA");
         }
     }
@@ -200,13 +200,48 @@ public class RetenueServiceImpl implements RetenueService {
         retenue.setSimpleRetenue(CorvusServiceLocator.getSimpleRetenuePayementService().update(
                 retenue.getSimpleRetenue()));
     }
+    @Override
+    public void updateWithoutCheck(PcaRetenue retenue) throws JadePersistenceException, JadeApplicationException {
+        prepareRentenuToSave(retenue, false);
+        String dateProchainPaiement = PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt();
+        PcaRetenueSearch retenueSearch = searchByIdPca(retenue);
+
+        if (checkIsPossibleToRemoveRetenueFlagOnPca(retenue, dateProchainPaiement, retenueSearch)) {
+            updatePcaRetenuToFalse(retenue);
+        } else {
+            updatePcaRetenuToTrue(retenue);
+        }
+
+        retenue.setSimpleRetenue(CorvusServiceLocator.getSimpleRetenuePayementService().update(
+                retenue.getSimpleRetenue()));
+    }
 
     private boolean isPossibleToRomveROnThePca(PcaRetenue retenue, String dateProchainPaiement,
             PcaRetenueSearch retenueSearch) {
         return !hasRetenueActive(retenueSearch, retenue, dateProchainPaiement)
-                && JadeDateUtil.isDateMonthYearBefore(retenue.getSimpleRetenue().getDateFinRetenue(),
+                && (JadeDateUtil.isDateMonthYearBefore(retenue.getSimpleRetenue().getDateFinRetenue(),
                         dateProchainPaiement)
-                && !dateProchainPaiement.equals(retenue.getSimpleRetenue().getDateFinRetenue());
+                || dateProchainPaiement.equals(retenue.getSimpleRetenue().getDateFinRetenue()));
+    }
+
+    private boolean checkIsPossibleToRemoveRetenueFlagOnPca(PcaRetenue retenue, String dateProchainPaiement,
+                                               PcaRetenueSearch retenueSearch) {
+        return !hasRetenueActiveNew(retenueSearch, retenue, dateProchainPaiement)
+                && (!JadeStringUtil.isBlankOrZero(retenue.getSimpleRetenue().getDateFinRetenue())
+                || dateProchainPaiement.equals(retenue.getSimpleRetenue().getDateFinRetenue()));
+    }
+    private boolean hasRetenueActiveNew(PcaRetenueSearch retenueSearch, PcaRetenue retenue, String dateProchainPaiement) {
+        for (JadeAbstractModel model : retenueSearch.getSearchResults()) {
+            PcaRetenue donnee = (PcaRetenue) model;
+            if (!retenue.getId().equals(donnee.getId())) {
+                if (JadeStringUtil.isBlankOrZero(donnee.getSimpleRetenue().getDateFinRetenue())
+                        || JadeDateUtil.isDateAfter(retenue.getSimpleRetenue().getDateFinRetenue(),
+                        dateProchainPaiement)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private boolean hasRetenueActive(PcaRetenueSearch retenueSearch, PcaRetenue retenue, String dateProchainPaiement) {

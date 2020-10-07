@@ -2,7 +2,7 @@
 <model-mapping>
 	<simple-model className="ch.globaz.pegasus.business.models.creancier.SimpleCreancier">
 		<description>Gestion des creanciers</description>
-		<table name="PCCREANC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<table name="PCCREANC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
 		<fields>
 			<primary-key name="idCreancier" column="DDIDCR" comment="ID_CREANCIER"/>
 			<field name="idDemande" column="DDIDDE" type="NUMERIC" mandatory="true" comment="ID_DEMANDE"/>
@@ -16,7 +16,8 @@
 			<field name="montant" column="DDMMON" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="MONTANT"/>
 			<field name="referencePaiement" column="DDLREP" type="STRING" dataType="VARCHAR(40)" mandatory="false" comment="REFERANCE_PAIEMENT"/>	
 			<field name="isBloque" column="DDBBLO" type="BOOLEAN" mandatory="false" comment="ID_TIER"/>
-			<field name="isCalcule" column="DDISCALCULE" type="BOOLEAN" mandatory="false" comment="VERSEMENT_HOME"/>
+			<field name="isCalcule" column="DDISCALCULE" type="BOOLEAN" mandatory="false" comment="ETAT_CALCULE"/>
+			<field name="isHome" column="DDISHOME" type="BOOLEAN" mandatory="false" comment="IS_HOME"/>
 		</fields>
 	</simple-model>
 </model-mapping>

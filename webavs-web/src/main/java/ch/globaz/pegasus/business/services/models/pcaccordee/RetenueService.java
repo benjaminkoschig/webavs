@@ -18,4 +18,5 @@ public interface RetenueService extends JadeApplicationService {
     public PcaRetenueSearch search(PcaRetenueSearch search) throws JadePersistenceException;
 
     public void update(PcaRetenue retenue) throws JadePersistenceException, JadeApplicationException;
+    public void updateWithoutCheck(PcaRetenue retenue) throws JadePersistenceException, JadeApplicationException;
 }

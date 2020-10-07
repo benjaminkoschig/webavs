@@ -2,7 +2,7 @@
 <model-mapping>
 	<simple-model className="ch.globaz.pegasus.business.models.creancier.SimpleCreanceAccordee">
 		<description>Gestion des creance saccordees</description>
-			<table name="PCCREACC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+			<table name="PCCREACC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
 		<fields>
 			<primary-key name="idCreanceAccordee" column="DEIDCA" comment="ID_CREANCE_ACCORDEE"/>
 			<field name="idCreancier" column="DEIDCR" type="NUMERIC" mandatory="true" comment="ID_CREANCIER"/>

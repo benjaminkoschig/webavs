@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+    <simple-model className="ch.globaz.pegasus.business.models.creancier.SimpleCreancierHystorique">
+        <description>Gestion de l'historique créancier et créances accordées (utilisé pour homes)</description>
+        <table name="PCCREANCEHISTORIQUE" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+        <fields>
+            <primary-key name="id" column="ID" comment="ID_HYST_CREANCIER"/>
+            <field name="idCreanceAccordee" column="CREANCEACCORDE_DEIDCA" type="NUMERIC" mandatory="true" comment="ID_CREANCIER_ACCORDE"/>
+            <field name="idOrdreVersement" column="CREANCEACCORDE_DEIDOV" type="NUMERIC" mandatory="false" comment="ID_ORDRE_VERSEMENT"/>
+            <field name="pspyCreanceAccordee" column="CREANCEACCORDE_PSPY" type="STRING" dataType="VARCHAR(24)"  mandatory="false" comment="CREANCEACCORDE_PSPY"/>
+            <field name="cspyCreanceAccordee" column="CREANCEACCORDE_CSPY" type="STRING" dataType="VARCHAR(24)"  mandatory="false" comment="CREANCEACCORDE_CSPY"/>
+            <field name="idPCAccordee" column="CREANCEACCORDE_DEIDPA" type="NUMERIC" mandatory="true" comment="ID_PC_ACCORDEE"/>
+            <field name="idCreancier" column="CREANCEACCORDE_DEIDCR" type="NUMERIC" mandatory="true" comment="ID_CREANCIER"/>
+            <field name="montantCreancieAccordee" column="CREANCEACCORDE_DEMMNT" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="MONTANT"/>
+            <field name="csTypeCreance" column="CREANCIER_DDCSTC" type="NUMERIC" mandatory="false" comment="CS_TYPE_CREANCE"/>
+            <field name="csEtat" column="CREANCIER_DDCSET" type="NUMERIC" mandatory="true" comment="CS_ETAT"/>
+            <field name="pspyCreancier" column="CREANCIER_PSPY" type="STRING" dataType="VARCHAR(24)" mandatory="false" comment="CREANCIER_PSPY"/>
+            <field name="cspyCreancier" column="CREANCIER_CSPY" type="STRING" dataType="VARCHAR(24)" mandatory="false" comment="CREANCIER_CSPY"/>
+            <field name="referencePaiement" column="CREANCIER_DDLREP" type="STRING" dataType="VARCHAR(40)" mandatory="false" comment="REFERANCE_PAIEMENT"/>
+            <field name="idTiersRegroupement" column="CREANCIER_DDIDTR" type="NUMERIC" mandatory="false" comment="ID_TIERS_REGROUPEMENT"/>
+            <field name="idDemande" column="CREANCIER_DDIDDE" type="NUMERIC" mandatory="true" comment="ID_DEMANDE"/>
+            <field name="isBloque" column="CREANCIER_DDBBLO" type="BOOLEAN" mandatory="false" comment="IS_BLOQUE"/>
+            <field name="idTiersAdressePaiement" column="CREANCIER_DDIDTA" type="NUMERIC" mandatory="false" comment="ID_TIERS_ADRESSE_PAIAMENT"/>
+            <field name="idDomaineApplicatif" column="CREANCIER_DDIDDA" type="NUMERIC" mandatory="false" comment="ID_DOMAINE_APPLICATIF"/>
+            <field name="idTiers" column="CREANCIER_DDIDTI" type="NUMERIC" mandatory="false" comment="ID_TIER"/>
+            <field name="idAffilieAdressePaiment" column="CREANCIER_DDIDAA" type="NUMERIC" mandatory="false" comment="ID_AFFILIE_ADRESSE_PAIEMENT"/>
+            <field name="montantCreancier" column="CREANCIER_DDMMON" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="MONTANT"/>
+            <field name="isCalcule" column="CREANCIER_DDISCALCULE" type="BOOLEAN" mandatory="false" comment="VERSEMENT_HOME"/>
+            <field name="isHome" column="CREANCIER_DDISHOME" type="BOOLEAN" mandatory="false" comment="IS_HOME"/>
+        </fields>
+        <search-definition>
+            <search-group operator="AND">
+                <search-field name="forIdPcAccordee" operation="EQUALS" field-ref="idPCAccordee"/>
+                <search-field name="forIdCreancier" operation="EQUALS" field-ref="idCreancier"/>
+                <search-field name="forIdCreaanceAccordee" operation="EQUALS" field-ref="idCreanceAccordee"/>
+            </search-group>
+        </search-definition>
+    </simple-model>
+</model-mapping>

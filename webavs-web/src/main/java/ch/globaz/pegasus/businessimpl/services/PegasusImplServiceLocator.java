@@ -3,6 +3,7 @@ package ch.globaz.pegasus.businessimpl.services;
 import ch.globaz.pegasus.business.models.assurancemaladie.SimplePrimeAssuranceMaladie;
 import ch.globaz.pegasus.business.services.models.assurancemaladie.*;
 import ch.globaz.pegasus.business.services.models.calcul.*;
+import ch.globaz.pegasus.business.services.models.creancier.SimpleCreancierHystoriqueService;
 import ch.globaz.pegasus.business.services.models.habitat.*;
 import ch.globaz.pegasus.business.services.models.revenusdepenses.*;
 import globaz.jade.service.provider.JadeApplicationServiceLocator;
@@ -1104,6 +1105,11 @@ public abstract class PegasusImplServiceLocator extends PegasusServiceLocator {
     public static SimpleCreancierService getSimpleCreancierService() throws JadeApplicationServiceNotAvailableException {
         return (SimpleCreancierService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
                 SimpleCreancierService.class);
+    }
+
+    public static SimpleCreancierHystoriqueService getSimpleCreancierHystoriqueService() throws JadeApplicationServiceNotAvailableException {
+        return (SimpleCreancierHystoriqueService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
+                SimpleCreancierHystoriqueService.class);
     }
 
     public static SimpleDecisionApresCalculService getSimpleDecisionApresCalculService()
