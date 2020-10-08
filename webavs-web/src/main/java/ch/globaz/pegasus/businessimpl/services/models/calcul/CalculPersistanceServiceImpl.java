@@ -241,6 +241,8 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
             simplePlanCalcul.setMontantPCMensuelle(cc.getMontantPCMensuel());
             simplePlanCalcul.setExcedentPCAnnuel(cc.getExcedentAnnuel());
             simplePlanCalcul.setPrimeMoyenneAssMaladie(cc.getPrimeMoyenneAssMaladie());
+            simplePlanCalcul.setMontantPrixHome(cc.getMontantPrixHomeReforme());
+            simplePlanCalcul.setPrimeVerseeAssMaladie(cc.getPrimeVerseeAssMaladie());
             simplePlanCalcul.setEtatPC(cc.getEtatPC());
             simplePlanCalcul.setIsPlanCalculAccessible(Boolean.TRUE);
             simplePlanCalcul.setReformePc(cc.isReformePc());

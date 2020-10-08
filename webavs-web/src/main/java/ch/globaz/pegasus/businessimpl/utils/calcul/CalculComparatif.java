@@ -25,12 +25,14 @@ public class CalculComparatif implements ICalculComparatif {
     private String montantMensuelRequerant = null;
     private String montantPCMensuel = null;
     private String montantPrixHome;
+    private String montantPrixHomeReforme;
     private String montantRentesAvsAi;
     private String montantPartCantonale = null;
     private TupleDonneeRapport montants = null;
     private String nbEnfants;
     private List<PersonnePCAccordee> personnes = null;
     private String primeMoyenneAssMaladie = null;
+    private String primeVerseeAssMaladie = null;
     private boolean isReformePc = false;
     private boolean comparer = false;
     private boolean refusFortune = false;
@@ -279,6 +281,12 @@ public class CalculComparatif implements ICalculComparatif {
         float montantRentesAvsAi = montants.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_RENAVSAI_TOTAL);
         this.montantRentesAvsAi = String.valueOf(montantRentesAvsAi);
 
+        float montantPrixHomeReforme = montants.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_TAXES_PENSION_RECONNUE);
+        this.montantPrixHomeReforme = String.valueOf(montantPrixHomeReforme);
+
+        float primeVerseeAssMaladie = montants.getValeurEnfant(IPCValeursPlanCalcul.MONTANT_VERSE_CAISSE_MALADIE);
+        this.primeVerseeAssMaladie = String.valueOf(primeVerseeAssMaladie);
+
         float montantPrixHome = montants.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_TAXEHOME_TOTAL);
         this.montantPrixHome = String.valueOf(montantPrixHome);
 
@@ -352,5 +360,21 @@ public class CalculComparatif implements ICalculComparatif {
 
     public void setFortune(String fortune) {
         this.fortune = fortune;
+    }
+
+    public String getMontantPrixHomeReforme() {
+        return montantPrixHomeReforme;
+    }
+
+    public void setMontantPrixHomeReforme(String montantPrixHomeReforme) {
+        this.montantPrixHomeReforme = montantPrixHomeReforme;
+    }
+
+    public String getPrimeVerseeAssMaladie() {
+        return primeVerseeAssMaladie;
+    }
+
+    public void setPrimeVerseeAssMaladie(String primeVerseeAssMaladie) {
+        this.primeVerseeAssMaladie = primeVerseeAssMaladie;
     }
 }

@@ -16,6 +16,9 @@ public class SimplePlanDeCalcul extends JadeSimpleModel {
     private Boolean isPlanRetenu = Boolean.FALSE;
     private String montantPCMensuelle = null;
     private String primeMoyenneAssMaladie = null;
+    private String primeVerseeAssMaladie = null;
+    private String montantPrixHome = null;
+
 
     private byte[] resultatCalcul = null;
 
@@ -126,5 +129,21 @@ public class SimplePlanDeCalcul extends JadeSimpleModel {
 
     public void setReformePc(Boolean reformePc) {
         this.reformePc = reformePc;
+    }
+
+    public String getMontantPrixHome() {
+        return montantPrixHome;
+    }
+
+    public void setMontantPrixHome(String montantPrixHome) {
+        this.montantPrixHome = montantPrixHome;
+    }
+
+    public String getPrimeVerseeAssMaladie() {
+        return primeVerseeAssMaladie;
+    }
+
+    public void setPrimeVerseeAssMaladie(String primeVerseeAssMaladie) {
+        this.primeVerseeAssMaladie = primeVerseeAssMaladie;
     }
 }

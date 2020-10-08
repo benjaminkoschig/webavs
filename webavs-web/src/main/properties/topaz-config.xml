@@ -52,6 +52,10 @@
 		<when attribute="idProcess" operator="eq" value="PCDecisionApresCalculCopie">
 			<doc-id action="set">pegasus/decision/decisionApresCalculCopie</doc-id>
 		</when>
+		<!--  decision apres calcul Réforme-->
+		<when attribute="idProcess" operator="eq" value="PCDecisionApresCalculReforme">
+			<doc-id action="set">pegasus/decision/decisionApresCalcul_reforme</doc-id>
+		</when>
 		<!--  page de garde DAC -->
 		<when attribute="idProcess" operator="eq" value="PCDecisionApresCalculPg">
 			<doc-id action="set">pegasus/decision/decisionApresCalculPg</doc-id>

@@ -30,6 +30,7 @@ public interface IPCCatalogueTextes {
     /** nom des proces **/
     public static final String PROCESS_COMMUNICATION_OCC = "PCCommunicationOCC";
     public static final String PROCESS_DECISION_APRESCALCUL = "PCDecisionApresCalcul";
+    public static final String PROCESS_DECISION_APRESCALCUL_REFORME = "PCDecisionApresCalculReforme";
     public static final String PROCESS_DECISION_APRESCALCUL_COPIE = "PCDecisionApresCalculCopie";
     public static final String PROCESS_DECISION_APRESCALCUL_PG = "PCDecisionApresCalculPg";
     public static final String PROCESS_DECISION_BILLAG = "PCAttestationBillag";

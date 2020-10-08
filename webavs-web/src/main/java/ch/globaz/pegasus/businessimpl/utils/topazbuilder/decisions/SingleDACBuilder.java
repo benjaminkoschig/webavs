@@ -155,7 +155,12 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         /************ Document principal, lettre ************/
         DocumentData dataOriginal = new DocumentData();
         dataOriginal = buildMainDoc(dataOriginal, tiersBeneficiaire);
-        dataOriginal.addData(IPCCatalogueTextes.STR_ID_PROCESS, IPCCatalogueTextes.PROCESS_DECISION_APRESCALCUL);
+        if (isReformePC()) {
+            dataOriginal.addData(IPCCatalogueTextes.STR_ID_PROCESS, IPCCatalogueTextes.PROCESS_DECISION_APRESCALCUL_REFORME);
+        } else {
+            dataOriginal.addData(IPCCatalogueTextes.STR_ID_PROCESS, IPCCatalogueTextes.PROCESS_DECISION_APRESCALCUL);
+        }
+
 
         mergeDataAndPubInfosWithPixisFill(allDoc, dataOriginal, new PegasusPubInfoBuilder().ged().rectoVersoLast()
                 .getPubInfo(), pubInfosPixisProperties, dacOO.getPersonneForDossier(),
@@ -854,8 +859,26 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
                                             + dacOO.getDecisionHeader().getSimpleDecisionHeader().getDateFinDecision()));
         }
 
+        if (isReformePC()) {
+            // TODO Changer label
+            data.addData("B_MONTANT_VERS_ASSURE", babelDoc.getTextes(3).getTexte(31).getDescription());
+            data.addData("MONTANT_VERS_ASSURE", SingleDACBuilder.MONNAIE + " " + new FWCurrency(getMontantPc()).toStringFormat());
+
+            // TODO Changer label
+            data.addData("B_MONTANT_VERSEE_ASS", babelDoc.getTextes(3).getTexte(32).getDescription());
+            data.addData("MONTANT_VERSEE_ASS", SingleDACBuilder.MONNAIE + " " + new FWCurrency(dacOO.getPlanCalcul().getPrimeVerseeAssMaladie()).toStringFormat());
+
+            // TODO Changer label
+            data.addData("B_MONTANT_HOME", babelDoc.getTextes(3).getTexte(33).getDescription());
+            data.addData("MONTANT_HOME", SingleDACBuilder.MONNAIE + " " + new FWCurrency(dacOO.getPlanCalcul().getMontantPrixHome()).toStringFormat());
+        }
+
         // gestion prestation
-        data.addData("B_PRESTATION_MENS", babelDoc.getTextes(3).getTexte(30).getDescription());
+        if (isReformePC()) {
+            data.addData("B_PRESTATION_MENS", babelDoc.getTextes(3).getTexte(34).getDescription());
+        } else {
+            data.addData("B_PRESTATION_MENS", babelDoc.getTextes(3).getTexte(30).getDescription());
+        }
 
         switch (getEtatDecision()) {
             case REFUS:
@@ -868,7 +891,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
             case OCTROI:
                 data.addData("PRESTATION_MENS",
-                        SingleDACBuilder.MONNAIE + " " + new FWCurrency(getMontantPc()).toStringFormat());
+                        SingleDACBuilder.MONNAIE + " " + new FWCurrency(isReformePC()? getMontantPCTotal():getMontantPc()).toStringFormat());
                 break;
 
             default:
@@ -918,18 +941,22 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
     private void generateAmalTextForStandardOperation(DocumentData data) throws DecisionException {
 
         String amaltexte;
+        String amalTexteReforme;
 
         switch (getEtatDecision()) {
             case OCTROI:
                 amaltexte = babelDoc.getTextes(5).getTexte(27).getDescription();
+                amalTexteReforme = babelDoc.getTextes(5).getTexte(30).getDescription();
                 break;
 
             case PARTIEL:
                 amaltexte = babelDoc.getTextes(5).getTexte(28).getDescription();
+                amalTexteReforme = babelDoc.getTextes(5).getTexte(30).getDescription();
                 break;
 
             case REFUS:
                 amaltexte = babelDoc.getTextes(5).getTexte(29).getDescription();
+                amalTexteReforme = babelDoc.getTextes(5).getTexte(30).getDescription();
                 break;
 
             default:
@@ -939,15 +966,24 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         }
 
         data.addData("REDUCTION_PRIMES", babelDoc.getTextes(5).getTexte(10).getDescription());
-        data.addData("B_REDUCTION_PRIMES", amaltexte);
+        if (isReformePC()){
+            data.addData("B_REDUCTION_PRIMES", amalTexteReforme);
+        } else {
+            data.addData("B_REDUCTION_PRIMES", amaltexte);
+        }
+
 
     }
 
     private void generateAmalTextForCheckAmalOperation(DocumentData data) {
 
         String amaltexte = null;
+        String amaltexteReforme = null;
         Boolean displayAmal = true;
         String codeAmal = dacOO.getSimpleDecisionApresCalcul().getCodeAmal();
+
+        // Reforme PC
+        amaltexteReforme = replaceDateDecisionAmalInString(babelDoc.getTextes(5).getTexte(30).getDescription());
 
         if (codeAmal.equals(EPCCodeAmal.CODE_A.getProperty())) {
             amaltexte = replaceDateDecisionAmalInString(babelDoc.getTextes(5).getTexte(23).getDescription());
@@ -969,7 +1005,11 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         if (displayAmal) {
             // Reduction primes, pour toutes les decisions, p5
             data.addData("REDUCTION_PRIMES", babelDoc.getTextes(5).getTexte(10).getDescription());
-            data.addData("B_REDUCTION_PRIMES", amaltexte);
+            if (isReformePC()) {
+                data.addData("B_REDUCTION_PRIMES", amaltexteReforme);
+            } else {
+                data.addData("B_REDUCTION_PRIMES", amaltexte);
+            }
         }
 
     }
@@ -1369,6 +1409,12 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         }
     }
 
+    private String getMontantPCTotal(){
+        Float montantPCTotal = Float.parseFloat(dacOO.getSimplePrestation().getMontantPrestation())
+                + Float.parseFloat(dacOO.getPlanCalcul().getPrimeVerseeAssMaladie());
+        return new FWCurrency(montantPCTotal.toString()).toStringFormat();
+    }
+
     /**
      * Retourn le nom du mois en fonction du numéro passé en param
      * 
@@ -1563,4 +1609,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         }
     }
 
+    public boolean isReformePC() {
+        return dacOO.getPlanCalcul().getReformePc();
+    }
 }

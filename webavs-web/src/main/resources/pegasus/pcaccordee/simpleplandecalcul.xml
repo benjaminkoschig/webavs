@@ -12,6 +12,8 @@
 			<field name="etatPC" column="CVLEPC" type="NUMERIC" mandatory="false" comment="ETAT_PC"/>
 			<field name="resultatCalcul" column="CVORES" type="BLOB" mandatory="false" comment="RESULTAT_CALCUL"/>
 			<field name="primeMoyenneAssMaladie" column="CVMAML" type="NUMERIC" mandatory="false" comment="PRIME_MOYENNE_ASS_MALADIE"/>
+			<field name="primeVerseeAssMaladie" column="CVMPVA" type="NUMERIC" mandatory="false" comment="PRIME_VERSEE_ASS_MALADIE"/>
+			<field name="montantPrixHome" column="CVMMHO" type="NUMERIC" mandatory="false" comment="MONTANT_PRIX_HOME"/>
 			<field name="isPlanCalculAccessible" column="CVBPLA" type="BOOLEAN" mandatory="true" comment="PLAN CALCUL ACCESSIBLE PCA OU PARENT"/>
 			<field name="reformePc" column="CVBRPC" type="BOOLEAN" mandatory="true" comment="REFORME PC"/>
 		</fields>

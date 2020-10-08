@@ -48,6 +48,14 @@
 		<when attribute="idProcess" operator="eq" value="PCDecisionApresCalcul">
 			<doc-id action="set">pegasus/decision/decisionApresCalcul</doc-id>
 		</when>
+		<!--  decision apres calcul Réforme-->
+		<when attribute="idProcess" operator="eq" value="PCDecisionApresCalculReforme">
+			<doc-id action="set">pegasus/decision/decisionApresCalcul_reforme</doc-id>
+		</when>
+		<!--  decision apres calcul Réforme-->
+		<when attribute="idProcess" operator="eq" value="PCDecisionApresCalculReforme">
+			<doc-id action="set">pegasus/decision/decisionApresCalcul_reforme</doc-id>
+		</when>
 		<!--  copie decision apres calcul -->
 		<when attribute="idProcess" operator="eq" value="PCDecisionApresCalculCopie">
 			<doc-id action="set">pegasus/decision/decisionApresCalculCopie</doc-id>
