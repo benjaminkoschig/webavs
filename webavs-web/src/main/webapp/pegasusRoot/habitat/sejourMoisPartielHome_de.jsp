@@ -15,6 +15,8 @@
 <%@page import="globaz.pegasus.vb.habitat.PCSejourMoisPartielHomeViewBean"%>
 <%@page import="java.util.Iterator"%>
 <%@ page import="ch.globaz.pegasus.business.models.habitat.SejourMoisPartielHome" %>
+<%@ page import="ch.globaz.pegasus.business.services.models.home.HomeService" %>
+<%@ page import="globaz.pegasus.utils.PCTaxeJournaliereHomeHandler" %>
 
 <%
 	//Les labels de cette page commencent par le préfix "JSP_PC_HABITAT"
@@ -52,9 +54,19 @@
 	var JSP_DELETE_MESSAGE_INFO = "<ct:FWLabel key='JSP_DELETE_MESSAGE_INFO'/>";
 	var PAGE_ID_DROIT="<%=viewBean.getId() %>";
 	var ACTION_AJAX_DONNEE_FINANCIERE = "<%=IPCActions.ACTION_DROIT_SEJOUR_MOIS_PARTIEL_HOME_AJAX%>";
+	var ACTION_AJAX_TYPE_CHAMBRE = "<%=IPCActions.ACTION_HOME_TYPE_CHAMBRE_AJAX%>";
 	var VAL_FRAIS_NOURRITURE = "<%=viewBean.getFraisNourriture() %>";
 </script>
 <script>
+
+//libelles js
+var tooltipTextLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOME_D_JS_TOOLTIP_TEXT") %>';
+var dialogHomeLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOME_D_JS_DIALOG_HOME_TEXT") %>';
+var dialogTypeChambreLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOME_D_JS_DIALOG_TYPECHAMBRE_TEXT") %>';
+var dialogTitre = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOME_D_JS_DIALOG_TITLE_TEXT") %>';
+var dialogPeriodeLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOME_D_JS_DIALOG_PERIODE_TEXT") %>';
+var dialogPrixJourLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOME_D_JS_DIALOG_PRIX_JOURNALIER_TEXT") %>';
+var dialogMontantLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOME_D_JS_DIALOG_MONTANT_TEXT") %>';
 
 </script>
 <script type="text/javascript" src="<%=rootPath%>/scripts/habitat/SejourMoisPartielHome_MembrePart.js"/></script>
@@ -86,6 +98,13 @@
 								<div class="areaTitre">
 									<%=PCDroitHandler.getFromattedTitreHTML(objSession,membreFamille)%>
 								</div>
+								<div class="dialog-confirm" style="display: none">
+									<p>
+										<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+										<ct:FWLabel key="JSP_PC_TAXE_JOURNALIERE_HOME_MESSAGE_ALERT_PARTICULARITE"/>
+
+									</p>
+								</div>
 			
 								<table class="areaDFDataTable">
 									<thead>
@@ -112,6 +131,17 @@
 							%>
 										<tr idEntity="<%=donnee.getId() %>" idGroup="<%=dfHeader.getIdEntityGroup() %>" header="<%=idGroup==null?"true":"false"%>">
 											<td>&#160;</td>
+<%--											<td><%=PCTaxeJournaliereHomeHandler.getLibelleHomeAvecChambre(sejour.getTypeChambre(),objSession)%></td>--%>
+<%--											<td>--%>
+<%--												<img class="detailPrixChambres" style="float:left" src="images/aide.gif"--%>
+<%--													 data-id-chambre="<%= sejour.getTypeChambre().getId() %>"--%>
+<%--													 data-id-home="<%= donnee.getIdHome() %>"--%>
+<%--													 data-dateDebut="<%= dfHeader.getDateDebut() %>"--%>
+<%--													 data-dateFin="<%= dfHeader.getDateFin() %>"--%>
+<%--													 data-g-bubble='text:tooltipTextLibelle,wantMarker:false,position:right'/>--%>
+
+<%--&lt;%&ndash;												<span style="float:right"><%=viewBean.getPrix(donnee,objSession)%></span>&ndash;%&gt;--%>
+<%--											</td>--%>
 
 											<td><%=PCCommonHandler.getCurrencyFormtedDefault(donnee.getPrixJournalier()) %></td>
 											<td><%=PCCommonHandler.getCurrencyFormtedDefault(donnee.getFraisNourriture())%></td>
@@ -131,16 +161,58 @@
 									<tr>
 										<td><ct:FWLabel key="JSP_PC_SEJOUR_MOIS_PARTIEL_D_PRIX_JOURNALIER"/></td>
 										<td><input type="text" class="prixJournalier" data-g-amount="mandatory:true, periodicity:D"/></td>
+
+										<td><a class="toHomeLink"><ct:FWLabel key="JSP_PC_TAXE_JOURNALIERE_HOME_D_HOME" /></a></td>
+										<td><input type="hidden" class="idHome" />
+											<ct:widget id='<%="homeWidget"+membreFamille.getId()%>' name='<%="homeWidget"+membreFamille.getId()%>' styleClass="selecteurHome libelleHome"
+													   notation="data-g-string='mandatory:true'">
+												<ct:widgetService methodName="search" className="<%=HomeService.class.getName()%>">
+													<ct:widgetCriteria criteria="likeNumeroIdentification" label="JSP_PC_TAXE_JOURNALIERE_HOME_W_NO_IDENTIFICATION"/>
+													<ct:widgetCriteria criteria="likeDesignation" label="JSP_PC_TAXE_JOURNALIERE_HOME_W_DESIGNATION"/>
+													<ct:widgetCriteria criteria="likeNpa" label="JSP_PC_TAXE_JOURNALIERE_HOME_W_NPA"/>
+													<ct:widgetCriteria criteria="likeLocalite" label="JSP_PC_TAXE_JOURNALIERE_HOME_W_LOCALITE"/>
+													<ct:widgetCriteria criteria="forTypeAdresse" fixedValue="<%=ch.globaz.pyxis.business.service.AdresseService.CS_TYPE_DOMICILE%>" label="JSP_PC_PARAM_HOMES_W_TIERS_LOCALITE"/>
+
+													<ct:widgetLineFormatter format="#{simpleHome.numeroIdentification} #{simpleHome.nomBatiment}  #{adresse.tiers.designation1} #{adresse.tiers.designation2} - (#{adresse.localite.numPostal} #{adresse.localite.localite})"/>
+													<ct:widgetJSReturnFunction>
+														<script type="text/javascript">
+															function(element){
+																$(this).parents('.areaMembre').find('.idHome').val($(element).attr('simpleHome.id'));
+																$(this).parents('.areaMembre').find('.idHome').trigger(eventConstant.AJAX_CHANGE);
+																$(this).find('.detailPrixChambres').attr('data-id-home',$(element).attr('simpleHome.id'));
+																$(this).parents('.areaDFDetail').find('.detailPrixChambres').attr('data-id-home',$(element).attr('simpleHome.id'));
+																this.value=$(element).attr('simpleHome.numeroIdentification')+' '+$(element).attr('simpleHome.nomBatiment')+' '+$(element).attr('adresse.tiers.designation1')+' '+$(element).attr('adresse.tiers.designation2')+' '+$(element).attr('simpleHome.numeroIdentification');
+															}
+														</script>
+													</ct:widgetJSReturnFunction>
+												</ct:widgetService>
+											</ct:widget>
+										</td>
+										<td><ct:FWLabel key="JSP_PC_TAXE_JOURNALIERE_HOME_D_TYPE_CHAMBRE" /></td>
+										<td colspan="2" class="listTypechambre"> </td>
+
+										<td><img class="detailPrixChambres" src="images/aide.gif"
+												 data-id-chambre=""
+												 data-id-home=""
+												 data-g-bubble='text:tooltipTextLibelle,wantMarker:false,position:right'/></td>
+
 									</tr>
 									<tr>
 										<td><ct:FWLabel key="JSP_PC_SEJOUR_MOIS_PARTIEL_D_FRAIS_NOURRITURE"/></td>
 										<td><input type="text" class="fraisNourriture" data-g-amount=" "/></td>
-										<td><input type="checkbox" class="isFraisNourriture"/>
-							           </td>
+										<td><input type="checkbox" class="isFraisNourriture"/></td>
+										<td/>
+										<td rowspan="2" colspan="3" >
+											<textarea  data-g-string="sizeMax:255" rows="3" style="width:100%" class="textLibre"></textarea>
+										</td>
 									</tr>
 									<tr>
 										<td><ct:FWLabel key="JSP_PC_SEJOUR_MOIS_PARTIEL_D_NOMBRE_JOUR"/></td>
 										<td><input type="text" class="nbJours" data-g-amount="mandatory:true"/></td>
+									</tr>
+									<tr>
+										<td><ct:FWLabel key="JSP_PC_HABITAT_VERSEMENT_HOME" /></td>
+										<td><input type="checkbox" class="isVersementDirect" /></td >
 									</tr>
 									<tr>
 										<td><ct:FWLabel key="JSP_PC_AUTRERENTE_D_DATE_DEBUT" /></td>

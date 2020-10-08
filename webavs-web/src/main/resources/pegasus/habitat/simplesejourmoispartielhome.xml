@@ -11,6 +11,11 @@
 			<field name="prixJournalier" column="PRIX_JOURNALIER" type="NUMERIC"  dataType="NUMERIC(15,2)" mandatory="false" />
 			<field name="fraisNourriture" column="FRAIS_NOURRITURE" type="NUMERIC"   dataType="NUMERIC(15,2)" mandatory="false" />
 			<field name="nbJours" column="NOMBRE_JOURS" type="NUMERIC"   dataType="NUMERIC(6,0)" mandatory="false" />
+			<field name="idHome" column="ID_HOME" type="NUMERIC"  mandatory="true"  comment="ID_HOME"/>
+			<field name="idTypeChambre" column="ID_TYPE_CHAMBRE" type="NUMERIC"  mandatory="true"  comment="CS_TYPE_CHAMBRE"/>
+			<field name="textLibre" column="TEXTE_LIBRE" type="STRING"   dataType="NUMERIC(6,0)" mandatory="false" />
+			<field name="isVersementDirect" column="IS_VERSEMENT_DIRECT" type="BOOLEAN" mandatory="false"/>
+			<field name="idAdressePaiement" column="ID_ADRESSE_PAIEMENT" type="NUMERIC" mandatory="false"/>
 		</fields>
 		<search-definition>
 			<search-group operator="AND">

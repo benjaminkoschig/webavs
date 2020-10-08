@@ -46,8 +46,11 @@ public class PCTaxeJournaliereHomeHandler {
     }
 
     public static String getSimpleLibelleHome(TypeChambre typeChambre) {
-        return typeChambre.getHome().getAdresse().getTiers().getDesignation1() + " "
-                + typeChambre.getHome().getAdresse().getTiers().getDesignation2();
+        if(typeChambre != null) {
+            return typeChambre.getHome().getAdresse().getTiers().getDesignation1() + " "
+                    + typeChambre.getHome().getAdresse().getTiers().getDesignation2();
+        }
+        return "";
     }
 
     public static void putPrix(Habitat habitat) throws PrixChambreException, HomeException,

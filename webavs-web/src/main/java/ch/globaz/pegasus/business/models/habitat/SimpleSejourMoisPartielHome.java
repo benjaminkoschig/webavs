@@ -17,6 +17,12 @@ public class SimpleSejourMoisPartielHome extends JadeSimpleModel {
     private String fraisNourriture = null;
     private String nbJours = null;
 
+    private String idHome = null;
+    private String idTypeChambre = null;
+    private String textLibre = null;
+    private Boolean isVersementDirect = Boolean.FALSE;
+    private String idAdressePaiement = null;
+
     @Override
     public String getId() {
         return idSejourMoisPartielHome;
@@ -65,5 +71,45 @@ public class SimpleSejourMoisPartielHome extends JadeSimpleModel {
 
     public void setNbJours(String nbJours) {
         this.nbJours = nbJours;
+    }
+
+    public String getIdHome() {
+        return idHome;
+    }
+
+    public void setIdHome(String idHome) {
+        this.idHome = idHome;
+    }
+
+    public String getIdTypeChambre() {
+        return idTypeChambre;
+    }
+
+    public void setIdTypeChambre(String idTypeChambre) {
+        this.idTypeChambre = idTypeChambre;
+    }
+
+    public String getTextLibre() {
+        return textLibre;
+    }
+
+    public void setTextLibre(String textLibre) {
+        this.textLibre = textLibre;
+    }
+
+    public Boolean getIsVersementDirect() {
+        return isVersementDirect;
+    }
+
+    public void setIsVersementDirect(Boolean isVersementDirect) {
+        this.isVersementDirect = isVersementDirect;
+    }
+
+    public String getIdAdressePaiement() {
+        return idAdressePaiement;
+    }
+
+    public void setIdAdressePaiement(String idAdressePaiement) {
+        this.idAdressePaiement = idAdressePaiement;
     }
 }

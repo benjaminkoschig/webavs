@@ -6,6 +6,7 @@
 <%@page import="globaz.jade.log.business.renderer.JadeBusinessMessageRenderer"%>
 <%@page import="globaz.pegasus.utils.PCCommonHandler"%>
 <%@page import="globaz.pegasus.vb.habitat.PCSejourMoisPartielHomeAjaxViewBean"%>
+<%@ page import="globaz.pegasus.utils.PCTaxeJournaliereHomeHandler" %>
 
 <%
 	PCSejourMoisPartielHomeAjaxViewBean viewBean = (PCSejourMoisPartielHomeAjaxViewBean) request.getAttribute(FWServlet.VIEWBEAN);
@@ -20,6 +21,11 @@
 		<prixJournalier><%=PCCommonHandler.getCurrencyFormtedDefault(viewBean.getSejourMoisPartielHome().getSimpleSejourMoisPartielHome().getPrixJournalier()) %></prixJournalier>
 		<fraisNourriture><%=PCCommonHandler.getCurrencyFormtedDefault(viewBean.getSejourMoisPartielHome().getSimpleSejourMoisPartielHome().getFraisNourriture()) %></fraisNourriture>
 		<nbJours><%=viewBean.getSejourMoisPartielHome().getSimpleSejourMoisPartielHome().getNbJours() %></nbJours>
+		<idHome><%=viewBean.getSejourMoisPartielHome().getSimpleSejourMoisPartielHome().getIdHome() %></idHome>
+		<idTypeChambre><%=viewBean.getSejourMoisPartielHome().getSimpleSejourMoisPartielHome().getIdTypeChambre() %></idTypeChambre>
+		<textLibre><%=viewBean.getSejourMoisPartielHome().getSimpleSejourMoisPartielHome().getTextLibre() %></textLibre>
+        <isVersementDirect><%=viewBean.getSejourMoisPartielHome().getSimpleSejourMoisPartielHome().getIsVersementDirect() %></isVersementDirect>
+		<libelleHome><%=PCTaxeJournaliereHomeHandler.getSimpleLibelleHome(viewBean.getSejourMoisPartielHome().getTypeChambre())%></libelleHome>
 		<%@ include file="/pegasusRoot/ajax/commonDonneeFinanciere.jsp" %>
 		
 	</contenu>
