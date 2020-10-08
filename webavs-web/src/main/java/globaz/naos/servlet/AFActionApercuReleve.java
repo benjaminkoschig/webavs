@@ -550,14 +550,6 @@ public class AFActionApercuReleve extends AFDefaultActionChercher {
                 List<AFApercuReleveLineFacturation> cotisationList = viewBean.getCotisationList();
                 List<AFApercuReleveLineFacturation> newLineList = new ArrayList<AFApercuReleveLineFacturation>();
 
-                //ESVE mis en place pour calculer le taux moyen
-                AFApercuReleveLineFacturation releveAssCotiAvsAi = null;
-                for (int j = 0; j < cotisationList.size(); j++) {
-                    if (CodeSystem.TYPE_ASS_COTISATION_AVS_AI.equals(cotisationList.get(j).getTypeAssurance())) {
-                        releveAssCotiAvsAi = cotisationList.get(j);
-                    }
-                }
-
                 for (int i = 0; i < cotisationList.size(); i++) {
                     AFApercuReleveLineFacturation newLine = new AFApercuReleveLineFacturation();
                     // Recupération des valeurs de l'écran
@@ -567,22 +559,6 @@ public class AFActionApercuReleve extends AFDefaultActionChercher {
                     if (JadeStringUtil.isEmpty(request.getParameter("masse" + i))) {
                         newLine.setMasseVide(true);
                     } else {
-                        //ESVE calculer le taux moyen
-                        AFApercuReleveLineFacturation afApercuReleveLineFacturation = cotisationList.get(i);
-                        String typeReleve = viewBean.getType();
-                        if ((CodeSystem.TYPE_RELEVE_BOUCLEMENT_ACOMPTE.equals(typeReleve) || (CodeSystem.TYPE_RELEVE_DECOMP_FINAL_COMPTA.equals(typeReleve)))
-                                && "true".equals(viewBean.getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER, "false"))
-                                && "true".equals(viewBean.getSession().getApplication().getProperty(AFApplication.PROPERTY_AFFICHE_TAUX_PAR_PALIER, "false"))
-                                && CodeSystem.GEN_VALEUR_ASS_TAUX_VARIABLE.equals(afApercuReleveLineFacturation.getTauxGenre())) {
-                            if (CodeSystem.TYPE_ASS_FRAIS_ADMIN.equals(afApercuReleveLineFacturation.getTypeAssurance()) && CodeSystem.GENRE_ASS_PARITAIRE.equals(afApercuReleveLineFacturation.getGenreAssurance())) {
-                                // Pour les frais d'admin le taux moyen se calcule sur la masses de l'assurance AVS/AI
-                                AFCalculAssurance.calculTauxMoyen(viewBean.getSession()
-                                        , viewBean.getAffiliationId()
-                                        , afApercuReleveLineFacturation.getAssuranceId()
-                                        , Double.toString(releveAssCotiAvsAi.getMasse())
-                                        , afApercuReleveLineFacturation.getDebutPeriode().substring(6));
-                            }
-                        }
                         newLine.setMasse(request.getParameter("masse" + i));
                         newLine.setMasse(AFUtil.plafonneMasse(newLine.getMasseString(false), viewBean.getType(),
                                 newLine.getAssuranceId(), viewBean.getDateDebut(), viewBean.getSession(),
