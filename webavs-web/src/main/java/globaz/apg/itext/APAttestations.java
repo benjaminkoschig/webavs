@@ -129,6 +129,8 @@ public class APAttestations extends FWIDocumentManager {
 
     private String type;
 
+    private String numeroInforom;
+
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
 
@@ -201,8 +203,8 @@ public class APAttestations extends FWIDocumentManager {
         JadePublishDocumentInfo docInfo = getDocumentInfo();
 
         // on ajoute au doc info le numéro de référence inforom
-        docInfo.setDocumentTypeNumber(IPRConstantesExternes.ATTESTATION_FISCALE_APG);
-        docInfo.setDocumentType(IPRConstantesExternes.ATTESTATION_FISCALE_APG);
+        docInfo.setDocumentTypeNumber(numeroInforom);
+        docInfo.setDocumentType(numeroInforom);
         docInfo.setDocumentProperty("annee", annee);
 
         // on ajoute au doc info le critere de tri pour les impressions
@@ -249,7 +251,7 @@ public class APAttestations extends FWIDocumentManager {
 
             JadePublishDocumentInfo docInfo = createDocumentInfo();
             // on ajoute au doc info le numéro de référence inforom
-            docInfo.setDocumentTypeNumber(IPRConstantesExternes.ATTESTATION_FISCALE_APG);
+            docInfo.setDocumentTypeNumber(numeroInforom);
 
             docInfo.setPublishDocument(true);
             docInfo.setArchiveDocument(false);
@@ -775,8 +777,8 @@ public class APAttestations extends FWIDocumentManager {
 
             TIDocumentInfoHelper.fill(docInfoDoc, getIdTiers(), getSession(), IntRole.ROLE_APG, null, null);
 
-            docInfoDoc.setDocumentType(IPRConstantesExternes.ATTESTATION_FISCALE_APG);
-            docInfoDoc.setDocumentTypeNumber(IPRConstantesExternes.ATTESTATION_FISCALE_APG);
+            docInfoDoc.setDocumentType(numeroInforom);
+            docInfoDoc.setDocumentTypeNumber(numeroInforom);
             docInfoDoc.setDocumentProperty(CTDocumentInfoHelper.TYPE_DOCUMENT_ID,
                     IAPCatalogueTexte.CS_ATTESTATION_FISCALE_APG);
 
@@ -843,7 +845,15 @@ public class APAttestations extends FWIDocumentManager {
 
     @Override
     protected String getEMailObject() {
-        return super.getEMailObject();
+        String suffixe;
+        if(IPRDemande.CS_TYPE_MATERNITE.equals(type)) {
+            suffixe = getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_MATERNITE_OK");
+        } else if(IPRDemande.CS_TYPE_PANDEMIE.equals(type)) {
+            suffixe = getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_PANDEMIE_OK");
+        } else {
+            suffixe = getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_APG_OK");
+        }
+        return suffixe + super.getEMailObject();
     }
 
     public String getIdTiers() {
@@ -986,6 +996,13 @@ public class APAttestations extends FWIDocumentManager {
 
     public void setType(String type) {
         this.type = type;
+        if(IPRDemande.CS_TYPE_MATERNITE.equals(type)) {
+            numeroInforom =  IPRConstantesExternes.ATTESTATION_FISCALE_MATERNITE;
+        } else if(IPRDemande.CS_TYPE_PANDEMIE.equals(type)) {
+            numeroInforom = IPRConstantesExternes.ATTESTATION_FISCALE_PANDEMIE;
+        } else {
+            numeroInforom = IPRConstantesExternes.ATTESTATION_FISCALE_APG;
+        }
     }
 
     private List traitementRegroupementPeriode(List listObjects) {

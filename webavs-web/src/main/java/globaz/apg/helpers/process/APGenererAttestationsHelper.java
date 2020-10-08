@@ -35,7 +35,10 @@ public class APGenererAttestationsHelper extends PRAbstractHelper {
             List l = JadeGedFacade.getDocumentNamesList();
             for (Iterator iterator = l.iterator(); iterator.hasNext();) {
                 String s = (String) iterator.next();
-                if (s != null && s.startsWith(IPRConstantesExternes.ATTESTATION_FISCALE_APG)) {
+                if (s != null && (s.startsWith(IPRConstantesExternes.ATTESTATION_FISCALE_APG)
+                    || s.startsWith(IPRConstantesExternes.ATTESTATION_FISCALE_MATERNITE)
+                    || s.startsWith(IPRConstantesExternes.ATTESTATION_FISCALE_PANDEMIE)
+                )) {
                     ((APGenererAttestationsViewBean) viewBean).setDisplaySendToGed("1");
                     break;
                 } else {

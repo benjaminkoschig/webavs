@@ -414,6 +414,7 @@ public class APGenererAttestationsProcess extends BProcess {
                 setEMailObject(getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_3") + " " + getAnnee());
 
             }
+
         }
 
         APAttestations attestations = new APAttestations(getSession());
