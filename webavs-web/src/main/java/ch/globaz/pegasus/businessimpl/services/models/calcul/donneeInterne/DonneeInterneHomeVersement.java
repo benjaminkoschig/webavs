@@ -1,6 +1,10 @@
 package ch.globaz.pegasus.businessimpl.services.models.calcul.donneeInterne;
 
+import ch.globaz.common.domaine.Periode;
 import ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DonneeInterneHomeVersement {
     public static String TYPE_CREANCIER = "TYPE_CREANCIER";
@@ -24,6 +28,7 @@ public class DonneeInterneHomeVersement {
     private String montantPCMensuel = "";
     private String montantHomes = "";
     private String montantDepenses = "";
+    List<Periode> periodeListCreanceAccorde = new ArrayList<>();
 
 
     public String getIdPca() {
@@ -136,4 +141,12 @@ public class DonneeInterneHomeVersement {
     public void setMontantDepenses(String montantDepenses) {
         this.montantDepenses = montantDepenses;
     }
+    public List<Periode> getPeriodeListCreanceAccorde() {
+        return periodeListCreanceAccorde;
+    }
+
+    public void setPeriodeListCreanceAccorde(List<Periode> periodeListCreanceAccorde) {
+        this.periodeListCreanceAccorde = periodeListCreanceAccorde;
+    }
+
 }
