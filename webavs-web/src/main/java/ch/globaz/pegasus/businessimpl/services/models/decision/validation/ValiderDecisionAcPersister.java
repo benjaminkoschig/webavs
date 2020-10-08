@@ -192,8 +192,13 @@ public class ValiderDecisionAcPersister {
     }
     private void updateCreanciers() throws JadeApplicationServiceNotAvailableException, CreancierException, JadePersistenceException {
         try {
+            Map<String,CreanceAccordee> mapCreancierAlreadyUpdate = new HashMap<>();
             for (CreanceAccordee ca : data.getCreanciers()) {
-                PegasusImplServiceLocator.getSimpleCreancierService().update(ca.getSimpleCreancier());
+                if(!mapCreancierAlreadyUpdate.containsKey(ca.getSimpleCreancier().getId())){
+                    PegasusImplServiceLocator.getSimpleCreancierService().update(ca.getSimpleCreancier());
+                    mapCreancierAlreadyUpdate.put(ca.getSimpleCreancier().getId(),ca);
+                }
+
             }
         } catch (CreancierException e) {
             throw new CreancierException("Unable to udpate the simpleDecisionHeader", e);

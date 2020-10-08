@@ -508,15 +508,10 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
         if (homeReplaced != null) {
             mappingHomes(homeVersementList, homeReplaced, allNewPca, mapMontantTotalHome);
         }
-        boolean isVersementHome = false;
-        if (homeVersementList != null && homeVersementList.size() > 0) {
-            isVersementHome = true;
-        }
-
 
         for (SimplePCAccordee simplePCAccordee : allNewPca) {
             reporterLaRetenuSiExistant(pcaReplaced, simplePCAccordee, homeVersementList);
-            updateOldRetenuWithDateEnd(pcaReplaced, simplePCAccordee, isVersementHome);
+            updateOldRetenuWithDateEnd(pcaReplaced, simplePCAccordee);
             createCreancierHystorique(pcaReplaced);
         }
 
@@ -660,39 +655,14 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 }
             }
         }
-//        /**
-//         * TEST : Check si il y'a des changement des montants des retenues du même home
-//         *  - NON : Empêcher la création d'une retenu identique
-//         *  - OUI : Supprimer la retenu reporté pour que la nouvelle créée plus tard la remplace
-//         */
-//        for (DonneeInterneHomeVersement donneeInterneHomeVersement : homeVersementList) {
-//            PcaRetenueSearch search = new PcaRetenueSearch();
-//            search.setForIdPca(ancienneDonnee.getSimplePCAccordee().getIdPCAccordee());
-//            search = PegasusServiceLocator.getRetenueService().search(search);
-//            for (JadeAbstractModel model : search.getSearchResults()) {
-//                PcaRetenue oldPcaRetenue = (PcaRetenue) model;
-//                if (donneeInterneHomeVersement.getCsTypeVersement().equals(DonneeInterneHomeVersement.TYPE_RETENUS)
-//                        && oldPcaRetenue.getSimpleRetenue().getIdTiersAdressePmt().equals(donneeInterneHomeVersement.getIdTiersAdressePaiement())) {
-//                    Float montantAVerser = getMontantHome(donneeInterneHomeVersement.getMontantHomes(), 1);
-//                    Float montantAVerserOld = Float.parseFloat(oldPcaRetenue.getSimpleRetenue().getMontantRetenuMensuel());
-//                    if (montantAVerser.floatValue() == montantAVerserOld.floatValue()) {
-//                        homeVersementList.remove(donneeInterneHomeVersement);
-//                    } else {
-//                        PegasusImplServiceLocator.getRetenueService().delete(oldPcaRetenue);
-//                    }
-//                }
-//            }
-//        }
-//
-//    }
 
     }
 
     private void createCreancierForVersementsHome(List<DonneeInterneHomeVersement> homeVersementList) throws JadeApplicationServiceNotAvailableException, PmtMensuelException, CreancierException, JadePersistenceException {
         String dateDebut = "";
         String dateFin = "";
-        String idCreancier ="";
-        Map<String,String> mapCreancierDejaCreer = new HashMap<>();
+        String idCreancier = "";
+        Map<String, String> mapCreancierDejaCreer = new HashMap<>();
         for (DonneeInterneHomeVersement calculDonneesHome : homeVersementList) {
             if (calculDonneesHome.getCsTypeVersement().equals(DonneeInterneHomeVersement.TYPE_CREANCIER)) {
                 if (JadeStringUtil.isBlankOrZero(calculDonneesHome.getDateFin())) {
@@ -703,7 +673,10 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 dateDebut = JadeDateUtil.getFirstDateOfMonth(calculDonneesHome.getDateDebut());
                 int nbreMois = JadeDateUtil.getNbMonthsBetween(dateDebut, dateFin);
                 Float montantAVerser = getMontantHome(calculDonneesHome.getMontantHomes(), nbreMois);
-                if(!mapCreancierDejaCreer.containsKey(calculDonneesHome.getIdTiersHome())){
+                /**
+                 * Empêcher de créer plusieurs même créanciers si ily'a plusieurs créances sur le même.
+                 */
+                if (!mapCreancierDejaCreer.containsKey(calculDonneesHome.getIdTiersHome())) {
                     Creancier creancier = new Creancier();
                     SimpleCreancier simpleCreancier = new SimpleCreancier();
                     simpleCreancier.setCsEtat(IPCDroits.CS_ETAT_CREANCE_A_PAYE);
@@ -719,8 +692,8 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                     creancier.setSimpleCreancier(simpleCreancier);
                     creancier = PegasusServiceLocator.getCreancierService().create(creancier);
                     idCreancier = creancier.getId();
-                    mapCreancierDejaCreer.put(calculDonneesHome.getIdTiersHome(),idCreancier);
-                }else{
+                    mapCreancierDejaCreer.put(calculDonneesHome.getIdTiersHome(), idCreancier);
+                } else {
                     idCreancier = mapCreancierDejaCreer.get(calculDonneesHome.getIdTiersHome());
                 }
                 CreanceAccordee creanceAccordee = new CreanceAccordee();
@@ -729,7 +702,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 simpleCreanceAccordee.setIdPCAccordee(calculDonneesHome.getIdPca());
                 Float montantPCMensuelDeduit = Float.parseFloat(calculDonneesHome.getMontantPCMensuel()) - (Float.parseFloat(calculDonneesHome.getMontantDepenses()) / 12);
                 if (montantPCMensuelDeduit < 0.0) {
-                    montantPCMensuelDeduit = new Float(0);
+                    montantPCMensuelDeduit = Float.parseFloat("0");
                 }
                 if (montantAVerser > montantPCMensuelDeduit) {
                     simpleCreanceAccordee.setMontant(montantPCMensuelDeduit.toString());
@@ -776,9 +749,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
     }
 
     private void mappingHomes(List<DonneeInterneHomeVersement> homeVersementList, CalculDonneesHomeSearch listHomes, List<SimplePCAccordee> allNewPca, Map<String, String> mapMontantTotalHome) throws JadeApplicationServiceNotAvailableException, PmtMensuelException {
-        int ID_PCA = 0;
-        int ROLE_BENEF = 1;
-        int MONTANT_MENSUEL = 2;
+
         String idPcAccordee = "";
         String csRoleBenef = "";
         String montantMensuelPC = "";
@@ -802,44 +773,43 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
         }
         for (JadeAbstractModel model : listHomes.getSearchResults()) {
             CalculDonneesHome home = (CalculDonneesHome) model;
-            if (home.getIsVersementDirect()) {
-                if (mapToIDPCA.containsKey(home.getIdTiersRegroupement())) {
-                    Map<Periode, String> mapPeriode = createPeriodeVersementHome(home.getDateDebutDFH(), home.getDateFinDFH());
-                    listPCA = mapToIDPCA.get(home.getIdTiersRegroupement());
-                    for (Map.Entry<Periode, String> entry : mapPeriode.entrySet()) {
-                        String csTypeVersement = entry.getValue();
-                        Periode periode = entry.getKey();
-                        for (SimplePCAccordee simplePCAccordeeBenef : listPCA) {
-                            donnee = new DonneeInterneHomeVersement();
-                            donnee.setIdRenteAccordee(simplePCAccordeeBenef.getIdPrestationAccordee());
-                            donnee.setIdPca(simplePCAccordeeBenef.getIdPCAccordee());
-                            donnee.setIdAdressePaiement(home.getIdAdressePaiement());
-                            donnee.setIdTiersHome(home.getIdTiersHome());
-                            donnee.setMontantPCMensuel(simplePCAccordeeBenef.getMontantMensuel());
-                            donnee.setIdDemande(home.getIdDemande());
-                            donnee.setIdTiersHome(home.getIdTiersHome());
-                            donnee.setIdTiersAdressePaiement(home.getIdTiersHome());
-                            donnee.setIdTiersRegroupement(home.getIdTiersRegroupement());
-                            donnee.setCsRoleBeneficiaire(simplePCAccordeeBenef.getCsRoleBeneficiaire());
-                            //Cas séperation où le conjoint est devenu requérant.
-                            if (donnee.getCsRoleBeneficiaire().equals(RoleMembreFamille.REQUERANT.getValue())) {
-                                donnee.setMontantHomes(mapMontantTotalHome.get(REQUERANT_HOME));
-                                donnee.setMontantDepenses(mapMontantTotalHome.get(REQUERANT_DEP_PERS));
-                            } else {
-                                donnee.setMontantHomes(mapMontantTotalHome.get(CONJOINT_HOME));
-                                donnee.setMontantDepenses(mapMontantTotalHome.get(CONJOINT_DEP_PERS));
-                            }
-                            donnee.setCsTypeVersement(csTypeVersement);
-                            donnee.setDateDebut(periode.getDateDebut());
-                            donnee.setDateFin(periode.getDateFin());
-                            if(donnee.getCsTypeVersement().equals(DonneeInterneHomeVersement.TYPE_RETENUS) && JadeStringUtil.isBlankOrZero(simplePCAccordeeBenef.getDateFin())
-                                || donnee.getCsTypeVersement().equals(DonneeInterneHomeVersement.TYPE_CREANCIER)  ){
-                                homeVersementList.add(donnee);
-                            }
+            if (Boolean.TRUE.equals(home.getIsVersementDirect()) && mapToIDPCA.containsKey(home.getIdTiersRegroupement())) {
+                Map<Periode, String> mapPeriode = createPeriodeVersementHome(home.getDateDebutDFH(), home.getDateFinDFH());
+                listPCA = mapToIDPCA.get(home.getIdTiersRegroupement());
+                for (Map.Entry<Periode, String> entry : mapPeriode.entrySet()) {
+                    String csTypeVersement = entry.getValue();
+                    Periode periode = entry.getKey();
+                    for (SimplePCAccordee simplePCAccordeeBenef : listPCA) {
+                        donnee = new DonneeInterneHomeVersement();
+                        donnee.setIdRenteAccordee(simplePCAccordeeBenef.getIdPrestationAccordee());
+                        donnee.setIdPca(simplePCAccordeeBenef.getIdPCAccordee());
+                        donnee.setIdAdressePaiement(home.getIdAdressePaiement());
+                        donnee.setIdTiersHome(home.getIdTiersHome());
+                        donnee.setMontantPCMensuel(simplePCAccordeeBenef.getMontantMensuel());
+                        donnee.setIdDemande(home.getIdDemande());
+                        donnee.setIdTiersHome(home.getIdTiersHome());
+                        donnee.setIdTiersAdressePaiement(home.getIdTiersHome());
+                        donnee.setIdTiersRegroupement(home.getIdTiersRegroupement());
+                        donnee.setCsRoleBeneficiaire(simplePCAccordeeBenef.getCsRoleBeneficiaire());
+                        //Cas séperation où le conjoint est devenu requérant.
+                        if (donnee.getCsRoleBeneficiaire().equals(RoleMembreFamille.REQUERANT.getValue())) {
+                            donnee.setMontantHomes(mapMontantTotalHome.get(REQUERANT_HOME));
+                            donnee.setMontantDepenses(mapMontantTotalHome.get(REQUERANT_DEP_PERS));
+                        } else {
+                            donnee.setMontantHomes(mapMontantTotalHome.get(CONJOINT_HOME));
+                            donnee.setMontantDepenses(mapMontantTotalHome.get(CONJOINT_DEP_PERS));
+                        }
+                        donnee.setCsTypeVersement(csTypeVersement);
+                        donnee.setDateDebut(periode.getDateDebut());
+                        donnee.setDateFin(periode.getDateFin());
+                        if (donnee.getCsTypeVersement().equals(DonneeInterneHomeVersement.TYPE_RETENUS) && JadeStringUtil.isBlankOrZero(simplePCAccordeeBenef.getDateFin())
+                                || donnee.getCsTypeVersement().equals(DonneeInterneHomeVersement.TYPE_CREANCIER)) {
+                            homeVersementList.add(donnee);
                         }
                     }
                 }
             }
+
         }
     }
 
@@ -895,7 +865,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
      * @throws JadePersistenceException
      */
 
-    private void updateOldRetenuWithDateEnd(CalculPcaReplaceSearch anciennesPCAccordees, SimplePCAccordee simplePCAccordee, Boolean isVersementHome) throws JadeApplicationException, JadePersistenceException {
+    private void updateOldRetenuWithDateEnd(CalculPcaReplaceSearch anciennesPCAccordees, SimplePCAccordee simplePCAccordee) throws JadeApplicationException, JadePersistenceException {
         CalculPcaReplace anciennePCACourante;
         String idPcaOld;
         String dateProchainPaiement = PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt();
@@ -906,7 +876,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 if (JadeStringUtil.isBlankOrZero(ancienneDonnee.getSimplePCAccordee().getDateFin())
                         && IPCPCAccordee.CS_ETAT_PCA_VALIDE.equals(ancienneDonnee.getSimplePCAccordee().getCsEtatPC())) {
                     anciennePCACourante = ancienneDonnee;
-                    if (anciennePCACourante.getSimplePrestationsAccordees().getIsRetenues()) {
+                    if (Boolean.TRUE.equals(anciennePCACourante.getSimplePrestationsAccordees().getIsRetenues())) {
                         idPcaOld = ancienneDonnee.getSimplePCAccordee().getIdPCAccordee();
                         PcaRetenueSearch search = new PcaRetenueSearch();
                         search.setForIdPca(idPcaOld);
