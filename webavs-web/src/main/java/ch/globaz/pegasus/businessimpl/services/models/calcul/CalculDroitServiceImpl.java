@@ -720,6 +720,9 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 simpleCreanceAccordee.setIdCreancier(creancier.getId());
                 simpleCreanceAccordee.setIdPCAccordee(calculDonneesHome.getIdPca());
                 Float montantPCMensuelDeduit = Float.parseFloat(calculDonneesHome.getMontantPCMensuel()) - (Float.parseFloat(calculDonneesHome.getMontantDepenses()) / 12);
+                if(montantPCMensuelDeduit <0.0){
+                    montantPCMensuelDeduit = new Float(0);
+                }
                 if (montantAVerser > montantPCMensuelDeduit) {
                     simpleCreanceAccordee.setMontant(montantPCMensuelDeduit.toString());
                 } else {
