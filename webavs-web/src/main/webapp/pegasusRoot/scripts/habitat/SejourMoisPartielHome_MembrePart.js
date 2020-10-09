@@ -34,7 +34,7 @@ function SejourMoisPartielHome (container) {
 
 		// champ.
 		this.idEntity = idEntity;
-		this.isModifFraisGardeCheck();
+		this.isModifFraisNourritureCheck();
 	};
 
 	this.getParametres = function ($data) {
@@ -133,7 +133,7 @@ function SejourMoisPartielHome (container) {
 		$elementTable.find('td:eq(1),td:eq(2)').css('text-align', 'right').end();
 	};
 
-	this.modifFraisGarde = function () {
+	this.modifFraisNourriture = function () {
 		var fraisNourriture = this.detail.find('.fraisNourriture');
 		if (this.detail.find('.isFraisNourriture').prop('checked')) {
 			fraisNourriture.prop( "disabled", false );
@@ -143,7 +143,7 @@ function SejourMoisPartielHome (container) {
 		}
 	};
 
-	this.isModifFraisGarde = function () {
+	this.isModifFraisNourriture = function () {
 		var fraisNourriture = this.detail.find('.fraisNourriture');
 		var isFraisNourriture = this.detail.find('.isFraisNourriture');
 		if(fraisNourriture.val() ==VAL_FRAIS_NOURRITURE) {
@@ -153,7 +153,7 @@ function SejourMoisPartielHome (container) {
 		}
 	}
 
-	this.isModifFraisGardeCheck = function () {
+	this.isModifFraisNourritureCheck = function () {
 		var fraisNourriture = this.detail.find('.fraisNourriture');
 		var isFraisNourriture = this.detail.find('.isFraisNourriture');
 		if(fraisNourriture.val() ==VAL_FRAIS_NOURRITURE) {
@@ -165,7 +165,7 @@ function SejourMoisPartielHome (container) {
 
 	this.addEvent = function () {
 		this.detail.find('.isFraisNourriture').click(function () {
-			that.modifFraisGarde();
+			that.modifFraisNourriture();
 		});
 	};
 
@@ -216,8 +216,7 @@ $(function () {
 		zone.addEvent();
 		$that.find('.btnAjaxUpdate').click(function () {
 			zone.startEdition();
-			//zone.isModifFraisGarde();
-			zone.modifFraisGarde();
+			zone.modifFraisNourriture();
 			$that.find('.btnAjaxValidateNouvellePeriode').show();
 
 		}).end()
@@ -234,8 +233,8 @@ $(function () {
 			zone.stopEdition();
 			zone.startEdition();
 			$that.find('.fraisNourriture').val(VAL_FRAIS_NOURRITURE);
-			zone.isModifFraisGardeCheck();
-			zone.isModifFraisGarde();
+			zone.isModifFraisNourritureCheck();
+			zone.isModifFraisNourriture();
 		}).end()
 		.find('.btnAjaxValidateNouvellePeriode').click(function () {
 			zone.doAddPeriode = true;
