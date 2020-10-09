@@ -131,18 +131,6 @@ var dialogMontantLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOM
 							%>
 										<tr idEntity="<%=donnee.getId() %>" idGroup="<%=dfHeader.getIdEntityGroup() %>" header="<%=idGroup==null?"true":"false"%>">
 											<td>&#160;</td>
-<%--											<td><%=PCTaxeJournaliereHomeHandler.getLibelleHomeAvecChambre(sejour.getTypeChambre(),objSession)%></td>--%>
-<%--											<td>--%>
-<%--												<img class="detailPrixChambres" style="float:left" src="images/aide.gif"--%>
-<%--													 data-id-chambre="<%= sejour.getTypeChambre().getId() %>"--%>
-<%--													 data-id-home="<%= donnee.getIdHome() %>"--%>
-<%--													 data-dateDebut="<%= dfHeader.getDateDebut() %>"--%>
-<%--													 data-dateFin="<%= dfHeader.getDateFin() %>"--%>
-<%--													 data-g-bubble='text:tooltipTextLibelle,wantMarker:false,position:right'/>--%>
-
-<%--&lt;%&ndash;												<span style="float:right"><%=viewBean.getPrix(donnee,objSession)%></span>&ndash;%&gt;--%>
-<%--											</td>--%>
-
 											<td><%=PCCommonHandler.getCurrencyFormtedDefault(donnee.getPrixJournalier()) %></td>
 											<td><%=PCCommonHandler.getCurrencyFormtedDefault(donnee.getFraisNourriture())%></td>
 											<td><%=PCCommonHandler.getNumeriqueDefault(donnee.getNbJours())%></td>
