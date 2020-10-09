@@ -61,7 +61,14 @@
 				<join-field name="isPlanRetenu" value="TRUE" />
 			</join-group>
 		</linked-model>
-		
+
+		<linked-model name="planCalculNonRetenu" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idPCAccordee" operation="EQUALS" field-ref="pcAccordee.simplePCAccordee.idPCAccordee"/>
+				<join-field name="isPlanNonRetenu" value="TRUE" />
+			</join-group>
+		</linked-model>
+
 		<search-definition>
 			<search-group operator="AND">
 				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="versionDroit.simpleVersionDroit.idVersionDroit"/>

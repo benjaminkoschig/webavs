@@ -1012,7 +1012,11 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
                     PegasusImplServiceLocator.getSimplePlanDeCalculService().update(simplePlanDeCalculOld);
 
                     simplePlanDeCalcul.setIsPlanRetenu(true);
+                    simplePlanDeCalcul.setIsPlanNonRetenu(false);
                     PegasusImplServiceLocator.getSimplePlanDeCalculService().update(simplePlanDeCalcul);
+
+                    // TODO : update plan de calcul non retenu.
+
                     try {
                         if (pcAccordee.getSimplePrestationsAccordeesConjoint() != null && !JadeStringUtil
                                 .isBlankOrZero(pcAccordee.getSimplePCAccordee().getIdPrestationAccordeeConjoint())) {

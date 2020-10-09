@@ -10,7 +10,9 @@ import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.db.tiers.TITiers;
+
 import java.util.ArrayList;
+
 import ch.globaz.common.business.language.LanguageResolver;
 import ch.globaz.common.document.TextMerger;
 import ch.globaz.common.document.babel.BabelTextDefinition;
@@ -61,23 +63,31 @@ public class PCPlanCalculHandlerOO {
 
     /**
      * Construction et retourne le data (DocumentData) du plan de calcul
-     * 
+     *
+     * @param babelDoc
+     * @param dacOO
      * @param data
-     * @param document
      * @param tupleRoot
+     * @param isMembresFamillesInclus
+     * @param isRetenu
      * @return data, instance de DocumentData contenat le plan de calcul
      * @throws Exception
      */
     public DocumentData build(ICTDocument babelDoc, DecisionApresCalculOO dacOO, DocumentData data,
-            TupleDonneeRapport tupleRoot, boolean isMembresFamillesInclus) throws Exception {
+                              TupleDonneeRapport tupleRoot, boolean isMembresFamillesInclus, boolean isRetenu) throws Exception {
 
         this.dacOO = dacOO;
         this.babelDoc = babelDoc;
         initSearch();
         String idTiersBeneficiaire = dacOO.getDecisionHeader().getPersonneEtendue().getTiers().getIdTiers();
 
-        planCalcul = PCPlanCalculHandler.getHandlerForIdPlanCalcul(getSession(), dacOO.getPlanCalcul()
-                .getIdPlanDeCalcul(), idTiersBeneficiaire);
+        String idPlanCalcul;
+        if (isRetenu) {
+            idPlanCalcul = dacOO.getPlanCalcul().getIdPlanDeCalcul();
+        } else {
+            idPlanCalcul = dacOO.getPlanCalculNonRetenu().getIdPlanDeCalcul();
+        }
+        planCalcul = PCPlanCalculHandler.getHandlerForIdPlanCalcul(getSession(), idPlanCalcul, idTiersBeneficiaire);
 
         planCalcul.generateBlocs(tupleRoot, babelDoc.getCodeIsoLangue());
         if (isMembresFamillesInclus) {
@@ -90,7 +100,7 @@ public class PCPlanCalculHandlerOO {
         TITiers tiers = loadTiers(idTiersBeneficiaire);
         textMerger.getTextGiver().setLangue(tiers.getLangueIso());
         createLibelleHome(textMerger, dacOO, tupleRoot);
-        createLibelleGeneraux(data, tiers);
+        createLibelleGeneraux(data, tiers, isRetenu);
         // Bloc fortune
         createBloc(data, planCalcul.getBlocFortune(), TypeBloc.FORTUNE);
         // Bloc revenu
@@ -106,7 +116,7 @@ public class PCPlanCalculHandlerOO {
     }
 
     private void createLibelleHome(TextMerger<BabelTextDefinition> textMerger, DecisionApresCalculOO dacOO,
-            TupleDonneeRapport tupleRoot) {
+                                   TupleDonneeRapport tupleRoot) {
         Home home;
         try {
             home = HomeUtil.readHomeByPlanCacule(dacOO.getPcAccordee().getSimplePCAccordee(), tupleRoot);
@@ -123,7 +133,7 @@ public class PCPlanCalculHandlerOO {
 
     /**
      * Découpe le libelle pour permettre de récupérer la legende
-     * 
+     *
      * @param ligne
      * @return le libelle simple
      */
@@ -142,7 +152,7 @@ public class PCPlanCalculHandlerOO {
 
     /**
      * Création des lignes de chaque bloc du plan de calcul
-     * 
+     *
      * @param data
      * @param listeLigneBloc
      * @param bloc
@@ -166,7 +176,7 @@ public class PCPlanCalculHandlerOO {
                         || IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_DEDUCTION_LPP.equals(ligne.getCsCode())
                         || IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_FRAIS_OBTENTION_REVENU.equals(ligne.getCsCode())
                         || IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_DEDUCTION_FORFAITAIRE_REVENU.equals(ligne
-                                .getCsCode())) {
+                        .getCsCode())) {
 
                     String libelle = buildLibelle(ligne)[0];
                     line.addData("LIBELLE", PCPlanCalculHandlerOO.INDENT + libelle);
@@ -251,7 +261,7 @@ public class PCPlanCalculHandlerOO {
 
     /**
      * Création du bloc résumé final du plan de calcul
-     * 
+     *
      * @param data
      * @param liste
      * @return data
@@ -289,13 +299,10 @@ public class PCPlanCalculHandlerOO {
 
     /**
      * Création de la ligne total des différents blcos du plan de calcul
-     * 
-     * @param data
-     *            , instance DocumentData
-     * @param bloc
-     *            , type de bloc du plan de calcul
-     * @param ligne
-     *            , ligne du plan de calcul
+     *
+     * @param data  , instance DocumentData
+     * @param bloc  , type de bloc du plan de calcul
+     * @param ligne , ligne du plan de calcul
      * @return, data
      */
     private DocumentData createLastligne(DocumentData data, TypeBloc bloc, PCLignePlanCalculHandler ligne) {
@@ -326,7 +333,7 @@ public class PCPlanCalculHandlerOO {
         return data;
     }
 
-    private DocumentData createLibelleGeneraux(DocumentData data, TITiers tiers)
+    private DocumentData createLibelleGeneraux(DocumentData data, TITiers tiers, boolean isRetenu)
             throws PersonneDansPlanCalculException, JadeApplicationServiceNotAvailableException,
             JadePersistenceException, DecisionException {
         // Requerant infos et mebre famille
@@ -348,20 +355,19 @@ public class PCPlanCalculHandlerOO {
                             + dacOO.getDecisionHeader().getSimpleDecisionHeader().getDateDebutDecision())
                     + " "
                     + PRStringUtils.replaceString(babelDoc.getTextes(1).getTexte(3).getDescription(),
-                            PCPlanCalculHandlerOO.DATE_FIN, PegasusDateUtil.getLastDayOfMonth(month - 1, year) + "."
-                                    + dacOO.getDecisionHeader().getSimpleDecisionHeader().getDateFinDecision());
+                    PCPlanCalculHandlerOO.DATE_FIN, PegasusDateUtil.getLastDayOfMonth(month - 1, year) + "."
+                            + dacOO.getDecisionHeader().getSimpleDecisionHeader().getDateFinDecision());
         }
 
         // PAGE
         data.addData("PAGE_NUMERO",
                 LanguageResolver.resolveLibelleFromLabel(tiers.getLangueIso(), "PAGE", getSession()));
+        if (isRetenu) {
+            data.addData("PCAL_HEADER", PRStringUtils.replaceString(babelDoc.getTextes(1).getTexte(4).getDescription(), PCPlanCalculHandlerOO.DECISION_DU, dacOO.getDecisionHeader().getSimpleDecisionHeader().getDateDecision()) + " " + toAppendToPcalHeader);
+        } else {
+            data.addData("PCAL_HEADER", PRStringUtils.replaceString(babelDoc.getTextes(1).getTexte(15).getDescription(), PCPlanCalculHandlerOO.DECISION_DU, dacOO.getDecisionHeader().getSimpleDecisionHeader().getDateDecision()) + " " + toAppendToPcalHeader);
+        }
 
-        data.addData(
-                "PCAL_HEADER",
-                PRStringUtils.replaceString(babelDoc.getTextes(1).getTexte(4).getDescription(),
-                        PCPlanCalculHandlerOO.DECISION_DU, dacOO.getDecisionHeader().getSimpleDecisionHeader()
-                                .getDateDecision())
-                        + " " + toAppendToPcalHeader);
         data.addData("PCAL_JUSTIFICATIF", babelDoc.getTextes(1).getTexte(10).getDescription());
         data.addData("PCAL_FORTUNE", babelDoc.getTextes(1).getTexte(5).getDescription());
         data.addData("PCAL_REVENUS", babelDoc.getTextes(1).getTexte(6).getDescription());
@@ -390,7 +396,7 @@ public class PCPlanCalculHandlerOO {
 
     /**
      * Retourne le flavor a appliquer pour la ligne du template OO
-     * 
+     *
      * @param ligne
      * @param bloc
      * @return instance de DataList
@@ -461,7 +467,7 @@ public class PCPlanCalculHandlerOO {
 
     /**
      * Retourne en fonction du type de bloc, l'identifiant du tableau pour le template OO
-     * 
+     *
      * @param bloc
      * @return instance Collection (ch.globaz.datajuicer)
      */

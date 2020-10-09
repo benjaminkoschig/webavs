@@ -20,6 +20,7 @@ public class CalculComparatif implements ICalculComparatif {
     private String excedentAnnuel = null;
     private String idPlanCalcul = null;
     private boolean isPlanRetenu = false;
+    private boolean isPlanNonRetenu = false;
     private String montantDonation;
     private String montantMensuelConjoint = null;
     private String montantMensuelRequerant = null;
@@ -56,6 +57,7 @@ public class CalculComparatif implements ICalculComparatif {
         cc.excedentAnnuel = excedentAnnuel;
         cc.idPlanCalcul = idPlanCalcul;
         cc.isPlanRetenu = isPlanRetenu;
+        cc.isPlanNonRetenu = isPlanNonRetenu;
         cc.montantDonation = montantDonation;
         cc.montantMensuelConjoint = montantMensuelConjoint;
         cc.montantPCMensuel = montantPCMensuel;
@@ -119,6 +121,10 @@ public class CalculComparatif implements ICalculComparatif {
 
     public boolean getIsPlanretenu() {
         return isPlanRetenu;
+    }
+
+    public boolean getIsPlanNonRetenu() {
+        return isPlanNonRetenu;
     }
 
     /*
@@ -210,6 +216,10 @@ public class CalculComparatif implements ICalculComparatif {
      */
     public boolean isPlanRetenu() {
         return isPlanRetenu;
+    }
+
+    public boolean isPlanNonRetenu() {
+        return isPlanNonRetenu;
     }
 
     public void setCcConjoint(CalculComparatif ccConjoint) {
@@ -324,6 +334,14 @@ public class CalculComparatif implements ICalculComparatif {
      */
     public void setPlanRetenu(boolean isPlanRetenu) {
         this.isPlanRetenu = isPlanRetenu;
+    }
+
+    /**
+     * @param isPlanNonRetenu
+     *            the isPlanNonRetenu to set
+     */
+    public void setPlanNonRetenu(boolean isPlanNonRetenu) {
+        this.isPlanNonRetenu = isPlanNonRetenu;
     }
 
     public void setPrimeMoyenneAssMaladie(String primeMoyenneAssMaladie) {

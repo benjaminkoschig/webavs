@@ -7,6 +7,7 @@
 			<primary-key name="idPlanDeCalcul" column="CVIPLC" comment="ID_PLAN_DE_CALCUL"/>
 			<field name="idPCAccordee" column="CVIPCA" type="NUMERIC" mandatory="true" comment="ID_PC_ACCORDEE"/>
 			<field name="isPlanRetenu" column="CVBPLR" type="BOOLEAN" mandatory="true" comment="IS_PLAN_RETENU"/>
+			<field name="isPlanNonRetenu" column="CVBPLNR" type="BOOLEAN" mandatory="true" comment="IS_PLAN_NON_RETENU"/>
 			<field name="montantPCMensuelle" column="CVMPCM" type="NUMERIC" mandatory="false" comment="MONTANT_PC_MENSUELLE"/>
 			<field name="excedentPCAnnuel" column="CVMEXA" type="NUMERIC" mandatory="false" comment="EXCEDENT_PC_ANNUEL"/>
 			<field name="etatPC" column="CVLEPC" type="NUMERIC" mandatory="false" comment="ETAT_PC"/>

@@ -238,6 +238,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
             simplePlanCalcul.setIdPCAccordee(simplePcAccordee.getId());
             simplePlanCalcul.setResultatCalcul(calculSerialise.getBytes());
             simplePlanCalcul.setIsPlanRetenu(cc.isPlanRetenu());
+            simplePlanCalcul.setIsPlanNonRetenu(cc.isPlanNonRetenu());
             simplePlanCalcul.setMontantPCMensuelle(cc.getMontantPCMensuel());
             simplePlanCalcul.setExcedentPCAnnuel(cc.getExcedentAnnuel());
             simplePlanCalcul.setPrimeMoyenneAssMaladie(cc.getPrimeMoyenneAssMaladie());

@@ -57,14 +57,14 @@ public class DecisionApresCalculServiceImpl extends PegasusAbstractServiceImpl i
     public final static String DEMANDE_DU = "{date_demande}";
 
     @Override
-    public DocumentData buildPlanCalculDocumentData(String idDecisionApresCalcul, boolean isWithMemmbreFamilles)
-            throws CatalogueTexteException, JadeApplicationServiceNotAvailableException, Exception {
+    public DocumentData buildPlanCalculDocumentData(String idDecisionApresCalcul, boolean isWithMemmbreFamilles, boolean isRetenu)
+            throws Exception {
         if (idDecisionApresCalcul == null) {
             throw new DecisionException("Unable to buil plan de calcul, the id Decision passed is null!");
         }
 
         // DAC oo
-        DecisionApresCalculOO dacOO = new DecisionApresCalculOO();
+        DecisionApresCalculOO dacOO;
         dacOO = readForOO(idDecisionApresCalcul);
         if (dacOO == null) {
             throw new DecisionException(
@@ -80,14 +80,20 @@ public class DecisionApresCalculServiceImpl extends PegasusAbstractServiceImpl i
                 .getLangue());
         ICTDocument babelDoc = documentsBabel.get(langueTiers);
         // Tupleroot
-        if (dacOO.getPlanCalcul().getResultatCalcul() == null) {
+        byte[] bytePlanCalcul;
+        if (isRetenu) {
+            bytePlanCalcul = dacOO.getPlanCalcul().getResultatCalcul();
+        } else {
+            bytePlanCalcul = dacOO.getPlanCalculNonRetenu().getResultatCalcul();
+        }
+        if (bytePlanCalcul == null) {
             return null;
         }
-        String byteArrayToString = new String(dacOO.getPlanCalcul().getResultatCalcul());
+        String byteArrayToString = new String(bytePlanCalcul);
         TupleDonneeRapport tupleRoot = PegasusImplServiceLocator.getCalculPersistanceService().deserialiseDonneesCcXML(
                 byteArrayToString);
 
-        return new PCPlanCalculHandlerOO().build(babelDoc, dacOO, data, tupleRoot, isWithMemmbreFamilles);
+        return new PCPlanCalculHandlerOO().build(babelDoc, dacOO, data, tupleRoot, isWithMemmbreFamilles, isRetenu);
 
     }
 

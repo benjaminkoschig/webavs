@@ -3,7 +3,6 @@
  */
 package ch.globaz.pegasus.businessimpl.utils.calcul;
 
-import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.pegasus.business.constantes.*;
 import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCRenteAvsAi;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
@@ -31,6 +30,9 @@ import org.apache.commons.lang.StringUtils;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul.*;
 
 /**
  * @author ECO
@@ -761,7 +763,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
      */
     public void consolideDonnees(String dateReforme) throws CalculException {
 
-        if (calculReforme && JadeDateUtil.isDateBefore(getStrDateDebut(), dateReforme)){
+        if (calculReforme && JadeDateUtil.isDateBefore(getStrDateDebut(), dateReforme)) {
             return;
         }
 
@@ -953,32 +955,58 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
                 break;
             default:
                 // ajout des cc dans les containers, TypePC, Listecc, instanciation
-                Map<String, ArrayList<CalculComparatif>> listeCC = new HashMap<String, ArrayList<CalculComparatif>>();
-                listeCC.put(IPCValeursPlanCalcul.STATUS_OCTROI, new ArrayList<CalculComparatif>());
-                listeCC.put(IPCValeursPlanCalcul.STATUS_OCTROI_PARTIEL, new ArrayList<CalculComparatif>());
-                listeCC.put(IPCValeursPlanCalcul.STATUS_REFUS, new ArrayList<CalculComparatif>());
+                Map<String, List<CalculComparatif>> listeCC = new HashMap<>();
+                listeCC.put(STATUS_OCTROI, new ArrayList<>());
+                listeCC.put(STATUS_OCTROI_PARTIEL, new ArrayList<>());
+                listeCC.put(STATUS_REFUS, new ArrayList<>());
 
                 // iteration sur les cc et depot dans les containers adequats
                 for (CalculComparatif cc : calculComparatifs) {
                     // Ajout du cc dans la bonne liste
                     listeCC.get(cc.getEtatPC()).add(cc);
                 }
+                // on sélectionne le CC retenu (plus favorable)
+                setCCRetenuEtNonRetenu(listeCC, true);
 
-                // Si on a des octrois, le cc retenu est un octroi
-                if (listeCC.get(IPCValeursPlanCalcul.STATUS_OCTROI).size() > 0) {
-                    setCCRetenuByContainer(listeCC.get(IPCValeursPlanCalcul.STATUS_OCTROI));
-                }
-                // Sinon le cc retenu est un octroi partiel...
-                else if (listeCC.get(IPCValeursPlanCalcul.STATUS_OCTROI_PARTIEL).size() > 0) {
-                    setCCRetenuByContainer(listeCC.get(IPCValeursPlanCalcul.STATUS_OCTROI_PARTIEL));
-                } else// ou un refus
-                {
-                    setCCRetenuByContainer(listeCC.get(IPCValeursPlanCalcul.STATUS_REFUS));
+                List<CalculComparatif> ccRetenus = calculComparatifs.stream().filter(cc -> cc.isPlanRetenu()).collect(Collectors.toList());
+                if (ccRetenus.size() != 1) {
+                    throw new CalculException("Aucun plan de calcul retenu !");
+                } else {
+                    // on regarde si le cc retenu est non retenu.
+                    boolean isReforme = ccRetenus.get(0).isReformePc();
+                    setCCNonRetenu(listeCC, isReforme);
                 }
 
                 break;
         }
     }
+
+
+    private void setCCNonRetenu(Map<String, List<CalculComparatif>> listeCC, boolean isReforme) throws CalculException {
+        // on filtre pour conserver uniquement les cc du type opposé (réforme/non réforme)
+        Map<String, List<CalculComparatif>> listeCCFilter = listeCC.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
+                i -> i.getValue().stream().filter(calculComparatif -> isReforme != calculComparatif.isReformePc()).collect(Collectors.toList())));
+        // on vérifie qu'il existe un calcul de type différent (réforme/non réforme)
+        if (listeCCFilter.entrySet().stream().anyMatch(eachlist -> !eachlist.getValue().isEmpty())) {
+            setCCRetenuEtNonRetenu(listeCCFilter, false);
+        }
+
+    }
+
+    private void setCCRetenuEtNonRetenu(Map<String, List<CalculComparatif>> listeCC, boolean isRetenu) throws CalculException {
+        // Si on a des octrois, le cc retenu est un octroi
+        if (listeCC.get(STATUS_OCTROI).size() > 0) {
+            setCCRetenuByContainer(listeCC.get(STATUS_OCTROI), isRetenu);
+        }
+        // Sinon le cc retenu est un octroi partiel...
+        else if (listeCC.get(STATUS_OCTROI_PARTIEL).size() > 0) {
+            setCCRetenuByContainer(listeCC.get(STATUS_OCTROI_PARTIEL), isRetenu);
+        } else// ou un refus
+        {
+            setCCRetenuByContainer(listeCC.get(STATUS_REFUS), isRetenu);
+        }
+    }
+
 
     private CalculComparatif finaliseCalculCC(List<PersonnePCAccordee> combinaisonPersonnesCommun,
                                               TupleDonneeRapport root) {
@@ -1460,17 +1488,17 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
         this.isCalculRetro = isCalculRetro;
     }
 
-    private void setCCRetenuByContainer(ArrayList<CalculComparatif> containerCC) throws CalculException {
+    private void setCCRetenuByContainer(List<CalculComparatif> containerCC, boolean isRetenu) throws CalculException {
         CalculComparatif ccRetenu = null;
         float somme = -1f;
-        Set<CalculComparatif> ccEgaux = new HashSet<CalculComparatif>();
+        Set<CalculComparatif> ccEgaux = new HashSet<>();
 
         // Iteration sur les cc
         for (CalculComparatif cc : containerCC) {
             // Recup du montant de la pc mensuelle 0, ou plus
             float ccSomme = Float.parseFloat(cc.getMontantPCMensuel());
             // Si c'est un refus la somme utilisé est l'excedent annuel net
-            if (cc.getEtatPC().equals(IPCValeursPlanCalcul.STATUS_REFUS)) {
+            if (cc.getEtatPC().equals(STATUS_REFUS)) {
                 ccSomme = Float.parseFloat(cc.getExcedentAnnuel()) + Float.parseFloat(cc.getPrimeMoyenneAssMaladie());
             }
             // si somme > -1f, o et plus
@@ -1502,9 +1530,17 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
         // Si ccRetenu défini
         if (ccRetenu != null) {
-            ccRetenu.setPlanRetenu(true);
+            if (isRetenu) {
+                ccRetenu.setPlanRetenu(true);
+            } else {
+                ccRetenu.setPlanNonRetenu(true);
+            }
             if (ccRetenu.getCcConjoint() != null) {
-                ccRetenu.getCcConjoint().setPlanRetenu(true);
+                if (isRetenu) {
+                    ccRetenu.getCcConjoint().setPlanRetenu(true);
+                } else {
+                    ccRetenu.getCcConjoint().setPlanNonRetenu(true);
+                }
             }
         } else {
             throw new CalculException(

@@ -17,11 +17,13 @@ import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.util.nss.PRUtil;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.db.tiers.TITiers;
+
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Map;
+
 import ch.globaz.common.business.language.LanguageResolver;
 import ch.globaz.common.business.models.CTDocumentImpl;
 import ch.globaz.common.codesystem.CodeSystem;
@@ -79,6 +81,7 @@ import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import ch.globaz.topaz.datajuicer.Collection;
 import ch.globaz.topaz.datajuicer.DataList;
 import ch.globaz.topaz.datajuicer.DocumentData;
+import org.apache.commons.lang.StringUtils;
 
 public class SingleDACBuilder extends AbstractDecisionBuilder {
 
@@ -123,8 +126,8 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
     }
 
     public void build(DecisionApresCalculOO dacOO, TupleDonneeRapport tuppleRoot,
-            Map<Langues, CTDocumentImpl> documentsBabel, JadePrintDocumentContainer allDoc, DACPublishHandler handler,
-            String dateDoc, String persRef, Boolean allowDecompte) throws DecisionException,
+                      Map<Langues, CTDocumentImpl> documentsBabel, JadePrintDocumentContainer allDoc, DACPublishHandler handler,
+                      String dateDoc, String persRef, Boolean allowDecompte) throws DecisionException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException, Exception {
 
         Checkers.checkNotNull(dacOO, "dacOO");
@@ -163,37 +166,32 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
 
         mergeDataAndPubInfosWithPixisFill(allDoc, dataOriginal, new PegasusPubInfoBuilder().ged().rectoVersoLast()
-                .getPubInfo(), pubInfosPixisProperties, dacOO.getPersonneForDossier(),
+                        .getPubInfo(), pubInfosPixisProperties, dacOO.getPersonneForDossier(),
                 AbstractDecisionBuilder.TYPE_DOCUMENT.ORIGINAL, dacOO.getIdTiersCourrier(), dacOO.getNoDecision());
 
         mergeDataAndPubInfosWithPixisFill(containerGed, dataOriginal, new PegasusPubInfoBuilder().ged()
-                .rectoVersoLast().getPubInfo(), pubInfosPixisProperties, dacOO.getPersonneForDossier(),
+                        .rectoVersoLast().getPubInfo(), pubInfosPixisProperties, dacOO.getPersonneForDossier(),
                 TYPE_DOCUMENT.ORIGINAL, dacOO.getIdTiersCourrier(), dacOO.getNoDecision());
 
         /******************** Plan de calcul **************/
-        DocumentData dataPCAL = new DocumentData();
-        dataPCAL = PegasusImplServiceLocator.getDecisionApresCalculService().buildPlanCalculDocumentData(
-                dacOO.getSimpleDecisionApresCalcul().getIdDecisionApresCalcul(), true);
-        // dataPCAL.addData(IPCCatalogueTextes.STR_ID_PROCESS, IPCCatalogueTextes.PROCESS_PLAN_CALCUL);
+        DocumentData dataPCAL = addPlanCalcul(dacOO, allDoc, containerGed, true);
 
-        mergeDataAndPubInfosWithPixisFill(allDoc, dataPCAL, new PegasusPubInfoBuilder().ged().rectoVersoLast()
-                .getPubInfo(), pubInfosPixisProperties, dacOO.getPersonneForDossier(), TYPE_DOCUMENT.ORIGINAL,
-                dacOO.getIdTiersCourrier(), dacOO.getNoDecision());
+        /******************** Plan de calcul non retenu **************/
+        if (StringUtils.isNotEmpty(dacOO.getPlanCalculNonRetenu().getId())) {
+            addPlanCalcul(dacOO, allDoc, containerGed, false);
+        }
 
-        mergeDataAndPubInfosWithPixisFill(containerGed, dataPCAL, new PegasusPubInfoBuilder().ged().rectoVersoLast()
-                .getPubInfo(), pubInfosPixisProperties, dacOO.getPersonneForDossier(), TYPE_DOCUMENT.ORIGINAL,
-                dacOO.getIdTiersCourrier(), dacOO.getNoDecision());
         /********************** Decomptes ****************/
         if (allowDecompte) {
             DocumentData dataDecompte = new DocumentData();
             dataDecompte = buildRecapitulatifsDoc(dataDecompte);
             dataDecompte.addData(IPCCatalogueTextes.STR_ID_PROCESS, IPCCatalogueTextes.PROCESS_DECISION_DECOMPTE);
             mergeDataAndPubInfosWithPixisFill(allDoc, dataDecompte, new PegasusPubInfoBuilder().ged().rectoVersoLast()
-                    .getPubInfo(), pubInfosPixisProperties, dacOO.getPersonneForDossier(), TYPE_DOCUMENT.ORIGINAL,
+                            .getPubInfo(), pubInfosPixisProperties, dacOO.getPersonneForDossier(), TYPE_DOCUMENT.ORIGINAL,
                     dacOO.getIdTiersCourrier(), dacOO.getNoDecision());
 
             mergeDataAndPubInfosWithPixisFill(containerGed, dataDecompte, new PegasusPubInfoBuilder().ged()
-                    .rectoVersoLast().getPubInfo(), pubInfosPixisProperties, dacOO.getPersonneForDossier(),
+                            .rectoVersoLast().getPubInfo(), pubInfosPixisProperties, dacOO.getPersonneForDossier(),
                     TYPE_DOCUMENT.ORIGINAL, dacOO.getIdTiersCourrier(), dacOO.getNoDecision());
 
         }
@@ -202,23 +200,23 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         if (isAnnexeBillag() && dacOO.isDecisionValidee() && isDecisionPasEnrefus()) {
             DocumentData dataBillag = new DocumentData();
             dataBillag = new SingleBillagBuilder().buildBillagDoc(this.dacOO.getDecisionHeader()
-                    .getSimpleDecisionHeader().getDateDecision(), babelDoc, this.dacOO.getDecisionHeader()
-                    .getSimpleDecisionHeader().getDateDebutDecision(), this.dacOO.getDecisionHeader()
-                    .getPersonneEtendue().getPersonneEtendue().getNumAvsActuel(), this.dacOO.getVersionDroit()
-                    .getDemande().getDossier().getDemandePrestation().getPersonneEtendue().getTiers().getIdTiers(),
+                            .getSimpleDecisionHeader().getDateDecision(), babelDoc, this.dacOO.getDecisionHeader()
+                            .getSimpleDecisionHeader().getDateDebutDecision(), this.dacOO.getDecisionHeader()
+                            .getPersonneEtendue().getPersonneEtendue().getNumAvsActuel(), this.dacOO.getVersionDroit()
+                            .getDemande().getDossier().getDemandePrestation().getPersonneEtendue().getTiers().getIdTiers(),
                     preprateurDecision.getVisa());
             String prop = getSession().getApplication().getProperty(IPCDecision.DESTINATAIRE_REDEVANCE);
-            if("BILLAG".equalsIgnoreCase(prop)) {
+            if ("BILLAG".equalsIgnoreCase(prop)) {
                 dataBillag.addData(IPCCatalogueTextes.STR_ID_PROCESS, IPCCatalogueTextes.PROCESS_DECISION_BILLAG);
             } else {
                 dataBillag.addData(IPCCatalogueTextes.STR_ID_PROCESS, IPCCatalogueTextes.PROCESS_DECISION_REDEVANCE);
             }
             mergeDataAndPubInfosWithPixisFill(allDoc, dataBillag, new PegasusPubInfoBuilder().ged().rectoVersoLast()
-                    .getPubInfo(), pubInfosPixisProperties, dacOO.getPersonneForDossier(), TYPE_DOCUMENT.ORIGINAL,
+                            .getPubInfo(), pubInfosPixisProperties, dacOO.getPersonneForDossier(), TYPE_DOCUMENT.ORIGINAL,
                     dacOO.getIdTiersCourrier(), dacOO.getNoDecision());
 
             mergeDataAndPubInfosWithPixisFill(containerGed, dataBillag, new PegasusPubInfoBuilder().ged()
-                    .rectoVersoLast().getPubInfo(), pubInfosPixisProperties, dacOO.getPersonneForDossier(),
+                            .rectoVersoLast().getPubInfo(), pubInfosPixisProperties, dacOO.getPersonneForDossier(),
                     TYPE_DOCUMENT.ORIGINAL, dacOO.getIdTiersCourrier(), dacOO.getNoDecision());
         }
 
@@ -249,7 +247,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
                 dataPageGarde.addData(IPCCatalogueTextes.STR_ID_PROCESS,
                         IPCCatalogueTextes.PROCESS_DECISION_APRESCALCUL_PG);
                 mergeDataAndPubInfosWithPixisFill(allDoc, dataPageGarde, new PegasusPubInfoBuilder().rectoVersoLast()
-                        .getPubInfo(), pubInfosPixisPropertiesCopie, dacOO.getPersonneForDossier(),
+                                .getPubInfo(), pubInfosPixisPropertiesCopie, dacOO.getPersonneForDossier(),
                         TYPE_DOCUMENT.COPIE, idTiersCopie, dacOO.getNoDecision());
             }
 
@@ -260,7 +258,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
                 dataCopie.addData(IPCCatalogueTextes.STR_ID_PROCESS,
                         IPCCatalogueTextes.PROCESS_DECISION_APRESCALCUL_COPIE);
                 mergeDataAndPubInfosWithPixisFill(allDoc, dataCopie, new PegasusPubInfoBuilder().rectoVersoLast()
-                        .getPubInfo(), pubInfosPixisPropertiesCopie, dacOO.getPersonneForDossier(),
+                                .getPubInfo(), pubInfosPixisPropertiesCopie, dacOO.getPersonneForDossier(),
                         TYPE_DOCUMENT.COPIE, idTiersCopie, dacOO.getNoDecision());
             }
 
@@ -269,7 +267,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
                 DocumentData dataPCALCopie = new DocumentData();
                 dataPCALCopie = dataPCAL;
                 mergeDataAndPubInfosWithPixisFill(allDoc, dataPCALCopie, new PegasusPubInfoBuilder().rectoVersoLast()
-                        .getPubInfo(), pubInfosPixisPropertiesCopie, dacOO.getPersonneForDossier(),
+                                .getPubInfo(), pubInfosPixisPropertiesCopie, dacOO.getPersonneForDossier(),
                         TYPE_DOCUMENT.COPIE, idTiersCopie, dacOO.getNoDecision());
             }
             // ****** Decompte copie
@@ -279,10 +277,25 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
                 dataDecompteCopie.addData(IPCCatalogueTextes.STR_ID_PROCESS,
                         IPCCatalogueTextes.PROCESS_DECISION_DECOMPTE);
                 mergeDataAndPubInfosWithPixisFill(allDoc, dataDecompteCopie, new PegasusPubInfoBuilder()
-                        .rectoVersoLast().getPubInfo(), pubInfosPixisPropertiesCopie, dacOO.getPersonneForDossier(),
+                                .rectoVersoLast().getPubInfo(), pubInfosPixisPropertiesCopie, dacOO.getPersonneForDossier(),
                         TYPE_DOCUMENT.COPIE, idTiersCopie, dacOO.getNoDecision());
             }
         }
+    }
+
+    private DocumentData addPlanCalcul(DecisionApresCalculOO dacOO, JadePrintDocumentContainer allDoc, JadePrintDocumentContainer containerGed, boolean isRetenu) throws Exception {
+        DocumentData dataPCAL;
+        dataPCAL = PegasusImplServiceLocator.getDecisionApresCalculService().buildPlanCalculDocumentData(
+                dacOO.getSimpleDecisionApresCalcul().getIdDecisionApresCalcul(), true, isRetenu);
+
+        mergeDataAndPubInfosWithPixisFill(allDoc, dataPCAL, new PegasusPubInfoBuilder().ged().rectoVersoLast()
+                        .getPubInfo(), pubInfosPixisProperties, dacOO.getPersonneForDossier(), TYPE_DOCUMENT.ORIGINAL,
+                dacOO.getIdTiersCourrier(), dacOO.getNoDecision());
+
+        mergeDataAndPubInfosWithPixisFill(containerGed, dataPCAL, new PegasusPubInfoBuilder().ged().rectoVersoLast()
+                        .getPubInfo(), pubInfosPixisProperties, dacOO.getPersonneForDossier(), TYPE_DOCUMENT.ORIGINAL,
+                dacOO.getIdTiersCourrier(), dacOO.getNoDecision());
+        return dataPCAL;
     }
 
     private boolean isDecisionPasEnrefus() throws DecisionException {
@@ -320,7 +333,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
     /**
      * Création du bloc annexes
-     * 
+     *
      * @param data
      * @param document
      * @return data, instance de DocumentData mis à jour
@@ -344,7 +357,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
     /**
      * Création du bloc copies
-     * 
+     *
      * @param data
      * @param document
      * @return data, instance de DocumentData mis à jour
@@ -393,7 +406,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
     /**
      * Construction du header
-     * 
+     *
      * @param data
      * @return data, l'objet alimenté avec les infos du header
      * @throws Exception
@@ -440,7 +453,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
     /**
      * Génération du paragraphie informations
-     * 
+     *
      * @throws DecisionException
      */
     private DocumentData buildBlocInformations(DocumentData data) throws Exception {
@@ -460,7 +473,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
     /**
      * Creation du bloc MOyens de droits
-     * 
+     *
      * @param data
      * @param document
      * @return data, instance de DocumentData mis à jour
@@ -474,7 +487,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
     /**
      * Génération du paragraphie obligation de renseigner
-     * 
+     *
      * @throws DecisionException
      */
     private DocumentData buildBlocObligationDeRenseigner(DocumentData data) throws DecisionException {
@@ -487,7 +500,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
     /**
      * Création du bloc remarques
-     * 
+     *
      * @param data
      * @param document
      * @return data, instance de DocumentData mis à jour
@@ -554,7 +567,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
     /**
      * Génération du paragraphie versement à
-     * 
+     *
      * @throws DecisionException
      * @throws JadeApplicationException
      * @throws JadePersistenceException
@@ -584,7 +597,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
     /**
      * Création des copies de documents en fonction des paramètres de copies
-     * 
+     *
      * @param data
      * @param document
      * @return
@@ -725,7 +738,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
     /**
      * Remplissage du document original
-     * 
+     *
      * @param data
      * @return DoumentData
      * @throws Exception
@@ -764,9 +777,8 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
     /**
      * Construction du contenu
-     * 
-     * @param data
-     *            , l'objet data
+     *
+     * @param data , l'objet data
      * @return data, l'objet alimenté avec les infos du contenu
      * @throws JadePersistenceException
      * @throws JadeApplicationServiceNotAvailableException
@@ -855,8 +867,8 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
                                     + dacOO.getDecisionHeader().getSimpleDecisionHeader().getDateDebutDecision())
                             + " "
                             + PRStringUtils.replaceString(babelDoc.getTextes(3).getTexte(22).getDescription(),
-                                    SingleDACBuilder.DATE_FIN, PegasusDateUtil.getLastDayOfMonth(month - 1, year) + "."
-                                            + dacOO.getDecisionHeader().getSimpleDecisionHeader().getDateFinDecision()));
+                            SingleDACBuilder.DATE_FIN, PegasusDateUtil.getLastDayOfMonth(month - 1, year) + "."
+                                    + dacOO.getDecisionHeader().getSimpleDecisionHeader().getDateFinDecision()));
         }
 
         if (isReformePC()) {
@@ -891,7 +903,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
             case OCTROI:
                 data.addData("PRESTATION_MENS",
-                        SingleDACBuilder.MONNAIE + " " + new FWCurrency(isReformePC()? getMontantPCTotal():getMontantPc()).toStringFormat());
+                        SingleDACBuilder.MONNAIE + " " + new FWCurrency(isReformePC() ? getMontantPCTotal() : getMontantPc()).toStringFormat());
                 break;
 
             default:
@@ -914,7 +926,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
      * Genération du traitement du texte amal sur la décision
      * Si propriété check amal à false --> traitement standard, code non définie lors de la préparation des décisions
      * Si propriété check amal à true --> traitement check amal
-     * 
+     *
      * @param data
      * @return
      * @throws DecisionException
@@ -933,7 +945,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
     /**
      * Generation du texte amal pour le traitement standard
-     * 
+     *
      * @param data le container de remplissage amal
      * @return le container de remplissage amal
      * @throws DecisionException
@@ -966,7 +978,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         }
 
         data.addData("REDUCTION_PRIMES", babelDoc.getTextes(5).getTexte(10).getDescription());
-        if (isReformePC()){
+        if (isReformePC()) {
             data.addData("B_REDUCTION_PRIMES", amalTexteReforme);
         } else {
             data.addData("B_REDUCTION_PRIMES", amaltexte);
@@ -1070,7 +1082,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
     /**
      * Creation du document recapitulatif
-     * 
+     *
      * @param data
      * @return
      * @throws DecisionException
@@ -1096,7 +1108,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
     /**
      * Création du bloc récapitulatif
-     * 
+     *
      * @param data
      * @param document
      * @return
@@ -1135,8 +1147,8 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
                         + dacOO.getDecisionHeader().getPersonneEtendue().getPersonne().getDateNaissance()
                         + " , "
                         + PRStringUtils.replaceString(babelDoc.getTextes(1).getTexte(30).getDescription(),
-                                SingleDACBuilder.NSS, dacOO.getDecisionHeader().getPersonneEtendue()
-                                        .getPersonneEtendue().getNumAvsActuel()));
+                        SingleDACBuilder.NSS, dacOO.getDecisionHeader().getPersonneEtendue()
+                                .getPersonneEtendue().getNumAvsActuel()));
 
         tabAyantDroit.add(ayantDroit);
         data.add(tabAyantDroit);
@@ -1207,7 +1219,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
     }
 
     private Collection fillLineDecompteByPeriode(Collection table, PCAccordeeDecompteVO pcaForPeriode,
-            Boolean dealPcaCSType) throws PmtMensuelException, JadeApplicationServiceNotAvailableException,
+                                                 Boolean dealPcaCSType) throws PmtMensuelException, JadeApplicationServiceNotAvailableException,
             NumberFormatException, PCAccordeeException {
 
         String dateFinDecompte = pcaForPeriode.getDateFinPeriode();
@@ -1284,7 +1296,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
                 "TOTAL",
                 ""
                         + new FWCurrency(pcaForPeriode.getSimpleJoursAppoint().getMontantTotal().toString())
-                                .toStringFormat());
+                        .toStringFormat());
         table.add(line);
     }
 
@@ -1367,9 +1379,9 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
     /**
      * Retourne l'état de la décision refus, octroi ou partiel
-     * 
-     * @return, contante enum de EtatDecision
+     *
      * @throws DecisionException
+     * @return, contante enum de EtatDecision
      */
     private EtatDecision getEtatDecision() throws DecisionException {
 
@@ -1409,7 +1421,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         }
     }
 
-    private String getMontantPCTotal(){
+    private String getMontantPCTotal() {
         Float montantPCTotal = Float.parseFloat(dacOO.getSimplePrestation().getMontantPrestation())
                 + Float.parseFloat(dacOO.getPlanCalcul().getPrimeVerseeAssMaladie());
         return new FWCurrency(montantPCTotal.toString()).toStringFormat();
@@ -1417,7 +1429,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
     /**
      * Retourn le nom du mois en fonction du numéro passé en param
-     * 
+     *
      * @param month
      * @return
      */
@@ -1442,7 +1454,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
     /**
      * Retourne une chaine de caractère comprenant les membres de familles compris dans le calcul
-     * 
+     *
      * @return chaine de caractère
      * @throws PersonneDansPlanCalculException
      * @throws JadeApplicationServiceNotAvailableException
@@ -1494,9 +1506,9 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
                 Langues langueTiers = LanguageResolver.resolveISOCode(dacOO.getPcAccordee().getPersonneEtendue().getTiers()
                         .getLangue());
                 String prop = getSession().getApplication().getProperty(IPCDecision.DESTINATAIRE_REDEVANCE);
-                String message = 
+                String message =
                         MessageFormat.format(LanguageResolver.resolveLibelleFromLabel(
-                        langueTiers.getCodeIso(), IPCDecision.BILLAG_ANNEXES_STRING, getSession()), prop);
+                                langueTiers.getCodeIso(), IPCDecision.BILLAG_ANNEXES_STRING, getSession()), prop);
                 annexe.setValeur(message);
                 return true;
             }
@@ -1506,7 +1518,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
     /**
      * Retourne true su la decision est de type PROFORMA
-     * 
+     *
      * @return
      */
     private Boolean isProforma() {
@@ -1525,11 +1537,9 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
     /**
      * Chargement du container de transfert pour le remplissage de pixis
-     * 
-     * @param idTiers
-     *            l'identifiant du tiers concerné pour les informations
-     * @throws DecisionException
-     *             si un problème survient lors du remplissge
+     *
+     * @param idTiers l'identifiant du tiers concerné pour les informations
+     * @throws DecisionException si un problème survient lors du remplissge
      */
     private void loadPixisInfoForPubInfo(String idTiers) throws DecisionException {
         try {

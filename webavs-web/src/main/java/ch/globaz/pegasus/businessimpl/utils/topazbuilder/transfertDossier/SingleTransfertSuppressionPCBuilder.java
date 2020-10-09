@@ -154,7 +154,7 @@ public class SingleTransfertSuppressionPCBuilder extends SingleTransfertPCAbstra
 
             // génération du plan de calcul
             DocumentData dataPlanCalcul = PegasusImplServiceLocator.getDecisionApresCalculService()
-                    .buildPlanCalculDocumentData(idDecisionApresCalcul, true);
+                    .buildPlanCalculDocumentData(idDecisionApresCalcul, true, true);
             // uniquement si la PCA contient un BLOB (pas dans les cas de reprise)
             if (dataPlanCalcul != null) {
                 allDoc.addDocument(dataPlanCalcul, pubInfo);

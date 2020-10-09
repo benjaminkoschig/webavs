@@ -31,6 +31,7 @@ public class DecisionApresCalculOO extends JadeComplexModel {
 
     private PCAccordee pcAccordee = null;
     private SimplePlanDeCalcul planCalcul = null;
+    private SimplePlanDeCalcul planCalculNonRetenu = null;
     private SimpleDecisionApresCalcul simpleDecisionApresCalcul = null;
     private SimplePrestationsAccordees simplePrestation = null;
     private SimpleValidationDecision simpleValidationDecision = null;
@@ -47,6 +48,7 @@ public class DecisionApresCalculOO extends JadeComplexModel {
         droit = new SimpleDroit();
         demande = new SimpleDemande();
         planCalcul = new SimplePlanDeCalcul();
+        planCalculNonRetenu = new SimplePlanDeCalcul();
         simplePrestation = new SimplePrestationsAccordees();
 
     }
@@ -100,6 +102,10 @@ public class DecisionApresCalculOO extends JadeComplexModel {
 
     public SimplePlanDeCalcul getPlanCalcul() {
         return planCalcul;
+    }
+
+    public SimplePlanDeCalcul getPlanCalculNonRetenu() {
+        return planCalculNonRetenu;
     }
 
     /**
@@ -167,6 +173,10 @@ public class DecisionApresCalculOO extends JadeComplexModel {
 
     public void setPlanCalcul(SimplePlanDeCalcul planCalcul) {
         this.planCalcul = planCalcul;
+    }
+
+    public void setPlanCalculNonRetenu(SimplePlanDeCalcul planCalculNonRetenu) {
+        this.planCalculNonRetenu = planCalculNonRetenu;
     }
 
     /**

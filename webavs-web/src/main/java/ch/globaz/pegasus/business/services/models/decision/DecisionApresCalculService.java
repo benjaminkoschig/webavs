@@ -28,13 +28,15 @@ public interface DecisionApresCalculService extends JadeApplicationService {
     /**
      * Retourne un documentData contenant l'entier du plan de calcul
      * 
-     * @param idDecision
+     * @param idDecisionApresCalcul
+     * @param isWithMemmbreFamilles
+     * @param isRetenu
      * @return
      * @throws CatalogueTexteException
      * @throws JadeApplicationServiceNotAvailableException
      * @throws Exception
      */
-    public DocumentData buildPlanCalculDocumentData(String idDecisionApresCalcul, boolean isWithMemmbreFamilles)
+    DocumentData buildPlanCalculDocumentData(String idDecisionApresCalcul, boolean isWithMemmbreFamilles, boolean isRetenu)
             throws CatalogueTexteException, JadeApplicationServiceNotAvailableException, Exception;
 
     /**
@@ -45,13 +47,13 @@ public interface DecisionApresCalculService extends JadeApplicationService {
      * @throws DecisionException
      * @throws JadePersistenceException
      */
-    public int count(DecisionApresCalculSearch search) throws DecisionException, JadePersistenceException;
+    int count(DecisionApresCalculSearch search) throws DecisionException, JadePersistenceException;
 
     /**
      * @param decision
      * @return
      */
-    public DecisionApresCalcul create(DecisionApresCalcul decisionApresCalcul) throws DecisionException,
+    DecisionApresCalcul create(DecisionApresCalcul decisionApresCalcul) throws DecisionException,
             JadePersistenceException;
 
     /**
@@ -64,7 +66,7 @@ public interface DecisionApresCalculService extends JadeApplicationService {
      * @throws DecisionException
      * @throws Exception
      */
-    public void createCourantDecision(DecisionApresCalcul decision, PCAccordeeSearch pcaSearchForDac,
+    void createCourantDecision(DecisionApresCalcul decision, PCAccordeeSearch pcaSearchForDac,
             Map<String, Map<String, List<SimpleDetailFamille>>> listeAmal) throws PCAccordeeException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException, DecisionException, Exception;
 
@@ -77,7 +79,7 @@ public interface DecisionApresCalculService extends JadeApplicationService {
      * @throws JadePersistenceException
      * @throws DecisionException
      */
-    public void createRetroDecision(DecisionApresCalcul decision, PCAccordeeSearch pcaSearchForDac,
+    void createRetroDecision(DecisionApresCalcul decision, PCAccordeeSearch pcaSearchForDac,
             Map<String, Map<String, List<SimpleDetailFamille>>> listeAmal) throws Exception;
 
     /**
@@ -87,7 +89,7 @@ public interface DecisionApresCalculService extends JadeApplicationService {
      * @param decision
      * @throws Exception
      */
-    public void createStandardDecision(DecisionApresCalcul decision) throws Exception;
+    void createStandardDecision(DecisionApresCalcul decision) throws Exception;
 
     /**
      * Processus de préparation de ( ou des) décision apres calcul de type STANDARD
@@ -99,7 +101,7 @@ public interface DecisionApresCalculService extends JadeApplicationService {
      * @throws DecisionException
      * @throws Exception
      */
-    public void createStandardDecision(DecisionApresCalcul decision, PCAccordeeSearch pcaSearchForDac,
+    void createStandardDecision(DecisionApresCalcul decision, PCAccordeeSearch pcaSearchForDac,
             Map<String, Map<String, List<SimpleDetailFamille>>> listeAmal) throws PCAccordeeException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException, DecisionException, Exception;
 
@@ -107,7 +109,7 @@ public interface DecisionApresCalculService extends JadeApplicationService {
      * @param decision
      * @return
      */
-    public void delete(ForDeleteDecisionSearch search) throws JadePersistenceException, DecisionException;
+    void delete(ForDeleteDecisionSearch search) throws JadePersistenceException, DecisionException;
 
     /**
      * Charge l'entité en base de données
@@ -117,7 +119,7 @@ public interface DecisionApresCalculService extends JadeApplicationService {
      * @throws JadePersistenceException
      * @throws DecisionException
      */
-    public DecisionApresCalcul read(String idDecision) throws JadePersistenceException, DecisionException;
+    DecisionApresCalcul read(String idDecision) throws JadePersistenceException, DecisionException;
 
     /**
      * Chargement de l'entité decisionAresCalcul etendu pour le modele OO
@@ -127,7 +129,7 @@ public interface DecisionApresCalculService extends JadeApplicationService {
      * @throws JadePersistenceException
      * @throws DecisionException
      */
-    public DecisionApresCalculOO readForOO(String idDecision) throws JadePersistenceException, DecisionException;
+    DecisionApresCalculOO readForOO(String idDecision) throws JadePersistenceException, DecisionException;
 
     /**
      * Recherche de l'entité en base de données
@@ -137,7 +139,7 @@ public interface DecisionApresCalculService extends JadeApplicationService {
      * @throws JadePersistenceException
      * @throws DecisionException
      */
-    public DecisionApresCalculSearch search(DecisionApresCalculSearch decisionApresCalculSearch)
+    DecisionApresCalculSearch search(DecisionApresCalculSearch decisionApresCalculSearch)
             throws JadePersistenceException, DecisionException;
 
     /**
@@ -149,15 +151,15 @@ public interface DecisionApresCalculService extends JadeApplicationService {
      * @throws DecisionException
      *             , levé si plus de une entité est retourné
      */
-    public DecisionApresCalculSearch searchForDecisionCourant(DecisionApresCalculSearch decisionApresCalculSearch)
+    DecisionApresCalculSearch searchForDecisionCourant(DecisionApresCalculSearch decisionApresCalculSearch)
             throws JadePersistenceException, DecisionException;
 
     /**
      * @param decision
      * @return
      */
-    public DecisionApresCalcul update(DecisionApresCalcul decision) throws JadePersistenceException, DecisionException;
+    DecisionApresCalcul update(DecisionApresCalcul decision) throws JadePersistenceException, DecisionException;
 
-    public DecisionApresCalcul updateForPrevalidation(DecisionApresCalcul decision) throws DecisionException,
+    DecisionApresCalcul updateForPrevalidation(DecisionApresCalcul decision) throws DecisionException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException;
 }
