@@ -463,11 +463,13 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 if (cc.getIsPlanretenu()) {
                     String montantTotalHome = cc.getMontantPrixHome();
                     Float montantDepensePersonnel = cc.getMontants().getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_DEPPERSO_TOTAL);
+                    //  Récuperer le séjour
                     for (PersonnePCAccordee personnePCAccordee : cc.getPersonnes()) {
                         if (personnePCAccordee.getIsHome()) {
                             if (!JadeStringUtil.isBlankOrZero(montantTotalHome)) {
                                 mapMontantTotalHome.put(REQUERANT_HOME, montantTotalHome);
                                 mapMontantTotalHome.put(REQUERANT_DEP_PERS, montantDepensePersonnel.toString());
+                                // mapMontantTotalHome.put(REQUERANT_MNT_SEJOUR, montantDepensePersonnel.toString());
                             }
                         }
                     }
@@ -477,11 +479,13 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 if (cc.getIsPlanretenu()) {
                     String montantTotalHome = cc.getMontantPrixHome();
                     Float montantDepensePersonnel = cc.getMontants().getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_DEPPERSO_TOTAL);
+                    //  Récuperer le séjour
                     for (PersonnePCAccordee personnePCAccordee : cc.getPersonnes()) {
                         if (personnePCAccordee.getIsHome()) {
                             if (!JadeStringUtil.isBlankOrZero(montantTotalHome)) {
                                 mapMontantTotalHome.put(CONJOINT_HOME, montantTotalHome);
                                 mapMontantTotalHome.put(CONJOINT_DEP_PERS, montantDepensePersonnel.toString());
+                                // mapMontantTotalHome.put(REQUERANT_MNT_SEJOUR, montantDepensePersonnel.toString());
                             }
                         }
                     }
@@ -501,6 +505,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
 
         CalculDonneesHomeSearch homeReplaced = (CalculDonneesHomeSearch) cacheDonneesBD
                 .get(ConstantesCalcul.CONTAINER_DONNEES_HOMES);
+
 
         /**
          * Gestion des versement en home (futur,retenus)
@@ -771,6 +776,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
 
             }
         }
+
         for (JadeAbstractModel model : listHomes.getSearchResults()) {
             CalculDonneesHome home = (CalculDonneesHome) model;
             if (Boolean.TRUE.equals(home.getIsVersementDirect()) && mapToIDPCA.containsKey(home.getIdTiersRegroupement())) {
@@ -811,6 +817,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             }
 
         }
+
     }
 
 
