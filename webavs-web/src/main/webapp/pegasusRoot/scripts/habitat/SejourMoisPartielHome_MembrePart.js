@@ -114,6 +114,7 @@ function SejourMoisPartielHome (container) {
 								that.$dialogue.dialog("open");
 							});
 						}
+						that.updatePrixJournalier();
 
 					}
 				});

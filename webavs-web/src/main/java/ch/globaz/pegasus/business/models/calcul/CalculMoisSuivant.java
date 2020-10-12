@@ -297,6 +297,10 @@ public class CalculMoisSuivant extends JadeComplexModel {
 
     private String sejourMoisPartielNombreJour = null;
 
+    private Boolean sejourMoisPartielVersementDirect = Boolean.FALSE;
+
+    private String sejourMoisPartielHome = null;
+
     public CalculMoisSuivant() {
         super();
         droitMembreFamille = new DroitMembreFamille();
@@ -2404,6 +2408,23 @@ public class CalculMoisSuivant extends JadeComplexModel {
     public void setTaxeJournaliereIsVersementDirect(Boolean taxeJournaliereIsVersementDirect) {
         this.taxeJournaliereIsVersementDirect = taxeJournaliereIsVersementDirect;
     }
+
+    public Boolean getSejourMoisPartielVersementDirect() {
+        return sejourMoisPartielVersementDirect;
+    }
+
+    public void setSejourMoisPartielVersementDirect(Boolean sejourMoisPartielVersementDirect) {
+        this.sejourMoisPartielVersementDirect = sejourMoisPartielVersementDirect;
+    }
+
+    public String getSejourMoisPartielHome() {
+        return sejourMoisPartielHome;
+    }
+
+    public void setSejourMoisPartielHome(String sejourMoisPartielHome) {
+        this.sejourMoisPartielHome = sejourMoisPartielHome;
+    }
+
     /*
      * (non-Javadoc)
      * 

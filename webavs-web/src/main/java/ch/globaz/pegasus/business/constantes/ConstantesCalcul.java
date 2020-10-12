@@ -7,6 +7,7 @@ public final class ConstantesCalcul {
     public static final String CONTAINER_DONNEES_DROIT = "droit";
     public static final String CONTAINER_DONNEES_DROIT_CC = "droitEnfant";
     public static final String CONTAINER_DONNEES_HOMES = "homes";
+    public static final String CONTAINER_DONNEES_SEJOUR = "sejour";
     public static final String CONTAINER_DONNEES_PCACCORDEES = "pcAccordees";
     public static final String CONTAINER_DONNEES_PCACCORDEES_REPLACED = "pcAccordeesReplaced";
     public static final String CONTAINER_DONNEES_PERSONNE = "donneesParPersonne";

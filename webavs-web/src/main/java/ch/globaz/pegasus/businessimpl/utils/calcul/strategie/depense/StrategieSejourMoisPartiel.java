@@ -31,6 +31,8 @@ public class StrategieSejourMoisPartiel extends StrategieCalculDepense {
         float prixJournalier = checkAmountAndParseAsFloat(donnee.getSejourMoisPartielPrixJournalier());
         float fraisNourriture = checkAmountAndParseAsFloat(donnee.getSejourMoisPartielFraisNourriture());
         float nbJours = checkAmountAndParseAsFloat(donnee.getSejourMoisPartielNombreJour());
+        boolean versementDirect = donnee.getSejourMoisPartielVersementDirect();
+        float home = checkAmountAndParseAsFloat(donnee.getSejourMoisPartielHome());
 
         TupleDonneeRapport tupleSejourMoisPartiel = this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL,
                 0f);
@@ -38,6 +40,8 @@ public class StrategieSejourMoisPartiel extends StrategieCalculDepense {
         this.getOrCreateChild(tupleSejourMoisPartiel, IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_PRIX_JOURNALIER, prixJournalier);
         this.getOrCreateChild(tupleSejourMoisPartiel, IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_FRAIS_NOURRITURE, fraisNourriture);
         this.getOrCreateChild(tupleSejourMoisPartiel, IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_NOMBRE_JOURS, nbJours);
+        this.getOrCreateChild(tupleSejourMoisPartiel, IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_VERSEMENT_DIRECT, versementDirect ? 1f : 0f);
+        this.getOrCreateChild(tupleSejourMoisPartiel, IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_HOME, home);
 
         float montantSejourMoisPartiel = Float.max(prixJournalier - fraisNourriture, 0.0f) * nbJours * NB_MOIS;
 

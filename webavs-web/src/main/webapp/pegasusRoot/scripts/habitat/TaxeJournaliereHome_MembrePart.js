@@ -62,7 +62,7 @@ function TaxeJournaliereHome (container) {
 			'taxeJournaliereHome.simpleTaxeJournaliereHome.dateEntreeHome': this.detail.find('[name=dateEntreeHome]').val(),
 			'taxeJournaliereHome.simpleTaxeJournaliereHome.isDeplafonner' : this.detail.find('.isDeplafonner').prop('checked'),
 			'taxeJournaliereHome.simpleTaxeJournaliereHome.montantFraisLongueDuree' : this.detail.find('.montantFraisLongueDuree').val(),
-			'taxeJournaliereHome.simpleTaxeJournaliereHome.isVersementDirect' : this.detail.find('.isVersementDirect').val(),
+			'taxeJournaliereHome.simpleTaxeJournaliereHome.isVersementDirect' : this.detail.find('.isVersementDirect').is(':checked'),
 			'doAddPeriode': this.doAddPeriode,
 			'idDroitMembreFamille': this.membreId
 		};

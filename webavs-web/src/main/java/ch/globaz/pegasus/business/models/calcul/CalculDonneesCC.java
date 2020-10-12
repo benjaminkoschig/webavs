@@ -310,6 +310,10 @@ public class CalculDonneesCC extends JadeComplexModel {
 
     private String sejourMoisPartielNombreJour = null;
 
+    private Boolean sejourMoisPartielVersementDirect = Boolean.FALSE;
+
+    private String sejourMoisPartielHome = null;
+
     /**
      * @return the allocationFamilialeMontantMensuel
      */
@@ -2379,5 +2383,21 @@ public class CalculDonneesCC extends JadeComplexModel {
 
     public void setSejourMoisPartielNombreJour(String sejourMoisPartielNombreJour) {
         this.sejourMoisPartielNombreJour = sejourMoisPartielNombreJour;
+    }
+
+    public Boolean getSejourMoisPartielVersementDirect() {
+        return sejourMoisPartielVersementDirect;
+    }
+
+    public void setSejourMoisPartielVersementDirect(Boolean sejourMoisPartielVersementDirect) {
+        this.sejourMoisPartielVersementDirect = sejourMoisPartielVersementDirect;
+    }
+
+    public String getSejourMoisPartielHome() {
+        return sejourMoisPartielHome;
+    }
+
+    public void setSejourMoisPartielHome(String sejourMoisPartielHome) {
+        this.sejourMoisPartielHome = sejourMoisPartielHome;
     }
 }

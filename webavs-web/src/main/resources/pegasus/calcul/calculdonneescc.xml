@@ -161,6 +161,8 @@
 			<select-field name="sejourMoisPartielPrixJournalier" field-ref="simpleSejourMoisPartielHome.prixJournalier"/>
 			<select-field name="sejourMoisPartielFraisNourriture" field-ref="simpleSejourMoisPartielHome.fraisNourriture"/>
 			<select-field name="sejourMoisPartielNombreJour" field-ref="simpleSejourMoisPartielHome.nbJours"/>
+			<select-field name="sejourMoisPartielVersementDirect" field-ref="simpleSejourMoisPartielHome.isVersementDirect"/>
+			<select-field name="sejourMoisPartielHome" field-ref="simpleSejourMoisPartielHome.idHome"/>
 			<select-field name="loyerMontant" field-ref="simpleLoyer.montantLoyerNet"/>
 			<select-field name="loyerMontantCharges" field-ref="simpleLoyer.montantCharges"/>
 			<select-field name="loyerIsFauteuilRoulant" field-ref="simpleLoyer.isFauteuilRoulant"/>

@@ -73,6 +73,8 @@
 			<select-field name="sejourMoisPartielPrixJournalier" field-ref="simpleSejourMoisPartielHome.prixJournalier"/>
 			<select-field name="sejourMoisPartielFraisNourriture" field-ref="simpleSejourMoisPartielHome.fraisNourriture"/>
 			<select-field name="sejourMoisPartielNombreJour" field-ref="simpleSejourMoisPartielHome.nbJours"/>
+			<select-field name="sejourMoisPartielVersementDirect" field-ref="simpleSejourMoisPartielHome.isVersementDirect"/>
+			<select-field name="sejourMoisPartielHome" field-ref="simpleSejourMoisPartielHome.idHome"/>
 
 			<!--  ********************************* Fortune usuelle  ********************************* -->
 			<!-- ********** Cb CPP   ********** -->

@@ -240,9 +240,12 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
         CreanceAccordeeSearch creanceAccordeeSearch = new CreanceAccordeeSearch();
         creanceAccordeeSearch.setForIdPCAccordee(idPCAccordee);
         creanceAccordeeSearch = PegasusImplServiceLocator.getCreanceAccordeeService().search(creanceAccordeeSearch);
+        List<String> creancierSup = new ArrayList<>();
         for (JadeAbstractModel model : creanceAccordeeSearch.getSearchResults()) {
             CreanceAccordee simpleCreance = (CreanceAccordee) model;
-            if (simpleCreance.getSimpleCreancier().getIsCalcule()) {
+            if(simpleCreance.getSimpleCreancier().getIsCalcule()
+                    && !creancierSup.contains(simpleCreance.getSimpleCreancier().getIdCreancier())){
+                creancierSup.add(simpleCreance.getSimpleCreancier().getIdCreancier());
                 PegasusImplServiceLocator.getSimpleCreancierService().deleteWithoutControl(
                         simpleCreance.getSimpleCreancier());
             }
