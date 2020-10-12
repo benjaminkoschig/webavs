@@ -343,6 +343,7 @@
 					<parameter name="userAction"
 						value="pegasus.decision.decisionApresCalcul.afficher" />
 					<parameter name="idDecision" />
+					<parameter name="idVersionDroit" />
 				</action>
 			</node>
 		</nodes>
