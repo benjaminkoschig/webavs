@@ -72,6 +72,12 @@ public class PCDecisionViewBean extends BJadePersistentObjectViewBean {
             noVersion = this.decision.getNoVersionDroitApc();
             idDemande = this.decision.getSimpleDroit().getIdDemandePC();
         }
+        if (this.isDecisionAdaptation(decision.getDecisionHeader().getSimpleDecisionHeader().getCsTypeDecision())) {
+            idDroit = this.decision.getIdDroitApc();
+            idVersionDroit = this.decision.getIdVersionDroitApc();
+            noVersion = this.decision.getNoVersionDroitApc();
+            idDemande = this.decision.getSimpleDroit().getIdDemandePC();
+        }
     }
 
     /*
@@ -277,6 +283,10 @@ public class PCDecisionViewBean extends BJadePersistentObjectViewBean {
     private Boolean isDecisionAC(String cs) {
         return (IPCDecision.CS_TYPE_OCTROI_AC.equals(cs) || IPCDecision.CS_TYPE_REFUS_AC.equals(cs) || IPCDecision.CS_TYPE_PARTIEL_AC
                 .equals(cs));
+    }
+
+    private Boolean isDecisionAdaptation(String cs) {
+        return (IPCDecision.CS_TYPE_ADAPTATION_AC.equals(cs));
     }
 
     /**

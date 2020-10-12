@@ -9,6 +9,7 @@ public class SimpleHomeSearch extends JadeSearchSimpleModel {
     private static final long serialVersionUID = 1L;
     private String forIdHome = null;
     private String forNoIdentification = null;
+    private String forIdTiersHome =null;
 
     public String getForNoIdentification() {
         return forNoIdentification;
@@ -31,6 +32,13 @@ public class SimpleHomeSearch extends JadeSearchSimpleModel {
      */
     public void setForIdHome(String forIdHome) {
         this.forIdHome = forIdHome;
+    }
+    public String getForIdTiersHome() {
+        return forIdTiersHome;
+    }
+
+    public void setForIdTiersHome(String forIdTiersHome) {
+        this.forIdTiersHome = forIdTiersHome;
     }
 
     /*
