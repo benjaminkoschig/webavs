@@ -210,7 +210,7 @@ public class ReferenceQR extends AbstractReference {
         builder.append(creNumMaisonOuLigneAdresse2.replace(CHAR_FIN_LIGNE, " ")).append(CHAR_FIN_LIGNE);
         builder.append((Objects.equals(creAdressTyp, COMBINE) ? StringUtils.EMPTY : creCodePostal)).append(CHAR_FIN_LIGNE);
         builder.append((Objects.equals(creAdressTyp, COMBINE) ? StringUtils.EMPTY : creLieu)).append(CHAR_FIN_LIGNE);
-        builder.append(Objects.isNull(getCrePays())? CODE_PAYS_DEFAUT : crePays).append(CHAR_FIN_LIGNE);
+        builder.append(Objects.isNull(getCrePays())? CODE_PAYS_DEFAUT : getCrePaysVar()).append(CHAR_FIN_LIGNE);
 
         builder.append(crefAdressTyp).append(CHAR_FIN_LIGNE);
         builder.append(crefNom.isEmpty()? crefRueOuLigneAdresse1.replace(CHAR_FIN_LIGNE, " ").replace(CHAR_FIN_LIGNE_DEB, " ") : crefNom ).append(CHAR_FIN_LIGNE);
@@ -218,7 +218,7 @@ public class ReferenceQR extends AbstractReference {
         builder.append(crefNumMaisonOuLigneAdresse2.replace(CHAR_FIN_LIGNE, " ").replace(CHAR_FIN_LIGNE_DEB, " ")).append(CHAR_FIN_LIGNE);
         builder.append((Objects.equals(crefAdressTyp, COMBINE) ? StringUtils.EMPTY : crefCodePostal)).append(CHAR_FIN_LIGNE);
         builder.append((Objects.equals(crefAdressTyp, COMBINE) ? StringUtils.EMPTY : crefLieu)).append(CHAR_FIN_LIGNE);
-        builder.append(Objects.isNull(getCrePays())? CODE_PAYS_DEFAUT : crefPays).append(CHAR_FIN_LIGNE);
+        builder.append(Objects.isNull(getCrefPays())? CODE_PAYS_DEFAUT : getCrefPays()).append(CHAR_FIN_LIGNE);
 
         // Débiteur final
         if (qrNeutre) {
@@ -244,7 +244,7 @@ public class ReferenceQR extends AbstractReference {
             builder.append((Objects.equals(debfAdressTyp, COMBINE) ? StringUtils.EMPTY : debfCodePostal)).append(CHAR_FIN_LIGNE);
             builder.append((Objects.equals(debfAdressTyp, COMBINE) ? StringUtils.EMPTY : debfLieu)).append(CHAR_FIN_LIGNE);
         }
-        builder.append(Objects.isNull(getCrePays())? CODE_PAYS_DEFAUT : debfPays).append(CHAR_FIN_LIGNE);
+        builder.append(Objects.isNull(getDebfPays())? CODE_PAYS_DEFAUT : getDebfPays()).append(CHAR_FIN_LIGNE);
 
         // Référence paiement
         builder.append(typeReference).append(CHAR_FIN_LIGNE);
@@ -663,6 +663,13 @@ public class ReferenceQR extends AbstractReference {
         }
     }
 
+    public String getCrePaysVar() {
+        if (crePays.isEmpty()) {
+            return CODE_PAYS_DEFAUT;
+        }
+        return crePays;
+    }
+
     public void setCrePays(String crePays) {
         this.crePays = crePays;
     }
@@ -783,6 +790,9 @@ public class ReferenceQR extends AbstractReference {
     }
 
     public String getDebfPays() {
+        if (debfPays.isEmpty()){
+            return CODE_PAYS_DEFAUT;
+        }
         return debfPays;
     }
 
@@ -884,5 +894,16 @@ public class ReferenceQR extends AbstractReference {
 
     public void setSubReportQR(String subReportQR) {
         this.subReportQR = subReportQR;
+    }
+
+    public String getCrefPays() {
+        if (crefPays.isEmpty()) {
+            return CODE_PAYS_DEFAUT;
+        }
+        return crefPays;
+    }
+
+    public void setCrefPays(String crefPays) {
+        this.crefPays = crefPays;
     }
 }
