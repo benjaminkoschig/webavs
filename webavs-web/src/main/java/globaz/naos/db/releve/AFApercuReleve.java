@@ -542,14 +542,6 @@ public class AFApercuReleve extends BEntity {
         FAEnteteFacture enteteReleve = null;
         String passage = "FAUX";
 
-        //ESVE mis en place pour calculer le taux moyen
-        AFApercuReleveLineFacturation releveAssCotiAvsAi = null;
-        for (int j = 0; j < cotisationList.size(); j++) {
-            if (CodeSystem.TYPE_ASS_COTISATION_AVS_AI.equals(cotisationList.get(j).getTypeAssurance())) {
-                releveAssCotiAvsAi = cotisationList.get(j);
-            }
-        }
-
         for (int i = 0; i < cotisationList.size(); i++) {
             AFApercuReleveLineFacturation releveLine = cotisationList.get(i);
             String roleCoti = CodeSystem.ROLE_AFFILIE;
@@ -655,9 +647,6 @@ public class AFApercuReleve extends BEntity {
                 // renseigner si taux caché
                 facturationLine.setAffichtaux(releveLine.getAfficheTaux());
                 facturationLine.add(transaction);
-
-                //ESVE calculer le taux moyen
-                updateTauxMoyen(releveAssCotiAvsAi, releveLine, type);
             }
 
             // Création pour V.5 d'une amende pour taxation d'office
@@ -887,7 +876,7 @@ public class AFApercuReleve extends BEntity {
 
         if (CodeSystem.ETATS_RELEVE_SAISIE.equals(getEtat())) {
 
-            //ESVE mis en place pour calculer le taux moyen
+            //ESVE récupération de la masse des cotisatoins avs/ai pour le calcul du taux moyen à la FERCIAM
             AFApercuReleveLineFacturation releveAssCotiAvsAi = null;
             for (int j = 0; j < cotisationList.size(); j++) {
                 if (CodeSystem.TYPE_ASS_COTISATION_AVS_AI.equals(cotisationList.get(j).getTypeAssurance())) {
@@ -1037,9 +1026,6 @@ public class AFApercuReleve extends BEntity {
 
                     }
 
-                    //ESVE calculer le taux moyen
-                    updateTauxMoyen(releveAssCotiAvsAi, line, type);
-
                     // *******************************************************************
                       // Assurance Personnelle
                       // *******************************************************************
@@ -1098,7 +1084,22 @@ public class AFApercuReleve extends BEntity {
 
                         if (line.getTauxGenre().equals(CodeSystem.GEN_VALEUR_ASS_TAUX_VARIABLE)) {
                             findAndSetTauxVariable(line, String.valueOf(newLine.getMasse()), masseGeneral);
-                            updateTauxMoyen(releveAssCotiAvsAi, line, type);
+                            line.setMasse(newLine.getMasse());
+
+                            //ESVE calculer le taux moyen spécifique à la FERCIAM
+                            String tauxMoyen = AFCalculAssurance.updateTauxMoyen(getSession()
+                                    , getAffiliation().getAffiliationId()
+                                    , line.getAssuranceId()
+                                    , line.getTypeAssurance()
+                                    , line.getGenreAssurance()
+                                    , line.getTauxGenre()
+                                    , Double.toString(releveAssCotiAvsAi.getMasse())
+                                    , line.getDebutPeriode().substring(6)
+                                    , type);
+
+                            //ESVE mettre à jour la ligne avec le taux moyen spécifique à la FERCIAM
+                            if (tauxMoyen != null) line.setTaux(tauxMoyen);
+
                             newLine.setMontantCalculer(JANumberFormatter.round(
                                     ((newLine.getMasse() * line.getTaux()) / line.getFraction()), 0.05, 2,
                                     JANumberFormatter.NEAR));
@@ -1137,24 +1138,6 @@ public class AFApercuReleve extends BEntity {
             } // end for
             setTotalCalculer(total.toString());
             firstCalculation(false);
-        }
-    }
-
-    private void updateTauxMoyen(AFApercuReleveLineFacturation releveAssCotiAvsAi, AFApercuReleveLineFacturation line, String typeReleve) throws Exception {
-        if ((CodeSystem.TYPE_RELEVE_BOUCLEMENT_ACOMPTE.equals(typeReleve) || (CodeSystem.TYPE_RELEVE_DECOMP_FINAL_COMPTA.equals(typeReleve)))
-                && "true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER, "false"))
-                && CodeSystem.GEN_VALEUR_ASS_TAUX_VARIABLE.equals(line.getTauxGenre())) {
-            if ((CodeSystem.TYPE_RELEVE_DECOMP_FINAL_COMPTA.equals(typeReleve))
-                    && CodeSystem.TYPE_ASS_FRAIS_ADMIN.equals(line.getTypeAssurance()) && CodeSystem.GENRE_ASS_PARITAIRE.equals(line.getGenreAssurance())
-                    && releveAssCotiAvsAi != null) {
-                // Pour les frais d'admin le taux moyen se calcule sur la masses de l'assurance AVS/AI
-                String taux = AFCalculAssurance.calculTauxMoyen(getSession()
-                        , getAffiliation().getAffiliationId()
-                        , line.getAssuranceId()
-                        , Double.toString(releveAssCotiAvsAi.getMasse())
-                        , line.getDebutPeriode().substring(6));
-                line.setTaux(taux);
-            }
         }
     }
 

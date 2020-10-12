@@ -4,7 +4,6 @@ import globaz.draco.application.DSApplication;
 import globaz.draco.db.declaration.DSDeclarationViewBean;
 import globaz.draco.db.declaration.DSLigneDeclarationListViewBean;
 import globaz.draco.db.declaration.DSLigneDeclarationViewBean;
-import globaz.draco.process.DSProcessValidation;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
 import globaz.framework.util.FWMessageFormat;
@@ -32,8 +31,6 @@ import globaz.naos.util.AFUtil;
 import globaz.pavo.db.compte.CIEcritureManager;
 import globaz.pyxis.constantes.IConstantes;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 public class DSValideMontantDeclarationProcess extends BProcess {
 
@@ -375,9 +372,6 @@ public class DSValideMontantDeclarationProcess extends BProcess {
                 // Si le montant est différent de zéro on génère les lignes
                 String oldId = "0";
 
-                DSLigneDeclarationViewBean ligneDecAssCotiAvsAi = null;
-                List<DSLigneDeclarationViewBean> lignesDec = new ArrayList();
-
                 for (int i = 0; i < cotisations.size(); i++) {
                     AFCotisation cotisation = (AFCotisation) cotisations.getEntity(i);
                     // List tauxList = cotisation.getTauxList("31.12." +
@@ -528,11 +522,6 @@ public class DSValideMontantDeclarationProcess extends BProcess {
                         }
                         ligneDec.setAssuranceId(cotisation.getAssuranceId());
 
-                        //ESVE mis en place pour calculer le taux moyen
-                        if (CodeSystem.TYPE_ASS_COTISATION_AVS_AI.equals(ligneDec.getAssurance().getTypeAssurance())) {
-                            ligneDecAssCotiAvsAi = ligneDec;
-                        }
-
                         // if(!JadeStringUtil.isDecimalEmpty(JANumberFormatter.deQuote(ligneDec.getMontantDeclaration()))){
                         // Pour les ctrl d'empl, on ne rembourse pas les frais d'adm.
                         // Calcul des montants séparés suite à modif ctrl empl et cat.pers.
@@ -543,30 +532,20 @@ public class DSValideMontantDeclarationProcess extends BProcess {
                                 ligneDec.add(getTransaction());
                             }
                         } else {
-                            //ESVE mis en place pour calculer le taux moyen
-                            if (CodeSystem.GEN_VALEUR_ASS_TAUX_VARIABLE.equals(tauxAssurance.getGenreValeur())
-                                    && globaz.draco.translation.CodeSystem.CS_PRINCIPALE.equals(declaration.getTypeDeclaration())
-                                    && CodeSystem.TYPE_ASS_FRAIS_ADMIN.equals(ligneDec.getAssurance().getTypeAssurance()) && CodeSystem.GENRE_ASS_PARITAIRE.equals(ligneDec.getAssurance().getAssuranceGenre())
-                                    && "true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER, "false"))
-                                    && "true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_AFFICHE_TAUX_PAR_PALIER, "false"))) {
-                                lignesDec.add(ligneDec);
-                            } else {
-                                ligneDec.add();
-                            }
+                            //ESVE calculer le taux moyen spécifique à la FERCIAM
+                            AFCalculAssurance.updateTauxMoyen(getSession()
+                                    , declaration.getAffiliation().getAffiliationId()
+                                    , ligneDec.getAssuranceId()
+                                    , cotisation.getAssurance().getTypeAssurance()
+                                    , cotisation.getAssurance().getAssuranceGenre()
+                                    , tauxAssurance.getGenreValeur()
+                                    , declaration.getMasseSalTotal()
+                                    , declaration.getAnnee()
+                                    , declaration.getTypeDeclaration());
+                            //ligneDec.setMontantDeclaration(ligneDecAssCotiAvsAi.getCotisationDue());
+                            ligneDec.add(getTransaction());
                         }
                     }
-                }
-
-                //ESVE calculer le taux moyen
-                for (DSLigneDeclarationViewBean ligneDec : lignesDec) {
-                    // Pour les frais d'admin le taux moyen se calcule sur la masses salariale
-                    AFCalculAssurance.calculTauxMoyen((BSession) DSProcessValidation.getSessionNaos(getSession()),
-                            declaration.getAffiliation().getAffiliationId()
-                            , ligneDec.getAssuranceId()
-                            , declaration.getMasseSalTotal()
-                            , declaration.getAnnee());
-                    ligneDec.setMontantDeclaration(ligneDecAssCotiAvsAi.getCotisationDue());
-                    ligneDec.add(getTransaction());
                 }
 
                 // Activer un calcul spécial de bonus pour les décomptes 13

@@ -354,26 +354,17 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
                         }
                         AFTauxAssurance taux = ligne.getTauxLigne("31.12." + annee);
 
-                        //ESVE calculer le taux moyen
-                        if (CodeSystem.GEN_VALEUR_ASS_TAUX_VARIABLE.equals(taux.getGenreValeur())) {
-                            if (CodeSystem.TYPE_ASS_FRAIS_ADMIN.equals(ligne.getAssurance().getTypeAssurance()) && CodeSystem.GENRE_ASS_PARITAIRE.equals(ligne.getAssurance().getAssuranceGenre())
-                                    && "true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER, "false"))
-                                    && "true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_AFFICHE_TAUX_PAR_PALIER, "false"))) {
-                                // Pour les frais d'admin le taux moyen se calcule sur la masses salariale
-                                AFCalculAssurance.calculTauxMoyen((BSession) getSessionNaos(getSession())
-                                        , decl.getAffiliation().getAffiliationId()
-                                        , ligne.getAssuranceId()
-                                        , decl.getMasseSalTotal()
-                                        , annee);
-                            } else {
-                                // Autrement le taux moyen se calcule sur la masses de la ligne
-                                AFCalculAssurance.calculTauxMoyen((BSession) getSessionNaos(getSession())
-                                        , decl.getAffiliation().getAffiliationId()
-                                        , ligne.getAssuranceId()
-                                        , ligne.getMontantDeclaration()
-                                        , annee);
-                            }
-                        }
+                        //ESVE calculer le taux moyen spécifique à la FERCIAM
+                        AFCalculAssurance.updateTauxMoyen(getSession()
+                                , decl.getAffiliation().getAffiliationId()
+                                , ligne.getAssuranceId()
+                                , ligne.getAssurance().getTypeAssurance()
+                                , ligne.getAssurance().getAssuranceGenre()
+                                , taux.getGenreValeur()
+                                , decl.getMasseSalTotal()
+                                , annee
+                                , decl.getTypeDeclaration());
+                        //ligne.setMontantDeclaration(ligneDecAssCotiAvsAi.getCotisationDue());
                     }
                 }
 

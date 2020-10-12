@@ -1164,6 +1164,12 @@ public class DSLigneDeclarationViewBean extends BEntity {
                     .getTypeDeclaration())
                     && !DSDeclarationViewBean.CS_ICI.equals(getDeclaration().getTypeDeclaration())
                     && !DSDeclarationViewBean.CS_DIVIDENDE.equals(getDeclaration().getTypeDeclaration());
+            //ESVE afficher le taux moyen spécifique à la FERCIAM
+            if (DSDeclarationViewBean.CS_PRINCIPALE.equals(getDeclaration().getTypeDeclaration())
+                    && CodeSystem.TYPE_ASS_FRAIS_ADMIN.equals(getAssurance().getTypeAssurance()) && CodeSystem.GENRE_ASS_PARITAIRE.equals(getAssurance().getAssuranceGenre())
+                    && "true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER, "false"))) {
+                wantRecalcul = false;
+            }
             return getCotisation().findTaux(dateFin, montant, getDeclaration().getTypeDeclaration(), wantRecalcul,
                     wantAnnualisation);
         }
