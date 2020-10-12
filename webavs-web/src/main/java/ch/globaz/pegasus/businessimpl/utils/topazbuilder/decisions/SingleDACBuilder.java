@@ -878,11 +878,12 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
             // TODO Changer label
             data.addData("B_MONTANT_VERSEE_ASS", babelDoc.getTextes(3).getTexte(32).getDescription());
+            data.addData("B_MONTANT_VERSEE_ASS2", babelDoc.getTextes(3).getTexte(35).getDescription());
             data.addData("MONTANT_VERSEE_ASS", SingleDACBuilder.MONNAIE + " " + new FWCurrency(dacOO.getPlanCalcul().getPrimeVerseeAssMaladie()).toStringFormat());
 
             // TODO Changer label
             data.addData("B_MONTANT_HOME", babelDoc.getTextes(3).getTexte(33).getDescription());
-            data.addData("MONTANT_HOME", SingleDACBuilder.MONNAIE + " " + new FWCurrency(dacOO.getPlanCalcul().getMontantPrixHome()).toStringFormat());
+            data.addData("MONTANT_HOME", SingleDACBuilder.MONNAIE + " " + new FWCurrency(Float.valueOf(dacOO.getPlanCalcul().getMontantPrixHome())/12).toStringFormat());
         }
 
         // gestion prestation
