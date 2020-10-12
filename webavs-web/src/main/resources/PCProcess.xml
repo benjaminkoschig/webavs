@@ -110,13 +110,13 @@
 						</property>
 					</bean>
 				</entry>
-				<entry key="5">
+				<entry key="8">
 					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
 						<property name="classNameStep" value="ch.globaz.pegasus.process.adaptationPrimeAssuranceMaladie.executeImport.PCProcessImportationPrimeAssuranceMaladieStep" />
 						<property name="hasRollback" value="true" />
 						<property name="nbThread" value="4" />
 						<property name="order" value="5" />
-						<property name="isEntityInjectable" value="true" />
+						<property name="isOptional" value="true" />
 						<property name="description">
 							<map>
 								<entry key="FR" value="Importation des primes LAmal" />
@@ -126,7 +126,7 @@
 						</property>
 					</bean>
 				</entry>
-				<entry key="6">
+				<entry key="5">
 					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
 						<property name="classNameStep" value="ch.globaz.pegasus.process.adaptation.step1.PCProcessAdaptationStep" />
 						<property name="hasRollback" value="true" />
@@ -142,7 +142,7 @@
 						</property>
 					</bean>
 				</entry>
-				<entry key="7">
+				<entry key="6">
 					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
 						<property name="classNameStep" value="ch.globaz.pegasus.process.adaptation.step2.PCProcessAdaptationStep" />
 						<property name="hasRollback" value="false" />
@@ -157,7 +157,7 @@
 						</property>
 					</bean>
 				</entry>
-				<entry key="8">
+				<entry key="7">
 					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
 						<property name="classNameStep" value="ch.globaz.pegasus.process.adaptation.imprimerDecisions.PCProcessAdaptationStep" />
 						<property name="hasRollback" value="true" />
