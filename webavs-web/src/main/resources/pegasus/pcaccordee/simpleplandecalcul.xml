@@ -22,10 +22,15 @@
 			<search-group operator="AND">
 				<search-field name="forIdPlanDeCalcul" operation="EQUALS" field-ref="idPlanDeCalcul"/>
 				<search-field name="forIsPlanRetenu" operation="EQUALS" field-ref="isPlanRetenu"/>
+				<search-field name="forIsPlanNonRetenu" operation="EQUALS" field-ref="isPlanNonRetenu"/>
 				<search-field name="forIdPCAccordee" operation="EQUALS" field-ref="idPCAccordee"/>
 				<search-field name="inIdPlanDeCalcul" operation="IN" field-ref="idPlanDeCalcul"/>
 				<search-field name="forEtatPc" operation="EQUALS" field-ref="etatPC"/>
+				<search-field name="forReformePC" operation="EQUALS" field-ref="reformePc"/>
 			</search-group>
 		</search-definition>
+		<order-by>
+			<order-field order="DESC" field-ref="montantPCMensuelle" />
+		</order-by>
 	</simple-model>
 </model-mapping>

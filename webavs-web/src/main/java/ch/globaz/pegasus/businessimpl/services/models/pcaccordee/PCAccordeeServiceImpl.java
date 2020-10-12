@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.corvus.business.exceptions.models.RentesAccordeesException;
 import ch.globaz.corvus.business.models.rentesaccordees.SimpleInformationsComptabilite;
@@ -69,9 +70,11 @@ import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+
 public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements PCAccordeeService {
 
     private String idCreancier = "";
+
     /*
      * (non-Javadoc)
      *
@@ -239,7 +242,7 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
         creanceAccordeeSearch = PegasusImplServiceLocator.getCreanceAccordeeService().search(creanceAccordeeSearch);
         for (JadeAbstractModel model : creanceAccordeeSearch.getSearchResults()) {
             CreanceAccordee simpleCreance = (CreanceAccordee) model;
-            if(simpleCreance.getSimpleCreancier().getIsCalcule()){
+            if (simpleCreance.getSimpleCreancier().getIsCalcule()) {
                 PegasusImplServiceLocator.getSimpleCreancierService().deleteWithoutControl(
                         simpleCreance.getSimpleCreancier());
             }
@@ -376,7 +379,7 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
     }
 
     public List<PcaForDecompte> findPcaPrecedante(String dateMax, String dateMin, String idDemande,
-            String noVersionDroitCourant)
+                                                  String noVersionDroitCourant)
             throws PCAccordeeException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
         return PcaPrecedante.findPcaToReplaced(dateMax, dateMin, idDemande, noVersionDroitCourant);
     }
@@ -664,7 +667,7 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
      */
     @Override
     public List<PCAccordeePlanCalculRetenuEnfantsDansCalculVO> searchPCAccordeePlanCalculRetenuEnfants(String idTiers,
-            String dateDebut, String dateFin, String csEtat)
+                                                                                                       String dateDebut, String dateFin, String csEtat)
             throws PCAccordeeException, JadePersistenceException, PersonneDansPlanCalculException {
 
         PCAccordeeSearch pcaSearch = new PCAccordeeSearch();
@@ -973,10 +976,8 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
             SimplePlanDeCalculSearch simplePlanDeCalculSearch = new SimplePlanDeCalculSearch();
             simplePlanDeCalculSearch.setForIsPlanRetenu(true);
             simplePlanDeCalculSearch.setForIdPCAccordee(simplePlanDeCalcul.getIdPCAccordee());
-            simplePlanDeCalculSearch = PegasusImplServiceLocator.getSimplePlanDeCalculService()
-                    .search(simplePlanDeCalculSearch);
-            PCAccordee pcAccordee = PegasusServiceLocator.getPCAccordeeService()
-                    .readDetail(simplePlanDeCalcul.getIdPCAccordee());
+            simplePlanDeCalculSearch = PegasusImplServiceLocator.getSimplePlanDeCalculService().search(simplePlanDeCalculSearch);
+            PCAccordee pcAccordee = PegasusServiceLocator.getPCAccordeeService().readDetail(simplePlanDeCalcul.getIdPCAccordee());
             if (simplePlanDeCalculSearch.getSize() > 0) {
                 if (simplePlanDeCalculSearch.getSize() == 1) {
 
@@ -1012,10 +1013,10 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
                     PegasusImplServiceLocator.getSimplePlanDeCalculService().update(simplePlanDeCalculOld);
 
                     simplePlanDeCalcul.setIsPlanRetenu(true);
-                    simplePlanDeCalcul.setIsPlanNonRetenu(false);
                     PegasusImplServiceLocator.getSimplePlanDeCalculService().update(simplePlanDeCalcul);
 
-                    // TODO : update plan de calcul non retenu.
+                    // On met à jour le plan de calcul non retenu si nécessaire.
+                    updatePlanDeCalculNonRetenu(simplePlanDeCalcul.getIdPCAccordee(), simplePlanDeCalcul.getReformePc());
 
                     try {
                         if (pcAccordee.getSimplePrestationsAccordeesConjoint() != null && !JadeStringUtil
@@ -1052,6 +1053,42 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
             throw new PCAccordeeException("Service not available - " + e.getMessage());
         }
         return simplePlanDeCalcul;
+    }
+
+    /**
+     * Mise à jour du plan de calcul non retenu.
+     *
+     * @param idPCAccordee : id de la PCA
+     * @param isReforme : vrai si on est sur un calcul réforme
+     * @throws JadeApplicationServiceNotAvailableException
+     * @throws PCAccordeeException
+     * @throws JadePersistenceException
+     */
+    private void updatePlanDeCalculNonRetenu(String idPCAccordee, boolean isReforme) throws JadeApplicationServiceNotAvailableException, PCAccordeeException, JadePersistenceException {
+        SimplePlanDeCalculSearch simplePlanDeCalculSearch = new SimplePlanDeCalculSearch();
+        simplePlanDeCalculSearch.setForIsPlanNonRetenu(true);
+        simplePlanDeCalculSearch.setForIdPCAccordee(idPCAccordee);
+        simplePlanDeCalculSearch = PegasusImplServiceLocator.getSimplePlanDeCalculService().search(simplePlanDeCalculSearch);
+        if (simplePlanDeCalculSearch.getSize() == 1) {
+            SimplePlanDeCalcul oldPlanDeCalculNonRetenu = (SimplePlanDeCalcul) simplePlanDeCalculSearch.getSearchResults()[0];
+            if (oldPlanDeCalculNonRetenu.getReformePc() == isReforme) {
+                // on met à jour l'ancien plan de calcul non retenu.
+                oldPlanDeCalculNonRetenu = PegasusImplServiceLocator.getSimplePlanDeCalculService().read(oldPlanDeCalculNonRetenu.getId());
+                oldPlanDeCalculNonRetenu.setIsPlanNonRetenu(false);
+                PegasusImplServiceLocator.getSimplePlanDeCalculService().update(oldPlanDeCalculNonRetenu);
+                SimplePlanDeCalculSearch simplePlanDeCalculNonRetenuSearch = new SimplePlanDeCalculSearch();
+                simplePlanDeCalculNonRetenuSearch.setForIdPCAccordee(idPCAccordee);
+                simplePlanDeCalculNonRetenuSearch.setForReformePC(!isReforme);
+                simplePlanDeCalculNonRetenuSearch = PegasusImplServiceLocator.getSimplePlanDeCalculService().search(simplePlanDeCalculNonRetenuSearch);
+                if (simplePlanDeCalculNonRetenuSearch.getSize() > 0){
+                    // on met à jour le nouveau plan de calcul non retenu.
+                    SimplePlanDeCalcul newPlanDeCalculNonRetenu = (SimplePlanDeCalcul) simplePlanDeCalculNonRetenuSearch.getSearchResults()[0];
+                    newPlanDeCalculNonRetenu = PegasusImplServiceLocator.getSimplePlanDeCalculService().read(newPlanDeCalculNonRetenu.getId());
+                    newPlanDeCalculNonRetenu.setIsPlanNonRetenu(true);
+                    PegasusImplServiceLocator.getSimplePlanDeCalculService().update(newPlanDeCalculNonRetenu);
+                }
+            }
+        }
     }
 
     @Override

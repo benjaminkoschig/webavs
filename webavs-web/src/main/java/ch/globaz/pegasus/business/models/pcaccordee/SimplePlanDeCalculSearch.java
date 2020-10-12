@@ -11,7 +11,9 @@ public class SimplePlanDeCalculSearch extends JadeSearchSimpleModel {
     private String forIdPCAccordee = null;
     private String forIdPlanDeCalcul = null;
     private Boolean forIsPlanRetenu = null;
+    private Boolean forIsPlanNonRetenu = null;
     private String forEtatPc = null;
+    private Boolean forReformePC = null;
 
     public String getForEtatPc() {
         return forEtatPc;
@@ -73,6 +75,22 @@ public class SimplePlanDeCalculSearch extends JadeSearchSimpleModel {
      */
     public void setForIsPlanRetenu(Boolean forIsPlanRetenu) {
         this.forIsPlanRetenu = forIsPlanRetenu;
+    }
+
+    public Boolean getForIsPlanNonRetenu() {
+        return forIsPlanNonRetenu;
+    }
+
+    public void setForIsPlanNonRetenu(Boolean forIsPlanNonRetenu) {
+        this.forIsPlanNonRetenu = forIsPlanNonRetenu;
+    }
+
+    public Boolean getForReformePC() {
+        return forReformePC;
+    }
+
+    public void setForReformePC(Boolean forReformePC) {
+        this.forReformePC = forReformePC;
     }
 
     /**
