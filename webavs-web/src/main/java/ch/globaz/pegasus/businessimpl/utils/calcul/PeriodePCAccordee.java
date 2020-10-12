@@ -969,13 +969,8 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
                 setCCRetenuEtNonRetenu(listeCC, true);
 
                 List<CalculComparatif> ccRetenus = calculComparatifs.stream().filter(cc -> cc.isPlanRetenu()).collect(Collectors.toList());
-                if (ccRetenus.size() != 1) {
-                    throw new CalculException("Aucun plan de calcul retenu !");
-                } else {
-                    // on regarde si le cc retenu est non retenu.
-                    boolean isReforme = ccRetenus.get(0).isReformePc();
-                    setCCNonRetenu(listeCC, isReforme);
-                }
+                boolean isReforme = ccRetenus.get(0).isReformePc();
+                setCCNonRetenu(listeCC, isReforme);
 
                 break;
         }
