@@ -1,5 +1,10 @@
 package ch.globaz.pegasus.businessimpl.utils.decision;
 
+import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
+import ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul;
+import ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalculSearch;
+import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
+import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 import globaz.externe.IPRConstantesExternes;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
@@ -7,13 +12,16 @@ import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.pegasus.utils.AutoCopiesFactory;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 import ch.globaz.pegasus.business.constantes.EPCProperties;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.constantes.IPCPCAccordee;
@@ -41,7 +49,7 @@ public class CopiesDecisionHandler {
 
     /**
      * Methode qui retourne une CopiesDecision avec les infos pour l'agence communale AVS
-     * 
+     *
      * @return
      * @throws JadeApplicationServiceNotAvailableException
      * @throws JadePersistenceException
@@ -80,14 +88,20 @@ public class CopiesDecisionHandler {
 
     /**
      * Methode qui retourne une CopiesDecision avec les infos pour les homes
-     * 
-     * @return
+     *
+     * @param typeCopie : le type de copie.
+     * @return La copie de décision
      * @throws Exception
      * @throws DecisionException
      */
-    private static CopiesDecision dealHomeCopie() throws JadePersistenceException, JadeApplicationException {
+    private static CopiesDecision dealHomeCopie(IPCAutoCopies.TYPE_COPIE typeCopie) throws JadePersistenceException, JadeApplicationException {
         // on set les infos du tier du home
-        Home home = CopiesDecisionHandler.getHomeForDecision(CopiesDecisionHandler.decision);
+        Home home = null;
+        if (IPCAutoCopies.TYPE_COPIE.HOME_PCAL.equals(typeCopie) || IPCAutoCopies.TYPE_COPIE.HOME_SANS_PCAL.equals(typeCopie)) {
+            home = CopiesDecisionHandler.getHomeForDecision(CopiesDecisionHandler.decision);
+        } else if (IPCAutoCopies.TYPE_COPIE.HOME_PARTIEL.equals(typeCopie) || IPCAutoCopies.TYPE_COPIE.HOME_PARTIEL_SANS_PCAL.equals(typeCopie)) {
+            home = CopiesDecisionHandler.getHomePartielForDecision(CopiesDecisionHandler.decision);
+        }
 
         if (home == null) {
             throw new DecisionException(BSessionUtil.getSessionFromThreadContext().getLabel(
@@ -104,14 +118,27 @@ public class CopiesDecisionHandler {
                 JACalendar.todayJJsMMsAAAA(), IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE,
                 AdresseService.CS_TYPE_COURRIER, null);
 
-        CopiesDecision copie = null;
+        CopiesDecision copie;
 
         // Soit copie plan de calcul soit sans
-        if (CopiesDecisionHandler.copiesAuto.get(IPCAutoCopies.TYPE_COPIE.HOME_PCAL) != null) {
-            copie = CopiesDecisionHandler.copiesAuto.get(IPCAutoCopies.TYPE_COPIE.HOME_PCAL);
-        } else {
-            copie = CopiesDecisionHandler.copiesAuto.get(IPCAutoCopies.TYPE_COPIE.HOME_SANS_PCAL);
+        switch (typeCopie) {
+            case HOME_PCAL:
+                copie = CopiesDecisionHandler.copiesAuto.get(IPCAutoCopies.TYPE_COPIE.HOME_PCAL);
+                break;
+            case HOME_SANS_PCAL:
+                copie = CopiesDecisionHandler.copiesAuto.get(IPCAutoCopies.TYPE_COPIE.HOME_SANS_PCAL);
+                break;
+            case HOME_PARTIEL:
+                copie = CopiesDecisionHandler.copiesAuto.get(IPCAutoCopies.TYPE_COPIE.HOME_PARTIEL);
+                break;
+            case HOME_PARTIEL_SANS_PCAL:
+                copie = CopiesDecisionHandler.copiesAuto.get(IPCAutoCopies.TYPE_COPIE.HOME_PARTIEL_SANS_PCAL);
+                break;
+            default:
+                copie = null;
+                break;
         }
+
         copie.getSimpleCopiesDecision().setIdTiersCopie(idTiers);
         copie.setDesignation1(CopiesDecisionHandler.getDesignation1Et2ForAdresse(adresse)[0]);
         copie.setDesignation2(CopiesDecisionHandler.getDesignation1Et2ForAdresse(adresse)[1]);
@@ -121,8 +148,21 @@ public class CopiesDecisionHandler {
     }
 
     /**
+     * Méthode permettant de récupérer le home partiel lié à la PCA.
+     *
+     * @param decision
+     * @return
+     * @throws JadeApplicationServiceNotAvailableException
+     * @throws JadePersistenceException
+     * @throws HomeException
+     */
+    private static Home getHomePartielForDecision(DecisionApresCalcul decision) throws JadeApplicationServiceNotAvailableException, JadePersistenceException, HomeException {
+        return HomeUtil.readHomePartielByPlanCacule(decision.getPcAccordee().getId());
+    }
+
+    /**
      * Methode qui retourne une CopiesDecision avec les infos pour Prosenectute
-     * 
+     *
      * @throws Exception
      * @throws DecisionException
      */
@@ -151,7 +191,7 @@ public class CopiesDecisionHandler {
 
     /**
      * Methode qui retourne une CopiesDecision avec les infos pour les services sociaux
-     * 
+     *
      * @return
      * @throws Exception
      * @throws DecisionException
@@ -188,7 +228,7 @@ public class CopiesDecisionHandler {
             // ***************** PRO SENECTUTE *****************
             if (typeCopie.equals(IPCAutoCopies.TYPE_COPIE.PRO_SENECTUTE_JU)
                     && !decision.getPcAccordee().getSimplePCAccordee().getCsTypePC()
-                            .equals(IPCPCAccordee.CS_TYPE_PC_INVALIDITE)) {
+                    .equals(IPCPCAccordee.CS_TYPE_PC_INVALIDITE)) {
                 listeCopies.add(CopiesDecisionHandler.dealProSenectuteCopie());
             }
 
@@ -203,10 +243,12 @@ public class CopiesDecisionHandler {
                 listeCopies.add(CopiesDecisionHandler.dealServicesSociauxCopie());
             }
 
-            // ***************** HOMES *****************
+            // ***************** HOMES && HOMES PARTIELS *****************
             if (typeCopie.equals(IPCAutoCopies.TYPE_COPIE.HOME_PCAL)
-                    || typeCopie.equals(IPCAutoCopies.TYPE_COPIE.HOME_SANS_PCAL)) {
-                listeCopies.add(CopiesDecisionHandler.dealHomeCopie());
+                    || typeCopie.equals(IPCAutoCopies.TYPE_COPIE.HOME_SANS_PCAL)
+                    || typeCopie.equals(IPCAutoCopies.TYPE_COPIE.HOME_PARTIEL)
+                    || typeCopie.equals(IPCAutoCopies.TYPE_COPIE.HOME_PARTIEL_SANS_PCAL)) {
+                listeCopies.add(CopiesDecisionHandler.dealHomeCopie(typeCopie));
             }
 
         }
@@ -215,7 +257,7 @@ public class CopiesDecisionHandler {
 
     /**
      * Retourne un tableau de chaine de caractère contrenat les desigantions 1 et 2 desd adresses
-     * 
+     *
      * @param adresse
      * @return
      */
@@ -229,7 +271,7 @@ public class CopiesDecisionHandler {
 
     /**
      * Retourne le home pour la décision concerné
-     * 
+     *
      * @param decision
      * @return home
      * @throws JadeApplicationServiceNotAvailableException
@@ -247,7 +289,7 @@ public class CopiesDecisionHandler {
 
     /**
      * Retourne l'id du tiers demandé concerné par la décision et correspondant au rôle passé en paramètre
-     * 
+     *
      * @param decision
      * @return id du tiers (requérant ou conjoint)
      */
@@ -290,7 +332,7 @@ public class CopiesDecisionHandler {
 
     /**
      * Retourne la session pour accès au labels
-     * 
+     *
      * @return BSession session
      * @throws DecisionException
      */
@@ -307,7 +349,7 @@ public class CopiesDecisionHandler {
 
     /**
      * Chargement des copies des décision. Toutes doivente être définis dans le fichier de properties
-     * 
+     *
      * @return , map des copies
      * @throws DecisionException
      */
@@ -341,6 +383,19 @@ public class CopiesDecisionHandler {
                     copie.setSimpleCopiesDecision(AutoCopiesFactory
                             .getAutoCopies(IPCAutoCopies.TYPE_COPIE.HOME_SANS_PCAL));
                     returnMap.put(IPCAutoCopies.TYPE_COPIE.HOME_SANS_PCAL, copie);
+                }
+            }
+
+            // ***************** HOMES PARTIELS *****************
+            if (Boolean.parseBoolean(session.getApplication().getProperty("pegasus.decision.copie.home.defaut"))
+                    && isHomePartiel(CopiesDecisionHandler.decision)) {
+                CopiesDecision copie = new CopiesDecision();
+                if (Boolean.parseBoolean(session.getApplication().getProperty("pegasus.decision.copie.home.plancalcul"))) {
+                    copie.setSimpleCopiesDecision(AutoCopiesFactory.getAutoCopies(IPCAutoCopies.TYPE_COPIE.HOME_PARTIEL));
+                    returnMap.put(IPCAutoCopies.TYPE_COPIE.HOME_PARTIEL, copie);
+                } else {
+                    copie.setSimpleCopiesDecision(AutoCopiesFactory.getAutoCopies(IPCAutoCopies.TYPE_COPIE.HOME_PARTIEL_SANS_PCAL));
+                    returnMap.put(IPCAutoCopies.TYPE_COPIE.HOME_PARTIEL_SANS_PCAL, copie);
                 }
             }
 
@@ -388,5 +443,37 @@ public class CopiesDecisionHandler {
             throw new DecisionException("Unable to fill copies, an error occured", e);
         }
 
+    }
+
+    /**
+     * Méthode permettant de savoir si la décision possède un home partiel.
+     *
+     * @param decision
+     * @return vrai si la décision possède un home partiel.
+     */
+    private static boolean isHomePartiel(DecisionApresCalcul decision) throws JadeApplicationServiceNotAvailableException, JadePersistenceException {
+        TupleDonneeRapport planDeCalcul = readPlanCalculRetenu(decision.getPcAccordee().getId());
+        return planDeCalcul.containsValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_SEJOUR_MOIS_PARTIEL_TOTAL);
+    }
+
+    /**
+     * Méthode permettant de récupérer le plan de calcul.
+     *
+     * @param idPca : id PC Accordée
+     * @return Retourne le plan de calcul sous forme de rapports de tuples.
+     * @throws JadePersistenceException
+     * @throws JadeApplicationServiceNotAvailableException
+     */
+    private static TupleDonneeRapport readPlanCalculRetenu(String idPca) throws JadePersistenceException,
+            JadeApplicationServiceNotAvailableException {
+        // Recherche du pla de calcul et du blob
+        SimplePlanDeCalculSearch search = new SimplePlanDeCalculSearch();
+        search.setForIdPCAccordee(idPca);
+        search.setForIsPlanRetenu(Boolean.TRUE);
+        SimplePlanDeCalcul plan = (SimplePlanDeCalcul) JadePersistenceManager.search(search, true).getSearchResults()[0];
+        String byteToArrayString = new String(plan.getResultatCalcul());
+        TupleDonneeRapport tuple = PegasusImplServiceLocator.getCalculPersistanceService().deserialiseDonneesCcXML(
+                byteToArrayString);
+        return tuple;
     }
 }

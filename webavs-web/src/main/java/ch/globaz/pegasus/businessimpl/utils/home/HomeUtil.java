@@ -113,6 +113,38 @@ public class HomeUtil {
         return home;
     }
 
+    /**
+     * Permet de trouver le home partiel lié a une pca
+     *
+     * @param idPca
+     * @return
+     * @throws JadeApplicationServiceNotAvailableException
+     * @throws PCAccordeeException
+     * @throws JadePersistenceException
+     * @throws HomeException
+     */
+    public static Home readHomePartielByPlanCacule(String idPca)
+            throws JadeApplicationServiceNotAvailableException, JadePersistenceException, HomeException {
+        TupleDonneeRapport tuple = readPlanCalculRetenu(idPca);
+        return readHomePartielByPlanCacule(tuple);
+    }
+
+    private static Home readHomePartielByPlanCacule(TupleDonneeRapport tuple)
+            throws JadeApplicationServiceNotAvailableException, JadePersistenceException, HomeException {
+        // recup du tuple des idHome
+        TupleDonneeRapport tupleIdHome = tuple.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL);
+
+        Home home = null;
+        if (tupleIdHome != null) {
+            String idHome = String.valueOf(tupleIdHome.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_HOME).getValeur());
+            // recup du home
+            if (idHome != null) {
+                home = PegasusServiceLocator.getHomeService().read(idHome);
+            }
+        }
+        return home;
+    }
+
     private static TupleDonneeRapport readPlanCalculRetenu(String idPca) throws JadePersistenceException,
             JadeApplicationServiceNotAvailableException {
         // Recherche du pla de calcul et du blob

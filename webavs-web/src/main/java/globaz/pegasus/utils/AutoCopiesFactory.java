@@ -28,6 +28,10 @@ public class AutoCopiesFactory {
                 true, false, false, false, true, true, true, false));
         AutoCopiesFactory.autoCopies.put(IPCAutoCopies.TYPE_COPIE.HOME_PCAL, new SimpleCopiesDecision(true, true, true,
                 false, false, true, true, true, true, false));
+        AutoCopiesFactory.autoCopies.put(IPCAutoCopies.TYPE_COPIE.HOME_PARTIEL_SANS_PCAL, new SimpleCopiesDecision(true, true,
+                true, false, true, false, true, true, true, false));
+        AutoCopiesFactory.autoCopies.put(IPCAutoCopies.TYPE_COPIE.HOME_PARTIEL, new SimpleCopiesDecision(true, true, true,
+                false, true, true, true, true, true, false));
     }
 
     public static SimpleCopiesDecision getAutoCopies(IPCAutoCopies.TYPE_COPIE type) {

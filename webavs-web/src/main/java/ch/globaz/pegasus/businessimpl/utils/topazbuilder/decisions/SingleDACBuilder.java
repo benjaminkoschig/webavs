@@ -177,8 +177,9 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         DocumentData dataPCAL = addPlanCalcul(dacOO, allDoc, containerGed, true);
 
         /******************** Plan de calcul non retenu **************/
+        DocumentData dataPCALnonRetenu = null;
         if (StringUtils.isNotEmpty(dacOO.getPlanCalculNonRetenu().getId())) {
-            addPlanCalcul(dacOO, allDoc, containerGed, false);
+            dataPCALnonRetenu = addPlanCalcul(dacOO, allDoc, containerGed, false);
         }
 
         /********************** Decomptes ****************/
@@ -224,9 +225,8 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         handler.addGedContainer(containerGed);
 
         /*********************** Copies ************/
-        // if (allowCopie) {
         ArrayList<CopiesDecision> listeCopies = this.dacOO.getDecisionHeader().getListeCopies();
-        DocumentData dataCopie = new DocumentData();
+        DocumentData dataCopie;
         for (CopiesDecision copie : listeCopies) {
 
             String idTiersCopie = copie.getSimpleCopiesDecision().getIdTiersCopie();
@@ -264,12 +264,22 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
             // ***** Plan calcul copie
             if (copie.getSimpleCopiesDecision().getPlandeCalcul()) {
-                DocumentData dataPCALCopie = new DocumentData();
+                DocumentData dataPCALCopie;
+                DocumentData dataPCALnonRetenuCopie;
+
                 dataPCALCopie = dataPCAL;
                 mergeDataAndPubInfosWithPixisFill(allDoc, dataPCALCopie, new PegasusPubInfoBuilder().rectoVersoLast()
                                 .getPubInfo(), pubInfosPixisPropertiesCopie, dacOO.getPersonneForDossier(),
                         TYPE_DOCUMENT.COPIE, idTiersCopie, dacOO.getNoDecision());
+
+                if (StringUtils.isNotEmpty(dacOO.getPlanCalculNonRetenu().getId())) {
+                    dataPCALnonRetenuCopie = dataPCALnonRetenu;
+                    mergeDataAndPubInfosWithPixisFill(allDoc, dataPCALnonRetenuCopie, new PegasusPubInfoBuilder().rectoVersoLast()
+                                    .getPubInfo(), pubInfosPixisPropertiesCopie, dacOO.getPersonneForDossier(),
+                            TYPE_DOCUMENT.COPIE, idTiersCopie, dacOO.getNoDecision());
+                }
             }
+
             // ****** Decompte copie
             if (allowDecompte && copie.getSimpleCopiesDecision().getRecapitulatif()) {
                 DocumentData dataDecompteCopie = new DocumentData();
