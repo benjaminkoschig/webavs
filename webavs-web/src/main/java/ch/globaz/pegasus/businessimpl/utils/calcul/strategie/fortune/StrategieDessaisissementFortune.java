@@ -108,17 +108,23 @@ public class StrategieDessaisissementFortune extends StrategieCalculFortune {
                 totalDF = checkAmoutAndParseAsFloat(donnee.getDessaisissementFortuneMontant())
                         - checkAmoutAndParseAsFloat(donnee.getDessaisissementFortuneDeductions());
 
-                if (IPCDessaisissementFortune.CS_MOTIF_DESSAISI_CONSOMMATION_EXCESSIVE.equals(donnee.getDessaisissementFortuneType())) {
-                    // Si l'on est sur un déssaisissement de fortune pour motif consommation excessive
+                if (!donnee.getDessaisissementFortuneType().isEmpty()) {
+                    // Si l'on est sur un déssaisissement de fortune
                     // On fixe les clé pour Registre PC
-                    this.ecraseChildExistant(resultatExistant, IPCValeursPlanCalcul.CLE_IS_DIVESTED_WEALTH,
+                    this.ecraseChildIfExistant(resultatExistant, IPCValeursPlanCalcul.CLE_IS_DIVESTED_WEALTH,
                             Boolean.TRUE);
-                    // 2 = consommation excessive
-                    // TODO mettre un enum
-                    this.ecraseChildExistant(resultatExistant, IPCValeursPlanCalcul.CLE_TYPE_DIVESTED_WEALTH,
-                            "2");
 
+                    if (IPCDessaisissementFortune.CS_MOTIF_DESSAISI_CONSOMMATION_EXCESSIVE.equals(donnee.getDessaisissementFortuneType())) {
+                        // 2 = consommation excessive
+                        this.ecraseChildIfExistant(resultatExistant, IPCValeursPlanCalcul.CLE_TYPE_DIVESTED_WEALTH,
+                                "2");
+                    } else {
+                        // 1 = le reste
+                        this.ecraseChildIfExistant(resultatExistant, IPCValeursPlanCalcul.CLE_TYPE_DIVESTED_WEALTH,
+                                "1");
+                    }
                 }
+
 
             }
 

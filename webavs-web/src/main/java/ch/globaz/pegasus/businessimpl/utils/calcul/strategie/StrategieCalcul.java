@@ -7,6 +7,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 
 import java.util.Map;
+import java.util.Objects;
 
 import ch.globaz.pegasus.business.constantes.ConstantesCalcul;
 import ch.globaz.pegasus.business.constantes.IPCHabitat;
@@ -151,17 +152,26 @@ public abstract class StrategieCalcul {
     }
 
 
-    protected TupleDonneeRapport ecraseChildExistant(TupleDonneeRapport base, String cle, String valeur) throws CalculException {
+    protected TupleDonneeRapport ecraseChildIfExistant(TupleDonneeRapport base, String cle, String valeur) throws CalculException {
         TupleDonneeRapport result = base.getEnfants().get(cle);
+
+        if (Objects.isNull(result)){
+            result = new TupleDonneeRapport(cle);
+            base.getEnfants().put(cle, result);
+        }
 
         result.setValeur(checkAmoutAndParseAsFloat(valeur));
 
         return result;
     }
 
-    protected TupleDonneeRapport ecraseChildExistant(TupleDonneeRapport base, String cle, boolean valeur) {
+    protected TupleDonneeRapport ecraseChildIfExistant(TupleDonneeRapport base, String cle, boolean valeur) {
         TupleDonneeRapport result = base.getEnfants().get(cle);
 
+        if (Objects.isNull(result)){
+            result = new TupleDonneeRapport(cle);
+            base.getEnfants().put(cle, result);
+        }
         result.setValeur(TupleDonneeRapport.writeBoolean(valeur));
         return result;
     }
