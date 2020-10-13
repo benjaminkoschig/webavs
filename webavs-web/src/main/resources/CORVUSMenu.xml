@@ -242,6 +242,12 @@
 						</action>
 					</node>
 					<node>
+						<label refId="MENU_OPTION_LST_REM_CEN" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.adaptation.listeRemarquesCentrale.afficher" />
+						</action>
+					</node>
+					<node>
 						<label refId="MENU_OPTION_LISTE_ERREURS_ADAP" />
 						<action command="/corvus" responseTarget="fr_main">
 							<parameter name="userAction" value="corvus.adaptation.listeErreurs.afficher" />

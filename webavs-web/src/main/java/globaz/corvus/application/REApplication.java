@@ -545,6 +545,8 @@ public class REApplication extends PRAbstractApplication {
                 FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(IREActions.ACTION_ADAPTATION_ENVOI_ANNONCES_SUB + ".afficher",
                 FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom(IREActions.ACTION_ADAPTATION_LISTE_REMARQUES_CENTRALE + ".afficher",
+                FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(IREActions.ACTION_ADAPTATION_2EME_ENVOI_CENTRALE + ".afficher",
                 FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(IREActions.ACTION_RENTE_VERSEE_A_TORT_AJAX + ".creerNouvelleEntiteeAJAX",

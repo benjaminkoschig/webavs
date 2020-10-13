@@ -15,6 +15,7 @@ public interface IREActions {
     public static final String ACTION_ADAPTATION_MAJ_RECAP_ADAPTATION = "corvus.adaptation.majRecapAdaptation";
     public static final String ACTION_ADAPTATION_MISE_A_JOUR_PREST = "corvus.adaptation.miseAJourPrest";
     public static final String ACTION_ADAPTATION_PMT_FICTIF = "corvus.adaptation.pmtFictif";
+    public static final String ACTION_ADAPTATION_LISTE_REMARQUES_CENTRALE = "corvus.adaptation.listeRemarquesCentrale";
     public static final String ACTION_ADAPTATION_RENTES_ADAPTEES = "corvus.adaptation.rentesAdaptees";
     public static final String ACTION_AFFICHER_LOT_DECISION = "corvus.lots.lot";
     public static final String ACTION_ANAKIN_VALIDATOR = "corvus.process.anakin";

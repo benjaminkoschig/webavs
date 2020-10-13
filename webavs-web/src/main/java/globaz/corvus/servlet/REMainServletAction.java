@@ -18,6 +18,7 @@ public class REMainServletAction {
         REMainServletAction.ACTIONS.put(IREActions.ACTION_ADAPTATION_ADAPTATION_MANUELLE, REAdaptationAction.class);
         REMainServletAction.ACTIONS.put(IREActions.ACTION_ADAPTATION_CIRCULAIRE, REAdaptationAction.class);
         REMainServletAction.ACTIONS.put(IREActions.ACTION_ADAPTATION_ENVOI_ANNONCES_SUB, REAdaptationAction.class);
+        REMainServletAction.ACTIONS.put(IREActions.ACTION_ADAPTATION_LISTE_REMARQUES_CENTRALE, REAdaptationAction.class);
         REMainServletAction.ACTIONS.put(IREActions.ACTION_ADAPTATION_IMPORT_51_53, REAdaptationAction.class);
         REMainServletAction.ACTIONS.put(IREActions.ACTION_ADAPTATION_LISTE_ANNONCES_SUB, REAdaptationAction.class);
         REMainServletAction.ACTIONS.put(IREActions.ACTION_ADAPTATION_LISTE_ERREURS, REAdaptationAction.class);
