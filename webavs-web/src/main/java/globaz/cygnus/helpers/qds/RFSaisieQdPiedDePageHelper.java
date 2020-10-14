@@ -192,7 +192,7 @@ public class RFSaisieQdPiedDePageHelper extends PRAbstractHelper {
                             if (rfQdVb.getMembresFamille().size() > 0) {
                                 RFUtils.ajouterAssociationDossierQdMembreFamille(rfQdVb.getMembresFamille(),
                                         rfQdVb.getIdGestionnaire(), rfQdVb.getSession(), transaction, idQd,
-                                        rfQdVb.getCsTypeBeneficiaire());
+                                        rfQdVb.getCsTypeBeneficiaire(), rfQdVb.getDateDebutPCAccordee());
                             } else {
                                 RFUtils.setMsgErreurViewBean(rfQdVb, "ERREUR_RF_QD_S_PERSONNES_DANS_CALCUL");
                             }
@@ -806,7 +806,7 @@ public class RFSaisieQdPiedDePageHelper extends PRAbstractHelper {
 
             if (rfQdVb.getMembresFamille().size() > 0) {
                 RFUtils.ajouterAssociationDossierQdMembreFamille(rfQdVb.getMembresFamille(), rfQdVb.getGestionnaire(),
-                        rfQdVb.getSession(), transaction, idQd, rfQdVb.getCsTypeBeneficiaire());
+                        rfQdVb.getSession(), transaction, idQd, rfQdVb.getCsTypeBeneficiaire(), rfQdVb.getDateDebutPCAccordee());
             } else {
                 RFUtils.setMsgErreurViewBean(rfQdVb, "ERREUR_RF_QD_S_PERSONNES_DANS_CALCUL");
             }
@@ -1202,7 +1202,7 @@ public class RFSaisieQdPiedDePageHelper extends PRAbstractHelper {
                                 membresFamilleVec.add(RFUtils.getMembreFamilleTabString(perDsCal.getIdTiers(),
                                         perDsCal.getCsRoleFamillePC(), perDsCal.getNss(), perDsCal.getNom(),
                                         perDsCal.getPrenom(), perDsCal.getDateNaissance(), perDsCal.getCsSexe(),
-                                        perDsCal.getCsNationalite(), perDsCal.getIsComprisDansCalcul()));
+                                        perDsCal.getCsNationalite(), perDsCal.getIsComprisDansCalcul(), perDsCal.getIsRentier()));
                             }
 
                             viewBean.setMembresFamille(membresFamilleVec);

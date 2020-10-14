@@ -182,7 +182,7 @@ public class RFUtils {
     }
 
     public static void ajouterAssociationDossierQdMembreFamille(Vector<String[]> membresFamille, String idGestionnaire,
-            BSession session, BITransaction transaction, String idQd, String csTypeBeneficiaire) throws Exception {
+                                                                BSession session, BITransaction transaction, String idQd, String csTypeBeneficiaire, String dateDebutPCA) throws Exception {
 
         for (String[] membreCourant : membresFamille) {
 
@@ -205,7 +205,13 @@ public class RFUtils {
                 }
 
                 rfAssQdDossier.setTypeRelation(membreCourant[1]);
+
+                String dateReforme = EPCProperties.DATE_REFORME_PC.getValue();
+                if (membreCourant[1].equals(IPCDroits.CS_ROLE_FAMILLE_ENFANT) && !JadeDateUtil.isDateBefore(dateDebutPCA, dateReforme) && membreCourant[8].equals(Boolean.FALSE.toString())) {
+                    rfAssQdDossier.setIsComprisDansCalcul(membreCourant[9].equals(Boolean.TRUE.toString()));
+                } else {
                 rfAssQdDossier.setIsComprisDansCalcul(membreCourant[8].equals(Boolean.TRUE.toString()));
+                }
 
                 rfAssQdDossier.add(transaction);
             }
@@ -685,6 +691,39 @@ public class RFUtils {
         }
 
         return membresFamilleVec;
+
+    }
+
+    /**
+     * Construit un tableau représentant le détail d'une famille
+     *
+     * @param idTiers
+     * @param typeRelation
+     * @param nss
+     * @param nom
+     * @param prenom
+     * @param dateNaissance
+     * @param csSexe
+     * @param csNationalite
+     * @return String[idTiers, typeRelation, nss, nom, prenom, dateNaissance, csSexe, csNationalite, isComprisDansCalcul, isRentier]
+     */
+    public static String[] getMembreFamilleTabString(String idTiers, String typeRelation, String nss, String nom,
+                                                     String prenom, String dateNaissance, String csSexe, String csNationalite, Boolean isComprisDansCalcul, Boolean isRentier) {
+
+        String[] tab = new String[10];
+
+        tab[0] = idTiers;
+        tab[1] = typeRelation;
+        tab[2] = nss;
+        tab[3] = nom;
+        tab[4] = prenom;
+        tab[5] = dateNaissance;
+        tab[6] = csSexe;
+        tab[7] = csNationalite;
+        tab[8] = isComprisDansCalcul.booleanValue() ? Boolean.TRUE.toString() : Boolean.FALSE.toString();
+        tab[9] = isRentier.booleanValue() ? Boolean.TRUE.toString() : Boolean.FALSE.toString();
+
+        return tab;
 
     }
 

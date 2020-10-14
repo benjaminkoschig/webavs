@@ -176,7 +176,9 @@ public class RFAdaptationJournaliereOctroiHandler extends RFAdaptationJournalier
             if (RFUtils.typeBeneficiairePlusieursPersonnesComprisesDansCalcul.contains(getContext()
                     .getInfoDroitPcServiceData().getTypeBeneficiaire())) {
 
-                if (getContext().getInfoDroitPcServiceData().getPersonneDansPlanCalculList().size() > 0) {
+                RFRetrieveInfoDroitPCServiceData infoDroitPcServiceData = getContext().getInfoDroitPcServiceData();
+
+                if (infoDroitPcServiceData.getPersonneDansPlanCalculList().size() > 0) {
 
                     Vector<String[]> personnesDansPlanCalculVec = new Vector<String[]>();
 
@@ -185,11 +187,11 @@ public class RFAdaptationJournaliereOctroiHandler extends RFAdaptationJournalier
                         personnesDansPlanCalculVec.add(RFUtils.getMembreFamilleTabString(membreCourant.getIdTiers(),
                                 membreCourant.getCsRoleFamillePC(), membreCourant.getNss(), membreCourant.getNom(),
                                 membreCourant.getPrenom(), membreCourant.getDateNaissance(), membreCourant.getCsSexe(),
-                                membreCourant.getCsNationalite(), membreCourant.getIsComprisDansCalcul()));
+                                membreCourant.getCsNationalite(), membreCourant.getIsComprisDansCalcul(), membreCourant.getIsRentier()));
                     }
 
                     RFUtils.ajouterAssociationDossierQdMembreFamille(personnesDansPlanCalculVec, getGestionnaire(),
-                            getSession(), getTransaction(), qd.getIdQd(), "");
+                            getSession(), getTransaction(), qd.getIdQd(), "", infoDroitPcServiceData.getDateDebutPcaccordee());
 
                     // M‡J de l'Ètat des autres Qds
                     if (isAdaptationAnnuelle) {
