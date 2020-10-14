@@ -16,7 +16,7 @@
 	<properties>
 		<webapp.context>/webavs</webapp.context>
 		<!-- empty enums make sonar fail... -->
-		<sonar.exclusions>**ch/globaz/common/listoutput/generator/annotation/style/VerticalAlign*,**globaz/apg/enums/APStep2Rules*,**globaz/apg/itext/decompte/utils/APDonneeRegroupementDecompte*,**globaz/corvus/itext/REListeComparaisonLivraison2Centrale*,**ch/globaz/al/businessimpl/services/entetesDocument/EnteteDocumentUserInfoServiceImpl*,**globaz/apg/helpers/prestation/APPrestationHelper*,**globaz/apg/vb/droits/APSituationProfessionnelleViewBean*,**heliosRoot/**/*.xml*,**naosRoot/**/*.xml,**/*jquery*.js,**/*jquery*.css,**/*bootstrap*.css,**/*bootstrap*.js,**/*cloud-zoom*.js,**/tiny_mce/**,**/tiny_mce*.js,**/Highcharts/**</sonar.exclusions>
+		<sonar.exclusions>**ch/glob az/common/listoutput/generator/annotation/style/VerticalAlign*,**globaz/apg/enums/APStep2Rules*,**globaz/apg/itext/decompte/utils/APDonneeRegroupementDecompte*,**globaz/corvus/itext/REListeComparaisonLivraison2Centrale*,**ch/globaz/al/businessimpl/services/entetesDocument/EnteteDocumentUserInfoServiceImpl*,**globaz/apg/helpers/prestation/APPrestationHelper*,**globaz/apg/vb/droits/APSituationProfessionnelleViewBean*,**heliosRoot/**/*.xml*,**naosRoot/**/*.xml,**/*jquery*.js,**/*jquery*.css,**/*bootstrap*.css,**/*bootstrap*.js,**/*cloud-zoom*.js,**/tiny_mce/**,**/tiny_mce*.js,**/Highcharts/**</sonar.exclusions>
 
 		<web.resources>src/main/webapp</web.resources>
 
@@ -594,14 +594,12 @@
             </build>
         </profile>
 	</profiles>
-
-
 	<dependencies>
-		<!--<dependency>
+		<dependency>
 			<groupId>ch.globaz</groupId>
 			<artifactId>list-adapt-rentes</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
-		</dependency>-->
+		</dependency>
 
 		<dependency>
 			<groupId>ch.globaz</groupId>
