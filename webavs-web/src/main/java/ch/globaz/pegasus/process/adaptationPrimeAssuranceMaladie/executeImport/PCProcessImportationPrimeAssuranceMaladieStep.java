@@ -111,19 +111,22 @@ public class PCProcessImportationPrimeAssuranceMaladieStep implements JadeProces
 
                 // Regex des NSS pour s'assurer sur la ligne du CSV commence bien par un NSS.
                 Pattern patternRegexNss = Pattern.compile("[0-9]{1,3}.[0-9]{1,4}.[0-9]{1,4}.[0-9]{1,2}");
+                Pattern patternRegexNssWithoutDot = Pattern.compile("[0-9]{13}");
                 Matcher matcherRegexNss = patternRegexNss.matcher(line) ;
+                Matcher matcherRegexNssWithoutDot = patternRegexNssWithoutDot.matcher(line) ;
                 boolean isLineStartWithNSS = matcherRegexNss.lookingAt() ;
+                boolean isLineStartWithNSSWithoutDot = matcherRegexNssWithoutDot.lookingAt() ;
 
-                if (isLineStartWithNSS) {
+                if (isLineStartWithNSS || isLineStartWithNSSWithoutDot) {
                     // On extrait les éléments de la ligne
-                    PrimeAssuranceMaladieFromCSV assuranceMaladie = extractDataFromCSV(line);
+                    PrimeAssuranceMaladieFromCSV assuranceMaladie = extractDataFromCSV(line, isLineStartWithNSSWithoutDot);
                     listePrimeAssuranceMaladieFromCSV.put(assuranceMaladie.getNss(), assuranceMaladie);
                 }
             }
         }
     }
 
-    private PrimeAssuranceMaladieFromCSV extractDataFromCSV(String line) {
+    private PrimeAssuranceMaladieFromCSV extractDataFromCSV(String line, boolean isLineStartWithNSSWithoutDot) {
         PrimeAssuranceMaladieFromCSV assuranceMaladieFromCSV = new PrimeAssuranceMaladieFromCSV();
 
         String regex = Character.toString(SEPARATOR);
@@ -137,7 +140,11 @@ public class PCProcessImportationPrimeAssuranceMaladieStep implements JadeProces
             if (Objects.nonNull(enumPrimeAssu)) {
                 switch (enumPrimeAssu) {
                     case NSS:
-                        assuranceMaladieFromCSV.setNss(datasTemp[i]);
+                        if (isLineStartWithNSSWithoutDot) {
+                            assuranceMaladieFromCSV.setNss(reformatNSSWithDot(datasTemp[i]));
+                        } else {
+                            assuranceMaladieFromCSV.setNss(datasTemp[i]);
+                        }
                         break;
                     case NOM:
                         assuranceMaladieFromCSV.setNom(datasTemp[i]);
@@ -160,6 +167,14 @@ public class PCProcessImportationPrimeAssuranceMaladieStep implements JadeProces
             }
         }
         return assuranceMaladieFromCSV;
+    }
+
+    private String reformatNSSWithDot(String nssWithoutDot) {
+        StringBuilder nssWithDot = new StringBuilder(nssWithoutDot);
+        nssWithDot.insert(3, ".");
+        nssWithDot.insert(8, ".");
+        nssWithDot.insert(13, ".");
+        return nssWithDot.toString();
     }
 
     @Override
