@@ -61,6 +61,7 @@
 		<globaz-external-xsd.version>1.2.6</globaz-external-xsd.version>
 		<ebback-api.version>9.2.0</ebback-api.version>
 		<cxf.version>3.2.1</cxf.version>
+		<list-adapt-rentes.version>1.0.0-SNAPSHOT</list-adapt-rentes.version>
 
 
 		<!-- CONTINUOUS INTEGRATION -->
@@ -216,6 +217,11 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>ch.globaz</groupId>
+				<artifactId>list-adapt-rentes</artifactId>
+				<version>${list-adapt-rentes.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>mercato.notification</artifactId>
