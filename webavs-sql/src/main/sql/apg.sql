@@ -36,7 +36,7 @@ WHERE CCIDOC = (select CBIDOC
 
 
 INSERT INTO SCHEMA.CTTEXTES(CDITXT, CDLDES, CDLCIL, CDIELE, PSPY)
-;SELECT CONCAT('84200000000', RIGHT(CDITXT, 3)),
+SELECT CONCAT('84200000000', RIGHT(CDITXT, 3)),
        CDLDES, CDLCIL,
        CONCAT('84200000000', RIGHT(CDIELE, 3)),
        '20201001120000globaz   '
@@ -49,7 +49,7 @@ WHERE CCIDOC = (select CBIDOC
                   AND CATTYP = 52019007
                   and CBBACT = 1
                   and CBBDEF = 1
-                  and CBLNOM = 'normal')
+                  and CBLNOM = 'normal');
 
 -- Maternite
 INSERT INTO SCHEMA.CTTYPDOC (CAITYD, CATDOM, CATTYP, PSPY, CANBIN, CAIGAN) VALUES (500, 52020001, 52021007, '                        ', 84300000000, null);
