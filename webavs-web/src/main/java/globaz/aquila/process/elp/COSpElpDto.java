@@ -49,6 +49,9 @@ public class COSpElpDto extends COAbstractELP {
                 typeSaisieLabel = session.getLabel(ADB_LABEL);
                 dateExecution = getDate(loss.getDate());
                 delaiVente = StringUtils.EMPTY;
+                if (Objects.nonNull(loss.getInterest())) {
+                    interest = loss.getInterest().toString();
+                }
             } else {
                 throw new COELPException("Erreur de cast du fichier xml : impossible de récupérer la balise Loss dans le cadre d'un PV de saisie valant ADB.");
             }

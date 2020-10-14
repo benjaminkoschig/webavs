@@ -16,6 +16,7 @@ public abstract class COAbstractELP {
     String dateReception;
     String motifAdditional;
     String numeroStatut;
+    String interest;
 
     public COMotifMessageELP getMotif() {
         return motif;
@@ -64,6 +65,15 @@ public abstract class COAbstractELP {
     public abstract String getRemarque();
 
     public abstract COTypeMessageELP getTypemessage();
+
+    /**
+     * Les intérêts sont utilisés uniquement pour les PV de saisie valant ADB et les ADB (type 206 et 303).
+     *
+     * @return le montant des intérêts.
+     */
+    public String getInterest() {
+        return interest;
+    }
 
     protected String getDate(XMLGregorianCalendar calendar) {
         return calendar == null ? StringUtils.EMPTY : new SimpleDateFormat(DATE_FORMAT).format(calendar.toGregorianCalendar().getTime());

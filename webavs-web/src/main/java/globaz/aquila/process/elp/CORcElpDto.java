@@ -12,8 +12,6 @@ public class CORcElpDto extends COAbstractELP {
     private RcType rcType;
     private String numAbd;
     private String dateEtablissement;
-    private String interest;
-
 
     public CORcElpDto(RcType rcType) {
         this.rcType = rcType;
@@ -51,10 +49,6 @@ public class CORcElpDto extends COAbstractELP {
 
     public String getDateEtablissement() {
         return dateEtablissement;
-    }
-
-    public String getInterest() {
-        return interest;
     }
 
 }

@@ -468,33 +468,33 @@ public class COImportMessageELP extends BProcess {
         // Création de l'objet spElp
         List<COSpElpDto> spElpDtoList = getSpElp(spType, infos);
         for (COSpElpDto spElpDto : spElpDtoList) {
-        switch (spElpDto.getNumeroStatut()) {
-            case ElpStatut.PV_SAISIE_MOB:
-            case ElpStatut.PV_SAISIE_SAL:
-            case ElpStatut.PV_SAISIE_SAL_MOB:
-            case ElpStatut.PV_SAISIE_ADB:
-                traitementInSuccess = createEtapePVSaisie(infos, spElpDto);
+            switch (spElpDto.getNumeroStatut()) {
+                case ElpStatut.PV_SAISIE_MOB:
+                case ElpStatut.PV_SAISIE_SAL:
+                case ElpStatut.PV_SAISIE_SAL_MOB:
+                case ElpStatut.PV_SAISIE_ADB:
+                    traitementInSuccess = createEtapePVSaisie(infos, spElpDto);
                     if (!traitementInSuccess) {
                         return false;
                     }
-                break;
-            case ElpStatut.PV_NON_LIEU:
-                spElpDto.setMotif(COMotifMessageELP.PV_NON_LIEU);
-                protocole.addnonTraite(spElpDto);
-                break;
-            case ElpStatut.SOLDE_OP:
-                spElpDto.setMotif(COMotifMessageELP.PV_SOLDE_OP);
-                protocole.addnonTraite(spElpDto);
-                break;
-            case ElpStatut.COMMINATION_FAILLITE:
-                spElpDto.setMotif(COMotifMessageELP.PV_COMMINATION_FAILLITE);
-                protocole.addnonTraite(spElpDto);
-                break;
-            default:
-                spElpDto.setMotif(COMotifMessageELP.PV_NON_TRAITE);
-                protocole.addnonTraite(spElpDto);
-                break;
-        }
+                    break;
+                case ElpStatut.PV_NON_LIEU:
+                    spElpDto.setMotif(COMotifMessageELP.PV_NON_LIEU);
+                    protocole.addnonTraite(spElpDto);
+                    break;
+                case ElpStatut.SOLDE_OP:
+                    spElpDto.setMotif(COMotifMessageELP.PV_SOLDE_OP);
+                    protocole.addnonTraite(spElpDto);
+                    break;
+                case ElpStatut.COMMINATION_FAILLITE:
+                    spElpDto.setMotif(COMotifMessageELP.PV_COMMINATION_FAILLITE);
+                    protocole.addnonTraite(spElpDto);
+                    break;
+                default:
+                    spElpDto.setMotif(COMotifMessageELP.PV_NON_TRAITE);
+                    protocole.addnonTraite(spElpDto);
+                    break;
+            }
         }
         return traitementInSuccess;
     }
@@ -503,7 +503,7 @@ public class COImportMessageELP extends BProcess {
      * Méthode de création de l'étape dans WebAVS.
      * Retourne vrai si le traitement a été exécuté avec succès.
      *
-     * @param infos : les infos du fichier
+     * @param infos    : les infos du fichier
      * @param spElpDto : le contenu du fichier
      * @return vrai si le traitement a été exécuté avec succès.
      * @throws ElpProcessException
@@ -525,12 +525,22 @@ public class COImportMessageELP extends BProcess {
             }
             if (Objects.nonNull(transition)) {
                 action.setTransition(transition);
-                // Ajout des étapes infos
-                if (!StringUtils.equals(ElpStatut.PV_SAISIE_ADB, spElpDto.getNumeroStatut())) {
+                List<Map<String, String>> fraisEtInterets;
+                if (StringUtils.equals(ElpStatut.PV_SAISIE_ADB, spElpDto.getNumeroStatut())) {
+                    try {
+                        fraisEtInterets = getFraisEtInterets(spElpDto, infos.getGenreAffiliation());
+                    } catch (COELPException e) {
+                        LOG.error("Les frais et intérêts n'ont pas pu être gérés automatiquement.", e);
+                        spElpDto.setMotif(COMotifMessageELP.RUBRIQUE_FRAIS_INDEF);
+                        protocole.addnonTraite(spElpDto);
+                        return false;
+                    }
+                } else {
+                    fraisEtInterets = new ArrayList<>();
                     addPvEtapeInfos(action, spElpDto);
                 }
                 // Création du process
-                traitementInSuccess = executeCOTransitionProcess(contentieux, action, new ArrayList());
+                traitementInSuccess = executeCOTransitionProcess(contentieux, action, fraisEtInterets);
                 if (traitementInSuccess) {
                     protocole.addMsgTraite(spElpDto);
                 } else {
@@ -601,9 +611,9 @@ public class COImportMessageELP extends BProcess {
         List<COSpElpDto> spElpDtoList = new ArrayList<>();
         Set<String> typesDeSaisie = getTypeSaisie(spType);
         if (typesDeSaisie.isEmpty()) {
-        COSpElpDto result = new COSpElpDto(spType, getSession());
-        result.setDateReception(infos.getDate());
-        result.setFichier(infos.getFichier());
+            COSpElpDto result = new COSpElpDto(spType, getSession());
+            result.setDateReception(infos.getDate());
+            result.setFichier(infos.getFichier());
             spElpDtoList.add(result);
         } else {
             for (String typeSaisie : typesDeSaisie) {
@@ -708,7 +718,7 @@ public class COImportMessageELP extends BProcess {
      * Méthode de création de l'étape dans WebAVS.
      * Retourne vrai si le traitement a été exécuté avec succès.
      *
-     * @param infos : les infos du fichier
+     * @param infos    : les infos du fichier
      * @param rcElpDto : le contenu du fichier
      * @return vrai si le traitement a été exécuté avec succès.
      * @throws ElpProcessException
@@ -820,16 +830,16 @@ public class COImportMessageELP extends BProcess {
     /**
      * Récupère les frais et les intérêts depuis le fichier xml.
      *
-     * @param rcElpDto         : le rcElp.
+     * @param elpDto         : le dto de type RC ou SP -> type 206 ou 303.
      * @param genreAffiliation : le genre de l'affiliation.
      * @return la liste des frais et intérêts s'il y en a.
      */
-    private List<Map<String, String>> getFraisEtInterets(CORcElpDto rcElpDto, String genreAffiliation) throws COELPException {
+    private List<Map<String, String>> getFraisEtInterets(COAbstractELP elpDto, String genreAffiliation) throws COELPException {
         List<Map<String, String>> fraisEtInterets = new ArrayList<>();
         Map<String, String> mapFraisEtInterets = new HashMap<>();
-        if (StringUtils.isNotEmpty(rcElpDto.getInterest())) {
+        if (StringUtils.isNotEmpty(elpDto.getInterest())) {
             mapFraisEtInterets.put(COTransitionViewBean.LIBELLE, StringUtils.EMPTY);
-            mapFraisEtInterets.put(COTransitionViewBean.MONTANT, rcElpDto.getInterest());
+            mapFraisEtInterets.put(COTransitionViewBean.MONTANT, elpDto.getInterest());
             CAReferenceRubrique ref = new CAReferenceRubrique();
             APIRubrique rubrique;
             ref.setSession(getSession());
