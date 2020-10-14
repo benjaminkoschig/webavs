@@ -644,6 +644,11 @@
 				<artifactId>zip4j</artifactId>
 				<version>2.5.2</version>
 			</dependency>
+			<dependency>
+				<groupId>ch.globaz</groupId>
+				<artifactId>list-adapt-rentes</artifactId>
+				<version>${list-adapt-rentes.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
