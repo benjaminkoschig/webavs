@@ -597,12 +597,11 @@
 
 
 	<dependencies>
-
-		<!--<dependency>
+		<dependency>
 			<groupId>ch.globaz.rentes</groupId>
 			<artifactId>rentes-groovy</artifactId>
 			<version>1.0.0</version>
-		</dependency>-->
+		</dependency>
 
 		<dependency>
 			<groupId>ch.globaz</groupId>
