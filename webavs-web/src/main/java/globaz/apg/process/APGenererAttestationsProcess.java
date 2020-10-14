@@ -279,11 +279,13 @@ public class APGenererAttestationsProcess extends BProcess {
                     isRestitution = true;
                 }
 
-                if (((Double.parseDouble(totalMontantAPG) != 0) && ((!totalMontantCotisations.isZero()) || (!totalMontantImpotSource
-                        .isZero())))
+                if (((Double.parseDouble(totalMontantAPG) != 0) &&
+                        ((!totalMontantCotisations.isZero())
+                                || (!totalMontantImpotSource.isZero())
+                                || APTypeDePrestation.LAMAT.isCodeSystemEqual(prest.getGenre())))
                         && ((((!isRestitution) && (totalMontantCotisations.isNegative())) || ((isRestitution) && (totalMontantCotisations
                                 .isPositive()))) || ((!isRestitution) && (totalMontantImpotSource.isNegative())) || ((isRestitution) && (totalMontantImpotSource
-                                .isPositive())))) {
+                                .isPositive()) || APTypeDePrestation.LAMAT.isCodeSystemEqual(prest.getGenre())))) {
 
                     // Création de la clé
                     Key k = new Key();
@@ -306,7 +308,7 @@ public class APGenererAttestationsProcess extends BProcess {
                         ai.montantTotal = ai.montantTotal.add(new BigDecimal(montantTotal.toString()));
                         ai.montantVentilations = ai.montantVentilations.add(new BigDecimal(montantVentilation
                                 .toString()));
-                        ai.isMaternite = IAPDroitMaternite.CS_REVISION_MATERNITE_2005.equals(prest.getNoRevision());
+                        ai.isMaternite = IPRDemande.CS_TYPE_MATERNITE.equals(typePrestation);
 
                         ai.idsRPVentilations = idsVentilation;
                         // Comme la clé est inexistante, on crée la liste
@@ -361,8 +363,7 @@ public class APGenererAttestationsProcess extends BProcess {
                                 ai.montantTotal = ai.montantTotal.add(new BigDecimal(montantTotal.toString()));
                                 ai.montantVentilations = ai.montantVentilations.add(new BigDecimal(montantVentilation
                                         .toString()));
-                                ai.isMaternite = IAPDroitMaternite.CS_REVISION_MATERNITE_2005.equals(prest
-                                        .getNoRevision());
+                                ai.isMaternite = IPRDemande.CS_TYPE_MATERNITE.equals(typePrestation);
 
                                 // Pas besoin de l'ajouter dans la liste, car
                                 // modifié en temps réel !
@@ -389,8 +390,7 @@ public class APGenererAttestationsProcess extends BProcess {
                             ai1.montantTotal = ai1.montantTotal.add(new BigDecimal(montantTotal.toString()));
                             ai1.montantVentilations = ai1.montantVentilations.add(new BigDecimal(montantVentilation
                                     .toString()));
-                            ai1.isMaternite = IAPDroitMaternite.CS_REVISION_MATERNITE_2005
-                                    .equals(prest.getNoRevision());
+                            ai1.isMaternite = IPRDemande.CS_TYPE_MATERNITE.equals(typePrestation);
                             ai1.idsRPVentilations = idsVentilation;
                             list.add(ai1);
 
@@ -414,7 +414,6 @@ public class APGenererAttestationsProcess extends BProcess {
                 setEMailObject(getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_3") + " " + getAnnee());
 
             }
-
         }
 
         APAttestations attestations = new APAttestations(getSession());
