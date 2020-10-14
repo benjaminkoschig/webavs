@@ -58,7 +58,7 @@ public class PCGroupeRevenusHandler extends PCGroupeAbstractHandler {
     // Constante PAR CATEGORIE
     String[] REV_IMPUTATION_FORTUNE_NETTE = {IPCValeursPlanCalcul.CLE_REVEN_IMP_FORT_TOTAL};
 
-    String[] REV_SUBSIDE_ASSURANCE_MALADIE = { IPCValeursPlanCalcul.CLE_REVEN_SUBSIDE_ASSURANCE_MALADIE_TOTAL };
+    String[] REV_SUBSIDE_ASSURANCE_MALADIE = {IPCValeursPlanCalcul.CLE_REVEN_SUBSIDE_ASSURANCE_MALADIE_TOTAL};
 
     String[] REV_INTERET_FORTUNE_DESSAISI = {IPCValeursPlanCalcul.CLE_REVEN_INTDESFO_TOTAL};
     String[] REV_INTERET_FORTUNE_MOBILIERE = {IPCValeursPlanCalcul.CLE_REVEN_INTFORMO_TOTAL,
@@ -465,9 +465,9 @@ public class PCGroupeRevenusHandler extends PCGroupeAbstractHandler {
                             }
                         }
                     }
-                } else if (isReforme()){
+                } else if (isReforme()) {
                     // dans le cas de la réforme, on affiche systématiquement la ligne de revenu pris en compte.
-                    if (csMembre.equals(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE) && valeurForfait !=0) {
+                    if (csMembre.equals(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE) && valeurForfait != 0) {
                         createLigneTotalGroupe(csMembre, legendeMembre, valMembre);
                     }
                 }
@@ -507,8 +507,8 @@ public class PCGroupeRevenusHandler extends PCGroupeAbstractHandler {
 
         String derniereLigne = getDerniereLigne(DERNIERE_LIGNE_REVENU_ACTIVITE_LUCRATIVE_CONJOINT);
 
-        // SI valeur diff de 0
-        if (val != 0f) {
+        // SI valeur diff de 0 ou dernière ligne diff de 0 on affiche le revenu
+        if (val != 0f || getValeur(derniereLigne) != 0) {
             // iteration sur les membres¨
             boolean hasRevenuPriviligie = false;
             for (int cpt = 1; cpt < tabCategorie.length; cpt++) {
@@ -570,10 +570,16 @@ public class PCGroupeRevenusHandler extends PCGroupeAbstractHandler {
                             }
                         }
                     }
+                } else {
+                    // dans le cas de la réforme, on affiche systématiquement la ligne de revenu pris en compte.
+                    if (csMembre.equals(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE_CONJOINT) && getValeur(derniereLigne) != 0) {
+                        createLigneTotalGroupe(csMembre, legendeMembre, valMembre);
+                    }
                 }
             }
         }
     }
+
 
     /**
      * Traitement de la categorie revenu activite lucrative pour les enfants
@@ -588,8 +594,8 @@ public class PCGroupeRevenusHandler extends PCGroupeAbstractHandler {
 
         String derniereLigne = getDerniereLigne(DERNIERE_LIGNE_REVENU_ACTIVITE_LUCRATIVE_ENFANT);
 
-        // SI valeur diff de 0
-        if (val != 0f) {
+        // SI valeur diff de 0 ou dernière ligne diff de 0 on affiche le revenu
+        if (val != 0f || getValeur(derniereLigne) != 0) {
             // iteration sur les membres¨
             boolean hasRevenuPriviligie = false;
             for (int cpt = 1; cpt < tabCategorie.length; cpt++) {
@@ -650,6 +656,11 @@ public class PCGroupeRevenusHandler extends PCGroupeAbstractHandler {
                                 }
                             }
                         }
+                    }
+                } else {
+                    // dans le cas de la réforme, on affiche systématiquement la ligne de revenu pris en compte.
+                    if (csMembre.equals(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE_ENFANT) && getValeur(derniereLigne) != 0) {
+                        createLigneTotalGroupe(csMembre, legendeMembre, valMembre);
                     }
                 }
             }
