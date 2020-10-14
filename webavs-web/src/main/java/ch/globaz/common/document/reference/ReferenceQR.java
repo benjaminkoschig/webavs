@@ -177,7 +177,7 @@ public class ReferenceQR extends AbstractReference {
             parameters.put(COParameter.P_INFO_ADD, (communicationNonStructuree + RETOUR_LIGNE + infoFacture).trim());
         }
 
-        parameters.put(FWIImportParametre.PARAM_REFERENCE, getReference());
+        parameters.put(FWIImportParametre.PARAM_REFERENCE, getReferenceWithoutSpace());
         parameters.put(COParameter.P_PARAM_1, pa1Param);
         parameters.put(COParameter.P_PARAM_2, pa2Param);
         if (!COMBINE.equals(creAdressTyp)) {
@@ -218,7 +218,11 @@ public class ReferenceQR extends AbstractReference {
         builder.append(crefNumMaisonOuLigneAdresse2.replace(CHAR_FIN_LIGNE, " ").replace(CHAR_FIN_LIGNE_DEB, " ")).append(CHAR_FIN_LIGNE);
         builder.append((Objects.equals(crefAdressTyp, COMBINE) ? StringUtils.EMPTY : crefCodePostal)).append(CHAR_FIN_LIGNE);
         builder.append((Objects.equals(crefAdressTyp, COMBINE) ? StringUtils.EMPTY : crefLieu)).append(CHAR_FIN_LIGNE);
-        builder.append(Objects.isNull(getCrefPays())? CODE_PAYS_DEFAUT : getCrefPays()).append(CHAR_FIN_LIGNE);
+        if (crefNom.isEmpty()) {
+            builder.append(CHAR_FIN_LIGNE);
+        } else {
+            builder.append(Objects.isNull(getCrefPays())? CODE_PAYS_DEFAUT : getCrefPays()).append(CHAR_FIN_LIGNE);
+        }
 
         // Débiteur final
         if (qrNeutre) {
@@ -458,6 +462,10 @@ public class ReferenceQR extends AbstractReference {
 
     public void setCompte(String compte) {
         this.compte = compte;
+    }
+
+    public String getReferenceWithoutSpace() {
+        return reference.replaceAll("\\s", "");
     }
 
     public String getReference() {
@@ -748,7 +756,7 @@ public class ReferenceQR extends AbstractReference {
             } else this.debfNumMaisonOuLigneAdresse2 = debfNumMaisonOuLigneAdresse2;
         } else {
             int indexDepart = 0;
-            if (debfNumMaisonOuLigneAdresse2.indexOf("\n") != -1 && debfNumMaisonOuLigneAdresse2.indexOf("\n") == 0 && debfNumMaisonOuLigneAdresse2.length()>2) {
+            if (debfNumMaisonOuLigneAdresse2.indexOf('\n') != -1 && debfNumMaisonOuLigneAdresse2.indexOf('\n') == 0 && debfNumMaisonOuLigneAdresse2.length()>2) {
                 indexDepart = 1;
             }
 
