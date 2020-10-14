@@ -597,11 +597,11 @@
 
 
 	<dependencies>
-		<dependency>
+		<!--<dependency>
 			<groupId>ch.globaz</groupId>
 			<artifactId>list-adapt-rentes</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
-		</dependency>
+		</dependency>-->
 
 		<dependency>
 			<groupId>ch.globaz</groupId>
