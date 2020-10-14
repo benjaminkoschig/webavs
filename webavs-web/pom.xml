@@ -598,9 +598,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>ch.globaz.rentes</groupId>
-			<artifactId>rentes-groovy</artifactId>
-			<version>1.0.0</version>
+			<groupId>ch.globaz</groupId>
+			<artifactId>list-adapt-rentes</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
