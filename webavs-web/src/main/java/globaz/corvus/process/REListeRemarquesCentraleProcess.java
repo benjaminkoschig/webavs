@@ -1,5 +1,6 @@
 package globaz.corvus.process;
 
+import ch.globaz.MainRentes;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.GlobazJobQueue;
@@ -44,7 +45,7 @@ public class REListeRemarquesCentraleProcess extends BProcess {
 
             // Appel a un jar externe pour générer les fichiers de remarques de la centrale
             String[] arguments = {JadePersistenceUtil.getDbSchema(), PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(getMoisAnnee()), Jade.getInstance().getHomeDir() + "work/"};
-            /*MainRentes.main(getSession().getCurrentThreadTransaction().getConnection(), arguments);
+            MainRentes.main(getSession().getCurrentThreadTransaction().getConnection(), arguments);
 
             if (MainRentes.isDocumentAdaptationManuelleGenerated) {
                 JadePublishDocumentInfo info1 = createDocumentInfo();
@@ -66,7 +67,7 @@ public class REListeRemarquesCentraleProcess extends BProcess {
 
                 // Envoi email avec pdf ListeChangementNSS en fichier joint
                 JadeSmtpClient.getInstance().sendMail(getSession().getUserEMail(), getEMailObject(), this.getMemoryLog().getMessagesInHtml(), new String[]{MainRentes.EMPLACEMENT_DOCUMENT_CHANGEMENT_NSS});
-            }*/
+            }
 
             return true;
 

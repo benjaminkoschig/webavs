@@ -160,9 +160,13 @@ public class PRACORConst {
     // CS = CODES SYSTEMES DU FRAMEWORK
     public static final String CS_HOMME = "516001";
     private static final String CS_LPART_DISSOUS = "515008";
+    private static final String CS_LPART_DISSOUS_ADDITIONEL = "19170007";
     private static final String CS_LPART_DISSOUS_DECES = "515009";
+    private static final String CS_LPART_DISSOUS_DECES_ADDITIONEL = "19170008";
     private static final String CS_LPART_ENREGISTRE = "515007";
+    private static final String CS_LPART_ENREGISTRE_ADDITIONEL = "19170006";
     private static final String CS_LPART_SEPARE_DE_FAIT = "515010";
+    private static final String CS_LPART_SEPARE_DE_FAIT_ADDITIONEL = "19170009";
     private static final String CS_MARIE = "515002";
     private static final String CS_SEPARE = "515005";
     private static final String CS_SEPARE_DE_FAIT = "515006";
@@ -645,13 +649,13 @@ public class PRACORConst {
             return PRACORConst.CA_SEPARE;
         } else if (PRACORConst.CS_SEPARE_DE_FAIT.equals(csEtatCivil)) {
             return PRACORConst.CA_MARIE;
-        } else if (PRACORConst.CS_LPART_DISSOUS.equals(csEtatCivil)) {
+        } else if (PRACORConst.CS_LPART_DISSOUS.equals(csEtatCivil) || PRACORConst.CS_LPART_DISSOUS_ADDITIONEL.equals(csEtatCivil)) {
             return PRACORConst.CA_LPART_DISSOUS;
-        } else if (PRACORConst.CS_LPART_DISSOUS_DECES.equals(csEtatCivil)) {
+        } else if (PRACORConst.CS_LPART_DISSOUS_DECES.equals(csEtatCivil) || PRACORConst.CS_LPART_DISSOUS_DECES_ADDITIONEL.equals(csEtatCivil)) {
             return PRACORConst.CA_LPART_DECES;
-        } else if (PRACORConst.CS_LPART_ENREGISTRE.equals(csEtatCivil)) {
+        } else if (PRACORConst.CS_LPART_ENREGISTRE.equals(csEtatCivil) || PRACORConst.CS_LPART_ENREGISTRE_ADDITIONEL.equals(csEtatCivil)) {
             return PRACORConst.CA_LPART_ENREGISTRE;
-        } else if (PRACORConst.CS_LPART_SEPARE_DE_FAIT.equals(csEtatCivil)) {
+        } else if (PRACORConst.CS_LPART_SEPARE_DE_FAIT.equals(csEtatCivil) || PRACORConst.CS_LPART_SEPARE_DE_FAIT_ADDITIONEL.equals(csEtatCivil)) {
             return PRACORConst.CA_LPART_ENREGISTRE;
         } else {
             return PRACORConst.CA_CELIBATAIRE;
