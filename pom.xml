@@ -219,11 +219,6 @@
 		<dependencies>
 			<dependency>
 				<groupId>ch.globaz</groupId>
-				<artifactId>list-adapt-rentes</artifactId>
-				<version>${list-adapt-rentes.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>ch.globaz</groupId>
 				<artifactId>mercato.notification</artifactId>
 				<version>${ch.globaz.mercato.notification.version}</version>
 			</dependency>
@@ -644,11 +639,12 @@
 				<artifactId>zip4j</artifactId>
 				<version>2.5.2</version>
 			</dependency>
-			<!--<dependency>
+
+			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>list-adapt-rentes</artifactId>
 				<version>${list-adapt-rentes.version}</version>
-			</dependency>-->
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
