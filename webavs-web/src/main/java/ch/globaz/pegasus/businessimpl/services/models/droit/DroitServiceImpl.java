@@ -4,11 +4,13 @@ import ch.globaz.pegasus.business.constantes.*;
 import ch.globaz.pegasus.business.exceptions.models.assurancemaladie.PrimeAssuranceMaladieException;
 import ch.globaz.pegasus.business.exceptions.models.assurancemaladie.SubsideAssuranceMaladieException;
 import ch.globaz.pegasus.business.exceptions.models.habitat.SejourMoisPartielHomeException;
+import ch.globaz.pegasus.business.exceptions.models.home.HomeException;
 import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.*;
 import ch.globaz.pegasus.business.models.assurancemaladie.*;
 import ch.globaz.pegasus.business.models.calcul.CalculPcaReplace;
 import ch.globaz.pegasus.business.models.creancier.*;
 import ch.globaz.pegasus.business.models.habitat.*;
+import ch.globaz.pegasus.business.models.home.SimpleHomeSearch;
 import ch.globaz.pegasus.business.models.pcaccordee.PcaRetenue;
 import ch.globaz.pegasus.business.models.pcaccordee.PcaRetenueSearch;
 import ch.globaz.pegasus.business.models.revenusdepenses.*;
@@ -4376,19 +4378,19 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
             try {
                 dateProchainPaiement = PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt();
                 for (JadeAbstractModel absDonnee : pcaRetenueSearch.getSearchResults()) {
-                    PcaRetenue retenue = (PcaRetenue) absDonnee;
+                    PcaRetenue retenueAncienne = (PcaRetenue) absDonnee;
                     CreanceAccordeeSearch creancierSearch = new CreanceAccordeeSearch();
-                    creancierSearch.setForIdPCAccordee(retenue.getIdPCAccordee());
+                    creancierSearch.setForIdPCAccordee(retenueAncienne.getIdPCAccordee());
                     creancierSearch.setForIsHome("true");
                     int nbreResult = PegasusServiceLocator.getCreanceAccordeeService().count(creancierSearch);
-                    if (retenue.getSimpleRetenue().getDateFinRetenue().equals(dateProchainPaiement)) {
-                        retenue.getSimpleRetenue().setDateFinRetenue("");
-                        PegasusServiceLocator.getRetenueService().update(retenue);
+                    if (retenueAncienne.getSimpleRetenue().getDateFinRetenue().equals(dateProchainPaiement)) {
+                        retenueAncienne.getSimpleRetenue().setDateFinRetenue("");
+                        PegasusServiceLocator.getRetenueService().update(retenueAncienne);
                     }
 
                     if(nbreResult==0){
                         SimpleCreancierHystoriqueSearch simpleCreancierHystoriqueSearch = new SimpleCreancierHystoriqueSearch();
-                        simpleCreancierHystoriqueSearch.setForIdPcAccordee(retenue.getIdPCAccordee());
+                        simpleCreancierHystoriqueSearch.setForIdPcAccordee(retenueAncienne.getIdPCAccordee());
                         simpleCreancierHystoriqueSearch = PegasusImplServiceLocator.getSimpleCreancierHystoriqueService().search(simpleCreancierHystoriqueSearch);
                         for(JadeAbstractModel model : simpleCreancierHystoriqueSearch.getSearchResults()){
                             SimpleCreancierHystorique simpleCreancierHystorique = (SimpleCreancierHystorique) model;

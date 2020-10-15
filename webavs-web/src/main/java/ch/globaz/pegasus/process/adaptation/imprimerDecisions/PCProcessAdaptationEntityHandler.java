@@ -1,5 +1,7 @@
 package ch.globaz.pegasus.process.adaptation.imprimerDecisions;
 
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeListUtil;
 import globaz.jade.client.util.JadeListUtil.Key;
@@ -72,12 +74,13 @@ public class PCProcessAdaptationEntityHandler implements JadeProcessEntityInterf
     }
 
     private CommunicationAdaptationElement createConteneurAndInitialize(String idTiersAyantDroit, Demande demande,
-            boolean isInTypeChambreNonMedicalise) throws JadePersistenceException, DemandeException,
+                                                                        boolean isInTypeChambreNonMedicalise, String idDecision) throws JadePersistenceException, DemandeException,
             JadeApplicationServiceNotAvailableException, AdaptationException {
         CommunicationAdaptationElement current;
         current = new CommunicationAdaptationElement();
         current.setIdGestionnaire(demande.getSimpleDemande().getIdGestionnaire());
         current.setInTypeChambreNonMedicalise(isInTypeChambreNonMedicalise);
+        current.setIdDecision(idDecision);
         initialiseConteneurs(current, idTiersAyantDroit);
         globalContainer.add(current);
         return current;
@@ -437,11 +440,11 @@ public class PCProcessAdaptationEntityHandler implements JadeProcessEntityInterf
         CommunicationAdaptationElement current = null;
         CommunicationAdaptationElement currentConjoint = null;
 
-        current = createConteneurAndInitialize(idTiersAyantDroit, demande, isInChambreNoMedicalise(pcaRequerant));
+        current = createConteneurAndInitialize(idTiersAyantDroit, demande, isInChambreNoMedicalise(pcaRequerant),pcaRequerant.getIdDecision());
 
         if (!JadeStringUtil.isBlankOrZero(idDecisionHeaderConjoint)) {
             currentConjoint = createConteneurAndInitialize(idTiersConjoint, demande,
-                    isInChambreNoMedicalise(pcaConjoint));
+                    isInChambreNoMedicalise(pcaConjoint),pcaConjoint.getIdDecision());
         }
 
         if (current != null) {

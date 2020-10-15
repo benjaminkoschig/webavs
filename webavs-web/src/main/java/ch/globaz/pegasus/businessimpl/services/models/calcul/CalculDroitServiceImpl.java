@@ -652,9 +652,9 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                             retenue = (PcaRetenue) JadePersistenceUtil.clone(mapOldHomeRetenues.get(oldKey));
                         } catch (JadeCloneModelException e) {
                             throw new PCAccordeeException("Unable to clone this PCA id: "
-                                    + simplePCAccordee.getIdPCAccordee());
+                                    + donneeInterneHomeVersementNew.getIdPca());
                         }
-                        retenue.setIdPCAccordee(simplePCAccordee.getIdPCAccordee());
+                        retenue.setIdPCAccordee(donneeInterneHomeVersementNew.getIdPca());
                         retenue.getSimpleRetenue().setDateDebutRetenue(
                                 PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt());
                         PegasusServiceLocator.getRetenueService().createWithOutCheck(retenue);

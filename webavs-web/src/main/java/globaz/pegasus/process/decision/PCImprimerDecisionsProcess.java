@@ -47,6 +47,8 @@ public class PCImprimerDecisionsProcess extends PCAbstractJob {
     private Boolean isForFtpValid = Boolean.FALSE;
 
     private Boolean isForLot = Boolean.FALSE;
+    private Boolean isFromAdaptation = Boolean.FALSE;
+    private String idProcessusPC = null;
 
     /* email gestionnaire */
     private String mailGest = null;
@@ -78,9 +80,7 @@ public class PCImprimerDecisionsProcess extends PCAbstractJob {
         }
     }
 
-    private void generateDecisionsForLot() throws PrestationException, DecisionException,
-            JadeApplicationServiceNotAvailableException, JadePersistenceException, LotException, Exception,
-            JadeServiceLocatorException, JadeServiceActivatorException, JadeClassCastException {
+    private void generateDecisionsForLot() throws Exception {
         DACGedHandler globalLotGedHandler = DACGedHandler.getInstanceForTraitementPourLot(idLot, persref, getSession(),
                 idDecisionsToPrint);
         // globalLotGedHandler.setLot(CorvusServiceLocator.getLotService().read(this.idLot));
@@ -173,7 +173,21 @@ public class PCImprimerDecisionsProcess extends PCAbstractJob {
             // instance du decision builder
             dec = PegasusServiceLocator.getDecisionBuilderProvderService().getBuilderFor(decisionType);
 
+
+
             /** Impression ftp validation et prevalidation automatique */
+            if(isFromAdaptation){
+                publisherHandler = DACPublishHandler.getInstanceForAdaptationAnnuel(idDecisionsToPrint, mailGest, dateDoc,
+                        persref, isForFtp, forGed,isFromAdaptation,idProcessusPC);
+
+                dec.build(publisherHandler);
+                // Lancement des task d 'impression, création du document fusionné
+                this.createDocuments(publisherHandler.getContainerPublication());
+
+                // Création des décisions
+                createDecisionsByLot(publisherHandler);
+
+            }else
             if (isForFtp) {
                 publisherHandler = DACPublishHandler.getInstanceForFTPPrintOnly(idDecisionsToPrint, mailGest, dateDoc,
                         persref);
@@ -296,5 +310,18 @@ public class PCImprimerDecisionsProcess extends PCAbstractJob {
     public void setPersref(String persref) {
         this.persref = persref;
     }
+    public Boolean getFromAdaptation() {
+        return isFromAdaptation;
+    }
 
+    public void setFromAdaptation(Boolean fromAdaptation) {
+        isFromAdaptation = fromAdaptation;
+    }
+    public String getIdProcessusPC() {
+        return idProcessusPC;
+    }
+
+    public void setIdProcessusPC(String idProcessusPC) {
+        this.idProcessusPC = idProcessusPC;
+    }
 }

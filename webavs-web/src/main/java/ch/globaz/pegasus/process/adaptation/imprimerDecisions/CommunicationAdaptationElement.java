@@ -56,6 +56,8 @@ public class CommunicationAdaptationElement implements Serializable {
 
     private String idTiersAyantDroit = null;
 
+    private String idDecision = null;
+
     private boolean isHome = false;
 
     private boolean isInTypeChambreNonMedicalise = false;
@@ -324,5 +326,12 @@ public class CommunicationAdaptationElement implements Serializable {
 
     public void setTotalMensuelPrecedent(String totalMensuelPrecedent) {
         this.totalMensuelPrecedent = totalMensuelPrecedent;
+    }
+    public String getIdDecision() {
+        return idDecision;
+    }
+
+    public void setIdDecision(String idDecision) {
+        this.idDecision = idDecision;
     }
 }

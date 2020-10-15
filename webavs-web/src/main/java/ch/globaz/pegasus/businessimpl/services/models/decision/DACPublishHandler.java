@@ -51,6 +51,20 @@ public class DACPublishHandler {
         handler.setForGed(false);
         return handler;
     }
+    public static DACPublishHandler getInstanceForAdaptationAnnuel(ArrayList<String> decisionsId, String mailGest,
+                                                                String dateDoc, String persRef, Boolean isForFtp, Boolean includeGed, Boolean isFromAdaptation,String idProcessPC) {
+
+        DACPublishHandler handler = new DACPublishHandler();
+        handler.setDecisionsId(decisionsId);
+        handler.setMailGest(mailGest);
+        handler.setDateDoc(dateDoc);
+        handler.setPersref(persRef);
+        handler.setIsForFtp(isForFtp);
+        handler.setForGed(includeGed);
+        handler.setFromAdaptation(isFromAdaptation);
+        handler.setIdProcessusPC(idProcessPC);
+        return handler;
+    }
 
     private DACGedHandler gedHandler = null;
 
@@ -80,6 +94,10 @@ public class DACPublishHandler {
 
     /* ou id seul pour impression seul */
     private String uniqueDecisionId = null;
+
+    private String idProcessusPC = null;
+
+    private Boolean isFromAdaptation = false;
 
     private JadePrintDocumentContainer containerPublication = null;
     private ArrayList<JadePrintDocumentContainer> conrtainersGed = new ArrayList<JadePrintDocumentContainer>();
@@ -163,4 +181,19 @@ public class DACPublishHandler {
     public void addGedContainer(JadePrintDocumentContainer containerGed) {
         conrtainersGed.add(containerGed);
     }
+    public String getIdProcessusPC() {
+        return idProcessusPC;
+    }
+
+    public void setIdProcessusPC(String idProcessusPC) {
+        this.idProcessusPC = idProcessusPC;
+    }
+    public Boolean getFromAdaptation() {
+        return isFromAdaptation;
+    }
+
+    public void setFromAdaptation(Boolean fromAdaptation) {
+        isFromAdaptation = fromAdaptation;
+    }
+
 }

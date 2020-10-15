@@ -28,6 +28,7 @@ public class PCAccordeeAdaptationImpression extends JadeComplexModel {
     private ArrayList<SimplePlanDeCalcul> planCalculs = null;
     private String prenomAyantDroit = null;
     private String prenomConjoint = null;
+    private String idDecision = null;
 
     public PCAccordeeAdaptationImpression() {
         super();
@@ -219,7 +220,13 @@ public class PCAccordeeAdaptationImpression extends JadeComplexModel {
     public void setPrenomConjoint(String prenomConjoint) {
         this.prenomConjoint = prenomConjoint;
     }
+    public String getIdDecision() {
+        return idDecision;
+    }
 
+    public void setIdDecision(String idDecision) {
+        this.idDecision = idDecision;
+    }
     /*
      * (non-Javadoc)
      * 

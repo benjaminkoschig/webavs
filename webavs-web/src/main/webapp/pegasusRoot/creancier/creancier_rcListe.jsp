@@ -44,4 +44,3 @@
 	<%-- tpl:insert attribute="zoneTableFooter" --%>
 	<%-- /tpl:insert --%>
 <%@ include file="/theme/list/tableEnd.jspf" %>
-	

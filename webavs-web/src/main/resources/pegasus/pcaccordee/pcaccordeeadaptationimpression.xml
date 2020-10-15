@@ -20,7 +20,7 @@
 			<select-field name="idVersionDroit" field-ref="simpleVersionDroit.idVersionDroit" />
 			<select-field name="idTiers" field-ref="simplePrestationsAccordees.idTiersBeneficiaire" />
 			<select-field name="idTiersConjoint" field-ref="simplePrestationsAccordeesConjoint.idTiersBeneficiaire" />
-			
+			<select-field name="idDecision" field-ref="simpleDecisionApresCalcul.idDecisionApresCalcul"/>
 		</select-fields>
 				
 		<linked-model name="simpleDecisionApresCalcul" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionApresCalcul" join-type="INNER" select-fields="false">

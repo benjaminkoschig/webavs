@@ -36,6 +36,7 @@ import ch.globaz.pegasus.businessimpl.utils.topazbuilder.util.PegasusPubInfoBuil
 public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implements DecisionBuilder {
 
     private final static String DAC_DOC_SUBJECT = "Décision(s) n° ";
+    private final static String DAC_DOC_SUBJECT_ADAPTATION = "Adaptation annuelle - Listes des décision - n° ";
     public final static String IS_FTP_PREVALID_AUTO = "isDacPreValidFtpAuto";
     public final static String IS_FTP_VALID_AUTO = "isDacValidFtpAuto";
     private final static String IS_VALID = "isDecisionValidee";
@@ -51,7 +52,6 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
     // private ArrayList<String> decisionsId = null;
     private HashMap<String, DecisionApresCalculOO> listeDAC = new HashMap<String, DecisionApresCalculOO>();
     private HashMap<String, TupleDonneeRapport> listePcal = new HashMap<String, TupleDonneeRapport>();
-
     private String persRef = null;
 
     JadePublishDocumentInfo pubInfosGed = null;
@@ -215,11 +215,18 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
      * @throws Exception
      */
     public JadePublishDocumentInfo getBasePubInfo(JadePublishDocumentInfo toMerge) throws Exception {
+        if(handlerGlobal.getFromAdaptation()){
+            toMerge.setDocumentTitle(DecisionApresCalculBuilder.DAC_DOC_SUBJECT_ADAPTATION
+                    + handlerGlobal.getIdProcessusPC());
+            toMerge.setDocumentSubject(DecisionApresCalculBuilder.DAC_DOC_SUBJECT_ADAPTATION
+                    + handlerGlobal.getIdProcessusPC());
+        }else{
+            toMerge.setDocumentTitle(DecisionApresCalculBuilder.DAC_DOC_SUBJECT
+                    + getDecisionsSubjects(handlerGlobal.getDecisionsId()));
+            toMerge.setDocumentSubject(DecisionApresCalculBuilder.DAC_DOC_SUBJECT
+                    + getDecisionsSubjects(handlerGlobal.getDecisionsId()));
+        }
 
-        toMerge.setDocumentTitle(DecisionApresCalculBuilder.DAC_DOC_SUBJECT
-                + getDecisionsSubjects(handlerGlobal.getDecisionsId()));
-        toMerge.setDocumentSubject(DecisionApresCalculBuilder.DAC_DOC_SUBJECT
-                + getDecisionsSubjects(handlerGlobal.getDecisionsId()));
         toMerge.setOwnerEmail(handlerGlobal.getMailGest());
         toMerge.setPublishProperty(JadePublishDocumentInfo.MAIL_TO, handlerGlobal.getMailGest());
         toMerge.setDocumentDate(handlerGlobal.getDateDoc());
@@ -416,5 +423,6 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
             containerGed.setMergedDocDestination(pubInfosGlobal);
         }
     }
+
 
 }
