@@ -26,7 +26,7 @@ public class StrategieFinalFortuneNette implements StrategieCalculFinalisation {
 
         somme -= donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_AUT_DETT_TOTAL);
 
-        donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL_AVANT_FRACTION, somme));
+        donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL_AVANT_FRACTION, somme - montantHabitationPrincipal(donnee)));
 
         final float MONTANT_DEDUCTION_CELIBATAIRE;
         final float MONTANT_DEDUCTION_COUPLE;
@@ -100,6 +100,18 @@ public class StrategieFinalFortuneNette implements StrategieCalculFinalisation {
             return nbPersonnesImmoPrincipal > 0;
         }
         return false;
+    }
+
+    private float montantHabitationPrincipal(TupleDonneeRapport donnee) {
+        TupleDonneeRapport tupleHabitatPrincipal = donnee.getEnfants().get(
+                IPCValeursPlanCalcul.CLE_INTER_HABITATION_PRINCIPALE);
+        boolean immoPrincipal = donnee.containsValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_FOR_IMMO_BIENS_IMMO_HABIT_PRINCIPALE);
+        if (tupleHabitatPrincipal != null && immoPrincipal) {
+            float montant = tupleHabitatPrincipal
+                    .getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_FORTUNE_IMMOBILIER_TOTAL_PRINCIPAL);
+                return montant;
+        }
+        return 0f;
     }
 
 }
