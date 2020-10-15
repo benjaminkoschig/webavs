@@ -279,13 +279,11 @@ public class APGenererAttestationsProcess extends BProcess {
                     isRestitution = true;
                 }
 
-                if (((Double.parseDouble(totalMontantAPG) != 0) &&
-                        ((!totalMontantCotisations.isZero())
-                                || (!totalMontantImpotSource.isZero())
-                                || APTypeDePrestation.LAMAT.isCodeSystemEqual(prest.getGenre())))
+                if (((Double.parseDouble(totalMontantAPG) != 0) && ((!totalMontantCotisations.isZero()) || (!totalMontantImpotSource
+                        .isZero())))
                         && ((((!isRestitution) && (totalMontantCotisations.isNegative())) || ((isRestitution) && (totalMontantCotisations
-                                .isPositive()))) || ((!isRestitution) && (totalMontantImpotSource.isNegative())) || ((isRestitution) && (totalMontantImpotSource
-                                .isPositive()) || APTypeDePrestation.LAMAT.isCodeSystemEqual(prest.getGenre())))) {
+                        .isPositive()))) || ((!isRestitution) && (totalMontantImpotSource.isNegative())) || ((isRestitution) && (totalMontantImpotSource
+                        .isPositive())))) {
 
                     // Création de la clé
                     Key k = new Key();
