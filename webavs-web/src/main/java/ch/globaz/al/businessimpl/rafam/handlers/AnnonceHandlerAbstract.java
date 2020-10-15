@@ -1,6 +1,7 @@
 package ch.globaz.al.businessimpl.rafam.handlers;
 
 import ch.globaz.al.business.constantes.enumerations.*;
+import ch.globaz.al.businessimpl.rafam.ContextAnnonceRafamDelegue;
 import ch.globaz.common.domaine.Periode;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.exception.JadeApplicationException;
@@ -213,18 +214,25 @@ public abstract class AnnonceHandlerAbstract {
      * C'est le cas s'il n'y pas encore d'annonce de ce type ou si la dernière annonce active est une annulation 68c
      *
      * @return true s'il y a nécessité de créer une annonce de type création 68a
-     * @throws JadePersistenceException
-     * @throws JadeApplicationException
      */
-    private boolean isCreation() throws JadePersistenceException, JadeApplicationException {
-        AnnonceRafamModel annonce;
-        if(RafamFamilyAllowanceType.ADI.equals(context.getType())){
-            Periode periode = new Periode(context.getDroit().getDroitModel().getDebutDroit(), context.getDroit().getDroitModel().getFinDroitForcee());
-            annonce = ALImplServiceLocator.getAnnoncesRafamSearchService().getLastActive(context.getDroit().getId(), context.getType(), periode);
-        } else {
-            annonce = ALImplServiceLocator.getAnnoncesRafamSearchService().getLastActive(context.getDroit().getId(), context.getType());
+    private boolean isCreation() {
+        try {
+            // Ne doit pas concerner pas les employeurs délégués, donc on fait comme avant -> création
+            if (context instanceof ContextAnnonceRafamDelegue || context.getDroit() == null) {
+                return true;
+            }
+            AnnonceRafamModel annonce;
+            if (RafamFamilyAllowanceType.ADI.equals(context.getType())) {
+                Periode periode = new Periode(context.getDroit().getDroitModel().getDebutDroit(), context.getDroit().getDroitModel().getFinDroitForcee());
+                annonce = ALImplServiceLocator.getAnnoncesRafamSearchService().getLastActive(context.getDroit().getId(), context.getType(), periode);
+            } else {
+                annonce = ALImplServiceLocator.getAnnoncesRafamSearchService().getLastActive(context.getDroit().getId(), context.getType());
+            }
+            return annonce.isNew() || RafamTypeAnnonce._68C_ANNULATION.equals(RafamTypeAnnonce.getRafamTypeAnnonce(annonce.getTypeAnnonce()));
+        }catch (Exception e){
+            // Blindage du code -> suite à une regréssion RAFAM ED, retourne true afin d'exécuter le processus "normalement"
+            return true;
         }
-        return annonce.isNew() || RafamTypeAnnonce._68C_ANNULATION.equals(RafamTypeAnnonce.getRafamTypeAnnonce(annonce.getTypeAnnonce()));
     }
 
     protected void updateNSSAnnonces() throws JadeApplicationException, JadePersistenceException {
