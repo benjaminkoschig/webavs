@@ -979,7 +979,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
             case REFUS:
                 amaltexte = babelDoc.getTextes(5).getTexte(29).getDescription();
-                amalTexteReforme = babelDoc.getTextes(5).getTexte(30).getDescription();
+                amalTexteReforme = amaltexte;
                 break;
 
             default:
