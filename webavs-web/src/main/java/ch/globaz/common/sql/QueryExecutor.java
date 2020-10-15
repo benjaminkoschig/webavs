@@ -397,7 +397,7 @@ public class QueryExecutor {
                 results.add(row);
 
                 for (int i = 1; i <= columns; i++) {
-                    row.put(md.getColumnName(i), resultSet.getObject(i));
+                    row.put(md.getColumnLabel(i), resultSet.getObject(i));
                 }
             }
 
