@@ -88,6 +88,24 @@ public class REPmtMensuel {
 
     /**
      * @param session la session
+     * @return La date dernier pmt mensuel plus 1 mois, au format mm.aaaa
+     */
+    public static String getDateDernierPmtPlusUnMois(BSession session) {
+        String dernierPaiement = REPmtMensuel.getDateDernierPmt(session);
+
+        JACalendar cal = new JACalendarGregorian();
+        String dernierPaiementMoinsUnMois;
+
+        try {
+            dernierPaiementMoinsUnMois = cal.addMonths("01." + dernierPaiement, 1);
+            return PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(dernierPaiementMoinsUnMois);
+        } catch (JAException e) {
+            return "01.1970";
+        }
+    }
+
+    /**
+     * @param session la session
      * @return La date dernier pmt mensuel moins 1 mois, au format mm.aaaa
      */
     public static String getDateDernierPmtMoinsUnMois(BSession session) {
