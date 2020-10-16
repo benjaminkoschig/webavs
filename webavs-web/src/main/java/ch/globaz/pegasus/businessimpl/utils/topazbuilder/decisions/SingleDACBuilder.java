@@ -1012,6 +1012,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
             amaltexte = replaceDateDecisionAmalInString(babelDoc.getTextes(5).getTexte(23).getDescription());
         } else if (codeAmal.equals(EPCCodeAmal.CODE_C.getProperty())) {
             amaltexte = replaceDateDecisionAmalInString(babelDoc.getTextes(5).getTexte(26).getDescription());
+            amaltexteReforme = amaltexte;
         } else if (codeAmal.equals(EPCCodeAmal.CODE_F.getProperty())) {
             amaltexte = replaceDateDecisionAmalInString(babelDoc.getTextes(5).getTexte(21).getDescription());
         } else if (codeAmal.equals(EPCCodeAmal.CODE_H.getProperty())) {
@@ -1020,9 +1021,11 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
             amaltexte = replaceDateDecisionAmalInString(babelDoc.getTextes(5).getTexte(25).getDescription());
         } else if (codeAmal.equals(EPCCodeAmal.CODE_J.getProperty())) {
             amaltexte = replaceDateDecisionAmalInString(babelDoc.getTextes(5).getTexte(22).getDescription());
+            amaltexteReforme = amaltexte;
         } else if (codeAmal.equals(EPCCodeAmal.CODE_K.getProperty())
                 || codeAmal.equals(EPCCodeAmal.CODE_UNDEFINED.getProperty()) || JadeStringUtil.isBlankOrZero(codeAmal)) {
             displayAmal = false;
+            amaltexteReforme = null;
         }
 
         if (displayAmal) {
