@@ -177,7 +177,7 @@ public class ReferenceQR extends AbstractReference {
             parameters.put(COParameter.P_INFO_ADD, (communicationNonStructuree + RETOUR_LIGNE + infoFacture).trim());
         }
 
-        parameters.put(FWIImportParametre.PARAM_REFERENCE, getReferenceWithoutSpace());
+        parameters.put(FWIImportParametre.PARAM_REFERENCE, getReference());
         parameters.put(COParameter.P_PARAM_1, pa1Param);
         parameters.put(COParameter.P_PARAM_2, pa2Param);
         if (!COMBINE.equals(creAdressTyp)) {
@@ -200,7 +200,7 @@ public class ReferenceQR extends AbstractReference {
         builder.append(qrType).append(CHAR_FIN_LIGNE);
         builder.append(version).append(CHAR_FIN_LIGNE);
         builder.append(codingType).append(CHAR_FIN_LIGNE);
-        builder.append(compte).append(CHAR_FIN_LIGNE);
+        builder.append(getCompteWithoutSpace()).append(CHAR_FIN_LIGNE);
 
         builder.append(creAdressTyp).append(CHAR_FIN_LIGNE);
         builder.append(creNom.isEmpty()?creRueOuLigneAdresse1.replace(CHAR_FIN_LIGNE, " ") : creNom ).append(CHAR_FIN_LIGNE);
@@ -252,7 +252,7 @@ public class ReferenceQR extends AbstractReference {
 
         // Référence paiement
         builder.append(typeReference).append(CHAR_FIN_LIGNE);
-        builder.append(getReferenceNonFormatte()).append(CHAR_FIN_LIGNE);
+        builder.append(getReferenceWithoutSpace()).append(CHAR_FIN_LIGNE);
 
         // Info Supp
         if (qrNeutre && new Montant(montant).isNegative()) {
@@ -460,6 +460,10 @@ public class ReferenceQR extends AbstractReference {
         return compte;
     }
 
+    public String getCompteWithoutSpace() {
+        return compte.replaceAll("\\s", "");
+    }
+
     public void setCompte(String compte) {
         this.compte = compte;
     }
@@ -475,15 +479,6 @@ public class ReferenceQR extends AbstractReference {
     public void setReference(String reference) {
         this.reference = reference;
     }
-
-    /**
-     *
-     *
-     */
-    public String getReferenceNonFormatte(){
-        return reference.replaceAll("\\s", "");
-    }
-
 
     public String getMontantSansCentimes() {
         return montantSansCentimes;
