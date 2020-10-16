@@ -765,11 +765,11 @@ public class ReferenceQR extends AbstractReference {
     }
 
     public void insertAdresseDebFAsStringInQrFacture(String adresseDebiteurAsString){
-        this.setDebfNom(adresseDebiteurAsString.substring(0, adresseDebiteurAsString.indexOf("\n")));
-        adresseDebiteurAsString = adresseDebiteurAsString.substring(adresseDebiteurAsString.indexOf("\n")+1, adresseDebiteurAsString.length());
-        this.setDebfRueOuLigneAdresse1(adresseDebiteurAsString.substring(0, adresseDebiteurAsString.indexOf("\n")));
-        adresseDebiteurAsString = adresseDebiteurAsString.substring(adresseDebiteurAsString.indexOf("\n")+1, adresseDebiteurAsString.length());
-        this.setDebfNumMaisonOuLigneAdresse2(adresseDebiteurAsString.substring(0, adresseDebiteurAsString.indexOf("\n")));
+        this.setDebfNom(adresseDebiteurAsString.substring(0, adresseDebiteurAsString.indexOf('\n')));
+        adresseDebiteurAsString = adresseDebiteurAsString.substring(adresseDebiteurAsString.indexOf('\n')+1, adresseDebiteurAsString.length());
+        this.setDebfRueOuLigneAdresse1(adresseDebiteurAsString.substring(0, adresseDebiteurAsString.indexOf('\n')));
+        adresseDebiteurAsString = adresseDebiteurAsString.substring(adresseDebiteurAsString.indexOf('\n')+1, adresseDebiteurAsString.length());
+        this.setDebfNumMaisonOuLigneAdresse2(adresseDebiteurAsString.substring(0, adresseDebiteurAsString.indexOf('\n')));
     }
 
     public String getDebfCodePostal() {
