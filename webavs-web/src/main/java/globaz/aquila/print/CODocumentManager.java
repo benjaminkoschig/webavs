@@ -1416,6 +1416,24 @@ public abstract class CODocumentManager extends FWIDocumentManager {
         }
     }
 
+
+    /**
+     * Retourne l'adresse de courrier. Si aucune adresse de courrier n'est définit, retourne l'adresse de domicile.
+     *
+     * @param tiers
+     * @return TIAdresseDataSource
+     * @throws Exception
+     */
+    public TIAdresseDataSource getAdressePrincipaleAsData(IntTiers tiers) throws Exception {
+        // l'adresse de paiement est l'adresse de courrier
+        TIAdresseDataSource result = getAdresseCourrierData(tiers, tiers.getLangueISO());
+        if (result==null) {
+            return result;
+        } else {
+            return getAdresseDomicileData(tiers, tiers.getLangueISO());
+        }
+    }
+
     /**
      * Retourne l'adresse principale si c'est une étape avant la RP. <br/>
      * sinon retourne l'adresse contentieux si elle est définie<br/>
@@ -2177,17 +2195,28 @@ public abstract class CODocumentManager extends FWIDocumentManager {
             //qrFacture.setCrePays(qrFacture.getCodePays());
             qrFacture.recupererIban();
             if (!qrFacture.genererAdresseDebiteur(curContentieux.getCompteAnnexe().getIdTiers())) {
-                // si l'adresse n'est pas trouvé en DB, alors chargement d'une adresse Combiné
-                qrFacture.setDebfAdressTyp(ReferenceQR.COMBINE);
 
                 // S'il s'agit d'une adresse combiné, et que le nombre de caractère dépasse les 70
                 // Il faut donc séparé l'adresse sur deux lignes, et mettre la deuxième partie sur la ligne 2
-                String adresseDebiteur = getAdresseDestinataire();
-                if (adresseDebiteur.length() > 70 && (adresseDebiteur.substring(0, 70).lastIndexOf("\n")!= -1)) {
-                    qrFacture.setDebfRueOuLigneAdresse1(adresseDebiteur.substring(0, adresseDebiteur.substring(0, 70).lastIndexOf("\n")));
-                    qrFacture.setDebfNumMaisonOuLigneAdresse2(adresseDebiteur.substring(adresseDebiteur.substring(0, 70).lastIndexOf("\n"), adresseDebiteur.length()));
+                String adresseDebiteurAsString = getAdresseDestinataire();
+                TIAdresseDataSource adresseDebiteurAsData = getAdresseDestinataireAsData();
+                if (Objects.nonNull(adresseDebiteurAsData)) {
+                    qrFacture.setDebfAdressTyp(ReferenceQR.STRUCTURE);
+                    qrFacture.setDebfNom(adresseDebiteurAsData.fullLigne1);
+                    qrFacture.setDebfPays(adresseDebiteurAsData.paysIso);
+                    qrFacture.setDebfCodePostal(adresseDebiteurAsData.localiteNpa);
+                    qrFacture.setDebfLieu(adresseDebiteurAsData.localiteNom);
+                    qrFacture.setDebfRueOuLigneAdresse1(adresseDebiteurAsData.rue);
+                    qrFacture.setDebfNumMaisonOuLigneAdresse2(adresseDebiteurAsData.numeroRue);
                 } else {
-                    qrFacture.setDebfRueOuLigneAdresse1(adresseDebiteur);
+                    // si l'adresse n'est pas trouvé en DB, alors chargement d'une adresse Combiné
+                    qrFacture.setDebfAdressTyp(ReferenceQR.COMBINE);
+                    if (adresseDebiteurAsString.length() > 70 && (adresseDebiteurAsString.substring(0, 70).lastIndexOf("\n")!= -1)) {
+                        qrFacture.setDebfRueOuLigneAdresse1(adresseDebiteurAsString.substring(0, adresseDebiteurAsString.substring(0, 70).lastIndexOf("\n")));
+                        qrFacture.setDebfNumMaisonOuLigneAdresse2(adresseDebiteurAsString.substring(adresseDebiteurAsString.substring(0, 70).lastIndexOf("\n"), adresseDebiteurAsString.length()));
+                    } else {
+                        qrFacture.setDebfRueOuLigneAdresse1(adresseDebiteurAsString);
+                    }
                 }
             }
             qrFacture.genererReferenceQR(curContentieux.getSection());
@@ -2210,6 +2239,14 @@ public abstract class CODocumentManager extends FWIDocumentManager {
      */
     public String getAdresseDestinataire() throws Exception {
         return getAdressePrincipale(destinataireDocument);
+    }
+
+    /**
+     * @return l'adresse définie dans la section sinon getAdresseString(destinataireDocument)
+     * @throws Exception
+     */
+    public TIAdresseDataSource getAdresseDestinataireAsData() throws Exception {
+        return getAdressePrincipaleAsData(destinataireDocument);
     }
 
     /**
