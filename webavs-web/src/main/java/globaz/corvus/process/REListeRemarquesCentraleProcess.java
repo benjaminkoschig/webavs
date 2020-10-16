@@ -57,7 +57,7 @@ public class REListeRemarquesCentraleProcess extends BProcess {
                 this.registerAttachedDocument(info2, MainRentes.EMPLACEMENT_DOCUMENT_CHANGEMENT_NSS);
 
                 // Envoi email avec pdf ListeChangementNSS et ListeAdaptationManuelle en fichier joint
-                JadeSmtpClient.getInstance().sendMail(getSession().getUserEMail(), getEMailObject(), this.getMemoryLog().getMessagesInHtml(), new String[]{MainRentes.EMPLACEMENT_DOCUMENT_ADAPTATION_MANUELLE, MainRentes.EMPLACEMENT_DOCUMENT_CHANGEMENT_NSS});
+                JadeSmtpClient.getInstance().sendMail(getEMailAddress(), getEMailObject(), this.getMemoryLog().getMessagesInHtml(), new String[]{MainRentes.EMPLACEMENT_DOCUMENT_ADAPTATION_MANUELLE, MainRentes.EMPLACEMENT_DOCUMENT_CHANGEMENT_NSS});
 
             } else if (MainRentes.isDocumentChangementNSSGenerated) {
 
@@ -66,7 +66,7 @@ public class REListeRemarquesCentraleProcess extends BProcess {
                 this.registerAttachedDocument(info2, MainRentes.EMPLACEMENT_DOCUMENT_CHANGEMENT_NSS);
 
                 // Envoi email avec pdf ListeChangementNSS en fichier joint
-                JadeSmtpClient.getInstance().sendMail(getSession().getUserEMail(), getEMailObject(), this.getMemoryLog().getMessagesInHtml(), new String[]{MainRentes.EMPLACEMENT_DOCUMENT_CHANGEMENT_NSS});
+                JadeSmtpClient.getInstance().sendMail(getEMailAddress(), getEMailObject(), this.getMemoryLog().getMessagesInHtml(), new String[]{MainRentes.EMPLACEMENT_DOCUMENT_CHANGEMENT_NSS});
             }
 
             return true;
