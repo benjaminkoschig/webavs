@@ -352,11 +352,12 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
                 // S'il s'agit d'une adresse combiné, et que le nombre de caractère dépasse les 70
                 // Il faut donc séparé l'adresse sur deux lignes, et mettre la deuxième partie sur la ligne 2
                 String adresseDebiteur = currentDataSource.getAdressePrincipale();
-                if (adresseDebiteur.length() > 70 && (adresseDebiteur.substring(0, 70).lastIndexOf("\n")!= -1)) {
-                    qrFacture.setDebfRueOuLigneAdresse1(adresseDebiteur.substring(0, adresseDebiteur.substring(0, 70).lastIndexOf("\n")));
-                    qrFacture.setDebfNumMaisonOuLigneAdresse2(adresseDebiteur.substring(adresseDebiteur.substring(0, 70).lastIndexOf("\n"), adresseDebiteur.length()));
-                } else {
-                    qrFacture.setDebfRueOuLigneAdresse1(currentDataSource.getAdressePrincipale());
+                try {
+                    qrFacture.insertAdresseDebFAsStringInQrFacture(adresseDebiteur);
+                } catch (Exception e) {
+                    getMemoryLog().logMessage(
+                            "Erreur lors de recherche de l'adresse Debiteur : " + e.getMessage(),
+                            FWMessage.AVERTISSEMENT, this.getClass().getName());
                 }
 
             }

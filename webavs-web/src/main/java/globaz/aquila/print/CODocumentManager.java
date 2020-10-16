@@ -2205,12 +2205,14 @@ public abstract class CODocumentManager extends FWIDocumentManager {
                 } else {
                     // si l'adresse n'est pas trouvé en DB, alors chargement d'une adresse Combiné
                     qrFacture.setDebfAdressTyp(ReferenceQR.COMBINE);
-                    if (adresseDebiteurAsString.length() > 70 && (adresseDebiteurAsString.substring(0, 70).lastIndexOf("\n")!= -1)) {
-                        qrFacture.setDebfRueOuLigneAdresse1(adresseDebiteurAsString.substring(0, adresseDebiteurAsString.substring(0, 70).lastIndexOf("\n")));
-                        qrFacture.setDebfNumMaisonOuLigneAdresse2(adresseDebiteurAsString.substring(adresseDebiteurAsString.substring(0, 70).lastIndexOf("\n"), adresseDebiteurAsString.length()));
-                    } else {
-                        qrFacture.setDebfRueOuLigneAdresse1(adresseDebiteurAsString);
+                    try {
+                        qrFacture.insertAdresseDebFAsStringInQrFacture(adresseDebiteurAsString);
+                    } catch (Exception e) {
+                        getMemoryLog().logMessage(
+                                "Erreur lors de recherche de l'adresse Debiteur : " + e.getMessage(),
+                                FWMessage.AVERTISSEMENT, this.getClass().getName());
                     }
+
                 }
             }
             qrFacture.genererReferenceQR(curContentieux.getSection());
