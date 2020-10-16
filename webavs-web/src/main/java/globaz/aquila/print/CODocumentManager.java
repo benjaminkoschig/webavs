@@ -1425,13 +1425,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
      * @throws Exception
      */
     public TIAdresseDataSource getAdressePrincipaleAsData(IntTiers tiers) throws Exception {
-        // l'adresse de paiement est l'adresse de courrier
-        TIAdresseDataSource result = getAdresseCourrierData(tiers, tiers.getLangueISO());
-        if (result==null) {
-            return result;
-        } else {
-            return getAdresseDomicileData(tiers, tiers.getLangueISO());
-        }
+        return getAdresseDataSourcePrincipal(tiers, tiers.getLangueISO());
     }
 
     /**
