@@ -1,5 +1,6 @@
 package ch.globaz.pegasus.businessimpl.services.models.calcul.joursAppoint;
 
+import ch.globaz.common.properties.PropertiesException;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.persistence.model.JadeAbstractModel;
@@ -40,8 +41,11 @@ public class PrepareDonneForJourAppoint {
      */
     public void addJourAppointInPeriodeIfNeeded(List<PeriodePCAccordee> listePCAccordes,
             CalculPcaReplaceSearch pcaReplaceSearch) throws CalculException {
+        boolean error = false;
+
+        // Récupération de la propriété système, si jours d'appoints actif
+        // Les jours d'appoint ne sont plus utilisés : séjour mois partiel à la place
         try {
-            // Récupération de la propriété système, si jours d'appoints actif
             if (PCproperties.getBoolean(EPCProperties.GESTION_JOURS_APPOINTS)) {
                 PeriodePCAccordee periodePrecedente = null;
                 isMemePeriodeEtJoursAppointExist = false;
@@ -55,86 +59,17 @@ public class PrepareDonneForJourAppoint {
                     // on itere sur les personnes
                     for (PersonnePCAccordee personne : ccRetenu.getPersonnes()) {
                         Date dateEntreeHomePersonne = getDateEntreeHome(personne);
-                        if (personne.isConjoint() || personne.isRequerant()) {
-
-                            if (mustGenerateJourAppoint(periode.getDateDebut(), dateEntreeHomePersonne)
-                                    && personne.getIsHome()) {
-                                RequerantConjoint<CalculPcaReplace> pcaReqConj = resolveOldPcaRequerantConjoint(
-                                        pcaReplaceSearch, periode);
-                                String montantPrecedant = "0";
-                                if (personne.isConjoint()) {
-                                    if ((!pcaReqConj.isRequerantEmpty())
-                                            && !JadeStringUtil.isBlankOrZero(pcaReqConj.getRequerant()
-                                                    .getSimplePCAccordee().getIdPrestationAccordeeConjoint())) {
-                                        montantPrecedant = pcaReqConj.getRequerant()
-                                                .getSimplePrestationsAccordeesConjoint().getMontantPrestation();
-                                    } else if (!pcaReqConj.isConjointEmpty()) {
-                                        montantPrecedant = pcaReqConj.getConjoint().getSimplePrestationsAccordees()
-                                                .getMontantPrestation();
-                                    }
-                                    CalculComparatif calculComparatifPrecedant = null;
-                                    if (periodePrecedente != null) {
-                                        calculComparatifPrecedant = periodePrecedente.getCCRetenu()[1];
-
-                                        if (calculComparatifPrecedant == null) {
-                                            calculComparatifPrecedant = periodePrecedente.getCCRetenu()[0];
-                                        }
-                                    }
-
-                                    if (calculComparatifPrecedant != null) {
-                                        montantPrecedant = calculComparatifPrecedant.getMontantPCMensuel();
-                                        if (!JadeStringUtil.isBlankOrZero(calculComparatifPrecedant
-                                                .getMontantMensuelConjoint())) {
-                                            montantPrecedant = calculComparatifPrecedant.getMontantMensuelConjoint();
-                                        }
-
-                                        periode.setJoursAppointConjoint(generateJoursAppoint(dateEntreeHomePersonne,
-                                                periode.getCCRetenu()[1], montantPrecedant, true));
-                                    } else {
-                                        if (!is2Rentes) {
-                                            periode.setJoursAppointConjoint(generateJoursAppoint(
-                                                    dateEntreeHomePersonne, periode.getCCRetenu()[1], "0", true));
-                                        } else {
-                                            periode.setJoursAppointConjoint(generateJoursAppoint(
-                                                    dateEntreeHomePersonne, periode.getCCRetenu()[1], montantPrecedant,
-                                                    true));
-                                        }
-
-                                    }
-
-                                } else if (personne.isRequerant()) {
-
-                                    if (!pcaReqConj.isRequerantEmpty()) {
-                                        montantPrecedant = pcaReqConj.getRequerant().getSimplePrestationsAccordees()
-                                                .getMontantPrestation();
-
-                                    }
-
-                                    if (periodePrecedente != null) {
-                                        CalculComparatif calculComparatifPrecedant = (periodePrecedente.getCCRetenu()[0]);
-                                        if (calculComparatifPrecedant != null) {
-                                            montantPrecedant = calculComparatifPrecedant.getMontantPCMensuel();
-                                            if (!JadeStringUtil.isBlankOrZero(calculComparatifPrecedant
-                                                    .getMontantMensuelConjoint())) {
-                                                montantPrecedant = calculComparatifPrecedant
-                                                        .getMontantMensuelRequerant();
-                                            }
-                                        }
-                                    }
-
-                                    periode.setJoursAppointRequerant(generateJoursAppoint(dateEntreeHomePersonne,
-                                            ccRetenu, montantPrecedant, false));
-
-                                }
-                            }
+                        if(dateEntreeHomePersonne != null) {
+                            throw new CalculException("date entrée home à supprimer : "+JadeDateUtil.getFormattedDate(dateEntreeHomePersonne)+" - Renseigner les frais de séjour mois partiel en home au lieu des jours d'appoint");
                         }
                     }
                     periodePrecedente = periode;
                 }
             }
-        } catch (Exception e) {
-            throw new CalculException("Problem with the processus gestion Jours Appoint", e);
+        } catch (PropertiesException e) {
+            throw new CalculException("Propriété pegasus.droit.gestionJoursAppoint manquante");
         }
+
     }
 
     private void is2Rentes(List<PersonnePCAccordee> list) {

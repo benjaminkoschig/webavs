@@ -46,6 +46,13 @@ function TaxeJournaliereHome (container) {
 		this.idEntity = idEntity;
 	};
 
+	this.afterStartEdition = function () {
+		var jourAppoint = $('[name=dateEntreeHome]');
+		if (jourAppoint && !jourAppoint.val()) {
+			jourAppoint.prop( "disabled", true );
+		}
+	};
+
 	this.getParametres = function ($data) {
 		return {
 			'taxeJournaliereHome.simpleTaxeJournaliereHome.idTypeChambre': this.detail.find('[name=idTypeChambre]').val(),

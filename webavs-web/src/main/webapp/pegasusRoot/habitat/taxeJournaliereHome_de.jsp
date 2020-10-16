@@ -302,7 +302,7 @@ var dialogMontantLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOM
 									<%if(EPCProperties.GESTION_JOURS_APPOINTS.getBooleanValue()) {%>
 									<tr>
 										<td><ct:FWLabel key="JSP_PC_TAXE_JOURNALIERE_HOME_D_DATE_ENTREE_HOME" /></td>
-										<td><input type="text" name="dateEntreeHome" value="" data-g-calendar="mandatory:true"/></td>
+										<td><input type="text" name="dateEntreeHome" value="" data-g-calendar="mandatory:false"/></td>
 										
 									</tr>
 									<%} %>
