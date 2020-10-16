@@ -19,8 +19,7 @@
                 <exclude>com.sun.xml.bind:jaxb-impl:*</exclude>
                 <exclude>com.ibm:jt400:*</exclude>
                 <exclude>com.ibm.db2:db2*:*</exclude>
-                <exclude>com.ibm.db2:jcc:*</exclude>
-
+                <exclude>com.ibm.db2.jcc:*</exclude>
             </excludes>
         </dependencySet>
     </dependencySets>
