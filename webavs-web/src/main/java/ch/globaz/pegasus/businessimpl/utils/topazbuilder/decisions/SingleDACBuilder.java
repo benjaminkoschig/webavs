@@ -893,7 +893,13 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
             // TODO Changer label
             data.addData("B_MONTANT_HOME", babelDoc.getTextes(3).getTexte(33).getDescription());
-            data.addData("MONTANT_HOME", SingleDACBuilder.MONNAIE + " " + new FWCurrency(Float.valueOf(dacOO.getPlanCalcul().getMontantPrixHome())/12).toStringFormat());
+
+            String montantHomeString = dacOO.getPlanCalcul().getMontantPrixHome();
+            Float montantHome = null;
+            if (montantHomeString.isEmpty()) {
+                montantHome = Float.valueOf(dacOO.getPlanCalcul().getMontantPrixHome())/12;
+            }
+            data.addData("MONTANT_HOME", SingleDACBuilder.MONNAIE + " " + new FWCurrency(montantHome).toStringFormat());
         }
 
         // gestion prestation
