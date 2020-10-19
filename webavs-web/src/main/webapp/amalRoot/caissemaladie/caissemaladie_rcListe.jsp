@@ -34,9 +34,11 @@
 	
 	String SEDEXRPAction = IAMActions.ACTION_CAISSEMALADIE+".launchSEDEXRPProcess";
 	String SEDEXCOAction = IAMActions.ACTION_CAISSEMALADIE+".launchSEDEXCOProcess";
+	String SEDEXPTAction = IAMActions.ACTION_CAISSEMALADIE+".launchSEDEXRPProcess";
 // 	String annonceAction = IAMActions.ACTION_CAISSEMALADIE+".launchAnnonceProcess";
 	String simulationRPAction = IAMActions.ACTION_CAISSEMALADIE+".launchSimulationProcess";
 	String simulationCOAction = IAMActions.ACTION_CAISSEMALADIE+".launchSimulationCOProcess";
+	String simulationPTAction = IAMActions.ACTION_CAISSEMALADIE+".launchSimulationProcess";
 	
 	boolean hasRightOnSEDEX = objSession.hasRight(SEDEXRPAction, FWSecureConstants.ADD);
 	boolean hasRightOnSEDEXCO = objSession.hasRight(SEDEXCOAction, FWSecureConstants.ADD);
@@ -117,7 +119,11 @@ $(document).ready(function() {
 			manageSEDEXCOButtonEvent(s_idButton, "C");
 		} else if(s_idButton.indexOf('SimulationCO')>=0){
 			manageSimulationCOButtonEvent(s_idButton, "SC");
-		} 
+		} else if(s_idButton.indexOf('SimulationPT')>=0){
+			manageSimulationPTButtonEvent(s_idButton, "SPT");
+		}else if(s_idButton.indexOf('SEDEXPT')>=0){
+			manageSEDEXPTButtonEvent(s_idButton, "PT");
+		}
 // 		else if(s_idButton.indexOf('Annoncer')>=0){			
 // 			if (confirm("Cosama désactivé, continuer ?")) {
 // 				manageAnnoncerButtonEvent(s_idButton, "A");				
@@ -201,6 +207,60 @@ $(document).ready(function() {
 			} else if (s_typeJob == "SC") {
 				$("#dialogSimuAnnonceCO").dialog('option', 'title', 'Simulation CO');
 			}
+		}
+	});
+
+	$("#dialogSimuAnnoncePT").dialog({
+		closeOnEscape: true,
+		height: 150,
+		width: 520,
+		minHeight: 300,
+		minWidth: 520,
+		resizable:false,
+		autoOpen: false,
+		modal:true,
+		dialogClass: "dialogSimuAnnonceClass",
+		position:['center','top'],
+		buttons : {
+			"Ok" : function() {
+				if (s_typeJob == "SPT") {
+					b_returnResult = processSimulationPT(s_currentButtonId);
+				} else if (s_typeJob == "PT") {
+					b_returnResult = processSEDEXPT(s_currentButtonId);
+				} else {
+					alert("Erreur, job inconnu");
+				}
+				if (b_returnResult) {
+					$(this).dialog("close");
+				}
+			},
+			"Annuler": function() {$(this).dialog("close");}
+		},
+		open: function() {
+			$(this).show();
+			if (s_typeJob == "SPT") {
+				$("#dialogSimuAnnoncePT").dialog('option', 'title', 'Simulation PT');
+			} else if (s_typeJob == "PT") {
+				$("#dialogSimuAnnoncePT").dialog('option', 'title', 'SEDEX PT');
+			}
+		}
+	});
+
+	$("#dialogSimuAnnoncePT :radio").click(function() {
+		if ($(this).attr("id")=="annoncePTtypeSelectionYearOne" || $(this).attr("id")=="annoncePTtypeSelectionYearAll") {
+			if ($(this).val() == "one") {
+				setDisabledElement("anneeAnnoncePTSimulation", false);
+				$("#anneeAnnoncePTSimulation").focus();
+			} else {
+				$("#anneeAnnoncePTSimulation").val("");
+				setDisabledElement("anneeAnnoncePTSimulation", true);
+			}
+		} else {
+			setDisabledElement("annoncePTtypeSelectionYearOne", false);
+			setDisabledElement("annoncePTtypeSelectionYearAll", true);
+			$("#anneeAnnoncePTSimulation").val("");
+			setDisabledElement("anneeAnnoncePTSimulation", true);
+			$("#annoncePTtypeSelectionYearOne").click();
 		}
 	});
 	
@@ -326,6 +386,33 @@ function manageSimulationRPButtonEvent(currentIdButton, type){
 }
 
 /**
+ * Gestion des événements sur les boutons SimulationPT
+ */
+function manageSimulationPTButtonEvent(currentIdButton, type){
+	s_currentButtonId = currentIdButton;
+	s_typeJob = type;
+	$("#dialogSimuAnnoncePT").dialog( "option", "height", 450 );
+	$("#dialogSimuAnnoncePT").dialog( "option", "minHeight", 150 );
+
+	setOpacityElement("msgSelectionNone",1.0);
+	setDisabledElement("msgSelectionNone", false);
+
+	$("#dialogSimuAnnoncePT").dialog('open');
+}
+
+/**
+ * Gestion des événements sur les boutons SEDEX RP
+ */
+function manageSEDEXPTButtonEvent(currentIdButton, type){
+	s_currentButtonId = currentIdButton;
+	s_typeJob = type;
+	$("#dialogSimuAnnoncePT").dialog( "option", "height", 450 );
+	$("#dialogSimuAnnoncePT").dialog( "option", "minHeight", 150 );
+
+	$("#dialogSimuAnnoncePT").dialog('open');
+}
+
+/**
  * Gestion des événements sur les boutons SEDEX CO
  */
 function manageSEDEXCOButtonEvent(currentIdButton, type){	
@@ -353,6 +440,176 @@ function manageSimulationCOButtonEvent(currentIdButton, type){
 	
 	$("#dialogSimuAnnonceCO").dialog('open');	
 }
+
+function processSEDEXPT(currentIdButton) {
+	var s_actionSEDEXPT = '<%=SEDEXPTAction%>';
+	var s_idButtonSEDEXPTPrincipale = 'buttonSEDEXPTGroupe_';
+	var s_idButtonSEDEXPTEnfant = 'buttonSEDEXPTEnfant_';
+	var s_anneeAnnoncePTSEDEX = $("#anneeAnnoncePTSimulation").val();
+	var s_typeMessageSEDEXPT = '5205';
+
+	if ($("#annoncePTtypeSelectionYearOne").attr("checked") && (s_anneeAnnoncePTSEDEX.length != 4 || !$.isNumeric(s_anneeAnnoncePTSEDEX))) {
+		alert("Année incorrecte");
+		return false;
+	}
+
+	if(currentIdButton.substring(0,s_idButtonSEDEXPTEnfant.length)==s_idButtonSEDEXPTEnfant){
+		// Proceed with deletion
+		var s_idGroupe=currentIdButton.split('_')[1];
+		var s_idTiersCaisse=currentIdButton.split('_')[2];
+		parent.document.forms[0].elements('userAction').value = s_actionSEDEXPT;
+		parent.document.forms[0].elements('selectedCaisse').value = s_idTiersCaisse;
+		parent.document.forms[0].elements('selectedAnnee').value = s_anneeAnnoncePTSEDEX;
+		parent.document.forms[0].elements('selectedTypeMessage').value = s_typeMessageSEDEXPT;
+		parent.document.forms[0].onsubmit = '';
+		parent.document.forms[0].target = '';
+		parent.document.forms[0].submit();
+	} else if(currentIdButton.substring(0,s_idButtonSEDEXPTPrincipale.length)==s_idButtonSEDEXPTPrincipale){
+		var s_idGroupe=currentIdButton.split('_')[1];
+		// Get the status of the main checkbox
+		// if checked, print the whole job
+		// if not, print the selected childrens
+		var s_idRelatedCheckBox='checkboxGroupe_'+s_idGroupe+'_';
+
+		if($('#'+s_idRelatedCheckBox).prop('checked') && s_idGroupe!= '0000' && s_idGroupe !='XXXX'){
+			parent.document.forms[0].elements('userAction').value = s_actionSEDEXPT;
+			parent.document.forms[0].elements('selectedGroupe').value = s_idGroupe;
+			parent.document.forms[0].elements('selectedAnnee').value = s_anneeAnnoncePTSEDEX;
+			parent.document.forms[0].elements('selectedTypeMessage').value = s_typeMessageSEDEXPT;
+			parent.document.forms[0].onsubmit = '';
+			parent.document.forms[0].target = '';
+			parent.document.forms[0].submit();
+		} else {
+			var s_allCaissesId = '';
+			var i_nbLines = 0;
+			// check the children status (checked) and get the ids
+			$('input:checkbox').each(function (iIndex) {
+				var s_currentCheckBoxId=this.id;
+				var s_s_checkBoxCaisse = 'checkboxCaisse_'+s_idGroupe+'_';
+				if(s_currentCheckBoxId.substring(0,s_s_checkBoxCaisse.length)==s_s_checkBoxCaisse){
+					i_nbLines++;
+					if($('#'+s_currentCheckBoxId).prop('checked')){
+						var s_caisseId = s_currentCheckBoxId.split('_')[2];
+						if(s_allCaissesId.length>0){
+							s_allCaissesId+=';';
+						}
+						s_allCaissesId+=s_caisseId;
+					}
+				}
+			});
+			if(s_allCaissesId.length>0){
+				if(i_nbLines == s_allCaissesId.split(';').length && s_idGroupe!= '0000' && s_idGroupe !='XXXX'){
+					parent.document.forms[0].elements('userAction').value = s_actionSEDEXPT;
+					parent.document.forms[0].elements('selectedGroupe').value = s_idGroupe;
+					parent.document.forms[0].elements('selectedAnnee').value = s_anneeAnnoncePTSEDEX;
+					parent.document.forms[0].elements('selectedTypeMessage').value = s_typeMessageSEDEXPT;
+					parent.document.forms[0].onsubmit = '';
+					parent.document.forms[0].target = '';
+					parent.document.forms[0].submit();
+				}else{
+					// Sélection d'éléments
+					parent.document.forms[0].elements('userAction').value = s_actionSEDEXPT;
+					parent.document.forms[0].elements('selectedCaisse').value = s_allCaissesId;
+					parent.document.forms[0].elements('selectedAnnee').value = s_anneeAnnoncePTSEDEX;
+					parent.document.forms[0].elements('selectedTypeMessage').value = s_typeMessageSEDEXPT;
+					parent.document.forms[0].onsubmit = '';
+					parent.document.forms[0].target = '';
+					parent.document.forms[0].submit();
+				}
+			}else{
+				alert('Pas d\'élément sélectionné, aucune action ne sera générée');
+			}
+		}
+	}
+}
+
+function processSimulationPT(currentIdButton) {
+	var s_actionSimuler = '<%=simulationPTAction%>';
+	var s_idButtonSimulerPrincipale = 'buttonSimulationPTGroupe_';
+	var s_idButtonSimulerEnfant = 'buttonSimulationPTEnfant_';
+	var s_anneeAnnonceSimulation = $("#anneeAnnoncePTSimulation").val();
+	var b_simulerSedex = true;
+	var s_typeMessageSEDEXPT = '5205';
+
+	if ($("#annoncePTtypeSelectionYearOne").attr("checked") && (s_anneeAnnonceSimulation.length != 4 || !$.isNumeric(s_anneeAnnonceSimulation))) {
+		alert("Année incorrecte");
+		return false;
+	}
+
+	if(currentIdButton.substring(0,s_idButtonSimulerEnfant.length)==s_idButtonSimulerEnfant){
+		// Proceed with deletion
+		var s_idGroupe=currentIdButton.split('_')[1];
+		var s_idTiersCaisse=currentIdButton.split('_')[2];
+		parent.document.forms[0].elements('userAction').value = s_actionSimuler;
+		parent.document.forms[0].elements('selectedCaisse').value = s_idTiersCaisse;
+		parent.document.forms[0].elements('selectedAnnee').value = s_anneeAnnonceSimulation;
+		parent.document.forms[0].elements('simulationSedex').value = b_simulerSedex;
+		parent.document.forms[0].elements('selectedTypeMessage').value = s_typeMessageSEDEXPT;
+		parent.document.forms[0].onsubmit = '';
+		parent.document.forms[0].target = '';
+		parent.document.forms[0].submit();
+	} else if(currentIdButton.substring(0,s_idButtonSimulerPrincipale.length)==s_idButtonSimulerPrincipale){
+		var s_idGroupe=currentIdButton.split('_')[1];
+		// Get the status of the main checkbox
+		// if checked, print the whole job
+		// if not, print the selected childrens
+		var s_idRelatedCheckBox='checkboxGroupe_'+s_idGroupe+'_';
+
+		if($('#'+s_idRelatedCheckBox).prop('checked') && s_idGroupe!= '0000' && s_idGroupe !='XXXX'){
+			parent.document.forms[0].elements('userAction').value = s_actionSimuler;
+			parent.document.forms[0].elements('selectedGroupe').value = s_idGroupe;
+			parent.document.forms[0].elements('selectedAnnee').value = s_anneeAnnonceSimulation;
+			parent.document.forms[0].elements('simulationSedex').value = b_simulerSedex;
+			parent.document.forms[0].elements('selectedTypeMessage').value = s_typeMessageSEDEXPT;
+			parent.document.forms[0].onsubmit = '';
+			parent.document.forms[0].target = '';
+			parent.document.forms[0].submit();
+		} else {
+			var s_allCaissesId = '';
+			var i_nbLines = 0;
+			// check the children status (checked) and get the ids
+			$('input:checkbox').each(function (iIndex) {
+				var s_currentCheckBoxId=this.id;
+				var s_s_checkBoxCaisse = 'checkboxCaisse_'+s_idGroupe+'_';
+				if(s_currentCheckBoxId.substring(0,s_s_checkBoxCaisse.length)==s_s_checkBoxCaisse){
+					i_nbLines++;
+					if($('#'+s_currentCheckBoxId).prop('checked')){
+						var s_caisseId = s_currentCheckBoxId.split('_')[2];
+						if(s_allCaissesId.length>0){
+							s_allCaissesId+=';';
+						}
+						s_allCaissesId+=s_caisseId;
+					}
+				}
+			});
+			if(s_allCaissesId.length>0){
+				if(i_nbLines == s_allCaissesId.split(';').length && s_idGroupe!= '0000' && s_idGroupe !='XXXX'){
+					parent.document.forms[0].elements('userAction').value = s_actionSimuler;
+					parent.document.forms[0].elements('selectedGroupe').value = s_idGroupe;
+					parent.document.forms[0].elements('selectedAnnee').value = s_anneeAnnonceSimulation;
+					parent.document.forms[0].elements('simulationSedex').value = b_simulerSedex;
+					parent.document.forms[0].elements('selectedTypeMessage').value = s_typeMessageSEDEXPT;
+					parent.document.forms[0].onsubmit = '';
+					parent.document.forms[0].target = '';
+					parent.document.forms[0].submit();
+				}else{
+					// Sélection d'éléments
+					parent.document.forms[0].elements('userAction').value = s_actionSimuler;
+					parent.document.forms[0].elements('selectedCaisse').value = s_allCaissesId;
+					parent.document.forms[0].elements('selectedAnnee').value = s_anneeAnnonceSimulation;
+					parent.document.forms[0].elements('simulationSedex').value = b_simulerSedex;
+					parent.document.forms[0].elements('selectedTypeMessage').value = s_typeMessageSEDEXPT;
+					parent.document.forms[0].onsubmit = '';
+					parent.document.forms[0].target = '';
+					parent.document.forms[0].submit();
+				}
+			}else{
+				alert('Pas d\'élément sélectionné, aucune action ne sera générée');
+			}
+		}
+	}
+}
+
 
 function processSEDEXRP(currentIdButton) {
 	var s_actionSEDEXRP = '<%=SEDEXRPAction%>';
@@ -815,6 +1072,10 @@ function toggleChildrenElements(currentIdJob){
 	var s_idButtonSimulationRPEnfant = 'buttonSimulationRPEnfant_'+currentIdJob+'_';
 	var s_idButtonSimulationRPGroupe = 'buttonSimulationRPGroupe_'+currentIdJob+'_';
 	var s_ButtonSimulationRPIsDisabled = ''+$('#'+s_idButtonSimulationRPGroupe).prop('disabled');
+
+	var s_idButtonSimulationPTEnfant = 'buttonSimulationPTEnfant_'+currentIdJob+'_';
+	var s_idButtonSimulationPTGroupe = 'buttonSimulationPTGroupe_'+currentIdJob+'_';
+	var s_ButtonSimulationPTIsDisabled = ''+$('#'+s_idButtonSimulationPTGroupe).prop('disabled');
 	
 // 	var s_idButtonAnnoncerEnfant = 'buttonAnnoncerEnfant_'+currentIdJob+'_';
 // 	var s_idButtonAnnoncerGroupe = 'buttonAnnoncerGroupe_'+currentIdJob+'_';
@@ -823,6 +1084,10 @@ function toggleChildrenElements(currentIdJob){
 	var s_idButtonSEDEXRPEnfant = 'buttonSEDEXRPEnfant_'+currentIdJob+'_';
 	var s_idButtonSEDEXRPGroupe = 'buttonSEDEXRPGroupe_'+currentIdJob+'_';
 	var s_ButtonSEDEXRPIsDisabled = ''+$('#'+s_idButtonSEDEXRPGroupe).prop('disabled');
+
+	var s_idButtonSEDEXPTEnfant = 'buttonSEDEXPTEnfant_'+currentIdJob+'_';
+	var s_idButtonSEDEXPTGroupe = 'buttonSEDEXPTGroupe_'+currentIdJob+'_';
+	var s_ButtonSEDEXPTIsDisabled = ''+$('#'+s_idButtonSEDEXPTGroupe).prop('disabled');
 	
 	var s_idButtonSEDEXCOEnfant = 'buttonSEDEXCOEnfant_'+currentIdJob+'_';
 	var s_idButtonSEDEXCOGroupe = 'buttonSEDEXCOGroupe_'+currentIdJob+'_';
@@ -836,13 +1101,17 @@ function toggleChildrenElements(currentIdJob){
 	for(iCurrentId=0;iCurrentId<a_idChildrens.length;iCurrentId++){
 		var b_Sent = false;
 		var s_currentIdSimuler = s_idButtonSimulationRPEnfant+a_idChildrens[iCurrentId]+'_';
+		var s_currentIdSimulerPT = s_idButtonSimulationPTEnfant+a_idChildrens[iCurrentId]+'_';
 // 		var s_currentIdAnnoncer = s_idButtonAnnoncerEnfant+a_idChildrens[iCurrentId]+'_';
 		var s_currentIdSEDEXRP = s_idButtonSEDEXRPEnfant+a_idChildrens[iCurrentId]+'_';
+		var s_currentIdSEDEXPT = s_idButtonSEDEXPTEnfant+a_idChildrens[iCurrentId]+'_';
 		var s_currentIdSEDEXCO = s_idButtonSEDEXCOEnfant+a_idChildrens[iCurrentId]+'_';
 		var s_currentIdSimulerCO = s_idButtonSimulationCOEnfant+a_idChildrens[iCurrentId]+'_';
 			toggleOpacityElement(s_currentIdSimuler,0.2,1.0);
+			toggleOpacityElement(s_currentIdSimulerPT,0.2,1.0);
 // 			toggleOpacityElement(s_currentIdAnnoncer,0.2,1.0);
 			toggleOpacityElement(s_currentIdSEDEXRP,0.2,1.0);
+			toggleOpacityElement(s_currentIdSEDEXPT,0.2,1.0);
 			toggleOpacityElement(s_currentIdSEDEXCO,0.2,1.0);
 			toggleOpacityElement(s_currentIdSimulerCO,0.2,1.0);
 	}
@@ -895,7 +1164,9 @@ function setDisabledElement(idElement, toDisabled){
 
 	<TH colspan="2">&nbsp;</TH>   		
 	<TH colspan="3" style="width:400px">Description</TH>
-	<TH>SEDEX RP</TH>   		
+	<TH>SEDEX PT</TH>
+	<TH>Simulation PT</TH>
+	<TH>SEDEX RP</TH>
 	<TH>Simulation RP</TH>   		
 	<TH>SEDEX CO</TH>
 	<TH>Simulation CO</TH>
@@ -1004,6 +1275,18 @@ size = mapGroupesAssureurs.keySet().size();
 			}
 			if(!inProgressAllAssureurs){
 			%>
+			<!-- BOUTON SEDEX PT -->
+			<TD class="mtd" align="center" style="border-bottom:solid 1px #226194;border-right:none">
+				<button id="buttonSEDEXPTGroupe_XXXX_" class="buttonSEDEXPT" type="button" style="width:110px;height:24px" <% if (!hasRightOnSEDEX) { %>disabled="disabled"<% } %>>
+					<b>SEDEX PT</b>
+				</button>
+			</TD>
+			<!-- BOUTON SIMULATION PT -->
+			<TD class="mtd" align="center" style="border-bottom:solid 1px #226194;border-right:none">
+				<button id="buttonSimulationPTGroupe_XXXX_" class="buttonSimulationPT" type="button" style="width:110px;height:24px" <% if (!hasRightOnSimulationRP) { %>disabled="disabled"<% } %>>
+					<b>Simulation PT</b>
+				</button>
+			</TD>
 			<!-- BOUTON SEDEX RP -->
 			<TD class="mtd" align="center" style="border-bottom:solid 1px #226194;border-right:none">
 				<button id="buttonSEDEXRPGroupe_XXXX_" class="buttonSEDEXRP" type="button" style="width:110px;height:24px" <% if (!hasRightOnSEDEX) { %>disabled="disabled"<% } %>>	
@@ -1035,7 +1318,7 @@ size = mapGroupesAssureurs.keySet().size();
 <!-- 				</button>	 -->
 <!-- 			</TD> -->
 			<%}else{%>
-			<TD align="center" colspan="4" style="border-bottom:solid 1px #226194;border-right:none">
+			<TD align="center" colspan="6" style="border-bottom:solid 1px #226194;border-right:none">
 				<img src="<%=request.getContextPath()%>/images/amal/loading.gif" 
 					title="Traitement en cours" 
 					border="0"
@@ -1075,6 +1358,16 @@ size = mapGroupesAssureurs.keySet().size();
 							if(!idTiersCMInProgress.contains(cm.getIdTiersCaisse())){
 							%>
 							<TD align="center">
+								<button id="buttonSEDEXPTEnfant_XXXX_<%=cm.getIdTiersCaisse()%>_" class="buttonSEDEXPT" type="button" style="font-size: 10px" <% if (!hasRightOnSEDEX) { %>disabled="disabled"<% } %>>
+									<b>SEDEX PT</b>
+								</button>
+							</TD>
+							<TD align="center">
+								<button id="buttonSimulationPTEnfant_XXXX_<%=cm.getIdTiersCaisse()%>_" class="buttonSimulationPT" type="button" style="font-size: 10px" <% if (!hasRightOnSimulationRP) { %>disabled="disabled"<% } %>>
+									<b>Simulation PT</b>
+								</button>
+							</TD>
+							<TD align="center">
 								<button id="buttonSEDEXRPEnfant_XXXX_<%=cm.getIdTiersCaisse()%>_" class="buttonSEDEXRP" type="button" style="font-size: 10px" <% if (!hasRightOnSEDEX) { %>disabled="disabled"<% } %>>	
 									<b>SEDEX RP</b>
 								</button>
@@ -1100,7 +1393,7 @@ size = mapGroupesAssureurs.keySet().size();
 <!-- 								</button> -->
 <!-- 							</TD> -->
 							<%}else{%>
-							<TD align="center" colspan="4">
+							<TD align="center" colspan="6">
 								<img src="<%=request.getContextPath()%>/images/amal/loading.gif" 
 									title="Traitement en cours" 
 									border="0"
@@ -1161,6 +1454,18 @@ size = mapGroupesAssureurs.keySet().size();
 					}
 					if(!inProgressSansGroupe){
 					%>
+					<!-- BOUTON SEDEX PT -->
+					<TD class="mtd" align="center" style="border-bottom:solid 1px #226194;border-right:none">
+						<button id="buttonSEDEXPTGroupe_0000_" class="buttonSEDEXPT" type="button" style="width:110px;height:24px" <% if (!hasRightOnSEDEX) { %>disabled="disabled"<% } %>>
+							<b>SEDEX PT</b>
+						</button>
+					</TD>
+					<!-- BOUTON SIMULATION PT -->
+					<TD class="mtd" align="center" style="border-bottom:solid 1px #226194;border-right:none">
+						<button id="buttonSimulationPTGroupe_0000_" class="buttonSimulationPT" type="button" style="width:110px;height:24px" <% if (!hasRightOnSimulationRP) { %>disabled="disabled"<% } %>>
+							<b>Simulation PT</b>
+						</button>
+					</TD>
 					<!-- BOUTON SEDEX RP -->
 					<TD class="mtd" align="center" style="border-bottom:solid 1px #226194;border-right:none">
 						<button id="buttonSEDEXRPGroupe_0000_" class="buttonSEDEXRP" type="button" style="width:110px;height:24px" <% if (!hasRightOnSEDEX) { %>disabled="disabled"<% } %>>				
@@ -1192,7 +1497,7 @@ size = mapGroupesAssureurs.keySet().size();
 <!-- 							</button>			 -->
 <!-- 					</TD> -->
 					<%}else{%>
-					<TD align="center" colspan="4" style="border-bottom:solid 1px #226194;border-right:none">
+					<TD align="center" colspan="6" style="border-bottom:solid 1px #226194;border-right:none">
 						<img src="<%=request.getContextPath()%>/images/amal/loading.gif" 
 							title="Traitement en cours" 
 							border="0"
@@ -1236,7 +1541,17 @@ size = mapGroupesAssureurs.keySet().size();
 					<TD style="<%=classInactive%>" colspan="3"><%=!orderByNumero?nomCaisse+" - "+numCaisse:numCaisse+" - "+nomCaisse%></TD>
 					<%
 					if(!idTiersCMInProgress.contains(cm.getIdTiersCaisse())){
-					%>		
+					%>
+					<TD align="center">
+						<button id="buttonSEDEXPTEnfant_0000_<%=cm.getIdTiersCaisse()%>_" class="buttonSEDEXPT" type="button" style="font-size: 10px" <% if (!hasRightOnSEDEX) { %>disabled="disabled"<% } %>>
+							<b>SEDEX PT</b>
+						</button>
+					</TD>
+					<TD align="center">
+						<button id="buttonSimulationPTEnfant_0000_<%=cm.getIdTiersCaisse()%>_" class="buttonSimulationPT" type="button" style="font-size: 10px" <% if (!hasRightOnSimulationRP) { %>disabled="disabled"<% } %>>
+							<b>Simulation PT</b>
+						</button>
+					</TD>
 					<TD align="center">
 						<button id="buttonSEDEXRPEnfant_0000_<%=cm.getIdTiersCaisse()%>_" class="buttonSEDEXRP" type="button" style="font-size: 10px" <% if (!hasRightOnSEDEX) { %>disabled="disabled"<% } %>>	
 							<b>SEDEX RP</b>
@@ -1263,7 +1578,7 @@ size = mapGroupesAssureurs.keySet().size();
 <!-- 						</button>					 -->
 <!-- 					</TD> -->
 					<%}else{%>
-					<TD align="center" colspan="4">
+					<TD align="center" colspan="6">
 						<img src="<%=request.getContextPath()%>/images/amal/loading.gif" 
 							title="Traitement en cours" 
 							border="0"
@@ -1316,6 +1631,18 @@ size = mapGroupesAssureurs.keySet().size();
 			}
 			if(!inProgress){
 			%>
+			<!-- BOUTON SEDEX PT -->
+			<TD class="mtd" align="center" style="border-bottom:solid 1px #226194;border-right:none">
+				<button id="buttonSEDEXPTGroupe_<%=arrayCaissesGroupes.get(0).getIdTiersGroupe()%>_" class="buttonSEDEXPT" type="button" style="width:110px;height:24px" <% if (!hasRightOnSEDEX) { %>disabled="disabled"<% } %>>
+					<b>SEDEX PT</b>
+				</button>
+			</TD>
+			<!-- BOUTON SIMULATION PT -->
+			<TD class="mtd" align="center" style="border-bottom:solid 1px #226194;border-right:none">
+				<button id="buttonSimulationPTGroupe_<%=arrayCaissesGroupes.get(0).getIdTiersGroupe()%>_" class="buttonSimulationPT" type="button" style="width:110px;height:24px" <% if (!hasRightOnSimulationRP) { %>disabled="disabled"<% } %>>
+					<b>Simulation PT</b>
+				</button>
+			</TD>
 			<!-- BOUTON SEDEX RP -->
 			<TD class="mtd" align="center" style="border-bottom:solid 1px #226194;border-right:none">
 				<button id="buttonSEDEXRPGroupe_<%=arrayCaissesGroupes.get(0).getIdTiersGroupe()%>_" class="buttonSEDEXRP" type="button" style="width:110px;height:24px" <% if (!hasRightOnSEDEX) { %>disabled="disabled"<% } %>>
@@ -1347,7 +1674,7 @@ size = mapGroupesAssureurs.keySet().size();
 <!-- 					</button>			 -->
 <!-- 			</TD> -->
 			<%}else{%>
-			<TD align="center" colspan="4" style="border-bottom:solid 1px #226194;border-right:none">
+			<TD align="center" colspan="6" style="border-bottom:solid 1px #226194;border-right:none">
 				<img src="<%=request.getContextPath()%>/images/amal/loading.gif" 
 					title="Traitement en cours" 
 					border="0"
@@ -1395,10 +1722,20 @@ size = mapGroupesAssureurs.keySet().size();
 						isDateFinGroupe = true;
 			   		}
 			   		%>
-			   		<TD style="<%=classInactive%>" colspan="3"><%=!orderByNumero?nomCaisse+" - "+numCaisse:numCaisse+" - "+nomCaisse%>&nbsp;<%=isDateFinGroupe?dateFin:""%></TD>					
+			   		<TD style="<%=classInactive%>" colspan="3"><%=!orderByNumero?nomCaisse+" - "+numCaisse:numCaisse+" - "+nomCaisse%>&nbsp;<%=isDateFinGroupe?dateFin:""%></TD>
 					<%
 					if(!idTiersCMInProgress.contains(cm.getIdTiersCaisse())){
-					%>	
+					%>
+					<TD align="center">
+						<button id="buttonSEDEXPTEnfant_<%=cm.getIdTiersGroupe()%>_<%=cm.getIdTiersCaisse()%>_" class="buttonSEDEXPT" type="button" style="font-size: 10px" <% if (!hasRightOnSEDEX) { %>disabled="disabled"<% } %>>
+							<b>SEDEX PT</b>
+						</button>
+					</TD>
+					<TD align="center">
+						<button id="buttonSimulationPTEnfant_<%=cm.getIdTiersGroupe()%>_<%=cm.getIdTiersCaisse()%>_" class="buttonSimulationPT" type="button" style="font-size: 10px" <% if (!hasRightOnSimulationRP) { %>disabled="disabled"<% } %>>
+							<b>Simulation PT</b>
+						</button>
+					</TD>
 					<TD align="center">
 						<button id="buttonSEDEXRPEnfant_<%=cm.getIdTiersGroupe()%>_<%=cm.getIdTiersCaisse()%>_" class="buttonSEDEXRP" type="button" style="font-size: 10px" <% if (!hasRightOnSEDEX) { %>disabled="disabled"<% } %>>	
 							<b>SEDEX RP</b>
@@ -1425,7 +1762,7 @@ size = mapGroupesAssureurs.keySet().size();
 <!-- 						</button>					 -->
 <!-- 					</TD> -->
 					<%}else{%>
-					<TD align="center" colspan="4">
+					<TD align="center" colspan="6">
 						<img src="<%=request.getContextPath()%>/images/amal/loading.gif" 
 							title="Traitement en cours" 
 							border="0"
@@ -1514,5 +1851,33 @@ size = mapGroupesAssureurs.keySet().size();
 				Personnes ne devant pas être poursuivies
 			</td>
 		</tr>			
+	</table>
+</div>
+
+<div id="dialogSimuAnnoncePT" title="Nouvelle simulation / annonce" style="display: none;">
+	<table>
+		<tr>
+			<td width="180px">Groupe  / Caisse</td>
+			<td class="descriptionCaisse" style="font-weight: bold;">
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">&nbsp;</td>
+		</tr>
+		<tr>
+			<td width="100px">Année</td>
+			<td>
+				<input type="radio" id="annoncePTtypeSelectionYearAll" name="typeSelectionYear" checked="checked" value="all"/>
+				Toutes
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td class="trSelectionYear">
+				<input type="radio" id="annoncePTtypeSelectionYearOne" name="typeSelectionYear" value="one"/>
+				Sélection
+				<input id="anneeAnnoncePTSimulation" type="text" size="4" maxlength="4" disabled="disabled" />
+			</td>
+		</tr>
 	</table>
 </div>

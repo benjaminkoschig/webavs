@@ -26,12 +26,29 @@ public enum AMMessagesSubTypesAnnonceSedex {
     NOUVELLE_DECISION("101"),
     REJET_DECISION("103"),
     REJET_INTERRUPTION("203"),
-    REPONSE_RAPPORT_ASSURANCE("402");
+    REPONSE_RAPPORT_ASSURANCE("402"),
+    DEMANDE_PRIME_TARIFAIRE("801"),
+    REPONSE_PRIME_TARIFAIRE("802");
 
     public static Collection<AMMessagesSubTypesAnnonceSedex> getSortedEnums() {
         SortedMap<String, AMMessagesSubTypesAnnonceSedex> map = new TreeMap<String, AMMessagesSubTypesAnnonceSedex>();
         for (AMMessagesSubTypesAnnonceSedex st : AMMessagesSubTypesAnnonceSedex.values()) {
             map.put(st.getValue(), st);
+        }
+        return map.values();
+    }
+
+    /**
+     * Permet d'avoir la liste des subtype de message sans les primes tarifaire.
+     * Utile pour l'écran de gestion des SEDEX RP
+     * @return la liste des subtype de message sans les primes tarifaire.
+     */
+    public static Collection<AMMessagesSubTypesAnnonceSedex> getSortedEnumsExeptPT() {
+        SortedMap<String, AMMessagesSubTypesAnnonceSedex> map = new TreeMap<String, AMMessagesSubTypesAnnonceSedex>();
+        for (AMMessagesSubTypesAnnonceSedex st : AMMessagesSubTypesAnnonceSedex.values()) {
+            if(!DEMANDE_PRIME_TARIFAIRE.getValue().equals(st.getValue()) && !REPONSE_PRIME_TARIFAIRE.getValue().equals(st.getValue())) {
+                map.put(st.getValue(), st);
+            }
         }
         return map.values();
     }
@@ -61,6 +78,10 @@ public enum AMMessagesSubTypesAnnonceSedex {
             return REJET_INTERRUPTION;
         } else if (REPONSE_RAPPORT_ASSURANCE.getValue().equals(value)) {
             return REPONSE_RAPPORT_ASSURANCE;
+        } else if (DEMANDE_PRIME_TARIFAIRE.getValue().equals(value)) {
+            return DEMANDE_PRIME_TARIFAIRE;
+        } else if (REPONSE_PRIME_TARIFAIRE.getValue().equals(value)) {
+            return REPONSE_PRIME_TARIFAIRE;
         } else {
             throw new AnnonceSedexException("Subtype not found : " + value);
         }
@@ -95,6 +116,10 @@ public enum AMMessagesSubTypesAnnonceSedex {
             subtype = AMSousTypeMessageSedexLibellesSubside.REJET_INTERRUPTION;
         } else if (REPONSE_RAPPORT_ASSURANCE.getValue().equals(value)) {
             subtype = AMSousTypeMessageSedexLibellesSubside.REPONSE_RAPPORT_ASSURANCE;
+        } else if (DEMANDE_PRIME_TARIFAIRE.getValue().equals(value)) {
+            subtype = AMSousTypeMessageSedexLibellesSubside.DEMANDE_PRIME_TARIFAIRE;
+        } else if (REPONSE_PRIME_TARIFAIRE.getValue().equals(value)) {
+            subtype = AMSousTypeMessageSedexLibellesSubside.REPONSE_PRIME_TARIFAIRE;
         } else {
             return "N/A";
         }

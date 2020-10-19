@@ -1,5 +1,4 @@
 <%@page import="ch.globaz.amal.business.constantes.AMMessagesSubTypesAnnonceSedex"%>
-<%@page import="ch.globaz.amal.business.constantes.IAMCodeSysteme.AMSousTypeMessageSedexLibellesSubside"%>
 <%@page import="java.util.Vector"%>
 <%@page import="java.util.Arrays"%>
 <%@page import="java.util.HashMap"%>
@@ -19,9 +18,10 @@
 <%@ taglib uri="/WEB-INF/nss.tld" prefix="nss" %>
 
 <%
-	idEcran="AM3003";
+	idEcran="AM3006";
 	rememberSearchCriterias = true;
 	bButtonNew = false;
+	String email = ((globaz.globall.db.BSession) ((globaz.framework.controller.FWController) session.getAttribute("objController")).getSession()).getUserEMail();
 %>
 <%@ include file="/theme/find/javascripts.jspf" %>
 <link rel="stylesheet" type="text/css" href="<%=servletContext%>/scripts/erichynds.multiSelect/jquery.multiselect.css" rel="stylesheet" />
@@ -32,7 +32,8 @@
 
 bFind = false;
 
-usrAction = "amal.sedexrp.sedexrp.lister";
+usrAction = "amal.sedexpt.sedexpt.lister";
+
 $(document).ready(function() {
 	// -------------------------------------------------------------------------------
 	// INITIALISATION
@@ -154,6 +155,14 @@ $(document).ready(function() {
 				globazNotation.readwidget.read();
 		}
 	});
+
+	$("#searchModel\\.forSUBAnneeHistorique").focusout(function (e) {
+		isYearCompliant();
+	});
+
+	$("#linkCreerListePC").live("click",function() {
+		attachActionCreerListePC();
+	});
 });
 
 function callBackSetAllAnnoncesManual(data) {
@@ -178,10 +187,25 @@ function setWhereKey(){
 	}
 }
 
+function isYearCompliant() {
+	var objRegExp  = /^(\d{4}$)/;
+
+	if($('#searchModel\\.forSUBAnneeHistorique').val() !== "") {
+		if ( objRegExp.test( $('#searchModel\\.forSUBAnneeHistorique').val())) {
+			return true;
+		} else {
+			alert("L'année spécifiée n'est pas une année valide.");
+			$('#searchModel\\.forSUBAnneeHistorique').val("");
+		}
+	}
+	return true;
+}
+
 function clearFields() {
 	$("#searchModel\\.forSDXDateMessageGOE").val('');
 	$("#searchModel\\.forSDXDateMessageLOE").val('');
 	$("#searchModel\\.forCMIdTiersGroupe").val('');
+	$("#searchModel\\.forSUBAnneeHistorique").val('');
 	$("#searchModel\\.forCMNumCaisse").val('');
 	$("#searchModel\\.likeCMNomCaisse").val('');
 	$("#searchModel\\.inSDXStatus").multiselect("uncheckAll");
@@ -193,7 +217,7 @@ function clearFields() {
 function getParametersForCSV() {
 	var inMessageSubType = $("#searchModel\\.inSDXMessageSubType").val();
 	if (inMessageSubType==null || inMessageSubType==undefined) {
-		inMessageSubType = new Array();
+		inMessageSubType = '801|802';
 	} else {
 		inMessageSubType=inMessageSubType.join();
 		inMessageSubType = inMessageSubType.replace(/\,/g,'|');
@@ -220,21 +244,80 @@ function getParametersForCSV() {
 	var forCMIdTiersGroupe = $("#searchModel\\.forCMIdTiersGroupe").val();
 	var forCMNumCaisse = $("#searchModel\\.forCMNumCaisse").val();
 	var likeCMNomCaisse = $("#searchModel\\.likeCMNomCaisse").val();
-	
+	var forSUBAnneeHistorique = $("#searchModel\\.forSUBAnneeHistorique").val();
+	var listeForEmail = $("#listeForEmail").val();
+
 	var params = "likeCMNomCaisse:"+likeCMNomCaisse+";forCMNumCaisse:"+forCMNumCaisse+
 		";forCMIdTiersGroupe:"+forCMIdTiersGroupe+";inSDXStatus:"+inSDXStatus+";inMessageSubType:"+inMessageSubType+
 		";inSDXTraitement:"+inSDXTraitement+";forDateMessageGOE:"+forDateMessageGOE+
-		";forDateMessageLOE:"+forDateMessageLOE+",setForOrder:dateMessageDesc";
+			";forSUBAnneeHistorique:"+forSUBAnneeHistorique+";listeForEmail:"+listeForEmail+";forDateMessageLOE:" +
+			forDateMessageLOE+",setForOrder:dateMessageDesc";
+	;
+
 	return params;
 }
 
+function attachActionCreerListePC() {
+	$( "#dialogCreationListePC" ).dialog({
+		minHeight:"200px",
+		height:"auto",
+		width:"500px",
+		autoOpen: true,
+		modal: true,
+		buttons: {
+			Ok: function() {
+				generationCreerListePC();
+				$( this ).dialog( "close" );
+			},
+			Annuler: function() {
+				$( this ).dialog( "close" );
+			}
+		}
+	});
+}
+
+function generationCreerListePC() {
+
+	var params = getParametersForCSV();
+
+	var o_options= {
+		serviceClassName: 'ch.globaz.amal.business.services.sedexRP.AnnoncesRPService',
+		serviceMethodName:'exportListAnnoncesReponsePT',
+		parametres: params,
+		callBack: callBackcreerListePC
+	}
+	globazNotation.readwidget.options=o_options;
+	globazNotation.readwidget.read();
+}
+
+function callBackcreerListePC(data) {
+	// window.location.reload();
+}
+
 </script>
+
+
+<div id="dialogCreationListePC" title="Créer liste PC" style="display: none;">
+	<table>
+		<tr>
+			<td>
+				<strong>Renseigner une adresse email</strong>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<input type="text" id="listeForEmail" name="listeForEmail" value="<%=email%>">
+			</td>
+		</tr>
+	</table>
+</div>
+
 
 <%-- /tpl:insert --%>
 
 <%@ include file="/theme/find/bodyStart.jspf" %>
 	<%-- tpl:insert attribute="zoneTitle" --%>
-		Gestion des annonces SEDEX RP
+		Gestion des annonces SEDEX PT
 	<%-- /tpl:insert --%>
 <%@ include file="/theme/find/bodyStart2.jspf" %>
 				<%-- tpl:insert attribute="zoneMain" --%>
@@ -255,38 +338,33 @@ function getParametersForCSV() {
 					<td>&nbsp;</td>
 					<td style="width:120px">Groupe</td>
 					<TD>
-					<select name="searchModel.forCMIdTiersGroupe">
-					<%
-					
-					// Génération de la combobox
-					HashMap<String, String> myOptions = null;
-					String csValue="";
-					String csLibelle="";
-					myOptions = AMCaisseMaladieHelper.getGroupesCM();
-					Object[] myKeys=myOptions.keySet().toArray();
-					Arrays.sort(myKeys);
-					for(int iIndex=0; iIndex<myKeys.length;iIndex++){
-						csValue = (String) myKeys[iIndex];
-						csLibelle = (String) myOptions.get(myKeys[iIndex]);
-					%>
-						<option value="<%=csValue%>"><%=csLibelle%></option>
-					<%
-					}// fin for option
-					
-					
-					%>
-					</select></TD>
-					<TD>Traitement</TD>
-					<TD>
-						<select multiple="multiple" name="searchModel.inSDXTraitement" id="searchModel.inSDXTraitement" >
-							<option selected="selected" value="<%=IAMCodeSysteme.AMTraitementsAnnonceSedex.TRAITE_AUTO.getValue()%>">Automatique</option>
-							<option selected="selected" value="<%=IAMCodeSysteme.AMTraitementsAnnonceSedex.TRAITE_MANU.getValue()%>">Manuel</option>
-							<option selected="selected" value="<%=IAMCodeSysteme.AMTraitementsAnnonceSedex.A_TRAITER.getValue()%>">A traiter</option>
+						<select name="searchModel.forCMIdTiersGroupe">
+						<%
+
+						// Génération de la combobox
+						HashMap<String, String> myOptions = null;
+						String csValue="";
+						String csLibelle="";
+						myOptions = AMCaisseMaladieHelper.getGroupesCM();
+						Object[] myKeys=myOptions.keySet().toArray();
+						Arrays.sort(myKeys);
+						for(int iIndex=0; iIndex<myKeys.length;iIndex++){
+							csValue = (String) myKeys[iIndex];
+							csLibelle = (String) myOptions.get(myKeys[iIndex]);
+						%>
+							<option value="<%=csValue%>"><%=csLibelle%></option>
+						<%
+						}// fin for option
+
+
+						%>
 						</select>
 					</TD>
+					<TD> </TD>
+					<TD> </TD>
 					<TD>&nbsp;</TD>
 					<TD><span id="setAllAsManual" style="display:none" title="Met le traitement 'Traitement manuel' à tout les éléments 'A traiter' qui correspondent aux critères">Traitement manuel</span></TD>
-					<td</td>
+					<td></td>
 				</TR>
 				<TR style="height:16px">
 					<td>&nbsp;</td>
@@ -296,13 +374,8 @@ function getParametersForCSV() {
 					<TD>Sous-type message</TD>
 					<TD>
 						<select name="searchModel.inSDXMessageSubType" multiple="multiple" id="searchModel.inSDXMessageSubType" >
-							<%
-							for (AMMessagesSubTypesAnnonceSedex s : AMMessagesSubTypesAnnonceSedex.getSortedEnumsExeptPT()) {
-								%>
-								<option value="<%=s.getValue()%>"><%=AMMessagesSubTypesAnnonceSedex.getSubTypeCSLibelle(s.getValue())%></option>
-								<%						
-							}
-							%>
+							<option value="<%=AMMessagesSubTypesAnnonceSedex.DEMANDE_PRIME_TARIFAIRE.getValue()%>"><%=AMMessagesSubTypesAnnonceSedex.getSubTypeCSLibelle(AMMessagesSubTypesAnnonceSedex.DEMANDE_PRIME_TARIFAIRE.getValue())%></option>
+							<option value="<%=AMMessagesSubTypesAnnonceSedex.REPONSE_PRIME_TARIFAIRE.getValue()%>"><%=AMMessagesSubTypesAnnonceSedex.getSubTypeCSLibelle(AMMessagesSubTypesAnnonceSedex.REPONSE_PRIME_TARIFAIRE.getValue())%></option>
 						</select>
 					</TD>
 					<TD>&nbsp;</TD>
@@ -339,20 +412,44 @@ function getParametersForCSV() {
 						</select>
 					</td>
 					<TD>Date message jusqu'à</TD>
-					<TD><input class="clearable" type="text"
-						name="searchModel.forSDXDateMessageLOE" value=""
-						data-g-calendar="mandatory:false" />
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<TD>
+						<table>
+							<tr>
+								<td>
+									<input class="clearable" type="text"
+									name="searchModel.forSDXDateMessageLOE" value=""
+									data-g-calendar="mandatory:false" />
+								</td>
+								<td> </td>
+								<td>Année</td>
+								<td><input class="clearable" type="text" id="searchModel.forSUBAnneeHistorique"
+										   name="searchModel.forSUBAnneeHistorique" value="" maxlength="4"/>
+								</td>
+							</tr>
+						</table>&nbsp;&nbsp;&nbsp;&nbsp;
 					</TD>
 					<TD>&nbsp;
 					</TD>
 					<TD>
-						<a data-g-download="docType:csv,
-							dynParametres:getParametersForCSV,
-	                    	serviceClassName:ch.globaz.amal.business.services.sedexRP.AnnoncesRPService,
-	                    	serviceMethodName:exportListAnnonces,
-	                    	docName:listeAnnonces,
-	                    	displayOnlyImage:false">Créer liste</a> 
+						<table>
+							<tr>
+								<td>
+									<a id="linkCreerListePC" class="butonDownload ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false">
+										<span class="ui-button-text">
+											Créer liste PC<img class="typeDoc" style="margin:0 0 0 10px;padding:0" src="/webavs_web/scripts/jsnotation/imgs/csv.png" id="" height="20px">
+										</span></a>
+
+								</td>
+								<td>
+									<a data-g-download="docType:csv,
+										dynParametres:getParametersForCSV,
+										serviceClassName:ch.globaz.amal.business.services.sedexRP.AnnoncesRPService,
+										serviceMethodName:exportListAnnonces,
+										docName:listeAnnonces,
+										displayOnlyImage:false">Créer liste</a>
+								</td>
+							</tr>
+						</table>
 					</TD>
 					<td>&nbsp;</td>
 				</TR>				
@@ -417,7 +514,34 @@ function getParametersForCSV() {
 
 
 <%-- /tpl:insert --%>
-<%@ include file="/theme/find/bodyButtons.jspf"%>
+<TR>
+	<TD height="20">
+		<INPUT type="hidden" name="userAction" value="">
+		<INPUT type="hidden" name="_sl" value="">
+		<INPUT type="hidden" name="_method" value="">
+		<INPUT type="hidden" name="_valid" value="">
+		<INPUT type="hidden" name="colonneSelection" value="<%=request.getParameter("colonneSelection")%>">
+	</TD>
+</TR>
+</TBODY>
+</TABLE>
+</TD>
+</TR>
+<TR>
+	<TD bgcolor="#FFFFFF" colspan="2" align="right">
+		<%
+			String actionCreationAnnonce =  servletContext + mainServletPath + "?userAction=amal.sedexpt.sedexptcreationannonce.afficher";
+		%>
+		<INPUT type="submit" name="btnCreationAnnonce" value="Création annonces" onClick="btnCreationAnnonce.onclick='';document.location.href='<%=actionCreationAnnonce%>'">
+			<%if (bButtonDelete) {%><input class="btnCtrl" id="btnDel" type="button" value="<%=btnDelLabel%>" onclick="del();"><%}%>
+			<%if (bShowExportButton) {%>
+		<INPUT type="button" name="btnExport" value="<%=btnExportLabel%>" onClick="onExport();">
+			<%}%>
+			<%if (bButtonFind) {%>
+		<INPUT type="submit" name="btnFind" value="<%=btnFindLabel%>">
+			<%} if (bButtonNew) {%>
+		<INPUT type="button" name="btnNew" value="<%=btnNewLabel%>" onClick="onClickNew();btnNew.onclick='';document.location.href='<%=actionNew%>'">
+			<%}%>
 <%-- tpl:insert attribute="zoneButtons" --%>
 <%-- /tpl:insert --%>
 <%@ include file="/theme/find/bodyEnd.jspf"%>

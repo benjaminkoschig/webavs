@@ -35,9 +35,7 @@ public abstract class AnnonceHandlerAbstract {
      * 
      * @param annonceSedex
      * @param e
-     * @param subType
-     * @param type
-     * @param idSender
+     * @param message
      */
     protected void _setErrorOnReception(SimpleAnnonceSedex annonceSedex, Throwable e, Object message) {
         try {
@@ -75,7 +73,9 @@ public abstract class AnnonceHandlerAbstract {
                         ch.gdk_cds.xmlns.pv_5212_000402._3.Message.class,
                         ch.gdk_cds.xmlns.pv_5203_000501._3.Message.class,
                         ch.gdk_cds.xmlns.pv_5213_000601._3.Message.class,
-                        ch.gdk_cds.xmlns.pv_5214_000701._3.Message.class };
+                        ch.gdk_cds.xmlns.pv_5214_000701._3.Message.class,
+                        ch.gdk_cds.xmlns.pv_5205_000801._3.Message.class,
+                        ch.gdk_cds.xmlns.pv_5215_000802._3.Message.class};
                 file = JAXBServices.getInstance().marshal(message, false, false, addClasses);
                 fileName = new String[1];
                 fileName[0] = file;
@@ -206,8 +206,7 @@ public abstract class AnnonceHandlerAbstract {
      * 
      * @param referenceMessageId
      *            Le decreeId
-     * @param subTypeMessage
-     *            A indiquer si l'on veut un sous-type spécifique, sinon null ou zéro
+     * @param referenceMessageId
      * @return
      * @throws AnnonceSedexException
      * @throws JadeApplicationServiceNotAvailableException

@@ -37,7 +37,7 @@ public class SimpleAnnonceSedex extends JadeSimpleModel {
     private String status = null;
     private String traitement = null;
     private String versionXSD = null;
-
+    private String montantPrimeTarifaire = null;
     /**
      * Default constructor
      */
@@ -352,4 +352,8 @@ public class SimpleAnnonceSedex extends JadeSimpleModel {
         this.versionXSD = versionXSD;
     }
 
+    public String getMontantPrimeTarifaire() { return this.montantPrimeTarifaire; }
+    public void setMontantPrimeTarifaire(String montantPrimeTarifaire) {
+        this.montantPrimeTarifaire = montantPrimeTarifaire;
+    }
 }

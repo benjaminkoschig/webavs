@@ -35,16 +35,7 @@ public class AMCaisseMaladieServletAction extends AMAbstractServletAction {
     // String typeAdmin = request.getParameter("searchModel.forTypeAdmin");
     // String orderBy = request.getParameter("searchModel.orderBy");
     //
-    // List<String> selectedIdCaisses = null;
-    // if (!JadeStringUtil.isEmpty(noCaisse)) {
-    // String[] selectedCaisses = noCaisse.split(";");
-    // if (selectedCaisses.length > 0) {
-    // selectedIdCaisses = new ArrayList<String>();
-    // for (int iCaisse = 0; iCaisse < selectedCaisses.length; iCaisse++) {
-    // selectedIdCaisses.add(selectedCaisses[iCaisse]);
-    // }
-    // }
-    // }
+    // List<String> selectedIdCaisses = extractSelectedIdCaisses(noCaisse);
     //
     // // ---------------------------------------------------------------------
     // // process preparation - afin d'éviter une double action sur les boutons
@@ -100,16 +91,7 @@ public class AMCaisseMaladieServletAction extends AMAbstractServletAction {
             isSimulation = true;
         }
 
-        ArrayList<String> selectedIdCaisses = null;
-        if (!JadeStringUtil.isEmpty(noCaisse)) {
-            String[] selectedCaisses = noCaisse.split(";");
-            if (selectedCaisses.length > 0) {
-                selectedIdCaisses = new ArrayList<String>();
-                for (int iCaisse = 0; iCaisse < selectedCaisses.length; iCaisse++) {
-                    selectedIdCaisses.add(selectedCaisses[iCaisse]);
-                }
-            }
-        }
+        List<String> selectedIdCaisses = extractSelectedIdCaisses(noCaisse);
 
         // ---------------------------------------------------------------------
         // process preparation - afin d'éviter une double action sur les boutons
@@ -152,6 +134,20 @@ public class AMCaisseMaladieServletAction extends AMAbstractServletAction {
 
     }
 
+    private List<String> extractSelectedIdCaisses(String noCaisse) {
+        List<String> selectedIdCaisses = null;
+        if (!JadeStringUtil.isEmpty(noCaisse)) {
+            String[] selectedCaisses = noCaisse.split(";");
+            if (selectedCaisses.length > 0) {
+                selectedIdCaisses = new ArrayList<String>();
+                for (int iCaisse = 0; iCaisse < selectedCaisses.length; iCaisse++) {
+                    selectedIdCaisses.add(selectedCaisses[iCaisse]);
+                }
+            }
+        }
+        return selectedIdCaisses;
+    }
+
     public String launchSimulationProcess(HttpSession session, HttpServletRequest request,
             HttpServletResponse response, FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) {
 
@@ -169,16 +165,7 @@ public class AMCaisseMaladieServletAction extends AMAbstractServletAction {
             return launchSEDEXRPProcess(session, request, response, mainDispatcher, viewBean);
         }
 
-        List<String> selectedIdCaisses = null;
-        if (!JadeStringUtil.isEmpty(noCaisse)) {
-            String[] selectedCaisses = noCaisse.split(";");
-            if (selectedCaisses.length > 0) {
-                selectedIdCaisses = new ArrayList<String>();
-                for (int iCaisse = 0; iCaisse < selectedCaisses.length; iCaisse++) {
-                    selectedIdCaisses.add(selectedCaisses[iCaisse]);
-                }
-            }
-        }
+        List<String> selectedIdCaisses = extractSelectedIdCaisses(noCaisse);
 
         // ---------------------------------------------------------------------
         // process preparation - afin d'éviter une double action sur les boutons
@@ -213,6 +200,20 @@ public class AMCaisseMaladieServletAction extends AMAbstractServletAction {
         return destination;
     }
 
+    public String launchSimulationPTProcess(HttpSession session, HttpServletRequest request,
+                                            HttpServletResponse response, FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) {
+        String destination = "";
+        String typeAdmin = request.getParameter("searchModel.forTypeAdmin");
+        String orderBy = request.getParameter("searchModel.orderBy");
+
+
+        destination = "/amal?userAction=" + IAMActions.ACTION_CAISSEMALADIE + ".chercher&searchModel.forTypeAdmin="
+                + typeAdmin + "&searchModel.orderBy=" + orderBy;
+
+        return destination;
+    }
+
+
     public String launchSEDEXCOProcess(HttpSession session, HttpServletRequest request, HttpServletResponse response,
             FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) {
         String destination = "";
@@ -229,16 +230,7 @@ public class AMCaisseMaladieServletAction extends AMAbstractServletAction {
             isSimulation = true;
         }
 
-        ArrayList<String> selectedIdCaisses = null;
-        if (!JadeStringUtil.isEmpty(noCaisse)) {
-            String[] selectedCaisses = noCaisse.split(";");
-            if (selectedCaisses.length > 0) {
-                selectedIdCaisses = new ArrayList<String>();
-                for (int iCaisse = 0; iCaisse < selectedCaisses.length; iCaisse++) {
-                    selectedIdCaisses.add(selectedCaisses[iCaisse]);
-                }
-            }
-        }
+        List<String> selectedIdCaisses = extractSelectedIdCaisses(noCaisse);
 
         // ---------------------------------------------------------------------
         // process preparation - afin d'éviter une double action sur les boutons
@@ -295,16 +287,7 @@ public class AMCaisseMaladieServletAction extends AMAbstractServletAction {
         // return launchSEDEXCOProcess(session, request, response, mainDispatcher, viewBean);
         // }
 
-        List<String> selectedIdCaisses = null;
-        if (!JadeStringUtil.isEmpty(noCaisse)) {
-            String[] selectedCaisses = noCaisse.split(";");
-            if (selectedCaisses.length > 0) {
-                selectedIdCaisses = new ArrayList<String>();
-                for (int iCaisse = 0; iCaisse < selectedCaisses.length; iCaisse++) {
-                    selectedIdCaisses.add(selectedCaisses[iCaisse]);
-                }
-            }
-        }
+        List<String> selectedIdCaisses = extractSelectedIdCaisses(noCaisse);
 
         // ---------------------------------------------------------------------
         // process preparation - afin d'éviter une double action sur les boutons

@@ -76,6 +76,12 @@
 						</action>
 					</node>
 					<node>
+						<label refId="MENU_ASSUREURS_SEDEX_PT"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.sedexpt.sedexpt.chercher"/>
+						</action>
+					</node>
+					<node>
 						<label refId="MENU_ASSUREURS_SEDEX_CO_COMPARAISONS"/>
 						<action command="/amal" responseTarget="fr_main">
 							<parameter name="userAction" value="amal.sedexco.sedexcocomparaison.afficher"/>					

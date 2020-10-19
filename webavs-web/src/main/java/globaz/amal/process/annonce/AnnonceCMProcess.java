@@ -65,9 +65,6 @@ import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
  */
 public class AnnonceCMProcess extends AMALabstractProcess {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     private String anneeHistorique = null;
     private List<String> errorMessages = null;

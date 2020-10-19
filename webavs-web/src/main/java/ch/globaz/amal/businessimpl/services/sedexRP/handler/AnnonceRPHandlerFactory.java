@@ -7,8 +7,7 @@ public class AnnonceRPHandlerFactory {
     /**
      * Retourne une instance du handler qui devra gérer le traitement de l'annonce de type RECEPTION
      * 
-     * @param annonce
-     *            L'annonce
+     * @param message L'annonce sedex
      * 
      * @return instance du handler
      * 
@@ -37,7 +36,8 @@ public class AnnonceRPHandlerFactory {
             ch.gdk_cds.xmlns.pv_5211_000202._3.Message stopConfirmation = (ch.gdk_cds.xmlns.pv_5211_000202._3.Message) message;
             return new AnnonceStopConfirmationHandler(stopConfirmation);
         } else if (message instanceof ch.gdk_cds.xmlns.pv_5211_000203._3.Message) {
-            // -------------- Rejet d'une interruption -----------------
+            // -------------- Rejet d'une interruption ---
+            // -------------
             ch.gdk_cds.xmlns.pv_5211_000203._3.Message stopReject = (ch.gdk_cds.xmlns.pv_5211_000203._3.Message) message;
             return new AnnonceStopRejectHandler(stopReject);
         } else if (message instanceof ch.gdk_cds.xmlns.pv_5211_000301._3.Message) {
@@ -64,7 +64,11 @@ public class AnnonceRPHandlerFactory {
             // -------------- Décompte annuel -----------------
             ch.gdk_cds.xmlns.pv_5214_000701._3.Message statement = (ch.gdk_cds.xmlns.pv_5214_000701._3.Message) message;
             return new AnnonceStatementHandler(statement);
-        } else {
+        } else if (message instanceof ch.gdk_cds.xmlns.pv_5215_000802._3.Message) {
+            // -------------- Reponse prime tarifaire -----------------
+            ch.gdk_cds.xmlns.pv_5215_000802._3.Message statement = (ch.gdk_cds.xmlns.pv_5215_000802._3.Message) message;
+            return new AnnoncePremiumQueryResultHandler(statement);
+        }else {
             throw new AnnonceSedexException("AnnonceHandlerFactory.getAnnonceHandler : Unknown type !");
         }
     }

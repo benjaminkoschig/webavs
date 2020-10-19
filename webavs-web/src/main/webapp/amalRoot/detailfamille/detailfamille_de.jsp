@@ -689,41 +689,63 @@ pre {
 		<tr>
 			<td width="100px"><input type="radio" id="typeNewAnnonce_decreeStop" name="typeNewAnnonce" class="typeNewAnnonce" value="decreeStop"><label for="typeNewAnnonce_decreeStop">Type</label></td>
 			<td>
-				<select id="createDecreeStop">
-					<option name="subTypeAnnonce" value="101">Nouvelle décision</option>
-					<option name="subTypeAnnonce" value="201">Interruption</option>
-				</select>
+				<table>
+					<tr>
+						<td>
+							<select id="createDecreeStop">
+								<option name="subTypeAnnonce" value="101">Nouvelle décision</option>
+								<option name="subTypeAnnonce" value="201">Interruption</option>
+								<option name="subTypeAnnonce" value="801">Demande PT</option>
+							</select>
+						</td>
+						<td>
+							<div id="membreFamille_div" style="display: none;">
+								<input type="checkbox" id="membreFamille_decreeStop" name="membreFamille" checked>
+								<label for="membreFamille_decreeStop">membre famille</label>
+							</div>
+						</td>
+					</tr>
+				</table>
+
 			</td>
 		</tr>
 		<tr>
 			<td>&nbsp;</td>
 			<td>
-				<select id="decreeStopCaisse" >
-					<%
-					AMDetailFamilleHelper dfH2 = new AMDetailFamilleHelper();
-					HashMap<String, String> mapGroupes2 = dfH.getGroupesCM();
-					
-					Map<String, Map<String, String>> mapGroupesCaisses2 = dfH.buildCMList();						
-						for (String idGroupe : mapGroupesCaisses2.keySet()) {
-							String libGroupe2 = mapGroupes2.get(idGroupe);
-							%>
-								<optgroup label="<%=libGroupe2%>">
-									<% 
-									Map<String, String> mapCaisses = mapGroupesCaisses2.get(idGroupe);
-									//for (String idCaisse : mapCaisses.keySet()) {
-									for (Map.Entry entry : mapCaisses.entrySet()) {
-										String selected = "";
-										if (!viewBean.getDetailFamille().isNew() && viewBean.getDetailFamille().getNoCaisseMaladie().equals(entry.getKey())) {
-											selected = "selected=\"selected\"";
+				<div id="decreeStopCaisse_div">
+					<table>
+						<tr>
+							<td colspan="2">
+								<select id="decreeStopCaisse" >
+									<%
+									AMDetailFamilleHelper dfH2 = new AMDetailFamilleHelper();
+									HashMap<String, String> mapGroupes2 = dfH.getGroupesCM();
+
+									Map<String, Map<String, String>> mapGroupesCaisses2 = dfH.buildCMList();
+										for (String idGroupe : mapGroupesCaisses2.keySet()) {
+											String libGroupe2 = mapGroupes2.get(idGroupe);
+											%>
+												<optgroup label="<%=libGroupe2%>">
+													<%
+													Map<String, String> mapCaisses = mapGroupesCaisses2.get(idGroupe);
+													//for (String idCaisse : mapCaisses.keySet()) {
+													for (Map.Entry entry : mapCaisses.entrySet()) {
+														String selected = "";
+														if (!viewBean.getDetailFamille().isNew() && viewBean.getDetailFamille().getNoCaisseMaladie().equals(entry.getKey())) {
+															selected = "selected=\"selected\"";
+														}
+													%>
+														<option <%=selected%> value="<%=entry.getKey()%>"><%=entry.getValue()%></option>
+													<% }%>
+												</optgroup>
+											<%
 										}
 									%>
-										<option <%=selected%> value="<%=entry.getKey()%>"><%=entry.getValue()%></option>
-									<% }%>
-								</optgroup>
-							<%
-						}
-					%>
-				</select>
+								</select>
+							</td>
+						</tr>
+					</table>
+				</div>
 			</td>
 		</tr>
 	</table>
@@ -787,6 +809,7 @@ Nouveau subside
 	 	<INPUT type="hidden" id="detailfamille.calculs.revenuIsTaxation" name="calculs.revenuIsTaxation" value="">
 	 	<INPUT type="hidden" id="detailfamille.calculs.allSubsidesAsString" name="calculs.allSubsidesAsString" value="">
 	 	<INPUT type="hidden" id="idContribuable" value="<%=viewBean.getContribuable().getId()%>">
+		<INPUT type="hidden" id="idFamille" value="<%=viewBean.getDetailFamille().getIdFamille()%>">
 				<table width="100%">
 					<tr>
 						<td align="left" style="vertical-align:top">

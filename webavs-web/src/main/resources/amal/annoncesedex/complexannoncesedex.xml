@@ -127,6 +127,7 @@
 						 ]]>
 					</search-literal>
 				</search-group>
+				<search-field name="forSUBAnneeHistorique" operation="EQUALS" field-ref="simpleDetailFamille.anneeHistorique"/>
 			</search-group>
 		</search-definition>
 

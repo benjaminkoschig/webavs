@@ -43,5 +43,7 @@ public interface IAMActions {
     public static final String ACTION_REVENU_HISTORIQUE = "amal.revenuHistorique.revenuHistorique";
     public static final String ACTION_SEDEX_RP = "amal.sedexrp.sedexrp";
     public static final String ACTION_SEDEX_CO = "amal.sedexco.sedexco";
+    public static final String ACTION_SEDEX_PT = "amal.sedexpt.sedexpt";
     public static final String ACTION_SEDEX_CO_COMPARAISON = "amal.sedexco.sedexcocomparaison";
+    public static final String ACTION_SEDEX_PT_CREATION_ANNONCE = "amal.sedexpt.sedexptcreationannonce";
 }

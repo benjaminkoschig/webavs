@@ -58,7 +58,12 @@ import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
  * 
  */
 public abstract class AnnonceBuilderAbstract {
+
     public static boolean isAnnonceConfirmed(SimpleAnnonceSedex simpleAnnonceSedex) {
+        return isAnnonceConfirmed(simpleAnnonceSedex, true);
+    }
+
+    public static boolean isAnnonceConfirmed(SimpleAnnonceSedex simpleAnnonceSedex, boolean checkInterruption) {
         if ((simpleAnnonceSedex == null) || simpleAnnonceSedex.isNew()) {
             return false;
         }
@@ -88,7 +93,7 @@ public abstract class AnnonceBuilderAbstract {
                 if (AMMessagesSubTypesAnnonceSedex.CONFIRMATION_DECISION.getValue().equals(annonce.getMessageSubType())) {
                     isConfirmed = true;
                 }
-                if (AMMessagesSubTypesAnnonceSedex.CONFIRMATION_INTERRUPTION.getValue().equals(
+                if (checkInterruption && AMMessagesSubTypesAnnonceSedex.CONFIRMATION_INTERRUPTION.getValue().equals(
                         annonce.getMessageSubType())) {
                     isStopped = true;
                 }

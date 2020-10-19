@@ -15,20 +15,19 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
+
+import ch.globaz.amal.business.models.detailfamille.SimpleDetailFamilleSearch;
+import com.google.common.collect.Lists;
+import globaz.jade.smtp.JadeSmtpClient;
+import org.apache.commons.collections.iterators.EntrySetMapIterator;
+import org.apache.commons.lang.StringUtils;
 import org.xml.sax.SAXException;
 import ch.ech.xmlns.ech_0090._1.EnvelopeType;
 import ch.globaz.amal.business.constantes.AMMessagesSubTypesAnnonceSedex;
@@ -587,7 +586,7 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
     /**
      * Création des annonces
      *
-     * @param annonceSedexSearchToSend
+     * @param annonceSedexSearchToCreate
      *            Model search pour la sélection des annonces à créer
      */
     private int _creationAnnoncesRP(ComplexAnnonceSedexSearch annonceSedexSearchToCreate) {
@@ -1120,11 +1119,40 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
         return simpleAnnonce;
     }
 
+    private List<SimpleAnnonceSedex> _lastAllDecreeConfirmed(String idDetailFamille)
+            throws JadePersistenceException, AnnonceSedexException, JadeApplicationServiceNotAvailableException {
+        SimpleAnnonceSedexSearch simpleAnnonceSedexSearch = _findAllNouvelleDecisionEnvoyeFromIdDetailFamille(idDetailFamille);
+
+        List<SimpleAnnonceSedex> simpleAnnonceSedexConfirmed = new ArrayList<>();
+        for (JadeAbstractModel abstractSimpleAnnonceSedex : simpleAnnonceSedexSearch.getSearchResults()) {
+            SimpleAnnonceSedex simpleAnnonceSedex = (SimpleAnnonceSedex) abstractSimpleAnnonceSedex;
+
+            // Si une des annonces SEDEX a été confirmée
+            if (AnnonceBuilderAbstract.isAnnonceConfirmed(simpleAnnonceSedex, false)) {
+                simpleAnnonceSedexConfirmed.add(simpleAnnonceSedex);
+            }
+        }
+
+        return simpleAnnonceSedexConfirmed;
+    }
+
+    private SimpleAnnonceSedexSearch _findAllNouvelleDecisionEnvoyeFromIdDetailFamille(String idDetailFamille)
+            throws JadePersistenceException, AnnonceSedexException, JadeApplicationServiceNotAvailableException {
+        SimpleAnnonceSedexSearch simpleAnnonceSedexSearch = new SimpleAnnonceSedexSearch();
+        simpleAnnonceSedexSearch.setForIdDetailFamille(idDetailFamille);
+        simpleAnnonceSedexSearch.setForMessageSubType(AMMessagesSubTypesAnnonceSedex.NOUVELLE_DECISION.getValue());
+        ArrayList<String> listStatus = new ArrayList<>();
+        listStatus.add(AMStatutAnnonceSedex.ENVOYE.getValue());
+        simpleAnnonceSedexSearch.setInStatus(listStatus);
+        simpleAnnonceSedexSearch = AmalImplServiceLocator.getSimpleAnnonceSedexService()
+                .search(simpleAnnonceSedexSearch);
+        return simpleAnnonceSedexSearch;
+    }
+
     /**
      * Retourne true si une annonce a été confirmée et non interrompue dans le subside passé en paramètre
      *
      * @param idDetailFamille
-     * @param decreeConfirmed
      * @return
      * @throws JadePersistenceException
      * @throws AnnonceSedexException
@@ -1132,14 +1160,7 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
      */
     private SimpleAnnonceSedex _lastDecreeConfirmed(String idDetailFamille)
             throws JadePersistenceException, AnnonceSedexException, JadeApplicationServiceNotAvailableException {
-        SimpleAnnonceSedexSearch simpleAnnonceSedexSearch = new SimpleAnnonceSedexSearch();
-        simpleAnnonceSedexSearch.setForIdDetailFamille(idDetailFamille);
-        simpleAnnonceSedexSearch.setForMessageSubType(AMMessagesSubTypesAnnonceSedex.NOUVELLE_DECISION.getValue());
-        ArrayList<String> listStatus = new ArrayList<String>();
-        listStatus.add(IAMCodeSysteme.AMStatutAnnonceSedex.ENVOYE.getValue());
-        simpleAnnonceSedexSearch.setInStatus(listStatus);
-        simpleAnnonceSedexSearch = AmalImplServiceLocator.getSimpleAnnonceSedexService()
-                .search(simpleAnnonceSedexSearch);
+        SimpleAnnonceSedexSearch simpleAnnonceSedexSearch = _findAllNouvelleDecisionEnvoyeFromIdDetailFamille(idDetailFamille);
 
         SimpleAnnonceSedex simpleAnnonceSedexConfirmed = null;
         for (JadeAbstractModel abstractSimpleAnnonceSedex : simpleAnnonceSedexSearch.getSearchResults()) {
@@ -1185,7 +1206,7 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
      * @param anneeHistorique
      * @return
      */
-    private ComplexAnnonceSedexSearch _loadAnnonceToCreate(String msgType, ArrayList<String> selectedIdCaisses,
+    private ComplexAnnonceSedexSearch _loadAnnonceToCreate(String msgType, List<String> selectedIdCaisses,
             String anneeHistorique) {
 
         ComplexAnnonceSedexSearch annonceSedexSearch = new ComplexAnnonceSedexSearch();
@@ -1199,7 +1220,7 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
             }
 
             if (!(selectedIdCaisses == null) && (selectedIdCaisses.size() > 0)) {
-                annonceSedexSearch.setInCMIdTiersCaisse(selectedIdCaisses);
+                annonceSedexSearch.setInCMIdTiersCaisse((ArrayList) selectedIdCaisses);
             }
 
             // FOR DEBUG ONLY
@@ -1254,7 +1275,7 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
      * @return
      */
     private Map<String, Map<String, List<SimpleAnnonceSedex>>> _loadAnnonceToSend(String msgType,
-            ArrayList<String> selectedIdCaisses, String anneeHistorique) {
+            List<String> selectedIdCaisses, String anneeHistorique) {
         Map<String, Map<String, List<SimpleAnnonceSedex>>> mapCMAnnonces = new HashMap<String, Map<String, List<SimpleAnnonceSedex>>>();
         try {
             ComplexAnnonceSedexSearch annonceSedexSearch = new ComplexAnnonceSedexSearch();
@@ -1273,7 +1294,7 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
             }
 
             if (!(selectedIdCaisses == null) && (selectedIdCaisses.size() > 0)) {
-                annonceSedexSearch.setInCMIdTiersCaisse(selectedIdCaisses);
+                annonceSedexSearch.setInCMIdTiersCaisse((ArrayList) selectedIdCaisses);
             }
 
             ArrayList<String> inStatus = new ArrayList<String>();
@@ -1352,15 +1373,20 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
      */
     private ComplexAnnonceSedexSearch _searchAnnoncesForExport(String filters, String order)
             throws JadePersistenceException, AnnonceSedexException, JadeApplicationServiceNotAvailableException {
-        Map<String, String> mapFilterValue = new HashMap<String, String>();
-        String[] pairs = filters.split(";");
-        for (int i = 0; i < pairs.length; i++) {
-            String pair = pairs[i];
-            String[] keyValue = pair.split(":");
-            if (keyValue.length > 1) {
-                mapFilterValue.put(keyValue[0], keyValue[1]);
-            }
-        }
+        // Récupération des valeurs de filtres
+        Map<String, String> mapFilterValue = initMapFilterValue(filters);
+        // Mapping des filtres avec le model search
+        ComplexAnnonceSedexSearch annonceSedexSearch = initialiseComplexAnnonceSedexSearch(mapFilterValue, order);
+
+        // Lancement de la recherche
+        annonceSedexSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+        annonceSedexSearch = AmalServiceLocator.getComplexAnnonceSedexService().search(annonceSedexSearch);
+        return annonceSedexSearch;
+    }
+
+
+    private ComplexAnnonceSedexSearch initialiseComplexAnnonceSedexSearch(Map<String, String> mapFilterValue, String order) {
+
         ComplexAnnonceSedexSearch annonceSedexSearch = new ComplexAnnonceSedexSearch();
         annonceSedexSearch.setWhereKey("rcListe");
 
@@ -1403,6 +1429,8 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
                 annonceSedexSearch.setForSDXDateMessageGOE(mapVal);
             } else if ("forDateMessageLOE".equals(mapKey)) {
                 annonceSedexSearch.setForSDXDateMessageLOE(mapVal);
+            } else if ("forSUBAnneeHistorique".equals(mapKey)) {
+                annonceSedexSearch.setForSUBAnneeHistorique(mapVal);
             } else if ("likeCMNomCaisse".equals(mapKey)) {
                 annonceSedexSearch.setLikeCMNomCaisse(mapVal);
             } else if ("forCMNumCaisse".equals(mapKey)) {
@@ -1423,10 +1451,20 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
             e.printStackTrace();
             // On ne fait rien, order pas appliqué
         }
-
-        annonceSedexSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
-        annonceSedexSearch = AmalServiceLocator.getComplexAnnonceSedexService().search(annonceSedexSearch);
         return annonceSedexSearch;
+    }
+
+    private Map<String, String> initMapFilterValue(String filters) {
+        Map<String, String> mapFilterValue = new HashMap<String, String>();
+        String[] pairs = filters.split(";");
+        for (int i = 0; i < pairs.length; i++) {
+            String pair = pairs[i];
+            String[] keyValue = pair.split(":");
+            if (keyValue.length > 1) {
+                mapFilterValue.put(keyValue[0], keyValue[1]);
+            }
+        }
+        return mapFilterValue;
     }
 
     /**
@@ -1666,7 +1704,7 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
      *            Nom du fichier avec l'extension
      * @return
      */
-    private String _writeFile(List<StringBuffer> listRecords, String lineHeader, String fileNameWithExt) {
+    public static String _writeFile(List<StringBuffer> listRecords, String lineHeader, String fileNameWithExt) {
         System.setProperty("line.separator", "\r\n");
 
         // Create file
@@ -1878,7 +1916,7 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
      * java.util.ArrayList, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public Map<String, Object> createAndSendAnnonce(String typeMessage, ArrayList<String> selectedIdCaisses,
+    public Map<String, Object> createAndSendAnnonce(String typeMessage, List<String> selectedIdCaisses,
             String idGroupe, String anneeHistorique, boolean _isSimulation) {
 
         if (!JadeStringUtil.isEmpty(idGroupe)) {
@@ -1909,9 +1947,11 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
         isSimulation = _isSimulation;
         if (AMMessagesTypesAnnonceSedex.NOUVELLE_DECISION.getValue().equals(typeMessage)
                 || AMMessagesTypesAnnonceSedex.INTERRUPTION.getValue().equals(typeMessage)
-                || AMMessagesTypesAnnonceSedex.DEMANDE_RAPPORT_ASSURANCE.getValue().equals(typeMessage)) {
+                || AMMessagesTypesAnnonceSedex.DEMANDE_RAPPORT_ASSURANCE.getValue().equals(typeMessage)
+                || AMMessagesTypesAnnonceSedex.DEMANDE_PRIME_TARIFAIRE.getValue().equals(typeMessage)) {
             // --------------------------------------------------------------------------------------------
             // Traitement nouvelle décision ou interruption (== 5201) ou 'Demande de rapport' (==5202)
+            // ou d'une demande de prime tarifaire (5205)
             // --------------------------------------------------------------------------------------------
             // Selection des annonces à créer
             ComplexAnnonceSedexSearch annonceSedexSearchToCreate = this._loadAnnonceToCreate(typeMessage,
@@ -2081,55 +2121,66 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
         for (JadeAbstractModel model : annonceSedexSearch.getSearchResults()) {
             ComplexAnnonceSedex annonceSedex = (ComplexAnnonceSedex) model;
 
-            StringBuffer sbCsv = new StringBuffer();
-            sbCsv.append(
-                    annonceSedex.getSimpleAnnonceSedex().getIdAnnonceSedex() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(
-                    annonceSedex.getSimpleAnnonceSedex().getIdContribuable() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(
-                    annonceSedex.getSimpleAnnonceSedex().getIdDetailFamille() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(annonceSedex.getSimpleAnnonceSedex().getDateMessage() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(annonceSedex.getSimpleAnnonceSedex().getMessageType() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(JadeStringUtil.fillWithZeroes(annonceSedex.getSimpleAnnonceSedex().getMessageSubType(), 6)
-                    + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(AMMessagesSubTypesAnnonceSedex.getSubTypeCSLibelle(
-                    annonceSedex.getSimpleAnnonceSedex().getMessageSubType()) + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(
-                    annonceSedex.getSimpleAnnonceSedex().getMessageEmetteur() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(
-                    annonceSedex.getSimpleAnnonceSedex().getMessageRecepteur() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(currentSession.getCodeLibelle(annonceSedex.getSimpleAnnonceSedex().getStatus())
-                    + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(currentSession.getCodeLibelle(annonceSedex.getSimpleAnnonceSedex().getTraitement())
-                    + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(
-                    annonceSedex.getSimpleAnnonceSedex().getNumeroDecision() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(annonceSedex.getSimpleAnnonceSedex().getNumeroCourant() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(
-                    annonceSedex.getContribuable().getFamille().getNomPrenom() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(annonceSedex.getSimpleFamille().getNomPrenom() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(annonceSedex.getSimpleFamille().getDateNaissance() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(currentSession.getCodeLibelle(annonceSedex.getSimpleFamille().getPereMereEnfant())
-                    + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(annonceSedex.getSimpleFamille().getIsContribuable() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(annonceSedex.getSimpleDetailFamille().getDebutDroit() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(annonceSedex.getSimpleDetailFamille().getFinDroit() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(annonceSedex.getSimpleDetailFamille().getMontantContribution()
-                    + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(
-                    annonceSedex.getSimpleDetailFamille().getMontantSupplement() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(annonceSedex.getSimpleDetailFamille().getMontantContributionAvecSupplExtra()
-                    + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(annonceSedex.getSimpleDetailFamille().getNoAssure() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(annonceSedex.getCaisseMaladie().getAdmin().getCodeAdministration()
-                    + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(
-                    annonceSedex.getCaisseMaladie().getTiers().getDesignation1() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+            StringBuffer sbCsv = createLineForExport(currentSession, annonceSedex);
 
             listRecords.add(sbCsv);
         }
 
         // CSV Line Header
+        String lineHeader = createHeaderForExportAnnonceRP();
+
+        return _writeFile(listRecords, lineHeader, "exportAnnoncesRP.csv");
+    }
+
+    public static StringBuffer createLineForExport(BSession currentSession, ComplexAnnonceSedex annonceSedex) {
+        StringBuffer sbCsv = new StringBuffer();
+        sbCsv.append(
+                annonceSedex.getSimpleAnnonceSedex().getIdAnnonceSedex() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(
+                annonceSedex.getSimpleAnnonceSedex().getIdContribuable() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(
+                annonceSedex.getSimpleAnnonceSedex().getIdDetailFamille() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(annonceSedex.getSimpleAnnonceSedex().getDateMessage() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(annonceSedex.getSimpleAnnonceSedex().getMessageType() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(JadeStringUtil.fillWithZeroes(annonceSedex.getSimpleAnnonceSedex().getMessageSubType(), 6)
+                + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(AMMessagesSubTypesAnnonceSedex.getSubTypeCSLibelle(
+                annonceSedex.getSimpleAnnonceSedex().getMessageSubType()) + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(
+                annonceSedex.getSimpleAnnonceSedex().getMessageEmetteur() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(
+                annonceSedex.getSimpleAnnonceSedex().getMessageRecepteur() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(currentSession.getCodeLibelle(annonceSedex.getSimpleAnnonceSedex().getStatus())
+                + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(currentSession.getCodeLibelle(annonceSedex.getSimpleAnnonceSedex().getTraitement())
+                + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(
+                annonceSedex.getSimpleAnnonceSedex().getNumeroDecision() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(annonceSedex.getSimpleAnnonceSedex().getNumeroCourant() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(
+                annonceSedex.getContribuable().getFamille().getNomPrenom() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(annonceSedex.getSimpleFamille().getNomPrenom() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(annonceSedex.getSimpleFamille().getDateNaissance() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(currentSession.getCodeLibelle(annonceSedex.getSimpleFamille().getPereMereEnfant())
+                + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(annonceSedex.getSimpleFamille().getIsContribuable() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(annonceSedex.getSimpleDetailFamille().getDebutDroit() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(annonceSedex.getSimpleDetailFamille().getFinDroit() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(annonceSedex.getSimpleDetailFamille().getMontantContribution()
+                + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(
+                annonceSedex.getSimpleDetailFamille().getMontantSupplement() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(annonceSedex.getSimpleDetailFamille().getMontantContributionAvecSupplExtra()
+                + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(annonceSedex.getSimpleDetailFamille().getNoAssure() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(annonceSedex.getCaisseMaladie().getAdmin().getCodeAdministration()
+                + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        sbCsv.append(
+                annonceSedex.getCaisseMaladie().getTiers().getDesignation1() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+        return sbCsv;
+    }
+
+    public static String createHeaderForExportAnnonceRP() {
         String lineHeader = "";
         lineHeader += "idAnnonceSedex" + AnnoncesRPServiceImpl.CSV_SEPARATOR;
         lineHeader += "idContribuable" + AnnoncesRPServiceImpl.CSV_SEPARATOR;
@@ -2157,9 +2208,86 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
         lineHeader += "No_assuré" + AnnoncesRPServiceImpl.CSV_SEPARATOR;
         lineHeader += "Num_Caisse_maladie" + AnnoncesRPServiceImpl.CSV_SEPARATOR;
         lineHeader += "Caisse_maladie" + AnnoncesRPServiceImpl.CSV_SEPARATOR;
-
-        return _writeFile(listRecords, lineHeader, "exportAnnoncesRP.csv");
+        return lineHeader;
     }
+
+    @Override
+    public String exportListAnnoncesReponsePT(String filters, String order) throws JadeApplicationException, JadePersistenceException {
+
+        // Récupération des filtres
+        Map<String, String> mapFilterValue = initMapFilterValue(filters);
+
+        // Construction de l'objet de recherche
+        ComplexAnnonceSedexSearch annonceSedexSearch = initialiseComplexAnnonceSedexSearch(mapFilterValue, order);
+
+        // On force la recherche des annonces de réponse prime tarifaire
+        annonceSedexSearch.setInSDXMessageSubType(Lists.newArrayList(AMMessagesSubTypesAnnonceSedex.REPONSE_PRIME_TARIFAIRE.getValue()));
+        annonceSedexSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+
+        // Lancement de la recherche
+        annonceSedexSearch = AmalServiceLocator.getComplexAnnonceSedexService().search(annonceSedexSearch);
+
+        // TODO SCO : Verifier que l'annonce de réponse soit bien a lié a un type de décision RP "Prestation complémentaire".
+
+        // Génération du fichier excel
+        String filename = genererCsvForListAnnoncesReponsePT(annonceSedexSearch);
+
+        // Envoi du fichier
+        sendEmailForListAnnoncesReponsePT(mapFilterValue, filename);
+
+        return "";
+    }
+
+    private String genererCsvForListAnnoncesReponsePT(ComplexAnnonceSedexSearch annonceSedexSearch) {
+
+        List<StringBuffer> listRecords = new ArrayList<StringBuffer>();
+        for (JadeAbstractModel model : annonceSedexSearch.getSearchResults()) {
+            ComplexAnnonceSedex annonceSedex = (ComplexAnnonceSedex) model;
+
+            StringBuffer sbCsv = new StringBuffer();
+            sbCsv.append(annonceSedex.getSimpleFamille().getNoAVS() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+            sbCsv.append(annonceSedex.getSimpleFamille().getNomPrenom() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+            sbCsv.append(annonceSedex.getSimpleFamille().getNomPrenomUpper() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+            sbCsv.append(annonceSedex.getSimpleFamille().getDateNaissance()+ AnnoncesRPServiceImpl.CSV_SEPARATOR);
+            sbCsv.append(annonceSedex.getSimpleAnnonceSedex().getMontantPrimeTarifaire() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+            sbCsv.append(annonceSedex.getSimpleAnnonceSedex().getMessageType() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+
+            // On ajoute que les annonces qui ont des primes tarifaires supérieur à 0
+            // si = 0, la réponse est un rejet et on traite pas les rejets.
+            BigDecimal montantPrimeTarifaire = new BigDecimal(annonceSedex.getSimpleAnnonceSedex().getMontantPrimeTarifaire());
+            if(!(new BigDecimal("0.00")).equals(montantPrimeTarifaire)) {
+                listRecords.add(sbCsv);
+            }
+        }
+
+        // CSV Line Header
+        String lineHeader = "";
+        lineHeader += "NSS" + AnnoncesRPServiceImpl.CSV_SEPARATOR;
+        lineHeader += "NomPrenom_membre" + AnnoncesRPServiceImpl.CSV_SEPARATOR;
+        lineHeader += "Prenom_membre" + AnnoncesRPServiceImpl.CSV_SEPARATOR;
+        lineHeader += "DateNaissance_membre" + AnnoncesRPServiceImpl.CSV_SEPARATOR;
+        lineHeader += "Prime_effective" + AnnoncesRPServiceImpl.CSV_SEPARATOR;
+        lineHeader += "idTiersBeneficiare" + AnnoncesRPServiceImpl.CSV_SEPARATOR;
+
+        String filename = _writeFile(listRecords, lineHeader, "exportAnnoncesReponsePT.csv");
+        return filename;
+    }
+
+    private void sendEmailForListAnnoncesReponsePT(Map<String, String> mapFilterValue, String filename) {
+        String[] filenames = {filename};
+        String subject = "Export reponse annonce PT";
+        String message = "La génération du fichier a été éffectué avec succès";
+
+        try {
+            JadeSmtpClient.getInstance().sendMail(mapFilterValue.get("listeForEmail"), subject, message, filenames);
+        } catch (Exception e) {
+            JadeThread.logError(
+                    "sendEmailForListAnnoncesReponsePT",
+                    "Erreur lors de l'envoi du mail du processus de génération des annonces PT par lot : "
+                            + e.getMessage());
+        }
+    }
+
 
     /**
      * Retourne un contexte. Si nécessaire il est initialisé
@@ -2237,7 +2365,8 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
                     ch.gdk_cds.xmlns.pv_5211_000203._3.Message.class, ch.gdk_cds.xmlns.pv_5211_000301._3.Message.class,
                     ch.gdk_cds.xmlns.pv_5202_000401._3.Message.class, ch.gdk_cds.xmlns.pv_5212_000402._3.Message.class,
                     ch.gdk_cds.xmlns.pv_5203_000501._3.Message.class, ch.gdk_cds.xmlns.pv_5213_000601._3.Message.class,
-                    ch.gdk_cds.xmlns.pv_5214_000701._3.Message.class };
+                    ch.gdk_cds.xmlns.pv_5214_000701._3.Message.class, ch.gdk_cds.xmlns.pv_5205_000801._3.Message.class,
+                    ch.gdk_cds.xmlns.pv_5215_000802._3.Message.class};
             // Class<?>[] addClasses = new Class[] {};
             JAXBServices jaxb = JAXBServices.getInstance();
             Object jaxbElement = jaxb.unmarshal(is, false, false, addClasses);
@@ -2490,7 +2619,7 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
                 ch.gdk_cds.xmlns.pv_5211_000103._3.Message.class, ch.gdk_cds.xmlns.pv_5211_000202._3.Message.class,
                 ch.gdk_cds.xmlns.pv_5211_000203._3.Message.class, ch.gdk_cds.xmlns.pv_5211_000301._3.Message.class,
                 ch.gdk_cds.xmlns.pv_5212_000402._3.Message.class, ch.gdk_cds.xmlns.pv_5213_000601._3.Message.class,
-                ch.gdk_cds.xmlns.pv_5214_000701._3.Message.class };
+                ch.gdk_cds.xmlns.pv_5214_000701._3.Message.class, ch.gdk_cds.xmlns.pv_5215_000802._3.Message.class };
 
         JAXBServices jaxbs = JAXBServices.getInstance();
         o_Message = jaxbs.unmarshal(currentSimpleMessage.fileLocation, false, true, addClasses);
@@ -2573,15 +2702,89 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
     }
 
     @Override
-    public SimpleAnnonceSedex initDecreeStopFromJsp(String idDetailFamille, String idContribuable, String msgType,
+    public SimpleAnnonceSedex initDecreeStopFromJsp(String idDetailFamille, String idContribuable, String msgSousType,
             String idTiersCaisse) throws AnnonceSedexException, DetailFamilleException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException {
         SimpleAnnonceSedex simpleAnnonceSedex = new SimpleAnnonceSedex();
-        _createSimpleAnnonceSedex(simpleAnnonceSedex, idDetailFamille, idContribuable, idTiersCaisse, "5201", msgType,
+        // 5201 : annonces fréquentes : organes d’exécution ? assureurs-maladie
+
+        _createSimpleAnnonceSedex(simpleAnnonceSedex, idDetailFamille, idContribuable, idTiersCaisse, "5201", msgSousType,
                 IAMCodeSysteme.AMTraitementsAnnonceSedex.A_TRAITER.getValue(),
                 IAMCodeSysteme.AMStatutAnnonceSedex.INITIAL.getValue());
 
         return simpleAnnonceSedex;
+    }
+
+    @Override
+    public SimpleAnnonceSedex initDecreeStopForDemandePTFromJsp(String idDetailFamille, String idContribuable,
+                                                                String idFamille, String anneeHistorique, Boolean membreFamille)
+            throws AnnonceSedexException, DetailFamilleException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
+
+        // Si "membreFamille" est true, alors on doit créé une annonce pour tous les membres de la famille
+        if(membreFamille) {
+
+            // On cherche le detail famille lié
+            SimpleDetailFamilleSearch detailFamilleSearch = new SimpleDetailFamilleSearch();
+            detailFamilleSearch.setForIdContribuable(idContribuable);
+            detailFamilleSearch.setForAnneeHistorique(anneeHistorique);
+            AmalImplServiceLocator.getSimpleDetailFamilleService().search(detailFamilleSearch);
+
+            for (JadeAbstractModel modelSimpleDetailFamille : detailFamilleSearch.getSearchResults()) {
+                SimpleDetailFamille simpleDetailFamille = (SimpleDetailFamille) modelSimpleDetailFamille;
+                genererAnnonceDemandePT(simpleDetailFamille.getIdDetailFamille(), null, null, false);
+            }
+
+        } else {
+            // Sinon on ne crée que pour le membre de famille spécifique.
+            genererAnnonceDemandePT(idDetailFamille, null, null,false);
+        }
+        return null;
+    }
+
+
+    @Override
+    public List<SimpleAnnonceSedex> genererAnnonceDemandePT(String idDetailFamille, String dateDebut, String dateFin, boolean simulation)
+            throws DetailFamilleException, JadeApplicationServiceNotAvailableException, JadePersistenceException, AnnonceSedexException {
+        // 1. REcherche des décisions confirmées (et non intérompu)
+        List<SimpleAnnonceSedex> allDecisionEnvoyeeConfirmee = _lastAllDecreeConfirmed(idDetailFamille);
+
+        List<SimpleAnnonceSedex> annoncesDemandePT = new ArrayList<>();
+        // 2. Pour chaque décision, on créé une annonce de PT
+        for (SimpleAnnonceSedex decision : allDecisionEnvoyeeConfirmee) {
+
+            // Vérification si la décision est bien dans la limite fourni
+            if(estDansLaLimite(decision.getDateMessage(), dateDebut, dateFin)) {
+                // 5205 : demande de prime tarifaire : organes d’exécution ? assureurs-maladie
+                SimpleAnnonceSedex simpleAnnonceSedex = new SimpleAnnonceSedex();
+                simpleAnnonceSedex =_createSimpleAnnonceSedex(simpleAnnonceSedex, idDetailFamille, decision.getIdContribuable(), decision.getIdTiersCM(),
+                            AMMessagesTypesAnnonceSedex.DEMANDE_PRIME_TARIFAIRE.getValue(),
+                            AMMessagesSubTypesAnnonceSedex.DEMANDE_PRIME_TARIFAIRE.getValue(),
+                            IAMCodeSysteme.AMTraitementsAnnonceSedex.A_TRAITER.getValue(),
+                            IAMCodeSysteme.AMStatutAnnonceSedex.INITIAL.getValue());
+                annoncesDemandePT.add(simpleAnnonceSedex);
+
+            }
+        }
+
+        return annoncesDemandePT;
+    }
+
+    public static boolean estDansLaLimite(String unFormattedDateDecision, String unFormattedDateDebut, String unFormattedDateFin) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDate dateDecision = LocalDate.parse(unFormattedDateDecision, formatter);
+
+        boolean estDansLaLimite = true;
+
+        if(StringUtils.isNotEmpty(unFormattedDateDebut)){
+            LocalDate dateDebut = LocalDate.parse(unFormattedDateDebut, formatter);
+            estDansLaLimite = dateDebut.isBefore(dateDecision) || dateDebut.isEqual(dateDecision);
+        }
+        if(StringUtils.isNotEmpty(unFormattedDateFin)){
+            LocalDate dateFin = LocalDate.parse(unFormattedDateFin, formatter);
+            estDansLaLimite = estDansLaLimite && (dateFin.isAfter(dateDecision) || dateFin.isEqual(dateDecision));
+        }
+
+        return estDansLaLimite;
     }
 
     /*
@@ -2601,7 +2804,8 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
     /**
      * Détermine si il faut effectuer un envoi simple ou groupé et effectue le ou les envois
      *
-     * @param annonceSedexSearch
+     * @param mapAnnonceSedexSearch
+     * @return
      */
     public int sendAnnonces(Map<String, Map<String, List<SimpleAnnonceSedex>>> mapAnnonceSedexSearch) {
         int nbItemsSend = 0;

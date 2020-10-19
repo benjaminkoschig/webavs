@@ -10,7 +10,7 @@ $(document).ready(function() {
 	//
     // Select all the a tag with name equal to modal
     //
-    // Action pour afficher la sélection des templates
+    // Action pour afficher la sï¿½lection des templates
     // -----------------------------------------------
     $('#buttonModal').click(function(e) {
         //Cancel the link behavior
@@ -79,7 +79,7 @@ $(document).ready(function() {
     	}
 	});
     $('#cmSuggestChoice').keyup(function(e) {
-    	// Touche Enter, sélection et retour dans champ input
+    	// Touche Enter, sï¿½lection et retour dans champ input
     	if(e.which==13){
     		// Get and Set Value
     		var myValue = $('#cmSuggestChoice option:selected').val();
@@ -122,6 +122,15 @@ $(document).ready(function() {
     
     $("#decreeStopCaisse, #createDecreeStop").click(function() {
     	$("#typeNewAnnonce_decreeStop").click();
+
+		var myValue = $('#createDecreeStop option:selected').val();
+		if(myValue === "801") {
+			$('#membreFamille_div').show();
+			$('#decreeStopCaisse_div').hide();
+		} else {
+			$('#membreFamille_div').hide();
+			$('#decreeStopCaisse_div').show();
+		}
     });
     
 });
@@ -146,7 +155,12 @@ function attachActionCheckCM() {
             			generateDecreeStop(currentIdDossier,$("#idContribuable").val(), "101", $("#decreeStopCaisse").val());
             		} else if (annonceACreer == "201") {
             			generateDecreeStop(currentIdDossier,$("#idContribuable").val(), "201", $("#decreeStopCaisse").val());
-            		}
+            		} else if (annonceACreer == "801") {
+            			var membreFamille = $("#membreFamille_decreeStop").is(":checked");
+            			var anneeHistorique = $("#anneeHistorique").val();
+            			var idFamille =  $("#idFamille").val();
+						generateDecreeStopDemandePT(currentIdDossier,$("#idContribuable").val(),idFamille, anneeHistorique, membreFamille);
+					}
             	} else {
                 	generateInsuranceQuery(currentIdDossier,s_arrayCaisses,$("#anneeHistorique").val());
             	}
@@ -160,7 +174,7 @@ function attachActionCheckCM() {
 
 
 //------------------------------------------------------------
-//Appel Ajax pour générer l'annonce 'Demande de rapport d'assurance'
+//Appel Ajax pour gï¿½nï¿½rer l'annonce 'Demande de rapport d'assurance'
 //------------------------------------------------------------
 function generateInsuranceQuery(_currentIdDetailFamille, s_arrayCaisses, anneeHistorique) {
 	var o_options= {
@@ -174,7 +188,7 @@ function generateInsuranceQuery(_currentIdDetailFamille, s_arrayCaisses, anneeHi
 }
 
 //------------------------------------------------------------
-//Appel Ajax pour générer une annonce Decree ou Stop
+//Appel Ajax pour gï¿½nï¿½rer une annonce Decree ou Stop
 //------------------------------------------------------------
 function generateDecreeStop(_currentIdDetailFamille, _currentIdContribuable, _type, idTiersCaisse) {
 	var o_options= {
@@ -185,6 +199,20 @@ function generateDecreeStop(_currentIdDetailFamille, _currentIdContribuable, _ty
 	}
 	globazNotation.readwidget.options=o_options;		
 	globazNotation.readwidget.read();	
+}
+
+//------------------------------------------------------------
+//Appel Ajax pour gï¿½nï¿½rer une annonce demande prime tarofaire
+//------------------------------------------------------------
+function generateDecreeStopDemandePT(_currentIdDetailFamille, _currentIdContribuable, _currentIdFamille, _currentAnneeHistorique, membreFamille) {
+	var o_options= {
+		serviceClassName: 'ch.globaz.amal.business.services.sedexRP.AnnoncesRPService',
+		serviceMethodName:'initDecreeStopForDemandePTFromJsp',
+		parametres:_currentIdDetailFamille+","+_currentIdContribuable+","+_currentIdFamille+","+_currentAnneeHistorique+","+membreFamille,
+		callBack: callBackSendAnnonceInsuranceQuery
+	}
+	globazNotation.readwidget.options=o_options;
+	globazNotation.readwidget.read();
 }
 
 function callBackSendAnnonceInsuranceQuery(data) {
@@ -223,7 +251,7 @@ function setDisabledElement(idElement, toDisabled){
 }
 
 /**
- * Cette méthode rattache les event. Nécessaire car le plugin jquery.contextMenu unbind tout lors de sa destruction
+ * Cette mï¿½thode rattache les event. Nï¿½cessaire car le plugin jquery.contextMenu unbind tout lors de sa destruction
  */
 function attachAction() {
     $(".divInfoSubsideHistoEnvoiExpand").live("click",function() {
@@ -258,7 +286,7 @@ function hideAndShow(elem) {
 }
 
 //------------------------------------------------------------
-// Adapte la liste des caisses maladies à afficher en fonction
+// Adapte la liste des caisses maladies ï¿½ afficher en fonction
 // d'une string partielle
 //------------------------------------------------------------
 function adaptCMList(stringPartielle){
@@ -272,7 +300,7 @@ function adaptCMList(stringPartielle){
 	}
 }
 //------------------------------------------------------------
-// Adapte l'élément input cmSuggestChoice avec la nouvelle liste
+// Adapte l'ï¿½lï¿½ment input cmSuggestChoice avec la nouvelle liste
 //------------------------------------------------------------
 function adaptSuggestChoice(){
 	// Remove all element
@@ -289,7 +317,7 @@ function adaptSuggestChoice(){
 	}
 }
 //------------------------------------------------------------
-// Action de génération de document (action du bouton Generate)
+// Action de gï¿½nï¿½ration de document (action du bouton Generate)
 //------------------------------------------------------------
 function onClickGenerateDocument(){
 	
@@ -306,12 +334,12 @@ function onClickGenerateDocument(){
 	}else{
 		// hide the selection box
 		$('#mask, .window').hide();
-		alert("Génération du document impossible, catégorie Batch-Direct non spécifiée.");
+		alert("Gï¿½nï¿½ration du document impossible, catï¿½gorie Batch-Direct non spï¿½cifiï¿½e.");
 	}
 }
 
 //------------------------------------------------------------
-// Génération du document interactif
+// Gï¿½nï¿½ration du document interactif
 //------------------------------------------------------------
 function onClickMerge(){
 
@@ -348,9 +376,9 @@ function onClickMerge(){
 						// check si chemin contient par ./persistence
 						if(s_filepath.indexOf('persistence')>=0){
 							s_filepath=s_filepath.substr(1);
-							var s_httpError = 'Le document a été généré sur le serveur web (http).';
-							s_httpError+= '\nLa sauvegarde et la mise en GED automatique ne peut être assurée.';
-							s_httpError+= '\nVeuillez vérifier les paramètres de configuration de l\'application';
+							var s_httpError = 'Le document a ï¿½tï¿½ gï¿½nï¿½rï¿½ sur le serveur web (http).';
+							s_httpError+= '\nLa sauvegarde et la mise en GED automatique ne peut ï¿½tre assurï¿½e.';
+							s_httpError+= '\nVeuillez vï¿½rifier les paramï¿½tres de configuration de l\'application';
 							alert(s_httpError);
 						}
 						
@@ -394,7 +422,7 @@ function raffraichirPage(){
 	location.reload();
 }
 //------------------------------------------------------------
-// Ajout du document dans la queue des documents à générés (TOPAZ)
+// Ajout du document dans la queue des documents ï¿½ gï¿½nï¿½rï¿½s (TOPAZ)
 //------------------------------------------------------------
 function onClickQueue(){
 
@@ -402,7 +430,7 @@ function onClickQueue(){
 	$('#mask, .window').hide();
 
 	// Get the id of the document to merge
-	// il est mentionné en tant que classe...
+	// il est mentionnï¿½ en tant que classe...
 	var modeleId = $('#modeleSpecimen').attr("class");
 	document.forms[0].elements('action').value = "merge";
     document.forms[0].elements('modeleId').value = modeleId;
@@ -419,7 +447,7 @@ function ShowMagnifier(objectImage){
 	TJPzoom(objectImage, imagePath);
 }
 //------------------------------------------------------------
-// trim tous les caractères qui ne sont pas compris 
+// trim tous les caractï¿½res qui ne sont pas compris 
 // entre 0 et 128
 // ainsi que les espaces
 //------------------------------------------------------------
@@ -449,7 +477,7 @@ function trimAll(sString)
 
 //------------------------------------------------------------
 // Change la vignette et le code utilisateur du champ de saisie
-// du formulaire de génération de document
+// du formulaire de gï¿½nï¿½ration de document
 //------------------------------------------------------------
 function vignette_request(value) {
 	// Change vignette
@@ -465,7 +493,7 @@ function vignette_request(value) {
 }
 //------------------------------------------------------------
 // change la valeur de la combobox en fonction du champ de saisie
-// du formulaire de génération de document
+// du formulaire de gï¿½nï¿½ration de document
 //------------------------------------------------------------
 function combo_request(cu){
 	// remove selected attribute
@@ -493,7 +521,7 @@ function combo_request(cu){
 
 
 //------------------------------------------------------------
-// Génération du tableau d'historique
+// Gï¿½nï¿½ration du tableau d'historique
 //------------------------------------------------------------
 var textToInsert = '';
 var currentIdDetailFamille = '';
@@ -504,7 +532,7 @@ function generateHistorique(_currentIdDetailFamille){
 }
 
 //------------------------------------------------------------
-// Appel Ajax pour générer l'historique des annonces
+// Appel Ajax pour gï¿½nï¿½rer l'historique des annonces
 //------------------------------------------------------------
 function generateHistoriqueAnnonce(_currentIdDetailFamille) {
 	var o_options= {
@@ -518,7 +546,7 @@ function generateHistoriqueAnnonce(_currentIdDetailFamille) {
 }
 
 //------------------------------------------------------------
-//Appel Ajax pour générer l'historique des envois
+//Appel Ajax pour gï¿½nï¿½rer l'historique des envois
 //------------------------------------------------------------
 function generateHistoriqueEnvois(_currentIdDetailFamille) {
 	var o_options= {
@@ -531,7 +559,7 @@ function generateHistoriqueEnvois(_currentIdDetailFamille) {
 	globazNotation.readwidget.read();	
 }
 //------------------------------------------------------------
-// CallBack Ajax pour générer l'historique des annonces
+// CallBack Ajax pour gï¿½nï¿½rer l'historique des annonces
 //------------------------------------------------------------
 function createHistoriqueAnnonces(data) {
 	//nbElemHistoEnvoi = data.length;
@@ -562,18 +590,18 @@ function createHistoriqueAnnonces(data) {
 		textToInsert += '</tr>';
 	}
 	if(data.length == 0){
-		textToInsert += '<tr class="divInfoSubsideHistoEnvoiExpand_Hidable"><td></td><td colspan="11">Pas d\'annonce caisse-maladie effectué</td></tr>';
+		textToInsert += '<tr class="divInfoSubsideHistoEnvoiExpand_Hidable"><td></td><td colspan="11">Pas d\'annonce caisse-maladie effectuï¿½</td></tr>';
 	}
 	textToInsert += '<tr class="divInfoSubsideHistoEnvoiExpand_Hidable"><td>&nbsp;</td></tr>';
 	generateHistoriqueEnvois(currentIdDetailFamille);
 }
 //------------------------------------------------------------
-//CallBack Ajax pour générer l'historique des envois
+//CallBack Ajax pour gï¿½nï¿½rer l'historique des envois
 //------------------------------------------------------------
 function createHistoriqueEnvois(data) {
 	var documentSent = 0;
 	var documentInProgress = 0;
-	// Documents déjà envoyé
+	// Documents dï¿½jï¿½ envoyï¿½
 	for(iElement=0; iElement< data.length; iElement++){
 		if(data[iElement].statusEnvoi == '42002403'){//SENT
 			nbElemHistoEnvoi++;
@@ -610,7 +638,7 @@ function createHistoriqueEnvois(data) {
 	textToInsert += '</tr>';
 	textToInsert += '<tr><td>&nbsp;</td></tr>';
 
-	// Document à envoyer
+	// Document ï¿½ envoyer
 	for(iElement=0; iElement< data.length; iElement++){
 		if(data[iElement].statusEnvoi != '42002403'){//SENT
 			textToInsert += '<tr class="divInfoSubsideEnvoiModifExpand_Hidable"><td></td>';
@@ -644,7 +672,7 @@ function createHistoriqueEnvois(data) {
 	}
 	nbElemEnvoiModifs = documentInProgress;
 	if(documentInProgress == 0){
-		textToInsert += '<tr class="divInfoSubsideEnvoiModifExpand_Hidable"><td></td><td colspan="11">Pas d\'élément modifiable actif</td></tr>';
+		textToInsert += '<tr class="divInfoSubsideEnvoiModifExpand_Hidable"><td></td><td colspan="11">Pas d\'ï¿½lï¿½ment modifiable actif</td></tr>';
 	}
 	textToInsert += '<tr class="divInfoSubsideEnvoiModifExpand_Hidable"><td>&nbsp;</td></tr>';
 	
@@ -653,7 +681,7 @@ function createHistoriqueEnvois(data) {
 }
 
 //------------------------------------------------------------
-//Appel Ajax pour générer l'historique des annonces SEDEX RP
+//Appel Ajax pour gï¿½nï¿½rer l'historique des annonces SEDEX RP
 //------------------------------------------------------------
 function generateHistoriqueSEDEXRP(_currentIdDetailFamille) {
 	var o_options= {
@@ -667,7 +695,7 @@ function generateHistoriqueSEDEXRP(_currentIdDetailFamille) {
 }
 
 //------------------------------------------------------------
-//CallBack Ajax pour générer l'historique des annonces
+//CallBack Ajax pour gï¿½nï¿½rer l'historique des annonces
 //------------------------------------------------------------
 function createHistoriqueSEDEXRP(data) {
 	
@@ -718,9 +746,9 @@ function createHistoriqueSEDEXRP(data) {
 
 	textToInsert += '<tr class="divInfoSubsideSedexExpand_Hidable"><td>&nbsp;</td></tr>';
 	
-	// Fin du traitement, on cache l'icône de chargement
+	// Fin du traitement, on cache l'icï¿½ne de chargement
 	$('#ajaxLoaderImgLine').hide();
-	// On append notre résultat
+	// On append notre rï¿½sultat
 	$('#tableHisto').append(textToInsert);
 	textToInsert='';
 	
@@ -743,11 +771,11 @@ function attachContextualMenu() {
 			getXmlAnnonce(idAnnonceSedex,'H');
 			$('#modelViewXML').dialog('open');
 		} else if (action == 'reSend') {
-			if (confirm("Cloner l'annonce pour réémission ?")) {
+			if (confirm("Cloner l'annonce pour rï¿½ï¿½mission ?")) {
 				reSubmitAnnonce(idAnnonceSedex);
 			}
 		} else if (action == 'delAnnonce') {
-			if (confirm("Supprimer l'annonce (seulement si l'annonce n'a pas été envoyée) ?")) {
+			if (confirm("Supprimer l'annonce (seulement si l'annonce n'a pas ï¿½tï¿½ envoyï¿½e) ?")) {
 				deleteAnnonce(idAnnonceSedex);
 			}
 		} else if (action == 'simuRep') {
@@ -803,7 +831,7 @@ function simulationAnnonceCallBack(data) {
 }
 
 //------------------------------------------------------------
-//Appel Ajax pour générer l'historique des annonces SEDEX RP
+//Appel Ajax pour gï¿½nï¿½rer l'historique des annonces SEDEX RP
 //------------------------------------------------------------
 function reSubmitAnnonce(_currentIdSedexAnnonce) {
 	var o_options= {
@@ -818,7 +846,7 @@ function reSubmitAnnonce(_currentIdSedexAnnonce) {
 
 
 //------------------------------------------------------------
-//Appel Ajax pour générer l'historique des annonces SEDEX RP
+//Appel Ajax pour gï¿½nï¿½rer l'historique des annonces SEDEX RP
 //------------------------------------------------------------
 function getXmlAnnonce(_currentIdSedexAnnonce,_type) {
 	$('#modelViewXML').dialog('option', 'title', 'Affichage du code XML de l\'annonce #'+_currentIdSedexAnnonce);
@@ -836,7 +864,7 @@ function getXmlAnnonce(_currentIdSedexAnnonce,_type) {
 function changeStatus(data) {
 	if (data != 0) {
 		window.location.reload();
-//		$("#statusAnnonce_"+data).html("Crée");
+//		$("#statusAnnonce_"+data).html("Crï¿½e");
 	}
 }
 
@@ -879,31 +907,31 @@ function viewXml(data) {
 
 function showCounters() {
 	if (nbElemHistoEnvoi==0) {
-		$("#nbElemHistoEnvoi").html("(0 élément)");
+		$("#nbElemHistoEnvoi").html("(0 ï¿½lï¿½ment)");
 		$(".divInfoSubsideHistoEnvoiExpand").click();
 	} else if (nbElemHistoEnvoi==1) {
-		$("#nbElemHistoEnvoi").html("("+nbElemHistoEnvoi+" élément)");
+		$("#nbElemHistoEnvoi").html("("+nbElemHistoEnvoi+" ï¿½lï¿½ment)");
 	} else {
-		$("#nbElemHistoEnvoi").html("("+nbElemHistoEnvoi+" éléments)");
+		$("#nbElemHistoEnvoi").html("("+nbElemHistoEnvoi+" ï¿½lï¿½ments)");
 	}
 	
 	if (nbElemEnvoiModifs==0) {
-		$("#nbElemAnnoncesModifs").html("(0 élément)");
+		$("#nbElemAnnoncesModifs").html("(0 ï¿½lï¿½ment)");
 		$(".divInfoSubsideEnvoiModifExpand").click();
 	} else if (nbElemEnvoiModifs==1) {
-		$("#nbElemAnnoncesModifs").html("("+nbElemEnvoiModifs+" élément)");
+		$("#nbElemAnnoncesModifs").html("("+nbElemEnvoiModifs+" ï¿½lï¿½ment)");
 	} else {
-		$("#nbElemAnnoncesModifs").html("("+nbElemEnvoiModifs+" éléments)");
+		$("#nbElemAnnoncesModifs").html("("+nbElemEnvoiModifs+" ï¿½lï¿½ments)");
 	}
 	
 
 	if (nbElemHistoSedex==0) {
-		$("#nbElemAnnoncesSedex").html("(0 élément)");
+		$("#nbElemAnnoncesSedex").html("(0 ï¿½lï¿½ment)");
 		$(".divInfoSubsideSedexExpand").click();
 	} else if (nbElemHistoSedex==1) {
-		$("#nbElemAnnoncesSedex").html("("+nbElemHistoSedex+" élément)");
+		$("#nbElemAnnoncesSedex").html("("+nbElemHistoSedex+" ï¿½lï¿½ment)");
 	} else {
-		$("#nbElemAnnoncesSedex").html("("+nbElemHistoSedex+" éléments)");
+		$("#nbElemAnnoncesSedex").html("("+nbElemHistoSedex+" ï¿½lï¿½ments)");
 	}
 }
 

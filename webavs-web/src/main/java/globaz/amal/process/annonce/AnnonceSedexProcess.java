@@ -27,9 +27,7 @@ import ch.globaz.pyxis.business.model.AdministrationComplexModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 
 public class AnnonceSedexProcess extends AMALabstractProcess {
-    /**
-     * 
-     */
+
     private static final long serialVersionUID = 1L;
     public static final String ATTACHED_FILES = "ATTACHED_FILES";
     public static final String ATTACHED_XML = "ATTACHED_XML";
@@ -47,7 +45,7 @@ public class AnnonceSedexProcess extends AMALabstractProcess {
     private String periodeDecreeInventoryTo = null;
     private String periodeInsuranceQueryFrom = null;
     private String periodeInsuranceQueryTo = null;
-    private ArrayList<String> selectedIdCaisses = null;
+    private List<String> selectedIdCaisses = null;
     private String typeMessage = null;
 
     private String _getReturnsInfos(Map<String, AnnonceBuilderReturnInfosContainer> mapReturnInfos) {
@@ -95,11 +93,6 @@ public class AnnonceSedexProcess extends AMALabstractProcess {
 
     /**
      * Création du mail à envoyer à l'utilisateur
-     * 
-     * @param typeMessage
-     * 
-     * @param idTiersCMInput
-     * @param idTiersGroupeInput
      */
     private void createMail() {
         // --------------------------------------------------
@@ -151,6 +144,9 @@ public class AnnonceSedexProcess extends AMALabstractProcess {
             } else if (AMMessagesTypesAnnonceSedex.ETAT_DECISIONS.getValue().equals(typeMessage)) {
                 subject += "Web@Lamal : " + typeProcess + " SEDEX 'Etat des décisions' " + etatProcess;
                 message += typeProcess + " de création et d'envoi d'annonces SEDEX RP terminé.\n\n";
+            } else if (AMMessagesTypesAnnonceSedex.DEMANDE_PRIME_TARIFAIRE.getValue().equals(typeMessage)) {
+                subject += "Web@Lamal : " + typeProcess + " SEDEX 'Demande prime tarifaire' " + etatProcess;
+                message += typeProcess + " de création et d'envoi d'annonces SEDEX PT terminé.\n\n";
             } else {
                 subject += "Web@Lamal : " + typeProcess + " SEDEX " + etatProcess;
                 message += typeProcess + " de création et d'envoi d'annonces SEDEX RP terminé.\n\n";
@@ -341,7 +337,7 @@ public class AnnonceSedexProcess extends AMALabstractProcess {
         return periodeInsuranceQueryTo;
     }
 
-    public ArrayList<String> getSelectedIdCaisses() {
+    public List<String> getSelectedIdCaisses() {
         return selectedIdCaisses;
     }
 
@@ -448,7 +444,7 @@ public class AnnonceSedexProcess extends AMALabstractProcess {
         this.periodeInsuranceQueryTo = periodeInsuranceQueryTo;
     }
 
-    public void setSelectedIdCaisses(ArrayList<String> selectedIdCaisses) {
+    public void setSelectedIdCaisses(List<String> selectedIdCaisses) {
         this.selectedIdCaisses = selectedIdCaisses;
     }
 

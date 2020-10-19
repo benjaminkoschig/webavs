@@ -21,7 +21,9 @@ public enum AMMessagesTypesAnnonceSedex {
     NOUVELLE_DECISION("5201"),
     REJET_DECISION("5211"),
     REJET_INTERRUPTION("5211"),
-    REPONSE_RAPPORT_ASSURANCE("5212");
+    REPONSE_RAPPORT_ASSURANCE("5212"),
+    DEMANDE_PRIME_TARIFAIRE("5205"),
+    REPONSE_PRIME_TARIFAIRE("5215");
 
     public static AMMessagesTypesAnnonceSedex getType(String value) throws AnnonceSedexException {
 
@@ -51,6 +53,10 @@ public enum AMMessagesTypesAnnonceSedex {
             return REJET_INTERRUPTION;
         } else if (REPONSE_RAPPORT_ASSURANCE.getValue().equals(value)) {
             return REPONSE_RAPPORT_ASSURANCE;
+        } else if (DEMANDE_PRIME_TARIFAIRE.getValue().equals(value)) {
+            return DEMANDE_PRIME_TARIFAIRE;
+        } else if (REPONSE_PRIME_TARIFAIRE.getValue().equals(value)) {
+            return REPONSE_PRIME_TARIFAIRE;
         } else {
             throw new AnnonceSedexException("Subtype not found : " + value);
         }

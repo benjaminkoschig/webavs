@@ -7,6 +7,7 @@ import globaz.jade.sedex.message.SedexMessage;
 import globaz.jade.service.provider.application.JadeApplicationService;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.xml.datatype.DatatypeConfigurationException;
 import ch.globaz.amal.business.exceptions.models.annoncesedex.AnnonceSedexException;
@@ -77,14 +78,13 @@ public interface AnnoncesRPService extends JadeApplicationService {
      * @param idMessageSedex
      * 
      */
-    public Map<String, Object> createAndSendAnnonce(String typeMessage, ArrayList<String> selectedIdCaisses,
+    public Map<String, Object> createAndSendAnnonce(String typeMessage, List<String> selectedIdCaisses,
             String groupe, String anneeHistorique, boolean isSimulation);
 
     /**
      * Crée l'annonce de l'id passé en paramètre
      * 
      * @param idMessageSedex
-     * @param msgSedexRP
      * @return
      */
     public ComplexAnnonceSedex createAnnonce(String idMessageSedex);
@@ -113,18 +113,31 @@ public interface AnnoncesRPService extends JadeApplicationService {
 
     /**
      * Création de la liste des annonces au format CSV
-     * 
-     * @param idMessageSedex
+     *
+     * @param filters
+     * @param order
      * @return L'url du fichier crée
-     * 
+     * @throws JadeApplicationException
+     * @throws JadePersistenceException
      */
     public String exportListAnnonces(String filters, String order) throws JadeApplicationException,
             JadePersistenceException;
 
     /**
+     * Permet d'exporter la liste des annonces de réponses de demande PT
+     * @param filters
+     * @param order
+     * @return l'url du fichier créé
+     * @throws JadeApplicationException
+     * @throws JadePersistenceException
+     */
+    public String exportListAnnoncesReponsePT(String filters, String order) throws JadeApplicationException,
+            JadePersistenceException;
+
+    /**
      * Description
      * 
-     * @param idMessageSedex
+     * @param idContribuable
      * 
      */
     public ArrayList<SimpleAnnonceSedex> getContribuableListSEDEXAnnonces(String idContribuable)
@@ -195,10 +208,11 @@ public interface AnnoncesRPService extends JadeApplicationService {
 
     /**
      * Initialise une annonce depuis la JSP
-     * 
+     *
      * @param idDetailFamille
      * @param idContribuable
      * @param msgType
+     * @param idTiersCaisse
      * @return
      * @throws AnnonceSedexException
      * @throws DetailFamilleException
@@ -209,10 +223,27 @@ public interface AnnoncesRPService extends JadeApplicationService {
             String idTiersCaisse) throws AnnonceSedexException, DetailFamilleException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException;
 
+
+    /**
+     * Permet d'initialiser une annonce de demande de prime tarifaire
+     * @param idDetailFamille
+     * @param idContribuable
+     * @param idFamille
+     * @param anneeHistorique
+     * @param membreFamille
+     * @return
+     * @throws AnnonceSedexException
+     * @throws DetailFamilleException
+     * @throws JadeApplicationServiceNotAvailableException
+     * @throws JadePersistenceException
+     */
+    public SimpleAnnonceSedex initDecreeStopForDemandePTFromJsp(String idDetailFamille, String idContribuable,
+                                                                String idFamille, String anneeHistorique, Boolean membreFamille)
+            throws AnnonceSedexException, DetailFamilleException, JadeApplicationServiceNotAvailableException, JadePersistenceException;
+
     /**
      * Envoi de toute les annonces en cours
-     * 
-     * @param idMessageSedex
+     *
      * @throws DatatypeConfigurationException
      * @throws JadeSedexDirectoryInitializationException
      * 
@@ -236,4 +267,21 @@ public interface AnnoncesRPService extends JadeApplicationService {
      * 
      */
     public void simulateAnnonce(String idMessageSedex, String subTypeReponse) throws Exception;
+
+
+    /**
+     * Permet la génération des annonces PT pour un idDetailFamille.
+     * Peut créer plusieurs annonces si il y a plusieurs caisses.
+     * @param idDetailFamille Un identifiant de détail famille
+     * @param dateDebut
+     * @param dateFin
+     * @param simulation
+     * @return La liste des annonces créées
+     * @throws DetailFamilleException
+     * @throws JadeApplicationServiceNotAvailableException
+     * @throws JadePersistenceException
+     * @throws AnnonceSedexException
+     */
+    public List<SimpleAnnonceSedex> genererAnnonceDemandePT(String idDetailFamille, String dateDebut, String dateFin, boolean simulation)
+            throws DetailFamilleException, JadeApplicationServiceNotAvailableException, JadePersistenceException, AnnonceSedexException;
 }

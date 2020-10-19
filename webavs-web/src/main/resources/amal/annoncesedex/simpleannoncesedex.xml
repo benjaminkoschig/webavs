@@ -21,7 +21,8 @@
 			<field name="status" column="CSSTAT" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="STATUS_MESSAGE"/>
 			<field name="traitement" column="CSTRAI" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="TRAITEMENT_MESSAGE"/>
 			<field name="versionXSD" column="MSGVER" type="STRING" dataType="VARCHAR(20)" mandatory="false" comment="VERSION_XSD"/>
-			<field name="referenceIdMessage" column="REFERENCE_ID_MESSAGE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="ID MESSAGE REFERENCE"/>			
+			<field name="referenceIdMessage" column="REFERENCE_ID_MESSAGE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="ID MESSAGE REFERENCE"/>
+			<field name="montantPrimeTarifaire" column="MTPRTA" type="NUMERIC" dataType="NUMERIC(10,2)" mandatory="false" comment="MONTANT_PRIME_TARIFAIRE"/>
 		</fields>
 		
 		<search-definition>
