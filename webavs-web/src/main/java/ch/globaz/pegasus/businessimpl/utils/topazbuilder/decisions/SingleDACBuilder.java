@@ -895,7 +895,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
             data.addData("B_MONTANT_HOME", babelDoc.getTextes(3).getTexte(33).getDescription());
 
             String montantHomeString = dacOO.getPlanCalcul().getMontantPrixHome();
-            Float montantHome = null;
+            Float montantHome = 0.0f;
             if (!montantHomeString.isEmpty()) {
                 montantHome = Float.valueOf(dacOO.getPlanCalcul().getMontantPrixHome())/12;
             }
@@ -1442,8 +1442,10 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
     }
 
     private String getMontantPCTotal() {
-        Float montantPCTotal = Float.parseFloat(dacOO.getSimplePrestation().getMontantPrestation())
-                + Float.parseFloat(dacOO.getPlanCalcul().getPrimeVerseeAssMaladie());
+        String primeVersee = dacOO.getPlanCalcul().getPrimeVerseeAssMaladie();
+        String montantPrestation = dacOO.getSimplePrestation().getMontantPrestation();
+        Float montantPCTotal = Float.parseFloat(montantPrestation.isEmpty() ? "0" : montantPrestation)
+                + Float.parseFloat(primeVersee.isEmpty()? "0" : primeVersee);
         return new FWCurrency(montantPCTotal.toString()).toStringFormat();
     }
 
