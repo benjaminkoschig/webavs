@@ -1,5 +1,6 @@
-package ch.globaz.pegasus.rpc.plausi.simple.ps012;
+package ch.globaz.pegasus.rpc.plausi.intra.pi082;
 
+import ch.globaz.common.domaine.Montant;
 import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceCase;
 import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceDecision;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiApplyToDecision;
@@ -10,32 +11,36 @@ import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RpcPlausiPS012 implements RpcPlausiMetier<RpcPlausiPS012Data> {
+public class RpcPlausiPI082 implements RpcPlausiMetier<RpcPlausiPI082Data> {
+
 
     @Override
-    public RpcPlausiPS012Data buildPlausi(AnnonceDecision decision, AnnonceCase data) {
-        RpcPlausiPS012Data plausiData = new RpcPlausiPS012Data(this);
+    public RpcPlausiPI082Data buildPlausi(AnnonceDecision decision, AnnonceCase data) {
+
+        final RpcPlausiPI082Data plausiData = new RpcPlausiPI082Data(this);
+        plausiData.dateArrivee = decision.getAnnonce().getDemande().getArrivee();
+        plausiData.decisionCause = decision.getDecisionCause();
         return plausiData;
     }
 
     @Override
     public RpcPlausiType getType() {
-        return RpcPlausiType.SIMPLE;
+        return RpcPlausiType.INTRA;
     }
 
     @Override
     public String getID() {
-        return "PS-012";
+        return "PI-082";
     }
 
     @Override
     public String getReferance() {
-        return " ";
+        return "Registre PC - Réforme PC - 2020";
     }
 
     @Override
     public RpcPlausiCategory getCategory() {
-        return RpcPlausiCategory.BLOCKING;
+        return RpcPlausiCategory.ERROR;
     }
 
     @Override
@@ -44,7 +49,6 @@ public class RpcPlausiPS012 implements RpcPlausiMetier<RpcPlausiPS012Data> {
             {
                 add(RpcPlausiApplyToDecision.POSITIVE);
                 add(RpcPlausiApplyToDecision.REJECT_FULL);
-                add(RpcPlausiApplyToDecision.REJECT_SMALL);
             }
         };
     }

@@ -45,6 +45,7 @@ import ch.globaz.pegasus.rpc.plausi.intra.pi044.RpcPlausiPI044;
 import ch.globaz.pegasus.rpc.plausi.intra.pi046.RpcPlausiPI046;
 import ch.globaz.pegasus.rpc.plausi.intra.pi049.RpcPlausiPI049;
 import ch.globaz.pegasus.rpc.plausi.intra.pi064.RpcPlausiPI064;
+import ch.globaz.pegasus.rpc.plausi.intra.pi082.RpcPlausiPI082;
 import ch.globaz.pegasus.rpc.plausi.simple.ps010.RpcPlausiPS010;
 import ch.globaz.pegasus.rpc.plausi.simple.ps011.RpcPlausiPS011;
 import ch.globaz.pegasus.rpc.plausi.simple.ps012.RpcPlausiPS012;
@@ -78,6 +79,7 @@ public class PlausiContainer {
         listMetier.add(new RpcPlausiPI044());
         listMetier.add(new RpcPlausiPI046(new Montant(300)));
         listMetier.add(new RpcPlausiPI049());
+        listMetier.add(new RpcPlausiPI082());
         listMetier.add(new RpcPlausiGZ001());
         listMetier.add(new RpcPlausiGZ002());
         listMetier.add(new RpcPlausiGZ003());
@@ -90,8 +92,6 @@ public class PlausiContainer {
         RpcPlausiPS011 plausi11 = new RpcPlausiPS011();
         listMetier.add(plausi11);
         plausisSkippedOnPrevalidation.add(plausi11);
-
-        listMetier.add(new RpcPlausiPS012());
         listMetier.add(new RpcPlausiPI021());
         listMetier.add(new RpcPlausiPI023());
         listMetier.add(new RpcPlausiPI024());
