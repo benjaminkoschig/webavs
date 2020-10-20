@@ -8,6 +8,16 @@ public enum APTypeDePrestation implements Comparable<APTypeDePrestation> {
     LAMAT("LAMAT", 52015003, true, true),
     STANDARD("Standard", 52015001, true, true),
     COMPCIAB("COMPCIAB", 52015006, true, false),
+
+    //ESVE MATERNITE NOUVEAU GENRE
+    MATCIAB("MATCIAB", 52015014, true, true),
+
+    MATCIAB1PA("MATCIAB1PA", 52015009, true, true),
+    MATCIAB2PA("MATCIAB2PA", 52015011, true, true),
+
+    MATCIAB1PE("MATCIAB1PE", 52015008, true, true),
+    MATCIAB2PE("MATCIAB2PE", 52015010, true, true),
+
     JOUR_ISOLE("ISOLES", 52015007, true, false),
     PANDEMIE("PANDEMIE", 52015012, true, false);
 

@@ -978,6 +978,7 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
      */
     @Override
     public String getMontantVerse() {
+        //ESVE MATERNITE SALAIRE
         return montantOuPourcentVerse;
     }
 

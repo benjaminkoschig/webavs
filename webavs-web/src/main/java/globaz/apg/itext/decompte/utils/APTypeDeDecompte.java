@@ -14,6 +14,9 @@ public enum APTypeDeDecompte {
     NORMAL_ACM_NE(5, "normal_acmne", "AP_DECOMPTE_DETAIL_ACMNE.jasper",
             new APTypeDePrestation[] { APTypeDePrestation.STANDARD, APTypeDePrestation.ACM_NE }),
     COMPCIAB(6, "normal", "AP_DECOMPTE_DETAIL_CIAB.jasper", new APTypeDePrestation[] { APTypeDePrestation.COMPCIAB }),
+    //ESVE MATERNITE REGROUPEMENT PARITAIRE PERSONNEL SUR DECOMPTE
+    MATCIABPE(6, "normal", "AP_DECOMPTE_DETAIL_CIAB.jasper", new APTypeDePrestation[] { APTypeDePrestation.MATCIAB1PE, APTypeDePrestation.MATCIAB2PE }),
+    MATCIABPA(6, "normal", "AP_DECOMPTE_DETAIL_CIAB.jasper", new APTypeDePrestation[] { APTypeDePrestation.MATCIAB1PA , APTypeDePrestation.MATCIAB2PA }),
     JOUR_ISOLE(7, "normal", "AP_DECOMPTE_DETAIL_CIAB.jasper", new APTypeDePrestation[] { APTypeDePrestation.JOUR_ISOLE });
 
     /**
@@ -53,6 +56,12 @@ public enum APTypeDeDecompte {
                     case COMPCIAB:
                         typeDuDecompte = APTypeDeDecompte.COMPCIAB;
                         break;
+                    case MATCIAB1PA: //ESVE MATERNITE REGROUPEMENT PARITAIRE PERSONNEL SUR DECOMPTE
+                    case MATCIAB2PA:
+                        typeDuDecompte = APTypeDeDecompte.MATCIABPA;
+                    case MATCIAB1PE: //ESVE MATERNITE REGROUPEMENT PARITAIRE PERSONNEL SUR DECOMPTE
+                    case MATCIAB2PE:
+                        typeDuDecompte = APTypeDeDecompte.MATCIABPE;
                     case JOUR_ISOLE:
                         typeDuDecompte = APTypeDeDecompte.JOUR_ISOLE;
                         break;

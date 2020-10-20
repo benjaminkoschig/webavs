@@ -312,6 +312,10 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                         genre = APTypeDePrestation.ACM_ALFA.getCodesystemString();
                     } else if (APTypeDePrestation.COMPCIAB.isCodeSystemEqual(genre)) {
                         genre = APTypeDePrestation.STANDARD.getCodesystemString();
+                    } //ESVE MATERNITE NOUVEAU GENRE
+                    else if (APTypeDePrestation.MATCIAB1PA.isCodeSystemEqual(genre) || APTypeDePrestation.MATCIAB2PA.isCodeSystemEqual(genre)
+                       || APTypeDePrestation.MATCIAB1PE.isCodeSystemEqual(genre) || APTypeDePrestation.MATCIAB2PE.isCodeSystemEqual(genre)) {
+                        genre = APTypeDePrestation.STANDARD.getCodesystemString();
                     }
                     final String idAssureDeBase = droit.loadDemande().getIdTiers();
 

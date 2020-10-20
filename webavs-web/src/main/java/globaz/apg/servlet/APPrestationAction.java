@@ -74,6 +74,8 @@ public class APPrestationAction extends PRDefaultAction {
         viewBean.setIdDroit(idDroit);
         viewBean.setGenreService(genreService);
 
+        //ESVE MATERNITE ACTION
+
         // 1 - en premier lieu il s'agit de savoir si on les calcul via ACOR ou via la calculateur maison
         getAction().changeActionPart(APPrestationHelper.ACTION_DETERMINER_TYPE_CALCUL_PRESTATIONS);
 

@@ -29,13 +29,20 @@ public abstract class APComplementCalculateur {
         }
     }
     
-    public BigDecimal calculerMontant(BigDecimal salaireMensuel, int nbJourSolde) throws Exception {
-        BigDecimal salaireJournalier = calculeSalaireJournalier(salaireMensuel);
+    public BigDecimal calculerMontantCOMBIAB(BigDecimal salaireMensuel, int nbJourSolde) throws Exception {
+        BigDecimal salaireJournalier = calculeSalaireJournalierCOMCIAB(salaireMensuel);
+        return calculMontantTotal(salaireJournalier, nbJourSolde);
+    }
+
+    //ESVE MATERNITE MONTANT MAX
+    public BigDecimal calculerMontantMATCIAB(BigDecimal salaireMensuel, int nbJourSolde) throws Exception {
+        BigDecimal salaireJournalier = calculeSalaireJournalierMATCIAB(salaireMensuel);
         return calculMontantTotal(salaireJournalier, nbJourSolde);
     }
     
-    abstract BigDecimal calculeSalaireJournalier(BigDecimal salaireMensuel) throws Exception;
-    
+    abstract BigDecimal calculeSalaireJournalierCOMCIAB(BigDecimal salaireMensuel) throws Exception;
+    abstract BigDecimal calculeSalaireJournalierMATCIAB(BigDecimal salaireMensuel) throws Exception;
+
     abstract BigDecimal calculMontantTotal(BigDecimal salairejournalier, int nbJourSolde);
     
     private static boolean isRecrue(String typeAllocation, int nbEnfant) {

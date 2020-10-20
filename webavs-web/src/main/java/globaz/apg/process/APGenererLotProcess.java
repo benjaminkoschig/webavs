@@ -101,6 +101,7 @@ public class APGenererLotProcess extends BProcess {
                 prestationManager.setForEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
                 prestationManager.setToDateFin(getPrestationDateFin());
                 prestationManager.setNotForGenre(APTypeDePrestation.PANDEMIE.getCodesystemString());
+                //ESVE MATERNITE POUR PASSER DANS SELECT LOT
                 prestationManager.setForNoRevision(IAPDroitMaternite.CS_REVISION_MATERNITE_2005);
             } else if (typePrestation.equals(IPRDemande.CS_TYPE_PANDEMIE)) {
                 prestationManager = new APPrestationJointDroitManager();

@@ -21,7 +21,7 @@ public class APComplementCalculAutre extends APComplementCalculateur{
     }
 
     @Override
-    BigDecimal calculeSalaireJournalier(BigDecimal salaireMensuel) throws Exception {
+    BigDecimal calculeSalaireJournalierCOMCIAB(BigDecimal salaireMensuel) throws Exception {
         BigDecimal salaireJournalier = arrondir(salaireMensuel.divide(DIVISION_AUTRE,2, RoundingMode.HALF_UP));
         BigDecimal salaireMax = ECanton.JU.equals(canton) ? montantsMax.get(EMontantsMax.COMCIABJUA): montantsMax.get(EMontantsMax.COMCIABBEA);
         if(salaireJournalier.compareTo(salaireMax)>0) {
@@ -30,6 +30,19 @@ public class APComplementCalculAutre extends APComplementCalculateur{
             montantJournalier = salaireJournalier;
         }
         return montantJournalier;
+    }
+
+    @Override
+    //ESVE MATERNITE MONTANT MAX
+    BigDecimal calculeSalaireJournalierMATCIAB(BigDecimal salaireMensuel) throws Exception {
+        BigDecimal salaireJournalier = arrondir(salaireMensuel.divide(DIVISION_AUTRE,2, RoundingMode.HALF_UP));
+        BigDecimal salaireMax = ECanton.JU.equals(canton) ? montantsMax.get(EMontantsMax.MATCIABJUM): montantsMax.get(EMontantsMax.MATCIABBEM);
+        if(salaireJournalier.compareTo(salaireMax)>0) {
+            montantJournalier = salaireMax;
+        } else {
+            montantJournalier = salaireJournalier;
+        }
+        return montantJournalier.multiply(BigDecimal.valueOf(2));
     }
 
     @Override

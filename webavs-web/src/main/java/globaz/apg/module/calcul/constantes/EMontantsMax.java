@@ -5,8 +5,11 @@ public enum EMontantsMax {
     COMCIABJUR("COMCIABJUR"),
     COMCIABBER("COMCIABBER"),
     COMCIABJUA("COMCIABJUA"),
-    COMCIABBEA("COMCIABBEA");
-    
+    COMCIABBEA("COMCIABBEA"),
+    //ESVE MATERNITE MONTANT MAX
+    MATCIABJUM("MATCIABJUM"),
+    MATCIABBEM("MATCIABBEM");
+
     private String value;
 
     private EMontantsMax(String value) {

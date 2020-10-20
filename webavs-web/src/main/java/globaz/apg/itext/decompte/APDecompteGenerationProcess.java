@@ -236,6 +236,7 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
 
         String csTypePrestation = loadCsTypePrestation();
 
+        //ESVE MATERNITE CATALOGUE TEXTE
         if (IPRDemande.CS_TYPE_MATERNITE.equals(csTypePrestation)) {
             documentHelper.setCsDomaine(IAPCatalogueTexte.CS_MATERNITE);
 //        } else if (IPRDemande.CS_TYPE_PANDEMIE.equals(csTypePrestation)) {

@@ -166,6 +166,9 @@ public class APApplication extends PRAbstractApplication {
     /** Service de la ged a utiliser */
     public static final String PROPERTY_IS_FERCIAB = "apg.isFERCIAB";
 
+    //ESVE MATERNITE PROPRIETE APPLICATIVE
+    public static final String PROPERTY_APG_FERCIAB_MATERNITE = "apg.FERCIAB.maternite";
+
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
 

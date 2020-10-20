@@ -191,6 +191,9 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
     // Inner class
     class Montants {
         public static final String TYPE_ACM = "ACM";
+        //ESVE MATERNITE NOUVEAU GENRE
+        public static final String TYPE_MATCIABPA = "MATCIABPA";
+        public static final String TYPE_MATCIABPE = "MATCIABPE";
         public static final String TYPE_ACM_NE = "ACM_NE";
         public static final String TYPE_AMAT = "AMATF";
         public static final String TYPE_APG = "APG";
@@ -756,6 +759,13 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(genrePrestation)
                 || APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(genrePrestation)) {
             return Montants.TYPE_ACM;
+        //ESVE MATERNITE COMPTABILITE
+        } else if (APTypeDePrestation.MATCIAB1PE.isCodeSystemEqual(genrePrestation)
+                || APTypeDePrestation.MATCIAB2PE.isCodeSystemEqual(genrePrestation)) {
+            return Montants.TYPE_MATCIABPE;
+        } else if (APTypeDePrestation.MATCIAB1PA.isCodeSystemEqual(genrePrestation)
+                || APTypeDePrestation.MATCIAB2PA.isCodeSystemEqual(genrePrestation)) {
+            return Montants.TYPE_MATCIABPA;
         } else if (APTypeDePrestation.ACM_NE.isCodeSystemEqual(genrePrestation)) {
             return Montants.TYPE_ACM_NE;
         } else if (APTypeDePrestation.COMPCIAB.isCodeSystemEqual(genrePrestation)) {
@@ -1841,8 +1851,11 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
                 if (typeLot.equals(IPRDemande.CS_TYPE_MATERNITE)) {
 
+                    //ESVE MATERNITE COMPTABILITE
                     if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(ventilation.genrePrestation)
-                            || APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(ventilation.genrePrestation)) {
+                            || APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(ventilation.genrePrestation)
+                            || APTypeDePrestation.MATCIAB1PE.isCodeSystemEqual(ventilation.genrePrestation)
+                            || APTypeDePrestation.MATCIAB1PA.isCodeSystemEqual(ventilation.genrePrestation)) {
 
                         doOrdreVersement(
                                 compta,

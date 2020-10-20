@@ -1,18 +1,12 @@
 package globaz.apg.calculateur.complement;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.calculateur.IAPPrestationCalculateur;
 import globaz.apg.calculateur.pojo.APPrestationCalculeeAPersister;
 import globaz.apg.calculateur.pojo.APRepartitionCalculeeAPersister;
-import globaz.apg.db.droits.APDroitAPG;
+import globaz.apg.db.droits.APDroitMaternite;
 import globaz.apg.db.droits.APSitProJointEmployeur;
 import globaz.apg.db.prestation.APCotisation;
 import globaz.apg.db.prestation.APPrestation;
@@ -29,8 +23,13 @@ import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.naos.db.affiliation.AFAffiliationManager;
+import globaz.prestation.api.IPRDemande;
 
-public class APCalculateurComplement implements IAPPrestationCalculateur<APCalculateurComplementDonneesPersistence, APCalculateurComplementDonneeDomaine, APCalculateurComplementDonneesPersistence> {
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.*;
+
+public class APCalculateurComplementAmat implements IAPPrestationCalculateur<APCalculateurComplementDonneesPersistence, APCalculateurComplementDonneeDomaine, APCalculateurComplementDonneesPersistence> {
     
     @Override
     public List<APCalculateurComplementDonneesPersistence> calculerPrestation(List<APCalculateurComplementDonneeDomaine> donneesDomainCalcul) throws Exception {
@@ -55,15 +54,17 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
             // Calculateur
             //String idSituationProf = prestationStandard.getRepartitions().get(0).getIdSituationProfessionnelle();
             String idSituationProf = prestationStandard.getSituationProfessionnelle().keySet().iterator().next();
-            APDroitAPG droit = (APDroitAPG)prestationStandard.getDroit();
+            //ESVE MATERNITE DROIT NON PAS APG MAIS MATERNITE
+            APDroitMaternite droit = (APDroitMaternite)prestationStandard.getDroit();
             APComplementCalculateur calculateur = APComplementCalculateur.getCalculateur(
                     prestationStandard.getMontantsMax(),
                     prestationStandard.getSituationProfessionnelle().get(idSituationProf).getCanton(),
                     prestation.getDateDebut(),
                     droit.getGenreService(),
-                    Integer.valueOf(droit.loadSituationFamilliale().getNbrEnfantsDebutDroit()));
+                    0);
+                    //Integer.valueOf(droit.loadSituationFamilliale().getNbrEnfantsDebutDroit()));
 
-            BigDecimal montant = calculateur.calculerMontantCOMBIAB(salaireMensuel,
+            BigDecimal montant = calculateur.calculerMontantMATCIAB(salaireMensuel,
                     Integer.valueOf(prestation.getNombreJoursSoldes()));
             BigDecimal montantBrut = arrondir(montant);
             BigDecimal montantBrutFederal = getMontantFederal(prestation);
@@ -137,8 +138,60 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
                             sitProf.getIndependant(),
                             cotisationAvsStandard,
                             cotisationAcStandard
+                    );
+                    prestationCalculeeAPersister.getRepartitionsPaiementMap().add(repartitionPaiementData);
+
+                    /*
+                    APCotisation cotisationAvsStandardParitaire = getCotisationFromMap(prestationStandard.getMapCotisation().get(repartition), APProperties.ASSURANCE_AVS_PAR_ID.getValue());
+                    APCotisation cotisationAvsStandardPersonnelle = getCotisationFromMap(prestationStandard.getMapCotisation().get(repartition), APProperties.ASSURANCE_AVS_PER_ID.getValue());
+                    APCotisation cotisationAcStandardParitaire = getCotisationFromMap(prestationStandard.getMapCotisation().get(repartition), APProperties.ASSURANCE_AC_PAR_ID.getValue());
+                    APCotisation cotisationAcStandardPersonnelle = getCotisationFromMap(prestationStandard.getMapCotisation().get(repartition), APProperties.ASSURANCE_AC_PER_ID.getValue());
+
+                    APCotisation cotisationAvsStandardParitaire2 = null;
+                    APCotisation cotisationAcStandardParitaire2 = null;
+
+                    APCotisation cotisationAvsStandardPersonnelle2 = null;
+                    APCotisation cotisationAcStandardPersonnelle2 = null;
+
+                    // Création des cotisations
+                    APCotisationData cotisationAvsParitaire = null;
+                    APCotisationData cotisationAcParitaire = null;
+                    APCotisationData cotisationAvsPersonelle = null;
+                    APCotisationData cotisationAcPersonelle = null;
+
+                    if(cotisationAvsStandardParitaire != null) {
+                        cotisationAvsStandardParitaire2 = cotisationAvsStandardParitaire;
+                        cotisationAvsParitaire = creerCotisation(montantBrutRepartition, tauxAvsAc[0], APProperties.ASSURANCE_AVS_PAR_ID.getValue());
+                    } else if (cotisationAvsStandardPersonnelle != null){
+                        cotisationAvsStandardPersonnelle2 = cotisationAvsStandardPersonnelle;
+                        cotisationAvsPersonelle = creerCotisation(montantBrutRepartition, tauxAvsAc[2], APProperties.ASSURANCE_AVS_PER_ID.getValue());
+                    }
+
+                    if(cotisationAcStandardParitaire != null) {
+                        cotisationAcStandardParitaire2 = cotisationAcStandardParitaire;
+                        cotisationAcParitaire = creerCotisation(montantBrutRepartition, tauxAvsAc[1], APProperties.ASSURANCE_AC_PAR_ID.getValue());
+                    } else if (cotisationAcStandardPersonnelle != null){
+                        cotisationAcStandardPersonnelle2 = cotisationAcStandardPersonnelle;
+                        cotisationAcPersonelle = creerCotisation(montantBrutRepartition, tauxAvsAc[3], APProperties.ASSURANCE_AC_PER_ID.getValue());
+                    }
+
+                    // création de la répartition
+                    montantBrutRepartition = arrondir(montantBrutRepartition);
+                    final APRepartitionPaiementData repartitionPaiementData = creerRepartition(
+                            montantBrutRepartition, cotisationAvsParitaire, cotisationAcParitaire,
+                            IAPRepartitionPaiements.CS_NORMAL, IAPRepartitionPaiements.CS_PAIEMENT_EMPLOYEUR,
+                            sitProf.getIdTiersEmployeur(), sitProf.getIdTiersPaiementEmployeur(),
+                            sitProf.getIdDomainePaiementEmployeur(),
+                            sitProf.getAssociation().getCodesystemToString(),
+                            sitProf.getId(), sitProf.getNom(),
+                            sitProf.getIdAffilie(),
+                            sitProf.getTypeAffiliation(),
+                            sitProf.getIndependant(),
+                            cotisationAvsStandardParitaire2,
+                            cotisationAcStandardParitaire2
                             );
                     prestationCalculeeAPersister.getRepartitionsPaiementMap().add(repartitionPaiementData);
+                    */
 
                     // màj montant prestation
                     montantPrestationComplementJournalier = montantPrestationComplementJournalier.add(sitProf
@@ -397,10 +450,16 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
                 prestation.setDateFin(prestationDomainCalculee.getDateFin());
                 prestation.setIdDroit(prestationDomainCalculee.getIdDroit());
                 prestation.setNombreJoursSoldes(String.valueOf(prestationDomainCalculee.getNombreDeJoursSoldes()));
-                prestation.setType(IAPPrestation.CS_TYPE_NORMAL);
+                //ESVE MATERNITE POUR PASSER DANS SELECT LOT
+                //prestation.setType(IAPPrestation.CS_TYPE_NORMAL);
+                prestation.setType(IPRDemande.CS_TYPE_MATERNITE);
                 prestation.setMontantJournalier(arrondir(prestationDomainCalculee.getMontantJournalier()).toString());
                 prestation.setMontantBrut(arrondir(prestationDomainCalculee.getMontantBrut()).toString());
-                prestation.setGenre(String.valueOf(APTypeDePrestation.COMPCIAB.getCodesystem()));
+                //ESVE MATERNITE NOUVEAU GENRE
+                prestation.setGenre(String.valueOf(APTypeDePrestation.MATCIAB1PA.getCodesystem()));
+                //ESVE MATERNITE POUR PASSER DANS SELECT LOT
+                prestation.setNoRevision(IAPDroitMaternite.CS_REVISION_MATERNITE_2005);
+
                 prestation.setEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
                 prestationPersistente.setPrestation(prestation);
 
