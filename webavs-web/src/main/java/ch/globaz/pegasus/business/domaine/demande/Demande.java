@@ -6,6 +6,7 @@ public class Demande {
     private String id;
     private Date debut;
     private Date fin;
+    private Date arrivee;
     private EtatDemande etat;
     private Boolean isFratrie;
 
@@ -49,4 +50,11 @@ public class Demande {
         this.isFratrie = isFratrie;
     }
 
+    public Date getArrivee() {
+        return arrivee;
+    }
+
+    public void setArrivee(Date arrivee) {
+        this.arrivee = arrivee;
+    }
 }

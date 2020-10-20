@@ -138,10 +138,12 @@ public class RpcDatasListConverter implements Iterator<RpcDataConverter>, Iterab
                     annonceData = new RpcData(versionDroit, dossier, demande);
                 }
                 demande.setEtat(EtatDemande.fromValue(entryDecisions.getValue().get(0).getEtatDemande()));
-                String dateDebut = entryDecisions.getValue().get(0).getDateFinDemande();
+                String dateDebut = entryDecisions.getValue().get(0).getDateDebutDemande();
                 String dateFin = entryDecisions.getValue().get(0).getDateFinDemande();
+                String dateArrivee = entryDecisions.getValue().get(0).getDateArriveeDemande();
                 demande.setDebut(JadeStringUtil.isEmpty(dateDebut) ? null : new Date(dateDebut));
                 demande.setFin(JadeStringUtil.isEmpty(dateFin) ? null : new Date(dateFin));
+                demande.setArrivee(JadeStringUtil.isEmpty(dateArrivee) ? null : new Date(dateArrivee));
 
                 annonceData.add(rpcDecisionRequerantConjoint.convert(entryDecisions.getValue(), versionDroit, demande));
             }

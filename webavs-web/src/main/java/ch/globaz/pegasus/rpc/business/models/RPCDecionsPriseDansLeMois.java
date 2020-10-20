@@ -22,6 +22,7 @@ public class RPCDecionsPriseDansLeMois extends JadeComplexModel {
     private String idPlanDeCalculParent;
     private String idPCAccordee;
     private String etatDemande;
+    private String dateArriveeDemande;
     private String dateDebutDemande;
     private String dateFinDemande;
 
@@ -183,6 +184,14 @@ public class RPCDecionsPriseDansLeMois extends JadeComplexModel {
 
     public void setDateFinDemande(String dateFinDemande) {
         this.dateFinDemande = dateFinDemande;
+    }
+
+    public String getDateArriveeDemande() {
+        return dateArriveeDemande;
+    }
+
+    public void setDateArriveeDemande(String dateArriveeDemande) {
+        this.dateArriveeDemande = dateArriveeDemande;
     }
 
     @Override

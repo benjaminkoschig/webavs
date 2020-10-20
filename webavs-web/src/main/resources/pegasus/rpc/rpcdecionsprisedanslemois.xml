@@ -14,6 +14,7 @@
 			<select-field name="idPlanDeCalculParent" field-ref="simplePlanDeCalculParent.idPlanDeCalcul" />
 			<select-field name="idPCAccordee" field-ref="simplePCAccordee.idPCAccordee" />
 			<select-field name="etatDemande" field-ref="simpleDemande.csEtatDemande" />
+			<select-field name="dateArriveeDemande" field-ref="simpleDemande.dateArrivee" />
 			<select-field name="dateDebutDemande" field-ref="simpleDemande.dateDebut" />
 			<select-field name="dateFinDemande" field-ref="simpleDemande.dateFin" />
 		</select-fields>
