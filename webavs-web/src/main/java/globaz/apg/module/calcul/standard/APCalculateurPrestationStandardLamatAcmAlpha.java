@@ -215,7 +215,6 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
         prestCalculee.setMontantJournalier(prestationWrapper.getPrestationBase().getMontantJournalier());
         prestCalculee.setBasicDailyAmount(prestationWrapper.getPrestationBase().getBasicDailyAmount());
-        //ESVE MATERNITE CALCULATEUR STANDARD
         prestCalculee.setTypePrestation(IAPPrestation.CS_TYPE_NORMAL);
         prestCalculee.setRevenuDeterminantMoyen(new FWCurrency(
                 prestationWrapper.getPrestationBase().revenuDeterminantMoyen.getBigDecimalValue().toString(), 3));
@@ -590,7 +589,6 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         APBaseCalcul bcSuivante = (APBaseCalcul) basesCalcul.get(basesCalcul.size() - 1);
 
         dateRevision = bcSuivante.getDateFin();
-        //ESVE MATERNITE CREATION PRESTATION
         prestationsCourantes
                 .addAll(this.calculerPrestationsCourantes(session, bcSuivante, apgOuMaternite, dateRevision));
 
@@ -738,7 +736,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
                 final boolean hasPrestationACMALFA = APPropertyTypeDePrestationAcmValues.ACM_ALFA.getPropertyValue()
                         .equals(propertyValue);
-                //ESVE MATERNITE CALCULATEUR STANDARD
+
                 // Si la caisse est une caisse horlogere => calculer les ACM
                 if (hasPrestationACMALFA && APPrestationHelper.hasAcmFalgInSitPro(session, droit) && !isDroitAdoption) {
                     helper.calculerACM(vbDroit, action, session);
@@ -975,7 +973,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             final FWCurrency revenuMoyenDeterminant, final String genrePrestation, final String dateDebut,
             final String dateFin, final String nombreJoursSoldes, final String noRevision,
             final boolean plusDeTrenteJours) throws Exception {
-        //ESVE MATERNITE CALCULATEUR STANDARD
+
         final APCalculateurAcmAlpha acmCalculateur = new APCalculateurAcmAlpha();
         final HashMap montants = acmCalculateur.calculerMontantACM(session, transaction, droit.getGenreService(),
                 droit.getIdDroit(), dateDebut, dateFin, plusDeTrenteJours);
@@ -1002,7 +1000,6 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             prestation.setIdDroit(droit.getIdDroit());
             prestation.setNombreJoursSoldes(nombreJoursSoldes);
             prestation.setNoRevision(noRevision);
-            //ESVE MATERNITE RevenuMoyenDeterminant
             prestation.setRevenuMoyenDeterminant(revenuMoyenDeterminant.getBigDecimalValue().toString());
             prestation.setType(IAPPrestation.CS_TYPE_NORMAL);
             prestation.setGenre(genrePrestation);
@@ -1073,7 +1070,6 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                 prestation.setIdDroit(droit.getIdDroit());
                 prestation.setNombreJoursSoldes(nombreJoursSoldes);
                 prestation.setNoRevision(noRevision);
-                //ESVE MATERNITE RevenuMoyenDeterminant
                 prestation.setRevenuMoyenDeterminant(revenuMoyenDeterminant.getBigDecimalValue().toString());
                 prestation.setType(IAPPrestation.CS_TYPE_NORMAL);
                 prestation.setGenre(genrePrestation);
@@ -2044,7 +2040,6 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
     /**
      * Traite les cas spécifiques des prestations ACM.
      */
-    //ESVE MATERNITE CALCULATEUR STANDARD
     private void traiterPrestationsAcmALpha(final BSession session, final BTransaction transaction,
             final APDroitLAPG droit, final String genrePrestation) throws Exception {
 
@@ -2275,7 +2270,6 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             }
         }
 
-        //ESVE MATERNITE créer le supplément de 14 jours à l'intérieur des ACM à sortir dans MATCIAB2
         // ACM pour allocation de maternité, supplément de 14 jours
         if (droit instanceof APDroitMaternite) {
             final String dureeACM = session.getApplication()
@@ -2363,7 +2357,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             }
         }
     }
-    //ESVE MATERNITE CALCULATEUR STANDARD
+
     private void traiterPrestationsCourantes(final BSession session, final BTransaction transaction,
             Collection prestationsCourantes, final APDroitLAPG droit, final FWCurrency fraisGarde) throws Exception {
 

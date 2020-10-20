@@ -318,9 +318,6 @@ public class APPrestationHelper extends PRAbstractHelper {
 
             calculerComplement(session, transaction, droit);
 
-            //ESVE MATERNITE NOUVEAU CALCULATEUR
-            calculerComplementAmat(session, transaction, droit);
-
             // calcul des ACM NE si la propriété TYPE_DE_PRESTATION_ACM vaut ACM_NE
             calculerPrestationsAcmNe(session, transaction, droit);
 
@@ -396,9 +393,6 @@ public class APPrestationHelper extends PRAbstractHelper {
 
             calculerComplement(session, transaction, droit);
 
-            //ESVE MATERNITE NOUVEAU CALCULATEUR
-            calculerComplementAmat(session, transaction, droit);
-
             calculerPrestationsAcmNe(session, transaction, droit);
 
             // Calcul des prestations ACM 2 si besoin
@@ -471,67 +465,6 @@ public class APPrestationHelper extends PRAbstractHelper {
         // Récupération des données depuis la persistence pour le calcul des prestations Complémentaires
 
         APCalculateurComplementDonneesPersistence donnesPersistencePourCalcul = getDonneesPersistancePourCalculComplementaire(
-                droit.getIdDroit(), session, transaction);
-
-        // si versé à l'assuré pas de calcul de complément
-        // si l’une des cotisations suivantes existe dans le dans le plan d’affiliation de l’employeur au début de la
-        // période APG, alors un complément est calculé
-        if (donnesPersistencePourCalcul == null
-                || donnesPersistencePourCalcul.getSituationProfessionnelleEmployeur().isEmpty()
-                || !isComplement(session, droit.getIdDroit(),
-                donnesPersistencePourCalcul.getSituationProfessionnelleEmployeur())) {
-            return;
-        }
-
-        donnesPersistencePourCalcul.setDroit(droit);
-
-        // Conversion vers des objets métier (domain) pour le calculateur
-        final List<Object> entiteesDomainPourCalcul = calculateurComplement
-                .persistenceToDomain(donnesPersistencePourCalcul);
-
-        // Calcul des prestations Complémentaires avec le calculateur approprié
-        final List<Object> entiteesDomainResultatCalcul = calculateurComplement
-                .calculerPrestation(entiteesDomainPourCalcul);
-
-        // Conversion des entités de domain vers des entités de persistance
-        final List<APPrestationCalculeeAPersister> resultatCalculAPersister = calculateurComplement
-                .domainToPersistence(entiteesDomainResultatCalcul);
-
-        // Sauvegarde des entités de persistance
-        persisterResultatCalculPrestation(resultatCalculAPersister, session, transaction);
-    }
-
-    /**
-     * Calcul des prestations MATCIAB
-     *
-     * @param session
-     * @param transaction
-     * @param viewBean
-     * @throws Exception
-     * @see{APProperties.TYPE_DE_PRESTATION_ACM
-     */
-    //ESVE MATERNITE NOUVEAU CALCULATEUR
-    private void calculerComplementAmat(final BSession session, final BTransaction transaction, final APDroitLAPG droit)
-            throws Exception {
-
-        //ESVE MATERNITE ENLEVER POUR CALCULER COMPLEMENT SUR MATERNITE
-        /*if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())
-                || APGUtils.isTypeAllocationPandemie(droit.getGenreService())) {
-            return;
-        }*/
-
-        String hasComplement = JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_APG_FERCIAB_MATERNITE);
-
-        if (!"true".equals(hasComplement) || APGUtils.isTypeAllocationJourIsole(droit.getGenreService())) {
-            return;
-        }
-
-        final IAPPrestationCalculateur calculateurComplement = APPrestationCalculateurFactory
-                .getCalculateurInstance(APTypeDePrestation.MATCIAB);
-
-        // Récupération des données depuis la persistence pour le calcul des prestations Complémentaires
-
-        APCalculateurComplementDonneesPersistence donnesPersistencePourCalcul = getDonneesPersistancePourCalculComplementaireAmat(
                 droit.getIdDroit(), session, transaction);
 
         // si versé à l'assuré pas de calcul de complément
@@ -1356,148 +1289,6 @@ public class APPrestationHelper extends PRAbstractHelper {
         putMontantMax(session, dateDebutPrestationStandard, montantsMax, EMontantsMax.COMCIABBER);
         putMontantMax(session, dateDebutPrestationStandard, montantsMax, EMontantsMax.COMCIABJUA);
         putMontantMax(session, dateDebutPrestationStandard, montantsMax, EMontantsMax.COMCIABBEA);
-        donneesPersistence.setMontantsMax(montantsMax);
-        return donneesPersistence;
-    }
-
-    //ESVE MATERNITE NOUVEAU CALCULATEUR
-    private APCalculateurComplementDonneesPersistence getDonneesPersistancePourCalculComplementaireAmat(
-            final String idDroit, final BISession iSession, final BITransaction iTransaction) throws Exception {
-        final APPrestationManager mgr = new APPrestationManager();
-        final BSession session = (BSession) iSession;
-        final BTransaction transaction = (BTransaction) iTransaction;
-        mgr.setSession(session);
-        mgr.setForIdDroit(idDroit);
-        mgr.find(BManager.SIZE_NOLIMIT);
-
-        List<APPrestation> list = new ArrayList<>();
-
-        for (int i = 0; i < mgr.getSize(); i++) {
-            final APPrestation prestation = (APPrestation) mgr.getEntity(i);
-            list.add(prestation);
-        }
-
-        final APCalculateurComplementDonneesPersistence donneesPersistence = new APCalculateurComplementDonneesPersistence(
-                idDroit);
-        donneesPersistence.setListPrestationStandard(list);
-
-        final APEntityService servicePersistance = ApgServiceLocator.getEntityService();
-        donneesPersistence.setIdDroit(idDroit);
-
-        // Récupération de toutes les restations joint repartitions
-        final List<APRepartitionJointPrestation> listeTemporaire = servicePersistance
-                .getRepartitionJointPrestationDuDroit(session, transaction, idDroit);
-
-        // On filtre car on ne veut pas les restitutions ou autres. Uniquement les prestations d'allocation
-        final List<APRepartitionJointPrestation> repartitionJointRepartitionsFiltree = new ArrayList<APRepartitionJointPrestation>();
-        for (APRepartitionJointPrestation repJointPrest : listeTemporaire) {
-            // On prend les prestation allocation et duplicata
-            if ((IAPAnnonce.CS_DEMANDE_ALLOCATION.equals(repJointPrest.getContenuAnnonce())
-                    || IAPAnnonce.CS_DUPLICATA.equals(repJointPrest.getContenuAnnonce()))
-                    && !JadeStringUtil.isBlankOrZero(repJointPrest.getIdSituationProfessionnelle())) {
-                repartitionJointRepartitionsFiltree.add(repJointPrest);
-            }
-        }
-
-        if (repartitionJointRepartitionsFiltree.isEmpty()) {
-            return null;
-        }
-
-        donneesPersistence.setPrestationJointRepartitions(repartitionJointRepartitionsFiltree);
-
-        APCotisationManager cotisations = new APCotisationManager();
-
-        List<APCotisation> listCotisation = new ArrayList<>();
-
-        for (APRepartitionJointPrestation repartition : repartitionJointRepartitionsFiltree) {
-            cotisations.setSession(session);
-            cotisations.setForIdRepartitionBeneficiairePaiement(repartition.getId());
-            cotisations.find(transaction);
-            for (int i = 0; i < cotisations.size(); i++) {
-                APCotisation cotisation = (APCotisation) cotisations.get(i);
-                listCotisation.add(cotisation);
-            }
-        }
-        donneesPersistence.setListCotisation(listCotisation);
-
-        // Situations professionnelles
-        final List<APSitProJointEmployeur> apSitProJoiEmpList = servicePersistance
-                .getSituationProfJointEmployeur(session, transaction, idDroit);
-
-        final String dateDebutPrestationStandard = donneesPersistence.getPrestationJointRepartitions().get(0)
-                .getDateDebut();
-
-        String idAssuranceParitaireJU = JadePropertiesService.getInstance()
-                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
-        String idAssurancePersonnelJU = JadePropertiesService.getInstance()
-                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_JU_ID);
-        String idAssuranceParitaireBE = JadePropertiesService.getInstance()
-                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_BE_ID);
-        String idAssurancePersonnelBE = JadePropertiesService.getInstance()
-                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_BE_ID);
-
-        List<APSitProJointEmployeur> apEmpList = new ArrayList<>();
-        // Récupération des taux
-        for (final APSitProJointEmployeur apSitProJoiEmp : apSitProJoiEmpList) {
-
-            String typeAffiliation = getTypeAffiliation(session, apSitProJoiEmp.getIdAffilie());
-
-            donneesPersistence.getMapTypeAffiliation().put(apSitProJoiEmp.getIdSitPro(), typeAffiliation);
-
-            // {taux AVS par, taux AC par}>
-            final BigDecimal[] taux = new BigDecimal[4];
-
-            taux[0] = getTauxAssurance(APProperties.ASSURANCE_AVS_PAR_ID.getValue(), dateDebutPrestationStandard,
-                    session);
-            taux[1] = getTauxAssurance(APProperties.ASSURANCE_AC_PAR_ID.getValue(), dateDebutPrestationStandard,
-                    session);
-            taux[2] = getTauxAssurance(APProperties.ASSURANCE_AVS_PER_ID.getValue(), dateDebutPrestationStandard,
-                    session);
-            taux[3] = getTauxAssurance(APProperties.ASSURANCE_AC_PER_ID.getValue(), dateDebutPrestationStandard,
-                    session);
-
-            donneesPersistence.getTaux().put(apSitProJoiEmp.getIdSitPro(), taux);
-
-            // list les cantons
-            Map<String, ECanton> mCanton = new HashMap<>();
-            List<IAFAssurance> listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercher(idDroit,
-                    apSitProJoiEmp.getIdAffilie(), session);
-            String idAssuranceEmployeur = null;
-            //ESVE MATERNITE recheche d'une assurance dans les propriétés
-            for (IAFAssurance assurance : listAssurance) {
-                if (apSitProJoiEmp.getIndependant()) {
-                    if (assurance.getAssuranceId().equals(idAssurancePersonnelBE)) {
-                        idAssuranceEmployeur = idAssurancePersonnelBE;
-                    } else if (assurance.getAssuranceId().equals(idAssurancePersonnelJU)) {
-                        idAssuranceEmployeur = idAssurancePersonnelJU;
-                    }
-                } else {
-                    if (assurance.getAssuranceId().equals(idAssuranceParitaireBE)) {
-                        idAssuranceEmployeur = idAssuranceParitaireBE;
-                    } else if (assurance.getAssuranceId().equals(idAssuranceParitaireJU)) {
-                        idAssuranceEmployeur = idAssuranceParitaireJU;
-                    }
-                }
-            }
-
-            // pas d'assurance pour cet employeur
-            if (idAssuranceEmployeur != null) {
-                apEmpList.add(apSitProJoiEmp);
-                if (idAssuranceEmployeur.equals(idAssuranceParitaireBE)
-                        || idAssuranceEmployeur.equals(idAssurancePersonnelBE)) {
-                    mCanton.put(apSitProJoiEmp.getIdSitPro(), ECanton.BE);
-                } else if (idAssuranceEmployeur.equals(idAssuranceParitaireJU)
-                        || idAssuranceEmployeur.equals(idAssurancePersonnelJU)) {
-                    mCanton.put(apSitProJoiEmp.getIdSitPro(), ECanton.JU);
-                }
-                donneesPersistence.setMapCanton(mCanton);
-            }
-        }
-        donneesPersistence.setSituationProfessionnelleEmployeur(apEmpList);
-
-        Map<EMontantsMax, BigDecimal> montantsMax = new HashMap<>();
-        putMontantMax(session, dateDebutPrestationStandard, montantsMax, EMontantsMax.MATCIABJUM);
-        putMontantMax(session, dateDebutPrestationStandard, montantsMax, EMontantsMax.MATCIABBEM);
         donneesPersistence.setMontantsMax(montantsMax);
         return donneesPersistence;
     }

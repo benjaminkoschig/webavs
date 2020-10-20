@@ -487,7 +487,6 @@ public class APGenererDecomptesProcess extends BProcess {
             CommonPropertiesUtils.validatePropertyValue(APProperties.TYPE_DE_PRESTATION_ACM, propertyValue,
                     APPropertyTypeDePrestationAcmValues.propertyValues());
 
-            //ESVE MATERNITE DECOMPTE
             final APPropertyTypeDePrestationAcmValues typeDePrestationAcm = APPropertyTypeDePrestationAcmValues
                     .valueOf(propertyValue);
             if (typeDePrestationAcm == null) {

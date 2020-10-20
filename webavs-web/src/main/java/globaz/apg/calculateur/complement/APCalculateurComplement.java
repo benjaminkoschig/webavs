@@ -9,10 +9,12 @@ import java.util.List;
 import java.util.Map;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
+import globaz.apg.application.APApplication;
 import globaz.apg.calculateur.IAPPrestationCalculateur;
 import globaz.apg.calculateur.pojo.APPrestationCalculeeAPersister;
 import globaz.apg.calculateur.pojo.APRepartitionCalculeeAPersister;
 import globaz.apg.db.droits.APDroitAPG;
+import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APSitProJointEmployeur;
 import globaz.apg.db.prestation.APCotisation;
 import globaz.apg.db.prestation.APPrestation;
@@ -20,15 +22,24 @@ import globaz.apg.db.prestation.APRepartitionJointPrestation;
 import globaz.apg.db.prestation.APRepartitionPaiements;
 import globaz.apg.enums.APAssuranceTypeAssociation;
 import globaz.apg.enums.APTypeDePrestation;
+import globaz.apg.module.calcul.APBaseCalcul;
 import globaz.apg.module.calcul.APCotisationData;
 import globaz.apg.module.calcul.APRepartitionPaiementData;
 import globaz.apg.module.calcul.APSituationProfessionnelleCanton;
 import globaz.apg.module.calcul.complement.APComplementCalculateur;
 import globaz.apg.properties.APProperties;
+import globaz.apg.services.APRechercherAssuranceFromDroitCotisationService;
+import globaz.globall.db.BManager;
+import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.properties.JadePropertiesService;
+import globaz.naos.api.IAFAffiliation;
+import globaz.naos.api.IAFAssurance;
+import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationManager;
+import globaz.naos.db.planAffiliation.AFPlanAffiliationManager;
 
 public class APCalculateurComplement implements IAPPrestationCalculateur<APCalculateurComplementDonneesPersistence, APCalculateurComplementDonneeDomaine, APCalculateurComplementDonneesPersistence> {
     
@@ -63,7 +74,7 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
                     droit.getGenreService(),
                     Integer.valueOf(droit.loadSituationFamilliale().getNbrEnfantsDebutDroit()));
 
-            BigDecimal montant = calculateur.calculerMontantCOMBIAB(salaireMensuel,
+            BigDecimal montant = calculateur.calculerMontant(salaireMensuel,
                     Integer.valueOf(prestation.getNombreJoursSoldes()));
             BigDecimal montantBrut = arrondir(montant);
             BigDecimal montantBrutFederal = getMontantFederal(prestation);
