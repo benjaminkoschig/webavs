@@ -17,13 +17,7 @@ public class RpcPlausiPS012Data extends RpcPlausiHeader {
     public boolean isValide() {
 
         // TODO A modifier pour PS-012
-
-        if (validFrom == null) {
-            return false;
-        }
-        Date tmpvalidF = new Date(validFrom.getMois() + "." + validFrom.getYear());
-        Date tmpAnnonce = new Date(new Date().getMois() + "." + new Date().getYear());
-        return tmpvalidF.before(tmpAnnonce);
+        return true;
     }
 
 }
