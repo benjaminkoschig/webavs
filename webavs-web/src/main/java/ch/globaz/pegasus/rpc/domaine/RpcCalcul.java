@@ -500,6 +500,13 @@ public class RpcCalcul {
     }
 
     /**
+     * FC41
+     */
+    public boolean isWheelchairSurcharge(){
+        return calcul.isWheelchairSurcharge();
+    }
+
+    /**
      * FC44
      */
     public Montant getDettesHypothequairesRealProperty() {
@@ -514,10 +521,21 @@ public class RpcCalcul {
     }
 
     /**
+     * FC45
+     *
+     */
+
+
+    /**
      * FC46
      */
     public String getTypeDivestedWealth() {
         return calcul.getTypeDivestedWealth();
+    }
+
+
+    public boolean isDivestedWealth() {
+        return calcul.isDivestedWealth();
     }
 
     /**
@@ -525,11 +543,6 @@ public class RpcCalcul {
      */
     public long getFamilySize() {
         return calcul.getFamilySize();
-    }
-
-
-    public boolean isDivestedWealth() {
-        return calcul.isDivestedWealth();
     }
 
 }

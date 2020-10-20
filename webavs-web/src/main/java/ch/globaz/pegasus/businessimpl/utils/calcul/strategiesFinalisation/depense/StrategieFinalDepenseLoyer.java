@@ -14,6 +14,7 @@ import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
 
 import java.util.Date;
+import java.util.Objects;
 
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
@@ -131,8 +132,15 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
                         forfaitFraisChauffage * prorata);
                 if (context.contains(Attribut.REFORME)) {
                     plafond = getPlafondReforme(tupleLoyer, nbHabitants, nbPersonnesCalcul, nbPersonnesCalculSansRenteUniquement);
+                    float montantLoyerMensuel = (tupleLoyer.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_LOYER_MONTANT_NET)) / 12;
+
                     if (isFauteuilRoulant) {
                         plafond += plafondFauteuil * prorata;
+                        // RPC. annonce fauteuil roulant
+                        // si loyer > plafondFauteuil
+                        if (Objects.nonNull(montantLoyerMensuel) && montantLoyerMensuel > plafondFauteuil) {
+                            donnee.getOrCreateEnfant(IPCValeursPlanCalcul.CLE_INTER_LOYER_IS_FAUTEUIL_ROULANT).addValeur(1f);
+                        }
                     }
                 }
 

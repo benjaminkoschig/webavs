@@ -1,8 +1,17 @@
 package ch.globaz.pegasus.rpc.domaine.annonce;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.GregorianCalendar;
+
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.pegasus.rpc.domaine.RpcDecisionAnnonceComplete;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 public class AnnonceCalculationElements {
     
@@ -49,10 +58,18 @@ public class AnnonceCalculationElements {
     protected boolean isDivestedWealth = Boolean.FALSE;
     protected String typeDivestedWealth;
 
+    protected boolean isWheelchairSurcharge = Boolean.FALSE;
+    protected XMLGregorianCalendar requestDateofReceipt;
+    private static final String SWISS_DAY_PATTERN = "dd.MM.yyyy";
+
     public AnnonceCalculationElements(RpcDecisionAnnonceComplete annonce) {
 
         otherWealth = annonce.getRpcCalcul().getAutreFortunes();
         divestedWealth = annonce.getRpcCalcul().getFortuneDessaisie();
+
+        isWheelchairSurcharge = annonce.getRpcCalcul().isWheelchairSurcharge();
+        // FC45
+        requestDateofReceipt = getDateArriveeDemandeXmlCalendar(annonce.getDemande().getArrivee().toString());
 
         isDivestedWealth = annonce.getRpcCalcul().isDivestedWealth();
         if (isDivestedWealth) {
@@ -113,7 +130,21 @@ public class AnnonceCalculationElements {
         }
         
     }
-    
+
+    private XMLGregorianCalendar getDateArriveeDemandeXmlCalendar(String dateDebutDemande) {
+        XMLGregorianCalendar result = null;
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(SWISS_DAY_PATTERN);
+            GregorianCalendar calendar = GregorianCalendar.from((LocalDate.parse(dateDebutDemande, formatter)).atStartOfDay(ZoneId.systemDefault()));
+            result = DatatypeFactory.newInstance()
+                    .newXMLGregorianCalendar(calendar);
+        } catch (DatatypeConfigurationException e) {
+            // TODO Traiter erreur. La date en DB n'est pas au format suisse.
+            e.printStackTrace();
+        }
+        return result;
+    }
+
     public Montant setZeroIfNull(Montant value) {
         return value == null ? Montant.ZERO : value; 
     }
@@ -251,5 +282,12 @@ public class AnnonceCalculationElements {
     public String getTypeDivestedWealth() {
         return typeDivestedWealth;
     }
-    
+
+    public boolean isWheelchairSurcharge() {
+        return isWheelchairSurcharge;
+    }
+
+    public XMLGregorianCalendar getRequestDateofReceipt() {
+        return requestDateofReceipt;
+    }
 }

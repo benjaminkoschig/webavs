@@ -731,4 +731,12 @@ public class Calcul {
         return typeDivestedWealth.substring(0, typeDivestedWealth.indexOf("."));
     }
 
+    public boolean isWheelchairSurcharge() {
+        return tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_LOYER_IS_FAUTEUIL_ROULANT).toString().equals("1.0");
+    }
+
+    public String getRequestDateofReceipt() {
+        return "";
+//        return tuple.getValeurEnfant(IPCValeursPlanCalcul.DATE)
+    }
 }

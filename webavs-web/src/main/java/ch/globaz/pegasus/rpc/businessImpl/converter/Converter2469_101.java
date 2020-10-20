@@ -110,6 +110,10 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
             elAmount.setElLimit(annonceDecision.getElAmounts().getElLimit());
             xmlDeci.setElAmounts(elAmount);
         }
+
+        // TODO Condition sur annonce de la date à mettre en place - FC4 lorsque la tâche sera faite
+        xmlDeci.setRequestDateOfReceipt(annonceDecision.getCalculationElements().getRequestDateofReceipt());
+
         CommonCalculationElementsType commCalculationElementsType = createCommCalculationElementsType(annonceDecision.getCalculationElements(), true);
         CalculationElementsTypeRef1 calcElmnt = convertCalculationElementRef1(annonceDecision.getCalculationElements(), commCalculationElementsType);
         xmlDeci.setCalculationElements(calcElmnt);
@@ -409,8 +413,6 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
             }
         }
 
-
-
         return calcElmnt;
     }
 
@@ -450,6 +452,7 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
         RentsTypeRef0 rents;
         if(isReformePC){
             rents = factory.createRentsTypeRef1();
+            rents.setWheelchairSurcharge(calculationElements.isWheelchairSurcharge());
         }else{
             rents = factory.createRentsTypeRef0();
         }
@@ -458,8 +461,7 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
         rents.setRentGrossTotal(calculationElements.getRentGrossTotal().longValue());
         rents.setRentGrossTotalPart(calculationElements.getRentGrossTotalPart().longValue());
         rents.setMaxRent(calculationElements.getMaxRent().longValue());
-        // TODO nouveau champ à false par défaut
-//        rents.setWheelchairSurcharge();
+
         return rents;
     }
 
