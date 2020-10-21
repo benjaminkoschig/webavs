@@ -286,7 +286,8 @@ public class COImportMessageELP extends BProcess {
                     } else {
                         LOG.warn("La nouvelle étape du contentieux n'a pas été créée.");
                         if (getSession().hasErrors()) {
-                            scElpDto.setMotifAdditional("\n" + getSession().getErrors().toString());
+                            StringBuilder errors = filterErrors(getSession().getErrors().toString());
+                            scElpDto.setMotifAdditional(errors.toString());
                         }
                         scElpDto.setMotif(COMotifMessageELP.CDP_NON_TRAITE);
                         protocole.addnonTraite(scElpDto);
@@ -455,6 +456,22 @@ public class COImportMessageELP extends BProcess {
     }
 
     /**
+     * On filtre les erreurs pour ne pas afficher plusieurs fois le même message.
+     * @param errors : les erreurs de la session
+     * @return le message d'erreurs à afficher.
+     */
+    private StringBuilder filterErrors(String errors) {
+        String[] allErrors = errors.split("\n");
+        Set<String> filterErrors = new HashSet<>(Arrays.asList(allErrors));
+        StringBuilder resultat = new StringBuilder();
+        for (String eachError : filterErrors) {
+            resultat.append("\n");
+            resultat.append(eachError);
+        }
+        return resultat;
+    }
+
+    /**
      * Traitement du fichier PV
      *
      * @param spType
@@ -546,7 +563,8 @@ public class COImportMessageELP extends BProcess {
                 } else {
                     LOG.warn("La nouvelle étape du contentieux n'a pas été créée.");
                     if (getSession().hasErrors()) {
-                        spElpDto.setMotifAdditional("\n" + getSession().getErrors().toString());
+                        StringBuilder errors = filterErrors(getSession().getErrors().toString());
+                        spElpDto.setMotifAdditional(errors.toString());
                     }
                     spElpDto.setMotif(COMotifMessageELP.PV_NON_TRAITE);
                     protocole.addnonTraite(spElpDto);
@@ -750,7 +768,8 @@ public class COImportMessageELP extends BProcess {
                 } else {
                     LOG.warn("La nouvelle étape du contentieux n'a pas été créée.");
                     if (getSession().hasErrors()) {
-                        rcElpDto.setMotifAdditional("\n" + getSession().getErrors().toString());
+                        StringBuilder errors = filterErrors(getSession().getErrors().toString());
+                        rcElpDto.setMotifAdditional(errors.toString());
                     }
                     rcElpDto.setMotif(COMotifMessageELP.ADB_NON_TRAITE);
                     protocole.addnonTraite(rcElpDto);
