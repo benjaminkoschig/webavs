@@ -45,7 +45,6 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
     
     @Override
     public List<APCalculateurComplementDonneesPersistence> calculerPrestation(List<APCalculateurComplementDonneeDomaine> donneesDomainCalcul) throws Exception {
-        //
 
         if (donneesDomainCalcul == null || donneesDomainCalcul.size() == 0) {
             throw new Exception("Aucune données pour le calcul des compléments");
