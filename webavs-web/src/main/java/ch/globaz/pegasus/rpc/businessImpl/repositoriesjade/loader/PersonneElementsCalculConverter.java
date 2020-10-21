@@ -7,6 +7,7 @@ import java.util.Map;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenuActiviteLucrativeIndependante.RevenuActiviteLucrativeIndependante;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenueActiviteLucrativeDependante.RevenuActiviteLucrativeDependante;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenueHypothtique.RevenuHypothtique;
+import ch.globaz.pegasus.business.domaine.parametre.forfaitPrime.ForfaitPrimeAssuranceMaladie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.globaz.common.domaine.Date;
@@ -128,6 +129,8 @@ public class PersonneElementsCalculConverter {
         Montant entretienViager = Montant.ZERO;
 
         perElCal.setFraisGarde(resolveFraisGarde(df));
+
+        perElCal.setMontantRIP(getMontantRIP(parameters.getForfaitsPrimesAssuranceMaladie(), donneesFinanciere.getFamille(), dateDebut));
 
         if (taxeJournaliereHome != null) {
 
@@ -378,6 +381,20 @@ public class PersonneElementsCalculConverter {
 
     Montant resolvePrimeLamal(ForfaitsPrimeAssuranceMaladie forfaitsPrimeAssuranceMaladie, MembreFamille membreFamille,
             Date dateDebut) {
+        ForfaitPrimeAssuranceMaladie forfaitPrimeAssuranceMaladie = getForfaitPrimeAssuranceMaladie(forfaitsPrimeAssuranceMaladie, membreFamille, dateDebut);
+        return  forfaitPrimeAssuranceMaladie.getMontantPrimeMoy();
+    }
+
+
+    /**
+     * Méthode permettant de récupérer le forfait de prime assurance maladie en fonction de la personne et de la date de début.
+     *
+     * @param forfaitsPrimeAssuranceMaladie
+     * @param membreFamille
+     * @param dateDebut
+     * @return le forfait prime assurance maladie associé.
+     */
+    private ForfaitPrimeAssuranceMaladie getForfaitPrimeAssuranceMaladie(ForfaitsPrimeAssuranceMaladie forfaitsPrimeAssuranceMaladie, MembreFamille membreFamille, Date dateDebut) {
         Date dateNaissance = new Date(membreFamille.getPersonne().getDateNaissance());
 
         ForfaitsPrimeAssuranceMaladie forfaits = forfaitsPrimeAssuranceMaladie
@@ -392,7 +409,19 @@ public class PersonneElementsCalculConverter {
             throw new RpcBusinessException("pegasus.rpc.primeLamal.notFound", idLocalite);
         }
         return forfaitsPrimeAssuranceMaladie.filtreByIdLocalite(idLocalite).filtreByAge(dateDebut, dateNaissance)
-                .resolveCourant(dateDebut).getMontant();
+                .resolveCourant(dateDebut);
+    }
+
+    /**
+     * Méthode permettant de récupérer le montant de la réduction individuelle individuelle de prime (LAMal).
+     * @param forfaitsPrimeAssuranceMaladie
+     * @param membreFamille
+     * @param dateDebut
+     * @return
+     */
+    private Montant getMontantRIP(ForfaitsPrimeAssuranceMaladie forfaitsPrimeAssuranceMaladie, MembreFamille membreFamille, Date dateDebut){
+        ForfaitPrimeAssuranceMaladie forfaitPrimeAssuranceMaladie = getForfaitPrimeAssuranceMaladie(forfaitsPrimeAssuranceMaladie, membreFamille, dateDebut);
+        return  forfaitPrimeAssuranceMaladie.getMontantPrimeReductionMaxCanton();
     }
 
     private TypeChambrePrix resolveTypeChambre(Parameters parameters, Date dateDebut,

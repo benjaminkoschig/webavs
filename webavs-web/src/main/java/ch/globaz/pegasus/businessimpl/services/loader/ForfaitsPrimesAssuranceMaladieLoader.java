@@ -3,8 +3,10 @@ package ch.globaz.pegasus.businessimpl.services.loader;
 import ch.globaz.pegasus.business.constantes.EPCForfaitType;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
+
 import java.util.List;
 import java.util.Set;
+
 import ch.globaz.common.converter.ConvertValueEnum;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
@@ -16,6 +18,7 @@ import ch.globaz.pegasus.business.models.parametre.ForfaitPrimeAssuranceMaladieL
 import ch.globaz.pegasus.business.models.parametre.ForfaitPrimeAssuranceMaladieLocaliteSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
+import org.apache.commons.lang.StringUtils;
 
 class ForfaitsPrimesAssuranceMaladieLoader {
 
@@ -71,7 +74,12 @@ class ForfaitsPrimesAssuranceMaladieLoader {
         forfaitPrimeAssuranceMaladie.setId(model.getSimpleLienZoneLocalite().getId());
         forfaitPrimeAssuranceMaladie.setIdLocalite(model.getSimpleLienZoneLocalite().getIdLocalite());
         forfaitPrimeAssuranceMaladie
-                .setMontant(new Montant(model.getSimpleForfaitPrimesAssuranceMaladie().getMontantPrimeMoy()));
+                .setMontantPrimeMoy(new Montant(model.getSimpleForfaitPrimesAssuranceMaladie().getMontantPrimeMoy()));
+        String montantRIP = model.getSimpleForfaitPrimesAssuranceMaladie().getMontantPrimeReductionMaxCanton();
+        if (StringUtils.isNotEmpty(montantRIP)) {
+            forfaitPrimeAssuranceMaladie
+                    .setMontantPrimeReductionMaxCanton(new Montant(montantRIP));
+        }
         forfaitPrimeAssuranceMaladie.setType(typConverter.convert(model.getSimpleForfaitPrimesAssuranceMaladie()
                 .getCsTypePrime()));
         return forfaitPrimeAssuranceMaladie;

@@ -33,6 +33,7 @@ public class AnnoncePersonalCalculationElements {
     protected Montant otherExpenses;
     protected Montant disabledAllowance;
     protected Montant childrenCostsAssitanceNet;
+    protected Montant individualPremiumReduction;
 
     protected AnnoncePensionCategory pensionCategory;
     protected AnnonceResidenceCosts residenceCosts;
@@ -47,6 +48,7 @@ public class AnnoncePersonalCalculationElements {
             residenceCosts = new AnnonceResidenceCosts(personData, calcul);
         }
         hcLcaAllowance = personData.getHomeContributionLca();
+        individualPremiumReduction = personData.getMontantRIP();
         lucrativeGrossIncome = personData.getRevenuBruteActiviteLucrative();
         hypotheticalGrossIncome = personData.getRevenuBrutHypothetique();
         totalPension = personData.getTotalRentes();
@@ -139,5 +141,9 @@ public class AnnoncePersonalCalculationElements {
 
     public Montant getChildrenCostsAssitanceNet() {
         return childrenCostsAssitanceNet;
+    }
+
+    public Montant getIndividualPremiumReduction() {
+        return individualPremiumReduction;
     }
 }

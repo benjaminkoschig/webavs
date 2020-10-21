@@ -10,7 +10,8 @@ public class ForfaitPrimeAssuranceMaladie implements Parametre<TypePrime> {
     private TypePrime typePrime;
     private Date dateDebut;
     private Date dateFin;
-    private Montant montant;
+    private Montant montantPrimeMoy;
+    private Montant montantPrimeReductionMaxCanton;
 
     public String getId() {
         return id;
@@ -55,18 +56,26 @@ public class ForfaitPrimeAssuranceMaladie implements Parametre<TypePrime> {
         this.dateFin = dateFin;
     }
 
-    public Montant getMontant() {
-        return montant;
+    public Montant getMontantPrimeMoy() {
+        return montantPrimeMoy;
     }
 
-    public void setMontant(Montant montant) {
-        this.montant = montant;
+    public void setMontantPrimeMoy(Montant montantPrimeMoy) {
+        this.montantPrimeMoy = montantPrimeMoy;
+    }
+
+    public Montant getMontantPrimeReductionMaxCanton() {
+        return montantPrimeReductionMaxCanton;
+    }
+
+    public void setMontantPrimeReductionMaxCanton(Montant montantPrimeReductionMaxCanton) {
+        this.montantPrimeReductionMaxCanton = montantPrimeReductionMaxCanton;
     }
 
     @Override
     public String toString() {
         return "ForfaitPrimeAssuranceMaladie [id=" + id + ", idLocalite=" + idLocalite + ", typePrime=" + typePrime
-                + ", dateDebut=" + dateDebut + ", dateFin=" + dateFin + ", montant=" + montant + "]";
+                + ", dateDebut=" + dateDebut + ", dateFin=" + dateFin + ", montantPrimeMoy=" + montantPrimeMoy + ", montantPrimeReductionMaxCanton=" + montantPrimeReductionMaxCanton +"]";
     }
 
 }

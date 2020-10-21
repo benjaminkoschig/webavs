@@ -71,7 +71,8 @@ public class ForfaitsPrimeAssuranceMaladieTest {
         ForfaitPrimeAssuranceMaladie forfaitPrimeAssuranceMaladie = new ForfaitPrimeAssuranceMaladie();
         forfaitPrimeAssuranceMaladie.setDateDebut(new Date());
         forfaitPrimeAssuranceMaladie.setDateFin(new Date());
-        forfaitPrimeAssuranceMaladie.setMontant(new Montant(1000));
+        forfaitPrimeAssuranceMaladie.setMontantPrimeMoy(new Montant(1000));
+        forfaitPrimeAssuranceMaladie.setMontantPrimeReductionMaxCanton(new Montant(900));
         forfaitPrimeAssuranceMaladie.setType(typePrime);
         forfaitPrimeAssuranceMaladie.setId(id);
         return forfaitPrimeAssuranceMaladie;

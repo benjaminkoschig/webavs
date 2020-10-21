@@ -47,6 +47,7 @@ public class PersonElementsCalcul {
     private String typeRenteCS;
 
     private Montant fraisGarde;
+    private Montant montantRIP;
 
     public Montant getValeurLocativeProprietaire() {
         return valeurLocativeProprietaire;
@@ -187,6 +188,10 @@ public class PersonElementsCalcul {
 
     public void setFraisGarde(Montant fraisGarde) {
         this.fraisGarde = fraisGarde;
+    }
+
+    public void setMontantRIP(Montant montantRIP) {
+        this.montantRIP = montantRIP;
     }
 
     public void addFraisGarde(PersonElementsCalcul elementsCalcul) {
@@ -417,5 +422,9 @@ public class PersonElementsCalcul {
 
     public Montant getFraisGarde() {
         return fraisGarde;
+    }
+
+    public Montant getMontantRIP() {
+        return montantRIP;
     }
 }

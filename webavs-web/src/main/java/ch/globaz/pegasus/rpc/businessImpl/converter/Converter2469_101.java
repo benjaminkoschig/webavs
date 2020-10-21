@@ -171,6 +171,7 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
             if (apce.getHcEffectiveHelp() != null) { // n'existe pas encore
                 pce.setHcEffectiveHelp(apce.getHcEffectiveHelp().longValue());
             }
+            pce.setIndividualPremiumReduction(apce.getIndividualPremiumReduction().longValue());
             person.setPersonalCalculationElements(pce);
             persons.getPerson().add(person);
         }
