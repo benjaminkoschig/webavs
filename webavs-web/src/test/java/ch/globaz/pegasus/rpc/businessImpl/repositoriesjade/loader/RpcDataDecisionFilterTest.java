@@ -48,7 +48,7 @@ public class RpcDataDecisionFilterTest {
         assertThat(data.getRpcDecisionRequerantConjoints().get(0)).isEqualTo(r2);
 
         assertThat(data.getRpcDecisionRequerantConjoints().get(0).getRequerant().getPca().getDateDebut()).isEqualTo(
-                new Date("20140114"));
+                new Date("20160102"));
         assertThat(data.getRpcDecisionRequerantConjoints().get(0).getRequerant().getPca().getDateFin()).isEqualTo(
                 new Date("20161231"));
 
@@ -59,7 +59,7 @@ public class RpcDataDecisionFilterTest {
         assertThat(data.getRpcDecisionRequerantConjoints().size()).isEqualTo(1);
         assertThat(data.getRpcDecisionRequerantConjoints().get(0)).isEqualTo(r4);
         assertThat(data.getRpcDecisionRequerantConjoints().get(0).getRequerant().getPca().getDateDebut()).isEqualTo(
-                new Date("20140114"));
+                new Date("20170101"));
         assertThat(data.getRpcDecisionRequerantConjoints().get(0).getRequerant().getPca().getDateFin()).isNull();
     }
 
@@ -120,13 +120,13 @@ public class RpcDataDecisionFilterTest {
                 PcaGenre.DOMICILE, PcaEtatCalcul.REFUSE);
         data.add(r3);
         assertThat(data.getRpcDecisionRequerantConjoints().size()).isEqualTo(3);
-        RpcDataDecisionFilter.keepLastPositiv(data, new Date("20120101"), null);
+        RpcDataDecisionFilter.keepLastPositiv(data);
         assertThat(data.getRpcDecisionRequerantConjoints().size()).isEqualTo(1);
         assertThat(data.getRpcDecisionRequerantConjoints().get(0)).isEqualTo(r2);
         RpcDecisionRequerantConjoint r4 = createRpcDeci(TypeDecision.OCTROI_APRES_CALCUL, "20170101", null,
                 PcaGenre.DOMICILE, PcaEtatCalcul.OCTROYE);
         data.add(r4);
-        RpcDataDecisionFilter.keepLastPositiv(data, new Date("20120101"), null);
+        RpcDataDecisionFilter.keepLastPositiv(data);
         assertThat(data.getRpcDecisionRequerantConjoints().size()).isEqualTo(1);
         assertThat(data.getRpcDecisionRequerantConjoints().get(0)).isEqualTo(r4);
 
@@ -148,7 +148,7 @@ public class RpcDataDecisionFilterTest {
         data.add(r3);
         assertThat(data.getRpcDecisionRequerantConjoints().size()).isEqualTo(3);
         try {
-            RpcDataDecisionFilter.keepCurrent(data, new Date("20120101"));
+            RpcDataDecisionFilter.keepCurrent(data);
 
         } catch (NullPointerException e) {
             assertThat(true);
@@ -157,11 +157,11 @@ public class RpcDataDecisionFilterTest {
         RpcDecisionRequerantConjoint r4 = createRpcDeci(TypeDecision.OCTROI_APRES_CALCUL, "20170101", null,
                 PcaGenre.DOMICILE, PcaEtatCalcul.OCTROYE);
         data.add(r4);
-        RpcDataDecisionFilter.keepCurrent(data, new Date("20120101"));
+        RpcDataDecisionFilter.keepCurrent(data);
         assertThat(data.getRpcDecisionRequerantConjoints().size()).isEqualTo(1);
         assertThat(data.getRpcDecisionRequerantConjoints().get(0)).isEqualTo(r4);
         assertThat(data.getRpcDecisionRequerantConjoints().get(0).getRequerant().getPca().getDateDebut()).isEqualTo(
-                new Date("20120101"));
+                new Date("20170101"));
     }
 
     @Test
