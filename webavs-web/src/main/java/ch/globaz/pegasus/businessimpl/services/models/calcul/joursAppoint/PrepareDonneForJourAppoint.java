@@ -36,7 +36,7 @@ public class PrepareDonneForJourAppoint {
      * Calcul des jours d'appoints s'il le faut l'ajoute dans la periode Pour calcule le montant du jour d'appont on
      * utilse le montant de la période d'avant si elle existe sinon on utilise le montant de l'ancienne version de
      * droit.
-     * 
+     *
      * @param dateDebutPlageCalcul
      */
     public void addJourAppointInPeriodeIfNeeded(List<PeriodePCAccordee> listePCAccordes,
@@ -59,8 +59,9 @@ public class PrepareDonneForJourAppoint {
                     // on itere sur les personnes
                     for (PersonnePCAccordee personne : ccRetenu.getPersonnes()) {
                         Date dateEntreeHomePersonne = getDateEntreeHome(personne);
-                        if(dateEntreeHomePersonne != null) {
-                            throw new CalculException("date entrée home à supprimer : "+JadeDateUtil.getFormattedDate(dateEntreeHomePersonne)+" - Renseigner les frais de séjour mois partiel en home au lieu des jours d'appoint");
+                        if (mustGenerateJourAppoint(periode.getDateDebut(), dateEntreeHomePersonne)
+                                && personne.getIsHome()) {
+                                throw new CalculException("date entrée home à supprimer : " + JadeDateUtil.getGlobazFormattedDate(dateEntreeHomePersonne) + " - Renseigner les frais de séjour mois partiel en home au lieu des jours d'appoint");
                         }
                     }
                     periodePrecedente = periode;
