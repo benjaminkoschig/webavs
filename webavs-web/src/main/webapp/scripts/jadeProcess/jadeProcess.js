@@ -206,6 +206,7 @@ var buttonExecut = {
 							$current = $("#current");
 							$current.attr("id","");
 							if (typeof data.viewBean.customHtml !== "undefined") {
+								$('#isStepImportPrime').remove();
 								$tr.find(".customHtml").empty().append("<span class='customHtmlAjax'>" + data.viewBean.customHtml + "</span>");
 							}
 							var $bouttons = $tr.find(".buttonProcess").detach();
@@ -226,6 +227,7 @@ var buttonExecut = {
 							$bouttons.find(".validerStep").button("option", "disabled", true);
 							if (typeof data.viewBean.currentStepCustomHtml !== "undefined") {
 								var $customCurrentHtml = $trNext.find(".customHtml");
+								$('#isStepImportPrime').remove();
 								$customCurrentHtml.append("<span class='customHtmlAjax'>" + data.viewBean.currentStepCustomHtml + "</span>");
 								notationManager.addNotationOnFragment($customCurrentHtml);
 							}
