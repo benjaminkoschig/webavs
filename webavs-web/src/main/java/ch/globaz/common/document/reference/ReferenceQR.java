@@ -188,7 +188,7 @@ public class ReferenceQR extends AbstractReference {
         if (!COMBINE.equals(debfAdressTyp)){
             parameters.put(COParameter.P_PAR, (debfNom + RETOUR_LIGNE + debfRueOuLigneAdresse1 + ESPACE + debfNumMaisonOuLigneAdresse2 + RETOUR_LIGNE + debfCodePostal + ESPACE + debfLieu).trim());
         } else {
-            parameters.put(COParameter.P_PAR, (debfRueOuLigneAdresse1 + RETOUR_LIGNE + debfNumMaisonOuLigneAdresse2).trim());
+            parameters.put(COParameter.P_PAR, (debfNom + RETOUR_LIGNE +debfRueOuLigneAdresse1 + RETOUR_LIGNE + debfNumMaisonOuLigneAdresse2).trim());
         }
 
 
@@ -769,7 +769,7 @@ public class ReferenceQR extends AbstractReference {
         adresseDebiteurAsString = adresseDebiteurAsString.substring(adresseDebiteurAsString.indexOf('\n')+1, adresseDebiteurAsString.length());
         this.setDebfRueOuLigneAdresse1(adresseDebiteurAsString.substring(0, adresseDebiteurAsString.indexOf('\n')));
         adresseDebiteurAsString = adresseDebiteurAsString.substring(adresseDebiteurAsString.indexOf('\n')+1, adresseDebiteurAsString.length());
-        this.setDebfNumMaisonOuLigneAdresse2(adresseDebiteurAsString.substring(0, adresseDebiteurAsString.indexOf('\n')));
+        this.setDebfNumMaisonOuLigneAdresse2(adresseDebiteurAsString);
     }
 
     public String getDebfCodePostal() {
