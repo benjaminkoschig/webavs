@@ -856,7 +856,7 @@ public class COImportMessageELP extends BProcess {
     private List<Map<String, String>> getFraisEtInterets(COAbstractELP elpDto, String genreAffiliation) throws COELPException {
         List<Map<String, String>> fraisEtInterets = new ArrayList<>();
         Map<String, String> mapFraisEtInterets = new HashMap<>();
-        if (StringUtils.isNotEmpty(elpDto.getInterest())) {
+        if (StringUtils.isNotEmpty(elpDto.getInterest()) && Float.parseFloat(elpDto.getInterest()) != 0) {
             mapFraisEtInterets.put(COTransitionViewBean.LIBELLE, StringUtils.EMPTY);
             mapFraisEtInterets.put(COTransitionViewBean.MONTANT, elpDto.getInterest());
             CAReferenceRubrique ref = new CAReferenceRubrique();
