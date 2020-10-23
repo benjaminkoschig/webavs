@@ -19,6 +19,8 @@ import ch.globaz.common.document.reference.ReferenceBVR;
 import ch.globaz.common.document.reference.ReferenceQR;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,6 +35,7 @@ import java.util.StringTokenizer;
  */
 public abstract class FAImpressionFacturation extends FWIDocumentManager {
 
+    private static final Logger LOG = LoggerFactory.getLogger(FAImpressionFacturation.class);
     /**
      * 
      */
@@ -355,9 +358,7 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
                 try {
                     qrFacture.insertAdresseDebFAsStringInQrFacture(adresseDebiteur);
                 } catch (Exception e) {
-                    getMemoryLog().logMessage(
-                            "Erreur lors de recherche de l'adresse Debiteur : " + e.getMessage(),
-                            FWMessage.AVERTISSEMENT, this.getClass().getName());
+                    LOG.info(this.getClass().getName() + " - Erreur lors de recherche de l'adresse Debiteur : " + e.getMessage());
                 }
 
             }
@@ -367,6 +368,7 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
             // Elle est récupérée depuis le catalogue de texte au format Combinée
             qrFacture.genererCreAdresse();
         } catch (Exception e) {
+
             getMemoryLog().logMessage(
                     "Erreur lors de recherche des élements de la sommation : " + e.getMessage(),
                     FWMessage.AVERTISSEMENT, this.getClass().getName());

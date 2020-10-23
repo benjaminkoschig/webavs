@@ -66,6 +66,8 @@ import java.util.*;
 
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Classe abstraite parente de touts les documents du projet aquila.<br>
@@ -78,6 +80,8 @@ public abstract class CODocumentManager extends FWIDocumentManager {
 
     // ~ Static fields/initializers
     // -------------------------------------------------------------------------------------
+
+    private static final Logger LOG = LoggerFactory.getLogger(CODocumentManager.class);
 
     /**
      * 
@@ -2208,9 +2212,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
                     try {
                         qrFacture.insertAdresseDebFAsStringInQrFacture(adresseDebiteurAsString);
                     } catch (Exception e) {
-                        getMemoryLog().logMessage(
-                                "Erreur lors de recherche de l'adresse Debiteur : " + e.getMessage(),
-                                FWMessage.AVERTISSEMENT, this.getClass().getName());
+                        LOG.info(this.getClass().getName() + " - Erreur lors de recherche de l'adresse Debiteur : " + e.getMessage());
                     }
 
                 }

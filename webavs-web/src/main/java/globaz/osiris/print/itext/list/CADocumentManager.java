@@ -44,6 +44,8 @@ import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Classe abstraite parente de tous les documents du projet osiris. Centralise les fonctionalités communes aux documents
@@ -55,6 +57,8 @@ public abstract class CADocumentManager extends FWIDocumentManager {
     /**
      * 
      */
+    private static final Logger LOG = LoggerFactory.getLogger(CADocumentManager.class);
+
     private static final long serialVersionUID = 1L;
     public final static String JASP_PROP_BODY_ADR_CAISSE_BVR = "body.adr.caisse.bvr.";
     /** Template properties */
@@ -825,9 +829,7 @@ public abstract class CADocumentManager extends FWIDocumentManager {
                 try {
                     qrFacture.insertAdresseDebFAsStringInQrFacture(adresseDebiteur);
                 } catch (Exception e) {
-                    getMemoryLog().logMessage(
-                            "Erreur lors de recherche de l'adresse Debiteur : " + e.getMessage(),
-                            FWMessage.AVERTISSEMENT, this.getClass().getName());
+                    LOG.info(this.getClass().getName() + " - Erreur lors de recherche de l'adresse Debiteur : " + e.getMessage());
                 }
 
             }
