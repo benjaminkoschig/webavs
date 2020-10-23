@@ -2119,7 +2119,7 @@ public class REValiderDecisionHandler {
             for (REAnnonceRente annonce : annonceMgr.getContainerAsList()) {
                 REAnnonceHeader annonceHeader = new REAnnonceHeader();
                 annonceHeader.setSession(getSession());
-                annonceHeader.setIdAnnonce(annonce.getId());
+                annonceHeader.setIdAnnonce(annonce.getIdAnnonceHeader());
                 annonceHeader.retrieve();
 
                 if (Objects.nonNull(annonceHeader) && (annonceHeader.getCodeApplication()=="41" || annonceHeader.getCodeApplication()=="44")) {
