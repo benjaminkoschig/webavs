@@ -2122,7 +2122,7 @@ public class REValiderDecisionHandler {
                 annonceHeader.setIdAnnonce(annonce.getIdAnnonceHeader());
                 annonceHeader.retrieve();
 
-                if (Objects.nonNull(annonceHeader) && (annonceHeader.getCodeApplication()=="41" || annonceHeader.getCodeApplication()=="44")) {
+                if (Objects.nonNull(annonceHeader) && (annonceHeader.getCodeApplication().equals("41") || annonceHeader.getCodeApplication().equals("44"))) {
                     if (!JadeStringUtil.isBlankOrZero(annonce.getIdDecision())) {
 
                         REDecisionEntity decCourant = new REDecisionEntity();
