@@ -17,6 +17,7 @@ import rpc.ch.ech.xmlns.ech_0007._5.CantonAbbreviationType;
 import rpc.ch.ech.xmlns.ech_0007._5.CantonFlAbbreviationType;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
 
@@ -111,8 +112,7 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
             xmlDeci.setElAmounts(elAmount);
         }
 
-        // TODO Condition sur annonce de la date à mettre en place - FC4 lorsque la tâche sera faite
-        xmlDeci.setRequestDateOfReceipt(annonceDecision.getCalculationElements().getRequestDateofReceipt());
+        xmlDeci.setRequestDateOfReceipt(annonceDecision.getRequestDateofReceipt());
 
         CommonCalculationElementsType commCalculationElementsType = createCommCalculationElementsType(annonceDecision.getCalculationElements(), true);
         CalculationElementsTypeRef1 calcElmnt = convertCalculationElementRef1(annonceDecision.getCalculationElements(), commCalculationElementsType);

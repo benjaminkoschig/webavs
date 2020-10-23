@@ -18,7 +18,7 @@ public class RpcPlausiPI082 implements RpcPlausiMetier<RpcPlausiPI082Data> {
     public RpcPlausiPI082Data buildPlausi(AnnonceDecision decision, AnnonceCase data) {
 
         final RpcPlausiPI082Data plausiData = new RpcPlausiPI082Data(this);
-        plausiData.dateArrivee = decision.getAnnonce().getDemande().getArrivee();
+        plausiData.dateArrivee = decision.getRequestDateofReceipt();
         plausiData.decisionCause = decision.getDecisionCause();
         return plausiData;
     }

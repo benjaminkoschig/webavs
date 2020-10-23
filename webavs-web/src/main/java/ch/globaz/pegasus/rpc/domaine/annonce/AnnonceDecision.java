@@ -2,7 +2,11 @@ package ch.globaz.pegasus.rpc.domaine.annonce;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
@@ -15,6 +19,10 @@ import ch.globaz.pegasus.rpc.businessImpl.converter.ConverterDecisionCause;
 import ch.globaz.pegasus.rpc.businessImpl.converter.ConverterDecisionKind;
 import ch.globaz.pegasus.rpc.domaine.PersonElementsCalcul;
 import ch.globaz.pegasus.rpc.domaine.RpcDecisionAnnonceComplete;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 public class AnnonceDecision {
 
@@ -39,6 +47,9 @@ public class AnnonceDecision {
 
     protected RpcDecisionAnnonceComplete annonce;
 
+    protected XMLGregorianCalendar requestDateofReceipt;
+    private static final String SWISS_DAY_PATTERN = "dd.MM.yyyy";
+
     public AnnonceDecision(RpcDecisionAnnonceComplete annonce) {
         this.annonce = annonce;
         final Decision decision = annonce.getPcaDecision().getDecision();
@@ -58,6 +69,12 @@ public class AnnonceDecision {
         if (annonce.getVersionDroit() != null) {
             decisionCause = ConverterDecisionCause.convert(annonce.getVersionDroit(), decision.getMotif());
         }
+
+        // FC45
+        if (decisionCause.compareTo(BigInteger.ONE) == 0){
+            requestDateofReceipt = getDateArriveeDemandeXmlCalendar(annonce.getDemande().getArrivee().toString());
+        }
+
         if (annonce.hasDateFin()) {
             validTo = decision.getDateFin();
         }
@@ -75,6 +92,20 @@ public class AnnonceDecision {
         }
         coupleSepare = decision.getType().isRefusSansCalcul() ? false : annonce.getRpcCalcul().isCoupleSepare();
 
+    }
+
+    private XMLGregorianCalendar getDateArriveeDemandeXmlCalendar(String dateDebutDemande) {
+        XMLGregorianCalendar result = null;
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(SWISS_DAY_PATTERN);
+            GregorianCalendar calendar = GregorianCalendar.from((LocalDate.parse(dateDebutDemande, formatter)).atStartOfDay(ZoneId.systemDefault()));
+            result = DatatypeFactory.newInstance()
+                    .newXMLGregorianCalendar(calendar);
+        } catch (DatatypeConfigurationException e) {
+            // TODO Traiter erreur. La date en DB n'est pas au format suisse.
+            e.printStackTrace();
+        }
+        return result;
     }
 
     private void initPersons(RpcDecisionAnnonceComplete annonce) {
@@ -551,5 +582,8 @@ public class AnnonceDecision {
         return personRepresentative;
     }
 
+    public XMLGregorianCalendar getRequestDateofReceipt() {
+        return requestDateofReceipt;
+    }
 
 }

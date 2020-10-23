@@ -5,10 +5,11 @@ import ch.globaz.common.domaine.Montant;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausi;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiHeader;
 
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
 
 public class RpcPlausiPI082Data extends RpcPlausiHeader {
-    Date dateArrivee;
+    XMLGregorianCalendar dateArrivee;
     BigInteger decisionCause;
 
     public RpcPlausiPI082Data(RpcPlausi<RpcPlausiPI082Data> plausi) {
