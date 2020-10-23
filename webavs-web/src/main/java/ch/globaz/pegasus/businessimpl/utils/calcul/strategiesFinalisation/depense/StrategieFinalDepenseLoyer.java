@@ -2,25 +2,15 @@ package ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depen
 
 import ch.globaz.pegasus.business.constantes.EPCForfaitType;
 import ch.globaz.pegasus.business.constantes.EPCPlafondLoyer;
-import ch.globaz.pegasus.business.exceptions.models.parametre.ForfaitsPrimesAssuranceMaladieException;
-import ch.globaz.pegasus.business.models.parametre.ForfaitPrimeAssuranceMaladieLocalite;
-import ch.globaz.pegasus.business.models.parametre.ForfaitPrimeAssuranceMaladieLocaliteSearch;
-import ch.globaz.pegasus.business.services.PegasusServiceLocator;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.persistence.JadePersistenceManager;
-import globaz.jade.persistence.model.JadeAbstractModel;
-
-import java.util.Date;
-import java.util.Objects;
-
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
+import ch.globaz.pegasus.business.exceptions.models.parametre.ForfaitsPrimesAssuranceMaladieException;
+import ch.globaz.pegasus.business.models.parametre.ForfaitPrimeAssuranceMaladieLocalite;
+import ch.globaz.pegasus.business.models.parametre.ForfaitPrimeAssuranceMaladieLocaliteSearch;
 import ch.globaz.pegasus.business.models.variablemetier.SimpleVariableMetier;
 import ch.globaz.pegasus.business.models.variablemetier.SimpleVariableMetierSearch;
+import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.businessimpl.utils.PegasusDateUtil;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext.Attribut;
@@ -28,8 +18,20 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.ControlleurVariablesMetier;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.StrategieCalculFinalisation;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.UtilStrategieBienImmobillier;
+import ch.globaz.pyxis.business.model.LocaliteSimpleModel;
+import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+
+import java.util.Date;
+import java.util.Objects;
 
 public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier implements StrategieCalculFinalisation {
 
@@ -269,8 +271,8 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
             loyerMaxLocaliteSearch = PegasusServiceLocator.getParametreServicesLocator()
                     .getForfaitPrimeAssuranceMaladieLocaliteService().search(loyerMaxLocaliteSearch);
         } catch (ForfaitsPrimesAssuranceMaladieException | JadeApplicationServiceNotAvailableException | JadePersistenceException e) {
-            throw new CalculException("pegasus.calcul.loyer.max.mandatory", idLocalite,
-                    dateDebut, csType);
+            throw new CalculException("pegasus.calcul.loyer.max.mandatory", getNpaLocalite(idLocalite),
+                    dateDebut, dateDeFin);
         }
         if (loyerMaxLocaliteSearch.getSearchResults().length > 0) {
             ForfaitPrimeAssuranceMaladieLocalite plafond = (ForfaitPrimeAssuranceMaladieLocalite) loyerMaxLocaliteSearch.getSearchResults()[0];
@@ -280,9 +282,20 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
             Float montantPourcent = montantPlafond * pourcentage / 100;
             return montantPlafond + montantPourcent;
         } else {
-            throw new CalculException("pegasus.calcul.loyer.max.mandatory", idLocalite,
-                    dateDebut, csType);
+            throw new CalculException("pegasus.calcul.loyer.max.mandatory", getNpaLocalite(idLocalite),
+                    dateDebut, dateDeFin);
         }
+    }
+
+    private String getNpaLocalite(String idLocalite) throws CalculException {
+        String nomLocalite = "";
+        try {
+            LocaliteSimpleModel localite = TIBusinessServiceLocator.getAdresseService().readLocalite(idLocalite);
+            nomLocalite = localite.getNumPostal();
+        } catch (JadePersistenceException | JadeApplicationException ex) {
+            nomLocalite = idLocalite;
+        }
+        return nomLocalite;
     }
 
     /***
