@@ -47,7 +47,7 @@ function TaxeJournaliereHome (container) {
 	};
 
 	this.afterStartEdition = function () {
-		var jourAppoint = $('[name=dateEntreeHome]');
+		var jourAppoint = this.detail.find('[name=dateEntreeHome]');
 		if (jourAppoint && !jourAppoint.val()) {
 			jourAppoint.prop( "disabled", true );
 		}
