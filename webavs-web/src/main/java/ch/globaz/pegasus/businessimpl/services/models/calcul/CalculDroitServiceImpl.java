@@ -320,9 +320,10 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                     cc.setPlanRetenu(Boolean.FALSE);
 
                     boolean listeEquals = cc.equalsPersonnes(listeIdPersonnes);
-                    isCCTrouve = listeEquals;
+
                     // Si retenus
-                    if (isCCTrouve) {
+                    if (listeEquals) {
+                        isCCTrouve = true;
                         calculsComparatifsComparaison.add(cc);
                         cc.setComparer(true);
                     }
