@@ -36,7 +36,7 @@ public class ConverterDecisionKind {
     }
 
     public static BigInteger convert(TypeDecision typeDecision, MotifDecision motifDecision,
-            PcaEtatCalcul etatCalculFederal) {
+                                     PcaEtatCalcul etatCalculFederal) {
 
         if (typeDecision.isRefusSansCalcul()) {
             if (MotifDecision.RENONCIATION.equals(motifDecision)) {
@@ -54,7 +54,14 @@ public class ConverterDecisionKind {
             } else if (typeDecision.isOctroiOrPartiel() || typeDecision.isAdaptation()) {
                 return toBigInt(6);
             } else if (typeDecision.isSuppression()) {
-                return toBigInt(3);
+                switch (motifDecision) {
+                    case JUSTIFICATIFS_PAS_FOURNIS:
+                        return toBigInt(2);
+                    case SEJOUR_ETRANGERS:
+                    default:
+                        return toBigInt(3);
+
+                }
             }
         }
 
