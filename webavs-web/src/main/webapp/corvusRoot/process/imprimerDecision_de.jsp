@@ -69,6 +69,13 @@ $( function() {
     });
 } );
 </script>
+ <% if(!viewBean.getIsTypeCaisseCorrect()){ %>
+	<div id="dialog-message" title="Warning">
+	  <p>
+	    <%= objSession.getLabel("ERROR_PROP_TRIBUNAL_NOT_FOUND")%>
+	  </p>
+	</div>
+ <%}%>
 <%-- /tpl:put --%>
 <%@ include file="/theme/process/bodyStart.jspf" %>
 			<%-- tpl:put name="zoneTitle" --%><ct:FWLabel key="JSP_IMD_D_TITRE"/><%-- /tpl:put --%>
@@ -124,6 +131,12 @@ $( function() {
 				<INPUT type="hidden" name="displaySendToGed" value="0">
 			<% } %>
 		<% } %>
+
+	<% if(viewBean.getIsTypeCaisseCorrect()){ %>
+		<input type = "hidden" name = "isTypeCaisseCorrect" value = "on">
+	<%}else{%>
+		<input type = "hidden" name = "isTypeCaisseCorrect" value = "">
+	<% } %>
 <%-- /tpl:put --%>
 <%@ include file="/theme/process/footer.jspf" %>
 <%-- tpl:put name="zoneEndPage" --%><%	if (request.getParameter("_back") != null && request.getParameter("_back").equals("sl")) { %> <%	}%> <%-- /tpl:put --%>

@@ -108,9 +108,9 @@ public class REImprimerDecisionHelper extends PRAbstractHelper {
             String typeCaisse = session.getRemoteApplication().getProperty(PRTiersHelper.TYPE_DE_CAISSE);
             if (decision.getCsGenreDecision().equals(IREDecision.CS_GENRE_DECISION_DECISION_SUR_OPPOSITION)) {
                 if (typeCaisse.contains(PRTiersHelper.CAISSE_CANT) || typeCaisse.contains(PRTiersHelper.CAISSE_PROF)) {
-                    vb.setIsTypeCorrect(true);
+                    vb.setIsTypeCaisseCorrect(true);
                 } else {
-                    vb.setIsTypeCorrect(false);
+                    vb.setIsTypeCaisseCorrect(false);
                 }
             }
         } catch (Exception e) {

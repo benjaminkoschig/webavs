@@ -23,7 +23,7 @@ public class REImprimerDecisionViewBean extends PRAbstractViewBeanSupport implem
     private String idDemandeRente = "";
     private String idTiersRequerant = "";
     private Boolean isSendToGed = Boolean.FALSE;
-    private boolean typeCaisse = true;
+    private Boolean isTypeCaisseCorrect = Boolean.TRUE;
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
 
@@ -221,13 +221,13 @@ public class REImprimerDecisionViewBean extends PRAbstractViewBeanSupport implem
         return true;
     }
 
-    public boolean isTypeCaisseCorrect() throws Exception {
-        return typeCaisse;
+    public Boolean getIsTypeCaisseCorrect(){
+        return isTypeCaisseCorrect;
 
     }
 
-    public void setIsTypeCorrect(boolean b) {
-        typeCaisse = b;
+    public void setIsTypeCaisseCorrect(Boolean isTypeCaisseCorrect) {
+        this.isTypeCaisseCorrect = isTypeCaisseCorrect;
     }
 
 }
