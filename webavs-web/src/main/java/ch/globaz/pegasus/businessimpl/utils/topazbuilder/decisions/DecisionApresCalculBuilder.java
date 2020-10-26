@@ -101,6 +101,31 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
         mergeAll();
 
     }
+    @Override
+    public void buildDecisionForAdaptation(DACPublishHandler handler) throws Exception, DecisionException,
+            JadeApplicationServiceNotAvailableException, JadePersistenceException {
+
+        /** instaciation du handler */
+        handlerGlobal = handler;
+        /** chargement des entités */
+        loadDBEntity();
+        /** instanciation pubInfos */
+        pubInfosGlobal = createMainPubInfos(false);
+
+        /**
+         * Dans le cas de la GED, on instancie le pubInfos de d'archivage Si il reste null, aucune sortie pour la pertie
+         * GED
+         */
+        if (handler.getForGed()) {
+            pubInfosGed = createMainPubInfos(true);
+        }
+
+        /** generation des containers d'impressions */
+        generateAllDecisions(handlerGlobal.getDecisionsId());
+        /** définition des déstinations pour les containers */
+        mergeAll();
+
+    }
 
     /**
      * Point d'entrée pour la publication des décisions après-calculs via ftp Commme la Ged, chaque décision sera publié

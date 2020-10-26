@@ -67,7 +67,11 @@ public class DecisionRefusBuilder extends AbstractDecisionBuilder implements Dec
         throw new UnsupportedOperationException("operation not implemented for decision de refus");
 
     }
-
+    @Override
+    public void buildDecisionForAdaptation(DACPublishHandler handler) throws DecisionException, JadeApplicationServiceNotAvailableException,
+            JadePersistenceException, Exception {
+        throw new NotImplementedException();
+    }
     private DocumentData buildHeader(DocumentData data) {
 
         // Prépartion des données

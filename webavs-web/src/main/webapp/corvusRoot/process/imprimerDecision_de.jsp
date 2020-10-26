@@ -69,13 +69,6 @@ $( function() {
     });
 } );
 </script>
- <% if(!viewBean.isTypeCaisseCorrect()){ %>
-	<div id="dialog-message" title="Warning">
-	  <p>
-	    <%= objSession.getLabel("ERROR_PROP_TRIBUNAL_NOT_FOUND")%>
-	  </p>
-	</div>
- <%}%>
 <%-- /tpl:put --%>
 <%@ include file="/theme/process/bodyStart.jspf" %>
 			<%-- tpl:put name="zoneTitle" --%><ct:FWLabel key="JSP_IMD_D_TITRE"/><%-- /tpl:put --%>

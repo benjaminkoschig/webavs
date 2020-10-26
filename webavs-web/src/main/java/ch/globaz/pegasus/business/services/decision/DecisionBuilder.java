@@ -15,4 +15,5 @@ public interface DecisionBuilder {
 
     public void buildForFtpValidation(DACPublishHandler handler) throws Exception, DecisionException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException;
+    public void buildDecisionForAdaptation(DACPublishHandler handler)throws Exception;
 }

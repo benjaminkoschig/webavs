@@ -180,7 +180,7 @@ public class PCImprimerDecisionsProcess extends PCAbstractJob {
                 publisherHandler = DACPublishHandler.getInstanceForAdaptationAnnuel(idDecisionsToPrint, mailGest, dateDoc,
                         persref, isForFtp, forGed,isFromAdaptation,idProcessusPC);
 
-                dec.build(publisherHandler);
+                dec.buildDecisionForAdaptation(publisherHandler);
                 // Lancement des task d 'impression, création du document fusionné
                 this.createDocuments(publisherHandler.getContainerPublication());
 
