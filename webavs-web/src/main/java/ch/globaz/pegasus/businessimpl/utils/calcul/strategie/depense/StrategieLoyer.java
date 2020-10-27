@@ -3,6 +3,7 @@
  */
 package ch.globaz.pegasus.businessimpl.utils.calcul.strategie.depense;
 
+import ch.globaz.pegasus.business.constantes.TypeDeplafonnement;
 import globaz.jade.client.util.JadeNumericUtil;
 import ch.globaz.pegasus.business.constantes.IPCHabitat;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
@@ -13,6 +14,7 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext.Attribut;
 import ch.globaz.pegasus.businessimpl.utils.calcul.ChargesLoyer;
 import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.ControlleurVariablesMetier;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author ECO
@@ -130,11 +132,15 @@ public class StrategieLoyer extends StrategieCalculDepense {
         }
 
         // S160704_002 : déplafonnement appartement partagé
-        if (csDeplafonnementAppartementPartage != "0" && csDeplafonnementAppartementPartage != null) {
-            TupleDonneeRapport nodeCsAppartementProtege = this.getOrCreateChild(tupleLoyerActuel,
-                    IPCValeursPlanCalcul.CLE_INTER_LOYER_CS_DEPLAFONNEMENT_APPARTEMENT_PARTAGE,
-                    csDeplafonnementAppartementPartage);
-            nodeCsAppartementProtege.setLegende(csDeplafonnementAppartementPartage);
+        if (StringUtils.isNotEmpty(csDeplafonnementAppartementPartage) && !StringUtils.equals(csDeplafonnementAppartementPartage, "0")) {
+            String csDeplafonnement;
+            if (context.contains(Attribut.REFORME)) {
+                csDeplafonnement = TypeDeplafonnement.mapVariableMetierDeplafonnement.get(csDeplafonnementAppartementPartage);
+            } else {
+                csDeplafonnement = csDeplafonnementAppartementPartage;
+            }
+            TupleDonneeRapport nodeCsAppartementProtege = this.getOrCreateChild(tupleLoyerActuel, IPCValeursPlanCalcul.CLE_INTER_LOYER_CS_DEPLAFONNEMENT_APPARTEMENT_PARTAGE, csDeplafonnement);
+            nodeCsAppartementProtege.setLegende(csDeplafonnement);
         } else {
             TupleDonneeRapport nodeCsAppartementProtege = this.getOrCreateChild(tupleLoyerActuel,
                     IPCValeursPlanCalcul.CLE_INTER_LOYER_CS_DEPLAFONNEMENT_APPARTEMENT_PARTAGE, "0");

@@ -78,8 +78,7 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
                         .getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_FRAIS_CHAUFFAGE);
 
                 // S160704_002 : Déplafonnement de loyer appartement protegé
-                csAppartementProtege = tupleLoyer
-                        .getLegendeEnfant(IPCValeursPlanCalcul.CLE_INTER_LOYER_CS_DEPLAFONNEMENT_APPARTEMENT_PARTAGE);
+                csAppartementProtege = tupleLoyer.getLegendeEnfant(IPCValeursPlanCalcul.CLE_INTER_LOYER_CS_DEPLAFONNEMENT_APPARTEMENT_PARTAGE);
 
                 SimpleVariableMetierSearch variableMetierSearch = new SimpleVariableMetierSearch();
                 variableMetierSearch.setForforCsTypeVariableMetier(csAppartementProtege);
