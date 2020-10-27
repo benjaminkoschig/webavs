@@ -13,10 +13,10 @@ public class RpcDataTest {
 
     @Test
     public void testIsMotifDroitSuppressionWithVersionDroit() throws Exception {
-        RpcData data = new RpcData(new VersionDroit("", 1, EtatDroit.VALIDE, MotifDroit.DECES), new Dossier(),
+        RpcData data = new RpcData(new VersionDroit("", 1, EtatDroit.VALIDE, MotifDroit.DECES, false), new Dossier(),
                 new Demande());
         assertThat(data.isMotifDroitSuppression()).isTrue();
-        data = new RpcData(new VersionDroit("", 1, EtatDroit.VALIDE, MotifDroit.ADAPTATION_HOME), new Dossier(),
+        data = new RpcData(new VersionDroit("", 1, EtatDroit.VALIDE, MotifDroit.ADAPTATION_HOME, false), new Dossier(),
                 new Demande());
         assertThat(data.isMotifDroitSuppression()).isFalse();
 

@@ -43,7 +43,7 @@ public class ConverterDecisionCauseTest {
     }
 
     private BigInteger convert(MotifDroit motifDroit) {
-        return ConverterDecisionCause.convert(new VersionDroit("0001", 2, EtatDroit.VALIDE, motifDroit), MotifDecision.AUTRE);
+        return ConverterDecisionCause.convert(new VersionDroit("0001", 2, EtatDroit.VALIDE, motifDroit, false), MotifDecision.AUTRE);
     }
 
 }

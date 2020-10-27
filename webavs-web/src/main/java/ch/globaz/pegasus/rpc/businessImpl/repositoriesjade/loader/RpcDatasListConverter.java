@@ -173,6 +173,6 @@ public class RpcDatasListConverter implements Iterator<RpcDataConverter>, Iterab
 
     VersionDroit toVersionDroit(SimpleVersionDroit verDroit) {
         return new VersionDroit(verDroit.getId(), Integer.valueOf(verDroit.getNoVersion()), verDroit.getEtat(),
-                verDroit.getMotif());
+                verDroit.getMotif(), verDroit.getDemandeInitiale());
     }
 }

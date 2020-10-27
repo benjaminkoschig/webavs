@@ -7,8 +7,9 @@ public class VersionDroit {
     private Integer numero;
     private EtatDroit etat;
     private MotifDroit motif;
+    private boolean demandeInitiale;
 
-    public VersionDroit(String id, Integer numero, EtatDroit etat, MotifDroit motif) {
+    public VersionDroit(String id, Integer numero, EtatDroit etat, MotifDroit motif, boolean demandeInitiale) {
         Preconditions.checkNotNull(id, "IdVersion is null");
         Preconditions.checkNotNull(numero, "NumeroVersion is null");
         Preconditions.checkNotNull(etat, "Etat is null");
@@ -18,6 +19,7 @@ public class VersionDroit {
         this.numero = numero;
         this.etat = etat;
         this.motif = motif;
+        this.demandeInitiale = demandeInitiale;
     }
 
     public VersionDroit(String id) {
@@ -61,4 +63,11 @@ public class VersionDroit {
         this.motif = motif;
     }
 
+    public boolean isDemandeInitiale() {
+        return demandeInitiale;
+    }
+
+    public void setDemandeInitiale(boolean demandeInitiale) {
+        this.demandeInitiale = demandeInitiale;
+    }
 }

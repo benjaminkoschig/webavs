@@ -68,6 +68,10 @@ public class AnnonceDecision {
         // null pour les annonces partielles
         if (annonce.getVersionDroit() != null) {
             decisionCause = ConverterDecisionCause.convert(annonce.getVersionDroit(), decision.getMotif());
+            // FC4 = 1 Uniquement si demande initiale
+            if (decisionCause.equals(BigInteger.valueOf(1)) && !getAnnonce().getVersionDroit().isDemandeInitiale()) {
+                decisionCause = BigInteger.valueOf(2);
+            }
         }
 
         // FC45

@@ -18,6 +18,7 @@ public class SimpleVersionDroit extends JadeSimpleModel {
     private String idVersionDroit = null;
     private String noVersion = null;
     private String remarqueDecompte = null;
+    private boolean demandeInitiale = false;
 
     /**
      * @return the csEtatDroit
@@ -154,4 +155,11 @@ public class SimpleVersionDroit extends JadeSimpleModel {
         return MotifDroit.fromValue(csMotif);
     }
 
+    public boolean getDemandeInitiale() {
+        return demandeInitiale;
+    }
+
+    public void setDemandeInitiale(boolean demandeInitiale) {
+        this.demandeInitiale = demandeInitiale;
+    }
 }

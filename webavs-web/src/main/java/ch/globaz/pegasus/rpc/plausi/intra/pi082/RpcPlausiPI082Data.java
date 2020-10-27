@@ -19,9 +19,9 @@ public class RpcPlausiPI082Data extends RpcPlausiHeader {
     @Override
     public boolean isValide() {
 
-        // TODO A modifier pour PS-012
+        // TODO A modifier pour PI-082
         // Si le code decisionCause < 2 et dateArrivee renseigné
-        if (dateArrivee != null && (decisionCause.compareTo(BigInteger.ONE) != 1)) {
+        if (dateArrivee == null && (decisionCause.compareTo(BigInteger.ONE) == 0)) {
             return false;
         }
         return true;

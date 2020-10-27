@@ -12,6 +12,7 @@
 			<field name="idDecision" column="BDIDEC" type="NUMERIC" mandatory="false" comment="ID_DECISION"/>
 			<field name="csMotif" column="BDTMOT" type="NUMERIC" mandatory="true" comment="CS_MOTIF"/>
 			<field name="remarqueDecompte" column="BDREMD" type="STRING" dataType="VARCHAR(1024)" mandatory="false" comment="REMARQUE_DECOMPTE"/>
+			<field name="demandeInitiale" column="BDDEINI" type="BOOLEAN" mandatory="true" comment="IS_DEMANDE_INITIALE"/>
 		</fields>
 		<search-definition>
 			<search-group operator="AND">

@@ -9,6 +9,7 @@ import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.*;
 import ch.globaz.pegasus.business.models.assurancemaladie.*;
 import ch.globaz.pegasus.business.models.calcul.CalculPcaReplace;
 import ch.globaz.pegasus.business.models.creancier.*;
+import ch.globaz.pegasus.business.models.demande.ListDemandesSearch;
 import ch.globaz.pegasus.business.models.habitat.*;
 import ch.globaz.pegasus.business.models.home.SimpleHomeSearch;
 import ch.globaz.pegasus.business.models.pcaccordee.PcaRetenue;
@@ -166,8 +167,12 @@ import ch.globaz.pegasus.businessimpl.checkers.droit.DroitChecker;
 import ch.globaz.pegasus.businessimpl.services.PegasusAbstractServiceImpl;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
 import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DroitServiceImpl extends PegasusAbstractServiceImpl implements DroitService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DroitServiceImpl.class);
 
     /**
      * convertit le code systeme LIEN AVEC REQUERANT PC (PCLIEREQ)au code systeme ROLE FAMILLE PC (PCROLEFAM)
@@ -2482,6 +2487,11 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
             simpleVersionDroit.setIdDroit(simpleDroit.getIdDroit());
             simpleVersionDroit.setCsEtatDroit(IPCDroits.CS_ENREGISTRE);
             simpleVersionDroit.setNoVersion("1");
+            if (isDemandeInitiale(demande)) {
+                simpleVersionDroit.setDemandeInitiale(true);
+            } else {
+                simpleVersionDroit.setDemandeInitiale(false);
+            }
             simpleVersionDroit.setCsMotif(IPCDroits.CS_MOTIF_DROIT_NOUVEAU_DROIT);
             // pour le droit initial la date d'annonce est la date de depot de la
             // demande pc
@@ -2494,6 +2504,22 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
          * } return null;
          */
 
+    }
+
+    private boolean isDemandeInitiale(Demande demande) {
+        ListDemandesSearch listDemandesSearch = new ListDemandesSearch();
+        listDemandesSearch.setForIdDossier(demande.getDossier().getId());
+        try {
+            listDemandesSearch = PegasusServiceLocator.getDemandeService().findDemandeForList(listDemandesSearch);
+        } catch (DecisionException e) {
+            LOG.error("DroitServiceImpl#isDemandeInitiale - Erreur lors de la récupération de la décision", e);
+        } catch (JadePersistenceException e) {
+            LOG.error("DroitServiceImpl#isDemandeInitiale - Erreur de persistence", e);
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            LOG.error("DroitServiceImpl#isDemandeInitiale - getDemandeService() not available", e);
+        }
+
+        return listDemandesSearch.getSearchResults().length==0;
     }
 
     @Override
