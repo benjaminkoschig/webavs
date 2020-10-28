@@ -15,6 +15,7 @@ import globaz.corvus.db.decisions.REDecisionEntity;
 import globaz.corvus.db.demandes.REDemandeRente;
 import globaz.corvus.db.demandes.REDemandeRenteAPI;
 import globaz.corvus.db.demandes.REDemandeRenteInvalidite;
+import globaz.corvus.properties.REProperties;
 import globaz.corvus.topaz.REDecisionOO;
 import globaz.corvus.utils.REGedUtils;
 import globaz.corvus.vb.decisions.RECopieDecisionViewBean;
@@ -329,7 +330,7 @@ public class REImprimerDecisionProcess extends AbstractJadeJob {
                     allDoc.addDocument(copieExacte, pubInfosCopieDecision);
                     isCopieCaissePrint = true;
                 }
-                String typeCaisse = getSession().getApplication().getProperty(PRTiersHelper.TYPE_DE_CAISSE);
+                String typeCaisse = REProperties.TYPE_DE_CAISSE.getValue();
                 if (typeCaisse.contains(PRTiersHelper.CAISSE_CANT) || typeCaisse.contains(PRTiersHelper.CAISSE_PROF)) {
 
                 } else {

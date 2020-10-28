@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import globaz.corvus.properties.REProperties;
 import globaz.pyxis.db.adressecourrier.TIAbstractAdresseData;
 import globaz.pyxis.db.adressecourrier.TIAdresseDataManager;
 import globaz.pyxis.db.tiers.*;
@@ -113,7 +114,6 @@ public class PRTiersHelper {
     public static final String ID_PAYS_SUISSE = "100";
     private static final Map<String, Vector<String[]>> LISTE_PAYS = new HashMap<String, Vector<String[]>>();
     private static final String ID_CANTON_PROP = "default.canton.caisse.location";
-    public static final String TYPE_DE_CAISSE = "type_de_caisse";
     public static final String CAISSE_CANT = "Caisse_CANT";
     public static final String CAISSE_PROF = "Caisse_PROF";
     private static Map<String, Map<String, String>> PAYS_PAR_LANGUE = null;
@@ -958,7 +958,7 @@ public class PRTiersHelper {
         BSession sessionApp = (BSession) session;
 
         cantonTypeCant = sessionApp.getApplication().getProperty(ID_CANTON_PROP);
-        typeCaisse = sessionApp.getApplication().getProperty(TYPE_DE_CAISSE);
+        typeCaisse = REProperties.TYPE_DE_CAISSE.getValue();
         if (tiers2 == null) {
             adresseTribunal = PRTiersHelper.AUCUN_TRIBUNAL_TROUVE;
         } else {

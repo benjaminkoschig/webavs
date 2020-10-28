@@ -5,6 +5,7 @@ import globaz.corvus.api.decisions.IREPreparationDecision;
 import globaz.corvus.db.decisions.REDecisionEntity;
 import globaz.corvus.db.demandes.REDemandeRente;
 import globaz.corvus.process.REImprimerDecisionProcess;
+import globaz.corvus.properties.REProperties;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.vb.process.REImprimerDecisionViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -105,7 +106,7 @@ public class REImprimerDecisionHelper extends PRAbstractHelper {
              * devront définir le choix du tribunal
              * Si ce n'est pas une décision sur opposition, alors on ne fait pas de vérification.
              */
-            String typeCaisse = session.getRemoteApplication().getProperty(PRTiersHelper.TYPE_DE_CAISSE);
+            String typeCaisse = REProperties.TYPE_DE_CAISSE.getValue();
             if (decision.getCsGenreDecision().equals(IREDecision.CS_GENRE_DECISION_DECISION_SUR_OPPOSITION)) {
                 if (typeCaisse.contains(PRTiersHelper.CAISSE_CANT) || typeCaisse.contains(PRTiersHelper.CAISSE_PROF)) {
                     vb.setIsTypeCaisseCorrect(true);

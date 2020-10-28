@@ -74,7 +74,8 @@ public enum REProperties implements IProperties {
             "donne la raçine nom du fichier à envoyer à la centrale"),
     RECAP_FTP_CENTRALE_PATH("recapRentes.centrale.url", "donne l'url de la centrale"),
     RECAP_CENTRALE_TEST("recapRentes.centrale.test",
-            "définit si nous sommes en mode test pour mettre la balise test dans le fichier output de la centrale");
+            "définit si nous sommes en mode test pour mettre la balise test dans le fichier output de la centrale"),
+    TYPE_DE_CAISSE("type_de_caisse", "renseigne le type de caisse (caisse cant ou prof)");
 
     private String description;
     private String propertyName;
