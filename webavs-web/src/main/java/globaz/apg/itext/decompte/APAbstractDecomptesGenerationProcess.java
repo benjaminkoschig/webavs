@@ -717,8 +717,17 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         }
 
                         // Ajout d'une ligne aprés position 4 / 1 si un élément est contenu dans le catalogue de texte.
+                        // 400
+                        if(Objects.equals(genreService, IAPDroitLAPG.CS_GARDE_PARENTALE)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "400")
+                                && Objects.nonNull(document.getTextes(4).getTexte(400))){
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(400).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
                         // 401
-                        if(Objects.equals(genreService, IAPDroitLAPG.CS_QUARANTAINE)
+                        }else if(Objects.equals(genreService, IAPDroitLAPG.CS_QUARANTAINE)
                                 && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "401")
                                 && Objects.nonNull(document.getTextes(4).getTexte(401))){
                             buffer.append("\n");
