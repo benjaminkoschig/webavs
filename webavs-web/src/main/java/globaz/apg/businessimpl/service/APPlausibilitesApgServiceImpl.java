@@ -525,8 +525,13 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
                 parametre = APParameter.GARDE_PARENTAL_INDE_JOURS_MAX.getParameterName();
             }
             if (parametre != null) {
+                APDroitLAPGManager manager = new APDroitLAPGManager();
+                manager.setSession(session);
+                manager.setForIdDroit(annonce.getIdDroit());
+                manager.find();
+                String dateDebut = manager.size() > 0 ? ((APDroitLAPG) manager.get(0)).getDateDebutDroit() : annonce.getStartOfPeriod();
                 BigDecimal valPlage = new BigDecimal(FWFindParameter.findParameter(
-                        session.getCurrentThreadTransaction(), "1", parametre, annonce.getStartOfPeriod(), "", 0));
+                        session.getCurrentThreadTransaction(), "1", parametre, dateDebut, "", 0));
                 message = message.replace("{0}", valPlage.toString());
             }
         } catch (Exception e) {

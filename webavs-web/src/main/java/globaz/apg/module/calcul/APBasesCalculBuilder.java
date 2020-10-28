@@ -1052,12 +1052,12 @@ public class APBasesCalculBuilder {
             case IAPDroitLAPG.CS_GARDE_PARENTALE:
             case IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP:
                 if(independant) {
-                    jourMaximum = getJourMax(APParameter.GARDE_PARENTAL_INDE_JOURS_MAX.getParameterName());
+                    jourMaximum = getJourMax(APParameter.GARDE_PARENTAL_INDE_JOURS_MAX.getParameterName(), droit.getDateDebutDroit());
                 };
                 break;
             case IAPDroitLAPG.CS_QUARANTAINE:
                 autreJours = 0;
-                jourMaximum = getJourMax(APParameter.QUARANTAINE_JOURS_MAX.getParameterName());break;
+                jourMaximum = getJourMax(APParameter.QUARANTAINE_JOURS_MAX.getParameterName(), null);break;
             default:
                 jourMaximum = null;
         }
@@ -1083,9 +1083,17 @@ public class APBasesCalculBuilder {
         }
     }
 
-    private Integer getJourMax(String param) throws Exception {
+    private Integer getJourMax(String param, String dateDebut) throws Exception {
+        String beginDate = dateDebut;
+        if(beginDate == null) {
+            beginDate = "0";
+        }
         if(!param.isEmpty()) {
-            return Integer.valueOf(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", param, "0", "", 0));
+            Integer date =  Integer.valueOf(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", param, beginDate, "", 0));
+            if(date == 0){
+                return null;
+            }
+            return date;
         }
         return null;
     }

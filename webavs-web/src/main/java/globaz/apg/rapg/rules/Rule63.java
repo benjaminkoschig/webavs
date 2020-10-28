@@ -1,8 +1,7 @@
 package globaz.apg.rapg.rules;
 
 import globaz.apg.ApgServiceLocator;
-import globaz.apg.db.droits.APPeriodeComparable;
-import globaz.apg.db.droits.APSitProJointEmployeur;
+import globaz.apg.db.droits.*;
 import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.exceptions.APRuleExecutionException;
 import globaz.apg.pojo.APChampsAnnonce;
@@ -51,7 +50,16 @@ public class Rule63 extends Rule {
                     return true;
                 }
 
-                int jourMax = Integer.parseInt(FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(), "1", APParameter.GARDE_PARENTAL_INDE_JOURS_MAX.getParameterName(), "0", "", 0));
+                APDroitLAPGManager manager = new APDroitLAPGManager();
+                manager.setSession(getSession());
+                manager.setForIdDroit(champsAnnonce.getIdDroit());
+                manager.find();
+                String dateDebut = manager.size() > 0 ? ((APDroitLAPG) manager.get(0)).getDateDebutDroit() : champsAnnonce.getStartOfPeriod();
+                int jourMax = Integer.parseInt(FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(), "1", APParameter.GARDE_PARENTAL_INDE_JOURS_MAX.getParameterName(), dateDebut, "", 0));
+
+                if(jourMax == 0) {
+                    return true;
+                }
 
                 List<APPeriodeComparable> listPeriode = getPeriodes(champsAnnonce.getIdDroit());
 
