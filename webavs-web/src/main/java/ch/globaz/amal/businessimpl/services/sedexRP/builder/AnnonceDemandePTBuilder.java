@@ -115,10 +115,16 @@ public class AnnonceDemandePTBuilder extends AnnonceBuilderAbstract {
 
         header.setSendingApplication(getSendingApplicationType());
 
-        GregorianCalendar cal = new GregorianCalendar();
-        XMLGregorianCalendar nowDateTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
+        XMLGregorianCalendar xmlCalendarEventDate = null;
+        try {
+            xmlCalendarEventDate = JAXBUtil.getXmlCalendarTimestamp();
+            xmlCalendarEventDate.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
+            header.setMessageDate(xmlCalendarEventDate);
+        } catch (DatatypeConfigurationException e) {
+            throw new AnnonceSedexException("Imposible de définir la date d'émission de la demande de prime tarifaire", e);
+        }
 
-        header.setMessageDate(nowDateTime);
+
         header.setAction(IAMSedex.MESSAGE_ACTION_DEMANDE);
         header.setTestDeliveryFlag(JadeSedexService.getInstance().getTestDeliveryFlag());
 
