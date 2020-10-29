@@ -529,10 +529,6 @@ function callBackcreerListePC(data) {
 </TR>
 <TR>
 	<TD bgcolor="#FFFFFF" colspan="2" align="right">
-		<%
-			String actionCreationAnnonce =  servletContext + mainServletPath + "?userAction=amal.sedexpt.sedexptcreationannonce.afficher";
-		%>
-		<INPUT type="submit" name="btnCreationAnnonce" value="Création annonces" onClick="btnCreationAnnonce.onclick='';document.location.href='<%=actionCreationAnnonce%>'">
 			<%if (bButtonDelete) {%><input class="btnCtrl" id="btnDel" type="button" value="<%=btnDelLabel%>" onclick="del();"><%}%>
 			<%if (bShowExportButton) {%>
 		<INPUT type="button" name="btnExport" value="<%=btnExportLabel%>" onClick="onExport();">
@@ -542,6 +538,12 @@ function callBackcreerListePC(data) {
 			<%} if (bButtonNew) {%>
 		<INPUT type="button" name="btnNew" value="<%=btnNewLabel%>" onClick="onClickNew();btnNew.onclick='';document.location.href='<%=actionNew%>'">
 			<%}%>
+
+			<%
+				String actionCreationAnnonce =  servletContext + mainServletPath + "?userAction=amal.sedexpt.sedexptcreationannonce.afficher";
+			%>
+			<INPUT type="submit" name="btnCreationAnnonce" value="Création annonces" onClick="btnCreationAnnonce.onclick='';document.location.href='<%=actionCreationAnnonce%>'">
+
 <%-- tpl:insert attribute="zoneButtons" --%>
 <%-- /tpl:insert --%>
 <%@ include file="/theme/find/bodyEnd.jspf"%>
