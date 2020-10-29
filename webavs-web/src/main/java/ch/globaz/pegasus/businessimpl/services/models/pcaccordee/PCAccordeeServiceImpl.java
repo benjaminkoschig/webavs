@@ -196,6 +196,7 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
                 for (JadeAbstractModel d : pcAccordeeSearch.getSearchResults()) {
                     PCAccordee pcAccordee = (PCAccordee) d;
                     revertCreancier(pcAccordee.getId());
+                    revertRetenues(pcAccordee.getSimpleDroit().getIdDroit(),pcAccordee.getSimpleVersionDroit().getNoVersion());
                     delete(pcAccordee);
                     idPca.add(pcAccordee.getId());
                 }
@@ -205,6 +206,34 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
              * if(idPca.size()>0){ SimpleJoursAppointSearch search = new SimpleJoursAppointSearch();
              * search.setInIdsPca(idPca); PegasusImplServiceLocator.getSimpleJoursAppointService().delete(search) }
              */
+        }
+    }
+
+    private void revertRetenues(String idDroit, String noVersionActuel) throws JadeApplicationServiceNotAvailableException, JadePersistenceException {
+        PcaRetenueSearch pcaRetenueSearch = new PcaRetenueSearch();
+        pcaRetenueSearch.setForIdDroit(idDroit);
+        int noVersion = Integer.parseInt(noVersionActuel);
+        if (noVersion > 1) {
+            noVersion--;
+        }
+        pcaRetenueSearch.setForNoVersion(String.valueOf(noVersion));
+        pcaRetenueSearch = PegasusServiceLocator.getRetenueService().search(pcaRetenueSearch);
+        String dateProchainPaiement = null;
+        try {
+            dateProchainPaiement = PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt();
+            for (JadeAbstractModel absDonnee : pcaRetenueSearch.getSearchResults()) {
+                PcaRetenue retenueAncienne = (PcaRetenue) absDonnee;
+                if (retenueAncienne.getSimpleRetenue().getDateFinRetenue().equals(dateProchainPaiement)) {
+                    retenueAncienne.getSimpleRetenue().setDateFinRetenue("");
+                    PegasusServiceLocator.getRetenueService().update(retenueAncienne);
+                }
+            }
+        } catch (CreancierException e) {
+            e.printStackTrace();
+        } catch (PmtMensuelException e) {
+            e.printStackTrace();
+        } catch (JadeApplicationException e) {
+            e.printStackTrace();
         }
     }
 
