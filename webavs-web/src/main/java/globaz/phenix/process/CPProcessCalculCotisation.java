@@ -1226,7 +1226,9 @@ public final class CPProcessCalculCotisation extends BProcess {
             } else if ((revenuCi != 0) && (cotiEncode == 0)) {
                 // On a saisi le montant du revenu CI, il faut calculer la
                 // cotisation
-                if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2020) {
+                if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2021) {
+                    cotiCalcule = revenuCi * (float) 0.1060;
+                } else if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2020) {
                     cotiCalcule = revenuCi * (float) 0.1055;
                 } else if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2016) {
                     cotiCalcule = revenuCi * (float) 0.1025;
