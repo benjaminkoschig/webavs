@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DonneeInterneHomeVersement {
-    public static String TYPE_CREANCIER = "TYPE_CREANCIER";
-    public static String TYPE_RETENUS = "TYPE_RETENUS";
+    public final static String TYPE_CREANCIER = "TYPE_CREANCIER";
+    public final static String TYPE_RETENUS = "TYPE_RETENUS";
     private String csTypeVersement = "";
     //RETENUS
     private String idPca = "";
