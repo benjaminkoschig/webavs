@@ -144,7 +144,7 @@ public class AnnonceSedexPTGenererAnnonceProcess extends AMALabstractProcess {
             try {
                 searchModel = AmalServiceLocator.getComplexAnnonceSedexService().search(searchModel);
             } catch (JadePersistenceException | AnnonceSedexException | JadeApplicationServiceNotAvailableException e) {
-                e.printStackTrace();
+                JadeLogger.error(this, "Error to find ComplexAnnonceSedexService : " + e.getMessage());
             }
 
             BSession currentSession = BSessionUtil.getSessionFromThreadContext();

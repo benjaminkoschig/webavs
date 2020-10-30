@@ -75,11 +75,8 @@ public class AMSedexPTServletAction extends AMAbstractServletAction {
             // -----------------------------------
             BProcessLauncher.start(process, false);
         } catch (Exception e) {
-            e.printStackTrace();
             JadeLogger.error(this, "Error Launching Process AnnonceCMProcess : " + e.getMessage());
         }
-
-
 
         return  "/amal?userAction=" + IAMActions.ACTION_SEDEX_PT_CREATION_ANNONCE + ".afficher";
     }

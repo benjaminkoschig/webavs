@@ -111,8 +111,7 @@ public class AnnoncePremiumQueryResultHandler extends AnnonceHandlerAbstract {
         try {
             JAXBServices.getInstance().marshal(m, os, false, false, new Class[]{});
         } catch (Exception e) {
-            JadeLogger.info(this, e.getMessage());
-            e.printStackTrace();
+            JadeLogger.error(this, e.getMessage());
         }
         return JadeStringUtil.decodeUTF8(os.toString());
     }
@@ -127,8 +126,7 @@ public class AnnoncePremiumQueryResultHandler extends AnnonceHandlerAbstract {
         try {
             JAXBServices.getInstance().marshal(m, os, false, false, new Class[]{});
         } catch (Exception e) {
-            JadeLogger.info(this, e.getMessage());
-            e.printStackTrace();
+            JadeLogger.error(this, e.getMessage());
         }
         return JadeStringUtil.decodeUTF8(os.toString());
     }
@@ -147,8 +145,7 @@ public class AnnoncePremiumQueryResultHandler extends AnnonceHandlerAbstract {
             try {
                 queryRejectReason = Integer.valueOf(premiumQueryResultType.getQueryRejectReason());
             } catch (NumberFormatException e) {
-                JadeLogger.info(this, "Code de QueryRejectReason non prévu :" + premiumQueryResultType.getQueryRejectReason());
-                e.printStackTrace();
+                JadeLogger.error(this, "Code de QueryRejectReason non prévu :" + premiumQueryResultType.getQueryRejectReason());
             }
             mapInfos.append("Rejeté : Oui</br>");
             switch (queryRejectReason) {
@@ -184,8 +181,7 @@ public class AnnoncePremiumQueryResultHandler extends AnnonceHandlerAbstract {
                 try {
                     premiumRejectReason = Integer.valueOf(premiumInsuredPersonType.getPremiumRejectReason());
                 } catch (NumberFormatException e) {
-                    JadeLogger.info(this, "Code de PremiumRejectReason non prévu :" + premiumInsuredPersonType.getPremiumRejectReason());
-                    e.printStackTrace();
+                    JadeLogger.error(this, "Code de PremiumRejectReason non prévu :" + premiumInsuredPersonType.getPremiumRejectReason());
                 }
                 mapInfos.append("Rejeté : Oui</br>");
                 switch (premiumRejectReason) {
