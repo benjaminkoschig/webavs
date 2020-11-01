@@ -65,8 +65,8 @@ public class DonneesFinancieresContainer {
     private DonneesFinancieresListBase<ApiAvsAi> apisAvsAi = new DonneesFinancieresListBase<ApiAvsAi>();
     private AssurancesRenteViagere assurancesRentesViageres = new AssurancesRenteViagere();
     private DonneesFinancieresListBase<AssuranceVie> assurancesVie = new DonneesFinancieresListBase<AssuranceVie>();
-    private DonneesFinancieresListBase<PrimeAssuranceMaladie> primeAssuranceMaladie = new DonneesFinancieresListBase<PrimeAssuranceMaladie>();
-    private DonneesFinancieresListBase<SubsideAssuranceMaladie> subsideAssuranceMaladie = new DonneesFinancieresListBase<SubsideAssuranceMaladie>();
+    private DonneesFinancieresListBase<PrimeAssuranceMaladie> primeAssuranceMaladie = new DonneesFinancieresListBase<>();
+    private DonneesFinancieresListBase<SubsideAssuranceMaladie> subsideAssuranceMaladie = new DonneesFinancieresListBase<>();
     private DonneesFinancieresListBase<AutreApi> autresApi = new DonneesFinancieresListBase<AutreApi>();
     private DonneesFinancieresListBase<AutreDetteProuvee> autresDettesProuvees = new DonneesFinancieresListBase<AutreDetteProuvee>();
     private DonneesFinancieresListBase<AutreFortuneMobiliere> autresFortunesMobilieres = new DonneesFinancieresListBase<AutreFortuneMobiliere>();
@@ -396,6 +396,10 @@ public class DonneesFinancieresContainer {
         return sejourMoisPartiel;
     }
 
+    public DonneesFinancieresListBase<PrimeAssuranceMaladie> getPrimeAssuranceMaladie() {
+        return primeAssuranceMaladie;
+    }
+
     public BiensImmobiliersListBase getAllBiensImmobilier() {
         List<BienImmobilier> list = new ArrayList<BienImmobilier>();
         list.addAll(biensImmobiliersNonHabitable.getList());
@@ -467,6 +471,8 @@ public class DonneesFinancieresContainer {
         container.vehicules = vehicules.filtreForMembreFamille(membreFamille);
         container.regimes = regimes.filtreForMembreFamille(membreFamille);
         container.sejourMoisPartiel = sejourMoisPartiel.filtreForMembreFamille(membreFamille);
+        container.primeAssuranceMaladie = primeAssuranceMaladie.filtreForMembreFamille(membreFamille);
+        container.subsideAssuranceMaladie = subsideAssuranceMaladie.filtreForMembreFamille(membreFamille);
 
         return container;
     }
@@ -518,6 +524,8 @@ public class DonneesFinancieresContainer {
         container.vehicules = vehicules.filtreForRole(roleMembreFamille);
         container.regimes = regimes.filtreForRole(roleMembreFamille);
         container.sejourMoisPartiel = sejourMoisPartiel.filtreForRole(roleMembreFamille);
+        container.primeAssuranceMaladie = primeAssuranceMaladie.filtreForRole(roleMembreFamille);
+        container.subsideAssuranceMaladie = subsideAssuranceMaladie.filtreForRole(roleMembreFamille);
 
         return container;
     }
@@ -569,6 +577,8 @@ public class DonneesFinancieresContainer {
         container.vehicules = vehicules.filtreForPeriode(debut, fin);
         container.regimes = regimes.filtreForPeriode(debut, fin);
         container.sejourMoisPartiel = sejourMoisPartiel.filtreForPeriode(debut, fin);
+        container.primeAssuranceMaladie = primeAssuranceMaladie.filtreForPeriode(debut, fin);
+        container.subsideAssuranceMaladie = subsideAssuranceMaladie.filtreForPeriode(debut, fin);
 
         return container;
     }

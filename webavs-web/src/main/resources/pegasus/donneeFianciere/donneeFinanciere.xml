@@ -150,7 +150,10 @@
 			<select-field name="IJAPGgainIntAnnuel" field-ref="simpleIJAPG.gainIntAnnuel"/>
 			<select-field name="IJAPGGenre" field-ref="simpleIJAPG.csGenrePrestation"/>
 			<select-field name="IJAPGAutreGenre" field-ref="simpleIJAPG.autreGenrePresation"/>
-			
+
+			<select-field name="primeAssuranceMaladie" field-ref="simplePrimeAssuranceMaladie.montant"/>
+			<select-field name="subsideAssuranceMaladie" field-ref="simpleSubsideAssuranceMaladie.montant"/>
+
 			<select-field name="AutresRevenusLibelle" field-ref="simpleAutreRevenu.montant"/>
 			<select-field name="autresRevenusMontant" field-ref="simpleAutreRevenu.montant"/>
 			<select-field name="dessaisissementRevenuMontant" field-ref="simpleDessaisissementRevenu.montantBrut"/>
@@ -403,7 +406,19 @@
 				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
 			</join-group>
 		</linked-model>
-		
+
+		<linked-model name="simplePrimeAssuranceMaladie" model-ref="ch.globaz.pegasus.business.models.assurancemaladie.SimplePrimeAssuranceMaladie" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simpleSubsideAssuranceMaladie" model-ref="ch.globaz.pegasus.business.models.assurancemaladie.SimpleSubsideAssuranceMaladie" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+
 		<linked-model name="simpleLoyer" model-ref="ch.globaz.pegasus.business.models.habitat.SimpleLoyer" join-type="LEFT_OUTER" select-fields="false">
 			<join-group operator="AND">
 				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>

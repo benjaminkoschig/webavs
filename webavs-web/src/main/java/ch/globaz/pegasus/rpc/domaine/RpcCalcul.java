@@ -35,12 +35,18 @@ public class RpcCalcul {
     /**
      * FC8
      */
-    public Montant getMontantAvecAssuranceMaladie() {
+    public Montant getMontantAvecAssuranceMaladie(boolean isReforme) {
         Montant partcanton = getPartCantonaleAnnuelle();
-        if (partcanton != null && partcanton.greater(Montant.ZERO)) {
-            return calcul.getTotalFederalMensuel().annualise().add(calcul.getTotalPrimeMaladie());
+        Montant primeMaladie;
+        if (isReforme) {
+            primeMaladie = calcul.getMontantPrimeMaladie();
+        } else {
+            primeMaladie = calcul.getTotalPrimeMaladie();
         }
-        return calcul.getTotalCaisseCompDeduitMensuel().annualise().add(calcul.getTotalPrimeMaladie());
+        if (partcanton != null && partcanton.greater(Montant.ZERO)) {
+            return calcul.getTotalFederalMensuel().annualise().add(primeMaladie);
+        }
+        return calcul.getTotalCaisseCompDeduitMensuel().annualise().add(primeMaladie);
     }
 
     /**

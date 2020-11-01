@@ -15,8 +15,9 @@ public class AnnonceElAmounts {
     public AnnonceElAmounts(RpcDecisionAnnonceComplete annonce) {
         this.annonce = annonce;
         RpcCalcul convertPca = annonce.getRpcCalcul();
+        boolean isReforme = annonce.getPcaDecision().getPca().getReformePC();
         amountNoHC = annonce.isPcaOctroiPartiel() ? Montant.ZERO_ANNUEL : convertPca.getMontantSansAssuranceMaladie();
-        amountWithHC = annonce.isRefusRaisonEco() ? Montant.ZERO_ANNUEL : convertPca.getMontantAvecAssuranceMaladie();
+        amountWithHC = annonce.isRefusRaisonEco() ? Montant.ZERO_ANNUEL : convertPca.getMontantAvecAssuranceMaladie(isReforme);
         elLimit = convertPca.getPlafonnementDesPC();
     }
 

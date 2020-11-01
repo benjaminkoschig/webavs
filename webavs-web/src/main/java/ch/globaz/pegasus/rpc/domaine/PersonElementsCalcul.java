@@ -31,6 +31,7 @@ public class PersonElementsCalcul {
     private Montant retraitCapitalLpp;
 
     private Montant primeLamal;
+    private Montant primeEffective;
     private Montant autresDepenses;
     private Montant revenuBrutHypothetique;
 
@@ -192,6 +193,10 @@ public class PersonElementsCalcul {
 
     public void setMontantRIP(Montant montantRIP) {
         this.montantRIP = montantRIP;
+    }
+
+    public void setPrimeEffective(Montant primeEffective) {
+        this.primeEffective = primeEffective;
     }
 
     public void addFraisGarde(PersonElementsCalcul elementsCalcul) {
@@ -426,5 +431,9 @@ public class PersonElementsCalcul {
 
     public Montant getMontantRIP() {
         return montantRIP;
+    }
+
+    public Montant getPrimeEffective() {
+        return primeEffective;
     }
 }

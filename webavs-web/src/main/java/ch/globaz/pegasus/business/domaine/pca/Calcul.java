@@ -59,6 +59,13 @@ public class Calcul {
     }
 
     /**
+     * MONTANT_VERSE_CAISSE_MALADIE
+     */
+    public Montant getMontantPrimeMaladie() {
+        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.MONTANT_VERSE_CAISSE_MALADIE));
+    }
+
+    /**
      * CLE_TOTAL_PRIMEMAL_TOTAL
      */
     public Montant getTotalPrimeMaladie() {

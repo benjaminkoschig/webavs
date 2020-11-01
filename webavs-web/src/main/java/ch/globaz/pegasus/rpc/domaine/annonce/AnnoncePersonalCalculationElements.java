@@ -10,7 +10,6 @@ public class AnnoncePersonalCalculationElements {
     /**
      * for all data not in WebAVS
      */
-    private static final Montant NOT_MAPPED_UNKNOWN_DATA = null;
     private static final String XSD_PCC_PARTIE_DE_LA_TAXE_HOME = "INSIDE_RESIDENCE_COSTS";
     private static final String XSD_PCC_EN_SUS_DE_LA_TAXE_HOME = "IN_ADDITION_RESIDENCE_COSTS";
     private static final String XSD_PCC_NON_PRIS_EN_COMPTE = "IGNORED";
@@ -39,7 +38,7 @@ public class AnnoncePersonalCalculationElements {
     protected AnnonceResidenceCosts residenceCosts;
 
     public AnnoncePersonalCalculationElements(PersonElementsCalcul personData, PersonElementsCalcul requerantData,
-            PcaDecision pcaDecision, RpcCalcul calcul) {
+                                              PcaDecision pcaDecision, RpcCalcul calcul) {
         this.personData = personData;
         this.requerantData = requerantData;
         this.pcaDecision = pcaDecision;
@@ -67,16 +66,9 @@ public class AnnoncePersonalCalculationElements {
             disabledAllowance = personData.getRenteApi();
         }
         hcFlatHelp = personData.getPrimeLamal();
-        if (hcEffectiveHelp()) {
-            hcEffectiveHelp = NOT_MAPPED_UNKNOWN_DATA;
-        }
+        hcEffectiveHelp = personData.getPrimeEffective();
         otherExpenses = personData.getAutresDepenses();
         childrenCostsAssitanceNet = personData.getFraisGarde();
-    }
-
-    private boolean hcEffectiveHelp() {
-        // n'existe pas encore
-        return false;
     }
 
     public Montant getHcLcaAllowance() {

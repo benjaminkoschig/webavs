@@ -114,6 +114,8 @@ public class PersonneElementsCalculConverter {
         perElCal.setPrimeLamal(resolvePrimeLamal(parameters.getForfaitsPrimesAssuranceMaladie(),
                 donneesFinanciere.getFamille(), dateDebut));
 
+        perElCal.setPrimeEffective(df.getPrimeAssuranceMaladie().sumDepense());
+
         // TODO fauteuil roulant
 
         DonneesFinancieresContainer dfFiltre = df;
