@@ -19,6 +19,8 @@
 		<developerConnection>scm:${scm.type}:${scm.url}</developerConnection>
 	</scm>
 
+
+
 	<distributionManagement>
 		<site>
 			<id>documentation-server</id>
@@ -517,7 +519,7 @@
 			<dependency>
 				<groupId>ch.admin.ofit.anakin</groupId>
 				<artifactId>Arena</artifactId>
-				<version>1.4.4</version>
+				<version>1.2.0</version>
 			</dependency>
 
 			<dependency>
