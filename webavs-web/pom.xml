@@ -222,36 +222,48 @@
 							<schemaDirectory>src/main/resources/xsd</schemaDirectory>
 							<generateDirectory>target/generated-sources/xjc-acor</generateDirectory>
 							<schemaIncludes>
-								<include>acor/*.xsd</include>
+								<include>acor/swap/xsd/*.xsd</include>
+								<include>acor/xsd/*.xsd</include>
+								<include>acor/xsd/annoncesRc/*.xsd</include>
+								<include>acor/xsd/annoncesRc/annoncesAI/*.xsd</include>
+								<include>acor/xsd/annoncesRc/annoncesApglj/*.xsd</include>
+								<include>acor/xsd/annoncesRc/annoncesCompta/*.xsd</include>
+								<include>acor/xsd/annoncesRc/annoncesPC/*.xsd</include>
+								<include>acor/xsd/annoncesRc/assuranceMilitaire/*.xsd</include>
+								<include>acor/xsd/annoncesRc/assuranceCACI/*.xsd</include>
+								<include>acor/xsd/annoncesRc/Prestations/*.xsd</include>
+								<include>acor/xsd/annoncesRc/testAnnonce/*.xsd</include>
+								<include>acor/xsd/euro/*.xsd</include>
+								<include>acor/xsd/Typebase/AI/*.xsd</include>
+								<include>acor/xsd/Typebase/ARC/*.xsd</include>
+								<include>acor/xsd/Typebase/CI/*.xsd</include>
+								<include>acor/xsd/Typebase/Compta/*.xsd</include>
+								<include>acor/xsd/Typebase/General/*.xsd</include>
+								<include>acor/xsd/Typebase/PersPhys/*.xsd</include>
+								<include>acor/xsd/Typebase/Prestations/*.xsd</include>
 							</schemaIncludes>
 							<bindingDirectory>src/main/resources/xjb</bindingDirectory>
 							<bindingIncludes>
 								<include>acor-bindings.xjb</include>
 							</bindingIncludes>
+							<extension>true</extension>
+							<args>
+								<arg>-Xannotate</arg>
+							</args>
+							<plugins>
+								<plugin>
+									<groupId>org.jvnet.jaxb2_commons</groupId>
+									<artifactId>jaxb2-basics-annotate</artifactId>
+									<version>0.6.3</version>
+								</plugin>
+								<plugin>
+									<groupId>org.jvnet.jaxb2_commons</groupId>
+									<artifactId>jaxb2-basics</artifactId>
+									<version>0.6.3</version>
+								</plugin>
+							</plugins>
 						</configuration>
 					</execution>
-<!--					<execution>-->
-<!--						<id>generate-acorV4</id>-->
-<!--						<goals>-->
-<!--							<goal>generate</goal>-->
-<!--						</goals>-->
-<!--						<configuration>-->
-<!--							<specVersion>2.1</specVersion>-->
-<!--							<schemaDirectory>src/main/resources/xsd</schemaDirectory>-->
-<!--							<generateDirectory>target/generated-sources/xjc-acorV4</generateDirectory>-->
-<!--							<schemaIncludes>-->
-<!--								<include>acorV4/swap/xsd/*.xsd</include>-->
-<!--								<include>acorV4/xsd/*.xsd</include>-->
-<!--								<include>acorV4/xsd/annoncesRC/*/*.xsd</include>-->
-<!--								<include>acorV4/xsd/euro/*/*.xsd</include>-->
-<!--								<include>acorV4/xsd/Typebase/*/*.xsd</include>-->
-<!--							</schemaIncludes>-->
-<!--							<bindingDirectory>src/main/resources/xjb</bindingDirectory>-->
-<!--							<bindingIncludes>-->
-<!--								<include>acorV4-bindings.xjb</include>-->
-<!--							</bindingIncludes>-->
-<!--						</configuration>-->
-<!--					</execution>-->
 					<execution>
 						<id>generate-apg-pandemie</id>
 						<goals>
@@ -954,12 +966,6 @@
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-transports-http</artifactId>
-			<version>${cxf.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-frontend-jaxws</artifactId>
 			<version>${cxf.version}</version>
 			<scope>provided</scope>
 		</dependency>

@@ -1,17 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2018 (x64) (http://www.altova.com) by administrator (GLOBAZ SA) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rentes_in_host="http://www.zas.admin.ch/xmlns/acor-rentes-in-host/0" xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/4" xmlns:eCH-0010="http://www.ech.ch/xmlns/eCH-0010/6" xmlns:trax="http://www.zas.admin.ch/RC" targetNamespace="http://www.zas.admin.ch/xmlns/acor-rentes-in-host/0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.1">
+<!-- edited with XMLSpy v2013 sp1 (x64) (http://www.altova.com) by Bundesamt für Informatik und Telekommunikation (Bundesamt für Informatik und Telekommunikation) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		   xmlns:rentes_in_host="http://www.zas.admin.ch/xmlns/acor-rentes-in-host/0"
+		   xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/4"
+		   xmlns:eCH-0010="http://www.ech.ch/xmlns/eCH-0010/6"
+		   xmlns:trax="http://www.zas.admin.ch/RC"
+		   xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+		   xmlns:annox="http://annox.dev.java.net"
+		   targetNamespace="http://www.zas.admin.ch/xmlns/acor-rentes-in-host/0"
+		   elementFormDefault="qualified"
+		   attributeFormDefault="unqualified"
+		   version="5.0"
+		   jaxb:version="2.1"
+		   jaxb:extensionBindingPrefixes="annox">
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/4" schemaLocation="eCH-0044-4-0.xsd"/>
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0010/6" schemaLocation="eCH-0010-6-0.xsd"/>
 	<!--<xs:import namespace="http://www.zas.admin.ch/RC"
                schemaLocation="./annoncesRC/Prestations/annoncesRente-types.xsd"/>-->
 	<!--<xs:import namespace="http://www.zas.admin.ch/RC"
                schemaLocation="./annoncesRC/rc.xsd"/>-->
+	<!--<xs:import namespace="http://www.zas.admin.ch/RC" schemaLocation="./annoncesRC/Prestations/annonceRente.xsd"/>
+    <xs:import namespace="http://www.zas.admin.ch/RC" schemaLocation="./annoncesRC/CACI/annonceCI-types.xsd"/>-->
 	<xs:import namespace="http://www.zas.admin.ch/RC" schemaLocation="./externalRC.xsd"/>
 	<!--<xs:import namespace="http://www.zas.admin.ch/RC"
                schemaLocation="./annoncesRC/CACI/annonceCI-types.xsd"/>-->
 	<xs:element name="inHost" type="rentes_in_host:inHostType"/>
 	<xs:complexType name="inHostType">
+		<xs:annotation>
+			<xs:appinfo>
+				<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(description = "fr : Format in des donn\u0026eacute;es du dossier.", required = false)</annox:annotate>
+			</xs:appinfo>
+		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="rentes_in_host:Meta">
 				<xs:sequence>
@@ -20,6 +39,13 @@
 					<xs:element name="enfant" type="rentes_in_host:enfantType" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element name="famille" type="rentes_in_host:familleType" minOccurs="0" maxOccurs="unbounded"/>
 				</xs:sequence>
+				<xs:attribute name="versionSchema" use="required">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:pattern value="([0-9]\.?)*-?(DEV|SNAPSHOT)?"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -27,7 +53,13 @@
 		<xs:complexContent>
 			<xs:extension base="rentes_in_host:Meta">
 				<xs:sequence>
-					<xs:element name="navs" type="xs:long"/>
+					<xs:element name="navs" type="xs:long">
+						<xs:annotation>
+							<xs:appinfo>
+								<annox:annotate target="field">@io.swagger.v3.oas.annotations.media.Schema(description = "fr : Num\u0026eacute;ro AVS (13) pour l'assur\u0026eacute; ma\u0026icirc;tre de la demande. (DEMANDE/1)",example="7560747116424", required = true)</annox:annotate>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
 					<xs:element name="caisseAgence" type="trax:IrgendeineZweigstelle_weakType"/>
 					<xs:element name="adresseCaisse" type="rentes_in_host:organisationAdresseType"/>
 					<xs:element name="moisRapport">
@@ -40,7 +72,13 @@
 					</xs:element>
 					<xs:element name="noDossier" type="xs:string" minOccurs="0"/>
 					<xs:element name="typeDemande" type="rentes_in_host:typeDemandeEnum"/>
-					<xs:element name="dateTraitement" type="xs:date"/>
+					<xs:element name="dateTraitement" type="xs:date">
+						<xs:annotation>
+							<xs:appinfo>
+								<annox:annotate target="field">@io.swagger.v3.oas.annotations.media.Schema(description = "fr : la date de traitement (DEMANDE/3)", required = true)</annox:annotate>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
 					<xs:element name="dateDepot" type="xs:date" minOccurs="0"/>
 					<xs:element name="langue">
 						<xs:simpleType>
@@ -142,6 +180,11 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="typeDemandeEnum">
+		<xs:annotation>
+			<xs:appinfo>
+				<annox:annotate target="enum">@io.swagger.v3.oas.annotations.media.Schema(description = "fr : le type de la demande (DEMANDE/2)", required = true)</annox:annotate>
+			</xs:appinfo>
+		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="v"/>
 			<xs:enumeration value="s"/>
@@ -163,8 +206,8 @@
 					<xs:element name="prenom" type="eCH-0044:officialFirstNameType"/>
 					<xs:element name="dateNaissance" type="xs:date"/>
 					<xs:element name="dateDeces" type="xs:date" minOccurs="0"/>
-					<xs:element name="nationalite" type="trax:WohnkantonStaatBSV_weakType"/>
-					<xs:element name="domicile" type="trax:WohnkantonStaatBSV_weakType"/>
+					<xs:element name="nationalite" type="trax:LandNrBSV_weakType" minOccurs="0"/>
+					<xs:element name="domicile" type="trax:WohnkantonStaatBSV_weakType" minOccurs="0"/>
 					<xs:element name="refugie" type="xs:boolean"/>
 					<xs:element name="renteOrdinaire9" type="rentes_in_host:renteOrdinaire9Type" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element name="renteExtraordinaire9" type="rentes_in_host:renteExtraordinaire9Type" minOccurs="0" maxOccurs="unbounded"/>
@@ -180,9 +223,27 @@
 		<xs:complexContent>
 			<xs:extension base="rentes_in_host:abstractAssureType">
 				<xs:sequence>
-					<xs:element name="sexe" type="eCH-0044:sexType"/>
-					<xs:element name="dateRemariage" type="xs:date" minOccurs="0"/>
-					<xs:element name="dateRedivorce" type="xs:date" minOccurs="0"/>
+					<xs:element name="sexe" type="rentes_in_host:sexType"/>
+					<xs:element name="dateRemariage" type="xs:date" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>
+								Ce champ est réservé à l'utilisation de V3 il va disparaître en mode V4, il ne faut pas l'utiliser. Si cet assuré est remarié il faut indiquer l'assuré dans les assurés et les liens dans les familles.
+							</xs:documentation>
+							<xs:appinfo>
+								<annox:annotate target="field">@io.swagger.v3.oas.annotations.media.Schema(description = "Ce champ est réservé à l'utilisation de V3 il va disparaître en mode V4, il ne faut pas l'utiliser. Si cet assuré est remarié il faut indiquer l'assuré dans les assurés et les liens dans les familles.", required = false)</annox:annotate>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="dateRedivorce" type="xs:date" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>
+								Ce champ est réservé à l'utilisation de V3 il va disparaître en mode V4, il ne faut pas l'utiliser. Si cet assuré est remarié il faut indiquer l'assuré dans les assurés et les liens dans les familles.
+							</xs:documentation>
+							<xs:appinfo>
+								<annox:annotate target="field">@io.swagger.v3.oas.annotations.media.Schema(description = "Ce champ est réservé à l'utilisation de V3 il va disparaître en mode V4, il ne faut pas l'utiliser. Si cet assuré est remarié il faut indiquer l'assuré dans les assurés et les liens dans les familles.", required = false)</annox:annotate>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
 					<xs:element name="donneesAI" type="rentes_in_host:aiInformations" minOccurs="0"/>
 					<xs:element name="reductionFauteGrave" type="trax:KuerzungSelbstverschulden_Type" minOccurs="0"/>
 					<xs:element name="donneesVeto" minOccurs="0">
@@ -205,13 +266,13 @@
 							</xs:sequence>
 						</xs:complexType>
 					</xs:element>
+					<xs:element name="dateDepotRemboursementTransfert" type="xs:date" minOccurs="0"/>
 					<xs:element name="flexibilisation" type="rentes_in_host:flexibilisationType" minOccurs="0"/>
 					<xs:element name="ci" type="rentes_in_host:ciType" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element name="periodeIJ" type="rentes_in_host:periodeIJType" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element name="periodeTravail" type="rentes_in_host:periodeTravailType" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element name="periodeEtrangere" type="rentes_in_host:periodeEtrangereType" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element name="periode" type="rentes_in_host:periodeType" minOccurs="0" maxOccurs="unbounded"/>
-					<xs:element name="lai39_3" type="xs:boolean" minOccurs="0"/>
 					<xs:element name="chargeEnfant" type="xs:long" minOccurs="0"/>
 					<xs:element name="generateur" type="xs:boolean" minOccurs="0">
 						<xs:annotation>
@@ -405,6 +466,7 @@
 			<xs:enumeration value="exemption"/>
 			<xs:enumeration value="incarceration"/>
 			<xs:enumeration value="etude"/>
+			<xs:enumeration value="renonciation"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="periodeEnfantType">
@@ -439,10 +501,16 @@
 		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="enfantSexType">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="1"/>
-			<xs:enumeration value="2"/>
-			<xs:enumeration value="3"/>
+	<xs:restriction base="xs:string">
+		<xs:enumeration value="MALE"/>
+		<xs:enumeration value="FEMALE"/>
+		<xs:enumeration value="UNKNOWN"/>
+	</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="sexType">
+		<xs:restriction base="rentes_in_host:enfantSexType">
+			<xs:enumeration value="MALE"/>
+			<xs:enumeration value="FEMALE"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="enfantType">
@@ -511,7 +579,7 @@
 					<xs:element name="participationBonificationAssistance" type="trax:BetreuungsgutschriftBruchteil_Type" minOccurs="0"/>
 					<xs:element name="codeProvenance">
 						<xs:annotation>
-							<xs:documentation>1: transfert par ligne, 2: saisie host/serveur, 6 : revenu prévisionnel
+							<xs:documentation>1: transfert par ligne, 2: saisie host/serveur,3: saisie ACOR, 4:Modifié par Acor, 5:saisie pour communication de période, 6 : revenu prévisionnel
                             </xs:documentation>
 						</xs:annotation>
 						<xs:simpleType>
@@ -601,7 +669,7 @@
 					</xs:element>
 					<xs:element name="debutDroit" type="xs:date"/>
 					<xs:element name="finDroit" type="xs:date" minOccurs="0"/>
-					<xs:element name="codeMutation" type="trax:Mutationscode_Type" minOccurs="0"/>
+					<xs:element name="codeMutation" type="rentes_in_host:acorMutationscode_Type" minOccurs="0"/>
 					<xs:element name="montant" type="trax:BetragFR_Type"/>
 					<xs:element name="anneeEtat" type="xs:gYear"/>
 					<xs:element name="casSpecial" type="trax:SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
@@ -614,7 +682,7 @@
 		<xs:complexContent>
 			<xs:extension base="rentes_in_host:commonRenteType">
 				<xs:sequence>
-					<xs:element name="base" type="rentes_in_host:ordinaireBase9Type"/>
+					<xs:element name="bases" type="rentes_in_host:ordinaireBase9Type"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -623,7 +691,7 @@
 		<xs:complexContent>
 			<xs:extension base="rentes_in_host:commonRenteType">
 				<xs:sequence>
-					<xs:element name="base" type="rentes_in_host:extraordinaireBase9Type"/>
+					<xs:element name="bases" type="rentes_in_host:extraordinaireBase9Type"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -642,7 +710,7 @@
 		<xs:complexContent>
 			<xs:extension base="rentes_in_host:rente10Type">
 				<xs:sequence>
-					<xs:element name="base" type="rentes_in_host:ordinaireBase10Type"/>
+					<xs:element name="bases" type="rentes_in_host:ordinaireBase10Type"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -651,7 +719,7 @@
 		<xs:complexContent>
 			<xs:extension base="rentes_in_host:rente10Type">
 				<xs:sequence>
-					<xs:element name="base" type="rentes_in_host:extraordinaireBase10Type"/>
+					<xs:element name="bases" type="rentes_in_host:extraordinaireBase10Type"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -693,7 +761,7 @@
 	</xs:complexType>
 	<xs:complexType name="aiInformations">
 		<xs:sequence>
-			<xs:element name="periodeAI" type="rentes_in_host:aiCurrentType" minOccurs="1" maxOccurs="unbounded"/>
+			<xs:element name="periodeAI" type="rentes_in_host:aiCurrentType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="casPenible" type="xs:boolean" minOccurs="0"/>
 			<xs:element name="derniereRevisionAI" type="xs:date" minOccurs="0"/>
 			<xs:element name="donneesNonCollaboration" minOccurs="0" maxOccurs="unbounded">
@@ -712,6 +780,7 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
+			<xs:element name="lai39_3" type="xs:boolean" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="officeAI">
@@ -901,11 +970,15 @@
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="e203DecedeType">
-		<xs:sequence>
-			<xs:element name="navs" type="xs:long" minOccurs="0"/>
-			<xs:element name="deces" type="rentes_in_host:e203DecesType"/>
-			<xs:element name="activite" type="xs:boolean" minOccurs="0"/>
-		</xs:sequence>
+		<xs:complexContent>
+			<xs:extension base="rentes_in_host:abstractE2023Type">
+				<xs:sequence>
+					<xs:element name="navs" type="xs:long" minOccurs="0"/>
+					<xs:element name="deces" type="rentes_in_host:e203DecesType"/>
+					<xs:element name="activite" type="xs:boolean" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="e203DecesType">
 		<xs:sequence>
@@ -1012,7 +1085,7 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
-			<xs:element name="moyenExistenceSuffisant" type="xs:boolean" default="true" minOccurs="0"/>
+			<xs:element name="moyenExistenceInsuffisant" type="xs:boolean" default="true" minOccurs="0"/>
 			<xs:element name="prestationComplementaire" type="xs:boolean" default="false" minOccurs="0"/>
 			<xs:element name="prestationComplementaireReduite" type="xs:boolean" default="false" minOccurs="0"/>
 		</xs:sequence>
@@ -1020,7 +1093,7 @@
 	<xs:complexType name="renteEtrangereType">
 		<xs:sequence>
 			<xs:element name="debutDroit" type="xs:date" minOccurs="0"/>
-			<xs:element name="ajournememt" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="ajournement" type="xs:boolean" minOccurs="0"/>
 			<xs:element name="dateAjournement" type="xs:date" minOccurs="0"/>
 			<xs:element name="paysAjournement" type="trax:LandNrBSV_weakType" minOccurs="0"/>
 		</xs:sequence>
@@ -1065,4 +1138,7 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+	<xs:simpleType name="acorMutationscode_Type">
+		<xs:union memberTypes="trax:Grundabgang_Type trax:Mutationscode_Type"/>
+	</xs:simpleType>
 </xs:schema>

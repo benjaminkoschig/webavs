@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2013 sp1 (x64) (http://www.altova.com) by Bundesamt für Informatik und Telekommunikation (Bundesamt für Informatik und Telekommunikation) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:im="http://www.zas.admin.ch/xmlns/acor-im/0" targetNamespace="http://www.zas.admin.ch/xmlns/acor-im/0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.9">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   xmlns:im="http://www.zas.admin.ch/xmlns/acor-im/0"
+		   targetNamespace="http://www.zas.admin.ch/xmlns/acor-im/0"
+		   elementFormDefault="qualified"
+		   attributeFormDefault="unqualified"
+		   version="2.0">
 	<xs:simpleType name="ref_idType">
 		<xs:annotation>
 			<xs:documentation>fait référence à l'id de l'élément "assure"</xs:documentation>
@@ -238,6 +243,7 @@
 			<xs:element name="id_session" type="xs:string" minOccurs="0"/>
 			<xs:element name="version_expert" type="xs:string" minOccurs="0"/>
 			<xs:element name="langue" type="im:langue" minOccurs="0"/>
+			<xs:element name="dossier" type="xs:long"/>
 			<xs:element name="date_traitement" type="xs:date"/>
 			<xs:element name="caisse" type="xs:string"/>
 			<xs:element name="param_mrapp" type="xs:integer">
@@ -257,6 +263,13 @@
 			<xs:element name="interets_moratoires" type="im:InteretsMoratoires" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="remarque" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
+		<xs:attribute name="versionSchema" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="([0-9]\.?)*-?(DEV|SNAPSHOT)?"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:element name="acor_im" type="im:AcorIM"/>
 </xs:schema>

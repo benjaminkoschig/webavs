@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2013 sp1 (x64) (http://www.altova.com) by Bundesamt für Informatik und Telekommunikation (Bundesamt für Informatik und Telekommunikation) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:arc95="http://www.zas.admin.ch/xmlns/arc95-out/0" targetNamespace="http://www.zas.admin.ch/xmlns/arc95-out/0" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:arc95="http://www.zas.admin.ch/xmlns/arc95-out/0" targetNamespace="http://www.zas.admin.ch/xmlns/arc95-out/0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
 	<xs:element name="dossier95" type="arc95:Dossier95"/>
 	<xs:complexType name="Periodesplitting">
 		<xs:attribute name="code" use="required">

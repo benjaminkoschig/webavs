@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		   xmlns:health="http://www.zas.admin.ch/xmlns/acor-health/0"
+		   targetNamespace="http://www.zas.admin.ch/xmlns/acor-health/0"
+		   elementFormDefault="qualified"
+		   version="2.0">
+	<xs:element name="healthReport" type="health:healthReportType"/>
+	<xs:complexType name="healthReportType">
+		<xs:sequence>
+			<xs:element name="generalHealth" type="health:statusType"/>
+			<xs:element name="healthCoreServiceReport" type="health:healthCoreServiceReportType" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="healthCoreServiceReportType">
+				<xs:sequence>
+					<xs:element name="name" type="xs:string"/>
+					<xs:element name="status" type="health:statusType"/>
+					<xs:element name="executionTime" type="xs:long" minOccurs="0"/>
+					<xs:element name="error" type="xs:string" minOccurs="0"/>
+				</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="statusType">
+		<xs:annotation><xs:documentation>0 = response OK, 1= incomplete or incorrect response, 2 = no response or exception thrown</xs:documentation></xs:annotation>
+		<xs:restriction base="xs:int">
+			<xs:enumeration value="0"/>
+			<xs:enumeration value="1"/>
+			<xs:enumeration value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

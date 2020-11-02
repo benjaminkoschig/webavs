@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2013 sp1 (x64) (http://www.altova.com) by Bundesamt für Informatik und Telekommunikation (Bundesamt für Informatik und Telekommunikation) -->
 <!-- Pour des raisons de compatibilité du xsl qui affiche la feuille ce schema ne peut être avec un targetNamespace (ni avec un namespace). Il faudra voir ci cela est viable-->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:e202="http://www.gotess.org/xns/e202" xmlns:e203="http://www.gotess.org/xns/e203" xmlns:e205="http://www.gotess.org/xns/e205" xmlns:e210="http://www.gotess.org/xns/e210" xmlns:eahv-iv-2401-000501="http://www.eahv-iv.ch/xmlns/eahv-iv-2401-000501/1" xmlns:eai-2401-common="http://www.eahv-iv.ch/xmlns/eahv-iv-2401-common/1" xmlns:splitting_interne="http://www.zas.admin.ch/xmlns/splitting-interne-out/0" xmlns:arc95="http://www.zas.admin.ch/xmlns/arc95-out/0" xmlns:im="http://www.zas.admin.ch/xmlns/acor-im/0" xmlns:inhost="http://www.zas.admin.ch/xmlns/acor-rentes-in-host/0" elementFormDefault="unqualified" attributeFormDefault="unqualified" version="3.1">
+<xs:schema xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+		   jaxb:version="2.1"
+		   xmlns:annox="http://annox.dev.java.net"
+		   jaxb:extensionBindingPrefixes="annox"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		   xmlns:e202="http://www.gotess.org/xns/e202"
+		   xmlns:e203="http://www.gotess.org/xns/e203"
+		   xmlns:e205="http://www.gotess.org/xns/e205"
+		   xmlns:e210="http://www.gotess.org/xns/e210"
+		   xmlns:eahv-iv-2401-000501="http://www.eahv-iv.ch/xmlns/eahv-iv-2401-000501/1"
+		   xmlns:eai-2401-common="http://www.eahv-iv.ch/xmlns/eahv-iv-2401-common/1"
+		   xmlns:splitting_interne="http://www.zas.admin.ch/xmlns/splitting-interne-out/0"
+		   xmlns:arc95="http://www.zas.admin.ch/xmlns/arc95-out/0"
+		   xmlns:im="http://www.zas.admin.ch/xmlns/acor-im/0"
+		   xmlns:inhost="http://www.zas.admin.ch/xmlns/acor-rentes-in-host/0"
+		   elementFormDefault="unqualified" attributeFormDefault="unqualified" version="7.0">
 	<!--NOTE : il faudrait passer en elementFormDefault="qualified" et targetNamespace="http://www.zas.admin.ch/xmlns/acor-rentes-out-f-calcul/0" et xmlns="http://www.zas.admin.ch/xmlns/acor-rentes-out-f-calcul/0"
 	mais cela pose des problème de xslt, on reste pour l'instanta "sans" namespace, le composant acor-converter (etclips-util sont prévu pour produire
 	un f_calcul.xml avec un namespace par défaut http://www.zas.admin.ch/xmlns/acor-rentes-out-f-calcul/0 (sans les prefixe dans le xml) mais cela ne suffit pas pour xslt. Pour activer
@@ -199,17 +214,17 @@
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:element>
-						<xs:element name="av_73" type="dcot">
+						<xs:element name="av_73" type="duree">
 							<xs:annotation>
 								<xs:documentation>durée avant 1973</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-						<xs:element name="ap_73" type="dcot">
+						<xs:element name="ap_73" type="duree">
 							<xs:annotation>
 								<xs:documentation>durée dès 1973</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-						<xs:element name="total" type="dcot">
+						<xs:element name="total" type="duree">
 							<xs:annotation>
 								<xs:documentation>durée totale = av_73 + ap_73</xs:documentation>
 							</xs:annotation>
@@ -230,7 +245,7 @@
 			</xs:simpleType>
 		</xs:attribute>
 	</xs:complexType>
-	<xs:complexType name="dcot">
+	<xs:complexType name="duree">
 		<xs:sequence>
 			<xs:element name="annees">
 				<xs:annotation>
@@ -310,10 +325,22 @@
 					<xs:sequence>
 						<xs:element name="rente" minOccurs="0" maxOccurs="unbounded">
 							<xs:complexType>
+								<xs:annotation>
+									<xs:documentation>rente versee calcul equite</xs:documentation>
+									<xs:appinfo>
+										<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="RenteCalculEquite",description = "rente versee calcul equite")</annox:annotate>
+									</xs:appinfo>
+								</xs:annotation>
 								<xs:sequence>
 									<xs:element name="genre" type="xs:int"/>
 									<xs:element name="periode" maxOccurs="unbounded">
 										<xs:complexType>
+											<xs:annotation>
+												<xs:documentation>periode pour les rentes versees (IF)</xs:documentation>
+												<xs:appinfo>
+													<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="periodeAMJIFVers",description = "periode pour les rentes versees (IF)")</annox:annotate>
+												</xs:appinfo>
+											</xs:annotation>
 											<xs:sequence>
 												<xs:element name="date_debut" type="AAAAMMJJ"/>
 												<xs:element name="date_fin" type="AAAAMMJJ"/>
@@ -382,6 +409,13 @@
 			<xs:element name="remarque" type="xs:string" minOccurs="0"/>
 			<xs:element name="an_ci" minOccurs="0" maxOccurs="unbounded">
 				<xs:complexType>
+					<xs:annotation>
+						<xs:documentation>an de CI pour les analyses de revenu
+						</xs:documentation>
+						<xs:appinfo>
+							<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="AnCiRev",description = "an de CI pour les analyses de revenu")</annox:annotate>
+						</xs:appinfo>
+					</xs:annotation>
 					<xs:sequence>
 						<xs:element name="an" type="AAAA"/>
 						<xs:element name="gcot" type="gcot"/>
@@ -948,14 +982,14 @@
 					<xs:documentation>pour les besoins de la feuille de calcul</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="d_cot_av_73" type="dcot" minOccurs="0">
+			<xs:element name="d_cot_av_73" type="duree" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : durée de cotisation avant
                         1973 (selon annonce au RR)
                     </xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="d_cot_ap_73" type="dcot" minOccurs="0">
+			<xs:element name="d_cot_ap_73" type="duree" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : durée de cotisation dès 1973
                         (selon annonce au RR)
@@ -984,14 +1018,14 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
-			<xs:element name="d_cot_etr_av_73" type="dcot" minOccurs="0">
+			<xs:element name="d_cot_etr_av_73" type="duree" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : durée de cotisation
                         étrangères prises en considération pour le calcul de l'échelle avant 1973
                     </xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="d_cot_etr_ap_73" type="dcot" minOccurs="0">
+			<xs:element name="d_cot_etr_ap_73" type="duree" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : durée de cotisation
                         étrangères prises en considération pour le calcul de l'échelle dès 1973
@@ -1017,7 +1051,7 @@
                     </xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="d_cot_ram" type="dcot" minOccurs="0">
+			<xs:element name="d_cot_ram" type="duree" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : durée de cotisation pour le
                         RAM
@@ -1222,6 +1256,12 @@
 				</xs:element>
 				<xs:element name="rente">
 					<xs:complexType>
+						<xs:annotation>
+							<xs:documentation>rente pour IF</xs:documentation>
+							<xs:appinfo>
+								<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="RenteIF",description = "rente pour IF")</annox:annotate>
+							</xs:appinfo>
+						</xs:annotation>
 						<xs:sequence>
 							<xs:element name="genre" type="GenrePrestation">
 								<xs:annotation>
@@ -1698,10 +1738,13 @@
 								</xs:simpleType>
 							</xs:element>
 							<xs:element name="periode" minOccurs="0" maxOccurs="unbounded">
-								<xs:annotation>
-									<xs:documentation>Zeitabschnitt</xs:documentation>
-								</xs:annotation>
 								<xs:complexType>
+									<xs:annotation>
+										<xs:documentation>periode au mois avec type, Zeitabschnitt</xs:documentation>
+										<xs:appinfo>
+											<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="periodeAMWType",description = "periode au mois avec type, Zeitabschnitt")</annox:annotate>
+										</xs:appinfo>
+									</xs:annotation>
 									<xs:complexContent>
 										<xs:extension base="periodeAM">
 											<xs:attribute name="type">
@@ -1773,29 +1816,6 @@
 										</xs:element>
 									</xs:sequence>
 								</xs:complexType>
-							</xs:element>
-							<xs:element name="oai" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation>office AI</xs:documentation>
-								</xs:annotation>
-								<xs:simpleType>
-									<xs:restriction base="xs:int">
-										<xs:minInclusive value="0"/>
-										<xs:maxInclusive value="350"/>
-									</xs:restriction>
-								</xs:simpleType>
-							</xs:element>
-							<xs:element name="genre_invalidite" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation>code d'infirmité (3 positions) et code d'atteinte fonctionnelle (2
-                                        positions)
-                                    </xs:documentation>
-								</xs:annotation>
-								<xs:simpleType>
-									<xs:restriction base="xs:int">
-										<xs:pattern value="0|[0-9]{5}"/>
-									</xs:restriction>
-								</xs:simpleType>
 							</xs:element>
 							<xs:element name="cas_penible" type="empty" minOccurs="0">
 								<xs:annotation>
@@ -2009,12 +2029,15 @@
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="prestation" minOccurs="0" maxOccurs="unbounded">
-					<xs:annotation>
-						<xs:documentation>prestation fournie à ACOR en entrée du calcul
-                            Leistung
-                        </xs:documentation>
-					</xs:annotation>
 					<xs:complexType>
+						<xs:annotation>
+							<xs:documentation>Prestation fournie à ACOR en entrée du calcul
+								Leistung
+							</xs:documentation>
+							<xs:appinfo>
+								<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="PrestationIN",desciption = "Prestation fournie à ACOR en entrée du calcul, Leistung")</annox:annotate>
+							</xs:appinfo>
+						</xs:annotation>
 						<xs:sequence>
 							<xs:element name="beneficiaire" type="id_acor">
 								<xs:annotation>
@@ -2053,6 +2076,12 @@
 										<xs:documentation>Rente</xs:documentation>
 									</xs:annotation>
 									<xs:complexType>
+										<xs:annotation>
+											<xs:documentation>rente en entree</xs:documentation>
+											<xs:appinfo>
+												<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="RenteIN",description = "rente en entree")</annox:annotate>
+											</xs:appinfo>
+										</xs:annotation>
 										<xs:complexContent>
 											<xs:extension base="rente">
 												<xs:attribute name="type">
@@ -2112,10 +2141,14 @@
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="an_ci" minOccurs="0" maxOccurs="unbounded">
-								<xs:annotation>
-									<xs:documentation>annee de cotisation</xs:documentation>
-								</xs:annotation>
 								<xs:complexType>
+									<xs:annotation>
+										<xs:documentation>annee de cotisation
+										</xs:documentation>
+										<xs:appinfo>
+											<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="AnCiSplit",description = "annee de cotisation pour splitting")</annox:annotate>
+										</xs:appinfo>
+									</xs:annotation>
 									<xs:sequence>
 										<xs:element name="an" type="AAAA"/>
 										<xs:element name="marque" minOccurs="0">
@@ -2142,7 +2175,7 @@
 										<xs:element name="mois">
 											<xs:simpleType>
 												<xs:restriction base="xs:string">
-													<xs:pattern value="[\.mdeEj1fpbavBs\s ]{6}[\s ][\.mdeEj1fpbavBs\s ]{6}"/>
+													<xs:pattern value="[\.mdeEj1fpbavBs€\s ]{6}[\s ][\.mdeEj1fpbavBs€\s ]{6}"/>
 												</xs:restriction>
 											</xs:simpleType>
 										</xs:element>
@@ -2175,7 +2208,7 @@
 										<xs:element name="mois2">
 											<xs:simpleType>
 												<xs:restriction base="xs:string">
-													<xs:pattern value="[\.mdeEj1fpbavBs\s ]{6}[\s ][\.mdeEj1fpbavBs\s ]{6}"/>
+													<xs:pattern value="[\.mdeEj1fpbavBs€\s ]{6}[\s ][\.mdeEj1fpbavBs€\s ]{6}"/>
 												</xs:restriction>
 											</xs:simpleType>
 										</xs:element>
@@ -2209,6 +2242,12 @@
 							<xs:element name="conjoint" type="id_acor"/>
 							<xs:element name="periode" maxOccurs="unbounded">
 								<xs:complexType>
+									<xs:annotation>
+										<xs:documentation>periode (annee) pour le splitting</xs:documentation>
+										<xs:appinfo>
+											<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="periodeASplitting",description = "periode (annee) pour le splitting")</annox:annotate>
+										</xs:appinfo>
+									</xs:annotation>
 									<xs:sequence>
 										<xs:element name="debut" type="AAAA"/>
 										<xs:element name="fin" type="AAAA"/>
@@ -2274,6 +2313,12 @@
 							</xs:element>
 							<xs:element name="inscription" minOccurs="0" maxOccurs="unbounded">
 								<xs:complexType>
+									<xs:annotation>
+										<xs:documentation>Inscription au CI</xs:documentation>
+										<xs:appinfo>
+											<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="InscriptionCI",description = "Inscription au CI")</annox:annotate>
+										</xs:appinfo>
+									</xs:annotation>
 									<xs:sequence>
 										<xs:element name="an" type="AAAA"/>
 										<xs:element name="branche" minOccurs="0">
@@ -2532,8 +2577,8 @@
 				<xs:element name="analyse_periodes" minOccurs="0" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:documentation>analyse des périodes d'assurance
-                            Analyse der Versicherungszeiten
-                        </xs:documentation>
+							Analyse der Versicherungszeiten
+						</xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
@@ -2581,6 +2626,8 @@
 									<xs:restriction base="xs:string">
 										<xs:enumeration value="avs"/>
 										<xs:enumeration value="ai"/>
+										<xs:enumeration value="ai_1ere"/>
+										<xs:enumeration value="ai_2eme"/>
 									</xs:restriction>
 								</xs:simpleType>
 							</xs:element>
@@ -2618,7 +2665,7 @@
 										<xs:element name="mois">
 											<xs:simpleType>
 												<xs:restriction base="xs:string">
-													<xs:pattern value="([\.mdeEj1fpbavBs][\s ]+){11}[\.mdeEj1fpbavBs]"/>
+													<xs:pattern value="([\.mdeEj1fpbavBs€][\s ]+){11}[\.mdeEj1fpbavBs€]"/>
 												</xs:restriction>
 											</xs:simpleType>
 										</xs:element>
@@ -2914,6 +2961,14 @@
 										<xs:element name="generateur" type="id_acor"/>
 										<xs:element name="analyse_periodes" minOccurs="0">
 											<xs:complexType>
+												<xs:annotation>
+													<xs:documentation>identifiant de l'analyse faite pour cette base, principale ssi cette analyse est faite en premier lieu pour cette base
+														Analyse der Versicherungszeiten
+													</xs:documentation>
+													<xs:appinfo>
+														<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="AnalysePeriodesReference",description = "identifiant de l'analyse faite pour cette base, principale ssi cette analyse est faite en premier lieu pour cette base")</annox:annotate>
+													</xs:appinfo>
+												</xs:annotation>
 												<xs:simpleContent>
 													<xs:extension base="id_acor">
 														<xs:attribute name="principale" type="xs:boolean"/>
@@ -3801,6 +3856,12 @@ toujours présent si le type n'est pas 'historique' </xs:documentation>
 															</xs:element>
 															<xs:element name="tranche" minOccurs="0" maxOccurs="unbounded">
 																<xs:complexType>
+                                                                    <xs:annotation>
+                                                                        <xs:documentation>tranche pour l'anticipation</xs:documentation>
+                                                                        <xs:appinfo>
+                                                                            <annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="TrancheAnticipation",description = "tranche pour l'anticipation")</annox:annotate>
+                                                                        </xs:appinfo>
+                                                                    </xs:annotation>
 																	<xs:sequence>
 																		<xs:element name="date_anticipation" type="AAAAMMJJ"/>
 																		<xs:element name="duree_anticipation">
@@ -3825,6 +3886,12 @@ toujours présent si le type n'est pas 'historique' </xs:documentation>
 																				<xs:documentation>aucune rente seulement s'il s'agit d'une tranche informative (rien n'a été calculé)</xs:documentation>
 																			</xs:annotation>
 																			<xs:complexType>
+																				<xs:annotation>
+																					<xs:documentation>rente pour l'anticipation</xs:documentation>
+																					<xs:appinfo>
+																						<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="RenteAnticipation",description = "rente pour l'anticipation")</annox:annotate>
+																					</xs:appinfo>
+																				</xs:annotation>
 																				<xs:sequence>
 																					<xs:element name="genre" type="xs:int"/>
 																					<xs:element name="pourcent_tranche">
@@ -3837,6 +3904,12 @@ toujours présent si le type n'est pas 'historique' </xs:documentation>
 																					<xs:element name="montant_reduction" type="xs:double" minOccurs="0"/>
 																					<xs:element name="periode" minOccurs="0" maxOccurs="unbounded">
 																						<xs:complexType>
+																							<xs:annotation>
+																								<xs:documentation>periode pour l'anticipation</xs:documentation>
+																								<xs:appinfo>
+																									<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="periodeAMJAnticipation",description = "periode pour l'anticipation")</annox:annotate>
+																								</xs:appinfo>
+																							</xs:annotation>
 																							<xs:sequence>
 																								<xs:element name="date_debut" type="AAAAMMJJ"/>
 																								<xs:element name="date_fin" type="AAAAMMJJ"/>
@@ -3915,6 +3988,12 @@ toujours présent si le type n'est pas 'historique' </xs:documentation>
 															</xs:element>
 															<xs:element name="tranche" minOccurs="0" maxOccurs="2">
 																<xs:complexType>
+                                                                    <xs:annotation>
+                                                                        <xs:documentation>tranche pour l'ajournement</xs:documentation>
+                                                                        <xs:appinfo>
+                                                                            <annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="TrancheAjournement",description = "tranche pour l'ajournement")</annox:annotate>
+                                                                        </xs:appinfo>
+                                                                    </xs:annotation>
 																	<xs:sequence>
 																		<xs:element name="statut">
 																			<xs:simpleType>
@@ -3943,10 +4022,22 @@ toujours présent si le type n'est pas 'historique' </xs:documentation>
 																		<xs:element name="prc_sup_ajournement" type="xs:float"/>
 																		<xs:element name="rente" minOccurs="0" maxOccurs="unbounded">
 																			<xs:complexType>
+																				<xs:annotation>
+																					<xs:documentation>rente pour l'ajournement</xs:documentation>
+																					<xs:appinfo>
+																						<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="RenteAjournement",description = "rente pour l'ajournement")</annox:annotate>
+																					</xs:appinfo>
+																				</xs:annotation>
 																				<xs:sequence>
 																					<xs:element name="genre" type="xs:int"/>
 																					<xs:element name="periode" maxOccurs="unbounded">
 																						<xs:complexType>
+																							<xs:annotation>
+																								<xs:documentation>periode pour l'ajournement</xs:documentation>
+																								<xs:appinfo>
+																									<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="periodeAMJAjournement",description = "periode pour l'ajournement")</annox:annotate>
+																								</xs:appinfo>
+																							</xs:annotation>
 																							<xs:sequence>
 																								<xs:element name="date_debut" type="AAAAMMJJ"/>
 																								<xs:element name="date_fin" type="AAAAMMJJ"/>
@@ -4066,10 +4157,22 @@ toujours présent si le type n'est pas 'historique' </xs:documentation>
 													<xs:element name="mont_if" type="xs:int"/>
 													<xs:element name="rente">
 														<xs:complexType>
+															<xs:annotation>
+																<xs:documentation>rente IF comparaison</xs:documentation>
+																<xs:appinfo>
+																	<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="RenteIFComp",description = "rente IF comparaison")</annox:annotate>
+																</xs:appinfo>
+															</xs:annotation>
 															<xs:sequence>
 																<xs:element name="genre" type="xs:int"/>
 																<xs:element name="periode" maxOccurs="unbounded">
 																	<xs:complexType>
+																		<xs:annotation>
+																			<xs:documentation>periode pour les IF</xs:documentation>
+																			<xs:appinfo>
+																				<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="periodeAMJIF",description = "periode pour les IF")</annox:annotate>
+																			</xs:appinfo>
+																		</xs:annotation>
 																		<xs:sequence>
 																			<xs:element name="date_debut" type="AAAAMMJJ"/>
 																			<xs:element name="date_fin" type="AAAAMMJJ"/>
@@ -4425,6 +4528,8 @@ s=survivant</xs:documentation>
 												<xs:restriction base="xs:string">
 													<xs:enumeration value="avs"/>
 													<xs:enumeration value="ai"/>
+													<xs:enumeration value="ai_1ere"/>
+													<xs:enumeration value="ai_2eme"/>
 													<xs:enumeration value="ai_avs"/>
 												</xs:restriction>
 											</xs:simpleType>
@@ -4564,7 +4669,7 @@ s=survivant</xs:documentation>
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
-							<xs:element name="comparaison_ai_v" minOccurs="0" maxOccurs="unbounded">
+							<xs:element name="comparaison_couple" minOccurs="0" maxOccurs="unbounded">
 								<xs:annotation>
 									<xs:documentation>comparaison globale des bases AI et AVS
                             Vergleich der AHV- und IV- Grundlagen für die integrale Neuberechnung
@@ -4573,72 +4678,80 @@ s=survivant</xs:documentation>
 								<xs:complexType>
 									<xs:sequence>
 										<xs:element name="label" type="xs:string" minOccurs="0"/>
+										<xs:element name="type">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="stand"/>
+													<xs:enumeration value="renaiss"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
 										<xs:element name="assure1" type="id_acor"/>
 										<xs:element name="assure2" type="id_acor"/>
-										<xs:element name="avs_np1">
+										<xs:element name="b2_np1">
 											<xs:simpleType>
 												<xs:restriction base="xs:int">
 													<xs:minInclusive value="0"/>
 												</xs:restriction>
 											</xs:simpleType>
 										</xs:element>
-										<xs:element name="avs_np2">
+										<xs:element name="b2_np2">
 											<xs:simpleType>
 												<xs:restriction base="xs:int">
 													<xs:minInclusive value="0"/>
 												</xs:restriction>
 											</xs:simpleType>
 										</xs:element>
-										<xs:element name="avs_p1" minOccurs="0">
+										<xs:element name="b2_p1" minOccurs="0">
 											<xs:simpleType>
 												<xs:restriction base="xs:int">
 													<xs:minInclusive value="0"/>
 												</xs:restriction>
 											</xs:simpleType>
 										</xs:element>
-										<xs:element name="avs_p2" minOccurs="0">
+										<xs:element name="b2_p2" minOccurs="0">
 											<xs:simpleType>
 												<xs:restriction base="xs:int">
 													<xs:minInclusive value="0"/>
 												</xs:restriction>
 											</xs:simpleType>
 										</xs:element>
-										<xs:element name="avs_tot">
+										<xs:element name="b2_tot">
 											<xs:simpleType>
 												<xs:restriction base="xs:int">
 													<xs:minInclusive value="0"/>
 												</xs:restriction>
 											</xs:simpleType>
 										</xs:element>
-										<xs:element name="ai_np1">
+										<xs:element name="b1_np1">
 											<xs:simpleType>
 												<xs:restriction base="xs:int">
 													<xs:minInclusive value="0"/>
 												</xs:restriction>
 											</xs:simpleType>
 										</xs:element>
-										<xs:element name="ai_np2">
+										<xs:element name="b1_np2">
 											<xs:simpleType>
 												<xs:restriction base="xs:int">
 													<xs:minInclusive value="0"/>
 												</xs:restriction>
 											</xs:simpleType>
 										</xs:element>
-										<xs:element name="ai_p1" minOccurs="0">
+										<xs:element name="b1_p1" minOccurs="0">
 											<xs:simpleType>
 												<xs:restriction base="xs:int">
 													<xs:minInclusive value="0"/>
 												</xs:restriction>
 											</xs:simpleType>
 										</xs:element>
-										<xs:element name="ai_p2" minOccurs="0">
+										<xs:element name="b1_p2" minOccurs="0">
 											<xs:simpleType>
 												<xs:restriction base="xs:int">
 													<xs:minInclusive value="0"/>
 												</xs:restriction>
 											</xs:simpleType>
 										</xs:element>
-										<xs:element name="ai_tot">
+										<xs:element name="b1_tot">
 											<xs:simpleType>
 												<xs:restriction base="xs:int">
 													<xs:minInclusive value="0"/>
@@ -4717,6 +4830,12 @@ s=survivant</xs:documentation>
 															<xs:documentation>rente à plafonner</xs:documentation>
 														</xs:annotation>
 														<xs:complexType>
+															<xs:annotation>
+																<xs:documentation>rente pour plafonnement</xs:documentation>
+																<xs:appinfo>
+																	<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="RentePlaf",description = "rente pour plafonement")</annox:annotate>
+																</xs:appinfo>
+															</xs:annotation>
 															<xs:sequence>
 																<xs:element name="beneficiaire" type="id_acor"/>
 																<xs:element name="genre" type="GenrePrestation"/>
@@ -4798,7 +4917,7 @@ s=survivant</xs:documentation>
 												</xs:restriction>
 											</xs:simpleType>
 										</xs:element>
-										<xs:element name="base" type="id_acor" minOccurs="2" maxOccurs="3">
+										<xs:element name="bases" type="id_acor" minOccurs="2" maxOccurs="3">
 											<xs:annotation>
 												<xs:documentation>base comparée</xs:documentation>
 											</xs:annotation>
@@ -4809,7 +4928,7 @@ s=survivant</xs:documentation>
 											</xs:annotation>
 											<xs:complexType>
 												<xs:sequence>
-													<xs:element name="base" type="id_acor">
+													<xs:element name="bases" type="id_acor">
 														<xs:annotation>
 															<xs:documentation>id de la base plus favorable</xs:documentation>
 														</xs:annotation>
@@ -4887,6 +5006,13 @@ s=survivant</xs:documentation>
 							<xs:element name="assure" type="id_acor"/>
 							<xs:element name="an_ci" minOccurs="0" maxOccurs="unbounded">
 								<xs:complexType>
+									<xs:annotation>
+										<xs:documentation>an de CI pour les comunications de periodes
+										</xs:documentation>
+										<xs:appinfo>
+											<annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="AnCiComm",description = "an de CI pour les comunications de periodes")</annox:annotate>
+										</xs:appinfo>
+									</xs:annotation>
 									<xs:sequence>
 										<xs:element name="an" type="AAAA"/>
 										<xs:element name="gcot">
@@ -5043,10 +5169,14 @@ s=survivant</xs:documentation>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="annexes" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation>Toutes les annexes, notamment annonce.pay, formulaire de compensation, formulaire euro</xs:documentation>
-					</xs:annotation>
 					<xs:complexType>
+                        <xs:annotation>
+                            <xs:documentation>Toutes les annexes, notamment annonce.pay, formulaire de compensation, formulaire euro
+                            </xs:documentation>
+                            <xs:appinfo>
+                                <annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="Annexes",description = "Toutes les annexes, notamment annonce.pay, formulaire de compensation, formulaire euro")</annox:annotate>
+                            </xs:appinfo>
+                        </xs:annotation>
 						<xs:sequence>
 							<xs:element name="pay" type="xs:string" minOccurs="0">
 								<xs:annotation>
@@ -5078,7 +5208,7 @@ s=survivant</xs:documentation>
 									<xs:documentation>Contenu de l'arc95</xs:documentation>
 								</xs:annotation>
 							</xs:element>
-							<xs:element name="interets_moratoires" type="im:AcorIM" minOccurs="0" maxOccurs="unbounded">
+							<xs:element name="interets_moratoires" type="im:AcorIM" minOccurs="0" maxOccurs="1">
 								<xs:annotation>
 									<xs:documentation>Contenu des IM à calculer éventuellement5</xs:documentation>
 								</xs:annotation>
