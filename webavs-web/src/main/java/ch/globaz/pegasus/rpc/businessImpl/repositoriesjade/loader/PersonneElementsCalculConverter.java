@@ -126,7 +126,8 @@ public class PersonneElementsCalculConverter {
         perElCal.setRevenuBrutHypothetique(df.getRevenusHypothtique().sumRevenuAnnuel());
 
         perElCal.setAutresDepenses(dfFiltre.getCotisationsPsal().sumDepense()
-                .add(dfFiltre.getPensionsAlimentaireByType(PensionAlimentaireType.VERSEE).sumDepense()));
+                .add(dfFiltre.getPensionsAlimentaireByType(PensionAlimentaireType.VERSEE).sumDepense())
+                .add(dfFiltre.getSejourMoisPartiel().sumDepense()));
         TaxeJournaliereHome taxeJournaliereHome = dfFiltre.getTaxesJournaliereHome().resolveCurrentTaxejournaliere();
         Montant entretienViager = Montant.ZERO;
 

@@ -20,7 +20,7 @@ public class SejourMoisPartiel extends DonneeFinanciere implements Depense {
     }
     @Override
     public Montant computeDepense() {
-        return prixJournalier.substract(fraisNourriture).multiply(nombreJours);
+        return prixJournalier.substract(fraisNourriture).multiply(nombreJours).addMensuelPeriodicity().annualise();
     }
 
     @Override
