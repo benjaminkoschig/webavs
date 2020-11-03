@@ -54,6 +54,8 @@ import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.persistence.util.JadePersistenceUtil;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 import static globaz.externe.IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE;
@@ -675,64 +677,6 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 PegasusServiceLocator.getRetenueService().createWithOutCheck(retenue);
         }
 
-
-//        if (JadeStringUtil.isBlankOrZero(simplePCAccordee.getDateFin())) {
-//            for (JadeAbstractModel absDonnee : anciennesPCAccordees.getSearchResults()) {
-//                CalculPcaReplace ancienneDonnee = (CalculPcaReplace) absDonnee;
-//                if (JadeStringUtil.isBlankOrZero(ancienneDonnee.getSimplePCAccordee().getDateFin())
-//                        && IPCPCAccordee.CS_ETAT_PCA_VALIDE.equals(ancienneDonnee.getSimplePCAccordee().getCsEtatPC())) {
-//                    if (ancienneDonnee.getSimplePrestationsAccordees().getIsRetenues()) {
-//                        idPcaOld = ancienneDonnee.getSimplePCAccordee().getIdPCAccordee();
-//                        PcaRetenueSearch search = new PcaRetenueSearch();
-//                        search.setForIdPca(idPcaOld);
-//                        search = PegasusServiceLocator.getRetenueService().search(search);
-//                        for (JadeAbstractModel model : search.getSearchResults()) {
-//                            PcaRetenue retenueAncienne = (PcaRetenue) model;
-//                            //Si même home mais montant identique : on repend la même retenu et on enlève la nouvelle retenue de la liste à créer
-//                            if (mapNewRetenues.containsKey(retenueAncienne.getSimpleRetenue().getIdTiersAdressePmt())) {
-//                                donneeInterneHomeVersementNew = mapNewRetenues.get(retenueAncienne.getSimpleRetenue().getIdTiersAdressePmt());
-//                                Float montantAVerser = getMontantHome(donneeInterneHomeVersementNew.getMontantHomes(), 1);
-//                                Float montantAVerserOld = Float.parseFloat(retenueAncienne.getSimpleRetenue().getMontantRetenuMensuel());
-//                                if (montantAVerser.floatValue() == montantAVerserOld.floatValue()) {
-//                                    PcaRetenue retenue;
-//                                    try {
-//                                        retenue = (PcaRetenue) JadePersistenceUtil.clone(model);
-//                                    } catch (JadeCloneModelException e) {
-//                                        throw new PCAccordeeException("Unable to clone this PCA id: "
-//                                                + simplePCAccordee.getIdPCAccordee());
-//                                    }
-//                                    retenue.setIdPCAccordee(simplePCAccordee.getIdPCAccordee());
-//                                    retenue.getSimpleRetenue().setDateDebutRetenue(
-//                                            PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt());
-//                                    PegasusServiceLocator.getRetenueService().createWithOutCheck(retenue);
-//                                    donneeInterneHomeVersements.remove(donneeInterneHomeVersementNew);
-//                                }
-//                            //Si l'ancienne retenu ne fait pas parti des nouvelles retenues à crééer => ça veut que dire que le home du bénéficiaire a été supprimé.
-//                            } else if (!isHome(retenueAncienne.getSimpleRetenue().getIdTiersAdressePmt())){
-//                                PegasusServiceLocator.getRetenueService().delete(retenueAncienne);
-//                                //Pour le reste qui n'est pas un home, on reprends les retenus actifs.
-//                            }else{
-//                                SimpleHomeSearch simpleHomeSearch = new SimpleHomeSearch();
-//                                simpleHomeSearch.setForIdTiersHome(retenueAncienne.getSimpleRetenue().getIdTiersAdressePmt());
-//                                if (retenueAncienne.getCsRoleFamillePC().equals(simplePCAccordee.getCsRoleBeneficiaire()) && PegasusImplServiceLocator.getSimpleHomeService().count(simpleHomeSearch)==0) {
-//                                    PcaRetenue retenue;
-//                                    try {
-//                                        retenue = (PcaRetenue) JadePersistenceUtil.clone(model);
-//                                    } catch (JadeCloneModelException e) {
-//                                        throw new PCAccordeeException("Unable to clone this PCA id: "
-//                                                + simplePCAccordee.getIdPCAccordee());
-//                                    }
-//                                    retenue.setIdPCAccordee(simplePCAccordee.getIdPCAccordee());
-//                                    retenue.getSimpleRetenue().setDateDebutRetenue(
-//                                            PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt());
-//                                    PegasusServiceLocator.getRetenueService().createWithOutCheck(retenue);
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
     }
 
     /**
@@ -921,8 +865,17 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 retenue.setIdTiersAdressePmt(calculDonneesHome.getIdTiersHome());
                 retenue.setIdRenteAccordee(calculDonneesHome.getIdRenteAccordee());
                 retenue.setIdDomaineApplicatif(IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE);
-                Float montantAVerser = getMontantHome(calculDonneesHome.getMontantHomes(), 1);
-                retenue.setMontantRetenuMensuel(montantAVerser.toString());
+                Float montantPCMensuel = Float.parseFloat(calculDonneesHome.getMontantPCMensuel());
+                BigDecimal montantAVerser = new BigDecimal(getMontantHome(calculDonneesHome.getMontantHomes(), 1));
+                BigDecimal montantAVerserArrondi = montantAVerser.setScale(0,RoundingMode.UP);
+                if(montantAVerserArrondi.floatValue() + Float.parseFloat(calculDonneesHome.getMontantDepenses())/12.0 > Float.parseFloat(calculDonneesHome.getMontantPCMensuel())){
+                    montantAVerserArrondi.subtract(BigDecimal.ONE);
+                }
+                Float montantAVerserDeduit = montantAVerserArrondi.floatValue()- (Float.parseFloat(calculDonneesHome.getMontantDepenses())/12);
+                if(montantAVerserDeduit> montantPCMensuel){
+                    montantAVerserDeduit =montantPCMensuel - (Float.parseFloat(calculDonneesHome.getMontantDepenses())/12);
+                }
+                retenue.setMontantRetenuMensuel(montantAVerserDeduit.toString());
                 retenue.setMontantTotalARetenir("999'999.00");
                 pcaRetenue.setSimpleRetenue(retenue);
                 PegasusServiceLocator.getRetenueService().createWithOutCheck(pcaRetenue);
