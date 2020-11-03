@@ -23,6 +23,7 @@
 		<csLienRepondant><%=viewBean.getDonneesPersonnelles().getSimpleDonneesPersonnelles().getCsLienRepondant()%></csLienRepondant>
 		<communeOrigineCodeOfs><%=viewBean.getDonneesPersonnelles().getSimpleDonneesPersonnelles().getCommuneOrigineCodeOfs()%></communeOrigineCodeOfs>	
 		<communeOrigine><%=viewBean.getDonneesPersonnelles().getSimpleDonneesPersonnelles().getCommuneOrigine()%></communeOrigine>		
+		<isMembreCongregation><%=viewBean.getDonneesPersonnelles().getSimpleDonneesPersonnelles().getIsMembreCongregation()%></isMembreCongregation>
 		<parentViewBean><ct:serializeObject objectName="viewBean.droit"/></parentViewBean>
 	</contenu>
 	<ct:serializeObject destination="xml"/>

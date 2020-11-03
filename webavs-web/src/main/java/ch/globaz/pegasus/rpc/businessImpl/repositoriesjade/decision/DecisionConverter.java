@@ -46,6 +46,7 @@ public class DecisionConverter {
         motifConverter.put("64043012", MotifDecision.DELAI_CARENCE);
         motifConverter.put("64043013", MotifDecision.RENONCIATION);
         motifConverter.put("64043014", MotifDecision.SEUIL_FORTUNE_DEPASSE);
+        motifConverter.put("64043015", MotifDecision.MEMBRE_CONGREGATION);
     }
 
     public Decision convertToDomain(SimpleDecisionHeader simpleDecisionHeader, String csMotif) {

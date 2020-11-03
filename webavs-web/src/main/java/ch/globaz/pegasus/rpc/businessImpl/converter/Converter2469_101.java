@@ -17,7 +17,6 @@ import rpc.ch.ech.xmlns.ech_0007._5.CantonAbbreviationType;
 import rpc.ch.ech.xmlns.ech_0007._5.CantonFlAbbreviationType;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
 
@@ -380,8 +379,8 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
                 .setScale(2, BigDecimal.ROUND_HALF_UP));
         commCalElmnt.setVitalNeeds(calculationElements.getVitalNeeds().longValue());
         commCalElmnt.setChildren(calculationElements.getChildren());
-        //TODO créer et sélectionner la bonne énumération
-        commCalElmnt.setLivingSituation("normal");
+        commCalElmnt.setLivingSituation(calculationElements.getLivingSituationType().getType());
+
         return  commCalElmnt;
     }
 

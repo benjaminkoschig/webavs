@@ -18,7 +18,8 @@
 <%@page import="ch.globaz.pyxis.business.service.AdresseService"%>
 <%@page import="ch.globaz.pegasus.business.models.droit.DonneesPersonnelles"%>
 <%@page import="globaz.pegasus.utils.PCDroitHandler"%>
-<%@ taglib uri="/WEB-INF/nss.tld" prefix="ct1" %>
+    <%@ page import="org.apache.commons.lang.StringUtils" %>
+    <%@ taglib uri="/WEB-INF/nss.tld" prefix="ct1" %>
 
 <link rel="stylesheet" type="text/css" href="<%=servletContext%><%=(mainServletPath+"Root")%>/css/droit/droit.css" />
 
@@ -163,7 +164,15 @@ $(function(){
 				<tr>
 					<td><ct:FWLabel key="JSP_PC_SDP_D_REPRESENTANT_LEGAL"/></td>
 					<td><input type="checkbox" class="representant" <% if (simpleDonnee.getIsRepresentantLegal()) { %> checked<% } %> /></td>
+
+                    <% if (StringUtils.equals(membreFamille.getSimpleDroitMembreFamille().getCsRoleFamillePC(), IPCDroits.CS_ROLE_FAMILLE_REQUERANT)) { %>
+                    <td><ct:FWLabel key="JSP_PC_SDP_D_MEMBRE_CONGREGATION"/></td>
+                    <td><input type="checkbox" class="isMembreCongregation" <% if (simpleDonnee.getIsMembreCongregation()) { %> checked<% } %>/></td>
+                    <%} %>
+
 				</tr>
+
+
 				<%if (EPCProperties.GESTION_ANNONCES_LAPRAMS.getBooleanValue()) { %>
 					<tr><td colspan="6"><hr></td></tr>
 					<tr><td colspan="6"><h2 calss="h2"> <ct:FWLabel key="JSP_PC_SDP_D_COMPLEMENT_LAPRAMS"/> </h2></td></tr>

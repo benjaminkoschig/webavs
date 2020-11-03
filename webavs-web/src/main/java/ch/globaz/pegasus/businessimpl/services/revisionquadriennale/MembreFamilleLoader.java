@@ -226,6 +226,7 @@ public class MembreFamilleLoader {
         donneesPersonnelles.setStatusRefugieApatride(StatusRefugieApatride.fromValue(simpleDonneesPersonnelles
                 .getCsStatusRefugieApatride()));
         donneesPersonnelles.setIsRepresentantLegal(simpleDonneesPersonnelles.getIsRepresentantLegal());
+        donneesPersonnelles.setMembreCongregation(simpleDonneesPersonnelles.getIsMembreCongregation());
         donneesPersonnelles.setNoCaisseAvs(simpleDonneesPersonnelles.getNoCaisseAvs());
         donneesPersonnelles.setIdDernierDomicileLegale(simpleDonneesPersonnelles.getIdDernierDomicileLegale());
         membreFamille.setDonneesPersonnelles(donneesPersonnelles);

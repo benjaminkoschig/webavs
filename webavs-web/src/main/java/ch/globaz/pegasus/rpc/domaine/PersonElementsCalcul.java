@@ -49,6 +49,7 @@ public class PersonElementsCalcul {
 
     private Montant fraisGarde;
     private Montant montantRIP;
+    private boolean isUsufrutuier;
 
     public Montant getValeurLocativeProprietaire() {
         return valeurLocativeProprietaire;
@@ -435,5 +436,13 @@ public class PersonElementsCalcul {
 
     public Montant getPrimeEffective() {
         return primeEffective;
+    }
+
+    public boolean isUsufrutuier() {
+        return isUsufrutuier;
+    }
+
+    public void setUsufrutuier(boolean usufrutuier) {
+        isUsufrutuier = usufrutuier;
     }
 }

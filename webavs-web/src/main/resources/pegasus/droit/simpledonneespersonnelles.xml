@@ -17,6 +17,7 @@
 			<field name="noOfficeAi" column="BFNOAI" type="STRING" mandatory="false" comment="NO_OFFICE_AI"/>
 			<field name="isEnfant" column="BFBISE" type="BOOLEAN" mandatory="FALSE" comment="IS_REQUERANT_ENFANT"/>
 			<field name="isRepresentantLegal" column="BFBIRL" type="BOOLEAN" mandatory="FALSE" comment="IS_REPRESENTANT_LEGAL"/>
+			<field name="isMembreCongregation" column="BFBIMC" type="BOOLEAN" mandatory="FALSE" comment="IS_MEMBRE_CONGREGATION"/>
 			<field name="communeOrigine" column="BFLCOR" type="STRING" mandatory="FALSE" comment="COMMUNE_ORIGINE"/>
 			<field name="communeOrigineCodeOfs" column="BFCCOC" type="NUMERIC" mandatory="FALSE" comment="COMMUNE_ORIGINE_CODE_OFS"/>
 		</fields>

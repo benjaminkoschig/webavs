@@ -19,6 +19,7 @@ public class SimpleDonneesPersonnelles extends JadeSimpleModel {
     private String idTiersRepondant = null;
     private Boolean isEnfant = false;
     private Boolean isRepresentantLegal = false;
+    private Boolean isMembreCongregation = false;
     private String noCaisseAvs = null;
     private String noOCC = null;
     private String noOfficeAi = null;
@@ -79,6 +80,10 @@ public class SimpleDonneesPersonnelles extends JadeSimpleModel {
 
     public Boolean getIsRepresentantLegal() {
         return isRepresentantLegal;
+    }
+
+    public Boolean getIsMembreCongregation() {
+        return isMembreCongregation;
     }
 
     /**
@@ -161,6 +166,10 @@ public class SimpleDonneesPersonnelles extends JadeSimpleModel {
 
     public void setIsRepresentantLegal(Boolean isRepresentantLegal) {
         this.isRepresentantLegal = isRepresentantLegal;
+    }
+
+    public void setIsMembreCongregation(Boolean isMembreCongregation) {
+        this.isMembreCongregation = isMembreCongregation;
     }
 
     /**

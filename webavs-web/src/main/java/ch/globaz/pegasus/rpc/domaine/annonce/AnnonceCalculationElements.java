@@ -5,16 +5,20 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import ch.globaz.common.domaine.Montant;
+import ch.globaz.pegasus.rpc.domaine.LivingSituationType;
+import ch.globaz.pegasus.rpc.domaine.PersonElementsCalcul;
 import ch.globaz.pegasus.rpc.domaine.RpcDecisionAnnonceComplete;
+import com.ibm.db2.jcc.a.e;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 public class AnnonceCalculationElements {
-    
+
     private static final String XSD_RENTCATEGORY_ANNUAL_GROSS = "ANNUAL_GROSS";
     private static final String XSD_RENTCATEGORY_RENTAL_VALUE = "RENTAL_VALUE";
 
@@ -30,7 +34,7 @@ public class AnnonceCalculationElements {
     protected BigDecimal wealthIncomeRate;
     protected Montant vitalNeeds;
     protected int children;
-    
+
     protected boolean property;
     protected Montant realProperty;
     protected Montant mortgageDebts;
@@ -42,12 +46,12 @@ public class AnnonceCalculationElements {
     protected Montant interestFeesEligible;
 
     protected long familySize;
-    
+
     protected boolean housingOwner;
     protected Montant selfInhabitedProperty;
     protected Montant selfInhabitedPropertyDeductible;
     protected Montant rentalValue;
-    
+
     protected boolean rent;
     protected Montant grossRental;
     protected String rentCategory;
@@ -55,10 +59,12 @@ public class AnnonceCalculationElements {
     protected Montant rentGrossTotalPart;
     protected Montant maxRent;
 
-    protected boolean isDivestedWealth = Boolean.FALSE;
+    protected boolean isDivestedWealth;
     protected String typeDivestedWealth;
 
-    protected boolean isWheelchairSurcharge = Boolean.FALSE;
+    protected boolean isWheelchairSurcharge;
+
+    protected LivingSituationType livingSituationType;
 
     public AnnonceCalculationElements(RpcDecisionAnnonceComplete annonce) {
 
@@ -83,7 +89,7 @@ public class AnnonceCalculationElements {
         children = annonce.getMembresFamilleWithDonneesFinanciere().getNombreEnfants();
 
         familySize = annonce.getRpcCalcul().getFamilySize();
-        
+
         realProperty = setZeroIfNull(annonce.getRpcCalcul().getFortuneImmobiliere());
         mortgageDebts = setZeroIfNull(annonce.getRpcCalcul().getDettesHypothequaires());
 
@@ -94,20 +100,29 @@ public class AnnonceCalculationElements {
         maintenanceFees = setZeroIfNull(annonce.getRpcCalcul().getFraisEntretien());
         interestFeesEligible = setZeroIfNull(annonce.getRpcCalcul().getInteretsHypothequairesFraisMaintenance());
         propertyIncome = setZeroIfNull(annonce.getRpcCalcul().getRevenusFortuneImmobiliere());
-         
+
         selfInhabitedProperty = setZeroIfNull(annonce.getRpcCalcul().getValeurImmeubleHabitation());
         selfInhabitedPropertyDeductible = setZeroIfNull(annonce.getRpcCalcul().getFranchiseImmeubleHabitation());
         usufructIncome = setZeroIfNull(annonce.getRpcCalcul().getUsufruit());
         rentalValue = setZeroIfNull(annonce.getRpcCalcul().getDepensesLoyerValeurLocativeAppHabite());
-        
+
         grossRental = setZeroIfNull(annonce.getRpcCalcul().getLoyerBrutEnCompte());
         rentCategory = annonce.getMembresFamilleWithDonneesFinanciere().isLoyerValeurLocative() ? XSD_RENTCATEGORY_RENTAL_VALUE
                 : XSD_RENTCATEGORY_ANNUAL_GROSS;
         rentGrossTotal = setZeroIfNull(annonce.resolveLoyerTotalBrut());
         rentGrossTotalPart = setZeroIfNull(annonce.getRpcCalcul().getPartLoyerTotatBrut());
         maxRent = setZeroIfNull(annonce.getRpcCalcul().getLoyerMaximum());
-        
-        
+
+        List<PersonElementsCalcul> personnesElementsCalcul = annonce.getPersonsElementsCalcul().getPersonsElementsCalcul();
+        if (personnesElementsCalcul.stream().anyMatch(personElementsCalcul -> personElementsCalcul.isUsufrutuier())) {
+            livingSituationType = LivingSituationType.USUFRUCTUARY;
+        } else if (personnesElementsCalcul.stream().anyMatch(personElementsCalcul -> personElementsCalcul.getMembreFamille().getDonneesPersonnelles().getMembreCongregation())) {
+            livingSituationType = LivingSituationType.CONGREGATION;
+        } else {
+            livingSituationType = LivingSituationType.NORMAL;
+        }
+
+
         if (!realProperty.isZero() || !mortgageDebtsRealProperty.isZero() || !mortgageInterest.isZero()
                 || !maintenanceFees.isZero() || !interestFeesEligible.isZero() || !propertyIncome.isZero()) {
             property = true;
@@ -125,12 +140,12 @@ public class AnnonceCalculationElements {
         } else {
             rent = false;
         }
-        
+
     }
 
 
     public Montant setZeroIfNull(Montant value) {
-        return value == null ? Montant.ZERO : value; 
+        return value == null ? Montant.ZERO : value;
     }
 
     public Montant getOtherWealth() {
@@ -180,7 +195,7 @@ public class AnnonceCalculationElements {
     public int getChildren() {
         return children;
     }
-   
+
     public Montant getSelfInhabitedProperty() {
         return selfInhabitedProperty;
     }
@@ -192,7 +207,7 @@ public class AnnonceCalculationElements {
     public Montant getRentalValue() {
         return rentalValue;
     }
-    
+
     public Montant getRealProperty() {
         return realProperty;
     }
@@ -248,7 +263,7 @@ public class AnnonceCalculationElements {
     public Montant getMaxRent() {
         return maxRent;
     }
-    
+
     public boolean isProperty() {
         return property;
     }
@@ -256,12 +271,14 @@ public class AnnonceCalculationElements {
     public boolean isHousingOwner() {
         return housingOwner;
     }
-    
+
     public boolean isRent() {
         return rent;
     }
 
-    public boolean isDivestedWealth(){return isDivestedWealth;}
+    public boolean isDivestedWealth() {
+        return isDivestedWealth;
+    }
 
     public String getTypeDivestedWealth() {
         return typeDivestedWealth;
@@ -269,6 +286,10 @@ public class AnnonceCalculationElements {
 
     public boolean isWheelchairSurcharge() {
         return isWheelchairSurcharge;
+    }
+
+    public LivingSituationType getLivingSituationType() {
+        return livingSituationType;
     }
 
 }

@@ -6,6 +6,7 @@ public class DonneesPersonnelles {
     private String noCaisseAvs;
     private String idDernierDomicileLegale;
     private Boolean isRepresentantLegal;
+    private Boolean isMembreCongregation;
 
     public StatusRefugieApatride getStatusRefugieApatride() {
         return statusRefugieApatride;
@@ -39,4 +40,11 @@ public class DonneesPersonnelles {
         this.isRepresentantLegal = isRepresentantLegal;
     }
 
+    public Boolean getMembreCongregation() {
+        return isMembreCongregation;
+    }
+
+    public void setMembreCongregation(Boolean membreCongregation) {
+        isMembreCongregation = membreCongregation;
+    }
 }

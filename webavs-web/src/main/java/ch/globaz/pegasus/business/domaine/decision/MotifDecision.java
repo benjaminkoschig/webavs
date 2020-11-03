@@ -35,11 +35,12 @@ public enum MotifDecision {
     ENFANT_PARENT_RENTIER(true),
     DELAI_CARENCE(true),
     RENONCIATION(true),
-    SEUIL_FORTUNE_DEPASSE(true);
+    SEUIL_FORTUNE_DEPASSE(true),
+    MEMBRE_CONGREGATION(true);
 
     private boolean isRefus;
 
-    private MotifDecision(boolean isRefus) {
+    MotifDecision(boolean isRefus) {
         this.isRefus = isRefus;
     }
 

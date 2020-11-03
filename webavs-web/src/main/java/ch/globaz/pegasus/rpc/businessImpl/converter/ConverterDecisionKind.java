@@ -14,8 +14,8 @@ import java.util.Set;
 
 public class ConverterDecisionKind {
 
-    private static Set<MotifDecision> motif5 = new HashSet<MotifDecision>();
-    private static Set<MotifDecision> motif1 = new HashSet<MotifDecision>();
+    private static Set<MotifDecision> motif5 = new HashSet<>();
+    private static Set<MotifDecision> motif1 = new HashSet<>();
     private static Set<MotifDecision> motif7 = new HashSet<>();
 
     static {
@@ -31,6 +31,7 @@ public class ConverterDecisionKind {
         motif1.add(MotifDecision.DROIT_INDEMNITE_AI);
         motif1.add(MotifDecision.ENFANT_PARENT_RENTIER);
         motif1.add(MotifDecision.DROIT_ENTRETIEN);
+        motif1.add(MotifDecision.MEMBRE_CONGREGATION);
 
         motif7.add(MotifDecision.SEUIL_FORTUNE_DEPASSE);
     }

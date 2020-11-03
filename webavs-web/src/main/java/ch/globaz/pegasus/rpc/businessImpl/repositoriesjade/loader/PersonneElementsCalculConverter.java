@@ -3,7 +3,10 @@ package ch.globaz.pegasus.rpc.businessImpl.repositoriesjade.loader;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.bienImmobilier.bienImmobilierNonPrincipale.BiensImmobiliersNonPrincipale;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.bienImmobilier.bienImmobilierServantHbitationPrincipale.BiensImmobiliersServantHabitationPrincipale;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenuActiviteLucrativeIndependante.RevenuActiviteLucrativeIndependante;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenueActiviteLucrativeDependante.RevenuActiviteLucrativeDependante;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenueHypothtique.RevenuHypothtique;
@@ -235,9 +238,15 @@ public class PersonneElementsCalculConverter {
                     .filtreByProprieteType(ProprieteType.USUFRUITIER, ProprieteType.DROIT_HABITATION)
                     .sumMontantValeurLocativeDH_RPC());
         }
-    
+
         perElCal.setUsufructIncome(usuIncome);
-        
+
+        BiensImmobiliersServantHabitationPrincipale biensImmobiliersPrincipaleUsufrutier = df.getBiensImmobiliersServantHbitationPrincipale().filtreByProprieteType(ProprieteType.USUFRUITIER);
+        BiensImmobiliersNonPrincipale biensImmobiliersNonPrincipaleUsufrutier = df.getBiensImmobiliersNonPrincipale().filtreByProprieteType(ProprieteType.USUFRUITIER);
+        if (biensImmobiliersPrincipaleUsufrutier.size() != 0 || biensImmobiliersNonPrincipaleUsufrutier.size() != 0) {
+            perElCal.setUsufrutuier(true);
+        }
+
         perElCal.setValeurLocativeProprietaire(propIncome);
 
         // Si les APi sont prisent en compte dans le calcul
