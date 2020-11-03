@@ -26,18 +26,97 @@
     </jaxb:bindings>
 
     <!-- package swap.xsd -->
-    <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0044-4-1f.xsd"
+    <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eahv-iv-2401-000501-1-1.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.swap.xsd"/>
+            <jaxb:package name="acor.ch.eahv_iv.xmlns.eahv_iv_2401_000501._1" />
         </jaxb:schemaBindings>
     </jaxb:bindings>
-
-    <!-- package swap.xsd -->
+    <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eahv-iv-2401-common-1-1.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="acor.ch.eahv_iv.xmlns.eahv_iv_2401_common._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eahv-iv-common-4-0.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="acor.ch.eahv_iv.xmlns.eahv_iv_common._4" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0006-2-0.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0006._2" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0007-5-0f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0007_f._5" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
     <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0008-3-0f.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor.swap.xsd"/>
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0008_f._3" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0010-5-0f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0010_f._5" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0010-6-0f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0010_f._6" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0011-7-0f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0011_f._7" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0044-3-0f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0044_f._3" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0044-4-1f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0044_f._4" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0046-3-0f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0046_f._3" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0058-4-0.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0058._4" />
+            <jaxb:nameXmlTransform>
+                <jaxb:elementName suffix="Element"/>
+            </jaxb:nameXmlTransform>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0097-1-0f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0097_f._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/swap/xsd/eCH-0135-1-0.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="acor.ch.ech.xmlns.ech_0135._1" />
         </jaxb:schemaBindings>
     </jaxb:bindings>
 
