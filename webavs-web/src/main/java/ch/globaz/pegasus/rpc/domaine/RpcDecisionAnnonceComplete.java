@@ -2,11 +2,14 @@ package ch.globaz.pegasus.rpc.domaine;
 
 import java.util.List;
 import ch.globaz.common.domaine.Montant;
+import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.domaine.demande.Demande;
 import ch.globaz.pegasus.business.domaine.droit.VersionDroit;
 import ch.globaz.pegasus.business.domaine.membreFamille.MembreFamilleWithDonneesFinanciere;
 import ch.globaz.pegasus.business.domaine.pca.PcaDecision;
 import ch.globaz.pegasus.business.domaine.pca.PcaGenre;
+import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext;
+import globaz.jade.client.util.JadeDateUtil;
 
 /**
  * Wrapper des données d'une decision dans l'annonce
@@ -87,7 +90,13 @@ public class RpcDecisionAnnonceComplete {
             if (isHome(personData, pcaDecision)) {
                 return RpcVitalNeedsCategory.NO_NEEDS;
             } else {
-                return RpcVitalNeedsCategory.CHILD;
+                String dateNaissance = personData.getMembreFamille().getPersonne().getDateNaissance();
+                String dateDebutPeriode = pcaDecision.getDecision().getDateDebut().getSwissValue();
+                    if (JadeDateUtil.getNbYearsBetween(dateNaissance, dateDebutPeriode) < 11) {
+                        return RpcVitalNeedsCategory.CHILD;
+                    }else{
+                        return RpcVitalNeedsCategory.TEENAGER;
+                    }
             }
         } else {
             if (isHome(personData, pcaDecision)) {

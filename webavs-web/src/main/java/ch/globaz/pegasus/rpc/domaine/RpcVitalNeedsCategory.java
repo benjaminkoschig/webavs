@@ -4,10 +4,14 @@ public enum RpcVitalNeedsCategory {
     NO_NEEDS,
     ALONE,
     COUPLE,
-    CHILD;
+    CHILD,
+    TEENAGER;
 
     public boolean isChild() {
         return RpcVitalNeedsCategory.CHILD.equals(this);
+    }
+    public boolean isTeenager(){
+        return RpcVitalNeedsCategory.TEENAGER.equals(this);
     }
 
     public boolean isCouple() {
@@ -21,4 +25,6 @@ public enum RpcVitalNeedsCategory {
     public boolean isNoNeed() {
         return RpcVitalNeedsCategory.NO_NEEDS.equals(this);
     }
+
+
 }
