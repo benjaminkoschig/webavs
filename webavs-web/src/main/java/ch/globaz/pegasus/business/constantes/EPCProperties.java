@@ -61,7 +61,8 @@ public enum EPCProperties implements IProperties {
     AFFICHAGE_FORCER_ANNULER("application.ForcerAnnuler.afficher"),
     RPC_SIMULATION("rpc.simulation"),
     REFORME_PC("activer.reforme.pc"),
-    DATE_REFORME_PC("date.reforme.pc");
+    DATE_REFORME_PC("date.reforme.pc"),
+    RPC_TEST_PREVALIDATION("rpc.test.prevalidation");
 
     private String property;
 

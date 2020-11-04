@@ -932,21 +932,30 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
             PegasusServiceLocator.getValidationDecisionService().checkAdresses(decisionApresCalcul);
         }
 
-        ListDecisionsSearch listSecisionsSearch = new ListDecisionsSearch();
-        listSecisionsSearch.setForVersionDroitApc(decisionApresCalcul.getVersionDroit().getId());
-        listSecisionsSearch.setForVersionDroitSup(decisionApresCalcul.getVersionDroit().getId());
-
-        List<String> decisions = new ArrayList<>();
-        listSecisionsSearch = PegasusServiceLocator.getDecisionService().searchDecisions(listSecisionsSearch);
-        for (JadeAbstractModel model : listSecisionsSearch.getSearchResults()) {
-            ListDecisions decision = ((ListDecisions) model);
-            decisions.add(decision.getDecisionHeader().getId());
+        Boolean testPlausiPrevalidation = null;
+        try {
+            testPlausiPrevalidation = EPCProperties.RPC_TEST_PREVALIDATION.getBooleanValue();
+        } catch (PropertiesException e) {
+            testPlausiPrevalidation = true;
         }
 
-        if (decisions.size() > 1) {
-            checkPlausi(decisions.toArray(new String[decisions.size()]));
-        } else {
-            checkPlausi(decisionApresCalcul.getDecisionHeader().getId());
+        if(testPlausiPrevalidation) {
+            ListDecisionsSearch listSecisionsSearch = new ListDecisionsSearch();
+            listSecisionsSearch.setForVersionDroitApc(decisionApresCalcul.getVersionDroit().getId());
+            listSecisionsSearch.setForVersionDroitSup(decisionApresCalcul.getVersionDroit().getId());
+
+            List<String> decisions = new ArrayList<>();
+            listSecisionsSearch = PegasusServiceLocator.getDecisionService().searchDecisions(listSecisionsSearch);
+            for (JadeAbstractModel model : listSecisionsSearch.getSearchResults()) {
+                ListDecisions decision = ((ListDecisions) model);
+                decisions.add(decision.getDecisionHeader().getId());
+            }
+
+            if (decisions.size() > 1) {
+                checkPlausi(decisions.toArray(new String[decisions.size()]));
+            } else {
+                checkPlausi(decisionApresCalcul.getDecisionHeader().getId());
+            }
         }
 
 
