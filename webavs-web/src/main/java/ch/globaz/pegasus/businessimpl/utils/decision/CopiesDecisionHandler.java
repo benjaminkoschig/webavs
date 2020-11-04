@@ -453,7 +453,7 @@ public class CopiesDecisionHandler {
      */
     private static boolean isHomePartiel(DecisionApresCalcul decision) throws JadeApplicationServiceNotAvailableException, JadePersistenceException {
         TupleDonneeRapport planDeCalcul = readPlanCalculRetenu(decision.getPcAccordee().getId());
-        return planDeCalcul.containsValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_SEJOUR_MOIS_PARTIEL_TOTAL);
+        return  planDeCalcul.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_SEJOUR_MOIS_PARTIEL_TOTAL) > 0;
     }
 
     /**
