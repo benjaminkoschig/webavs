@@ -1175,7 +1175,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
      */
     private void dertermineCalculs(Droit droit, List<PeriodePCAccordee> listePCAccordes, List<PeriodePCAccordee> listePCAccordesReforme,
                                    String dateFinPlageCalcul, String dateReforme) throws PropertiesException {
-        String dateDemande = droit.getDemande().getSimpleDemande().getDateDepot();
+        String dateDemande = JadeDateUtil.getFirstDateOfMonth(droit.getDemande().getSimpleDemande().getDateDebut());
         Boolean reforme = EPCProperties.REFORME_PC.getBooleanValue();
         if (JadeDateUtil.isDateBefore(dateFinPlageCalcul, dateReforme) || !reforme) {
             // calcul sur ancien calculateur uniquement
