@@ -792,17 +792,18 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
         for (DonneeInterneHomeVersement calculDonneesHome : homeVersementList) {
             String dateFin = JadeDateUtil.getLastDateOfMonth(calculDonneesHome.getDateFin());
             String dateDebut = JadeDateUtil.getFirstDateOfMonth(calculDonneesHome.getDateDebut());
-            Float montantAVerser = getMontantHome(calculDonneesHome.getMontantHomes(), 1);
-            Creancier creancier = getCreancier(mapCreancierDejaCreer, calculDonneesHome, montantAVerser, true);
+            BigDecimal montantAVerser = new BigDecimal(getMontantHome(calculDonneesHome.getMontantHomes(), 1));
+            BigDecimal montantAVerserArrondi = montantAVerser.setScale(0,RoundingMode.UP);
+            Creancier creancier = getCreancier(mapCreancierDejaCreer, calculDonneesHome, montantAVerserArrondi.floatValue(), true);
             CreanceAccordee creanceAccordee = new CreanceAccordee();
             SimpleCreanceAccordee simpleCreanceAccordee = new SimpleCreanceAccordee();
             simpleCreanceAccordee.setIdCreancier(creancier.getId());
             simpleCreanceAccordee.setIdPCAccordee(calculDonneesHome.getIdPca());
             Float montantPCMensuel = Float.parseFloat(calculDonneesHome.getMontantPCMensuel());
-            if (montantAVerser > montantPCMensuel) {
+            if (montantAVerserArrondi.floatValue() > montantPCMensuel) {
                 simpleCreanceAccordee.setMontant(montantPCMensuel.toString());
             } else {
-                simpleCreanceAccordee.setMontant(montantAVerser.toString());
+                simpleCreanceAccordee.setMontant(montantAVerserArrondi.toString());
             }
             creanceAccordee.setSimpleCreanceAccordee(simpleCreanceAccordee);
             PegasusServiceLocator.getCreanceAccordeeService().create(creanceAccordee);
