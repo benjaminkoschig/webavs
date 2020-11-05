@@ -21,6 +21,7 @@ public class PersonElementsCalcul {
     private Montant renteApi;
     private Montant renteIj;
     private boolean renteIsSansRente;
+    private boolean rentHasApi;
 
     private Montant revenuBruteActiviteLucrative;
 
@@ -444,5 +445,13 @@ public class PersonElementsCalcul {
 
     public void setUsufrutuier(boolean usufrutuier) {
         isUsufrutuier = usufrutuier;
+    }
+
+    public void setRentHasApi(boolean rentHasApi) {
+        this.rentHasApi = rentHasApi;
+    }
+
+    public boolean isRentHasApi() {
+        return rentHasApi;
     }
 }

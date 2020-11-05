@@ -256,6 +256,9 @@ public class PersonneElementsCalculConverter {
             perElCal.setRenteApi(Montant.ZERO_ANNUEL);
         }
 
+        // information s'il y a des rentes API même si pas en home
+        perElCal.setRentHasApi(!df.getApisAvsAi().sumRevenuAnnuel().isZero());
+
         return perElCal;
     }
 

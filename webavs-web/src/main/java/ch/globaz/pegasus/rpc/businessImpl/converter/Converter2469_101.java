@@ -229,8 +229,7 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
             PersonalCalculationElementsTypeRef1 pce1 = (PersonalCalculationElementsTypeRef1) pce;
             pce1.setChildrenCostsAssistanceNet(apce.getChildrenCostsAssitanceNet().longValue());
         }
-        //TODO nouveau champ à false par défaut
-//        pce.setDisabledAllowanceRecipient();
+        pce.setDisabledAllowanceRecipient(apce.getDisabledAllowanceRecipient());
         return pce;
     }
 

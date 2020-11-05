@@ -33,6 +33,7 @@ public class AnnoncePersonalCalculationElements {
     protected Montant disabledAllowance;
     protected Montant childrenCostsAssitanceNet;
     protected Montant individualPremiumReduction;
+    protected Boolean disabledAllowanceRecipient;
 
     protected AnnoncePensionCategory pensionCategory;
     protected AnnonceResidenceCosts residenceCosts;
@@ -69,6 +70,7 @@ public class AnnoncePersonalCalculationElements {
         hcEffectiveHelp = personData.getPrimeEffective();
         otherExpenses = personData.getAutresDepenses();
         childrenCostsAssitanceNet = personData.getFraisGarde();
+        disabledAllowanceRecipient = personData.isRentHasApi();
     }
 
     public Montant getHcLcaAllowance() {
@@ -138,4 +140,10 @@ public class AnnoncePersonalCalculationElements {
     public Montant getIndividualPremiumReduction() {
         return individualPremiumReduction;
     }
+
+    public Boolean getDisabledAllowanceRecipient() {
+        return disabledAllowanceRecipient;
+    }
+
+
 }
