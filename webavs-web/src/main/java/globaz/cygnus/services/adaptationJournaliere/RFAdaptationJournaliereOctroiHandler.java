@@ -1,5 +1,6 @@
 package globaz.cygnus.services.adaptationJournaliere;
 
+import ch.globaz.pegasus.business.constantes.EPCProperties;
 import globaz.cygnus.api.IRFTypesBeneficiairePc;
 import globaz.cygnus.api.adaptationsJournalieres.IRFAdaptationJournaliere;
 import globaz.cygnus.api.qds.IRFQd;
@@ -26,18 +27,13 @@ import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.tools.PRDateFormater;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
+
 import ch.globaz.pegasus.business.constantes.IPCDecision;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.vo.pcaccordee.PCAMembreFamilleVO;
@@ -173,8 +169,11 @@ public class RFAdaptationJournaliereOctroiHandler extends RFAdaptationJournalier
             }
 
             // Création du lien entre le dossier et la Qd de base
-            if (RFUtils.typeBeneficiairePlusieursPersonnesComprisesDansCalcul.contains(getContext()
-                    .getInfoDroitPcServiceData().getTypeBeneficiaire())) {
+            List<PCAMembreFamilleVO> personnesDansPlanCalcul = getContext().getInfoDroitPcServiceData().getPersonneDansPlanCalculList();
+            String dateReforme = EPCProperties.DATE_REFORME_PC.getValue();
+            String dateDebutPCA = getContext().getInfoDroitPcServiceData().getDateDebutPcaccordee();
+            boolean hasEnfantRentier =  personnesDansPlanCalcul.size() > 1 && personnesDansPlanCalcul.stream().anyMatch(each -> each.getIsRentier() && Objects.equals(IPCDroits.CS_ROLE_FAMILLE_ENFANT,each.getCsRoleFamillePC())) &&  !JadeDateUtil.isDateBefore(dateDebutPCA, dateReforme);
+            if (RFUtils.typeBeneficiairePlusieursPersonnesComprisesDansCalcul.contains(getContext().getInfoDroitPcServiceData().getTypeBeneficiaire()) || hasEnfantRentier) {
 
                 RFRetrieveInfoDroitPCServiceData infoDroitPcServiceData = getContext().getInfoDroitPcServiceData();
 
