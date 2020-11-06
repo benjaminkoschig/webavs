@@ -34,7 +34,7 @@ public class SimpleRetenuePayementChecker extends CorvusAbstractChecker {
         if (new Float(simpleRetenuePayement.getMontantTotalARetenir()) < new Float(
                 simpleRetenuePayement.getMontantRetenuMensuel())) {
             JadeThread
-                    .logError(
+                    .logWarn(
                             simpleRetenuePayement.getClass().getName(),
                             "SimpleRetenuePayementException: le montant de la retenue mensuel ne doit pas être supérieur au montant de la retenue totale");
 
