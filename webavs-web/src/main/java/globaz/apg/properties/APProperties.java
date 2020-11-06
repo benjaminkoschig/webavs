@@ -178,6 +178,13 @@ public enum APProperties implements IProperties {
         public boolean isValidValue(final String propertyValue) {
             return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
         }
+    },
+
+    RAPG_ISV5("rapg.isv5", "Annonce format v5") {
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
+        }
     }
 
     ;

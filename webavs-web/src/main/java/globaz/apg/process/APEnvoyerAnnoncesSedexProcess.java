@@ -4,14 +4,17 @@
 package globaz.apg.process;
 
 import globaz.apg.api.annonces.IAPAnnonce;
+import globaz.apg.business.service.APAnnoncesRapgService;
 import globaz.apg.db.annonces.APAnnonceAPG;
 import globaz.apg.db.annonces.APAnnonceAPGManager;
 import globaz.apg.pojo.APChampsAnnonce;
+import globaz.apg.properties.APProperties;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.GlobazJobQueue;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -94,8 +97,11 @@ public class APEnvoyerAnnoncesSedexProcess extends BProcess {
                 annoncesBd.put(annonce.getIdAnnonce(), annonce);
             }
 
+            boolean isv5 = APProperties.RAPG_ISV5.getBooleanValue().booleanValue();
+            APAnnoncesRapgService service = isv5 ? globaz.apg.ApgServiceLocator.getAnnoncesRapgServiceV5() : globaz.apg.ApgServiceLocator.getAnnoncesRapgService();
+
             // Envoi des annonces
-            annoncesToSend = globaz.apg.ApgServiceLocator.getAnnoncesRapgService().envoyerAnnonces(annoncesToSend,
+            annoncesToSend = service.envoyerAnnonces(annoncesToSend,
                     getMemoryLog(), getSession());
 
             getMemoryLog().logMessage(annoncesToSend.size() + " annonces envoyées !", FWMessage.INFORMATION,
