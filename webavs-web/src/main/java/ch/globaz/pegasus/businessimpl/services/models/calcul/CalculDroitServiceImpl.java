@@ -635,7 +635,9 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                             if (isHome(retenueAncienne.getSimpleRetenue().getIdTiersAdressePmt())) {
                                 mapOldHomeRetenues.put(retenueAncienne.getSimpleRetenue().getIdTiersAdressePmt()+""+retenueAncienne.getCsRoleFamillePC(), retenueAncienne);
                             }else{
-                                mapAutreRetenues.put(retenueAncienne.getSimpleRetenue().getIdTiersAdressePmt()+""+retenueAncienne.getCsRoleFamillePC(), model);
+                                if(JadeStringUtil.isBlankOrZero(retenueAncienne.getSimpleRetenue().getDateFinRetenue()) ||isDateAfterOrEquals(retenueAncienne.getSimpleRetenue().getDateFinRetenue(),PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt())){
+                                    mapAutreRetenues.put(retenueAncienne.getSimpleRetenue().getIdTiersAdressePmt()+""+retenueAncienne.getCsRoleFamillePC(), model);
+                                }
                             }
                         }
                     }
@@ -648,16 +650,17 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                     Float montantAVerser = getMontantHome(donneeInterneHomeVersementNew.getMontantHomes(), 1);
                     Float montantAVerserOld = Float.parseFloat(mapOldHomeRetenues.get(oldKey).getSimpleRetenue().getMontantRetenuMensuel());
                     if (montantAVerser.floatValue() == montantAVerserOld.floatValue()) {
+                        PcaRetenue ancienneRetenue = mapOldHomeRetenues.get(oldKey);
                         PcaRetenue retenue;
                         try {
-                            retenue = (PcaRetenue) JadePersistenceUtil.clone(mapOldHomeRetenues.get(oldKey));
+                            retenue = (PcaRetenue) JadePersistenceUtil.clone(ancienneRetenue);
                         } catch (JadeCloneModelException e) {
                             throw new PCAccordeeException("Unable to clone this PCA id: "
                                     + donneeInterneHomeVersementNew.getIdPca());
                         }
                         retenue.setIdPCAccordee(donneeInterneHomeVersementNew.getIdPca());
-                        retenue.getSimpleRetenue().setDateDebutRetenue(
-                                PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt());
+                            retenue.getSimpleRetenue().setDateDebutRetenue(
+                                    PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt());
                         PegasusServiceLocator.getRetenueService().createWithOutCheck(retenue);
                         donneeInterneHomeVersements.remove(donneeInterneHomeVersementNew);
                     }
@@ -672,8 +675,11 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                             + simplePCAccordee.getIdPCAccordee());
                 }
                 retenue.setIdPCAccordee(simplePCAccordee.getIdPCAccordee());
-                retenue.getSimpleRetenue().setDateDebutRetenue(
-                        PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt());
+                String dateProchainePmt =  PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt();
+               if(isDateBeforeOrEquals(retenue.getSimpleRetenue().getDateDebutRetenue(),dateProchainePmt)) {
+                   retenue.getSimpleRetenue().setDateDebutRetenue(
+                           PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt());
+               }
                 PegasusServiceLocator.getRetenueService().createWithOutCheck(retenue);
         }
 
@@ -1022,6 +1028,14 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
         return false;
 
     }
+    private boolean isDateBeforeOrEquals(String dateDebutDFH, String dateProchainPmt) {
+        if (JadeDateUtil.isDateBefore(dateProchainPmt, dateDebutDFH) || dateDebutDFH.equals(dateProchainPmt)) {
+            return true;
+        }
+        return false;
+
+    }
+
 
     /**
      * Fermer tout les retenues des pcas de l'ancien droit pour éviter un blocage de ceux qui ont des retenues sans dates de fins
@@ -1052,6 +1066,9 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                         for (JadeAbstractModel model : search.getSearchResults()) {
                             PcaRetenue retenue = (PcaRetenue) model;
                             if (JadeStringUtil.isBlankOrZero(retenue.getSimpleRetenue().getDateFinRetenue())) {
+                                if(isDateAfterOrEquals(retenue.getSimpleRetenue().getDateDebutRetenue(),dateProchainPaiement)){
+                                    retenue.getSimpleRetenue().setDateDebutRetenue(dateProchainPaiement);
+                                }
                                 retenue.getSimpleRetenue().setDateFinRetenue(dateProchainPaiement);
                                 PegasusServiceLocator.getRetenueService().updateWithoutCheck(retenue);
                             }
