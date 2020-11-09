@@ -1,9 +1,9 @@
 package globaz.apg.util;
 
-import ch.admin.cdc.seodor.core.dto.generated._1.GetServicePeriodsRequestType;
-import ch.eahv.seodor.eahv000101._1.AddressInformationType;
-import ch.eahv.seodor.eahv000101._1.InsurantDomicileType;
-import ch.eahv.seodor.eahv000101._1.InsurantType;
+import seodor.ch.eahv_iv.xmlns.eavh_iv_2014_000101._1.AddressInformationType;
+import seodor.ch.eahv_iv.xmlns.eavh_iv_2014_000101._1.InsurantDomicileType;
+import seodor.ch.eahv_iv.xmlns.eavh_iv_2014_000101._1.InsurantType;
+import seodor.ws.GetServicePeriodsRequestType;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 

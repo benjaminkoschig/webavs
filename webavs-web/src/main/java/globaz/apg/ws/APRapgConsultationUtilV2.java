@@ -1,7 +1,7 @@
 package globaz.apg.ws;
 
-import ch.admin.zas.rapg.webservice.consultation._1.RapgConsultation1;
-import ch.admin.zas.rapg.webservice.consultation._1.RapgConsultationService1;
+import ch.admin.zas.rapg.ws.consultation._2.RapgConsultation20;
+import ch.admin.zas.rapg.ws.consultation._2.RapgConsultationService20;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.CommonPropertiesUtils;
 import ch.globaz.common.properties.PropertiesException;
@@ -13,11 +13,11 @@ import globaz.jade.log.JadeLogger;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rapg.v1.ErreurMessageType;
-import rapg.v1.ch.eahv_iv.xmlns.eahv_iv_2015_000601._4.RegisterStatusRecordType;
-import rapg.v1.ch.eahv_iv.xmlns.eahv_iv_2015_common._4.DeliveryOfficeType;
-import rapg.v1.ws.RapgAnnoncesRequestType;
-import rapg.v1.ws.RapgAnnoncesResponseType;
+import rapg.v2.ErreurMessageType;
+import rapg.v2.ch.eahv_iv.xmlns.eahv_iv_2015_000601._5.RegisterStatusRecordType;
+import rapg.v2.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.DeliveryOfficeType;
+import rapg.v2.ws.RapgAnnoncesRequestType;
+import rapg.v2.ws.RapgAnnoncesResponseType;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -36,7 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class APRapgConsultationUtil {
+public class APRapgConsultationUtilV2 {
+
     private static final String SSL_SOCKET_FACTORY_ORACLE_JDK = "com.sun.xml.ws.transport.https.client.SSLSocketFactory";
     private static final String SSL_SOCKET_FACTORY_JAX_WS_RI = "com.sun.xml.internal.ws.transport.https.client.SSLSocketFactory";
     private static final Logger logger = LoggerFactory.getLogger(APRapgConsultationUtil.class);
@@ -48,7 +49,7 @@ public class APRapgConsultationUtil {
         String certType = CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_TYPE);
 
         //1) Create the service
-        RapgConsultation1 rapgConsultation;
+        RapgConsultation20 rapgConsultation;
         try {
             rapgConsultation = getRapgConsultation(session, urlRAPGWS, certFileName, certPassword, certType);
             JadeLogger.info(APRapgConsultationUtil.class, "Create request... ");
@@ -121,7 +122,7 @@ public class APRapgConsultationUtil {
         return request;
     }
 
-    private static RapgConsultation1 getRapgConsultation(BSession session, final String urlRAPGWS, final String certFileName, final String certPassword, String certType)
+    private static RapgConsultation20 getRapgConsultation(BSession session, final String urlRAPGWS, final String certFileName, final String certPassword, String certType)
             throws Exception {
         // Instantiate the service object generated from wsdl.
         String pathWsdl = CommonPropertiesUtils.getValue(CommonProperties.RAPG_WEBSERVICE_WSDL_PATH);
@@ -130,10 +131,10 @@ public class APRapgConsultationUtil {
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         URL wsdlLocation = classloader.getResource(pathWsdl);
         QName qName = new QName(nameSpace, name);
-        final RapgConsultationService1 rapgConsultationService = new RapgConsultationService1(wsdlLocation, qName);
+        final RapgConsultationService20 rapgConsultationService = new RapgConsultationService20(wsdlLocation, qName);
         //Getting the port. Entry point for the Webservice.
 
-        final RapgConsultation1 port = rapgConsultationService.getRapgConsultationPort1();
+        final RapgConsultation20 port = rapgConsultationService.getRapgConsultationPort20();
 
         // Set endpoint address (URL) of the webservice.
         if (StringUtils.isNotEmpty(urlRAPGWS)) {
@@ -156,7 +157,7 @@ public class APRapgConsultationUtil {
      * @param certFileName certFileName certificat filename with full path
      * @param certPassword certificat password
      */
-    private static void configureSSLOnTheClient(final RapgConsultation1 proxy, final String certFileName, final String certPassword, String certType) throws Exception {
+    private static void configureSSLOnTheClient(final RapgConsultation20 proxy, final String certFileName, final String certPassword, String certType) throws Exception {
 
         SSLContext sc = null;
         KeyStore ks = null;

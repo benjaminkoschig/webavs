@@ -1,7 +1,5 @@
 package globaz.apg.util;
 
-import ch.admin.cdc.seodor.core.dto.generated._1.GetServicePeriodsRequestType;
-import ch.admin.cdc.seodor.core.dto.generated._1.GetServicePeriodsResponseType;
 import ch.admin.zas.seodor.ws.service_periods._1.ServicePeriodsPort10;
 import ch.admin.zas.seodor.ws.service_periods._1.ServicePeriodsService10;
 import ch.globaz.common.domaine.Date;
@@ -19,6 +17,8 @@ import globaz.prestation.beans.PRPeriode;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import seodor.ws.GetServicePeriodsRequestType;
+import seodor.ws.GetServicePeriodsResponseType;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;

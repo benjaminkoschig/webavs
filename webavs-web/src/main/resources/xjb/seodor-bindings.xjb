@@ -1,0 +1,59 @@
+<jaxb:bindings xmlns:xs="http://www.w3.org/2001/XMLSchema"
+               xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <jaxb:bindings schemaLocation="../xsd/seodor/seodor-ws-1-0.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="seodor.ws"/>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/seodor/eCH-0007-6-0f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="seodor.ch.ech.xmlns.ech_0007_f._6"/>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/seodor/eCH-0008-3-0f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="seodor.ch.ech.xmlns.ech_0008_f._3"/>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/seodor/eCH-0010-7-0f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="seodor.ch.ech.xmlns.ech_0010_f._7"/>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/seodor/eCH-0044-4-1f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="seodor.ch.ech.xmlns.ech_0044_f._4"/>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/seodor/eCH-0046-5-0f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="seodor.ch.ech.xmlns.ech_0046_f._5"/>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/seodor/eCH-0058-5-0.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="seodor.ch.ech.xmlns.ech_0058._5"/>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+<!--    <jaxb:bindings schemaLocation="../xsd/seodor/eCH-0090-1-0.xsd"-->
+<!--                   node="//xs:schema">-->
+<!--        <jaxb:schemaBindings>-->
+<!--            <jaxb:package name="seodor.ch.ech.xmlns.ech_0090._1"/>-->
+<!--        </jaxb:schemaBindings>-->
+<!--    </jaxb:bindings>-->
+    <jaxb:bindings schemaLocation="../xsd/seodor/eavh-iv-2014-000101-1-0.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="seodor.ch.eahv_iv.xmlns.eavh_iv_2014_000101._1"/>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+</jaxb:bindings>

@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:rapg-ws="http://www.zas.admin.ch/xmlns/rapg-ws/1" xmlns:ech0058="http://www.ech.ch/xmlns/eCH-0058/4" xmlns:ech0044="http://www.ech.ch/xmlns/eCH-0044/2" xmlns:common="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-common/4" xmlns:eahv-iv-2015-000601="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-000601/4" xmlns:ofit-ws="http://www.ofit.admin.ch/xmlns/commun-ws/2" xmlns:eahv-iv-2015-000701="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-000701/4" targetNamespace="http://www.zas.admin.ch/xmlns/rapg-ws/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.0">
-	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/2" schemaLocation="./eCH-0044-2-0f.xsd"/>
-	<xs:import namespace="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-common/4" schemaLocation="./eahv-iv-2015-common-4-2.xsd"/>
-	<xs:import namespace="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-000601/4" schemaLocation="./eahv-iv-2015-000601-4-2.xsd"/>
-	<xs:import namespace="http://www.ofit.admin.ch/xmlns/commun-ws/2" schemaLocation="./ofit-commun-ws-2-0.xsd"/>
-	<xs:import namespace="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-000701/4" schemaLocation="./eahv-iv-2015-000701-4-2.xsd"/>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   xmlns:rapg-ws="http://www.zas.admin.ch/xmlns/rapg-ws/2"
+		   xmlns:ech0044="http://www.ech.ch/xmlns/eCH-0044/2"
+		   xmlns:common="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-common/5"
+		   xmlns:eahv-iv-2015-000601="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-000601/5"
+		   xmlns:eahv-iv-2015-000701="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-000701/5"
+		   xmlns:ofit-ws="http://www.ofit.admin.ch/xmlns/commun-ws/2"
+		   targetNamespace="http://www.zas.admin.ch/xmlns/rapg-ws/2" elementFormDefault="qualified" version="2.0">
+	
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0058/4" schemaLocation="../eCH-0058-4-0.xsd" />
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/2" schemaLocation="../eCH-0044-2-0f.xsd"/>
+	<xs:import namespace="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-common/5" schemaLocation="../v5/eahv-iv-2015-common-5-0.xsd"/>
+	<xs:import namespace="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-000601/5" schemaLocation="../v5/eahv-iv-2015-000601-5-0.xsd"/>
+	<xs:import namespace="http://www.ofit.admin.ch/xmlns/commun-ws/2" schemaLocation="../ofit-commun-ws-2-0.xsd"/>
+	<xs:import namespace="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-000701/5" schemaLocation="../v5/eahv-iv-2015-000701-5-0.xsd"/>
 	<xs:element name="rapgAnnoncesRequest" type="rapg-ws:rapgAnnoncesRequestType"/>
 	<xs:element name="rapgAnnoncesResponse" type="rapg-ws:rapgAnnoncesResponseType"/>
 	<xs:element name="rapgRegisterStatusRequest" type="rapg-ws:rapgRegisterStatusRequestType"/>

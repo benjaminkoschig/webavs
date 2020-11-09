@@ -1,35 +1,29 @@
 package globaz.apg.util;
 
-import ch.admin.cdc.rapg.core.dto.generated._1.RapgAnnoncesRequestType;
-import ch.admin.cdc.seodor.core.dto.generated._1.GetServicePeriodsRequestType;
-import ch.admin.cdc.seodor.core.dto.generated._1.GetServicePeriodsResponseType;
-import ch.admin.cdc.seodor.core.dto.generated._1.ServicePeriodsRequestType;
-import ch.eahv.rapg.common._4.DeliveryOfficeType;
-import ch.eahv.seodor.eahv000101._1.AddressInformationType;
-import ch.eahv.seodor.eahv000101._1.ContentType;
-import ch.eahv.seodor.eahv000101._1.InsurantDomicileType;
-import ch.eahv.seodor.eahv000101._1.InsurantType;
-import ch.globaz.common.domaine.Periode;
-import ch.globaz.perseus.business.constantes.CSChoixDecision;
-import globaz.globall.db.BSession;
-import globaz.phenix.util.WIRRDataBean;
-import globaz.prestation.beans.PRPeriode;
-import org.xml.sax.Locator;
-import ch.admin.cdc.seodor.core.dto.generated._1.HeaderType;
 import ch.globaz.common.properties.CommonProperties;
+import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
-import globaz.jade.client.util.JadeUUIDGenerator;
-import ch.ech.ech0058._5.SendingApplicationType;
-
+import globaz.prestation.beans.PRPeriode;
+import seodor.ch.eahv_iv.xmlns.eavh_iv_2014_000101._1.AddressInformationType;
+import seodor.ch.eahv_iv.xmlns.eavh_iv_2014_000101._1.ContentType;
+import seodor.ch.eahv_iv.xmlns.eavh_iv_2014_000101._1.InsurantDomicileType;
+import seodor.ch.eahv_iv.xmlns.eavh_iv_2014_000101._1.InsurantType;
+import seodor.ch.ech.xmlns.ech_0058._5.SendingApplicationType;
+import seodor.ws.GetServicePeriodsRequestType;
+import seodor.ws.GetServicePeriodsResponseType;
+import seodor.ws.HeaderType;
+import seodor.ws.ServicePeriodsRequestType;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.math.BigInteger;
-import java.util.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Objects;
 
 public class APGSeodorServiceMappingUtil {
 

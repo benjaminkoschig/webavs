@@ -8,7 +8,7 @@
 
   <wsdl:types>
     <xs:schema targetNamespace="http://www.zas.admin.ch/seodor/ws/service-periods/1" elementFormDefault="qualified">
-      <xs:import namespace="http://www.zas.admin.ch/xmlns/seodor-ws/1" schemaLocation="../xsd/seodor-ws-1-0.xsd"/>
+      <xs:import namespace="http://www.zas.admin.ch/xmlns/seodor-ws/1" schemaLocation="../../xsd/seodor/seodor-ws-1-0.xsd"/>
     </xs:schema>
   </wsdl:types>
 
