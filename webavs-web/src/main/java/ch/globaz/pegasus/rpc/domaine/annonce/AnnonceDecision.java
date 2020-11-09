@@ -67,7 +67,7 @@ public class AnnonceDecision {
         decisionKind = ConverterDecisionKind.convert(decision.getType(), decision.getMotif(), etatCalculFederal);
         // null pour les annonces partielles
         if (annonce.getVersionDroit() != null) {
-            decisionCause = ConverterDecisionCause.convert(annonce.getVersionDroit(), decision.getMotif());
+            decisionCause = ConverterDecisionCause.convert(annonce.getVersionDroit(), decision.getMotif(), pca.getReformePC());
             // FC4 = 1 Uniquement si demande initiale
             if (decisionCause.equals(BigInteger.valueOf(1)) && !getAnnonce().getVersionDroit().isDemandeInitiale()) {
                 decisionCause = BigInteger.valueOf(2);

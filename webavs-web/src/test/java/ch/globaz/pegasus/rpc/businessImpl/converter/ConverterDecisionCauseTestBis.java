@@ -15,10 +15,10 @@ public class ConverterDecisionCauseTestBis {
     public void testConvert() throws Exception {
         VersionDroit versionDroit = new VersionDroit("000001");
         versionDroit.setNumero(1);
-        assertThat(ConverterDecisionCause.convert(versionDroit, MotifDecision.AUTRE)).isEqualTo(BigInteger.valueOf(1));
+        assertThat(ConverterDecisionCause.convert(versionDroit, MotifDecision.AUTRE, false)).isEqualTo(BigInteger.valueOf(1));
         versionDroit.setNumero(2);
         try {
-            assertThat(ConverterDecisionCause.convert(versionDroit, MotifDecision.AUTRE)).isEqualTo(BigInteger.valueOf(1));
+            assertThat(ConverterDecisionCause.convert(versionDroit, MotifDecision.AUTRE, false)).isEqualTo(BigInteger.valueOf(1));
         } catch (Exception e) {
             assertThat(true);
         }
