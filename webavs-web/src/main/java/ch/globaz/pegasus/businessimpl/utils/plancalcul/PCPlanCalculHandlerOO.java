@@ -363,6 +363,9 @@ public class PCPlanCalculHandlerOO {
         data.addData("PAGE_NUMERO", LanguageResolver.resolveLibelleFromLabel(tiers.getLangueIso(), "PAGE", getSession()));
         if (!isRetenu) {
             data.addData("NON_RETENU", babelDoc.getTextes(1).getTexte(15).getDescription());
+            data.addData("NUMERO","5");
+        } else {
+            data.addData("NUMERO", "3");
         }
 
         data.addData("PCAL_HEADER", PRStringUtils.replaceString(babelDoc.getTextes(1).getTexte(4).getDescription(), PCPlanCalculHandlerOO.DECISION_DU, dacOO.getDecisionHeader().getSimpleDecisionHeader().getDateDecision()) + " " + toAppendToPcalHeader);
