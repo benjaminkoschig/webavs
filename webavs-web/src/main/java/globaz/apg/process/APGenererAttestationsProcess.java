@@ -279,11 +279,12 @@ public class APGenererAttestationsProcess extends BProcess {
                     isRestitution = true;
                 }
 
-                if (((Double.parseDouble(totalMontantAPG) != 0) && ((!totalMontantCotisations.isZero()) || (!totalMontantImpotSource
+                if (isPrestationLamat(prest) ||
+                        (((Double.parseDouble(totalMontantAPG) != 0) && ((!totalMontantCotisations.isZero()) || (!totalMontantImpotSource
                         .isZero())))
                         && ((((!isRestitution) && (totalMontantCotisations.isNegative())) || ((isRestitution) && (totalMontantCotisations
                         .isPositive()))) || ((!isRestitution) && (totalMontantImpotSource.isNegative())) || ((isRestitution) && (totalMontantImpotSource
-                        .isPositive())))) {
+                        .isPositive()))))) {
 
                     // Création de la clé
                     Key k = new Key();
@@ -445,6 +446,10 @@ public class APGenererAttestationsProcess extends BProcess {
 
         return true;
 
+    }
+
+    private boolean isPrestationLamat(APPrestation prest) {
+        return (Double.parseDouble(totalMontantAPG) != 0) && APTypeDePrestation.LAMAT.isCodeSystemEqual(prest.getGenre());
     }
 
     public String getAnnee() {
