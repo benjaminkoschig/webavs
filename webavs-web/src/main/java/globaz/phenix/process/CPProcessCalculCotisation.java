@@ -283,14 +283,12 @@ public final class CPProcessCalculCotisation extends BProcess {
      *
      * @param process
      *            BProcess le processus d'exécution
-     * @param cotisationMensuelle
+     * @param cotiMensuelle
      *            float
-     * @param idCotisationAssurance
+     * @param cotiAf
      *            String
      * @param taux
      *            string
-     * @param prorata
-     *            boolean
      * @param cotiAnnuelle
      *            String
      * @param cotiMinimum
@@ -476,7 +474,7 @@ public final class CPProcessCalculCotisation extends BProcess {
      *
      * @param process
      *            BProcess le processus d'exécution
-     * @param revenu
+     * @param revenuCi
      * @param exempte
      * @param saveDureeDecision
      * @param cotiMinimumAvs
@@ -660,7 +658,7 @@ public final class CPProcessCalculCotisation extends BProcess {
      *
      * @param process
      *            BProcess le processus d'exécution
-     * @param revenu
+     * @param revenuDet
      *            revenu de base pour le calcul
      */
     public void calculAFI(BProcess process, float revenuCi, String revenuDeterminant, float revenuDet, float revenuMin,
@@ -1062,7 +1060,7 @@ public final class CPProcessCalculCotisation extends BProcess {
      *
      * @param process
      *            BProcess le processus d'exécution
-     * @param plafond
+     * @param plafondAC1
      *            AC1
      * @param revenu
      *            à prendre en compte
@@ -1195,7 +1193,13 @@ public final class CPProcessCalculCotisation extends BProcess {
                     donneeCalcul.setSession(getSession());
                     String varCi = donneeCalcul.getMontant(coti.getIdDecision(), CPDonneesCalcul.CS_REV_CI);
                     if (JadeStringUtil.isEmpty(varCi)) {
-                        if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2011) {
+                        if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2021) {
+                            revenuCi = cotiEncode * (float) 9.4339;
+                        } else if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2020) {
+                            revenuCi = cotiEncode * (float) 9.4786;
+                        } else if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2016) {
+                            revenuCi = cotiEncode * (float) 9.7560;
+                        } else if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2011) {
                             revenuCi = cotiEncode * (float) 9.71;
                         } else {
                             revenuCi = cotiEncode * (float) 9.9;
@@ -1204,7 +1208,16 @@ public final class CPProcessCalculCotisation extends BProcess {
                         float ancienCi = Float.parseFloat(JANumberFormatter
                                 .deQuote(donneeCalcul.getMontant(coti.getIdDecision(), CPDonneesCalcul.CS_REV_CI)));
                         // Calcul du CI
-                        if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2011) {
+                        if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2021) {
+                            revenuCi = (Float.parseFloat(JANumberFormatter.deQuote(coti.getMontantAnnuel()))
+                                    - cotiEncode) * (float) 9.4339;
+                        } else if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2020) {
+                            revenuCi = (Float.parseFloat(JANumberFormatter.deQuote(coti.getMontantAnnuel()))
+                                    - cotiEncode) * (float) 9.4786;
+                        } else if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2016) {
+                            revenuCi = (Float.parseFloat(JANumberFormatter.deQuote(coti.getMontantAnnuel()))
+                                    - cotiEncode) * (float) 9.7560;
+                        } else if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2011) {
                             revenuCi = (Float.parseFloat(JANumberFormatter.deQuote(coti.getMontantAnnuel()))
                                     - cotiEncode) * (float) 9.71;
                         } else {
@@ -1217,7 +1230,13 @@ public final class CPProcessCalculCotisation extends BProcess {
                         revenuCi = ancienCi - revenuCi;
                     }
                 } else {
-                    if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2011) {
+                    if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2021) {
+                        revenuCi = cotiEncode * (float) 9.4339;
+                    } else if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2020) {
+                        revenuCi = cotiEncode * (float) 9.4786;
+                    } else if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2016) {
+                        revenuCi = cotiEncode * (float) 9.7560;
+                    } else if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2011) {
                         revenuCi = cotiEncode * (float) 9.71;
                     } else {
                         revenuCi = cotiEncode * (float) 9.9;
@@ -1361,7 +1380,7 @@ public final class CPProcessCalculCotisation extends BProcess {
      *
      * @param process
      *            BProcess le processus d'exécution
-     * @param revenuCI
+     * @param revenuCi
      */
     public LigneCotisation calculCPSAutre(BProcess process, float revenuCi, boolean exempte, int saveDureeDecision,
             boolean isEbusiness, boolean cotiMinimumAvs) {
@@ -1506,7 +1525,7 @@ public final class CPProcessCalculCotisation extends BProcess {
      *
      * @param process
      *            BProcess le processus d'exécution
-     * @param revenuCI
+     * @param revenuCi
      */
     public LigneCotisation calculCPSGeneral(BProcess process, float revenuCi, boolean exempte, int saveDureeDecision,
             boolean isEbusiness, boolean cotiMinimumAvs) {
@@ -2036,7 +2055,7 @@ public final class CPProcessCalculCotisation extends BProcess {
      *
      * @param process
      *            BProcess le processus d'exécution
-     * @param boolean revenuAFDifferent codeRevenuAf= 0 => calcul normal codeRevenuAf= 1 => calcul avs sans tenir compte
+     * @param codeRevenuAf codeRevenuAf= 0 => calcul normal codeRevenuAf= 1 => calcul avs sans tenir compte
      *            de revenuAutre et ne pas générer la coti AF codeRevenuAf= 2 => calcul uniquement de la coti AF en
      *            prenant
      *            en compte uniquement revenuAutre (=revenuAF)
@@ -2634,7 +2653,7 @@ public final class CPProcessCalculCotisation extends BProcess {
      *
      * @param process
      *            BProcess le processus d'exécution
-     * @param revenuCI
+     * @param revenuCi
      */
     public LigneCotisation calculLamat(BProcess process, float revenuCi, boolean exempte, boolean isEbusiness) {
         // Sous contrôle d'exception
@@ -3965,7 +3984,7 @@ public final class CPProcessCalculCotisation extends BProcess {
      *            BProcess le processus d'exécution
      * @param anneeRevenu
      *            String (année du revenu pour se positionner dans la table)
-     * @param revenu
+     * @param revenuDeterminant
      *            string
      * @return CPTableIndependant
      **/
@@ -4003,7 +4022,7 @@ public final class CPProcessCalculCotisation extends BProcess {
      *            BProcess le processus d'exécution
      * @param anneeRevenu
      *            String (année du revenu pour se positionner dans la table)
-     * @param revenu
+     * @param revenuDeterminant
      *            string
      * @return CPTableIndependant
      **/
@@ -4101,7 +4120,7 @@ public final class CPProcessCalculCotisation extends BProcess {
     /**
      * Insérez la description de la méthode ici. Date de création : (25.02.2002 13:55:43)
      *
-     * @param newIdJournal
+     * @param newIdDecision
      *            java.lang.String
      */
     public void setIdDecision(java.lang.String newIdDecision) {
