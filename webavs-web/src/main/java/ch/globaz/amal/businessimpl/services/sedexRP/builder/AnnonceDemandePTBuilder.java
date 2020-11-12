@@ -34,13 +34,14 @@ import java.util.GregorianCalendar;
  * @author sco
  */
 public class AnnonceDemandePTBuilder extends AnnonceBuilderAbstract {
-
+    private AnnonceInfosContainer annonceInfos = null;
     /**
      * Constructeur de la fabrique des demandes de prime tarifaire
      * @param simpleAnnonceSedex
      */
-    public AnnonceDemandePTBuilder(SimpleAnnonceSedex simpleAnnonceSedex) {
+    public AnnonceDemandePTBuilder(SimpleAnnonceSedex simpleAnnonceSedex, AnnonceInfosContainer annonceInfos) {
         this.simpleAnnonceSedex = simpleAnnonceSedex;
+        this.annonceInfos = annonceInfos;
     }
 
     @Override
@@ -105,7 +106,7 @@ public class AnnonceDemandePTBuilder extends AnnonceBuilderAbstract {
         HeaderType header = of.createHeaderType();
 
         header.setSenderId(JadeSedexService.getInstance().getSedexDirectory().getLocalEntry().getId());
-        header.setRecipientId(AMSedexRPUtil.getSedexIdFromIdTiers(simpleDetailFamille.getNoCaisseMaladie()));
+        header.setRecipientId(this.annonceInfos.getRecipientId());
         header.setMessageId(JadeUUIDGenerator.createStringUUID());
 
         header.setBusinessProcessId(getNextBusinessProcessId());

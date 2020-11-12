@@ -33,7 +33,7 @@ public final class AnnonceBuilderFactory {
             case ETAT_DECISIONS:
                 return new AnnonceDecreeInventoryBuilder(annonceSedex, annonceInfos);
             case DEMANDE_PRIME_TARIFAIRE:
-                return new AnnonceDemandePTBuilder(annonceSedex);
+                return new AnnonceDemandePTBuilder(annonceSedex, annonceInfos);
             default:
                 throw new AnnonceSedexException("Unknown subtype in AnnonceBuilderFactory.getAnnonceBuilder : "
                         + subType);
