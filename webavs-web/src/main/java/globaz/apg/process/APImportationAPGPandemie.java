@@ -1628,7 +1628,7 @@ public class APImportationAPGPandemie extends BProcess {
                 if ("ASSIM_EMPLOYEUR".equalsIgnoreCase(employementType)) {
                     return APGenreServiceAPG.DirigeantSalarieLimitationActivite.getCodeSysteme();
                 } else {
-                    return APGenreServiceAPG.IndependantPerteGains.getCodeSysteme();
+                    return APGenreServiceAPG.IndependantLimitationActivite.getCodeSysteme();
                 }
             case "FERMETURE":
                 if ("ASSIM_EMPLOYEUR".equalsIgnoreCase(employementType)) {
