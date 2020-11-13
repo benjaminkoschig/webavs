@@ -35,6 +35,15 @@ public class APDroitPanSituation extends BEntity  implements IPRCloneable {
     public static final String FIELDNAME_VALEUR_PERTE = "VALEUR_PERTE";
     public static final String FIELDNAME_UNIT_PERTE = "UNIT_PERTE";
 
+    // Vague 2
+    public static final String FIELDNAME_REFERENCE_DATA = "REFERENCE_DATA";
+    public static final String FIELDNAME_ACTIVITE_LIMITEE_DEBUT = "ACTIVITE_LIMITEE_DEBUT";
+    public static final String FIELDNAME_ACTIVITE_LIMITEE_FIN = "ACTIVITE_LIMITEE_FIN";
+    public static final String FIELDNAME_ACTIVITE_LIMITEE_START_DATE = "ACTIVITE_LIMITEE_START_DATE";
+    public static final String FIELDNAME_ACTIVITE_LIMITEE_LOSS_VALUE = "ACTIVITE_LIMITEE_LOSS_VALUE";
+    public static final String FIELDNAME_ACTIVITE_LIMITEE_UNIT = "ACTIVITE_LIMITEE_UNIT";
+    public static final String FIELDNAME_ACTIVITE_LIMITEE_REASON = "ACTIVITE_LIMITEE_REASON";
+
     private String idApgPandemie = "";
     private String idDroit = "";
     private boolean activiteSalarie = false;
@@ -62,6 +71,14 @@ public class APDroitPanSituation extends BEntity  implements IPRCloneable {
     private String valeurPerte = "";
     private String unitPerte = "";
 
+    // Vague 2
+    private String referenceData = "";
+    private String dateDebutActiviteLimitee = "";
+    private String dateFinActiviteLimitee = "";
+    private String startDateActiviteLimitee = "";
+    private String lossValueActiviteLimitee = "";
+    private String unitActiviteLimitee = "";
+    private String reasonActiviteLimitee = "";
 
     /**
      * @return la chaine TABLE_NAME
@@ -102,6 +119,14 @@ public class APDroitPanSituation extends BEntity  implements IPRCloneable {
         isTeletravail = statement.dbReadBoolean(APDroitPanSituation.FIELDNAME_IS_TELETRAVAIL);
         valeurPerte = statement.dbReadNumeric(APDroitPanSituation.FIELDNAME_VALEUR_PERTE);
         unitPerte = statement.dbReadString(APDroitPanSituation.FIELDNAME_UNIT_PERTE);
+
+        referenceData = statement.dbReadString(APDroitPanSituation.FIELDNAME_REFERENCE_DATA);
+        dateDebutActiviteLimitee = statement.dbReadDateAMJ(APDroitPanSituation.FIELDNAME_ACTIVITE_LIMITEE_DEBUT);
+        dateFinActiviteLimitee = statement.dbReadDateAMJ(APDroitPanSituation.FIELDNAME_ACTIVITE_LIMITEE_FIN);
+        startDateActiviteLimitee = statement.dbReadDateAMJ(APDroitPanSituation.FIELDNAME_ACTIVITE_LIMITEE_START_DATE);
+        lossValueActiviteLimitee = statement.dbReadNumeric(APDroitPanSituation.FIELDNAME_ACTIVITE_LIMITEE_LOSS_VALUE);
+        unitActiviteLimitee = statement.dbReadString(APDroitPanSituation.FIELDNAME_ACTIVITE_LIMITEE_UNIT);
+        reasonActiviteLimitee = statement.dbReadString(APDroitPanSituation.FIELDNAME_ACTIVITE_LIMITEE_REASON);
     }
 
     /**
@@ -149,8 +174,15 @@ public class APDroitPanSituation extends BEntity  implements IPRCloneable {
                 this._dbWriteBoolean(statement.getTransaction(), isTeletravail));
         statement.writeField(APDroitPanSituation.FIELDNAME_VALEUR_PERTE,
                 this._dbWriteNumeric(statement.getTransaction(), valeurPerte));
-        statement.writeField(APDroitPanSituation.FIELDNAME_UNIT_PERTE,
-                this._dbWriteString(statement.getTransaction(), unitPerte));
+        statement.writeField(APDroitPanSituation.FIELDNAME_UNIT_PERTE, this._dbWriteString(statement.getTransaction(), unitPerte));
+
+        statement.writeField(APDroitPanSituation.FIELDNAME_REFERENCE_DATA, this._dbWriteString(statement.getTransaction(), referenceData));
+        statement.writeField(APDroitPanSituation.FIELDNAME_ACTIVITE_LIMITEE_DEBUT, this._dbWriteDateAMJ(statement.getTransaction(), dateDebutActiviteLimitee));
+        statement.writeField(APDroitPanSituation.FIELDNAME_ACTIVITE_LIMITEE_FIN, this._dbWriteDateAMJ(statement.getTransaction(), dateFinActiviteLimitee));
+        statement.writeField(APDroitPanSituation.FIELDNAME_ACTIVITE_LIMITEE_START_DATE, this._dbWriteDateAMJ(statement.getTransaction(), startDateActiviteLimitee));
+        statement.writeField(APDroitPanSituation.FIELDNAME_ACTIVITE_LIMITEE_LOSS_VALUE, this._dbWriteNumeric(statement.getTransaction(), lossValueActiviteLimitee));
+        statement.writeField(APDroitPanSituation.FIELDNAME_ACTIVITE_LIMITEE_UNIT, this._dbWriteString(statement.getTransaction(), unitActiviteLimitee));
+        statement.writeField(APDroitPanSituation.FIELDNAME_ACTIVITE_LIMITEE_REASON, this._dbWriteString(statement.getTransaction(), reasonActiviteLimitee));
     }
 
     @Override
@@ -373,6 +405,62 @@ public class APDroitPanSituation extends BEntity  implements IPRCloneable {
 
     public void setSenderId(String senderId) {
         this.senderId = senderId;
+    }
+
+    public String getReferenceData() {
+        return referenceData;
+    }
+
+    public void setReferenceData(String referenceData) {
+        this.referenceData = referenceData;
+    }
+
+    public String getDateDebutActiviteLimitee() {
+        return dateDebutActiviteLimitee;
+    }
+
+    public void setDateDebutActiviteLimitee(String dateDebutActiviteLimitee) {
+        this.dateDebutActiviteLimitee = dateDebutActiviteLimitee;
+    }
+
+    public String getDateFinActiviteLimitee() {
+        return dateFinActiviteLimitee;
+    }
+
+    public void setDateFinActiviteLimitee(String dateFinActiviteLimitee) {
+        this.dateFinActiviteLimitee = dateFinActiviteLimitee;
+    }
+
+    public String getStartDateActiviteLimitee() {
+        return startDateActiviteLimitee;
+    }
+
+    public void setStartDateActiviteLimitee(String startDateActiviteLimitee) {
+        this.startDateActiviteLimitee = startDateActiviteLimitee;
+    }
+
+    public String getLossValueActiviteLimitee() {
+        return lossValueActiviteLimitee;
+    }
+
+    public void setLossValueActiviteLimitee(String lossValueActiviteLimitee) {
+        this.lossValueActiviteLimitee = lossValueActiviteLimitee;
+    }
+
+    public String getUnitActiviteLimitee() {
+        return unitActiviteLimitee;
+    }
+
+    public void setUnitActiviteLimitee(String unitActiviteLimitee) {
+        this.unitActiviteLimitee = unitActiviteLimitee;
+    }
+
+    public String getReasonActiviteLimitee() {
+        return reasonActiviteLimitee;
+    }
+
+    public void setReasonActiviteLimitee(String reasonActiviteLimitee) {
+        this.reasonActiviteLimitee = reasonActiviteLimitee;
     }
 }
 

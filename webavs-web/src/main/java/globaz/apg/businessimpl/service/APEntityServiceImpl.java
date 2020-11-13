@@ -95,7 +95,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
             demande = getOrCreateDemandeDuTiersPandemie(session, transaction, tierWrapper.getIdTiers());
             droit = creationDuDroitPandemie(viewBean, session, transaction, demande);
-            creerSituationProfSiIndependant(session, transaction, droit, tierWrapper.getIdTiers());
+            creerSituationProfPanSiIndependant(session, transaction, droit, tierWrapper.getIdTiers());
             situationFamiliale = creerSituationFamiliale(session, transaction);
 
             // Mise à jour de certaines entitées
@@ -209,6 +209,8 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         droitPandemieSituation.setDateDebutPerteGains(viewBean.getDateDebutPerteGains());
         droitPandemieSituation.setDateFinPerteGains(viewBean.getDateFinPerteGains());
         droitPandemieSituation.setRemarque(viewBean.getRemarqueRefus());
+        droitPandemieSituation.setDateDebutActiviteLimitee(viewBean.getDateDebutActiviteLimitee());
+        droitPandemieSituation.setDateFinActiviteLimitee(viewBean.getDateFinActiviteLimitee());
 
 
         if (modeEdition.equals(APModeEditionDroit.CREATION)) {
@@ -668,6 +670,196 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         }
         return situationProfessionnelle;
     }
+
+
+    @Override
+    public boolean creerSituationProfPanSelonDroitPrecedent(BSession session, BTransaction transaction, APDroitLAPG droit, String idTiers) throws Exception {
+        // Récupération du dernier droit
+        String idLastDroit = findLastIDDroitPandemie(session, transaction, idTiers);
+        // Récupération de(s) dernière(s) situation(s) prof
+        List<APSituationProfessionnelle> listLastSituationPro = findSituationProfessionnelleByIDDroit(session, transaction, idLastDroit);
+        // Création des situations professionnelles
+        List<APSituationProfessionnelle> listLastSituationProCrees = creerCopieSituationProf(session, transaction, listLastSituationPro, droit);
+        // Permet de savoir si au moins une situation professionnelle a été créée
+        return listLastSituationProCrees.size() > 0;
+    }
+
+    private String findLastIDDroitPandemie(BSession session, final BTransaction transaction, final String idTiers) throws Exception {
+        List<String> etat = new ArrayList<>();
+        etat.add(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
+        APDroitPanJointTiersManager manager = new APDroitPanJointTiersManager();
+        manager.setSession(session);
+        manager.setForIdTiers(idTiers);
+        manager.setToDateDebutDroit("17.09.2020");
+        manager.setToDateFinDroit("17.09.2020");
+        manager.setForEtatDroitIn(etat);
+        manager.setOrderByDroitDesc(true);
+        manager.find(transaction, BManager.SIZE_NOLIMIT);
+        List<APDroitPanJointTiers> droitsPandemie = manager.getContainer();
+        if (droitsPandemie.size() > 0) {
+            return droitsPandemie.get(0).getIdDroit();
+        }
+        return null;
+    }
+
+    private List<APSituationProfessionnelle> creerCopieSituationProf(BSession session, BTransaction transaction, List<APSituationProfessionnelle> listLastSituationPro, APDroitLAPG droit) throws Exception {
+        List<APSituationProfessionnelle> situProCrees = new ArrayList<>();
+        for (APSituationProfessionnelle sitPro : listLastSituationPro) {
+            // creation de la situation prof.
+            APSituationProfessionnelle newSituationProfessionnelle = new APSituationProfessionnelle();
+            newSituationProfessionnelle.setSession(session);
+            newSituationProfessionnelle.setIdDroit(droit.getIdDroit());
+            newSituationProfessionnelle.setIdEmployeur(sitPro.getIdEmployeur());
+            newSituationProfessionnelle.setIsIndependant(sitPro.getIsIndependant());
+            newSituationProfessionnelle.setIsVersementEmployeur(sitPro.getIsVersementEmployeur());
+            // on set la masse annuelle
+            newSituationProfessionnelle.setRevenuIndependant(sitPro.getRevenuIndependant());
+            newSituationProfessionnelle.wantCallValidate(false);
+            newSituationProfessionnelle.add(transaction);
+            situProCrees.add(newSituationProfessionnelle);
+        }
+        return situProCrees;
+    }
+
+    private List<APSituationProfessionnelle> findSituationProfessionnelleByIDDroit(BSession session, final BTransaction transaction, String idDroit) throws Exception {
+        List<APSituationProfessionnelle> listSituationPro = new ArrayList<>();
+        if (!JadeStringUtil.isBlankOrZero(idDroit)) {
+            APSituationProfessionnelleManager managerSitu = new APSituationProfessionnelleManager();
+            managerSitu.setSession(session);
+            managerSitu.setForIdDroit(idDroit);
+            managerSitu.find(transaction, BManager.SIZE_NOLIMIT);
+
+            for (int idSitPro = 0; idSitPro < managerSitu.size(); ++idSitPro) {
+                APSituationProfessionnelle sitPro = (APSituationProfessionnelle) managerSitu.get(idSitPro);
+                listSituationPro.add(sitPro);
+            }
+        }
+        return listSituationPro;
+    }
+
+    /**
+     * Si le tiers possède une affiliation personnelle en cours durant la période du droit, on creer une situation prof.
+     * avec cette affiliation
+     */
+    private APSituationProfessionnelle creerSituationProfPanSiIndependant(final BSession session,
+                                                                       final BTransaction transaction, final APDroitLAPG droit, final String idTiers) throws Exception {
+
+        APSituationProfessionnelle situationProfessionnelle = null;
+        String masseAnnuel = "0";
+
+        // on cherche les affiliations pour ce tiers
+
+        final IAFAffiliation affiliation = (IAFAffiliation) session.getAPIFor(IAFAffiliation.class);
+        affiliation.setISession(PRSession.connectSession(session, AFApplication.DEFAULT_APPLICATION_NAOS));
+        final Hashtable<Object, Object> param = new Hashtable<Object, Object>();
+        param.put(IAFAffiliation.FIND_FOR_IDTIERS, idTiers);
+        final IAFAffiliation[] affiliations = affiliation.findAffiliation(param);
+
+        if (affiliations.length > 0) {
+            for (int i = 0; i < affiliations.length; i++) {
+                final IAFAffiliation aff = affiliations[i];
+
+                // InfoRom531 : On ne reprend que les indépendants et indépendant + employeur.
+                if (IAFAffiliation.TYPE_AFFILI_INDEP.equals(aff.getTypeAffiliation())
+                        || IAFAffiliation.TYPE_AFFILI_INDEP_EMPLOY.equals(aff.getTypeAffiliation())) {
+
+                    if (!creerSituationProfPanSelonDroitPrecedent(session, transaction, droit, idTiers)) {
+
+                        final boolean dateDebutDroitGreaterOrEqualDateDebutApg = BSessionUtil
+                                .compareDateFirstGreaterOrEqual(session, droit.getDateDebutDroit(), aff.getDateDebut());
+                        final boolean dateDebutDroitLowerOrEqualDateFinApg = BSessionUtil
+                                .compareDateFirstLowerOrEqual(session, droit.getDateDebutDroit(), aff.getDateFin());
+                        // si l'affiliation est en cours
+                        if (dateDebutDroitGreaterOrEqualDateDebutApg && (dateDebutDroitLowerOrEqualDateFinApg
+                                || globaz.jade.client.util.JadeStringUtil.isEmpty(aff.getDateFin()))) {
+
+                            // creation de l'employeur
+                            final APEmployeur emp = new APEmployeur();
+                            emp.setSession(session);
+                            emp.setIdTiers(aff.getIdTiers());
+                            emp.setIdAffilie(aff.getAffiliationId());
+                            emp.add(transaction);
+
+                            // retrouver la masse annuelle dans les cotisations
+                            // pers.
+
+                            // on cherche la decision
+                            final ICPDecision decision = (ICPDecision) session.getAPIFor(ICPDecision.class);
+                            decision.setISession(PRSession.connectSession(session, "PHENIX"));
+
+                            final Hashtable<Object, Object> params = new Hashtable<Object, Object>();
+                            if (APGUtils.isTypeAllocationPandemie(droit.getGenreService())) {
+                                // Récupération des décisons de l'année précédente PANDEMIE
+                                params.put(ICPDecision.FIND_FOR_ANNEE_DECISION,
+                                        Integer.toString(new JADate(droit.getDateDebutDroit()).getYear() - 1));
+                            } else {
+                                params.put(ICPDecision.FIND_FOR_ANNEE_DECISION,
+                                        Integer.toString(new JADate(droit.getDateDebutDroit()).getYear()));
+
+                            }
+                            params.put(ICPDecision.FIND_FOR_ID_AFFILIATION, aff.getAffiliationId());
+                            params.put(ICPDecision.FIND_FOR_IS_ACTIVE, Boolean.TRUE);
+
+                            final ICPDecision[] decisions = decision.findDecisions(params);
+
+                            // on cherche les données calculées en fonction de la
+                            // decision
+                            if ((decisions != null) && (decisions.length > 0)) {
+
+                                final ICPDonneesCalcul donneesCalcul = (ICPDonneesCalcul) session
+                                        .getAPIFor(ICPDonneesCalcul.class);
+                                decision.setISession(PRSession.connectSession(session, "PHENIX"));
+
+                                final Hashtable<Object, Object> parms = new Hashtable<Object, Object>();
+                                parms.put(ICPDonneesCalcul.FIND_FOR_ID_DECISION, decisions[0].getIdDecision());
+                                if (APGUtils.isTypeAllocationPandemie(droit.getGenreService())) {
+                                    parms.put(ICPDonneesCalcul.FIND_FOR_ID_DONNEES_CALCUL, ICPDonneesCalcul.CS_REV_NET);
+                                } else {
+                                    parms.put(ICPDonneesCalcul.FIND_FOR_ID_DONNEES_CALCUL, ICPDonneesCalcul.CS_REV_CI);
+                                }
+
+                                final ICPDonneesCalcul[] donneesCalculs = donneesCalcul.findDonneesCalcul(parms);
+
+                                if ((donneesCalculs != null) && (donneesCalculs.length > 0)) {
+                                    masseAnnuel = donneesCalculs[0].getMontant();
+                                }
+                            }
+
+                            // creation de la situation prof.
+                            situationProfessionnelle = new APSituationProfessionnelle();
+                            situationProfessionnelle.setSession(session);
+                            situationProfessionnelle.setIdDroit(droit.getIdDroit());
+                            situationProfessionnelle.setIdEmployeur(emp.getIdEmployeur());
+                            situationProfessionnelle.setIsIndependant(Boolean.TRUE);
+                            situationProfessionnelle.setIsVersementEmployeur(Boolean.TRUE);
+                            // si pas "non-actif" on donne les allocations
+                            // d'exploitation
+                            if (!IAFAffiliation.TYPE_AFFILI_NON_ACTIF.equals(aff.getTypeAffiliation())) {
+
+                                // pas d'allocations d'exploitation si pour un droit maternité
+                                if (!IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())
+                                        && !APGUtils.isTypeAllocationPandemie(droit.getGenreService())
+                                        && !APGUtils.isTypeAllocationJourIsole(droit.getGenreService())) {
+                                    situationProfessionnelle.setIsAllocationExploitation(Boolean.TRUE);
+                                }
+                            }
+
+                            // on set la masse annuelle
+                            situationProfessionnelle.setRevenuIndependant(masseAnnuel);
+                            situationProfessionnelle.wantCallValidate(false);
+                            situationProfessionnelle.add(transaction);
+                        }
+                    }else{
+                        // Si des situations professionnelles sont trouvées dans le dernier droit pandémie et ont été créées
+                        // dans le nouveau droit, alors pas besoin d'itérer sur les affiliations, tout a été créés
+                        return situationProfessionnelle;
+                    }
+                }
+            }
+        }
+        return situationProfessionnelle;
+    }
+
 
     private boolean doMoreTestOnControlNumber(final String genreService, final boolean isDuplicata) {
         final int intValue = Integer.valueOf(genreService);

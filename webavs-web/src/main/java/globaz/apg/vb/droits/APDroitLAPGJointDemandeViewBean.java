@@ -103,7 +103,8 @@ public class APDroitLAPGJointDemandeViewBean extends APDroitLAPGJointDemande imp
     }
 
     public Vector getGenreDroitData() {
-        Vector genresDroit = PRCodeSystem.getLibellesPourGroupe(IAPDroitLAPG.CS_GROUPE_GENRE_SERVICE_APG, getSession());
+        Vector genresDroit = PRCodeSystem.getLibellesEtCodePourGroupe(IAPDroitLAPG.CS_GROUPE_GENRE_SERVICE_APG, getSession());
+
         for(int i=0; i<genresDroit.size(); i++){
             String[] a = (String[]) genresDroit.get(i);
             if(!APGUtils.isTypeAllocationPandemie(a[0])){

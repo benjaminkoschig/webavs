@@ -29,6 +29,16 @@ public interface APEntityService extends JadeApplicationService {
 
     APDroitPanSituation creerDroitPanSituation(BSession session, BTransaction transaction, APDroitPanSituationViewBean viewBean);
 
+    /** Recherche si le tiers possède des droits pandémie datant d'avant la 2ème vague (<17.09.2020) et si c'est le cas, la
+     * méthode va récupérer la ou les situations profesionnelles de cet ancien droit et les créer pour le nouveau droit (en paramètre).
+     * Si des situations professionnelles sont créées pour le nouveau droit, alors on retourne TRUE, sinon FALSE
+     * @param transaction
+     * @param droit
+     * @param idTiers
+     * @return TRUE si des situations professionnelles ont été créées pour le droit passé en paramètre
+     */
+    boolean creerSituationProfPanSelonDroitPrecedent(BSession session, final BTransaction transaction, final APDroitLAPG droit, final String idTiers) throws Exception;
+
     /**
      * Retourne la demande lié au droit LAPG
      * 

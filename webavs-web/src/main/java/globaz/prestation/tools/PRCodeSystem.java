@@ -216,6 +216,26 @@ public class PRCodeSystem {
         }
     }
 
+    public static final Vector getLibellesEtCodePourGroupe(String groupeCodes, BSession session) {
+        try {
+            // on récupére la liste de tous les codes systèmes
+            FWParametersCodeManager mgr = FWTranslation.getSystemCodeList(groupeCodes, session);
+            Vector retValue = new Vector(mgr.size() + 2);
+
+            // ajout des codes systemes standards
+            for (int idCode = 0; idCode < mgr.size(); ++idCode) {
+                FWParametersSystemCode code = (FWParametersSystemCode) mgr.getEntity(idCode);
+
+                retValue.add(new String[] { code.getIdCode(), code.getCurrentCodeUtilisateur().getLibelle() + " - " +
+                        code.getCurrentCodeUtilisateur().getCodeUtilisateur() });
+            }
+
+            return retValue;
+        } catch (Exception e) {
+            return new Vector();
+        }
+    }
+
     /**
      * Renvoi une map avec comme clé les traductions (dans la langue de la session) et comme valeurs le numéros de codes
      * systèmes.<br/>

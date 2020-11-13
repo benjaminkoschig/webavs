@@ -405,7 +405,7 @@ public abstract class Rule implements APRuleDBDataProvider {
     }
 
     /**
-     * récupère le délai selon le genre de service
+     * récupère les jours de carence selon le genre de service
      * @param listPeriode
      */
     protected int getDelai(List<APPeriodeComparable> listPeriode, String genreService) throws Exception {
@@ -426,6 +426,15 @@ public abstract class Rule implements APRuleDBDataProvider {
                     valeur = APParameter.INDEPENDANT_PERTE_DE_GAIN_MAX.getParameterName();break;
                 case IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE:
                     valeur = APParameter.INDEPENDANT_JOURS_SANS_INDEMISATION.getParameterName();break;
+                case IAPDroitLAPG.CS_INDEPENDANT_FERMETURE:
+                case IAPDroitLAPG.CS_INDEPENDANT_MANIFESTATION_ANNULEE:
+                case IAPDroitLAPG.CS_INDEPENDANT_LIMITATION_ACTIVITE:
+                    valeur = APParameter.INDEPENDANT_JOURS_SANS_INDEMISATION.getParameterName();break;
+                case IAPDroitLAPG.CS_GARDE_PARENTALE_17_09_20:
+                case IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20:
+                    valeur = APParameter.GARDE_PARENTAL_JOURS_SANS_IDEMNISATION.getParameterName();break;
+                case IAPDroitLAPG.CS_QUARANTAINE_17_09_20:
+                    valeur = APParameter.QUARANTAINE_JOURS_SANS_INDEMISATION.getParameterName();break;
                 default:
                     valeur = "";
             }

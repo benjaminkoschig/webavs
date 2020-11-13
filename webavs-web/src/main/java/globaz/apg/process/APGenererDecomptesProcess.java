@@ -555,7 +555,8 @@ public class APGenererDecomptesProcess extends BProcess {
                 } else {
                     droitLAPG.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
                 }
-            } else if (Arrays.asList(IAPDroitLAPG.CS_QUARANTAINE).contains(droitLAPG.getGenreService())) {
+            } else if (Arrays.asList(IAPDroitLAPG.CS_QUARANTAINE).contains(droitLAPG.getGenreService())
+                || Arrays.asList(IAPDroitLAPG.CS_QUARANTAINE_17_09_20).contains(droitLAPG.getGenreService())) {
                 final APPrestationManager prestationManager = new APPrestationManager();
                 prestationManager.setSession(session);
                 prestationManager.setForIdDroit(droitLAPG.getIdDroit());

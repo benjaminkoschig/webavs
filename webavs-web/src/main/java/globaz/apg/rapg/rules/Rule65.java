@@ -1,5 +1,7 @@
 package globaz.apg.rapg.rules;
 
+import globaz.apg.db.droits.APDroitLAPG;
+import globaz.apg.db.droits.APDroitLAPGManager;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.droits.APSituationProfessionnelleManager;
 import globaz.apg.enums.APGenreServiceAPG;
@@ -8,6 +10,7 @@ import globaz.apg.pojo.APChampsAnnonce;
 import globaz.apg.properties.APParameter;
 import globaz.globall.db.BManager;
 import globaz.globall.db.FWFindParameter;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import org.safehaus.uuid.Logger;
 
@@ -22,6 +25,8 @@ import java.math.BigDecimal;
  *
  */
 public class Rule65 extends Rule {
+
+    private static final String dateMax = "16.09.2020";
 
     /**
      * @param errorCode
@@ -39,9 +44,23 @@ public class Rule65 extends Rule {
     @Override
     public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException {
         String serviceType = champsAnnonce.getServiceType();
+        boolean isTestUniquementMin = false;
 
-        if (serviceType.equals(APGenreServiceAPG.IndependantPerteGains.getCodePourAnnonce())) {
+        if (serviceType.equals(APGenreServiceAPG.IndependantPerteGains.getCodePourAnnonce())
+        || serviceType.equals(APGenreServiceAPG.IndependantFermeture.getCodePourAnnonce())
+        || serviceType.equals(APGenreServiceAPG.IndependantLimitationActivite.getCodePourAnnonce())) {
             try {
+
+                APDroitLAPGManager mng = new APDroitLAPGManager();
+                mng.setSession(getSession());
+                mng.setForIdDroit(champsAnnonce.getIdDroit());
+                mng.find(BManager.SIZE_USEDEFAULT);
+                String dateDebut = mng.size() > 0 ? ((APDroitLAPG) mng.get(0)).getDateDebutDroit() : champsAnnonce.getStartOfPeriod();
+
+                // le max ne doit plus être vérifié aprés le 16.09.2020
+                if(JadeDateUtil.isDateBefore(dateMax, dateDebut)) {
+                    isTestUniquementMin = true ;
+                }
 
 
                 final APSituationProfessionnelleManager manager = new APSituationProfessionnelleManager();
@@ -53,7 +72,7 @@ public class Rule65 extends Rule {
                     APSituationProfessionnelle sitPro = (APSituationProfessionnelle) manager.get(idSitPro);
                     if(sitPro.getIsIndependant()
                             && (JadeStringUtil.isBlankOrZero(sitPro.getRevenuIndependant())
-                            || !isDansInterval(new BigDecimal(sitPro.getRevenuIndependant())))) {
+                            || !isDansInterval(new BigDecimal(sitPro.getRevenuIndependant()), isTestUniquementMin))) {
                         return false;
                     }
                 }
@@ -65,7 +84,7 @@ public class Rule65 extends Rule {
         return true;
     }
 
-    private boolean isDansInterval(BigDecimal revenu) throws Exception {
+    private boolean isDansInterval(BigDecimal revenu, boolean isTestUniquementMin) throws Exception {
         BigDecimal min = new BigDecimal(
                 FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(), "1",
                         APParameter.REVENU_INDEPENDANT_MIN.getParameterName(),
@@ -75,8 +94,12 @@ public class Rule65 extends Rule {
                         APParameter.REVENU_INDEPENDANT_MAX.getParameterName(),
                         "0", "", 0));
 
+        if(isTestUniquementMin){
+            return revenu.compareTo(min) >= 0;
+        } else {
         return revenu.compareTo(min) >= 0
                 && revenu.compareTo(max) <= 0 ;
+        }
 
     }
 

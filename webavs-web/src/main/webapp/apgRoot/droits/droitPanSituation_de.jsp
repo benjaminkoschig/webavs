@@ -64,7 +64,7 @@
         document.getElementById("genreService").disabled = true;
         document.getElementById("email").disabled = true;
 
-        <%if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_GARDE_PARENTALE)) {%>
+        <%if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_GARDE_PARENTALE) || StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_GARDE_PARENTALE_17_09_20)) {%>
         document.getElementById("categorieEntreprise").disabled = true;
         document.getElementById("categorieEntrepriseLibelle").disabled = true;
         document.getElementById("quarantaineOrdonnee").disabled = true;
@@ -76,7 +76,9 @@
         document.getElementById("motifGardeHandicap").disabled = true;
         document.getElementById("dateDebutPerteGains").disabled = true;
         document.getElementById("dateFinPerteGains").disabled = true;
-        <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP)) { %>
+        document.getElementById("dateDebutActiviteLimitee").disabled = true;
+        document.getElementById("dateFinActiviteLimitee").disabled = true;
+        <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP) || StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20)) { %>
         document.getElementById("categorieEntreprise").disabled = true;
         document.getElementById("categorieEntrepriseLibelle").disabled = true;
         document.getElementById("quarantaineOrdonnee").disabled = true;
@@ -88,7 +90,9 @@
         document.getElementById("dateDebutPerteGains").disabled = true;
         document.getElementById("dateFinPerteGains").disabled = true;
         document.getElementById("motifGarde").disabled = true;
-        <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_QUARANTAINE)) { %>
+        document.getElementById("dateDebutActiviteLimitee").disabled = true;
+        document.getElementById("dateFinActiviteLimitee").disabled = true;
+        <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_QUARANTAINE) || StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_QUARANTAINE_17_09_20)) { %>
         document.getElementById("categorieEntreprise").disabled = true;
         document.getElementById("categorieEntrepriseLibelle").disabled = true;
         document.getElementById("motifGarde").disabled = true;
@@ -99,6 +103,8 @@
         document.getElementById("dateFinManifAnnulee").disabled = true;
         document.getElementById("dateDebutPerteGains").disabled = true;
         document.getElementById("dateFinPerteGains").disabled = true;
+        document.getElementById("dateDebutActiviteLimitee").disabled = true;
+        document.getElementById("dateFinActiviteLimitee").disabled = true;
         <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE)) { %>
         document.getElementById("motifGarde").disabled = true;
         document.getElementById("motifGardeHandicap").disabled = true;
@@ -106,7 +112,9 @@
         document.getElementById("quarantaineOrdonneePar").disabled = true;
         document.getElementById("dateDebutPerteGains").disabled = true;
         document.getElementById("dateFinPerteGains").disabled = true;
-        <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE)) { %>
+        document.getElementById("dateDebutActiviteLimitee").disabled = true;
+        document.getElementById("dateFinActiviteLimitee").disabled = true;
+        <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE) || StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_INDEPENDANT_MANIFESTATION_ANNULEE) || StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_DIRIGEANT_SALARIE_MANIFESTATION_ANNULEE)) { %>
         document.getElementById("motifGarde").disabled = true;
         document.getElementById("motifGardeHandicap").disabled = true;
         document.getElementById("quarantaineOrdonnee").disabled = true;
@@ -115,6 +123,8 @@
         document.getElementById("dateFinPerteGains").disabled = true;
         document.getElementById("dateDebutFermeture").disabled = true;
         document.getElementById("dateFinFermeture").disabled = true;
+        document.getElementById("dateDebutActiviteLimitee").disabled = true;
+        document.getElementById("dateFinActiviteLimitee").disabled = true;
         <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS)) { %>
         document.getElementById("motifGarde").disabled = true;
         document.getElementById("motifGardeHandicap").disabled = true;
@@ -124,6 +134,30 @@
         document.getElementById("dateFinManifAnnulee").disabled = true;
         document.getElementById("dateDebutFermeture").disabled = true;
         document.getElementById("dateFinFermeture").disabled = true;
+        document.getElementById("dateDebutActiviteLimitee").disabled = true;
+        document.getElementById("dateFinActiviteLimitee").disabled = true;
+        <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_INDEPENDANT_FERMETURE) || StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_DIRIGEANT_SALARIE_FERMETURE)) { %>
+        document.getElementById("motifGarde").disabled = true;
+        document.getElementById("motifGardeHandicap").disabled = true;
+        document.getElementById("quarantaineOrdonnee").disabled = true;
+        document.getElementById("quarantaineOrdonneePar").disabled = true;
+        document.getElementById("dateDebutPerteGains").disabled = true;
+        document.getElementById("dateFinPerteGains").disabled = true;
+        document.getElementById("dateDebutManifAnnulee").disabled = true;
+        document.getElementById("dateFinManifAnnulee").disabled = true;
+        document.getElementById("dateDebutActiviteLimitee").disabled = true;
+        document.getElementById("dateFinActiviteLimitee").disabled = true;
+        <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_INDEPENDANT_LIMITATION_ACTIVITE) || StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_DIRIGEANT_SALARIE_LIMITATION_ACTIVITE)) { %>
+        document.getElementById("motifGarde").disabled = true;
+        document.getElementById("motifGardeHandicap").disabled = true;
+        document.getElementById("quarantaineOrdonnee").disabled = true;
+        document.getElementById("quarantaineOrdonneePar").disabled = true;
+        document.getElementById("dateDebutManifAnnulee").disabled = true;
+        document.getElementById("dateFinManifAnnulee").disabled = true;
+        document.getElementById("dateDebutFermeture").disabled = true;
+        document.getElementById("dateFinFermeture").disabled = true;
+        document.getElementById("dateDebutPerteGains").disabled = true;
+        document.getElementById("dateFinPerteGains").disabled = true;
         <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_SALARIE_EVENEMENTIEL)) { %>
         for (i = 0; i < document.forms[0].length; i++) {
             document.forms[0].elements[i].disabled = true;
@@ -200,7 +234,7 @@
         document.getElementById("genreService").disabled = true;
         document.getElementById("email").disabled = true;
 
-        <%if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_GARDE_PARENTALE)) {%>
+        <%if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_GARDE_PARENTALE) || StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_GARDE_PARENTALE_17_09_20)) {%>
         document.getElementById("categorieEntreprise").disabled = true;
         document.getElementById("categorieEntrepriseLibelle").disabled = true;
         document.getElementById("quarantaineOrdonnee").disabled = true;
@@ -212,7 +246,9 @@
         document.getElementById("motifGardeHandicap").disabled = true;
         document.getElementById("dateDebutPerteGains").disabled = true;
         document.getElementById("dateFinPerteGains").disabled = true;
-        <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP)) { %>
+        document.getElementById("dateDebutActiviteLimitee").disabled = true;
+        document.getElementById("dateFinActiviteLimitee").disabled = true;
+        <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP) || StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20)) { %>
         document.getElementById("categorieEntreprise").disabled = true;
         document.getElementById("categorieEntrepriseLibelle").disabled = true;
         document.getElementById("quarantaineOrdonnee").disabled = true;
@@ -224,7 +260,9 @@
         document.getElementById("dateDebutPerteGains").disabled = true;
         document.getElementById("dateFinPerteGains").disabled = true;
         document.getElementById("motifGarde").disabled = true;
-        <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_QUARANTAINE)) { %>
+        document.getElementById("dateDebutActiviteLimitee").disabled = true;
+        document.getElementById("dateFinActiviteLimitee").disabled = true;
+        <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_QUARANTAINE) || StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_QUARANTAINE_17_09_20)) { %>
         document.getElementById("categorieEntreprise").disabled = true;
         document.getElementById("categorieEntrepriseLibelle").disabled = true;
         document.getElementById("motifGarde").disabled = true;
@@ -235,6 +273,8 @@
         document.getElementById("dateFinManifAnnulee").disabled = true;
         document.getElementById("dateDebutPerteGains").disabled = true;
         document.getElementById("dateFinPerteGains").disabled = true;
+        document.getElementById("dateDebutActiviteLimitee").disabled = true;
+        document.getElementById("dateFinActiviteLimitee").disabled = true;
         <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE)) { %>
         document.getElementById("motifGarde").disabled = true;
         document.getElementById("motifGardeHandicap").disabled = true;
@@ -242,7 +282,9 @@
         document.getElementById("quarantaineOrdonneePar").disabled = true;
         document.getElementById("dateDebutPerteGains").disabled = true;
         document.getElementById("dateFinPerteGains").disabled = true;
-        <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE)) { %>
+        document.getElementById("dateDebutActiviteLimitee").disabled = true;
+        document.getElementById("dateFinActiviteLimitee").disabled = true;
+        <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE) || StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_INDEPENDANT_MANIFESTATION_ANNULEE)  || StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_DIRIGEANT_SALARIE_MANIFESTATION_ANNULEE)) { %>
         document.getElementById("motifGarde").disabled = true;
         document.getElementById("motifGardeHandicap").disabled = true;
         document.getElementById("quarantaineOrdonnee").disabled = true;
@@ -251,6 +293,8 @@
         document.getElementById("dateFinPerteGains").disabled = true;
         document.getElementById("dateDebutFermeture").disabled = true;
         document.getElementById("dateFinFermeture").disabled = true;
+        document.getElementById("dateDebutActiviteLimitee").disabled = true;
+        document.getElementById("dateFinActiviteLimitee").disabled = true;
         <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS)) { %>
         document.getElementById("motifGarde").disabled = true;
         document.getElementById("motifGardeHandicap").disabled = true;
@@ -260,6 +304,30 @@
         document.getElementById("dateFinManifAnnulee").disabled = true;
         document.getElementById("dateDebutFermeture").disabled = true;
         document.getElementById("dateFinFermeture").disabled = true;
+        document.getElementById("dateDebutActiviteLimitee").disabled = true;
+        document.getElementById("dateFinActiviteLimitee").disabled = true;
+        <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_INDEPENDANT_FERMETURE) || StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_DIRIGEANT_SALARIE_FERMETURE)) { %>
+        document.getElementById("motifGarde").disabled = true;
+        document.getElementById("motifGardeHandicap").disabled = true;
+        document.getElementById("quarantaineOrdonnee").disabled = true;
+        document.getElementById("quarantaineOrdonneePar").disabled = true;
+        document.getElementById("dateDebutPerteGains").disabled = true;
+        document.getElementById("dateFinPerteGains").disabled = true;
+        document.getElementById("dateDebutManifAnnulee").disabled = true;
+        document.getElementById("dateFinManifAnnulee").disabled = true;
+        document.getElementById("dateDebutActiviteLimitee").disabled = true;
+        document.getElementById("dateFinActiviteLimitee").disabled = true;
+        <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_INDEPENDANT_LIMITATION_ACTIVITE) || StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_DIRIGEANT_SALARIE_LIMITATION_ACTIVITE)) { %>
+        document.getElementById("motifGarde").disabled = true;
+        document.getElementById("motifGardeHandicap").disabled = true;
+        document.getElementById("quarantaineOrdonnee").disabled = true;
+        document.getElementById("quarantaineOrdonneePar").disabled = true;
+        document.getElementById("dateDebutManifAnnulee").disabled = true;
+        document.getElementById("dateFinManifAnnulee").disabled = true;
+        document.getElementById("dateDebutFermeture").disabled = true;
+        document.getElementById("dateFinFermeture").disabled = true;
+        document.getElementById("dateDebutPerteGains").disabled = true;
+        document.getElementById("dateFinPerteGains").disabled = true;
         <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_SALARIE_EVENEMENTIEL)) { %>
         for (i = 0; i < document.forms[0].length; i++) {
             document.forms[0].elements[i].disabled = true;
@@ -723,6 +791,30 @@
                value="<%=viewBean.getDateFinManifAnnulee()%>"/>
     </td>
 </tr>
+<tr>
+    <td>
+        <label>
+            <ct:FWLabel key="JSP_ACTIVITE_LIMITEE_DU"/>
+        </label>
+    </td>
+    <td colspan="2">
+        <input type="text"
+               id="dateDebutActiviteLimitee"
+               name="dateDebutActiviteLimitee"
+               data-g-calendar=" "
+               value="<%=viewBean.getDateDebutActiviteLimitee()%>"/>
+        <label>
+            <ct:FWLabel key="JSP_AU"/>
+        </label>
+        <input type="text"
+               id="dateFinActiviteLimitee"
+               name="dateFinActiviteLimitee"
+               data-g-calendar=" "
+               value="<%=viewBean.getDateFinActiviteLimitee()%>"/>
+    </td>
+</tr>
+
+
 
 <tr>
     <td colspan="6">

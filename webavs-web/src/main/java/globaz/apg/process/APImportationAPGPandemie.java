@@ -22,7 +22,10 @@ import globaz.apg.api.codesystem.IAPCatalogueTexte;
 import globaz.apg.api.droits.IAPDroitAPG;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.droits.IAPDroitMaternite;
+import globaz.apg.db.importation.beneficiaires.APBeneficiaries;
+import globaz.apg.db.importation.beneficiaires.APBeneficiary;
 import globaz.apg.db.droits.*;
+import globaz.apg.db.importation.turnover.*;
 import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.db.droits.APImportationAPGPandemieHistorique;
 import globaz.apg.properties.APProperties;
@@ -56,6 +59,7 @@ import globaz.phenix.api.ICPDonneesCalcul;
 import globaz.phenix.db.principale.CPDecision;
 import globaz.phenix.db.principale.CPDecisionManager;
 import globaz.prestation.api.IPRDemande;
+import globaz.prestation.api.IPRSituationProfessionnelle;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.db.demandes.PRDemandeManager;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
@@ -89,6 +93,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -111,6 +117,7 @@ public class APImportationAPGPandemie extends BProcess {
     private static final String XML_EXTENSION = ".xml";
     private static final String ZIP_EXTENSION = ".zip";
     private static final int MAX_TREATMENT = 40;
+    private static final String DATE_RETRO_DROIT_VAGUE_2 = "17.09.2020";
 
     private static String userGestionnaire = "";
 
@@ -118,6 +125,7 @@ public class APImportationAPGPandemie extends BProcess {
     private BabelContainer conteneurCatalogues = null;
     private LinkedList<String> errors = new LinkedList();
     private LinkedList<String> infos = new LinkedList();
+    private LinkedList<String> errorsCreateBeneficiaries = new LinkedList();
     private String backupFolder;
     private String errorsFolder;
     private String storageFolder;
@@ -134,9 +142,12 @@ public class APImportationAPGPandemie extends BProcess {
 
     private Boolean isImportGestionnaire = false;
     private String senderId = "";
+    private String referenceData = "";
+    private boolean isAssimEmployeur = false;
+    private boolean isEmploye = false;
+    private List<String> nssTraites;
 
     // Pour les tests - A Supprimer une fois que la recup du NSS sera implémentée
-    String nss;
     String state = APIOperation.ETAT_TRAITE;
     private String NOM_CATALOGUE = "Decompte_Pandemie";
 
@@ -173,7 +184,7 @@ public class APImportationAPGPandemie extends BProcess {
         dateFinDroit = "";
         adresseEmailAssure = "";
         sexeCI = "";
-        nss = "";
+        nssTraites = new ArrayList<>();
         errors = new LinkedList();
         infos = new LinkedList();
         isProcessErrorMetier = false;
@@ -262,11 +273,18 @@ public class APImportationAPGPandemie extends BProcess {
                         message = getMessageFromFile(destTmpXMLPath);
                         if (message != null) {
                             isTraitementSuccess = traiterMessage(message);
+                            if (isAssimEmployeur) {
+                                adresseEmailAssure = message.getContent().getActivity().getCompanies().getCompany().get(0).getEmail();
+                            } else {
                             adresseEmailAssure = message.getContent().getInsuredAddress().getEmail();
+                            }
+
                             if (isTraitementSuccess) {
+                                for(String nss : nssTraites) {
                                 savingFileInDb(nss, destTmpXMLPath, state);
                                 infos.add("Traitement du fichier suivant réussi : " + nameOriginalZipFile);
-                                infos.add("Assuré concerné : " + message.getContent().getInsuredPerson().getVn());
+                                    infos.add("Assuré(s) concerné(s) : " + nss);
+                                }
                             }
                         } else {
                             errors.add("Fichier zip suivant ne contient aucun fichier XML pouvant être traité : " + nameOriginalZipFile);
@@ -298,7 +316,7 @@ public class APImportationAPGPandemie extends BProcess {
                     try {
                         sendResultMailToCaisse(filesToSend, nameOriginalZipFile);
                         if (isProcessErrorMetier) {
-                            sendResultMailAssure(filesToSend, adresseEmailAssure);
+                            sendResultMailAssure(filesToSend, adresseEmailAssure, (nssTraites.size()>1 ? "" : nssTraites.toString()));
                         }
                     } catch (Exception e) {
                         LOG.error("Error in sending mail...", e.getStackTrace());
@@ -370,6 +388,8 @@ public class APImportationAPGPandemie extends BProcess {
             // Vérification s'il s'agit d'un import Gestionnaire
             isImportGestionnaire = isGestionnaireBySenderId(Objects.nonNull(message.getHeader()) ? message.getHeader().getSenderId() : null);
             senderId = Objects.nonNull(message.getHeader()) ? message.getHeader().getSenderId() : "";
+            // Vague 2
+            referenceData = Objects.nonNull(message.getContent()) ? message.getContent().getReferenceData() : "";
 
             traitementInSuccess = processCreationDroitGlobal(message.getContent());
         } catch (Exception e) {
@@ -480,7 +500,9 @@ public class APImportationAPGPandemie extends BProcess {
 
             if (!(Objects.isNull(storageFolder) || (storageFolder.isEmpty()))) {
                 // Création du répertoire de storage
+                for (String nss : nssTraites) {
                 storageFolderTemp = CommonFilesUtils.createPathFiles(nss, storageFolder);
+                }
 
                 // copy du zip dans le storage
                 if (!storageFolderTemp.isEmpty()) {
@@ -522,6 +544,9 @@ public class APImportationAPGPandemie extends BProcess {
         for(String error : errors){
             corpsCaisse.append(error + "\n");
         }
+        for (String errorCreationBeneficiaire : errorsCreateBeneficiaries) {
+            corpsCaisse.append(errorCreationBeneficiaire + "\n");
+        }
         LOG.info("ImportAPGPandemie - Envoi mail à l'adresse de la caisse "+getListEMailAddressTechnique().toString());
         ProcessMailUtils.sendMail(getListEMailAddressTechnique(), getEMailObjectCaisse(), corpsCaisse.toString(), filesToJoin);
     }
@@ -533,7 +558,7 @@ public class APImportationAPGPandemie extends BProcess {
      * @param emailTiers
      * @throws Exception
      */
-    private void sendResultMailAssure(List<String> filesToJoin, String emailTiers) throws Exception {
+    private void sendResultMailAssure(List<String> filesToJoin, String emailTiers, String nss) throws Exception {
         StringBuilder corpsAssure = new StringBuilder();
 
         // TODO à supprimer lorsque le Catalogue de texte sera mis en place
@@ -584,7 +609,7 @@ public class APImportationAPGPandemie extends BProcess {
 
 
         LOG.info("ImportAPGPandemie - Envoi mail à l'adresse de l'assuré "+getListEMailAddressAssure(emailTiers).toString());
-        ProcessMailUtils.sendMail(getListEMailAddressAssure(emailTiers), getEMailObjectAssure(), corpsAssure.toString(), filesToJoin);
+        ProcessMailUtils.sendMail(getListEMailAddressAssure(emailTiers), getEMailObjectAssure(nss), corpsAssure.toString(), filesToJoin);
     }
 
     /**
@@ -646,14 +671,14 @@ public class APImportationAPGPandemie extends BProcess {
 
     protected String getEMailObjectCaisse() {
         if(isProcessErrorMetier){
-            return bsession.getLabel(AGP_PANDEMIE_IMPORT_MAIL_SUBJECT_KO_METIER)+ " " + nss;
+            return bsession.getLabel(AGP_PANDEMIE_IMPORT_MAIL_SUBJECT_KO_METIER)+ " " + nssTraites.toString();
         }else if(isProcessErrorTechnique){
-            return bsession.getLabel(AGP_PANDEMIE_IMPORT_MAIL_SUBJECT_KO_TECHNIQUE) + " " + nss;
+            return bsession.getLabel(AGP_PANDEMIE_IMPORT_MAIL_SUBJECT_KO_TECHNIQUE) + " " + nssTraites.toString();
         }
-        return bsession.getLabel(AGP_PANDEMIE_IMPORT_MAIL_SUBJECT_OK) + " " + nss;
+        return bsession.getLabel(AGP_PANDEMIE_IMPORT_MAIL_SUBJECT_OK) + " " + nssTraites.toString();
     }
 
-    protected String getEMailObjectAssure() {
+    protected String getEMailObjectAssure(String nss) {
         return bsession.getLabel(AGP_PANDEMIE_IMPORT_MAIL_SUBJECT_KO_METIER)+ " " + nss;
     }
 
@@ -680,12 +705,19 @@ public class APImportationAPGPandemie extends BProcess {
         CIEcriture ecriture = null;
         InsuredPerson assure = content.getInsuredPerson();
         InsuredAddress adresseAssure = content.getInsuredAddress();
-        FamilyMembers membresFamilleAssure = content.getFamilyMembers();
         Activity activiteProfessionnelle = content.getActivity();
+
+        // Vague 2 - Creation des bénéficiaires.
+        APBeneficiaries beneficiaires = createBeneficiariesObject(content.getBeneficiaries());
+
         boolean isIndependant = isIndependant(activiteProfessionnelle);
+        // Vague 2
+        isAssimEmployeur = isAssimileEmployeur(activiteProfessionnelle);
+        isEmploye = isEmploye(activiteProfessionnelle);
+        // TODO Charger la var
         boolean isCaisseCompetente = false;
         ActivityCessation activiteArret = content.getActivityCessation();
-        PaymentContact adressePaiement = content.getPaymentContact();
+
         initDatesDroit(activiteArret);
         try {
             transaction = (BTransaction) bsession.newTransaction();
@@ -693,18 +725,25 @@ public class APImportationAPGPandemie extends BProcess {
                 transaction.openTransaction();
             }
             // Test si la caisse est compétente -> Si non, on ne créé rien
-            nss = assure.getVn();
-            PRTiersWrapper tiers = getTiersByNss(assure.getVn());
+            PRTiersWrapper tiers = null;
+            String nss = "";
+            // Concerne autant indépendant APG que indépendant quarantaine
             if(isIndependant){
+                nss = assure.getVn();
+                nssTraites.add(nss);
+                tiers = getTiersByNss(assure.getVn());
                 if(tiers != null){
-                    if(isCaisseCompetentePourIndependant(bsession, dateDebutDroit, dateFinDroit, tiers.getIdTiers())){
+                    if(isCaisseCompetentePourIndependant(bsession, dateDebutDroit, dateFinDroit, tiers.getIdTiers(), nss)){
                         isCaisseCompetente = true;
                     }
                 }else {
                     infos.add("Indépendant inexistant: " + nss);
                 }
-            }else{
-                if(!isAffiliationRenseigneExist(activiteProfessionnelle)) {
+            }else if (isEmploye){ // + SubMessageType = 103 (103 = Quarantaine, 104 = APG)
+                nss = assure.getVn();
+                nssTraites.add(nss);
+                tiers = getTiersByNss(assure.getVn());
+                if(!isAffiliationRenseigneExist(activiteProfessionnelle, nss)) {
                     ecriture = retrieveEcrituresAssure(bsession, NSUtil.unFormatAVS(nss), transaction);
                     if (ecriture != null) {
                         isCaisseCompetente = true;
@@ -718,17 +757,91 @@ public class APImportationAPGPandemie extends BProcess {
                     tiers = creationTiers(assure, adresseAssure);
                 }
             }
-            if(isCaisseCompetente && tiers != null){
+            FamilyMembers membresFamilleAssure = new FamilyMembers();
+            if ((isIndependant || isEmploye) && isCaisseCompetente && tiers != null) {
+                // Vague 2 - Création pour l'indépendant (APG / quarantaine) ou l'employé (quarantaine)
+                membresFamilleAssure = content.getFamilyMembers();
+                isTraitementSuccess = createDroitForTier(nss, tiers, content, adresseAssure, membresFamilleAssure, activiteArret, activiteProfessionnelle, activiteProfessionnelle.getSalary(), true, content.getInsuredAddress().getEmail(), transaction);
+            } else if (isAssimEmployeur){
+                // Vague 2 - Création pour les bénéficiaires
+                // Pour le moment, les bénéficiaires n'ont pas de membres de famille associés
+                InsuredAddress adresseBeneficiaire = new InsuredAddress();
+                InsuredPerson assureBeneficiaire = new InsuredPerson();
+
+                for (Beneficiary beneficiaire : content.getBeneficiaries().getBeneficiary()) {
+                    nss = beneficiaire.getInsuredPerson().getVn();
+                    nssTraites.add(nss);
+                    PRTiersWrapper beneficiaireTiers = getTiersByNss(nss);
+                    assureBeneficiaire = beneficiaire.getInsuredPerson();
+                    adresseBeneficiaire = beneficiaire.getInsuredAddress();
+
+                    boolean continueProcessBeneficiaire = false;
+
+                    if(!isAffiliationRenseigneExist(activiteProfessionnelle, nss)) {
+                        ecriture = retrieveEcrituresAssure(bsession, NSUtil.unFormatAVS(nss), transaction);
+                        if (ecriture != null) {
+                            continueProcessBeneficiaire = true;
+                        }else{
+                            infos.add("Aucun CI trouvé pour l'assuré: " + nss);
+                        }
+                    }else{
+                        continueProcessBeneficiaire = true;
+                    }
+                    if(continueProcessBeneficiaire && beneficiaireTiers == null){
+                        beneficiaireTiers = creationTiers(assureBeneficiaire, adresseBeneficiaire);
+                    }
+
+                    if (continueProcessBeneficiaire && beneficiaireTiers != null) {
+                        isTraitementSuccess = createDroitForTier(nss, beneficiaireTiers, content, adresseBeneficiaire, membresFamilleAssure, activiteArret, activiteProfessionnelle
+                                , beneficiaire.getSalary(), false, beneficiaire.getInsuredAddress().getEmail(), transaction);
+                    } else{
+                        // Vague 2 - Ajout d'une erreur si le Beneficiaire ne peut pas être traité
+                        errorsCreateBeneficiaries.add("Caisse non compétente pour le bénéficiaire :" + nss + "\n");
+                    }
+                }
+            } else{
+                transaction.rollback();
+                adresseEmailAssure = adresseAssure.getEmail();
+                LOG.warn("ImportAPGPandemie - Caisse non compétente pour l'assuré : "+nss);
+                isTraitementSuccess = false;
+                isProcessErrorMetier = true;
+            }
+
+            // Vague 2 - Création des turnOvers
+            if(Objects.nonNull(activiteArret.getActivityLimitationCessation())) {
+                createTurnovers(activiteArret.getActivityLimitationCessation().getTurnovers(), transaction);
+            }
+
+        } catch (Exception e) {
+            isTraitementSuccess = false;
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            errors.add("Erreur dans la création du droit "+e.getMessage());
+            LOG.error("APImportationAPGPandemie#processCreationDroitGlobal : erreur lors de la création du droit ", e);
+        } finally {
+            if (transaction != null) {
+                transaction.closeTransaction();
+            }
+        }
+        return isTraitementSuccess;
+    }
+
+    private boolean createDroitForTier(String nss, PRTiersWrapper tiers, Content content, InsuredAddress adresseAssure, FamilyMembers membresFamilleAssure, ActivityCessation activiteArret, Activity activiteProfessionnelle, Salary salary, boolean isIndependant, String email, BTransaction transaction) throws Exception {
+        boolean isTraitementSuccess = true;
+        PaymentContact adressePaiement = content.getPaymentContact();
 
                 // Création du contact avec l'email récupéré du XML
-                createContact(tiers, content.getInsuredAddress().getEmail());
+        createContact(tiers, email);
 
                 // Création rôle APG du tiers
                 LOG.info("ImportAPGPandemie - Creating APG Role...");
                 creationRoleApgTiers(tiers.getIdTiers());
 
                 // Création de l'adresse APG-Pandémie du tiers
-                String npaFormat = getNpaFormat(adresseAssure.getZipCode());
+        // Vague 2
+        String npaFormat = getNpaFormat(getZipCode(adresseAssure));
+
                 if(isDonneesAdresseValide(adresseAssure, npaFormat)) {
                     LOG.info("ImportAPGPandemie - Creating Adresses...");
                     createAdresseApgPandemie(tiers, adresseAssure, adressePaiement, npaFormat);
@@ -750,14 +863,25 @@ public class APImportationAPGPandemie extends BProcess {
 
                 // Création droit pandémie
                 LOG.info("ImportAPGPandemie - Creating Data Pandemie...");
-                APDroitPanSituation newDroitPademie = creationDroitPandemie(newDroit, membresFamilleAssure, isIndependant, adressePaiement, activiteProfessionnelle, activiteArret, transaction);
+        APDroitPanSituation newDroitPademie = creationDroitPandemie(newDroit, membresFamilleAssure, isIndependant, adressePaiement, activiteProfessionnelle, salary, activiteArret, transaction);
+
+
 
                 // Création de la situation professionnelle pour indépendant
                 LOG.info("ImportAPGPandemie - Creating Situation Professionnelle Pandemie...");
-                if(isIndependant(activiteProfessionnelle)){
-                    creerSituationProfIndependant(transaction, newDroit, tiers.getIdTiers());
+        if(isEmploye){
+            creerSituationProfQuarantaine(transaction, newDroit, salary);
                 }else{
-                    creerSituationProf(transaction, newDroit, activiteProfessionnelle);
+            // Si le tiers possédait déjà un droit pandémie, on créé la même situation professionnelle qu'il y avait de ce dernier droit
+            boolean situationProfessionnelleCreeSucess = creerSituationProfPanSelonDroitPrecedent(getSession(), transaction, newDroit, tiers.getIdTiers());
+            // Si aucune situation professionnelle n'a été créé (pas de droit pandémie, ou problème de création
+            if(!situationProfessionnelleCreeSucess) {
+                if (isIndependant) {
+                    creerSituationProfIndependant(transaction, newDroit, tiers.getIdTiers());
+                } else if (isAssimEmployeur) {
+                    creerSituationProfAssimileEmployeur(transaction, nss, newDroit, salary);
+                }
+            }
                 }
                 if (!hasError(bsession, transaction)) {
                     transaction.commit();
@@ -770,26 +894,119 @@ public class APImportationAPGPandemie extends BProcess {
                             +bsession.getErrors()+"\nTransactions errors : "+transaction.getErrors());
                     isTraitementSuccess = false;
                 }
-            }else{
-                transaction.rollback();
-                adresseEmailAssure = adresseAssure.getEmail();
-                LOG.warn("ImportAPGPandemie - Caisse non compétente pour l'assuré : "+nss);
-                isTraitementSuccess = false;
-                isProcessErrorMetier = true;
+
+
+        return isTraitementSuccess;
+    }
+
+    /**
+     *
+     *
+     * @param adresseAssure
+     * @return
+     */
+    private String getZipCode(InsuredAddress adresseAssure) {
+        String npaTrouve = "";
+
+        if (Objects.isNull(adresseAssure.getZipCode())) {
+            String town = adresseAssure.getTown().trim();
+            Matcher matcher = Pattern.compile("^\\d+").matcher(town); // on cherche une suite de chiffres
+            if (matcher.find()) { // si on trouve
+                npaTrouve = matcher.group(0); // on récupère ce qui a été trouvé
             }
-        } catch (Exception e) {
-            isTraitementSuccess = false;
-            if (transaction != null) {
-                transaction.rollback();
+            else {
+                LOG.info("NPA non trouvé dans InsuredAdress.town");
             }
-            errors.add("Erreur dans la création du droit "+e.getMessage());
-            LOG.error("APImportationAPGPandemie#processCreationDroitGlobal : erreur lors de la création du droit ", e);
-        } finally {
-            if (transaction != null) {
-                transaction.closeTransaction();
+        } else return adresseAssure.getZipCode();
+
+        return npaTrouve;
+    }
+
+    private APTurnovers createTurnovers(Turnovers turnoversXml, BTransaction transaction) throws Exception {
+        APTurnovers turnovers = new APTurnovers(referenceData);
+
+        if (Objects.nonNull(turnoversXml)) {
+            if (Objects.nonNull(turnoversXml.getMonthlyTurnovers())){
+                for(MonthlyTurnover monthlyTurnoverXml : turnoversXml.getMonthlyTurnovers().getMonthlyTurnover()) {
+                    APTurnover monthlyTurnover = new APTurnover();
+                    monthlyTurnover.setSession(bsession);
+                    monthlyTurnover.setAmount(String.valueOf(monthlyTurnoverXml.getAmount()));
+                    monthlyTurnover.setUnit(monthlyTurnoverXml.getUnit());
+                    monthlyTurnover.setMonth(monthlyTurnoverXml.getMonth());
+                    monthlyTurnover.setReferenceData(referenceData);
+                    try {
+                        monthlyTurnover.add(transaction);
+                    } catch (Exception e) {
+                        infos.add("Un problème a été rencontré lors de mise en DB des Turnovers ");
+                        LOG.error("APImportationAPGPandemie#createTurnovers : Erreur rencontré lors de la création des turnovers Mensuels pour l'assuré", e);
+                    }
+                    turnovers.addTurnover(monthlyTurnover);
+                }
+            }
+
+            if (Objects.nonNull(turnoversXml.getAnnualTurnovers())){
+                for(AnnualTurnover annualTurnoverXml : turnoversXml.getAnnualTurnovers().getAnnualTurnover()) {
+                    APTurnover annualTurnover = new APTurnover();
+                    annualTurnover.setSession(bsession);
+                    annualTurnover.setAmount(String.valueOf(annualTurnoverXml.getAmount()));
+                    annualTurnover.setUnit(annualTurnoverXml.getUnit());
+                    annualTurnover.setYear(String.valueOf(annualTurnoverXml.getYear()));
+                    annualTurnover.setReferenceData(referenceData);
+                    try {
+                        annualTurnover.add(transaction);
+                    } catch (Exception e) {
+                        infos.add("Un problème a été rencontré lors de mise en DB des Turnovers ");
+                        LOG.error("APImportationAPGPandemie#createTurnovers : Erreur rencontré lors de la création des turnovers Annuels pour l'assuré", e);
+                    }
+                    turnovers.addTurnover(annualTurnover);
+                }
             }
         }
-        return isTraitementSuccess;
+
+        if (!hasError(bsession, transaction)) {
+            transaction.commit();
+            LOG.info("ImportAPGPandemie - Création des TurnOvers - Traitement in success...");
+        }
+
+        return turnovers;
+    }
+
+    /**
+     * Mise en object des Beneficiares contenu dans le message.
+     *
+     * @param beneficiariesXml
+     * @return
+     */
+    private APBeneficiaries createBeneficiariesObject(Beneficiaries beneficiariesXml) {
+        // Creation de l'objet et lien avec demande.
+        APBeneficiaries beneficiaries = new APBeneficiaries(referenceData);
+
+        if (Objects.nonNull(beneficiariesXml)){
+            for(Beneficiary beneficiaryXml : beneficiariesXml.getBeneficiary()) {
+                APBeneficiary beneficiary = new APBeneficiary();
+                beneficiary.setNumAVS(beneficiaryXml.getInsuredPerson().getVn());
+                beneficiary.setName(beneficiaryXml.getInsuredPerson().getOfficialName());
+                beneficiary.setFirstName(beneficiaryXml.getInsuredPerson().getFirstName());
+                beneficiary.setDateOfBirth(beneficiaryXml.getInsuredPerson().getDateOfBirth());
+                beneficiary.setEmail(beneficiaryXml.getInsuredAddress().getEmail());
+                beneficiary.setNameStreetWithNumber(beneficiaryXml.getInsuredAddress().getStreetWithNr());
+                beneficiary.setTown(beneficiaryXml.getInsuredAddress().getTown());
+                beneficiary.setZipCode(beneficiaryXml.getInsuredAddress().getZipCode());
+                beneficiary.setPhoneNumber(beneficiaryXml.getInsuredAddress().getPhone());
+                beneficiary.setAmountLastAnnualIncome(beneficiaryXml.getLastAnnualIncome().getAmount());
+                beneficiary.setUnitLastAnnualIncome(beneficiaryXml.getLastAnnualIncome().getUnit());
+                beneficiary.setYearLastAnnualIncome(beneficiaryXml.getLastAnnualIncome().getYear());
+                beneficiary.setAmountLastIncome(beneficiaryXml.getSalary().getLastIncome());
+                beneficiary.setPositionType(beneficiaryXml.getEmploymentInfo().getPositionType());
+                beneficiary.setAssimilablePosition(beneficiaryXml.getEmploymentInfo().isAssimilablePosition());
+                beneficiary.setRhtIndemnity(beneficiaryXml.getEmploymentInfo().isRHTIndemnity());
+                beneficiary.setHasLossOfProfit(beneficiaryXml.getEmploymentInfo().isHasLossOfProfit());
+                beneficiary.setReduceWorkHours(beneficiaryXml.getEmploymentInfo().isReducedWorkHours());
+
+                beneficiaries.addBeneficiaries(beneficiary);
+            }
+        }
+        return beneficiaries;
     }
 
     private String getNpaFormat(String npa) {
@@ -811,7 +1028,7 @@ public class APImportationAPGPandemie extends BProcess {
         return !JadeStringUtil.isBlankOrZero(adresseAssure.getStreetWithNr()) || !JadeStringUtil.isBlankOrZero(adresseAssure.getTown());
     }
 
-    private boolean isAffiliationRenseigneExist(Activity activiteProfessionnelle) throws Exception {
+    private boolean isAffiliationRenseigneExist(Activity activiteProfessionnelle, String nss) throws Exception {
         try {
             boolean affiliationExist = false;
             if (!Objects.isNull(activiteProfessionnelle.getCompanies().getCompany())) {
@@ -863,9 +1080,9 @@ public class APImportationAPGPandemie extends BProcess {
             }
 
         } catch (Exception e) {
-            errors.add("Une erreur est survenue lors de la création du contact pour l'id tiers : "+nss+" - "+email);
-            LOG.error("APImportationAPGPandemie#createContact : Une erreur est survenue lors de la création du contact pour l'id tiers " + nss, e);
-            throw new Exception("APImportationAPGPandemie#createContact : Une erreur est survenue lors de la création du contact pour l'id tiers " + nss);
+            errors.add("Une erreur est survenue lors de la création du contact pour l'id tiers : "+tiers.getNSS()+" - "+email);
+            LOG.error("APImportationAPGPandemie#createContact : Une erreur est survenue lors de la création du contact pour l'id tiers " + tiers.getNSS(), e);
+            throw new Exception("APImportationAPGPandemie#createContact : Une erreur est survenue lors de la création du contact pour l'id tiers " + tiers.getNSS());
         }
 
 
@@ -929,7 +1146,7 @@ public class APImportationAPGPandemie extends BProcess {
             XMLGregorianCalendar dateDebutXml = null;
             XMLGregorianCalendar dateFinXml = null;
             int nbJours = 0;
-            if (activityCessation.getChildCareCessation().isIsSelected()) {
+            if (Objects.nonNull(activityCessation.getChildCareCessation()) && activityCessation.getChildCareCessation().isIsSelected()) {
                 for (ChildCarePeriod periode : activityCessation.getChildCareCessation().getChildCarePeriods().getChildCarePeriod()) {
                     dateDebutXml = periode.getFrom();
                     dateFinXml = periode.getTo();
@@ -937,18 +1154,35 @@ public class APImportationAPGPandemie extends BProcess {
                     periodes.add(buildPeriode(dateDebutXml, dateFinXml, nbJours));
                 }
             } else {
-                if (activityCessation.getQuarantineCessation().isIsSelected()) {
+                if (Objects.nonNull(activityCessation.getQuarantineCessation()) && activityCessation.getQuarantineCessation().isIsSelected()) {
+                    // Vague 2
+                    if (activityCessation.getQuarantineCessation().isIsQuarantineDueToTravel()) {
+                        dateDebutXml = activityCessation.getQuarantineCessation().getQuarantineTravel().getFrom();
+                        dateFinXml = activityCessation.getQuarantineCessation().getQuarantineTravel().getTo();
+                    } else {
                     dateDebutXml = activityCessation.getQuarantineCessation().getQuarantinePeriod().getFrom();
                     dateFinXml = activityCessation.getQuarantineCessation().getQuarantinePeriod().getTo();
-                } else if (activityCessation.getIndependantWorkClosureCessation().isIsSelected()) {
+                    }
+                } else if (Objects.nonNull(activityCessation.getIndependantWorkClosureCessation()) && activityCessation.getIndependantWorkClosureCessation().isIsSelected()) {
                     dateDebutXml = activityCessation.getIndependantWorkClosureCessation().getIndependantWorkClosurePeriod().getFrom();
                     dateFinXml = activityCessation.getIndependantWorkClosureCessation().getIndependantWorkClosurePeriod().getTo();
-                } else if (activityCessation.getIndependantEventCessation().isIsSelected()) {
+                } else if (Objects.nonNull(activityCessation.getIndependantEventCessation()) && activityCessation.getIndependantEventCessation().isIsSelected()) {
                     dateDebutXml = activityCessation.getIndependantEventCessation().getIndependantEventPeriod().getFrom();
                     dateFinXml = activityCessation.getIndependantEventCessation().getIndependantEventPeriod().getTo();
-                } else if (activityCessation.getIndependantLossOfIncomeCessation().isIsSelected()) {
+                } else if (Objects.nonNull(activityCessation.getIndependantLossOfIncomeCessation()) && activityCessation.getIndependantLossOfIncomeCessation().isIsSelected()) {
                     dateDebutXml = activityCessation.getIndependantLossOfIncomeCessation().getIndependantLossOfIncomePeriod().getFrom();
                     dateFinXml = activityCessation.getIndependantLossOfIncomeCessation().getIndependantLossOfIncomePeriod().getTo();
+
+                    // Vague 2
+                } else if (Objects.nonNull(activityCessation.getActivityLimitationCessation()) && activityCessation.getActivityLimitationCessation().isIsSelected()) {
+                    dateDebutXml = activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getFrom();
+                    dateFinXml = activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getTo();
+                } else if (Objects.nonNull(activityCessation.getEventCessation()) && activityCessation.getEventCessation().isIsSelected()) {
+                    dateDebutXml = activityCessation.getEventCessation().getEventPeriod().getFrom();
+                    dateFinXml = activityCessation.getEventCessation().getEventPeriod().getTo();
+                } else if (Objects.nonNull(activityCessation.getWorkClosureCessation()) && activityCessation.getWorkClosureCessation().isIsSelected()) {
+                    dateDebutXml = activityCessation.getWorkClosureCessation().getWorkClosurePeriod().getFrom();
+                    dateFinXml = activityCessation.getWorkClosureCessation().getWorkClosurePeriod().getTo();
                 }
                 periodes.add(buildPeriode(dateDebutXml, dateFinXml, nbJours));
             }
@@ -1073,6 +1307,20 @@ public class APImportationAPGPandemie extends BProcess {
         return "";
     }
 
+    private String transformMotifGardeVague2ToCode(String xmlEnumMotifG) {
+        if(!Objects.isNull(xmlEnumMotifG)) {
+            switch (xmlEnumMotifG) {
+                case "FERMETURE_GARDE_ENFANT":
+                    return "52040001";
+                case "QUARANTAINE_ENFANT":
+                    return "52040002";
+                default:
+                    return "";
+            }
+        }
+        return "";
+    }
+
     private String transformGroupeRisqueToCode(String xmlEnumGroupeR){
         if(!Objects.isNull(xmlEnumGroupeR)) {
             switch (xmlEnumGroupeR) {
@@ -1117,27 +1365,36 @@ public class APImportationAPGPandemie extends BProcess {
     }
 
     private APDroitPanSituation creationDroitPandemie(APDroitPandemie droitPandemie, FamilyMembers membresFamilleAssure, boolean isIndependant, PaymentContact paymentContact,
-                                                      Activity activity, ActivityCessation activityCessation, BTransaction transaction) throws Exception {
+                                                      Activity activity, Salary salary, ActivityCessation activityCessation, BTransaction transaction) throws Exception {
         APDroitPanSituation droitPanSituation = new APDroitPanSituation();
         try {
             droitPanSituation.setSession(bsession);
+            droitPanSituation.setReferenceData(referenceData);
             // Activity
             droitPanSituation.setActiviteSalarie(!isIndependant);
+            if (Objects.nonNull(activity.getActivityCategory())) {
             droitPanSituation.setCategorieEntreprise(Objects.isNull(activity.getActivityCategory().getActivityType())?
                     "": transformCatEntrepriseToCode(activity.getActivityCategory().getActivityType()));
             droitPanSituation.setCategorieEntrepriseLibelle(activity.getActivityCategory().getActivityOtherDetail());
-            droitPanSituation.setCopieDecompteEmployeur(activity.getSalary().isSendDecompteToEmployer());
+            }
+            droitPanSituation.setCopieDecompteEmployeur(salary.isSendDecompteToEmployer());
             // ActivityCessation
-            if(activityCessation.getChildCareCessation().isIsSelected()) {
+            if(Objects.nonNull(activityCessation.getChildCareCessation()) && activityCessation.getChildCareCessation().isIsSelected()) {
                 // Création de la situation Familiale
                 creationSituationFamiliale(membresFamilleAssure, droitPandemie.getId(), transaction);
-                if (activityCessation.getChildCareCessation().isChildCareWithHandicap()) {
-                    droitPanSituation.setMotifGardeHandicap(Objects.isNull(activityCessation.getChildCareCessation().getChildCareCause()) ?
-                            "" : transformMotifGardHandicapToCode(activityCessation.getChildCareCessation().getChildCareCause()));
-                } else {
+                // Vague 2
                     droitPanSituation.setMotifGarde(Objects.isNull(activityCessation.getChildCareCessation().getChildCareCause()) ?
-                            "" : transformMotifGardToCode(activityCessation.getChildCareCessation().getChildCareCause()));
-                }
+                        "" : transformMotifGardeVague2ToCode(activityCessation.getChildCareCessation().getChildCareCause()));
+
+                // Vague 1
+//                if (activityCessation.getChildCareCessation().isChildCareWithHandicap()) {
+//                    droitPanSituation.setMotifGardeHandicap(Objects.isNull(activityCessation.getChildCareCessation().getChildCareCause()) ?
+//                            "" : transformMotifGardHandicapToCode(activityCessation.getChildCareCessation().getChildCareCause()));
+//                } else {
+//                    droitPanSituation.setMotifGarde(Objects.isNull(activityCessation.getChildCareCessation().getChildCareCause()) ?
+//                            "" : transformMotifGardToCode(activityCessation.getChildCareCessation().getChildCareCause()));
+//                }
+
                 if(Objects.nonNull(activityCessation.getChildCareCessation().getChildCarePersonRiskProof())){
                     droitPanSituation.setGroupeRisque(transformGroupeRisqueToCode(activityCessation.getChildCareCessation().getChildCarePersonRiskProof().getChildCarePersonType()));
                     if(isMaladie(droitPanSituation.getGroupeRisque())) {
@@ -1145,21 +1402,51 @@ public class APImportationAPGPandemie extends BProcess {
                     }
                 }
             }
-            if(activityCessation.getQuarantineCessation().isIsSelected()) {
+            if(Objects.nonNull(activityCessation.getQuarantineCessation()) && activityCessation.getQuarantineCessation().isIsSelected()) {
                 droitPanSituation.setQuarantaineOrdonnee(activityCessation.getQuarantineCessation().isPrescribedQuarantine());
                 droitPanSituation.setQuarantaineOrdonneePar(activityCessation.getQuarantineCessation().getPrescribedBy());
             }
-            if(activityCessation.getIndependantWorkClosureCessation().isIsSelected()) {
+            if(Objects.nonNull(activityCessation.getIndependantWorkClosureCessation()) && activityCessation.getIndependantWorkClosureCessation().isIsSelected()) {
                 droitPanSituation.setDateFermetureEtablissementDebut(Objects.isNull(activityCessation.getIndependantWorkClosureCessation().getIndependantWorkClosurePeriod().getFrom()) ?
                         "" : tranformGregDateToGlobDate(activityCessation.getIndependantWorkClosureCessation().getIndependantWorkClosurePeriod().getFrom()));
                 droitPanSituation.setDateFermetureEtablissementFin(Objects.isNull(activityCessation.getIndependantWorkClosureCessation().getIndependantWorkClosurePeriod().getTo()) ?
                         "" : tranformGregDateToGlobDate(activityCessation.getIndependantWorkClosureCessation().getIndependantWorkClosurePeriod().getTo()));
             }
-            if(activityCessation.getIndependantEventCessation().isIsSelected()) {
+            if(Objects.nonNull(activityCessation.getIndependantEventCessation()) && activityCessation.getIndependantEventCessation().isIsSelected()) {
                 droitPanSituation.setDateDebutManifestationAnnulee(tranformGregDateToGlobDate(activityCessation.getIndependantEventCessation().getIndependantEventPeriod().getEventDate()));
                 droitPanSituation.setDateDebutManifestationAnnulee(tranformGregDateToGlobDate(activityCessation.getIndependantEventCessation().getIndependantEventPeriod().getFrom()));
                 droitPanSituation.setDateFinManifestationAnnulee(tranformGregDateToGlobDate(activityCessation.getIndependantEventCessation().getIndependantEventPeriod().getTo()));
             }
+
+            // Vague 2
+             if (Objects.nonNull(activityCessation.getActivityLimitationCessation()) && activityCessation.getActivityLimitationCessation().isIsSelected()) {
+                 droitPanSituation.setDateDebutActiviteLimitee(Objects.isNull(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getFrom()) ?
+                         "" : tranformGregDateToGlobDate(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getFrom()));
+                 droitPanSituation.setDateFinActiviteLimitee(Objects.isNull(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getTo()) ?
+                         "" : tranformGregDateToGlobDate(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getTo()));
+                 droitPanSituation.setStartDateActiviteLimitee(Objects.isNull(activityCessation.getActivityLimitationCessation().getActivityDateStart()) ?
+                         "" : tranformGregDateToGlobDate(activityCessation.getActivityLimitationCessation().getActivityDateStart()));
+                 droitPanSituation.setLossValueActiviteLimitee(Objects.isNull(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getLossValue()) ?
+                         "" : String.valueOf(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getLossValue()));
+                 droitPanSituation.setUnitActiviteLimitee(Objects.isNull(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getUnit()) ?
+                         "" : String.valueOf(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getUnit()));
+                 droitPanSituation.setReasonActiviteLimitee(Objects.isNull(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getReason()) ?
+                         "" : activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getReason());
+             }
+            if (Objects.nonNull(activityCessation.getEventCessation()) && activityCessation.getEventCessation().isIsSelected()) {
+                // Deprecated
+//                droitPanSituation.setDateDebutManifestationAnnulee(tranformGregDateToGlobDate(activityCessation.getEventCessation().getEventPeriod().getEventDate()));
+                droitPanSituation.setDateDebutManifestationAnnulee(tranformGregDateToGlobDate(activityCessation.getEventCessation().getEventPeriod().getFrom()));
+                droitPanSituation.setDateFinManifestationAnnulee(tranformGregDateToGlobDate(activityCessation.getEventCessation().getEventPeriod().getTo()));
+            }
+            if (Objects.nonNull(activityCessation.getWorkClosureCessation()) && activityCessation.getWorkClosureCessation().isIsSelected()) {
+                droitPanSituation.setDateFermetureEtablissementDebut(Objects.isNull(activityCessation.getWorkClosureCessation().getWorkClosurePeriod().getFrom()) ?
+                        "" : tranformGregDateToGlobDate(activityCessation.getWorkClosureCessation().getWorkClosurePeriod().getFrom()));
+                droitPanSituation.setDateFermetureEtablissementFin(Objects.isNull(activityCessation.getWorkClosureCessation().getWorkClosurePeriod().getTo()) ?
+                        "" : tranformGregDateToGlobDate(activityCessation.getWorkClosureCessation().getWorkClosurePeriod().getTo()));
+            }
+
+
             droitPanSituation.setIdDroit(droitPandemie.getIdDroit());
             if(paymentContact != null) {
                 droitPanSituation.setPaiementEmployeur(paymentContact.isDirectPayment());
@@ -1230,6 +1517,14 @@ public class APImportationAPGPandemie extends BProcess {
 
     private boolean isIndependant(Activity activity) {
         return "INDEPENDANT".equalsIgnoreCase(activity.getEmploymentType());
+    }
+
+    private boolean isAssimileEmployeur(Activity activity) {
+        return "ASSIM_EMPLOYEUR".equalsIgnoreCase(activity.getEmploymentType());
+    }
+
+    private boolean isEmploye(Activity activity) {
+        return "EMPLOYE".equalsIgnoreCase(activity.getEmploymentType());
     }
 
     private PRDemande creationDemande(String idTiers) throws Exception {
@@ -1310,7 +1605,9 @@ public class APImportationAPGPandemie extends BProcess {
 
     private String getCSGenreService(Content content) {
         String cause = content.getActivityCessation().getActivityCause();
+        String employementType = content.getActivity().getEmploymentType();
 
+        // Vague 1 - N'est plus utilisé
         // Le type garde peut être pour enfant avec Handicap. S'il s'agit d'une garde et qu'il a un handicap, alors on retourne le type garde handicap
         if (Objects.equals(cause, "GARDE") && Objects.nonNull(content.getActivityCessation().getChildCareCessation())
                 && Objects.nonNull(content.getActivityCessation().getChildCareCessation().isChildCareWithHandicap())
@@ -1319,11 +1616,32 @@ public class APImportationAPGPandemie extends BProcess {
         }
 
         switch (cause){
+            // Vague 1 - N'est plus utilisé
             case "GARDE": return APGenreServiceAPG.GardeParentale.getCodeSysteme();
-            case "QUARANTAINE": return APGenreServiceAPG.Quarantaine.getCodeSysteme();
-            case "FERMETURE": return APGenreServiceAPG.IndependantPandemie.getCodeSysteme();
-            case "MANIFESTATION": return APGenreServiceAPG.IndependantManifAnnulee.getCodeSysteme();
             case "PERTEGAIN": return APGenreServiceAPG.IndependantPerteGains.getCodeSysteme();
+            // Vague 2
+            case "QUARANTAINE": return APGenreServiceAPG.Quarantaine_17_09_20.getCodeSysteme();
+            case "GARDE_ENFANT_MOINS_12_ANS": return APGenreServiceAPG.GardeParentale_17_09_20.getCodeSysteme();
+            case "GARDE_ENFANT_HANDICAP": return APGenreServiceAPG.GardeParentaleHandicap_17_09_20.getCodeSysteme();
+
+            case "LIMITATION_ACTIVITE":
+                if ("ASSIM_EMPLOYEUR".equalsIgnoreCase(employementType)) {
+                    return APGenreServiceAPG.DirigeantSalarieLimitationActivite.getCodeSysteme();
+                } else {
+                    return APGenreServiceAPG.IndependantPerteGains.getCodeSysteme();
+                }
+            case "FERMETURE":
+                if ("ASSIM_EMPLOYEUR".equalsIgnoreCase(employementType)) {
+                    return APGenreServiceAPG.DirigeantSalarieFermeture.getCodeSysteme();
+                } else {
+                    return APGenreServiceAPG.IndependantFermeture.getCodeSysteme();
+                }
+            case "MANIFESTATION":
+                if ("ASSIM_EMPLOYEUR".equalsIgnoreCase(employementType)) {
+                    return APGenreServiceAPG.DirigeantSalarieManifestationAnnulee.getCodeSysteme();
+                } else {
+                    return APGenreServiceAPG.IndependantManifestationAnnulee.getCodeSysteme();
+                }
             default: return "";
         }
     }
@@ -1428,7 +1746,7 @@ public class APImportationAPGPandemie extends BProcess {
                 infos.add("Aucune adresse créée car le domaine pandémie n'a pas été défini dans la propriété suivante: "+APProperties.DOMAINE_ADRESSE_APG_PANDEMIE.getPropertyName());
             }
         }catch (Exception e){
-            infos.add("Un problème a été rencontré lors de la création des adresses pour l'assuré suivant"+nss);
+            infos.add("Un problème a été rencontré lors de la création des adresses pour l'assuré suivant"+tiers.getNSS());
             LOG.error("APImportationAPGPandemie#createAdresseApgPandemie : Erreur rencontré lors de la création adresses pour l'assuré", e);
         }
     }
@@ -1577,10 +1895,10 @@ public class APImportationAPGPandemie extends BProcess {
         return result;
     }
 
-    private void creerSituationProf(BTransaction transaction, APDroitPandemie droitPandemie, Activity activity) {
+    private void creerSituationProfQuarantaine(BTransaction transaction, APDroitPandemie droitPandemie, Salary salary) {
         try {
-            boolean isVersementEmployeur = activity.getSalary().isHasReceiveSalaryDuringInterruption();
-            String salaireMensuel = String.valueOf(activity.getSalary().getLastIncome());
+            boolean isVersementEmployeur = salary.isHasReceiveSalaryDuringInterruption();
+            String salaireMensuel = String.valueOf(salary.getLastIncome());
             for(String idAffiliation : listIDAff){
                 AFAffiliation affiliation = findAffiliationById(idAffiliation);
                 if(affiliation != null) {
@@ -1598,6 +1916,65 @@ public class APImportationAPGPandemie extends BProcess {
                     situationProfessionnelle.setIsIndependant(Boolean.FALSE);
                     situationProfessionnelle.setIsVersementEmployeur(isVersementEmployeur);
                     situationProfessionnelle.setSalaireMensuel(salaireMensuel);
+
+                    // Vague 2 - Si le salarié est payé sur 13 mois
+                    // On ajoute son 13eme mois sans une autre rémunération annuelle
+                    if (salary.isHasThirteenthMonth()) {
+                        situationProfessionnelle.setAutreRemuneration(salaireMensuel);
+                        situationProfessionnelle.setPeriodiciteAutreRemun(IPRSituationProfessionnelle.CS_PERIODICITE_ANNEE);
+                    }
+
+                    salaireMensuel = "";
+                    situationProfessionnelle.wantCallValidate(false);
+                    situationProfessionnelle.add(transaction);
+                }
+            }
+        }catch (Exception e){
+            errors.add("Erreur rencontré lors de la création de la situation professionnelle pour l'assuré ");
+            LOG.error("APImportationAPGPandemie#creerSituationProf : Erreur rencontré lors de la création de la situation professionnelle pour l'assuré ", e);
+            if(isJadeThreadError()){
+                addJadeThreadErrorToListError("Situation Professionnelle Employé");
+                // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans l'ajout de la situation prof
+                JadeThread.logClear();
+            }
+        }
+    }
+
+    private void creerSituationProfAssimileEmployeur(BTransaction transaction, String nss, APDroitPandemie droitPandemie, Salary salary) {
+        try {
+            boolean isVersementEmployeur = salary.isHasReceiveSalaryDuringInterruption();
+            String salaireMensuel = String.valueOf(salary.getLastIncome());
+            for(String idAffiliation : listIDAff){
+                AFAffiliation affiliation = findAffiliationById(idAffiliation);
+                if(affiliation != null) {
+                    // creation de la situation prof avec le dernier employeur d'après les CI
+                    APEmployeur emp = new APEmployeur();
+                    emp.setSession(bsession);
+                    emp.setIdTiers(affiliation.getIdTiers());
+                    emp.setIdAffilie(affiliation.getAffiliationId());
+                    emp.add(transaction);
+
+                    APSituationProfessionnelle situationProfessionnelle = new APSituationProfessionnelle();
+                    situationProfessionnelle.setSession(bsession);
+                    situationProfessionnelle.setIdDroit(droitPandemie.getIdDroit());
+                    situationProfessionnelle.setIdEmployeur(emp.getIdEmployeur());
+                    situationProfessionnelle.setIsIndependant(Boolean.FALSE);
+                    situationProfessionnelle.setIsVersementEmployeur(isVersementEmployeur);
+                    situationProfessionnelle.setSalaireMensuel(salaireMensuel);
+
+                    // Vague 2 - Si le salarié est payé sur 13 mois
+                    // On ajoute son 13eme mois sans une autre rémunération annuelle
+                    if (salary.isHasThirteenthMonth()) {
+                        situationProfessionnelle.setAutreRemuneration(salaireMensuel);
+                        situationProfessionnelle.setPeriodiciteAutreRemun(IPRSituationProfessionnelle.CS_PERIODICITE_ANNEE);
+                    }
+
+                    CIEcriture ecriture = retrieveEcrituresAssureAF(getSession(), nss, affiliation.getAffilieNumero(), transaction);
+                    if(ecriture != null){
+                        situationProfessionnelle.setAutreSalaire(ecriture.getMontant());
+                        situationProfessionnelle.setPeriodiciteAutreSalaire(IPRSituationProfessionnelle.CS_PERIODICITE_ANNEE);
+                    }
+
                     salaireMensuel = "";
                     situationProfessionnelle.wantCallValidate(false);
                     situationProfessionnelle.add(transaction);
@@ -1738,6 +2115,233 @@ public class APImportationAPGPandemie extends BProcess {
         return situationProfessionnelle;
     }
 
+    private String findLastIDDroitPandemie(BSession session, final BTransaction transaction, final String idTiers){
+        try {
+            List<String> etat = new ArrayList<>();
+            etat.add(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
+            APDroitPanJointTiersManager manager = new APDroitPanJointTiersManager();
+            manager.setSession(session);
+            manager.setForIdTiers(idTiers);
+            manager.setToDateDebutDroit(DATE_RETRO_DROIT_VAGUE_2);
+            manager.setToDateFinDroit(DATE_RETRO_DROIT_VAGUE_2);
+            manager.setForEtatDroitIn(etat);
+            manager.setOrderByDroitDesc(true);
+            manager.find(transaction, BManager.SIZE_NOLIMIT);
+            List<APDroitPanJointTiers> droitsPandemie = manager.getContainer();
+            if (droitsPandemie.size() > 0) {
+                return droitsPandemie.get(0).getIdDroit();
+            }
+        }catch(Exception e){
+            errors.add("Erreur rencontré lors de la recherche du dernier droit du tiers (IDTiers : "+idTiers+")");
+            LOG.error("APImportationAPGPandemie#findLastIDDroitPandemie : Erreur rencontré lors de la création de la situation professionnelle, lors de la recherche du dernier droit (IDTiers : "+idTiers+")", e);
+
+            if(isJadeThreadError()){
+                addJadeThreadErrorToListError("Situation Professionnelle Indépendant");
+                // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans l'ajout de la situation prof
+                JadeThread.logClear();
+                return null;
+            }
+        }
+        return null;
+    }
+
+    private List<APSituationProfessionnelle> findSituationProfessionnelleByIDDroit(BSession session, final BTransaction transaction, String idDroit) {
+        List<APSituationProfessionnelle> listSituationPro = new ArrayList<>();
+        try {
+            if (!JadeStringUtil.isBlankOrZero(idDroit)) {
+                APSituationProfessionnelleManager managerSitu = new APSituationProfessionnelleManager();
+                managerSitu.setSession(session);
+                managerSitu.setForIdDroit(idDroit);
+                managerSitu.find(transaction, BManager.SIZE_NOLIMIT);
+
+                for (int idSitPro = 0; idSitPro < managerSitu.size(); ++idSitPro) {
+                    APSituationProfessionnelle sitPro = (APSituationProfessionnelle) managerSitu.get(idSitPro);
+                    listSituationPro.add(sitPro);
+                }
+            }
+        }catch(Exception e){
+            errors.add("Erreur rencontré lors de la recherche des situations professionnelles du droit (IDDroit : "+idDroit+")");
+            LOG.error("APImportationAPGPandemie#findLastIDDroitPandemie : Erreur rencontré lors de la création de la situation professionnelle, lors de la recherche des situations professionnelles du droit", e);
+
+            if(isJadeThreadError()){
+                addJadeThreadErrorToListError("Situation Professionnelle Indépendant");
+                // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans l'ajout de la situation prof
+                JadeThread.logClear();
+                return null;
+            }
+        }
+        return listSituationPro;
+    }
+
+    private boolean creerSituationProfPanSelonDroitPrecedent(BSession session, final BTransaction transaction, final APDroitLAPG droit, final String idTiers) {
+        // Récupération du dernier droit
+        String idLastDroit = findLastIDDroitPandemie(session, transaction, idTiers);
+        // Récupération de(s) dernière(s) situation(s) prof
+        List<APSituationProfessionnelle> listLastSituationPro = findSituationProfessionnelleByIDDroit(session, transaction, idLastDroit);
+        // Création des situations professionnelles
+        List<APSituationProfessionnelle> listLastSituationProCrees = creerCopieSituationProf(session, transaction, listLastSituationPro, droit);
+        // Permet de savoir si au moins une situation professionnelle a été créée
+        return listLastSituationProCrees.size() > 0;
+    }
+
+    private CIEcriture retrieveEcrituresAssureAF(BSession session, String nssAssure, String numAffilie, BTransaction transaction) throws Exception {
+        try {
+            CICompteIndividuelManager ciManager = new CICompteIndividuelManager();
+            ciManager.setSession(session);
+            ciManager.setForNumeroAvs(nssAssure);
+            ciManager.orderByAvs(true);
+            ciManager.find(transaction);
+            // pour tous les ci trouvés
+            for (int i = 0; i < ciManager.size(); i++) {
+                CICompteIndividuel compte = (CICompteIndividuel) ciManager.getEntity(i);
+                // Recherche d'une écriture comptable pour l'année 2019 pour les CI
+                CIEcritureManager ecritureSource = new CIEcritureManager();
+                ecritureSource.setSession(session);
+                ecritureSource.setForCompteIndividuelId(compte.getId());
+                ecritureSource.setForAffilie(numAffilie);
+                ecritureSource.setForAnnee("2019");
+                ecritureSource.setForIdTypeCompte(CIEcriture.CS_CI);
+                ecritureSource.setOrderBy("KBNANN DESC");
+                ecritureSource.find(transaction, BManager.SIZE_NOLIMIT);
+                if (!ecritureSource.isEmpty()) {
+                    return (CIEcriture) ecritureSource.getEntity(0);
+                }
+            }
+        }catch (Exception e){
+            errors.add("Une erreur est survenue lors de la recherche des écritures comptable pour le tiers : "+nssAssure);
+            LOG.error("APImportationAPGPandemie#retrieveEcrituresAssure : erreur lors de la récupération des écritures comptable pour le tiers : " + nssAssure, e);
+            throw new Exception("APImportationAPGPandemie#retrieveEcrituresAssure : erreur lors de la récupération des écritures comptable pour le tiers : " + nssAssure);
+        }
+        return null;
+    }
+    /**
+     * Si le tiers possède une affiliation personnelle en cours durant la période du droit, on creer une situation prof.
+     * avec cette affiliation
+     */
+    private void creerSituationProfAssimEmpl(final BTransaction transaction, final APDroitLAPG droit, final String idTiers) {
+        try {
+            APSituationProfessionnelle situationProfessionnelle = null;
+            String masseAnnuel = "0";
+            // on cherche les affiliations pour ce tiers
+            final IAFAffiliation affiliation = (IAFAffiliation) bsession.getAPIFor(IAFAffiliation.class);
+            affiliation.setISession(PRSession.connectSession(bsession, AFApplication.DEFAULT_APPLICATION_NAOS));
+            final Hashtable<Object, Object> param = new Hashtable<Object, Object>();
+            param.put(IAFAffiliation.FIND_FOR_IDTIERS, idTiers);
+            final IAFAffiliation[] affiliations = affiliation.findAffiliation(param);
+
+            if (affiliations.length > 0) {
+                for (int i = 0; i < affiliations.length; i++) {
+                    final IAFAffiliation aff = affiliations[i];
+
+                    // InfoRom531 : On ne reprend que les indépendants et indépendant + employeur.
+                    if (IAFAffiliation.TYPE_AFFILI_INDEP.equals(aff.getTypeAffiliation())
+                            || IAFAffiliation.TYPE_AFFILI_INDEP_EMPLOY.equals(aff.getTypeAffiliation())) {
+
+                        final boolean dateDebutDroitGreaterOrEqualDateDebutApg = BSessionUtil
+                                .compareDateFirstGreaterOrEqual(bsession, droit.getDateDebutDroit(), aff.getDateDebut());
+                        final boolean dateDebutDroitLowerOrEqualDateFinApg = BSessionUtil
+                                .compareDateFirstLowerOrEqual(bsession, droit.getDateDebutDroit(), aff.getDateFin());
+                        // si l'affiliation est en cours
+                        if (dateDebutDroitGreaterOrEqualDateDebutApg && (dateDebutDroitLowerOrEqualDateFinApg
+                                || globaz.jade.client.util.JadeStringUtil.isEmpty(aff.getDateFin()))) {
+
+                            // creation de l'employeur
+                            final APEmployeur emp = new APEmployeur();
+                            emp.setSession(bsession);
+                            emp.setIdTiers(aff.getIdTiers());
+                            emp.setIdAffilie(aff.getAffiliationId());
+                            emp.add(transaction);
+
+                            // retrouver la masse annuelle dans les cotisations
+                            // pers.
+
+                            // on cherche la decision
+                            final CPDecisionManager decision = new CPDecisionManager(); //(CPDecision) bsession.getAPIFor(CPDecision.class);
+                            BSession sessionPhenix = new BSession("PHENIX");
+                            bsession.connectSession(sessionPhenix);
+
+                            decision.setSession(sessionPhenix);
+                            decision.setForIdAffiliation(aff.getAffiliationId());
+                            decision.setForIsActive(Boolean.TRUE);
+                            decision.setForAnneeDecision(Integer.toString(new JADate(droit.getDateDebutDroit()).getYear() - 1));
+                            decision.find(BManager.SIZE_NOLIMIT);
+
+                            // on cherche les données calculées en fonction de la
+                            // decision
+                            if ((decision != null) && (decision.size() > 0)) {
+
+                                final ICPDonneesCalcul donneesCalcul = (ICPDonneesCalcul) bsession
+                                        .getAPIFor(ICPDonneesCalcul.class);
+                                donneesCalcul.setISession(PRSession.connectSession(bsession, "PHENIX"));
+
+                                final Hashtable<Object, Object> parms = new Hashtable<Object, Object>();
+                                parms.put(ICPDonneesCalcul.FIND_FOR_ID_DECISION, ((CPDecision) decision.getEntity(0)).getIdDecision());
+                                parms.put(ICPDonneesCalcul.FIND_FOR_ID_DONNEES_CALCUL, ICPDonneesCalcul.CS_REV_NET);
+
+                                final ICPDonneesCalcul[] donneesCalculs = donneesCalcul.findDonneesCalcul(parms);
+
+                                if ((donneesCalculs != null) && (donneesCalculs.length > 0)) {
+                                    masseAnnuel = donneesCalculs[0].getMontant();
+                                }
+                            }
+
+                            // creation de la situation prof.
+                            situationProfessionnelle = new APSituationProfessionnelle();
+                            situationProfessionnelle.setSession(bsession);
+                            situationProfessionnelle.setIdDroit(droit.getIdDroit());
+                            situationProfessionnelle.setIdEmployeur(emp.getIdEmployeur());
+                            situationProfessionnelle.setIsIndependant(Boolean.TRUE);
+                            situationProfessionnelle.setIsVersementEmployeur(Boolean.TRUE);
+                            // on set la masse annuelle
+                            situationProfessionnelle.setRevenuIndependant(masseAnnuel);
+                            situationProfessionnelle.wantCallValidate(false);
+                            situationProfessionnelle.add(transaction);
+                        }
+                    }
+                }
+            }
+        }catch (Exception e){
+            errors.add("Erreur rencontré lors de la création de la situation professionnelle pour un indépendant (IDTiers : "+idTiers+")");
+            LOG.error("APImportationAPGPandemie#creerSituationProfSiIndependant : Erreur rencontré lors de la création de la situation professionnelle pour un indépendant ", e);
+
+            if(isJadeThreadError()){
+                addJadeThreadErrorToListError("Situation Professionnelle Indépendant");
+                // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans l'ajout de la situation prof
+                JadeThread.logClear();
+            }
+        }
+    }
+
+    private List<APSituationProfessionnelle> creerCopieSituationProf(BSession session, BTransaction transaction, List<APSituationProfessionnelle> listLastSituationPro, APDroitLAPG droit) {
+        List<APSituationProfessionnelle> situProCrees = new ArrayList<>();
+        try {
+            for (APSituationProfessionnelle sitPro : listLastSituationPro) {
+                // creation de la situation prof.
+                APSituationProfessionnelle newSituationProfessionnelle = new APSituationProfessionnelle();
+                newSituationProfessionnelle.setSession(session);
+                newSituationProfessionnelle.setIdDroit(droit.getIdDroit());
+                newSituationProfessionnelle.setIdEmployeur(sitPro.getIdEmployeur());
+                newSituationProfessionnelle.setIsIndependant(sitPro.getIsIndependant());
+                newSituationProfessionnelle.setIsVersementEmployeur(sitPro.getIsVersementEmployeur());
+                // on set la masse annuelle
+                newSituationProfessionnelle.setRevenuIndependant(sitPro.getRevenuIndependant());
+                newSituationProfessionnelle.wantCallValidate(false);
+                newSituationProfessionnelle.add(transaction);
+                situProCrees.add(newSituationProfessionnelle);
+            }
+        }catch (Exception e){
+            errors.add("Erreur rencontré lors de la création de la situation professionnelle selon droit précédent ");
+            LOG.error("APImportationAPGPandemie#creerSituationProfSiIndependant : Erreur rencontré lors de la création de la situation professionnelle selon droit précédent ", e);
+
+            if(isJadeThreadError()){
+                addJadeThreadErrorToListError("Situation Professionnelle Indépendant");
+                // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans l'ajout de la situation prof
+                JadeThread.logClear();
+            }
+        }
+        return situProCrees;
+    }
+
     /**
      * @param session
      * @param transaction
@@ -1794,14 +2398,14 @@ public class APImportationAPGPandemie extends BProcess {
             }
             return null;
         }catch (Exception e){
-            errors.add("Une erreur est survenue lors de la recherche des écritures comptable pour le tiers : "+nss);
-            LOG.error("APImportationAPGPandemie#retrieveEcrituresAssure : erreur lors de la récupération des écritures comptable pour le tiers : " + nss, e);
-            throw new Exception("APImportationAPGPandemie#retrieveEcrituresAssure : erreur lors de la récupération des écritures comptable pour le tiers : " + nss);
+            errors.add("Une erreur est survenue lors de la recherche des écritures comptable pour le tiers : "+nssAssure);
+            LOG.error("APImportationAPGPandemie#retrieveEcrituresAssure : erreur lors de la récupération des écritures comptable pour le tiers : " + nssAssure, e);
+            throw new Exception("APImportationAPGPandemie#retrieveEcrituresAssure : erreur lors de la récupération des écritures comptable pour le tiers : " + nssAssure);
         }
     }
 
     private boolean isCaisseCompetentePourIndependant(final BSession session, final String dateDebut,
-                                                      final String dateFin, final String idTiers) throws Exception {
+                                                      final String dateFin, final String idTiers, final String nss) throws Exception {
         try {
             boolean isCompetente = false;
             List<String> listAffNonPriseEnCompte = new ArrayList<>();

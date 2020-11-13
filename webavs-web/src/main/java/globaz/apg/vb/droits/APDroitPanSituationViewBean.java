@@ -162,6 +162,22 @@ public class APDroitPanSituationViewBean extends PRAbstractViewBeanSupport {
         getDroitPanSituation().setDateFinPerteGains(dateFinPerteGains);
     }
 
+    public String getDateDebutActiviteLimitee() {
+        return getDroitPanSituation().getDateDebutActiviteLimitee();
+    }
+
+    public void setDateDebutActiviteLimitee(String dateDebutActiviteLimitee) {
+        getDroitPanSituation().setDateDebutActiviteLimitee(dateDebutActiviteLimitee);
+    }
+
+    public String getDateFinActiviteLimitee() {
+        return getDroitPanSituation().getDateFinActiviteLimitee();
+    }
+
+    public void setDateFinActiviteLimitee(String dateFinActiviteLimitee) {
+        getDroitPanSituation().setDateFinActiviteLimitee(dateFinActiviteLimitee);
+    }
+
     public void setRemarqueRefus(String remarqueRefus) {
         getDroitPanSituation().setRemarque(remarqueRefus);
     }

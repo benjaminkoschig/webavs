@@ -47,7 +47,8 @@ public class Rule61 extends Rule {
     public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException {
         String serviceType = champsAnnonce.getServiceType();
 
-        if (serviceType.equals(APGenreServiceAPG.Quarantaine.getCodePourAnnonce())) {
+        if (serviceType.equals(APGenreServiceAPG.Quarantaine.getCodePourAnnonce())
+            ||serviceType.equals(APGenreServiceAPG.Quarantaine_17_09_20.getCodePourAnnonce())) {
             try {
                 int jourMax = Integer.parseInt(FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(), "1", APParameter.QUARANTAINE_JOURS_MAX.getParameterName(), "0", "", 0));
 

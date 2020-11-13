@@ -28,6 +28,7 @@ import globaz.apg.properties.APParameter;
 import globaz.apg.rapg.rules.Rule;
 import globaz.apg.rapg.rules.RulesFactory;
 import globaz.apg.utils.APGUtils;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.FWFindParameter;
 import globaz.jade.client.util.JadeDateUtil;
@@ -478,7 +479,8 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
     }
 
     private void setDateFinPandemie(BSession session, APDroitLAPG droit, APPeriodeAPG periode) throws Exception {
-        if(IAPDroitLAPG.CS_QUARANTAINE.equals(droit.getGenreService())) {
+        if(IAPDroitLAPG.CS_QUARANTAINE.equals(droit.getGenreService())
+            || IAPDroitLAPG.CS_QUARANTAINE_17_09_20.equals(droit.getGenreService())) {
             resolveFinJourMaxParam(session, periode, APParameter.QUARANTAINE_JOURS_MAX.getParameterName());
         } else {
             Calendar cal = Calendar.getInstance();
@@ -528,7 +530,7 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
                 APDroitLAPGManager manager = new APDroitLAPGManager();
                 manager.setSession(session);
                 manager.setForIdDroit(annonce.getIdDroit());
-                manager.find();
+                manager.find(BManager.SIZE_USEDEFAULT);
                 String dateDebut = manager.size() > 0 ? ((APDroitLAPG) manager.get(0)).getDateDebutDroit() : annonce.getStartOfPeriod();
                 BigDecimal valPlage = new BigDecimal(FWFindParameter.findParameter(
                         session.getCurrentThreadTransaction(), "1", parametre, dateDebut, "", 0));

@@ -24,6 +24,10 @@ public class APDroitPanJointTiersManager extends PRAbstractManager {
     private String forIdTiers;
     private String likeNumeroAvs;
     private List<String> forEtatDroitNotIn;
+    private List<String> forEtatDroitIn;
+    private String toDateDebutDroit;
+    private String toDateFinDroit;
+    private boolean orderByDroitDesc = false;
 
     public APDroitPanJointTiersManager() {
         super();
@@ -138,12 +142,45 @@ public class APDroitPanJointTiersManager extends PRAbstractManager {
             }
             sql.append(")");
         }
+        if ((forEtatDroitIn != null) && (forEtatDroitIn.size() > 0)) {
+            if (sql.length() > 0) {
+                sql.append(" AND ");
+            }
+            sql.append(tableDroitLAPG).append(".").append(APDroitLAPG.FIELDNAME_ETAT);
+            sql.append(" IN (");
+            for (int ctr = 0; ctr < forEtatDroitIn.size(); ctr++) {
+                sql.append(forEtatDroitIn.get(ctr));
+                if ((ctr + 1) < forEtatDroitIn.size()) {
+                    sql.append(", ");
+                }
+            }
+            sql.append(")");
+        }
+
+        if (!JadeStringUtil.isBlank(toDateDebutDroit)) {
+            if (sql.length() > 0) {
+                sql.append(" AND ");
+            }
+            sql.append(tableDroitLAPG).append(".").append(APDroitLAPG.FIELDNAME_DATEDEBUTDROIT);
+            sql.append("<");
+            sql.append(this._dbWriteDateAMJ(statement.getTransaction(), toDateDebutDroit));
+        }
+
+        if (!JadeStringUtil.isBlank(toDateFinDroit)) {
+            if (sql.length() > 0) {
+                sql.append(" AND ");
+            }
+            sql.append(tableDroitLAPG).append(".").append(APDroitLAPG.FIELDNAME_DATEFINDROIT);
+            sql.append("<");
+            sql.append(this._dbWriteDateAMJ(statement.getTransaction(), toDateFinDroit));
+        }
+
         return sql.toString();
     }
 
     @Override
-    protected APDroitMaterniteJointTiers _newEntity() throws Exception {
-        return new APDroitMaterniteJointTiers();
+    protected APDroitPanJointTiers _newEntity() throws Exception {
+        return new APDroitPanJointTiers();
     }
 
     public String getForDroitContenuDansDateDebut() {
@@ -172,6 +209,14 @@ public class APDroitPanJointTiersManager extends PRAbstractManager {
     @Override
     public String getOrderByDefaut() {
         return APDroitLAPG.FIELDNAME_IDDROIT_LAPG;
+    }
+
+    @Override
+    protected String _getOrder(BStatement statement) {
+        if(orderByDroitDesc){
+            return APDroitLAPG.FIELDNAME_IDDROIT_LAPG + " DESC";
+        }
+        return getOrderByDefaut();
     }
 
     public void setForDroitContenuDansDateDebut(String forDroitContenuDansDateDebut) {
@@ -206,4 +251,35 @@ public class APDroitPanJointTiersManager extends PRAbstractManager {
         this.forEtatDroitNotIn = forEtatDroitNotIn;
     }
 
+    public List<String> getForEtatDroitIn() {
+        return forEtatDroitIn;
+    }
+
+    public void setForEtatDroitIn(List<String> forEtatDroitIn) {
+        this.forEtatDroitIn = forEtatDroitIn;
+    }
+
+    public String getToDateDebutDroit() {
+        return toDateDebutDroit;
+    }
+
+    public void setToDateDebutDroit(String toDateDebutDroit) {
+        this.toDateDebutDroit = toDateDebutDroit;
+    }
+
+    public String getToDateFinDroit() {
+        return toDateFinDroit;
+    }
+
+    public void setToDateFinDroit(String toDateFinDroit) {
+        this.toDateFinDroit = toDateFinDroit;
+    }
+
+    public boolean isOrderByDroitDesc() {
+        return orderByDroitDesc;
+    }
+
+    public void setOrderByDroitDesc(boolean orderByDroitDesc) {
+        this.orderByDroitDesc = orderByDroitDesc;
+    }
 }

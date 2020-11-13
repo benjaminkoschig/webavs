@@ -36,8 +36,16 @@ public enum APGenreServiceAPG {
     IndependantPerteGains("403", IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS),
     GardeParentaleHandicap("404", IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP),
     IndependantManifAnnulee("405", IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE),
-    SalarieEvenementiel("406", IAPDroitLAPG.CS_SALARIE_EVENEMENTIEL);
-
+    SalarieEvenementiel("406", IAPDroitLAPG.CS_SALARIE_EVENEMENTIEL),
+    IndependantFermeture("410", IAPDroitLAPG.CS_INDEPENDANT_FERMETURE),
+    DirigeantSalarieFermeture("411", IAPDroitLAPG.CS_DIRIGEANT_SALARIE_FERMETURE),
+    IndependantManifestationAnnulee("412", IAPDroitLAPG.CS_INDEPENDANT_MANIFESTATION_ANNULEE),
+    DirigeantSalarieManifestationAnnulee("413", IAPDroitLAPG.CS_DIRIGEANT_SALARIE_MANIFESTATION_ANNULEE),
+    IndependantLimitationActivite("414", IAPDroitLAPG.CS_INDEPENDANT_LIMITATION_ACTIVITE),
+    DirigeantSalarieLimitationActivite("415", IAPDroitLAPG.CS_DIRIGEANT_SALARIE_LIMITATION_ACTIVITE),
+    GardeParentale_17_09_20("416", IAPDroitLAPG.CS_GARDE_PARENTALE_17_09_20),
+    Quarantaine_17_09_20("417", IAPDroitLAPG.CS_QUARANTAINE_17_09_20),
+    GardeParentaleHandicap_17_09_20("418", IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20);
 
     public static APGenreServiceAPG resoudreGenreParCodeSystem(final String codeSystem) {
         for (final APGenreServiceAPG genre : APGenreServiceAPG.values()) {
@@ -77,7 +85,10 @@ public enum APGenreServiceAPG {
             return false;
         }
         for (APGenreServiceAPG gs : Arrays.asList(APGenreServiceAPG.GardeParentale, APGenreServiceAPG.Quarantaine,  APGenreServiceAPG.IndependantPandemie,
-                APGenreServiceAPG.IndependantPerteGains, APGenreServiceAPG.GardeParentaleHandicap, APGenreServiceAPG.IndependantManifAnnulee, APGenreServiceAPG.SalarieEvenementiel)) {
+                APGenreServiceAPG.IndependantPerteGains, APGenreServiceAPG.GardeParentaleHandicap, APGenreServiceAPG.IndependantManifAnnulee, APGenreServiceAPG.SalarieEvenementiel,
+                APGenreServiceAPG.IndependantFermeture, APGenreServiceAPG.DirigeantSalarieFermeture,APGenreServiceAPG.IndependantManifestationAnnulee,
+                APGenreServiceAPG.DirigeantSalarieManifestationAnnulee,APGenreServiceAPG.IndependantLimitationActivite,APGenreServiceAPG.DirigeantSalarieLimitationActivite,
+                APGenreServiceAPG.GardeParentale_17_09_20,APGenreServiceAPG.Quarantaine_17_09_20,APGenreServiceAPG.GardeParentaleHandicap_17_09_20)) {
             if (gs.getCodePourAnnonce().equals(genreService)) {
                 return true;
             }

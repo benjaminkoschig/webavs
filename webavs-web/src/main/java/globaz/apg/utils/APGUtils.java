@@ -123,7 +123,16 @@ public class APGUtils {
                 || IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS.equals(csTypeAllocation)
                 || IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP.equals(csTypeAllocation)
                 || IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE.equals(csTypeAllocation))
-                || IAPDroitLAPG.CS_SALARIE_EVENEMENTIEL.equals(csTypeAllocation);
+                || IAPDroitLAPG.CS_SALARIE_EVENEMENTIEL.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_INDEPENDANT_FERMETURE.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_DIRIGEANT_SALARIE_FERMETURE.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_INDEPENDANT_MANIFESTATION_ANNULEE.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_DIRIGEANT_SALARIE_MANIFESTATION_ANNULEE.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_INDEPENDANT_LIMITATION_ACTIVITE.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_DIRIGEANT_SALARIE_LIMITATION_ACTIVITE.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_GARDE_PARENTALE_17_09_20.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_QUARANTAINE_17_09_20.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20.equals(csTypeAllocation);
     }
 
 
@@ -139,7 +148,16 @@ public class APGUtils {
                 || IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS.equals(csTypeAllocation)
                 || IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP.equals(csTypeAllocation)
                 || IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE.equals(csTypeAllocation))
-                || IAPDroitLAPG.CS_SALARIE_EVENEMENTIEL.equals(csTypeAllocation);
+                || IAPDroitLAPG.CS_SALARIE_EVENEMENTIEL.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_INDEPENDANT_FERMETURE.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_DIRIGEANT_SALARIE_FERMETURE.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_INDEPENDANT_MANIFESTATION_ANNULEE.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_DIRIGEANT_SALARIE_MANIFESTATION_ANNULEE.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_INDEPENDANT_LIMITATION_ACTIVITE.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_DIRIGEANT_SALARIE_LIMITATION_ACTIVITE.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_GARDE_PARENTALE_17_09_20.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_QUARANTAINE_17_09_20.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20.equals(csTypeAllocation);
     }
 
     public static String getCSDomaineFromTypeDemande(String typePrestation) {

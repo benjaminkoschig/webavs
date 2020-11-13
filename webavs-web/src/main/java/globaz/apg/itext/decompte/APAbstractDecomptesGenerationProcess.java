@@ -780,6 +780,78 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                             if (buffer.length() > 0) {
                                 buffer.append("\n");
                             }
+                        } else if(Objects.equals(genreService, IAPDroitLAPG.CS_INDEPENDANT_FERMETURE)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "410")
+                                && Objects.nonNull(document.getTextes(4).getTexte(410))){
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(410).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
+                        } else if(Objects.equals(genreService, IAPDroitLAPG.CS_DIRIGEANT_SALARIE_FERMETURE)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "411")
+                                && Objects.nonNull(document.getTextes(4).getTexte(411))){
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(411).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
+                        } else if(Objects.equals(genreService, IAPDroitLAPG.CS_INDEPENDANT_MANIFESTATION_ANNULEE)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "412")
+                                && Objects.nonNull(document.getTextes(4).getTexte(412))){
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(412).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
+                        } else if(Objects.equals(genreService, IAPDroitLAPG.CS_DIRIGEANT_SALARIE_MANIFESTATION_ANNULEE)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "413")
+                                && Objects.nonNull(document.getTextes(4).getTexte(413))){
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(413).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
+                        } else if(Objects.equals(genreService, IAPDroitLAPG.CS_INDEPENDANT_LIMITATION_ACTIVITE)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "414")
+                                && Objects.nonNull(document.getTextes(4).getTexte(414))){
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(414).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
+                        } else if(Objects.equals(genreService, IAPDroitLAPG.CS_DIRIGEANT_SALARIE_LIMITATION_ACTIVITE)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "415")
+                                && Objects.nonNull(document.getTextes(4).getTexte(415))){
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(415).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
+                        } else if(Objects.equals(genreService, IAPDroitLAPG.CS_GARDE_PARENTALE_17_09_20)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "416")
+                                && Objects.nonNull(document.getTextes(4).getTexte(416))){
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(416).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
+                        } else if(Objects.equals(genreService, IAPDroitLAPG.CS_QUARANTAINE_17_09_20)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "417")
+                                && Objects.nonNull(document.getTextes(4).getTexte(417))){
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(417).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
+                        } else if(Objects.equals(genreService, IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "418")
+                                && Objects.nonNull(document.getTextes(4).getTexte(418))){
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(418).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
                         }
                     }
                 } else {

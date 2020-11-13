@@ -879,18 +879,18 @@ public class APBasesCalculBuilder {
 
         List<APPeriodeComparable> listPeriode = getApPeriodeDroit(droit.getIdDroit());
 
-        int delai = autreJours == 0 ? getDelaiSelonService() : 0;
+        int jCarrence = autreJours == 0 ? getJourCarenceSelonService() : 0;
 
-        if(autreJours == 0 && delai > 0) {
-            // vérifie si les jours de carrence n'ont pas été atteind dans d'autres droits
-            delai = calcDelaiForDroits(delai, dateDebut);
+        if(autreJours == 0 && jCarrence > 0) {
+            // vérifie si les jours de carrence n'ont pas été atteint dans d'autres droits
+            jCarrence = calcCarrenceForDroits(jCarrence, dateDebut);
         }
 
-        calcDateDebutFin(droit.getIdDroit(), delai, dateDebut, listPeriode);
+        calcDateDebutFin(droit.getIdDroit(), jCarrence, dateDebut, listPeriode);
 
-        // ajout d'un délai selon les services
+        // ajout des jours de carrence selon les services
         if(autreJours == 0){
-            delaiSelonService(listPeriode, delai);
+            delaiSelonService(listPeriode, jCarrence);
         }
 
         int nbJourSoldes = 0;
@@ -920,7 +920,8 @@ public class APBasesCalculBuilder {
             // ajouter l'événement "fin de la période"
             commands.add(eCommand);
 
-            if(!IAPDroitLAPG.CS_QUARANTAINE.equals(droit.getGenreService())) {
+            if(!IAPDroitLAPG.CS_QUARANTAINE.equals(droit.getGenreService())
+                && !IAPDroitLAPG.CS_QUARANTAINE_17_09_20.equals(droit.getGenreService())) {
                 // couper par mois
                 Date debut = DF.parse(periode.getDateDebutPeriode());
                 Calendar fin = getCalendarInstance();
@@ -933,7 +934,12 @@ public class APBasesCalculBuilder {
         return nbJourSoldes;
     }
 
-    private int calcDelaiForDroits(int delai, String dateDebut) throws Exception {
+    private int calcCarrenceForDroits(int delai, String dateDebut) throws Exception {
+        // les jours de Carrence pour les gardes parentales doivent être ajouter à chaque droit
+        if(IAPDroitLAPG.CS_GARDE_PARENTALE_17_09_20.equals(droit.getGenreService())
+                || IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20.equals(droit.getGenreService())) {
+            return delai;
+        }
         List<String> listDroit = ApgServiceLocator.getEntityService().getAutresDroits(session, droit.getIdDroit());
         for(String idDroit:listDroit){
             List<APPeriodeComparable> listPeriode = getApPeriodeDroit(idDroit);
@@ -956,7 +962,8 @@ public class APBasesCalculBuilder {
             }
             // si pas de date fin mettre la fin du mois en cours pour le calcul
             if (JadeStringUtil.isEmpty(periode.getDateFinPeriode())) {
-                if(IAPDroitLAPG.CS_QUARANTAINE.equals(droit.getGenreService())) {
+                if(IAPDroitLAPG.CS_QUARANTAINE.equals(droit.getGenreService())
+                        || IAPDroitLAPG.CS_QUARANTAINE_17_09_20.equals(droit.getGenreService())) {
                     resolveFinJourMaxParam(periode, APParameter.QUARANTAINE_JOURS_MAX.getParameterName(), delai);
                 } else {
                     Calendar cal = Calendar.getInstance();
@@ -988,27 +995,33 @@ public class APBasesCalculBuilder {
         return listPeriode;
     }
 
-    private int getDelaiSelonService() throws Exception {
-        Integer delai = 0;
+    private int getJourCarenceSelonService() throws Exception {
+        Integer jourCarence = 0;
         String valeur = "";
         switch(droit.getGenreService()){
             case IAPDroitLAPG.CS_GARDE_PARENTALE:
             case IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP:
+            case IAPDroitLAPG.CS_GARDE_PARENTALE_17_09_20:
+            case IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20:
                 valeur = APParameter.GARDE_PARENTAL_JOURS_SANS_IDEMNISATION.getParameterName();break;
             case IAPDroitLAPG.CS_QUARANTAINE:
+            case IAPDroitLAPG.CS_QUARANTAINE_17_09_20:
                 valeur = APParameter.QUARANTAINE_JOURS_SANS_INDEMISATION.getParameterName();break;
             case IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE:
             case IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS:
             case IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE:
+            case IAPDroitLAPG.CS_INDEPENDANT_FERMETURE:
+            case IAPDroitLAPG.CS_INDEPENDANT_MANIFESTATION_ANNULEE:
+            case IAPDroitLAPG.CS_INDEPENDANT_LIMITATION_ACTIVITE:
                 valeur = APParameter.INDEPENDANT_JOURS_SANS_INDEMISATION.getParameterName();break;
             default:
                 valeur = "";
         }
 
         if(!valeur.isEmpty()) {
-            delai = Integer.valueOf(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", valeur, "0", "", 0));
+            jourCarence = Integer.valueOf(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", valeur, "0", "", 0));
         }
-        return delai;
+        return jourCarence;
     }
 
     private void resolveFinJourMaxParam(APPeriodeComparable periode, String param, int delai) throws Exception {
@@ -1056,6 +1069,7 @@ public class APBasesCalculBuilder {
                 };
                 break;
             case IAPDroitLAPG.CS_QUARANTAINE:
+            case IAPDroitLAPG.CS_QUARANTAINE_17_09_20:
                 autreJours = 0;
                 jourMaximum = getJourMax(APParameter.QUARANTAINE_JOURS_MAX.getParameterName(), null);break;
             default:
@@ -1151,6 +1165,16 @@ public class APBasesCalculBuilder {
                 valeur = APParameter.FERMETURE_EMTREPRISE_DATE_MINI.getParameterName();break;
             case IAPDroitLAPG.CS_SALARIE_EVENEMENTIEL:
                 valeur = APParameter.SALARIE_EVENEMENTIEL_DATE.getParameterName();break;
+            case IAPDroitLAPG.CS_INDEPENDANT_FERMETURE:
+            case IAPDroitLAPG.CS_DIRIGEANT_SALARIE_FERMETURE:
+            case IAPDroitLAPG.CS_INDEPENDANT_MANIFESTATION_ANNULEE:
+            case IAPDroitLAPG.CS_DIRIGEANT_SALARIE_MANIFESTATION_ANNULEE:
+            case IAPDroitLAPG.CS_INDEPENDANT_LIMITATION_ACTIVITE:
+            case IAPDroitLAPG.CS_DIRIGEANT_SALARIE_LIMITATION_ACTIVITE:
+            case IAPDroitLAPG.CS_GARDE_PARENTALE_17_09_20:
+            case IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20:
+            case IAPDroitLAPG.CS_QUARANTAINE_17_09_20:
+                valeur = APParameter.DIRECTIVE_NOVEMBRE_2020.getParameterName();break;
 
             default:return dateDebut;
         }

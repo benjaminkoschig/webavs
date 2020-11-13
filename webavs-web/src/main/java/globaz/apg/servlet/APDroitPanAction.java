@@ -40,7 +40,8 @@ public class APDroitPanAction extends APAbstractDroitPAction {
                                            HttpServletResponse response, FWViewBeanInterface viewBean) {
         APDroitPanDTO dto =new APDroitPanDTO(((APDroitPanViewBean) viewBean).getDroit());
         PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO, dto);
-        if(IAPDroitLAPG.CS_GARDE_PARENTALE.equals(((APDroitPanViewBean) viewBean).getDroit().getGenreService()) || IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP.equals(((APDroitPanViewBean) viewBean).getDroit().getGenreService())) {
+        if(IAPDroitLAPG.CS_GARDE_PARENTALE.equals(((APDroitPanViewBean) viewBean).getDroit().getGenreService()) || IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP.equals(((APDroitPanViewBean) viewBean).getDroit().getGenreService())
+            || IAPDroitLAPG.CS_GARDE_PARENTALE_17_09_20.equals(((APDroitPanViewBean) viewBean).getDroit().getGenreService()) || IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20.equals(((APDroitPanViewBean) viewBean).getDroit().getGenreService())) {
             return this.getUserActionURL(request, IAPActions.ACTION_ENFANT_PAN, FWAction.ACTION_CHERCHER
                     + "&" + APAbstractDroitDTOAction.PARAM_ID_DROIT + "=" + dto.getIdDroit());
         } else {
@@ -60,7 +61,8 @@ public class APDroitPanAction extends APAbstractDroitPAction {
                                             HttpServletResponse response, FWViewBeanInterface viewBean) {
         APDroitPanDTO dto =new APDroitPanDTO(((APDroitPanViewBean) viewBean).getDroit());
         PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO, dto);
-        if(IAPDroitLAPG.CS_GARDE_PARENTALE.equals(((APDroitPanViewBean) viewBean).getDroit().getGenreService()) || IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP.equals(((APDroitPanViewBean) viewBean).getDroit().getGenreService())) {
+        if(IAPDroitLAPG.CS_GARDE_PARENTALE.equals(((APDroitPanViewBean) viewBean).getDroit().getGenreService()) || IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP.equals(((APDroitPanViewBean) viewBean).getDroit().getGenreService())
+                || IAPDroitLAPG.CS_GARDE_PARENTALE_17_09_20.equals(((APDroitPanViewBean) viewBean).getDroit().getGenreService()) || IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20.equals(((APDroitPanViewBean) viewBean).getDroit().getGenreService())) {
             return this.getUserActionURL(request, IAPActions.ACTION_ENFANT_PAN, FWAction.ACTION_CHERCHER
                     + "&" + APAbstractDroitDTOAction.PARAM_ID_DROIT + "=" + dto.getIdDroit());
         } else {

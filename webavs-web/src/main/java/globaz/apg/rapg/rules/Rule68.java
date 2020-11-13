@@ -1,6 +1,8 @@
 package globaz.apg.rapg.rules;
 
 import globaz.apg.ApgServiceLocator;
+import globaz.apg.db.droits.APDroitLAPG;
+import globaz.apg.db.droits.APDroitLAPGManager;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.droits.APSituationProfessionnelleManager;
 import globaz.apg.enums.APGenreServiceAPG;
@@ -11,6 +13,7 @@ import globaz.apg.pojo.APChampsAnnonce;
 import globaz.apg.properties.APParameter;
 import globaz.globall.db.BManager;
 import globaz.globall.db.FWFindParameter;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import org.safehaus.uuid.Logger;
 
@@ -25,6 +28,8 @@ import java.math.BigDecimal;
  *
  */
 public class Rule68 extends Rule {
+
+    private static final String dateMax = "16.09.2020";
 
     /**
      * @param errorCode
@@ -46,6 +51,16 @@ public class Rule68 extends Rule {
         if (serviceType.equals(APGenreServiceAPG.SalarieEvenementiel.getCodePourAnnonce())) {
             try {
 
+                APDroitLAPGManager mng = new APDroitLAPGManager();
+                mng.setSession(getSession());
+                mng.setForIdDroit(champsAnnonce.getIdDroit());
+                mng.find(BManager.SIZE_USEDEFAULT);
+                String dateDebut = mng.size() > 0 ? ((APDroitLAPG) mng.get(0)).getDateDebutDroit() : champsAnnonce.getStartOfPeriod();
+
+                // ne doit plus être vérifié aprés le 16.09.2020
+                if(JadeDateUtil.isDateBefore(dateMax, dateDebut)) {
+                    return true;
+                }
 
                 final APSituationProfessionnelleManager manager = new APSituationProfessionnelleManager();
                 manager.setSession(getSession());

@@ -869,6 +869,15 @@
 									<ct:excludeCode code="<%=IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP%>"/>
 									<ct:excludeCode code="<%=IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE%>"/>
 									<ct:excludeCode code="<%=IAPDroitLAPG.CS_SALARIE_EVENEMENTIEL%>"/>
+									<ct:excludeCode code="<%=IAPDroitLAPG.CS_INDEPENDANT_FERMETURE%>"/>
+									<ct:excludeCode code="<%=IAPDroitLAPG.CS_DIRIGEANT_SALARIE_FERMETURE%>"/>
+									<ct:excludeCode code="<%=IAPDroitLAPG.CS_INDEPENDANT_MANIFESTATION_ANNULEE%>"/>
+									<ct:excludeCode code="<%=IAPDroitLAPG.CS_DIRIGEANT_SALARIE_MANIFESTATION_ANNULEE%>"/>
+									<ct:excludeCode code="<%=IAPDroitLAPG.CS_INDEPENDANT_LIMITATION_ACTIVITE%>"/>
+									<ct:excludeCode code="<%=IAPDroitLAPG.CS_DIRIGEANT_SALARIE_LIMITATION_ACTIVITE%>"/>
+									<ct:excludeCode code="<%=IAPDroitLAPG.CS_GARDE_PARENTALE_17_09_20%>"/>
+									<ct:excludeCode code="<%=IAPDroitLAPG.CS_QUARANTAINE_17_09_20%>"/>
+									<ct:excludeCode code="<%=IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20%>"/>
 								</ct:optionsCodesSystems>
 							</ct:select>
 						</td>

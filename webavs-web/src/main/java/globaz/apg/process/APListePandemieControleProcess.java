@@ -394,7 +394,7 @@ public class APListePandemieControleProcess extends BProcess {
         sql.append("inner join schema.tipavsp as tip on dem1.waitie = tip.htitie ");
         sql.append("inner join schema.apbrules on dro.vaidro = vriddr ");
         sql.append("inner join schema.titierp as tie on dem1.waitie = tie.htitie ");
-        sql.append("where dro.vatgse in (52001040,52001041,52001042,52001043,52001044,52001045,52001046)");
+        sql.append("where dro.vatgse in (52001040,52001041,52001042,52001043,52001044,52001045,52001046,52001060,52001061,52001062,52001063,52001064,52001065)");
         sql.append("and dro.vateta in (52003007,52003003,52003002) ");
         sql.append("and vrbrco = 65 ");
         sql.append("and dro.vaidro not in (select dro.vaidro from schema.apdroip as dr10 where dr10.vaipar = dro.vaidro)");
@@ -423,7 +423,7 @@ public class APListePandemieControleProcess extends BProcess {
         sql.append("inner join schema.tipavsp as tip on dem1.waitie = tip.htitie ");
         sql.append("inner join schema.apbrules on dro.vaidro = vriddr ");
         sql.append("inner join schema.titierp as tie on dem1.waitie = tie.htitie ");
-        sql.append("where dro.vatgse in (52001040,52001041,52001042,52001043,52001044,52001045,52001046)");
+        sql.append("where dro.vatgse in (52001040,52001041,52001042,52001043,52001044,52001045,52001046,52001060,52001061,52001062,52001063,52001064,52001065)");
         sql.append("and dro.vateta in (52003007,52003003,52003002) ");
         sql.append("and vrbrco = 66 ");
         sql.append("and dro.vaidro not in (select dro.vaidro from schema.apdroip as dr10 where dr10.vaipar = dro.vaidro)");
@@ -452,7 +452,7 @@ public class APListePandemieControleProcess extends BProcess {
         sql.append("inner join schema.tipavsp as tip on dem1.waitie = tip.htitie ");
         sql.append("inner join schema.apbrules on dro.vaidro = vriddr ");
         sql.append("inner join schema.titierp as tie on dem1.waitie = tie.htitie ");
-        sql.append("where dro.vatgse in (52001040,52001041,52001042,52001043,52001044,52001045,52001046)");
+        sql.append("where dro.vatgse in (52001040,52001041,52001042,52001043,52001044,52001045,52001046,52001060,52001061,52001062,52001063,52001064,52001065)");
         sql.append("and dro.vateta in (52003007,52003003,52003002) ");
         sql.append("and vrbrco = 67 ");
         sql.append("and dro.vaidro not in (select dro.vaidro from schema.apdroip as dr10 where dr10.vaipar = dro.vaidro)");
@@ -512,7 +512,7 @@ public class APListePandemieControleProcess extends BProcess {
         sql.append("where dem1.waitie in (select waitie from (SELECT dem10.waitie, count(*) ");
         sql.append("FROM schema.apdroip as dr2 ");
         sql.append("inner join schema.prdemap as dem10 on dr2.vaidem = dem10.waidem ");
-        sql.append("where dr2.vatgse in (52001040,52001041,52001042,52001043,52001044,52001045,52001046) ");
+        sql.append("where dr2.vatgse in (52001040,52001041,52001042,52001043,52001044,52001045,52001046,52001060,52001061,52001062,52001063,52001064,52001065)");
         sql.append("and dem10.wattde = 52201008 ");
         sql.append("and dr2.vaidro not in (select dr2.vaidro from schema.apdroip as dr3 where dr3.vaipar = dr2.vaidro)");
         sql.append("GROUP by dem10.waitie ");
@@ -560,7 +560,7 @@ public class APListePandemieControleProcess extends BProcess {
         sql.append("inner join schema.aprepap as rep on pre.vhiprs = rep.viipra ");
         sql.append("where dr1.vaidro in ");
         sql.append("(select vaidro from ( SELECT dr2.vaidro, count(*) FROM schema.apdroip as dr2 inner join schema.apsiprp on dr2.vaidro = vfidro ");
-        sql.append("where dr2.vatgse in (52001040,52001041,52001042,52001043,52001044,52001045,52001046) and dr2.vaidro not in ( select dr2.vaidro from schema.apdroip as dr3 where dr3.vaipar = dr2.vaidro) ");
+        sql.append("where dr2.vatgse in (52001040,52001041,52001042,52001043,52001044,52001045,52001046,52001060,52001061,52001062,52001063,52001064,52001065) and dr2.vaidro not in ( select dr2.vaidro from schema.apdroip as dr3 where dr3.vaipar = dr2.vaidro) ");
         sql.append("GROUP by dr2.vaidro having count(*)> 1))");
         sql.append("and dr1.vatgse in (52001040,52001041,52001042,52001043,52001044,52001045,52001046) ");
         sql.append("and dem1.wattde = 52201008 ");

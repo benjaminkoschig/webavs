@@ -68,7 +68,7 @@ public class APDroitPanJointTiers extends BEntity implements APDroitAvecParent {
         StringBuilder sql = new StringBuilder();
 
         String tableDroitLAPG = _getCollection() + APDroitLAPG.TABLE_NAME_LAPG;
-        String tableDroitPandemie = _getCollection() + APDroitPandemie.TABLE_NAME_LAPG;
+        String tableDroitPandemie = _getCollection() + APDroitPandemie.TABLE_NAME_DROIT_APG;
         String tableTiers = _getCollection() + ITITiersDefTable.TABLE_NAME;
         String tableDemandePrestation = _getCollection() + PRDemande.TABLE_NAME;
         String tablePersonneAvs = _getCollection() + ITIPersonneAvsDefTable.TABLE_NAME;
@@ -80,7 +80,7 @@ public class APDroitPanJointTiers extends BEntity implements APDroitAvecParent {
         sql.append(" ON ");
         sql.append(tableDroitLAPG).append(".").append(APDroitLAPG.FIELDNAME_IDDROIT_LAPG);
         sql.append("=");
-        sql.append(tableDroitPandemie).append(".").append(APDroitMaternite.FIELDNAME_IDDROIT_MAT);
+        sql.append(tableDroitPandemie).append(".").append(APDroitPandemie.FIELDNAME_IDDROIT_APG);
 
         sql.append(" INNER JOIN ");
         sql.append(tableDemandePrestation);

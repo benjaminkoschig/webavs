@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- APG Pandemie 1.0.2 -->
+<!-- APG Pandemie 1.1.0 Vague 2-->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 	<xs:element name="action" type="xs:int" />
 	<xs:element name="activity">
@@ -25,11 +25,14 @@
 	<xs:element name="activityCause">
 		<xs:simpleType>
 			<xs:restriction base="xs:string">
-				<xs:enumeration value="GARDE"/>
-				<xs:enumeration value="QUARANTAINE"/>
-				<xs:enumeration value="FERMETURE"/>
-				<xs:enumeration value="MANIFESTATION"/>
-				<xs:enumeration value="PERTEGAIN"/>
+				<xs:enumeration value="GARDE"/> <!-- Vague 1 uniquement -->
+				<xs:enumeration value="QUARANTAINE"/> <!-- Vague 1 et 2 -->
+				<xs:enumeration value="FERMETURE"/> <!-- Vague 1 et 2 -->
+				<xs:enumeration value="MANIFESTATION"/>  <!-- Vague 1 et 2 -->
+				<xs:enumeration value="PERTEGAIN"/> <!-- Vague 1 uniquement -->
+				<xs:enumeration value="GARDE_ENFANT_MOINS_12_ANS"/><!-- Vague 2 Garde remplace GARDE  et flag is  childCareWithHAndicap à  false-->
+				<xs:enumeration value="GARDE_ENFANT_HANDICAP"/><!-- Vague 2 Garde remplace GARDE  et flag is  childCareWithHAndicao à  true-->
+				<xs:enumeration value="LIMITATION_ACTIVITE"/> <!-- Vague 2 Perte de gain -->
 			</xs:restriction>
 		</xs:simpleType>
 	</xs:element>
@@ -42,11 +45,14 @@
 				<xs:element ref="independantWorkClosureCessation" minOccurs="0"/>
 				<xs:element ref="independantEventCessation" minOccurs="0"/>
 				<xs:element ref="independantLossOfIncomeCessation" minOccurs="0"/>
+				<xs:element ref="workClosureCessation" minOccurs="0"/><!-- Vague 2 Perte de gain remplace independantWorkClosureCessation-->
+				<xs:element ref="eventCessation" minOccurs="0"/><!-- Vague 2 Perte de gain rempalce independantEventCessation-->
+				<xs:element ref="activityLimitationCessation" minOccurs="0"/> <!-- Vague 2 Perte de gain -->
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="activityOtherDetail" type="xs:string" />
-	<xs:element name="activityType">
+	<xs:element name="activityType"> <!--hors scope vague 2  -->
 		<xs:simpleType>
 			<xs:restriction base="xs:string">
 				<xs:enumeration value="MAGASINS"/>
@@ -104,11 +110,13 @@
 	<xs:element name="childCareCause">
 		<xs:simpleType>
 			<xs:restriction base="xs:string">
-				<xs:enumeration value="ECOLE"/>
-				<xs:enumeration value="CRECHE"/>
-				<xs:enumeration value="RISQUE"/>
-				<xs:enumeration value="HANDICAPSPECIALE"/>
-				<xs:enumeration value="HANDICAPINSTITUTION"/>
+				<xs:enumeration value="ECOLE"/><!-- Vague 1 Garde-->
+				<xs:enumeration value="CRECHE"/><!-- Vague 1 Garde-->
+				<xs:enumeration value="RISQUE"/><!-- Vague 1 Garde-->
+				<xs:enumeration value="HANDICAPSPECIALE"/><!-- Vague 1 Garde-->
+				<xs:enumeration value="HANDICAPINSTITUTION"/><!-- Vague 1 Garde-->
+				<xs:enumeration value="FERMETURE_GARDE_ENFANT"/> <!-- Vague 2 Garde pour strucutrue d'acceuil et handicap  -->
+				<xs:enumeration value="QUARANTAINE_ENFANT"/> <!-- Vague 2 Perte de gain Garde pour enfant -->
 			</xs:restriction>
 		</xs:simpleType>
 	</xs:element>
@@ -134,6 +142,8 @@
 				<xs:element ref="from"/>
 				<xs:element ref="to"/>
 				<xs:element ref="numbersOfDays"/>
+				<xs:element ref="lossValue" minOccurs="0"/>
+				<xs:element ref="unit" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -249,10 +259,12 @@
 	<xs:element name="content">
 		<xs:complexType>
 			<xs:sequence>
+			 	<xs:element ref="referenceData"/> <!-- Vague 2  -->
 				<xs:element ref="otherIndemnity"/>
-				<xs:element ref="insuredPerson"/>
-				<xs:element ref="insuredAddress"/>
+				<xs:element ref="insuredPerson" minOccurs="0"/>
+				<xs:element ref="insuredAddress" minOccurs="0"/>
 				<xs:element ref="familyMembers" minOccurs="0"/>
+				<xs:element ref="beneficiaries" minOccurs="0"/> <!-- Vague 2 Perte de gain -->
 				<xs:element ref="activity"/>
 				<xs:element ref="activityCessation"/>
 				<xs:element ref="paymentContact"/>
@@ -281,6 +293,7 @@
 			<xs:restriction base="xs:string">
 				<xs:enumeration value="EMPLOYE"/>
 				<xs:enumeration value="INDEPENDANT"/>
+				<xs:enumeration value="ASSIM_EMPLOYEUR"/> <!-- Vague 2 Perte de gain -->
 			</xs:restriction>
 		</xs:simpleType>
 	</xs:element>
@@ -300,6 +313,70 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<!-- Vague 2 Perte de gain Début ayants droits-->
+	<xs:element name="year" type="xs:integer" />
+	<xs:element name="amount" type="xs:double" />
+	<xs:element name="lastAnnualIncome">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="year"/>
+				<xs:element ref="amount"/>
+				<xs:element ref="unit"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="reducedWorkHours" type="xs:boolean"/>
+	<xs:element name="RHTIndemnity" type="xs:boolean"/>
+	<xs:element name="hasLossOfProfit" type="xs:boolean"/>
+	<xs:element name="assimilablePosition" type="xs:boolean"/>
+
+	<xs:element name="positionType">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="ASSOCIE"/>
+				<xs:enumeration value="MEMBRE"/>
+				<xs:enumeration value="CONJOINT"/><!--vague2 APG-->
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+
+	<xs:element name="employmentInfo">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="reducedWorkHours"/>
+				<xs:element ref="RHTIndemnity"/>
+				<xs:element ref="assimilablePosition"/>
+				<xs:element ref="positionType"/>
+				<xs:element ref="hasLossOfProfit"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+
+	<xs:element name="beneficiary">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="insuredPerson" />
+				<xs:element ref="insuredAddress"/>
+				<xs:element ref="salary"/>
+				<xs:element ref="lastAnnualIncome"/>
+				<xs:element ref="employmentInfo"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="beneficiaries">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="beneficiary" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- Vague 2 Perte de gain Fin ayants droits-->
+
+
+
 	<xs:element name="file">
 		<xs:complexType>
 			<xs:sequence>
@@ -367,6 +444,43 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<!-- vague 2 perte de gain debut  remplace les independant en plus générique pour assimile employeur et indépendant -->
+	<xs:element name="eventCessation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="isSelected"/>
+				<xs:element ref="eventPeriod" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="eventPeriod">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="eventDate" minOccurs="0"/> <!-- eventDate deprecated -->
+				<xs:element ref="from" minOccurs="0"/>
+                <xs:element ref="to" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="workClosureCessation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="isSelected"/>
+				<xs:element ref="workClosurePeriod" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="workClosurePeriod">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="from" minOccurs="0"/>
+				<xs:element ref="to" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+<!-- vague 2 perte de gain fin-->
+
 	<xs:element name="independantLossOfIncomeCessation">
 		<xs:complexType>
 			<xs:sequence>
@@ -419,13 +533,21 @@
 	<xs:element name="isSelected" type="xs:boolean" />
 	<xs:element name="messageDate" type="xs:dateTime" />
 	<xs:element name="messageId" type="xs:string" />
-	<xs:element name="messageType" type="xs:string" />
+	<xs:element name="messageType" type="xs:string" >
+	<xs:annotation>
+          <xs:documentation>
+          318753= demande vague 1
+          318755=demande garde et quarantaine vague 2
+          3187556=demande perte de gain vague 2</xs:documentation>
+        </xs:annotation>
+     </xs:element>
 	<xs:element name="name" type="xs:string" />
 	<xs:element name="numbersOfDays" type="xs:int" />
 	<xs:element name="officialName" type="xs:string" />
 	<xs:element name="organisationName" type="xs:string" />
 	<xs:element name="organisationUID" type="xs:string" />
 	<xs:element name="ourBusinessReferenceId" type="xs:int" />
+	<xs:element name="referenceData" type="xs:string" />  	<!-- Vague 2 -->
 	<xs:element name="otherIndemnityType" type="xs:string" />
 	<xs:element name="otherIndemnity">
 		<xs:complexType>
@@ -462,6 +584,17 @@
 	<xs:element name="prescribedQuarantine" type="xs:boolean"/>
 	<xs:element name="product" type="xs:string" />
 	<xs:element name="productVersion" type="xs:string" />
+	<xs:element name="isQuarantineDueToTravel" type="xs:boolean"/> 	<!-- Vague 2 quarantaine-->
+	<xs:element name="quarantineTravel">   <!-- Vague 2 quarantaine-->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="country" minOccurs="0"/>
+				<xs:element ref="from"/>
+				<xs:element ref="to"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
 	<xs:element name="quarantineCessation">
 		<xs:complexType>
 			<xs:sequence>
@@ -469,6 +602,8 @@
 				<xs:element ref="prescribedQuarantine" minOccurs="0"/>
 				<xs:element ref="prescribedBy" minOccurs="0"/>
 				<xs:element ref="quarantinePeriod" minOccurs="0"/>
+				<xs:element ref="isQuarantineDueToTravel" minOccurs="0"/> <!-- Vague 2 quarantaine-->
+				<xs:element ref="quarantineTravel" minOccurs="0"/>        <!-- Vague 2 quarantaine-->
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -480,6 +615,73 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+<!-- Vague 2 Perte de gain Début chiffre d'affaire-->
+ <xs:element name="reason" type="xs:string"/>
+ <xs:element name="annualTurnover">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="year"/>
+        <xs:element ref="amount"/>
+        <xs:element ref="unit"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="month" type="xs:string"/>
+  <xs:element name="monthlyTurnover">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="month"/>
+        <xs:element ref="amount"/>
+        <xs:element ref="unit"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="annualTurnovers">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="annualTurnover" maxOccurs="unbounded" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="monthlyTurnovers">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="monthlyTurnover"  maxOccurs="unbounded" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="activityDateStart" type="xs:date"/>
+  <xs:element name="lossOfIncomeTurnoverPeriod">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="from"/>
+        <xs:element ref="to"/>
+        <xs:element ref="lossValue"/>
+        <xs:element ref="unit"/>
+        <xs:element ref="reason"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="turnovers">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="annualTurnovers"/>
+        <xs:element ref="monthlyTurnovers"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="activityLimitationCessation">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="isSelected"/>
+        <xs:element ref="activityDateStart"/>
+        <xs:element ref="lossOfIncomeTurnoverPeriod"/>
+        <xs:element ref="turnovers"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!-- Vague 2 Perte de gain Fin chiffre d'affaire-->
+
 	<xs:element name="recipientId" type="xs:string" />
 	<xs:element name="salary">
 		<xs:complexType>
@@ -488,6 +690,7 @@
 				<xs:element ref="hasReceiveSalaryDuringInterruption"/>
 				<xs:element ref="sendDecompteToEmployer"/>
 				<xs:element ref="withholdingTax"/>
+				<xs:element ref="hasThirteenthMonth"/> <!-- Vague 2  -->
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -505,14 +708,22 @@
 	<xs:element name="sortOrder" type="xs:int" />
 	<xs:element name="streetWithNr" type="xs:string" />
 	<xs:element name="subject" type="xs:string" />
-	<xs:element name="subMessageType" type="xs:string" />
+	<xs:element name="subMessageType" type="xs:string" >
+	 <xs:annotation>
+          <xs:documentation>1sous message type
+          101=demande vague 1
+          102= prolongation vague 1
+          103= demande garde et quarantaine vague 2
+          104= demande perte de gain</xs:documentation>
+        </xs:annotation>
+     </xs:element>
 	<xs:element name="swissZipCode" type="xs:string" />
 
 	<xs:element name="lossValue" type="xs:double" />
 	<xs:element name="unit">
 		<xs:simpleType>
 			<xs:restriction base="xs:string">
-				<xs:enumeration value="CH"/>
+				<xs:enumeration value="CHF"/>
 				<xs:enumeration value="PERCENT"/>
 			</xs:restriction>
 		</xs:simpleType>
@@ -550,5 +761,6 @@
 	<xs:element name="version" type="xs:string" />
 	<xs:element name="vn" type="xs:string" />
 	<xs:element name="withholdingTax" type="xs:boolean"/>
+	<xs:element name="hasThirteenthMonth" type="xs:boolean"/> <!-- Vague 2 -->
 	<xs:element name="zipCode" type="xs:string" />
 </xs:schema>
