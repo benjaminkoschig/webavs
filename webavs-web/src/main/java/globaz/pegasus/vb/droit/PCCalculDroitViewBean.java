@@ -3,12 +3,14 @@
  */
 package globaz.pegasus.vb.droit;
 
+import ch.globaz.pegasus.business.models.habitat.TaxeJournaliereHome;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.pegasus.utils.calculmoissuivant.CalculMoisSuivantBuilder;
 import globaz.prestation.tools.PRStringUtils;
@@ -202,9 +204,13 @@ public class PCCalculDroitViewBean extends BJadePersistentObjectViewBean {
             search.setForDateDebut(dateMoisSuivant);
             search.setForIdVersionDroit(droit.getSimpleVersionDroit().getIdVersionDroit());
             search.setForLessDateEntreeHome("01." + dateMoisSuivant);
-            int nb = PegasusServiceLocator.getTaxeJournaliereHomeService().count(search);
-            if (nb > 0) {
-                hasDateDebutHomSameHasDateProchainPmt = true;
+            search = PegasusServiceLocator.getTaxeJournaliereHomeService().search(search);
+            for(JadeAbstractModel searAbstractModel : search.getSearchResults() ){
+                TaxeJournaliereHome taxeJournaliereHome = (TaxeJournaliereHome) searAbstractModel;
+                if(!JadeStringUtil.isBlankOrZero(taxeJournaliereHome.getSimpleTaxeJournaliereHome().getDateEntreeHome())){
+                    hasDateDebutHomSameHasDateProchainPmt = true;
+                    break;
+                }
             }
         }
         isCalculBloqueDuAujourDappoint = hasDateDebutHomSameHasDateProchainPmt;
