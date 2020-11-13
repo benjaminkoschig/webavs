@@ -882,24 +882,28 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         }
 
         if (isReformePC()) {
-            // TODO Changer label
             data.addData("B_MONTANT_VERS_ASSURE", babelDoc.getTextes(3).getTexte(31).getDescription());
             data.addData("MONTANT_VERS_ASSURE", SingleDACBuilder.MONNAIE + " " + new FWCurrency(getMontantPc()).toStringFormat());
 
-            // TODO Changer label
             data.addData("B_MONTANT_VERSEE_ASS", babelDoc.getTextes(3).getTexte(32).getDescription());
             data.addData("B_MONTANT_VERSEE_ASS2", babelDoc.getTextes(3).getTexte(35).getDescription());
             data.addData("MONTANT_VERSEE_ASS", SingleDACBuilder.MONNAIE + " " + new FWCurrency(dacOO.getPlanCalcul().getPrimeVerseeAssMaladie()).toStringFormat());
 
-            // TODO Changer label
-            data.addData("B_MONTANT_HOME", babelDoc.getTextes(3).getTexte(33).getDescription());
+
 
             String montantHomeString = dacOO.getPlanCalcul().getMontantPrixHome();
             Float montantHome = 0.0f;
             if (!montantHomeString.isEmpty()) {
                 montantHome = Float.valueOf(dacOO.getPlanCalcul().getMontantPrixHome())/12;
             }
-            data.addData("MONTANT_HOME", SingleDACBuilder.MONNAIE + " " + new FWCurrency(montantHome).toStringFormat());
+            FWCurrency montantHomeCurrency = new FWCurrency(montantHome);
+            if (montantHomeCurrency.isZero()) {
+                data.addData("B_MONTANT_HOME","");
+                data.addData("MONTANT_HOME","");
+            } else {
+                data.addData("B_MONTANT_HOME", babelDoc.getTextes(3).getTexte(33).getDescription());
+                data.addData("MONTANT_HOME", SingleDACBuilder.MONNAIE + " " + montantHomeCurrency.toString());
+            }
         }
 
         // gestion prestation
@@ -1445,7 +1449,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         String primeVersee = dacOO.getPlanCalcul().getPrimeVerseeAssMaladie();
         String montantPrestation = dacOO.getSimplePrestation().getMontantPrestation();
         Float montantPCTotal = Float.parseFloat(montantPrestation.isEmpty() ? "0" : montantPrestation)
-                + Float.parseFloat(primeVersee.isEmpty()? "0" : primeVersee);
+                + (Float.parseFloat(primeVersee.isEmpty()? "0" : primeVersee)/12);
         return new FWCurrency(montantPCTotal.toString()).toStringFormat();
     }
 
