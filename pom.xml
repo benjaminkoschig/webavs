@@ -63,7 +63,7 @@
 		<globaz-external-xsd.version>1.2.7-SNAPSHOT</globaz-external-xsd.version>
 		<ebback-api.version>9.2.0</ebback-api.version>
 		<cxf.version>3.2.1</cxf.version>
-		<list-adapt-rentes.version>1.0.0-RC1</list-adapt-rentes.version>
+		<list-adapt-rentes.version>1.0.0-RC2</list-adapt-rentes.version>
 
 
 		<!-- CONTINUOUS INTEGRATION -->
