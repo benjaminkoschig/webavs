@@ -19,6 +19,7 @@ public class SimplePlanDeCalcul extends JadeSimpleModel {
     private String primeMoyenneAssMaladie = null;
     private String primeVerseeAssMaladie = null;
     private String montantPrixHome = null;
+    private String montantPartCantonale = null;
 
 
     private byte[] resultatCalcul = null;
@@ -154,5 +155,13 @@ public class SimplePlanDeCalcul extends JadeSimpleModel {
 
     public void setPrimeVerseeAssMaladie(String primeVerseeAssMaladie) {
         this.primeVerseeAssMaladie = primeVerseeAssMaladie;
+    }
+
+    public String getMontantPartCantonale() {
+        return montantPartCantonale;
+    }
+
+    public void setMontantPartCantonale(String montantPartCantonale) {
+        this.montantPartCantonale = montantPartCantonale;
     }
 }

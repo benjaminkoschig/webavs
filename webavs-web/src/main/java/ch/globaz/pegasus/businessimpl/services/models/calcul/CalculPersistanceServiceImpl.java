@@ -10,12 +10,14 @@ import ch.globaz.corvus.business.exceptions.models.RentesAccordeesException;
 import ch.globaz.corvus.business.models.rentesaccordees.SimpleInformationsComptabilite;
 import ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees;
 import ch.globaz.corvus.business.models.ventilation.SimpleVentilation;
+import ch.globaz.corvus.business.models.ventilation.SimpleVentilationSearch;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.pegasus.business.constantes.*;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
+import ch.globaz.pegasus.business.exceptions.models.process.AdaptationException;
 import ch.globaz.pegasus.business.models.calcul.CalculPcaReplace;
 import ch.globaz.pegasus.business.models.calcul.CalculPcaReplaceSearch;
 import ch.globaz.pegasus.business.models.droit.Droit;
@@ -26,18 +28,14 @@ import ch.globaz.pegasus.business.services.models.calcul.CalculPersistanceServic
 import ch.globaz.pegasus.businessimpl.services.PegasusAbstractServiceImpl;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
 import ch.globaz.pegasus.businessimpl.services.determineSousCodePrestation.DetermineSousCodePrestation;
-import ch.globaz.pegasus.businessimpl.utils.PCproperties;
 import ch.globaz.pegasus.businessimpl.utils.calcul.*;
 import ch.globaz.pegasus.businessimpl.utils.calcul.PeriodePCAccordee.TypeSeparationCC;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.corvus.db.ventilation.constantes.REVentilationType;
 import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
-import globaz.framework.util.FWCurrency;
-import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadeCloneModelException;
 import globaz.jade.exception.JadePersistenceException;
@@ -247,6 +245,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
             simplePlanCalcul.setEtatPC(cc.getEtatPC());
             simplePlanCalcul.setIsPlanCalculAccessible(Boolean.TRUE);
             simplePlanCalcul.setReformePc(cc.isReformePc());
+            simplePlanCalcul.setMontantPartCantonale(cc.getMontantPartCantonale());
 
             if (cc.isPlanRetenu()) {
                 pcAccordeePlanCalcul.setSimplePlanDeCalcul(simplePlanCalcul);
@@ -362,6 +361,28 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
             return CorvusServiceLocator.getSimpleVentilationService().create(ventilationPartCantonale);
         }
         return null;
+    }
+
+    @Override
+    public void updateVentilationPartCantonalePC(TypeSeparationCC typeSeparationCC, String idPrestatoinAccordee,
+                                                               boolean isConjoint, String montantPartCantonale) throws CorvusException,
+            JadeApplicationServiceNotAvailableException, JadePersistenceException, AdaptationException {
+
+        SimpleVentilationSearch ventilationSearch = new SimpleVentilationSearch();
+        ventilationSearch.setForIdPrestationAccordee(idPrestatoinAccordee);
+        ventilationSearch = CorvusServiceLocator.getSimpleVentilationService().search(ventilationSearch);
+        if (ventilationSearch.getSearchResults().length != 0) {
+            SimpleVentilation ventilationPartCantonale = (SimpleVentilation) ventilationSearch.getSearchResults()[0];
+            if (TypeSeparationCC.CALCUL_DOM2_PRINCIPALE.equals(typeSeparationCC)) {
+                if (!JadeNumericUtil.isEmptyOrZero(montantPartCantonale)) {
+                    ventilationPartCantonale.setMontantVentile(calculPartCantonaleConjoint(isConjoint,
+                            montantPartCantonale));
+                }
+            } else {
+                ventilationPartCantonale.setMontantVentile(montantPartCantonale);
+            }
+            CorvusServiceLocator.getSimpleVentilationService().update(ventilationPartCantonale);
+        }
     }
 
     // S160704_002 :Il faut splitter la part cantonal entre les 2 conjoints

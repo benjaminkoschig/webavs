@@ -1,5 +1,7 @@
 package ch.globaz.pegasus.businessimpl.services.models.calcul;
 
+import ch.globaz.corvus.business.exceptions.CorvusException;
+import ch.globaz.pegasus.business.exceptions.models.process.AdaptationException;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.model.JadeAbstractModel;
@@ -72,6 +74,11 @@ public class CopiesGenerateTestCase {
             @Override
             public String serialiseDonneesCcXML(CalculComparatif cc) {
                 return null;
+            }
+
+            @Override
+            public void updateVentilationPartCantonalePC(PeriodePCAccordee.TypeSeparationCC typeSeparationCC, String idPrestatoinAccordee, boolean isConjoint, String montantPartCantonale) throws CorvusException, JadeApplicationServiceNotAvailableException, JadePersistenceException, AdaptationException {
+
             }
         });
         return generate;

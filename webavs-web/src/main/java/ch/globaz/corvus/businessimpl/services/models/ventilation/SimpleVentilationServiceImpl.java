@@ -1,14 +1,8 @@
 /**
- * 
+ *
  */
 package ch.globaz.corvus.businessimpl.services.models.ventilation;
 
-import globaz.corvus.db.ventilation.REVentilation;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.persistence.JadePersistenceManager;
-import java.util.ArrayList;
-import java.util.List;
 import ch.globaz.corvus.business.models.lots.SimpleLotSearch;
 import ch.globaz.corvus.business.models.ventilation.SimpleVentilation;
 import ch.globaz.corvus.business.models.ventilation.SimpleVentilationSearch;
@@ -20,10 +14,21 @@ import ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee;
 import ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordeeSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pyxis.common.Messages;
+import globaz.corvus.db.ventilation.REVentilation;
+import globaz.corvus.exceptions.RETechnicalException;
+import globaz.globall.api.BITransaction;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.db.BTransaction;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.JadePersistenceManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author est
- * 
+ *
  */
 public class SimpleVentilationServiceImpl implements SimpleVentilationService {
     private enum OPERATION {
@@ -46,7 +51,6 @@ public class SimpleVentilationServiceImpl implements SimpleVentilationService {
         bean.setIdPrestationAccordee(model.getIdPrestationAccordee());
         bean.setMontantVentile(model.getMontantVentile());
         bean.setCsTypeVentilation(model.getCsTypeVentilation());
-
         bean.populateSpy(model.getSpy());
         return bean;
     }
@@ -130,13 +134,47 @@ public class SimpleVentilationServiceImpl implements SimpleVentilationService {
     }
 
     @Override
-    public SimpleVentilation update(SimpleVentilation simpleVentilation) throws JadePersistenceException {
-        return null;
+    public SimpleVentilation update(SimpleVentilation model) throws JadePersistenceException, VentilationException {
+        if (model == null) {
+            throw new VentilationException("Unable to update SimpleVentilation, the model passed is null!");
+        }
+
+        BITransaction transaction;
+        try {
+            transaction = new BTransaction(BSessionUtil.getSessionFromThreadContext());
+            transaction.openTransaction();
+
+            try {
+
+                REVentilation ventilation = new REVentilation();
+                ventilation.setSession(BSessionUtil.getSessionFromThreadContext());
+                ventilation.setIdVentilation(model.getId());
+                ventilation.retrieve(transaction);
+
+                ventilation.setMontantVentile(model.getMontantVentile());
+
+                ventilation.update(transaction);
+            } catch (Exception ex) {
+                transaction.addErrors(ex.toString());
+                throw new RETechnicalException(ex);
+            } finally {
+                if (transaction.hasErrors()) {
+                    transaction.rollback();
+                } else {
+                    transaction.commit();
+                }
+                transaction.closeTransaction();
+            }
+        } catch (Exception ex) {
+            throw new RETechnicalException(ex);
+        }
+
+        return model;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * #search(ch.globaz.corvus.business.models.ventilation.SimpleVentilationSearch)
      */
     @Override

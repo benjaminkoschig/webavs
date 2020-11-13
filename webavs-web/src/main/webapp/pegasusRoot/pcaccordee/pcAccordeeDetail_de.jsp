@@ -626,7 +626,7 @@
 									</td>
 									<!--  part cantonale -->
 									<td class="pcantonale ${isRetenu?'retenu':''}" data-g-amountformatter=" " style="text-align:right">
-										<c:out value="${viewBean.getPartCantonale(planCalcul)}"/>
+										<c:out value="${planCalcul.montantPartCantonale}"/>
 									</td>									
 								<!--  generation url image pcal -->
 								<c:choose>

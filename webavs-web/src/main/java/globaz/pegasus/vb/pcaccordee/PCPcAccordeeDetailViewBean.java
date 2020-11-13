@@ -1,15 +1,31 @@
 package globaz.pegasus.vb.pcaccordee;
 
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.corvus.business.services.CorvusServiceLocator;
+import ch.globaz.pegasus.business.constantes.*;
+import ch.globaz.pegasus.business.exceptions.models.pcaccordee.AllocationDeNoelException;
+import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
+import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PersonneDansPlanCalculException;
+import ch.globaz.pegasus.business.models.droit.SimpleVersionDroit;
+import ch.globaz.pegasus.business.models.pcaccordee.*;
+import ch.globaz.pegasus.business.services.PegasusServiceLocator;
+import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
+import ch.globaz.pegasus.businessimpl.services.models.calcul.CalculComparatifServiceImpl;
+import ch.globaz.pegasus.businessimpl.utils.PCproperties;
+import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
+import ch.globaz.pegasus.businessimpl.utils.calcul.PegasusCalculUtil;
+import ch.globaz.pegasus.businessimpl.utils.calcul.PeriodePCAccordee;
+import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
+import ch.globaz.pyxis.business.model.AdresseTiersDetail;
+import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
+import ch.globaz.pyxis.business.model.TiersSimpleModel;
+import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import globaz.corvus.db.rentesaccordees.REEnteteBlocage;
 import globaz.corvus.db.rentesaccordees.REPrestationAccordeeBloquee;
 import globaz.corvus.db.rentesaccordees.REPrestationAccordeeBloqueeManager;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.util.FWCurrency;
-import globaz.globall.db.BConstants;
-import globaz.globall.db.BManager;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.db.BSpy;
+import globaz.globall.db.*;
 import globaz.globall.util.JACalendar;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
 import globaz.jade.client.util.JadeListUtil;
@@ -24,48 +40,15 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 import globaz.pegasus.utils.PCUserHelper;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.prestation.tools.nnss.PRNSSUtil;
+import org.apache.commons.lang.NotImplementedException;
+
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.apache.commons.lang.NotImplementedException;
-import ch.globaz.common.properties.PropertiesException;
-import ch.globaz.corvus.business.models.ventilation.SimpleVentilation;
-import ch.globaz.corvus.business.services.CorvusServiceLocator;
-import ch.globaz.pegasus.business.constantes.EPCProperties;
-import ch.globaz.pegasus.business.constantes.IPCActions;
-import ch.globaz.pegasus.business.constantes.IPCDroits;
-import ch.globaz.pegasus.business.constantes.IPCPCAccordee;
-import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
-import ch.globaz.pegasus.business.exceptions.models.pcaccordee.AllocationDeNoelException;
-import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
-import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PersonneDansPlanCalculException;
-import ch.globaz.pegasus.business.models.droit.SimpleVersionDroit;
-import ch.globaz.pegasus.business.models.pcaccordee.AllocationNoel;
-import ch.globaz.pegasus.business.models.pcaccordee.PCAccordee;
-import ch.globaz.pegasus.business.models.pcaccordee.PCAccordeeSearch;
-import ch.globaz.pegasus.business.models.pcaccordee.PlanDeCalculWitMembreFamille;
-import ch.globaz.pegasus.business.models.pcaccordee.PlanDeCalculWitMembreFamilleSearch;
-import ch.globaz.pegasus.business.models.pcaccordee.SimpleAllocationNoel;
-import ch.globaz.pegasus.business.models.pcaccordee.SimpleJoursAppoint;
-import ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul;
-import ch.globaz.pegasus.business.services.PegasusServiceLocator;
-import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
-import ch.globaz.pegasus.businessimpl.services.models.calcul.CalculComparatifServiceImpl;
-import ch.globaz.pegasus.businessimpl.utils.PCproperties;
-import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
-import ch.globaz.pyxis.business.model.AdresseTiersDetail;
-import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
-import ch.globaz.pyxis.business.model.TiersSimpleModel;
-import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
+import java.util.*;
 
 /**
  * ViewBean pour le traitement des pcAccordées (détail) <<<<<<< .working
- * 
+ *
  * @author SCE - 19 oct. 2010 - Créaion initiales
  * @author SCE - 24 sept. 2013 - Modif 1.12, ajout gestion blocage débblocage ======= >>>>>>> .merge-right.r24112
  */
@@ -88,7 +71,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
     private SimpleAllocationNoel simpleAllocationNoel = new SimpleAllocationNoel();
 
     /**
-     * 
+     *
      */
     public PCPcAccordeeDetailViewBean() {
         super();
@@ -106,7 +89,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#add()
      */
     @Override
@@ -223,7 +206,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#delete()
      */
     @Override
@@ -277,7 +260,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Retourne l'adresse de courier du tiers
-     * 
+     *
      * @return String, adresse de courrier
      * @throws JadeApplicationServiceNotAvailableException
      * @throws JadePersistenceException
@@ -322,7 +305,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Gestion ERREURS
-     * 
+     *
      * @return
      */
     public boolean getAutoShowErrorPopup() {
@@ -344,7 +327,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Gestion ERREURS
-     * 
+     *
      * @return
      * @throws InvocationTargetException
      * @throws IllegalAccessException
@@ -416,7 +399,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Recherche si une prestations est accordée au conjoint pour la même pca (couple a DOM2Rentes).
-     * 
+     *
      * @return boolean true si prestations pour conjoint aussi
      */
     public Boolean getHasPCAConjoint() {
@@ -427,7 +410,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Gestion ERREURS
-     * 
+     *
      * @return
      */
     public boolean getHasViewBeanErrors() {
@@ -437,7 +420,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#getId()
      */
     @Override
@@ -447,7 +430,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Retourne l'id de la demande de la pcaccordee
-     * 
+     *
      * @return idPcaccorde, id de la demande de la pcaccordee
      */
     public String getIdDemandePc() {
@@ -481,7 +464,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Retourne l'état (enfant, ou pas) de la pca. Si il y aun parent, retourne true
-     * 
+     *
      * @return true si enfant, false, sinon
      */
     public Boolean getIsPcaChildrenFromOtherPca() {
@@ -492,7 +475,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
     /**
      * Definit si la pc est candidate à être bloqué ou débloqué PCValidéé ET DateDefin vide ET etatPlanCalculRetenu pas
      * vide ET etatPlanCalculRetenu pas en refus
-     * 
+     *
      * @return pc candidate au deblocage
      */
     public boolean getIsPcCandidatePourBlocageDeblocage() throws PCAccordeeException {
@@ -514,7 +497,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
     /**
      * Retourne un chaine correspondant à la description de la somme des jours d'appoint, si il y en a, ou un message
      * aucun JA
-     * 
+     *
      * @return chaine de caractère
      */
     public String getJoursAppoint() {
@@ -538,7 +521,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Gestion ERREURS
-     * 
+     *
      * @return
      */
     private String getLastModification() {
@@ -634,7 +617,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Retourne une map trié par idPlan de calcul du modele de recherche
-     * 
+     *
      * @return
      */
     public Map<String, List<PlanDeCalculWitMembreFamille>> getOrderedMapByPlanCalcul() {
@@ -674,7 +657,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Retourne le modele complex de la personne
-     * 
+     *
      * @return personneComplexModel
      */
     private PersonneEtendueComplexModel getPersonneEtendue(String membre) {
@@ -694,7 +677,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Retourne l'objet session
-     * 
+     *
      * @return objet BSession
      */
     public BSession getSession() {
@@ -703,7 +686,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Retourne le modele simpleVersionDroit de la pc accordee
-     * 
+     *
      * @return instance de SimpleVersionDroit, version du droit de la pcaccordee
      */
     public SimpleVersionDroit getSimpleVersionDroit() {
@@ -712,7 +695,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.vb.BJadePersistentObjectViewBean#getSpy()
      */
     @Override
@@ -734,7 +717,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Retourne le Tiers
-     * 
+     *
      * @return
      */
     public TiersSimpleModel getTiers() {
@@ -806,7 +789,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
     /**
      * Tri des plan de calculs passé en paramètres Pour le splans en refus et octroi partiel, c'est lexcdent de revenus
      * qui définit l'ordre
-     * 
+     *
      * @param listePlanCalculToOrder
      */
     private void orderListePlanCalcul(List<SimplePlanDeCalcul> listePlanCalculToOrder) {
@@ -856,7 +839,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Lance la recherche des plans de de calcul et retourne le modele de rechecrche
-     * 
+     *
      * @return
      * @throws JadePersistenceException
      * @throws JadeApplicationServiceNotAvailableException
@@ -902,7 +885,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#setId(java.lang.String)
      */
     @Override
@@ -916,8 +899,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
     }
 
     /**
-     * @param pcAccordee
-     *            the pcAccordee to set
+     * @param pcAccordee the pcAccordee to set
      */
     public void setPcAccordee(PCAccordee pcAccordee) {
         this.pcAccordee = pcAccordee;
@@ -925,7 +907,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Recupére la part cantonale
-     * 
+     *
      * @return
      * @throws JadeApplicationException, JadePersistenceException
      */
@@ -935,10 +917,9 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
     }
 
 
-
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#update()
      */
     @Override
@@ -946,7 +927,16 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
         pcAccordee = PegasusServiceLocator.getPCAccordeeService().update(pcAccordee);
         // si le plan de calcul retenu a changé...
         if (!JadeStringUtil.isEmpty(idPlanCalcule)) {
-            PegasusServiceLocator.getPCAccordeeService().updatePlanDecalculeRetenu(idPlanCalcule);
+            SimplePlanDeCalcul planDeCalulRetenu = PegasusServiceLocator.getPCAccordeeService().updatePlanDecalculeRetenu(idPlanCalcule);
+
+            // Mise à jour de la ventilation des parts cantonales.
+            PeriodePCAccordee.TypeSeparationCC separationCC = calculTypeSeparationCC(planDeCalulRetenu);
+            PegasusImplServiceLocator.getCalculPersistanceService().updateVentilationPartCantonalePC(separationCC, pcAccordee.getSimplePCAccordee().getIdPrestationAccordee(), false, planDeCalulRetenu.getMontantPartCantonale());
+            if (PeriodePCAccordee.TypeSeparationCC.CALCUL_SEPARE_MALADIE.equals(separationCC)) {
+                PegasusImplServiceLocator.getCalculPersistanceService().updateVentilationPartCantonalePC(separationCC, pcAccordee.getSimplePrestationsAccordeesConjoint().getIdPrestationAccordee(), true, planDeCalulRetenu.getMontantPartCantonale());
+            } else if (PeriodePCAccordee.TypeSeparationCC.CALCUL_DOM2_PRINCIPALE.equals(separationCC)) {
+                PegasusImplServiceLocator.getCalculPersistanceService().updateVentilationPartCantonalePC(separationCC, pcAccordee.getSimplePrestationsAccordeesConjoint().getIdPrestationAccordee(), true, planDeCalulRetenu.getMontantPartCantonale());
+            }
 
             CalculComparatifServiceImpl.updateJoursAppoint(pcAccordee);
 
@@ -968,4 +958,15 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
             }
         }
     }
+
+    private PeriodePCAccordee.TypeSeparationCC calculTypeSeparationCC(SimplePlanDeCalcul planDeCalulRetenu) throws JadeApplicationServiceNotAvailableException {
+
+        PeriodePCAccordee.TypeSeparationCC typeSeparationCC;
+        String byteToArrayString = new String(planDeCalulRetenu.getResultatCalcul());
+        TupleDonneeRapport tupleRoot = PegasusImplServiceLocator.getCalculPersistanceService().deserialiseDonneesCcXML(byteToArrayString);
+        typeSeparationCC = PegasusCalculUtil.getTypeSeparation(tupleRoot);
+        return typeSeparationCC;
+    }
+
+
 }

@@ -1,5 +1,7 @@
 package ch.globaz.pegasus.business.services.models.calcul;
 
+import ch.globaz.corvus.business.exceptions.CorvusException;
+import ch.globaz.pegasus.business.exceptions.models.process.AdaptationException;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
@@ -20,22 +22,24 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 
 public interface CalculPersistanceService extends JadeApplicationService {
 
-    public void clearPCAccordee(Droit droit) throws JadePersistenceException, PCAccordeeException,
-            JadeApplicationServiceNotAvailableException, JadeApplicationException;
+    void clearPCAccordee(Droit droit) throws JadePersistenceException, PCAccordeeException,
+     JadeApplicationServiceNotAvailableException, JadeApplicationException;
 
-    public TupleDonneeRapport deserialiseDonneesCcXML(String donneeSerialisee);
+    TupleDonneeRapport deserialiseDonneesCcXML(String donneeSerialisee);
 
-    public void recupereAnciensPCAccordee(String dateDebutPlage, Droit droit,
-            Map<String, JadeAbstractSearchModel> cacheDonneesBD) throws PCAccordeeException, JadePersistenceException,
-            CalculException, PropertiesException;
+    void recupereAnciensPCAccordee(String dateDebutPlage, Droit droit,
+     Map<String, JadeAbstractSearchModel> cacheDonneesBD) throws PCAccordeeException, JadePersistenceException,
+     CalculException, PropertiesException;
 
-    public List<PCAccordeePlanCalcul> sauvePCAccordee(Droit droit, PeriodePCAccordee periode,
-            CalculPcaReplaceSearch anciennesPCAccordees) throws PCAccordeeException,
-            JadeApplicationServiceNotAvailableException, JadePersistenceException, JadeApplicationException;
+    List<PCAccordeePlanCalcul> sauvePCAccordee(Droit droit, PeriodePCAccordee periode,
+     CalculPcaReplaceSearch anciennesPCAccordees) throws PCAccordeeException,
+     JadeApplicationServiceNotAvailableException, JadePersistenceException, JadeApplicationException;
 
-    public void sauvePCAccordeeToCopie(CalculPcaReplace pcaToSave) throws PCAccordeeException,
-            JadeApplicationServiceNotAvailableException, JadePersistenceException, JadeApplicationException;
+    void sauvePCAccordeeToCopie(CalculPcaReplace pcaToSave) throws PCAccordeeException,
+     JadeApplicationServiceNotAvailableException, JadePersistenceException, JadeApplicationException;
 
-    public String serialiseDonneesCcXML(CalculComparatif cc);
+    String serialiseDonneesCcXML(CalculComparatif cc);
+
+    void updateVentilationPartCantonalePC(PeriodePCAccordee.TypeSeparationCC typeSeparationCC, String idPrestatoinAccordee, boolean isConjoint, String montantPartCantonale) throws CorvusException, JadeApplicationServiceNotAvailableException, JadePersistenceException, AdaptationException;
 
 }
