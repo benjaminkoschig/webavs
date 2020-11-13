@@ -1,11 +1,13 @@
 package globaz.pegasus.vb.pcaccordee;
 
 import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.corvus.business.exceptions.CorvusException;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.pegasus.business.constantes.*;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.AllocationDeNoelException;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PersonneDansPlanCalculException;
+import ch.globaz.pegasus.business.exceptions.models.process.AdaptationException;
 import ch.globaz.pegasus.business.models.droit.SimpleVersionDroit;
 import ch.globaz.pegasus.business.models.pcaccordee.*;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
@@ -930,13 +932,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
             SimplePlanDeCalcul planDeCalulRetenu = PegasusServiceLocator.getPCAccordeeService().updatePlanDecalculeRetenu(idPlanCalcule);
 
             // Mise à jour de la ventilation des parts cantonales.
-            PeriodePCAccordee.TypeSeparationCC separationCC = calculTypeSeparationCC(planDeCalulRetenu);
-            PegasusImplServiceLocator.getCalculPersistanceService().updateVentilationPartCantonalePC(separationCC, pcAccordee.getSimplePCAccordee().getIdPrestationAccordee(), false, planDeCalulRetenu.getMontantPartCantonale());
-            if (PeriodePCAccordee.TypeSeparationCC.CALCUL_SEPARE_MALADIE.equals(separationCC)) {
-                PegasusImplServiceLocator.getCalculPersistanceService().updateVentilationPartCantonalePC(separationCC, pcAccordee.getSimplePrestationsAccordeesConjoint().getIdPrestationAccordee(), true, planDeCalulRetenu.getMontantPartCantonale());
-            } else if (PeriodePCAccordee.TypeSeparationCC.CALCUL_DOM2_PRINCIPALE.equals(separationCC)) {
-                PegasusImplServiceLocator.getCalculPersistanceService().updateVentilationPartCantonalePC(separationCC, pcAccordee.getSimplePrestationsAccordeesConjoint().getIdPrestationAccordee(), true, planDeCalulRetenu.getMontantPartCantonale());
-            }
+            majVentilationPartCantonale(planDeCalulRetenu);
 
             CalculComparatifServiceImpl.updateJoursAppoint(pcAccordee);
 
@@ -959,8 +955,33 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
         }
     }
 
-    private PeriodePCAccordee.TypeSeparationCC calculTypeSeparationCC(SimplePlanDeCalcul planDeCalulRetenu) throws JadeApplicationServiceNotAvailableException {
+    /**
+     * Méthode permettant la mise à jour de la part cantonale.
+     *
+     * @param planDeCalulRetenu
+     * @throws JadeApplicationServiceNotAvailableException
+     * @throws CorvusException
+     * @throws JadePersistenceException
+     * @throws AdaptationException
+     */
+    private void majVentilationPartCantonale(SimplePlanDeCalcul planDeCalulRetenu) throws JadeApplicationServiceNotAvailableException, CorvusException, JadePersistenceException, AdaptationException {
+        PeriodePCAccordee.TypeSeparationCC separationCC = recupererTypeSeparationCC(planDeCalulRetenu);
+        PegasusImplServiceLocator.getCalculPersistanceService().updateVentilationPartCantonalePC(separationCC, pcAccordee.getSimplePCAccordee().getIdPrestationAccordee(), false, planDeCalulRetenu.getMontantPartCantonale());
+        if (PeriodePCAccordee.TypeSeparationCC.CALCUL_SEPARE_MALADIE.equals(separationCC)) {
+            PegasusImplServiceLocator.getCalculPersistanceService().updateVentilationPartCantonalePC(separationCC, pcAccordee.getSimplePrestationsAccordeesConjoint().getIdPrestationAccordee(), true, planDeCalulRetenu.getMontantPartCantonale());
+        } else if (PeriodePCAccordee.TypeSeparationCC.CALCUL_DOM2_PRINCIPALE.equals(separationCC)) {
+            PegasusImplServiceLocator.getCalculPersistanceService().updateVentilationPartCantonalePC(separationCC, pcAccordee.getSimplePrestationsAccordeesConjoint().getIdPrestationAccordee(), true, planDeCalulRetenu.getMontantPartCantonale());
+        }
+    }
 
+    /**
+     * Méthode permettant de récupérer le type de sépraration dans le calcul comparatif.
+     *
+     * @param planDeCalulRetenu
+     * @return
+     * @throws JadeApplicationServiceNotAvailableException
+     */
+    private PeriodePCAccordee.TypeSeparationCC recupererTypeSeparationCC(SimplePlanDeCalcul planDeCalulRetenu) throws JadeApplicationServiceNotAvailableException {
         PeriodePCAccordee.TypeSeparationCC typeSeparationCC;
         String byteToArrayString = new String(planDeCalulRetenu.getResultatCalcul());
         TupleDonneeRapport tupleRoot = PegasusImplServiceLocator.getCalculPersistanceService().deserialiseDonneesCcXML(byteToArrayString);
