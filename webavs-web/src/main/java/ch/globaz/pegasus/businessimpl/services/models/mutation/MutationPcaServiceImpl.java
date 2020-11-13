@@ -476,7 +476,7 @@ public class MutationPcaServiceImpl implements MutationPcaService {
             // On test si on a eu un passage. Par exemple avs à l'ai. On peut avoir un passage que si on a du courant
             // Si on a un passage il faut aller mettre une diminution dans l'ancien type de pca.
             if (!EPCPMutationPassage.AUCUN.equals(mutation.getPassage()) && mutation.isCurrent()) {
-                if (!map.containsKey(mutation.getCodeCategroriePca())) {
+                if (!map.containsKey(mutation.getCodeCategroriePcaPrecedante())) {
                     map.put(mutation.getCodeCategroriePcaPrecedante(), new ArrayList<MutationPcaVo>());
                 }
                 MutationPcaVo m = mutation.clone();

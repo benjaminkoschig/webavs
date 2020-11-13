@@ -102,7 +102,7 @@ public class StrategieLoyer extends StrategieCalculDepense {
         // création des clés temporaires
         TupleDonneeRapport tupleLoyers = this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_INTER_LOYERS,
                 0f);
-        TupleDonneeRapport tupleLoyerActuel = this.getOrCreateChild(tupleLoyers, donnee.getIdDonneeFinanciereHeader(),
+        TupleDonneeRapport tupleLoyerActuel = this.getOrCreateChild(tupleLoyers, IPCValeursPlanCalcul.CLE_INTER_LOYERS_ID+donnee.getIdDonneeFinanciereHeader(),
                 0f);
         if (IPCHabitat.CS_LOYER_BRUT_CHARGES_COMPRISES.equals(csTypeLoyer)) {
             this.getOrCreateChild(tupleLoyerActuel, IPCValeursPlanCalcul.CLE_INTER_LOYER_MONTANT_BRUT,
