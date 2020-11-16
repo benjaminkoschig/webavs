@@ -7,6 +7,8 @@ import ch.gdk_cds.xmlns.pv_5215_000802._3.PremiumQueryResultType;
 import ch.globaz.amal.business.constantes.AMMessagesSubTypesAnnonceSedex;
 import ch.globaz.amal.business.constantes.AMMessagesTypesAnnonceSedex;
 import ch.globaz.amal.business.constantes.IAMCodeSysteme;
+import ch.globaz.amal.business.exceptions.models.annoncesedex.AnnonceSedexException;
+import ch.globaz.amal.business.exceptions.models.detailFamille.DetailFamilleException;
 import ch.globaz.amal.business.models.annoncesedex.SimpleAnnonceSedex;
 import ch.globaz.amal.business.models.annoncesedex.SimpleAnnonceSedexSearch;
 import ch.globaz.amal.business.models.famille.FamilleContribuable;
@@ -18,6 +20,8 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.jaxb.JAXBServices;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.webavs.common.CommonNSSFormater;
 import org.apache.commons.lang.StringUtils;
 
@@ -33,6 +37,7 @@ public class AnnoncePremiumQueryResultHandler extends AnnonceHandlerAbstract {
 
     private Message premiumQueryResult;
     private CommonNSSFormater nnssFormater = new CommonNSSFormater();
+    private String annee;
 
     /**
      * Cosntructeur de l'handler de réponse de l'annonce
@@ -45,6 +50,7 @@ public class AnnoncePremiumQueryResultHandler extends AnnonceHandlerAbstract {
 
     @Override
     public SimpleAnnonceSedex execute() throws JadeApplicationException, JadePersistenceException {
+        String idTiersCM = null;
         try {
             // Enregistrement des données génériques
             super.recordAnnonce(premiumQueryResult.getHeader().getMessageDate());
@@ -59,59 +65,94 @@ public class AnnoncePremiumQueryResultHandler extends AnnonceHandlerAbstract {
             annonceSedex.setNumeroCourant(premiumQueryResult.getHeader().getBusinessProcessId().toString());
             annonceSedex.setNumeroDecision(premiumQueryResult.getHeader().getMessageId());
 
-            String idTiers = AMSedexRPUtil.getIdTiersFromSedexId(premiumQueryResult.getHeader().getSenderId());
-            annonceSedex.setIdTiersCM(idTiers);
+            idTiersCM = AMSedexRPUtil.getIdTiersFromSedexId(premiumQueryResult.getHeader().getSenderId());
+            annonceSedex.setIdTiersCM(idTiersCM);
 
 
             // Année traité
-            String annee = String.valueOf(premiumQueryResult.getContent().getPremiumQueryResult().getYear().getYear());
+            annee = String.valueOf(premiumQueryResult.getContent().getPremiumQueryResult().getYear().getYear());
+        } catch (Exception e) {
+            _setErrorOnReception(annonceSedex, e, premiumQueryResult);
+        }
 
-            // On boucle sur chacune des réponses
-            List<PremiumInsuredPersonType> premiumInsuredPersonTypes = premiumQueryResult.getContent().getPremiumQueryResult().getPremiumInsuredPerson();
-            for (PremiumInsuredPersonType insuredPerson : premiumInsuredPersonTypes) {
+        // On boucle sur chacune des réponses
+        List<PremiumInsuredPersonType> premiumInsuredPersonTypes = premiumQueryResult.getContent().getPremiumQueryResult().getPremiumInsuredPerson();
+        for (PremiumInsuredPersonType insuredPerson : premiumInsuredPersonTypes) {
+            // Pour chaque personne dans la réponse, on crée une annonce.
+            SimpleAnnonceSedex annonceSedexRetour = new SimpleAnnonceSedex();
 
-                // Pour chaque personne dans la réponse, on crée une annonce.
-                SimpleAnnonceSedex annonceSedexRetour = new SimpleAnnonceSedex();
+            try {
+
                 // On copy les infos des annonces setté plus haut.
                 copyInfosCommunes(annonceSedexRetour);
-
-                // Recherche des infos de la personne
-                FamilleContribuableSearch familleContribuableSearch = new FamilleContribuableSearch();
-                familleContribuableSearch.setForAnneeHistorique(annee);
-                familleContribuableSearch.setForNNSS(nnssFormater.format(Long.toString(insuredPerson.getPerson().getVn())));
-                familleContribuableSearch =  AmalImplServiceLocator.getFamilleContribuableService().search(familleContribuableSearch);
-
-               if (familleContribuableSearch.getSize() == 1) {
-                   FamilleContribuable familleContribuable = (FamilleContribuable) familleContribuableSearch.getSearchResults()[0];
-                    annonceSedexRetour.setIdContribuable(familleContribuable.getSimpleContribuable().getIdContribuable());
-                    annonceSedexRetour.setIdDetailFamille(familleContribuable.getSimpleDetailFamille().getIdDetailFamille());
-               } else if(familleContribuableSearch.getSize() > 1) {
-                   throw new Exception("Impossible de trouver la correspondance pour (trop de résultat lors de la recherche) : "
-                           + insuredPerson.toString());
-               } else {
-                    throw new Exception("Annonce sedex not found for ReferenceMessageId : "
-                            + insuredPerson.toString());
-                }
 
                 // On stocke la valeur du montant de prime tarifaire. (seuelement si pas de rejet)
                 if(insuredPerson.getPremiumRejectReason() == null) {
                     try {
                         annonceSedexRetour.setMontantPrimeTarifaire(insuredPerson.getQueryDatePremium().setScale(2).toString());
                     } catch (Exception e) {
-                        throw new Exception("Problème avec la récupération des "
-                                + insuredPerson.toString());
+                        throw new Exception("Problème avec la récupération prime pour le cas "
+                                + insuredPerson.getPerson().getVn() + " / Annee = " + annee);
                     }
                 }
 
-                // On enregistre l'annonce
-                AmalImplServiceLocator.getSimpleAnnonceSedexService().create(annonceSedexRetour);
-            }
+                // Recherche des infos de la personne
+                FamilleContribuableSearch familleContribuableSearch = new FamilleContribuableSearch();
+                familleContribuableSearch.setForAnneeHistorique(annee);
+                familleContribuableSearch.setForNNSS(nnssFormater.format(Long.toString(insuredPerson.getPerson().getVn())));
+                familleContribuableSearch.setForDroitActifFromToday("0");
+                familleContribuableSearch =  AmalImplServiceLocator.getFamilleContribuableService().search(familleContribuableSearch);
 
-        } catch (Exception e) {
-            _setErrorOnReception(annonceSedex, e, premiumQueryResult);
+               if (familleContribuableSearch.getSize() == 1) {
+                   // Une seule famille, on créé l'annonce sedex de réponse
+                   FamilleContribuable familleContribuable = (FamilleContribuable) familleContribuableSearch.getSearchResults()[0];
+                   saveAnnonceSedex(annonceSedexRetour, familleContribuable);
+
+               } else if(familleContribuableSearch.getSize() > 1) {
+                   // On a plusieurs dossier. Il faut ajouter la réponse a tous les dossiers qui ont une demande
+                   // pour cette caisse et pour cette année la.
+                   boolean aucuneDemandeTrouve = true;
+                   for (JadeAbstractModel model : familleContribuableSearch.getSearchResults()){
+                       FamilleContribuable familleContribuable = (FamilleContribuable) model;
+                       SimpleAnnonceSedexSearch simpleAnnonceSedexSearch = new SimpleAnnonceSedexSearch();
+                       simpleAnnonceSedexSearch.setForIdDetailFamille(familleContribuable.getSimpleDetailFamille().getIdDetailFamille());
+                       simpleAnnonceSedexSearch.setForIdContribuable(familleContribuable.getSimpleContribuable().getIdContribuable());
+                       simpleAnnonceSedexSearch.setForIdTiersCM(idTiersCM);
+                       simpleAnnonceSedexSearch.setForMessageType(AMMessagesTypesAnnonceSedex.DEMANDE_PRIME_TARIFAIRE.getValue());
+                       simpleAnnonceSedexSearch.setForMessageSubType(AMMessagesSubTypesAnnonceSedex.DEMANDE_PRIME_TARIFAIRE.getValue());
+
+                       simpleAnnonceSedexSearch = AmalImplServiceLocator.getSimpleAnnonceSedexService().search(simpleAnnonceSedexSearch);
+
+                       // On a bien une demande pour cette année, ce dossier et cette caisse, on ajoute l'annonce de réponse.
+                       if(simpleAnnonceSedexSearch.getSize() > 0) {
+                           aucuneDemandeTrouve = false; //On a bien au moins une demande parmis tous les dossiers de ce NSS et de cette année
+                           saveAnnonceSedex(annonceSedexRetour, familleContribuable);
+                       }
+                   }
+
+                   if(aucuneDemandeTrouve) {
+                       // Si toujours rien trouvé, on lève une erreur
+                       throw new Exception("Pas de demande de prime tarifaire correspondante pour ce NSS = "
+                               + insuredPerson.getPerson().getVn() + " / Annee = " + annee);
+                   }
+               } else {
+                   // Cas ou l'on a aucune correspondance pour une réponse
+                    throw new Exception("Aucun dossier correspondant pour le retour de demande tarifaire : NSS = "
+                            + insuredPerson.getPerson().getVn() + " / Annee = " + annee);
+                }
+
+            } catch (Exception e) {
+                _setErrorOnReception(annonceSedexRetour, e, premiumQueryResult);
+            }
         }
 
         return annonceSedex;
+    }
+
+    private void saveAnnonceSedex(SimpleAnnonceSedex annonceSedexRetour, FamilleContribuable familleContribuable) throws JadePersistenceException, JadeApplicationServiceNotAvailableException, AnnonceSedexException, DetailFamilleException {
+        annonceSedexRetour.setIdContribuable(familleContribuable.getSimpleContribuable().getIdContribuable());
+        annonceSedexRetour.setIdDetailFamille(familleContribuable.getSimpleDetailFamille().getIdDetailFamille());
+        // AmalImplServiceLocator.getSimpleAnnonceSedexService().create(annonceSedexRetour);
     }
 
     @Override
