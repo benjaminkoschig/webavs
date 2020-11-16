@@ -136,4 +136,5 @@ public class PCListeComparaisonCommuneModel implements Serializable {
     public void setRequerant(boolean requerant) {
         isRequerant = requerant;
     }
+
 }

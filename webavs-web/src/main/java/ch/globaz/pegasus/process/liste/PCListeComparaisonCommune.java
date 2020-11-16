@@ -3,6 +3,7 @@ package ch.globaz.pegasus.process.liste;
 import ch.globaz.pegasus.business.domaine.membreFamille.RoleMembreFamille;
 import ch.globaz.pegasus.excel.PCListeComparaisonCommuneExcel;
 import ch.globaz.pegasus.excel.model.PCListeComparaisonCommuneModel;
+import ch.globaz.pegasus.excel.model.PCListeFratrie2LoyerModel;
 import ch.globaz.pegasus.excel.model.PCListeLocaliteFromPCModel;
 import ch.globaz.queryexec.bridge.jade.SCM;
 import ch.globaz.simpleoutputlist.exception.TechnicalException;
@@ -64,6 +65,7 @@ public class PCListeComparaisonCommune extends BProcess implements Serializable 
             listDroits = createSource();
             List<PCListeComparaisonCommuneModel> listModelForExcel = new ArrayList<>();
             Map<String, PCListeLocaliteFromPCModel> listeLocaliteFromPC = createSourceLocalite();
+            List<PCListeFratrie2LoyerModel> listeFratrie2Loyer = createSourceFratrie2Loyers();
             List<List<PCListeComparaisonCommuneModel>> lists = divide(listDroits, 2000);
             for (List<PCListeComparaisonCommuneModel> subList : lists) {
                 listModelForExcel.addAll(searchAndControlCommune(subList, listeLocaliteFromPC));
@@ -71,7 +73,8 @@ public class PCListeComparaisonCommune extends BProcess implements Serializable 
             listModelForExcel.sort(Comparator.comparing(PCListeComparaisonCommuneModel::getNom));
             listCourrier.sort(Comparator.comparing(PCListeComparaisonCommuneModel::getNom));
             listNotFound.sort(Comparator.comparing(PCListeComparaisonCommuneModel::getNom));
-            if (!listModelForExcel.isEmpty() || !listCourrier.isEmpty() || !listNotFound.isEmpty()) {
+            listeFratrie2Loyer.sort(Comparator.comparing(PCListeFratrie2LoyerModel::getNomRequerant));
+            if (!listModelForExcel.isEmpty() || !listCourrier.isEmpty() || !listNotFound.isEmpty() || !listeFratrie2Loyer.isEmpty()) {
                 List<String> fichiers = new ArrayList<>();
                 String path = Jade.getInstance().getHomeDir() + "work/";
                 JadePublishDocumentInfo docInfoExcel = JadePublishDocumentInfoProvider.newInstance(this);
@@ -81,6 +84,7 @@ public class PCListeComparaisonCommune extends BProcess implements Serializable 
                 listeExcel.setListSheetNormal(listModelForExcel);
                 listeExcel.setListSheetCourrier(listCourrier);
                 listeExcel.setListSheetNotFound(listNotFound);
+                listeExcel.setListeFratrie2Loyer(listeFratrie2Loyer);
                 listeExcel.creerDocument();
                 fichiers.add(listeExcel.getOutputFile(path));
                 JadeSmtpClient.getInstance().sendMail(this.getEMailAddress(), this.getEMailObject(), this.getBodyMessage(), JadeConversionUtil.toStringArray(fichiers));
@@ -192,7 +196,9 @@ public class PCListeComparaisonCommune extends BProcess implements Serializable 
                             model.setNomLocaliteFromTiers(MSG_NOT_FOUND);
                             model.setRemarque("Aucunes adresses (domicile et courrier) dans la gestion des tiers");
                             listAddressCache.put(tiersPersonne.getIdTiers(), new TIAdresseDataSource());
-                            listNotFound.add(model);
+                            if(!model.isRequerant() && JadeStringUtil.isBlankOrZero(model.getIdLocaliteFromPc())){
+                                listNotFound.add(model);
+                            }
                             continue;
                         }
                     }
@@ -248,6 +254,11 @@ public class PCListeComparaisonCommune extends BProcess implements Serializable 
             map.put(model.getIdLocalite(), model);
         }
         return map;
+    }
+    private List<PCListeFratrie2LoyerModel> createSourceFratrie2Loyers() {
+        List<PCListeFratrie2LoyerModel> list;
+        list = SCM.newInstance(PCListeFratrie2LoyerModel.class).session(getSession()).query(getSqlFratrie2Loyers()).execute();
+        return list;
     }
 
     private String getSQL() {
@@ -313,6 +324,44 @@ public class PCListeComparaisonCommune extends BProcess implements Serializable 
         return sql.toString();
     }
 
+
+    private String getSqlFratrie2Loyers() {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT noAVSRequerant.HXNAVS AS NSS_REQUERANT,\n" +
+                " CONCAT(CONCAT(TRIM(tiersRequerant.HTLDE1), ' '), TRIM(tiersRequerant.HTLDE2)) AS NOM_REQUERANT,\n" +
+                " COUNT(*) AS NB_LOYER\n" +
+                "FROM schema.PCDOSSI dossiers\n" +
+                "INNER JOIN schema.PCDEMPC demandesPC ON (demandesPC.BBIDOS = dossiers.BAIDOS)\n" +
+                "         LEFT OUTER JOIN schema.PCDROIT droits ON (droits.BCIDPC = demandesPC.BBIDPC)\n" +
+                "         LEFT JOIN schema.PCDRMBRFA droitMembresPC ON (droitMembresPC.BEIDRO = droits.BCIDRO)\n" +
+                "         LEFT JOIN schema.SFMBRFAM membres ON (droitMembresPC.BEIMEF = membres.WGIMEF)\n" +
+                "         LEFT JOIN schema.PCDONPERS donneePers ON (donneePers.BFIDOP = droitMembresPC.BEIDOP)\n" +
+                "         LEFT JOIN schema.TIPAVSP noAVS ON (membres.WGITIE = noAVS.HTITIE)\n" +
+                "         LEFT JOIN schema.TITIERP tiers ON (noAVS.HTITIE = tiers.HTITIE)\n" +
+                "         LEFT JOIN schema.PCDRMBRFA droitMembresPCRequerant\n" +
+                "                   ON (droitMembresPCRequerant.BEIDRO = droits.BCIDRO AND droitMembresPCRequerant.BETROF = 64004001)\n" +
+                "         LEFT JOIN schema.SFMBRFAM membresRequerant ON (droitMembresPCRequerant.BEIMEF = membresRequerant.WGIMEF)\n" +
+                "         INNER JOIN schema.PCDOFINH PCDOFINH1 ON (droitMembresPC.BEIDMF = PCDOFINH1.BGIDMF)\n" +
+                "         INNER JOIN schema.PCLOYER PCLOYER1\n" +
+                "                    ON (PCDOFINH1.BGIDFH = PCLOYER1.CRIDDF AND PCDOFINH1.BGTDOF = 64007007)\n" +
+                "         LEFT JOIN schema.TIPAVSP noAVSRequerant ON (membresRequerant.WGITIE = noAVSRequerant.HTITIE)\n" +
+                "         LEFT JOIN schema.TITIERP tiersRequerant ON (noAVSRequerant.HTITIE = tiersRequerant.HTITIE)\n" +
+                "WHERE (demandesPC.BBDFIN = 0 OR demandesPC.BBTETD = '64001003')\n" +
+                "  AND droits.BCIDRO IS NOT NULL\n" +
+                "  AND membres.WGITIE IS NOT NULL\n" +
+                "  AND demandesPC.BBBISF = 1\n" +
+                "  AND PCDOFINH1.BGBSUP = 2\n" +
+                "  AND     PCDOFINH1.BGDDFI = 0\n" +
+                "  AND PCDOFINH1.BGIVDR = (select MAX(PCVERDRO1.BDIVDR)\n" +
+                "                          from schema.PCVERDRO PCVERDRO1\n" +
+                "                                   inner join schema.PCDOFINH PCDOFINH4 on (PCVERDRO1.BDIVDR = PCDOFINH4.BGIVDR)\n" +
+                "                          where PCDOFINH1.BGIENT = PCDOFINH4.BGIENT\n" +
+                "                            and PCVERDRO1.BDNVER <= 1)\n" +
+                "GROUP BY noAVSRequerant.HXNAVS, CONCAT(CONCAT(TRIM(tiersRequerant.HTLDE1), ' '), TRIM(tiersRequerant.HTLDE2))\n" +
+                "HAVING COUNT(*)>1\n" +
+                "ORDER BY CONCAT(CONCAT(TRIM(tiersRequerant.HTLDE1), ' '), TRIM(tiersRequerant.HTLDE2))");
+        return sql.toString();
+    }
 
     private void initBsession() throws Exception {
         this.bsession = this.getSession();
