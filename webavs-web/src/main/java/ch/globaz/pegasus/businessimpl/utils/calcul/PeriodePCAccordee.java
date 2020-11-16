@@ -886,7 +886,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
      * @return vrai si la personnne n'a pas de rentes dans les données.
      */
     private boolean isSansRente(List<CalculDonneesCC> donneesBD) {
-        return !donneesBD.stream().anyMatch(calculDonneesCC -> StringUtils.isNotEmpty(calculDonneesCC.getRenteAVSAICsType()) || StringUtils.isNotEmpty(calculDonneesCC.getAPIAVSCsType()) || StringUtils.isNotEmpty(calculDonneesCC.getIJAPGGenre()));
+        return !donneesBD.stream().anyMatch(calculDonneesCC -> StringUtils.isNotEmpty(calculDonneesCC.getRenteAVSAICsType()) || StringUtils.isNotEmpty(calculDonneesCC.getAPIAVSCsType()));
     }
 
     /**
