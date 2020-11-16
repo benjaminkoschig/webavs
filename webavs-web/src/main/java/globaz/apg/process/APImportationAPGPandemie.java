@@ -315,9 +315,10 @@ public class APImportationAPGPandemie extends BProcess {
                     filesToSend.add(movedZipPath);
                     try {
                         sendResultMailToCaisse(filesToSend, nameOriginalZipFile);
-                        if (isProcessErrorMetier) {
-                            sendResultMailAssure(filesToSend, adresseEmailAssure, (nssTraites.size()>1 ? "" : nssTraites.toString()));
-                        }
+                        //Vague 2 - FERCIAM ne veut plus envoyer de message à l'ayant droit
+                        //if (isProcessErrorMetier) {
+                        //sendResultMailAssure(filesToSend, adresseEmailAssure, (nssTraites.size()>1 ? "" : nssTraites.toString()));
+                        //}
                     } catch (Exception e) {
                         LOG.error("Error in sending mail...", e.getStackTrace());
                         LOG.error("Error in sending mail..." + ExceptionUtils.getStackTrace(e));
