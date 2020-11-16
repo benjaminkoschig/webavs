@@ -47,7 +47,6 @@ public class Rule65 extends Rule {
         boolean isTestUniquementMin = false;
 
         if (serviceType.equals(APGenreServiceAPG.IndependantPerteGains.getCodePourAnnonce())
-        || serviceType.equals(APGenreServiceAPG.IndependantFermeture.getCodePourAnnonce())
         || serviceType.equals(APGenreServiceAPG.IndependantLimitationActivite.getCodePourAnnonce())) {
             try {
 
