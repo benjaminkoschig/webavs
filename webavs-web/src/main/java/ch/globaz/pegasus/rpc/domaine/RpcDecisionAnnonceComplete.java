@@ -92,7 +92,7 @@ public class RpcDecisionAnnonceComplete {
             } else {
                 String dateNaissance = personData.getMembreFamille().getPersonne().getDateNaissance();
                 String dateDebutPeriode = pcaDecision.getDecision().getDateDebut().getSwissValue();
-                    if (JadeDateUtil.getNbYearsBetween(dateNaissance, dateDebutPeriode) < 11) {
+                    if (!pcaDecision.getPca().getReformePC() || JadeDateUtil.getNbYearsBetween(dateNaissance, dateDebutPeriode) < 11 ) {
                         return RpcVitalNeedsCategory.CHILD;
                     }else{
                         return RpcVitalNeedsCategory.TEENAGER;
