@@ -119,12 +119,17 @@ public class RERenteAccordeeReader extends REAbstractBEntityValueReader {
 
     /**
      * Format attendu booléen
-     * 
-     * @param isSurivant
+     *
+     * @param isSurvivant
      * @return
      */
-    public Boolean convertIsSurvivant(String isSurivant) {
-        return convertToBoolean(isSurivant);
+    public Boolean convertIsSurvivant(String isSurvivant) {
+        Boolean result = convertToBoolean(isSurvivant);
+        if (result == null) {
+            return Boolean.FALSE;
+        } else {
+            return result;
+        }
     }
 
     /**
