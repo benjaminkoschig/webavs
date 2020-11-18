@@ -14,6 +14,7 @@ public abstract class RpcPlausiCommonCalculData extends RpcPlausiHeader {
     protected Montant sumRevenu;
     protected Montant diff;
     protected Montant pca;
+    protected boolean isReforme;
     // protected Montant montantCalculateur;
 
     protected PcaEtatCalcul etat;
@@ -155,5 +156,13 @@ public abstract class RpcPlausiCommonCalculData extends RpcPlausiHeader {
 
     public Montant getSumRevenu() {
         return sumRevenu;
+    }
+
+    public boolean isReforme() {
+        return isReforme;
+    }
+
+    public void setReforme(boolean reforme) {
+        isReforme = reforme;
     }
 }

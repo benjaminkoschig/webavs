@@ -19,7 +19,7 @@ class RpcPlausiPI008Data extends RpcPlausiCommonCalculData {
 
     @Override
     public boolean isValide() {
-        if (FC9 != 0 || !FC2.equals(BigInteger.valueOf(6))) {
+        if (FC9 != 0 || !FC2.equals(BigInteger.valueOf(6)) || isReforme()) {
             return true;
         } else {
             resolveX2();

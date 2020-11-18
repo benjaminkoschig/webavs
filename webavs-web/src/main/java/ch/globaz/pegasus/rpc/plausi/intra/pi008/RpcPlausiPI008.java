@@ -2,6 +2,7 @@ package ch.globaz.pegasus.rpc.plausi.intra.pi008;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceCase;
 import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceDecision;
@@ -21,17 +22,19 @@ public class RpcPlausiPI008 extends RpcPlausiCommonCalcul {
 
     @Override
     public RpcPlausiCommonCalculData buildPlausi(AnnonceDecision decision, AnnonceCase data) {
-        final RpcPlausiPI008Data plausiData = new RpcPlausiPI008Data(this);
+            final RpcPlausiPI008Data plausiData = new RpcPlausiPI008Data(this);
 
-        plausiData.tolerance = tolerance;
-        plausiData.FC2 = decision.getDecisionKind();
-        plausiData.FC8 = decision.getAmountWithHC();
-        plausiData.FC9 = decision.getElLimit();
+            plausiData.setReforme(decision.getAnnonce().getPcaDecision().getPca().getReformePC());
 
-        buildRevenu(decision, plausiData, data);
-        buildDepense(decision, plausiData, true);
+            plausiData.tolerance = tolerance;
+            plausiData.FC2 = decision.getDecisionKind();
+            plausiData.FC8 = decision.getAmountWithHC();
+            plausiData.FC9 = decision.getElLimit();
 
-        return plausiData;
+            buildRevenu(decision, plausiData, data);
+            buildDepense(decision, plausiData, true);
+
+            return plausiData;
     }
 
     @Override
