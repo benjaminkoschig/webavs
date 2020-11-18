@@ -183,8 +183,8 @@ public class PCImprimerDecisionsProcess extends PCAbstractJob {
                 DACGedHandler globalLotGedHandler = DACGedHandler.getInstanceForTraitementDecisionsAdaptationAnnuel(idDecisionsToPrint, getSession(),persref);
                 sendProcessMailAdaptations(PROCESS_TYPE.ADAPTATION_ANNUEL, idProcessusPC,globalLotGedHandler);
                 publisherHandler = DACPublishHandler.getInstanceForAdaptationAnnuel(idDecisionsToPrint, mailGest, dateDoc,
-                        persref, isForFtp, isFromAdaptation, idProcessusPC,gedHandler);
-                decBuilder.build(publisherHandler);
+                        persref, false,isForFtp, isFromAdaptation, idProcessusPC,gedHandler);
+                decBuilder.buildDecisionForAdaptation(publisherHandler);
                 this.createDocuments(publisherHandler.getContainerPublication());
                 for (String idDecs : idDecisionsToPrint) {
 
@@ -193,11 +193,11 @@ public class PCImprimerDecisionsProcess extends PCAbstractJob {
                     idsDecisions.add(idDecs);
 
                     DACGedHandler gedHandler = DACGedHandler.getInstanceForTraitementDecisionsAdaptationAnnuel(idsDecisions, getSession(),persref);
-                    publisherHandler = DACPublishHandler.getInstanceForAdaptationAnnuel(idsDecisions, mailGest, dateDoc,
-                            persref, isForFtp, isFromAdaptation, idProcessusPC,gedHandler);
-                    decBuilder.buildDecisionForGedOnly(publisherHandler);
+                    DACPublishHandler publisherHandler2 = DACPublishHandler.getInstanceForAdaptationAnnuel(idsDecisions, mailGest, dateDoc,
+                            persref, true,isForFtp, isFromAdaptation, idProcessusPC,gedHandler);
+                    decBuilder.build(publisherHandler2);
                     // Création des décisions
-                    createDecisionsByLot(publisherHandler);
+                    createDecisionsByLot(publisherHandler2);
 
                 }
 

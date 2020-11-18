@@ -104,8 +104,7 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
 
     }
     @Override
-    public void buildDecisionForAdaptation(DACPublishHandler handler) throws Exception, DecisionException,
-            JadeApplicationServiceNotAvailableException, JadePersistenceException {
+    public void buildDecisionForAdaptation(DACPublishHandler handler) throws Exception {
 
         /** instaciation du handler */
         handlerGlobal = handler;
@@ -126,7 +125,7 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
         generateAllDecisions(handlerGlobal.getDecisionsId());
         /** définition des déstinations pour les containers */
         mergeAll();
-        mergeAllUniqueDecision();
+//        mergeAllUniqueDecision();
 
     }
 
@@ -139,21 +138,14 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
         /** instanciation pubInfos */
         pubInfosGlobal = createMainPubInfos(false);
 
-        /**
-         * Dans le cas de la GED, on instancie le pubInfos de d'archivage Si il reste null, aucune sortie pour la pertie
-         * GED
-         */
-        if (handler.getForGed()) {
-            pubInfosGed = createMainPubInfos(true);
-        }
+        pubInfosGed = createMainPubInfos(true);
 
         /** generation des containers d'impressions */
         generateAllDecisions(handlerGlobal.getDecisionsId());
         /** définition des déstinations pour les containers */
-        if(!PCApplicationUtil.isCantonVS()){
-            mergeAllUniqueDecision();
-        }
         mergeAll();
+        mergeAllUniqueDecision();
+
     }
 
     /**
