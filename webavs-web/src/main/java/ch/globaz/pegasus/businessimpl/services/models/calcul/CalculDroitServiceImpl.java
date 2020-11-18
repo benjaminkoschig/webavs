@@ -393,20 +393,20 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 continue;
             }
 
-            for (CalculComparatif calculComparatifs : pcAccordes.getCCRetenu()) {
-                if (calculComparatifs != null) {
-                    calculComparatifs.setPlanRetenu(false);
+                for (CalculComparatif calculComparatifs : pcAccordes.getCCRetenu()) {
+                    if (calculComparatifs != null) {
+                        calculComparatifs.setPlanRetenu(false);
+                    }
                 }
-            }
-            for (CalculComparatif calculComparatifsReforme : pcAccordesReforme.getCCRetenu()) {
-                if (calculComparatifsReforme != null) {
-                    calculComparatifsReforme.setPlanRetenu(false);
+                for (CalculComparatif calculComparatifsReforme : pcAccordesReforme.getCCRetenu()) {
+                    if (calculComparatifsReforme != null) {
+                        calculComparatifsReforme.setPlanRetenu(false);
+                    }
                 }
-            }
-            pcAccordes.getCalculsComparatifs().addAll(getCalculReforme(pcAccordesReforme.getCalculsComparatifs()));
-            pcAccordes.getCalculsComparatifsConjoint().addAll(getCalculReforme(pcAccordesReforme.getCalculsComparatifsConjoint()));
-            fusionnePersonne(pcAccordes, pcAccordesReforme);
-            pcAccordes.getPersonnes().putAll(pcAccordesReforme.getPersonnes());
+                pcAccordes.getCalculsComparatifs().addAll(getCalculReforme(pcAccordesReforme.getCalculsComparatifs()));
+                pcAccordes.getCalculsComparatifsConjoint().addAll(getCalculReforme(pcAccordesReforme.getCalculsComparatifsConjoint()));
+                fusionnePersonne(pcAccordes, pcAccordesReforme);
+                pcAccordes.getPersonnes().putAll(pcAccordesReforme.getPersonnes());
             pcAccordes.determineCCFavorable();
         }
     }
@@ -476,12 +476,13 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                     checkSejourMoisPartiel(droit, pcAccordee, cc, sejourVersementList);
                     String montantTotalHome = cc.getMontantPrixHome();
                     Float montantDepensePersonnel = cc.getMontants().getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_DEPPERSO_TOTAL);
-                    mapMontantTotalHome.put(REQUERANT_MNT_SEJOUR, montantDepensePersonnel.toString());
+                    String fKey = pcAccordee.getIdSimplePcAccordee()+"-";
+                    mapMontantTotalHome.put(fKey+REQUERANT_MNT_SEJOUR, montantDepensePersonnel.toString());
                     for (PersonnePCAccordee personnePCAccordee : cc.getPersonnes()) {
                         if (personnePCAccordee.getIsHome()) {
                             if (!JadeStringUtil.isBlankOrZero(montantTotalHome)) {
-                                mapMontantTotalHome.put(REQUERANT_HOME, montantTotalHome);
-                                mapMontantTotalHome.put(REQUERANT_DEP_PERS, montantDepensePersonnel.toString());
+                                mapMontantTotalHome.put(fKey+REQUERANT_HOME, montantTotalHome);
+                                mapMontantTotalHome.put(fKey+REQUERANT_DEP_PERS, montantDepensePersonnel.toString());
                             }
                         }
                     }
@@ -495,8 +496,9 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                     for (PersonnePCAccordee personnePCAccordee : cc.getPersonnes()) {
                         if (personnePCAccordee.getIsHome()) {
                             if (!JadeStringUtil.isBlankOrZero(montantTotalHome)) {
-                                mapMontantTotalHome.put(CONJOINT_HOME, montantTotalHome);
-                                mapMontantTotalHome.put(CONJOINT_DEP_PERS, montantDepensePersonnel.toString());
+                                String fKey = pcAccordee.getIdSimplePcAccordee()+"-";
+                                mapMontantTotalHome.put(fKey+CONJOINT_HOME, montantTotalHome);
+                                mapMontantTotalHome.put(fKey+CONJOINT_DEP_PERS, montantDepensePersonnel.toString());
                             }
                         }
                     }
@@ -784,12 +786,14 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 Float montantAverser;
                 if (montantHome.floatValue() + Float.parseFloat(calculDonneesHome.getMontantDepenses()) / 12.0 > montantPCMensuel) {
                     montantAverser = montantPCMensuel - (Float.parseFloat(calculDonneesHome.getMontantDepenses()) / 12);
+                    montantAverser = montantAverser * nbreMois;
                     montantAverser = new BigDecimal(montantAverser).setScale(0, RoundingMode.UP).floatValue();
                 } else {
                     montantAverser = montantHome.setScale(0, RoundingMode.UP).floatValue();
                     if (montantAverser.floatValue() + Float.parseFloat(calculDonneesHome.getMontantDepenses()) / 12.0 > montantPCMensuel) {
                         montantAverser = montantAverser - 1;
                     }
+                    montantAverser = montantAverser * nbreMois;
                 }
                 simpleCreanceAccordee.setMontant(montantAverser.toString());
                 creanceAccordee.setSimpleCreanceAccordee(simpleCreanceAccordee);
@@ -937,13 +941,14 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                         donnee.setIdTiersAdressePaiement(home.getIdTiersHome());
                         donnee.setIdTiersRegroupement(home.getIdTiersRegroupement());
                         donnee.setCsRoleBeneficiaire(simplePCAccordeeBenef.getCsRoleBeneficiaire());
+                        String fKey = simplePCAccordeeBenef.getIdPCAccordee()+"-";
                         //Cas séperation où le conjoint est devenu requérant.
                         if (donnee.getCsRoleBeneficiaire().equals(RoleMembreFamille.REQUERANT.getValue())) {
-                            donnee.setMontantHomes(mapMontantTotalHome.get(REQUERANT_HOME));
-                            donnee.setMontantDepenses(mapMontantTotalHome.get(REQUERANT_DEP_PERS));
+                            donnee.setMontantHomes(mapMontantTotalHome.get(fKey+REQUERANT_HOME));
+                            donnee.setMontantDepenses(mapMontantTotalHome.get(fKey+REQUERANT_DEP_PERS));
                         } else {
-                            donnee.setMontantHomes(mapMontantTotalHome.get(CONJOINT_HOME));
-                            donnee.setMontantDepenses(mapMontantTotalHome.get(CONJOINT_DEP_PERS));
+                            donnee.setMontantHomes(mapMontantTotalHome.get(fKey+CONJOINT_HOME));
+                            donnee.setMontantDepenses(mapMontantTotalHome.get(fKey+CONJOINT_DEP_PERS));
                         }
                         String montantDejaVerser = searchMontantDejaVerser(periode, droit.getSimpleDroit().getIdDroit(), droit.getSimpleVersionDroit().getNoVersion());
                         donnee.setMontantDejaVerser(montantDejaVerser);
