@@ -1,12 +1,15 @@
 package globaz.pegasus.process.lot;
 
 import globaz.globall.db.BSession;
+import globaz.jade.common.Jade;
 import globaz.jade.context.JadeThread;
 import globaz.jade.log.business.JadeBusinessLogSession;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
 import globaz.jade.log.business.renderer.JadeBusinessMessageRenderer;
 import globaz.jade.smtp.JadeSmtpClient;
 import java.util.List;
+
+import net.lingala.zip4j.ZipFile;
 import org.apache.commons.lang.StringUtils;
 import ch.globaz.corvus.business.models.lots.SimpleLot;
 import ch.globaz.pegasus.businessimpl.services.models.decision.ged.DACGedHandler;
@@ -17,7 +20,8 @@ public class ComptabiliserProcessMailHandler {
     // type de process compta ou mise en ged
     public enum PROCESS_TYPE {
         COMPTABILISATION("COMPTA"),
-        MISE_EN_GED("GED");
+        MISE_EN_GED("GED"),
+        ADAPTATION_ANNUEL(" ADAPTATION_ANNUEL");
 
         // prefixe du label servant à récupérer le label correct
         private String labelPrefix = null;
@@ -33,6 +37,8 @@ public class ComptabiliserProcessMailHandler {
     private DACGedHandler gedHandler = null;
     private JadeBusinessLogSession logs = null;
     private SimpleLot lot = null;
+    private boolean isAdaptation = false;
+    private String idProcessusAdaptation = "";
     private StringBuilder mailBody = new StringBuilder("");
     private StringBuilder mailSubject = new StringBuilder("");
     private BSession session = null;
@@ -69,6 +75,24 @@ public class ComptabiliserProcessMailHandler {
         initMailBody();
         buildMail();
     }
+    public ComptabiliserProcessMailHandler(PROCESS_TYPE process, String idProcessusAdaptation, BSession session,
+                                           JadeBusinessLogSession logs, DACGedHandler gedHandler) {
+
+        if (session == null) {
+            throw new IllegalArgumentException(
+                    "The session cannot be null to handle the mail process for compatbilisation process " + "["
+                            + this.getClass().getName() + "]");
+        }
+
+        this.gedHandler = gedHandler;
+        this.session = session;
+        this.logs = logs;
+        this.idProcessusAdaptation = idProcessusAdaptation;
+        isAdaptation = true;
+        typeProcess = process;
+        initMailBody();
+        buildMail();
+    }
 
     /**
      * Constrution du mail pour le processus de comptabilisation
@@ -92,9 +116,13 @@ public class ComptabiliserProcessMailHandler {
             case MISE_EN_GED:
                 buildMiseEnGedProcessMail();
                 break;
+            case ADAPTATION_ANNUEL:
+                buildAdaptationProcessMail();
+                break;
         }
 
     }
+
 
     private void buildMailContent() {
 
@@ -127,6 +155,28 @@ public class ComptabiliserProcessMailHandler {
             mailSubject.append(replaceStr);
         }
 
+    }
+    private void buildAdaptationProcessMail() {
+        // erreur
+        if ((logs.getMaxLevel() == JadeBusinessMessageLevels.ERROR)
+                || JadeThread.logHasMessagesFromLevel(JadeBusinessMessageLevels.ERROR)) {
+
+            mailSubject.append(session.getLabel("MENU_PROCESS_ADAPTATION")).append("(ERROR)")
+                    .append("N° :").append(idProcessusAdaptation);
+
+        }
+        // warning
+        else if (logs.getMaxLevel() == JadeBusinessMessageLevels.WARN) {
+
+            String desc = (lot.getDescription() == null) ? "" : lot.getDescription();
+
+            mailSubject.append(session.getLabel("MENU_PROCESS_ADAPTATION")).append("(WARN)").append("(")
+                    .append("N° :").append(idProcessusAdaptation).append(")  ");
+        }
+        // ok
+        else {
+            mailSubject.append(session.getLabel("MENU_PROCESS_ADAPTATION")).append("(OK) ").append("N° :").append(idProcessusAdaptation).append(" - ").append(session.getLabel("PROCESS_ADAPTATION_PC_ETAPE_IMPRESSION"));
+        }
     }
 
     /**
@@ -165,8 +215,16 @@ public class ComptabiliserProcessMailHandler {
                     mailBody.append(JadeBusinessMessageRenderer.getInstance().getDefaultAdapter()
                             .render(JadeThread.logMessages(), JadeThread.currentLanguage()));
                 }
-
                 break;
+            case ADAPTATION_ANNUEL:
+                if (JadeThread.logMessages() == null) {
+                    mailBody.append(session.getLabel("JSP_PC_PC_AVANCES_EXECUTER_D_PROCESS_RUN"));
+                } else {
+                    mailBody.append(JadeBusinessMessageRenderer.getInstance().getDefaultAdapter()
+                            .render(JadeThread.logMessages(), JadeThread.currentLanguage()));
+                }
+                break;
+
         }
 
     }
@@ -202,5 +260,34 @@ public class ComptabiliserProcessMailHandler {
         }
         JadeSmtpClient.getInstance().sendMail(emailsAsArray, mailSubject.toString(), mailBody.toString(), null);
     }
+    public void sendMail(List<String> emailAdresses,List<String> listDecision) throws Exception {
 
+        if (emailAdresses == null) {
+            throw new NullPointerException("cannot send completion mail: dest list is null");
+        }
+        if (emailAdresses.isEmpty()) {
+            return;
+        }
+        BSession theSession = session;
+        if (theSession == null) {
+            throw new IllegalStateException("cannot send completion mail: user session is null.");
+        }
+
+        String[] emailsAsArray = emailAdresses.toArray(new String[emailAdresses.size()]);
+        assert emailsAsArray != null : "emailsAsArray is null!";
+        for (int i = 0; i < emailsAsArray.length; i++) {
+            if (emailsAsArray[i] == null) {
+                throw new NullPointerException(
+                        "Cannot send completion mails: an email is null in List. No single mail sent!");
+            }
+        }
+        String path = Jade.getInstance().getHomeDir() + "work/";
+        ZipFile zipFile = new ZipFile(path+"files.zip");
+        for(String fileName :listDecision){
+            zipFile.addFile(fileName);
+        }
+        String[] listeFiles = new String[1];
+        listeFiles[0] = zipFile.getFile().getAbsolutePath();
+        JadeSmtpClient.getInstance().sendMail(emailsAsArray, mailSubject.toString(), mailBody.toString(), listeFiles);
+    }
 }

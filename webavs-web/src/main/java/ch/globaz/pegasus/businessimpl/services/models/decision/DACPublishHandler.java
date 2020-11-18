@@ -52,7 +52,7 @@ public class DACPublishHandler {
         return handler;
     }
     public static DACPublishHandler getInstanceForAdaptationAnnuel(ArrayList<String> decisionsId, String mailGest,
-                                                                String dateDoc, String persRef, Boolean isForFtp, Boolean includeGed, Boolean isFromAdaptation,String idProcessPC) {
+                                                                String dateDoc, String persRef, Boolean isForFtp, Boolean isFromAdaptation,String idProcessPC, DACGedHandler gedHandler) {
 
         DACPublishHandler handler = new DACPublishHandler();
         handler.setDecisionsId(decisionsId);
@@ -60,7 +60,8 @@ public class DACPublishHandler {
         handler.setDateDoc(dateDoc);
         handler.setPersref(persRef);
         handler.setIsForFtp(isForFtp);
-        handler.setForGed(includeGed);
+        handler.setForGed(true);
+        handler.setGedHandler(gedHandler);
         handler.setFromAdaptation(isFromAdaptation);
         handler.setIdProcessusPC(idProcessPC);
         return handler;

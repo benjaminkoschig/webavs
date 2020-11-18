@@ -45,7 +45,10 @@ public class PCProcessAdaptationStep implements JadeProcessStepInterface, JadePr
         BSession session = BSessionUtil.getSessionFromThreadContext();
         ArrayList<String> idsDecision = new ArrayList<>();
         for (CommunicationAdaptationElement element : container) {
-            idsDecision.add(element.getIdDecision());
+            if(element != null){
+                idsDecision.add(element.getIdDecision());
+            }
+
         }
 
         PCImprimerDecisionsProcess processDecision = new PCImprimerDecisionsProcess();

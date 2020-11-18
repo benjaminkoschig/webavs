@@ -13,8 +13,10 @@ import globaz.jade.smtp.JadeSmtpClient;
 import globaz.pegasus.process.PCAbstractJob;
 import globaz.pegasus.process.lot.ComptabiliserProcessMailHandler;
 import globaz.pegasus.process.lot.ComptabiliserProcessMailHandler.PROCESS_TYPE;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import ch.globaz.corvus.business.exceptions.models.LotException;
 import ch.globaz.pegasus.business.constantes.decision.DecisionTypes;
 import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
@@ -27,8 +29,8 @@ import ch.globaz.pegasus.businessimpl.services.models.decision.ged.DACGedHandler
 public class PCImprimerDecisionsProcess extends PCAbstractJob {
 
     /**
-	 * 
-	 */
+     *
+     */
     private static final long serialVersionUID = 1L;
     /* Date docment */
     private String dateDoc = null;
@@ -66,9 +68,8 @@ public class PCImprimerDecisionsProcess extends PCAbstractJob {
     /**
      * Génération des documents présents dans le container. Le but est de créer une publication, donc une tâche
      * d'impression par décisions présente dans le handler
-     * 
-     * @param publisherHandler
-     *            le handler contenant les documents
+     *
+     * @param publisherHandler le handler contenant les documents
      * @throws JadeServiceLocatorException
      * @throws JadeServiceActivatorException
      * @throws JadeClassCastException
@@ -174,21 +175,43 @@ public class PCImprimerDecisionsProcess extends PCAbstractJob {
             dec = PegasusServiceLocator.getDecisionBuilderProvderService().getBuilderFor(decisionType);
 
 
-
             /** Impression ftp validation et prevalidation automatique */
-            if(isFromAdaptation){
+            if (isFromAdaptation) {
+                DecisionBuilder decBuilder = null;
+                decBuilder = PegasusServiceLocator.getDecisionBuilderProvderService().getBuilderFor(decisionType);
+                ArrayList<String> idsDecisions;
+                DACGedHandler globalLotGedHandler = DACGedHandler.getInstanceForTraitementDecisionsAdaptationAnnuel(idDecisionsToPrint, getSession(),persref);
+                sendProcessMailAdaptations(PROCESS_TYPE.ADAPTATION_ANNUEL, idProcessusPC,globalLotGedHandler);
                 publisherHandler = DACPublishHandler.getInstanceForAdaptationAnnuel(idDecisionsToPrint, mailGest, dateDoc,
-                        persref, isForFtp, forGed,isFromAdaptation,idProcessusPC);
-
-                dec.buildDecisionForAdaptation(publisherHandler);
-                // Lancement des task d 'impression, création du document fusionné
+                        persref, isForFtp, isFromAdaptation, idProcessusPC,gedHandler);
+                decBuilder.build(publisherHandler);
                 this.createDocuments(publisherHandler.getContainerPublication());
+                for (String idDecs : idDecisionsToPrint) {
 
-                // Création des décisions
-                createDecisionsByLot(publisherHandler);
 
-            }else
-            if (isForFtp) {
+                    idsDecisions = new ArrayList<String>();
+                    idsDecisions.add(idDecs);
+
+                    DACGedHandler gedHandler = DACGedHandler.getInstanceForTraitementDecisionsAdaptationAnnuel(idsDecisions, getSession(),persref);
+                    publisherHandler = DACPublishHandler.getInstanceForAdaptationAnnuel(idsDecisions, mailGest, dateDoc,
+                            persref, isForFtp, isFromAdaptation, idProcessusPC,gedHandler);
+                    decBuilder.buildDecisionForGedOnly(publisherHandler);
+                    // Création des décisions
+                    createDecisionsByLot(publisherHandler);
+
+                }
+
+
+//                dec.buildDecisionForAdaptation(publisherHandler);
+//                // Lancement des task d 'impression, création du document fusionné
+//                this.createDocuments(publisherHandler.getContainerPublication());
+//
+//                // Création des décisions
+//                createDecisionsByLot(publisherHandler);
+
+//                generateDecisionsForLot();
+
+            } else if (isForFtp) {
                 publisherHandler = DACPublishHandler.getInstanceForFTPPrintOnly(idDecisionsToPrint, mailGest, dateDoc,
                         persref);
 
@@ -247,7 +270,7 @@ public class PCImprimerDecisionsProcess extends PCAbstractJob {
 
     /**
      * Envoi du mail suite au process
-     * 
+     *
      * @param process
      * @param lot
      * @param gedHandler
@@ -262,6 +285,19 @@ public class PCImprimerDecisionsProcess extends PCAbstractJob {
         }
 
         ComptabiliserProcessMailHandler handler = new ComptabiliserProcessMailHandler(process, gedHandler.getLot(),
+                getSession(), getLogSession(), gedHandler);
+
+        handler.sendMail(mails);
+    }
+    private final void sendProcessMailAdaptations(PROCESS_TYPE process, String idProcessus,DACGedHandler gedHandler) throws Exception {
+        List<String> mails = new ArrayList<String>();
+        if (mailGest == null) {
+            mails.add(getSession().getUserEMail());
+        } else {
+            mails.add(mailGest);
+        }
+
+        ComptabiliserProcessMailHandler handler = new ComptabiliserProcessMailHandler(process,idProcessus,
                 getSession(), getLogSession(), gedHandler);
 
         handler.sendMail(mails);
@@ -310,6 +346,7 @@ public class PCImprimerDecisionsProcess extends PCAbstractJob {
     public void setPersref(String persref) {
         this.persref = persref;
     }
+
     public Boolean getFromAdaptation() {
         return isFromAdaptation;
     }
@@ -317,6 +354,7 @@ public class PCImprimerDecisionsProcess extends PCAbstractJob {
     public void setFromAdaptation(Boolean fromAdaptation) {
         isFromAdaptation = fromAdaptation;
     }
+
     public String getIdProcessusPC() {
         return idProcessusPC;
     }

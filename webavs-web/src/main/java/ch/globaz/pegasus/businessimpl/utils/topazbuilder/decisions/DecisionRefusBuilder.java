@@ -72,6 +72,12 @@ public class DecisionRefusBuilder extends AbstractDecisionBuilder implements Dec
             JadePersistenceException, Exception {
         throw new NotImplementedException();
     }
+
+    @Override
+    public void buildDecisionForGedOnly(DACPublishHandler handler) throws Exception {
+        throw new NotImplementedException();
+    }
+
     private DocumentData buildHeader(DocumentData data) {
 
         // Prépartion des données

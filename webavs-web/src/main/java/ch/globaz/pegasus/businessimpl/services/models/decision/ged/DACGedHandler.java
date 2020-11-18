@@ -44,6 +44,21 @@ public class DACGedHandler {
         return handler;
     }
 
+    public static DACGedHandler getInstanceForTraitementDecisionsAdaptationAnnuel(ArrayList<String> idsDecisions,  BSession session,String persref) {
+
+        if ((idsDecisions == null) || (idsDecisions.size() == 0)) {
+            throw new IllegalArgumentException("The list of the decision(s) to print cannot be null or empty ["
+                    + DACGedHandler.class.getName() + "]");
+        }
+
+        DACGedHandler handler = new DACGedHandler();
+        handler.setSession(session);
+        handler.setIdsDacToPutInGed(idsDecisions);
+        handler.setPersref(persref);
+
+        return handler;
+    }
+
     public static DACGedHandler getInstanceForTraitementPourLot(String idLot, String persref, BSession session,
             ArrayList<String> idDecisionsToPrint) throws PrestationException, DecisionException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException, LotException {
@@ -197,4 +212,6 @@ public class DACGedHandler {
     public void setSession(BSession session) {
         this.session = session;
     }
+
+
 }

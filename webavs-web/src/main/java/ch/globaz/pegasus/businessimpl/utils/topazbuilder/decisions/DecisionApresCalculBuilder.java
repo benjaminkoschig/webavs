@@ -1,6 +1,7 @@
 package ch.globaz.pegasus.businessimpl.utils.topazbuilder.decisions;
 
 import ch.globaz.common.business.language.LanguageResolver;
+import ch.globaz.pegasus.utils.PCApplicationUtil;
 import ch.globaz.pyxis.business.model.TiersSimpleModel;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.externe.IPRConstantesExternes;
@@ -42,6 +43,7 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
     private final static String IS_VALID = "isDecisionValidee";
     private final static String IS_PROVISOIRE = "isDecisionProvisoire";
     private final static String IS_PROVISOIRE_DE = "isDecisionProvisoireDe";
+    private final static String IS_FROM_ADAPTATION_ANNUELLE = "IsFromAdaptationAnnuelle";
 
     /* Container pour l 'impression des decuments */
     JadePrintDocumentContainer allDoc = new JadePrintDocumentContainer();
@@ -124,7 +126,34 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
         generateAllDecisions(handlerGlobal.getDecisionsId());
         /** définition des déstinations pour les containers */
         mergeAll();
+        mergeAllUniqueDecision();
 
+    }
+
+    @Override
+    public void buildDecisionForGedOnly(DACPublishHandler handler) throws Exception {
+        /** instaciation du handler */
+        handlerGlobal = handler;
+        /** chargement des entités */
+        loadDBEntity();
+        /** instanciation pubInfos */
+        pubInfosGlobal = createMainPubInfos(false);
+
+        /**
+         * Dans le cas de la GED, on instancie le pubInfos de d'archivage Si il reste null, aucune sortie pour la pertie
+         * GED
+         */
+        if (handler.getForGed()) {
+            pubInfosGed = createMainPubInfos(true);
+        }
+
+        /** generation des containers d'impressions */
+        generateAllDecisions(handlerGlobal.getDecisionsId());
+        /** définition des déstinations pour les containers */
+        if(!PCApplicationUtil.isCantonVS()){
+            mergeAllUniqueDecision();
+        }
+        mergeAll();
     }
 
     /**
@@ -266,6 +295,7 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
         toMerge.setDocumentProperty(DecisionApresCalculBuilder.IS_PROVISOIRE, getEtatValidationProvisoire());
         // pour l'ajout de la watermark decision provisoire allemand
         toMerge.setDocumentProperty(DecisionApresCalculBuilder.IS_PROVISOIRE_DE, getEtatValidationProvisoireDe());
+        toMerge.setDocumentProperty(DecisionApresCalculBuilder.IS_FROM_ADAPTATION_ANNUELLE,handlerGlobal.getFromAdaptation().booleanValue() == true ? "true":"false");
         // Remplissage des propriétés du document pour le tiers (clés pixis.*)
         TIDocumentInfoHelper.fill(toMerge, getIdTiers(), getSession(), null, null, null);
 
