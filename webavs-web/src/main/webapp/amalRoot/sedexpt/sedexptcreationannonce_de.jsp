@@ -98,17 +98,17 @@ $(function () {
 				<tr>
 					<td>Sous-type Message</td>
 					<td>
-						<input tabindex="0"  type="text" value="<%=AMMessagesSubTypesAnnonceSedex.getSubTypeCSLibelle(AMMessagesSubTypesAnnonceSedex.DEMANDE_PRIME_TARIFAIRE.getValue())%>" disabled="disabled"/>
+						<input tabindex="0" style="width: 10cm" type="text" value="<%=AMMessagesSubTypesAnnonceSedex.getSubTypeCSLibelle(AMMessagesSubTypesAnnonceSedex.DEMANDE_PRIME_TARIFAIRE.getValue())%>" disabled="disabled"/>
 					</td>
 				</tr>
 				<tr>
 	            	<td> <ct:FWLabel key="AL0028_EMAIL"/></td>
-					<td><input tabindex="1"  type="text" id="email"  name=email  value="<%= viewBean.getEmail() != null ? viewBean.getEmail() : "" %>"/></td>
+					<td><input tabindex="1" style="width: 10cm" type="text" id="email"  name=email  value="<%= viewBean.getEmail() != null ? viewBean.getEmail() : "" %>"/></td>
 				</tr>
 				<tr>
 					<td>Date Réduction de prime de </td>
 					<td>
-						<input class="clearable" type="text" id="dateReductionPrimeDe"
+						<input tabindex="2" class="clearable" type="text" id="dateReductionPrimeDe"
 							   name="dateReductionPrimeDe" value=""
 							   data-g-calendar="mandatory:false"/>
 					</td>
@@ -116,7 +116,7 @@ $(function () {
 				<tr>
 					<td>Date Réduction de prime à </td>
 					<td>
-						<input class="clearable" type="text" id="dateReductionPrimeA"
+						<input tabindex="3" class="clearable" type="text" id="dateReductionPrimeA"
 							   name="dateReductionPrimeA" value=""
 							   data-g-calendar="mandatory:false"/>
 					</td>
@@ -127,11 +127,11 @@ $(function () {
 				</tr>
 				<tr>
 					<td>Simulation</td>
-					<td><input type="checkbox" id="simulation" name="simulation"/></td>
+					<td><input tabindex="5" type="checkbox" id="simulation" name="simulation"/></td>
 				</tr>
 				<tr>
 					<td>&nbsp;</td>
-					<td><input id="launchGenererAnnoncePT" type="button" name="launchGenererAnnoncePT" value='Lancer'/></td>
+					<td><input tabindex="6" id="launchGenererAnnoncePT" type="button" name="launchGenererAnnoncePT" value='Lancer'/></td>
 				</tr>
 			</table>
 		</td>
