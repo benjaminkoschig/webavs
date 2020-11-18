@@ -15,6 +15,7 @@ public class SimplePlanDeCalcul extends JadeSimpleModel {
     private Boolean isPlanCalculAccessible = Boolean.FALSE;
     private Boolean isPlanRetenu = Boolean.FALSE;
     private Boolean isPlanNonRetenu = Boolean.FALSE;
+    private Boolean isVersementDirect = Boolean.FALSE;
     private String montantPCMensuelle = null;
     private String primeMoyenneAssMaladie = null;
     private String primeVerseeAssMaladie = null;
@@ -163,5 +164,13 @@ public class SimplePlanDeCalcul extends JadeSimpleModel {
 
     public void setMontantPartCantonale(String montantPartCantonale) {
         this.montantPartCantonale = montantPartCantonale;
+    }
+
+    public Boolean getIsVersementDirect() {
+        return isVersementDirect;
+    }
+
+    public void setIsVersementDirect(Boolean versementDirect) {
+        isVersementDirect = versementDirect;
     }
 }

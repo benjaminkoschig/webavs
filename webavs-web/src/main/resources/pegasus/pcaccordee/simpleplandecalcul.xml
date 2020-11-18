@@ -18,6 +18,7 @@
 			<field name="isPlanCalculAccessible" column="CVBPLA" type="BOOLEAN" mandatory="true" comment="PLAN CALCUL ACCESSIBLE PCA OU PARENT"/>
 			<field name="montantPartCantonale" column="CVMPACA" type="NUMERIC" mandatory="false" comment="MONTANT_PART_CANTONALE"/>
 			<field name="reformePc" column="CVBRPC" type="BOOLEAN" mandatory="true" comment="REFORME PC"/>
+			<field name="isVersementDirect" column="CVISVD" type="BOOLEAN" mandatory="true" comment="IS VERSEMENT DIRECT"/>
 		</fields>
 		<search-definition>
 			<search-group operator="AND">

@@ -197,6 +197,12 @@ ALTER TABLE SCHEMA.PCDONPERS
 REORG Table SCHEMA.PCDONPERS;
 -- Call Sysproc.admin_cmd('reorg Table SCHEMA.PCDONPERS');
 
+-- Ajout boolean pour versement direct
+ALTER TABLE SCHEMA.PCPLCAL
+    ADD COLUMN CVISVD DECIMAL(1) DEFAULT 0;
+REORG Table SCHEMA.PCPLCAL;
+-- Call Sysproc.admin_cmd('reorg Table PCPLCAL');
+
 -- Ajout des propriétés jade
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('pegasus.activer.reforme.pc','false','20200101120000Globaz    ','20200101120000Globaz    ');
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('pegasus.date.reforme.pc','01.01.2021','20200101120000Globaz    ','20200101120000Globaz    ');

@@ -50,10 +50,7 @@ import java.beans.XMLEncoder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author ECO
@@ -251,6 +248,8 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
                 pcAccordeePlanCalcul.setSimplePlanDeCalcul(simplePlanCalcul);
             }
 
+            simplePlanCalcul.setIsVersementDirect(isVersementDirect(periode.getPersonnes().values()));
+
             // creation du plan de calcul
             simplePlanCalcul = PegasusImplServiceLocator.getSimplePlanDeCalculService().create(simplePlanCalcul);
             cc.setIdPlanCalcul(simplePlanCalcul.getIdPlanDeCalcul());
@@ -267,6 +266,20 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
 
         }
         return pcAccordeePlanCalcul;
+    }
+
+    private Boolean isVersementDirect(Collection<PersonnePCAccordee> values) {
+        boolean isVersementDirect = false;
+
+        for(PersonnePCAccordee personne : values) {
+            // Versement direct activé
+            if (Objects.equals(personne.getCsRoleFamille(), IPCDroits.CS_ROLE_FAMILLE_REQUERANT)
+                    && personne.getHome() != null && personne.getHome().getIsVersementDirect() != null
+                    && personne.getHome().getIsVersementDirect()) {
+                isVersementDirect= true;
+            }
+        }
+        return isVersementDirect;
     }
 
     private void addDateFinForPcaEnRefus(PeriodePCAccordee periode, SimplePCAccordee simplePcAccordee) {
