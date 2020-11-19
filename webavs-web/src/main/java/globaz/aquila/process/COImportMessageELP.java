@@ -105,6 +105,8 @@ public class COImportMessageELP extends BProcess {
         getSession().getErrors();
         getTransaction().clearErrorBuffer();
         getTransaction().clearWarningBuffer();
+        getSession().getCurrentThreadTransaction().clearErrorBuffer();
+        getSession().getCurrentThreadTransaction().clearWarningBuffer();
         getMemoryLog().clear();
         JadeThread.logClear();
     }
@@ -440,6 +442,7 @@ public class COImportMessageELP extends BProcess {
     private boolean executeCOTransitionProcess(COContentieux contentieux, COTransitionAction action, List fraisEtInterets) throws ElpProcessException {
         COProcessEffectuerTransition process = new COProcessEffectuerTransition();
         process.setSession(getSession());
+        process.setTransaction(getSession().getCurrentThreadTransaction());
         process.setContentieux(contentieux);
         process.setRefresh(false);
         process.setLibSequence(contentieux.getLibSequence());
