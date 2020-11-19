@@ -117,6 +117,21 @@ public class HEAnnoncesCentrale extends BEntity {
         // return this.extraireAnnonces(transaction, new Integer(0), outputAnnonceListViewBean);
     }
 
+    public IHEOutputAnnonce[] getAnnoncesAdaptationRentesPCForCentrale(BTransaction transaction) throws Exception {
+        HEOutputAnnonceLotListViewBean outputAnnonceListViewBean = new HEOutputAnnonceLotListViewBean();
+        outputAnnonceListViewBean.setSession(getSession());
+        outputAnnonceListViewBean.setForTypeLot(HELotViewBean.CS_TYPE_ADAPTATION_RENTES_PC);
+        outputAnnonceListViewBean.setForDateReceptionVide(true);
+        outputAnnonceListViewBean.setForCodeApplication("61");
+        outputAnnonceListViewBean.setForStatut(IHEAnnoncesViewBean.CS_TERMINE);
+        outputAnnonceListViewBean.wantCallMethodAfter(false);
+        outputAnnonceListViewBean.setOrder("RNIANN");
+        outputAnnonceListViewBean.setAddConditionToReceiveCentrale(true);
+        HELoadFields load = new HELoadFields();
+        return load.extraireAnnoncesAndLoadfields(transaction, new Integer(0), outputAnnonceListViewBean);
+        // return this.extraireAnnonces(transaction, new Integer(0), outputAnnonceListViewBean);
+    }
+
     public IHEOutputAnnonce[] getAnnoncesRentes(BTransaction transaction) throws Exception {
         HEOutputAnnonceLotListViewBean outputAnnonceListViewBean = new HEOutputAnnonceLotListViewBean();
         outputAnnonceListViewBean.setSession(getSession());

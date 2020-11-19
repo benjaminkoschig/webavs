@@ -1,6 +1,7 @@
 package globaz.hermes.db.gestion;
 
 import globaz.globall.db.BStatement;
+import globaz.jade.common.Jade;
 
 public class HEOutputAnnonceLotListViewBean extends HEOutputAnnonceListViewBean {
 
@@ -9,6 +10,8 @@ public class HEOutputAnnonceLotListViewBean extends HEOutputAnnonceListViewBean 
      */
     private static final long serialVersionUID = 1L;
     private String forTypeLot = "";
+    private boolean addConditionToReceiveCentrale = false;
+    private String schema;
 
     /*
      * (non-Javadoc)
@@ -36,7 +39,24 @@ public class HEOutputAnnonceLotListViewBean extends HEOutputAnnonceListViewBean 
                 sqlWhere += " AND ";
             }
             sqlWhere += "RMTTYP=" + _dbWriteNumeric(statement.getTransaction(), forTypeLot);
+
+
+            // Modification pour les reception centrale. La requête n'érait pas bonne. On ajout notre correction seulement sur on le demande via le boolean
+            if (addConditionToReceiveCentrale) {
+                StringBuilder whereClauseForCentrale = new StringBuilder();
+                whereClauseForCentrale.append(" AND HEANNOP.RMILOT = (SELECT HEA.RMILOT ");
+                whereClauseForCentrale.append("FROM "+getSchema()+".HEANNOP HEA ");
+                whereClauseForCentrale.append("INNER JOIN "+getSchema()+".HELOTSP AS HELO ON HELO.RMILOT = HEA.RMILOT ");
+                whereClauseForCentrale.append("WHERE SUBSTR(HEA.RNLENR, 1, 2) = '"+getForCodeApplication()+"' ");
+                whereClauseForCentrale.append("AND HEA.RNTSTA = "+ _dbWriteNumeric(statement.getTransaction(), getForStatut()));
+                whereClauseForCentrale.append(" AND (HEA.RNDECP = 0 OR HEA.RNDECP IS NULL) ");
+                whereClauseForCentrale.append("AND HELO.RMTTYP = "+ forTypeLot);
+                whereClauseForCentrale.append(" ORDER BY HEA.RNDDAN DESC ");
+                whereClauseForCentrale.append("FETCH FIRST ROW ONLY) ");
+                sqlWhere += whereClauseForCentrale.toString();
+            }
         }
+
         return sqlWhere;
     }
 
@@ -55,4 +75,19 @@ public class HEOutputAnnonceLotListViewBean extends HEOutputAnnonceListViewBean 
         this.forTypeLot = forTypeLot;
     }
 
+    public boolean isAddConditionToReceiveCentrale() {
+        return addConditionToReceiveCentrale;
+    }
+
+    public void setAddConditionToReceiveCentrale(boolean addConditionToReceiveCentrale) {
+        this.addConditionToReceiveCentrale = addConditionToReceiveCentrale;
+    }
+
+    private String getSchema() {
+
+        if (schema == null) {
+            schema = Jade.getInstance().getDefaultJdbcSchema();
+        }
+        return schema;
+    }
 }
