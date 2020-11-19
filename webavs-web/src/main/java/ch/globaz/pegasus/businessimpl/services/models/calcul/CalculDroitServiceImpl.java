@@ -496,7 +496,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                     for (PersonnePCAccordee personnePCAccordee : cc.getPersonnes()) {
                         if (personnePCAccordee.getIsHome()) {
                             if (!JadeStringUtil.isBlankOrZero(montantTotalHome)) {
-                                String fKey = pcAccordee.getIdSimplePcAccordee()+"-";
+                                String fKey = pcAccordee.getIdSimplePcAccordeeConjoint()+"-";
                                 mapMontantTotalHome.put(fKey+CONJOINT_HOME, montantTotalHome);
                                 mapMontantTotalHome.put(fKey+CONJOINT_DEP_PERS, montantDepensePersonnel.toString());
                             }
