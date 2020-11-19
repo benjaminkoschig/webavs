@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum CACamt054DefinitionType {
-    BVR(CACamt054BaliseType.DOM_PMNT, Arrays.asList(CACamt054BaliseType.FA_RCDT), Arrays.asList(
-            CACamt054BaliseType.SUBFA_VCOM, CACamt054BaliseType.SUBFA_CAJT)),
+    BVR(CACamt054BaliseType.DOM_PMNT, Arrays.asList(CACamt054BaliseType.FA_RCDT, CACamt054BaliseType.FA_CNTR), Arrays.asList(
+            CACamt054BaliseType.SUBFA_VCOM, CACamt054BaliseType.SUBFA_CAJT, CACamt054BaliseType.SUBFA_CDPT)),
     LSV(CACamt054BaliseType.DOM_PMNT, Arrays.asList(CACamt054BaliseType.FA_IDDT, CACamt054BaliseType.FA_RDDT), null),
     UNKNOWN(CACamt054BaliseType.DOM_EMPTY, Arrays.asList(CACamt054BaliseType.FA_EMPTY), Arrays
             .asList(CACamt054BaliseType.SUBFA_EMPTY));
