@@ -10,11 +10,11 @@ public class PrimeAssuranceMaladie extends DonneeFinanciere implements Depense {
 
     public PrimeAssuranceMaladie(Montant montant, DonneeFinanciere donneeFinanciere) {
         super(donneeFinanciere);
-        this.montant = montant.addAnnuelPeriodicity();
+        this.montant = montant.addMensuelPeriodicity();
     }
 
     public Montant getMontant() {
-        return montant;
+        return montant.annualise();
     }
 
 
