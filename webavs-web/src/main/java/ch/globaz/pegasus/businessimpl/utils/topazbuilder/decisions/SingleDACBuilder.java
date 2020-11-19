@@ -902,13 +902,13 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
                 data.addData("MONTANT_HOME","");
             } else {
                 data.addData("B_MONTANT_HOME", babelDoc.getTextes(3).getTexte(33).getDescription());
-                data.addData("MONTANT_HOME", SingleDACBuilder.MONNAIE + " " + montantHomeCurrency.toString());
+                data.addData("MONTANT_HOME", SingleDACBuilder.MONNAIE + " " + new FWCurrency(montantHomeCurrency.toString()).toStringFormat());
             }
         }
 
         // gestion prestation
         if (isReformePC()) {
-            data.addData("B_PRESTATION_MENS", babelDoc.getTextes(3).getTexte(34).getDescription());
+            //data.addData("B_PRESTATION_MENS", babelDoc.getTextes(3).getTexte(34).getDescription());
         } else {
             data.addData("B_PRESTATION_MENS", babelDoc.getTextes(3).getTexte(30).getDescription());
         }
