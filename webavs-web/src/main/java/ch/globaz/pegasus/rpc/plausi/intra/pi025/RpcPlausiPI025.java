@@ -8,13 +8,14 @@ import ch.globaz.pegasus.rpc.domaine.RpcVitalNeedsCategory;
 import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceCase;
 import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceDecision;
 import ch.globaz.pegasus.rpc.domaine.annonce.AnnoncePerson;
+import ch.globaz.pegasus.rpc.plausi.common.RpcPlausiCommonCalculData;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiApplyToDecision;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiCategory;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiMetier;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiType;
 import ch.globaz.pegasus.rpc.plausi.intra.pi025.RpcPlausiPI025Data.ParSituationCouple;
 
-public class RpcPlausiPI025 implements RpcPlausiMetier<RpcPlausiPI025Data> {
+public class RpcPlausiPI025 implements RpcPlausiMetier<RpcPlausiCommonCalculData> {
 
     private Montant par1;
     private Montant par2;
@@ -38,6 +39,7 @@ public class RpcPlausiPI025 implements RpcPlausiMetier<RpcPlausiPI025Data> {
     @Override
     public RpcPlausiPI025Data buildPlausi(AnnonceDecision decision, AnnonceCase data) {
         final RpcPlausiPI025Data dataPlausi = new RpcPlausiPI025Data(this);
+        dataPlausi.setReforme(decision.getAnnonce().getPcaDecision().getPca().getReformePC());
         dataPlausi.par1 = par1;
         dataPlausi.par2 = par2;
         dataPlausi.par3 = par3;

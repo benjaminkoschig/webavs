@@ -1,10 +1,11 @@
 package ch.globaz.pegasus.rpc.plausi.intra.pi025;
 
 import ch.globaz.common.domaine.Montant;
+import ch.globaz.pegasus.rpc.plausi.common.RpcPlausiCommonCalculData;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiHeader;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiMetier;
 
-class RpcPlausiPI025Data extends RpcPlausiHeader {
+class RpcPlausiPI025Data extends RpcPlausiCommonCalculData {
 
     public enum ParSituationCouple {
         PAR0,
@@ -27,12 +28,15 @@ class RpcPlausiPI025Data extends RpcPlausiHeader {
     Montant par5;
     Montant par6;
 
-    public RpcPlausiPI025Data(RpcPlausiMetier<RpcPlausiPI025Data> plausi) {
+    public RpcPlausiPI025Data(RpcPlausiMetier<RpcPlausiCommonCalculData> plausi) {
         super(plausi);
     }
 
     @Override
     public boolean isValide() {
+        if(isReforme){
+            return true;
+        }
         resolveVitalNeeds();
         return isDomicile ? FC33.substract(besoinsVitaux).isZero() : true;
     }
