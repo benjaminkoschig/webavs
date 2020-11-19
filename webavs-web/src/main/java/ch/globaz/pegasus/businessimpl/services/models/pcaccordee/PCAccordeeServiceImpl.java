@@ -229,11 +229,11 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
                 }
             }
         } catch (CreancierException e) {
-            e.printStackTrace();
+            throw new JadePersistenceException("Service not available - " + e.getMessage());
         } catch (PmtMensuelException e) {
-            e.printStackTrace();
+            throw new JadePersistenceException("Service not available - " + e.getMessage());
         } catch (JadeApplicationException e) {
-            e.printStackTrace();
+            throw new JadePersistenceException("Service not available - " + e.getMessage());
         }
     }
 
