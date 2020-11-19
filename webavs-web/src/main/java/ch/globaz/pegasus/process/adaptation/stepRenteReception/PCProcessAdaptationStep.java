@@ -68,7 +68,7 @@ public class PCProcessAdaptationStep implements JadeProcessStepInterface, JadePr
     private Map<String, List<IHEOutputAnnonce>> findAnnonce() throws Exception {
         HEAnnoncesCentrale annoncesCentrale = new HEAnnoncesCentrale();
 
-        IHEOutputAnnonce[] annonceRentes = annoncesCentrale.getAnnoncesAdaptationRentesPC(BSessionUtil
+        IHEOutputAnnonce[] annonceRentes = annoncesCentrale.getAnnoncesAdaptationRentesPCForCentrale(BSessionUtil
                 .getSessionFromThreadContext().getCurrentThreadTransaction());
         // On regroupe toute les annonces par l'idDroitMembreFamille (referenceInterne)
         Map<String, List<IHEOutputAnnonce>> mapAnnonceRentes = JadeListUtil.groupBy(Arrays.asList(annonceRentes),
