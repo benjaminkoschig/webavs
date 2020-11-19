@@ -76,11 +76,11 @@
 	<!-- La balise service contient les endpoints (port) d'accès. -->
 	<wsdl:service name="RapgConsultationService-2-0">
 		<wsdl:port name="RapgConsultationPort-2-0" binding="rws:RapgConsultationBinding-2-0">
-			<soap:address location="https://www.rapg.zas.admin.ch/ApgCore/ws/consultation"/>
+			<soap:address location="https://ws.rapg.zas.admin.ch/ApgCore/ws/consultation/2"/>
 			<!-- Fashtest URL-->
 			<!-- <soap:address location="https://ws.rapg-f.zas.admin.ch/ApgCore/ws/consultation/2"/> -->
 			<!-- AQ URL-->
-			<!-- <soap:address location="https://www.rapg-a.zas.admin.ch/ApgCore/ws/consultation"/> -->
+			<!-- <soap:address location="https://ws.rapg-a.zas.admin.ch/ApgCore/ws/consultation/2"/> -->
 		</wsdl:port>
 	</wsdl:service>
 </wsdl:definitions>
