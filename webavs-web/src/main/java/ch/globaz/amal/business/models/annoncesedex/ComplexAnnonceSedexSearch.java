@@ -23,6 +23,7 @@ public class ComplexAnnonceSedexSearch extends JadeSearchComplexModel {
     private String forCMNumCaisse = null;
     private String forCMNumGroupe = null;
     private String forCMTypeAdmin = null;
+    private String forCMTypeDemande = null;
     private String forCONTContribuableActif = null;
     private String forCONTIdContribuable = null;
     private String forFAMIsContribuable = null;
@@ -503,6 +504,14 @@ public class ComplexAnnonceSedexSearch extends JadeSearchComplexModel {
     public void setLikeCMNomCaisse(String likeCMNomCaisse) {
         this.likeCMNomCaisse = likeCMNomCaisse != null ? JadeStringUtil.convertSpecialChars(likeCMNomCaisse)
                 .toUpperCase() : null;
+    }
+
+    public void setForCMTypeDemande(String forCMTypeDemande) {
+        this.forCMTypeDemande = forCMTypeDemande;
+    }
+
+    public String getForCMTypeDemande() {
+        return forCMTypeDemande;
     }
 
     /*

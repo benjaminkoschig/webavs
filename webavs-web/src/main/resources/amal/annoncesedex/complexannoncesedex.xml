@@ -58,6 +58,8 @@
 					<search-field name="forCMActifs" field-ref="compositionTiersSimpleModel.finRelation" operation="NULL" />					
 				</search-group>
 				-->
+				<!-- Detail Famille -->
+				<search-field name="forCMTypeDemande" field-ref="simpleDetailFamille.typeDemande" operation="EQUALS" />
 				<!-- MESSAGE -->
 				<search-field name="forSDXDateMessage" field-ref="simpleAnnonceSedex.dateMessage" operation="EQUALS"/>
 				<search-field name="forSDXDateMessageGOE" field-ref="simpleAnnonceSedex.dateMessage" operation="GREATER_OR_EQUALS"/>
@@ -101,6 +103,8 @@
 					<search-field name="forCMActifs" field-ref="compositionTiersSimpleModel.finRelation" operation="NULL" />					
 				</search-group>
 				-->
+				<!-- Detail Famille -->
+				<search-field name="forCMTypeDemande" field-ref="simpleDetailFamille.typeDemande" operation="EQUALS" />
 				<!-- MESSAGE -->
 				<search-field name="forSDXDateMessage" field-ref="simpleAnnonceSedex.dateMessage" operation="EQUALS"/>
 				<search-field name="forSDXDateMessageGOE" field-ref="simpleAnnonceSedex.dateMessage" operation="GREATER_OR_EQUALS"/>
@@ -150,6 +154,8 @@
 					<search-field name="forCMActifs" field-ref="compositionTiersSimpleModel.finRelation" operation="NULL" />					
 				</search-group>
 				-->
+				<!-- Detail Famille -->
+				<search-field name="forCMTypeDemande" field-ref="simpleDetailFamille.typeDemande" operation="EQUALS" />
 				<!-- MESSAGE -->
 				<search-field name="forSDXIdAnnonceSedex" field-ref="simpleAnnonceSedex.idAnnonceSedex" operation="EQUALS"/>
 				<search-field name="forSDXIdAnnonceSedexLT" field-ref="simpleAnnonceSedex.idAnnonceSedex" operation="LESS"/>

@@ -2223,11 +2223,10 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
         // On force la recherche des annonces de réponse prime tarifaire
         annonceSedexSearch.setInSDXMessageSubType(Lists.newArrayList(AMMessagesSubTypesAnnonceSedex.REPONSE_PRIME_TARIFAIRE.getValue()));
         annonceSedexSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+        annonceSedexSearch.setForCMTypeDemande(AMTypeDemandeSubside.PC.getValue()); // On veut que les PC
 
         // Lancement de la recherche
         annonceSedexSearch = AmalServiceLocator.getComplexAnnonceSedexService().search(annonceSedexSearch);
-
-        // TODO SCO : Verifier que l'annonce de réponse soit bien a lié a un type de décision RP "Prestation complémentaire".
 
         // Génération du fichier excel
         String filename = genererCsvForListAnnoncesReponsePT(annonceSedexSearch);
@@ -2250,7 +2249,7 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
             sbCsv.append(annonceSedex.getSimpleFamille().getNomPrenomUpper() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
             sbCsv.append(annonceSedex.getSimpleFamille().getDateNaissance()+ AnnoncesRPServiceImpl.CSV_SEPARATOR);
             sbCsv.append(annonceSedex.getSimpleAnnonceSedex().getMontantPrimeTarifaire() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(annonceSedex.getSimpleAnnonceSedex().getMessageType() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+            sbCsv.append(annonceSedex.getSimpleAnnonceSedex().getMessageType());
 
             // On ajoute que les annonces qui ont des primes tarifaires supérieur à 0
             // si = 0, la réponse est un rejet et on traite pas les rejets.
@@ -2267,7 +2266,8 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
         lineHeader += "Prenom_membre" + AnnoncesRPServiceImpl.CSV_SEPARATOR;
         lineHeader += "DateNaissance_membre" + AnnoncesRPServiceImpl.CSV_SEPARATOR;
         lineHeader += "Prime_effective" + AnnoncesRPServiceImpl.CSV_SEPARATOR;
-        lineHeader += "idTiersBeneficiare" + AnnoncesRPServiceImpl.CSV_SEPARATOR;
+        lineHeader += "idTiersBeneficiare";
+
 
         String filename = _writeFile(listRecords, lineHeader, "exportAnnoncesReponsePT.csv");
         return filename;

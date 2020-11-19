@@ -306,7 +306,7 @@ function callBackcreerListePC(data) {
 		</tr>
 		<tr>
 			<td>
-				<input type="text" id="listeForEmail" name="listeForEmail" value="<%=email%>">
+				<input type="text" id="listeForEmail" name="listeForEmail" value="<%=email%>" style="width: 10cm">
 			</td>
 		</tr>
 	</table>
