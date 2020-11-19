@@ -897,7 +897,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
                 montantHome = Float.valueOf(dacOO.getPlanCalcul().getMontantPrixHome())/12;
             }
             FWCurrency montantHomeCurrency = new FWCurrency(montantHome);
-            if (montantHomeCurrency.isZero() || dacOO.getPlanCalcul().getIsVersementDirect()) {
+            if (montantHomeCurrency.isZero() || !dacOO.getPlanCalcul().getIsVersementDirect()) {
                 data.addData("B_MONTANT_HOME","");
                 data.addData("MONTANT_HOME","");
             } else {
