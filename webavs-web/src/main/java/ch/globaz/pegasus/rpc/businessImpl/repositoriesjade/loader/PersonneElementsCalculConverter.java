@@ -1,41 +1,30 @@
 package ch.globaz.pegasus.rpc.businessImpl.repositoriesjade.loader;
 
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import ch.globaz.pegasus.business.domaine.donneeFinanciere.bienImmobilier.bienImmobilierNonPrincipale.BiensImmobiliersNonPrincipale;
-import ch.globaz.pegasus.business.domaine.donneeFinanciere.bienImmobilier.bienImmobilierServantHbitationPrincipale.BiensImmobiliersServantHabitationPrincipale;
-import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenuActiviteLucrativeIndependante.RevenuActiviteLucrativeIndependante;
-import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenueActiviteLucrativeDependante.RevenuActiviteLucrativeDependante;
-import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenueHypothtique.RevenuHypothtique;
-import ch.globaz.pegasus.business.domaine.parametre.forfaitPrime.ForfaitPrimeAssuranceMaladie;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCIJAI;
-import ch.globaz.pegasus.business.domaine.donneeFinanciere.DonneeFinanciereType;
-import ch.globaz.pegasus.business.domaine.donneeFinanciere.DonneesFinancieresContainer;
-import ch.globaz.pegasus.business.domaine.donneeFinanciere.DonneesFinancieresListBase;
-import ch.globaz.pegasus.business.domaine.donneeFinanciere.Filtre;
-import ch.globaz.pegasus.business.domaine.donneeFinanciere.ProprieteType;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.*;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.api.avsAi.ApiAvsAi;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.assuranceRenteViagere.AssuranceRenteViagere;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.autreRente.AutreRente;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.autreRente.AutreRenteGenre;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.autreRente.AutresRentes;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.bienImmobilier.BienImmobilier;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.bienImmobilier.bienImmobilierNonPrincipale.BiensImmobiliersNonPrincipale;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.bienImmobilier.bienImmobilierServantHbitationPrincipale.BiensImmobiliersServantHabitationPrincipale;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.contratEntretienViager.ContratEntretienViager;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.iJAi.IjsAi;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.pensionAlimentaire.PensionAlimentaireType;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.renteAvsAi.RenteAvsAi;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenuActiviteLucrativeIndependante.RevenuActiviteLucrativeIndependante;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenueActiviteLucrativeDependante.RevenuActiviteLucrativeDependante;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenueHypothtique.RevenuHypothtique;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.taxeJournalierHome.TaxeJournaliereHome;
 import ch.globaz.pegasus.business.domaine.membreFamille.MembreFamille;
 import ch.globaz.pegasus.business.domaine.membreFamille.MembreFamilleWithDonneesFinanciere;
 import ch.globaz.pegasus.business.domaine.membreFamille.RoleMembreFamille;
 import ch.globaz.pegasus.business.domaine.parametre.Parameters;
+import ch.globaz.pegasus.business.domaine.parametre.forfaitPrime.ForfaitPrimeAssuranceMaladie;
 import ch.globaz.pegasus.business.domaine.parametre.forfaitPrime.ForfaitsPrimeAssuranceMaladie;
 import ch.globaz.pegasus.business.domaine.parametre.home.HomeCategoriArgentPoche;
 import ch.globaz.pegasus.business.domaine.parametre.home.HomeCategorie;
@@ -51,6 +40,16 @@ import ch.globaz.pegasus.rpc.businessImpl.RpcTechnicalException;
 import ch.globaz.pegasus.rpc.businessImpl.converter.RpcBusinessException;
 import ch.globaz.pegasus.rpc.domaine.PersonElementsCalcul;
 import ch.globaz.pegasus.rpc.domaine.RpcAddress;
+import ch.globaz.pyxis.business.model.LocaliteSimpleModel;
+import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
 public class PersonneElementsCalculConverter {
     private static final Logger LOG = LoggerFactory.getLogger(PersonneElementsCalculConverter.class);
@@ -412,16 +411,22 @@ public class PersonneElementsCalculConverter {
     private ForfaitPrimeAssuranceMaladie getForfaitPrimeAssuranceMaladie(ForfaitsPrimeAssuranceMaladie forfaitsPrimeAssuranceMaladie, MembreFamille membreFamille, Date dateDebut) {
         Date dateNaissance = new Date(membreFamille.getPersonne().getDateNaissance());
 
-        ForfaitsPrimeAssuranceMaladie forfaits = forfaitsPrimeAssuranceMaladie
-                .filtreByIdLocalite(membreFamille.getDonneesPersonnelles().getIdDernierDomicileLegale());
         String idLocalite = membreFamille.getDonneesPersonnelles().getIdDernierDomicileLegale();
 
         if ("0".equals(idLocalite) || idLocalite == null || idLocalite.isEmpty()) {
             throw new RpcBusinessException("pegasus.rpc.dernierDomicileLegale.mandatory");
         }
 
+        ForfaitsPrimeAssuranceMaladie forfaits = forfaitsPrimeAssuranceMaladie
+                .filtreByIdLocalite(idLocalite);
+
         if (forfaits.isEmpty()) {
-            throw new RpcBusinessException("pegasus.rpc.primeLamal.notFound", idLocalite);
+            try {
+                LocaliteSimpleModel localiteSearchModel = TIBusinessServiceLocator.getAdresseService().readLocalite(idLocalite);
+                throw new RpcBusinessException("pegasus.rpc.primeLamal.notFound", localiteSearchModel.getNumPostal()+ " - "+ localiteSearchModel.getLocalite());
+            } catch (JadePersistenceException | JadeApplicationException e) {
+                throw new RpcBusinessException("pegasus.rpc.primeLamal.notFound", idLocalite);
+            }
         }
         return forfaitsPrimeAssuranceMaladie.filtreByIdLocalite(idLocalite).filtreByAge(dateDebut, dateNaissance)
                 .resolveCourant(dateDebut);
