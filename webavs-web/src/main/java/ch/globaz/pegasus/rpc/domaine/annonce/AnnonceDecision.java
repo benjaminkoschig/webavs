@@ -82,7 +82,7 @@ public class AnnonceDecision {
         if (annonce.hasDateFin()) {
             validTo = decision.getDateFin();
         }
-        if (annonce.isNotRefus()) {
+        if (annonce.isNotRefus() || annonce.isRefusRaisonEco()) {
             elAmounts = new AnnonceElAmounts(annonce);
         }
         // null pour les annonces partielles
