@@ -18,6 +18,7 @@ import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
 import ch.globaz.pegasus.business.exceptions.models.process.AdaptationException;
+import ch.globaz.pegasus.business.models.calcul.CalculDonneesHome;
 import ch.globaz.pegasus.business.models.calcul.CalculPcaReplace;
 import ch.globaz.pegasus.business.models.calcul.CalculPcaReplaceSearch;
 import ch.globaz.pegasus.business.models.droit.Droit;
@@ -50,6 +51,9 @@ import java.beans.XMLEncoder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -248,7 +252,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
                 pcAccordeePlanCalcul.setSimplePlanDeCalcul(simplePlanCalcul);
             }
 
-            simplePlanCalcul.setIsVersementDirect(isVersementDirect(periode.getPersonnes().values()));
+            simplePlanCalcul.setIsVersementDirect(isVersementDirect(periode));
 
             // creation du plan de calcul
             simplePlanCalcul = PegasusImplServiceLocator.getSimplePlanDeCalculService().create(simplePlanCalcul);
@@ -268,18 +272,42 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
         return pcAccordeePlanCalcul;
     }
 
-    private Boolean isVersementDirect(Collection<PersonnePCAccordee> values) {
+    private Boolean isVersementDirect(PeriodePCAccordee periode) {
         boolean isVersementDirect = false;
 
-        for(PersonnePCAccordee personne : values) {
+        for(PersonnePCAccordee personne : periode.getPersonnes().values()) {
+
             // Versement direct activé
             if (Objects.equals(personne.getCsRoleFamille(), IPCDroits.CS_ROLE_FAMILLE_REQUERANT)
                     && personne.getHome() != null && personne.getHome().getIsVersementDirect() != null
-                    && personne.getHome().getIsVersementDirect()) {
+                    && personne.getHome().getIsVersementDirect()
+                    && isPeriodeOk(personne.getHome(), periode)) {
                 isVersementDirect= true;
             }
         }
         return isVersementDirect;
+    }
+
+    private boolean isPeriodeOk(CalculDonneesHome home, PeriodePCAccordee periode) {
+        boolean isPeriodeOk = false;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDate dateDebutHomeLocalDate = home.getDateDebutDFH().isEmpty()? null : LocalDate.parse("01."+home.getDateDebutDFH(), formatter);
+        LocalDate dateFinHomeLocalDate = home.getDateFinDFH().isEmpty()? null : LocalDate.parse("01."+home.getDateFinDFH(), formatter);
+
+        LocalDate dateDebutPeriodeLocalDate = periode.getDateDebut().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate dateFinPeriodeLocalDate = Objects.isNull(periode.getDateFin())? null : periode.getDateFin().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        if (dateDebutPeriodeLocalDate.isBefore(dateDebutHomeLocalDate)
+                && (!dateFinHomeLocalDate.isAfter(dateFinPeriodeLocalDate) || (Objects.isNull(dateFinPeriodeLocalDate) && Objects.isNull(dateFinHomeLocalDate)))) {
+            isPeriodeOk = true;
+        }
+
+        if(!dateDebutPeriodeLocalDate.isBefore(dateDebutHomeLocalDate)
+                && ( Objects.isNull(dateFinHomeLocalDate ) || !dateFinPeriodeLocalDate.isAfter(dateFinHomeLocalDate) )){
+            isPeriodeOk = true;
+        }
+
+        return isPeriodeOk;
     }
 
     private void addDateFinForPcaEnRefus(PeriodePCAccordee periode, SimplePCAccordee simplePcAccordee) {

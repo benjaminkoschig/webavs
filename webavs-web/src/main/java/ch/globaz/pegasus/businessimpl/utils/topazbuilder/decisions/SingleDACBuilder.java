@@ -907,11 +907,9 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         }
 
         // gestion prestation
-        if (isReformePC()) {
-            //data.addData("B_PRESTATION_MENS", babelDoc.getTextes(3).getTexte(34).getDescription());
-        } else {
-            data.addData("B_PRESTATION_MENS", babelDoc.getTextes(3).getTexte(30).getDescription());
-        }
+
+        data.addData("B_PRESTATION_MENS", babelDoc.getTextes(3).getTexte(30).getDescription());
+
 
         switch (getEtatDecision()) {
             case REFUS:
