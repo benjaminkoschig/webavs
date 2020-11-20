@@ -142,8 +142,14 @@
             // pas de calculs de prestations ni de mise en attente réponse ni de mise en refus si le droit n'est pas en "attente" (attente, validé, en erreur ou attente réponse)
     %>
     <ct:menuExcludeNode nodeId="calculertoutesprestations"/>
-    <ct:menuExcludeNode nodeId="attenteReponse"/>
     <ct:menuExcludeNode nodeId="refuser"/>
+    <%
+        }
+    %>
+    <%
+        if (!Arrays.asList(IAPDroitLAPG.DROITS_MODIFIABLES).contains(courant.getEtatDroit()) || courant.getEtatDroit().equals(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE_REPONSE)) {
+    %>
+    <ct:menuExcludeNode nodeId="attenteReponse"/>
     <%
         }
     %>
