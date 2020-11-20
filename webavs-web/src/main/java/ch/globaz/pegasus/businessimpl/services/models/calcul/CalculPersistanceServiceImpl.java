@@ -303,7 +303,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
         }
 
         if(!dateDebutPeriodeLocalDate.isBefore(dateDebutHomeLocalDate)
-                && ( Objects.isNull(dateFinHomeLocalDate ) || !dateFinPeriodeLocalDate.isAfter(dateFinHomeLocalDate) )){
+                && ( Objects.isNull(dateFinHomeLocalDate ) || (Objects.nonNull(dateFinPeriodeLocalDate) && !dateFinPeriodeLocalDate.isAfter(dateFinHomeLocalDate)))){
             isPeriodeOk = true;
         }
 
