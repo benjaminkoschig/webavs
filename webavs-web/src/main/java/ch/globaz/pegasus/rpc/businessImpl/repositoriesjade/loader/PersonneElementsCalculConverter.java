@@ -135,7 +135,8 @@ public class PersonneElementsCalculConverter {
 
         perElCal.setFraisGarde(resolveFraisGarde(df));
 
-        perElCal.setMontantRIP(getMontantRIP(parameters.getForfaitsPrimesAssuranceMaladie(), donneesFinanciere.getFamille(), dateDebut));
+        Montant rip = getMontantRIP(parameters.getForfaitsPrimesAssuranceMaladie(), donneesFinanciere.getFamille(), dateDebut);
+        perElCal.setMontantRIP(rip == null ? Montant.ZERO : rip);
 
         if (taxeJournaliereHome != null) {
 
