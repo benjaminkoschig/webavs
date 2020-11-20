@@ -7,16 +7,16 @@
 	</parent>
 
 	<artifactId>webavs-parent</artifactId>
-	<version>1.25.1-SNAPSHOT</version>
+	<version>1.25.0</version>
 	<packaging>pom</packaging>
 	<name>WebAVS Parent</name>
 	<description>WebAVS system</description>
 	<url>http://javadoc.ju.globaz.ch/webavs/${project.version}</url>
 
 	<scm>
-		<url>${scm.weburl}</url>
-		<connection>scm:${scm.type}:${scm.url}</connection>
-		<developerConnection>scm:${scm.type}:${scm.url}</developerConnection>
+		<url>scm:svn:http://svndev.ju.globaz.ch/webavs-repos/tags/webavs/1.25.0</url>
+		<connection>scm:svn:http://svndev.ju.globaz.ch/webavs-repos/tags/webavs/1.25.0</connection>
+		<developerConnection>scm:svn:http://svndev.ju.globaz.ch/webavs-repos/tags/webavs/1.25.0</developerConnection>
 	</scm>
 
 
