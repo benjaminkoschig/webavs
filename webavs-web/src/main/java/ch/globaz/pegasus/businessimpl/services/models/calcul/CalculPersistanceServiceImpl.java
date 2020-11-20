@@ -298,7 +298,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
         LocalDate dateFinPeriodeLocalDate = Objects.isNull(periode.getDateFin())? null : periode.getDateFin().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
         if (dateDebutPeriodeLocalDate.isBefore(dateDebutHomeLocalDate)
-                && (!dateFinHomeLocalDate.isAfter(dateFinPeriodeLocalDate) || (Objects.isNull(dateFinPeriodeLocalDate) && Objects.isNull(dateFinHomeLocalDate)))) {
+                && ((Objects.nonNull(dateFinHomeLocalDate) && !dateFinHomeLocalDate.isAfter(dateFinPeriodeLocalDate)) || (Objects.isNull(dateFinPeriodeLocalDate) && Objects.isNull(dateFinHomeLocalDate)))) {
             isPeriodeOk = true;
         }
 
