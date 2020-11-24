@@ -8,6 +8,8 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import ch.globaz.common.domaine.Montant;
+import ch.globaz.pegasus.business.constantes.EPCRegionLoyer;
+import ch.globaz.pegasus.rpc.businessImpl.converter.ConverterRentRegion;
 import ch.globaz.pegasus.rpc.domaine.LivingSituationType;
 import ch.globaz.pegasus.rpc.domaine.PersonElementsCalcul;
 import ch.globaz.pegasus.rpc.domaine.RpcDecisionAnnonceComplete;
@@ -58,6 +60,7 @@ public class AnnonceCalculationElements {
     protected Montant rentGrossTotal;
     protected Montant rentGrossTotalPart;
     protected Montant maxRent;
+    protected String rentRegion;
 
     protected boolean isDivestedWealth;
     protected String typeDivestedWealth;
@@ -112,6 +115,10 @@ public class AnnonceCalculationElements {
         rentGrossTotal = setZeroIfNull(annonce.resolveLoyerTotalBrut());
         rentGrossTotalPart = setZeroIfNull(annonce.getRpcCalcul().getPartLoyerTotatBrut());
         maxRent = setZeroIfNull(annonce.getRpcCalcul().getLoyerMaximum());
+        EPCRegionLoyer region = annonce.getRpcCalcul().getLoyerRegion();
+        if(region != null) {
+            rentRegion = ConverterRentRegion.convert(region);
+        }
 
         List<PersonElementsCalcul> personnesElementsCalcul = annonce.getPersonsElementsCalcul().getPersonsElementsCalcul();
         if (personnesElementsCalcul.stream().anyMatch(personElementsCalcul -> personElementsCalcul.isUsufrutuier())) {
@@ -290,6 +297,10 @@ public class AnnonceCalculationElements {
 
     public LivingSituationType getLivingSituationType() {
         return livingSituationType;
+    }
+
+    public String getRentRegion() {
+        return rentRegion;
     }
 
 }

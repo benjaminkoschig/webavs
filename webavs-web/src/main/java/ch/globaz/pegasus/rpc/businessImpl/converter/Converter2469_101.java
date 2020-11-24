@@ -397,7 +397,7 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
         }
         if (calculationElements.isRent()) {// annonce.hasLoyers()
             RentsTypeRef1 rents = (RentsTypeRef1)createRentsTypeRef(calculationElements, true);
-            rents.setRentRegion("CITY");
+            rents.setRentRegion(calculationElements.getRentRegion());
             rents.setFamilySize(calculationElements.getFamilySize());
             calcElmnt.setRents(rents);
         }

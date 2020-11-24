@@ -1,6 +1,7 @@
 package ch.globaz.pegasus.business.domaine.pca;
 
 import ch.globaz.pegasus.business.constantes.EPCRegionLoyer;
+import ch.globaz.pegasus.business.constantes.IPCDroits;
 import org.apache.commons.lang.math.Fraction;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
@@ -718,7 +719,22 @@ public class Calcul {
      * CLE_REGION
      */
     public EPCRegionLoyer getLoyerRegion() {
-        String regionLoyer = tuple.getLegendeEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_ZONE);
+        String regionLoyer = null;
+        TupleDonneeRapport tupleHab = tuple.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_HABITATION_PRINCIPALE);
+        if(tupleHab != null && IPCDroits.CS_ROLE_FAMILLE_REQUERANT.equals(tupleHab.getLegendeEnfant(IPCValeursPlanCalcul.CLE_INTER_BISHP_ROLE_PROPRIETAIRE))) {
+            regionLoyer = tupleHab.getLegendeEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_ZONE);
+            if(regionLoyer != null){
+                return EPCRegionLoyer.fromValue(regionLoyer);
+            }
+        }
+        TupleDonneeRapport tupleLoyers = tuple.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_LOYERS);
+        if (tupleLoyers != null) {
+            for (TupleDonneeRapport tupleLoyer : tupleLoyers.getEnfants().values()) {
+                if(IPCDroits.CS_ROLE_FAMILLE_REQUERANT.equals(tupleLoyer.getLegendeEnfant(IPCValeursPlanCalcul.CLE_INTER_LOYER_ROLE_PROPRIETAIRE))) {
+                    regionLoyer = tupleLoyer.getLegendeEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_ZONE);
+                }
+            }
+        }
         return EPCRegionLoyer.fromValue(regionLoyer);
     }
 
