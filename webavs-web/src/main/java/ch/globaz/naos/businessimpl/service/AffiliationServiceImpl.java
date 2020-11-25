@@ -17,6 +17,7 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationUtil;
 import globaz.naos.db.assurance.AFAssurance;
@@ -601,6 +602,24 @@ public class AffiliationServiceImpl implements AffiliationService {
         } // fin switch
     }
 
+    private void handleWarningCotiAfWithoutMasse(AssuranceInfo infoResult,AffiliationAssuranceComplexModel dataWithCotiAF) throws JadeApplicationException, JadePersistenceException {
+
+        // Affiliation vérification le type (maison mère, succursale, normal)
+        AffiliationSimpleModel maisonMere = AFBusinessServiceLocator.getAffiliationService()
+                .findMaisonMere(dataWithCotiAF.getAffiliation().getAffilieNumero());
+        // pas une succursale tester la masse salariale si facturé par accompte,
+        // sinon ok
+        if ((maisonMere == null) && !dataWithCotiAF.getAffiliation().getReleveParitaire()) {
+            if (JadeStringUtil.isIntegerEmpty(dataWithCotiAF.getCotisation().getMasseAnnuelle())) {
+
+                List<String> warnings = infoResult.getWarningsContainer();
+                warnings.add("naos.cotisation.af.aucuneMasse");
+                infoResult.setWarningsContainer(warnings);
+            }
+        }
+
+    }
+
     /**
      *
      * Permet de savoir si une assurance est couverte ou non
@@ -786,25 +805,16 @@ public class AffiliationServiceImpl implements AffiliationService {
         if (nbCotiAFFound == 1) {
             infoResult.setCanton(dataWithCotiAF.getAssurance().getAssuranceCanton());
             _getInfosAF(infoResult, dataWithCotiAF);
-            // Affiliation vérification le type (maison mère, succursale, normal)
-            AffiliationSimpleModel maisonMere = AFBusinessServiceLocator.getAffiliationService()
-                    .findMaisonMere(dataWithCotiAF.getAffiliation().getAffilieNumero());
-            // pas une succursale tester la masse salariale si facturé par accompte,
-            // sinon ok
-            if ((maisonMere == null) && !dataWithCotiAF.getAffiliation().getReleveParitaire()) {
-                if (JadeStringUtil.isIntegerEmpty(dataWithCotiAF.getCotisation().getMasseAnnuelle())) {
-
-                    List<String> warnings = infoResult.getWarningsContainer();
-                    warnings.add("naos.cotisation.af.aucuneMasse");
-                    infoResult.setWarningsContainer(warnings);
-                }
-            }
+            handleWarningCotiAfWithoutMasse(infoResult,dataWithCotiAF);
 
             // TODO: si coti facturé à la maison mère => tester maison mère et si inactive => warning aucune coti maison
             // mère
             // et tester si maison mère existe
 
         } else {
+            if(ALConstCaisse.CAISSE_CICI.equalsIgnoreCase(ALServiceLocator.getParametersServices().getNomCaisse()) && nbCotiAFFound > 1){
+                handleWarningCotiAfWithoutMasse(infoResult,dataWithCotiAF);
+            }
             // FIXME: infoResult.setCanton(this._getCantonAFTiers(affiliationResult.getIdTiers(), date));
             // et plus besoin de le faire dans chaque condition en dessous
             if (ALConstCaisse.CAISSE_CCVD.equals(ALServiceLocator.getParametersServices().getNomCaisse())
