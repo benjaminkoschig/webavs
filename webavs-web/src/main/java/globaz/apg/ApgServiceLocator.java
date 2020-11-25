@@ -1,12 +1,6 @@
 package globaz.apg;
 
-import globaz.apg.business.service.APAnnoncesRapgService;
-import globaz.apg.business.service.APDroitAPGService;
-import globaz.apg.business.service.APEntityService;
-import globaz.apg.business.service.APMontantJournalierApgService;
-import globaz.apg.business.service.APPlausibilitesApgService;
-import globaz.apg.business.service.APRulesService;
-import globaz.apg.business.service.APSalaireJournalierApgService;
+import globaz.apg.business.service.*;
 import globaz.apg.businessimpl.service.APAnnoncesRapgServiceV5Impl;
 import globaz.jade.service.provider.JadeApplicationServiceLocator;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
@@ -63,5 +57,11 @@ public final class ApgServiceLocator {
      */
     public static APRulesService getRulesService() throws JadeApplicationServiceNotAvailableException {
         return (APRulesService) JadeApplicationServiceLocator.getInstance().getServiceImpl(APRulesService.class);
+    }
+
+    public static APLotService getLotService()
+            throws JadeApplicationServiceNotAvailableException {
+        return (APLotService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
+                APLotService.class);
     }
 }

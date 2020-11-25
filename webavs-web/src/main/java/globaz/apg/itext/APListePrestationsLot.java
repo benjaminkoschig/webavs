@@ -6,6 +6,7 @@
  */
 package globaz.apg.itext;
 
+import globaz.apg.ApgServiceLocator;
 import globaz.apg.application.APApplication;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationJointLotTiersDroit;
@@ -498,7 +499,7 @@ public class APListePrestationsLot extends FWIAbstractManagerDocumentList {
     @Override
     protected void summary() throws FWIException {
         String key = null;
-        List orderedList = new ArrayList();
+        List<String> orderedList = new ArrayList();
         FWIDocumentTable tbl = new FWIDocumentTable();
         tbl.addColumn("");
         tbl.addColumn(getSession().getLabel("LIST_CTRL_INDEMNITE_BRUTE"), FWITableModel.RIGHT, 1);
@@ -562,7 +563,9 @@ public class APListePrestationsLot extends FWIAbstractManagerDocumentList {
             it.next();
             tbl.addCell("______________________________");
         }
+
         tbl.addRow();
+
         // Affichage des totaux
         tbl.addCell(getSession().getLabel("LIST_CTRL_TOTAUX"));
         it = orderedList.iterator();
@@ -577,6 +580,26 @@ public class APListePrestationsLot extends FWIAbstractManagerDocumentList {
                 tbl.addCell("");
             }
         }
+
+        tbl.addRow();
+
+        //Iterator itOPAE = orderedList.iterator();
+        tbl.addCell(getSession().getLabel("LIST_CTRL_TOTAUX_OPAE"));
+        String sumOPAE = null;
+        try {
+            sumOPAE = ApgServiceLocator.getLotService().getTotauxOPAE(getSession(), getIdLot());
+        } catch (Exception e) {
+            throw new FWIException(e);
+        }
+
+        for(String keyOp : orderedList){
+            if (getSession().getLabel("LIST_CTRL_MONTANT_TOT").equals(keyOp)) {
+                tbl.addCell(new FWCurrency(sumOPAE).toStringFormat());
+            } else {
+                tbl.addCell("");
+            }
+        }
+
         tbl.addRow();
 
         super._addPageBreak();

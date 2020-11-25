@@ -1,5 +1,6 @@
 package globaz.apg.process;
 
+import globaz.apg.ApgServiceLocator;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationJointLotTiersDroit;
 import globaz.apg.db.prestation.APPrestationJointLotTiersDroitManager;
@@ -11,6 +12,7 @@ import globaz.globall.db.*;
 import globaz.jade.publish.client.JadePublishDocument;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.publish.document.JadePublishDocumentInfoProvider;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 import java.util.List;
 
@@ -38,6 +40,7 @@ public class APListePrestationsLotExcelProcess extends BProcess {
                 if (!list.isEmpty()){
                     JadePublishDocumentInfo docInfoExcel = JadePublishDocumentInfoProvider.newInstance(this);
                     APListePrestationsLotExcel listeExcel = new APListePrestationsLotExcel(getSession());
+                    listeExcel.setSumOPAE(getTotalOPAE(getIdLot()));
                     listeExcel.setList(list);
                     listeExcel.creerDocument();
                     docInfoExcel.setDocumentTypeNumber(IPRConstantesExternes.CONTROLE_PRESTATIONS_LOT_APG);
@@ -64,6 +67,10 @@ public class APListePrestationsLotExcelProcess extends BProcess {
                 + APPrestation.FIELDNAME_IDPRESTATIONAPG);
         manager.find(getTransaction(), BManager.SIZE_NOLIMIT);
         return manager.getContainerAsList();
+    }
+
+    private String getTotalOPAE(String idLot) throws Exception {
+        return ApgServiceLocator.getLotService().getTotauxOPAE(getSession(), idLot);
     }
 
     @Override

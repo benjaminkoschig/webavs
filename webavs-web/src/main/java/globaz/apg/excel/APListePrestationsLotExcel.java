@@ -1,10 +1,12 @@
 package globaz.apg.excel;
 
+import globaz.apg.ApgServiceLocator;
 import globaz.apg.db.prestation.APPrestationJointLotTiersDroit;
 import globaz.apg.db.prestation.APRepartJointCotJointPrestJointEmployeur;
 import globaz.apg.db.prestation.APRepartJointCotJointPrestJointEmployeurManager;
 import globaz.caisse.report.helper.ACaisseReportHelper;
 import globaz.corvus.excel.REAbstractListExcel;
+import globaz.framework.printing.itext.exception.FWIException;
 import globaz.framework.printing.itext.fill.FWIImportProperties;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BManager;
@@ -46,6 +48,7 @@ public class APListePrestationsLotExcel extends REAbstractListExcel {
     FWCurrency totalParNSS = new FWCurrency("0");
     private JadePublishDocumentInfo docInfoExcel;
     APRepartJointCotJointPrestJointEmployeur lastBenef;
+    private String sumOPAE;
 
     /**
      * @param session
@@ -246,7 +249,7 @@ public class APListePrestationsLotExcel extends REAbstractListExcel {
     private void createTotaux() {
         FWCurrency totauxIndBrut = new FWCurrency("0.00");
         FWCurrency totauxMontantTotal = new FWCurrency("0.00");
-        List orderedList = new ArrayList();
+        List<String> orderedList = new ArrayList();
         createRow();
         createCell("");
         createCell(getSession().getLabel("LIST_CTRL_INDEMNITE_BRUTE"),getStyleRightBold());
@@ -308,6 +311,16 @@ public class APListePrestationsLotExcel extends REAbstractListExcel {
                 createCell(totauxMontantTotal.toStringFormat(),getStyleRightMontantBorderTop());
             } else {
                 createCell("",getStyleRightMontantBorderTop());
+            }
+        }
+
+        createRow();
+        createCell(getSession().getLabel("LIST_CTRL_TOTAUX_OPAE"),getStyleCenterNoBorder());
+        for(String keyOp : orderedList){
+            if (getSession().getLabel("LIST_CTRL_MONTANT_TOT").equals(keyOp)) {
+                createCell(new FWCurrency(sumOPAE).toStringFormat(),getStyleRightMontant());
+            } else {
+                createCell("",getStyleRightMontant());
             }
         }
 
@@ -393,5 +406,13 @@ public class APListePrestationsLotExcel extends REAbstractListExcel {
 
     public void setDocInfoExcel(JadePublishDocumentInfo docInfoExcel) {
         this.docInfoExcel = docInfoExcel;
+    }
+
+    public String getSumOPAE() {
+        return sumOPAE;
+    }
+
+    public void setSumOPAE(String sumOPAE) {
+        this.sumOPAE = sumOPAE;
     }
 }
