@@ -1,5 +1,6 @@
 package ch.globaz.al.businessimpl.services.declarationVersement;
 
+import ch.globaz.al.properties.ALProperties;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
@@ -25,6 +26,7 @@ import ch.globaz.al.business.services.documents.DocumentDataContainer;
 import ch.globaz.naos.business.service.AFBusinessServiceLocator;
 import ch.globaz.topaz.datajuicer.Collection;
 import ch.globaz.topaz.datajuicer.DocumentData;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Classe d'implémentation du service de liste des attestations de versement pour un dossier imposé à la source
@@ -210,6 +212,7 @@ public class DeclarationVersementGlobalDirectServiceImpl extends DeclarationVers
         HashMap<String, String> totaux = new HashMap<String, String>();
         String montantRetroactif = "0.00";
         String montantAnneeVersement = "0.00";
+        String montantTotalIS = "0.00";
         for (int i = 0; i < presta./* get */size(); i++) {
             /* DetailPrestationGenComplexModel */DeclarationVersementDetailleComplexModel declarationVersementLigne = presta
                     .get/* SearchResults()[i] */(i);
@@ -238,15 +241,23 @@ public class DeclarationVersementGlobalDirectServiceImpl extends DeclarationVers
                         declarationVersementLigne./* getMontant() */getMontantDetailPrestation());
 
             }
+
+            if (StringUtils.isNotEmpty(declarationVersementLigne.getMontantIS())) {
+                montantTotalIS = calculMontant(montantTotalIS,declarationVersementLigne.getMontantIS());
+            }
             // }
 
         }
         // }
 
         String montantTotal = calculMontant(montantAnneeVersement, montantRetroactif);
+        if (ALProperties.IMPOT_A_LA_SOURCE.getBooleanValue()) {
+            montantTotal = calculMontantIS(montantTotal, montantTotalIS);
+        }
 
         totaux.put(ALConstDeclarationVersement.TOTAL_RETROACTIF, montantRetroactif);
         totaux.put(ALConstDeclarationVersement.TOTAL_ANNEE, montantAnneeVersement);
+        totaux.put(ALConstDeclarationVersement.TOTAL_IS, montantTotalIS);
         totaux.put(ALConstDeclarationVersement.TOTAL, montantTotal);
 
         return totaux;
