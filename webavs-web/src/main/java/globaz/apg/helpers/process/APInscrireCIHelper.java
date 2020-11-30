@@ -10,6 +10,8 @@ import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWHelper;
 import globaz.globall.api.BISession;
 import globaz.globall.db.BSession;
+import globaz.prestation.api.IPRDemande;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author hpe
@@ -34,6 +36,9 @@ public class APInscrireCIHelper extends FWHelper {
 
         process.setEMailAddress(cpViewBean.getEMailAddress());
         process.setNoPassage(cpViewBean.getNoPassageFinal());
+        if (StringUtils.equals(IPRDemande.CS_TYPE_PANDEMIE,cpViewBean.getTypePrestation())) {
+            process.setPandemie(true);
+        }
 
         if (cpViewBean.isRegeneration()) {
             process.setIsRegen(Boolean.TRUE);

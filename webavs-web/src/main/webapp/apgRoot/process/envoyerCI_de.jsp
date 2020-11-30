@@ -1,4 +1,6 @@
 <%-- tpl:insert page="/theme/process.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%@ page import="globaz.prestation.api.IPRDemande" %>
+<%@ page import="globaz.prestation.tools.PRSessionDataContainerHelper" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/process/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
@@ -47,7 +49,14 @@ userActionValue="apg.process.inscrireCI.executer";
 <%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE) {%>
 	<ct:menuChange displayId="menu" menuId="ap-menuprincipalamat" showTab="menu"/>
 	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<%}%>
+<%} else if (IPRDemande.CS_TYPE_PANDEMIE.equals(PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION))) {
+// Si Pandémie
+%>
+<ct:menuChange displayId="menu" menuId="ap-menuprincipalpan" showTab="menu"/>
+<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
+<%
+	}
+%>
 <%-- /tpl:put --%>
 <%@ include file="/theme/process/bodyStart.jspf" %>
 			<%-- tpl:put name="zoneTitle" --%><ct:FWLabel key="JSP_INSCRIPTIONS_CI"/><%-- /tpl:put --%>

@@ -723,6 +723,12 @@
 							<parameter name="userAction" value="apg.process.listePandemieControle.afficher" />
 						</action>
 					</node>
+					<node>
+						<label refId="MENU_OPTION_INSCRIPTIONS_CI" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.envoyerCI.afficher" />
+						</action>
+					</node>
 				</nodes>
 			</node>
 		</nodes>

@@ -12,7 +12,7 @@ import globaz.prestation.db.PRAbstractManager;
 
 /**
  * <H1>Description</H1>
- * 
+ *
  * @author dvh
  */
 public class APInscriptionCIManager extends PRAbstractManager {
@@ -21,26 +21,24 @@ public class APInscriptionCIManager extends PRAbstractManager {
     // ------------------------------------------------------------------------------------------------
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private String forNoPassage = "";
     private String forStatut = "";
     private String toAnnee = "";
     private String toMoisAnnee = "";
+    private boolean pandemie = false;
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
 
     /**
      * (non-Javadoc)
-     * 
-     * @see globaz.globall.db.BManager#_getWhere(globaz.globall.db.BStatement)
-     * 
-     * @param statement
-     *            DOCUMENT ME!
-     * 
+     *
+     * @param statement DOCUMENT ME!
      * @return DOCUMENT ME!
+     * @see globaz.globall.db.BManager#_getWhere(globaz.globall.db.BStatement)
      */
     @Override
     protected String _getWhere(BStatement statement) {
@@ -89,12 +87,29 @@ public class APInscriptionCIManager extends PRAbstractManager {
             statement.getTransaction().addErrors("FORMAT_DATES_INCORRECT");
         }
 
+        if (isPandemie()) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+
+            sqlWhere += APInscriptionCI.FIELDNAME_GENRE_PRESTATION + "="
+                    + _dbWriteNumeric(statement.getTransaction(), "52015012");
+
+        } else {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+
+            sqlWhere += APInscriptionCI.FIELDNAME_GENRE_PRESTATION + "<>"
+                    + _dbWriteNumeric(statement.getTransaction(), "52015012");
+        }
+
         return sqlWhere;
     }
 
     /**
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BManager#_newEntity()
      */
     @Override
@@ -111,7 +126,7 @@ public class APInscriptionCIManager extends PRAbstractManager {
 
     /**
      * getter pour l'attribut for statut
-     * 
+     *
      * @return la valeur courante de l'attribut for statut
      */
     public String getForStatut() {
@@ -120,10 +135,9 @@ public class APInscriptionCIManager extends PRAbstractManager {
 
     /**
      * (non-Javadoc)
-     * 
-     * @see globaz.prestation.db.PRAbstractManager#getOrderByDefaut()
-     * 
+     *
      * @return la valeur courante de l'attribut order by defaut
+     * @see globaz.prestation.db.PRAbstractManager#getOrderByDefaut()
      */
     @Override
     public String getOrderByDefaut() {
@@ -133,7 +147,7 @@ public class APInscriptionCIManager extends PRAbstractManager {
 
     /**
      * getter pour l'attribut to annee
-     * 
+     *
      * @return la valeur courante de l'attribut to annee
      */
     public String getToAnnee() {
@@ -142,7 +156,7 @@ public class APInscriptionCIManager extends PRAbstractManager {
 
     /**
      * getter pour l'attribut to mois annee
-     * 
+     *
      * @return la valeur courante de l'attribut to mois annee
      */
     public String getToMoisAnnee() {
@@ -158,9 +172,8 @@ public class APInscriptionCIManager extends PRAbstractManager {
 
     /**
      * setter pour l'attribut for statut
-     * 
-     * @param string
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param string une nouvelle valeur pour cet attribut
      */
     public void setForStatut(String string) {
         forStatut = string;
@@ -168,9 +181,8 @@ public class APInscriptionCIManager extends PRAbstractManager {
 
     /**
      * setter pour l'attribut to annee
-     * 
-     * @param string
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param string une nouvelle valeur pour cet attribut
      */
     public void setToAnnee(String string) {
         toAnnee = string;
@@ -178,12 +190,18 @@ public class APInscriptionCIManager extends PRAbstractManager {
 
     /**
      * setter pour l'attribut to mois annee
-     * 
-     * @param string
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param string une nouvelle valeur pour cet attribut
      */
     public void setToMoisAnnee(String string) {
         toMoisAnnee = string;
     }
 
+    public boolean isPandemie() {
+        return pandemie;
+    }
+
+    public void setPandemie(boolean pandemie) {
+        this.pandemie = pandemie;
+    }
 }

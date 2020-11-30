@@ -483,8 +483,19 @@ public class APLAPGAction extends PRDefaultAction {
      */
     public String corrigerDroit(HttpSession session, HttpServletRequest request, HttpServletResponse response,
             FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) throws ServletException, IOException {
+        clearEtatDroit(session);
         // tout se fait dans le helper
         return deleguerAHelper(session, request, response, mainDispatcher, viewBean);
+    }
+
+    /**
+     * Méthode permettant de nettoyer l'état de droit dans la recherche des droits.
+     * @param session
+     */
+    private void clearEtatDroit(HttpSession session) {
+        // Dans le cadre d'une correction de droit, on réinitialise l'état du droit dans la recherche.
+        APDroitParametresRCDTO dto = (APDroitParametresRCDTO) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_PARAMETRES_RC_DTO);
+        dto.setEtatDroit("");
     }
 
     // delegue simplement au helper et retourne la page RC
@@ -569,6 +580,8 @@ public class APLAPGAction extends PRDefaultAction {
      */
     public String restituerDroit(HttpSession session, HttpServletRequest request, HttpServletResponse response,
             FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) throws ServletException, IOException {
+        // Dans le cadre d'une restitution de droit, on réinitialise l'état du droit dans la recherche.
+        clearEtatDroit(session);
         return deleguerAHelper(session, request, response, mainDispatcher, viewBean);
     }
 
@@ -694,11 +707,13 @@ public class APLAPGAction extends PRDefaultAction {
 
     public String actionAttenteReponse(HttpSession session, HttpServletRequest request, HttpServletResponse response,
                                      FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) throws ServletException, IOException {
+        clearEtatDroit(session);
         return deleguerAHelper(session, request, response, mainDispatcher, viewBean);
     }
 
     public String actionRefuser(HttpSession session, HttpServletRequest request, HttpServletResponse response,
                                        FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) throws ServletException, IOException {
+        clearEtatDroit(session);
         return deleguerAHelper(session, request, response, mainDispatcher, viewBean);
     }
 

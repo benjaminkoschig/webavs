@@ -38,6 +38,7 @@ public class APEnvoyerCIProcess extends BProcess {
     APInscriptionCI previousInscriptionCI = null;
     private long montantBrutTotalInscriptionCI = 0;
     private int nbInscriptionCIOnOneFileLine = 0;
+    private boolean pandemie = false;
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -108,6 +109,7 @@ public class APEnvoyerCIProcess extends BProcess {
             // creation des enregistrements (32)
             APInscriptionCIManager inscriptionCIManager = new APInscriptionCIManager();
             inscriptionCIManager.setSession(session);
+            inscriptionCIManager.setPandemie(pandemie);
 
             if (isRegen.booleanValue()) {
                 inscriptionCIManager.setForNoPassage(getNoPassage());
@@ -395,6 +397,14 @@ public class APEnvoyerCIProcess extends BProcess {
         inscriptionCI.setStatut(IAPInscriptionCI.CS_VALIDE);
         inscriptionCI.setNoPassage(getNoPassage());
         inscriptionCI.update(transaction);
+    }
+
+    public void setPandemie(boolean b) {
+        pandemie = b;
+    }
+
+    public boolean getPandemie() {
+        return pandemie;
     }
 
 }

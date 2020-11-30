@@ -24,6 +24,7 @@ public class APEnvoyerCIViewBean extends APEnvoyerCIProcess implements FWViewBea
     private static final long serialVersionUID = 1L;
     private boolean isRegeneration = false;
     private String noPassageFinal = "";
+    private String typePrestation = "";
 
     /**
      * Getter permettant de définir le no de passage (annee+mois+jour)
@@ -111,4 +112,11 @@ public class APEnvoyerCIViewBean extends APEnvoyerCIProcess implements FWViewBea
         isRegeneration = b;
     }
 
+    public String getTypePrestation() {
+        return typePrestation;
+    }
+
+    public void setTypePrestation(String typePrestation) {
+        this.typePrestation = typePrestation;
+    }
 }

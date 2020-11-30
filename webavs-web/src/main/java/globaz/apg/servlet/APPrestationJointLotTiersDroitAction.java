@@ -13,6 +13,8 @@ import globaz.apg.itext.APListePrestations;
 import globaz.apg.process.APListePrestationExcelProcess;
 import globaz.apg.utils.APGUtils;
 import globaz.apg.vb.droits.APDroitDTO;
+import globaz.apg.vb.droits.APDroitPanDTO;
+import globaz.apg.vb.droits.APDroitPanViewBean;
 import globaz.apg.vb.lots.APLotViewBean;
 import globaz.apg.vb.prestation.APPrestationJointLotTiersDroitListViewBean;
 import globaz.apg.vb.prestation.APPrestationJointLotTiersDroitViewBean;

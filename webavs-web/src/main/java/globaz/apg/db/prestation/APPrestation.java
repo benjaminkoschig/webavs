@@ -8,6 +8,7 @@ import globaz.apg.db.annonces.APAnnonceAPG;
 import globaz.apg.db.lots.APCompensation;
 import globaz.apg.db.lots.APLot;
 import globaz.apg.enums.APTypeDePrestation;
+import globaz.apg.enums.APValidationDroitError;
 import globaz.apg.pojo.wrapper.APPrestationWrapper;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BConstants;
@@ -17,9 +18,12 @@ import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.globall.util.JAUtil;
+import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.api.IPRSituationProfessionnelle;
 import globaz.prestation.tools.PRCalcul;
+import globaz.prestation.utils.PRDateUtils;
+
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -222,6 +226,13 @@ public class APPrestation extends BEntity implements IAPPrestation {
 
     @Override
     protected void _beforeUpdate(BTransaction transaction) throws Exception {
+        // On contrôle si le nombre de jour soldés est inférieur ou égal à la période de la prestation.
+        int nbJoursSoldes = Integer.parseInt(this.getNombreJoursSoldes());
+        int nbJoursPeriodes = (PRDateUtils.getNbDayBetween(this.getDateDebut(),  this.getDateFin()) + 1);
+        if (nbJoursPeriodes < nbJoursSoldes) {
+            _addError(transaction,getSession().getLabel("JOUR_SOLDES_PRESTATION_ERROR"));
+        }
+
         // si la prestation a un idLot et que son état est différent de mis en
         // lot ou définitif, c'est que son état a
         // rétrogradé. Il faut virer le idLot.
@@ -575,6 +586,11 @@ public class APPrestation extends BEntity implements IAPPrestation {
 
     @Override
     protected void _validate(globaz.globall.db.BStatement statement) throws Exception {
+    }
+
+    @Override
+    protected void _afterUpdate(BTransaction transaction) throws Exception {
+        super._afterUpdate(transaction);
     }
 
     @Override

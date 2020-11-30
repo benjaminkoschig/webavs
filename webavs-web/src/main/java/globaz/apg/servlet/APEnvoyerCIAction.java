@@ -7,6 +7,8 @@ import globaz.apg.vb.process.APEnvoyerCIViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWDispatcher;
 import globaz.framework.servlets.FWServlet;
+import globaz.prestation.tools.PRSessionDataContainerHelper;
+
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -63,6 +65,8 @@ public class APEnvoyerCIAction extends APDefaultProcessAction {
         }
 
         viewBean.setNoPassageFinal(noPassage);
+
+        viewBean.setTypePrestation((String) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION));
 
         // Définition de la destination et redirection suivant l'exécution...
         String destination = "";
