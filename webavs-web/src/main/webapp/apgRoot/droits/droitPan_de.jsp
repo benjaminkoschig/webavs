@@ -69,7 +69,9 @@
     function validate() {
         if (document.forms[0].elements('_method').value === "read") {
             if (document.forms[0].elements('genreService').value === "<%=IAPDroitLAPG.CS_GARDE_PARENTALE%>"
-                || document.forms[0].elements('genreService').value === "<%=IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP%>") {
+                || document.forms[0].elements('genreService').value === "<%=IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP%>"
+                || document.forms[0].elements('genreService').value === "<%=IAPDroitLAPG.CS_GARDE_PARENTALE_17_09_20%>"
+                || document.forms[0].elements('genreService').value === "<%=IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20%>") {
                 document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_ENFANT_PAN%>.chercher";
             } else {
                 document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_PAN_SITUATION%>.afficher";
@@ -99,7 +101,10 @@
             if (EDITION_MODE) {
                 document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_PAN%>.modifier";
             } else {
-                if (document.forms[0].elements('genreService').value === "<%=IAPDroitLAPG.CS_GARDE_PARENTALE%>") {
+                if (document.forms[0].elements('genreService').value === "<%=IAPDroitLAPG.CS_GARDE_PARENTALE%>"
+                    || document.forms[0].elements('genreService').value === "<%=IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP%>"
+                    || document.forms[0].elements('genreService').value === "<%=IAPDroitLAPG.CS_GARDE_PARENTALE_17_09_20%>"
+                    || document.forms[0].elements('genreService').value === "<%=IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20%>") {
                     document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_ENFANT_PAN%>.chercher";
                 } else {
                     document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_PAN_SITUATION%>.afficher";
