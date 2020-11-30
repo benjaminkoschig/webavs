@@ -152,7 +152,7 @@ public class AnnoncePremiumQueryResultHandler extends AnnonceHandlerAbstract {
     private void saveAnnonceSedex(SimpleAnnonceSedex annonceSedexRetour, FamilleContribuable familleContribuable) throws JadePersistenceException, JadeApplicationServiceNotAvailableException, AnnonceSedexException, DetailFamilleException {
         annonceSedexRetour.setIdContribuable(familleContribuable.getSimpleContribuable().getIdContribuable());
         annonceSedexRetour.setIdDetailFamille(familleContribuable.getSimpleDetailFamille().getIdDetailFamille());
-        // AmalImplServiceLocator.getSimpleAnnonceSedexService().create(annonceSedexRetour);
+        AmalImplServiceLocator.getSimpleAnnonceSedexService().create(annonceSedexRetour);
     }
 
     @Override
