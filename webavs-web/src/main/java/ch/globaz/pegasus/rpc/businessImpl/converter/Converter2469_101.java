@@ -243,6 +243,9 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
         person.setVn(annoncePerson.getVn());
         person.setRepresentative(annoncePerson.getRepresentative());
         person.setPensionKind(annoncePerson.getPensionKind());
+        if(annoncePerson.getDegreeOfInvalidity() != null) {
+            person.setDegreeOfInvalidity(new BigDecimal(annoncePerson.getDegreeOfInvalidity()));
+        }
         person.setMaritalStatus(annoncePerson.getMaritalStatus());
         person.setHousingMode(annoncePerson.getHousingMode().isDomicile() ? XSD_HOUSINGMODE_DOMICILE
                 : XSD_HOUSINGMODE_RESIDENCE);

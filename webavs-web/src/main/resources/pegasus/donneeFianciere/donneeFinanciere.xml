@@ -126,6 +126,7 @@
 			<select-field name="renteAVSAIMontant" field-ref="simpleRenteAVSAI.montant"/>
 			<select-field name="renteAVSAICsType" field-ref="simpleRenteAVSAI.csTypeRente"/>
 			<select-field name="renteAVSAICsTypeSansRente" field-ref="simpleRenteAVSAI.csTypePc"/>
+			<select-field name="degreInvalidite" field-ref="simpleRenteAVSAI.degreInvalidite"/>
 			<select-field name="IJAIMontant" field-ref="simpleIJAI.montant"/>
 			<select-field name="IJAIJours" field-ref="simpleIJAI.nbreJours"/>
 			<select-field name="APIAVSAIMontant" field-ref="simpleAPI.montant"/>

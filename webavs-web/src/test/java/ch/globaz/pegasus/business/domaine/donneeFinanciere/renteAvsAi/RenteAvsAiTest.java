@@ -8,7 +8,7 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.DonneeFinanciereType;
 
 public class RenteAvsAiTest {
     public static final RenteAvsAi df = new RenteAvsAi(new Montant(1000), RenteAvsAiType.RENTE_10,
-            TypeSansRente.INDEFINIT, BuilderDf.createDF());
+            TypeSansRente.INDEFINIT, null, BuilderDf.createDF());
 
     @Test
     public void testDefinedTypeDonneeFinanciere() throws Exception {
@@ -33,7 +33,7 @@ public class RenteAvsAiTest {
     @Test
     public void testIsSansRenteTrue() throws Exception {
         RenteAvsAi df1 = new RenteAvsAi(new Montant(1000), RenteAvsAiType.SANS_RENTE, TypeSansRente.INVALIDITE,
-                BuilderDf.createDF());
+                null, BuilderDf.createDF());
         assertTrue(df1.isSansRente());
     }
 

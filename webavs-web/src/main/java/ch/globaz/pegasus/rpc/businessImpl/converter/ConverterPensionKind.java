@@ -1,8 +1,7 @@
 package ch.globaz.pegasus.rpc.businessImpl.converter;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCApiAvsAi;
@@ -87,6 +86,20 @@ public class ConverterPensionKind {
         aMap.put(IPCRenteAvsAi.CS_TYPE_RENTE_46, 46);
         notSupportedCS = Collections.unmodifiableMap(aMap);
     }
+
+    private static final List<String> rentAI = new ArrayList<>(Arrays.asList(
+            IPCRenteAvsAi.CS_TYPE_RENTE_50,
+            IPCRenteAvsAi.CS_TYPE_RENTE_54,
+            IPCRenteAvsAi.CS_TYPE_RENTE_55,
+            IPCRenteAvsAi.CS_TYPE_RENTE_70,
+            IPCRenteAvsAi.CS_TYPE_RENTE_74,
+            IPCRenteAvsAi.CS_TYPE_RENTE_75,
+            IPCRenteAvsAi.CS_TYPE_SANS_RENTE_INVALIDITE
+            ));
+
+    public static boolean isRentAi(String rente) {
+        return rentAI.contains(rente);
+    };
 
     public static Integer convert(String typeRenteCS) {
         if (typeRenteCS.isEmpty()) {

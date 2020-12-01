@@ -86,7 +86,7 @@ public class ConvertAllDonneeFinanciereTest {
 
         RenteAvsAi result = convert(dr).getRentesAvsAi().get(0);
         RenteAvsAi expected = new RenteAvsAi(new Montant("1566"), RenteAvsAiType.RENTE_10, TypeSansRente.INDEFINIT,
-                BuilderDf.createDF());
+                null, BuilderDf.createDF());
 
         assertEquals(expected, result);
     }

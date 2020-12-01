@@ -126,7 +126,8 @@ class ConvertAllDonneeFinanciere {
             Montant montant = toMontant(dr.getRenteAVSAIMontant());
             RenteAvsAiType typeDonneeFinanciere = RenteAvsAiType.fromValue(dr.getRenteAVSAICsType());
             TypeSansRente typeSansRente = TypeSansRente.fromValue(dr.getRenteAVSAICsTypeSansRente());
-            RenteAvsAi renteAvsAi = new RenteAvsAi(montant, typeDonneeFinanciere, typeSansRente, df);
+            Float degreInvalidite = dr.getDegreInvalidite() != null ? Float.parseFloat(dr.getDegreInvalidite()) : null;
+            RenteAvsAi renteAvsAi = new RenteAvsAi(montant, typeDonneeFinanciere, typeSansRente, degreInvalidite, df);
             list.add(renteAvsAi);
         } else if (dft.isIjAi()) {
             Montant montant = toMontant(dr.getIJAIMontant());

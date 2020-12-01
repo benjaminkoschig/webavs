@@ -200,9 +200,9 @@ public class DemandeAReviserTest {
         container.add(new AllocationFamilliale(M_20, DF_ENF));
         container.add(new AllocationFamilliale(M_20, DF_CONJ));
 
-        container.add(new RenteAvsAi(M_1000, RenteAvsAiType.RENTE_10, TypeSansRente.INDEFINIT, DF_REQ));
-        container.add(new RenteAvsAi(M_2000, RenteAvsAiType.RENTE_10, TypeSansRente.INDEFINIT, DF_CONJ));
-        container.add(new RenteAvsAi(M_2000, RenteAvsAiType.RENTE_10, TypeSansRente.INDEFINIT, DF_ENF));
+        container.add(new RenteAvsAi(M_1000, RenteAvsAiType.RENTE_10, TypeSansRente.INDEFINIT, null, DF_REQ));
+        container.add(new RenteAvsAi(M_2000, RenteAvsAiType.RENTE_10, TypeSansRente.INDEFINIT, null, DF_CONJ));
+        container.add(new RenteAvsAi(M_2000, RenteAvsAiType.RENTE_10, TypeSansRente.INDEFINIT, null, DF_ENF));
 
         container.add(new IjAi(M_20, 10, DF_REQ));
         container.add(new IjAi(M_15, 10, DF_CONJ));

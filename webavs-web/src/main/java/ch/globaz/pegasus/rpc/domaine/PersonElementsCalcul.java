@@ -47,6 +47,7 @@ public class PersonElementsCalcul {
     private Montant usufructIncome;
 
     private String typeRenteCS;
+    private Float degreInvalidite;
 
     private Montant fraisGarde;
     private Montant montantRIP;
@@ -330,6 +331,8 @@ public class PersonElementsCalcul {
         this.typeRenteCS = typeRenteCS;
     }
 
+
+
     public RpcAddress getLegalAddress() {
         return legalAddress;
     }
@@ -453,5 +456,13 @@ public class PersonElementsCalcul {
 
     public boolean isRentHasApi() {
         return rentHasApi;
+    }
+
+    public Float getDegreInvalidite() {
+        return degreInvalidite;
+    }
+
+    public void setDegreInvalidite(Float degreInvalidite) {
+        this.degreInvalidite = degreInvalidite;
     }
 }

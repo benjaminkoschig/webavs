@@ -10,8 +10,9 @@ public class RenteAvsAi extends DonneeFinanciere implements Revenu {
     private Montant montant;
     private RenteAvsAiType typeRente;
     private TypeSansRente typeSansRente;
+    private Float degreInvalidite;
 
-    public RenteAvsAi(Montant montant, RenteAvsAiType typeRente, TypeSansRente typeSansRente,
+    public RenteAvsAi(Montant montant, RenteAvsAiType typeRente, TypeSansRente typeSansRente, Float degreInvalidite,
             DonneeFinanciere donneeFinanciere) {
         super(donneeFinanciere);
 
@@ -19,6 +20,7 @@ public class RenteAvsAi extends DonneeFinanciere implements Revenu {
         this.typeSansRente = typeSansRente;
 
         this.montant = montant.addMensuelPeriodicity();
+        this.degreInvalidite = degreInvalidite;
     }
 
     public Montant getMontant() {
@@ -31,6 +33,10 @@ public class RenteAvsAi extends DonneeFinanciere implements Revenu {
 
     public TypeSansRente getTypeSansRente() {
         return typeSansRente;
+    }
+
+    public Float getDegreInvalidite() {
+        return degreInvalidite;
     }
 
     public boolean isSansRente() {

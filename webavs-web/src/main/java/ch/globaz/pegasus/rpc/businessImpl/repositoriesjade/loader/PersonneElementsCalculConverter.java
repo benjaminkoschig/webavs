@@ -34,9 +34,11 @@ import ch.globaz.pegasus.business.domaine.parametre.monnaieEtrangere.MonnaieEtra
 import ch.globaz.pegasus.business.domaine.parametre.variableMetier.VariableMetier;
 import ch.globaz.pegasus.business.domaine.parametre.variableMetier.VariableMetierType;
 import ch.globaz.pegasus.business.domaine.parametre.variableMetier.VariablesMetier;
+import ch.globaz.pegasus.business.models.renteijapi.AutreApi;
 import ch.globaz.pegasus.businessimpl.utils.calcul.ProxyCalculDates;
 import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 import ch.globaz.pegasus.rpc.businessImpl.RpcTechnicalException;
+import ch.globaz.pegasus.rpc.businessImpl.converter.ConverterPensionKind;
 import ch.globaz.pegasus.rpc.businessImpl.converter.RpcBusinessException;
 import ch.globaz.pegasus.rpc.domaine.PersonElementsCalcul;
 import ch.globaz.pegasus.rpc.domaine.RpcAddress;
@@ -208,7 +210,7 @@ public class PersonneElementsCalculConverter {
 
         perElCal.setLegalAddress(legalAddress);
         perElCal.setLivingAddress(livingAddress);
-        perElCal.setTypeRenteCS(resolveMaxType(dfFiltre, df.getIjAis()));
+        resolveMaxType(perElCal, dfFiltre, df.getIjAis());
 
         Montant propIncome = Montant.ZERO;
         Montant usuIncome = Montant.ZERO;
@@ -304,7 +306,7 @@ public class PersonneElementsCalculConverter {
         return montantRentesEtranger;
     }
 
-    private String resolveMaxType(DonneesFinancieresContainer df, IjsAi ijsAi) {
+    private String resolveMaxType(PersonElementsCalcul perElCal, DonneesFinancieresContainer df, IjsAi ijsAi) {
         List<RenteAvsAi> typesRente = df.getRentesAvsAi().getList();
         List<ApiAvsAi> typesApi = df.getApisAvsAi().getList();
         Montant maxMontantAPI = Montant.ZERO;
@@ -313,6 +315,7 @@ public class PersonneElementsCalculConverter {
         String typeRenteCSIJ = "";
         String typeRenteCSAPI = "";
         String typeRenteCSRente = "";
+        Float degreInvalidite = null;
         
         if(ijsAi != null && !ijsAi.isEmpty()) {
             typeRenteCSIJ = IPCIJAI.CS_TYPE_DONNEE_FINANCIERE;
@@ -329,6 +332,9 @@ public class PersonneElementsCalculConverter {
             if (rente.getMontant().greater(maxMontantRente)) {
                 maxMontantRente = rente.getMontant();
                 typeRenteCSRente = rente.getTypeRente().getValue();
+                if(ConverterPensionKind.isRentAi(typeRenteCSRente)) {
+                    degreInvalidite = rente.getDegreInvalidite();
+                }
             }
         }
         
@@ -341,6 +347,8 @@ public class PersonneElementsCalculConverter {
             typeRenteCS = typeRenteCSIJ;
         }
 
+        perElCal.setDegreInvalidite(degreInvalidite);
+        perElCal.setTypeRenteCS(typeRenteCS);
         return typeRenteCS;
     }
 

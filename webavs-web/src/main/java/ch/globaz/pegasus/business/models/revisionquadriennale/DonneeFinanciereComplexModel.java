@@ -27,6 +27,7 @@ public class DonneeFinanciereComplexModel extends JadeComplexModel {
     private String autresAPIMontant = null;
     private String autresDettesProuveesMontant = null;
     private String autresApiCsDegre = null;
+    private String degreInvalidite = null;
 
     private String primeAssuranceMaladie = null;
     private String subsideAssuranceMaladie = null;
@@ -2321,5 +2322,13 @@ public class DonneeFinanciereComplexModel extends JadeComplexModel {
 
     public void setSejourMoisPartielNombreJour(String sejourMoisPartielNombreJour) {
         this.sejourMoisPartielNombreJour = sejourMoisPartielNombreJour;
+    }
+
+    public String getDegreInvalidite() {
+        return degreInvalidite;
+    }
+
+    public void setDegreInvalidite(String degreInvalidite) {
+        this.degreInvalidite = degreInvalidite;
     }
 }
