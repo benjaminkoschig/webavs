@@ -19,12 +19,17 @@ import ch.globaz.pegasus.rpc.businessImpl.converter.ConverterDecisionCause;
 import ch.globaz.pegasus.rpc.businessImpl.converter.ConverterDecisionKind;
 import ch.globaz.pegasus.rpc.domaine.PersonElementsCalcul;
 import ch.globaz.pegasus.rpc.domaine.RpcDecisionAnnonceComplete;
+import globaz.apg.businessimpl.service.APAnnoncesRapgServiceV5Impl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 public class AnnonceDecision {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AnnonceDecision.class);
 
     protected String pcaDecisionId;
     protected String decisionId;
@@ -51,6 +56,7 @@ public class AnnonceDecision {
     private static final String SWISS_DAY_PATTERN = "dd.MM.yyyy";
 
     public AnnonceDecision(RpcDecisionAnnonceComplete annonce) {
+
         this.annonce = annonce;
         final Decision decision = annonce.getPcaDecision().getDecision();
         final PcaEtatCalcul etatCalculFederal = decision.getType().isRefusSansCalcul() ? PcaEtatCalcul.REFUSE
@@ -106,8 +112,7 @@ public class AnnonceDecision {
             result = DatatypeFactory.newInstance()
                     .newXMLGregorianCalendar(calendar);
         } catch (DatatypeConfigurationException e) {
-            // TODO Traiter erreur. La date en DB n'est pas au format suisse.
-            e.printStackTrace();
+            LOG.error("Erreur sur le parsing de la Date. La date n'est pas au bon format : " + e);
         }
         return result;
     }
