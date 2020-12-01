@@ -52,7 +52,7 @@ import java.util.*;
  * - TRAITEMENT_VENTILATIONS : passage ou l'on va s'occuper de la génération des décomptes liés au ventilations</br>
  * Ces étapes sont modélisé par le type énuméré TraitementCourant. Au départ, nous sommes
  * dans un état 'UNDEFINI', cela signifie qu'aucun document n'a encore été généré.
- * 
+ *
  * @author lga
  */
 public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationProcess {
@@ -62,7 +62,7 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
     /**
      * Définit les différentes étapes du processus Par défaut, au démarrage de ce processus nous sommes à l'état
      * indéfinis.. Hé ouais !
-     * 
+     *
      * @author lga
      */
     private enum TraitementCourant {
@@ -94,7 +94,7 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
 
     /**
      * Le type de prestation ACM que propose la caisse.
-     * 
+     *
      * @see APPropertyTypeDePrestationAcmValues
      */
     private APPropertyTypeDePrestationAcmValues typeDePrestationAcm;
@@ -176,7 +176,7 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
 
     /**
      * Default no-arg constructor
-     * 
+     *
      * @throws FWIException
      */
     public APDecompteGenerationProcess() throws FWIException {
@@ -236,6 +236,7 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
 
         String csTypePrestation = loadCsTypePrestation();
 
+        //ESVE MATERNITE CATALOGUE TEXTE
         if (IPRDemande.CS_TYPE_MATERNITE.equals(csTypePrestation)) {
             documentHelper.setCsDomaine(IAPCatalogueTexte.CS_MATERNITE);
 //        } else if (IPRDemande.CS_TYPE_PANDEMIE.equals(csTypePrestation)) {
@@ -289,7 +290,7 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
     /**
      * Retourne une liste contenant toutes les ventilations liées aux répartition de paiement présentes dans la liste
      * des répartitions fournies en paramètres
-     * 
+     *
      * @param repartitions
      * @return
      * @throws Exception
@@ -356,7 +357,7 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
 
     /**
      * Parcours l'ensemble des prestations fournies en paramètres et les tries en fonction de la clé de regroupement
-     * 
+     *
      * @param donnees
      *            L'ensemble des prestations à trier
      * @return Une liste contenant des objets Decompte
@@ -498,7 +499,7 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
 
     /**
      * Validation interne de l'ensemble des paramètres d'entrée du processus de génération des décomptes
-     * 
+     *
      * @throws FWIException
      *             dans le cas ou des erreurs sont détectées
      */
@@ -521,7 +522,7 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
 
     /**
      * Récupère une situation professionnelle en fonction de son id
-     * 
+     *
      * @return la situation professionnelle si existante sinon <code>null</code>
      * @throws Exception
      *             En cas de problème lors de l'accès à la DB
@@ -612,9 +613,9 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
                         }
                     }
                     if (next){
-                    traitementCourant = TraitementCourant.TRAITEMENT_VENTILATIONS;
+                        traitementCourant = TraitementCourant.TRAITEMENT_VENTILATIONS;
+                    }
                 }
-            }
             }
         } else if (TraitementCourant.TRAITEMENT_VENTILATIONS.equals(traitementCourant)) {
             // Si oui, il faut récupérer le décompte en question
@@ -693,7 +694,7 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
      * <p>
      * Les catalogues ne sont charges qu'un fois, ils sont ensuite mis en cache.
      * </p>
-     * 
+     *
      * @throws FWIException
      */
     private final ICTDocument chargerCatalogue(final APDecompte decompteCourant) throws FWIException {
@@ -780,7 +781,7 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
 
     /**
      * Crée une clé qui identifie de manière unique un catalogue.
-     * 
+     *
      * @return
      * @throws Exception
      */
@@ -827,7 +828,7 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
 
     /**
      * retrouve le type de prestation contenues dans le lot.
-     * 
+     *
      * @return un code système (PRTYPDEMAN)
      * @throws Exception
      */

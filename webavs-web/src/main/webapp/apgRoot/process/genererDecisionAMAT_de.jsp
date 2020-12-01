@@ -59,6 +59,7 @@ idEcran="PAP3006";
 											<LABEL for="decision"><ct:FWLabel key="JSP_COMMUNICATION"/></LABEL>
 											<INPUT type="radio" name="decision" value="off"<%=!viewBean.isDecision()?" checked" : ""%>>
 											<INPUT type="hidden" name="idDroit" value="<%=viewBean.getIdDroit()%>">
+											<INPUT type="hidden" name="isMatciab2ViewBean" value="<%=viewBean.getIsMatciab2ViewBean()%>">
 										</TD>
 									</TR>
 										<%if ("1".equals(viewBean.getDisplaySendToGed())) { %> 

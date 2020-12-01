@@ -81,6 +81,8 @@ public class APGenererDecisionAMATHelper extends FWHelper {
             APGenererDecisionCommunicationAMATProcess process = new APGenererDecisionCommunicationAMATProcess(
                     (BSession) session);
 
+            // Permet de filter les MATCIAB2 des décisions pour les faire ressortir sur un document séparé
+            process.setIsMatciab2Process(gdViewBean.getIsMatciab2ViewBean());
             process.setEMailAddress(gdViewBean.getEmail());
             process.setCsTypeDocument(gdViewBean.isDecision() ? IAPCatalogueTexte.CS_DECISION_MAT
                     : IAPCatalogueTexte.CS_COMMUNICATION_MAT);

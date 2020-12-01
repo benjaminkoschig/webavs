@@ -1,5 +1,6 @@
 package globaz.apg.servlet;
 
+import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.vb.process.APGenererDecisionAMATViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWDispatcher;
@@ -91,6 +92,13 @@ public class APGenererDecisionAMATAction extends APDefaultProcessAction {
             // Par défaut, on génère une décision et non une communication
             if (viewBean instanceof APGenererDecisionAMATViewBean) {
                 ((APGenererDecisionAMATViewBean) viewBean).setDecision(true);
+
+                // on set le type de prestation si passé en paramètre
+                String typePrestation = request.getParameter("typePrestation");
+                if (typePrestation != null && typePrestation.equals(APTypeDePrestation.MATCIAB2.getNomTypePrestation())) {
+                    // Permet de filter les MATCIAB2 des décisions pour les faire ressortir sur un document séparé
+                    ((APGenererDecisionAMATViewBean) viewBean).setIsMatciab2ViewBean(Boolean.TRUE);
+                }
             }
             saveViewBean(viewBean, session);
             mainDispatcher.dispatch(viewBean, getAction());

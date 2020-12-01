@@ -13,9 +13,9 @@ import java.util.List;
 public class ACM2BusinessDataParEmployeur {
 
     /**
+     * @param idDroit
+     * @param nombreJoursPrestationACM2
      * @param situationProfJointEmployeur
-     * @param prestationStandard
-     * @param prestationACM1
      */
     public ACM2BusinessDataParEmployeur(String idDroit, int nombreJoursPrestationACM2,
             APSitProJointEmployeur situationProfJointEmployeur) {
@@ -26,6 +26,7 @@ public class ACM2BusinessDataParEmployeur {
 
         prestationStandard = new ArrayList<APRepartitionJointPrestation>();
         prestationACM1 = new ArrayList<APRepartitionJointPrestation>();
+        prestationMATCIAB1 = new ArrayList<APRepartitionJointPrestation>();
         prestationLAMat = new ArrayList<APRepartitionJointPrestation>();
     }
 
@@ -35,6 +36,7 @@ public class ACM2BusinessDataParEmployeur {
     private FWCurrency revenuMoyenDeterminant;
     private List<APRepartitionJointPrestation> prestationStandard;
     private List<APRepartitionJointPrestation> prestationACM1;
+    private List<APRepartitionJointPrestation> prestationMATCIAB1;
     private List<APRepartitionJointPrestation> prestationLAMat;
 
     public String getIdDroit() {
@@ -59,8 +61,30 @@ public class ACM2BusinessDataParEmployeur {
         Collections.sort(prestationACM1, getComparator());
     }
 
+    public void addPrestationMATCIAB1(APRepartitionJointPrestation prestation) {
+        prestationMATCIAB1.add(prestation);
+        Collections.sort(prestationMATCIAB1, getComparator());
+    }
+
+    public void addPrestationLAMat(APRepartitionJointPrestation prestation) {
+        prestationLAMat.add(prestation);
+        Collections.sort(prestationLAMat, getComparator());
+    }
+
     public boolean hasPrestationACM1() {
         return prestationACM1.size() > 0;
+    }
+
+    public boolean hasPrestationMATCIAB1() {
+        return prestationMATCIAB1.size() > 0;
+    }
+
+    public boolean hasPrestationLAMat() {
+        return prestationLAMat.size() > 0;
+    }
+
+    public boolean hasPrestationStandard() {
+        return prestationStandard.size() > 0;
     }
 
     /**
@@ -78,9 +102,34 @@ public class ACM2BusinessDataParEmployeur {
         return periodePrestationACM1;
     }
 
-    public void addPrestationLAMat(APRepartitionJointPrestation prestation) {
-        prestationLAMat.add(prestation);
-        Collections.sort(prestationLAMat, getComparator());
+    /**
+     * Retourne une PRPeriode uniquement si la méthode hasPrestationStandard() return <code>true</code> sinon null
+     *
+     * @return une PRPeriode uniquement si la méthode hasPrestationStandard() return <code>true</code> sinon null
+     */
+    public PRPeriode getPeriodeStandard() {
+        PRPeriode periodePrestationStandard = null;
+        if (hasPrestationStandard()) {
+            periodePrestationStandard = new PRPeriode();
+            periodePrestationStandard.setDateDeDebut(prestationStandard.get(0).getDateDebut());
+            periodePrestationStandard.setDateDeFin(prestationStandard.get(prestationStandard.size() - 1).getDateFin());
+        }
+        return periodePrestationStandard;
+    }
+
+    /**
+     * Retourne une PRPeriode uniquement si la méthode hasPrestationMATCIAB1() return <code>true</code> sinon null
+     *
+     * @return une PRPeriode uniquement si la méthode hasPrestationMATCIAB1() return <code>true</code> sinon null
+     */
+    public PRPeriode getPeriodeMATCIAB1() {
+        PRPeriode periodePrestationMATCIAB1 = null;
+        if (hasPrestationMATCIAB1()) {
+            periodePrestationMATCIAB1 = new PRPeriode();
+            periodePrestationMATCIAB1.setDateDeDebut(prestationMATCIAB1.get(0).getDateDebut());
+            periodePrestationMATCIAB1.setDateDeFin(prestationMATCIAB1.get(prestationMATCIAB1.size() - 1).getDateFin());
+        }
+        return periodePrestationMATCIAB1;
     }
 
     /**
@@ -98,16 +147,16 @@ public class ACM2BusinessDataParEmployeur {
         return periode;
     }
 
-    public boolean hasPrestationLAMat() {
-        return prestationLAMat.size() > 0;
-    }
-
     public List<APRepartitionJointPrestation> getPrestationStandard() {
         return prestationStandard;
     }
 
     public List<APRepartitionJointPrestation> getPrestationACM1() {
         return prestationACM1;
+    }
+
+    public List<APRepartitionJointPrestation> getPrestationMATCIAB1() {
+        return prestationMATCIAB1;
     }
 
     public List<APRepartitionJointPrestation> getPrestationLAMat() {

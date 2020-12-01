@@ -22,7 +22,7 @@ import globaz.prestation.itext.PRLettreEnTete;
  */
 public class APGenererDecisionCommunicationAMATProcess extends BProcess {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private static final String DOC_DEC_AMAT_COPIE_ASS = "documents.decision.amat.copie.assure";
@@ -34,6 +34,16 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
     private String idDroit = "";
     private Boolean isSendToGed = Boolean.FALSE;
     private boolean succeed = true;
+    // Permet de filter les MATCIAB2 des décisions pour les faire ressortir sur un document séparé
+    private Boolean isMatciab2Process = Boolean.FALSE;
+
+    public Boolean getIsMatciab2Process() {
+        return isMatciab2Process;
+    }
+
+    public void setIsMatciab2Process(Boolean isMatciab2Process) {
+        this.isMatciab2Process = isMatciab2Process;
+    }
 
     /**
      * Constructeur
@@ -43,7 +53,7 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
 
     /**
      * Constructeur
-     * 
+     *
      * @param parent
      */
     public APGenererDecisionCommunicationAMATProcess(BProcess parent) {
@@ -52,7 +62,7 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
 
     /**
      * Constructeur
-     * 
+     *
      * @param session
      */
     public APGenererDecisionCommunicationAMATProcess(BSession session) {
@@ -61,7 +71,7 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BProcess#_executeCleanUp()
      */
     @Override
@@ -71,7 +81,7 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BProcess#_executeProcess()
      */
     @Override
@@ -102,7 +112,7 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BProcess#_validate()
      */
     @Override
@@ -115,7 +125,7 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
 
     /**
      * Chargement de la demande
-     * 
+     *
      * @throws Exception
      */
     private void chargeDemande() throws Exception {
@@ -133,7 +143,7 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
 
     /**
      * Chargement du droit
-     * 
+     *
      * @throws Exception
      */
     private void chargeDroit() throws Exception {
@@ -151,7 +161,7 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
 
     /**
      * Chargement des propriétés
-     * 
+     *
      * @throws Exception
      */
     private void chargeProprietes() throws Exception {
@@ -172,6 +182,8 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
         decisionCopy.setDate(getDate());
         decisionCopy.setIdDroit(getIdDroit());
         decisionCopy.setIsSendToGed(getIsSendToGed());
+        // Permet de filter les MATCIAB2 des décisions pour les faire ressortir sur un document séparé
+        decisionCopy.setIsMatciab2Decision(getIsMatciab2Process());
         decisionCopy.setParent(this);
         decisionCopy.setDocumentCopy(true);
         decisionCopy.executeProcess();
@@ -192,6 +204,8 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
         decisionOriginale.setParent(this);
         decisionOriginale.setDocumentCopy(false);
         decisionOriginale.setIsSendToGed(getIsSendToGed());
+        // Permet de filter les MATCIAB2 des décisions pour les faire ressortir sur un document séparé
+        decisionOriginale.setIsMatciab2Decision(getIsMatciab2Process());
         decisionOriginale.executeProcess();
 
         return decisionOriginale;
@@ -199,7 +213,7 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
 
     /**
      * Création de la lettre d'entête
-     * 
+     *
      * @param idTiers
      * @return
      * @throws FWIException
@@ -223,7 +237,7 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
 
     /**
      * Fusion des documents
-     * 
+     *
      * @throws Exception
      */
     private void fusionDocuments() throws Exception {
@@ -235,7 +249,7 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
 
     /**
      * Récupère le code système du type de document
-     * 
+     *
      * @return
      */
     public String getCsTypeDocument() {
@@ -244,7 +258,7 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
 
     /**
      * Récupère la date
-     * 
+     *
      * @return
      */
     public String getDate() {
@@ -257,7 +271,7 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BProcess#getEMailObject()
      */
     @Override
@@ -274,7 +288,7 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
 
     /**
      * Récupère l'id du droit
-     * 
+     *
      * @return
      */
     public String getIdDroit() {
@@ -287,7 +301,7 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BProcess#jobQueue()
      */
     @Override
@@ -297,7 +311,7 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
 
     /**
      * Modifie le code système du type de document
-     * 
+     *
      * @param newCsTypeDocument
      */
     public void setCsTypeDocument(String newCsTypeDocument) {
@@ -306,7 +320,7 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
 
     /**
      * Modifie la date
-     * 
+     *
      * @param newDate
      */
     public void setDate(String newDate) {
@@ -319,7 +333,7 @@ public class APGenererDecisionCommunicationAMATProcess extends BProcess {
 
     /**
      * Modifie l'id du droit
-     * 
+     *
      * @param newIdDroit
      */
     public void setIdDroit(String newIdDroit) {

@@ -1662,6 +1662,29 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         }
     }
 
+    /**
+     * Supprime l'intégralité du graphe d'objet lié aux prestations d'un droit APG par genre
+     */
+    @Override
+    public void supprimerLesPrestationsDuDroitParGenre(final BSession session, final BTransaction transaction,
+                                               final String idDroit, String genre) throws Exception {
+        if (JadeStringUtil.isBlankOrZero(idDroit)) {
+            throw new Exception(
+                    "Unable to delete the APPrestation for an APDroitAPG with an empty id [" + idDroit + "]");
+        }
+        final APPrestationManager prestationManager = new APPrestationManager();
+        prestationManager.setSession(session);
+        prestationManager.setForIdDroit(idDroit);
+        prestationManager.setForGenre(genre);
+        prestationManager.find(transaction, BManager.SIZE_NOLIMIT);
+
+        for (int i = 0; i < prestationManager.size(); i++) {
+            final APPrestation prestation = (APPrestation) prestationManager.getEntity(i);
+            prestation.setSession(session);
+            prestation.delete(transaction);
+        }
+    }
+
     @Override
     public APDroitPanSituation getDroitPanSituation(BSession session, BTransaction transaction, String idDroit) throws Exception {
         validateSessionAndTransactionNotNull(session, transaction);

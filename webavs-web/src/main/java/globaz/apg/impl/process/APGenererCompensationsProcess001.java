@@ -312,7 +312,10 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                         genre = APTypeDePrestation.ACM_ALFA.getCodesystemString();
                     } else if (APTypeDePrestation.COMPCIAB.isCodeSystemEqual(genre)) {
                         genre = APTypeDePrestation.STANDARD.getCodesystemString();
-                    }
+                        genre = APTypeDePrestation.STANDARD.getCodesystemString();
+                    } // TODO SCO
+                    else if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(genre)) {
+                        genre = APTypeDePrestation.STANDARD.getCodesystemString();                    }
                     final String idAssureDeBase = droit.loadDemande().getIdTiers();
 
                     Boolean isPorteEnCompte = isSituationProfPorteEnCompte(
@@ -440,11 +443,11 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                     // prochaine facturation périodique est égale à 12
                     if (!JadeStringUtil.isEmpty(codePeriodiciteAffilie)
                             && ((CodeSystem.PERIODICITE_MENSUELLE.equals(codePeriodiciteAffilie))
-                                    || ((CodeSystem.PERIODICITE_TRIMESTRIELLE.equals(codePeriodiciteAffilie))
-                                            && (("03".equals(moisFac)) || ("06".equals(moisFac))
-                                                    || ("09".equals(moisFac)) || ("12".equals(moisFac))))
-                                    || ((CodeSystem.PERIODICITE_ANNUELLE.equals(codePeriodiciteAffilie))
-                                            && ("12".equals(moisFac))))) {
+                            || ((CodeSystem.PERIODICITE_TRIMESTRIELLE.equals(codePeriodiciteAffilie))
+                            && (("03".equals(moisFac)) || ("06".equals(moisFac))
+                            || ("09".equals(moisFac)) || ("12".equals(moisFac))))
+                            || ((CodeSystem.PERIODICITE_ANNUELLE.equals(codePeriodiciteAffilie))
+                            && ("12".equals(moisFac))))) {
 
                         APFactureACompenser factureACompenser = new APFactureACompenser();
                         factureACompenser.setSession(session);
@@ -531,7 +534,7 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                         // compenser et qu'on peut encore compenser
                         while (propositionsCompensationsIterator.hasNext()
                                 && (Math.abs(montantTotalCompense.doubleValue()) < Math
-                                        .abs(Double.parseDouble(compensation.getMontantTotal())))) {
+                                .abs(Double.parseDouble(compensation.getMontantTotal())))) {
                             sectionEnCours = (CASection) propositionsCompensationsIterator.next();
                             montantDejaCompenseSurSectionEnCours = new FWCurrency(0);
 
@@ -545,7 +548,7 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                             // non, on compense tout.
                             if (Math.abs(Double.parseDouble(
                                     compensation.getMontantTotal())) > (Math.abs(montantTotalCompense.doubleValue())
-                                            + Math.abs(Double.parseDouble(sectionEnCours.getSolde())))) {
+                                    + Math.abs(Double.parseDouble(sectionEnCours.getSolde())))) {
                                 factureACompenser.setMontant(sectionEnCours.getSolde());
                                 montantTotalCompense.add(new FWCurrency(sectionEnCours.getSolde()));
                                 montantDejaCompenseSurSectionEnCours.add(new FWCurrency(sectionEnCours.getSolde()));
@@ -587,6 +590,7 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                         genres.add(APTypeDePrestation.ACM2_ALFA.getCodesystemString());
                     } else if (APTypeDePrestation.STANDARD.isCodeSystemEqual(key.genrePrestation)) {
                         genres.add(APTypeDePrestation.COMPCIAB.getCodesystemString());
+                        genres.add(APTypeDePrestation.MATCIAB1.getCodesystemString()); //TODO SCO
                     }
                     genres.add(key.genrePrestation);
 

@@ -15,6 +15,7 @@ public class PrestationCIABPojo implements Serializable {
 
     private ArrayList<PrestationCIABLigneRecapitulationPojo> listPrestationCIAB;
     private Map<String, PrestationCIABAssuranceComplPojo> mapPrestationComplementaireAssuranceCIAB;
+    private Map<String, PrestationCIABAssuranceComplPojo> mapPrestationMatCIAB;
     private String dateTraitement;
     private String selecteurPrestationLibelle;
     private String dateDebut;
@@ -22,14 +23,17 @@ public class PrestationCIABPojo implements Serializable {
     private String numeroAffilie;
     private String nomAffilie;
     private double totalMontantBrutComplementaire;
+    private double totalMontantBrutMatciab;
     private double totalMontantBrutJourIsole;
     private int totalNbCasComplementaire;
     private int totalJourIsole;
+    private int totalNbCasMatciab;
 
     public PrestationCIABPojo() {
         super();
         listPrestationCIAB = new ArrayList<PrestationCIABLigneRecapitulationPojo>();
         mapPrestationComplementaireAssuranceCIAB = new TreeMap<String, PrestationCIABAssuranceComplPojo>();
+        mapPrestationMatCIAB = new TreeMap<String, PrestationCIABAssuranceComplPojo>();
         selecteurPrestationLibelle = "";
         totalMontantBrutComplementaire = 0;
         totalMontantBrutJourIsole = 0;
@@ -132,5 +136,29 @@ public class PrestationCIABPojo implements Serializable {
 
     public void setMapPrestationComplementaireAssuranceCIAB(Map<String, PrestationCIABAssuranceComplPojo> mapPrestationComplementaireCIAB) {
         this.mapPrestationComplementaireAssuranceCIAB = mapPrestationComplementaireCIAB;
+    }
+
+    public double getTotalMontantBrutMatciab() {
+        return totalMontantBrutMatciab;
+    }
+
+    public int getTotalNbCasMatciab() {
+        return totalNbCasMatciab;
+    }
+
+    public void setTotalMontantBrutMatciab(double totalMontantBrutMatciab) {
+        this.totalMontantBrutMatciab = totalMontantBrutMatciab;
+    }
+
+    public void setTotalNbCasMatciab(int totalNbCasMatciab) {
+        this.totalNbCasMatciab = totalNbCasMatciab;
+    }
+
+    public Map<String, PrestationCIABAssuranceComplPojo> getMapPrestationMatCIAB() {
+        return mapPrestationMatCIAB;
+    }
+
+    public void setMapPrestationMatCIAB(Map<String, PrestationCIABAssuranceComplPojo> mapPrestationMatCIAB) {
+        this.mapPrestationMatCIAB = mapPrestationMatCIAB;
     }
 }

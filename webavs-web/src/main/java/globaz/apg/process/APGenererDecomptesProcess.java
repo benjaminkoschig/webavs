@@ -51,7 +51,7 @@ import java.util.*;
  * <p>
  * Si Communication provisoire, ne fait qu'imprimer la communication
  * </p>
- * 
+ *
  * @author dvh
  */
 public class APGenererDecomptesProcess extends BProcess {
@@ -72,7 +72,7 @@ public class APGenererDecomptesProcess extends BProcess {
 
     /**
      * Crée une nouvelle instance de la classe APGenererDecomptesProcess.
-     * 
+     *
      * @param parent DOCUMENT ME!
      */
     public APGenererDecomptesProcess(final BProcess parent) {
@@ -81,7 +81,7 @@ public class APGenererDecomptesProcess extends BProcess {
 
     /**
      * Crée une nouvelle instance de la classe APGenererDecomptesProcess.
-     * 
+     *
      * @param session DOCUMENT ME!
      */
     public APGenererDecomptesProcess(final BSession session) {
@@ -93,7 +93,7 @@ public class APGenererDecomptesProcess extends BProcess {
 
     /**
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BProcess#_executeCleanUp()
      */
     @Override
@@ -102,7 +102,7 @@ public class APGenererDecomptesProcess extends BProcess {
 
     /**
      * DOCUMENT ME!
-     * 
+     *
      * @return DOCUMENT ME!
      */
     @Override
@@ -229,46 +229,46 @@ public class APGenererDecomptesProcess extends BProcess {
                 // Dans le cadre des pandémies, on n'envoie pas d'annonces.
                 envoiAnnoncesSuccess = true;
             } else {
-            try {
-                // Faire l'envoi des annonces (dans une transaction séparée, si ça plante, on fera l'envoi manuellement
-                if (isDefinitif.booleanValue()) {
-                    if ("true"
-                            .equalsIgnoreCase(GlobazSystem.getApplication("APG").getProperty("rapg.envoiAutomatique"))) {
-                        envoyerAnnonces(transaction);
+                try {
+                    // Faire l'envoi des annonces (dans une transaction séparée, si ça plante, on fera l'envoi manuellement
+                    if (isDefinitif.booleanValue()) {
+                        if ("true"
+                                .equalsIgnoreCase(GlobazSystem.getApplication("APG").getProperty("rapg.envoiAutomatique"))) {
+                            envoyerAnnonces(transaction);
 
-                        envoiAnnoncesSuccess = !getMemoryLog().hasErrors();
+                            envoiAnnoncesSuccess = !getMemoryLog().hasErrors();
 
-                        transaction.commit();
-                        if (envoiAnnoncesSuccess) {
-                            getMemoryLog().logMessage(getSession().getLabel("GENERATION_ENVOI_ANNONCES"),
-                                    FWMessage.INFORMATION, "");
+                            transaction.commit();
+                            if (envoiAnnoncesSuccess) {
+                                getMemoryLog().logMessage(getSession().getLabel("GENERATION_ENVOI_ANNONCES"),
+                                        FWMessage.INFORMATION, "");
+                            } else {
+                                getMemoryLog().logMessage(getSession().getLabel("ERROR_GENERATION_ENVOI_ANNONCES"),
+                                        FWMessage.INFORMATION, "");
+                            }
                         } else {
-                            getMemoryLog().logMessage(getSession().getLabel("ERROR_GENERATION_ENVOI_ANNONCES"),
-                                    FWMessage.INFORMATION, "");
+                            // Pour pas qu'on se retrouve en partiel vu qu'on envoi pas les annonces
+                            envoiAnnoncesSuccess = true;
                         }
                     } else {
                         // Pour pas qu'on se retrouve en partiel vu qu'on envoi pas les annonces
                         envoiAnnoncesSuccess = true;
                     }
-                } else {
-                    // Pour pas qu'on se retrouve en partiel vu qu'on envoi pas les annonces
-                    envoiAnnoncesSuccess = true;
-                }
 
-            } catch (final Exception e) {
+                } catch (final Exception e) {
 
-                getMemoryLog().logMessage(getSession().getLabel("ERROR_GENERATION_ENVOI_ANNONCES"),
-                        FWMessage.INFORMATION, "");
+                    getMemoryLog().logMessage(getSession().getLabel("ERROR_GENERATION_ENVOI_ANNONCES"),
+                            FWMessage.INFORMATION, "");
 
-                getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, this.getClass().toString());
-
-                try {
-                    transaction.rollback();
-                } catch (final Exception e1) {
                     getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, this.getClass().toString());
+
+                    try {
+                        transaction.rollback();
+                    } catch (final Exception e1) {
+                        getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, this.getClass().toString());
+                    }
+                    return true;
                 }
-                return true;
-            }
             }
         } finally {
             String status;
@@ -297,7 +297,7 @@ public class APGenererDecomptesProcess extends BProcess {
 
     /**
      * (non-Javadoc)
-     * 
+     *
      * @throws Exception DOCUMENT ME!
      * @see globaz.globall.db.BProcess#_validate()
      */
@@ -357,7 +357,7 @@ public class APGenererDecomptesProcess extends BProcess {
 
     /**
      * getter pour l'attribut date sur document
-     * 
+     *
      * @return la valeur courante de l'attribut date sur document
      */
     public String getDateSurDocument() {
@@ -366,7 +366,7 @@ public class APGenererDecomptesProcess extends BProcess {
 
     /**
      * getter pour l'attribut date valeur comptable
-     * 
+     *
      * @return la valeur courante de l'attribut date valeur comptable
      */
     public String getDateValeurComptable() {
@@ -375,7 +375,7 @@ public class APGenererDecomptesProcess extends BProcess {
 
     /**
      * getter pour l'attribut description lot
-     * 
+     *
      * @return la valeur courante de l'attribut description lot
      */
     public String getDescriptionLot() {
@@ -384,7 +384,7 @@ public class APGenererDecomptesProcess extends BProcess {
 
     /**
      * (non-Javadoc)
-     * 
+     *
      * @return DOCUMENT ME!
      * @see globaz.globall.db.BProcess#getEMailObject()
      */
@@ -395,7 +395,7 @@ public class APGenererDecomptesProcess extends BProcess {
 
     /**
      * getter pour l'attribut no lot
-     * 
+     *
      * @return la valeur courante de l'attribut no lot
      */
     public String getIdLot() {
@@ -404,7 +404,7 @@ public class APGenererDecomptesProcess extends BProcess {
 
     /**
      * getter pour l'attribut is definitif
-     * 
+     *
      * @return la valeur courante de l'attribut is definitif
      */
     public Boolean getIsDefinitif() {
@@ -420,7 +420,7 @@ public class APGenererDecomptesProcess extends BProcess {
 
     /**
      * Exécute le process de génération des décomptes
-     * 
+     *
      * @throws Exception En cas d'exception lors de la génération des déccomptes
      */
     private void imprimerCommunication(Boolean isCopie) throws Exception {
@@ -487,6 +487,7 @@ public class APGenererDecomptesProcess extends BProcess {
             CommonPropertiesUtils.validatePropertyValue(APProperties.TYPE_DE_PRESTATION_ACM, propertyValue,
                     APPropertyTypeDePrestationAcmValues.propertyValues());
 
+            //ESVE MATERNITE DECOMPTE
             final APPropertyTypeDePrestationAcmValues typeDePrestationAcm = APPropertyTypeDePrestationAcmValues
                     .valueOf(propertyValue);
             if (typeDePrestationAcm == null) {
@@ -527,7 +528,7 @@ public class APGenererDecomptesProcess extends BProcess {
 
     /**
      * (non-Javadoc)
-     * 
+     *
      * @return DOCUMENT ME!
      * @see globaz.globall.db.BProcess#jobQueue()
      */
@@ -555,8 +556,7 @@ public class APGenererDecomptesProcess extends BProcess {
                 } else {
                     droitLAPG.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
                 }
-            } else if (Arrays.asList(IAPDroitLAPG.CS_QUARANTAINE).contains(droitLAPG.getGenreService())
-                || Arrays.asList(IAPDroitLAPG.CS_QUARANTAINE_17_09_20).contains(droitLAPG.getGenreService())) {
+            } else if (Arrays.asList(IAPDroitLAPG.CS_QUARANTAINE).contains(droitLAPG.getGenreService())) {
                 final APPrestationManager prestationManager = new APPrestationManager();
                 prestationManager.setSession(session);
                 prestationManager.setForIdDroit(droitLAPG.getIdDroit());
@@ -576,19 +576,19 @@ public class APGenererDecomptesProcess extends BProcess {
                 }
 
             } else {
-            final APPrestationManager prestationManager = new APPrestationManager();
-            prestationManager.setSession(session);
-            prestationManager.setForIdDroit(droitLAPG.getIdDroit());
-            prestationManager.setForEtat(APPrestationManager.ETAT_NON_DEFINITIF);
-            prestationManager.find(transaction);
+                final APPrestationManager prestationManager = new APPrestationManager();
+                prestationManager.setSession(session);
+                prestationManager.setForIdDroit(droitLAPG.getIdDroit());
+                prestationManager.setForEtat(APPrestationManager.ETAT_NON_DEFINITIF);
+                prestationManager.find(transaction);
 
-            final boolean tousDefinitif = (prestationManager.size() == 0);
+                final boolean tousDefinitif = (prestationManager.size() == 0);
 
-            if (tousDefinitif) {
-                droitLAPG.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
-            } else {
-                droitLAPG.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL);
-            }
+                if (tousDefinitif) {
+                    droitLAPG.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
+                } else {
+                    droitLAPG.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL);
+                }
             }
 
 
@@ -676,7 +676,7 @@ public class APGenererDecomptesProcess extends BProcess {
 
     /**
      * setter pour l'attribut date sur document
-     * 
+     *
      * @param string une nouvelle valeur pour cet attribut
      */
     public void setDateSurDocument(final String string) {
@@ -685,7 +685,7 @@ public class APGenererDecomptesProcess extends BProcess {
 
     /**
      * setter pour l'attribut date valeur comptable
-     * 
+     *
      * @param string une nouvelle valeur pour cet attribut
      */
     public void setDateValeurComptable(final String string) {
@@ -694,7 +694,7 @@ public class APGenererDecomptesProcess extends BProcess {
 
     /**
      * setter pour l'attribut description lot
-     * 
+     *
      * @param string une nouvelle valeur pour cet attribut
      */
     public void setDescriptionLot(final String string) {
@@ -703,7 +703,7 @@ public class APGenererDecomptesProcess extends BProcess {
 
     /**
      * setter pour l'attribut no lot
-     * 
+     *
      * @param string une nouvelle valeur pour cet attribut
      */
     public void setIdLot(final String string) {
@@ -712,7 +712,7 @@ public class APGenererDecomptesProcess extends BProcess {
 
     /**
      * setter pour l'attribut is definitif
-     * 
+     *
      * @param boolean1 une nouvelle valeur pour cet attribut
      */
     public void setIsDefinitif(final Boolean boolean1) {

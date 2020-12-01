@@ -180,6 +180,11 @@ public interface APEntityService extends JadeApplicationService {
     void supprimerLesPrestationsDuDroit(final BSession session, final BTransaction transaction,
             final String idDroit) throws Exception;
 
+    /**
+     * Supprime l'intégralité du graphe d'objet lié aux prestations d'un droit APG par genre
+     */
+    void supprimerLesPrestationsDuDroitParGenre(final BSession session, final BTransaction transaction,
+                                        final String idDroit, String genre) throws Exception;
 
     APDroitPanSituation getDroitPanSituation(BSession session, BTransaction transaction, String idDroitSituation) throws Exception;
 

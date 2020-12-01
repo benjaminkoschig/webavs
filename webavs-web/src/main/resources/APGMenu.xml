@@ -516,12 +516,30 @@
 					<parameter name="genreService" />
 				</action>
 			</node>
-			<node>
+			<node id="calculertoutesprestationsMATCIAB2">
+				<label refId="MENU_OPTION_CALCULER_PRESTATIONS_MATCIAB2" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.prestation.prestation.actionCalculerToutesLesPrestations" />
+					<parameter name="selectedId" />
+					<parameter name="genreService" />
+					<parameter name="typePrestation" value="MATCIAB2"/>
+				</action>
+			</node>
+			<node id="genererlesdecicions">
 				<label refId="MENU_OPTION_GENERER_COMM_DEC" />
 				<action command="/apg" responseTarget="fr_main">
 					<parameter name="userAction" value="apg.process.genererDecisionAMAT.afficher" />
 					<parameter name="selectedId" />
 					<parameter name="genreService" />
+				</action>
+			</node>
+			<node id="genererlesdecicionsMATCIAB2">
+				<label refId="MENU_OPTION_GENERER_COMM_DEC_MATCIAB2" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.process.genererDecisionAMAT.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="genreService" />
+					<parameter name="typePrestation" value="MATCIAB2"/>
 				</action>
 			</node>
 			<node id="initinfocompl">

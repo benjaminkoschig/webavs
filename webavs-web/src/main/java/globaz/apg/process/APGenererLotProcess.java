@@ -23,7 +23,7 @@ import java.text.MessageFormat;
 
 /**
  * <H1>Description</H1>
- * 
+ *
  * @author dvh
  */
 public class APGenererLotProcess extends BProcess {
@@ -32,7 +32,7 @@ public class APGenererLotProcess extends BProcess {
     // ------------------------------------------------------------------------------------------------
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private String description = "";
@@ -51,7 +51,7 @@ public class APGenererLotProcess extends BProcess {
 
     /**
      * Crée une nouvelle instance de la classe APGenererLotProcess.
-     * 
+     *
      * @param parent
      *            DOCUMENT ME!
      */
@@ -61,7 +61,7 @@ public class APGenererLotProcess extends BProcess {
 
     /**
      * Crée une nouvelle instance de la classe APGenererLotProcess.
-     * 
+     *
      * @param session
      *            DOCUMENT ME!
      */
@@ -74,7 +74,7 @@ public class APGenererLotProcess extends BProcess {
 
     /**
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BProcess#_executeCleanUp()
      */
     @Override
@@ -83,7 +83,7 @@ public class APGenererLotProcess extends BProcess {
 
     /**
      * DOCUMENT ME!
-     * 
+     *
      * @return DOCUMENT ME!
      */
     @Override
@@ -101,6 +101,7 @@ public class APGenererLotProcess extends BProcess {
                 prestationManager.setForEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
                 prestationManager.setToDateFin(getPrestationDateFin());
                 prestationManager.setNotForGenre(APTypeDePrestation.PANDEMIE.getCodesystemString());
+                //ESVE MATERNITE POUR PASSER DANS SELECT LOT
                 prestationManager.setForNoRevision(IAPDroitMaternite.CS_REVISION_MATERNITE_2005);
             } else if (typePrestation.equals(IPRDemande.CS_TYPE_PANDEMIE)) {
                 prestationManager = new APPrestationJointDroitManager();
@@ -184,7 +185,7 @@ public class APGenererLotProcess extends BProcess {
 
     /**
      * getter pour l'attribut description
-     * 
+     *
      * @return la valeur courante de l'attribut description
      */
     public String getDescription() {
@@ -193,7 +194,7 @@ public class APGenererLotProcess extends BProcess {
 
     /**
      * getter pour l'attribut EMail object
-     * 
+     *
      * @return la valeur courante de l'attribut EMail object
      */
     @Override
@@ -210,7 +211,7 @@ public class APGenererLotProcess extends BProcess {
 
     /**
      * getter pour l'attribut type prestation
-     * 
+     *
      * @return la valeur courante de l'attribut type prestation
      */
     public String getTypePrestation() {
@@ -219,7 +220,7 @@ public class APGenererLotProcess extends BProcess {
 
     /**
      * DOCUMENT ME!
-     * 
+     *
      * @return DOCUMENT ME!
      */
     @Override
@@ -229,7 +230,7 @@ public class APGenererLotProcess extends BProcess {
 
     /**
      * setter pour l'attribut description
-     * 
+     *
      * @param string
      *            une nouvelle valeur pour cet attribut
      */
@@ -246,7 +247,7 @@ public class APGenererLotProcess extends BProcess {
 
     /**
      * setter pour l'attribut type prestation
-     * 
+     *
      * @param string
      *            une nouvelle valeur pour cet attribut
      */

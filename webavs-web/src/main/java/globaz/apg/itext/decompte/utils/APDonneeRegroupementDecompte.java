@@ -65,6 +65,9 @@ public class APDonneeRegroupementDecompte {
         APDonneeRegroupementDecompte.regroupementSepare.put(APTypeDePrestation.COMPCIAB, Regroupement.STANDARD);
         APDonneeRegroupementDecompte.regroupementSepare.put(APTypeDePrestation.LAMAT, Regroupement.LAMAT);
 
+        // Regroupement des MATCIAB1
+        APDonneeRegroupementDecompte.regroupementSepare.put(APTypeDePrestation.MATCIAB1, Regroupement.STANDARD);
+
         // Même regroupement pour ACM et ACM2
         APDonneeRegroupementDecompte.regroupementSepare.put(APTypeDePrestation.ACM_ALFA, Regroupement.ACM_ALFA);
         APDonneeRegroupementDecompte.regroupementSepare.put(APTypeDePrestation.ACM2_ALFA, Regroupement.ACM_ALFA);
@@ -81,6 +84,9 @@ public class APDonneeRegroupementDecompte {
                 Regroupement.STANDARD);
         APDonneeRegroupementDecompte.regroupementPrestationStandardEtACM_Ne.put(APTypeDePrestation.COMPCIAB,
                 Regroupement.STANDARD);
+
+        // Regroupement des MATCIAB1
+        APDonneeRegroupementDecompte.regroupementPrestationStandardEtACM_Ne.put(APTypeDePrestation.MATCIAB1, Regroupement.STANDARD);
 
         APDonneeRegroupementDecompte.regroupementPrestationStandardEtACM_Ne.put(APTypeDePrestation.LAMAT,
                 Regroupement.LAMAT);

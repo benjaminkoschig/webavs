@@ -91,13 +91,13 @@ import net.sf.jasperreports.engine.JRDataSource;
  * <p>
  * Génére un document général pour l'assuré et un document particulier pour chacun des employeurs.
  * </p>
- * 
+ *
  * @author vre
  */
 public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -107,8 +107,8 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
     private class ImporterImpl extends FWIImportManager {
 
         /**
-		 *
-		 */
+         *
+         */
         public ImporterImpl() throws FWIException {
             setImportPath(APApplication.APPLICATION_APG_REP);
         }
@@ -161,7 +161,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
         /**
          * DOCUMENT ME!
-         * 
+         *
          * @return DOCUMENT ME!
          */
         @Override
@@ -184,10 +184,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
         /**
          * DOCUMENT ME!
-         * 
+         *
          * @return DOCUMENT ME!
-         * @throws NoSuchElementException
-         *             DOCUMENT ME!
+         * @throws NoSuchElementException DOCUMENT ME!
          */
         @Override
         public Object next() {
@@ -201,8 +200,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         }
 
         /**
-         * @throws UnsupportedOperationException
-         *             DOCUMENT ME!
+         * @throws UnsupportedOperationException DOCUMENT ME!
          */
         @Override
         public void remove() {
@@ -212,11 +210,17 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
     private static final JACalendar CALENDAR = new JACalendarGregorian();
     private static final String DOC_DEC_AMAT_COPIE_ASS = "documents.decision.amat.copie.assure";
+    //ESVE MATERNITE
+    // Nom de fichier jasper pour les décisions
     private static final String FICHIER_MODELE = "AP_DECISION";
+
+    // Permet de filter les MATCIAB2 des décisions pour les faire ressortir sur un document séparé
+    private Boolean isMatciab2Decision = Boolean.FALSE;
 
     private static final String FICHIER_RESULTAT = "decision";
     private static final String ORDER_PRINTING_BY = "orderPrintingBy";
     private static final int STATE_ACM = 11;
+    private static final int STATE_MATCIAB2 = 14;
     private static final int STATE_ASSURES = 1;
 
     private static final int STATE_EMPLOYEURS = 2;
@@ -248,6 +252,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
     private ICTDocument helper = null;
     private String idDroit;
 
+    String revenuMoyenDeterminant;
     private String idTiersAssure = "";
     private boolean isDecompteRempli = false;
 
@@ -272,6 +277,14 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
     private int state_dec = APDecisionCommunicationAMAT.STATE_STANDARD;
 
+    public Boolean getIsMatciab2Decision() {
+        return isMatciab2Decision;
+    }
+
+    public void setIsMatciab2Decision(Boolean matciab2Decision) {
+        isMatciab2Decision = matciab2Decision;
+    }
+
     public APDecisionCommunicationAMAT() throws FWIException {
         super();
         setImporter(new ImporterImpl());
@@ -279,11 +292,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
     /**
      * Crée une nouvelle instance de la classe APGenererDecisionProcess.
-     * 
-     * @param parent
-     *            DOCUMENT ME!
-     * @throws FWIException
-     *             DOCUMENT ME!
+     *
+     * @param parent DOCUMENT ME!
+     * @throws FWIException DOCUMENT ME!
      */
     public APDecisionCommunicationAMAT(final BProcess parent) throws FWIException {
         super(parent, APApplication.APPLICATION_APG_REP, APDecisionCommunicationAMAT.FICHIER_RESULTAT);
@@ -291,18 +302,17 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
     /**
      * Crée une nouvelle instance de la classe APGenererDecisionProcess.
-     * 
-     * @param session
-     *            DOCUMENT ME!
-     * @throws FWIException
-     *             DOCUMENT ME!
+     *
+     * @param session DOCUMENT ME!
+     * @throws FWIException DOCUMENT ME!
      */
     public APDecisionCommunicationAMAT(final BSession session) throws FWIException {
         super(session, APApplication.APPLICATION_APG_REP, APDecisionCommunicationAMAT.FICHIER_RESULTAT);
     }
 
     /**
-	 */
+     *
+     */
     @Override
     public void beforeBuildReport() {
         try {
@@ -353,11 +363,13 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
     }
 
     /**
-	 */
+     *
+     */
     @Override
     public void beforeExecuteReport() {
         try {
             // le modele
+            //ESVE MATERNITE DECISIONS
             final String extensionModelCaisse = getSession().getApplication().getProperty("extensionModelITextCaisse");
             if (!JadeStringUtil.isEmpty(extensionModelCaisse)) {
                 setTemplateFile(APDecisionCommunicationAMAT.FICHIER_MODELE + extensionModelCaisse);
@@ -451,6 +463,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 helper.setNom("normal");
             } else if (state_dec == APDecisionCommunicationAMAT.STATE_ACM) {
                 helper.setNom("ACM");
+            } else if (state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
+                helper.setNom("MATCIAB2");
+                chargerCatalogueTexte();
             } else if (state_dec == APDecisionCommunicationAMAT.STATE_LAMAT) {
                 helper.setNom("Lamat");
             }
@@ -485,6 +500,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 helper.setNom("normal");
             } else if (state_dec == APDecisionCommunicationAMAT.STATE_ACM) {
                 helper.setNom("ACM");
+            } else if (state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
+                helper.setNom("MATCIAB2");
+                chargerCatalogueTexte();
             } else if (state_dec == APDecisionCommunicationAMAT.STATE_LAMAT) {
                 helper.setNom("Lamat");
             }
@@ -547,7 +565,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
             firstBirth = new JADate("31.12.9999");
 
-            for (final Iterator iterator = enfMgr.iterator(); iterator.hasNext();) {
+            for (final Iterator iterator = enfMgr.iterator(); iterator.hasNext(); ) {
                 final APEnfantMat enfant = (APEnfantMat) iterator.next();
 
                 if (cal.compare(new JADate(enfant.getDateNaissance()), firstBirth) == JACalendar.COMPARE_FIRSTLOWER) {
@@ -564,7 +582,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
         // fusionner tous les textes sauf les speciaux (position > 100)
         try {
-            for (final Iterator textes = document.getTextes(2).iterator(); textes.hasNext();) {
+            for (final Iterator textes = document.getTextes(2).iterator(); textes.hasNext(); ) {
                 final int position = Integer.parseInt((texte = (ICTTexte) textes.next()).getPosition());
 
                 if (position < 100) { // ignorer les textes speciaux
@@ -614,7 +632,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         // fusionner tous les textes sauf les speciaux (position > 100)
         try {
             for (final Iterator textes = document.getTextes(4).iterator(); textes.hasNext()
-                    && (Integer.parseInt((texte = (ICTTexte) textes.next()).getPosition()) < 100);) {
+                    && (Integer.parseInt((texte = (ICTTexte) textes.next()).getPosition()) < 100); ) {
 
                 if (buffer.length() > 0) {
                     buffer.append("\n\n");
@@ -627,7 +645,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 // Cas particulier (Destinataire employeur et lettre ACM), car paragraphe 3 est devenu générique dans le
                 // niveau 4 afin d'afficher le bon nombre de jours.
                 if (isPos3ACMEmployeur) {
-                    buffer.append(traitementLevel4Pos3ACMEmployeur(texte));
+                    buffer.append(traitementLevel4Pos3ACMEmployeur(texte)); //ESVE MATERNITE A VOIR A VERIFIER
                 } else {
                     buffer.append(texte.getDescription());
                 }
@@ -682,6 +700,13 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 break;
         }
 
+        parametres.put("PARAM_AP_DECISION_DETAIL",
+                JadeStringUtil
+                        .change(getSession().getApplication().getExternalModelPath()
+                                + APApplication.APPLICATION_APG_REP, '\\', '/')
+                        + "/" + "model" + "/" + "AP_DECISION_DETAIL.jasper");
+
+
         parametres.put("PARAM_SALUTATIONS", buffer.toString());
 
         // ajouter la signature
@@ -710,7 +735,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
     /**
      * Pouvoir attribuer dans le niveau 4 position 3 ACM Employeur, le nombre de jours corrects selon si la décision
      * pour l'employeur verse que des ACM ou (ACM et ACM 2)
-     * 
+     *
      * @param texte Le catalogue de texte.
      * @return Le chaine du niveau 4 position 3 avec la nouvelle valeur.
      * @throws Exception Exception due a la recherche de situation professionnelle
@@ -724,6 +749,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         sitPro.setIdSituationProf(repartition.getIdSituationProfessionnelle());
         sitPro.retrieve();
 
+        //ESVE MATERNITE DUREE MATCIAB2
         Integer nbJoursTotaux = Integer.valueOf(APProperties.DROIT_ACM_MAT_DUREE_JOURS.getValue());
         if (!sitPro.isNew()) {
             final boolean hasAcm2 = sitPro.getHasAcm2AlphaPrestations();
@@ -792,7 +818,8 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             // charger le catalogue de texte
             helper = PRBabelHelper.getDocumentHelper(getISession());
 
-            helper.setCsTypeDocument(IAPCatalogueTexte.CS_DECISION_MAT); // decision
+            helper.setCsTypeDocument(IAPCatalogueTexte.CS_DECISION_MAT);
+            // decision
             // et
             // communication,
             // meme
@@ -803,6 +830,8 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 helper.setNom("normal");
             } else if (state_dec == APDecisionCommunicationAMAT.STATE_ACM) {
                 helper.setNom("ACM");
+            } else if (state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
+                helper.setNom("MATCIAB2");
             } else if (state_dec == APDecisionCommunicationAMAT.STATE_LAMAT) {
                 helper.setNom("Lamat");
             }
@@ -1025,8 +1054,12 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
             if (isMontantMax) {
                 arguments[4] = JANumberFormatter.format(montantJournalierMax);
+                revenuMoyenDeterminant = JANumberFormatter.format(montantJournalierMax);
             } else {
                 arguments[4] = JANumberFormatter.format(
+                        Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 1, 2,
+                        JANumberFormatter.SUP);
+                revenuMoyenDeterminant = JANumberFormatter.format(
                         Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 1, 2,
                         JANumberFormatter.SUP);
             }
@@ -1038,6 +1071,11 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
             // Si c'est une décision complémentaire (ACM)
         } else if (state_dec == APDecisionCommunicationAMAT.STATE_ACM) {
+
+            arguments[7] = JANumberFormatter.format(revenuAnnuel);
+
+          // Si c'est une décision complémentaire (MATCIAB2)
+        } else if (state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
 
             arguments[7] = JANumberFormatter.format(revenuAnnuel);
 
@@ -1148,8 +1186,12 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
             if (isMontantMax) {
                 arguments[5] = JANumberFormatter.format(montantJournalierMax);
+                revenuMoyenDeterminant = JANumberFormatter.format(montantJournalierMax);
             } else {
                 arguments[5] = JANumberFormatter.format(
+                        Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 1, 2,
+                        JANumberFormatter.SUP);
+                revenuMoyenDeterminant = JANumberFormatter.format(
                         Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 1, 2,
                         JANumberFormatter.SUP);
             }
@@ -1161,6 +1203,11 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
             // Si c'est une décision complémentaire (ACM)
         } else if (state_dec == APDecisionCommunicationAMAT.STATE_ACM) {
+
+            arguments[10] = JANumberFormatter.format(revenuAnnuel);
+
+            // Si c'est une décision complémentaire (MATCIAB2)
+        } else if (state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
 
             arguments[10] = JANumberFormatter.format(revenuAnnuel);
 
@@ -1411,10 +1458,10 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             /*
              * il y a trois possibilites: 1. on construit le document de l'assure. Dans ce cas on affiche les montants
              * des prestations non modifies meme si ce montant sera verse a son employeur.
-             * 
+             *
              * 2. on construit le document de l'employeur et l'assure n'a qu'un seul employeur Dans ce cas on affiche
              * les memes donnees que pour l'assure.
-             * 
+             *
              * 3. on construit le document de l'employeur et l'assure a plusieurs employeurs Dans ce cas on affiche les
              * données corrigees au pro rata de la contribution de l'employeur au revenu journalier moyen de l'assuré.
              * C'est-a-dire qu'on va charger les repartitions de paiements et trouver celle qui correspond à l'employe
@@ -1428,165 +1475,356 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
                 int nbPrest = 0;
 
+                // Création champs de données document assurées pour tous les types sauf MATCIAB1
                 for (int idPrestation = 0; idPrestation < loadPrestations().size(); ++idPrestation) {
 
                     final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
 
-                    if (isGenreSameAsStateDecision(prestation)) {
+                    //<editor-fold defaultstate="collapsed" desc="ALLTYPE">
+                    if (!APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre())) {
+                        if (isGenreSameAsStateDecision(prestation)) {
 
-                        nbPrest++;
+                            nbPrest++;
 
-                        // si idAffilie de la répartition = 0 && que c'est
-                        // l'assuré (par idTiers)
-                        repartitionPaiementsManager.setForIdPrestation(prestation.getIdPrestationApg());
-                        repartitionPaiementsManager.find();
+                            // si idAffilie de la répartition = 0 && que c'est
+                            // l'assuré (par idTiers)
+                            repartitionPaiementsManager.setForIdPrestation(prestation.getIdPrestationApg());
+                            repartitionPaiementsManager.find();
 
-                        for (int idRP = 0; idRP < repartitionPaiementsManager.size(); ++idRP) {
-                            final APRepartitionPaiements rp = (APRepartitionPaiements) repartitionPaiementsManager
-                                    .get(idRP);
+                            for (int idRP = 0; idRP < repartitionPaiementsManager.size(); ++idRP) {
+                                final APRepartitionPaiements rp = (APRepartitionPaiements) repartitionPaiementsManager
+                                        .get(idRP);
 
-                            // reprendre la situation prof pour voir si
-                            // indépendant
-                            final APSituationProfessionnelle sitPro = new APSituationProfessionnelle();
-                            sitPro.setSession(getSession());
-                            sitPro.setIdSituationProf(rp.getIdSituationProfessionnelle());
-                            sitPro.retrieve();
+                                // reprendre la situation prof pour voir si
+                                // indépendant
+                                final APSituationProfessionnelle sitPro = new APSituationProfessionnelle();
+                                sitPro.setSession(getSession());
+                                sitPro.setIdSituationProf(rp.getIdSituationProfessionnelle());
+                                sitPro.retrieve();
 
-                            if (sitPro.getIsIndependant().booleanValue()) {
-                                isIndependant = true;
-                            } else {
-                                isIndependant = false;
-                            }
-
-                            final StringBuffer buffer = new StringBuffer();
-                            FWMessageFormat message = createMessageFormat(buffer);
-
-                            if (state == APDecisionCommunicationAMAT.STATE_ASSURES) {
-                                if (JadeStringUtil.isIntegerEmpty(rp.getIdAffilie())
-                                        && rp.getIdTiers().equals(getIdTiersAssure())
-                                        && !JadeStringUtil.isIntegerEmpty(rp.getMontantBrut())) {
-
-                                    final Map champs = new HashMap();
-                                    final double nbJours = Double.parseDouble(prestation.getNombreJoursSoldes());
-
-                                    buffer.setLength(0);
-                                    buffer.append(documentAssures.getTextes(3).getTexte(6));
-                                    message = createMessageFormat(buffer);
-                                    buffer.setLength(0);
-                                    champs.put(
-                                            "CHAMP_DATE_DEBUT",
-                                            message.format(new Object[] { prestation.getDateDebut() }, buffer,
-                                                    new FieldPosition(0)).toString());
-
-                                    buffer.setLength(0);
-                                    buffer.append(documentAssures.getTextes(3).getTexte(7));
-                                    message = createMessageFormat(buffer);
-                                    buffer.setLength(0);
-                                    champs.put(
-                                            "CHAMP_DATE_FIN",
-                                            message.format(new Object[] { prestation.getDateFin() }, buffer,
-                                                    new FieldPosition(0)).toString());
-
-                                    buffer.setLength(0);
-                                    buffer.append(documentAssures.getTextes(3).getTexte(8));
-                                    message = createMessageFormat(buffer);
-                                    buffer.setLength(0);
-                                    champs.put(
-                                            "CHAMP_NB_JOURS",
-                                            message.format(new Object[] { prestation.getNombreJoursSoldes() }, buffer,
-                                                    new FieldPosition(0)).toString());
-
-                                    buffer.setLength(0);
-                                    buffer.append(documentAssures.getTextes(3).getTexte(9));
-                                    message = createMessageFormat(buffer);
-                                    buffer.setLength(0);
-                                    champs.put(
-                                            "CHAMP_MONTANT_JOURNALIER",
-                                            message.format(
-                                                    new Object[] { String.valueOf(JANumberFormatter.format(
-                                                            Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2,
-                                                            JANumberFormatter.NEAR)) }, buffer, new FieldPosition(0))
-                                                    .toString());
-
-                                    buffer.setLength(0);
-                                    buffer.append(documentAssures.getTextes(3).getTexte(10));
-                                    message = createMessageFormat(buffer);
-                                    buffer.setLength(0);
-                                    champs.put(
-                                            "CHAMP_MONTANT_BRUT",
-                                            message.format(
-                                                    new Object[] { JANumberFormatter.formatNoRound(rp.getMontantBrut()) },
-                                                    buffer, new FieldPosition(0)).toString());
-                                    lignes.add(champs);
-                                }
-                            } else {
-                                if (!JadeStringUtil.isIntegerEmpty(rp.getIdAffilie())
-                                        && !JadeStringUtil.isIntegerEmpty(rp.getMontantBrut())) {
-
-                                    final Map champs = new HashMap();
-                                    final double nbJours = Double.parseDouble(prestation.getNombreJoursSoldes());
-
-                                    buffer.setLength(0);
-                                    buffer.append(documentEmployeurs.getTextes(3).getTexte(6));
-                                    message = createMessageFormat(buffer);
-                                    buffer.setLength(0);
-                                    champs.put(
-                                            "CHAMP_DATE_DEBUT",
-                                            message.format(new Object[] { prestation.getDateDebut() }, buffer,
-                                                    new FieldPosition(0)).toString());
-
-                                    buffer.setLength(0);
-                                    buffer.append(documentEmployeurs.getTextes(3).getTexte(7));
-                                    message = createMessageFormat(buffer);
-                                    buffer.setLength(0);
-                                    champs.put(
-                                            "CHAMP_DATE_FIN",
-                                            message.format(new Object[] { prestation.getDateFin() }, buffer,
-                                                    new FieldPosition(0)).toString());
-
-                                    buffer.setLength(0);
-                                    buffer.append(documentEmployeurs.getTextes(3).getTexte(8));
-                                    message = createMessageFormat(buffer);
-                                    buffer.setLength(0);
-                                    champs.put(
-                                            "CHAMP_NB_JOURS",
-                                            message.format(new Object[] { prestation.getNombreJoursSoldes() }, buffer,
-                                                    new FieldPosition(0)).toString());
-
-                                    buffer.setLength(0);
-                                    buffer.append(documentEmployeurs.getTextes(3).getTexte(9));
-                                    message = createMessageFormat(buffer);
-                                    buffer.setLength(0);
-                                    champs.put(
-                                            "CHAMP_MONTANT_JOURNALIER",
-                                            message.format(
-                                                    new Object[] { String.valueOf(JANumberFormatter.format(
-                                                            Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2,
-                                                            JANumberFormatter.NEAR)) }, buffer, new FieldPosition(0))
-                                                    .toString());
-
-                                    buffer.setLength(0);
-                                    buffer.append(documentEmployeurs.getTextes(3).getTexte(10));
-                                    message = createMessageFormat(buffer);
-                                    buffer.setLength(0);
-                                    champs.put(
-                                            "CHAMP_MONTANT_BRUT",
-                                            message.format(
-                                                    new Object[] { JANumberFormatter.formatNoRound(rp.getMontantBrut()) },
-                                                    buffer, new FieldPosition(0)).toString());
-                                    lignes.add(champs);
+                                if (sitPro.getIsIndependant().booleanValue()) {
+                                    isIndependant = true;
+                                } else {
+                                    isIndependant = false;
                                 }
 
+                                final StringBuffer buffer = new StringBuffer();
+                                FWMessageFormat message = createMessageFormat(buffer);
+
+                                if (state == APDecisionCommunicationAMAT.STATE_ASSURES) {
+                                    if (JadeStringUtil.isIntegerEmpty(rp.getIdAffilie())
+                                            && rp.getIdTiers().equals(getIdTiersAssure())
+                                            && !JadeStringUtil.isIntegerEmpty(rp.getMontantBrut())) {
+
+                                        final Map champs = new HashMap();
+                                        final double nbJours = Double.parseDouble(prestation.getNombreJoursSoldes());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentAssures.getTextes(3).getTexte(6));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_DATE_DEBUT",
+                                                message.format(new Object[]{prestation.getDateDebut()}, buffer,
+                                                        new FieldPosition(0)).toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentAssures.getTextes(3).getTexte(7));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_DATE_FIN",
+                                                message.format(new Object[]{prestation.getDateFin()}, buffer,
+                                                        new FieldPosition(0)).toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentAssures.getTextes(3).getTexte(8));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_NB_JOURS",
+                                                message.format(new Object[]{prestation.getNombreJoursSoldes()}, buffer,
+                                                        new FieldPosition(0)).toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentAssures.getTextes(3).getTexte(9));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_MONTANT_JOURNALIER",
+                                                message.format(
+                                                        new Object[]{String.valueOf(JANumberFormatter.format(
+                                                                Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2,
+                                                                JANumberFormatter.NEAR))}, buffer, new FieldPosition(0))
+                                                        .toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentAssures.getTextes(3).getTexte(10));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_MONTANT_BRUT",
+                                                message.format(
+                                                        new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
+                                                        buffer, new FieldPosition(0)).toString());
+                                        lignes.add(champs);
+                                    }
+                                } else {
+                                    if (!JadeStringUtil.isIntegerEmpty(rp.getIdAffilie())
+                                            && !JadeStringUtil.isIntegerEmpty(rp.getMontantBrut())) {
+
+                                        final Map champs = new HashMap();
+                                        final double nbJours = Double.parseDouble(prestation.getNombreJoursSoldes());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentEmployeurs.getTextes(3).getTexte(6));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_DATE_DEBUT",
+                                                message.format(new Object[]{prestation.getDateDebut()}, buffer,
+                                                        new FieldPosition(0)).toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentEmployeurs.getTextes(3).getTexte(7));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_DATE_FIN",
+                                                message.format(new Object[]{prestation.getDateFin()}, buffer,
+                                                        new FieldPosition(0)).toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentEmployeurs.getTextes(3).getTexte(8));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_NB_JOURS",
+                                                message.format(new Object[]{prestation.getNombreJoursSoldes()}, buffer,
+                                                        new FieldPosition(0)).toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentEmployeurs.getTextes(3).getTexte(9));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_MONTANT_JOURNALIER",
+                                                message.format(
+                                                        new Object[]{String.valueOf(JANumberFormatter.format(
+                                                                Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2,
+                                                                JANumberFormatter.NEAR))}, buffer, new FieldPosition(0))
+                                                        .toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentEmployeurs.getTextes(3).getTexte(10));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_MONTANT_BRUT",
+                                                message.format(
+                                                        new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
+                                                        buffer, new FieldPosition(0)).toString());
+                                        lignes.add(champs);
+                                    }
+                                }
                             }
                         }
                     }
+                    //</editor-fold>
                 }
 
-            } else if (state == APDecisionCommunicationAMAT.STATE_EMPLOYEURS) {
+                // Création champs de données document assurées pour le types MATCIAB1
+                boolean textadded = false;
+                for (int idPrestation = 0; idPrestation < loadPrestations().size(); ++idPrestation) {
+
+                    final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
+
+                    //<editor-fold defaultstate="collapsed" desc="MATCIAB1">
+                    if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre())) {
+                        if (isGenreSameAsStateDecision(prestation)) {
+
+                            nbPrest++;
+
+                            // si idAffilie de la répartition = 0 && que c'est
+                            // l'assuré (par idTiers)
+                            repartitionPaiementsManager.setForIdPrestation(prestation.getIdPrestationApg());
+                            repartitionPaiementsManager.find();
+
+                            for (int idRP = 0; idRP < repartitionPaiementsManager.size(); ++idRP) {
+                                final APRepartitionPaiements rp = (APRepartitionPaiements) repartitionPaiementsManager
+                                        .get(idRP);
+
+                                // reprendre la situation prof pour voir si
+                                // indépendant
+                                final APSituationProfessionnelle sitPro = new APSituationProfessionnelle();
+                                sitPro.setSession(getSession());
+                                sitPro.setIdSituationProf(rp.getIdSituationProfessionnelle());
+                                sitPro.retrieve();
+
+                                if (sitPro.getIsIndependant().booleanValue()) {
+                                    isIndependant = true;
+                                } else {
+                                    isIndependant = false;
+                                }
+
+                                final StringBuffer buffer = new StringBuffer();
+                                FWMessageFormat message = createMessageFormat(buffer);
+
+                                if (state == APDecisionCommunicationAMAT.STATE_ASSURES) {
+                                    if (JadeStringUtil.isIntegerEmpty(rp.getIdAffilie())
+                                            && rp.getIdTiers().equals(getIdTiersAssure())
+                                            && !JadeStringUtil.isIntegerEmpty(rp.getMontantBrut())) {
+
+                                        final Map champs = new HashMap();
+                                        final double nbJours = Double.parseDouble(prestation.getNombreJoursSoldes());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentAssures.getTextes(3).getTexte(6));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_DATE_DEBUT2",
+                                                message.format(new Object[]{prestation.getDateDebut()}, buffer,
+                                                        new FieldPosition(0)).toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentAssures.getTextes(3).getTexte(7));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_DATE_FIN2",
+                                                message.format(new Object[]{prestation.getDateFin()}, buffer,
+                                                        new FieldPosition(0)).toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentAssures.getTextes(3).getTexte(8));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_NB_JOURS2",
+                                                message.format(new Object[]{prestation.getNombreJoursSoldes()}, buffer,
+                                                        new FieldPosition(0)).toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentAssures.getTextes(3).getTexte(9));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_MONTANT_JOURNALIER2",
+                                                message.format(
+                                                        new Object[]{String.valueOf(JANumberFormatter.format(
+                                                                Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2,
+                                                                JANumberFormatter.NEAR))}, buffer, new FieldPosition(0))
+                                                        .toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentAssures.getTextes(3).getTexte(10));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_MONTANT_BRUT2",
+                                                message.format(
+                                                        new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
+                                                        buffer, new FieldPosition(0)).toString());
+                                        lignes.add(champs);
+                                    }
+                                } else {
+                                    if (!JadeStringUtil.isIntegerEmpty(rp.getIdAffilie())
+                                            && !JadeStringUtil.isIntegerEmpty(rp.getMontantBrut())) {
+
+                                        final Map champs = new HashMap();
+                                        final double nbJours = Double.parseDouble(prestation.getNombreJoursSoldes());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentEmployeurs.getTextes(3).getTexte(6));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_DATE_DEBUT2",
+                                                message.format(new Object[]{prestation.getDateDebut()}, buffer,
+                                                        new FieldPosition(0)).toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentEmployeurs.getTextes(3).getTexte(7));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_DATE_FIN2",
+                                                message.format(new Object[]{prestation.getDateFin()}, buffer,
+                                                        new FieldPosition(0)).toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentEmployeurs.getTextes(3).getTexte(8));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_NB_JOURS2",
+                                                message.format(new Object[]{prestation.getNombreJoursSoldes()}, buffer,
+                                                        new FieldPosition(0)).toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentEmployeurs.getTextes(3).getTexte(9));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_MONTANT_JOURNALIER2",
+                                                message.format(
+                                                        new Object[]{String.valueOf(JANumberFormatter.format(
+                                                                Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2,
+                                                                JANumberFormatter.NEAR))}, buffer, new FieldPosition(0))
+                                                        .toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentEmployeurs.getTextes(3).getTexte(10));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_MONTANT_BRUT2",
+                                                message.format(
+                                                        new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
+                                                        buffer, new FieldPosition(0)).toString());
+
+                                        if (!textadded) {
+                                            buffer.setLength(0);
+                                            buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(2).getTexte(3).getDescription(), "{5}",
+                                                    String.valueOf(revenuMoyenDeterminant)));
+                                            message = createMessageFormat(buffer);
+                                            buffer.setLength(0);
+                                            champs.put(
+                                                    "CHAMP_TEXT1",
+                                                    message.format(
+                                                            new Object[]{}, buffer, new FieldPosition(0))
+                                                            .toString());
+
+                                            buffer.setLength(0);
+                                            buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(2).getTexte(3).getDescription(), "{5}",
+                                                    JANumberFormatter.format(Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2, JANumberFormatter.NEAR)));
+                                            message = createMessageFormat(buffer);
+                                            buffer.setLength(0);
+                                            champs.put(
+                                                    "CHAMP_TEXT2",
+                                                    message.format(
+                                                            new Object[]{}, buffer, new FieldPosition(0))
+                                                            .toString());
+
+                                            textadded = true;
+                                        }
+                                        lignes.add(champs);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    //</editor-fold>
+                }
+            } else if (STATE_EMPLOYEURS == APDecisionCommunicationAMAT.STATE_EMPLOYEURS) {
 
                 final APRepartitionPaiementsManager repartitionPaiementsManager = new APRepartitionPaiementsManager();
                 repartitionPaiementsManager.setSession(getSession());
 
+                int nbPrest = 0;
+
+                // Création champs de données document employeurs pour tous les types sauf MATCIAB1
                 for (int idPrestation = 0; idPrestation < loadPrestations().size(); ++idPrestation) {
                     final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
                     final Map champs = new HashMap();
@@ -1595,98 +1833,240 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                     final StringBuffer buffer = new StringBuffer();
                     FWMessageFormat message = createMessageFormat(buffer);
 
-                    if (isGenreSameAsStateDecision(prestation)) {
+                    //<editor-fold defaultstate="collapsed" desc="ALLTYPE">
+                    if (!APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre())) {
+                        if (isGenreSameAsStateDecision(prestation)) {
 
-                        repartitionPaiementsManager.setForIdPrestation(prestation.getIdPrestationApg());
-                        repartitionPaiementsManager.find();
+                            nbPrest++;
 
-                        int count = 0;
+                            repartitionPaiementsManager.setForIdPrestation(prestation.getIdPrestationApg());
+                            repartitionPaiementsManager.find();
 
-                        for (int idRP = 0; idRP < repartitionPaiementsManager.size(); ++idRP) {
-                            final APRepartitionPaiements rp = (APRepartitionPaiements) repartitionPaiementsManager
-                                    .get(idRP);
+                            int count = 0;
 
-                            // reprendre la situation prof pour voir si
-                            // indépendant
-                            final APSituationProfessionnelle sitPro = new APSituationProfessionnelle();
-                            sitPro.setSession(getSession());
-                            sitPro.setIdSituationProf(rp.getIdSituationProfessionnelle());
-                            sitPro.retrieve();
+                            for (int idRP = 0; idRP < repartitionPaiementsManager.size(); ++idRP) {
+                                final APRepartitionPaiements rp = (APRepartitionPaiements) repartitionPaiementsManager
+                                        .get(idRP);
 
-                            if (sitPro.getIsIndependant().booleanValue()) {
-                                isIndependant = true;
-                            } else {
-                                isIndependant = false;
-                            }
+                                // reprendre la situation prof pour voir si
+                                // indépendant
+                                final APSituationProfessionnelle sitPro = new APSituationProfessionnelle();
+                                sitPro.setSession(getSession());
+                                sitPro.setIdSituationProf(rp.getIdSituationProfessionnelle());
+                                sitPro.retrieve();
 
-                            if (!JadeStringUtil.isIntegerEmpty(rp.getIdAffilie())
-                                    || !rp.getIdTiers().equals(getIdTiersAssure())) {
+                                if (sitPro.getIsIndependant().booleanValue()) {
+                                    isIndependant = true;
+                                } else {
+                                    isIndependant = false;
+                                }
 
-                                if (JadeStringUtil.isIntegerEmpty(rp.getIdParent())
-                                        && rp.getIdAffilie().equals(repartition.getIdAffilie())
-                                        && rp.getIdTiers().equals(repartition.getIdTiers())
-                                        && rp.getNom().equals(repartition.getNom())
-                                        && !JadeStringUtil.isIntegerEmpty(rp.getMontantBrut())) {
+                                if (!JadeStringUtil.isIntegerEmpty(rp.getIdAffilie())
+                                        || !rp.getIdTiers().equals(getIdTiersAssure())) {
 
-                                    count++;
+                                    if (JadeStringUtil.isIntegerEmpty(rp.getIdParent())
+                                            && rp.getIdAffilie().equals(repartition.getIdAffilie())
+                                            && rp.getIdTiers().equals(repartition.getIdTiers())
+                                            && rp.getNom().equals(repartition.getNom())
+                                            && !JadeStringUtil.isIntegerEmpty(rp.getMontantBrut())) {
 
-                                    buffer.setLength(0);
-                                    buffer.append(documentEmployeurs.getTextes(3).getTexte(6));
-                                    message = createMessageFormat(buffer);
-                                    buffer.setLength(0);
-                                    champs.put(
-                                            "CHAMP_DATE_DEBUT",
-                                            message.format(new Object[] { prestation.getDateDebut() }, buffer,
-                                                    new FieldPosition(0)).toString());
+                                        count++;
 
-                                    buffer.setLength(0);
-                                    buffer.append(documentEmployeurs.getTextes(3).getTexte(7));
-                                    message = createMessageFormat(buffer);
-                                    buffer.setLength(0);
-                                    champs.put(
-                                            "CHAMP_DATE_FIN",
-                                            message.format(new Object[] { prestation.getDateFin() }, buffer,
-                                                    new FieldPosition(0)).toString());
+                                        buffer.setLength(0);
+                                        buffer.append(documentEmployeurs.getTextes(3).getTexte(6));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_DATE_DEBUT",
+                                                message.format(new Object[]{prestation.getDateDebut()}, buffer,
+                                                        new FieldPosition(0)).toString());
 
-                                    buffer.setLength(0);
-                                    buffer.append(documentEmployeurs.getTextes(3).getTexte(8));
-                                    message = createMessageFormat(buffer);
-                                    buffer.setLength(0);
-                                    champs.put(
-                                            "CHAMP_NB_JOURS",
-                                            message.format(new Object[] { prestation.getNombreJoursSoldes() }, buffer,
-                                                    new FieldPosition(0)).toString());
+                                        buffer.setLength(0);
+                                        buffer.append(documentEmployeurs.getTextes(3).getTexte(7));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_DATE_FIN",
+                                                message.format(new Object[]{prestation.getDateFin()}, buffer,
+                                                        new FieldPosition(0)).toString());
 
-                                    buffer.setLength(0);
-                                    buffer.append(documentEmployeurs.getTextes(3).getTexte(9));
-                                    message = createMessageFormat(buffer);
-                                    buffer.setLength(0);
-                                    champs.put(
-                                            "CHAMP_MONTANT_JOURNALIER",
-                                            message.format(
-                                                    new Object[] { String.valueOf(JANumberFormatter.format(
-                                                            Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2,
-                                                            JANumberFormatter.NEAR)) }, buffer, new FieldPosition(0))
-                                                    .toString());
+                                        buffer.setLength(0);
+                                        buffer.append(documentEmployeurs.getTextes(3).getTexte(8));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_NB_JOURS",
+                                                message.format(new Object[]{prestation.getNombreJoursSoldes()}, buffer,
+                                                        new FieldPosition(0)).toString());
 
-                                    buffer.setLength(0);
-                                    buffer.append(documentEmployeurs.getTextes(3).getTexte(10));
-                                    message = createMessageFormat(buffer);
-                                    buffer.setLength(0);
-                                    champs.put(
-                                            "CHAMP_MONTANT_BRUT",
-                                            message.format(
-                                                    new Object[] { JANumberFormatter.formatNoRound(rp.getMontantBrut()) },
-                                                    buffer, new FieldPosition(0)).toString());
+                                        buffer.setLength(0);
+                                        buffer.append(documentEmployeurs.getTextes(3).getTexte(9));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_MONTANT_JOURNALIER",
+                                                message.format(
+                                                        new Object[]{String.valueOf(JANumberFormatter.format(
+                                                                Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2,
+                                                                JANumberFormatter.NEAR))}, buffer, new FieldPosition(0))
+                                                        .toString());
 
-                                    break;
+                                        buffer.setLength(0);
+                                        buffer.append(documentEmployeurs.getTextes(3).getTexte(10));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_MONTANT_BRUT",
+                                                message.format(
+                                                        new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
+                                                        buffer, new FieldPosition(0)).toString());
+
+                                        break;
+                                    }
                                 }
                             }
-                        }
-                        if (count > 0) {
-                            lignes.add(champs);
+                            if (count > 0) {
+                                lignes.add(champs);
+                            }
                         }
                     }
+                    //</editor-fold>
+                }
+
+                // Création champs de données document employeurs pour le type MATCIAB1
+                boolean textadded = false;
+                for (int idPrestation = 0; idPrestation < loadPrestations().size(); ++idPrestation) {
+                    final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
+                    final Map champs = new HashMap();
+                    final double nbJours = Double.parseDouble(prestation.getNombreJoursSoldes());
+
+                    final StringBuffer buffer = new StringBuffer();
+                    FWMessageFormat message = createMessageFormat(buffer);
+
+                    //<editor-fold defaultstate="collapsed" desc="MATCIAB1">
+                    if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre())) {
+                        if (isGenreSameAsStateDecision(prestation)) {
+
+                            nbPrest++;
+
+                            repartitionPaiementsManager.setForIdPrestation(prestation.getIdPrestationApg());
+                            repartitionPaiementsManager.find();
+
+                            int count = 0;
+
+                            for (int idRP = 0; idRP < repartitionPaiementsManager.size(); ++idRP) {
+                                final APRepartitionPaiements rp = (APRepartitionPaiements) repartitionPaiementsManager
+                                        .get(idRP);
+
+                                // reprendre la situation prof pour voir si
+                                // indépendant
+                                final APSituationProfessionnelle sitPro = new APSituationProfessionnelle();
+                                sitPro.setSession(getSession());
+                                sitPro.setIdSituationProf(rp.getIdSituationProfessionnelle());
+                                sitPro.retrieve();
+
+                                if (sitPro.getIsIndependant().booleanValue()) {
+                                    isIndependant = true;
+                                } else {
+                                    isIndependant = false;
+                                }
+
+                                if (!JadeStringUtil.isIntegerEmpty(rp.getIdAffilie())
+                                        || !rp.getIdTiers().equals(getIdTiersAssure())) {
+
+                                    if (JadeStringUtil.isIntegerEmpty(rp.getIdParent())
+                                            && rp.getIdAffilie().equals(repartition.getIdAffilie())
+                                            && rp.getIdTiers().equals(repartition.getIdTiers())
+                                            && rp.getNom().equals(repartition.getNom())
+                                            && !JadeStringUtil.isIntegerEmpty(rp.getMontantBrut())) {
+
+                                        count++;
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentEmployeurs.getTextes(3).getTexte(6));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_DATE_DEBUT2",
+                                                message.format(new Object[]{prestation.getDateDebut()}, buffer,
+                                                        new FieldPosition(0)).toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentEmployeurs.getTextes(3).getTexte(7));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_DATE_FIN2",
+                                                message.format(new Object[]{prestation.getDateFin()}, buffer,
+                                                        new FieldPosition(0)).toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentEmployeurs.getTextes(3).getTexte(8));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_NB_JOURS2",
+                                                message.format(new Object[]{prestation.getNombreJoursSoldes()}, buffer,
+                                                        new FieldPosition(0)).toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentEmployeurs.getTextes(3).getTexte(9));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_MONTANT_JOURNALIER2",
+                                                message.format(
+                                                        new Object[]{String.valueOf(JANumberFormatter.format(
+                                                                Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2,
+                                                                JANumberFormatter.NEAR))}, buffer, new FieldPosition(0))
+                                                        .toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentEmployeurs.getTextes(3).getTexte(10));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_MONTANT_BRUT2",
+                                                message.format(
+                                                        new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
+                                                        buffer, new FieldPosition(0)).toString());
+
+                                        if (!textadded) {
+                                            buffer.setLength(0);
+                                            buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(2).getTexte(3).getDescription(), "{5}",
+                                                    String.valueOf(revenuMoyenDeterminant)));
+                                            message = createMessageFormat(buffer);
+                                            buffer.setLength(0);
+                                            champs.put(
+                                                    "CHAMP_TEXT1",
+                                                    message.format(
+                                                            new Object[]{}, buffer, new FieldPosition(0))
+                                                            .toString());
+
+                                            buffer.setLength(0);
+                                            buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(2).getTexte(3).getDescription(), "{5}",
+                                                    JANumberFormatter.format(Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2, JANumberFormatter.NEAR)));
+                                            message = createMessageFormat(buffer);
+                                            buffer.setLength(0);
+                                            champs.put(
+                                                    "CHAMP_TEXT2",
+                                                    message.format(
+                                                            new Object[]{}, buffer, new FieldPosition(0))
+                                                            .toString());
+
+                                            textadded = true;
+                                        }
+
+                                        break;
+                                    }
+                                }
+                            }
+                            if (count > 0) {
+                                lignes.add(champs);
+                            }
+                        }
+                    }
+                    //</editor-fold>
                 }
             }
 
@@ -1736,6 +2116,16 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         // Genre de prestation LAMAT ET décision à l'état LAMAT
         isGoodStateAndGenre |= APTypeDePrestation.LAMAT.isCodeSystemEqual(prestation.getGenre())
                 && state_dec == APDecisionCommunicationAMAT.STATE_LAMAT;
+
+        // OU
+        // Genre de prestation MATCIAB1 ET décision à l'état STANDARD
+        isGoodStateAndGenre |= APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre())
+                && state_dec == APDecisionCommunicationAMAT.STATE_STANDARD;
+
+        // OU
+        // Genre de prestation MATCIAB2 ET décision à l'état ACM
+        isGoodStateAndGenre |= APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())
+                && state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2;
 
         return isGoodStateAndGenre;
     }
@@ -1836,7 +2226,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
                     if ((assureWrapper != null)
                             && !JadeStringUtil.isEmpty(assureWrapper
-                                    .getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL))) {
+                            .getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL))) {
                         // On écrase les properties nss... de l'employeur avec
                         // celle de l'assurée
                         docInfo = PRBlankBNumberFormater.fillNss((PRAbstractApplication) getSession().getApplication(),
@@ -1914,7 +2304,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
     private FWMessageFormat createMessageFormat(final StringBuffer pattern) {
         // doubler les apostrophes pour eviter que MessageFormat se trompe
-        for (int idChar = pattern.length(); --idChar >= 0;) {
+        for (int idChar = pattern.length(); --idChar >= 0; ) {
             if (pattern.charAt(idChar) == '\'') {
                 pattern.insert(idChar, '\'');
             }
@@ -1934,7 +2324,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
     /**
      * getter pour l'attribut cs type documentAssures.
-     * 
+     *
      * @return la valeur courante de l'attribut cs type documentAssures
      */
     public String getCsTypeDocument() {
@@ -1943,7 +2333,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
     /**
      * getter pour l'attribut date.
-     * 
+     *
      * @return la valeur courante de l'attribut date
      */
     public String getDate() {
@@ -1952,7 +2342,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
     /**
      * getter pour l'attribut id droit.
-     * 
+     *
      * @return la valeur courante de l'attribut id droit
      */
     public String getIdDroit() {
@@ -1969,7 +2359,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
     /**
      * Retourne si le document doit avoir une copie
-     * 
+     *
      * @return
      */
     public boolean isCreateDocumentCopie() {
@@ -1978,7 +2368,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
     /**
      * Permet de savoir si document de copie
-     * 
+     *
      * @return
      */
     public boolean isDocumentCopy() {
@@ -2007,8 +2397,8 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
     }
 
     /**
-	 *
-	 */
+     *
+     */
     private boolean isSituationProfessionnelleSpeciale() throws Exception {
 
         final APSituationProfessionnelle situationProfessionnelle = new APSituationProfessionnelle();
@@ -2029,7 +2419,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
     /**
      * READ_SHORT.
-     * 
+     *
      * @return READ_SHORT
      */
     @Override
@@ -2044,6 +2434,12 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         if (!prestations.isLoaded()) {
             prestations.setSession(getSession());
             prestations.setForIdDroit(getIdDroit());
+            // Permet de filter les MATCIAB2 des décisions pour les faire ressortir sur un document séparé
+            if (this.isMatciab2Decision) {
+                prestations.setForGenre(APTypeDePrestation.MATCIAB2.getCodesystemString());
+            } else {
+                prestations.setNotForGenre(APTypeDePrestation.MATCIAB2.getCodesystemString());
+            }
             prestations.setOrderBy(APPrestation.FIELDNAME_DATEDEBUT);
 
             try {
@@ -2087,10 +2483,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
     /**
      * DOCUMENT ME!
-     * 
+     *
      * @return DOCUMENT ME!
-     * @throws FWIException
-     *             DOCUMENT ME!
+     * @throws FWIException DOCUMENT ME!
      */
     @Override
     public boolean next() throws FWIException {
@@ -2100,6 +2495,16 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         switch (state_dec) {
 
             case STATE_STANDARD:
+                if (state != APDecisionCommunicationAMAT.STATE_FIN) {
+                    suite = true;
+                } else {
+                    state = APDecisionCommunicationAMAT.STATE_ASSURES;
+                    state_dec = APDecisionCommunicationAMAT.STATE_MATCIAB2;
+                    suite = true;
+                }
+                break;
+
+            case STATE_MATCIAB2:
                 if (state != APDecisionCommunicationAMAT.STATE_FIN) {
                     suite = true;
                 } else {
@@ -2145,7 +2550,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
     /**
      * Indique si création de document de copie
-     * 
+     *
      * @param newCreateDocumentCopie
      */
     public void setCreateDocumentCopie(final boolean newCreateDocumentCopie) {
@@ -2154,9 +2559,8 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
     /**
      * setter pour l'attribut cs type documentAssures.
-     * 
-     * @param csTypeDocument
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param csTypeDocument une nouvelle valeur pour cet attribut
      */
     public void setCsTypeDocument(final String csTypeDocument) {
         this.csTypeDocument = csTypeDocument;
@@ -2164,9 +2568,8 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
     /**
      * setter pour l'attribut date.
-     * 
-     * @param date
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param date une nouvelle valeur pour cet attribut
      */
     public void setDate(final String date) {
         this.date = date;
@@ -2174,7 +2577,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
     /**
      * Modification de l'attribut afin de déterminé s'il s'agit d'un document de copie
-     * 
+     *
      * @param newDocumentCopy
      */
     public void setDocumentCopy(final boolean newDocumentCopy) {
@@ -2183,9 +2586,8 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
     /**
      * setter pour l'attribut id droit.
-     * 
-     * @param idDroit
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param idDroit une nouvelle valeur pour cet attribut
      */
     public void setIdDroit(final String idDroit) {
         this.idDroit = idDroit;

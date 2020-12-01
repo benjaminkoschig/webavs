@@ -9,9 +9,8 @@ import java.util.Map;
 
 /**
  * Données provenant de la persistence avant conversion vers des données business
- * 
+ *
  * @author lga
- * 
  */
 public class ACM2PersistenceInputData {
     private String idDroit = "";
@@ -25,12 +24,10 @@ public class ACM2PersistenceInputData {
 
     /**
      * @param idDroit
-     * @param nombreJoursPrestationACM2
      */
-    public ACM2PersistenceInputData(String idDroit, int nombreJoursPrestationACM2) {
+    public ACM2PersistenceInputData(String idDroit) {
         super();
         this.idDroit = idDroit;
-        this.nombreJoursPrestationACM2 = nombreJoursPrestationACM2;
         mapRMD = new HashMap<String, FWCurrency>();
     }
 
@@ -59,12 +56,29 @@ public class ACM2PersistenceInputData {
         return nombreJoursPrestationACM2;
     }
 
+    public void setNombreJoursPrestationACM2(int nombreJoursPrestationACM2) {
+        this.nombreJoursPrestationACM2 = nombreJoursPrestationACM2;
+    }
+
     public void addRMDParEmployeur(String idSitPro, FWCurrency rmd) {
         mapRMD.put(idSitPro, rmd);
     }
 
     public FWCurrency getRevenuMoyenDeterminant(String idSitPro) {
         return mapRMD.get(idSitPro);
+    }
+
+    /**
+     * Remplace le revenu par le montant max s'il le dépasse
+     *
+     * @param montantMaxJournalier
+     */
+    public void setRevenuMoyenDeterminantParEmployeurAvecMontantMax(FWCurrency montantMaxJournalier) {
+        for (Map.Entry<String, FWCurrency> entry : mapRMD.entrySet()) {
+            if (entry.getValue().compareTo(montantMaxJournalier) > 0) {
+                entry.setValue(montantMaxJournalier);
+            }
+        }
     }
 
 }

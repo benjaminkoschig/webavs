@@ -30,6 +30,7 @@ public interface IPRConstantesExternes {
     public static final String DECOMPTE_MAT_ACM = "5007PAP";
     public static final String DECOMPTE_MAT_LAMAT = "5040PAP";
     public static final String DECOMPTE_MAT_NORMAL = "5006PAP";
+    public static final String DECOMPTE_MAT_MATCIAB2 = "5011PAP";
     public static final String DECOMPTE_APG_NORMAL_ACMNE = "5044PAP";
     public static final String DECOMPTE_PANDEMIE_NORMAL = "5045PAP";
     public static final String DECOMPTE_MAT_VENTILATION = "5041PAP";

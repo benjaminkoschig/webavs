@@ -1,6 +1,7 @@
 package globaz.apg.excel;
 
 import globaz.apg.application.APApplication;
+import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.pojo.*;
 import globaz.apg.process.APListePrestationCIABProcess;
 import globaz.caisse.report.helper.ACaisseReportHelper;
@@ -89,11 +90,64 @@ public class APListePrestationCIABExcel extends REAbstractListExcel {
 
     private void createRecapitulationPrestationCIABRows(PrestationCIABPojo aPrestationCIABPojo) {
 
+        String idAssuranceParitaireJU = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
+        String idAssurancePersonnelJU = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_JU_ID);
+
+        String idAssuranceParitaireBE = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_BE_ID);
+        String idAssurancePersonnelBE = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_BE_ID);
+
         // header
         createRow();
         this.createCell(getSession().getLabel(APListePrestationCIABProcess.LABEL_RECAPITULATION), styleLeftBold);
         this.createCell(getSession().getLabel(APListePrestationCIABProcess.LABEL_NOMBRE_CAS), styleLeftBold);
         this.createCell(getSession().getLabel(APListePrestationCIABProcess.LABEL_MONTANT_BRUT), styleLeftBold);
+
+        // MATCIAB
+        boolean hasMatciab = false;
+        String labelMatciab = getSession().getLabel(APListePrestationCIABProcess.LABEL_MATERNITE_CIAB);
+        String cleMatciabJuParitaire = String.valueOf(APTypeDePrestation.MATCIAB1.getCodesystem()) + idAssuranceParitaireJU;
+        if (aPrestationCIABPojo.getMapPrestationMatCIAB().get(cleMatciabJuParitaire) != null){
+            hasMatciab = true;
+            createRow();
+            this.createCell(labelMatciab + aPrestationCIABPojo.getMapPrestationMatCIAB().get(cleMatciabJuParitaire).getLibelleAssuranceCompl());
+            this.createCell(aPrestationCIABPojo.getMapPrestationMatCIAB().get(cleMatciabJuParitaire).getNbCas());
+            this.createCell(Double.valueOf(aPrestationCIABPojo.getMapPrestationMatCIAB().get(cleMatciabJuParitaire).getMontantBrut()).doubleValue(), styleMonetaire);
+        }
+        String cleMatciabJuPerso = String.valueOf(APTypeDePrestation.MATCIAB1.getCodesystem()) + idAssurancePersonnelJU;
+        if (aPrestationCIABPojo.getMapPrestationMatCIAB().get(cleMatciabJuPerso) != null){
+            hasMatciab = true;
+            createRow();
+            this.createCell(labelMatciab + aPrestationCIABPojo.getMapPrestationMatCIAB().get(cleMatciabJuPerso).getLibelleAssuranceCompl());
+            this.createCell(aPrestationCIABPojo.getMapPrestationMatCIAB().get(cleMatciabJuPerso).getNbCas());
+            this.createCell(Double.valueOf(aPrestationCIABPojo.getMapPrestationMatCIAB().get(cleMatciabJuPerso).getMontantBrut()).doubleValue(), styleMonetaire);
+        }
+        String cleMatciabbeParitaire = String.valueOf(APTypeDePrestation.MATCIAB1.getCodesystem()) + idAssuranceParitaireBE;
+        if (aPrestationCIABPojo.getMapPrestationMatCIAB().get(cleMatciabbeParitaire) != null){
+            hasMatciab = true;
+            createRow();
+            this.createCell(labelMatciab + aPrestationCIABPojo.getMapPrestationMatCIAB().get(cleMatciabbeParitaire).getLibelleAssuranceCompl());
+            this.createCell(aPrestationCIABPojo.getMapPrestationMatCIAB().get(cleMatciabbeParitaire).getNbCas());
+            this.createCell(Double.valueOf(aPrestationCIABPojo.getMapPrestationMatCIAB().get(cleMatciabbeParitaire).getMontantBrut()).doubleValue(), styleMonetaire);
+        }
+        String cleMatciabbePerso = String.valueOf(APTypeDePrestation.MATCIAB1.getCodesystem()) + idAssurancePersonnelBE;
+        if (aPrestationCIABPojo.getMapPrestationMatCIAB().get(cleMatciabbePerso) != null){
+            hasMatciab = true;
+            createRow();
+            this.createCell(labelMatciab + aPrestationCIABPojo.getMapPrestationMatCIAB().get(cleMatciabbePerso).getLibelleAssuranceCompl());
+            this.createCell(aPrestationCIABPojo.getMapPrestationMatCIAB().get(cleMatciabbePerso).getNbCas());
+            this.createCell(Double.valueOf(aPrestationCIABPojo.getMapPrestationMatCIAB().get(cleMatciabbePerso).getMontantBrut()).doubleValue(), styleMonetaire);
+        }
+        if(hasMatciab) {
+            createRow();
+            this.createCell(getSession().getLabel(APListePrestationCIABProcess.LABEL_MATERNITE_CIAB_TOTAL));
+            this.createCell(Integer.valueOf(aPrestationCIABPojo.getTotalNbCasMatciab()).intValue(), styleAlignRightBordureHaut);
+            this.createCell(Double.valueOf(aPrestationCIABPojo.getTotalMontantBrutMatciab()).doubleValue(), styleMonetaireBordureHaut);
+            createRow();
+        }
 
         if (aPrestationCIABPojo.getMapPrestationComplementaireAssuranceCIAB().get(JadePropertiesService.getInstance()
                 .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID)) != null){

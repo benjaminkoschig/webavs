@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="AP_DECISION_DETAIL"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Landscape"
+		 pageWidth="509"
+		 pageHeight="625"
+		 columnWidth="509"
+		 columnSpacing="0"
+		 leftMargin="0"
+		 rightMargin="0"
+		 topMargin="0"
+		 bottomMargin="0"
+		 whenNoDataType="AllSectionsNoDetail"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="2" />
+	<reportFont name="Arial_Normal" isDefault="true" fontName="SansSerif" size="7" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<reportFont name="Arial_Bold" isDefault="false" fontName="SansSerif" size="7" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<reportFont name="Arial_Italic" isDefault="false" fontName="SansSerif" size="7" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Oblique" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<reportFont name="Arial_Bold_Title" isDefault="false" fontName="SansSerif" size="14" isBold="true" isItalic="false" isUnderline="true" isStrikeThrough="false" pdfFontName="Helvetica-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<reportFont name="Arial_Bold_Sub" isDefault="false" fontName="SansSerif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<parameter name="P_DEFAULT_MODEL_PATH" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["..//defaultModel"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PARAM_ALLOCATION_DU" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="CHAMP_DATE_DEBUT" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="PARAM_AU" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="CHAMP_DATE_FIN" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="CHAMP_NB_JOURS" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="PARAM_JOURS_A" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="PARAM_CHF" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="CHAMP_MONTANT_JOURNALIER" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="CHAMP_MONTANT_BRUT" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="FIELD_REMARQUE_PRESTATION" isForPrompting="false" class="java.lang.String"/>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="29"  isSplitAllowed="false" >
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="19"
+						y="0"
+						width="70"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-1"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[$P{CHAMP_DATE_DEBUT}!= null]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_ALLOCATION_DU}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="89"
+						y="0"
+						width="60"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-2"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[$P{CHAMP_DATE_DEBUT}!= null]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{CHAMP_DATE_DEBUT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="149"
+						y="0"
+						width="40"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-3"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[$P{CHAMP_DATE_DEBUT}!=null]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_AU}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="189"
+						y="0"
+						width="60"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-4"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[$P{CHAMP_DATE_DEBUT}!=null]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{CHAMP_DATE_FIN}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="249"
+						y="0"
+						width="40"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-5"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[$P{CHAMP_DATE_DEBUT}!=null]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{CHAMP_NB_JOURS}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="289"
+						y="0"
+						width="50"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-6"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[$P{CHAMP_DATE_DEBUT}!=null]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_JOURS_A}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="339"
+						y="0"
+						width="30"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-7"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[$P{CHAMP_DATE_DEBUT}!=null]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_CHF}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="#,##0.00" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="369"
+						y="0"
+						width="45"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-8"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[$P{CHAMP_DATE_DEBUT}!=null]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{CHAMP_MONTANT_JOURNALIER}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="414"
+						y="0"
+						width="30"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-9"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[$P{CHAMP_DATE_DEBUT}!=null]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_CHF}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern=" #'##0.00 (example 1'234.56)" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="444"
+						y="0"
+						width="48"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-10"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[$P{CHAMP_DATE_DEBUT}!=null]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{CHAMP_MONTANT_BRUT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="46"
+						y="14"
+						width="446"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-11"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[$P{CHAMP_DATE_DEBUT}!=null]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{FIELD_REMARQUE_PRESTATION}]]></textFieldExpression>
+				</textField>
+				<ellipse>
+					<reportElement
+						mode="Opaque"
+						x="33"
+						y="14"
+						width="5"
+						height="7"
+						forecolor="#000000"
+						backcolor="#000000"
+						key="ellipse-1"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[new Boolean($P{FIELD_REMARQUE_PRESTATION}!=null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</ellipse>
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

@@ -8,6 +8,8 @@ public enum APTypeDePrestation implements Comparable<APTypeDePrestation> {
     LAMAT("LAMAT", 52015003, true, true),
     STANDARD("Standard", 52015001, true, true),
     COMPCIAB("COMPCIAB", 52015006, true, false),
+    MATCIAB1("MATCIAB1", 52015008, false, true),
+    MATCIAB2("MATCIAB2", 52015009, false, true),
     JOUR_ISOLE("ISOLES", 52015007, true, false),
     PANDEMIE("PANDEMIE", 52015012, true, false);
 
@@ -27,7 +29,7 @@ public enum APTypeDePrestation implements Comparable<APTypeDePrestation> {
     private String nomTypePrestation;
 
     private APTypeDePrestation(final String nomTypePrestation, final int codesystem, final boolean isPrestationAPG,
-            final boolean isPrestationMaternite) {
+                               final boolean isPrestationMaternite) {
         this.nomTypePrestation = nomTypePrestation;
         this.codesystem = codesystem;
         this.isPrestationAPG = isPrestationAPG;

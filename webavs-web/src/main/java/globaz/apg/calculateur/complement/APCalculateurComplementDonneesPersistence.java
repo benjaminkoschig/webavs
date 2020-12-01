@@ -45,6 +45,7 @@ public class APCalculateurComplementDonneesPersistence {
     
     public APCalculateurComplementDonneesPersistence(String idDroit) {
         this.idDroit = idDroit;
+        mapRMD = new HashMap<String, FWCurrency>();
     }
     
     public APCalculateurComplementDonneesPersistence(String dateDebut, String dateFin, int nombreDeJoursSoldes,
@@ -206,6 +207,19 @@ public class APCalculateurComplementDonneesPersistence {
 
     public void setMapTypeAffiliation(Map<String, String> mapTypeAffiliation) {
         this.mapTypeAffiliation = mapTypeAffiliation;
+    }
+
+    /**
+     * Remplace le revenu par le montant max s'il le dépasse
+     *
+     * @param montantMaxJournalier
+     */
+    public void setRevenuMoyenDeterminantParEmployeurAvecMontantMax(FWCurrency montantMaxJournalier) {
+        for (Map.Entry<String, FWCurrency> entry : mapRMD.entrySet()) {
+            if (entry.getValue().compareTo(montantMaxJournalier) > 0) {
+                entry.setValue(montantMaxJournalier);
+            }
+        }
     }
 
 

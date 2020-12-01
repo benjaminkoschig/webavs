@@ -564,6 +564,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             } else {
                 switch (decompteCourant.getTypeDeDecompte()) {
 
+                    case MATCIAB2:
                     case NORMAL:
                         type_decompte = document.getTextes(5).getTexte(6).getDescription();
                         break;
@@ -1239,6 +1240,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     champs.put(APAbstractDecomptesGenerationProcess.PARAMETER_PRESTATION_COMPLEMENTAIRE, APPrestationLibelleCodeSystem.getLibelleJourIsole(getSession(),
                             repartition.getGenreService(), getCodeIsoLangue()));
                 } else if (APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
+                    champs.put(APAbstractDecomptesGenerationProcess.PARAMETER_PRESTATION_COMPLEMENTAIRE, APPrestationLibelleCodeSystem.getLibelleComplement(getSession(),
+                            getCodeIsoLangue()));
+                } else if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
                     champs.put(APAbstractDecomptesGenerationProcess.PARAMETER_PRESTATION_COMPLEMENTAIRE, APPrestationLibelleCodeSystem.getLibelleComplement(getSession(),
                             getCodeIsoLangue()));
                 }
@@ -1936,6 +1940,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     } else {
                         switch (decompteCourant.getTypeDeDecompte()) {
 
+                            case MATCIAB2:
+                                docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_MAT_MATCIAB2);
+                                break;
                             case NORMAL:
                                 docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_MAT_NORMAL);
                                 break;

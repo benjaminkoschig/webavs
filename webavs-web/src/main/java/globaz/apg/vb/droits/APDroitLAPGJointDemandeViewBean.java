@@ -285,6 +285,20 @@ public class APDroitLAPGJointDemandeViewBean extends APDroitLAPGJointDemande imp
         }
     }
 
+    /**
+     * Retourne true si le droit possède au moins une prestation du genre passé en paramètre
+     *
+     * @param genre
+     * @return boolean
+     */
+    public boolean hasPrestationOfGenre(int genre) throws Exception {
+        if ((droit == null) || !droit.getIdDroit().equals(super.getIdDroit())) {
+            droit = APGUtils.loadDroit(getSession(), super.getIdDroit(), super.getGenreService());
+        }
+
+        return droit.hasPrestationOfGenre(getSession().getCurrentThreadTransaction(), genre);
+    }
+
     public APDroitLAPG loadDroit() throws Exception {
         if ((droit == null) || !droit.getIdDroit().equals(super.getIdDroit())) {
             droit = APGUtils.loadDroit(getSession(), super.getIdDroit(), super.getGenreService());
@@ -296,7 +310,6 @@ public class APDroitLAPGJointDemandeViewBean extends APDroitLAPGJointDemande imp
     /**
      * Recherche si tous les enfants liés au droit ont ete adopte et retourne true dans ce cas.
      * 
-     * @param droit
      * @return
      */
     public boolean retrieveIsDroitAdoption() {

@@ -946,6 +946,40 @@ public class APModuleRepartitionPaiements {
     }
 
     /**
+     * Les cotisations AVS & AC sont toujours calculée pour les montants ACM.
+     *
+     * @param session
+     * @param prestation
+     * @param repa
+     *
+     * @throws Exception
+     */
+    public void genererCotisationsMATCIAB2(BSession session, APPrestationCalculee prestation, APRepartitionPaiements repa, boolean isIndependant)
+            throws Exception {
+        if (!isIndependant) {
+            // le beneficiaire est un employeur
+            ajouterLignesCotisations(session, prestation, repa, PRAffiliationHelper.GENRE_AVS_AI.getIdAssurance(
+                    APApplication.DEFAULT_APPLICATION_APG, PRAffiliationHelper.TYPE_PARITAIRE),
+                    APModuleRepartitionPaiements.ADDITION);
+
+            // le beneficiaire est un employeur
+            ajouterLignesCotisations(session, prestation, repa, PRAffiliationHelper.GENRE_AC.getIdAssurance(
+                    APApplication.DEFAULT_APPLICATION_APG, PRAffiliationHelper.TYPE_PARITAIRE),
+                    APModuleRepartitionPaiements.ADDITION);
+        } else {
+            // le bénéficiaire est un assuré
+            ajouterLignesCotisations(session, prestation, repa, PRAffiliationHelper.GENRE_AVS_AI.getIdAssurance(
+                    APApplication.DEFAULT_APPLICATION_APG, PRAffiliationHelper.TYPE_PERSONNEL),
+                    APModuleRepartitionPaiements.SOUSTRACTION);
+
+            // le beneficiaire est un assuré
+            ajouterLignesCotisations(session, prestation, repa, PRAffiliationHelper.GENRE_AC.getIdAssurance(
+                    APApplication.DEFAULT_APPLICATION_APG, PRAffiliationHelper.TYPE_PERSONNEL),
+                    APModuleRepartitionPaiements.SOUSTRACTION);
+        }
+    }
+
+    /**
      * Generation des cotisations lors d'un paiement a l'assure
      * 
      * @param session
@@ -2037,7 +2071,7 @@ public class APModuleRepartitionPaiements {
      *            DOCUMENT ME!
      * @param lastPrestation
      *            DOCUMENT ME!
-     * @param prestationACM
+     * @param prestationLAMat
      *            DOCUMENT ME!
      * 
      * @throws Exception
@@ -2555,7 +2589,7 @@ public class APModuleRepartitionPaiements {
     /**
      * @param session
      * @param transaction
-     * @param string
+     * @param idDroit
      * @param keyIdEmployeur
      * @return
      */

@@ -197,6 +197,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         public static final String TYPE_LAMAT = "LAMAT";
         public static final String TYPE_COMPCIAB = "COMPCIAB";
         public static final String TYPE_PANDEMIE = "PANDEMIE";
+        public static final String TYPE_MATCIAB = "MATCIAB";
 
         private final FWCurrency montantACM = new FWCurrency(0);
         private final FWCurrency montantACMNE = new FWCurrency(0);
@@ -205,6 +206,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         private final FWCurrency montantLAMAT = new FWCurrency(0);
         private final FWCurrency montantCOMPCIAB = new FWCurrency(0);
         private final FWCurrency montantPANDEMIE = new FWCurrency(0);
+        private final FWCurrency montantMATCIAB = new FWCurrency(0);
 
         public void add(final Montants montant) {
             montantACMNE.add(montant.montantACMNE);
@@ -214,6 +216,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             montantAPG.add(montant.montantAPG);
             montantCOMPCIAB.add(montant.montantCOMPCIAB);
             montantPANDEMIE.add(montant.montantPANDEMIE);
+            montantMATCIAB.add(montant.montantMATCIAB);
         }
 
         /**
@@ -235,6 +238,8 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 montantCOMPCIAB.add(montant);
             } else if (Montants.TYPE_PANDEMIE.equals(type)) {
                 montantPANDEMIE.add(montant);
+            } else if (Montants.TYPE_MATCIAB.equals(type)) {
+                montantMATCIAB.add(montant);
             }
         }
 
@@ -262,6 +267,8 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 return new FWCurrency(montantCOMPCIAB.toString());
             } else if (Montants.TYPE_PANDEMIE.equals(type)) {
                 return new FWCurrency(montantPANDEMIE.toString());
+            } else if (Montants.TYPE_MATCIAB.equals(type)) {
+                return new FWCurrency(montantMATCIAB.toString());
             } else {
                 return null;
             }
@@ -297,12 +304,15 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             if (expression.indexOf(Montants.TYPE_PANDEMIE) != -1) {
                 result.add(montantPANDEMIE);
             }
+            if (expression.indexOf(Montants.TYPE_MATCIAB) != -1) {
+                result.add(montantMATCIAB);
+            }
             return result;
         }
 
         public boolean isZero() {
             return montantACM.isZero() && montantACMNE.isZero() && montantAMAT.isZero() && montantAPG.isZero()
-                    && montantLAMAT.isZero() && montantCOMPCIAB.isZero() && montantPANDEMIE.isZero();
+                    && montantLAMAT.isZero() && montantCOMPCIAB.isZero() && montantPANDEMIE.isZero() && montantMATCIAB.isZero();
         }
 
         public void sub(final Montants montant) {
@@ -313,6 +323,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             montantAPG.sub(montant.montantAPG);
             montantCOMPCIAB.sub(montant.montantCOMPCIAB);
             montantPANDEMIE.sub(montant.montantPANDEMIE);
+            montantMATCIAB.sub(montant.montantMATCIAB);
         }
 
     }
@@ -788,6 +799,9 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             return Montants.TYPE_COMPCIAB;
         } else if (APTypeDePrestation.PANDEMIE.isCodeSystemEqual(genrePrestation)) {
             return Montants.TYPE_PANDEMIE;
+        } else if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(genrePrestation)
+                || APTypeDePrestation.MATCIAB2.isCodeSystemEqual(genrePrestation)) {
+            return Montants.TYPE_MATCIAB;
         } else {
             return Montants.TYPE_APG;
         }
@@ -1015,6 +1029,41 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 }
             }
 
+            //
+            // Compensation des prestations de genre Complément (MATCIAB) :
+            //
+            // /////////////////////////////////////////////////////////////////////////
+
+            propRubrique = getSession().getApplication().getProperty(
+                    APGenererEcrituresComptablesProcess.PROP_RUBRIQUE_COMPENSATION);
+
+            if (!ci.montantTotPrestations.montantMATCIAB.isZero() && !ci.montantTotRestitutions.montantMATCIAB.isZero()) {
+
+                ci.montantTotRestitutions.montantMATCIAB.abs();
+                ci.montantTotPrestations.montantMATCIAB.abs();
+
+                FWCurrency plusPetitDesMontantAbs = null;
+                // prendre le plus petit des montant en val. abs
+                if (ci.montantTotPrestations.montantMATCIAB.compareTo(ci.montantTotRestitutions.montantMATCIAB) < 0) {
+                    plusPetitDesMontantAbs = ci.montantTotPrestations.montantMATCIAB;
+                } else {
+                    plusPetitDesMontantAbs = ci.montantTotRestitutions.montantMATCIAB;
+                }
+
+                final FWCurrency montantInverse = new FWCurrency(plusPetitDesMontantAbs.toString());
+                montantInverse.negate();
+
+                getMemoryLog().logMessage("Compensations internes à la CA >>>>>>>>", FWMessage.INFORMATION,
+                        getSession().getLabel("ECR_COM_GENERER_ECRITURES_COMPTABLES_PROCESS"));
+
+                if ("RUBRIQUE_DE_LISSAGE".equals(propRubrique)) {
+                    doEcriture(compta, plusPetitDesMontantAbs.toString(), COMPENSATION, ci.idCompteAnnexe,
+                            ci.idSectionRestitution, null);
+
+                    doEcriture(compta, montantInverse.toString(), COMPENSATION, ci.idCompteAnnexe, ci.idSectionNormale,
+                            null);
+                }
+            }
 
             //
             // Compensation des prestations de genre Standard (APG) :
@@ -1296,7 +1345,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             final Montants montants = (Montants) cotisations.get(annee);
             result.add(montants);
             final FWCurrency montant = montants.getMontantCumule(Montants.TYPE_ACM + "_" + Montants.TYPE_APG + "_"
-                    + Montants.TYPE_ACM_NE + "_" + Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_PANDEMIE);
+                    + Montants.TYPE_ACM_NE + "_" + Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_PANDEMIE + "_" + Montants.TYPE_MATCIAB);
             doEcriture(compta, montant.toString(), rubrique, idCompteAnnexe, idSection, annee);
         }
         return result;
@@ -1526,7 +1575,9 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             for (Object repar : repartitions) {
                 Repartition repartition1 = (Repartition) repar;
                 if (APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition1.genrePrestation) ||
-                        APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(repartition1.genrePrestation)) {
+                        APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(repartition1.genrePrestation) ||
+                        APTypeDePrestation.MATCIAB1.isCodeSystemEqual(repartition1.genrePrestation) || // TODO SCO
+                        APTypeDePrestation.MATCIAB2.isCodeSystemEqual(repartition1.genrePrestation)) {
                     typeComplement = getTypeComplementFromAssurance(getSession(), key.idAffilie, repartition1.idDroit, repartition1.isIndependant);
                     break;
                 }
@@ -1543,6 +1594,9 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                     .isCodeSystemEqual(repartition.genrePrestation);
             final boolean isGenrePrestationJoursIsoles = APTypeDePrestation.JOUR_ISOLE
                     .isCodeSystemEqual(repartition.genrePrestation);
+            final boolean isGenrePrestationMatCIAB = APTypeDePrestation.MATCIAB1
+                    .isCodeSystemEqual(repartition.genrePrestation)
+                    || APTypeDePrestation.MATCIAB2.isCodeSystemEqual(repartition.genrePrestation);
 
             final GenreDestinataire destinataire = GenreDestinataire.getDestinataire(repartition.isEmployeur,
                     repartition.isIndependant);
@@ -1641,7 +1695,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                             throw new Exception("Not implemented");
                         }
                     }
-                } else if (isGenrePrestationCompCIAB || isGenrePrestationJoursIsoles) {
+                } else if (isGenrePrestationCompCIAB || isGenrePrestationJoursIsoles || isGenrePrestationMatCIAB) {
                     final Montants mnt = new Montants();
                     mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAC);
                     if (GenreDestinataire.INDEPENDANT.equals(destinataire) && !isRestitution) {
@@ -1721,7 +1775,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                             throw new Exception("Not implemented");
                         }
                     }
-                } else if (isGenrePrestationCompCIAB || isGenrePrestationJoursIsoles) {
+                } else if (isGenrePrestationCompCIAB || isGenrePrestationJoursIsoles || isGenrePrestationMatCIAB) {
                     final Montants mnt = new Montants();
                     mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAVS);
                     if (GenreDestinataire.INDEPENDANT.equals(destinataire) && !isRestitution) {
@@ -1865,8 +1919,10 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
                 if (typeLot.equals(IPRDemande.CS_TYPE_MATERNITE)) {
 
+                    //ESVE MATERNITE COMPTABILITE
                     if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(ventilation.genrePrestation)
-                            || APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(ventilation.genrePrestation)) {
+                            || APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(ventilation.genrePrestation)
+                    ) {
 
                         doOrdreVersement(
                                 compta,
@@ -1883,7 +1939,9 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                                 ventilation.montant, ventilation.idAdressePaiement, getSession().getApplication()
                                         .getProperty(APGenererEcrituresComptablesProcess.PROP_NATURE_VERSEMENT_LAMAT),
                                 nomPrenom, ventilation.referenceInterne);
-                    } else if (APTypeDePrestation.STANDARD.isCodeSystemEqual(ventilation.genrePrestation)) {
+                    } else if (APTypeDePrestation.STANDARD.isCodeSystemEqual(ventilation.genrePrestation)
+                            || APTypeDePrestation.MATCIAB1.isCodeSystemEqual(ventilation.genrePrestation)
+                            || APTypeDePrestation.MATCIAB2.isCodeSystemEqual(ventilation.genrePrestation)) {
                         doOrdreVersement(compta, compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(),
                                 ventilation.montant, ventilation.idAdressePaiement, getSession().getApplication()
                                         .getProperty(APGenererEcrituresComptablesProcess.PROP_NATURE_VERSEMENT_AMAT),
@@ -1938,7 +1996,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             final Montants montants = (Montants) (mapEcrituresRubriquesConcernees.get(keyRegroupementRubriqueConcernee));
             montantTotalStandard.add(montants);
             final FWCurrency montant = montants.getMontantCumule(Montants.TYPE_ACM + "_" + Montants.TYPE_APG + "_"
-                    + Montants.TYPE_ACM_NE + "_" + Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_PANDEMIE);
+                    + Montants.TYPE_ACM_NE + "_" + Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_PANDEMIE + "_" + Montants.TYPE_MATCIAB);
             doEcriture(compta, montant.toString(), keyRegroupementRubriqueConcernee.rubrique,
                     compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(), null);
         }
@@ -1968,7 +2026,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
             montantTotalRestitution.add(montants);
             final FWCurrency montant = montants.getMontantCumule(Montants.TYPE_ACM + "_" + Montants.TYPE_APG + "_"
-                    + Montants.TYPE_ACM_NE + "_" + Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_PANDEMIE);
+                    + Montants.TYPE_ACM_NE + "_" + Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_PANDEMIE + "_" + Montants.TYPE_MATCIAB);
 
             doEcriture(compta, montant.toString(), keyRegroupementRubriqueConcernee.rubrique,
                     compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
@@ -2115,6 +2173,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
                 mntIS.add(Montants.TYPE_COMPCIAB, montantIndependant);
             }
+
             montantAssure = totalISAssure.getMontant(Montants.TYPE_PANDEMIE);
             montantIndependant = totalISIndependant.getMontant(Montants.TYPE_PANDEMIE);
             if ((montantAssure != null) && !montantAssure.isZero()) {
@@ -2135,17 +2194,17 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         montantTotalStandard.add(mntIS);
 
         montantTotalStandard.add(totalFondDeCompensationAssure);
-        doEcriture(compta, totalFondDeCompensationAssure.getMontantCumule(Montants.TYPE_ACM + "_" + Montants.TYPE_APG + "_" + Montants.TYPE_PANDEMIE)
+        doEcriture(compta, totalFondDeCompensationAssure.getMontantCumule(Montants.TYPE_ACM + "_" + Montants.TYPE_APG + "_" + Montants.TYPE_PANDEMIE + "_" + Montants.TYPE_MATCIAB)
                         .toString(), FONDS_DE_COMPENSATION_ASSURE, compteAnnexeAPG.getIdCompteAnnexe(),
                 sectionNormale.getIdSection(), null);
         montantTotalStandard.add(totalFondDeCompensationEmployeur);
         doEcriture(compta,
-                totalFondDeCompensationEmployeur.getMontantCumule(Montants.TYPE_ACM + "_" + Montants.TYPE_APG + "_" + Montants.TYPE_PANDEMIE)
+                totalFondDeCompensationEmployeur.getMontantCumule(Montants.TYPE_ACM + "_" + Montants.TYPE_APG + "_" + Montants.TYPE_PANDEMIE + "_" + Montants.TYPE_MATCIAB)
                         .toString(), FONDS_DE_COMPENSATION_EMPLOYEUR, compteAnnexeAPG.getIdCompteAnnexe(),
                 sectionNormale.getIdSection(), null);
         montantTotalStandard.add(totalFondDeCompensationIndependant);
         doEcriture(compta,
-                totalFondDeCompensationIndependant.getMontantCumule(Montants.TYPE_ACM + "_" + Montants.TYPE_APG + "_" + Montants.TYPE_PANDEMIE)
+                totalFondDeCompensationIndependant.getMontantCumule(Montants.TYPE_ACM + "_" + Montants.TYPE_APG + "_" + Montants.TYPE_PANDEMIE + "_" + Montants.TYPE_MATCIAB)
                         .toString(), FONDS_DE_COMPENSATION_INDEPENDANT, compteAnnexeAPG.getIdCompteAnnexe(),
                 sectionNormale.getIdSection(), null);
 
@@ -2170,7 +2229,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
             montantTotalStandard.add(totalFondDeCompensationComplementEmployeur);
             doEcriture(compta,
-                    totalFondDeCompensationComplementEmployeur.getMontantCumule(Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_APG)
+                    totalFondDeCompensationComplementEmployeur.getMontantCumule(Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_APG + "_" + Montants.TYPE_MATCIAB)
                             .toString(), rubrique, compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(), null);
 
         }
@@ -2181,7 +2240,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
             montantTotalStandard.add(totalFondDeCompensationComplementIndependant);
             doEcriture(compta,
-                    totalFondDeCompensationComplementIndependant.getMontantCumule(Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_APG)
+                    totalFondDeCompensationComplementIndependant.getMontantCumule(Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_APG + "_" + Montants.TYPE_MATCIAB)
                             .toString(), rubrique, compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(), null);
 
         }
@@ -2362,19 +2421,19 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             doEcriture(
                     compta,
                     totalFondDeCompensationRestitutionAssure.getMontantCumule(
-                            Montants.TYPE_ACM + "_" + Montants.TYPE_APG + "_" + Montants.TYPE_PANDEMIE).toString(), FONDS_DE_COMPENSATION_ASSURE,
+                            Montants.TYPE_ACM + "_" + Montants.TYPE_APG + "_" + Montants.TYPE_PANDEMIE + "_" + Montants.TYPE_MATCIAB).toString(), FONDS_DE_COMPENSATION_ASSURE,
                     compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
             montantTotalRestitution.add(totalFondDeCompensationRestitutionEmployeur);
             doEcriture(
                     compta,
                     totalFondDeCompensationRestitutionEmployeur.getMontantCumule(
-                            Montants.TYPE_ACM + "_" + Montants.TYPE_APG + "_" + Montants.TYPE_PANDEMIE).toString(), FONDS_DE_COMPENSATION_EMPLOYEUR,
+                            Montants.TYPE_ACM + "_" + Montants.TYPE_APG + "_" + Montants.TYPE_PANDEMIE + "_" + Montants.TYPE_MATCIAB).toString(), FONDS_DE_COMPENSATION_EMPLOYEUR,
                     compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
             montantTotalRestitution.add(totalFondDeCompensationRestitutionIndependant);
             doEcriture(
                     compta,
                     totalFondDeCompensationRestitutionIndependant.getMontantCumule(
-                            Montants.TYPE_ACM + "_" + Montants.TYPE_APG + "_" + Montants.TYPE_PANDEMIE).toString(), FONDS_DE_COMPENSATION_INDEPENDANT,
+                            Montants.TYPE_ACM + "_" + Montants.TYPE_APG + "_" + Montants.TYPE_PANDEMIE + "_" + Montants.TYPE_MATCIAB).toString(), FONDS_DE_COMPENSATION_INDEPENDANT,
                     compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
 
             montantTotalRestitution.add(totalFondDeCompensationRestitutionACM);
@@ -2401,7 +2460,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
                 montantTotalRestitution.add(totalFondDeCompensationComplementRestitutionEmployeur);
                 doEcriture(compta,
-                        totalFondDeCompensationComplementRestitutionEmployeur.getMontantCumule(Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_APG + "_" + Montants.TYPE_PANDEMIE)
+                        totalFondDeCompensationComplementRestitutionEmployeur.getMontantCumule(Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_APG + "_" + Montants.TYPE_PANDEMIE + "_" + Montants.TYPE_MATCIAB)
                                 .toString(), rubrique, compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
             }
 
@@ -2411,7 +2470,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
                 montantTotalRestitution.add(totalFondDeCompensationComplementRestitutionIndependant);
                 doEcriture(compta,
-                        totalFondDeCompensationComplementRestitutionIndependant.getMontantCumule(Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_APG + "_" + Montants.TYPE_PANDEMIE)
+                        totalFondDeCompensationComplementRestitutionIndependant.getMontantCumule(Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_APG + "_" + Montants.TYPE_PANDEMIE + "_" + Montants.TYPE_MATCIAB)
                                 .toString(), rubrique, compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
 
             }
@@ -2758,6 +2817,11 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             montants.add(Montants.TYPE_COMPCIAB, montant);
         }
 
+        if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(genrePrestation)
+        || APTypeDePrestation.MATCIAB2.isCodeSystemEqual(genrePrestation)) {
+            montants.add(Montants.TYPE_MATCIAB, montant);
+        }
+
         if (APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(genrePrestation)) {
             montants.add(Montants.TYPE_COMPCIAB, montant);
         }
@@ -2985,7 +3049,9 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
             TypeComplement typeComplement = null;
             if (APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition.genrePrestation) ||
-                    APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(repartition.genrePrestation)) {
+                    APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(repartition.genrePrestation) ||
+                    APTypeDePrestation.MATCIAB1.isCodeSystemEqual(repartition.genrePrestation) ||
+                    APTypeDePrestation.MATCIAB2.isCodeSystemEqual(repartition.genrePrestation)) {
                 typeComplement = getTypeComplementFromAssurance(getSession(), idAffilie, prestation.getIdDroit(), isIndependant);
             }
 
@@ -3205,6 +3271,20 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                     rubrique = mapComplementBean.get(typeComplement.getCanton().getValue()).getRubriquePersonnelMontantBrut();
                 }
             }
+        }  else if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(genrePrestation) ||APTypeDePrestation.MATCIAB2.isCodeSystemEqual(genrePrestation)) { // Complément
+                if (isRestitution) { // TODO SCO
+                    if ("PARITAIRE".equals(typeComplement.genre)) {
+                        rubrique = mapComplementBean.get(typeComplement.getCanton().getValue()).getRubriqueParitaireRestitution();
+                    } else if ("PERSONNEL".equals(typeComplement.genre)) {
+                        rubrique = mapComplementBean.get(typeComplement.getCanton().getValue()).getRubriquePersonnelRestitution();
+                    }
+                } else {
+                    if ("PARITAIRE".equals(typeComplement.genre)) {
+                        rubrique = mapComplementBean.get(typeComplement.getCanton().getValue()).getRubriqueParitaireMontantBrut();
+                    } else if ("PERSONNEL".equals(typeComplement.genre)) {
+                        rubrique = mapComplementBean.get(typeComplement.getCanton().getValue()).getRubriquePersonnelMontantBrut();
+                    }
+                }
         } else if (APTypeDePrestation.PANDEMIE.isCodeSystemEqual(genrePrestation)) {
             rubrique = getRubriquePandemie(isIndependant, isRestitution, genreSerivce, isManifestationAnnulee, rubrique);
         } else if (isRestitution) {
@@ -3574,6 +3654,48 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                     .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_ACM_MONTANT_BRUT);
             ACM_RESTITUTION = referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_ACM_RESTITUTION);
+
+            final ComplementBean matciabJUBean = new ComplementBean();
+            matciabJUBean.setRubriqueParitaireParticipationCotisation(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATCIAB_JU_PARITAIRE_PARTICIPATION));
+            matciabJUBean.setRubriqueParitaireMontantBrut(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATCIAB_JU_PARITAIRE_MONTANT_BRUT));
+            matciabJUBean.setRubriqueParitaireRestitution(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATCIAB_JU_PARITAIRE_MONTANT_RESTITUTION));
+            matciabJUBean.setRubriquePersonnelParticipationCotisation(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATCIAB_JU_PERSONNEL_PARTICIPATION));
+            matciabJUBean.setRubriquePersonnelMontantBrut(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATCIAB_JU_PERSONNEL_MONTANT_BRUT));
+            matciabJUBean.setRubriquePersonnelRestitution(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATCIAB_JU_PERSONNEL_MONTANT_RESTITUTION));
+            matciabJUBean.setRubriquePersonnelCotisationAC(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATCIAB_JU_PERSONNEL_COTISATIONS_AC));
+            matciabJUBean.setRubriquePersonnelCotisationAVS(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATCIAB_JU_PERSONNEL_COTISATIONS_AVS));
+
+            mapComplementBean.put(ECanton.JU.getValue(), matciabJUBean);
+
+            final ComplementBean matciabBEBean = new ComplementBean();
+            matciabBEBean.setRubriqueParitaireParticipationCotisation(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATCIAB_BE_PARITAIRE_PARTICIPATION));
+            matciabBEBean.setRubriqueParitaireMontantBrut(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATCIAB_BE_PARITAIRE_MONTANT_BRUT));
+            matciabBEBean.setRubriqueParitaireRestitution(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATCIAB_BE_PARITAIRE_MONTANT_RESTITUTION));
+            matciabBEBean.setRubriquePersonnelParticipationCotisation(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATCIAB_BE_PERSONNEL_PARTICIPATION));
+            matciabBEBean.setRubriquePersonnelMontantBrut(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATCIAB_BE_PERSONNEL_MONTANT_BRUT));
+            matciabBEBean.setRubriquePersonnelRestitution(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATCIAB_BE_PERSONNEL_MONTANT_RESTITUTION));
+            matciabBEBean.setRubriquePersonnelCotisationAC(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATCIAB_BE_PERSONNEL_COTISATIONS_AC));
+            matciabBEBean.setRubriquePersonnelCotisationAVS(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATCIAB_BE_PERSONNEL_COTISATIONS_AVS));
+
+            mapComplementBean.put(ECanton.BE.getValue(), matciabBEBean);
+
+
         } else if (typeLot.equals(IPRDemande.CS_TYPE_PANDEMIE)) {
             INDEMN_GARDE_ENFANT_SALARIE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_INDEMN_GARDE_ENFANTS_POUR_SALARIE);
             INDEMN_GARDE_ENFANT_INDEPENDANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_INDEMN_GARDE_ENFANTS_POUR_INDEPENDANT);
@@ -3785,7 +3907,6 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                     .getRubriqueByCodeReference(APIReferenceRubrique.APG_COMPCIAB_BE_PERSONNEL_IMPOT_SOURCE));
 
             mapComplementBean.put(ECanton.BE.getValue(), complementBEBean);
-
         }
     }
 

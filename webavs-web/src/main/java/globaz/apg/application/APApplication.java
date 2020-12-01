@@ -166,6 +166,9 @@ public class APApplication extends PRAbstractApplication {
     /** Service de la ged a utiliser */
     public static final String PROPERTY_IS_FERCIAB = "apg.isFERCIAB";
 
+
+    /** Propriété d'activation MATCIAB1 et MATCIAB2 */
+    public static final String PROPERTY_APG_FERCIAB_MATERNITE = "apg.FERCIAB.maternite";
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
 
@@ -290,6 +293,8 @@ public class APApplication extends PRAbstractApplication {
                 IAPActions.ACTION_PRESTATIONS + "." + IAPActions.ACTION_CONTROLE_PRESTATION_CALCULEES,
                 FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(IAPActions.ACTION_PRESTATIONS + ".actionCalculerToutesLesPrestations",
+                FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom(IAPActions.ACTION_PRESTATIONS + ".actionCalculerToutesLesPrestationsMATCIAB2",
                 FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(IAPActions.ACTION_PRESTATIONS + ".actionImporterPrestationsDepuisACOR",
                 FWSecureConstants.UPDATE);

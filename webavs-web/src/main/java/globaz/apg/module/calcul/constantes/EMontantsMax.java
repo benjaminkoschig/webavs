@@ -1,11 +1,13 @@
 package globaz.apg.module.calcul.constantes;
 
 public enum EMontantsMax {
-    
+
     COMCIABJUR("COMCIABJUR"),
     COMCIABBER("COMCIABBER"),
     COMCIABJUA("COMCIABJUA"),
-    COMCIABBEA("COMCIABBEA");
+    COMCIABBEA("COMCIABBEA"),
+    MATCIABJUM("MATCIABJUM"),
+    MATCIABBEM("MATCIABBEM");
     
     private String value;
 

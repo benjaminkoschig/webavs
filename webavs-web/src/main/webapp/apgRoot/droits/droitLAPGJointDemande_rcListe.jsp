@@ -11,6 +11,8 @@
 <%@ page import="java.util.Objects" %>
 <%@ page import="java.util.Arrays" %>
 <%@ page import="globaz.apg.utils.APGUtils" %>
+<%@ page import="globaz.apg.enums.APTypeDePrestation" %>
+<%@ page import="globaz.apg.helpers.prestation.APPrestationHelper" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 
@@ -111,9 +113,21 @@
 					<ct:menuParam key="detailsAssure" value="<%=courant.getDetailRequerant()%>" />
 					<ct:menuParam key="<%=VueGlobaleTiersUtils.PARAMETRE_REQUETE_ID_TIERS_VUE_GLOBALE%>" value="<%=courant.getIdTiers()%>" />
 <%
-	if (!IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(courant.getEtatDroit())) {
-		// pas de calculs de prestations si le droit est en attente
+	if (!IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(courant.getEtatDroit())) { // pas de calculs de prestations si le droit est en attente
 %>					<ct:menuExcludeNode nodeId="calculertoutesprestations" />
+<%
+	}
+%>
+<%
+	if (!APPrestationHelper.isCalculDisponibleMATCIAB(courant.loadDroit())) {
+%>					<ct:menuExcludeNode nodeId="calculertoutesprestationsMATCIAB2" />
+<%
+	}
+%>
+<%
+	if (!courant.hasPrestationOfGenre(APTypeDePrestation.MATCIAB2.getCodesystem())) {
+		// pas de decisions MATCIAB2 si le droit ne possède pas de prestations MATCIAB2
+%>					<ct:menuExcludeNode nodeId="genererlesdecicionsMATCIAB2" />
 <%
 	}
 %>

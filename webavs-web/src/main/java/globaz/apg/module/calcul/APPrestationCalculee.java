@@ -29,6 +29,7 @@ public class APPrestationCalculee {
     private FWCurrency revenuDeterminantMoyen = null;
     private String typePrestation = null;
     private String csGenrePrestation = null;
+    private String idPrestationApg = null;
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -294,4 +295,11 @@ public class APPrestationCalculee {
         this.csGenrePrestation = csGenrePrestation;
     }
 
+    public String getIdPrestationApg() {
+        return idPrestationApg;
+    }
+
+    public void setIdPrestationApg(String idPrestationApg) {
+        this.idPrestationApg = idPrestationApg;
+    }
 }

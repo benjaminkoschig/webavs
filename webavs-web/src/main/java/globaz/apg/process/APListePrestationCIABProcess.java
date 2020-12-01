@@ -87,6 +87,9 @@ public class APListePrestationCIABProcess extends BProcess {
     public final static String LABEL_COMPLEMENT_CIAB = "COMPLEMENT_CIAB";
     public final static String LABEL_TOTAL_COMPLEMENT_CIAB = "TOTAL_COMPLEMENT_CIAB";
 
+    public final static String LABEL_MATERNITE_CIAB = "MATERNITE_CIAB";
+    public final static String LABEL_MATERNITE_CIAB_TOTAL = "MATERNITE_CIAB_TOTAL";
+
     public static final String REQUETE_LISTE_PRESTATION_VERSEE_COL_NAME_DATE_DEBUT = "DATE_DEBUT";
     public static final String REQUETE_LISTE_PRESTATION_VERSEE_COL_NAME_DATE_FIN = "DATE_FIN";
 
@@ -182,7 +185,7 @@ public class APListePrestationCIABProcess extends BProcess {
             // Création de la ListePrestationCIABPojo
             creerListePrestationCIABPojo();
 
-            if (!listePrestationCIABPojo.getListPrestationCIAB().isEmpty()) {
+            if (!listePrestationCIABPojo.getListPrestationCIAB().isEmpty() || !listePrestationCIABPojo.getMapPrestationMatCIAB().isEmpty() ) {
                 // création des documents
 
                 JadePublishDocument documentAPublierExcel = creerListePrestationCIABDocumentsExcel();
@@ -302,10 +305,12 @@ public class APListePrestationCIABProcess extends BProcess {
         String codePrestation = "";
         double totalMontantBrutService = 0;
         double totalMontantJourIsole = 0;
+        double totalMontantBrutMatciab = 0;
         int totalNbCasService = 0;
         double montantBrutService = 0;
         int nbCasService = 0;
         int totalJourIsole = 0;
+        int totalNbCasMatciab = 0;
         boolean firstTime = true;
 
         // Parcours de chaque ligne retournée par la requête sql
@@ -319,11 +324,11 @@ public class APListePrestationCIABProcess extends BProcess {
             codeAssuranceCompl = aMapRowResultQueryListePrestationCIAB
                     .get(APListePrestationCIABProcess.REQUETE_LISTE_PRESTATION_VERSEE_COL_CODE_ASSURANCE_COMPL);
 
-            if (codeAssuranceCompl.equalsIgnoreCase(idAssuranceParitaireJU)){
+            if (codeAssuranceCompl.equalsIgnoreCase(idAssuranceParitaireJU)) {
                 libelleAssuranceCompl = getSession().getLabel(LABEL_ASSURANCE_COMPLEMENT_PARITAIRE_JU);
-            } else if (codeAssuranceCompl.equalsIgnoreCase(idAssuranceParitaireBE)){
+            } else if (codeAssuranceCompl.equalsIgnoreCase(idAssuranceParitaireBE)) {
                 libelleAssuranceCompl = getSession().getLabel(LABEL_ASSURANCE_COMPLEMENT_PARITAIRE_BE);
-            } else if (codeAssuranceCompl.equalsIgnoreCase(idAssurancePersonnelJU)){
+            } else if (codeAssuranceCompl.equalsIgnoreCase(idAssurancePersonnelJU)) {
                 libelleAssuranceCompl = getSession().getLabel(LABEL_ASSURANCE_COMPLEMENT_PERSONNEL_JU);
             } else if (codeAssuranceCompl.equalsIgnoreCase(idAssurancePersonnelBE)) {
                 libelleAssuranceCompl = getSession().getLabel(LABEL_ASSURANCE_COMPLEMENT_PERSONNEL_BE);
@@ -335,13 +340,13 @@ public class APListePrestationCIABProcess extends BProcess {
             String montantBrut = aMapRowResultQueryListePrestationCIAB
                     .get(APListePrestationCIABProcess.REQUETE_LISTE_PRESTATION_VERSEE_COL_NAME_MONTANT_BRUT);
 
-            //La boucle se déroule en 2 parties, d'abord le traitement des Compléements CIAB
-            if (codePrestation.equalsIgnoreCase(String.valueOf(APTypeDePrestation.COMPCIAB.getCodesystem()))){
+            //La boucle se déroule en 3 parties, d'abord le traitement des Compléements CIAB
+            if (codePrestation.equalsIgnoreCase(String.valueOf(APTypeDePrestation.COMPCIAB.getCodesystem()))) {
                 PrestationCIABAssuranceComplPojo aPrestationCIDABAssCompl = new PrestationCIABAssuranceComplPojo();
                 if (listePrestationCIABPojo.getMapPrestationComplementaireAssuranceCIAB().containsKey(codeAssuranceCompl)) {
                     aPrestationCIDABAssCompl = listePrestationCIABPojo.getMapPrestationComplementaireAssuranceCIAB().get(codeAssuranceCompl);
                 }
-                aPrestationCIDABAssCompl.setNbCas(aPrestationCIDABAssCompl.getNbCas()+1);
+                aPrestationCIDABAssCompl.setNbCas(aPrestationCIDABAssCompl.getNbCas() + 1);
                 aPrestationCIDABAssCompl.setMontantBrut(aPrestationCIDABAssCompl.getMontantBrut()
                         + Double.valueOf(montantBrut).doubleValue());
                 aPrestationCIDABAssCompl.setCodeAssuranceCompl(codeAssuranceCompl);
@@ -351,8 +356,25 @@ public class APListePrestationCIABProcess extends BProcess {
                 listePrestationCIABPojo.getMapPrestationComplementaireAssuranceCIAB().put(codeAssuranceCompl
                         , aPrestationCIDABAssCompl);
 
-                // Ensuite les jours isolés
-            } else{
+                // Ensuite les MATCIAB
+            } else if(codePrestation.equalsIgnoreCase(String.valueOf(APTypeDePrestation.MATCIAB1.getCodesystem()))
+                    || codePrestation.equalsIgnoreCase(String.valueOf(APTypeDePrestation.MATCIAB2.getCodesystem()))){
+
+                PrestationCIABAssuranceComplPojo prestationMATCIAB = new PrestationCIABAssuranceComplPojo();
+                if (listePrestationCIABPojo.getMapPrestationMatCIAB().containsKey(String.valueOf(APTypeDePrestation.MATCIAB1.getCodesystem())+codeAssuranceCompl)) {
+                    prestationMATCIAB = listePrestationCIABPojo.getMapPrestationMatCIAB().get(String.valueOf(APTypeDePrestation.MATCIAB1.getCodesystem())+codeAssuranceCompl);
+                }
+                prestationMATCIAB.setNbCas(prestationMATCIAB.getNbCas() + 1);
+                prestationMATCIAB.setMontantBrut(prestationMATCIAB.getMontantBrut()
+                        + Double.valueOf(montantBrut).doubleValue());
+                prestationMATCIAB.setCodeAssuranceCompl(codeAssuranceCompl);
+                prestationMATCIAB.setLibelleAssuranceCompl(libelleAssuranceCompl);
+                totalMontantBrutMatciab += Double.valueOf(montantBrut).doubleValue();
+                totalNbCasMatciab++;
+                listePrestationCIABPojo.getMapPrestationMatCIAB().put(String.valueOf(APTypeDePrestation.MATCIAB1.getCodesystem())+codeAssuranceCompl
+                        , prestationMATCIAB);
+
+            } else {
                 // Lors de la première execution des jours isolés, nous chargeons les variables et enregistrons les totaux des compléments CIAB
                 if (firstTime) {
                     listePrestationCIABPojo.setTotalMontantBrutComplementaire(totalMontantBrutService);
@@ -423,27 +445,34 @@ public class APListePrestationCIABProcess extends BProcess {
 
         }
 
-        // Enregistrement du dernier élément de la liste
-        aPrestationCIABAssuranceCompl = new PrestationCIABAssuranceComplPojo();
-        aPrestationCIABAssuranceCompl.setMontantBrut(montantBrutService);
-        aPrestationCIABAssuranceCompl.setNbCas(nbCasService);
-        aPrestationCIABAssuranceCompl.setCodeAssuranceCompl(codeAssuranceCompl);
-        aPrestationCIABAssuranceCompl.setLibelleAssuranceCompl(libelleAssuranceCompl);
-        aListPrestationCIABAssuranceCompl.add(aPrestationCIABAssuranceCompl);
+        // Si traité au moins un jour isolé, alors on ajoute le dernier element dans la liste.
+        if(firstTime == false) {
+
+            // Enregistrement du dernier élément de la liste
+            aPrestationCIABAssuranceCompl = new PrestationCIABAssuranceComplPojo();
+            aPrestationCIABAssuranceCompl.setMontantBrut(montantBrutService);
+            aPrestationCIABAssuranceCompl.setNbCas(nbCasService);
+            aPrestationCIABAssuranceCompl.setCodeAssuranceCompl(codeAssuranceCompl);
+            aPrestationCIABAssuranceCompl.setLibelleAssuranceCompl(libelleAssuranceCompl);
+            aListPrestationCIABAssuranceCompl.add(aPrestationCIABAssuranceCompl);
 
 
-        aPrestationCIABLigneRecapPojo = new PrestationCIABLigneRecapitulationPojo();
-        aPrestationCIABLigneRecapPojo.setCodeService(codeService);
-        aPrestationCIABLigneRecapPojo.setLibelleService(libelleCodeService);
-        aPrestationCIABLigneRecapPojo.setListPrestationCIABAssuranceCompl(aListPrestationCIABAssuranceCompl);
-        aPrestationCIABLigneRecapPojo.setTotalMontantBrutService(totalMontantBrutService);
-        aPrestationCIABLigneRecapPojo.setTotalNbCasService(totalNbCasService);
+            aPrestationCIABLigneRecapPojo = new PrestationCIABLigneRecapitulationPojo();
+            aPrestationCIABLigneRecapPojo.setCodeService(codeService);
+            aPrestationCIABLigneRecapPojo.setLibelleService(libelleCodeService);
+            aPrestationCIABLigneRecapPojo.setListPrestationCIABAssuranceCompl(aListPrestationCIABAssuranceCompl);
+            aPrestationCIABLigneRecapPojo.setTotalMontantBrutService(totalMontantBrutService);
+            aPrestationCIABLigneRecapPojo.setTotalNbCasService(totalNbCasService);
 
-        if (!aPrestationCIABLigneRecapPojo.getCodeService().isEmpty()){
-            listePrestationCIABPojo.getListPrestationCIAB().add(aPrestationCIABLigneRecapPojo);
-            listePrestationCIABPojo.setTotalJourIsole(totalJourIsole);
-            listePrestationCIABPojo.setTotalMontantBrutJourIsole(totalMontantJourIsole);
+            if (!aPrestationCIABLigneRecapPojo.getCodeService().isEmpty()) {
+                listePrestationCIABPojo.getListPrestationCIAB().add(aPrestationCIABLigneRecapPojo);
+                listePrestationCIABPojo.setTotalJourIsole(totalJourIsole);
+                listePrestationCIABPojo.setTotalMontantBrutJourIsole(totalMontantJourIsole);
+            }
         }
+
+        listePrestationCIABPojo.setTotalMontantBrutMatciab(totalMontantBrutMatciab);
+        listePrestationCIABPojo.setTotalNbCasMatciab(totalNbCasMatciab);
     }
 
     private List<Map<String, String>> executeQuery(String sql) throws JadePersistenceException, JAException {
@@ -463,14 +492,16 @@ public class APListePrestationCIABProcess extends BProcess {
             stmt.setString(3, dateFinAMJ);
             stmt.setInt(4, APTypeDePrestation.COMPCIAB.getCodesystem());
             stmt.setInt(5, APTypeDePrestation.JOUR_ISOLE.getCodesystem());
-            stmt.setString(6, idAssuranceParitaireJU);
-            stmt.setString(7, idAssuranceParitaireBE);
-            stmt.setString(8, idAssurancePersonnelJU);
-            stmt.setString(9, idAssurancePersonnelBE);
+            stmt.setInt(6, APTypeDePrestation.MATCIAB1.getCodesystem());
+            stmt.setInt(7, APTypeDePrestation.MATCIAB2.getCodesystem());
+            stmt.setString(8, idAssuranceParitaireJU);
+            stmt.setString(9, idAssuranceParitaireBE);
             stmt.setString(10, idAssurancePersonnelJU);
             stmt.setString(11, idAssurancePersonnelBE);
-            stmt.setString(12, idAssuranceParitaireJU);
-            stmt.setString(13, idAssuranceParitaireBE);
+            stmt.setString(12, idAssurancePersonnelJU);
+            stmt.setString(13, idAssurancePersonnelBE);
+            stmt.setString(14, idAssuranceParitaireJU);
+            stmt.setString(15, idAssuranceParitaireBE);
             resultSet = stmt.executeQuery();
 
 
@@ -568,7 +599,7 @@ public class APListePrestationCIABProcess extends BProcess {
             throw new Exception("Not implemented");
         }
 
-        sqlWhere += " AND pres.VHTGEN IN (?,?) ";
+        sqlWhere += " AND pres.VHTGEN IN (?,?,?,?) ";
         //sqlWhere += " AND afc.MBIASS IN (?,?,?,?) ";
         sqlWhere += " AND ((pres.VHDFIN <= afc.MEDFIN or afc.MEDFIN = 0) AND pres.VHDDEB >= afc.MEDDEB)";
         sqlWhere += " AND (((( repa.VIMMOB < repa.VIMMON AND afc.MBIASS IN (?, ?))";

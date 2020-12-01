@@ -14,6 +14,9 @@ public enum APTypeDeDecompte {
     NORMAL_ACM_NE(5, "normal_acmne", "AP_DECOMPTE_DETAIL_ACMNE.jasper",
             new APTypeDePrestation[] { APTypeDePrestation.STANDARD, APTypeDePrestation.ACM_NE }),
     COMPCIAB(6, "normal", "AP_DECOMPTE_DETAIL_CIAB.jasper", new APTypeDePrestation[] { APTypeDePrestation.COMPCIAB }),
+    // TODO SCO : MATCIAB1 est regroupé avec le normal et le MATCIAB2 est seul sur un document.
+    MATCIAB1(6, "normal", "AP_DECOMPTE_DETAIL_CIAB.jasper", new APTypeDePrestation[] { APTypeDePrestation.MATCIAB1 }),
+    MATCIAB2(6, "matciab2", "AP_DECOMPTE_DETAIL_CIAB.jasper", new APTypeDePrestation[] { APTypeDePrestation.MATCIAB2 }),
     JOUR_ISOLE(7, "normal", "AP_DECOMPTE_DETAIL_CIAB.jasper", new APTypeDePrestation[] { APTypeDePrestation.JOUR_ISOLE });
 
     /**
@@ -53,7 +56,12 @@ public enum APTypeDeDecompte {
                     case COMPCIAB:
                         typeDuDecompte = APTypeDeDecompte.COMPCIAB;
                         break;
-                    case JOUR_ISOLE:
+                    case MATCIAB1:
+                        typeDuDecompte = APTypeDeDecompte.NORMAL;
+                        break;
+                    case MATCIAB2:
+                        typeDuDecompte = APTypeDeDecompte.MATCIAB2;
+                        break;                    case JOUR_ISOLE:
                         typeDuDecompte = APTypeDeDecompte.JOUR_ISOLE;
                         break;
                     case LAMAT:
@@ -71,13 +79,18 @@ public enum APTypeDeDecompte {
                         break;
                 }
             } else if (vals.length == 2) { // 2 types de prestations trouvés. (Due aux regroupement dans
-                                           // APDonneeRegroupementDecompte)
+                // APDonneeRegroupementDecompte)
                 boolean standard = APTypeDeDecompte.searchTypeInArray(APTypeDePrestation.STANDARD, vals);
                 boolean acm_ne = APTypeDeDecompte.searchTypeInArray(APTypeDePrestation.ACM_NE, vals);
                 boolean acm1 = APTypeDeDecompte.searchTypeInArray(APTypeDePrestation.ACM_ALFA, vals);
                 boolean acm2 = APTypeDeDecompte.searchTypeInArray(APTypeDePrestation.ACM2_ALFA, vals);
                 boolean jour_isole = APTypeDeDecompte.searchTypeInArray(APTypeDePrestation.JOUR_ISOLE, vals);
                 boolean complement = APTypeDeDecompte.searchTypeInArray(APTypeDePrestation.COMPCIAB, vals);
+                boolean matciab1 = APTypeDeDecompte.searchTypeInArray(APTypeDePrestation.MATCIAB1, vals);
+
+                if(matciab1) {
+                    typeDuDecompte = APTypeDeDecompte.NORMAL;
+                }
 
                 if (standard && acm_ne) {
                     typeDuDecompte = APTypeDeDecompte.NORMAL_ACM_NE;
@@ -86,11 +99,11 @@ public enum APTypeDeDecompte {
                 if (acm1 && acm2) {
                     typeDuDecompte = APTypeDeDecompte.ACM_GE;
                 }
-                
+
                 if (standard && complement) {
                     typeDuDecompte = APTypeDeDecompte.COMPCIAB;
                 }
-                
+
                 if (jour_isole && complement) {
                     typeDuDecompte = APTypeDeDecompte.JOUR_ISOLE;
                 }
@@ -180,7 +193,7 @@ public enum APTypeDeDecompte {
     private APTypeDePrestation[] typesDePrestation;
 
     private APTypeDeDecompte(final int index, final String nomDocument, String nomModeleDetailDecompte,
-            final APTypeDePrestation[] typesDePrestation) {
+                             final APTypeDePrestation[] typesDePrestation) {
         this.index = index;
         this.nomDocument = nomDocument;
         this.nomModeleDetailDecompte = nomModeleDetailDecompte;

@@ -21,6 +21,8 @@ public class APGenererDecisionAMATViewBean extends PRAbstractViewBeanSupport {
 
     private String idDroit = "";
     private Boolean isSendToGed = Boolean.FALSE;
+    // Permet de filter les MATCIAB2 des décisions pour les faire ressortir sur un document séparé
+    private Boolean isMatciab2ViewBean = Boolean.FALSE;
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -56,13 +58,22 @@ public class APGenererDecisionAMATViewBean extends PRAbstractViewBeanSupport {
         return idDroit;
     }
 
+    /**
+     * getter pour l'attribut isMatciab2ViewBean
+     *
+     * @return la valeur courante de l'attribut isMatciab2ViewBean
+     */
+    public Boolean getIsMatciab2ViewBean() {
+        return isMatciab2ViewBean;
+    }
+
     public Boolean getIsSendToGed() {
         return isSendToGed;
     }
 
     /**
      * getter pour l'attribut calcule
-     * 
+     *
      * @return la valeur courante de l'attribut calcule
      */
     public boolean isCalcule() {
@@ -106,6 +117,16 @@ public class APGenererDecisionAMATViewBean extends PRAbstractViewBeanSupport {
      */
     public void setDecision(boolean decision) {
         this.decision = decision;
+    }
+
+    /**
+     * setter pour l'attribut isMatciab2ViewBean
+     *
+     * @param isMatciab2ViewBean
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setIsMatciab2ViewBean(Boolean isMatciab2ViewBean) {
+        this.isMatciab2ViewBean = isMatciab2ViewBean;
     }
 
     public void setDisplaySendToGed(String displaySendToGed) {

@@ -116,6 +116,27 @@ public class APDroitLAPG extends BEntity {
     }
 
     /**
+     * Retourne true si le droit possède au moins une prestation du genre passé en paramètre
+     *
+     * @param genre
+     * @return boolean
+     */
+    public boolean hasPrestationOfGenre(BTransaction transaction, int genre) throws Exception {
+            APPrestationManager prestationManager = new APPrestationManager();
+            prestationManager.setSession(getSession());
+            prestationManager.setForIdDroit(idDroit);
+            prestationManager.find(transaction, BManager.SIZE_NOLIMIT);
+
+            for (int i = 0; i < prestationManager.size(); i++) {
+                APPrestation prestation = (APPrestation) prestationManager.getEntity(i);
+                if (prestation.getGenre().equals(String.valueOf(genre))) {
+                    return true;
+                }
+            }
+        return false;
+    }
+
+    /**
      * <p>
      * Initialise la valeur de Id Droit.<br/>
      * On utilise uniquement le compteur de la table APDroitLAPG pour toutes les classes descendantes de celle-ci.
