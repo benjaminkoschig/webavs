@@ -1,7 +1,10 @@
 package ch.globaz.pegasus.rpc.process;
 
+import ch.globaz.pyxis.business.model.LocaliteSimpleModel;
+import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.job.common.JadeJobQueueNames;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
@@ -315,6 +318,16 @@ public class GenererAnnoncesProcess extends ProcessItemsHandlerJadeJob<AnnonceIt
             @Override
             // TODO test unitaire
             public String formatte(RpcBusinessException exception, Locale locale) {
+                if("pegasus.rpc.primeLamal.notFound".equals(exception.getLabelMessage())){
+                    String idLocalite = String.valueOf(exception.getParams().get(0));
+                    try {
+                        LocaliteSimpleModel localiteSearchModel = TIBusinessServiceLocator.getAdresseService().readLocalite(idLocalite);
+                        exception.getParams().clear();
+                        exception.getParams().add(localiteSearchModel.getNumPostal()+ " - "+ localiteSearchModel.getLocalite());
+                    } catch (JadePersistenceException | JadeApplicationException e) {
+                        LOG.warn("impossible de trouver la localité : "+idLocalite);
+                    }
+                }
                 if (!exception.getParams().isEmpty()) {
                     String[] params = new String[exception.getParams().size()]; // = exception.getParams().toArray(new
                                                                                 // String[exception.getParams().size()]);
