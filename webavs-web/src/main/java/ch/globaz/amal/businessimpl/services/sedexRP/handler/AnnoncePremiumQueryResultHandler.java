@@ -90,6 +90,7 @@ public class AnnoncePremiumQueryResultHandler extends AnnonceHandlerAbstract {
                 if(insuredPerson.getPremiumRejectReason() == null) {
                     try {
                         annonceSedexRetour.setMontantPrimeTarifaire(insuredPerson.getQueryDatePremium().setScale(2).toString());
+                        annonceSedexRetour.setMessageContent(insuredPerson.getQueryDatePremium().setScale(2).toString());
                     } catch (Exception e) {
                         throw new Exception("Problème avec la récupération prime pour le cas "
                                 + insuredPerson.getPerson().getVn() + " / Annee = " + annee);

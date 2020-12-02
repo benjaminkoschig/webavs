@@ -24,6 +24,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import ch.globaz.amal.business.models.detailfamille.SimpleDetailFamilleSearch;
+import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
 import com.google.common.collect.Lists;
 import globaz.jade.smtp.JadeSmtpClient;
 import org.apache.commons.collections.iterators.EntrySetMapIterator;
@@ -2237,19 +2238,27 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
         return "";
     }
 
-    private String genererCsvForListAnnoncesReponsePT(ComplexAnnonceSedexSearch annonceSedexSearch) {
+    private String genererCsvForListAnnoncesReponsePT(ComplexAnnonceSedexSearch annonceSedexSearch) throws JadeApplicationException, JadePersistenceException {
 
         List<StringBuffer> listRecords = new ArrayList<StringBuffer>();
         for (JadeAbstractModel model : annonceSedexSearch.getSearchResults()) {
             ComplexAnnonceSedex annonceSedex = (ComplexAnnonceSedex) model;
 
             StringBuffer sbCsv = new StringBuffer();
-            sbCsv.append(annonceSedex.getSimpleFamille().getNoAVS() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
+
+            PersonneEtendueComplexModel personneEtendueComplexModel = TIBusinessServiceLocator.getPersonneEtendueService()
+                    .read(annonceSedex.getSimpleFamille().getIdTier());
+            if ((personneEtendueComplexModel == null) || personneEtendueComplexModel.isNew()) {
+                throw new AnnonceSedexException("PersonneEtendueComplexModel not found with idTier : "
+                        + annonceSedex.getSimpleFamille().getIdTier());
+            }
+
+            sbCsv.append(personneEtendueComplexModel.getPersonneEtendue().getNumAvsActuel() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
             sbCsv.append(annonceSedex.getSimpleFamille().getNomPrenom() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
             sbCsv.append(annonceSedex.getSimpleFamille().getNomPrenomUpper() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
             sbCsv.append(annonceSedex.getSimpleFamille().getDateNaissance()+ AnnoncesRPServiceImpl.CSV_SEPARATOR);
             sbCsv.append(annonceSedex.getSimpleAnnonceSedex().getMontantPrimeTarifaire() + AnnoncesRPServiceImpl.CSV_SEPARATOR);
-            sbCsv.append(annonceSedex.getSimpleAnnonceSedex().getMessageType());
+            sbCsv.append(annonceSedex.getSimpleFamille().getIdTier());
 
             // On ajoute que les annonces qui ont des primes tarifaires supérieur à 0
             // si = 0, la réponse est un rejet et on traite pas les rejets.
