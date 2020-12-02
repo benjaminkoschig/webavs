@@ -24,7 +24,7 @@ public class AnnoncePerson {
     protected Long vn;
     protected Boolean representative;
     protected Integer pensionKind;
-    protected Float degreeOfInvalidity;
+    protected String degreeOfInvalidity;
     protected RpcVitalNeedsCategory vitalNeedsCategory;
     protected String maritalStatus;
     protected PcaGenre housingMode;
@@ -48,8 +48,8 @@ public class AnnoncePerson {
         representative = !RoleMembreFamille.ENFANT.equals(personData.getMembreFamille().getRoleMembreFamille());
         representative = annonce.getRpcCalcul().isCoupleSepare() ? representative : personData.isMandataire();
         pensionKind = ConverterPensionKind.convert(personData.getTypeRenteCS());
-        if(ConverterPensionKind.isRentAi(personData.getTypeRenteCS())) {
-            degreeOfInvalidity = personData.getDegreInvalidite();
+        if(ConverterPensionKind.isRentAi(personData.getTypeRenteCS()) && personData.getDegreInvalidite() != null) {
+            degreeOfInvalidity = String.format("%.2f",personData.getDegreInvalidite());
         }
         vitalNeedsCategory = annonce.resolveVitalNeedsCategory(personData, annonce.getDemande());
         maritalStatus = ConverterMaritalStatus.convert(personData.getSituationFamiliale());
@@ -224,7 +224,7 @@ public class AnnoncePerson {
         return personsElementsCalcul.getPersonsElementsCalcul();
     }
 
-    public Float getDegreeOfInvalidity() {
+    public String getDegreeOfInvalidity() {
         return degreeOfInvalidity;
     }
 
