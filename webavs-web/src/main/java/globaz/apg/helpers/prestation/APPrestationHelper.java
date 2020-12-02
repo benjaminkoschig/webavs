@@ -1842,6 +1842,8 @@ public class APPrestationHelper extends PRAbstractHelper {
         final List<APSitProJointEmployeur> apSitProJoiEmpList = servicePersistance
                 .getSituationProfJointEmployeur(session, transaction, idDroit);
 
+        donneesPersistence.setNombreDeSituationProfessionelle(apSitProJoiEmpList.size());
+
         final String dateDebutPrestationStandard = donneesPersistence.getPrestationJointRepartitions().get(0)
                 .getDateDebut();
 

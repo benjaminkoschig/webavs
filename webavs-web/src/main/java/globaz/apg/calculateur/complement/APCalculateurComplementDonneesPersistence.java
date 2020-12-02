@@ -24,6 +24,7 @@ public class APCalculateurComplementDonneesPersistence {
     private BigDecimal montantJournalier = null;
     private BigDecimal montantNet = null;
     private Integer nombreDeJoursSoldes = 0;
+    private Integer nombreDeSituationProfessionelle = 0;
     
     // Lecture
     private List<APRepartitionJointPrestation> prestationJointRepartitions = null;
@@ -113,6 +114,10 @@ public class APCalculateurComplementDonneesPersistence {
         return nombreDeJoursSoldes;
     }
 
+    public Integer getNombreDeSituationProfessionelle() {
+        return nombreDeSituationProfessionelle;
+    }
+
     public List<APRepartitionPaiementData> getRepartitionsPaiementMap() {
         return repartitionsPaiementMap;
     }
@@ -139,6 +144,10 @@ public class APCalculateurComplementDonneesPersistence {
 
     public void setNombreDeJoursSoldes(Integer nombreDeJoursSoldes) {
         this.nombreDeJoursSoldes = nombreDeJoursSoldes;
+    }
+
+    public void setNombreDeSituationProfessionelle(Integer nombreDeSituationProfessionelle) {
+        this.nombreDeSituationProfessionelle = nombreDeSituationProfessionelle;
     }
 
     public void setRepartitionsPaiementMap(List<APRepartitionPaiementData> repartitionsPaiementMap) {

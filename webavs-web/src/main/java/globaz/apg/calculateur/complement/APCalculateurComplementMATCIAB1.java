@@ -8,26 +8,26 @@ import globaz.apg.calculateur.pojo.APPrestationCalculeeAPersister;
 import globaz.apg.calculateur.pojo.APRepartitionCalculeeAPersister;
 import globaz.apg.db.droits.APDroitMaternite;
 import globaz.apg.db.droits.APSitProJointEmployeur;
-import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.prestation.APCotisation;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APRepartitionJointPrestation;
 import globaz.apg.db.prestation.APRepartitionPaiements;
 import globaz.apg.enums.APAssuranceTypeAssociation;
 import globaz.apg.enums.APTypeDePrestation;
-import globaz.apg.helpers.droits.APSituationProfessionnelleHelper;
+import globaz.apg.helpers.prestation.APPrestationHelper;
 import globaz.apg.module.calcul.APCotisationData;
 import globaz.apg.module.calcul.APRepartitionPaiementData;
 import globaz.apg.module.calcul.APSituationProfessionnelleCanton;
 import globaz.apg.module.calcul.complement.APComplementCalculateur;
+import globaz.apg.module.calcul.constantes.IAPConstantes;
 import globaz.apg.properties.APProperties;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
-import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.prestation.api.IPRDemande;
+import globaz.prestation.utils.PRDateUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -47,7 +47,7 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
         for (APCalculateurComplementDonneeDomaine prestationStandard : donneesDomainCalcul) {
             APPrestation prestation = prestationStandard.getPrestation();
 
-            BigDecimal salaireJournalier = new BigDecimal(prestation.getRevenuMoyenDeterminant());
+            BigDecimal sommeSalaireJournalier = new BigDecimal(prestation.getRevenuMoyenDeterminant());
 
             APCalculateurComplementDonneesPersistence prestationCalculeeAPersister = new APCalculateurComplementDonneesPersistence(
                     prestation.getDateDebut(), prestation.getDateFin(), Integer.valueOf(prestation.getNombreJoursSoldes()),
@@ -67,21 +67,23 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
             // La date de début prestation.getDateDebut() et peut avoir été adapté par rapport
             // à la propriété PROPERTY_APG_FERCIAB_MATERNITE et donc le nombre de jours soldes
             // pour la période entre prestation.getDateDebut() et prestation.getDateFin() est à recalculer
-            int nombreJoursSoldes = Integer.parseInt(prestation.getNombreJoursSoldes()); // nombreJoursSoldes initial avant l'adaptation de la période par la propriété PROPERTY_APG_FERCIAB_MATERNITE
-            int nombreJoursSoldesPeriodePriseEnCompte = JadeDateUtil.getNbDaysBetween(prestation.getDateDebut(), prestation.getDateFin()) + 1; // nombreJoursSoldesPeriodePriseEnCompte après l'adapation par la propriété PROPERTY_APG_FERCIAB_MATERNITE
-            BigDecimal montantMATCIAB1 = calculateur.calculerMontantMATCIAB1(salaireJournalier, nombreJoursSoldesPeriodePriseEnCompte);
-            BigDecimal montantBrutFederal;
-            BigDecimal salaireJournalier80 = salaireJournalier.multiply(BigDecimal.valueOf(80)).divide(BigDecimal.valueOf(100));
-            if (salaireJournalier80.compareTo(new BigDecimal(prestation.getMontantJournalier())) < 0) {
-                // ce cas ne se produit que si il y a plusieurs employeur et que certain de ces remployeur ne cotise pas au assurance complémentaire
+            int nombreJoursSoldesPeriodePriseEnCompte = PRDateUtils.getNbDayBetween2(prestation.getDateDebut(), prestation.getDateFin()) + 1; // nombreJoursSoldesPeriodePriseEnCompte après l'adapation par la propriété PROPERTY_APG_FERCIAB_MATERNITE
+            BigDecimal montantMATCIAB1 = calculateur.calculerMontantMATCIAB1(sommeSalaireJournalier, nombreJoursSoldesPeriodePriseEnCompte);
+            if (prestationStandard.getNombreDeSituationProfessionelle() != prestationStandard.getSituationProfessionnelle().size()) {
+                // ce cas ne se produit que si il y a plusieurs employeur et que certain de ces employeur ne cotise pas au assurance complémentaire
                 // le calcul MATCIAB1 se base alors sur le 80% des revenus moyen déterminent qui cotise au assurance complémentaire
-                montantBrutFederal = getMontantFederal(salaireJournalier80, prestation, nombreJoursSoldesPeriodePriseEnCompte);
+                BigDecimal sommeSalaireJournalier80 = sommeSalaireJournalier.compareTo(IAPConstantes.APG_JOURNALIERE_MAX) > 0
+                        ? IAPConstantes.APG_JOURNALIERE_MAX
+                        : sommeSalaireJournalier.multiply(BigDecimal.valueOf(80)).divide(BigDecimal.valueOf(100));
+                BigDecimal montantBrutFederalAdapte80 = getMontantFederal(sommeSalaireJournalier80, prestation, nombreJoursSoldesPeriodePriseEnCompte);
+                montantMATCIAB1 = montantMATCIAB1.subtract(montantBrutFederalAdapte80);
             } else {
                 // ce cas se produit pour les cas ou le nombre de revenu qui cotise au assurance complémentaire est le même que le nombre de revenu total
                 // le calcul MATCIAB1 se base alors sur le même revenu moyen déterminent que le calcul Standard
-                montantBrutFederal = getMontantFederal(new BigDecimal(prestation.getMontantJournalier()), prestation, nombreJoursSoldesPeriodePriseEnCompte);
+                BigDecimal montantBrutFederal = getMontantFederal(new BigDecimal(prestation.getMontantJournalier()), prestation, nombreJoursSoldesPeriodePriseEnCompte);
+                montantMATCIAB1 = montantMATCIAB1.subtract(montantBrutFederal);
             }
-            montantMATCIAB1 = montantMATCIAB1.subtract(montantBrutFederal);
+
             prestationCalculeeAPersister.setMontantBrut(montantMATCIAB1);
             prestationCalculeeAPersister.setMontantJournalier(montantMATCIAB1.divide(BigDecimal.valueOf(nombreJoursSoldesPeriodePriseEnCompte),2, RoundingMode.HALF_UP));
             // met à jour le nombre de jours soldes avec le nombre de jours soldes prise en compte
@@ -92,12 +94,20 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
             BigDecimal montantPrestationComplementBrut = new BigDecimal("0");
             BigDecimal montantPrestationComplementNet = new BigDecimal("0");
 
+            // En calculant la somme des reperatitions qui n'ont pas été filtrées jusqu'ici cela vas nous permettre de définir quel est la proportion/taux de chaque repartition
+            // par rapport au montant total
+            BigDecimal sommeMontantBrut = BigDecimal.ZERO;
+            for(APRepartitionJointPrestation repartition : prestationStandard.getRepartitions()) {
+                sommeMontantBrut = sommeMontantBrut.add(new BigDecimal(repartition.getMontantBrut()));
+            }
+
             for(APRepartitionJointPrestation repartition : prestationStandard.getRepartitions()) {
                 if (prestationStandard.getSituationProfessionnelle().get(repartition.getIdSituationProfessionnelle()) != null) {
 
                     APSituationProfessionnelleCanton sitProf = prestationStandard.getSituationProfessionnelle().get(repartition.getIdSituationProfessionnelle());
 
-                    BigDecimal tauxCalcul = new BigDecimal(repartition.getMontantBrut()).divide(montantBrutFederal, 10, RoundingMode.HALF_UP);
+                    // proportion / taux de la répartion par rapport a la somme des repartitions
+                    BigDecimal tauxCalcul = new BigDecimal(repartition.getMontantBrut()).divide(sommeMontantBrut, 10, RoundingMode.HALF_UP);
 
                     BigDecimal montantBrutReparti = montantBrutJournalier.multiply(tauxCalcul);
 
@@ -195,14 +205,14 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
         return resultatCalcul;
     }
 
-    private BigDecimal getMontantFederal(BigDecimal montantJournalier, APPrestation prestation, int nombreJoursSoldesPeriodePriseEnCompte) {
+    private BigDecimal getMontantFederal(BigDecimal sommeSalaireJournalier, APPrestation prestation, int nombreJoursSoldesPeriodePriseEnCompte) {
         BigDecimal montantAllocationExploitation = new BigDecimal(prestation.getMontantAllocationExploitation());
-        // dans le cas ou la prestation.getDateDebut() à été modifié par la propriété PROPERTY_APG_FERCIAB_MATERNITE
-        // il faut recalculer le salaire en fonction du nombreJoursSoldesPeriodePriseEnCompte
-        montantJournalier = montantJournalier.multiply(BigDecimal.valueOf(nombreJoursSoldesPeriodePriseEnCompte));
+        // pour prendre en compte les cas ou la prestation.getDateDebut() à été modifié par la propriété PROPERTY_APG_FERCIAB_MATERNITE
+        // il faut recalculer le salaire journalier en fonction du nombreJoursSoldesPeriodePriseEnCompte
+        sommeSalaireJournalier = sommeSalaireJournalier.multiply(BigDecimal.valueOf(nombreJoursSoldesPeriodePriseEnCompte));
         montantAllocationExploitation = montantAllocationExploitation.multiply(BigDecimal.valueOf(nombreJoursSoldesPeriodePriseEnCompte));
         BigDecimal fraisGarde = new BigDecimal(prestation.getFraisGarde());
-        return montantJournalier.subtract(montantAllocationExploitation).subtract(fraisGarde);
+        return sommeSalaireJournalier.subtract(montantAllocationExploitation).subtract(fraisGarde);
     }
 
     private APCotisationData creerCotisation(final BigDecimal montantBrutRepartition, final BigDecimal tauxAc,
@@ -322,7 +332,6 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
         // Données en sortie
         final List<APCalculateurComplementDonneeDomaine> listePrestationsComplementDomaineConverties = new ArrayList<>();
 
-
         Map<String, List<APRepartitionJointPrestation>> mapPrestations = new HashMap<>();
         // Pour chacune des prestations standard joint répartition
         for (APRepartitionJointPrestation prestationJoinRepartition : listePrestationsPersistance) {
@@ -337,6 +346,7 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
             if(repartitions != null) {
                 APCalculateurComplementDonneeDomaine donneeDomaine = new APCalculateurComplementDonneeDomaine(prestation);
                 donneeDomaine.setRepartitions(repartitions);
+                donneeDomaine.setNombreDeSituationProfessionelle(donneesPersistancePourCalcul.getNombreDeSituationProfessionelle());
                 listePrestationsComplementDomaineConverties.add(donneeDomaine);
             }
         }

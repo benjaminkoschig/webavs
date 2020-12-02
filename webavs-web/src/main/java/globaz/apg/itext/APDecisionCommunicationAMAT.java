@@ -357,6 +357,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             }
 
         } catch (final Exception e) {
+            e.printStackTrace();
             getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, "APDecisionCommunicationAMAT");
             abort();
         }
@@ -960,7 +961,8 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
             if (isEmployeursMultiples() || isVersementIncomplet || isContratTravailEcheance) {
                 buffer.append(" ");
-                buffer.append(textes.getTexte(6).getDescription());
+                buffer.append(PRStringUtils.replaceString(textes.getTexte(6).getDescription(), "{montantAnnuel}",
+                        "{10}"));
             }
 
             if (isEmployeursMultiples()) {
@@ -1119,7 +1121,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             }
         }
 
+        if (state_dec != APDecisionCommunicationAMAT.STATE_STANDARD) {
         buffer.append("\n");
+        }
 
         // creer les arguments a remplacer dans le texte
 
@@ -1172,16 +1176,10 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             if (montantJournalierMax <= Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant())) {
                 arguments[10] = PRStringUtils.replaceString(textes.getTexte(5).getDescription(), "{montantAnnuelMax}",
                         JANumberFormatter.format(montantAnnuelMax));
-
-                // arguments[10] =
-                // "supérieur à CHF "+JANumberFormatter.format(montantAnnuelMax);
                 isMontantMax = true;
             } else {
                 arguments[10] = PRStringUtils.replaceString(textes.getTexte(6).getDescription(), "{montantAnnuel}",
                         JANumberFormatter.format(revenuAnnuel));
-
-                // arguments[10] =
-                // "de CHF "+JANumberFormatter.format(Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant())*360);
             }
 
             if (isMontantMax) {
