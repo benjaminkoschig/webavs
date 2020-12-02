@@ -60,7 +60,7 @@ public class PCGroupeFortuneHandler extends PCGroupeAbstractHandler {
     /**
      * Traitement de biens immobiiers servant habitation principal avec ligne deduction forfaitaire
      */
-    private PCLignePlanCalculHandler[] createLignesForBienImmoPrincipal() {
+    private PCLignePlanCalculHandler[] createLignesForBienImmoPrincipalReforme() {
         // Tableau de retour
         PCLignePlanCalculHandler[] tabBiensImmo = new PCLignePlanCalculHandler[3];
         // Récupération des montants (Valeur,Déduction Forfaitaire et dette hypothècaire)
@@ -126,7 +126,7 @@ public class PCGroupeFortuneHandler extends PCGroupeAbstractHandler {
         return tabBiensImmo;
     }
 
-    private PCLignePlanCalculHandler[] createLignesForBienImmoSecondaire() {
+    private PCLignePlanCalculHandler[] createLignesForBienImmoSecondaireReforme() {
         // Tableau de retour
         PCLignePlanCalculHandler[] tabBiensImmo = null;
         // Récupération des montants (Valeur,Déduction Forfaitaire et dette hypothècaire)
@@ -178,7 +178,7 @@ public class PCGroupeFortuneHandler extends PCGroupeAbstractHandler {
         return tabBiensImmo;
     }
 
-    private PCLignePlanCalculHandler[] createLignesForBienImmoNonHabitable() {
+    private PCLignePlanCalculHandler[] createLignesForBienImmoNonHabitableReforme() {
         // Tableau de retour
         PCLignePlanCalculHandler[] tabBiensImmo;
         // Récupération des montants (Valeur,Déduction Forfaitaire et dette hypothècaire)
@@ -301,7 +301,7 @@ public class PCGroupeFortuneHandler extends PCGroupeAbstractHandler {
      * Traitement de la categorie des fortunes immobilieres Obligatoire
      * Si il existe des biens immobiliers, on parcours les données, sinon on affiche uniquement la ligne du bien immobiliers principale.
      */
-    private void dealCategorieFortuneImmobiliere() {
+    private void dealCategorieFortuneImmobiliereReforme() {
         int lastValueInList = 0;
         boolean hasBienNonZero = false;
         String[] tabCategorie = FOR_FORTUNE_IMOBILIERE;
@@ -322,13 +322,13 @@ public class PCGroupeFortuneHandler extends PCGroupeAbstractHandler {
                 PCLignePlanCalculHandler[] lignesAajouter = null;
                 switch (csMembre) {
                     case IPCValeursPlanCalcul.CLE_FORTU_FOR_IMMO_BIENS_IMMO_HABIT_PRINCIPALE:
-                        lignesAajouter = createLignesForBienImmoPrincipal();
+                        lignesAajouter = createLignesForBienImmoPrincipalReforme();
                         break;
                     case IPCValeursPlanCalcul.CLE_FORTU_FOR_IMMO_BIENS_NON_HABIT_PRINCIPALE:
-                        lignesAajouter = createLignesForBienImmoSecondaire();
+                        lignesAajouter = createLignesForBienImmoSecondaireReforme();
                         break;
                     case IPCValeursPlanCalcul.CLE_FORTU_FOR_IMMO_BIENS_NON_HABITABLES:
-                        lignesAajouter = createLignesForBienImmoNonHabitable();
+                        lignesAajouter = createLignesForBienImmoNonHabitableReforme();
                         break;
                 }
                 /**
@@ -434,7 +434,11 @@ public class PCGroupeFortuneHandler extends PCGroupeAbstractHandler {
     private void generateLigneProcess() {
         dealCategorieFortuneMobiliere();
         dealCategorieFortuneDessaisie();
-        dealCategorieFortuneImmobiliere();
+        if (isReforme()) {
+            dealCategorieFortuneImmobiliereReforme();
+        } else {
+            dealCategorieFortuneImmobiliere();
+        }
         // Ajout ligne vide
         groupList.add(setEmptyLigne());
         if (!isReforme()) {
@@ -445,6 +449,106 @@ public class PCGroupeFortuneHandler extends PCGroupeAbstractHandler {
         // Ajout ligne vide
         groupList.add(setEmptyLigne());
         dealCategorieTotal();
+    }
+
+    private void dealCategorieFortuneImmobiliere() {
+        int lastValueInList = 0;
+        String[] tabCategorie = FOR_FORTUNE_IMOBILIERE;
+        // Test du totale de groupe
+        String cs = tabCategorie[0];// recup code systeme
+        String legende = getLegende(cs);
+        Float val = getValeur(cs);// recup valeur
+        // Si cat diff 0, itere sur les membre
+        if (val != 0f) {
+            // on itere sur les membres
+            for (int cpt = 1; cpt < tabCategorie.length; cpt++) {
+                String csMembre = tabCategorie[cpt];
+                String legendeMembre = getLegende(csMembre);
+                Float valMembre = getValeur(csMembre);
+                // si valeur != 0, et BISHP on traite les deux lignes avec
+                // deduction forfaitaire
+                if ((valMembre != 0f)
+                        && csMembre.equals(IPCValeursPlanCalcul.CLE_FORTU_FOR_IMMO_BIENS_IMMO_HABIT_PRINCIPALE)) {
+                    // on stocke la ligne, pour la mettre a jour ensuite avec le
+                    // sous total et l'ajouter
+                    groupList.add(createLignesForBienImmoPrincipal()[0]);
+                    groupList.add(createLignesForBienImmoPrincipal()[1]);
+
+                } else {
+                    if (csMembre.equals(IPCValeursPlanCalcul.CLE_FORTU_FOR_IMMO_BIENS_NON_HABIT_PRINCIPALE)
+                            && (getValeur(csMembre) != 0f)) {
+                        groupList.add(createLigneForGroupeList(csMembre, legendeMembre, valMembre, 2));
+                        lastValueInList = groupList.size() - 1;
+                    }
+                    if (csMembre.equals(IPCValeursPlanCalcul.CLE_FORTU_FOR_IMMO_BIENS_NON_HABITABLES)
+                            && (getValeur(csMembre) != 0f)) {
+                        groupList.add(createLigneForGroupeList(csMembre, legendeMembre, valMembre, 2));
+                        lastValueInList = groupList.size() - 1;
+                    }
+                }
+            }
+        } else// Sinon on affiche, cat obligatoire
+        {
+            float valeurHabitatPrincipal = getValeur(FOR_FORTUNE_IMOBILIERE[1]);
+            // Si présent on le traite en dessousde zéro
+            if (valeurHabitatPrincipal != 0) {
+                groupList.add(createLignesForBienImmoPrincipal()[0]);
+                groupList.add(createLignesForBienImmoPrincipal()[1]);
+            } else {
+                groupList.add(createLigneForGroupeList(cs, legende, val, 2));
+                lastValueInList = groupList.size() - 1;
+            }
+
+        }
+        if (lastValueInList == 0) {
+            lastValueInList = groupList.size() - 1;
+        }
+        // Valeur sous total
+        cs = IPCValeursPlanCalcul.CLE_FORTU_SOUS_TOTAL;
+        val = getValeur(cs);
+        PCValeurPlanCalculHandler valeurSousTotal = createValeurPlanCalcul(cs, val.toString(), ADDITION, NO_CSS_CLASS);
+
+        groupList.get(lastValueInList).setValCol3(valeurSousTotal);
+        groupList.get(lastValueInList).getValCol2().setCssClass(CSS_SOULIGNE);
+    }
+
+    private PCLignePlanCalculHandler[] createLignesForBienImmoPrincipal() {
+        // Tableau de retour
+        PCLignePlanCalculHandler[] tabBiensImmo = new PCLignePlanCalculHandler[2];
+        // Valeur et ligne bien immo
+        String cs = IPCValeursPlanCalcul.CLE_FORTU_FOR_IMMO_BIENS_IMMO_HABIT_PRINCIPALE;
+        String legende = getLegende(cs);
+        Float val = getValeur(cs);
+        // Valeur
+        PCValeurPlanCalculHandler valeurForBienImmoMobil = createValeurPlanCalcul(cs, val.toString(), ADDITION,
+                NO_CSS_CLASS);
+        // Ligne
+        PCLignePlanCalculHandler ligneForBienImmo = createLignePlanCalcul(cs, legende, valeurForBienImmoMobil,
+                VALEUR_VIDE, VALEUR_VIDE);
+        // Ajout de la ligne dans le tableau de retour
+        tabBiensImmo[0] = ligneForBienImmo;
+
+        // Valeur et ligne deduction fofaitaire
+        cs = IPCValeursPlanCalcul.CLE_FORTU_FOR_IMMO_DEDUCTION_FOFAITAIRE;
+        val = getValeur(cs);
+        PCValeurPlanCalculHandler valeurForBienImmoDedForf = createValeurPlanCalcul(cs, val.toString(),
+                PCGroupeFortuneHandler.SOUSTRACTION, CSS_SOULIGNE);
+
+        // Valeur deduite
+        cs = IPCValeursPlanCalcul.CLE_FORTU_FOR_IMMO_BIENS_PRINCIPAL_DEDUIT;
+        val = getValeur(cs);
+        // if(val<0f){
+        // val = 0f;
+        // }
+        PCValeurPlanCalculHandler valeurForBienImmoDeduit = createValeurPlanCalcul(cs, val.toString(), ADDITION,
+                NO_CSS_CLASS);
+
+        // Ligne
+        PCLignePlanCalculHandler ligneForBienImmoDeduit = createLignePlanCalcul(cs, legende, valeurForBienImmoDedForf,
+                valeurForBienImmoDeduit, VALEUR_VIDE);
+        // Ajout ligne dans tableu retour
+        tabBiensImmo[1] = ligneForBienImmoDeduit;
+        return tabBiensImmo;
     }
 
     /**
