@@ -1,5 +1,6 @@
 package globaz.osiris.db.print;
 
+import globaz.aquila.api.ICOEtape;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BStatement;
@@ -15,6 +16,16 @@ public class CACotisationsImpayeesProcess extends BProcess {
      */
     private static final long serialVersionUID = 1L;
     private String dateValue;
+    private final int SECTEUR_2 = 0;
+    private final int SECTEUR_9 = 1;
+    private final int SECTEUR_5_8 = 2;
+    private final int TOTAL = 3;
+
+    private final int TAB_POURSUITES = 0;
+    private final int TAB_SOMMATION = 1;
+    private final int TAB_SURCIS = 2;
+    private final int TAB_AUTRES = 3;
+
     /**
      * Secteur : 4 premiers chiffres de la rubrique. <br>
      * Exemple : Secteur 2 = 2000.xxxx.xxxx
@@ -22,9 +33,11 @@ public class CACotisationsImpayeesProcess extends BProcess {
     private double secteur2, secteur4_8, secteur9, total;
     private double[] tab_ante = new double[4];
     private double[] tab_revue = new double[4];
-
     private double[] tab_tot = new double[4];
-
+    private double[] tab_poursuites = new double[4];
+    private double[] tab_sommations = new double[4];
+    private double[] tab_surcis = new double[4];
+    private double[] tab_autres = new double[4];
     /**
      * Constructeur CICompteIndividuelProcess.
      */
@@ -77,8 +90,8 @@ public class CACotisationsImpayeesProcess extends BProcess {
 
             secteur();
             tab_revue[0] = secteur2;
-            tab_revue[1] = secteur4_8;
-            tab_revue[2] = secteur9;
+            tab_revue[1] = secteur9;
+            tab_revue[2] = secteur4_8;
             tab_revue[3] = total;
 
             aff = null;
@@ -103,8 +116,8 @@ public class CACotisationsImpayeesProcess extends BProcess {
 
             secteur();
             tab_ante[0] = secteur2;
-            tab_ante[1] = secteur4_8;
-            tab_ante[2] = secteur9;
+            tab_ante[1] = secteur9;
+            tab_ante[2] = secteur4_8;
             tab_ante[3] = total;
 
             for (int i = 0; (i <= 3) && !isAborted(); i++) {
@@ -141,11 +154,39 @@ public class CACotisationsImpayeesProcess extends BProcess {
             mgr_aff.cursorClose(statement);
             mgr_aff.setForDateCG(getDateValue());
             mgr_aff.setForPoursuite(true);
+            mgr_aff.setForSommations(false);
             mgr_aff.setForSursis(false);
+            statement = mgr_aff.cursorOpen(getTransaction());
+
+            while ((aff = (CACotisationsImpayees) mgr_aff.cursorReadNext(statement)) != null) {
+                if (isAborted()) {
+                    return false;
+                }
+                calculSecteurDetail(aff.getIdexterne(),TAB_POURSUITES ,aff.getMontant());
+            }
+
+
+            incProgressCounter();
+            if (isAborted()) {
+                return false;
+            }
+
+            // Sommations
+            mgr_aff.clear();
+            mgr_aff.cursorClose(statement);
+            mgr_aff.setForDateCG(getDateValue());
+            mgr_aff.setForSursis(false);
+            mgr_aff.setForPoursuite(false);
+            mgr_aff.setForSommations(true);
             mgr_aff.find(getTransaction());
-            double montantPoursuite = round(
-                    div(Double.parseDouble(((CACotisationsImpayees) mgr_aff.getFirstEntity()).getMontant())), 2);
-            list.setPoursuite(montantPoursuite);
+            statement = mgr_aff.cursorOpen(getTransaction());
+
+            while ((aff = (CACotisationsImpayees) mgr_aff.cursorReadNext(statement)) != null) {
+                if (isAborted()) {
+                    return false;
+                }
+                calculSecteurDetail(aff.getIdexterne(),TAB_SOMMATION ,aff.getMontant());
+            }
 
             incProgressCounter();
             if (isAborted()) {
@@ -154,20 +195,44 @@ public class CACotisationsImpayeesProcess extends BProcess {
 
             // Sursis
             mgr_aff.clear();
+            mgr_aff.cursorClose(statement);
             mgr_aff.setForDateCG(getDateValue());
             mgr_aff.setForSursis(true);
             mgr_aff.setForPoursuite(false);
+            mgr_aff.setForSommations(false);
             mgr_aff.find(getTransaction());
-            double montantSursis = round(
-                    div(Double.parseDouble(((CACotisationsImpayees) mgr_aff.getFirstEntity()).getMontant())), 2);
-            list.setSursis(montantSursis);
+            statement = mgr_aff.cursorOpen(getTransaction());
 
+            while ((aff = (CACotisationsImpayees) mgr_aff.cursorReadNext(statement)) != null) {
+                if (isAborted()) {
+                    return false;
+                }
+                calculSecteurDetail(aff.getIdexterne(),TAB_SURCIS ,aff.getMontant());
+            }
             incProgressCounter();
             if (isAborted()) {
                 return false;
             }
+            double totalPoursuite = 0.0,totalSommation = 0.0,totalSurcis = 0.0 ,totalAutres = 0.0;
 
-            list.populateSheetListe(tab_revue, tab_ante, tab_tot, getDateValue());
+            for (int i = 0; (i <= 2) && !isAborted(); i++) {
+                tab_poursuites[i] = round(div(tab_poursuites[i]), 2);
+                totalPoursuite += tab_poursuites[i];
+                tab_sommations[i] = round(div(tab_sommations[i]), 2);
+                totalSommation += tab_sommations[i];
+                tab_surcis[i] = round(div(tab_surcis[i]), 2);
+                totalSurcis += tab_surcis[i];
+                tab_autres[i] = tab_tot[i]- tab_poursuites[i]- tab_sommations[i]- tab_surcis[i];
+                totalAutres += tab_autres[i];
+            }
+            tab_poursuites[TOTAL] = totalPoursuite;
+            tab_sommations[TOTAL] = totalSommation;
+            tab_surcis[TOTAL] = totalSurcis;
+            tab_autres[TOTAL] = totalAutres;
+
+
+
+            list.populateSheetListe(tab_revue, tab_ante,tab_poursuites, tab_sommations,tab_surcis, tab_autres,tab_tot, getDateValue());
 
             incProgressCounter();
 
@@ -188,7 +253,7 @@ public class CACotisationsImpayeesProcess extends BProcess {
 
     /**
      * Total par secteur.
-     * 
+     *
      * @param ID
      *            : rubrique pour déterminer le secteur.
      * @param Montant
@@ -209,6 +274,39 @@ public class CACotisationsImpayeesProcess extends BProcess {
                 break;
         }
     }
+
+    public void calculSecteurDetail(String ID, int typeTableau ,String Montant) {
+        ID = ID.substring(0, 3); // Prend les premiers chiffres de la rubrique pour le secteur.
+
+        int id = Integer.parseInt(ID);
+        switch (id) {
+            case 200:
+                addSecteurDetail(SECTEUR_2,typeTableau,Double.parseDouble(Montant));
+                break;
+            case 900:
+                addSecteurDetail(SECTEUR_9,typeTableau,Double.parseDouble(Montant));
+                break;
+            default:
+                addSecteurDetail(SECTEUR_5_8,typeTableau,Double.parseDouble(Montant));
+                break;
+        }
+    }
+
+
+    private void addSecteurDetail(int indexSecteur,int typeTableau, double parseDouble) {
+        switch (typeTableau){
+            case TAB_POURSUITES:
+                tab_poursuites[indexSecteur]+=parseDouble;
+                break;
+            case TAB_SOMMATION:
+                tab_sommations[indexSecteur]+=parseDouble;
+                break;
+            case TAB_SURCIS:
+                tab_surcis[indexSecteur]+=parseDouble;
+                break;
+        }
+    }
+
 
     /**
      * Réinitialise les membres (secteurs et total).

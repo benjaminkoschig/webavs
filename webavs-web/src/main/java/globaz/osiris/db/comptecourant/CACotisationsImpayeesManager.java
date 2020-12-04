@@ -1,5 +1,6 @@
 package globaz.osiris.db.comptecourant;
 
+import globaz.aquila.api.ICOEtape;
 import globaz.aquila.api.helper.ICOEtapeHelper;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
@@ -38,6 +39,7 @@ public class CACotisationsImpayeesManager extends BManager {
     private boolean forDateAnterieur = false;
     private String forDateCG = "";
     private boolean forPoursuite = false;
+    private boolean forSommations = false;
     private boolean forSursis = false;
 
     private String order = "";
@@ -55,9 +57,9 @@ public class CACotisationsImpayeesManager extends BManager {
     protected String _getFields(BStatement statement) {
         String select = "";
 
-        if (!(isForPoursuite() || isForSursis())) {
+//        if (!(isForPoursuite() || isForSursis())) {
             select += "cc.idexterne,";
-        }
+//        }
         select += "sum(montant) as " + CACotisationsImpayees.FIELD_TOTAL_MONTANT;
 
         return select;
@@ -179,6 +181,15 @@ public class CACotisationsImpayeesManager extends BManager {
             sqlWhere.append(ICOEtapeHelper.ETAPE_POURSUITE_SQL_NOT_IN_FORMAT);
             sqlWhere.append(")");
         }
+        if(isForSommations()){
+            if (sqlWhere.length() != 0) {
+                sqlWhere.append(CACotisationsImpayeesManager.AND);
+            }
+            sqlWhere.append(" se.idLastEtatAquila"
+                    + CACotisationsImpayeesManager.IN + "(");
+            sqlWhere.append(ICOEtape.CS_SOMMATION_ENVOYEE);
+            sqlWhere.append(")");
+        }
 
         sqlWhere.append(CACotisationsImpayeesManager.AND);
         sqlWhere.append("cc.idexterne");
@@ -190,9 +201,7 @@ public class CACotisationsImpayeesManager extends BManager {
         sqlWhere.append(CACotisationsImpayeesManager.NOT_LIKE);
         sqlWhere.append(" '%.1106.%' ");
 
-        if (!(isForPoursuite() || isForSursis())) {
-            sqlWhere.append(getGroupBy());
-        }
+        sqlWhere.append(getGroupBy());
 
         return sqlWhere.toString();
     }
@@ -348,5 +357,13 @@ public class CACotisationsImpayeesManager extends BManager {
      */
     public void setForSursis(boolean forSursis) {
         this.forSursis = forSursis;
+    }
+
+    public boolean isForSommations() {
+        return forSommations;
+    }
+
+    public void setForSommations(boolean forSommations) {
+        this.forSommations = forSommations;
     }
 }

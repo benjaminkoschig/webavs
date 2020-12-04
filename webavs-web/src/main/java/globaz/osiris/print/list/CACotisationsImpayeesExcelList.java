@@ -6,8 +6,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 
 public class CACotisationsImpayeesExcelList extends CAAbstractListExcel {
     private static final String NUMERO_REFERENCE_INFOROM = "0130GCA";
-    public double poursuite = 0.0;
-    public double sursis = 0.0;
+
 
     // créé la feuille xls
     public CACotisationsImpayeesExcelList(BSession session) {
@@ -17,20 +16,6 @@ public class CACotisationsImpayeesExcelList extends CAAbstractListExcel {
     @Override
     public String getNumeroInforom() {
         return CACotisationsImpayeesExcelList.NUMERO_REFERENCE_INFOROM;
-    }
-
-    /**
-     * @return the poursuite
-     */
-    public double getPoursuite() {
-        return poursuite;
-    }
-
-    /**
-     * @return the sursis
-     */
-    public double getSursis() {
-        return sursis;
     }
 
     /**
@@ -78,7 +63,7 @@ public class CACotisationsImpayeesExcelList extends CAAbstractListExcel {
     /**
      * initialisation de la feuille xls
      */
-    public HSSFSheet populateSheetListe(double[] tab_sous, double[] tab_ante, double[] tab_tot, String dateValeur)
+    public HSSFSheet populateSheetListe(double[] tab_sous, double[] tab_ante,double[] tab_poursuites,double[] tab_sommations,double[] tab_surcis, double[] tab_autres,double[] tab_tot, String dateValeur)
             throws Exception {
         // création de la page
         initListe(dateValeur);
@@ -89,54 +74,56 @@ public class CACotisationsImpayeesExcelList extends CAAbstractListExcel {
         createRow();
         this.createCell(getSession().getLabel("COTIMP_ANTERIEUR"), getStyleListTitleLeft());
         this.createCell(tab_ante[0], getStyleListRight());
-        this.createCell(tab_ante[2], getStyleListRight());
         this.createCell(tab_ante[1], getStyleListRight());
+        this.createCell(tab_ante[2], getStyleListRight());
         this.createCell(tab_ante[3], getStyleListRight());
 
         createRow();
         this.createCell(getSession().getLabel("COTIMP_REVUE"), getStyleListTitleLeft());
         this.createCell(tab_sous[0], getStyleListRight());
-        this.createCell(tab_sous[2], getStyleListRight());
         this.createCell(tab_sous[1], getStyleListRight());
+        this.createCell(tab_sous[2], getStyleListRight());
         this.createCell(tab_sous[3], getStyleListRight());
 
         createRow();
         this.createCell(getSession().getLabel("COTIMP_TOTAL_TITLE"), getStyleListTitleLeft());
-        this.createCell("", getStyleListRight());
-        this.createCell("", getStyleListRight());
-        this.createCell("", getStyleListRight());
+        this.createCell(tab_tot[0], getStyleListRight());
+        this.createCell(tab_tot[1], getStyleListRight());
+        this.createCell(tab_tot[2], getStyleListRight());
         this.createCell(tab_tot[3], getStyleListRight());
 
         createRow();
         this.createCell(getSession().getLabel("COTIMP_POURSUITE"), getStyleListTitleLeft());
-        this.createCell("", getStyleListRight());
-        this.createCell("", getStyleListRight());
-        this.createCell("", getStyleListRight());
-        this.createCell(getPoursuite(), getStyleListRight());
+        this.createCell(tab_poursuites[0], getStyleListRight());
+        this.createCell(tab_poursuites[1], getStyleListRight());
+        this.createCell(tab_poursuites[2], getStyleListRight());
+        this.createCell(tab_poursuites[3], getStyleListRight());
+
+
+        createRow();
+        this.createCell(getSession().getLabel("COTIMP_SOMMATION"), getStyleListTitleLeft());
+        this.createCell(tab_sommations[0], getStyleListRight());
+        this.createCell(tab_sommations[1], getStyleListRight());
+        this.createCell(tab_sommations[2], getStyleListRight());
+        this.createCell(tab_sommations[3], getStyleListRight());
+
 
         createRow();
         this.createCell(getSession().getLabel("COTIMP_SURSIS"), getStyleListTitleLeft());
-        this.createCell("", getStyleListRight());
-        this.createCell("", getStyleListRight());
-        this.createCell("", getStyleListRight());
-        this.createCell(getSursis(), getStyleListRight());
+        this.createCell(tab_surcis[0], getStyleListRight());
+        this.createCell(tab_surcis[1], getStyleListRight());
+        this.createCell(tab_surcis[2], getStyleListRight());
+        this.createCell(tab_surcis[3], getStyleListRight());
 
+        createRow();
+        this.createCell(getSession().getLabel("COTIMP_AUTRES"), getStyleListTitleLeft());
+        this.createCell(tab_autres[0], getStyleListRight());
+        this.createCell(tab_autres[1], getStyleListRight());
+        this.createCell(tab_autres[2], getStyleListRight());
+        this.createCell(tab_autres[3], getStyleListRight());
         return currentSheet;
     }
 
-    /**
-     * @param poursuite
-     *            the poursuite to set
-     */
-    public void setPoursuite(double poursuite) {
-        this.poursuite = poursuite;
-    }
 
-    /**
-     * @param sursis
-     *            the sursis to set
-     */
-    public void setSursis(double sursis) {
-        this.sursis = sursis;
-    }
+
 }
