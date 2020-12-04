@@ -26,10 +26,20 @@ public class PCTaxeJournaliereHomeHandler {
 
     public static String getPrix(TaxeJournaliereHome taxeJournaliereHome, BSession objSession)
             throws JadeApplicationServiceNotAvailableException {
+        return getPrix(taxeJournaliereHome, objSession, true);
+    }
+
+    public static String getPrix(TaxeJournaliereHome taxeJournaliereHome, BSession objSession, boolean prixManuel)
+            throws JadeApplicationServiceNotAvailableException {
 
         String prix = null;
+
         try {
-            prix = PegasusServiceLocator.getTaxeJournaliereHomeService().getPrixTypeChambreInMap(taxeJournaliereHome);
+            if(prixManuel && !JadeStringUtil.isBlankOrZero(taxeJournaliereHome.getSimpleTaxeJournaliereHome().getPrixJournalier())) {
+                prix = taxeJournaliereHome.getSimpleTaxeJournaliereHome().getPrixJournalier();
+            } else {
+                prix = PegasusServiceLocator.getTaxeJournaliereHomeService().getPrixTypeChambreInMap(taxeJournaliereHome);
+            }
 
             if (!JadeStringUtil.isEmpty(prix)) {
                 prix = PCCommonHandler.getCurrencyFormtedDefault(prix);
@@ -42,6 +52,7 @@ public class PCTaxeJournaliereHomeHandler {
         } catch (Exception e) {
             return "error prix" + e.getMessage() + " c " + e.getCause() + " " + e.toString();
         }
+
         return prix;
     }
 

@@ -169,6 +169,7 @@
 			<select-field name="taxeJournalierePrimeAPayer" field-ref="simpleTaxeJournaliereHome.primeAPayer"/>
 			<select-field name="taxeJournaliereDateEntreeHome" field-ref="simpleTaxeJournaliereHome.dateEntreeHome"/>
 			<select-field name="taxeJournaliereLongueDuree" field-ref="simpleTaxeJournaliereHome.montantFraisLongueDuree"/>
+			<select-field name="taxeJournalierePrixJournalier" field-ref="simpleTaxeJournaliereHome.prixJournalier"/>
 			<select-field name="sejourMoisPartielPrixJournalier" field-ref="simpleSejourMoisPartielHome.prixJournalier"/>
 			<select-field name="sejourMoisPartielFraisNourriture" field-ref="simpleSejourMoisPartielHome.fraisNourriture"/>
 			<select-field name="sejourMoisPartielNombreJour" field-ref="simpleSejourMoisPartielHome.nbJours"/>

@@ -59,13 +59,18 @@ public class StrategieTaxeJournaliere extends StrategieCalculDepense {
         String csMbrFamille = donnee.getCsRoleFamille();
         String strFraisLongueDuree = null;
         String csPeriodeServiceEtat = null;
+        String prixJournalier = donnee.getTaxeJournalierePrixJournalier();
 
         CalculDonneesHome homeCalcul = getHomeForTypeChambre(donneesHomes, idTypeChambre);
 
         if (null == homeCalcul) {
             throw new CalculBusinessException("pegasus.calcul.strategie.taxeJournaliere.home.integrity");
         } else {
-            strPrixChambre = homeCalcul.getPrixJournalier();
+            if(!JadeStringUtil.isBlankOrZero(prixJournalier) ) {
+                strPrixChambre = prixJournalier;
+            } else {
+                strPrixChambre = homeCalcul.getPrixJournalier();
+            }
             csTypeChambre = homeCalcul.getCsTypeChambre();
             csCategorieTypeChambre = homeCalcul.getCsCategorieArgentPoche();
             idHome = homeCalcul.getIdHome();

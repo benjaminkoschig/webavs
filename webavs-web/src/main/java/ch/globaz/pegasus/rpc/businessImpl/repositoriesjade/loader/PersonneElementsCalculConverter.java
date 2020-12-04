@@ -148,7 +148,13 @@ public class PersonneElementsCalculConverter {
             TypeChambrePrix typeChambrePrix = resolveTypeChambre(parameters, dateDebut, taxeJournaliereHome);
             Montant homeTaxeHomeTotal = typeChambrePrix.getPrix().annualise(dateDebut);
 
+            Montant prixJournalier = taxeJournaliereHome.getPrixJournalier().annualise(dateDebut);
+            if(!prixJournalier.isZero()){
+                homeTaxeHomeTotal = prixJournalier;
+            }
+
             perElCal.setHomeTaxeHomeTotal(homeTaxeHomeTotal);
+
             Montant plafond = isCantonValais
                     ? resolvePlafondHome(parameters.getVariablesMetier(), typeChambrePrix.getServiceEtat())
                             .annualise(dateDebut)

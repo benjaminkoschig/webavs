@@ -70,6 +70,7 @@
 			<select-field name="taxeJournaliereDateEntreeHome" field-ref="simpleTaxeJournaliereHome.dateEntreeHome"/>-->
 			<select-field name="taxeJournaliereIdHome" field-ref="simpleTaxeJournaliereHome.idHome"/>
 			<select-field name="taxeJournaliereIsVersementDirect" field-ref="simpleTaxeJournaliereHome.isVersementDirect"/>
+			<select-field name="taxeJournalierePrixJournalier" field-ref="simpleTaxeJournaliereHome.prixJournalier"/>
 			<select-field name="sejourMoisPartielPrixJournalier" field-ref="simpleSejourMoisPartielHome.prixJournalier"/>
 			<select-field name="sejourMoisPartielFraisNourriture" field-ref="simpleSejourMoisPartielHome.fraisNourriture"/>
 			<select-field name="sejourMoisPartielNombreJour" field-ref="simpleSejourMoisPartielHome.nbJours"/>

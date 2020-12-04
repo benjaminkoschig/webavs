@@ -12,9 +12,10 @@ public class TaxeJournaliereHome extends DonneeFinanciere {
     private final boolean participationLca;
     private final Date dateEntreeHome;
     private final String idTypeChambre;
+    private final Montant prixJournalier;
 
     public TaxeJournaliereHome(Montant montantJournalierLca, Montant primeAPayer, boolean participationLca,
-            Date dateEntreeHome, String idTypeChambre, Montant fraisLongueDuree, DonneeFinanciere donneeFinanciere) {
+            Date dateEntreeHome, String idTypeChambre, Montant fraisLongueDuree, Montant prixJournalier, DonneeFinanciere donneeFinanciere) {
         super(donneeFinanciere);
         this.dateEntreeHome = dateEntreeHome;
         this.participationLca = participationLca;
@@ -23,6 +24,7 @@ public class TaxeJournaliereHome extends DonneeFinanciere {
         this.montantJournalierLca = montantJournalierLca.addJournalierPeriodicity();
         this.primeAPayer = primeAPayer.addMensuelPeriodicity();
         this.fraisLongueDuree = fraisLongueDuree.addJournalierPeriodicity();
+        this.prixJournalier = prixJournalier.addJournalierPeriodicity();
     }
 
     public Montant computMontantContributionLcaAnnuel(int nbDayInYear) {
@@ -54,6 +56,10 @@ public class TaxeJournaliereHome extends DonneeFinanciere {
 
     public Montant getFraisLongueDuree() {
         return fraisLongueDuree;
+    }
+
+    public Montant getPrixJournalier() {
+        return prixJournalier;
     }
 
     @Override

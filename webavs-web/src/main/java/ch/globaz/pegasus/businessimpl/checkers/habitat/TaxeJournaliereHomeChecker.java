@@ -1,10 +1,14 @@
 package ch.globaz.pegasus.businessimpl.checkers.habitat;
 
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
 import globaz.jade.exception.JadePersistenceException;
 import ch.globaz.pegasus.business.exceptions.models.habitat.LoyerException;
 import ch.globaz.pegasus.business.exceptions.models.habitat.TaxeJournaliereHomeException;
 import ch.globaz.pegasus.business.models.habitat.TaxeJournaliereHome;
 import ch.globaz.pegasus.businessimpl.checkers.PegasusAbstractChecker;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import globaz.pegasus.utils.PCTaxeJournaliereHomeHandler;
 
 public class TaxeJournaliereHomeChecker extends PegasusAbstractChecker {
 
@@ -13,22 +17,16 @@ public class TaxeJournaliereHomeChecker extends PegasusAbstractChecker {
         if (!PegasusAbstractChecker.threadOnError()) {
             TaxeJournaliereHomeChecker.checkIntegrity(taxeJournaliereHome);
 
-            // try {
-            // // Si la date de fin est rempli il faut définir un motifi de sortie
-            // if (EPCProperties.GESTION_ANNONCES_LAPRAMS.getBooleanValue()) {
-            //
-            // if (!taxeJournaliereHome.getSimpleDonneeFinanciereHeader().getIsCopieFromPreviousVersion()
-            // && !JadeStringUtil.isEmpty(taxeJournaliereHome.getSimpleDonneeFinanciereHeader()
-            // .getDateFin())
-            // && JadeStringUtil.isEmpty(taxeJournaliereHome.getSimpleTaxeJournaliereHome()
-            // .getCsDestinationSortie())) {
-            //
-            // }
-            // }
-            // } catch (PropertiesException e) {
-            // throw new TaxeJournaliereHomeException("Unable to obtain the propertie "
-            // + EPCProperties.GESTION_ANNONCES_LAPRAMS.getProperty(), e);
-            // }
+            try {
+                String prix = PCTaxeJournaliereHomeHandler.getPrix(taxeJournaliereHome, BSessionUtil.getSessionFromThreadContext(), false);
+                if(taxeJournaliereHome.getSimpleTaxeJournaliereHome().getPrixJournalier() != null
+                        && taxeJournaliereHome.getSimpleTaxeJournaliereHome().getPrixJournalier().equals(prix)) {
+                    taxeJournaliereHome.getSimpleTaxeJournaliereHome().setPrixJournalier(null);
+                }
+            } catch (JadeApplicationServiceNotAvailableException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 

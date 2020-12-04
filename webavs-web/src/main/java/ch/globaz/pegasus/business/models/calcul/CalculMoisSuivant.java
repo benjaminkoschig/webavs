@@ -253,6 +253,7 @@ public class CalculMoisSuivant extends JadeComplexModel {
 
     private Boolean taxeJournaliereIsVersementDirect = false;
 
+    private String taxeJournalierePrixJournalier = null;
 
     // private Boolean taxeJournaliereIsParticipationLCA = null;
 
@@ -2423,6 +2424,14 @@ public class CalculMoisSuivant extends JadeComplexModel {
 
     public void setSejourMoisPartielHome(String sejourMoisPartielHome) {
         this.sejourMoisPartielHome = sejourMoisPartielHome;
+    }
+
+    public String getTaxeJournalierePrixJournalier() {
+        return taxeJournalierePrixJournalier;
+    }
+
+    public void setTaxeJournalierePrixJournalier(String taxeJournalierePrixJournalier) {
+        this.taxeJournalierePrixJournalier = taxeJournalierePrixJournalier;
     }
 
     /*

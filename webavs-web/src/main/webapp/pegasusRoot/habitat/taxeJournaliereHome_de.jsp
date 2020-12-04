@@ -170,7 +170,7 @@ var dialogMontantLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOM
 														data-g-bubble='text:tooltipTextLibelle,wantMarker:false,position:right'/>
 														
 												<span style="float:right"><%=viewBean.getPrix(donnee,objSession)%></span>
-											</td>									
+											</td>
 											<td><%=PCCommonHandler.getCurrencyFormtedDefault(donnee.getSimpleTaxeJournaliereHome().getMontantJournalierLCA()) %></td>
 											<td><%=PCCommonHandler.getCurrencyFormtedDefault(donnee.getSimpleTaxeJournaliereHome().getPrimeAPayer()) %></td>
 											<td><%=PCTaxeJournaliereHomeHandler.getLibelleAssurenceMaladie(donnee.getTiersAssurenceMaladie(),objSession)%></td>
@@ -200,6 +200,9 @@ var dialogMontantLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOM
 								<table>
 								
 									<tr>
+										<td><ct:FWLabel key="JSP_PC_SEJOUR_MOIS_PARTIEL_D_PRIX_JOURNALIER"/></td>
+										<td><input type="text" class="prixJournalier" data-g-amount="periodicity:D"/></td>
+
 										<td><a class="toHomeLink"><ct:FWLabel key="JSP_PC_TAXE_JOURNALIERE_HOME_D_HOME" /></a></td>
 										<td><input type="hidden" class="idHome" />
 											<ct:widget id='<%="homeWidget"+membreFamille.getId()%>' name='<%="homeWidget"+membreFamille.getId()%>' styleClass="selecteurHome libelleHome"

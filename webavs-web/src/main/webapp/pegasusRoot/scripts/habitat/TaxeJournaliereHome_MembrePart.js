@@ -37,11 +37,9 @@ function TaxeJournaliereHome (container) {
 				.find('.detailPrixChambres').attr('data-g-desc-home',$data.find('libelleHome').text()).end()
 				.find('.detailPrixChambres').attr('data-id-chambre',this.idTypeChambre).end()
 				.find('.detailPrixChambres').attr('data-dateDebut',$data.find('dateDebut').text()).end()
-				.find('.detailPrixChambres').attr('data-dateFin',$data.find('dateFin').text()); 	
-		
-		
-	
-		
+				.find('.detailPrixChambres').attr('data-dateFin',$data.find('dateFin').text()).end()
+				.find('.prixJournalier').val($data.find('prixJournalier').text()).end();
+
 		// champ.
 		this.idEntity = idEntity;
 	};
@@ -56,6 +54,7 @@ function TaxeJournaliereHome (container) {
 	this.getParametres = function ($data) {
 		return {
 			'taxeJournaliereHome.simpleTaxeJournaliereHome.idTypeChambre': this.detail.find('[name=idTypeChambre]').val(),
+			'taxeJournaliereHome.simpleTaxeJournaliereHome.prixJournalier': this.detail.find('.prixJournalier').val(),
 			'taxeJournaliereHome.simpleTaxeJournaliereHome.dateEcheance': this.detail.find('[name=dateEcheance]').val(),
 			'taxeJournaliereHome.simpleTaxeJournaliereHome.idAssureurMaladie': this.detail.find('.idAssureurMaladie').val(),
 			'taxeJournaliereHome.simpleTaxeJournaliereHome.idHome': this.detail.find('.idHome').val(),
@@ -136,7 +135,9 @@ function TaxeJournaliereHome (container) {
 								that.$dialogue.dialog("open");
 							});
 						}
-
+						if(that.detail.find('.prixJournalier').val() == 0.00){
+							that.updatePrixJournalier();
+						}
 					}
 				});
 			}
@@ -179,6 +180,36 @@ function TaxeJournaliereHome (container) {
 		this.colorTableRows(false);
 	});
 	this.showOrHideDetail = function () {
+	};
+
+	this.updatePrixJournalier = function (){
+		var dateDebut = this.detail.find('[name=dateDebut]').val();
+		var dateFin = this.detail.find('[name=dateFin]').val();
+		var idTypeChambre = this.detail.find('.listTypechambre :selected').val();
+		var idHome = this.detail.find('.idHome').val();
+		if(!dateFin){
+			dateFin = 0;
+		}
+
+		if(dateDebut && idTypeChambre) {
+			var affichage_decompte_service_call_options = {
+				serviceClassName: 'ch.globaz.pegasus.business.services.models.home.HomeService',
+				serviceMethodName: 'getListePrixChambres',
+				parametres: idHome+","+idTypeChambre+","+dateDebut+","+dateFin,
+				callBack: function (data){
+					that.callback_prix_chambre(data);
+				}
+			}
+			globazNotation.readwidget.options = affichage_decompte_service_call_options;
+			globazNotation.readwidget.read();
+		}
+	};
+
+	this.callback_prix_chambre = function (data) {
+		var montant = data.montantsPeriode[0];
+		if(montant != null) {
+			this.detail.find('.prixJournalier').val(montant.prixChambre.montant);
+		}
 	};
 }
 
@@ -223,6 +254,12 @@ $(function () {
 			zone.doAddPeriode = true;
 			zone.validateEdition();
 		}).end()
+			.find('[name=dateDebut]').change(function () {
+			zone.updatePrixJournalier();
+		}).end()
+			.find('[name=dateFin]').change(function () {
+			zone.updatePrixJournalier();
+		}).end()
 		.find('.listTypechambre').change(function () {
 			
 			var idTypeChambre = $('.listTypechambre :selected').val();
@@ -232,11 +269,10 @@ $(function () {
 			$that.find('.detailPrixChambres').attr('data-id-chambre',idTypeChambre);
 			$that.find('.detailPrixChambres').attr('data-dateDebut',dateDebut);
 			$that.find('.detailPrixChambres').attr('data-dateFin',dateFin);
+			zone.updatePrixJournalier();
 			
 		}).end();
 		zone.addTypeChambre();
-
-
 	});
 });
 

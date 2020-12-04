@@ -268,6 +268,8 @@ public class CalculDonneesCC extends JadeComplexModel {
         this.taxeJournaliereIsDeplafonner = taxeJournaliereIsDeplafonner;
     }
 
+    private String taxeJournalierePrixJournalier = null;
+
     private String titreDroitGarde = null;
 
     private String titreFractionDenominateur = null;
@@ -2399,5 +2401,13 @@ public class CalculDonneesCC extends JadeComplexModel {
 
     public void setSejourMoisPartielHome(String sejourMoisPartielHome) {
         this.sejourMoisPartielHome = sejourMoisPartielHome;
+    }
+
+    public String getTaxeJournalierePrixJournalier() {
+        return taxeJournalierePrixJournalier;
+    }
+
+    public void setTaxeJournalierePrixJournalier(String taxeJournalierePrixJournalier) {
+        this.taxeJournalierePrixJournalier = taxeJournalierePrixJournalier;
     }
 }

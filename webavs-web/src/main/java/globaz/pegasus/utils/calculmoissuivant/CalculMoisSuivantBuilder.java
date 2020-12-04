@@ -479,6 +479,9 @@ public class CalculMoisSuivantBuilder {
 
         PrixChambre pchambre = (PrixChambre) search.getSearchResults()[0];
         String montant = pchambre.getSimplePrixChambre().getPrixJournalier();
+        if(!JadeStringUtil.isBlankOrZero(donneeTaxesJournaliereHome.getTaxeJournalierePrixJournalier())){
+            montant = donneeTaxesJournaliereHome.getTaxeJournalierePrixJournalier();
+        }
         String designation = pchambre.getTypeChambre().getSimpleTypeChambre().getDesignation();
         String type = pchambre.getTypeChambre().getSimpleTypeChambre().getCsCategorie();
         String descHome = pchambre.getTypeChambre().getHome().getSimpleHome().getNomBatiment();

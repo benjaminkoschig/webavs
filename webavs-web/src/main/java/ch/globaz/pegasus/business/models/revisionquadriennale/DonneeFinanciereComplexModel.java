@@ -226,6 +226,7 @@ public class DonneeFinanciereComplexModel extends JadeComplexModel {
     private String taxeJournaliereMontantJournalierLCA = null;
     private String taxeJournalierePrimeAPayer = null;
     private String taxeJournaliereLongueDuree = null;
+    private String taxeJournalierePrixJournalier = null;
 
     private String sejourMoisPartielPrixJournalier = null;
     private String sejourMoisPartielFraisNourriture = null;
@@ -2330,5 +2331,13 @@ public class DonneeFinanciereComplexModel extends JadeComplexModel {
 
     public void setDegreInvalidite(String degreInvalidite) {
         this.degreInvalidite = degreInvalidite;
+    }
+
+    public String getTaxeJournalierePrixJournalier() {
+        return taxeJournalierePrixJournalier;
+    }
+
+    public void setTaxeJournalierePrixJournalier(String taxeJournalierePrixJournalier) {
+        this.taxeJournalierePrixJournalier = taxeJournalierePrixJournalier;
     }
 }

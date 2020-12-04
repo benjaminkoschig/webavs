@@ -30,6 +30,7 @@
 <%@page import="globaz.pegasus.utils.PCTaxeJournaliereHomeHandler"%><message>
 	<contenu>
 		<idTypeChambre><%=PCCommonHandler.getStringDefault(entity.getIdTypeChambre())%></idTypeChambre>
+		<prixJournalier><%=PCCommonHandler.getCurrencyFormtedDefault(viewBean.getTaxeJournaliereHome().getSimpleTaxeJournaliereHome().getPrixJournalier()) %></prixJournalier>
 		<dateEcheance><%=entity.getDateEcheance()%></dateEcheance>
 		<idAssureurMaladie><%=PCCommonHandler.getStringDefault(entity.getIdAssureurMaladie())%></idAssureurMaladie>
 		<libelleAssureurMaladie><%=PCTaxeJournaliereHomeHandler.getLibelleAssurenceMaladie(viewBean.getTaxeJournaliereHome().getTiersAssurenceMaladie(),objSession)%></libelleAssureurMaladie>

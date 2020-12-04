@@ -215,7 +215,7 @@ public class ConvertAllDonneeFinanciereTest {
         dr.setTaxeJournaliereLongueDuree("123");
         TaxeJournaliereHome result = convert(dr).getTaxesJournaliereHome().get(0);
         TaxeJournaliereHome expected = new TaxeJournaliereHome(new Montant(11), new Montant(123), true, new Date(
-                "21.01.2015"), "1", new Montant(123), BuilderDf.createDF());
+                "21.01.2015"), "1", new Montant(123), new Montant(0), BuilderDf.createDF());
 
         assertEquals(expected, result);
     }

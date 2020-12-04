@@ -14,6 +14,7 @@ public class SimpleTaxeJournaliereHome extends JadeSimpleModel {
     private String csDestinationSortie = null;
     private String dateEcheance = null;
     private String dateEntreeHome = null;
+    private String prixJournalier = null;
     private String idAssureurMaladie = null;
     private String idDonneeFinanciereHeader = null;
     private String idHome = null;
@@ -25,6 +26,7 @@ public class SimpleTaxeJournaliereHome extends JadeSimpleModel {
     private Boolean isDeplafonner = null;
     private String montantFraisLongueDuree = null;
     private Boolean isVersementDirect = Boolean.FALSE;
+    private Boolean isCopie = Boolean.FALSE;
 
     private String idAdressePaiement = null;
 
@@ -218,5 +220,21 @@ public class SimpleTaxeJournaliereHome extends JadeSimpleModel {
 
     public void setIdAdressePaiement(String idAdressePaiement) {
         this.idAdressePaiement = idAdressePaiement;
+    }
+
+    public Boolean getCopie() {
+        return isCopie;
+    }
+
+    public void setCopie(Boolean copie) {
+        isCopie = copie;
+    }
+
+    public String getPrixJournalier() {
+        return prixJournalier;
+    }
+
+    public void setPrixJournalier(String prixJournalier) {
+        this.prixJournalier = prixJournalier;
     }
 }

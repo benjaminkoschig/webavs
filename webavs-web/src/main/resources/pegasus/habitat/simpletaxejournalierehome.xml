@@ -21,6 +21,7 @@
 			<field name="montantFraisLongueDuree" column="CSMFLD" type="NUMERIC"  dataType="NUMERIC(15,2)" mandatory="false"  comment="MONTANT_FRAIS_LONGUE_DUREE"/>
 			<field name="isVersementDirect" column="CSVEDT" type="BOOLEAN" mandatory="false"/>
 			<field name="idAdressePaiement" column="CSIADP" type="NUMERIC" mandatory="false"/>
+			<field name="prixJournalier" column="CSPRJO" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false"/>
 		</fields>
 		<search-definition>
 			<search-group operator="AND">
