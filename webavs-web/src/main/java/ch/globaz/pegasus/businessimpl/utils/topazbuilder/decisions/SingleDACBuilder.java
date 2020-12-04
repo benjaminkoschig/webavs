@@ -1034,6 +1034,9 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
                 || codeAmal.equals(EPCCodeAmal.CODE_UNDEFINED.getProperty()) || JadeStringUtil.isBlankOrZero(codeAmal)) {
             displayAmal = false;
             amaltexteReforme = null;
+        } else if(codeAmal.equals(EPCCodeAmal.CODE_ADAPTATION.getProperty())) {
+            amaltexte = replaceDateDecisionAmalInString(babelDoc.getTextes(5).getTexte(33).getDescription());
+            amaltexteReforme = replaceDateDecisionAmalInString(babelDoc.getTextes(5).getTexte(34).getDescription());
         }
 
         if (displayAmal) {

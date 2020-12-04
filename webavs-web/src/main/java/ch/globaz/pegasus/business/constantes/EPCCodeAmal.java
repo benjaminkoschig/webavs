@@ -11,7 +11,8 @@ public enum EPCCodeAmal {
     CODE_J("J"),
     CODE_K("K"),
     CODE_UNDEFINED("U"),
-    CODE_STANDARD("X");
+    CODE_STANDARD("X"),
+    CODE_ADAPTATION("Z");
 
     private String property;
 

@@ -1,5 +1,7 @@
 package ch.globaz.pegasus.businessimpl.services.models.decision;
 
+import ch.globaz.pegasus.business.constantes.*;
+import ch.globaz.pegasus.business.models.decision.DecisionApresCalcul;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.externe.IPRConstantesExternes;
 import globaz.globall.db.BSessionUtil;
@@ -14,17 +16,13 @@ import globaz.jade.log.business.JadeBusinessMessageLevels;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.osiris.external.IntRole;
+import globaz.pegasus.utils.AmalUtilsForDecisionsPC;
 import globaz.pegasus.utils.PCUserHelper;
 import java.util.ArrayList;
 import java.util.List;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.osiris.business.service.CABusinessServiceLocator;
-import ch.globaz.pegasus.business.constantes.EPCCodeAmal;
-import ch.globaz.pegasus.business.constantes.EPCProperties;
-import ch.globaz.pegasus.business.constantes.IPCDecision;
-import ch.globaz.pegasus.business.constantes.IPCDroits;
-import ch.globaz.pegasus.business.constantes.IPCPCAccordee;
 import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
 import ch.globaz.pegasus.business.exceptions.models.process.AdaptationException;
@@ -225,7 +223,7 @@ public class DecisionAdaptationServiceImpl extends PegasusAbstractServiceImpl im
 
         simpleDecisionApresCalcul.setAllocNonActif(false);
         simpleDecisionApresCalcul.setAnnuleEtRemplacePrec(false);
-        simpleDecisionApresCalcul.setCodeAmal(EPCCodeAmal.CODE_UNDEFINED.getProperty());
+        simpleDecisionApresCalcul.setCodeAmal(EPCCodeAmal.CODE_ADAPTATION.getProperty());
         simpleDecisionApresCalcul.setDateDecisionAmal("");
         simpleDecisionApresCalcul.setCsTypePreparation(IPCDecision.CS_PREP_STANDARD);
 
