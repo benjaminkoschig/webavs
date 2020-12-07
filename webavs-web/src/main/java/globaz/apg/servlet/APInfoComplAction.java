@@ -4,6 +4,7 @@
 package globaz.apg.servlet;
 
 import globaz.apg.db.droits.APDroitLAPG;
+import globaz.apg.vb.droits.APDroitAPGDTO;
 import globaz.apg.vb.droits.APInfoComplViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
@@ -14,6 +15,8 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.servlet.PRDefaultAction;
+import globaz.prestation.tools.PRSessionDataContainerHelper;
+
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -173,6 +176,9 @@ public class APInfoComplAction extends PRDefaultAction {
             droit.setSession((BSession) mainDispatcher.getSession());
             droit.setIdDroit(idDroit);
             droit.retrieve();
+
+            // on met à jour le dto pour le back
+            PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO, new APDroitAPGDTO(droit));
 
             // creation ou chargement de l'info. compl.
             APInfoComplViewBean infoCompl = new APInfoComplViewBean();

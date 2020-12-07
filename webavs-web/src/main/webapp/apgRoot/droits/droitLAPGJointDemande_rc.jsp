@@ -17,7 +17,7 @@
 <%
     idEcran = "PAP0000";
 
-    rememberSearchCriterias = true;
+	rememberSearchCriterias = false;
 
     // le viewBean doit avoir été créé puis sauvé dans la session par l'action custom APLAPGAction
     APDroitLAPGJointDemandeViewBean viewBean = (APDroitLAPGJointDemandeViewBean) request.getAttribute("viewBean");
@@ -47,10 +47,10 @@
     }
 %>
 <script type="text/javascript">
-    <%
-        if ((PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO) != null)
-            && PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO) instanceof APDroitDTO
-            && (!JadeStringUtil.isEmpty(((APDroitDTO) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO)).getNoAVS()))) {
+<%
+	if ((PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO) != null)
+		&& PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO) instanceof APDroitDTO
+		&& (!JadeStringUtil.isEmpty(((APDroitDTO) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO)).getNoAVS()))) {
     %>
     bFind = true;
     <%
@@ -98,125 +98,125 @@
 <%@ include file="/theme/find/bodyStart.jspf" %>
 <%=viewBean.getTitreEcran()%>
 <%@ include file="/theme/find/bodyStart2.jspf" %>
-<tr>
-    <td>
-        <table border="0" cellspacing="0" cellpadding="0" width="100%">
-            <tr>
-                <td>
-                    <label for="forIdGestionnaire">
-                        <ct:FWLabel key="JSP_GESTIONNAIRE"/>
-                    </label>
-                </td>
-                <%
-                    if (PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_PARAMETRES_RC_DTO) != null) {
+						<tr>
+							<td>
+								<table border="0" cellspacing="0" cellpadding="0" width="100%">
+									<tr>
+										<td>
+											<label for="forIdGestionnaire">
+												<ct:FWLabel key="JSP_GESTIONNAIRE" />
+											</label>
+										</td>
+										<%
+										if (PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_PARAMETRES_RC_DTO) != null) {
+										%>
+											<td>
+												<ct:FWListSelectTag	data="<%=viewBean.getResponsableData()%>"
+																	defaut="<%=((APDroitParametresRCDTO) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_PARAMETRES_RC_DTO)).getResponsable()%>"
+																	name="forIdGestionnaire" />
+											</td>
+										<%
+											} else {
+										%>
+											<td>
+												<ct:FWListSelectTag	data="<%=viewBean.getResponsableData()%>"
+																	defaut="<%=viewBean.getCurrentUserId()%>"
+																	name="forIdGestionnaire" />
+											</td>
+										<%
+											}
+										%>
+										<td colspan="4">
+											&nbsp;
+										</td>
+									</tr>
+									<tr>
+										<td colspan="6">
+											&nbsp;
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<label for="fromNumeroAVS">
+												<ct:FWLabel key="JSP_NSS_ABREGE" />
+											</label>
+										</td>
+										<%
+										if (PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO) != null) {
+										%>
+											<td>
+												<ct1:nssPopup	avsMinNbrDigit="99"
+																nssMinNbrDigit="99"
+																name="likeNumeroAVS"
+																newnss="<%=viewBean.isNNSS(((APDroitDTO) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO)).getNoAVS())%>"
+																onChange="fromNumeroAVSChange();"
+																value="<%=NSUtil.formatWithoutPrefixe(((APDroitDTO) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO)).getNoAVS(), ((APDroitDTO) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO)).getNoAVS().length() > 14 ? true : false)%>" />
+											</td>
+										<%
+											} else {
+										%>
+											<td>
+												<ct1:nssPopup	avsMinNbrDigit="99"
+																nssMinNbrDigit="99"
+																name="likeNumeroAVS"
+																newnss="<%=viewBean.isNNSS()%>"
+																onChange="fromNumeroAVSChange();" />
+											</td>
+										<%
+										}
+										%>
+										<td>
+											<label for="likeNom">
+												<ct:FWLabel key="JSP_NOM" />
+											</label>
+										</td>
+										<td>
+											<input type="text" name="likeNom" value="" onchange="likeNomChange();" />
+										</td>
+										<td>
+											<label for="likePrenom">
+												<ct:FWLabel key="JSP_PRENOM" />
+											</label>
+										</td>
+										<td>
+											<input type="text" name="likePrenom" value="" onchange="likePrenomChange();" />
+											<input type="hidden" name="hasPostitField" value="<%=true%>" />
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<ct:FWLabel key="JSP_DATE_NAISSANCE" />
+										</td>
+										<td>
+											<input type="text" name="forDateNaissance" data-g-calendar=" " />
+										</td>
+										<td>
+											<ct:FWLabel key="JSP_SEXE" />
+										</td>
+										<td>
+											<ct:FWCodeSelectTag name="forCsSexe" wantBlank="<%=true%>" codeType="PYSEXE" defaut="" />
+										</td>
+										<td colspan="2">
+											&nbsp;
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<label for="forEtatDemande">
+												<ct:FWLabel key="JSP_ETAT_DEMANDE" />
+											</label>
+										</td>
+<%
+	if (PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_PARAMETRES_RC_DTO) != null) {
                 %>
                 <td>
-                    <ct:FWListSelectTag data="<%=viewBean.getResponsableData()%>"
-                                        defaut="<%=((APDroitParametresRCDTO) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_PARAMETRES_RC_DTO)).getResponsable()%>"
-                                        name="forIdGestionnaire"/>
-                </td>
-                <%
-                } else {
-                %>
-                <td>
-                    <ct:FWListSelectTag data="<%=viewBean.getResponsableData()%>"
-                                        defaut="<%=viewBean.getCurrentUserId()%>"
-                                        name="forIdGestionnaire"/>
-                </td>
-                <%
-                    }
-                %>
-                <td colspan="4">
-                    &nbsp;
-                </td>
-            </tr>
-            <tr>
-                <td colspan="6">
-                    &nbsp;
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label for="fromNumeroAVS">
-                        <ct:FWLabel key="JSP_NSS_ABREGE"/>
-                    </label>
-                </td>
-                <%
-                    if (PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO) != null) {
-                %>
-                <td>
-                    <ct1:nssPopup avsMinNbrDigit="99"
-                                  nssMinNbrDigit="99"
-                                  name="likeNumeroAVS"
-                                  newnss="<%=viewBean.isNNSS(((APDroitDTO) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO)).getNoAVS())%>"
-                                  onChange="fromNumeroAVSChange();"
-                                  value="<%=NSUtil.formatWithoutPrefixe(((APDroitDTO) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO)).getNoAVS(), ((APDroitDTO) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO)).getNoAVS().length() > 14 ? true : false)%>"/>
-                </td>
-                <%
-                } else {
-                %>
-                <td>
-                    <ct1:nssPopup avsMinNbrDigit="99"
-                                  nssMinNbrDigit="99"
-                                  name="likeNumeroAVS"
-                                  newnss="<%=viewBean.isNNSS()%>"
-                                  onChange="fromNumeroAVSChange();"/>
-                </td>
-                <%
-                    }
-                %>
-                <td>
-                    <label for="likeNom">
-                        <ct:FWLabel key="JSP_NOM"/>
-                    </label>
-                </td>
-                <td>
-                    <input type="text" name="likeNom" value="" onchange="likeNomChange();"/>
-                </td>
-                <td>
-                    <label for="likePrenom">
-                        <ct:FWLabel key="JSP_PRENOM"/>
-                    </label>
-                </td>
-                <td>
-                    <input type="text" name="likePrenom" value="" onchange="likePrenomChange();"/>
-                    <input type="hidden" name="hasPostitField" value="<%=true%>"/>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <ct:FWLabel key="JSP_DATE_NAISSANCE"/>
-                </td>
-                <td>
-                    <input type="text" name="forDateNaissance" data-g-calendar=" "/>
-                </td>
-                <td>
-                    <ct:FWLabel key="JSP_SEXE"/>
-                </td>
-                <td>
-                    <ct:FWCodeSelectTag name="forCsSexe" wantBlank="<%=true%>" codeType="PYSEXE" defaut=""/>
-                </td>
-                <td colspan="2">
-                    &nbsp;
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label for="forEtatDemande">
-                        <ct:FWLabel key="JSP_ETAT_DEMANDE"/>
-                    </label>
-                </td>
-                <%
-                    if (PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_PARAMETRES_RC_DTO) != null) {
-                %>
-                <td>
-                    <ct:FWCodeSelectTag codeType="PRETADEMAN"
-                                        name="forEtatDemande"
-                                        wantBlank="true"
-                                        defaut="<%=((APDroitParametresRCDTO) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_PARAMETRES_RC_DTO)).getEtatDemande()%>"/>
-                </td>
-                <%
-                } else {
+											<ct:FWCodeSelectTag	codeType="PRETADEMAN"
+																name="forEtatDemande"
+																wantBlank="true"
+																defaut="<%=((APDroitParametresRCDTO) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_PARAMETRES_RC_DTO)).getEtatDemande()%>" />
+										</td>
+<%
+	} else {
                 %>
                 <td>
                     <ct:FWCodeSelectTag codeType="PRETADEMAN" name="forEtatDemande" wantBlank="true" defaut=" "/>
@@ -233,20 +233,20 @@
                     if (PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_PARAMETRES_RC_DTO) != null) {
                 %>
                 <td>
-                    <ct:FWListSelectTag data="<%=viewBean.getEtatDroitData()%>"
-                                        defaut="<%=((APDroitParametresRCDTO) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_PARAMETRES_RC_DTO)).getEtatDroit()%>"
-                                        name="forEtatDroit"/>
-                </td>
-                <%
-                } else {
+											<ct:FWListSelectTag	data="<%=viewBean.getEtatDroitData()%>"
+																defaut="<%=((APDroitParametresRCDTO) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_PARAMETRES_RC_DTO)).getEtatDroit()%>"
+																name="forEtatDroit" />
+										</td>
+<%
+	} else {
                 %>
                 <td>
-                    <ct:FWListSelectTag data="<%=viewBean.getEtatDroitData()%>"
-                                        defaut=" "
-                                        name="forEtatDroit"/>
-                </td>
-                <%
-                    }
+											<ct:FWListSelectTag	data="<%=viewBean.getEtatDroitData()%>"
+																defaut=" "
+																name="forEtatDroit" />
+										</td>
+<%
+	}
                 %>
                 <td colspan="2">
                     &nbsp;
@@ -265,12 +265,12 @@
                     if (PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_PARAMETRES_RC_DTO) != null) {
                 %>
                 <td>
-                    <ct:FWListSelectTag data="<%=viewBean.getOrderByData()%>"
-                                        defaut="<%=((APDroitParametresRCDTO) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_PARAMETRES_RC_DTO)).getOrderBy()%>"
-                                        name="orderBy"/>
-                </td>
-                <%
-                } else {
+											<ct:FWListSelectTag	data="<%=viewBean.getOrderByData()%>"
+																defaut="<%=((APDroitParametresRCDTO) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_PARAMETRES_RC_DTO)).getOrderBy()%>"
+																name="orderBy" />
+										</td>
+<%
+	} else {
                 %>
                 <td><ct:FWListSelectTag data="<%=viewBean.getOrderByData()%>" defaut="" name="orderBy"/></td>
                 <%

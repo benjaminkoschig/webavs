@@ -79,6 +79,7 @@ public class APMainServletAction {
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_GENERER_DROIT_PAN_MENSUEL, APGenererDroitPandemieMensuelAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_LISTE_PANDEMIE_CONTROLE, APListePandemieControleAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_PANDEMIE_FIN_DU_DROIT, APFinDuDroitAction.class);
+        APMainServletAction.ACTIONS.put(IAPActions.ACTION_BREAK_RULES, APBreakRuleAction.class);
     }
 
     // ~ Constructors

@@ -63,5 +63,6 @@ public interface IAPActions {
     String ACTION_GENERER_DROIT_PAN_MENSUEL = "apg.process.genererDroitPandemieMensuel";
     String ACTION_LISTE_PANDEMIE_CONTROLE = "apg.process.listePandemieControle";
     String ACTION_PANDEMIE_FIN_DU_DROIT = "apg.droits.finDroit";
+    String ACTION_BREAK_RULES = "apg.annonces.breakRule";
 
 }

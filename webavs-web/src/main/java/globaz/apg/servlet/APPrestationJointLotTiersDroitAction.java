@@ -6,15 +6,14 @@ package globaz.apg.servlet;
 import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.api.lots.IAPLot;
 import globaz.apg.api.prestation.IAPPrestation;
+import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.prestation.APRepartitionJointPrestation;
 import globaz.apg.db.prestation.APRepartitionJointPrestationManager;
-import globaz.apg.excel.APListePrestationsExcel;
 import globaz.apg.itext.APListePrestations;
 import globaz.apg.process.APListePrestationExcelProcess;
 import globaz.apg.utils.APGUtils;
+import globaz.apg.vb.droits.APDroitAPGDTO;
 import globaz.apg.vb.droits.APDroitDTO;
-import globaz.apg.vb.droits.APDroitPanDTO;
-import globaz.apg.vb.droits.APDroitPanViewBean;
 import globaz.apg.vb.lots.APLotViewBean;
 import globaz.apg.vb.prestation.APPrestationJointLotTiersDroitListViewBean;
 import globaz.apg.vb.prestation.APPrestationJointLotTiersDroitViewBean;
@@ -30,18 +29,16 @@ import globaz.globall.db.BSession;
 import globaz.globall.http.JSPUtils;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.publish.client.JadePublishDocument;
-import globaz.jade.publish.document.JadePublishDocumentInfo;
-import globaz.jade.publish.document.JadePublishDocumentInfoProvider;
 import globaz.prestation.api.IPRDemande;
 import globaz.prestation.servlet.PRDefaultAction;
 import globaz.prestation.tools.PRSessionDataContainerHelper;
-import java.io.IOException;
-import java.util.Iterator;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * Classe d'actions pour prestationJointLotTiersDroit
@@ -177,6 +174,17 @@ public class APPrestationJointLotTiersDroitAction extends PRDefaultAction {
             dto.setNoLot("");
             PRSessionDataContainerHelper.setData(session,
                     PRSessionDataContainerHelper.KEY_PRESTATION_PARAMETRES_RC_DTO, dto);
+
+            // on met à jour le dto du droit pour l'affichage.
+            APDroitLAPG droit = new APDroitLAPG();
+            droit.setISession(mainDispatcher.getSession());
+            droit.setIdDroit(viewBean.getForIdDroit());
+            try {
+                droit.retrieve();
+            } catch (Exception e) {
+               // on ne met pas à jour le dto.
+            }
+            PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO, new APDroitAPGDTO(droit));
         }
 
         if (!JadeStringUtil.isEmpty(request.getParameter("forIdLot"))) {
