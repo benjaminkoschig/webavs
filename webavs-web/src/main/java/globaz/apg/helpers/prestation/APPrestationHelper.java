@@ -626,9 +626,19 @@ public class APPrestationHelper extends PRAbstractHelper {
                 .getCalculateurInstance(APTypeDePrestation.MATCIAB1);
 
         // Récupération des données depuis la persistence pour le calcul des prestations Complémentaires MATCIAB1
-
         APCalculateurComplementDonneesPersistence donnesPersistencePourCalculMATCIAB1 = getDonneesPersistancePourCalculComplementaireMATCIAB1(
                 droit.getIdDroit(), session, transaction);
+
+        // si versé à l'assuré pas de calcul de complément
+        // si l’une des cotisations suivantes existe dans le dans le plan d’affiliation de l’employeur au début de la
+        // période APG, alors un complément est calculé
+        if (donnesPersistencePourCalculMATCIAB1 == null
+                || donnesPersistencePourCalculMATCIAB1.getListPrestationStandard().size() == 0
+                || donnesPersistencePourCalculMATCIAB1.getSituationProfessionnelleEmployeur().isEmpty()
+                || !isComplement(session, droit.getIdDroit(),
+                donnesPersistencePourCalculMATCIAB1.getSituationProfessionnelleEmployeur())) {
+            return;
+        }
 
         /*
          * Check si le montant max journalier définit dans la plage de valeur est valide pour calculer des prestations MATCIAB2
@@ -640,17 +650,6 @@ public class APPrestationHelper extends PRAbstractHelper {
         } else { // Remplace le revenu par le montant max s'il le dépasse
             donnesPersistencePourCalculMATCIAB1.setRevenuMoyenDeterminantParEmployeurAvecMontantMax(new FWCurrency(
                     JANumberFormatter.format(montantMaxMATCIAB1.toString(), 1, 2, JANumberFormatter.SUP)));
-        }
-
-        // si versé à l'assuré pas de calcul de complément
-        // si l’une des cotisations suivantes existe dans le dans le plan d’affiliation de l’employeur au début de la
-        // période APG, alors un complément est calculé
-        if (donnesPersistencePourCalculMATCIAB1 == null
-                || donnesPersistencePourCalculMATCIAB1.getListPrestationStandard().size() == 0
-                || donnesPersistencePourCalculMATCIAB1.getSituationProfessionnelleEmployeur().isEmpty()
-                || !isComplement(session, droit.getIdDroit(),
-                donnesPersistencePourCalculMATCIAB1.getSituationProfessionnelleEmployeur())) {
-            return;
         }
 
         donnesPersistencePourCalculMATCIAB1.setDroit(droit);
@@ -987,7 +986,6 @@ public class APPrestationHelper extends PRAbstractHelper {
         final IAPPrestationCalculateur calculateurAcm2 = APPrestationCalculateurFactory
                 .getCalculateurInstance(APTypeDePrestation.ACM2_ALFA);
 
-        // TODO
         // Récupération des données depuis la persistence pour le calcul des prestations ACM NE
         final ACM2PersistenceInputData donnesPersistencePourCalculAcm2 = getDonneesPersistancePourCalculAcm2(droit, session, transaction);
 
@@ -1135,7 +1133,7 @@ public class APPrestationHelper extends PRAbstractHelper {
                 apResultatCalculSituationProfessionnel.setIdTiers(repartitionCourante.getRepartitionPaiements().getIdTiers());
                 apResultatCalculSituationProfessionnel.setIndependant(sitPro.getIsIndependant());
                 apResultatCalculSituationProfessionnel.setIdSituationProfessionnelle(repartitionCourante.getRepartitionPaiements().getIdSituationProfessionnelle());
-                apResultatCalculSituationProfessionnel.setSalaireJournalierNonArrondi(prestationCalculee.getMontantJournalier());
+                apResultatCalculSituationProfessionnel.setSalaireJournalierNonArrondi(new FWCurrency(String.valueOf(new BigDecimal(repartitionCourante.getRepartitionPaiements().getMontantBrut()).divide(new BigDecimal(prestationCalculee.getNombreJoursSoldes())))));
                 apResultatCalculSituationProfessionnel.setSoumisCotisation(!sitPro.getIsNonSoumisCotisation());
                 apResultatCalculSituationProfessionnel.setCollaborateurAgricole(sitPro.getIsCollaborateurAgricole());
                 apResultatCalculSituationProfessionnel.setTravailleurSansEmployeur(sitPro.getIsTravailleurSansEmploi());
@@ -1842,10 +1840,12 @@ public class APPrestationHelper extends PRAbstractHelper {
         final List<APSitProJointEmployeur> apSitProJoiEmpList = servicePersistance
                 .getSituationProfJointEmployeur(session, transaction, idDroit);
 
-        donneesPersistence.setNombreDeSituationProfessionelle(apSitProJoiEmpList.size());
+        donneesPersistence.setNombreInitialDeSituationsProfessionelles(apSitProJoiEmpList.size());
 
-        final String dateDebutPrestationStandard = donneesPersistence.getPrestationJointRepartitions().get(0)
-                .getDateDebut();
+        final String dateDebutPrestationStandard = donneesPersistence.getPrestationJointRepartitions().size() > 0 ? donneesPersistence.getPrestationJointRepartitions().get(0).getDateDebut() : null;
+        if (dateDebutPrestationStandard == null) {
+            return null;
+        }
 
         String idAssuranceParitaireJU = JadePropertiesService.getInstance()
                 .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
@@ -2172,6 +2172,8 @@ public class APPrestationHelper extends PRAbstractHelper {
         // Situations professionnelles
         final List<APSitProJointEmployeur> apSitProJoiEmpList = servicePersistance
                 .getSituationProfJointEmployeur(session, transaction, droit.getIdDroit());
+
+        donneesPersistence.setNombreInitialDeSituationsProfessionelles(apSitProJoiEmpList.size());
 
         List<APSitProJointEmployeur> apEmpList = filterAPSitProJointEmployeurNotComplement(droit.getIdDroit(), session, apSitProJoiEmpList);
 

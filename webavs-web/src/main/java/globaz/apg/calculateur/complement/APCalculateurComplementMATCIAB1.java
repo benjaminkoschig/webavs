@@ -14,7 +14,6 @@ import globaz.apg.db.prestation.APRepartitionJointPrestation;
 import globaz.apg.db.prestation.APRepartitionPaiements;
 import globaz.apg.enums.APAssuranceTypeAssociation;
 import globaz.apg.enums.APTypeDePrestation;
-import globaz.apg.helpers.prestation.APPrestationHelper;
 import globaz.apg.module.calcul.APCotisationData;
 import globaz.apg.module.calcul.APRepartitionPaiementData;
 import globaz.apg.module.calcul.APSituationProfessionnelleCanton;
@@ -69,7 +68,7 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
             // pour la période entre prestation.getDateDebut() et prestation.getDateFin() est à recalculer
             int nombreJoursSoldesPeriodePriseEnCompte = PRDateUtils.getNbDayBetween2(prestation.getDateDebut(), prestation.getDateFin()) + 1; // nombreJoursSoldesPeriodePriseEnCompte après l'adapation par la propriété PROPERTY_APG_FERCIAB_MATERNITE
             BigDecimal montantMATCIAB1 = calculateur.calculerMontantMATCIAB1(sommeSalaireJournalier, nombreJoursSoldesPeriodePriseEnCompte);
-            if (prestationStandard.getNombreDeSituationProfessionelle() != prestationStandard.getSituationProfessionnelle().size()) {
+            if (prestationStandard.getNombreInitialDeSituationsProfessionelles() != prestationStandard.getSituationProfessionnelle().size()) {
                 // ce cas ne se produit que si il y a plusieurs employeur et que certain de ces employeur ne cotise pas au assurance complémentaire
                 // le calcul MATCIAB1 se base alors sur le 80% des revenus moyen déterminent qui cotise au assurance complémentaire
                 BigDecimal sommeSalaireJournalier80 = sommeSalaireJournalier.compareTo(IAPConstantes.APG_JOURNALIERE_MAX) > 0
@@ -110,7 +109,7 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
                     // tauxCalcul = proportion de la répartion par rapport a la somme des repartitions
                     BigDecimal tauxCalcul;
                     // si le nombre de prestation prise en compte pour MATCIAB1 est différent du nombre de situation proffessionelle prise en compte pour la maternité fédérale
-                    if (prestationStandard.getNombreDeSituationProfessionelle() != prestationStandard.getSituationProfessionnelle().size()) {
+                    if (prestationStandard.getNombreInitialDeSituationsProfessionelles() != prestationStandard.getSituationProfessionnelle().size()) {
                         tauxCalcul = new BigDecimal(repartition.getMontantBrut()).divide(sommeMontantBrut, 4, RoundingMode.UNNECESSARY);
                     } else {
                         tauxCalcul = new BigDecimal(repartition.getTauxRJM()).divide(BigDecimal.valueOf(100), 4, RoundingMode.UNNECESSARY);
@@ -346,7 +345,7 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
             if(repartitions != null) {
                 APCalculateurComplementDonneeDomaine donneeDomaine = new APCalculateurComplementDonneeDomaine(prestation);
                 donneeDomaine.setRepartitions(repartitions);
-                donneeDomaine.setNombreDeSituationProfessionelle(donneesPersistancePourCalcul.getNombreDeSituationProfessionelle());
+                donneeDomaine.setNombreInitialDeSituationsProfessionelles(donneesPersistancePourCalcul.getNombreInitialDeSituationsProfessionelles());
                 listePrestationsComplementDomaineConverties.add(donneeDomaine);
             }
         }

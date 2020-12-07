@@ -15,6 +15,8 @@ import java.util.Map;
 public class ACM2PersistenceInputData {
     private String idDroit = "";
     private int nombreJoursPrestationACM2;
+    private Integer nombreInitialDeSituationsProfessionelles = 0;
+
     /**
      * RMD = Revenu moyen déterminant
      */
@@ -81,4 +83,11 @@ public class ACM2PersistenceInputData {
         }
     }
 
+    public Integer getNombreInitialDeSituationsProfessionelles() {
+        return nombreInitialDeSituationsProfessionelles;
+    }
+
+    public void setNombreInitialDeSituationsProfessionelles(Integer nombreInitialDeSituationsProfessionelles) {
+        this.nombreInitialDeSituationsProfessionelles = nombreInitialDeSituationsProfessionelles;
+    }
 }

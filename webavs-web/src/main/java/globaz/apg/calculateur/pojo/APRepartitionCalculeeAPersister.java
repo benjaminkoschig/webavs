@@ -9,6 +9,7 @@ public class APRepartitionCalculeeAPersister {
 
     private List<APCotisation> cotisations = new ArrayList<APCotisation>();
     private APRepartitionPaiements repartitionPaiements;
+    private Integer nombreInitialDeSituationsProfessionelles = 0;
 
     public List<APCotisation> getCotisations() {
         return cotisations;
@@ -26,4 +27,11 @@ public class APRepartitionCalculeeAPersister {
         this.repartitionPaiements = repartitionPaiements;
     }
 
+    public Integer getNombreInitialDeSituationsProfessionelles() {
+        return nombreInitialDeSituationsProfessionelles;
+    }
+
+    public void setNombreInitialDeSituationsProfessionelles(Integer nombreInitialDeSituationsProfessionelles) {
+        this.nombreInitialDeSituationsProfessionelles = nombreInitialDeSituationsProfessionelles;
+    }
 }

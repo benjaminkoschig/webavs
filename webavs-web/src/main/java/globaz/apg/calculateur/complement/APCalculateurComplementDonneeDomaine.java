@@ -23,7 +23,7 @@ public class APCalculateurComplementDonneeDomaine {
 
     private Map<String, BigDecimal[]> taux = new HashMap<String, BigDecimal[]>();
     private Map<EMontantsMax, BigDecimal> montantsMax;
-    private Integer nombreDeSituationProfessionelle = 0;
+    private Integer nombreInitialDeSituationsProfessionelles = 0;
 
     private Map<APRepartitionJointPrestation,Map<String, APCotisation>> mapCotisation = new HashMap<>();
     
@@ -87,11 +87,11 @@ public class APCalculateurComplementDonneeDomaine {
         this.mapCotisation = mapCotisation;
     }
 
-    public Integer getNombreDeSituationProfessionelle() {
-        return nombreDeSituationProfessionelle;
+    public Integer getNombreInitialDeSituationsProfessionelles() {
+        return nombreInitialDeSituationsProfessionelles;
     }
 
-    public void setNombreDeSituationProfessionelle(Integer nombreDeSituationProfessionelle) {
-        this.nombreDeSituationProfessionelle = nombreDeSituationProfessionelle;
+    public void setNombreInitialDeSituationsProfessionelles(Integer nombreInitialDeSituationsProfessionelles) {
+        this.nombreInitialDeSituationsProfessionelles = nombreInitialDeSituationsProfessionelles;
     }
 }

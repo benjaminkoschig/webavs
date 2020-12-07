@@ -183,6 +183,7 @@ public class APcalculateurMATCIAB2 implements IAPPrestationCalculateur<APPrestat
 
                 repartitionCalculeeAPersister.setRepartitionPaiements(repartitionPaiements);
                 repartitionCalculeeAPersister.setCotisations(new ArrayList<APCotisation>());
+                repartitionCalculeeAPersister.setNombreInitialDeSituationsProfessionelles(donneesParEmployeur.getNombreInitialDeSituationsProfessionelles());
             }
 
             prestationCalculeeAPersister.setRepartitions(repartitions);
@@ -238,6 +239,7 @@ public class APcalculateurMATCIAB2 implements IAPPrestationCalculateur<APPrestat
 
                     }
                 }
+                donneesEmployeur.setNombreInitialDeSituationsProfessionelles(donneesDepuisPersistance.getNombreInitialDeSituationsProfessionelles());
                 donneesBusiness.add(donneesEmployeur);
 
         }

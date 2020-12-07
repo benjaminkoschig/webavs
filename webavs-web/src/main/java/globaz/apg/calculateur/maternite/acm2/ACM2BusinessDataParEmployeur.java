@@ -32,6 +32,7 @@ public class ACM2BusinessDataParEmployeur {
 
     private String idDroit;
     private int nombreJoursPrestationACM2;
+    private Integer nombreInitialDeSituationsProfessionelles = 0;
     private APSitProJointEmployeur situationProfJointEmployeur;
     private FWCurrency revenuMoyenDeterminant;
     private List<APRepartitionJointPrestation> prestationStandard;
@@ -49,6 +50,14 @@ public class ACM2BusinessDataParEmployeur {
 
     public APSitProJointEmployeur getSituationProfJointEmployeur() {
         return situationProfJointEmployeur;
+    }
+
+    public Integer getNombreInitialDeSituationsProfessionelles() {
+        return nombreInitialDeSituationsProfessionelles;
+    }
+
+    public void setNombreInitialDeSituationsProfessionelles(Integer nombreInitialDeSituationsProfessionelles) {
+        this.nombreInitialDeSituationsProfessionelles = nombreInitialDeSituationsProfessionelles;
     }
 
     public void addPrestationStandard(APRepartitionJointPrestation prestation) {
