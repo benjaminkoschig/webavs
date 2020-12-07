@@ -67,6 +67,7 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.vehicule.Vehicule;
 import ch.globaz.pegasus.business.domaine.parametre.monnaieEtrangere.MonnaieEtrangereType;
 import ch.globaz.pegasus.business.models.revisionquadriennale.DonneeFinanciereComplexModel;
 import ch.globaz.pegasus.businessimpl.services.adresse.TechnicalExceptionWithTiers;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
@@ -126,7 +127,7 @@ class ConvertAllDonneeFinanciere {
             Montant montant = toMontant(dr.getRenteAVSAIMontant());
             RenteAvsAiType typeDonneeFinanciere = RenteAvsAiType.fromValue(dr.getRenteAVSAICsType());
             TypeSansRente typeSansRente = TypeSansRente.fromValue(dr.getRenteAVSAICsTypeSansRente());
-            Float degreInvalidite = dr.getDegreInvalidite() != null ? Float.parseFloat(dr.getDegreInvalidite()) : null;
+            Float degreInvalidite = !JadeStringUtil.isBlank(dr.getDegreInvalidite()) ? Float.parseFloat(dr.getDegreInvalidite()) : null;
             RenteAvsAi renteAvsAi = new RenteAvsAi(montant, typeDonneeFinanciere, typeSansRente, degreInvalidite, df);
             list.add(renteAvsAi);
         } else if (dft.isIjAi()) {
