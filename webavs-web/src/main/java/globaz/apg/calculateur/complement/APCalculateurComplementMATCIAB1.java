@@ -74,28 +74,29 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
                 // le calcul MATCIAB1 se base alors sur le 80% des revenus moyen déterminent qui cotise au assurance complémentaire
                 BigDecimal sommeSalaireJournalier80 = sommeSalaireJournalier.compareTo(IAPConstantes.APG_JOURNALIERE_MAX) > 0
                         ? IAPConstantes.APG_JOURNALIERE_MAX
-                        : sommeSalaireJournalier.multiply(BigDecimal.valueOf(80)).divide(BigDecimal.valueOf(100));
-                BigDecimal montantBrutFederalAdapte80 = getMontantFederal(sommeSalaireJournalier80, prestation, nombreJoursSoldesPeriodePriseEnCompte);
-                montantMATCIAB1 = montantMATCIAB1.subtract(montantBrutFederalAdapte80);
+                        : sommeSalaireJournalier.multiply(BigDecimal.valueOf(80)).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
+                BigDecimal montantBrutFederal80 = getMontantFederal(sommeSalaireJournalier80, nombreJoursSoldesPeriodePriseEnCompte);
+                montantMATCIAB1 = montantMATCIAB1.subtract(montantBrutFederal80);
             } else {
                 // ce cas se produit pour les cas ou le nombre de revenu qui cotise au assurance complémentaire est le même que le nombre de revenu total
                 // le calcul MATCIAB1 se base alors sur le même revenu moyen déterminent que le calcul Standard
-                BigDecimal montantBrutFederal = getMontantFederal(new BigDecimal(prestation.getMontantJournalier()), prestation, nombreJoursSoldesPeriodePriseEnCompte);
+                BigDecimal montantBrutFederal = getMontantFederal(new BigDecimal(prestation.getMontantJournalier()), nombreJoursSoldesPeriodePriseEnCompte);
                 montantMATCIAB1 = montantMATCIAB1.subtract(montantBrutFederal);
             }
 
             prestationCalculeeAPersister.setMontantBrut(montantMATCIAB1);
-            prestationCalculeeAPersister.setMontantJournalier(montantMATCIAB1.divide(BigDecimal.valueOf(nombreJoursSoldesPeriodePriseEnCompte),2, RoundingMode.HALF_UP));
+            BigDecimal montantBrutJournalier = montantMATCIAB1.divide(BigDecimal.valueOf(nombreJoursSoldesPeriodePriseEnCompte), 2, RoundingMode.HALF_UP);
+            prestationCalculeeAPersister.setMontantJournalier(montantBrutJournalier);
+
             // met à jour le nombre de jours soldes avec le nombre de jours soldes prise en compte
             prestationCalculeeAPersister.setNombreDeJoursSoldes(nombreJoursSoldesPeriodePriseEnCompte);
-            BigDecimal montantBrutJournalier = montantMATCIAB1.divide(BigDecimal.valueOf(nombreJoursSoldesPeriodePriseEnCompte), 10, RoundingMode.HALF_UP);
 
             BigDecimal montantPrestationComplementJournalier = new BigDecimal("0");
             BigDecimal montantPrestationComplementBrut = new BigDecimal("0");
             BigDecimal montantPrestationComplementNet = new BigDecimal("0");
 
-            // En calculant la somme des reperatitions qui n'ont pas été filtrées jusqu'ici cela vas nous permettre de définir quel est la proportion/taux de chaque repartition
-            // par rapport au montant total
+            // En calculant la somme des répartitions qui n'ont pas été filtrées jusqu'ici cela vas nous permettre de définir
+            // quel est la proportion/taux de chaque repartition par rapport au montant total
             BigDecimal sommeMontantBrut = BigDecimal.ZERO;
             for(APRepartitionJointPrestation repartition : prestationStandard.getRepartitions()) {
                 sommeMontantBrut = sommeMontantBrut.add(new BigDecimal(repartition.getMontantBrut()));
@@ -106,13 +107,19 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
 
                     APSituationProfessionnelleCanton sitProf = prestationStandard.getSituationProfessionnelle().get(repartition.getIdSituationProfessionnelle());
 
-                    // proportion / taux de la répartion par rapport a la somme des repartitions
-                    BigDecimal tauxCalcul = new BigDecimal(repartition.getMontantBrut()).divide(sommeMontantBrut, 10, RoundingMode.HALF_UP);
+                    // tauxCalcul = proportion de la répartion par rapport a la somme des repartitions
+                    BigDecimal tauxCalcul;
+                    // si le nombre de prestation prise en compte pour MATCIAB1 est différent du nombre de situation proffessionelle prise en compte pour la maternité fédérale
+                    if (prestationStandard.getNombreDeSituationProfessionelle() != prestationStandard.getSituationProfessionnelle().size()) {
+                        tauxCalcul = new BigDecimal(repartition.getMontantBrut()).divide(sommeMontantBrut, 4, RoundingMode.UNNECESSARY);
+                    } else {
+                        tauxCalcul = new BigDecimal(repartition.getTauxRJM()).divide(BigDecimal.valueOf(100), 4, RoundingMode.UNNECESSARY);
+                    }
 
-                    BigDecimal montantBrutReparti = montantBrutJournalier.multiply(tauxCalcul);
+                    BigDecimal montantBrutRepartition = montantBrutJournalier.multiply(tauxCalcul);
+                    montantBrutRepartition = arrondir(montantBrutRepartition);
+                    montantBrutRepartition = montantBrutRepartition.multiply(new BigDecimal(prestationCalculeeAPersister.getNombreDeJoursSoldes()));
 
-                    BigDecimal montantBrutRepartition = getMontantBrutRepartition(
-                            montantBrutReparti, prestationCalculeeAPersister.getNombreDeJoursSoldes());
                     final BigDecimal[] tauxAvsAc = prestationStandard.getTaux().get(sitProf.getId());
 
                     APCotisation cotisationAvsParitaire = getCotisationFromMap(prestationStandard.getMapCotisation().get(repartition), APProperties.ASSURANCE_AVS_PAR_ID.getValue());
@@ -205,14 +212,11 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
         return resultatCalcul;
     }
 
-    private BigDecimal getMontantFederal(BigDecimal sommeSalaireJournalier, APPrestation prestation, int nombreJoursSoldesPeriodePriseEnCompte) {
-        BigDecimal montantAllocationExploitation = new BigDecimal(prestation.getMontantAllocationExploitation());
+    private BigDecimal getMontantFederal(BigDecimal sommeSalaireJournalier, int nombreJoursSoldesPeriodePriseEnCompte) {
         // pour prendre en compte les cas ou la prestation.getDateDebut() à été modifié par la propriété PROPERTY_APG_FERCIAB_MATERNITE
         // il faut recalculer le salaire journalier en fonction du nombreJoursSoldesPeriodePriseEnCompte
         sommeSalaireJournalier = sommeSalaireJournalier.multiply(BigDecimal.valueOf(nombreJoursSoldesPeriodePriseEnCompte));
-        montantAllocationExploitation = montantAllocationExploitation.multiply(BigDecimal.valueOf(nombreJoursSoldesPeriodePriseEnCompte));
-        BigDecimal fraisGarde = new BigDecimal(prestation.getFraisGarde());
-        return sommeSalaireJournalier.subtract(montantAllocationExploitation).subtract(fraisGarde);
+        return sommeSalaireJournalier;
     }
 
     private APCotisationData creerCotisation(final BigDecimal montantBrutRepartition, final BigDecimal tauxAc,
@@ -287,10 +291,6 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
     private BigDecimal getMontantBrutCotisation(final BigDecimal montantBrutRepartition, final BigDecimal taux) {
         final BigDecimal montantBrutCotisation = montantBrutRepartition.multiply(taux);
         return montantBrutCotisation;
-    }
-
-    private BigDecimal getMontantBrutRepartition(final BigDecimal montantJournalierAcmNe, final int nombreDeJoursSoldes) {
-        return montantJournalierAcmNe.multiply(new BigDecimal(nombreDeJoursSoldes));
     }
 
     private APCotisation getCotisationFromMap(Map<String, APCotisation> mapCotisation, String idAssurance) {

@@ -213,7 +213,6 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
         prestCalculee.setMontantJournalier(prestationWrapper.getPrestationBase().getMontantJournalier());
         prestCalculee.setBasicDailyAmount(prestationWrapper.getPrestationBase().getBasicDailyAmount());
-        //ESVE MATERNITE CALCULATEUR STANDARD
         prestCalculee.setTypePrestation(IAPPrestation.CS_TYPE_NORMAL);
         prestCalculee.setRevenuDeterminantMoyen(new FWCurrency(
                 prestationWrapper.getPrestationBase().revenuDeterminantMoyen.getBigDecimalValue().toString(), 3));
@@ -995,7 +994,6 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             prestation.setIdDroit(droit.getIdDroit());
             prestation.setNombreJoursSoldes(nombreJoursSoldes);
             prestation.setNoRevision(noRevision);
-            //ESVE MATERNITE RevenuMoyenDeterminant
             prestation.setRevenuMoyenDeterminant(revenuMoyenDeterminant.getBigDecimalValue().toString());
             prestation.setType(IAPPrestation.CS_TYPE_NORMAL);
             prestation.setGenre(genrePrestation);
