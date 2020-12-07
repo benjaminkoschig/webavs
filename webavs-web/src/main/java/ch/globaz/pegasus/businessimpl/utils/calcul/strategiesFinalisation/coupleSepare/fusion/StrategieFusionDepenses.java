@@ -37,7 +37,8 @@ public class StrategieFusionDepenses implements StrategieCalculFusion {
             IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_DIFF_PART_CANTONALE,
             IPCValeursPlanCalcul.CLE_DEPEN_FRAIS_GARDE_TOTAL,
             IPCValeursPlanCalcul.CLE_DEPEN_PRIME_ASSURANCE_MALADIE_TOTAL,
-            IPCValeursPlanCalcul.CLE_DEPEN_SEJOUR_MOIS_PARTIEL_TOTAL};
+            IPCValeursPlanCalcul.CLE_DEPEN_SEJOUR_MOIS_PARTIEL_TOTAL,
+            IPCValeursPlanCalcul.PLAFOND_LOYER_ZONE};
 
     @Override
     public void calcule(TupleDonneeRapport donneeCommun, TupleDonneeRapport donneeAvecEnfants,

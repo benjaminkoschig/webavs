@@ -132,7 +132,7 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
                 donnee.getOrCreateEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_FRAIS_CHAUFFAGE).addValeur(
                         forfaitFraisChauffage * prorata);
                 if (context.contains(Attribut.REFORME)) {
-                    plafond = getPlafondReforme(tupleLoyer, nbHabitants, nbPersonnesCalcul, nbPersonnesCalculSansRenteUniquement);
+                    plafond = getPlafondReforme(donnee, tupleLoyer, nbHabitants, nbPersonnesCalcul, nbPersonnesCalculSansRenteUniquement);
                     float montantLoyerMensuel = (tupleLoyer.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_LOYER_MONTANT_NET)) / 12;
 
                     if (isFauteuilRoulant) {
@@ -186,7 +186,7 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
             donnee.getOrCreateEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_CHARGES_FORFAITAIRES).addValeur(forfait);
 
             if (context.contains(Attribut.REFORME)) {
-                plafond = getPlafondReforme(tupleHabitatPrincipal, nbPersonnes, nbPersonnesCalcul, nbPersonnesCalculSansRenteUniquement);
+                plafond = getPlafondReforme(donnee, tupleHabitatPrincipal, nbPersonnes, nbPersonnesCalcul, nbPersonnesCalculSansRenteUniquement);
             }
         }
 
@@ -239,7 +239,7 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
 
     }
 
-    private float getPlafondReforme(TupleDonneeRapport donneeLoyer, float nbHabitants, float nbPersonnesCalcul, float nbPersonnesCalculSansRenteUniquement) throws CalculException {
+    private float getPlafondReforme(TupleDonneeRapport donnee, TupleDonneeRapport donneeLoyer, float nbHabitants, float nbPersonnesCalcul, float nbPersonnesCalculSansRenteUniquement) throws CalculException {
         //return donneeLoyer.getValeurEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER);
 
         ForfaitPrimeAssuranceMaladieLocaliteSearch loyerMaxLocaliteSearch = new ForfaitPrimeAssuranceMaladieLocaliteSearch();
@@ -276,6 +276,7 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
         if (loyerMaxLocaliteSearch.getSearchResults().length > 0) {
             ForfaitPrimeAssuranceMaladieLocalite plafond = (ForfaitPrimeAssuranceMaladieLocalite) loyerMaxLocaliteSearch.getSearchResults()[0];
             donneeLoyer.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.PLAFOND_LOYER_ZONE, 0.0f, plafond.getSimpleForfaitPrimesAssuranceMaladie().getIdZoneForfait()));
+            donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.PLAFOND_LOYER_ZONE, 0.0f, plafond.getSimpleForfaitPrimesAssuranceMaladie().getIdZoneForfait()));
             Float montantPlafond = Float.valueOf(plafond.getSimpleForfaitPrimesAssuranceMaladie().getMontantPrimeMoy());
             Float pourcentage = Float.valueOf(plafond.getSimpleLienZoneLocalite().getPourcentage());
             Float montantPourcent = montantPlafond * pourcentage / 100;

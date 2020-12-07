@@ -303,4 +303,7 @@ public class AnnonceCalculationElements {
         return rentRegion;
     }
 
+    public void setRentRegion(String rentRegion) {
+        this.rentRegion = rentRegion;
+    }
 }

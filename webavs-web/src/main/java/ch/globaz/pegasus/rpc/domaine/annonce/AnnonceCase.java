@@ -3,6 +3,8 @@ package ch.globaz.pegasus.rpc.domaine.annonce;
 import java.util.ArrayList;
 import java.util.List;
 import ch.globaz.naos.ree.tools.InfoCaisse;
+import ch.globaz.pegasus.business.constantes.EPCRegionLoyer;
+import ch.globaz.pegasus.rpc.businessImpl.converter.ConverterRentRegion;
 import ch.globaz.pegasus.rpc.domaine.RpcData;
 import ch.globaz.pegasus.rpc.domaine.RpcDecisionRequerantConjoint;
 
@@ -21,13 +23,27 @@ public class AnnonceCase {
 
     private void initDecisions() {
         for (RpcDecisionRequerantConjoint pca : rpcData.getRpcDecisionRequerantConjoints()) {
-            decisions.add(new AnnonceDecision(pca.buildRpcDecisionAnnonceCompleteRequerant(rpcData.getVersionDroit())));
+            AnnonceDecision annonce = new AnnonceDecision(pca.buildRpcDecisionAnnonceCompleteRequerant(rpcData.getVersionDroit()));
+            if(annonce.getCalculationElements().getRentRegion() == null
+                    && pca.getConjointDatas() != null
+                    && pca.getConjointDatas().getCalcul().getLoyerRegion() != null){
+                EPCRegionLoyer region = pca.getConjointDatas().getCalcul().getLoyerRegion();
+                annonce.getCalculationElements().setRentRegion(ConverterRentRegion.convert(region));
+            }
+            decisions.add(annonce);
             if (pca.hasConjoint()) {
-                decisions.add(new AnnonceDecision(
-                        pca.buildRpcDecisionAnnonceCompleteConjoint(rpcData.getVersionDroit())));
+                AnnonceDecision annonceConjoint = new AnnonceDecision(pca.buildRpcDecisionAnnonceCompleteConjoint(rpcData.getVersionDroit()));
+                if(annonceConjoint.getCalculationElements().getRentRegion() == null) {
+                    annonceConjoint.getCalculationElements().setRentRegion(annonce.getCalculationElements().getRentRegion());
+                }
+                decisions.add(annonceConjoint);
             }
         }
         businessCaseIdRPC = rpcData.getDossier().getId();
+    }
+
+    private void rentRegionFromConjoint () {
+
     }
 
     public String getBusinessCaseIdRPC() {

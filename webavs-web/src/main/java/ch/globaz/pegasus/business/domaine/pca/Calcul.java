@@ -721,7 +721,7 @@ public class Calcul {
     public EPCRegionLoyer getLoyerRegion() {
         String regionLoyer = null;
         TupleDonneeRapport tupleHab = tuple.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_HABITATION_PRINCIPALE);
-        if(tupleHab != null && IPCDroits.CS_ROLE_FAMILLE_REQUERANT.equals(tupleHab.getLegendeEnfant(IPCValeursPlanCalcul.CLE_INTER_BISHP_ROLE_PROPRIETAIRE))) {
+        if(tupleHab != null) {
             regionLoyer = tupleHab.getLegendeEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_ZONE);
             if(regionLoyer != null){
                 return EPCRegionLoyer.fromValue(regionLoyer);
@@ -734,7 +734,18 @@ public class Calcul {
                     regionLoyer = tupleLoyer.getLegendeEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_ZONE);
                 }
             }
+            if (regionLoyer == null) {
+                for (TupleDonneeRapport tupleLoyer : tupleLoyers.getEnfants().values()) {
+                    if(IPCDroits.CS_ROLE_FAMILLE_CONJOINT.equals(tupleLoyer.getLegendeEnfant(IPCValeursPlanCalcul.CLE_INTER_LOYER_ROLE_PROPRIETAIRE))) {
+                        regionLoyer = tupleLoyer.getLegendeEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_ZONE);
+                    }
+                }
+            }
         }
+        if(regionLoyer == null) {
+            regionLoyer = tuple.getLegendeEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_ZONE);
+        }
+
         return EPCRegionLoyer.fromValue(regionLoyer);
     }
 
