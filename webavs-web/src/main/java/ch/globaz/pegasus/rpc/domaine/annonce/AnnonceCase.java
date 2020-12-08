@@ -24,7 +24,7 @@ public class AnnonceCase {
     private void initDecisions() {
         for (RpcDecisionRequerantConjoint pca : rpcData.getRpcDecisionRequerantConjoints()) {
             AnnonceDecision annonce = new AnnonceDecision(pca.buildRpcDecisionAnnonceCompleteRequerant(rpcData.getVersionDroit()));
-            if(annonce.getCalculationElements().getRentRegion() == null
+            if(annonce.getCalculationElements() != null && annonce.getCalculationElements().getRentRegion() == null
                     && pca.getConjointDatas() != null
                     && pca.getConjointDatas().getCalcul().getLoyerRegion() != null){
                 EPCRegionLoyer region = pca.getConjointDatas().getCalcul().getLoyerRegion();
@@ -33,7 +33,7 @@ public class AnnonceCase {
             decisions.add(annonce);
             if (pca.hasConjoint()) {
                 AnnonceDecision annonceConjoint = new AnnonceDecision(pca.buildRpcDecisionAnnonceCompleteConjoint(rpcData.getVersionDroit()));
-                if(annonceConjoint.getCalculationElements().getRentRegion() == null) {
+                if(annonceConjoint.getCalculationElements() != null && annonceConjoint.getCalculationElements().getRentRegion() == null) {
                     annonceConjoint.getCalculationElements().setRentRegion(annonce.getCalculationElements().getRentRegion());
                 }
                 decisions.add(annonceConjoint);
