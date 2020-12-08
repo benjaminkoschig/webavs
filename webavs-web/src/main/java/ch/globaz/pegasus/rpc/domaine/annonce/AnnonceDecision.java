@@ -78,11 +78,11 @@ public class AnnonceDecision {
             if (decisionCause.equals(BigInteger.valueOf(1)) && !getAnnonce().getVersionDroit().isDemandeInitiale()) {
                 decisionCause = BigInteger.valueOf(2);
             }
-        }
 
-        // FC45
-        if (decisionCause.compareTo(BigInteger.ONE) == 0){
-            requestDateofReceipt = getDateArriveeDemandeXmlCalendar(annonce.getDemande().getArrivee().toString());
+            // FC45
+            if (decisionCause.compareTo(BigInteger.ONE) == 0){
+                requestDateofReceipt = getDateArriveeDemandeXmlCalendar(annonce.getDemande().getArrivee().toString());
+            }
         }
 
         if (annonce.hasDateFin()) {
