@@ -1139,7 +1139,7 @@ public class APPrestationHelper extends PRAbstractHelper {
                 apResultatCalculSituationProfessionnel.setTravailleurSansEmployeur(sitPro.getIsTravailleurSansEmploi());
                 apResultatCalculSituationProfessionnel.setVersementEmployeur(sitPro.getIsVersementEmployeur());
                 apResultatCalculSituationProfessionnel.setMontant(new FWCurrency(repartitionCourante.getRepartitionPaiements().getMontantBrut()));
-                apResultatCalculSituationProfessionnel.setTauxProRata(new FWCurrency(repartitionCourante.getRepartitionPaiements().getTauxRJM()));
+                apResultatCalculSituationProfessionnel.setTauxProRata(new FWCurrency(String.valueOf(new BigDecimal(repartitionCourante.getRepartitionPaiements().getTauxRJM()).divide(new BigDecimal(100)))));
                 apResultatCalculSituationProfessionnel.setNom(repartitionCourante.getRepartitionPaiements().getNom());
                 prestationCalculee.getResultatCalcul().addResultatCalculSitProfessionnelle(apResultatCalculSituationProfessionnel);
             }
@@ -2191,8 +2191,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             }
             // recherche le salaire horaire/mensuel/indépendant/versé
             FWCurrency revenuMoyenDeterminant = APSituationProfessionnelleHelper.getSalaireJournalierVerse(sitPro);
-            revenuMoyenDeterminant = new FWCurrency(
-                    JANumberFormatter.format(revenuMoyenDeterminant.toString(), 1, 2, JANumberFormatter.SUP));
+            revenuMoyenDeterminant = new FWCurrency(JANumberFormatter.format(revenuMoyenDeterminant.toString(), 0.5, 2, JANumberFormatter.SUP)); // ESVE MATERNITE ARRONDI A VERIFIER
             donneesPersistence.addRMDParEmployeur(sitPro.getIdSituationProf(), revenuMoyenDeterminant);
         }
 

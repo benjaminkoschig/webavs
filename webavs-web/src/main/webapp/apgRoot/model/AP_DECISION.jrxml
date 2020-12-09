@@ -51,6 +51,9 @@
 	<parameter name="PARAM_TITRE_DETAIL" isForPrompting="false" class="java.lang.String">
 		<parameterDescription><![CDATA[Le titre des colonnes de la boucle de detail]]></parameterDescription>
 	</parameter>
+	<parameter name="PARAM_TITRE_DETAIL2" isForPrompting="false" class="java.lang.String">
+		<parameterDescription><![CDATA[Le titre des colonnes de la boucle de detail2]]></parameterDescription>
+	</parameter>
 	<parameter name="PARAM_AFFILIE_LABEL" isForPrompting="false" class="java.lang.String">
 		<parameterDescription><![CDATA[le label de la ligne affilie]]></parameterDescription>
 	</parameter>
@@ -451,7 +454,7 @@
 			</band>
 		</columnHeader>
 		<detail>
-			<band height="55"  isSplitAllowed="false" >
+			<band height="70"  isSplitAllowed="false" >
 				<subreport  isUsingCache="true">
 					<reportElement
 						mode="Opaque"
@@ -505,7 +508,7 @@
 					<reportElement
 						mode="Opaque"
 						x="0"
-						y="41"
+						y="56"
 						width="509"
 						height="12"
 						forecolor="#000000"
@@ -552,7 +555,7 @@
 				</subreport>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="0"
+						x="2"
 						y="12"
 						width="507"
 						height="14"
@@ -572,8 +575,8 @@
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="0"
-						y="27"
+						x="2"
+						y="26"
 						width="507"
 						height="14"
 						forecolor="#000000"
@@ -589,6 +592,28 @@
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{CHAMP_TEXT2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="0"
+						y="41"
+						width="510"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-39"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="false"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[new Boolean($F{CHAMP_TEXT1}!=null)]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Bottom" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_TITRE_DETAIL2}]]></textFieldExpression>
 				</textField>
 			</band>
 		</detail>

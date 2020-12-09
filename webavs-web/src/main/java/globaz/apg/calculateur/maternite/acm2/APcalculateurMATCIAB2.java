@@ -56,6 +56,8 @@ public class APcalculateurMATCIAB2 implements IAPPrestationCalculateur<APPrestat
             }
         }
 
+        revenuMoyenDeterminantACM2 = new FWCurrency(String.valueOf(arrondirFranc(revenuMoyenDeterminantACM2.getBigDecimalValue())));
+
         if (periodeMATCIAB1ouStandard == null) {
             throw new Exception("Aucune période MATCIAB1 ni Standard trouvée");
         }
@@ -103,7 +105,7 @@ public class APcalculateurMATCIAB2 implements IAPPrestationCalculateur<APPrestat
 
             BigDecimal montantBrut = revenuMoyenDeterminantACM2.getBigDecimalValue().multiply(
                     new BigDecimal(nombreDeJours));
-            montantBrut = arrondir(montantBrut);
+            //montantBrut = arrondir(montantBrut); // ESVE MATERNITE ARRONDI A VERIFIER
 
             APPrestation prestationACreer = new APPrestation();
             prestationACreer.setDateCalcul(JACalendar.todayJJsMMsAAAA());
@@ -171,7 +173,7 @@ public class APcalculateurMATCIAB2 implements IAPPrestationCalculateur<APPrestat
                 // calcul du montant brut
                 BigDecimal montantBrutRepartition = donneesParEmployeur.getRevenuMoyenDeterminant()
                         .getBigDecimalValue().multiply(new BigDecimal(nombreDeJours));
-                montantBrutRepartition = arrondir(montantBrutRepartition);
+                //montantBrutRepartition = arrondir(montantBrutRepartition); // ESVE MATERNITE ARRONDI A VERIFIER
                 repartitionPaiements.setMontantBrut(montantBrutRepartition.toString());
                 // repartitionPaiements.setIdRepartitionBeneficiairePaiement();
                 repartitionPaiements.setTauxRJM(tauxRJM);
@@ -204,6 +206,19 @@ public class APcalculateurMATCIAB2 implements IAPPrestationCalculateur<APPrestat
         // arrondi à 2 chiffres après la virgule, à 5cts près.
         return new BigDecimal(JANumberFormatter.deQuote(JANumberFormatter.format(montant.toString(), 0.05, 2,
                 JANumberFormatter.NEAR)));
+    }
+
+    /**
+     * Règle retrouvée dans le code...</br>
+     * arrondi à 2 chiffres après la virgule, à 1Chf près.
+     *
+     * @param montant
+     * @return
+     */
+    private BigDecimal arrondirFranc(BigDecimal montant) {
+        // arrondi à 2 chiffres après la virgule, à 1chf près.
+        return new BigDecimal(JANumberFormatter.deQuote(JANumberFormatter.format(montant.toString(), 1, 2,
+                JANumberFormatter.SUP)));
     }
 
     @Override

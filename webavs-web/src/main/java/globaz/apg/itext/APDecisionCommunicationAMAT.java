@@ -210,7 +210,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
     private static final JACalendar CALENDAR = new JACalendarGregorian();
     private static final String DOC_DEC_AMAT_COPIE_ASS = "documents.decision.amat.copie.assure";
-    //ESVE MATERNITE
+
     // Nom de fichier jasper pour les décisions
     private static final String FICHIER_MODELE = "AP_DECISION";
 
@@ -370,7 +370,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
     public void beforeExecuteReport() {
         try {
             // le modele
-            //ESVE MATERNITE DECISIONS
             final String extensionModelCaisse = getSession().getApplication().getProperty("extensionModelITextCaisse");
             if (!JadeStringUtil.isEmpty(extensionModelCaisse)) {
                 setTemplateFile(APDecisionCommunicationAMAT.FICHIER_MODELE + extensionModelCaisse);
@@ -538,7 +537,16 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         // ----------------------------------------------------------------------------------------
 
         if (getCsTypeDocument().equalsIgnoreCase(IAPCatalogueTexte.CS_DECISION_MAT)) {
-            parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(1).getDescription());
+            if (state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
+                try {
+                    parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(203).getDescription());
+                } catch (IndexOutOfBoundsException e) {
+                    e.printStackTrace();
+                    parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(1).getDescription());
+                }
+            } else {
+                parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(1).getDescription());
+            }
         } else {
             // il s'agit d'une communication
             parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(5).getDescription());
@@ -621,6 +629,16 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         // la boucle de détail
         // -----------------------------------------------------------------------------------------
         parametres.put("PARAM_TITRE_DETAIL", document.getTextes(3).getTexte(1).getDescription());
+        if (getCsTypeDocument().equalsIgnoreCase(IAPCatalogueTexte.CS_DECISION_MAT)) {
+            if (state_dec == APDecisionCommunicationAMAT.STATE_STANDARD || state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
+                try {
+                    parametres.put("PARAM_TITRE_DETAIL2", document.getTextes(3).getTexte(200).getDescription());
+                } catch (IndexOutOfBoundsException e) {
+                    e.printStackTrace();
+                    parametres.put("PARAM_TITRE_DETAIL2", document.getTextes(3).getTexte(1).getDescription());
+                }
+            }
+        }
         parametres.put("PARAM_ALLOCATION_DU", document.getTextes(3).getTexte(2).getDescription());
         parametres.put("PARAM_AU", document.getTextes(3).getTexte(3).getDescription());
         parametres.put("PARAM_JOURS_A", document.getTextes(3).getTexte(4).getDescription());
@@ -750,7 +768,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         sitPro.setIdSituationProf(repartition.getIdSituationProfessionnelle());
         sitPro.retrieve();
 
-        //ESVE MATERNITE DUREE MATCIAB2
         Integer nbJoursTotaux = Integer.valueOf(APProperties.DROIT_ACM_MAT_DUREE_JOURS.getValue());
         if (!sitPro.isNew()) {
             final boolean hasAcm2 = sitPro.getHasAcm2AlphaPrestations();
@@ -1076,7 +1093,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
             arguments[7] = JANumberFormatter.format(revenuAnnuel);
 
-          // Si c'est une décision complémentaire (MATCIAB2)
+            // Si c'est une décision complémentaire (MATCIAB2)
         } else if (state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
 
             arguments[7] = JANumberFormatter.format(revenuAnnuel);
@@ -1104,11 +1121,10 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             buffer.append(" "); // ligne
             buffer.append(textes.getTexte(102).getDescription());
 
-            arguments[8] = repartition.getTauxRJM();
-
             // calculer le pourcentage de l'employeur
             final double pourcent = Double.parseDouble(repartition.getTauxRJM()) / 100d;
 
+            arguments[8] = repartition.getTauxRJM();
             arguments[9] = JANumberFormatter.format(Double.parseDouble(loadPrestationType().getMontantJournalier())
                     * pourcent, 0.05, 2, JANumberFormatter.NEAR);
         }
@@ -1122,7 +1138,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         }
 
         if (state_dec != APDecisionCommunicationAMAT.STATE_STANDARD) {
-        buffer.append("\n");
+            buffer.append("\n");
         }
 
         // creer les arguments a remplacer dans le texte
@@ -1474,6 +1490,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 int nbPrest = 0;
 
                 // Création champs de données document assurées pour tous les types sauf MATCIAB1
+                boolean textaddedMATCIAB2 = false;
                 for (int idPrestation = 0; idPrestation < loadPrestations().size(); ++idPrestation) {
 
                     final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
@@ -1565,6 +1582,24 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                 message.format(
                                                         new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
                                                         buffer, new FieldPosition(0)).toString());
+
+                                        if (APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) {
+                                            if (!textaddedMATCIAB2) {
+                                                buffer.setLength(0);
+                                                buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
+                                                        String.valueOf(revenuMoyenDeterminant)));
+                                                message = createMessageFormat(buffer);
+                                                buffer.setLength(0);
+                                                champs.put(
+                                                        "CHAMP_TEXT1",
+                                                        message.format(
+                                                                new Object[]{}, buffer, new FieldPosition(0))
+                                                                .toString());
+
+                                                textaddedMATCIAB2 = true;
+                                            }
+                                        }
+
                                         lignes.add(champs);
                                     }
                                 } else {
@@ -1622,6 +1657,24 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                 message.format(
                                                         new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
                                                         buffer, new FieldPosition(0)).toString());
+
+                                        if (APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) { // tableau standard indépendant un seul employeur
+                                            if (!textaddedMATCIAB2) {
+                                                buffer.setLength(0);
+                                                buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
+                                                        String.valueOf(revenuMoyenDeterminant)));
+                                                message = createMessageFormat(buffer);
+                                                buffer.setLength(0);
+                                                champs.put(
+                                                        "CHAMP_TEXT1",
+                                                        message.format(
+                                                                new Object[]{}, buffer, new FieldPosition(0))
+                                                                .toString());
+
+                                                textaddedMATCIAB2 = true;
+                                            }
+                                        }
+
                                         lignes.add(champs);
                                     }
                                 }
@@ -1632,7 +1685,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 }
 
                 // Création champs de données document assurées pour le types MATCIAB1
-                boolean textadded = false;
+                boolean textaddedMATCIAB1 = false;
                 for (int idPrestation = 0; idPrestation < loadPrestations().size(); ++idPrestation) {
 
                     final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
@@ -1724,6 +1777,33 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                 message.format(
                                                         new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
                                                         buffer, new FieldPosition(0)).toString());
+
+                                        if (!textaddedMATCIAB1) {
+                                            buffer.setLength(0);
+                                            buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
+                                                    String.valueOf(revenuMoyenDeterminant)));
+                                            message = createMessageFormat(buffer);
+                                            buffer.setLength(0);
+                                            champs.put(
+                                                    "CHAMP_TEXT1",
+                                                    message.format(
+                                                            new Object[]{}, buffer, new FieldPosition(0))
+                                                            .toString());
+
+                                            buffer.setLength(0);
+                                            buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(201).getDescription(), "{0}",
+                                                    JANumberFormatter.format(Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2, JANumberFormatter.NEAR)));
+                                            message = createMessageFormat(buffer);
+                                            buffer.setLength(0);
+                                            champs.put(
+                                                    "CHAMP_TEXT2",
+                                                    message.format(
+                                                            new Object[]{}, buffer, new FieldPosition(0))
+                                                            .toString());
+
+                                            textaddedMATCIAB1 = true;
+                                        }
+
                                         lignes.add(champs);
                                     }
                                 } else {
@@ -1782,9 +1862,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                         new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
                                                         buffer, new FieldPosition(0)).toString());
 
-                                        if (!textadded) {
+                                        if (!textaddedMATCIAB1) { // tableau matciab1 indépendant un seul employeur
                                             buffer.setLength(0);
-                                            buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(2).getTexte(3).getDescription(), "{5}",
+                                            buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
                                                     String.valueOf(revenuMoyenDeterminant)));
                                             message = createMessageFormat(buffer);
                                             buffer.setLength(0);
@@ -1795,7 +1875,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                             .toString());
 
                                             buffer.setLength(0);
-                                            buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(2).getTexte(3).getDescription(), "{5}",
+                                            buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(201).getDescription(), "{0}",
                                                     JANumberFormatter.format(Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2, JANumberFormatter.NEAR)));
                                             message = createMessageFormat(buffer);
                                             buffer.setLength(0);
@@ -1805,8 +1885,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                             new Object[]{}, buffer, new FieldPosition(0))
                                                             .toString());
 
-                                            textadded = true;
+                                            textaddedMATCIAB1 = true;
                                         }
+
                                         lignes.add(champs);
                                     }
                                 }
@@ -1823,6 +1904,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 int nbPrest = 0;
 
                 // Création champs de données document employeurs pour tous les types sauf MATCIAB1
+                boolean textaddedMATCIAB2 = false;
                 for (int idPrestation = 0; idPrestation < loadPrestations().size(); ++idPrestation) {
                     final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
                     final Map champs = new HashMap();
@@ -1919,6 +2001,23 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                         new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
                                                         buffer, new FieldPosition(0)).toString());
 
+                                        if (APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) { // tableau indépendant standard plusieurs employeur
+                                            if (!textaddedMATCIAB2) {
+                                                buffer.setLength(0);
+                                                buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
+                                                        String.valueOf(revenuMoyenDeterminant)));
+                                                message = createMessageFormat(buffer);
+                                                buffer.setLength(0);
+                                                champs.put(
+                                                        "CHAMP_TEXT1",
+                                                        message.format(
+                                                                new Object[]{}, buffer, new FieldPosition(0))
+                                                                .toString());
+
+                                                textaddedMATCIAB2 = true;
+                                            }
+                                        }
+
                                         break;
                                     }
                                 }
@@ -1932,7 +2031,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 }
 
                 // Création champs de données document employeurs pour le type MATCIAB1
-                boolean textadded = false;
+                boolean textaddedMATCIAB1 = false;
                 for (int idPrestation = 0; idPrestation < loadPrestations().size(); ++idPrestation) {
                     final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
                     final Map champs = new HashMap();
@@ -2029,9 +2128,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                         new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
                                                         buffer, new FieldPosition(0)).toString());
 
-                                        if (!textadded) {
+                                        if (!textaddedMATCIAB1) { //tableau matciab1 employeur plusieurs employeurs
                                             buffer.setLength(0);
-                                            buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(2).getTexte(3).getDescription(), "{5}",
+                                            buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
                                                     String.valueOf(revenuMoyenDeterminant)));
                                             message = createMessageFormat(buffer);
                                             buffer.setLength(0);
@@ -2042,7 +2141,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                             .toString());
 
                                             buffer.setLength(0);
-                                            buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(2).getTexte(3).getDescription(), "{5}",
+                                            buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(201).getDescription(), "{0}",
                                                     JANumberFormatter.format(Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2, JANumberFormatter.NEAR)));
                                             message = createMessageFormat(buffer);
                                             buffer.setLength(0);
@@ -2052,7 +2151,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                             new Object[]{}, buffer, new FieldPosition(0))
                                                             .toString());
 
-                                            textadded = true;
+                                            textaddedMATCIAB1 = true;
                                         }
 
                                         break;
@@ -2121,7 +2220,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 && state_dec == APDecisionCommunicationAMAT.STATE_STANDARD;
 
         // OU
-        // Genre de prestation MATCIAB2 ET décision à l'état ACM
+        // Genre de prestation MATCIAB2 ET décision à l'état MATCIAB2
         isGoodStateAndGenre |= APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())
                 && state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2;
 
