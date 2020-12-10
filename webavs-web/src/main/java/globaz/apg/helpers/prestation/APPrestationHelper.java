@@ -1929,7 +1929,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             // recherche le salaire horaire/mensuel/indépendant/versé
             FWCurrency revenuMoyenDeterminant = APSituationProfessionnelleHelper.getSalaireJournalierVerse(sitPro);
             revenuMoyenDeterminant = new FWCurrency(
-                    JANumberFormatter.format(revenuMoyenDeterminant.toString(), 1, 2, JANumberFormatter.SUP));
+                    JANumberFormatter.format(revenuMoyenDeterminant.toString(), 0.01, 2, JANumberFormatter.SUP));
             donneesPersistence.addRMDParEmployeur(sitPro.getIdSituationProf(), revenuMoyenDeterminant);
         }
 
@@ -2191,7 +2191,8 @@ public class APPrestationHelper extends PRAbstractHelper {
             }
             // recherche le salaire horaire/mensuel/indépendant/versé
             FWCurrency revenuMoyenDeterminant = APSituationProfessionnelleHelper.getSalaireJournalierVerse(sitPro);
-            revenuMoyenDeterminant = new FWCurrency(JANumberFormatter.format(revenuMoyenDeterminant.toString(), 0.5, 2, JANumberFormatter.SUP)); // ESVE MATERNITE ARRONDI A VERIFIER
+            revenuMoyenDeterminant = new FWCurrency(
+                    JANumberFormatter.format(revenuMoyenDeterminant.toString(), 0.01, 2, JANumberFormatter.SUP));
             donneesPersistence.addRMDParEmployeur(sitPro.getIdSituationProf(), revenuMoyenDeterminant);
         }
 

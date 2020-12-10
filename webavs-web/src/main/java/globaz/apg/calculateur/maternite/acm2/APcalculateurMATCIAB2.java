@@ -22,6 +22,7 @@ import globaz.prestation.beans.PRPeriode;
 import globaz.prestation.utils.PRDateUtils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -46,9 +47,10 @@ public class APcalculateurMATCIAB2 implements IAPPrestationCalculateur<APPrestat
          * Calcul du montant journalier de la prestation MATCIAB2
          * ET recherche de la période MATCIAB1 ou Standard -> au moins un des employeurs doit payer des MATCIAB1 ou Standard !
          */
-        FWCurrency revenuMoyenDeterminantACM2 = new FWCurrency("0");
+        FWCurrency sommeRevenuMoyenDeterminantMATCIAB2 = new FWCurrency("0");
+        FWCurrency sommeRevenuMoyenDeterminantMATCIAB2Arrondi = new FWCurrency("0");
         for (ACM2BusinessDataParEmployeur object : donneesDomainCalcul) {
-            revenuMoyenDeterminantACM2.add(object.getRevenuMoyenDeterminant());
+            sommeRevenuMoyenDeterminantMATCIAB2.add(object.getRevenuMoyenDeterminant());
             if (donneesEmployeurTmp.hasPrestationMATCIAB1() && periodeMATCIAB1ouStandard == null) {
                 periodeMATCIAB1ouStandard = donneesEmployeurTmp.getPeriodeMATCIAB1();
             } else if (donneesEmployeurTmp.hasPrestationStandard() && periodeMATCIAB1ouStandard == null) {
@@ -56,7 +58,8 @@ public class APcalculateurMATCIAB2 implements IAPPrestationCalculateur<APPrestat
             }
         }
 
-        revenuMoyenDeterminantACM2 = new FWCurrency(String.valueOf(arrondirFranc(revenuMoyenDeterminantACM2.getBigDecimalValue())));
+        sommeRevenuMoyenDeterminantMATCIAB2 = new FWCurrency(String.valueOf(sommeRevenuMoyenDeterminantMATCIAB2.getBigDecimalValue()));
+        sommeRevenuMoyenDeterminantMATCIAB2Arrondi = new FWCurrency(String.valueOf(arrondirFranc(sommeRevenuMoyenDeterminantMATCIAB2.getBigDecimalValue())));
 
         if (periodeMATCIAB1ouStandard == null) {
             throw new Exception("Aucune période MATCIAB1 ni Standard trouvée");
@@ -103,9 +106,9 @@ public class APcalculateurMATCIAB2 implements IAPPrestationCalculateur<APPrestat
             int nombreDeJours = PRDateUtils.getNbDayBetween(dateDeDebut, dateDeFin);
             nombreDeJours++;
 
-            BigDecimal montantBrut = revenuMoyenDeterminantACM2.getBigDecimalValue().multiply(
+            BigDecimal montantBrut = sommeRevenuMoyenDeterminantMATCIAB2Arrondi.getBigDecimalValue().multiply(
                     new BigDecimal(nombreDeJours));
-            //montantBrut = arrondir(montantBrut); // ESVE MATERNITE ARRONDI A VERIFIER
+            montantBrut = arrondir(montantBrut);
 
             APPrestation prestationACreer = new APPrestation();
             prestationACreer.setDateCalcul(JACalendar.todayJJsMMsAAAA());
@@ -116,11 +119,11 @@ public class APcalculateurMATCIAB2 implements IAPPrestationCalculateur<APPrestat
             prestationACreer.setGenre(APTypeDePrestation.MATCIAB2.getCodesystemString());
             prestationACreer.setIdDroit(idDroit);
             prestationACreer.setMontantBrut(montantBrut.toString());
-            prestationACreer.setMontantJournalier(revenuMoyenDeterminantACM2.toString());
+            prestationACreer.setMontantJournalier(sommeRevenuMoyenDeterminantMATCIAB2Arrondi.toString());
             prestationACreer.setNombreJoursSoldes(String.valueOf(nombreDeJours));
             // assigne le noRevision en CS_REVISION_MATERNITE_2005
             prestationACreer.setNoRevision(IAPDroitMaternite.CS_REVISION_MATERNITE_2005);
-            prestationACreer.setRevenuMoyenDeterminant(revenuMoyenDeterminantACM2.toString());
+            prestationACreer.setRevenuMoyenDeterminant(sommeRevenuMoyenDeterminantMATCIAB2Arrondi.toString());
             // assigne la nouvelle prestation en IPRDemande.CS_TYPE_MATERNITE
             prestationACreer.setType(IPRDemande.CS_TYPE_MATERNITE);
 
@@ -170,10 +173,19 @@ public class APcalculateurMATCIAB2 implements IAPPrestationCalculateur<APPrestat
                     }
                 }
 
-                // calcul du montant brut
-                BigDecimal montantBrutRepartition = donneesParEmployeur.getRevenuMoyenDeterminant()
-                        .getBigDecimalValue().multiply(new BigDecimal(nombreDeJours));
-                //montantBrutRepartition = arrondir(montantBrutRepartition); // ESVE MATERNITE ARRONDI A VERIFIER
+                // calcul du montant brut par repartitions
+                BigDecimal tauxCalcul; // proportion de la répartion par rapport a la somme des repartitions
+                // si le nombre de prestation prise en compte pour MATCIAB2 est différent du nombre de situation proffessionelle prise en compte pour la maternité fédérale
+                if (donneesParEmployeur.getNombreInitialDeSituationsProfessionelles() != donneesDomainCalcul.size()) {
+                    tauxCalcul = donneesParEmployeur.getRevenuMoyenDeterminant().getBigDecimalValue().divide(sommeRevenuMoyenDeterminantMATCIAB2.getBigDecimalValue(), 4, RoundingMode.HALF_UP);
+                } else {
+                    tauxCalcul = new BigDecimal(tauxRJM).divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
+                }
+
+                BigDecimal montantBrutRepartition = sommeRevenuMoyenDeterminantMATCIAB2Arrondi.getBigDecimalValue().multiply(tauxCalcul);
+                montantBrutRepartition = arrondir(montantBrutRepartition);
+                montantBrutRepartition = montantBrutRepartition.multiply(new BigDecimal(nombreDeJours));
+
                 repartitionPaiements.setMontantBrut(montantBrutRepartition.toString());
                 // repartitionPaiements.setIdRepartitionBeneficiairePaiement();
                 repartitionPaiements.setTauxRJM(tauxRJM);

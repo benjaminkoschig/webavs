@@ -46,7 +46,7 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
         for (APCalculateurComplementDonneeDomaine prestationStandard : donneesDomainCalcul) {
             APPrestation prestation = prestationStandard.getPrestation();
 
-            BigDecimal sommeSalaireJournalier = new BigDecimal(prestation.getRevenuMoyenDeterminant());
+            BigDecimal sommeRevenuMoyenDeterminantMATCIAB1Arrondi = new BigDecimal(prestation.getRevenuMoyenDeterminant());
 
             APCalculateurComplementDonneesPersistence prestationCalculeeAPersister = new APCalculateurComplementDonneesPersistence(
                     prestation.getDateDebut(), prestation.getDateFin(), Integer.valueOf(prestation.getNombreJoursSoldes()),
@@ -67,13 +67,13 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
             // à la propriété PROPERTY_APG_FERCIAB_MATERNITE et donc le nombre de jours soldes
             // pour la période entre prestation.getDateDebut() et prestation.getDateFin() est à recalculer
             int nombreJoursSoldesPeriodePriseEnCompte = PRDateUtils.getNbDayBetween2(prestation.getDateDebut(), prestation.getDateFin()) + 1; // nombreJoursSoldesPeriodePriseEnCompte après l'adapation par la propriété PROPERTY_APG_FERCIAB_MATERNITE
-            BigDecimal montantMATCIAB1 = calculateur.calculerMontantMATCIAB1(sommeSalaireJournalier, nombreJoursSoldesPeriodePriseEnCompte);
+            BigDecimal montantMATCIAB1 = calculateur.calculerMontantMATCIAB1(sommeRevenuMoyenDeterminantMATCIAB1Arrondi, nombreJoursSoldesPeriodePriseEnCompte);
             if (prestationStandard.getNombreInitialDeSituationsProfessionelles() != prestationStandard.getSituationProfessionnelle().size()) {
                 // ce cas ne se produit que si il y a plusieurs employeur et que certain de ces employeur ne cotise pas au assurance complémentaire
                 // le calcul MATCIAB1 se base alors sur le 80% des revenus moyen déterminent qui cotise au assurance complémentaire
-                BigDecimal sommeSalaireJournalier80 = sommeSalaireJournalier.compareTo(IAPConstantes.APG_JOURNALIERE_MAX) > 0
+                BigDecimal sommeSalaireJournalier80 = sommeRevenuMoyenDeterminantMATCIAB1Arrondi.compareTo(IAPConstantes.APG_JOURNALIERE_MAX) > 0
                         ? IAPConstantes.APG_JOURNALIERE_MAX
-                        : sommeSalaireJournalier.multiply(BigDecimal.valueOf(80)).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
+                        : sommeRevenuMoyenDeterminantMATCIAB1Arrondi.multiply(BigDecimal.valueOf(80)).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
                 BigDecimal montantBrutFederal80 = getMontantFederal(sommeSalaireJournalier80, nombreJoursSoldesPeriodePriseEnCompte);
                 montantMATCIAB1 = montantMATCIAB1.subtract(montantBrutFederal80);
             } else {
@@ -106,13 +106,13 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
 
                     APSituationProfessionnelleCanton sitProf = prestationStandard.getSituationProfessionnelle().get(repartition.getIdSituationProfessionnelle());
 
-                    // tauxCalcul = proportion de la répartion par rapport a la somme des repartitions
-                    BigDecimal tauxCalcul;
+                    // calcul du montant brut par repartitions
+                    BigDecimal tauxCalcul; // proportion de la répartion par rapport a la somme des repartitions
                     // si le nombre de prestation prise en compte pour MATCIAB1 est différent du nombre de situation proffessionelle prise en compte pour la maternité fédérale
                     if (prestationStandard.getNombreInitialDeSituationsProfessionelles() != prestationStandard.getSituationProfessionnelle().size()) {
-                        tauxCalcul = new BigDecimal(repartition.getMontantBrut()).divide(sommeMontantBrut, 4, RoundingMode.UNNECESSARY);
+                        tauxCalcul = new BigDecimal(repartition.getMontantBrut()).divide(sommeMontantBrut, 4, RoundingMode.HALF_UP);
                     } else {
-                        tauxCalcul = new BigDecimal(repartition.getTauxRJM()).divide(BigDecimal.valueOf(100), 4, RoundingMode.UNNECESSARY);
+                        tauxCalcul = new BigDecimal(repartition.getTauxRJM()).divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
                     }
 
                     BigDecimal montantBrutRepartition = montantBrutJournalier.multiply(tauxCalcul);
@@ -153,7 +153,7 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
                                 sitProf.getIdTiersEmployeur(), sitProf.getIdTiersPaiementEmployeur(),
                                 sitProf.getIdDomainePaiementEmployeur(),
                                 sitProf.getAssociation().getCodesystemToString(),
-                                sitProf.getId(), sitProf.getNom(),
+                                sitProf.getId(), repartition.getNom(),
                                 sitProf.getIdAffilie(),
                                 //ESVE MATERNITE ici le type de la repartition est set à paritaire ou personelle mais pas utilisé
                                 sitProf.getTypeAffiliation(),
@@ -178,7 +178,7 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
                                 sitProf.getIdTiersEmployeur(), sitProf.getIdTiersPaiementEmployeur(),
                                 sitProf.getIdDomainePaiementEmployeur(),
                                 sitProf.getAssociation().getCodesystemToString(),
-                                sitProf.getId(), sitProf.getNom(),
+                                sitProf.getId(), repartition.getNom(),
                                 sitProf.getIdAffilie(),
                                 //ESVE MATERNITE ici le type de la repartition est set à paritaire ou personelle mais pas utilisé
                                 sitProf.getTypeAffiliation(),
@@ -397,6 +397,8 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
                 }
             }
 
+            // Arrondi au franc suppérieur
+            sommeRevenuMoyenDeterminant = new FWCurrency(JANumberFormatter.format(sommeRevenuMoyenDeterminant.toString(), 1, 2, JANumberFormatter.SUP));
             prestationStandard.getPrestation().setRevenuMoyenDeterminant(sommeRevenuMoyenDeterminant.toString());
             prestationStandard.setDroit(donneesPersistancePourCalcul.getDroit());
 

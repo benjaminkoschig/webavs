@@ -1510,8 +1510,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                 final APRepartitionPaiements rp = (APRepartitionPaiements) repartitionPaiementsManager
                                         .get(idRP);
 
-                                // reprendre la situation prof pour voir si
-                                // indépendant
+                                // reprendre la situation prof pour voir si indépendant
                                 final APSituationProfessionnelle sitPro = new APSituationProfessionnelle();
                                 sitPro.setSession(getSession());
                                 sitPro.setIdSituationProf(rp.getIdSituationProfessionnelle());
@@ -1705,8 +1704,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                 final APRepartitionPaiements rp = (APRepartitionPaiements) repartitionPaiementsManager
                                         .get(idRP);
 
-                                // reprendre la situation prof pour voir si
-                                // indépendant
+                                // reprendre la situation prof pour voir si indépendant
                                 final APSituationProfessionnelle sitPro = new APSituationProfessionnelle();
                                 sitPro.setSession(getSession());
                                 sitPro.setIdSituationProf(rp.getIdSituationProfessionnelle());
@@ -1778,9 +1776,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                         new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
                                                         buffer, new FieldPosition(0)).toString());
 
-                                        if (!textaddedMATCIAB1) {
+                                        if (!textaddedMATCIAB1) { // tableau MATCIAB1 assuré un seul employeurs
                                             buffer.setLength(0);
-                                            buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
+                                            buffer.append(PRStringUtils.replaceString(documentAssures.getTextes(1).getTexte(200).getDescription(), "{0}",
                                                     String.valueOf(revenuMoyenDeterminant)));
                                             message = createMessageFormat(buffer);
                                             buffer.setLength(0);
@@ -1791,7 +1789,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                             .toString());
 
                                             buffer.setLength(0);
-                                            buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(201).getDescription(), "{0}",
+                                            buffer.append(PRStringUtils.replaceString(documentAssures.getTextes(1).getTexte(201).getDescription(), "{0}",
                                                     JANumberFormatter.format(Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2, JANumberFormatter.NEAR)));
                                             message = createMessageFormat(buffer);
                                             buffer.setLength(0);
@@ -1862,7 +1860,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                         new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
                                                         buffer, new FieldPosition(0)).toString());
 
-                                        if (!textaddedMATCIAB1) { // tableau matciab1 indépendant un seul employeur
+                                        if (!textaddedMATCIAB1) { // tableau MATCIAB1 indépendant/employeur un seul employeur
                                             buffer.setLength(0);
                                             buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
                                                     String.valueOf(revenuMoyenDeterminant)));
@@ -1928,8 +1926,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                 final APRepartitionPaiements rp = (APRepartitionPaiements) repartitionPaiementsManager
                                         .get(idRP);
 
-                                // reprendre la situation prof pour voir si
-                                // indépendant
+                                // reprendre la situation prof pour voir si indépendant
                                 final APSituationProfessionnelle sitPro = new APSituationProfessionnelle();
                                 sitPro.setSession(getSession());
                                 sitPro.setIdSituationProf(rp.getIdSituationProfessionnelle());
@@ -2001,7 +1998,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                         new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
                                                         buffer, new FieldPosition(0)).toString());
 
-                                        if (APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) { // tableau indépendant standard plusieurs employeur
+                                        if (APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) { // tableau STANDARD indépendant/employeur plusieurs employeurs
                                             if (!textaddedMATCIAB2) {
                                                 buffer.setLength(0);
                                                 buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
@@ -2055,8 +2052,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                 final APRepartitionPaiements rp = (APRepartitionPaiements) repartitionPaiementsManager
                                         .get(idRP);
 
-                                // reprendre la situation prof pour voir si
-                                // indépendant
+                                // reprendre la situation prof pour voir si indépendant
                                 final APSituationProfessionnelle sitPro = new APSituationProfessionnelle();
                                 sitPro.setSession(getSession());
                                 sitPro.setIdSituationProf(rp.getIdSituationProfessionnelle());
@@ -2128,7 +2124,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                         new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
                                                         buffer, new FieldPosition(0)).toString());
 
-                                        if (!textaddedMATCIAB1) { //tableau matciab1 employeur plusieurs employeurs
+                                        if (!textaddedMATCIAB1) { // tableau MATCIAB1 indépendant/employeur plusieurs employeurs
                                             buffer.setLength(0);
                                             buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
                                                     String.valueOf(revenuMoyenDeterminant)));
