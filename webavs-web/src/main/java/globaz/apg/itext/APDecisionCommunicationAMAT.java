@@ -1490,13 +1490,12 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 int nbPrest = 0;
 
                 // Création champs de données document assurées pour tous les types sauf MATCIAB1
-                boolean textaddedMATCIAB2 = false;
                 for (int idPrestation = 0; idPrestation < loadPrestations().size(); ++idPrestation) {
 
                     final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
 
                     //<editor-fold defaultstate="collapsed" desc="ALLTYPE">
-                    if (!APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre())) {
+                    if (!APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre()) && !APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) {
                         if (isGenreSameAsStateDecision(prestation)) {
 
                             nbPrest++;
@@ -1582,23 +1581,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                         new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
                                                         buffer, new FieldPosition(0)).toString());
 
-                                        if (APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) {
-                                            if (!textaddedMATCIAB2) {
-                                                buffer.setLength(0);
-                                                buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
-                                                        String.valueOf(revenuMoyenDeterminant)));
-                                                message = createMessageFormat(buffer);
-                                                buffer.setLength(0);
-                                                champs.put(
-                                                        "CHAMP_TEXT1",
-                                                        message.format(
-                                                                new Object[]{}, buffer, new FieldPosition(0))
-                                                                .toString());
-
-                                                textaddedMATCIAB2 = true;
-                                            }
-                                        }
-
                                         lignes.add(champs);
                                     }
                                 } else {
@@ -1653,6 +1635,109 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                         buffer.setLength(0);
                                         champs.put(
                                                 "CHAMP_MONTANT_BRUT",
+                                                message.format(
+                                                        new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
+                                                        buffer, new FieldPosition(0)).toString());
+
+                                        lignes.add(champs);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    //</editor-fold>
+                }
+
+                // Création champs de données document assurées pour le types MATCIAB1
+                boolean textaddedMATCIAB1 = false;
+                boolean textaddedMATCIAB2 = false;
+                for (int idPrestation = 0; idPrestation < loadPrestations().size(); ++idPrestation) {
+
+                    final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
+
+                    //<editor-fold defaultstate="collapsed" desc="MATCIAB1">
+                    if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre()) || APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) {
+                        if (isGenreSameAsStateDecision(prestation)) {
+
+                            nbPrest++;
+
+                            // si idAffilie de la répartition = 0 && que c'est
+                            // l'assuré (par idTiers)
+                            repartitionPaiementsManager.setForIdPrestation(prestation.getIdPrestationApg());
+                            repartitionPaiementsManager.find();
+
+                            for (int idRP = 0; idRP < repartitionPaiementsManager.size(); ++idRP) {
+                                final APRepartitionPaiements rp = (APRepartitionPaiements) repartitionPaiementsManager
+                                        .get(idRP);
+
+                                // reprendre la situation prof pour voir si indépendant
+                                final APSituationProfessionnelle sitPro = new APSituationProfessionnelle();
+                                sitPro.setSession(getSession());
+                                sitPro.setIdSituationProf(rp.getIdSituationProfessionnelle());
+                                sitPro.retrieve();
+
+                                if (sitPro.getIsIndependant().booleanValue()) {
+                                    isIndependant = true;
+                                } else {
+                                    isIndependant = false;
+                                }
+
+                                final StringBuffer buffer = new StringBuffer();
+                                FWMessageFormat message = createMessageFormat(buffer);
+
+                                if (state == APDecisionCommunicationAMAT.STATE_ASSURES) {
+                                    if (JadeStringUtil.isIntegerEmpty(rp.getIdAffilie())
+                                            && rp.getIdTiers().equals(getIdTiersAssure())
+                                            && !JadeStringUtil.isIntegerEmpty(rp.getMontantBrut())) {
+
+                                        final Map champs = new HashMap();
+                                        final double nbJours = Double.parseDouble(prestation.getNombreJoursSoldes());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentAssures.getTextes(3).getTexte(6));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_DATE_DEBUT2",
+                                                message.format(new Object[]{prestation.getDateDebut()}, buffer,
+                                                        new FieldPosition(0)).toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentAssures.getTextes(3).getTexte(7));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_DATE_FIN2",
+                                                message.format(new Object[]{prestation.getDateFin()}, buffer,
+                                                        new FieldPosition(0)).toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentAssures.getTextes(3).getTexte(8));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_NB_JOURS2",
+                                                message.format(new Object[]{prestation.getNombreJoursSoldes()}, buffer,
+                                                        new FieldPosition(0)).toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentAssures.getTextes(3).getTexte(9));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_MONTANT_JOURNALIER2",
+                                                message.format(
+                                                        new Object[]{String.valueOf(JANumberFormatter.format(
+                                                                Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2,
+                                                                JANumberFormatter.NEAR))}, buffer, new FieldPosition(0))
+                                                        .toString());
+
+                                        buffer.setLength(0);
+                                        buffer.append(documentAssures.getTextes(3).getTexte(10));
+                                        message = createMessageFormat(buffer);
+                                        buffer.setLength(0);
+                                        champs.put(
+                                                "CHAMP_MONTANT_BRUT2",
                                                 message.format(
                                                         new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
                                                         buffer, new FieldPosition(0)).toString());
@@ -1674,132 +1759,32 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                             }
                                         }
 
-                                        lignes.add(champs);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    //</editor-fold>
-                }
+                                        if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre())) { // tableau standard indépendant un seul employeur
+                                            if (!textaddedMATCIAB1) { // tableau MATCIAB1 assuré un seul employeurs
+                                                buffer.setLength(0);
+                                                buffer.append(PRStringUtils.replaceString(documentAssures.getTextes(1).getTexte(200).getDescription(), "{0}",
+                                                        String.valueOf(revenuMoyenDeterminant)));
+                                                message = createMessageFormat(buffer);
+                                                buffer.setLength(0);
+                                                champs.put(
+                                                        "CHAMP_TEXT1",
+                                                        message.format(
+                                                                new Object[]{}, buffer, new FieldPosition(0))
+                                                                .toString());
 
-                // Création champs de données document assurées pour le types MATCIAB1
-                boolean textaddedMATCIAB1 = false;
-                for (int idPrestation = 0; idPrestation < loadPrestations().size(); ++idPrestation) {
+                                                buffer.setLength(0);
+                                                buffer.append(PRStringUtils.replaceString(documentAssures.getTextes(1).getTexte(201).getDescription(), "{0}",
+                                                        JANumberFormatter.format(Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2, JANumberFormatter.NEAR)));
+                                                message = createMessageFormat(buffer);
+                                                buffer.setLength(0);
+                                                champs.put(
+                                                        "CHAMP_TEXT2",
+                                                        message.format(
+                                                                new Object[]{}, buffer, new FieldPosition(0))
+                                                                .toString());
 
-                    final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
-
-                    //<editor-fold defaultstate="collapsed" desc="MATCIAB1">
-                    if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre())) {
-                        if (isGenreSameAsStateDecision(prestation)) {
-
-                            nbPrest++;
-
-                            // si idAffilie de la répartition = 0 && que c'est
-                            // l'assuré (par idTiers)
-                            repartitionPaiementsManager.setForIdPrestation(prestation.getIdPrestationApg());
-                            repartitionPaiementsManager.find();
-
-                            for (int idRP = 0; idRP < repartitionPaiementsManager.size(); ++idRP) {
-                                final APRepartitionPaiements rp = (APRepartitionPaiements) repartitionPaiementsManager
-                                        .get(idRP);
-
-                                // reprendre la situation prof pour voir si indépendant
-                                final APSituationProfessionnelle sitPro = new APSituationProfessionnelle();
-                                sitPro.setSession(getSession());
-                                sitPro.setIdSituationProf(rp.getIdSituationProfessionnelle());
-                                sitPro.retrieve();
-
-                                if (sitPro.getIsIndependant().booleanValue()) {
-                                    isIndependant = true;
-                                } else {
-                                    isIndependant = false;
-                                }
-
-                                final StringBuffer buffer = new StringBuffer();
-                                FWMessageFormat message = createMessageFormat(buffer);
-
-                                if (state == APDecisionCommunicationAMAT.STATE_ASSURES) {
-                                    if (JadeStringUtil.isIntegerEmpty(rp.getIdAffilie())
-                                            && rp.getIdTiers().equals(getIdTiersAssure())
-                                            && !JadeStringUtil.isIntegerEmpty(rp.getMontantBrut())) {
-
-                                        final Map champs = new HashMap();
-                                        final double nbJours = Double.parseDouble(prestation.getNombreJoursSoldes());
-
-                                        buffer.setLength(0);
-                                        buffer.append(documentAssures.getTextes(3).getTexte(6));
-                                        message = createMessageFormat(buffer);
-                                        buffer.setLength(0);
-                                        champs.put(
-                                                "CHAMP_DATE_DEBUT2",
-                                                message.format(new Object[]{prestation.getDateDebut()}, buffer,
-                                                        new FieldPosition(0)).toString());
-
-                                        buffer.setLength(0);
-                                        buffer.append(documentAssures.getTextes(3).getTexte(7));
-                                        message = createMessageFormat(buffer);
-                                        buffer.setLength(0);
-                                        champs.put(
-                                                "CHAMP_DATE_FIN2",
-                                                message.format(new Object[]{prestation.getDateFin()}, buffer,
-                                                        new FieldPosition(0)).toString());
-
-                                        buffer.setLength(0);
-                                        buffer.append(documentAssures.getTextes(3).getTexte(8));
-                                        message = createMessageFormat(buffer);
-                                        buffer.setLength(0);
-                                        champs.put(
-                                                "CHAMP_NB_JOURS2",
-                                                message.format(new Object[]{prestation.getNombreJoursSoldes()}, buffer,
-                                                        new FieldPosition(0)).toString());
-
-                                        buffer.setLength(0);
-                                        buffer.append(documentAssures.getTextes(3).getTexte(9));
-                                        message = createMessageFormat(buffer);
-                                        buffer.setLength(0);
-                                        champs.put(
-                                                "CHAMP_MONTANT_JOURNALIER2",
-                                                message.format(
-                                                        new Object[]{String.valueOf(JANumberFormatter.format(
-                                                                Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2,
-                                                                JANumberFormatter.NEAR))}, buffer, new FieldPosition(0))
-                                                        .toString());
-
-                                        buffer.setLength(0);
-                                        buffer.append(documentAssures.getTextes(3).getTexte(10));
-                                        message = createMessageFormat(buffer);
-                                        buffer.setLength(0);
-                                        champs.put(
-                                                "CHAMP_MONTANT_BRUT2",
-                                                message.format(
-                                                        new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
-                                                        buffer, new FieldPosition(0)).toString());
-
-                                        if (!textaddedMATCIAB1) { // tableau MATCIAB1 assuré un seul employeurs
-                                            buffer.setLength(0);
-                                            buffer.append(PRStringUtils.replaceString(documentAssures.getTextes(1).getTexte(200).getDescription(), "{0}",
-                                                    String.valueOf(revenuMoyenDeterminant)));
-                                            message = createMessageFormat(buffer);
-                                            buffer.setLength(0);
-                                            champs.put(
-                                                    "CHAMP_TEXT1",
-                                                    message.format(
-                                                            new Object[]{}, buffer, new FieldPosition(0))
-                                                            .toString());
-
-                                            buffer.setLength(0);
-                                            buffer.append(PRStringUtils.replaceString(documentAssures.getTextes(1).getTexte(201).getDescription(), "{0}",
-                                                    JANumberFormatter.format(Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2, JANumberFormatter.NEAR)));
-                                            message = createMessageFormat(buffer);
-                                            buffer.setLength(0);
-                                            champs.put(
-                                                    "CHAMP_TEXT2",
-                                                    message.format(
-                                                            new Object[]{}, buffer, new FieldPosition(0))
-                                                            .toString());
-
-                                            textaddedMATCIAB1 = true;
+                                                textaddedMATCIAB1 = true;
+                                            }
                                         }
 
                                         lignes.add(champs);
@@ -1860,30 +1845,49 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                         new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
                                                         buffer, new FieldPosition(0)).toString());
 
-                                        if (!textaddedMATCIAB1) { // tableau MATCIAB1 indépendant/employeur un seul employeur
-                                            buffer.setLength(0);
-                                            buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
-                                                    String.valueOf(revenuMoyenDeterminant)));
-                                            message = createMessageFormat(buffer);
-                                            buffer.setLength(0);
-                                            champs.put(
-                                                    "CHAMP_TEXT1",
-                                                    message.format(
-                                                            new Object[]{}, buffer, new FieldPosition(0))
-                                                            .toString());
+                                        if (APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) {
+                                            if (!textaddedMATCIAB2) {
+                                                buffer.setLength(0);
+                                                buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
+                                                        String.valueOf(revenuMoyenDeterminant)));
+                                                message = createMessageFormat(buffer);
+                                                buffer.setLength(0);
+                                                champs.put(
+                                                        "CHAMP_TEXT1",
+                                                        message.format(
+                                                                new Object[]{}, buffer, new FieldPosition(0))
+                                                                .toString());
 
-                                            buffer.setLength(0);
-                                            buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(201).getDescription(), "{0}",
-                                                    JANumberFormatter.format(Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2, JANumberFormatter.NEAR)));
-                                            message = createMessageFormat(buffer);
-                                            buffer.setLength(0);
-                                            champs.put(
-                                                    "CHAMP_TEXT2",
-                                                    message.format(
-                                                            new Object[]{}, buffer, new FieldPosition(0))
-                                                            .toString());
+                                                textaddedMATCIAB2 = true;
+                                            }
+                                        }
 
-                                            textaddedMATCIAB1 = true;
+                                        if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre())) {
+                                            if (!textaddedMATCIAB1) { // tableau MATCIAB1 indépendant/employeur un seul employeur
+                                                buffer.setLength(0);
+                                                buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
+                                                        String.valueOf(revenuMoyenDeterminant)));
+                                                message = createMessageFormat(buffer);
+                                                buffer.setLength(0);
+                                                champs.put(
+                                                        "CHAMP_TEXT1",
+                                                        message.format(
+                                                                new Object[]{}, buffer, new FieldPosition(0))
+                                                                .toString());
+
+                                                buffer.setLength(0);
+                                                buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(201).getDescription(), "{0}",
+                                                        JANumberFormatter.format(Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2, JANumberFormatter.NEAR)));
+                                                message = createMessageFormat(buffer);
+                                                buffer.setLength(0);
+                                                champs.put(
+                                                        "CHAMP_TEXT2",
+                                                        message.format(
+                                                                new Object[]{}, buffer, new FieldPosition(0))
+                                                                .toString());
+
+                                                textaddedMATCIAB1 = true;
+                                            }
                                         }
 
                                         lignes.add(champs);
@@ -1902,7 +1906,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 int nbPrest = 0;
 
                 // Création champs de données document employeurs pour tous les types sauf MATCIAB1
-                boolean textaddedMATCIAB2 = false;
                 for (int idPrestation = 0; idPrestation < loadPrestations().size(); ++idPrestation) {
                     final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
                     final Map champs = new HashMap();
@@ -1912,7 +1915,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                     FWMessageFormat message = createMessageFormat(buffer);
 
                     //<editor-fold defaultstate="collapsed" desc="ALLTYPE">
-                    if (!APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre())) {
+                    if (!APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre()) && !APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) {
                         if (isGenreSameAsStateDecision(prestation)) {
 
                             nbPrest++;
@@ -1998,23 +2001,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                         new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
                                                         buffer, new FieldPosition(0)).toString());
 
-                                        if (APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) { // tableau STANDARD indépendant/employeur plusieurs employeurs
-                                            if (!textaddedMATCIAB2) {
-                                                buffer.setLength(0);
-                                                buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
-                                                        String.valueOf(revenuMoyenDeterminant)));
-                                                message = createMessageFormat(buffer);
-                                                buffer.setLength(0);
-                                                champs.put(
-                                                        "CHAMP_TEXT1",
-                                                        message.format(
-                                                                new Object[]{}, buffer, new FieldPosition(0))
-                                                                .toString());
-
-                                                textaddedMATCIAB2 = true;
-                                            }
-                                        }
-
                                         break;
                                     }
                                 }
@@ -2029,6 +2015,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
                 // Création champs de données document employeurs pour le type MATCIAB1
                 boolean textaddedMATCIAB1 = false;
+                boolean textaddedMATCIAB2 = false;
                 for (int idPrestation = 0; idPrestation < loadPrestations().size(); ++idPrestation) {
                     final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
                     final Map champs = new HashMap();
@@ -2038,7 +2025,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                     FWMessageFormat message = createMessageFormat(buffer);
 
                     //<editor-fold defaultstate="collapsed" desc="MATCIAB1">
-                    if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre())) {
+                    if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre()) || APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) {
                         if (isGenreSameAsStateDecision(prestation)) {
 
                             nbPrest++;
@@ -2124,30 +2111,49 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                         new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
                                                         buffer, new FieldPosition(0)).toString());
 
-                                        if (!textaddedMATCIAB1) { // tableau MATCIAB1 indépendant/employeur plusieurs employeurs
-                                            buffer.setLength(0);
-                                            buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
-                                                    String.valueOf(revenuMoyenDeterminant)));
-                                            message = createMessageFormat(buffer);
-                                            buffer.setLength(0);
-                                            champs.put(
-                                                    "CHAMP_TEXT1",
-                                                    message.format(
-                                                            new Object[]{}, buffer, new FieldPosition(0))
-                                                            .toString());
+                                        if (APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) {
+                                            if (!textaddedMATCIAB2) {
+                                                buffer.setLength(0);
+                                                buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
+                                                        String.valueOf(revenuMoyenDeterminant)));
+                                                message = createMessageFormat(buffer);
+                                                buffer.setLength(0);
+                                                champs.put(
+                                                        "CHAMP_TEXT1",
+                                                        message.format(
+                                                                new Object[]{}, buffer, new FieldPosition(0))
+                                                                .toString());
 
-                                            buffer.setLength(0);
-                                            buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(201).getDescription(), "{0}",
-                                                    JANumberFormatter.format(Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2, JANumberFormatter.NEAR)));
-                                            message = createMessageFormat(buffer);
-                                            buffer.setLength(0);
-                                            champs.put(
-                                                    "CHAMP_TEXT2",
-                                                    message.format(
-                                                            new Object[]{}, buffer, new FieldPosition(0))
-                                                            .toString());
+                                                textaddedMATCIAB2 = true;
+                                            }
+                                        }
 
-                                            textaddedMATCIAB1 = true;
+                                        if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre())) {
+                                            if (!textaddedMATCIAB1) { // tableau MATCIAB1 indépendant/employeur plusieurs employeurs
+                                                buffer.setLength(0);
+                                                buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
+                                                        String.valueOf(revenuMoyenDeterminant)));
+                                                message = createMessageFormat(buffer);
+                                                buffer.setLength(0);
+                                                champs.put(
+                                                        "CHAMP_TEXT1",
+                                                        message.format(
+                                                                new Object[]{}, buffer, new FieldPosition(0))
+                                                                .toString());
+
+                                                buffer.setLength(0);
+                                                buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(201).getDescription(), "{0}",
+                                                        JANumberFormatter.format(Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2, JANumberFormatter.NEAR)));
+                                                message = createMessageFormat(buffer);
+                                                buffer.setLength(0);
+                                                champs.put(
+                                                        "CHAMP_TEXT2",
+                                                        message.format(
+                                                                new Object[]{}, buffer, new FieldPosition(0))
+                                                                .toString());
+
+                                                textaddedMATCIAB1 = true;
+                                            }
                                         }
 
                                         break;

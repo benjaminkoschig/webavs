@@ -428,7 +428,9 @@
 						isPrintRepeatedValues="false"
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[$F{CHAMP_DATE_DEBUT}!= null]]></printWhenExpression>
+						</reportElement>
 					<textElement textAlignment="Center" verticalAlignment="Bottom" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
@@ -549,7 +551,7 @@
 						<subreportParameterExpression><![CDATA[$F{CHAMP_MONTANT_BRUT2}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportParameter  name="FIELD_REMARQUE_PRESTATION">
-						<subreportParameterExpression><![CDATA[$F{FIELD_REMARQUE_PRESTATION}]]></subreportParameterExpression>
+						<subreportParameterExpression><![CDATA[]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportExpression  class="java.lang.String"><![CDATA[$P{PARAM_AP_DECISION_DETAIL}]]></subreportExpression>
 				</subreport>

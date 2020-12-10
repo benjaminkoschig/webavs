@@ -45,7 +45,7 @@
 			</band>
 		</title>
 		<pageHeader>
-			<band height="29"  isSplitAllowed="false" >
+			<band height="28"  isSplitAllowed="false" >
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="19"
@@ -63,7 +63,7 @@
 						isPrintWhenDetailOverflows="false">
 							<printWhenExpression><![CDATA[$P{CHAMP_DATE_DEBUT}!= null]]></printWhenExpression>
 						</reportElement>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_ALLOCATION_DU}]]></textFieldExpression>
@@ -85,7 +85,7 @@
 						isPrintWhenDetailOverflows="false">
 							<printWhenExpression><![CDATA[$P{CHAMP_DATE_DEBUT}!= null]]></printWhenExpression>
 						</reportElement>
-					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{CHAMP_DATE_DEBUT}]]></textFieldExpression>
@@ -107,7 +107,7 @@
 						isPrintWhenDetailOverflows="false">
 							<printWhenExpression><![CDATA[$P{CHAMP_DATE_DEBUT}!=null]]></printWhenExpression>
 						</reportElement>
-					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_AU}]]></textFieldExpression>
@@ -129,7 +129,7 @@
 						isPrintWhenDetailOverflows="false">
 							<printWhenExpression><![CDATA[$P{CHAMP_DATE_DEBUT}!=null]]></printWhenExpression>
 						</reportElement>
-					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{CHAMP_DATE_FIN}]]></textFieldExpression>
@@ -151,7 +151,7 @@
 						isPrintWhenDetailOverflows="false">
 							<printWhenExpression><![CDATA[$P{CHAMP_DATE_DEBUT}!=null]]></printWhenExpression>
 						</reportElement>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{CHAMP_NB_JOURS}]]></textFieldExpression>
@@ -173,7 +173,7 @@
 						isPrintWhenDetailOverflows="false">
 							<printWhenExpression><![CDATA[$P{CHAMP_DATE_DEBUT}!=null]]></printWhenExpression>
 						</reportElement>
-					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_JOURS_A}]]></textFieldExpression>
@@ -195,7 +195,7 @@
 						isPrintWhenDetailOverflows="false">
 							<printWhenExpression><![CDATA[$P{CHAMP_DATE_DEBUT}!=null]]></printWhenExpression>
 						</reportElement>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_CHF}]]></textFieldExpression>
@@ -217,7 +217,7 @@
 						isPrintWhenDetailOverflows="false">
 							<printWhenExpression><![CDATA[$P{CHAMP_DATE_DEBUT}!=null]]></printWhenExpression>
 						</reportElement>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{CHAMP_MONTANT_JOURNALIER}]]></textFieldExpression>
@@ -239,7 +239,7 @@
 						isPrintWhenDetailOverflows="false">
 							<printWhenExpression><![CDATA[$P{CHAMP_DATE_DEBUT}!=null]]></printWhenExpression>
 						</reportElement>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_CHF}]]></textFieldExpression>
@@ -261,7 +261,7 @@
 						isPrintWhenDetailOverflows="false">
 							<printWhenExpression><![CDATA[$P{CHAMP_DATE_DEBUT}!=null]]></printWhenExpression>
 						</reportElement>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{CHAMP_MONTANT_BRUT}]]></textFieldExpression>
@@ -283,7 +283,7 @@
 						isPrintWhenDetailOverflows="false">
 							<printWhenExpression><![CDATA[$P{CHAMP_DATE_DEBUT}!=null]]></printWhenExpression>
 						</reportElement>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{FIELD_REMARQUE_PRESTATION}]]></textFieldExpression>
