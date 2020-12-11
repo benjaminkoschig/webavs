@@ -7,6 +7,15 @@ import globaz.framework.bean.FWViewBeanInterface;
 public class APDeterminerTypeCalculPrestationViewBean extends FWViewBean implements FWViewBeanInterface {
     private String idDroit;
     private APTypeCalculPrestation typeCalculPrestation;
+    private String typePrestation;
+
+    public final String getTypePrestation() {
+        return typePrestation;
+    }
+
+    public final void setTypePrestation(String typePrestation) {
+        this.typePrestation = typePrestation;
+    }
 
     public final String getIdDroit() {
         return idDroit;

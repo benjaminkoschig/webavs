@@ -478,8 +478,8 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
                 apRepartitionPaiementsEntity.setIdAffilie(apRepPaiDat.getIdAffilie());
                 apRepartitionPaiementsEntity.setIdDomaineAdressePaiement(apRepPaiDat.getIdDomainePaiementEmployeur());
 
-                final APRepartitionCalculeeAPersister apResRepAcmNeEntite = new APRepartitionCalculeeAPersister();
-                apResRepAcmNeEntite.setRepartitionPaiements(apRepartitionPaiementsEntity);
+                final APRepartitionCalculeeAPersister apRepartitionCalculeeAPersister = new APRepartitionCalculeeAPersister();
+                apRepartitionCalculeeAPersister.setRepartitionPaiements(apRepartitionPaiementsEntity);
 
                 // Création des cotisations
                 for (final APCotisationData cotisationData : apRepPaiDat.getCotisations()) {
@@ -494,9 +494,9 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
                     apCot.setTaux(cotisationData.getTaux().multiply(new BigDecimal(100))
                             .setScale(2, RoundingMode.HALF_UP).toString());
 
-                    apResRepAcmNeEntite.getCotisations().add(apCot);
+                    apRepartitionCalculeeAPersister.getCotisations().add(apCot);
                 }
-                prestationPersistente.getRepartitions().add(apResRepAcmNeEntite);
+                prestationPersistente.getRepartitions().add(apRepartitionCalculeeAPersister);
             }
             list.add(prestationPersistente);
         }

@@ -91,6 +91,7 @@ import globaz.prestation.tools.nnss.PRNSSUtil;
 import globaz.prestation.utils.PRDateUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <H1>Description</H1> Créé le 3 juin 05
@@ -629,14 +630,16 @@ public class APPrestationHelper extends PRAbstractHelper {
         APCalculateurComplementDonneesPersistence donnesPersistencePourCalculMATCIAB1 = getDonneesPersistancePourCalculComplementaireMATCIAB1(
                 droit.getIdDroit(), session, transaction);
 
-        // si versé à l'assuré pas de calcul de complément
         // si l’une des cotisations suivantes existe dans le dans le plan d’affiliation de l’employeur au début de la
         // période APG, alors un complément est calculé
+        // s'il reste des situations professionelles non filtrées qui cotise aux assurances complémentaires et qui ont isVersementEmployeur à true
         if (donnesPersistencePourCalculMATCIAB1 == null
-                || donnesPersistencePourCalculMATCIAB1.getListPrestationStandard().size() == 0
-                || donnesPersistencePourCalculMATCIAB1.getSituationProfessionnelleEmployeur().isEmpty()
-                || !isComplement(session, droit.getIdDroit(),
-                donnesPersistencePourCalculMATCIAB1.getSituationProfessionnelleEmployeur())) {
+                || donnesPersistencePourCalculMATCIAB1.getPrestationJointRepartitions() == null
+                || donnesPersistencePourCalculMATCIAB1.getPrestationJointRepartitions().isEmpty()
+                || donnesPersistencePourCalculMATCIAB1.getListPrestationStandard() == null
+                || donnesPersistencePourCalculMATCIAB1.getListPrestationStandard().isEmpty()
+                || donnesPersistencePourCalculMATCIAB1.getSituationProfessionnelleEmployeur() == null
+                || donnesPersistencePourCalculMATCIAB1.getSituationProfessionnelleEmployeur().isEmpty()) {
             return;
         }
 
@@ -668,7 +671,9 @@ public class APPrestationHelper extends PRAbstractHelper {
 
         // Sauvegarde des entités de persistance
         persisterResultatCalculPrestation(resultatCalculAPersisterMATCIAB1, session, transaction, true);
-    }    /**
+    }
+
+    /**
      * Vérification pour définir si calcul MATCIAB1 ou calcul MATCIAB2
      * peut avoir lieu ou non
      *
@@ -698,11 +703,6 @@ public class APPrestationHelper extends PRAbstractHelper {
         // Contrôle la propriété PROPERTY_IS_FERCIAB
         String isFerciab = JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_IS_FERCIAB);
         if (!"true".equals(isFerciab)) {
-            return false;
-        }
-
-        // Contrôle que le droit n'est pas un droit corrigé
-        if (!JadeStringUtil.isBlankOrZero(droit.getIdDroitParent())) {
             return false;
         }
 
@@ -1042,14 +1042,14 @@ public class APPrestationHelper extends PRAbstractHelper {
         // Récupération des données depuis la persistence pour le calcul des prestations MATCIAB2
         final ACM2PersistenceInputData donnesPersistencePourCalculMATCIAB2 = getDonneesPersistancePourCalculMATCIAB2(droit, session, transaction);
 
-        // si versé à l'assuré pas de calcul de complément
         // si l’une des cotisations suivantes existe dans le dans le plan d’affiliation de l’employeur au début de la
         // période APG, alors un complément est calculé
+        // s'il reste des situations professionelles non filtrées qui cotise aux assurances complémentaires et qui ont isVersementEmployeur à true
         if (donnesPersistencePourCalculMATCIAB2 == null
-                || donnesPersistencePourCalculMATCIAB2.getPrestationJointRepartitions().size() == 0
-                || donnesPersistencePourCalculMATCIAB2.getSituationProfessionnelleEmployeur().isEmpty()
-                || !isComplement(session, droit.getIdDroit(),
-                donnesPersistencePourCalculMATCIAB2.getSituationProfessionnelleEmployeur())) {
+                || donnesPersistencePourCalculMATCIAB2.getPrestationJointRepartitions() == null
+                || donnesPersistencePourCalculMATCIAB2.getPrestationJointRepartitions().isEmpty()
+                || donnesPersistencePourCalculMATCIAB2.getSituationProfessionnelleEmployeur() == null
+                || donnesPersistencePourCalculMATCIAB2.getSituationProfessionnelleEmployeur().isEmpty()) {
             return;
         }
 
@@ -1558,6 +1558,11 @@ public class APPrestationHelper extends PRAbstractHelper {
                 }
             }
 
+            // Cas spécial pour éviter le calcul ACOR quand on calcul des prestations de type MATCIAB2
+            if (viewBean.getTypePrestation() != null && viewBean.getTypePrestation().equals(APTypeDePrestation.MATCIAB2.getNomTypePrestation())) {
+                viewBean.setTypeCalculPrestation(APTypeCalculPrestation.STANDARD);
+            }
+
             if (!hasErrors(session, transaction)) {
                 transaction.commit();
             }
@@ -1678,78 +1683,15 @@ public class APPrestationHelper extends PRAbstractHelper {
         donneesPersistence.setListCotisation(listCotisation);
 
         // Situations professionnelles
-        final List<APSitProJointEmployeur> apSitProJoiEmpList = servicePersistance
+        final List<APSitProJointEmployeur> apSitProJointEmployeurs = servicePersistance
                 .getSituationProfJointEmployeur(session, transaction, idDroit);
 
         final String dateDebutPrestationStandard = donneesPersistence.getPrestationJointRepartitions().get(0)
                 .getDateDebut();
 
-        String idAssuranceParitaireJU = JadePropertiesService.getInstance()
-                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
-        String idAssurancePersonnelJU = JadePropertiesService.getInstance()
-                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_JU_ID);
-        String idAssuranceParitaireBE = JadePropertiesService.getInstance()
-                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_BE_ID);
-        String idAssurancePersonnelBE = JadePropertiesService.getInstance()
-                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_BE_ID);
+        List<APSitProJointEmployeur> apSitProJointEmployeursIsComplement = filterAPSitProJointEmployeursIsComplement(idDroit, session, donneesPersistence, dateDebutPrestationStandard, apSitProJointEmployeurs);
 
-        List<APSitProJointEmployeur> apEmpList = new ArrayList<>();
-        // Récupération des taux
-        for (final APSitProJointEmployeur apSitProJoiEmp : apSitProJoiEmpList) {
-
-            String typeAffiliation = getTypeAffiliation(session, apSitProJoiEmp.getIdAffilie());
-
-            donneesPersistence.getMapTypeAffiliation().put(apSitProJoiEmp.getIdSitPro(), typeAffiliation);
-
-            // {taux AVS par, taux AC par}>
-            final BigDecimal[] taux = new BigDecimal[4];
-
-            taux[0] = getTauxAssurance(APProperties.ASSURANCE_AVS_PAR_ID.getValue(), dateDebutPrestationStandard,
-                    session);
-            taux[1] = getTauxAssurance(APProperties.ASSURANCE_AC_PAR_ID.getValue(), dateDebutPrestationStandard,
-                    session);
-            taux[2] = getTauxAssurance(APProperties.ASSURANCE_AVS_PER_ID.getValue(), dateDebutPrestationStandard,
-                    session);
-            taux[3] = getTauxAssurance(APProperties.ASSURANCE_AC_PER_ID.getValue(), dateDebutPrestationStandard,
-                    session);
-
-            donneesPersistence.getTaux().put(apSitProJoiEmp.getIdSitPro(), taux);
-
-            // list les cantons
-            Map<String, ECanton> mCanton = new HashMap<>();
-            List<IAFAssurance> listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercher(idDroit,
-                    apSitProJoiEmp.getIdAffilie(), session);
-            String idAssuranceEmployeur = null;
-            for (IAFAssurance assurance : listAssurance) {
-                if (apSitProJoiEmp.getIndependant()) {
-                    if (assurance.getAssuranceId().equals(idAssurancePersonnelBE)) {
-                        idAssuranceEmployeur = idAssurancePersonnelBE;
-                    } else if (assurance.getAssuranceId().equals(idAssurancePersonnelJU)) {
-                        idAssuranceEmployeur = idAssurancePersonnelJU;
-                    }
-                } else {
-                    if (assurance.getAssuranceId().equals(idAssuranceParitaireBE)) {
-                        idAssuranceEmployeur = idAssuranceParitaireBE;
-                    } else if (assurance.getAssuranceId().equals(idAssuranceParitaireJU)) {
-                        idAssuranceEmployeur = idAssuranceParitaireJU;
-                    }
-                }
-            }
-
-            // filtre les situations proffessionelles qui ne sont pas assurées à une des complémentaire
-            if (idAssuranceEmployeur != null) {
-                apEmpList.add(apSitProJoiEmp);
-                if (idAssuranceEmployeur.equals(idAssuranceParitaireBE)
-                        || idAssuranceEmployeur.equals(idAssurancePersonnelBE)) {
-                    mCanton.put(apSitProJoiEmp.getIdSitPro(), ECanton.BE);
-                } else if (idAssuranceEmployeur.equals(idAssuranceParitaireJU)
-                        || idAssuranceEmployeur.equals(idAssurancePersonnelJU)) {
-                    mCanton.put(apSitProJoiEmp.getIdSitPro(), ECanton.JU);
-                }
-                donneesPersistence.setMapCanton(mCanton);
-            }
-        }
-        donneesPersistence.setSituationProfessionnelleEmployeur(apEmpList);
+        donneesPersistence.setSituationProfessionnelleEmployeur(apSitProJointEmployeursIsComplement);
 
         Map<EMontantsMax, BigDecimal> montantsMax = new HashMap<>();
         putMontantMax(session, dateDebutPrestationStandard, montantsMax, EMontantsMax.COMCIABJUR);
@@ -1799,35 +1741,35 @@ public class APPrestationHelper extends PRAbstractHelper {
         donneesPersistence.setIdDroit(idDroit);
 
         // Récupération de toutes les restations joint repartitions
-        final List<APRepartitionJointPrestation> listeTemporaire = servicePersistance
+        final List<APRepartitionJointPrestation> repartitionNonFiltrees = servicePersistance
                 .getRepartitionJointPrestationDuDroit(session, transaction, idDroit);
 
         // On filtre car on ne veut pas les restitutions ou autres. Uniquement les prestations d'allocation
-        final List<APRepartitionJointPrestation> repartitionJointPrestationsFiltree = new ArrayList<APRepartitionJointPrestation>();
-        for (APRepartitionJointPrestation repJointPrest : listeTemporaire) {
+        final List<APRepartitionJointPrestation> apRepJointPrestationsIsAllocation = new ArrayList<APRepartitionJointPrestation>();
+        for (APRepartitionJointPrestation repJointPrest : repartitionNonFiltrees) {
             // On prend les prestation allocation et duplicata
             if ((IAPAnnonce.CS_DEMANDE_ALLOCATION.equals(repJointPrest.getContenuAnnonce())
                     || IAPAnnonce.CS_DUPLICATA.equals(repJointPrest.getContenuAnnonce()))
                     && !JadeStringUtil.isBlankOrZero(repJointPrest.getIdSituationProfessionnelle())) {
-                repartitionJointPrestationsFiltree.add(repJointPrest);
+                apRepJointPrestationsIsAllocation.add(repJointPrest);
             }
         }
 
-        if (repartitionJointPrestationsFiltree.isEmpty()) {
+        if (apRepJointPrestationsIsAllocation.isEmpty()) {
             return null;
         }
 
-        List<APRepartitionJointPrestation> repartitionJointRepartitionsFiltreeFiltree = filterAPRepartitionJointPrestationNotComplement(idDroit, session, repartitionJointPrestationsFiltree);
+        List<APRepartitionJointPrestation> apRepJointPrestationsIsComplement = filterAPRepJointPrestationsIsComplement(idDroit, session, apRepJointPrestationsIsAllocation);
 
-        donneesPersistence.setPrestationJointRepartitions(repartitionJointRepartitionsFiltreeFiltree);
+        donneesPersistence.setPrestationJointRepartitions(apRepJointPrestationsIsComplement);
 
         APCotisationManager cotisations = new APCotisationManager();
 
         List<APCotisation> listCotisation = new ArrayList<>();
 
-        for (APRepartitionJointPrestation repartition : repartitionJointRepartitionsFiltreeFiltree) {
+        for (APRepartitionJointPrestation apRepartitionJointPrestation : apRepJointPrestationsIsComplement) {
             cotisations.setSession(session);
-            cotisations.setForIdRepartitionBeneficiairePaiement(repartition.getId());
+            cotisations.setForIdRepartitionBeneficiairePaiement(apRepartitionJointPrestation.getId());
             cotisations.find(transaction);
             for (int i = 0; i < cotisations.size(); i++) {
                 APCotisation cotisation = (APCotisation) cotisations.get(i);
@@ -1837,90 +1779,29 @@ public class APPrestationHelper extends PRAbstractHelper {
         donneesPersistence.setListCotisation(listCotisation);
 
         // Situations professionnelles
-        final List<APSitProJointEmployeur> apSitProJoiEmpList = servicePersistance
+        final List<APSitProJointEmployeur> apSitProJointEmployeurs = servicePersistance
                 .getSituationProfJointEmployeur(session, transaction, idDroit);
 
-        donneesPersistence.setNombreInitialDeSituationsProfessionelles(apSitProJoiEmpList.size());
+        donneesPersistence.setNombreInitialDeSituationsProfessionelles(apSitProJointEmployeurs.size());
 
         final String dateDebutPrestationStandard = donneesPersistence.getPrestationJointRepartitions().size() > 0 ? donneesPersistence.getPrestationJointRepartitions().get(0).getDateDebut() : null;
         if (dateDebutPrestationStandard == null) {
             return null;
         }
 
-        String idAssuranceParitaireJU = JadePropertiesService.getInstance()
-                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
-        String idAssurancePersonnelJU = JadePropertiesService.getInstance()
-                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_JU_ID);
-        String idAssuranceParitaireBE = JadePropertiesService.getInstance()
-                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_BE_ID);
-        String idAssurancePersonnelBE = JadePropertiesService.getInstance()
-                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_BE_ID);
+        // Filtre les situations proffesionelles qui ne cotise pas au complément
+        List<APSitProJointEmployeur> apSitProJointEmployeursIsComplement = filterAPSitProJointEmployeursIsComplement(idDroit, session, donneesPersistence, dateDebutPrestationStandard, apSitProJointEmployeurs);
 
-        List<APSitProJointEmployeur> apEmpList = new ArrayList<>();
-        // Récupération des taux
-        for (final APSitProJointEmployeur apSitProJoiEmp : apSitProJoiEmpList) {
+        // Filtre les situations proffesionelles qui ne sont pas des versement employeurs
+        List<APSitProJointEmployeur> apSitProJointEmployeursIsVersementEmployeur = filterAPSitProJointEmployeursIsVersementEmployeur(apSitProJointEmployeursIsComplement);
 
-            String typeAffiliation = getTypeAffiliation(session, apSitProJoiEmp.getIdAffilie());
-
-            donneesPersistence.getMapTypeAffiliation().put(apSitProJoiEmp.getIdSitPro(), typeAffiliation);
-
-            // {taux AVS par, taux AC par}>
-            final BigDecimal[] taux = new BigDecimal[4];
-
-            taux[0] = getTauxAssurance(APProperties.ASSURANCE_AVS_PAR_ID.getValue(), dateDebutPrestationStandard,
-                    session);
-            taux[1] = getTauxAssurance(APProperties.ASSURANCE_AC_PAR_ID.getValue(), dateDebutPrestationStandard,
-                    session);
-            taux[2] = getTauxAssurance(APProperties.ASSURANCE_AVS_PER_ID.getValue(), dateDebutPrestationStandard,
-                    session);
-            taux[3] = getTauxAssurance(APProperties.ASSURANCE_AC_PER_ID.getValue(), dateDebutPrestationStandard,
-                    session);
-
-            donneesPersistence.getTaux().put(apSitProJoiEmp.getIdSitPro(), taux);
-
-            // list les cantons
-            Map<String, ECanton> mCanton = new HashMap<>();
-            List<IAFAssurance> listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercher(idDroit,
-                    apSitProJoiEmp.getIdAffilie(), session);
-            String idAssuranceEmployeur = null;
-
-            // recheche d'une assurance dans les propriétés
-            for (IAFAssurance assurance : listAssurance) {
-                if (apSitProJoiEmp.getIndependant()) {
-                    if (assurance.getAssuranceId().equals(idAssurancePersonnelBE)) {
-                        idAssuranceEmployeur = idAssurancePersonnelBE;
-                    } else if (assurance.getAssuranceId().equals(idAssurancePersonnelJU)) {
-                        idAssuranceEmployeur = idAssurancePersonnelJU;
-                    }
-                } else {
-                    if (assurance.getAssuranceId().equals(idAssuranceParitaireBE)) {
-                        idAssuranceEmployeur = idAssuranceParitaireBE;
-                    } else if (assurance.getAssuranceId().equals(idAssuranceParitaireJU)) {
-                        idAssuranceEmployeur = idAssuranceParitaireJU;
-                    }
-                }
-            }
-
-            // filtre les situations proffessionelles qui ne sont pas assurées à une des complémentaire
-            if (idAssuranceEmployeur != null) {
-                apEmpList.add(apSitProJoiEmp);
-                if (idAssuranceEmployeur.equals(idAssuranceParitaireBE)
-                        || idAssuranceEmployeur.equals(idAssurancePersonnelBE)) {
-                    mCanton.put(apSitProJoiEmp.getIdSitPro(), ECanton.BE);
-                } else if (idAssuranceEmployeur.equals(idAssuranceParitaireJU)
-                        || idAssuranceEmployeur.equals(idAssurancePersonnelJU)) {
-                    mCanton.put(apSitProJoiEmp.getIdSitPro(), ECanton.JU);
-                }
-                donneesPersistence.setMapCanton(mCanton);
-            }
-        }
-        donneesPersistence.setSituationProfessionnelleEmployeur(apEmpList);
+        donneesPersistence.setSituationProfessionnelleEmployeur(apSitProJointEmployeursIsVersementEmployeur);
 
         // Add RMD par sitPro
-        for (final APSitProJointEmployeur sitProJointEmployeur : apEmpList) {
+        for (final APSitProJointEmployeur apSitProJointEmployeur : apSitProJointEmployeursIsVersementEmployeur) {
             APSituationProfessionnelle sitPro = new APSituationProfessionnelle();
             sitPro.setSession(session);
-            sitPro.setIdSituationProf(sitProJointEmployeur.getIdSitPro());
+            sitPro.setIdSituationProf(apSitProJointEmployeur.getIdSitPro());
             sitPro.retrieve();
             if (sitPro.isNew()) {
                 throw new Exception(
@@ -1939,7 +1820,8 @@ public class APPrestationHelper extends PRAbstractHelper {
         donneesPersistence.setMontantsMax(montantsMax);
         return donneesPersistence;
     }
-    private List<APRepartitionJointPrestation> filterAPRepartitionJointPrestationNotComplement(String idDroit, BSession session, List<APRepartitionJointPrestation> repartitionJointRepartitionsFiltree) throws Exception {
+
+    private List<APSitProJointEmployeur> filterAPSitProJointEmployeursIsComplement(String idDroit, BSession session, APCalculateurComplementDonneesPersistence donneesPersistence, String dateDebutPrestationStandard, List<APSitProJointEmployeur> apSitProJointEmployeurs) throws Exception {
         String idAssuranceParitaireJU = JadePropertiesService.getInstance()
                 .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
         String idAssurancePersonnelJU = JadePropertiesService.getInstance()
@@ -1949,9 +1831,81 @@ public class APPrestationHelper extends PRAbstractHelper {
         String idAssurancePersonnelBE = JadePropertiesService.getInstance()
                 .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_BE_ID);
 
-        List<APRepartitionJointPrestation> repartitionJointRepartitionsFiltreeFiltree = new ArrayList<>();
+        List<APSitProJointEmployeur> apSitProJointEmployeursIsComplement = new ArrayList<>();
 
-        for (APRepartitionJointPrestation apRepJointPrestation : repartitionJointRepartitionsFiltree) {
+        // Récupération des taux
+        for (final APSitProJointEmployeur apSitProJointEmployeur : apSitProJointEmployeurs) {
+
+            String typeAffiliation = getTypeAffiliation(session, apSitProJointEmployeur.getIdAffilie());
+
+            donneesPersistence.getMapTypeAffiliation().put(apSitProJointEmployeur.getIdSitPro(), typeAffiliation);
+
+            // {taux AVS par, taux AC par}>
+            final BigDecimal[] taux = new BigDecimal[4];
+
+            taux[0] = getTauxAssurance(APProperties.ASSURANCE_AVS_PAR_ID.getValue(), dateDebutPrestationStandard,
+                    session);
+            taux[1] = getTauxAssurance(APProperties.ASSURANCE_AC_PAR_ID.getValue(), dateDebutPrestationStandard,
+                    session);
+            taux[2] = getTauxAssurance(APProperties.ASSURANCE_AVS_PER_ID.getValue(), dateDebutPrestationStandard,
+                    session);
+            taux[3] = getTauxAssurance(APProperties.ASSURANCE_AC_PER_ID.getValue(), dateDebutPrestationStandard,
+                    session);
+
+            donneesPersistence.getTaux().put(apSitProJointEmployeur.getIdSitPro(), taux);
+
+            // list les cantons
+            Map<String, ECanton> mCanton = new HashMap<>();
+            List<IAFAssurance> listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercher(idDroit,
+                    apSitProJointEmployeur.getIdAffilie(), session);
+            String idAssuranceEmployeur = null;
+
+            // recheche d'une assurance dans les propriétés
+            for (IAFAssurance assurance : listAssurance) {
+                if (apSitProJointEmployeur.getIndependant()) {
+                    if (assurance.getAssuranceId().equals(idAssurancePersonnelBE)) {
+                        idAssuranceEmployeur = idAssurancePersonnelBE;
+                    } else if (assurance.getAssuranceId().equals(idAssurancePersonnelJU)) {
+                        idAssuranceEmployeur = idAssurancePersonnelJU;
+                    }
+                } else {
+                    if (assurance.getAssuranceId().equals(idAssuranceParitaireBE)) {
+                        idAssuranceEmployeur = idAssuranceParitaireBE;
+                    } else if (assurance.getAssuranceId().equals(idAssuranceParitaireJU)) {
+                        idAssuranceEmployeur = idAssuranceParitaireJU;
+                    }
+                }
+            }
+
+            // filtre les situations proffessionelles qui ne sont pas assurées à une des complémentaire
+            if (idAssuranceEmployeur != null) {
+                apSitProJointEmployeursIsComplement.add(apSitProJointEmployeur);
+                if (idAssuranceEmployeur.equals(idAssuranceParitaireBE)
+                        || idAssuranceEmployeur.equals(idAssurancePersonnelBE)) {
+                    mCanton.put(apSitProJointEmployeur.getIdSitPro(), ECanton.BE);
+                } else if (idAssuranceEmployeur.equals(idAssuranceParitaireJU)
+                        || idAssuranceEmployeur.equals(idAssurancePersonnelJU)) {
+                    mCanton.put(apSitProJointEmployeur.getIdSitPro(), ECanton.JU);
+                }
+                donneesPersistence.setMapCanton(mCanton);
+            }
+        }
+        return apSitProJointEmployeursIsComplement;
+    }
+
+    private List<APRepartitionJointPrestation> filterAPRepJointPrestationsIsComplement(String idDroit, BSession session, List<APRepartitionJointPrestation> apRepJointPrestations) throws Exception {
+        String idAssuranceParitaireJU = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
+        String idAssurancePersonnelJU = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_JU_ID);
+        String idAssuranceParitaireBE = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_BE_ID);
+        String idAssurancePersonnelBE = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_BE_ID);
+
+        List<APRepartitionJointPrestation> apRepJointPrestationsIsComplement = new ArrayList<>();
+
+        for (APRepartitionJointPrestation apRepJointPrestation : apRepJointPrestations) {
 
             List<IAFAssurance> listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercher(idDroit,
                     apRepJointPrestation.getIdAffilie(), session);
@@ -1976,10 +1930,10 @@ public class APPrestationHelper extends PRAbstractHelper {
 
             // filtre les situations proffessionelles qui ne sont pas assurées à une des complémentaire
             if (idAssuranceEmployeur != null) {
-                repartitionJointRepartitionsFiltreeFiltree.add(apRepJointPrestation);
+                apRepJointPrestationsIsComplement.add(apRepJointPrestation);
             }
         }
-        return repartitionJointRepartitionsFiltreeFiltree;
+        return apRepJointPrestationsIsComplement;
     }
 
     public static String getTypeAffiliation(BSession session, String idAffiliation) throws Exception {
@@ -2098,7 +2052,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             }
         }
 
-        donneesPersistence.setPrestations(repartitionJointRepartitionsFiltree);
+        donneesPersistence.setPrestationJointRepartitions(repartitionJointRepartitionsFiltree);
 
         // Situations professionnelles
         final List<APSitProJointEmployeur> apSitProJoiEmpList = servicePersistance
@@ -2146,44 +2100,48 @@ public class APPrestationHelper extends PRAbstractHelper {
                 .getRepartitionJointPrestationDuDroit(session, transaction, droit.getIdDroit());
 
         // On filtre car on ne veut pas les restitutions ou autres. Uniquement les prestations d'allocation
-        final List<APRepartitionJointPrestation> repartitionJointRepartitionsFiltree = new ArrayList<APRepartitionJointPrestation>();
+        final List<APRepartitionJointPrestation> apRepJointPrestationsFiltree = new ArrayList<APRepartitionJointPrestation>();
 
         // Contrôle la propriété PROPERTY_APG_FERCIAB_MATERNITE
         String apgFerciabMaternite = JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_APG_FERCIAB_MATERNITE);
 
-        for (APRepartitionJointPrestation repJointPrest : repartitionNonFiltrees) {
+        for (APRepartitionJointPrestation apRepJointPrest : repartitionNonFiltrees) {
 
             // Ne prends en compte que les prestations qui commence après la date trouvé dans la propriété PROPERTY_APG_FERCIAB_MATERNITE
-            String dateFinMoins1Jour = JadeDateUtil.addDays(repJointPrest.getDateFin(), 1); // Pour MATCIAB2 il faut comparer la propriété PROPERTY_APG_FERCIAB_MATERNITE à la date de fin moins 1 jours
+            String dateFinMoins1Jour = JadeDateUtil.addDays(apRepJointPrest.getDateFin(), 1); // Pour MATCIAB2 il faut comparer la propriété PROPERTY_APG_FERCIAB_MATERNITE à la date de fin moins 1 jours
             PRDateUtils.PRDateEquality prestationEndDateCheck = PRDateUtils.compare(dateFinMoins1Jour, apgFerciabMaternite);
-            PRDateUtils.PRDateEquality prestationBeginDateCheck = PRDateUtils.compare(repJointPrest.getDateDebut(), apgFerciabMaternite);
+            PRDateUtils.PRDateEquality prestationBeginDateCheck = PRDateUtils.compare(apRepJointPrest.getDateDebut(), apgFerciabMaternite);
             if (prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.EQUALS) || prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.BEFORE)) {
                 // Adapte la date de début en fonction de la propriété PROPERTY_APG_FERCIAB_MATERNITE
                 if (prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.AFTER)) {
-                    repJointPrest.setDateDebut(apgFerciabMaternite);
+                    apRepJointPrest.setDateDebut(apgFerciabMaternite);
                 }
-                repartitionJointRepartitionsFiltree.add(repJointPrest);
+                apRepJointPrestationsFiltree.add(apRepJointPrest);
             }
 
         }
 
-        donneesPersistence.setPrestations(repartitionJointRepartitionsFiltree);
+        donneesPersistence.setPrestationJointRepartitions(apRepJointPrestationsFiltree);
 
         // Situations professionnelles
-        final List<APSitProJointEmployeur> apSitProJoiEmpList = servicePersistance
+        final List<APSitProJointEmployeur> apSitProJointEmployeurs = servicePersistance
                 .getSituationProfJointEmployeur(session, transaction, droit.getIdDroit());
 
-        donneesPersistence.setNombreInitialDeSituationsProfessionelles(apSitProJoiEmpList.size());
+        donneesPersistence.setNombreInitialDeSituationsProfessionelles(apSitProJointEmployeurs.size());
 
-        List<APSitProJointEmployeur> apEmpList = filterAPSitProJointEmployeurNotComplement(droit.getIdDroit(), session, apSitProJoiEmpList);
+        // Filtre les situations proffesionelles qui ne cotise pas au complément
+        List<APSitProJointEmployeur> apSitProJointEmployeursIsComplement = filterAPSitProJointEmployeursIsComplementMATCIAB2(droit.getIdDroit(), session, apSitProJointEmployeurs);
 
-        donneesPersistence.setSituationProfessionnelleEmployeur(apEmpList);
+        // Filtre les situations proffesionelles qui ne sont pas des versement employeurs
+        List<APSitProJointEmployeur> apSitProJointEmployeursIsVersementEmployeur = filterAPSitProJointEmployeursIsVersementEmployeur(apSitProJointEmployeursIsComplement);
+
+        donneesPersistence.setSituationProfessionnelleEmployeur(apSitProJointEmployeursIsVersementEmployeur);
 
         // Add RMD par sitPro
-        for (final APSitProJointEmployeur sitProJointEmployeur : apEmpList) {
+        for (final APSitProJointEmployeur apSitProJointEmployeur : apSitProJointEmployeursIsVersementEmployeur) {
             APSituationProfessionnelle sitPro = new APSituationProfessionnelle();
             sitPro.setSession(session);
-            sitPro.setIdSituationProf(sitProJointEmployeur.getIdSitPro());
+            sitPro.setIdSituationProf(apSitProJointEmployeur.getIdSitPro());
             sitPro.retrieve();
             if (sitPro.isNew()) {
                 throw new Exception(
@@ -2200,7 +2158,11 @@ public class APPrestationHelper extends PRAbstractHelper {
 
     }
 
-    private List<APSitProJointEmployeur> filterAPSitProJointEmployeurNotComplement(String idDroit, BSession session, List<APSitProJointEmployeur> apSitProJoiEmpList) throws Exception {
+    private List<APSitProJointEmployeur> filterAPSitProJointEmployeursIsVersementEmployeur(List<APSitProJointEmployeur> apSitProJointEmployeurs) {
+        return apSitProJointEmployeurs.stream().filter(APSitProJointEmployeur::getIsVersementEmployeur).collect(Collectors.toList());
+    }
+
+    private List<APSitProJointEmployeur> filterAPSitProJointEmployeursIsComplementMATCIAB2(String idDroit, BSession session, List<APSitProJointEmployeur> apSitProJointEmployeurs) throws Exception {
         String idAssuranceParitaireJU = JadePropertiesService.getInstance()
                 .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
         String idAssurancePersonnelJU = JadePropertiesService.getInstance()
@@ -2210,17 +2172,17 @@ public class APPrestationHelper extends PRAbstractHelper {
         String idAssurancePersonnelBE = JadePropertiesService.getInstance()
                 .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_BE_ID);
 
-        List<APSitProJointEmployeur> apEmpList = new ArrayList<>();
+        List<APSitProJointEmployeur> apSitProJointEmployeursIsComplement = new ArrayList<>();
 
-        for (final APSitProJointEmployeur apSitProJoiEmp : apSitProJoiEmpList) {
+        for (final APSitProJointEmployeur apSitProJointEmployeur : apSitProJointEmployeurs) {
 
             List<IAFAssurance> listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercher(idDroit,
-                    apSitProJoiEmp.getIdAffilie(), session);
+                    apSitProJointEmployeur.getIdAffilie(), session);
             String idAssuranceEmployeur = null;
 
             // recheche d'une assurance dans les propriétés
             for (IAFAssurance assurance : listAssurance) {
-                if (apSitProJoiEmp.getIndependant()) {
+                if (apSitProJointEmployeur.getIndependant()) {
                     if (assurance.getAssuranceId().equals(idAssurancePersonnelBE)) {
                         idAssuranceEmployeur = idAssurancePersonnelBE;
                     } else if (assurance.getAssuranceId().equals(idAssurancePersonnelJU)) {
@@ -2237,11 +2199,11 @@ public class APPrestationHelper extends PRAbstractHelper {
 
             // filtre les situations proffessionelles qui ne sont pas assurées à une des complémentaire
             if (idAssuranceEmployeur != null) {
-                apEmpList.add(apSitProJoiEmp);
+                apSitProJointEmployeursIsComplement.add(apSitProJointEmployeur);
             }
         }
 
-        return apEmpList;
+        return apSitProJointEmployeursIsComplement;
     }
 
     /**

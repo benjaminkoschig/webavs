@@ -74,6 +74,7 @@ public class APPrestationAction extends PRDefaultAction {
         }
 
         typeCalculViewBean.setIdDroit(idDroit);
+        typeCalculViewBean.setTypePrestation(typePrestation);
         viewBean.setIdDroit(idDroit);
         viewBean.setGenreService(genreService);
 
@@ -95,7 +96,7 @@ public class APPrestationAction extends PRDefaultAction {
                 if (typePrestation != null && typePrestation.equals(APTypeDePrestation.MATCIAB2.getNomTypePrestation())) {
                     getAction().changeActionPart(APPrestationHelper.ACTION_CALCULER_PRESTATION_MATCIAB2_AVEC_CALCULATEUR_GLOBAZ);
                 } else {
-                getAction().changeActionPart(APPrestationHelper.ACTION_CALCULER_PRESTATION_AVEC_CALCULATEUR_GLOBAZ);
+                    getAction().changeActionPart(APPrestationHelper.ACTION_CALCULER_PRESTATION_AVEC_CALCULATEUR_GLOBAZ);
                 }
                 viewBean = (APPrestationViewBean) mainDispatcher.dispatch(viewBean, getAction());
                 if (FWViewBeanInterface.ERROR.equals(viewBean.getMsgType())) {
@@ -107,27 +108,12 @@ public class APPrestationAction extends PRDefaultAction {
                 destination = controllerLesPrestation(session, request, response, mainDispatcher, viewBean);
                 break;
             case ACOR:
-                // Cas spécial utilisé pour évite le calcul ACOR quand on à cliqué sur "Calculer prestations MATCIAB2"
-                // On appel directement la méthode concernée dans la helper.
-                if (typePrestation != null && typePrestation.equals(APTypeDePrestation.MATCIAB2.getNomTypePrestation())) {
-                    getAction().changeActionPart(APPrestationHelper.ACTION_CALCULER_PRESTATION_MATCIAB2_AVEC_CALCULATEUR_GLOBAZ);
-
-                    viewBean = (APPrestationViewBean) mainDispatcher.dispatch(viewBean, getAction());
-                    if (FWViewBeanInterface.ERROR.equals(viewBean.getMsgType())) {
-                        this.saveViewBean(viewBean, session);
-                        throw new Exception("Exception thrown during action APPrestationHelper."
-                                + APPrestationHelper.ACTION_DETERMINER_TYPE_CALCUL_PRESTATIONS + viewBean.getMessage());
-                    }
-                    // 3 - Contrôle des plausibilité sur les prestations qui ont étés calculées
-                    destination = controllerLesPrestation(session, request, response, mainDispatcher, viewBean);
-                } else {
                 // on redirige vers la page pour lancer le calcul ACOR
                 destination = this.getUserActionURL(
                         request,
                         IAPActions.ACTION_CALCUL_ACOR,
                         APPrestationAction.VERS_ECRAN_CALCUL_ACOR + viewBean.getIdDroit() + "&genreService="
                                 + viewBean.getGenreService());
-                }
                 break;
             default:
                 throw new Exception(

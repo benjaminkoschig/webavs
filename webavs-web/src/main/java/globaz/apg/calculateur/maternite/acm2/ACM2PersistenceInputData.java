@@ -45,7 +45,7 @@ public class ACM2PersistenceInputData {
         return situationProfessionnelleEmployeur;
     }
 
-    public void setPrestations(final List<APRepartitionJointPrestation> prestationJointRepartitions) {
+    public void setPrestationJointRepartitions(final List<APRepartitionJointPrestation> prestationJointRepartitions) {
         this.prestationJointRepartitions = prestationJointRepartitions;
     }
 

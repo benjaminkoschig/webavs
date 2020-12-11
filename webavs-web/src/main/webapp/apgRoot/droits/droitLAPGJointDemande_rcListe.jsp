@@ -119,7 +119,7 @@
 	}
 %>
 <%
-	if (!APPrestationHelper.isCalculDisponibleMATCIAB(courant.loadDroit())) {
+	if (iterH.isPere() || !APPrestationHelper.isCalculDisponibleMATCIAB(courant.loadDroit())) {
 %>					<ct:menuExcludeNode nodeId="calculertoutesprestationsMATCIAB2" />
 <%
 	}
