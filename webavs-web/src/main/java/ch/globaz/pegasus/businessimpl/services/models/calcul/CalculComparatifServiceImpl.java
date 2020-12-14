@@ -121,9 +121,8 @@ public class CalculComparatifServiceImpl extends PegasusAbstractServiceImpl impl
             throw new CalculException("Unbale to obtain properties for reforme pc", e);
         }
         for (PeriodePCAccordee periodePCAccordee : listePCAccordes) {
-            if (!periodePCAccordee.isCalculReforme() || !JadeDateUtil.isDateBefore(JadeDateUtil.getGlobazFormattedDate(periodePCAccordee.getDateDebut()), dateReforme)) {
+            if (!periodePCAccordee.isNePasCalculer() && (!periodePCAccordee.isCalculReforme() || !JadeDateUtil.isDateBefore(JadeDateUtil.getGlobazFormattedDate(periodePCAccordee.getDateDebut()), dateReforme))) {
                 periodePCAccordee.finaliseCC(droit);
-
                 if (determineCCFavorable) {
                     // determine maintenant le calcul le plus favorable, sinon pour comparaison ancien/nouveau(reforme) sera fait plus tard
                     periodePCAccordee.determineCCFavorable();

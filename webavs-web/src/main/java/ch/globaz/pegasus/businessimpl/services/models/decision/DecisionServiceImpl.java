@@ -427,7 +427,8 @@ public class DecisionServiceImpl extends PegasusAbstractServiceImpl implements D
         return (nb == 0);
     }
 
-    private SimpleVersionDroit findVersionDroitPrecedant(String idDroit, String noVersion) throws DroitException,
+    @Override
+    public SimpleVersionDroit findVersionDroitPrecedant(String idDroit, String noVersion) throws DroitException,
             JadePersistenceException, JadeApplicationServiceNotAvailableException {
         SimpleVersionDroit simpleVersionDroitPrecedente = null;
         // recherche la version précédente

@@ -295,6 +295,8 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
     private String strDateFin = null;
     private TypeSeparationCC typeSeparationCC = null;
 
+    private boolean nePasCalculer = false;
+
     /**
      * Ajoute un forfait de primes moyennes d'assurance maladie à la liste de forfaits concernant la période
      *
@@ -941,17 +943,19 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
         return false;
     }
 
-    public void determineCCFavorable() throws CalculException {
-        determineCCFavorable(getCalculsComparatifs());
+    public boolean determineCCFavorable() throws CalculException {
+        return determineCCFavorable(getCalculsComparatifs());
     }
 
-    public void determineCCFavorable(List<CalculComparatif> calculComparatifs) throws CalculException {
+    public boolean determineCCFavorable(List<CalculComparatif> calculComparatifs) throws CalculException {
 
+        boolean isReforme = false;
         switch (calculComparatifs.size()) {
             case 0:
                 throw new CalculException("No calcul comparatif found!");
             case 1:
                 calculComparatifs.get(0).setPlanRetenu(true);
+                isReforme = calculComparatifs.get(0).isReformePc();
                 break;
             default:
                 // ajout des cc dans les containers, TypePC, Listecc, instanciation
@@ -969,11 +973,12 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
                 setCCRetenuEtNonRetenu(listeCC, true);
 
                 List<CalculComparatif> ccRetenus = calculComparatifs.stream().filter(cc -> cc.isPlanRetenu()).collect(Collectors.toList());
-                boolean isReforme = ccRetenus.get(0).isReformePc();
+                isReforme = ccRetenus.get(0).isReformePc();
                 setCCNonRetenu(listeCC, isReforme);
 
                 break;
         }
+        return isReforme;
     }
 
 
@@ -1636,6 +1641,10 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
         }
     }
 
+    public void setTypeSeparationCC(TypeSeparationCC typeSeparationCC) {
+        this.typeSeparationCC = typeSeparationCC;
+    }
+
     /**
      * Fonction récursive qui somme 2 tuples ensemble, ainsi que leurs enfants. Si deux enfants ont un identifiant
      * commun, ils sont sommés
@@ -1717,4 +1726,11 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
         isFratrie = fratrie;
     }
 
+    public boolean isNePasCalculer() {
+        return nePasCalculer;
+    }
+
+    public void setNePasCalculer(boolean nePasCalculer) {
+        this.nePasCalculer = nePasCalculer;
+    }
 }

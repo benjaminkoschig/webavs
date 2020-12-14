@@ -25,4 +25,5 @@
 	<model-mapping import="pegasus/pcaccordee/allocationnoeldemande.xml"/>
 	<model-mapping import="pegasus/pcaccordee/allocationnoel.xml"/>
 	<model-mapping import="pegasus/pcaccordee/nouvelleetanciennepcacourante.xml"/>
+	<model-mapping import="pegasus/pcaccordee/pcaccordeeplancalculreforme.xml"/>
 </model-mapping>

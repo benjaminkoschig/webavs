@@ -30,6 +30,7 @@ import ch.globaz.pegasus.business.services.models.calcul.CalculDroitService;
 import ch.globaz.pegasus.businessimpl.services.PegasusAbstractServiceImpl;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
 import ch.globaz.pegasus.businessimpl.services.models.calcul.donneeInterne.DonneeInterneHomeVersement;
+import ch.globaz.pegasus.businessimpl.services.models.pcaccordee.PcaPlanCalculReforme;
 import ch.globaz.pegasus.businessimpl.services.models.pcaccordee.PcaPrecedante;
 import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
 import ch.globaz.pegasus.businessimpl.utils.calcul.*;
@@ -99,6 +100,13 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             // VariableMetierProvider varMetProvider = new VariableMetierProvider();
             DonneesHorsDroitsProvider containerGlobal = DonneesHorsDroitsProvider.getInstance();
             containerGlobal.init();
+
+            String dateSplitReforme = null;
+            String version = droit.getSimpleVersionDroit().getNoVersion();
+            // sur un calcul rétro : vérifie s'il n'y avait une période uniquement réforme
+            if(retroactif && !JadeStringUtil.isBlankOrZero(version) && Integer.parseInt(version) > 1){
+                dateSplitReforme = getSplitDateReforme(droit, Integer.toString(Integer.parseInt(version) - 1));
+            }
             // si la date de la plage est nulle, c'est qu'il n'y a pas de rente
             // et pas de calcul à faire
             if (dateDebutPlageCalcul != null) {
@@ -108,13 +116,13 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                         .getDonneesCalculDroit(droit, dateDebutPlageCalcul, dateFinPlageCalcul);
 
                 List<PeriodePCAccordee> listePCAccordes = calculeDroitPartagePeriodes(droit, dateDebutPlageCalcul,
-                        dateFinPlageCalcul, cacheDonneesBD, containerGlobal, isDateFinForce);
+                        dateFinPlageCalcul, cacheDonneesBD, containerGlobal, isDateFinForce, dateSplitReforme);
 
                 List<PeriodePCAccordee> listePCAccordesReforme = calculeDroitPartagePeriodes(droit, dateDebutPlageCalcul,
-                        dateFinPlageCalcul, cacheDonneesBD, containerGlobal, isDateFinForce);
+                        dateFinPlageCalcul, cacheDonneesBD, containerGlobal, isDateFinForce, dateSplitReforme);
                 // procède au calcul à proprement dit
                 calculeDroitTraitement(droit, cacheDonneesBD, listePCAccordes, listePCAccordesReforme, dateDebutPlageCalcul,
-                        dateFinPlageCalcul, containerGlobal);
+                        dateFinPlageCalcul, containerGlobal, retroactif, dateSplitReforme);
 
                 // récupère anciennes pc accordées
                 PegasusImplServiceLocator.getCalculPersistanceService().recupereAnciensPCAccordee(dateDebutPlageCalcul,
@@ -254,10 +262,10 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                         .getDonneesCalculDroit(droit, dateDebutPlageCalcul, dateFinPlageCalcul);
 
                 listePCAccordes = calculeDroitPartagePeriodes(droit, dateDebutPlageCalcul, dateFinPlageCalcul,
-                        cacheDonneesBD, containerGlobal, false);
+                        cacheDonneesBD, containerGlobal, false, null);
 
                 listePCAccordesReforme = calculeDroitPartagePeriodes(droit, dateDebutPlageCalcul, dateFinPlageCalcul,
-                        cacheDonneesBD, containerGlobal, false);
+                        cacheDonneesBD, containerGlobal, false, null);
 
                 if ((listePCAccordes.size() > 2) || (listePCAccordes.size() < 1)) {
                     throw new CalculException("Expected 1 or 2 PC Accordee!");
@@ -265,7 +273,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
 
                 // procède au calcul à proprement dit
                 calculeDroitTraitement(droit, cacheDonneesBD, listePCAccordes, listePCAccordesReforme, dateDebutPlageCalcul,
-                        dateFinPlageCalcul, containerGlobal);
+                        dateFinPlageCalcul, containerGlobal, retroactif, null);
 
                 dertermineFavorableCombinaisonPersonne(listeIdPersonnes, listePCAccordes);
 
@@ -363,7 +371,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
     private void fusionneCalcul(List<PeriodePCAccordee> listePCAccordes, List<PeriodePCAccordee> listePCAccordesReforme, String dateReforme) throws CalculException {
 
         if (listePCAccordesReforme.isEmpty()) {
-            // pas de fusion seul les calculs avant réforme compte
+            // pas de fusion seul les calculs avant réforme comptent
             return;
         } else if (listePCAccordes.isEmpty()) {
             // pas de fusion : on remplace la liste ancienne avec les données de la liste calcul réforme
@@ -382,17 +390,21 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             throw new CalculException("Les nombres de PCA avant réforme et après réforme ne sont pas identique !");
         }
 
+        boolean isReforme = false;
+
         for (int i = 0; i < listePCAccordes.size(); i++) {
             PeriodePCAccordee pcAccordes = listePCAccordes.get(i);
             PeriodePCAccordee pcAccordesReforme = listePCAccordesReforme.get(i);
             Date dateDebut = pcAccordesReforme.getDateDebut();
-            if (JadeDateUtil.isDateBefore(JadeDateUtil.getGlobazFormattedDate(dateDebut), dateReforme)
+            if(isReforme || pcAccordes.isNePasCalculer()) {
+                // la période précédente a déterminée qu'un calcul réforme était plus favorable : tous les suivants sont uniquement réforme
+                // ou sur un calcul rétro : une ancienne version de droit était déjà un calcul uniquement réforme
+                keepReformeOnly(pcAccordes, pcAccordesReforme);
+            } else if (JadeDateUtil.isDateBefore(JadeDateUtil.getGlobazFormattedDate(dateDebut), dateReforme)
                     || isRefusFortune(pcAccordesReforme)) {
                 // periode de cette pca avant la réforme à ne pas comparer ou refus seuil de fortune sur le calcul réforme
                 pcAccordes.determineCCFavorable();
-                continue;
-            }
-
+            } else {
                 for (CalculComparatif calculComparatifs : pcAccordes.getCCRetenu()) {
                     if (calculComparatifs != null) {
                         calculComparatifs.setPlanRetenu(false);
@@ -407,8 +419,25 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 pcAccordes.getCalculsComparatifsConjoint().addAll(getCalculReforme(pcAccordesReforme.getCalculsComparatifsConjoint()));
                 fusionnePersonne(pcAccordes, pcAccordesReforme);
                 pcAccordes.getPersonnes().putAll(pcAccordesReforme.getPersonnes());
-            pcAccordes.determineCCFavorable();
+                isReforme = pcAccordes.determineCCFavorable();
+            }
         }
+    }
+
+    /**
+     * remplace les calculs d'une pca par ceux de la pca réforme
+     * @param pcAccordes
+     * @param pcAccordesReforme
+     * @throws CalculException
+     */
+    private void keepReformeOnly(PeriodePCAccordee pcAccordes, PeriodePCAccordee pcAccordesReforme) throws CalculException {
+        pcAccordes.getCalculsComparatifs().clear();
+        pcAccordes.getCalculsComparatifsConjoint().clear();
+        pcAccordes.getCalculsComparatifs().addAll(getCalculReforme(pcAccordesReforme.getCalculsComparatifs()));
+        pcAccordes.getCalculsComparatifsConjoint().addAll(getCalculReforme(pcAccordesReforme.getCalculsComparatifsConjoint()));
+        pcAccordes.getPersonnes().putAll(pcAccordesReforme.getPersonnes());
+        pcAccordes.setTypeSeparationCC(pcAccordesReforme.getTypeSeparationCC());
+        pcAccordes.determineCCFavorable();
     }
 
     private boolean isRefusFortune(PeriodePCAccordee pcAccordesReforme) {
@@ -434,12 +463,12 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
 
     private List<PeriodePCAccordee> calculeDroitPartagePeriodes(Droit droit, String dateDebutPlageCalcul,
                                                                 String dateFinPlageCalcul, Map<String, JadeAbstractSearchModel> cacheDonneesBD,
-                                                                DonneesHorsDroitsProvider containerGlobal, boolean isDateFinForce) throws CalculException,
+                                                                DonneesHorsDroitsProvider containerGlobal, boolean isDateFinForce, String dateSplitReforme) throws CalculException,
             JadePersistenceException, JadeApplicationServiceNotAvailableException {
         List<PeriodePCAccordee> listePCAccordes;
 
         listePCAccordes = PegasusImplServiceLocator.getPeriodesService().recherchePeriodesCalcul(droit,
-                dateDebutPlageCalcul, dateFinPlageCalcul, cacheDonneesBD, containerGlobal, isDateFinForce);
+                dateDebutPlageCalcul, dateFinPlageCalcul, cacheDonneesBD, containerGlobal, isDateFinForce, dateSplitReforme);
         return listePCAccordes;
     }
 
@@ -1148,7 +1177,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
 
     private void calculeDroitTraitement(Droit droit, Map<String, JadeAbstractSearchModel> cacheDonneesBD,
                                         List<PeriodePCAccordee> listePCAccordes, List<PeriodePCAccordee> listePCAccordesReforme, String dateDebutPlageCalcul, String dateFinPlageCalcul,
-                                        DonneesHorsDroitsProvider containerGlobal) throws CalculException,
+                                        DonneesHorsDroitsProvider containerGlobal, boolean retroactif, String dateSplitReforme) throws CalculException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException, TaxeJournaliereHomeException,
             HomeException {
         Map<String, CalculMembreFamille> listePersonnes = new HashMap<String, CalculMembreFamille>();
@@ -1163,7 +1192,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
 
         try {
             dateReforme = EPCProperties.DATE_REFORME_PC.getValue();
-            dertermineCalculs(droit, listePCAccordes, listePCAccordesReforme, dateDebutPlageCalcul, dateFinPlageCalcul, dateReforme);
+            dertermineCalculs(droit, listePCAccordes, listePCAccordesReforme, dateDebutPlageCalcul, dateFinPlageCalcul, dateReforme, retroactif, dateSplitReforme);
         } catch (PropertiesException e) {
             throw new CalculException("Unbale to obtain properties for reforme pc", e);
         }
@@ -1204,12 +1233,13 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
      * @throws PropertiesException
      */
     private void dertermineCalculs(Droit droit, List<PeriodePCAccordee> listePCAccordes, List<PeriodePCAccordee> listePCAccordesReforme,
-                                   String dateDebutPlageCalcul, String dateFinPlageCalcul, String dateReforme) throws PropertiesException {
+                                   String dateDebutPlageCalcul, String dateFinPlageCalcul, String dateReforme, boolean retroactif, String dateSplitReforme) throws PropertiesException, JadePersistenceException {
         String dateDemande = JadeDateUtil.getFirstDateOfMonth(droit.getDemande().getSimpleDemande().getDateDebut());
         if (JadeStringUtil.isEmpty(dateDemande) || JadeDateUtil.isDateBefore(dateDebutPlageCalcul, dateDemande)) {
             dateDemande = dateDebutPlageCalcul;
         }
         Boolean reforme = EPCProperties.REFORME_PC.getBooleanValue();
+        String noVersionPrecedante = versionPrecedante(droit);
         if (JadeDateUtil.isDateBefore(dateFinPlageCalcul, dateReforme) || !reforme) {
             // calcul sur ancien calculateur uniquement
             listePCAccordesReforme.clear();
@@ -1217,9 +1247,72 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 (dateDemande.equals(dateReforme) || JadeDateUtil.isDateAfter(dateDemande, dateReforme))) {
             // calcul uniquement calcul réforme
             listePCAccordes.clear();
+        } else if (!noVersionPrecedante.isEmpty()){
+            if(!retroactif) {
+                // Si derniere periode de la version droit - 1 réforme : calcul uniquement calcul réforme
+                uniquementReformeDroitPrecedant(droit, listePCAccordes, noVersionPrecedante);
+            } else if(dateSplitReforme != null){
+                periodesCompareSelonDroitPrecedant(droit, listePCAccordes, dateSplitReforme);
+            }
         }
         // sinon on garde les 2 listes pour le calcul comparatif
     }
+
+    /**
+     * Returne le numéro de version de droit précédent
+     * @param droit
+     * @return
+     */
+    private String versionPrecedante(Droit droit) {
+        String version = droit.getSimpleVersionDroit().getNoVersion();
+        if(!JadeStringUtil.isBlankOrZero(version) && Integer.parseInt(version) > 1){
+            return Integer.toString(Integer.parseInt(version) - 1);
+        }
+        return "";
+    }
+
+    /**
+     * Si la pca de la version de droit précédente est réforme alors toutes les pca de cette version sont réforme
+     * @param droit
+     * @param listePCAccordes
+     * @param noVersionPrecedante
+     * @throws JadePersistenceException
+     */
+    private void uniquementReformeDroitPrecedant(Droit droit, List<PeriodePCAccordee> listePCAccordes, String noVersionPrecedante) throws JadePersistenceException {
+        List<PCAccordeePlanCalculReforme> listPcaPrecedentes = PcaPlanCalculReforme.findPcaCourrante(droit.getId(), noVersionPrecedante);
+        PCAccordeePlanCalculReforme pca = listPcaPrecedentes.get(listPcaPrecedentes.size()-1);
+        if(pca.getReformePc() != null && pca.getReformePc()) {
+            listePCAccordes.clear();
+        }
+    }
+
+    /**
+     * Pour un calcul rétro : uniquement réforme à partir de la date passée en param
+     * @param droit
+     * @param listPca
+     * @param dateSplitReforme
+     * @throws JadePersistenceException
+     */
+    private void periodesCompareSelonDroitPrecedant(Droit droit, List<PeriodePCAccordee> listPca, String dateSplitReforme) throws JadePersistenceException {
+        String dateCompare = JadeDateUtil.getFirstDateOfMonth(dateSplitReforme);
+        for(PeriodePCAccordee pca : listPca) {
+            if(!JadeDateUtil.isDateBefore(pca.getStrDateDebut(), dateCompare)) {
+                pca.setNePasCalculer(true);
+            }
+        }
+    }
+
+    /**
+     * Détermine la date à partir de laquelle une pca est uniquement réforme (sans calcul comparatif)
+     * @param droit
+     * @param noVersionPrecedante
+     * @return
+     * @throws JadePersistenceException
+     */
+    private String getSplitDateReforme(Droit droit, String noVersionPrecedante) throws JadePersistenceException {
+        return PcaPlanCalculReforme.getSplitDateReformeFromVersion(droit.getId(), noVersionPrecedante);
+    }
+
 
     @Override
     public IPeriodePCAccordee calculWithoutPersist(Droit droit, Collection<String> listeIdPersonnes,

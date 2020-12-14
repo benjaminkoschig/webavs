@@ -3,6 +3,7 @@
  */
 package ch.globaz.pegasus.business.services.models.decision;
 
+import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
@@ -130,4 +131,7 @@ public interface DecisionService extends JadeApplicationService {
             JadeApplicationServiceNotAvailableException;
 
     public boolean isAdaptationAnnuelleNotValidate(String nextDate) throws JadePersistenceException;
+
+    public SimpleVersionDroit findVersionDroitPrecedant(String idDroit, String noVersion) throws DroitException,
+            JadePersistenceException, JadeApplicationServiceNotAvailableException;
 }

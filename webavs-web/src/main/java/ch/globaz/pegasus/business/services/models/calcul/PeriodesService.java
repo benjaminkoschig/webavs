@@ -36,7 +36,7 @@ public interface PeriodesService extends JadeApplicationService {
 
     public List<PeriodePCAccordee> recherchePeriodesCalcul(Droit droit, String debutPlage, String dateFinPlage,
             Map<String, JadeAbstractSearchModel> cacheDonnees, DonneesHorsDroitsProvider containerGlobal,
-            boolean isDateFinForce) throws CalculException, JadePersistenceException;
+            boolean isDateFinForce, String dateSplitReforme) throws CalculException, JadePersistenceException;
 
     /**
      * Recherche la date de début de la plage de calcul du droit.

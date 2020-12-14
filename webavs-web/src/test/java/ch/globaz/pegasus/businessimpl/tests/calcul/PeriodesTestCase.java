@@ -97,7 +97,7 @@ public class PeriodesTestCase {
         Map<String, JadeAbstractSearchModel> cacheDonneesCalcul = PegasusImplServiceLocator.getPeriodesService()
                 .getDonneesCalculDroit(casTest.getDroit(), "01.2011", "");
         List<PeriodePCAccordee> listePerPCA = PegasusImplServiceLocator.getPeriodesService().recherchePeriodesCalcul(
-                casTest.getDroit(), "01.2011", "", cacheDonneesCalcul, containerGlobal, false);
+                casTest.getDroit(), "01.2011", "", cacheDonneesCalcul, containerGlobal, false, null);
         casTest = CalculTestsUtil.calculVersionDroit(casTest);
 
         assertNotNull(listePerPCA);

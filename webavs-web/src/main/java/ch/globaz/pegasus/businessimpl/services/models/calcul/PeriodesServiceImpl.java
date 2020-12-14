@@ -484,7 +484,7 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
     @Override
     public List<PeriodePCAccordee> recherchePeriodesCalcul(Droit droit, String debutPlage, String finPlage,
             Map<String, JadeAbstractSearchModel> cacheDonneesPersistence, DonneesHorsDroitsProvider containerGlobal,
-            boolean isDateFinForce) throws CalculException, JadePersistenceException {
+            boolean isDateFinForce, String dateSplitReforme) throws CalculException, JadePersistenceException {
 
         if (containerGlobal == null) {
             throw new CalculException("donneesHorsDroitProvider is null!");
@@ -492,6 +492,11 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
         // Recherche des dates de partages
         Set<String> listeDatesPartage = getDatesPartagePeriodes(droit, cacheDonneesPersistence, debutPlage,
                 containerGlobal);
+
+        // ajoute la date à partir de laquelle le calcul est uniquement réforme pour un calcul rétro
+        if(dateSplitReforme != null && !listeDatesPartage.contains(dateSplitReforme)){
+            listeDatesPartage.add(dateSplitReforme);
+        }
 
         // pour correction problème si date de fin --> fin d'année
         String dateFinPlage = JadeDateUtil.addDays(finPlage, 1);
