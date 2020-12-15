@@ -36,15 +36,13 @@ public class MajFADHelper {
      * @param provenance la provenance
      * @param typeDeclaration le type de déclaration de salaire
      */
-    public void updateMajFADAvecDeclaration(BTransaction transaction, AFAffiliation afAffiliation, String provenance, String typeDeclaration, String anneeDeclSalaire) throws Exception {
+    public void updateMajFADAvecDeclaration(List<String> typesDeclarationDepuisPropriete, BTransaction transaction, AFAffiliation afAffiliation, String provenance, String typeDeclaration, String anneeDeclSalaire) throws Exception {
         try {
             HashSet<String> idsAssurancesAffiliation = AFBusinessServiceLocator.getAffiliationService().getIdsAssurancesAffiliation(transaction.getSession(), afAffiliation.getAffilieNumero());
             List<String> idsAssurancesTous = AFBusinessServiceLocator.getAssuranceService().getIdsAssurancesTous(transaction.getSession());
-            List<String> typesDeclarationDepuisPropriete = getTypesDeclarationDepuisProprietes();
             List<String> idsAssurancesDepuisPropriete = getIdsAssurancesDepuisProprietes(idsAssurancesTous);
 
-            if (typesDeclarationDepuisPropriete.size() > 0
-                    && typesDeclarationDepuisPropriete.contains(typeDeclaration)
+            if (typesDeclarationDepuisPropriete.contains(typeDeclaration)
                     && idsAssurancesDepuisPropriete.size() > 0
                     && idsAssurancesAffiliation.size() > 0
                     && idsAssurancesAffiliation.stream()
@@ -81,11 +79,9 @@ public class MajFADHelper {
         try {
             HashSet<String> idsAssurancesAffiliation = AFBusinessServiceLocator.getAffiliationService().getIdsAssurancesAffiliation(transaction.getSession(), afAffiliation.getAffilieNumero());
             List<String> idsAssurancesTous = AFBusinessServiceLocator.getAssuranceService().getIdsAssurancesTous(transaction.getSession());
-            List<String> typesDeclarationDepuisPropriete = getTypesDeclarationDepuisProprietes();
             List<String> idsAssurancesDepuisPropriete = getIdsAssurancesDepuisProprietes(idsAssurancesTous);
 
-            if (typesDeclarationDepuisPropriete.size() > 0
-                    && idsAssurancesDepuisPropriete.size() > 0
+            if (idsAssurancesDepuisPropriete.size() > 0
                     && idsAssurancesAffiliation.size() > 0
                     && idsAssurancesAffiliation.stream()
                     .anyMatch(id -> idsAssurancesDepuisPropriete.contains(id))) {
@@ -95,7 +91,6 @@ public class MajFADHelper {
                 } else {
                     AFBusinessServiceLocator.getAffiliationService().deactivateCotisationAssuranceMajoration(transaction, afAffiliation);
                 }
-
             }
         } catch (JadeApplicationServiceNotAvailableException e) {
             String message = "Erreur durant la recherche du service pour mettre à jour la cotisation à l'asssurance de majoration des frais d'admin.";
@@ -126,9 +121,6 @@ public class MajFADHelper {
                     String message = "La propriété: " + DSProperties.MAJORATION_DECLARATION_MANUELLE_ACTIVE.getPropertyName() + " possède des valeurs érronées. Desc: " + DSProperties.MAJORATION_DECLARATION_MANUELLE_ASSURANCE.getDescription();
                     LOG.warn(message);
                 }
-            } else {
-                String message = "La propriété: " + DSProperties.MAJORATION_DECLARATION_MANUELLE_ACTIVE.getPropertyName() + " ne possède aucune valeur. Desc: " + DSProperties.MAJORATION_DECLARATION_MANUELLE_ASSURANCE.getDescription();
-                LOG.info(message);
             }
         } catch (PropertiesException e) {
             String message = "La propriété: " + DSProperties.MAJORATION_DECLARATION_MANUELLE_ACTIVE.getPropertyName() + " n'existe pas en base de données. Desc: " + DSProperties.MAJORATION_DECLARATION_MANUELLE_ASSURANCE.getDescription();

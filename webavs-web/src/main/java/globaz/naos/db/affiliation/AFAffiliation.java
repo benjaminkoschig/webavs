@@ -593,8 +593,10 @@ public class AFAffiliation extends BEntity implements Serializable {
     protected void _afterUpdate(BTransaction transaction) throws Exception {
 
         if(!isSaisieSysteme()) {
-            // Update le boolean majFAD sur l'affiliation et ajoute si besoin la cotisation à l'assurance de majoration des frais d'admin
-            getMajFADHelper().updateMajFADSansDeclaration(getSession().getCurrentThreadTransaction(), this);
+            if (MajFADHelper.getTypesDeclarationDepuisProprietes().size() > 0) {
+                // Update le boolean majFAD sur l'affiliation et ajoute si besoin la cotisation à l'assurance de majoration des frais d'admin
+                getMajFADHelper().updateMajFADSansDeclaration(getSession().getCurrentThreadTransaction(), this);
+            }
         }
 
         if (isWantGenerationSuiviLAALPP()) {

@@ -386,8 +386,13 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
         setIdDeclaration(this._incCounter(transaction, "0"));
         // Lors d'un ajout on force l'état à ouvert
         setEtat(DSDeclarationViewBean.CS_OUVERT);
-        // Update le boolean majFAD sur l'affiliation et ajoute si besoin la cotisation à l'assurance de majoration des frais d'admin
-        getMajFADHelper().updateMajFADAvecDeclaration(transaction, getAffiliation(), getProvenance(), getTypeDeclaration(), getAnnee());
+
+        List<String> typesDeclarationDepuisPropriete = MajFADHelper.getTypesDeclarationDepuisProprietes();
+        if (typesDeclarationDepuisPropriete.size() > 0) {
+            // Update le boolean majFAD sur l'affiliation et ajoute si besoin la cotisation à l'assurance de majoration des frais d'admin
+            getMajFADHelper().updateMajFADAvecDeclaration(typesDeclarationDepuisPropriete, transaction, getAffiliation(), getProvenance(), getTypeDeclaration(), getAnnee());
+        }
+
         //transaction.getErrors()
         if (isSaisieEcran()) {
             // Lors de saisie à l'écran
