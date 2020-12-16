@@ -5,6 +5,7 @@ import globaz.apg.db.lots.APLot;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 import globaz.globall.util.JANumberFormatter;
+import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.pyxis.db.tiers.ITIPersonneAvsDefTable;
@@ -17,7 +18,7 @@ import globaz.pyxis.db.tiers.ITITiersDefTable;
 public class APPrestationJointLotTiersDroit extends APPrestation {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     public static final String FIELDNAME_DATE_NAISSANCE = "HPDNAI";
@@ -73,7 +74,11 @@ public class APPrestationJointLotTiersDroit extends APPrestation {
     protected void _beforeUpdate(BTransaction transaction) throws Exception {
         // recalculer le montant journalier
         double brut = JadeStringUtil.toDouble(getMontantBrut());
-        double nbJours = JadeStringUtil.toDouble(getNombreJoursSoldes());
+        String joursSoldes = getNombreJoursSoldes();
+        if ((joursSoldes == null) || !JadeNumericUtil.isIntegerPositif(joursSoldes)) {
+            _addError(transaction,getSession().getLabel("JOUR_SOLDES_PRESTATION_INVALID"));
+        }
+        double nbJours = JadeStringUtil.toDouble(joursSoldes);
 
         setMontantJournalier(JANumberFormatter.formatNoQuote(brut / nbJours));
 

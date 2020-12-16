@@ -11,6 +11,7 @@ import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.exceptions.APEmptyIdException;
 import globaz.apg.helpers.prestation.APPrestationHelper;
 import globaz.apg.utils.APGUtils;
+import globaz.apg.vb.droits.APDroitAPGDTO;
 import globaz.apg.vb.droits.APSituationProfessionnelleViewBean;
 import globaz.apg.vb.prestation.APCalculACORViewBean;
 import globaz.apg.vb.prestation.APDeterminerTypeCalculPrestationViewBean;
@@ -24,6 +25,7 @@ import globaz.framework.servlets.FWServlet;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.prestation.servlet.PRDefaultAction;
+import globaz.prestation.tools.PRSessionDataContainerHelper;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -63,6 +65,18 @@ public class APPrestationAction extends PRDefaultAction {
         if (JadeStringUtil.isBlankOrZero(idDroit)) {
             throw new APEmptyIdException(APDroitLAPG.class, idDroit);
         }
+
+
+        // on met à jour le dto du droit pour l'affichage.
+        APDroitLAPG droit = new APDroitLAPG();
+        droit.setISession(mainDispatcher.getSession());
+        droit.setIdDroit(idDroit);
+        try {
+            droit.retrieve();
+        } catch (Exception e) {
+            // on ne met pas à jour le dto.
+        }
+        PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO, new APDroitAPGDTO(droit));
 
         String destination = FWDefaultServletAction.ERROR_PAGE;
         APDeterminerTypeCalculPrestationViewBean typeCalculViewBean = new APDeterminerTypeCalculPrestationViewBean();
