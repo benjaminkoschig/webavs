@@ -180,24 +180,23 @@ public class PCImprimerDecisionsProcess extends PCAbstractJob {
                 DecisionBuilder decBuilder = null;
                 decBuilder = PegasusServiceLocator.getDecisionBuilderProvderService().getBuilderFor(decisionType);
                 ArrayList<String> idsDecisions;
-                DACGedHandler globalLotGedHandler = DACGedHandler.getInstanceForTraitementDecisionsAdaptationAnnuel(idDecisionsToPrint, getSession(),persref);
-                sendProcessMailAdaptations(PROCESS_TYPE.ADAPTATION_ANNUEL, idProcessusPC,globalLotGedHandler);
-                publisherHandler = DACPublishHandler.getInstanceForAdaptationAnnuel(idDecisionsToPrint, mailGest, dateDoc,
-                        persref, false,isForFtp, isFromAdaptation, idProcessusPC,gedHandler);
-                decBuilder.buildDecisionForAdaptation(publisherHandler);
-                this.createDocuments(publisherHandler.getContainerPublication());
-                for (String idDecs : idDecisionsToPrint) {
+                    DACGedHandler globalLotGedHandler = DACGedHandler.getInstanceForTraitementDecisionsAdaptationAnnuel(idDecisionsToPrint, getSession(),persref);
+                    sendProcessMailAdaptations(PROCESS_TYPE.ADAPTATION_ANNUEL, idProcessusPC,globalLotGedHandler);
+                    publisherHandler = DACPublishHandler.getInstanceForAdaptationAnnuel(idDecisionsToPrint, mailGest, dateDoc,
+                            persref, false,isForFtp, isFromAdaptation, idProcessusPC,gedHandler);
+                    decBuilder.buildDecisionForAdaptation(publisherHandler);
+                    this.createDocuments(publisherHandler.getContainerPublication());
+                    for (String idDecs : idDecisionsToPrint) {
+                        idsDecisions = new ArrayList<String>();
+                        idsDecisions.add(idDecs);
 
-
-                    idsDecisions = new ArrayList<String>();
-                    idsDecisions.add(idDecs);
-
-                    DACGedHandler gedHandler = DACGedHandler.getInstanceForTraitementDecisionsAdaptationAnnuel(idsDecisions, getSession(),persref);
-                    DACPublishHandler publisherHandler2 = DACPublishHandler.getInstanceForAdaptationAnnuel(idsDecisions, mailGest, dateDoc,
-                            persref, true,isForFtp, isFromAdaptation, idProcessusPC,gedHandler);
-                    decBuilder.build(publisherHandler2);
-                    // Création des décisions
-                    createDecisionsByLot(publisherHandler2);
+                        DACGedHandler gedHandler = DACGedHandler.getInstanceForTraitementDecisionsAdaptationAnnuel(idsDecisions, getSession(),persref);
+                        DACPublishHandler publisherHandler2 = DACPublishHandler.getInstanceForAdaptationAnnuel(idsDecisions, mailGest, dateDoc,
+                                persref, true,isForFtp, isFromAdaptation, idProcessusPC,gedHandler);
+                        decBuilder = PegasusServiceLocator.getDecisionBuilderProvderService().getBuilderFor(decisionType);
+                        decBuilder.build(publisherHandler2);
+                        // Création des décisions
+                        createDecisionsByLot(publisherHandler2);
 
                 }
 
