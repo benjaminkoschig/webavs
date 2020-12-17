@@ -7,6 +7,7 @@ import ch.globaz.naos.business.service.AFBusinessServiceLocator;
 import ch.globaz.naos.exception.MajorationFraisAdminException;
 import globaz.draco.properties.DSProperties;
 import globaz.globall.db.BTransaction;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.naos.db.affiliation.AFAffiliation;
 import org.slf4j.Logger;
@@ -110,6 +111,9 @@ public class MajFADHelper {
     public static List<String> getTypesDeclarationDepuisProprietes() {
         try {
             String majorationDeclarationTypes = CommonPropertiesUtils.getValue(DSProperties.MAJORATION_DECLARATION_MANUELLE_ACTIVE);
+            if(JadeStringUtil.isBlankOrZero(majorationDeclarationTypes)){
+                return new ArrayList<>();
+            }
             List<String> majorationDeclarationTypesSplitted = Arrays.asList(majorationDeclarationTypes.split(","));
             List<String> declarationTypesTous = Arrays.stream(DeclarationSalaireType.values())
                     .map(DeclarationSalaireType::getCodeSystem)

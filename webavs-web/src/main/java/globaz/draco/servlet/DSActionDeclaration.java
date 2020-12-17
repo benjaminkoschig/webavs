@@ -27,7 +27,9 @@ public class DSActionDeclaration extends DSActionCustomFind {
     @Override
     protected FWViewBeanInterface beforeNouveau(HttpSession session, HttpServletRequest request, HttpServletResponse response, FWViewBeanInterface viewBean) {
         if (viewBean instanceof DSDeclarationViewBean) {
-            updateProvenanceDeclaration((DSDeclarationViewBean) viewBean);
+            if (MajFADHelper.getTypesDeclarationDepuisProprietes().size() > 0) {
+                updateProvenanceDeclaration((DSDeclarationViewBean) viewBean);
+            }
         }
         return super.beforeNouveau(session, request, response, viewBean);
     }
@@ -37,9 +39,7 @@ public class DSActionDeclaration extends DSActionCustomFind {
      * système draco.majoration.declaration.manuelle.active
      */
     private void updateProvenanceDeclaration(DSDeclarationViewBean viewBean) {
-        if (MajFADHelper.getTypesDeclarationDepuisProprietes().size() > 0) {
-            viewBean.setProvenance(DSDeclarationViewBean.PROVENANCE_MANUELLE);
-        }
+        viewBean.setProvenance(DSDeclarationViewBean.PROVENANCE_MANUELLE);
     }
 
     @Override
