@@ -15,6 +15,7 @@ import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeConversionUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.publish.client.JadePublishDocument;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
@@ -36,6 +37,7 @@ public class APListePandemieControleProcess extends BProcess {
     public final static String LABEL_TITRE_SHEET_9_DOCUMENT = "DOC_LISTE_JOURS_CARENCE_3";
 
     public final static String NUM_INFOROM = "6000PAP";
+//    public final static String NUM_AVS_DEBUG ="756.9035.8711.20";
     private String eMailObject = "";
     private Map<String, List> mapList = new HashMap<>();
     private List<APListePandemieSuiviDossierModel> listSuivi;
@@ -369,6 +371,10 @@ public class APListePandemieControleProcess extends BProcess {
         sql.append("and (vhddeb > 20200301 OR vhdfin > 20200301 ) ");
         sql.append("and dr1.vaidro not in (select dr1.vaidro from schema.apdroip as dr4 where dr4.vaipar = dr1.vaidro) ");
         sql.append("and prest.vhteta in (52006002,52006003,52006004,52006005) ");
+        sql.append("and prest.vhirst = 0");
+//        if(!JadeStringUtil.isBlankOrZero(NUM_AVS_DEBUG)){
+//            sql.append("AND tip.HXNAVS='"+NUM_AVS_DEBUG+"'");
+//        }
         return sql.toString();
     }
 
