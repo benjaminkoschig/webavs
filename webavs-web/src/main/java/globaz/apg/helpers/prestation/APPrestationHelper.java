@@ -682,7 +682,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      */
     public static boolean isCalculDisponibleMATCIAB(APDroitLAPG droit) throws Exception {
         if (droit == null) {
-            throw new Exception("APDroitLAPG is null");
+            return false;
         }
 
         if (!(droit instanceof APDroitMaternite)) {

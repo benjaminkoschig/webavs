@@ -510,14 +510,14 @@
 					<reportElement
 						mode="Opaque"
 						x="0"
-						y="56"
+						y="57"
 						width="509"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="subreport-6"
 						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
+						positionType="Float"
 						isPrintRepeatedValues="true"
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
@@ -557,9 +557,9 @@
 				</subreport>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="2"
+						x="0"
 						y="12"
-						width="507"
+						width="512"
 						height="14"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -569,7 +569,7 @@
 						isPrintRepeatedValues="false"
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
+						isPrintWhenDetailOverflows="true"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
@@ -577,9 +577,9 @@
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="2"
+						x="0"
 						y="26"
-						width="507"
+						width="512"
 						height="14"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -589,7 +589,7 @@
 						isPrintRepeatedValues="false"
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
+						isPrintWhenDetailOverflows="true"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
@@ -598,7 +598,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="0"
-						y="41"
+						y="43"
 						width="510"
 						height="14"
 						forecolor="#000000"

@@ -42,8 +42,7 @@ public class APComplementCalculAutre extends APComplementCalculateur{
      */
     @Override
     BigDecimal calculeSalaireJournalierMATCIAB1(BigDecimal salaireJournalier) {
-        BigDecimal salaireJournalierMATCIAB1 = arrondir(salaireJournalier);
-        montantJournalier = salaireJournalierMATCIAB1;
+        montantJournalier = salaireJournalier;
         return montantJournalier;
     }
 

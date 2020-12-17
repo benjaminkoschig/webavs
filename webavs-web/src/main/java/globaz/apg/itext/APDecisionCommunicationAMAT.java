@@ -1782,6 +1782,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                         message.format(
                                                                 new Object[]{}, buffer, new FieldPosition(0))
                                                                 .toString());
+                                                buffer.setLength(0);
 
                                                 textaddedMATCIAB1 = true;
                                             }
@@ -1857,6 +1858,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                         message.format(
                                                                 new Object[]{}, buffer, new FieldPosition(0))
                                                                 .toString());
+                                                buffer.setLength(0);
 
                                                 textaddedMATCIAB2 = true;
                                             }
@@ -1885,6 +1887,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                         message.format(
                                                                 new Object[]{}, buffer, new FieldPosition(0))
                                                                 .toString());
+                                                buffer.setLength(0);
 
                                                 textaddedMATCIAB1 = true;
                                             }
@@ -2123,6 +2126,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                         message.format(
                                                                 new Object[]{}, buffer, new FieldPosition(0))
                                                                 .toString());
+                                                buffer.setLength(0);
 
                                                 textaddedMATCIAB2 = true;
                                             }
@@ -2151,6 +2155,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                         message.format(
                                                                 new Object[]{}, buffer, new FieldPosition(0))
                                                                 .toString());
+                                                buffer.setLength(0);
 
                                                 textaddedMATCIAB1 = true;
                                             }
