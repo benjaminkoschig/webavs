@@ -20,6 +20,7 @@ import ch.globaz.pegasus.business.models.lot.PrestationSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.businessimpl.services.models.decision.ged.DACGedHandler;
 import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.process.ComptabilisationData;
+import ch.globaz.pegasus.utils.PCApplicationUtil;
 import globaz.corvus.api.lots.IRELot;
 import globaz.globall.db.BProcessLauncher;
 import globaz.globall.db.BSession;
@@ -86,7 +87,9 @@ public class PCComptabiliserProcess extends PCAbstractJob {
                 // on vide les logs, afin de logger les infos reltaives au process de mise en ged
                 // et de supprimer les logs relatifs à la comptabilisation des décisions
                 JadeThread.logClear();
-                launchMiseEnGedDecisionApresCalcul(simpleLot);
+                if(!PCApplicationUtil.isCantonVS()){
+                    launchMiseEnGedDecisionApresCalcul(simpleLot);
+                }
                 if (simpleLot.getCsTypeLot().equals(IRELot.CS_TYP_LOT_DECISION)) {
                     sendJobForChysaor(simpleLot.getIdLot());
                 }
