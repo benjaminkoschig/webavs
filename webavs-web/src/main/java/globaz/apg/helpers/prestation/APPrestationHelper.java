@@ -569,7 +569,6 @@ public class APPrestationHelper extends PRAbstractHelper {
                 .getCalculateurInstance(APTypeDePrestation.COMPCIAB);
 
         // Récupération des données depuis la persistence pour le calcul des prestations Complémentaires
-
         APCalculateurComplementDonneesPersistence donnesPersistencePourCalcul = getDonneesPersistancePourCalculComplementaire(
                 droit.getIdDroit(), session, transaction);
 
@@ -1646,32 +1645,17 @@ public class APPrestationHelper extends PRAbstractHelper {
         final APEntityService servicePersistance = ApgServiceLocator.getEntityService();
         donneesPersistence.setIdDroit(idDroit);
 
-        // Récupération de toutes les restations joint repartitions
-        final List<APRepartitionJointPrestation> listeTemporaire = servicePersistance
-                .getRepartitionJointPrestationDuDroit(session, transaction, idDroit);
+        // Filtre pour ne garder que les prestations d'allocations
+        final List<APRepartitionJointPrestation> apRepJointPrestationsIsAllocation = filterApRepJointPrestationsIsAllocation(idDroit, session, transaction, servicePersistance);
+        if (apRepJointPrestationsIsAllocation.isEmpty()) return null;
 
-        // On filtre car on ne veut pas les restitutions ou autres. Uniquement les prestations d'allocation
-        final List<APRepartitionJointPrestation> repartitionJointRepartitionsFiltree = new ArrayList<APRepartitionJointPrestation>();
-        for (APRepartitionJointPrestation repJointPrest : listeTemporaire) {
-            // On prend les prestation allocation et duplicata
-            if ((IAPAnnonce.CS_DEMANDE_ALLOCATION.equals(repJointPrest.getContenuAnnonce())
-                    || IAPAnnonce.CS_DUPLICATA.equals(repJointPrest.getContenuAnnonce()))
-                    && !JadeStringUtil.isBlankOrZero(repJointPrest.getIdSituationProfessionnelle())) {
-                repartitionJointRepartitionsFiltree.add(repJointPrest);
-            }
-        }
-
-        if (repartitionJointRepartitionsFiltree.isEmpty()) {
-            return null;
-        }
-
-        donneesPersistence.setPrestationJointRepartitions(repartitionJointRepartitionsFiltree);
+        donneesPersistence.setPrestationJointRepartitions(apRepJointPrestationsIsAllocation);
 
         APCotisationManager cotisations = new APCotisationManager();
 
         List<APCotisation> listCotisation = new ArrayList<>();
 
-        for (APRepartitionJointPrestation repartition : repartitionJointRepartitionsFiltree) {
+        for (APRepartitionJointPrestation repartition : apRepJointPrestationsIsAllocation) {
             cotisations.setSession(session);
             cotisations.setForIdRepartitionBeneficiairePaiement(repartition.getId());
             cotisations.find(transaction);
@@ -1712,52 +1696,19 @@ public class APPrestationHelper extends PRAbstractHelper {
         mgr.setForIdDroit(idDroit);
         mgr.find(BManager.SIZE_NOLIMIT);
 
-        List<APPrestation> list = new ArrayList<>();
-
-        // Contrôle la propriété PROPERTY_APG_FERCIAB_MATERNITE
-        String apgFerciabMaternite = JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_APG_FERCIAB_MATERNITE);
-
-        for (int i = 0; i < mgr.getSize(); i++) {
-            final APPrestation prestation = (APPrestation) mgr.getEntity(i);
-
-            // Ne prends en compte que les prestations qui commence après la date trouvé dans la propriété PROPERTY_APG_FERCIAB_MATERNITE
-            PRDateUtils.PRDateEquality prestationEndDateCheck = PRDateUtils.compare(prestation.getDateFin(), apgFerciabMaternite);
-            PRDateUtils.PRDateEquality prestationBeginDateCheck = PRDateUtils.compare(prestation.getDateDebut(), apgFerciabMaternite);
-            if (prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.EQUALS) || prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.BEFORE)) {
-                // Adapte la date de début en fonction de la propriété PROPERTY_APG_FERCIAB_MATERNITE
-                if (prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.AFTER)) {
-                    prestation.setDateDebut(apgFerciabMaternite);
-                }
-                list.add(prestation);
-            }
-
-        }
+        // Filtre les prestations qui ont une date de début avant la propriété apg.FERCIAB.maternite
+        List<APPrestation> apPrestationsIsDateDebutAvantProprieteFerciab = filterAPRepJointPrestationsIsDateDebutAvantProprieteFerciabMATCIAB1(mgr);
 
         final APCalculateurComplementDonneesPersistence donneesPersistence = new APCalculateurComplementDonneesPersistence(
                 idDroit);
-        donneesPersistence.setListPrestationStandard(list);
+        donneesPersistence.setListPrestationStandard(apPrestationsIsDateDebutAvantProprieteFerciab);
 
         final APEntityService servicePersistance = ApgServiceLocator.getEntityService();
         donneesPersistence.setIdDroit(idDroit);
 
-        // Récupération de toutes les restations joint repartitions
-        final List<APRepartitionJointPrestation> repartitionNonFiltrees = servicePersistance
-                .getRepartitionJointPrestationDuDroit(session, transaction, idDroit);
-
-        // On filtre car on ne veut pas les restitutions ou autres. Uniquement les prestations d'allocation
-        final List<APRepartitionJointPrestation> apRepJointPrestationsIsAllocation = new ArrayList<APRepartitionJointPrestation>();
-        for (APRepartitionJointPrestation repJointPrest : repartitionNonFiltrees) {
-            // On prend les prestation allocation et duplicata
-            if ((IAPAnnonce.CS_DEMANDE_ALLOCATION.equals(repJointPrest.getContenuAnnonce())
-                    || IAPAnnonce.CS_DUPLICATA.equals(repJointPrest.getContenuAnnonce()))
-                    && !JadeStringUtil.isBlankOrZero(repJointPrest.getIdSituationProfessionnelle())) {
-                apRepJointPrestationsIsAllocation.add(repJointPrest);
-            }
-        }
-
-        if (apRepJointPrestationsIsAllocation.isEmpty()) {
-            return null;
-        }
+        // Filtre pour ne garder que les prestations d'allocations
+        final List<APRepartitionJointPrestation> apRepJointPrestationsIsAllocation = filterApRepJointPrestationsIsAllocation(idDroit, session, transaction, servicePersistance);
+        if (apRepJointPrestationsIsAllocation.isEmpty()) return null;
 
         List<APRepartitionJointPrestation> apRepJointPrestationsIsComplement = filterAPRepJointPrestationsIsComplement(idDroit, session, apRepJointPrestationsIsAllocation);
 
@@ -1785,12 +1736,15 @@ public class APPrestationHelper extends PRAbstractHelper {
         donneesPersistence.setNombreInitialDeSituationsProfessionelles(apSitProJointEmployeurs.size());
 
         final String dateDebutPrestationStandard = donneesPersistence.getPrestationJointRepartitions().size() > 0 ? donneesPersistence.getPrestationJointRepartitions().get(0).getDateDebut() : null;
-        if (dateDebutPrestationStandard == null) {
-            return null;
-        }
+        if (dateDebutPrestationStandard == null) return null;
 
         // Filtre les situations proffesionelles qui ne cotise pas au complément
         List<APSitProJointEmployeur> apSitProJointEmployeursIsComplement = filterAPSitProJointEmployeursIsComplement(idDroit, session, donneesPersistence, dateDebutPrestationStandard, apSitProJointEmployeurs);
+        if (apSitProJointEmployeursIsComplement.isEmpty()) return null;
+
+        // Filtre les prestations qui débute à une date ou il n'y avait pas encore de cotisations aux assurances complémentaire
+        /*List<APPrestation> apPrestationsIsDebutCotisationComplementaireAvantDebutPrestations = filterAPPrestationsIsCotisationComplementaireAvantDebutPrestations(apPrestationsIsDateDebutAvantProprieteFerciab, apSitProJointEmployeursIsComplement);
+        donneesPersistence.setListPrestationStandard(apPrestationsIsDebutCotisationComplementaireAvantDebutPrestations);*/
 
         // Filtre les situations proffesionelles qui ne sont pas des versement employeurs
         List<APSitProJointEmployeur> apSitProJointEmployeursIsVersementEmployeur = filterAPSitProJointEmployeursIsVersementEmployeur(apSitProJointEmployeursIsComplement);
@@ -1819,6 +1773,54 @@ public class APPrestationHelper extends PRAbstractHelper {
         putMontantMax(session, dateDebutPrestationStandard, montantsMax, EMontantsMax.MATCIABBEM);
         donneesPersistence.setMontantsMax(montantsMax);
         return donneesPersistence;
+    }
+
+    private  List<APPrestation> filterAPRepJointPrestationsIsDateDebutAvantProprieteFerciabMATCIAB1(APPrestationManager mgr) {
+        final List<APPrestation> apPrestationsIsDateDebutAvantProprieteFerciab = new ArrayList<>();
+
+        // Contrôle la propriété PROPERTY_APG_FERCIAB_MATERNITE
+        String proprieteAPGFerciabMaternite = JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_APG_FERCIAB_MATERNITE);
+
+        for (int i = 0; i < mgr.getSize(); i++) {
+            final APPrestation prestation = (APPrestation) mgr.getEntity(i);
+
+            // Ne prends en compte que les prestations qui commence après la date trouvé dans la propriété PROPERTY_APG_FERCIAB_MATERNITE
+            PRDateUtils.PRDateEquality prestationEndDateCheck = PRDateUtils.compare(prestation.getDateFin(), proprieteAPGFerciabMaternite);
+            PRDateUtils.PRDateEquality prestationBeginDateCheck = PRDateUtils.compare(prestation.getDateDebut(), proprieteAPGFerciabMaternite);
+            if (prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.EQUALS) || prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.BEFORE)) {
+                // Adapte la date de début en fonction de la propriété PROPERTY_APG_FERCIAB_MATERNITE
+                if (prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.AFTER)) {
+                    prestation.setDateDebut(proprieteAPGFerciabMaternite);
+                }
+                apPrestationsIsDateDebutAvantProprieteFerciab.add(prestation);
+            }
+
+        }
+        return apPrestationsIsDateDebutAvantProprieteFerciab;
+    }
+
+    private List<APRepartitionJointPrestation> filterAPRepJointPrestationsIsDateDebutAvantProprieteFerciabMATCIAB2(List<APRepartitionJointPrestation> repartitionNonFiltrees) {
+        final List<APRepartitionJointPrestation> apRepJointPrestationsIsDateDebutAvantProprieteFerciab = new ArrayList<APRepartitionJointPrestation>();
+
+        // Contrôle la propriété PROPERTY_APG_FERCIAB_MATERNITE
+        String apgFerciabMaternite = JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_APG_FERCIAB_MATERNITE);
+
+        for (APRepartitionJointPrestation apRepJointPrest : repartitionNonFiltrees) {
+
+            // Ne prends en compte que les prestations qui commence après la date trouvé dans la propriété PROPERTY_APG_FERCIAB_MATERNITE
+            String dateFinMoins1Jour = JadeDateUtil.addDays(apRepJointPrest.getDateFin(), 1); // Pour MATCIAB2 il faut comparer la propriété PROPERTY_APG_FERCIAB_MATERNITE à la date de fin moins 1 jours
+            PRDateUtils.PRDateEquality prestationEndDateCheck = PRDateUtils.compare(dateFinMoins1Jour, apgFerciabMaternite);
+            PRDateUtils.PRDateEquality prestationBeginDateCheck = PRDateUtils.compare(apRepJointPrest.getDateDebut(), apgFerciabMaternite);
+            if (prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.EQUALS) || prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.BEFORE)) {
+                // Adapte la date de début en fonction de la propriété PROPERTY_APG_FERCIAB_MATERNITE
+                if (prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.AFTER)) {
+                    apRepJointPrest.setDateDebut(apgFerciabMaternite);
+                }
+                apRepJointPrestationsIsDateDebutAvantProprieteFerciab.add(apRepJointPrest);
+            }
+
+        }
+        return apRepJointPrestationsIsDateDebutAvantProprieteFerciab;
     }
 
     private List<APSitProJointEmployeur> filterAPSitProJointEmployeursIsComplement(String idDroit, BSession session, APCalculateurComplementDonneesPersistence donneesPersistence, String dateDebutPrestationStandard, List<APSitProJointEmployeur> apSitProJointEmployeurs) throws Exception {
@@ -1891,6 +1893,25 @@ public class APPrestationHelper extends PRAbstractHelper {
             }
         }
         return apSitProJointEmployeursIsComplement;
+    }
+
+    private List<APRepartitionJointPrestation> filterApRepJointPrestationsIsAllocation(String idDroit, BSession session, BTransaction transaction, APEntityService servicePersistance) throws Exception {
+        // Récupération de toutes les restations joint repartitions
+        final List<APRepartitionJointPrestation> apRepJointPrestations = servicePersistance
+                .getRepartitionJointPrestationDuDroit(session, transaction, idDroit);
+
+        // On filtre car on ne veut pas les restitutions ou autres. Uniquement les prestations d'allocation
+        final List<APRepartitionJointPrestation> apRepJointPrestationsIsAllocation = new ArrayList<APRepartitionJointPrestation>();
+        for (APRepartitionJointPrestation repJointPrest : apRepJointPrestations) {
+            // On prend les prestation allocation et duplicata
+            if ((IAPAnnonce.CS_DEMANDE_ALLOCATION.equals(repJointPrest.getContenuAnnonce())
+                    || IAPAnnonce.CS_DUPLICATA.equals(repJointPrest.getContenuAnnonce()))
+                    && !JadeStringUtil.isBlankOrZero(repJointPrest.getIdSituationProfessionnelle())) {
+                apRepJointPrestationsIsAllocation.add(repJointPrest);
+            }
+        }
+
+        return apRepJointPrestationsIsAllocation;
     }
 
     private List<APRepartitionJointPrestation> filterAPRepJointPrestationsIsComplement(String idDroit, BSession session, List<APRepartitionJointPrestation> apRepJointPrestations) throws Exception {
@@ -2099,29 +2120,10 @@ public class APPrestationHelper extends PRAbstractHelper {
         final List<APRepartitionJointPrestation> repartitionNonFiltrees = servicePersistance
                 .getRepartitionJointPrestationDuDroit(session, transaction, droit.getIdDroit());
 
-        // On filtre car on ne veut pas les restitutions ou autres. Uniquement les prestations d'allocation
-        final List<APRepartitionJointPrestation> apRepJointPrestationsFiltree = new ArrayList<APRepartitionJointPrestation>();
+        // Filtre les prestations qui ont une date de début avant la propriété apg.FERCIAB.maternite
+        final List<APRepartitionJointPrestation> apRepJointPrestationsIsDateDebutAvantProprieteFerciab = filterAPRepJointPrestationsIsDateDebutAvantProprieteFerciabMATCIAB2(repartitionNonFiltrees);
 
-        // Contrôle la propriété PROPERTY_APG_FERCIAB_MATERNITE
-        String apgFerciabMaternite = JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_APG_FERCIAB_MATERNITE);
-
-        for (APRepartitionJointPrestation apRepJointPrest : repartitionNonFiltrees) {
-
-            // Ne prends en compte que les prestations qui commence après la date trouvé dans la propriété PROPERTY_APG_FERCIAB_MATERNITE
-            String dateFinMoins1Jour = JadeDateUtil.addDays(apRepJointPrest.getDateFin(), 1); // Pour MATCIAB2 il faut comparer la propriété PROPERTY_APG_FERCIAB_MATERNITE à la date de fin moins 1 jours
-            PRDateUtils.PRDateEquality prestationEndDateCheck = PRDateUtils.compare(dateFinMoins1Jour, apgFerciabMaternite);
-            PRDateUtils.PRDateEquality prestationBeginDateCheck = PRDateUtils.compare(apRepJointPrest.getDateDebut(), apgFerciabMaternite);
-            if (prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.EQUALS) || prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.BEFORE)) {
-                // Adapte la date de début en fonction de la propriété PROPERTY_APG_FERCIAB_MATERNITE
-                if (prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.AFTER)) {
-                    apRepJointPrest.setDateDebut(apgFerciabMaternite);
-                }
-                apRepJointPrestationsFiltree.add(apRepJointPrest);
-            }
-
-        }
-
-        donneesPersistence.setPrestationJointRepartitions(apRepJointPrestationsFiltree);
+        donneesPersistence.setPrestationJointRepartitions(apRepJointPrestationsIsDateDebutAvantProprieteFerciab);
 
         // Situations professionnelles
         final List<APSitProJointEmployeur> apSitProJointEmployeurs = servicePersistance
@@ -2131,6 +2133,7 @@ public class APPrestationHelper extends PRAbstractHelper {
 
         // Filtre les situations proffesionelles qui ne cotise pas au complément
         List<APSitProJointEmployeur> apSitProJointEmployeursIsComplement = filterAPSitProJointEmployeursIsComplementMATCIAB2(droit.getIdDroit(), session, apSitProJointEmployeurs);
+        if (apSitProJointEmployeursIsComplement.isEmpty()) return null;
 
         // Filtre les situations proffesionelles qui ne sont pas des versement employeurs
         List<APSitProJointEmployeur> apSitProJointEmployeursIsVersementEmployeur = filterAPSitProJointEmployeursIsVersementEmployeur(apSitProJointEmployeursIsComplement);
