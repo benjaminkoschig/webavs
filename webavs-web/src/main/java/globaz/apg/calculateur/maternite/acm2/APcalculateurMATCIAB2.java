@@ -40,7 +40,7 @@ public class APcalculateurMATCIAB2 implements IAPPrestationCalculateur<APPrestat
         // On prend le premier employeur pour récupérer certaines données invariable d'un employeur à l'autre
         ACM2BusinessDataParEmployeur donneesEmployeurTmp = donneesDomainCalcul.get(0);
         String idDroit = donneesEmployeurTmp.getIdDroit();
-        int nombreJoursACM2 = donneesEmployeurTmp.getNombreJoursPrestationACM2();
+        int nombreJoursMATCIAB2 = donneesEmployeurTmp.getNombreJoursPrestationACM2();
         PRPeriode periodeMATCIAB1ouStandard = null;
 
         /*
@@ -66,10 +66,12 @@ public class APcalculateurMATCIAB2 implements IAPPrestationCalculateur<APPrestat
         }
 
         // Calcul de la période initiale des MATCIAB2
-        String ddfACM1ouStandard = periodeMATCIAB1ouStandard.getDateDeFin();
-        String dateDebutACM2 = JadeDateUtil.addDays(ddfACM1ouStandard, 1);
-        String dateFinACM2 = JadeDateUtil.addDays(ddfACM1ouStandard, nombreJoursACM2);
-        PRPeriode periodeACM2 = new PRPeriode(dateDebutACM2, dateFinACM2);
+        String ddfMATCIAB1ouStandard = periodeMATCIAB1ouStandard.getDateDeFin();
+        String dateDebutMATCIAB2 = JadeDateUtil.addDays(ddfMATCIAB1ouStandard, 1);
+        String dateFinMATCIAB2 = JadeDateUtil.addDays(ddfMATCIAB1ouStandard, nombreJoursMATCIAB2);
+        dateFinMATCIAB2 = limitDateFinMATCIAB2(donneesDomainCalcul, dateFinMATCIAB2);
+
+        PRPeriode periodeMATCIAB2 = new PRPeriode(dateDebutMATCIAB2, dateFinMATCIAB2);
 
         SimpleDateFormat reader = new SimpleDateFormat("dd.MM.yyyy");
         SimpleDateFormat anneeWriter = new SimpleDateFormat("yyyy");
@@ -81,18 +83,18 @@ public class APcalculateurMATCIAB2 implements IAPPrestationCalculateur<APPrestat
          */
 
         // On récupère l'année de la date de début de la période
-        String annee = anneeWriter.format(reader.parse(periodeACM2.getDateDeDebut()));
+        String annee = anneeWriter.format(reader.parse(periodeMATCIAB2.getDateDeDebut()));
         // On créé la date du 31.12 de l'année correspondante
         String finDeAnnee = "31.12." + annee;
-        boolean result = PRDateUtils.isDateDansLaPeriode(periodeACM2, finDeAnnee);
+        boolean result = PRDateUtils.isDateDansLaPeriode(periodeMATCIAB2, finDeAnnee);
         if (result) {
-            PRPeriode p1 = new PRPeriode(periodeACM2.getDateDeDebut(), finDeAnnee);
+            PRPeriode p1 = new PRPeriode(periodeMATCIAB2.getDateDeDebut(), finDeAnnee);
             String debutAnnee = JadeDateUtil.addDays(finDeAnnee, 1);
-            PRPeriode p2 = new PRPeriode(debutAnnee, periodeACM2.getDateDeFin());
+            PRPeriode p2 = new PRPeriode(debutAnnee, periodeMATCIAB2.getDateDeFin());
             periodes.add(p1);
             periodes.add(p2);
         } else {
-            periodes.add(periodeACM2);
+            periodes.add(periodeMATCIAB2);
         }
 
         List<APPrestationCalculeeAPersister> resultatCalcul = new LinkedList<>();
@@ -205,6 +207,21 @@ public class APcalculateurMATCIAB2 implements IAPPrestationCalculateur<APPrestat
         }
 
         return resultatCalcul;
+    }
+
+    private String limitDateFinMATCIAB2(List<ACM2BusinessDataParEmployeur> donneesDomainCalcul, String dateFinMATCIAB2) {
+        ACM2BusinessDataParEmployeur donneesEmployeurTmpMaxDateFin = donneesDomainCalcul.get(0);
+        for (ACM2BusinessDataParEmployeur object : donneesDomainCalcul) {
+            PRDateUtils.PRDateEquality prestationEndDateCheck = PRDateUtils.compare(donneesEmployeurTmpMaxDateFin.getSituationProfJointEmployeur().getDateFin(), object.getSituationProfJointEmployeur().getDateFin());
+            if (donneesEmployeurTmpMaxDateFin.getSituationProfJointEmployeur().getDateFin().isEmpty() || prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.BEFORE)) {
+                donneesEmployeurTmpMaxDateFin = object;
+            }
+        }
+        PRDateUtils.PRDateEquality prestationEndDateCheck = PRDateUtils.compare(donneesEmployeurTmpMaxDateFin.getSituationProfJointEmployeur().getDateFin(), dateFinMATCIAB2);
+        if (prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.AFTER)) {
+            dateFinMATCIAB2 = donneesEmployeurTmpMaxDateFin.getSituationProfJointEmployeur().getDateFin();
+        }
+        return dateFinMATCIAB2;
     }
 
     /**

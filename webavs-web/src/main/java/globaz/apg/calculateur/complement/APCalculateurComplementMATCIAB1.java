@@ -84,7 +84,7 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
             }
 
             prestationCalculeeAPersister.setMontantBrut(montantMATCIAB1);
-            BigDecimal montantBrutJournalier = montantMATCIAB1.divide(BigDecimal.valueOf(nombreJoursSoldesPeriodePriseEnCompte), 2, RoundingMode.HALF_UP);
+            BigDecimal montantBrutJournalier = montantMATCIAB1.divide(BigDecimal.valueOf(nombreJoursSoldesPeriodePriseEnCompte), 2, RoundingMode.HALF_UP).abs();
             prestationCalculeeAPersister.setMontantJournalier(montantBrutJournalier);
 
             // met à jour le nombre de jours soldes avec le nombre de jours soldes prise en compte
@@ -371,26 +371,31 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
                     if (!idSituationProfessionnelleCourante.equals(apSitProJoiEmpEnt.getIdSitPro())) {
                         idSituationProfessionnelleCourante = apSitProJoiEmpEnt.getIdSitPro();
 
-                        sommeRevenuMoyenDeterminant.add(donneesPersistancePourCalcul.getRevenuMoyenDeterminant(idSituationProfessionnelleCourante)); // sommme le revenu moyen déterminant des différentes situations proffessionelles
+                        // Filtre les situations professionelles qui ne cotisent pas a la date de début de la prestation
+                        PRDateUtils.PRDateEquality prestationEndDateCheck = PRDateUtils.compare(prestationStandard.getPrestation().getDateFin(), apSitProJoiEmpEnt.getDateFin());
+                        PRDateUtils.PRDateEquality prestationBeginDateCheck = PRDateUtils.compare(prestationStandard.getPrestation().getDateDebut(), apSitProJoiEmpEnt.getDateDebut());
+                        if ((prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.EQUALS) || prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.BEFORE))
+                        && (prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.INCOMPARABLE) || prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.EQUALS) || prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.AFTER))) {
+                            sommeRevenuMoyenDeterminant.add(donneesPersistancePourCalcul.getRevenuMoyenDeterminant(idSituationProfessionnelleCourante)); // sommme le revenu moyen déterminant des différentes situations proffessionelles
 
-                        // Définition de l'association
-                        final APAssuranceTypeAssociation association = getAssociationFromSituationProf(apSitProJoiEmpEnt);
+                            // Définition de l'association
+                            final APAssuranceTypeAssociation association = getAssociationFromSituationProf(apSitProJoiEmpEnt);
 
-                        APSituationProfessionnelleCanton sitProf = new APSituationProfessionnelleCanton(association, apSitProJoiEmpEnt.getDateDebut(),
-                                apSitProJoiEmpEnt.getDateFin(),
-                                new BigDecimal(apSitProJoiEmpEnt
-                                        .getMontantJournalierAcmNe()),
-                                apSitProJoiEmpEnt.getIdSitPro(),
-                                apSitProJoiEmpEnt.getIdTiers(), apSitProJoiEmpEnt.getIdAffilie(),
-                                apSitProJoiEmpEnt.getNom(), apSitProJoiEmpEnt.getIdTiersPaiementEmployeur(),
-                                apSitProJoiEmpEnt.getIdDomainePaiementEmployeur(),
-                                donneesPersistancePourCalcul.getMapTypeAffiliation().get(apSitProJoiEmpEnt.getIdSitPro()),
-                                apSitProJoiEmpEnt.getIndependant());
-                        sitProf.setCanton(donneesPersistancePourCalcul.getMapCanton().get(apSitProJoiEmpEnt.getIdSitPro()));
-                        prestationStandard.getSituationProfessionnelle().put(
-                                apSitProJoiEmpEnt.getIdSitPro(),sitProf
-                        );
-
+                            APSituationProfessionnelleCanton sitProf = new APSituationProfessionnelleCanton(association, apSitProJoiEmpEnt.getDateDebut(),
+                                    apSitProJoiEmpEnt.getDateFin(),
+                                    new BigDecimal(apSitProJoiEmpEnt
+                                            .getMontantJournalierAcmNe()),
+                                    apSitProJoiEmpEnt.getIdSitPro(),
+                                    apSitProJoiEmpEnt.getIdTiers(), apSitProJoiEmpEnt.getIdAffilie(),
+                                    apSitProJoiEmpEnt.getNom(), apSitProJoiEmpEnt.getIdTiersPaiementEmployeur(),
+                                    apSitProJoiEmpEnt.getIdDomainePaiementEmployeur(),
+                                    donneesPersistancePourCalcul.getMapTypeAffiliation().get(apSitProJoiEmpEnt.getIdSitPro()),
+                                    apSitProJoiEmpEnt.getIndependant());
+                            sitProf.setCanton(donneesPersistancePourCalcul.getMapCanton().get(apSitProJoiEmpEnt.getIdSitPro()));
+                            prestationStandard.getSituationProfessionnelle().put(
+                                    apSitProJoiEmpEnt.getIdSitPro(), sitProf
+                            );
+                        }
                     }
                 } else {
                     throw new Exception("APCalculerComplementService.convert(): impossible de retrouver la prestation");

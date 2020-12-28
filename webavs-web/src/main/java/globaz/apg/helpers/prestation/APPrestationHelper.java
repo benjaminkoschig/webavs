@@ -719,7 +719,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      */
     private Integer getMaxJoursSelonCantonSitPro(BSession session, String idDroit, List<APSitProJointEmployeur> listEmployeur)
             throws Exception {
-        List<IAFAssurance> listAssurance;
+        Map<IAFAssurance, String> listAssurance;
         Integer maxJours = 0;
         String idAssuranceParitaireJU = JadePropertiesService.getInstance()
                 .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
@@ -729,16 +729,16 @@ public class APPrestationHelper extends PRAbstractHelper {
                 .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_JU_ID);
         String idAssurancePersonnelBE = JadePropertiesService.getInstance()
                 .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_BE_ID);
-        for (APSitProJointEmployeur employeur : listEmployeur) {
-            listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercher(idDroit,
-                    employeur.getIdAffilie(), session);
-            for (IAFAssurance assurance : listAssurance) {
-                if (assurance.getAssuranceId().equals(idAssurancePersonnelBE) || assurance.getAssuranceId().equals(idAssuranceParitaireBE)) {
+        for (APSitProJointEmployeur apSitProJointEmployeur : listEmployeur) {
+            listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercherAvecDateDebut(idDroit,
+                    apSitProJointEmployeur.getIdAffilie(), session);
+            for (Map.Entry<IAFAssurance, String> assurance : listAssurance.entrySet()) {
+                if (assurance.getKey().getAssuranceId().equals(idAssurancePersonnelBE) || assurance.getKey().getAssuranceId().equals(idAssuranceParitaireBE)) {
                     Integer jour = Integer.valueOf(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", "MATCIABBEJ", "0", "", 0));
                     if (jour > maxJours) {
                         maxJours = jour;
                     }
-                } else if (assurance.getAssuranceId().equals(idAssurancePersonnelJU) || assurance.getAssuranceId().equals(idAssuranceParitaireJU)) {
+                } else if (assurance.getKey().getAssuranceId().equals(idAssurancePersonnelJU) || assurance.getKey().getAssuranceId().equals(idAssuranceParitaireJU)) {
                     Integer jour = Integer.valueOf(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", "MATCIABJUJ", "0", "", 0));
                     if (jour > maxJours) {
                         maxJours = jour;
@@ -764,7 +764,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      */
     private Integer getMontantMaxSelonCantonSitPro(BSession session, String idDroit, List<APSitProJointEmployeur> listEmployeur)
             throws Exception {
-        List<IAFAssurance> listAssurance;
+        Map<IAFAssurance, String> listAssurance;
         Integer montantMax = 0;
         String idAssuranceParitaireJU = JadePropertiesService.getInstance()
                 .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
@@ -774,16 +774,16 @@ public class APPrestationHelper extends PRAbstractHelper {
                 .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_JU_ID);
         String idAssurancePersonnelBE = JadePropertiesService.getInstance()
                 .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_BE_ID);
-        for (APSitProJointEmployeur employeur : listEmployeur) {
-            listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercher(idDroit,
-                    employeur.getIdAffilie(), session);
-            for (IAFAssurance assurance : listAssurance) {
-                if (assurance.getAssuranceId().equals(idAssurancePersonnelBE) || assurance.getAssuranceId().equals(idAssuranceParitaireBE)) {
+        for (APSitProJointEmployeur apSitProJointEmployeur : listEmployeur) {
+            listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercherAvecDateDebut(idDroit,
+                    apSitProJointEmployeur.getIdAffilie(), session);
+            for (Map.Entry<IAFAssurance, String> assurance : listAssurance.entrySet()) {
+                if (assurance.getKey().getAssuranceId().equals(idAssurancePersonnelBE) || assurance.getKey().getAssuranceId().equals(idAssuranceParitaireBE)) {
                     Integer montant = Integer.valueOf(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", "MATCIABBEM", "0", "", 0));
                     if (montant > montantMax) {
                         montantMax = montant;
                     }
-                } else if (assurance.getAssuranceId().equals(idAssurancePersonnelJU) || assurance.getAssuranceId().equals(idAssuranceParitaireJU)) {
+                } else if (assurance.getKey().getAssuranceId().equals(idAssurancePersonnelJU) || assurance.getKey().getAssuranceId().equals(idAssuranceParitaireJU)) {
                     Integer montant = Integer.valueOf(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", "MATCIABJUM", "0", "", 0));
                     if (montant > montantMax) {
                         montantMax = montant;
@@ -1526,7 +1526,9 @@ public class APPrestationHelper extends PRAbstractHelper {
                 apgOuMaternite = APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_APG;
             }
             if (!Arrays.asList(IAPDroitLAPG.DROITS_MODIFIABLES).contains(droit.getEtat())) {
-                throw new APCalculException(session.getLabel("MODULE_CALCUL_ETAT_DROIT_INVALIDE"));
+                if (!isMATCIAB2(viewBean)) {
+                    throw new APCalculException(session.getLabel("MODULE_CALCUL_ETAT_DROIT_INVALIDE"));
+                }
             }
 
             if (APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_APG.equals(apgOuMaternite)) {
@@ -1558,7 +1560,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             }
 
             // Cas spécial pour éviter le calcul ACOR quand on calcul des prestations de type MATCIAB2
-            if (viewBean.getTypePrestation() != null && viewBean.getTypePrestation().equals(APTypeDePrestation.MATCIAB2.getNomTypePrestation())) {
+            if (isMATCIAB2(viewBean)) {
                 viewBean.setTypeCalculPrestation(APTypeCalculPrestation.STANDARD);
             }
 
@@ -1578,6 +1580,11 @@ public class APPrestationHelper extends PRAbstractHelper {
             }
         }
         return viewBean;
+    }
+
+    private boolean isMATCIAB2(APDeterminerTypeCalculPrestationViewBean viewBean) {
+        return viewBean.getTypePrestation() != null
+                && viewBean.getTypePrestation().equals(APTypeDePrestation.MATCIAB2.getNomTypePrestation());
     }
 
     /**
@@ -1673,6 +1680,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         final String dateDebutPrestationStandard = donneesPersistence.getPrestationJointRepartitions().get(0)
                 .getDateDebut();
 
+        // Filtre les situations proffesionelles qui ne cotise pas au complément
         List<APSitProJointEmployeur> apSitProJointEmployeursIsComplement = filterAPSitProJointEmployeursIsComplement(idDroit, session, donneesPersistence, dateDebutPrestationStandard, apSitProJointEmployeurs);
 
         donneesPersistence.setSituationProfessionnelleEmployeur(apSitProJointEmployeursIsComplement);
@@ -1701,7 +1709,6 @@ public class APPrestationHelper extends PRAbstractHelper {
 
         final APCalculateurComplementDonneesPersistence donneesPersistence = new APCalculateurComplementDonneesPersistence(
                 idDroit);
-        donneesPersistence.setListPrestationStandard(apPrestationsIsDateDebutAvantProprieteFerciab);
 
         final APEntityService servicePersistance = ApgServiceLocator.getEntityService();
         donneesPersistence.setIdDroit(idDroit);
@@ -1710,7 +1717,8 @@ public class APPrestationHelper extends PRAbstractHelper {
         final List<APRepartitionJointPrestation> apRepJointPrestationsIsAllocation = filterApRepJointPrestationsIsAllocation(idDroit, session, transaction, servicePersistance);
         if (apRepJointPrestationsIsAllocation.isEmpty()) return null;
 
-        List<APRepartitionJointPrestation> apRepJointPrestationsIsComplement = filterAPRepJointPrestationsIsComplement(idDroit, session, apRepJointPrestationsIsAllocation);
+        // Filtre les repartitions qui ne cotise pas au complément
+        List<APRepartitionJointPrestation> apRepJointPrestationsIsComplement = filterAPRepJointPrestationsIsComplementMATCIAB1(idDroit, session, apRepJointPrestationsIsAllocation);
 
         donneesPersistence.setPrestationJointRepartitions(apRepJointPrestationsIsComplement);
 
@@ -1739,16 +1747,22 @@ public class APPrestationHelper extends PRAbstractHelper {
         if (dateDebutPrestationStandard == null) return null;
 
         // Filtre les situations proffesionelles qui ne cotise pas au complément
-        List<APSitProJointEmployeur> apSitProJointEmployeursIsComplement = filterAPSitProJointEmployeursIsComplement(idDroit, session, donneesPersistence, dateDebutPrestationStandard, apSitProJointEmployeurs);
+        List<APSitProJointEmployeur> apSitProJointEmployeursIsComplement = filterAPSitProJointEmployeursIsComplementMATCIAB1(idDroit, session, donneesPersistence, dateDebutPrestationStandard, apSitProJointEmployeurs);
         if (apSitProJointEmployeursIsComplement.isEmpty()) return null;
 
         // Filtre les prestations qui débute à une date ou il n'y avait pas encore de cotisations aux assurances complémentaire
-        /*List<APPrestation> apPrestationsIsDebutCotisationComplementaireAvantDebutPrestations = filterAPPrestationsIsCotisationComplementaireAvantDebutPrestations(apPrestationsIsDateDebutAvantProprieteFerciab, apSitProJointEmployeursIsComplement);
-        donneesPersistence.setListPrestationStandard(apPrestationsIsDebutCotisationComplementaireAvantDebutPrestations);*/
+        List<APPrestation> apPrestationsIsDebutCotisationComplementaireAvantDebutPrestations = filterAPPrestationsIsCotisationComplementaireAvantDebutPrestations(apPrestationsIsDateDebutAvantProprieteFerciab, apSitProJointEmployeursIsComplement);
+        if (apPrestationsIsDebutCotisationComplementaireAvantDebutPrestations.isEmpty()) return null;
 
         // Filtre les situations proffesionelles qui ne sont pas des versement employeurs
         List<APSitProJointEmployeur> apSitProJointEmployeursIsVersementEmployeur = filterAPSitProJointEmployeursIsVersementEmployeur(apSitProJointEmployeursIsComplement);
+        if (apSitProJointEmployeursIsVersementEmployeur.isEmpty()) return null;
 
+        // Filtre les prestations en fonction de la date de fin de contrat des situations proffessionelles
+        setDateFinContrat(session, apSitProJointEmployeursIsVersementEmployeur);
+        List<APPrestation> apPrestationsIsDateFinContrat = filterAPPrestationsIsDateFinContratMATCIAB1(apSitProJointEmployeursIsVersementEmployeur, apPrestationsIsDebutCotisationComplementaireAvantDebutPrestations);
+
+        donneesPersistence.setListPrestationStandard(apPrestationsIsDateFinContrat);
         donneesPersistence.setSituationProfessionnelleEmployeur(apSitProJointEmployeursIsVersementEmployeur);
 
         // Add RMD par sitPro
@@ -1773,6 +1787,104 @@ public class APPrestationHelper extends PRAbstractHelper {
         putMontantMax(session, dateDebutPrestationStandard, montantsMax, EMontantsMax.MATCIABBEM);
         donneesPersistence.setMontantsMax(montantsMax);
         return donneesPersistence;
+    }
+
+    private void setDateFinContrat(BSession session, List<APSitProJointEmployeur> apSitProJointEmployeursIsVersementEmployeur) throws Exception {
+        for (final APSitProJointEmployeur apSitProJointEmployeur : apSitProJointEmployeursIsVersementEmployeur) {
+            APSituationProfessionnelle sitPro = new APSituationProfessionnelle();
+            sitPro.setSession(session);
+            sitPro.setIdSituationProf(apSitProJointEmployeur.getIdSitPro());
+            sitPro.retrieve();
+            apSitProJointEmployeur.setDateFin(sitPro.getDateFinContrat());
+        }
+    }
+
+    private List<APPrestation> filterAPPrestationsIsDateFinContratMATCIAB1(List<APSitProJointEmployeur> apSitProJointEmployeursIsVersementEmployeur, List<APPrestation> apPrestationsIsDebutCotisationComplementaireAvantDebutPrestations) {
+        List<APPrestation> apPrestationsIsDateFinContrat = new ArrayList<>();
+
+        APSitProJointEmployeur apSitProJointEmployeurMaxDateFinContrat = apSitProJointEmployeursIsVersementEmployeur.get(0);
+        // La situation professionele qui possède une date de fin de contrat la plus éloignée
+        for (APSitProJointEmployeur apSitProJointEmployeur : apSitProJointEmployeursIsVersementEmployeur) {
+            PRDateUtils.PRDateEquality prestationBeginDateCheck = PRDateUtils.compare(apSitProJointEmployeurMaxDateFinContrat.getDateFin(), apSitProJointEmployeur.getDateFin());
+            if (prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.AFTER)) {
+                apSitProJointEmployeurMaxDateFinContrat = apSitProJointEmployeur;
+            } else if (prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.INCOMPARABLE)) { // dateFin = null est la plus grande date de fin que l'on peut trouver
+                apSitProJointEmployeurMaxDateFinContrat = apSitProJointEmployeur;
+                break;
+            }
+        }
+
+        for (APPrestation apPrestation : apPrestationsIsDebutCotisationComplementaireAvantDebutPrestations) {
+            // Ne prends en compte que les prestations qui commence avant la date trouvé dans la situations professionelle qui possède une date de fin de contrat la plus éloignée
+            PRDateUtils.PRDateEquality prestationEndDateCheck = PRDateUtils.compare(apSitProJointEmployeurMaxDateFinContrat.getDateFin(), apPrestation.getDateFin());
+            PRDateUtils.PRDateEquality prestationBeginDateCheck = PRDateUtils.compare(apSitProJointEmployeurMaxDateFinContrat.getDateFin(), apPrestation.getDateDebut());
+            if (prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.INCOMPARABLE) || prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.EQUALS) || prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.BEFORE)) {
+                // Adapte la date de fin de la prestation en fonction de la situation profesionelle qui possède une date de fin de contrat la plus éloignée
+                if (prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.AFTER)) {
+                    apPrestation.setDateFin(apSitProJointEmployeurMaxDateFinContrat.getDateFin());
+                }
+                apPrestationsIsDateFinContrat.add(apPrestation);
+            }
+        }
+        return apPrestationsIsDateFinContrat;
+    }
+
+    private List<APRepartitionJointPrestation> filterAPPrestationsIsDateFinContratMATCIAB2(List<APSitProJointEmployeur> apSitProJointEmployeursIsVersementEmployeur, List<APRepartitionJointPrestation> apRepJointPrestationsIsDateDebutAvantProprieteFerciab) {
+        List<APRepartitionJointPrestation> apRepJointPrestationIsDateFinContrat = new ArrayList<>();
+
+        APSitProJointEmployeur apSitProJointEmployeurMaxDateFinContrat = apSitProJointEmployeursIsVersementEmployeur.get(0);
+        // La situation professionele qui possède une date de fin de contrat la plus éloignée
+        for (APSitProJointEmployeur apSitProJointEmployeur : apSitProJointEmployeursIsVersementEmployeur) {
+            PRDateUtils.PRDateEquality prestationBeginDateCheck = PRDateUtils.compare(apSitProJointEmployeurMaxDateFinContrat.getDateFin(), apSitProJointEmployeur.getDateFin());
+            if (prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.AFTER)) {
+                apSitProJointEmployeurMaxDateFinContrat = apSitProJointEmployeur;
+            } else if (prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.INCOMPARABLE)) {  // dateFin = null est la plus grande date de fin que l'on peut trouver
+                apSitProJointEmployeurMaxDateFinContrat = apSitProJointEmployeur;
+                break;
+            }
+        }
+
+        for (APRepartitionJointPrestation apRepJointPrestation : apRepJointPrestationsIsDateDebutAvantProprieteFerciab) {
+            // Ne prends en compte que les prestations qui commence avant la date trouvé dans la situations professionelle qui possède une date de fin de contrat la plus éloignée
+            PRDateUtils.PRDateEquality prestationEndDateCheck = PRDateUtils.compare(apSitProJointEmployeurMaxDateFinContrat.getDateFin(), apRepJointPrestation.getDateFin() );
+            PRDateUtils.PRDateEquality prestationBeginDateCheck = PRDateUtils.compare(apSitProJointEmployeurMaxDateFinContrat.getDateFin(), apRepJointPrestation.getDateDebut());
+            if (prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.INCOMPARABLE) || prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.EQUALS) || prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.BEFORE)) {
+                // Adapte la date de fin de la prestation en fonction de la situation profesionelle qui possède une date de fin de contrat la plus éloignée
+                if (prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.AFTER)) {
+                    apRepJointPrestation.setDateFin(apSitProJointEmployeurMaxDateFinContrat.getDateFin());
+                }
+                apRepJointPrestationIsDateFinContrat.add(apRepJointPrestation);
+            }
+        }
+
+        return apRepJointPrestationIsDateFinContrat;
+    }
+
+    private List<APPrestation> filterAPPrestationsIsCotisationComplementaireAvantDebutPrestations(List<APPrestation> apPrestationsIsDateDebutAvantProprieteFerciab, List<APSitProJointEmployeur> apSitProJointEmployeursIsComplement) {
+        List<APPrestation> apPrestationsIsCotisationComplementaireAvantDebutPrestations = new ArrayList<>();
+
+        APSitProJointEmployeur apSitProJointEmployeurMinDateDebut = apSitProJointEmployeursIsComplement.get(0);
+        // La situation professionele qui cotise à une assurance complémentaire depuis le plus longtemps
+        for (APSitProJointEmployeur apSitProJointEmployeurIsComplement : apSitProJointEmployeursIsComplement) {
+            PRDateUtils.PRDateEquality prestationBeginDateCheck = PRDateUtils.compare(apSitProJointEmployeurMinDateDebut.getDateDebut(), apSitProJointEmployeurIsComplement.getDateDebut());
+            if (prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.BEFORE)) {
+                apSitProJointEmployeurMinDateDebut = apSitProJointEmployeurIsComplement;
+            }
+        }
+
+        for (APPrestation apPrestation : apPrestationsIsDateDebutAvantProprieteFerciab) {
+            // Ne prends en compte que les prestations qui commence après la date trouvé dans la situations professionelle qui cotise à une assurance complémentaire depuis le plus longtemps
+            PRDateUtils.PRDateEquality prestationEndDateCheck = PRDateUtils.compare(apPrestation.getDateFin(), apSitProJointEmployeurMinDateDebut.getDateDebut());
+            PRDateUtils.PRDateEquality prestationBeginDateCheck = PRDateUtils.compare(apPrestation.getDateDebut(), apSitProJointEmployeurMinDateDebut.getDateDebut());
+            if (prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.EQUALS) || prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.BEFORE)) {
+                // Adapte la date de début en fonction de la situation profesionelle qui cotise à une assurance complémentaire depuis le plus longtemps
+                if (prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.AFTER)) {
+                    apPrestation.setDateDebut(apSitProJointEmployeurMinDateDebut.getDateDebut());
+                }
+                apPrestationsIsCotisationComplementaireAvantDebutPrestations.add(apPrestation);
+            }
+        }
+        return apPrestationsIsCotisationComplementaireAvantDebutPrestations;
     }
 
     private  List<APPrestation> filterAPRepJointPrestationsIsDateDebutAvantProprieteFerciabMATCIAB1(APPrestationManager mgr) {
@@ -1821,6 +1933,83 @@ public class APPrestationHelper extends PRAbstractHelper {
 
         }
         return apRepJointPrestationsIsDateDebutAvantProprieteFerciab;
+    }
+
+    private List<APSitProJointEmployeur> filterAPSitProJointEmployeursIsComplementMATCIAB1(String idDroit, BSession session, APCalculateurComplementDonneesPersistence donneesPersistence, String dateDebutPrestationStandard, List<APSitProJointEmployeur> apSitProJointEmployeurs) throws Exception {
+        String idAssuranceParitaireJU = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
+        String idAssurancePersonnelJU = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_JU_ID);
+        String idAssuranceParitaireBE = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_BE_ID);
+        String idAssurancePersonnelBE = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_BE_ID);
+
+        List<APSitProJointEmployeur> apSitProJointEmployeursIsComplement = new ArrayList<>();
+
+        // Récupération des taux
+        for (final APSitProJointEmployeur apSitProJointEmployeur : apSitProJointEmployeurs) {
+
+            String typeAffiliation = getTypeAffiliation(session, apSitProJointEmployeur.getIdAffilie());
+
+            donneesPersistence.getMapTypeAffiliation().put(apSitProJointEmployeur.getIdSitPro(), typeAffiliation);
+
+            // {taux AVS par, taux AC par}>
+            final BigDecimal[] taux = new BigDecimal[4];
+
+            taux[0] = getTauxAssurance(APProperties.ASSURANCE_AVS_PAR_ID.getValue(), dateDebutPrestationStandard,
+                    session);
+            taux[1] = getTauxAssurance(APProperties.ASSURANCE_AC_PAR_ID.getValue(), dateDebutPrestationStandard,
+                    session);
+            taux[2] = getTauxAssurance(APProperties.ASSURANCE_AVS_PER_ID.getValue(), dateDebutPrestationStandard,
+                    session);
+            taux[3] = getTauxAssurance(APProperties.ASSURANCE_AC_PER_ID.getValue(), dateDebutPrestationStandard,
+                    session);
+
+            donneesPersistence.getTaux().put(apSitProJointEmployeur.getIdSitPro(), taux);
+
+            // list les cantons
+            Map<String, ECanton> mCanton = new HashMap<>();
+            Map<IAFAssurance, String> listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercherAvecDateDebut(idDroit,
+                    apSitProJointEmployeur.getIdAffilie(), session);
+
+            String idAssuranceEmployeur = null;
+
+            // recheche d'une assurance dans les propriétés
+            for (Map.Entry<IAFAssurance, String> assurance : listAssurance.entrySet()) {
+                if (apSitProJointEmployeur.getIndependant()) {
+                    if (assurance.getKey().getAssuranceId().equals(idAssurancePersonnelBE)) {
+                        apSitProJointEmployeur.setDateDebut(assurance.getValue());
+                        idAssuranceEmployeur = idAssurancePersonnelBE;
+                    } else if (assurance.getKey().getAssuranceId().equals(idAssurancePersonnelJU)) {
+                        apSitProJointEmployeur.setDateDebut(assurance.getValue());
+                        idAssuranceEmployeur = idAssurancePersonnelJU;
+                    }
+                } else {
+                    if (assurance.getKey().getAssuranceId().equals(idAssuranceParitaireBE)) {
+                        apSitProJointEmployeur.setDateDebut(assurance.getValue());
+                        idAssuranceEmployeur = idAssuranceParitaireBE;
+                    } else if (assurance.getKey().getAssuranceId().equals(idAssuranceParitaireJU)) {
+                        apSitProJointEmployeur.setDateDebut(assurance.getValue());
+                        idAssuranceEmployeur = idAssuranceParitaireJU;
+                    }
+                }
+            }
+
+            // filtre les situations proffessionelles qui ne sont pas assurées à une des complémentaire
+            if (idAssuranceEmployeur != null) {
+                apSitProJointEmployeursIsComplement.add(apSitProJointEmployeur);
+                if (idAssuranceEmployeur.equals(idAssuranceParitaireBE)
+                        || idAssuranceEmployeur.equals(idAssurancePersonnelBE)) {
+                    mCanton.put(apSitProJointEmployeur.getIdSitPro(), ECanton.BE);
+                } else if (idAssuranceEmployeur.equals(idAssuranceParitaireJU)
+                        || idAssuranceEmployeur.equals(idAssurancePersonnelJU)) {
+                    mCanton.put(apSitProJointEmployeur.getIdSitPro(), ECanton.JU);
+                }
+                donneesPersistence.setMapCanton(mCanton);
+            }
+        }
+        return apSitProJointEmployeursIsComplement;
     }
 
     private List<APSitProJointEmployeur> filterAPSitProJointEmployeursIsComplement(String idDroit, BSession session, APCalculateurComplementDonneesPersistence donneesPersistence, String dateDebutPrestationStandard, List<APSitProJointEmployeur> apSitProJointEmployeurs) throws Exception {
@@ -1914,7 +2103,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         return apRepJointPrestationsIsAllocation;
     }
 
-    private List<APRepartitionJointPrestation> filterAPRepJointPrestationsIsComplement(String idDroit, BSession session, List<APRepartitionJointPrestation> apRepJointPrestations) throws Exception {
+    private List<APRepartitionJointPrestation> filterAPRepJointPrestationsIsComplementMATCIAB1(String idDroit, BSession session, List<APRepartitionJointPrestation> apRepJointPrestations) throws Exception {
         String idAssuranceParitaireJU = JadePropertiesService.getInstance()
                 .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
         String idAssurancePersonnelJU = JadePropertiesService.getInstance()
@@ -1928,22 +2117,22 @@ public class APPrestationHelper extends PRAbstractHelper {
 
         for (APRepartitionJointPrestation apRepJointPrestation : apRepJointPrestations) {
 
-            List<IAFAssurance> listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercher(idDroit,
+            Map<IAFAssurance, String> listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercherAvecDateDebut(idDroit,
                     apRepJointPrestation.getIdAffilie(), session);
             String idAssuranceEmployeur = null;
 
             // recheche d'une assurance dans les propriétés
-            for (IAFAssurance assurance : listAssurance) {
+            for (Map.Entry<IAFAssurance, String> assurance : listAssurance.entrySet()) {
                 if (apRepJointPrestation.loadSituationProfessionnelle().getIsIndependant()) {
-                    if (assurance.getAssuranceId().equals(idAssurancePersonnelBE)) {
+                    if (assurance.getKey().getAssuranceId().equals(idAssurancePersonnelBE)) {
                         idAssuranceEmployeur = idAssurancePersonnelBE;
-                    } else if (assurance.getAssuranceId().equals(idAssurancePersonnelJU)) {
+                    } else if (assurance.getKey().getAssuranceId().equals(idAssurancePersonnelJU)) {
                         idAssuranceEmployeur = idAssurancePersonnelJU;
                     }
                 } else {
-                    if (assurance.getAssuranceId().equals(idAssuranceParitaireBE)) {
+                    if (assurance.getKey().getAssuranceId().equals(idAssuranceParitaireBE)) {
                         idAssuranceEmployeur = idAssuranceParitaireBE;
-                    } else if (assurance.getAssuranceId().equals(idAssuranceParitaireJU)) {
+                    } else if (assurance.getKey().getAssuranceId().equals(idAssuranceParitaireJU)) {
                         idAssuranceEmployeur = idAssuranceParitaireJU;
                     }
                 }
@@ -2122,8 +2311,7 @@ public class APPrestationHelper extends PRAbstractHelper {
 
         // Filtre les prestations qui ont une date de début avant la propriété apg.FERCIAB.maternite
         final List<APRepartitionJointPrestation> apRepJointPrestationsIsDateDebutAvantProprieteFerciab = filterAPRepJointPrestationsIsDateDebutAvantProprieteFerciabMATCIAB2(repartitionNonFiltrees);
-
-        donneesPersistence.setPrestationJointRepartitions(apRepJointPrestationsIsDateDebutAvantProprieteFerciab);
+        if (apRepJointPrestationsIsDateDebutAvantProprieteFerciab.isEmpty()) return null;
 
         // Situations professionnelles
         final List<APSitProJointEmployeur> apSitProJointEmployeurs = servicePersistance
@@ -2137,11 +2325,20 @@ public class APPrestationHelper extends PRAbstractHelper {
 
         // Filtre les situations proffesionelles qui ne sont pas des versement employeurs
         List<APSitProJointEmployeur> apSitProJointEmployeursIsVersementEmployeur = filterAPSitProJointEmployeursIsVersementEmployeur(apSitProJointEmployeursIsComplement);
+        if (apSitProJointEmployeursIsVersementEmployeur.isEmpty()) return null;
 
-        donneesPersistence.setSituationProfessionnelleEmployeur(apSitProJointEmployeursIsVersementEmployeur);
+        // Filtre les prestations en fonction de la date de fin de contrat des situations proffessionelles
+        setDateFinContrat(session, apSitProJointEmployeursIsVersementEmployeur);
+        List<APRepartitionJointPrestation> apRepJointPrestationIsDateFinContrat = filterAPPrestationsIsDateFinContratMATCIAB2(apSitProJointEmployeursIsVersementEmployeur, apRepJointPrestationsIsDateDebutAvantProprieteFerciab);
+
+        // Filtre les situations proffesionelles qui ne sont plus active à la fin de la dernière prestations
+        List<APSitProJointEmployeur> apSitProJointEmployeursIsActive = filerAPSitProJointEmployeursIsActive(apRepJointPrestationsIsDateDebutAvantProprieteFerciab, apSitProJointEmployeursIsVersementEmployeur);
+
+        donneesPersistence.setPrestationJointRepartitions(apRepJointPrestationIsDateFinContrat);
+        donneesPersistence.setSituationProfessionnelleEmployeur(apSitProJointEmployeursIsActive);
 
         // Add RMD par sitPro
-        for (final APSitProJointEmployeur apSitProJointEmployeur : apSitProJointEmployeursIsVersementEmployeur) {
+        for (final APSitProJointEmployeur apSitProJointEmployeur : apSitProJointEmployeursIsActive) {
             APSituationProfessionnelle sitPro = new APSituationProfessionnelle();
             sitPro.setSession(session);
             sitPro.setIdSituationProf(apSitProJointEmployeur.getIdSitPro());
@@ -2159,6 +2356,33 @@ public class APPrestationHelper extends PRAbstractHelper {
 
         return donneesPersistence;
 
+    }
+
+    private List<APSitProJointEmployeur> filerAPSitProJointEmployeursIsActive(List<APRepartitionJointPrestation> apRepJointPrestationsIsDateDebutAvantProprieteFerciab, List<APSitProJointEmployeur> apSitProJointEmployeursIsVersementEmployeur) {
+        List<APSitProJointEmployeur> apSitProJointEmployeursIsActive = new ArrayList<>();
+
+        APRepartitionJointPrestation apRepartitionJointPrestationMaxDateFinContrat = apRepJointPrestationsIsDateDebutAvantProprieteFerciab.get(0);
+        for (APRepartitionJointPrestation apRepartitionJointPrestation : apRepJointPrestationsIsDateDebutAvantProprieteFerciab) {
+            PRDateUtils.PRDateEquality prestationEndDateCheck = PRDateUtils.compare(apRepartitionJointPrestationMaxDateFinContrat.getDateFin(), apRepartitionJointPrestation.getDateFin());
+            if (prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.AFTER)) {
+                apRepartitionJointPrestationMaxDateFinContrat = apRepartitionJointPrestation;
+            } else if (prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.INCOMPARABLE)) {
+                apRepartitionJointPrestationMaxDateFinContrat = apRepartitionJointPrestation;
+                break;
+            }
+        }
+
+        // Ne garde que les situations professionelles qui sont encore actives au moment de la dernière repartionsJointPrestation
+        for (APSitProJointEmployeur apSitProJointEmployeur : apSitProJointEmployeursIsVersementEmployeur) {
+            PRDateUtils.PRDateEquality prestationEndDateCheck = PRDateUtils.compare(apRepartitionJointPrestationMaxDateFinContrat.getDateFin(), apSitProJointEmployeur.getDateFin());
+            if (prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.AFTER)) {
+                apSitProJointEmployeursIsActive.add(apSitProJointEmployeur);
+            } else if (prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.INCOMPARABLE)) {
+                apSitProJointEmployeursIsActive.add(apSitProJointEmployeur);
+            }
+        }
+
+        return apSitProJointEmployeursIsActive;
     }
 
     private List<APSitProJointEmployeur> filterAPSitProJointEmployeursIsVersementEmployeur(List<APSitProJointEmployeur> apSitProJointEmployeurs) {
@@ -2179,22 +2403,26 @@ public class APPrestationHelper extends PRAbstractHelper {
 
         for (final APSitProJointEmployeur apSitProJointEmployeur : apSitProJointEmployeurs) {
 
-            List<IAFAssurance> listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercher(idDroit,
+            Map<IAFAssurance, String> listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercherAvecDateDebut(idDroit,
                     apSitProJointEmployeur.getIdAffilie(), session);
             String idAssuranceEmployeur = null;
 
             // recheche d'une assurance dans les propriétés
-            for (IAFAssurance assurance : listAssurance) {
+            for (Map.Entry<IAFAssurance, String> assurance : listAssurance.entrySet()) {
                 if (apSitProJointEmployeur.getIndependant()) {
-                    if (assurance.getAssuranceId().equals(idAssurancePersonnelBE)) {
+                    if (assurance.getKey().getAssuranceId().equals(idAssurancePersonnelBE)) {
+                        apSitProJointEmployeur.setDateDebut(assurance.getValue());
                         idAssuranceEmployeur = idAssurancePersonnelBE;
-                    } else if (assurance.getAssuranceId().equals(idAssurancePersonnelJU)) {
+                    } else if (assurance.getKey().getAssuranceId().equals(idAssurancePersonnelJU)) {
+                        apSitProJointEmployeur.setDateDebut(assurance.getValue());
                         idAssuranceEmployeur = idAssurancePersonnelJU;
                     }
                 } else {
-                    if (assurance.getAssuranceId().equals(idAssuranceParitaireBE)) {
+                    if (assurance.getKey().getAssuranceId().equals(idAssuranceParitaireBE)) {
+                        apSitProJointEmployeur.setDateDebut(assurance.getValue());
                         idAssuranceEmployeur = idAssuranceParitaireBE;
-                    } else if (assurance.getAssuranceId().equals(idAssuranceParitaireJU)) {
+                    } else if (assurance.getKey().getAssuranceId().equals(idAssuranceParitaireJU)) {
+                        apSitProJointEmployeur.setDateDebut(assurance.getValue());
                         idAssuranceEmployeur = idAssuranceParitaireJU;
                     }
                 }
