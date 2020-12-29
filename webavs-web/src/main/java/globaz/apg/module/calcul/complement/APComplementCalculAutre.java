@@ -54,7 +54,6 @@ public class APComplementCalculAutre extends APComplementCalculateur{
 
     @Override
     BigDecimal calculMontantTotalMATCIAB1(BigDecimal salaireJournalier, int nombreJoursSoldesPeriodePriseEnCompte) {
-        salaireJournalier = arrondirFranc(salaireJournalier);
         return salaireJournalier.multiply(BigDecimal.valueOf(nombreJoursSoldesPeriodePriseEnCompte));
     }
 

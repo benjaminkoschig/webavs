@@ -1244,7 +1244,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                             getCodeIsoLangue()));
                 } else if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
                     champs.put(APAbstractDecomptesGenerationProcess.PARAMETER_PRESTATION_COMPLEMENTAIRE, APPrestationLibelleCodeSystem.getLibelleComplement(getSession(),
-                            getCodeIsoLangue()));
+                            getCodeIsoLangue())); // Texte additionel sur prestation MATCIAB1
                 }
 
                 champs.put("FIELD_ASSURE",
@@ -1941,7 +1941,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         switch (decompteCourant.getTypeDeDecompte()) {
 
                             case MATCIAB2:
-                                docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_MAT_MATCIAB2);
+                                docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_MAT_NORMAL);
                                 break;
                             case NORMAL:
                                 docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_MAT_NORMAL);

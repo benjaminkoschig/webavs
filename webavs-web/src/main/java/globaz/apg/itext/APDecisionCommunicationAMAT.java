@@ -613,7 +613,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                         if ((position == 2) && isMoreThanEnfant) {
                             buffer.append(document.getTextes(2).getTexte(13));
                         } else {
-                            buffer.append(texte.getDescription());
+                            if (!(position == 3 && state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2)) {
+                                buffer.append(texte.getDescription());
+                            }
                         }
 
                         count++;
