@@ -46,7 +46,7 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
         for (APCalculateurComplementDonneeDomaine prestationStandard : donneesDomainCalcul) {
             APPrestation prestation = prestationStandard.getPrestation();
 
-            BigDecimal sommeRevenuMoyenDeterminantMATCIAB1Arrondi = new BigDecimal(prestation.getRevenuMoyenDeterminant());
+            BigDecimal sommeRevenuMoyenDeterminantMATCIAB1 = new BigDecimal(prestation.getRevenuMoyenDeterminant());
 
             APCalculateurComplementDonneesPersistence prestationCalculeeAPersister = new APCalculateurComplementDonneesPersistence(
                     prestation.getDateDebut(), prestation.getDateFin(), Integer.valueOf(prestation.getNombreJoursSoldes()),
@@ -67,15 +67,10 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
             // à la propriété PROPERTY_APG_FERCIAB_MATERNITE et donc le nombre de jours soldes
             // pour la période entre prestation.getDateDebut() et prestation.getDateFin() est à recalculer
             int nombreJoursSoldesPeriodePriseEnCompte = PRDateUtils.getNbDayBetween2(prestation.getDateDebut(), prestation.getDateFin()) + 1; // nombreJoursSoldesPeriodePriseEnCompte après l'adapation par la propriété PROPERTY_APG_FERCIAB_MATERNITE
-            BigDecimal montantMATCIAB1 = calculateur.calculerMontantMATCIAB1(sommeRevenuMoyenDeterminantMATCIAB1Arrondi, nombreJoursSoldesPeriodePriseEnCompte);
+            BigDecimal montantMATCIAB1 = calculateur.calculerMontantMATCIAB1(sommeRevenuMoyenDeterminantMATCIAB1, nombreJoursSoldesPeriodePriseEnCompte);
             if (prestationStandard.getNombreInitialDeSituationsProfessionelles() != prestationStandard.getSituationProfessionnelle().size()) {
                 // ce cas ne se produit que si il y a plusieurs employeur et que certain de ces employeur ne cotise pas au assurance complémentaire
                 // le calcul MATCIAB1 se base alors sur le 80% des revenus moyen déterminent qui cotise au assurance complémentaire
-                BigDecimal sommeSalaireJournalier80 = sommeRevenuMoyenDeterminantMATCIAB1Arrondi.compareTo(IAPConstantes.APG_JOURNALIERE_MAX) > 0
-                        ? IAPConstantes.APG_JOURNALIERE_MAX
-                        : sommeRevenuMoyenDeterminantMATCIAB1Arrondi.multiply(BigDecimal.valueOf(80)).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
-                BigDecimal montantBrutFederal80 = getMontantFederal(sommeSalaireJournalier80, nombreJoursSoldesPeriodePriseEnCompte);
-                montantMATCIAB1 = montantMATCIAB1.subtract(montantBrutFederal80);
             } else {
                 // ce cas se produit pour les cas ou le nombre de revenu qui cotise au assurance complémentaire est le même que le nombre de revenu total
                 // le calcul MATCIAB1 se base alors sur le même revenu moyen déterminent que le calcul Standard
@@ -364,6 +359,7 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
             AFAffiliationManager afManager = new AFAffiliationManager();
 
             FWCurrency sommeRevenuMoyenDeterminant = new FWCurrency(0);
+            FWCurrency sommeRepartitions = new FWCurrency(0);
             for (final APSitProJointEmployeur apSitProJoiEmpEnt : apSitProJoiEmpEntityList) {
 
                 if (apSitProJoiEmpEnt != null) {
@@ -376,7 +372,13 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
                         PRDateUtils.PRDateEquality prestationBeginDateCheck = PRDateUtils.compare(prestationStandard.getPrestation().getDateDebut(), apSitProJoiEmpEnt.getDateDebut());
                         if ((prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.EQUALS) || prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.BEFORE))
                         && (prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.INCOMPARABLE) || prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.EQUALS) || prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.AFTER))) {
+
                             sommeRevenuMoyenDeterminant.add(donneesPersistancePourCalcul.getRevenuMoyenDeterminant(idSituationProfessionnelleCourante)); // sommme le revenu moyen déterminant des différentes situations proffessionelles
+                            for (APRepartitionJointPrestation apRepartitionJointPrestation : prestationStandard.getRepartitions()) {
+                                if (apRepartitionJointPrestation.getIdSituationProfessionnelle().equals(idSituationProfessionnelleCourante)) {
+                                    sommeRepartitions.add(apRepartitionJointPrestation.getMontantBrut());
+                                }
+                            }
 
                             // Définition de l'association
                             final APAssuranceTypeAssociation association = getAssociationFromSituationProf(apSitProJoiEmpEnt);
@@ -402,8 +404,7 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
                 }
             }
 
-            // Arrondi au franc suppérieur
-            sommeRevenuMoyenDeterminant = new FWCurrency(JANumberFormatter.format(sommeRevenuMoyenDeterminant.toString(), 1, 2, JANumberFormatter.SUP));
+            sommeRevenuMoyenDeterminant.sub(sommeRepartitions);
             prestationStandard.getPrestation().setRevenuMoyenDeterminant(sommeRevenuMoyenDeterminant.toString());
             prestationStandard.setDroit(donneesPersistancePourCalcul.getDroit());
 
