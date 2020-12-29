@@ -404,7 +404,10 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
                 }
             }
 
-            sommeRevenuMoyenDeterminant.sub(sommeRepartitions);
+            BigDecimal sommeRepartitionsMATCIAB1 = sommeRepartitions.getBigDecimalValue().compareTo(IAPConstantes.APG_JOURNALIERE_MAX) > 0
+                    ? IAPConstantes.APG_JOURNALIERE_MAX
+                    : sommeRepartitions.getBigDecimalValue();
+            sommeRevenuMoyenDeterminant.getBigDecimalValue().subtract(sommeRepartitionsMATCIAB1);
             prestationStandard.getPrestation().setRevenuMoyenDeterminant(sommeRevenuMoyenDeterminant.toString());
             prestationStandard.setDroit(donneesPersistancePourCalcul.getDroit());
 
