@@ -70,6 +70,14 @@ public class ACM2PersistenceInputData {
         return mapRMD.get(idSitPro);
     }
 
+    public Map<String, FWCurrency> getMapRMD() {
+        return mapRMD;
+    }
+
+    public void setMapRMD(Map<String, FWCurrency> mapRMD) {
+        this.mapRMD = mapRMD;
+    }
+
     /**
      * Remplace le revenu par le montant max s'il le dépasse
      *

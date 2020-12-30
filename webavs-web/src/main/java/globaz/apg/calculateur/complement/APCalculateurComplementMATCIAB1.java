@@ -68,16 +68,6 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
             // pour la période entre prestation.getDateDebut() et prestation.getDateFin() est à recalculer
             int nombreJoursSoldesPeriodePriseEnCompte = PRDateUtils.getNbDayBetween2(prestation.getDateDebut(), prestation.getDateFin()) + 1; // nombreJoursSoldesPeriodePriseEnCompte après l'adapation par la propriété PROPERTY_APG_FERCIAB_MATERNITE
             BigDecimal montantMATCIAB1 = calculateur.calculerMontantMATCIAB1(sommeRevenuMoyenDeterminantMATCIAB1, nombreJoursSoldesPeriodePriseEnCompte);
-            if (prestationStandard.getNombreInitialDeSituationsProfessionelles() != prestationStandard.getSituationProfessionnelle().size()) {
-                // ce cas ne se produit que si il y a plusieurs employeur et que certain de ces employeur ne cotise pas au assurance complémentaire
-                // le calcul MATCIAB1 se base alors sur le 80% des revenus moyen déterminent qui cotise au assurance complémentaire
-            } else {
-                // ce cas se produit pour les cas ou le nombre de revenu qui cotise au assurance complémentaire est le même que le nombre de revenu total
-                // le calcul MATCIAB1 se base alors sur le même revenu moyen déterminent que le calcul Standard
-                BigDecimal montantBrutFederal = getMontantFederal(new BigDecimal(prestation.getMontantJournalier()), nombreJoursSoldesPeriodePriseEnCompte);
-                montantMATCIAB1 = montantMATCIAB1.subtract(montantBrutFederal);
-            }
-
             prestationCalculeeAPersister.setMontantBrut(montantMATCIAB1);
             BigDecimal montantBrutJournalier = montantMATCIAB1.divide(BigDecimal.valueOf(nombreJoursSoldesPeriodePriseEnCompte), 2, RoundingMode.HALF_UP).abs();
             prestationCalculeeAPersister.setMontantJournalier(montantBrutJournalier);
@@ -111,8 +101,8 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
                     }
 
                     BigDecimal montantBrutRepartition = montantBrutJournalier.multiply(tauxCalcul);
-                    montantBrutRepartition = arrondir(montantBrutRepartition);
                     montantBrutRepartition = montantBrutRepartition.multiply(new BigDecimal(prestationCalculeeAPersister.getNombreDeJoursSoldes()));
+                    montantBrutRepartition = arrondir(montantBrutRepartition);
 
                     final BigDecimal[] tauxAvsAc = prestationStandard.getTaux().get(sitProf.getId());
 
@@ -404,11 +394,10 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
                 }
             }
 
-            BigDecimal sommeRepartitionsMATCIAB1 = sommeRepartitions.getBigDecimalValue().compareTo(IAPConstantes.APG_JOURNALIERE_MAX) > 0
-                    ? IAPConstantes.APG_JOURNALIERE_MAX
-                    : sommeRepartitions.getBigDecimalValue();
-            sommeRevenuMoyenDeterminant.getBigDecimalValue().subtract(sommeRepartitionsMATCIAB1);
-            prestationStandard.getPrestation().setRevenuMoyenDeterminant(sommeRevenuMoyenDeterminant.toString());
+            int nombreJoursSoldesPeriodePriseEnCompte = PRDateUtils.getNbDayBetween2(prestationStandard.getPrestation().getDateDebut(), prestationStandard.getPrestation().getDateFin()) + 1; // nombreJoursSoldesPeriodePriseEnCompte après l'adapation par la propriété PROPERTY_APG_FERCIAB_MATERNITE
+            BigDecimal sommeRepartitionsMATCIAB1 = sommeRepartitions.getBigDecimalValue().divide(BigDecimal.valueOf(nombreJoursSoldesPeriodePriseEnCompte));
+            BigDecimal sommeRevenuMoyenDeterminantMATCIAB1 = sommeRevenuMoyenDeterminant.getBigDecimalValue().subtract(sommeRepartitionsMATCIAB1);
+            prestationStandard.getPrestation().setRevenuMoyenDeterminant(sommeRevenuMoyenDeterminantMATCIAB1.toString());
             prestationStandard.setDroit(donneesPersistancePourCalcul.getDroit());
 
             for (APCotisation cotisation : donneesPersistancePourCalcul.getListCotisation()) {

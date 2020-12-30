@@ -598,11 +598,12 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
                     if ((position > 3) && (position < 14)) {
 
-                    } else {
+                    } else if (hasNotOnlyMATCIAB1()) {
 
                         if ((buffer.length() > 0) && (count < 3)) {
-                            buffer.append("\n\n"); // paragraphe (Seulement pour
-                            // les 2 premiers blocs !
+                            if (!(position == 3 && state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2)) {
+                                buffer.append("\n\n"); // paragraphe (Seulement pour les 2 premiers blocs !
+                            }
                         } else if (buffer.length() > 0) {
                             buffer.append(" "); // Espace pour les ajouts de
                             // lignes sans paragraphes
@@ -751,6 +752,20 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             parametres.put("P_COPIE_A", document.getTextes(1).getTexte(8).getDescription());
             parametres.put("P_COPIE_A2", ligne);
         }
+    }
+
+    private Boolean hasNotOnlyMATCIAB1() throws FWIException {
+        // Création champs de données document assurées pour tous les types sauf MATCIAB1
+        for (int idPrestation = 0; idPrestation < loadPrestations().size(); ++idPrestation) {
+
+            final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
+
+            //<editor-fold defaultstate="collapsed" desc="ALLTYPE">
+            if (!APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -932,8 +947,10 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             buffer.append(" "); // espace
             buffer.append(textes.getTexte(101).getDescription());
         } else if (state_dec == APDecisionCommunicationAMAT.STATE_STANDARD) {
-            buffer.append(" "); // espace
-            buffer.append(textes.getTexte(4).getDescription());
+            if (hasNotOnlyMATCIAB1()) {
+                buffer.append(" "); // espace
+                buffer.append(textes.getTexte(4).getDescription());
+            }
         }
 
         // ajouter le texte concernant l'employeur si nécessaire
@@ -1114,8 +1131,10 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             buffer.append(" "); // paragraphe
             buffer.append(textes.getTexte(101).getDescription());
         } else if (state_dec == APDecisionCommunicationAMAT.STATE_STANDARD) {
-            buffer.append(" "); // espace
-            buffer.append(textes.getTexte(4).getDescription());
+            if (hasNotOnlyMATCIAB1()) {
+                buffer.append(" "); // espace
+                buffer.append(textes.getTexte(4).getDescription());
+            }
         }
 
         // ajouter le paragraphe sur la répartition de paiement si nécessaire
@@ -1763,16 +1782,19 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
                                         if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre())) { // tableau standard indépendant un seul employeur
                                             if (!textaddedMATCIAB1) { // tableau MATCIAB1 assuré un seul employeurs
-                                                buffer.setLength(0);
-                                                buffer.append(PRStringUtils.replaceString(documentAssures.getTextes(1).getTexte(200).getDescription(), "{0}",
-                                                        String.valueOf(revenuMoyenDeterminant)));
-                                                message = createMessageFormat(buffer);
-                                                buffer.setLength(0);
-                                                champs.put(
-                                                        "CHAMP_TEXT1",
-                                                        message.format(
-                                                                new Object[]{}, buffer, new FieldPosition(0))
-                                                                .toString());
+
+                                                if (hasNotOnlyMATCIAB1()) {
+                                                    buffer.setLength(0);
+                                                    buffer.append(PRStringUtils.replaceString(documentAssures.getTextes(1).getTexte(200).getDescription(), "{0}",
+                                                            String.valueOf(revenuMoyenDeterminant)));
+                                                    message = createMessageFormat(buffer);
+                                                    buffer.setLength(0);
+                                                    champs.put(
+                                                            "CHAMP_TEXT1",
+                                                            message.format(
+                                                                    new Object[]{}, buffer, new FieldPosition(0))
+                                                                    .toString());
+                                                }
 
                                                 buffer.setLength(0);
                                                 buffer.append(PRStringUtils.replaceString(documentAssures.getTextes(1).getTexte(201).getDescription(), "{0}",
@@ -1868,16 +1890,19 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
                                         if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre())) {
                                             if (!textaddedMATCIAB1) { // tableau MATCIAB1 indépendant/employeur un seul employeur
-                                                buffer.setLength(0);
-                                                buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
-                                                        String.valueOf(revenuMoyenDeterminant)));
-                                                message = createMessageFormat(buffer);
-                                                buffer.setLength(0);
-                                                champs.put(
-                                                        "CHAMP_TEXT1",
-                                                        message.format(
-                                                                new Object[]{}, buffer, new FieldPosition(0))
-                                                                .toString());
+
+                                                if (hasNotOnlyMATCIAB1()) {
+                                                    buffer.setLength(0);
+                                                    buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
+                                                            String.valueOf(revenuMoyenDeterminant)));
+                                                    message = createMessageFormat(buffer);
+                                                    buffer.setLength(0);
+                                                    champs.put(
+                                                            "CHAMP_TEXT1",
+                                                            message.format(
+                                                                    new Object[]{}, buffer, new FieldPosition(0))
+                                                                    .toString());
+                                                }
 
                                                 buffer.setLength(0);
                                                 buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(201).getDescription(), "{0}",
@@ -2136,16 +2161,19 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
                                         if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre())) {
                                             if (!textaddedMATCIAB1) { // tableau MATCIAB1 indépendant/employeur plusieurs employeurs
-                                                buffer.setLength(0);
-                                                buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
-                                                        String.valueOf(revenuMoyenDeterminant)));
-                                                message = createMessageFormat(buffer);
-                                                buffer.setLength(0);
-                                                champs.put(
-                                                        "CHAMP_TEXT1",
-                                                        message.format(
-                                                                new Object[]{}, buffer, new FieldPosition(0))
-                                                                .toString());
+
+                                                if (hasNotOnlyMATCIAB1()) {
+                                                    buffer.setLength(0);
+                                                    buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
+                                                            String.valueOf(revenuMoyenDeterminant)));
+                                                    message = createMessageFormat(buffer);
+                                                    buffer.setLength(0);
+                                                    champs.put(
+                                                            "CHAMP_TEXT1",
+                                                            message.format(
+                                                                    new Object[]{}, buffer, new FieldPosition(0))
+                                                                    .toString());
+                                                }
 
                                                 buffer.setLength(0);
                                                 buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(201).getDescription(), "{0}",

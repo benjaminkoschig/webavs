@@ -643,16 +643,9 @@ public class APPrestationHelper extends PRAbstractHelper {
         }
 
         /*
-         * Check si le montant max journalier définit dans la plage de valeur est valide pour calculer des prestations MATCIAB2
-         * et retourne le plus grand montant si il y a plusieurs employeur dans différent canton.
+         * Set les montant max journalier par situtations professionelles par canton.
          */
-        Integer montantMaxMATCIAB1 = getMontantMaxSelonCantonSitPro(session, droit.getIdDroit(), donnesPersistencePourCalculMATCIAB1.getSituationProfessionnelleEmployeur());
-        if (montantMaxMATCIAB1 == null || montantMaxMATCIAB1 <= 0) {
-            throw new Exception("Aucune prestation MATCIAB1 sera générées car le montant max n'est pas correcte [ montant max trouvé = " + montantMaxMATCIAB1 + "]");
-        } else { // Remplace le revenu par le montant max s'il le dépasse
-            donnesPersistencePourCalculMATCIAB1.setRevenuMoyenDeterminantParEmployeurAvecMontantMax(new FWCurrency(
-                    JANumberFormatter.format(montantMaxMATCIAB1.toString(), 1, 2, JANumberFormatter.SUP)));
-        }
+        setMontantMaxSelonCantonSitPro(session, droit.getIdDroit(), donnesPersistencePourCalculMATCIAB1.getSituationProfessionnelleEmployeur(), donnesPersistencePourCalculMATCIAB1.getMapRMD());
 
         donnesPersistencePourCalculMATCIAB1.setDroit(droit);
 
@@ -753,16 +746,15 @@ public class APPrestationHelper extends PRAbstractHelper {
         }
     }
 
-    /**
-     * Check si le montant max journalier définit dans la plage de valeur est valide pour calculer des prestations MATCIAB2
-     * et retourne le plus grand montant si il y a plusieurs employeur dans différent canton.
+    /*
+     * Set les montant max journalier par situtations professionelles par canton.
      *
      * @param session
      * @param idDroit
      * @param listEmployeur
      * @throws Exception
      */
-    private Integer getMontantMaxSelonCantonSitPro(BSession session, String idDroit, List<APSitProJointEmployeur> listEmployeur)
+    private void setMontantMaxSelonCantonSitPro(BSession session, String idDroit, List<APSitProJointEmployeur> listEmployeur, Map<String, FWCurrency> mapRMD)
             throws Exception {
         Map<IAFAssurance, String> listAssurance;
         Integer montantMax = 0;
@@ -780,21 +772,26 @@ public class APPrestationHelper extends PRAbstractHelper {
             for (Map.Entry<IAFAssurance, String> assurance : listAssurance.entrySet()) {
                 if (assurance.getKey().getAssuranceId().equals(idAssurancePersonnelBE) || assurance.getKey().getAssuranceId().equals(idAssuranceParitaireBE)) {
                     Integer montant = Integer.valueOf(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", "MATCIABBEM", "0", "", 0));
-                    if (montant > montantMax) {
-                        montantMax = montant;
+                    FWCurrency montant2 = new FWCurrency(JANumberFormatter.format(montant.toString(), 1, 2, JANumberFormatter.SUP));
+                    for (Map.Entry<String, FWCurrency> entry : mapRMD.entrySet()) {
+                        if (entry.getKey().equals(apSitProJointEmployeur.getIdSitPro())) {
+                            if (entry.getValue().compareTo(montant2) > 0) {
+                                entry.setValue(montant2);
+                            }
+                        }
                     }
                 } else if (assurance.getKey().getAssuranceId().equals(idAssurancePersonnelJU) || assurance.getKey().getAssuranceId().equals(idAssuranceParitaireJU)) {
                     Integer montant = Integer.valueOf(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", "MATCIABJUM", "0", "", 0));
-                    if (montant > montantMax) {
-                        montantMax = montant;
+                    FWCurrency montant2 = new FWCurrency(JANumberFormatter.format(montant.toString(), 1, 2, JANumberFormatter.SUP));
+                    for (Map.Entry<String, FWCurrency> entry : mapRMD.entrySet()) {
+                        if (entry.getKey().equals(apSitProJointEmployeur.getIdSitPro())) {
+                            if (entry.getValue().compareTo(montant2) > 0) {
+                                entry.setValue(montant2);
+                            }
+                        }
                     }
                 }
             }
-        }
-        if (montantMax != 0) {
-            return montantMax;
-        } else {
-            return null;
         }
     }
 
@@ -1064,16 +1061,9 @@ public class APPrestationHelper extends PRAbstractHelper {
         }
 
         /*
-         * Check si le montant max journalier définit dans la plage de valeur est valide pour calculer des prestations MATCIAB2
-         * et retourne le plus grand montant si il y a plusieurs employeur dans différent canton.
+         * Set les montant max journalier par situtations professionelles par canton.
          */
-        Integer montantMaxMATCIAB2 = getMontantMaxSelonCantonSitPro(session, droit.getIdDroit(), donnesPersistencePourCalculMATCIAB2.getSituationProfessionnelleEmployeur());
-        if (montantMaxMATCIAB2 == null || montantMaxMATCIAB2 <= 0) {
-            throw new Exception("Aucune prestation MATCIAB2 sera générées car le montant max n'est pas correcte [ montant max trouvé = " + montantMaxMATCIAB2 + "]");
-        } else { // Remplace le revenu par le montant max s'il le dépasse
-            donnesPersistencePourCalculMATCIAB2.setRevenuMoyenDeterminantParEmployeurAvecMontantMax(new FWCurrency(
-                    JANumberFormatter.format(montantMaxMATCIAB2.toString(), 1, 2, JANumberFormatter.SUP)));
-        }
+        setMontantMaxSelonCantonSitPro(session, droit.getIdDroit(), donnesPersistencePourCalculMATCIAB2.getSituationProfessionnelleEmployeur(), donnesPersistencePourCalculMATCIAB2.getMapRMD());
 
         // Conversion vers des objets métier (domain) pour le calculateur
         final List<Object> entiteesDomainPourCalculMATCIAB2 = calculateurMATCIAB2
@@ -1778,7 +1768,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             // recherche le salaire horaire/mensuel/indépendant/versé
             FWCurrency revenuMoyenDeterminant = APSituationProfessionnelleHelper.getSalaireJournalierVerse(sitPro);
             revenuMoyenDeterminant = new FWCurrency(
-                    JANumberFormatter.format(revenuMoyenDeterminant.toString(), 0.01, 2, JANumberFormatter.SUP));
+                    JANumberFormatter.format(revenuMoyenDeterminant.toString(), 1, 2, JANumberFormatter.NEAR));
             donneesPersistence.addRMDParEmployeur(sitPro.getIdSituationProf(), revenuMoyenDeterminant);
         }
 
@@ -2350,7 +2340,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             // recherche le salaire horaire/mensuel/indépendant/versé
             FWCurrency revenuMoyenDeterminant = APSituationProfessionnelleHelper.getSalaireJournalierVerse(sitPro);
             revenuMoyenDeterminant = new FWCurrency(
-                    JANumberFormatter.format(revenuMoyenDeterminant.toString(), 0.01, 2, JANumberFormatter.SUP));
+                    JANumberFormatter.format(revenuMoyenDeterminant.toString(), 1, 2, JANumberFormatter.NEAR));
             donneesPersistence.addRMDParEmployeur(sitPro.getIdSituationProf(), revenuMoyenDeterminant);
         }
 

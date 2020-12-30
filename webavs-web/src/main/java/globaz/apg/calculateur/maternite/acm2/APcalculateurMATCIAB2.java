@@ -59,7 +59,7 @@ public class APcalculateurMATCIAB2 implements IAPPrestationCalculateur<APPrestat
         }
 
         sommeRevenuMoyenDeterminantMATCIAB2 = new FWCurrency(String.valueOf(sommeRevenuMoyenDeterminantMATCIAB2.getBigDecimalValue()));
-        sommeRevenuMoyenDeterminantMATCIAB2Arrondi = new FWCurrency(String.valueOf(arrondirFranc(sommeRevenuMoyenDeterminantMATCIAB2.getBigDecimalValue())));
+        sommeRevenuMoyenDeterminantMATCIAB2Arrondi = new FWCurrency(String.valueOf(arrondir(sommeRevenuMoyenDeterminantMATCIAB2.getBigDecimalValue())));
 
         if (periodeMATCIAB1ouStandard == null) {
             throw new Exception("Aucune période MATCIAB1 ni Standard trouvée");
