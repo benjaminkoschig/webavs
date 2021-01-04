@@ -643,7 +643,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         }
 
         /*
-         * Set les montant max journalier par situtations professionelles par canton.
+         * Set les montants max journalier par situations professionelles par canton.
          */
         setMontantMaxSelonCantonSitPro(session, droit.getIdDroit(), donnesPersistencePourCalculMATCIAB1.getSituationProfessionnelleEmployeur(), donnesPersistencePourCalculMATCIAB1.getMapRMD());
 
@@ -747,7 +747,7 @@ public class APPrestationHelper extends PRAbstractHelper {
     }
 
     /*
-     * Set les montant max journalier par situtations professionelles par canton.
+     * Set les montants max journalier par situations professionelles par canton.
      *
      * @param session
      * @param idDroit
@@ -1061,7 +1061,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         }
 
         /*
-         * Set les montant max journalier par situtations professionelles par canton.
+         * Set les montants max journalier par situations professionelles par canton.
          */
         setMontantMaxSelonCantonSitPro(session, droit.getIdDroit(), donnesPersistencePourCalculMATCIAB2.getSituationProfessionnelleEmployeur(), donnesPersistencePourCalculMATCIAB2.getMapRMD());
 
