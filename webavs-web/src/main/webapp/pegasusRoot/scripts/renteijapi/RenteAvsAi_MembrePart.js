@@ -38,7 +38,7 @@ function RenteAvsAiPart(container) {
 		if( (typePc == '64027003' && typeRente == '64006021') || $.inArray(typeRente,that.typesRenteAvecAI)>-1){
 			
 			//Si c'est un nefant on s'asure que le type pour les enfant soit bien utilisé 50 et 70 uniquement
-			if(csRoleMembreFamille===csRoleEnfant && $.inArray(typeRente,that.typeRentesAvecAiEnfant)>-1){
+			if(csRoleMembreFamille===csRoleEnfant && ((typePc == '64027003' && typeRente == '64006021') || $.inArray(typeRente,that.typeRentesAvecAiEnfant))>-1){
 				that.$inputDegre.show();
 				that.$labelDegre.show();
 			}
