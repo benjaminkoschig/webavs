@@ -10,7 +10,7 @@ function RenteAvsAiPart(container) {
 	var that = this;
 	var csRoleEnfant = '64004003';
 	this.typesRenteAvecAI=['64006015','64006032','64006033','64006023','64006016','64006017','64006018','64006034','64006035','64006024','64006019','64006020','64006036'];
-	this.typeRentesAvecAiEnfant = ['64006015','64006018'];
+	this.typeRentesAvecAiEnfant = ['64006015','64006018','64006016','64006017','64006019','64006020'];
 	
 	this.ACTION_AJAX = ACTION_AJAX_DONNEE_FINANCIERE;
 	this.mainContainer = container;
