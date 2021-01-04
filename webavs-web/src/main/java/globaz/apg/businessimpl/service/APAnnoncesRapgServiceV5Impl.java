@@ -221,12 +221,12 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
     private Schema getSchema() throws SAXException {
         SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Source[] sources = new Source[] {
-                new StreamSource(getClass().getClassLoader().getResource(XSD_FOLDER+XSD_101).toExternalForm()),
-                new StreamSource(getClass().getClassLoader().getResource(XSD_FOLDER+XSD_301).toExternalForm()),
-                new StreamSource(getClass().getClassLoader().getResource(XSD_FOLDER+XSD_401).toExternalForm()),
-                new StreamSource(getClass().getClassLoader().getResource(XSD_FOLDER+XSD_COMMON).toExternalForm()),
-                new StreamSource(getClass().getClassLoader().getResource(XSD_FOLDER+XSD_44).toExternalForm()),
-                new StreamSource(getClass().getClassLoader().getResource(XSD_FOLDER+XSD_58).toExternalForm()),
+                new StreamSource(getClass().getResource(XSD_FOLDER+XSD_101).toExternalForm()),
+                new StreamSource(getClass().getResource(XSD_FOLDER+XSD_301).toExternalForm()),
+                new StreamSource(getClass().getResource(XSD_FOLDER+XSD_401).toExternalForm()),
+                new StreamSource(getClass().getResource(XSD_FOLDER+XSD_COMMON).toExternalForm()),
+                new StreamSource(getClass().getResource(XSD_FOLDER+XSD_44).toExternalForm()),
+                new StreamSource(getClass().getResource(XSD_FOLDER+XSD_58).toExternalForm()),
         };
         return sf.newSchema(sources);
     }
