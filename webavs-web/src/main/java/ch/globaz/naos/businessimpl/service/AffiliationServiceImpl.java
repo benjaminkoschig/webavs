@@ -53,7 +53,7 @@ public class AffiliationServiceImpl implements AffiliationService {
         CotisationSimpleModel cotisationAssuranceMajoration = getCotisationAssuranceMajoration(transaction.getSession(), afAffiliation.getAffilieNumero());
 
         if (cotisationAssuranceMajoration != null) {
-            activateCotisationAssuranceMajoration(transaction, cotisationAssuranceFraisAdmin, cotisationAssuranceMajoration, anneeDeclSalaire);
+            activateCotisationAssuranceMajoration(transaction, afAffiliation, cotisationAssuranceFraisAdmin, cotisationAssuranceMajoration, anneeDeclSalaire);
         } else if (cotisationAssuranceFraisAdmin != null) {
             addCotisationAssuranceMajoration(transaction, afAffiliation, cotisationAssuranceFraisAdmin, anneeDeclSalaire);
         }
@@ -97,16 +97,23 @@ public class AffiliationServiceImpl implements AffiliationService {
      * @param cotisationAssuranceFraisAdmin la cotisation à l'assurance de frais d'admin
      * @param cotisationAssuranceMajoration la cotisation à l'assurance de majoration des frais d'admin
      */
-    private void activateCotisationAssuranceMajoration(BTransaction transaction, CotisationSimpleModel cotisationAssuranceFraisAdmin, CotisationSimpleModel cotisationAssuranceMajoration, String anneeDeclSalaire) throws MajorationFraisAdminException {
+    private void activateCotisationAssuranceMajoration(BTransaction transaction, AFAffiliation afAffiliation, CotisationSimpleModel cotisationAssuranceFraisAdmin, CotisationSimpleModel cotisationAssuranceMajoration, String anneeDeclSalaire) throws MajorationFraisAdminException {
         try {
             // initialisation du thread context et utilisation du contextjdbc
             JadeThreadContext threadContext = AFAffiliationUtil.initContext(transaction.getSession());
             JadeThreadActivator.startUsingJdbcContext(Thread.currentThread(), threadContext.getContext());
 
             // Update de la cotisation de majoration des frais d'admin avec les valeures de la cotisations au frais d'admin
-            cotisationAssuranceMajoration.setDateDebut(anneeDeclSalaire != null
+            String dateDebut = (anneeDeclSalaire != null
                     ? "01.01." + anneeDeclSalaire
                     : cotisationAssuranceFraisAdmin.getDateDebut());
+
+            if (JadeDateUtil.isDateBefore(afAffiliation.getDateDebut(), dateDebut)) {
+                cotisationAssuranceMajoration.setDateDebut(dateDebut);
+            } else {
+                cotisationAssuranceMajoration.setDateDebut(afAffiliation.getDateDebut());
+            }
+
             cotisationAssuranceMajoration.setDateFin(cotisationAssuranceFraisAdmin.getDateFin());
             // Ne reprends pas le motif de fin exception autrement il faudrait créer une deuxième cotisation utilisé comme référence pour l'exception
             cotisationAssuranceMajoration.setMotifFin(cotisationAssuranceFraisAdmin.getMotifFin().equals(CodeSystem.MOTIF_FIN_EXCEPTION)
@@ -148,9 +155,17 @@ public class AffiliationServiceImpl implements AffiliationService {
             // Création d'une nouvelle cotisation de majoration des frais d'admin avec les valeures de la cotisation aux frais d'admin
             AFCotisation cotisationAssuranceMajoration = new AFCotisation();
             cotisationAssuranceMajoration.setSession(transaction.getSession());
-            cotisationAssuranceMajoration.setDateDebut(anneeDeclSalaire != null
+
+            String dateDebut = (anneeDeclSalaire != null
                     ? "01.01." + anneeDeclSalaire
                     : cotisationAssuranceFraisAdmin.getDateDebut());
+
+            if (JadeDateUtil.isDateBefore(afAffiliation.getDateDebut(), dateDebut)) {
+                cotisationAssuranceMajoration.setDateDebut(dateDebut);
+            } else {
+                cotisationAssuranceMajoration.setDateDebut(afAffiliation.getDateDebut());
+            }
+
             cotisationAssuranceMajoration.setDateFin(cotisationAssuranceFraisAdmin.getDateFin());
             // Ne reprends pas le motif de fin exception autrement il faudrait créer une deuxième cotisation utilisé comme référence pour l'exception
             cotisationAssuranceMajoration.setMotifFin(cotisationAssuranceFraisAdmin.getMotifFin().equals(CodeSystem.MOTIF_FIN_EXCEPTION)

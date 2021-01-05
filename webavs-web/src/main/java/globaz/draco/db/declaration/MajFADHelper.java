@@ -10,6 +10,7 @@ import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.naos.db.affiliation.AFAffiliation;
+import globaz.naos.db.affiliation.AFAffiliationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,11 +53,13 @@ public class MajFADHelper {
                 if (provenance.equals(DSDeclarationViewBean.PROVENANCE_MANUELLE)) {
                     afAffiliation.setMajFAD(true);
                     afAffiliation.setSaisieSysteme(true);
+                    AFAffiliationUtil.disableExtraProcessingForAffiliation(afAffiliation);
                     afAffiliation.update();
                     AFBusinessServiceLocator.getAffiliationService().addOrActivateCotisationAssuranceMajoration(transaction, afAffiliation, anneeDeclSalaire);
                 } else {
                     afAffiliation.setMajFAD(false);
                     afAffiliation.setSaisieSysteme(true);
+                    AFAffiliationUtil.disableExtraProcessingForAffiliation(afAffiliation);
                     afAffiliation.update();
                     AFBusinessServiceLocator.getAffiliationService().deactivateCotisationAssuranceMajoration(transaction, afAffiliation);
                 }
