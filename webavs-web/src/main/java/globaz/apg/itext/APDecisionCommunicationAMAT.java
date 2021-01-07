@@ -1102,7 +1102,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                         Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 1, 2,
                         JANumberFormatter.SUP);
                 revenuMoyenDeterminant = JANumberFormatter.format(
-                        Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 1, 2,
+                        Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 0.05, 2,
                         JANumberFormatter.SUP);
             }
 

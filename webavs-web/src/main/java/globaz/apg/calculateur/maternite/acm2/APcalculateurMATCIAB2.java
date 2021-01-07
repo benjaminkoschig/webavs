@@ -213,8 +213,11 @@ public class APcalculateurMATCIAB2 implements IAPPrestationCalculateur<APPrestat
         ACM2BusinessDataParEmployeur donneesEmployeurTmpMaxDateFin = donneesDomainCalcul.get(0);
         for (ACM2BusinessDataParEmployeur object : donneesDomainCalcul) {
             PRDateUtils.PRDateEquality prestationEndDateCheck = PRDateUtils.compare(donneesEmployeurTmpMaxDateFin.getSituationProfJointEmployeur().getDateFin(), object.getSituationProfJointEmployeur().getDateFin());
-            if (donneesEmployeurTmpMaxDateFin.getSituationProfJointEmployeur().getDateFin().isEmpty() || prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.BEFORE)) {
+            if (prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.BEFORE)) {
                 donneesEmployeurTmpMaxDateFin = object;
+            } else if (object.getSituationProfJointEmployeur().getDateFin().isEmpty()) { // dateFin isEmpty est la plus grande date de fin que l'on peut trouver
+                donneesEmployeurTmpMaxDateFin = object;
+                break;
             }
         }
         PRDateUtils.PRDateEquality prestationEndDateCheck = PRDateUtils.compare(donneesEmployeurTmpMaxDateFin.getSituationProfJointEmployeur().getDateFin(), dateFinMATCIAB2);
