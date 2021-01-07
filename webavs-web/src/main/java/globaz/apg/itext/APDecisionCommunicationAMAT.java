@@ -611,8 +611,12 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
                         // si c'est le texte 2.2, et que la décision a plus d'un
                         // enfant, il faut mettre le texte 2.13 à la place
-                        if ((position == 2) && isMoreThanEnfant) {
+                        if ((position == 2) && isMoreThanEnfant && state_dec != APDecisionCommunicationAMAT.STATE_MATCIAB2) {
                             buffer.append(document.getTextes(2).getTexte(13));
+                        } else if ((position == 2) && isMoreThanEnfant && state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
+                            buffer.append(document.getTextes(2).getTexte(201));
+                        } else if ((position == 2) && !isMoreThanEnfant && state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
+                            buffer.append(document.getTextes(2).getTexte(200));
                         } else {
                             if (!(position == 3 && state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2)) {
                                 buffer.append(texte.getDescription());
@@ -1785,6 +1789,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
                                                 if (hasNotOnlyMATCIAB1()) {
                                                     buffer.setLength(0);
+                                                    buffer.append("\n");
                                                     buffer.append(PRStringUtils.replaceString(documentAssures.getTextes(1).getTexte(200).getDescription(), "{0}",
                                                             String.valueOf(revenuMoyenDeterminant)));
                                                     message = createMessageFormat(buffer);
@@ -1893,6 +1898,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
                                                 if (hasNotOnlyMATCIAB1()) {
                                                     buffer.setLength(0);
+                                                    buffer.append("\n");
                                                     buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
                                                             String.valueOf(revenuMoyenDeterminant)));
                                                     message = createMessageFormat(buffer);
@@ -2164,6 +2170,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
                                                 if (hasNotOnlyMATCIAB1()) {
                                                     buffer.setLength(0);
+                                                    buffer.append("\n");
                                                     buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
                                                             String.valueOf(revenuMoyenDeterminant)));
                                                     message = createMessageFormat(buffer);

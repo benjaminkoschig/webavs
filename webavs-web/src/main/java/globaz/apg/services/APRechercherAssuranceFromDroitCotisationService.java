@@ -124,7 +124,7 @@ public class APRechercherAssuranceFromDroitCotisationService {
                 if (BSessionUtil.compareDateFirstLowerOrEqual((BSession) session, theSmallestDateDebut,
                         droit.getDateDebutDroit())
                         && BSessionUtil.compareDateFirstGreaterOrEqual((BSession) session, theGreatestDateFin,
-                                droit.getDateFinDroit())) {
+                        droit.getDateFinDroit())) {
 
                     // on cherche l'assurance
                     IAFAssurance assurance = (IAFAssurance) ((BSession) session).getAPIFor(IAFAssurance.class);
@@ -202,7 +202,7 @@ public class APRechercherAssuranceFromDroitCotisationService {
                             .compareDateFirstLowerOrEqual((BSession) session, aCotisation.getDateFin(),
                                     droit.getDateDebutDroit()))
                             || BSessionUtil.compareDateFirstGreaterOrEqual((BSession) session,
-                            aCotisation.getDateDebut(), droit.getDateFinDroit())) {
+                                aCotisation.getDateDebut(), droit.getDateFinDroit())) {
                         continue;
 
                     }

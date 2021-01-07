@@ -1575,10 +1575,13 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             for (Object repar : repartitions) {
                 Repartition repartition1 = (Repartition) repar;
                 if (APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition1.genrePrestation) ||
-                        APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(repartition1.genrePrestation) ||
-                        APTypeDePrestation.MATCIAB1.isCodeSystemEqual(repartition1.genrePrestation) || // TODO SCO
-                        APTypeDePrestation.MATCIAB2.isCodeSystemEqual(repartition1.genrePrestation)) {
+                        APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(repartition1.genrePrestation)) {
                     typeComplement = getTypeComplementFromAssurance(getSession(), key.idAffilie, repartition1.idDroit, repartition1.isIndependant);
+                    break;
+                }
+                if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(repartition1.genrePrestation) ||
+                        APTypeDePrestation.MATCIAB2.isCodeSystemEqual(repartition1.genrePrestation)) {
+                    typeComplement = getTypeComplementFromAssuranceDateDebut(getSession(), key.idAffilie, repartition1.idDroit, repartition1.isIndependant);
                     break;
                 }
             }
@@ -3049,10 +3052,12 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
             TypeComplement typeComplement = null;
             if (APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition.genrePrestation) ||
-                    APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(repartition.genrePrestation) ||
-                    APTypeDePrestation.MATCIAB1.isCodeSystemEqual(repartition.genrePrestation) ||
-                    APTypeDePrestation.MATCIAB2.isCodeSystemEqual(repartition.genrePrestation)) {
+                    APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(repartition.genrePrestation)) {
                 typeComplement = getTypeComplementFromAssurance(getSession(), idAffilie, prestation.getIdDroit(), isIndependant);
+            }
+            if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(repartition.genrePrestation) ||
+                    APTypeDePrestation.MATCIAB2.isCodeSystemEqual(repartition.genrePrestation)) {
+                typeComplement = getTypeComplementFromAssuranceDateDebut(getSession(), idAffilie, prestation.getIdDroit(), isIndependant);
             }
 
             boolean isManifestationAnnulee = false;
@@ -3125,6 +3130,37 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         }
 
         return repartitions;
+    }
+
+    private TypeComplement getTypeComplementFromAssuranceDateDebut(BSession session, String idAffilie, String idDroit, boolean isIndependant) throws Exception {
+        // list les cantons
+        String idAssuranceParitaireJU = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
+        String idAssurancePersonnelJU = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_JU_ID);
+        String idAssuranceParitaireBE = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_BE_ID);
+        String idAssurancePersonnelBE = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_BE_ID);
+
+        Map<IAFAssurance, String> listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercherAvecDateDebut(idDroit,
+                idAffilie, session);
+        for (Map.Entry<IAFAssurance, String> assurance : listAssurance.entrySet()) {
+            if (isIndependant) {
+                if (assurance.getKey().getAssuranceId().equals(idAssurancePersonnelBE)) {
+                    return TypeComplement.BE_PERSONNEL;
+                } else if (assurance.getKey().getAssuranceId().equals(idAssurancePersonnelJU)) {
+                    return TypeComplement.JU_PERSONNEL;
+                }
+            } else {
+                if (assurance.getKey().getAssuranceId().equals(idAssuranceParitaireBE)) {
+                    return TypeComplement.BE_PARITAIRE;
+                } else if (assurance.getKey().getAssuranceId().equals(idAssuranceParitaireJU)) {
+                    return TypeComplement.JU_PARITAIRE;
+                }
+            }
+        }
+        return null;
     }
 
     private TypeComplement getTypeComplementFromAssurance(BSession session, String idAffilie, String idDroit, boolean isIndependant) throws Exception {
