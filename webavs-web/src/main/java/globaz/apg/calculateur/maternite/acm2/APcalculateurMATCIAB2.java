@@ -69,7 +69,7 @@ public class APcalculateurMATCIAB2 implements IAPPrestationCalculateur<APPrestat
         String ddfMATCIAB1ouStandard = periodeMATCIAB1ouStandard.getDateDeFin();
         String dateDebutMATCIAB2 = JadeDateUtil.addDays(ddfMATCIAB1ouStandard, 1);
         String dateFinMATCIAB2 = JadeDateUtil.addDays(ddfMATCIAB1ouStandard, nombreJoursMATCIAB2);
-        dateFinMATCIAB2 = limitDateFinMATCIAB2(donneesDomainCalcul, dateFinMATCIAB2);
+        dateFinMATCIAB2 = limiteDateFinMATCIAB2AvecMinDateFinContrat(donneesDomainCalcul, dateFinMATCIAB2);
 
         PRPeriode periodeMATCIAB2 = new PRPeriode(dateDebutMATCIAB2, dateFinMATCIAB2);
 
@@ -209,20 +209,18 @@ public class APcalculateurMATCIAB2 implements IAPPrestationCalculateur<APPrestat
         return resultatCalcul;
     }
 
-    private String limitDateFinMATCIAB2(List<ACM2BusinessDataParEmployeur> donneesDomainCalcul, String dateFinMATCIAB2) {
-        ACM2BusinessDataParEmployeur donneesEmployeurTmpMaxDateFin = donneesDomainCalcul.get(0);
+    private String limiteDateFinMATCIAB2AvecMinDateFinContrat(List<ACM2BusinessDataParEmployeur> donneesDomainCalcul, String dateFinMATCIAB2) {
+        // La situation professionele qui possède une date de fin de contrat la proche
+        ACM2BusinessDataParEmployeur donneesEmployeurTmpMinDateFin = donneesDomainCalcul.get(0);
         for (ACM2BusinessDataParEmployeur object : donneesDomainCalcul) {
-            PRDateUtils.PRDateEquality prestationEndDateCheck = PRDateUtils.compare(donneesEmployeurTmpMaxDateFin.getSituationProfJointEmployeur().getDateFin(), object.getSituationProfJointEmployeur().getDateFin());
-            if (prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.BEFORE)) {
-                donneesEmployeurTmpMaxDateFin = object;
-            } else if (object.getSituationProfJointEmployeur().getDateFin().isEmpty()) { // dateFin isEmpty est la plus grande date de fin que l'on peut trouver
-                donneesEmployeurTmpMaxDateFin = object;
-                break;
+            PRDateUtils.PRDateEquality prestationEndDateCheck = PRDateUtils.compare(object.getSituationProfJointEmployeur().getDateFin(), donneesEmployeurTmpMinDateFin.getSituationProfJointEmployeur().getDateFin());
+            if (donneesEmployeurTmpMinDateFin.getSituationProfJointEmployeur().getDateFin().isEmpty() || prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.BEFORE)) {
+                donneesEmployeurTmpMinDateFin = object;
             }
         }
-        PRDateUtils.PRDateEquality prestationEndDateCheck = PRDateUtils.compare(donneesEmployeurTmpMaxDateFin.getSituationProfJointEmployeur().getDateFin(), dateFinMATCIAB2);
-        if (prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.AFTER)) {
-            dateFinMATCIAB2 = donneesEmployeurTmpMaxDateFin.getSituationProfJointEmployeur().getDateFin();
+        PRDateUtils.PRDateEquality prestationEndDateCheck = PRDateUtils.compare(dateFinMATCIAB2, donneesEmployeurTmpMinDateFin.getSituationProfJointEmployeur().getDateFin());
+        if (prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.BEFORE)) {
+            dateFinMATCIAB2 = donneesEmployeurTmpMinDateFin.getSituationProfJointEmployeur().getDateFin();
         }
         return dateFinMATCIAB2;
     }

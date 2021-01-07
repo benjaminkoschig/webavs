@@ -3308,7 +3308,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 }
             }
         }  else if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(genrePrestation) ||APTypeDePrestation.MATCIAB2.isCodeSystemEqual(genrePrestation)) { // Complément
-                if (isRestitution) { // TODO SCO
+                if (isRestitution) {
                     if ("PARITAIRE".equals(typeComplement.genre)) {
                         rubrique = mapComplementBean.get(typeComplement.getCanton().getValue()).getRubriqueParitaireRestitution();
                     } else if ("PERSONNEL".equals(typeComplement.genre)) {

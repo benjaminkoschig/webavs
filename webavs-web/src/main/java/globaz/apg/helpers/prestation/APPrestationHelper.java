@@ -1643,7 +1643,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         donneesPersistence.setIdDroit(idDroit);
 
         // Filtre pour ne garder que les prestations d'allocations
-        final List<APRepartitionJointPrestation> apRepJointPrestationsIsAllocation = filterApRepJointPrestationsIsAllocation(idDroit, session, transaction, servicePersistance);
+        final List<APRepartitionJointPrestation> apRepJointPrestationsIsAllocation = filtrerApRepJointPrestationsIsAllocation(idDroit, session, transaction, servicePersistance);
         if (apRepJointPrestationsIsAllocation.isEmpty()) return null;
 
         donneesPersistence.setPrestationJointRepartitions(apRepJointPrestationsIsAllocation);
@@ -1704,7 +1704,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         donneesPersistence.setIdDroit(idDroit);
 
         // Filtre pour ne garder que les prestations d'allocations
-        final List<APRepartitionJointPrestation> apRepJointPrestationsIsAllocation = filterApRepJointPrestationsIsAllocation(idDroit, session, transaction, servicePersistance);
+        final List<APRepartitionJointPrestation> apRepJointPrestationsIsAllocation = filtrerApRepJointPrestationsIsAllocation(idDroit, session, transaction, servicePersistance);
         if (apRepJointPrestationsIsAllocation.isEmpty()) return null;
 
         // Filtre les repartitions qui ne cotise pas au complément
@@ -1822,31 +1822,23 @@ public class APPrestationHelper extends PRAbstractHelper {
     private List<APRepartitionJointPrestation> filterAPPrestationsIsDateFinContratMATCIAB2(List<APSitProJointEmployeur> apSitProJointEmployeursIsVersementEmployeur, List<APRepartitionJointPrestation> apRepJointPrestationsIsDateDebutAvantProprieteFerciab) {
         List<APRepartitionJointPrestation> apRepJointPrestationIsDateFinContrat = new ArrayList<>();
 
-        APSitProJointEmployeur apSitProJointEmployeurMaxDateFinContrat = apSitProJointEmployeursIsVersementEmployeur.get(0);
-        // La situation professionele qui possède une date de fin de contrat la plus éloignée
         for (APSitProJointEmployeur apSitProJointEmployeur : apSitProJointEmployeursIsVersementEmployeur) {
-            PRDateUtils.PRDateEquality prestationBeginDateCheck = PRDateUtils.compare(apSitProJointEmployeurMaxDateFinContrat.getDateFin(), apSitProJointEmployeur.getDateFin());
-            if (prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.AFTER)) {
-                apSitProJointEmployeurMaxDateFinContrat = apSitProJointEmployeur;
-            } else if (prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.INCOMPARABLE)) {  // dateFin = null est la plus grande date de fin que l'on peut trouver
-                apSitProJointEmployeurMaxDateFinContrat = apSitProJointEmployeur;
-                break;
-            }
-        }
 
-        for (APRepartitionJointPrestation apRepJointPrestation : apRepJointPrestationsIsDateDebutAvantProprieteFerciab) {
-            // Ne prends en compte que les prestations qui commence avant la date trouvé dans la situations professionelle qui possède une date de fin de contrat la plus éloignée
-            PRDateUtils.PRDateEquality prestationEndDateCheck = PRDateUtils.compare(apSitProJointEmployeurMaxDateFinContrat.getDateFin(), apRepJointPrestation.getDateFin() );
-            PRDateUtils.PRDateEquality prestationBeginDateCheck = PRDateUtils.compare(apSitProJointEmployeurMaxDateFinContrat.getDateFin(), apRepJointPrestation.getDateDebut());
-            if (prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.INCOMPARABLE) || prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.EQUALS) || prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.BEFORE)) {
-                // Adapte la date de fin de la prestation en fonction de la situation profesionelle qui possède une date de fin de contrat la plus éloignée
-                if (prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.AFTER)) {
-                    apRepJointPrestation.setDateFin(apSitProJointEmployeurMaxDateFinContrat.getDateFin());
+            for (APRepartitionJointPrestation apRepJointPrestation : apRepJointPrestationsIsDateDebutAvantProprieteFerciab) {
+                if (apRepJointPrestation.getIdSituationProfessionnelle().equals(apSitProJointEmployeur.getIdSitPro())) {
+                    // Ne prends en compte que les prestations qui commence avant la date de fin trouvé dans la situations professionelle
+                    PRDateUtils.PRDateEquality prestationEndDateCheck = PRDateUtils.compare(apSitProJointEmployeur.getDateFin(), apRepJointPrestation.getDateFin());
+                    PRDateUtils.PRDateEquality prestationBeginDateCheck = PRDateUtils.compare(apSitProJointEmployeur.getDateFin(), apRepJointPrestation.getDateDebut());
+                    if (prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.INCOMPARABLE) || prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.EQUALS) || prestationBeginDateCheck.equals(PRDateUtils.PRDateEquality.BEFORE)) {
+                        // Adapte la date de fin de la prestation en fonction de la situation profesionelle qui possède une date de fin de contrat la plus éloignée
+                        if (prestationEndDateCheck.equals(PRDateUtils.PRDateEquality.AFTER)) {
+                            apRepJointPrestation.setDateFin(apSitProJointEmployeur.getDateFin());
+                        }
+                        apRepJointPrestationIsDateFinContrat.add(apRepJointPrestation);
+                    }
                 }
-                apRepJointPrestationIsDateFinContrat.add(apRepJointPrestation);
             }
         }
-
         return apRepJointPrestationIsDateFinContrat;
     }
 
@@ -2074,7 +2066,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         return apSitProJointEmployeursIsComplement;
     }
 
-    private List<APRepartitionJointPrestation> filterApRepJointPrestationsIsAllocation(String idDroit, BSession session, BTransaction transaction, APEntityService servicePersistance) throws Exception {
+    private List<APRepartitionJointPrestation> filtrerApRepJointPrestationsIsAllocation(String idDroit, BSession session, BTransaction transaction, APEntityService servicePersistance) throws Exception {
         // Récupération de toutes les restations joint repartitions
         final List<APRepartitionJointPrestation> apRepJointPrestations = servicePersistance
                 .getRepartitionJointPrestationDuDroit(session, transaction, idDroit);
