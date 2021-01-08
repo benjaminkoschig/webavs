@@ -18,6 +18,7 @@ public class APRepartitionPaiementData {
     private String typeAssociationAssurance;
     private String typePaiement;
     private String typePrestation;
+    private String tauxRJM;
 
     public APRepartitionPaiementData(BigDecimal montantBrut, BigDecimal montantNet, String typePrestation,
             String typePaiement, String idTiersEmployeur, String idTiersPaiementEmployeur,
@@ -77,6 +78,10 @@ public class APRepartitionPaiementData {
         return typePrestation;
     }
 
+    public String getTauxRJM() {
+        return tauxRJM;
+    }
+
     public void setCotisations(List<APCotisationData> cotisations) {
         this.cotisations = cotisations;
     }
@@ -115,6 +120,10 @@ public class APRepartitionPaiementData {
 
     public void setTypePrestation(String typePrestation) {
         this.typePrestation = typePrestation;
+    }
+
+    public void setTauxRJM(String tauxRJM) {
+        this.tauxRJM = tauxRJM;
     }
 
     public String getIdDomainePaiementEmployeur() {

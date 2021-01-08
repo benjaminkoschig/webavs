@@ -146,6 +146,8 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
                                 cotisationAvsParitaire,
                                 cotisationAcParitaire
                         );
+                        repartitionPaiementData.setTauxRJM(JANumberFormatter.format(tauxCalcul.doubleValue() * 100d, 0.01, 2, JANumberFormatter.NEAR));
+
                         prestationCalculeeAPersister.getRepartitionsPaiementMap().add(repartitionPaiementData);
 
                         montantPrestationComplementBrut = montantPrestationComplementBrut.add(repartitionPaiementData
@@ -475,7 +477,7 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
                 apRepartitionPaiementsEntity.setIdTiersAdressePaiement(apRepPaiDat.getIdTiersPaiementEmployeur());
                 apRepartitionPaiementsEntity.setIdAffilie(apRepPaiDat.getIdAffilie());
                 apRepartitionPaiementsEntity.setIdDomaineAdressePaiement(apRepPaiDat.getIdDomainePaiementEmployeur());
-
+                apRepartitionPaiementsEntity.setTauxRJM(apRepPaiDat.getTauxRJM());
                 final APRepartitionCalculeeAPersister apRepartitionCalculeeAPersister = new APRepartitionCalculeeAPersister();
                 apRepartitionCalculeeAPersister.setRepartitionPaiements(apRepartitionPaiementsEntity);
 

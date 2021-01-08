@@ -1768,7 +1768,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             // recherche le salaire horaire/mensuel/indépendant/versé
             FWCurrency revenuMoyenDeterminant = APSituationProfessionnelleHelper.getSalaireJournalierVerse(sitPro);
             revenuMoyenDeterminant = new FWCurrency(
-                    JANumberFormatter.format(revenuMoyenDeterminant.toString(), 0.05, 2, JANumberFormatter.SUP));
+                    JANumberFormatter.format(revenuMoyenDeterminant.toString(), 0.05, 2, JANumberFormatter.NEAR));
             donneesPersistence.addRMDParEmployeur(sitPro.getIdSituationProf(), revenuMoyenDeterminant);
         }
 
@@ -2332,7 +2332,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             // recherche le salaire horaire/mensuel/indépendant/versé
             FWCurrency revenuMoyenDeterminant = APSituationProfessionnelleHelper.getSalaireJournalierVerse(sitPro);
             revenuMoyenDeterminant = new FWCurrency(
-                    JANumberFormatter.format(revenuMoyenDeterminant.toString(), 0.05, 2, JANumberFormatter.SUP));
+                    JANumberFormatter.format(revenuMoyenDeterminant.toString(), 0.05, 2, JANumberFormatter.NEAR));
             donneesPersistence.addRMDParEmployeur(sitPro.getIdSituationProf(), revenuMoyenDeterminant);
         }
 

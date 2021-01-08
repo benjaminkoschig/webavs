@@ -1103,7 +1103,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                         JANumberFormatter.SUP);
                 revenuMoyenDeterminant = JANumberFormatter.format(
                         Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 0.05, 2,
-                        JANumberFormatter.SUP);
+                        JANumberFormatter.NEAR);
             }
 
             // Si c'est une décision Lamat (Maternité cantonale)
@@ -1120,6 +1120,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         } else if (state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
 
             arguments[7] = JANumberFormatter.format(revenuAnnuel);
+            revenuMoyenDeterminant = JANumberFormatter.format(
+                    Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 0.05, 2,
+                    JANumberFormatter.NEAR);
 
         }
 

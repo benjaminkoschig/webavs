@@ -190,7 +190,7 @@ public class APcalculateurMATCIAB2 implements IAPPrestationCalculateur<APPrestat
 
                 repartitionPaiements.setMontantBrut(montantBrutRepartition.toString());
                 // repartitionPaiements.setIdRepartitionBeneficiairePaiement();
-                repartitionPaiements.setTauxRJM(tauxRJM);
+                repartitionPaiements.setTauxRJM(JANumberFormatter.format(tauxCalcul.doubleValue() * 100d, 0.01, 2, JANumberFormatter.NEAR));
                 // repartitionPaiements.setTypeAssociationAssurance(); spécifique ACM NE ?
                 // TODO repartitionPaiements.chercherAdressePaiement(session);
                 // repartitionPaiements.setAdressePaiement();
