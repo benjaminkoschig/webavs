@@ -104,8 +104,15 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             String dateSplitReforme = null;
             String version = droit.getSimpleVersionDroit().getNoVersion();
             // sur un calcul rétro : vérifie s'il n'y avait une période uniquement réforme
+            boolean retroactifCalcul = retroactif;
             if(retroactif && !JadeStringUtil.isBlankOrZero(version) && Integer.parseInt(version) > 1){
-                dateSplitReforme = getSplitDateReforme(droit, Integer.toString(Integer.parseInt(version) - 1));
+                List<PCAccordeePlanCalculReforme> list = PcaPlanCalculReforme.getListPcaFromNoVersion(droit.getId(), Integer.toString(Integer.parseInt(version) - 1));
+                // Si la date de début est supérieure à la date de début de la dernière période, il faudra vérifier le statut réforme sur l'ancien droit
+                if(JadeDateUtil.isDateAfter(dateDebutPlageCalcul, JadeDateUtil.getFirstDateOfMonth(list.get(list.size() - 1).getDateDebut()))) {
+                    retroactifCalcul = false;
+                } else {
+                    dateSplitReforme = PcaPlanCalculReforme.getSplitDateReformeFromVersion(list);
+                }
             }
             // si la date de la plage est nulle, c'est qu'il n'y a pas de rente
             // et pas de calcul à faire
@@ -122,7 +129,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                         dateFinPlageCalcul, cacheDonneesBD, containerGlobal, isDateFinForce, dateSplitReforme);
                 // procède au calcul à proprement dit
                 calculeDroitTraitement(droit, cacheDonneesBD, listePCAccordes, listePCAccordesReforme, dateDebutPlageCalcul,
-                        dateFinPlageCalcul, containerGlobal, retroactif, dateSplitReforme);
+                        dateFinPlageCalcul, containerGlobal, retroactifCalcul, dateSplitReforme);
 
                 // récupère anciennes pc accordées
                 PegasusImplServiceLocator.getCalculPersistanceService().recupereAnciensPCAccordee(dateDebutPlageCalcul,
@@ -1301,18 +1308,6 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             }
         }
     }
-
-    /**
-     * Détermine la date à partir de laquelle une pca est uniquement réforme (sans calcul comparatif)
-     * @param droit
-     * @param noVersionPrecedante
-     * @return
-     * @throws JadePersistenceException
-     */
-    private String getSplitDateReforme(Droit droit, String noVersionPrecedante) throws JadePersistenceException {
-        return PcaPlanCalculReforme.getSplitDateReformeFromVersion(droit.getId(), noVersionPrecedante);
-    }
-
 
     @Override
     public IPeriodePCAccordee calculWithoutPersist(Droit droit, Collection<String> listeIdPersonnes,

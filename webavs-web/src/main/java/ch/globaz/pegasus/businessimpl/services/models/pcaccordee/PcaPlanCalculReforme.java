@@ -1,17 +1,17 @@
 package ch.globaz.pegasus.businessimpl.services.models.pcaccordee;
 
-import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
 import ch.globaz.pegasus.business.models.pcaccordee.PCAccordeePlanCalculReforme;
 import ch.globaz.pegasus.business.models.pcaccordee.PCAccordeePlanCalculReformeSearch;
-import ch.globaz.pegasus.business.models.pcaccordee.PcaForDecompteSearch;
 import ch.globaz.pegasus.businessimpl.services.models.decision.validation.ValiderDecisionUtils;
 import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class PcaPlanCalculReforme {
@@ -81,7 +81,7 @@ public class PcaPlanCalculReforme {
      * @return
      * @throws JadePersistenceException
      */
-    public static String getSplitDateReformeFromVersion(String idDroit, String noVersionDroitCourant) throws JadePersistenceException {
+    public static List<PCAccordeePlanCalculReforme> getListPcaFromNoVersion(String idDroit, String noVersionDroitCourant) throws JadePersistenceException {
 
         if (JadeStringUtil.isBlankOrZero(idDroit)) {
             throw new IllegalArgumentException("Unable to findPcaToReplaced, the dDroit is null!");
@@ -107,6 +107,17 @@ public class PcaPlanCalculReforme {
                 }
             }
         }
+        return list;
+    }
+
+    /**
+     * Retour la date à partir de laquelle les pca sont de type réforme sans calcul comparatif pour la verion de droit donnée
+     * @param idDroit
+     * @param noVersionDroitCourant
+     * @return
+     * @throws JadePersistenceException
+     */
+    public static String getSplitDateReformeFromVersion(List<PCAccordeePlanCalculReforme> list) throws JadePersistenceException {
 
         Map<String, List<PCAccordeePlanCalculReforme>> mPcaPdc = new HashMap<>();
         for(PCAccordeePlanCalculReforme pcaPdc : list) {
