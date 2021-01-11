@@ -598,7 +598,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
                     if ((position > 3) && (position < 14)) {
 
-                    } else if (hasNotOnlyMATCIAB1()) {
+                    } else if (hasNotOnlyMATCIAB1() || position < 3) {
 
                         if ((buffer.length() > 0) && (count < 3)) {
                             if (!(position == 3 && state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2)) {
@@ -613,8 +613,12 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                         // enfant, il faut mettre le texte 2.13 à la place
                         if ((position == 2) && isMoreThanEnfant && state_dec != APDecisionCommunicationAMAT.STATE_MATCIAB2) {
                             buffer.append(document.getTextes(2).getTexte(13));
+                        // si c'est le texte 2.2, et que la décision a plus d'un
+                        // enfant et qu'il s'agit de MATCIAB2, il faut mettre le texte 2.201 à la place
                         } else if ((position == 2) && isMoreThanEnfant && state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
                             buffer.append(document.getTextes(2).getTexte(201));
+                        // si c'est le texte 2.2, et que la décision ne possède qu'un seul
+                        // enfant et qu'il s'agit de MATCIAB2, il faut mettre le texte 2.200 à la place
                         } else if ((position == 2) && !isMoreThanEnfant && state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
                             buffer.append(document.getTextes(2).getTexte(200));
                         } else {
@@ -759,13 +763,31 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
     }
 
     private Boolean hasNotOnlyMATCIAB1() throws FWIException {
+        if (hasMATCIAB1()) {
+            // Création champs de données document assurées pour tous les types sauf MATCIAB1
+            for (int idPrestation = 0; idPrestation < loadPrestations().size(); ++idPrestation) {
+
+                final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
+
+                //<editor-fold defaultstate="collapsed" desc="ALLTYPE">
+                if (APTypeDePrestation.STANDARD.isCodeSystemEqual(prestation.getGenre())) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private Boolean hasMATCIAB1() throws FWIException {
         // Création champs de données document assurées pour tous les types sauf MATCIAB1
         for (int idPrestation = 0; idPrestation < loadPrestations().size(); ++idPrestation) {
 
             final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
 
             //<editor-fold defaultstate="collapsed" desc="ALLTYPE">
-            if (!APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre())) {
+            if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre())) {
                 return true;
             }
         }
@@ -1035,7 +1057,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 buffer.append(".");
             }
 
-            buffer.append("\n");
+            if (hasNotOnlyMATCIAB1()) {
+                buffer.append("\n");
+            }
         }
 
         // creer les arguments a remplacer dans le texte
@@ -1165,8 +1189,12 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             }
         }
 
-        if (state_dec != APDecisionCommunicationAMAT.STATE_STANDARD) {
-            buffer.append("\n");
+        if (hasNotOnlyMATCIAB1()) {
+            if (state_dec != APDecisionCommunicationAMAT.STATE_MATCIAB2 || isEmployeursMultiples()) {
+                if (state_dec != APDecisionCommunicationAMAT.STATE_STANDARD || !isEmployeursMultiples()) {
+                    buffer.append("\n");
+                }
+            }
         }
 
         // creer les arguments a remplacer dans le texte
@@ -1252,6 +1280,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         } else if (state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
 
             arguments[10] = JANumberFormatter.format(revenuAnnuel);
+            revenuMoyenDeterminant = JANumberFormatter.format(
+                    Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 0.05, 2,
+                    JANumberFormatter.NEAR);
 
         }
 
