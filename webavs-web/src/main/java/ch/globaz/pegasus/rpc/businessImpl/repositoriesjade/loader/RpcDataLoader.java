@@ -265,7 +265,7 @@ public class RpcDataLoader {
 
         List<RPCDecionsPriseDansLeMois> currentPca = loadPcaCourante(idsVersionDroitNotIn, dateMoisAnnoncesPrise);
 
-        removeDateFin(currentPca);
+        removeDateFin(currentPca, dateMoisAnnoncesPrise);
         infos.setNbPcaCourante(currentPca.size());
         LOG.info("Nb pca current loaded: {}", infos.getNbPcaCourante());
 
@@ -282,12 +282,16 @@ public class RpcDataLoader {
         return load(mapDecision, decisionsRefus);
     }
 
-    private void removeDateFin(List<RPCDecionsPriseDansLeMois> currentPca) {
+    private void removeDateFin(List<RPCDecionsPriseDansLeMois> currentPca, Date dateGeneration) {
         for (RPCDecionsPriseDansLeMois rpcDecionsPriseDansLeMois : currentPca) {
-            rpcDecionsPriseDansLeMois.getSimplePCAccordee().setDateFin(null);
-            rpcDecionsPriseDansLeMois.getSimpleDecisionHeader().setDateFinDecision(null);
+            if(!JadeStringUtil.isEmpty(rpcDecionsPriseDansLeMois.getSimplePCAccordee().getDateFin())
+                    && dateGeneration.before(new Date(rpcDecionsPriseDansLeMois.getSimplePCAccordee().getDateFin()))) {
+                rpcDecionsPriseDansLeMois.getSimplePCAccordee().setDateFin(null);
+                rpcDecionsPriseDansLeMois.getSimpleDecisionHeader().setDateFinDecision(null);
+            }
         }
     }
+
 
     private RpcDatasListConverter load(Map<String, List<RPCDecionsPriseDansLeMois>> mapDecision,
             List<DecisionRefus> decisionsRefus) {
