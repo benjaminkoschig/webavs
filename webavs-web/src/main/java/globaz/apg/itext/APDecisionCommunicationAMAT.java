@@ -704,6 +704,10 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
                 String titre = tiersTitre.getFormulePolitesse(tiersTitre.getLangue());
 
+                //Force un saut de page correct
+                if (hasMATCIAB1() && hasNotOnlyMATCIAB1() && loadPrestations().size() == 6) {
+                    buffer.append("\n\n");
+                }
                 // buffer.append("\n");
 
                 buffer = new StringBuffer(PRStringUtils.formatMessage(buffer, titre));
@@ -724,6 +728,10 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 }
                 titre = tiersTitre.getFormulePolitesse(tiersTitre.getLangue());
 
+                //Force un saut de page correct
+                if (hasMATCIAB1() && hasNotOnlyMATCIAB1() && loadPrestations().size() == 6) {
+                    buffer.append("\n\n");
+                }
                 // buffer.append("\n");
 
                 buffer = new StringBuffer(PRStringUtils.formatMessage(buffer, titre));
@@ -1057,7 +1065,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 buffer.append(".");
             }
 
-            if (hasNotOnlyMATCIAB1()) {
+            if (hasNotOnlyMATCIAB1() || isEmployeursMultiples()) {
                 buffer.append("\n");
             }
         }
@@ -1189,12 +1197,10 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             }
         }
 
-        if (hasNotOnlyMATCIAB1()) {
-            if (state_dec != APDecisionCommunicationAMAT.STATE_MATCIAB2 || isEmployeursMultiples()) {
-                if (state_dec != APDecisionCommunicationAMAT.STATE_STANDARD || !isEmployeursMultiples()) {
-                    buffer.append("\n");
-                }
-            }
+        if (!hasNotOnlyMATCIAB1()) {
+        } else if (hasMATCIAB1() && isEmployeursMultiples()) {
+        } else {
+            buffer.append("\n");
         }
 
         // creer les arguments a remplacer dans le texte
@@ -1836,6 +1842,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                 }
 
                                                 buffer.setLength(0);
+                                                if (!hasNotOnlyMATCIAB1()){
+                                                    buffer.append("\n");
+                                                }
                                                 buffer.append(PRStringUtils.replaceString(documentAssures.getTextes(1).getTexte(201).getDescription(), "{0}",
                                                         JANumberFormatter.format(Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2, JANumberFormatter.NEAR)));
                                                 message = createMessageFormat(buffer);
@@ -1945,6 +1954,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                 }
 
                                                 buffer.setLength(0);
+                                                if (!hasNotOnlyMATCIAB1()){
+                                                    buffer.append("\n");
+                                                }
                                                 buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(201).getDescription(), "{0}",
                                                         JANumberFormatter.format(Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2, JANumberFormatter.NEAR)));
                                                 message = createMessageFormat(buffer);
@@ -2217,6 +2229,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                 }
 
                                                 buffer.setLength(0);
+                                                if (!hasNotOnlyMATCIAB1()){
+                                                    buffer.append("\n");
+                                                }
                                                 buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(201).getDescription(), "{0}",
                                                         JANumberFormatter.format(Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2, JANumberFormatter.NEAR)));
                                                 message = createMessageFormat(buffer);

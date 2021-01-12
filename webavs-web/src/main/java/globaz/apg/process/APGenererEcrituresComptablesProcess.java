@@ -2683,6 +2683,11 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                         nature = getSession().getApplication().getProperty(
                                 APGenererEcrituresComptablesProcess.PROP_NATURE_VERSEMENT_AMAT);
                         typeMontant = Montants.TYPE_AMAT;
+
+                        // Si il y a des montants MATCIAB on additionne les montants de type AMAT et MATCIAB
+                        if (!cumulMontantsParType(new FWCurrency(0), montantsBrutTotal, totalCotisations, compensationsTotale, ventilationTotale, Montants.TYPE_MATCIAB).isZero()) {
+                            typeMontant = Montants.TYPE_AMAT + "_" + Montants.TYPE_MATCIAB;
+                        }
                         break;
                     // case 1:
                     // nature = getSession().getApplication().getProperty(
