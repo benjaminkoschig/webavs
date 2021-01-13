@@ -537,13 +537,8 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         // ----------------------------------------------------------------------------------------
 
         if (getCsTypeDocument().equalsIgnoreCase(IAPCatalogueTexte.CS_DECISION_MAT)) {
-            if (state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
-                try {
-                    parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(203).getDescription());
-                } catch (IndexOutOfBoundsException e) {
-                    e.printStackTrace();
-                    parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(1).getDescription());
-                }
+            if (hasMATCIAB2() && state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
+                parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(203).getDescription());
             } else {
                 parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(1).getDescription());
             }
@@ -615,11 +610,11 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                             buffer.append(document.getTextes(2).getTexte(13));
                         // si c'est le texte 2.2, et que la décision a plus d'un
                         // enfant et qu'il s'agit de MATCIAB2, il faut mettre le texte 2.201 à la place
-                        } else if ((position == 2) && isMoreThanEnfant && state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
+                        } else if ((position == 2) && hasMATCIAB2() && isMoreThanEnfant && state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
                             buffer.append(document.getTextes(2).getTexte(201));
                         // si c'est le texte 2.2, et que la décision ne possède qu'un seul
                         // enfant et qu'il s'agit de MATCIAB2, il faut mettre le texte 2.200 à la place
-                        } else if ((position == 2) && !isMoreThanEnfant && state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
+                        } else if ((position == 2) && hasMATCIAB2() && !isMoreThanEnfant && state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
                             buffer.append(document.getTextes(2).getTexte(200));
                         } else {
                             if (!(position == 3 && state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2)) {
@@ -641,13 +636,8 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         // -----------------------------------------------------------------------------------------
         parametres.put("PARAM_TITRE_DETAIL", document.getTextes(3).getTexte(1).getDescription());
         if (getCsTypeDocument().equalsIgnoreCase(IAPCatalogueTexte.CS_DECISION_MAT)) {
-            if (state_dec == APDecisionCommunicationAMAT.STATE_STANDARD || state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
-                try {
-                    parametres.put("PARAM_TITRE_DETAIL2", document.getTextes(3).getTexte(200).getDescription());
-                } catch (IndexOutOfBoundsException e) {
-                    e.printStackTrace();
-                    parametres.put("PARAM_TITRE_DETAIL2", document.getTextes(3).getTexte(1).getDescription());
-                }
+            if ((hasMATCIAB1() || hasMATCIAB2()) && (state_dec == APDecisionCommunicationAMAT.STATE_STANDARD || state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2)) {
+                parametres.put("PARAM_TITRE_DETAIL2", document.getTextes(3).getTexte(200).getDescription());
             }
         }
         parametres.put("PARAM_ALLOCATION_DU", document.getTextes(3).getTexte(2).getDescription());
@@ -705,10 +695,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 String titre = tiersTitre.getFormulePolitesse(tiersTitre.getLangue());
 
                 //Force un saut de page correct
-                if (hasMATCIAB1() && hasNotOnlyMATCIAB1() && loadPrestations().size() == 6) {
+                if (hasMATCIAB1() && hasNotOnlyMATCIAB1() && loadPrestations().size() >= 6 && loadPrestations().size() <= 7) {
                     buffer.append("\n\n");
                 }
-                // buffer.append("\n");
 
                 buffer = new StringBuffer(PRStringUtils.formatMessage(buffer, titre));
                 break;
@@ -729,10 +718,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 titre = tiersTitre.getFormulePolitesse(tiersTitre.getLangue());
 
                 //Force un saut de page correct
-                if (hasMATCIAB1() && hasNotOnlyMATCIAB1() && loadPrestations().size() == 6) {
+                if (hasMATCIAB1() && hasNotOnlyMATCIAB1() && loadPrestations().size() >= 6 && loadPrestations().size() <= 7) {
                     buffer.append("\n\n");
                 }
-                // buffer.append("\n");
 
                 buffer = new StringBuffer(PRStringUtils.formatMessage(buffer, titre));
                 break;
@@ -796,6 +784,20 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
             //<editor-fold defaultstate="collapsed" desc="ALLTYPE">
             if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Boolean hasMATCIAB2() throws FWIException {
+        // Création champs de données document assurées pour tous les types sauf MATCIAB1
+        for (int idPrestation = 0; idPrestation < loadPrestations().size(); ++idPrestation) {
+
+            final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
+
+            //<editor-fold defaultstate="collapsed" desc="ALLTYPE">
+            if (APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) {
                 return true;
             }
         }
@@ -1031,8 +1033,8 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
             if (isEmployeursMultiples() || isVersementIncomplet || isContratTravailEcheance) {
                 buffer.append(" ");
-                buffer.append(PRStringUtils.replaceString(textes.getTexte(6).getDescription(), "{montantAnnuel}",
-                        "{10}"));
+                /*buffer.append(PRStringUtils.replaceString(textes.getTexte(6).getDescription(), "{montantAnnuel}", "{10}"));*/
+                buffer.append(textes.getTexte(6).getDescription());
             }
 
             if (isEmployeursMultiples()) {
@@ -1199,6 +1201,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
         if (!hasNotOnlyMATCIAB1()) {
         } else if (hasMATCIAB1() && isEmployeursMultiples()) {
+        } else if (hasMATCIAB2() && !isEmployeursMultiples()) {
         } else {
             buffer.append("\n");
         }
