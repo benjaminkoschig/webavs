@@ -437,7 +437,7 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
 
             MessageRAPG message = createMessage(champsAnnonce);
 
-            message.setMinorVersion(BigInteger.valueOf(3));
+            message.setMinorVersion(BigInteger.valueOf(0));
             message.setDeliveryOffice(ofCommon.createDeliveryOfficeType());
             message.setSendingApplication(ofEch0058.createSendingApplicationType());
             if (!JadeStringUtil.isBlankOrZero(champsAnnonce.getInsurantDomicileCanton())
