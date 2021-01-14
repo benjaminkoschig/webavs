@@ -58,6 +58,7 @@ public class PCValidationDecisionsHelper extends PegasusHelper {
                 process.setDateDoc(vb.getDateDoc());
                 process.setPersref(persRef);
                 process.setIsForFtp(Boolean.TRUE);
+                process.setIsForFtpValid(Boolean.TRUE);
                 BProcessLauncher.startJob(process);
 
             }
