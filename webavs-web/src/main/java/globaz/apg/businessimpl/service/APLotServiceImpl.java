@@ -24,6 +24,9 @@ public class APLotServiceImpl  extends JadeAbstractService implements APLotServi
         statement.createStatement();
         ResultSet res = statement.executeQuery(sql);
         res.next();
+        if(res.getObject(1) == null) {
+            return null;
+        }
         return res.getObject(1).toString();
 
     }
