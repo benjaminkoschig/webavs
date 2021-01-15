@@ -862,8 +862,7 @@ public class AFApercuReleve extends BEntity {
     /**
      * Calcule et met à jour les montant dans la liste des cotisations du relevé.
      * 
-     * @param viewBean
-     * @param request
+     * @param newLineList
      */
     public void calculeCotisation(List<?> newLineList) throws Exception {
 
@@ -875,12 +874,13 @@ public class AFApercuReleve extends BEntity {
         }
 
         if (CodeSystem.ETATS_RELEVE_SAISIE.equals(getEtat())) {
-
-            //ESVE récupération de la masse des cotisatoins avs/ai pour le calcul du taux moyen à la FERCIAM
             AFApercuReleveLineFacturation releveAssCotiAvsAi = null;
-            for (int j = 0; j < cotisationList.size(); j++) {
-                if (CodeSystem.TYPE_ASS_COTISATION_AVS_AI.equals(cotisationList.get(j).getTypeAssurance())) {
-                    releveAssCotiAvsAi = cotisationList.get(j);
+            if("true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER, "false"))) {
+                //ESVE récupération de la masse des cotisatoins avs/ai pour le calcul du taux moyen à la FERCIAM
+                for (int j = 0; j < cotisationList.size(); j++) {
+                    if (CodeSystem.TYPE_ASS_COTISATION_AVS_AI.equals(cotisationList.get(j).getTypeAssurance())) {
+                        releveAssCotiAvsAi = cotisationList.get(j);
+                    }
                 }
             }
 
@@ -1084,21 +1084,27 @@ public class AFApercuReleve extends BEntity {
 
                         if (line.getTauxGenre().equals(CodeSystem.GEN_VALEUR_ASS_TAUX_VARIABLE)) {
                             findAndSetTauxVariable(line, String.valueOf(newLine.getMasse()), masseGeneral);
-                            line.setMasse(newLine.getMasse());
 
                             //ESVE calculer le taux moyen spécifique à la FERCIAM
-                            String tauxMoyen = AFCalculAssurance.updateTauxMoyen(getSession()
-                                    , getAffiliation().getAffiliationId()
-                                    , line.getAssuranceId()
-                                    , line.getTypeAssurance()
-                                    , line.getGenreAssurance()
-                                    , line.getTauxGenre()
-                                    , Double.toString(releveAssCotiAvsAi.getMasse())
-                                    , line.getDebutPeriode().substring(6)
-                                    , type);
+                            if("true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER, "false"))) {
+                                line.setMasse(newLine.getMasse());
+                                Double massReveleAccCotiAvsAi = new Double(0);
+                                if(releveAssCotiAvsAi != null){
+                                    massReveleAccCotiAvsAi = releveAssCotiAvsAi.getMasse();
+                                }
+                                String tauxMoyen = AFCalculAssurance.updateTauxMoyen(getSession()
+                                        , getAffiliation().getAffiliationId()
+                                        , line.getAssuranceId()
+                                        , line.getTypeAssurance()
+                                        , line.getGenreAssurance()
+                                        , line.getTauxGenre()
+                                        , Double.toString(massReveleAccCotiAvsAi)
+                                        , line.getDebutPeriode().substring(6)
+                                        , type);
 
-                            //ESVE mettre à jour la ligne avec le taux moyen spécifique à la FERCIAM
-                            if (tauxMoyen != null) line.setTaux(tauxMoyen);
+                                //ESVE mettre à jour la ligne avec le taux moyen spécifique à la FERCIAM
+                                if (tauxMoyen != null) line.setTaux(tauxMoyen);
+                            }
 
                             newLine.setMontantCalculer(JANumberFormatter.round(
                                     ((newLine.getMasse() * line.getTaux()) / line.getFraction()), 0.05, 2,
@@ -1241,7 +1247,7 @@ public class AFApercuReleve extends BEntity {
      *            la ligne du relevé
      * @param masse
      *            la masse de la période à facturer
-     * @param tauxVarUtil
+     * @param masseAnnuelTaux
      *            l'utilitaire de calcul du taux variable
      * @throws Exception
      *             si une exception survient
@@ -1870,8 +1876,7 @@ public class AFApercuReleve extends BEntity {
 
     /**
      * Recherche l'affiliation concernée
-     * 
-     * @param transaction
+     *
      * @throws Exception
      */
     public AFAffiliation getAffiliation() throws Exception {

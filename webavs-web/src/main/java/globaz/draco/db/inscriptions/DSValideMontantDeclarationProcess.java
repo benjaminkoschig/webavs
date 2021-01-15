@@ -533,16 +533,17 @@ public class DSValideMontantDeclarationProcess extends BProcess {
                             }
                         } else {
                             //ESVE calculer le taux moyen spécifique à la FERCIAM
-                            AFCalculAssurance.updateTauxMoyen(getSession()
-                                    , declaration.getAffiliation().getAffiliationId()
-                                    , ligneDec.getAssuranceId()
-                                    , cotisation.getAssurance().getTypeAssurance()
-                                    , cotisation.getAssurance().getAssuranceGenre()
-                                    , tauxAssurance.getGenreValeur()
-                                    , declaration.getMasseSalTotal()
-                                    , declaration.getAnnee()
-                                    , declaration.getTypeDeclaration());
-                            //ligneDec.setMontantDeclaration(ligneDecAssCotiAvsAi.getCotisationDue());
+                            if("true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER, "false"))) {
+                                AFCalculAssurance.updateTauxMoyen(getSession()
+                                        , declaration.getAffiliation().getAffiliationId()
+                                        , ligneDec.getAssuranceId()
+                                        , cotisation.getAssurance().getTypeAssurance()
+                                        , cotisation.getAssurance().getAssuranceGenre()
+                                        , tauxAssurance.getGenreValeur()
+                                        , declaration.getMasseSalTotal()
+                                        , declaration.getAnnee()
+                                        , declaration.getTypeDeclaration());
+                            }
                             ligneDec.add(getTransaction());
                         }
                     }
