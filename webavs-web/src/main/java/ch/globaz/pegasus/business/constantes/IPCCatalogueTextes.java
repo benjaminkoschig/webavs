@@ -32,6 +32,7 @@ public interface IPCCatalogueTextes {
     String PROCESS_DECISION_APRESCALCUL = "PCDecisionApresCalcul";
     String PROCESS_DECISION_APRESCALCUL_REFORME = "PCDecisionApresCalculReforme";
     String PROCESS_DECISION_APRESCALCUL_COPIE = "PCDecisionApresCalculCopie";
+    String PROCESS_DECISION_APRESCALCUL_COPIE_REFORME = "PCDecisionApresCalculCopieReforme";
     String PROCESS_DECISION_APRESCALCUL_PG = "PCDecisionApresCalculPg";
     String PROCESS_DECISION_BILLAG = "PCAttestationBillag";
     String PROCESS_DECISION_REDEVANCE = "PCAttestationRedevance";

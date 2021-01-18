@@ -255,11 +255,21 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
             if (copie.getSimpleCopiesDecision().getLettreBase()) {
                 dataCopie = new DocumentData();
                 dataCopie = buildCopiesDoc(dataCopie, copie.getSimpleCopiesDecision(), tiersBeneficiaire);
-                dataCopie.addData(IPCCatalogueTextes.STR_ID_PROCESS,
-                        IPCCatalogueTextes.PROCESS_DECISION_APRESCALCUL_COPIE);
-                mergeDataAndPubInfosWithPixisFill(allDoc, dataCopie, new PegasusPubInfoBuilder().rectoVersoLast()
-                                .getPubInfo(), pubInfosPixisPropertiesCopie, dacOO.getPersonneForDossier(),
-                        TYPE_DOCUMENT.COPIE, idTiersCopie, dacOO.getNoDecision());
+
+                if (isReformePC()) {
+                    dataCopie.addData(IPCCatalogueTextes.STR_ID_PROCESS,
+                            IPCCatalogueTextes.PROCESS_DECISION_APRESCALCUL_COPIE_REFORME);
+                    mergeDataAndPubInfosWithPixisFill(allDoc, dataCopie, new PegasusPubInfoBuilder().rectoVersoLast()
+                                    .getPubInfo(), pubInfosPixisPropertiesCopie, dacOO.getPersonneForDossier(),
+                            TYPE_DOCUMENT.COPIE, idTiersCopie, dacOO.getNoDecision());
+                } else {
+                    dataCopie.addData(IPCCatalogueTextes.STR_ID_PROCESS,
+                            IPCCatalogueTextes.PROCESS_DECISION_APRESCALCUL_COPIE);
+                    mergeDataAndPubInfosWithPixisFill(allDoc, dataCopie, new PegasusPubInfoBuilder().rectoVersoLast()
+                                    .getPubInfo(), pubInfosPixisPropertiesCopie, dacOO.getPersonneForDossier(),
+                            TYPE_DOCUMENT.COPIE, idTiersCopie, dacOO.getNoDecision());
+                }
+
             }
 
             // ***** Plan calcul copie
