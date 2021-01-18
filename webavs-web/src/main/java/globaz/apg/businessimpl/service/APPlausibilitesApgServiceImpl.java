@@ -136,6 +136,8 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
             return false;
         } else if (APGUtils.isTypeAnnonceJourIsole(annonce.getServiceType()) && ruleInSkipList(rule)) {
             return true;
+        } else if (annonce.getHasComplementCIAB() && ruleInSkipListMATCIAB1(rule)) {
+            return true;
         }
         return false;
     }
@@ -143,6 +145,11 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
     private boolean ruleInSkipList(Rule rule) {
         return APAllPlausibiliteRules.R_307.getCodeAsString().equals(rule.getErrorCode())
                 || APAllPlausibiliteRules.R_321.getCodeAsString().equals(rule.getErrorCode());
+    }
+
+    private boolean ruleInSkipListMATCIAB1(Rule rule) {
+        return APAllPlausibiliteRules.R_508.getCodeAsString().equals(rule.getErrorCode())
+                || APAllPlausibiliteRules.R_509.getCodeAsString().equals(rule.getErrorCode());
     }
 
     private boolean ruleConcernePlageValeurs(Rule rule) {

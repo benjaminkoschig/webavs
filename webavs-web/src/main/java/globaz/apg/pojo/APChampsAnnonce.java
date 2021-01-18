@@ -507,6 +507,16 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
     /*
      * (non-Javadoc)
      *
+     * @see globaz.apg.pojo.IAPAnnonce#getHasComplementCIAB()
+     */
+    @Override
+    public Boolean getHasComplementCIAB() {
+        return hasComplementCIAB;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setAccountingMonth(java.lang.String)
      */
     @Override
@@ -904,7 +914,13 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
         this.totalAPG = totalAPG;
     }
 
-    public void setComplementCIAB(Boolean hasComplementCIAB) {
+    /*
+     * (non-Javadoc)
+     *
+     * @see globaz.apg.pojo.IAPAnnonce#setHasComplementCIAB(java.lang.String)
+     */
+    @Override
+    public void setHasComplementCIAB(Boolean hasComplementCIAB) {
         this.hasComplementCIAB = hasComplementCIAB;
     }
 

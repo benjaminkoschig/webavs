@@ -21,7 +21,7 @@ public class APCalculateurComplementDonneeDomaine {
 
     private Map<String, APSituationProfessionnelleCanton> situationProfessionnelle = new HashMap<String, APSituationProfessionnelleCanton>();
 
-    private Map<String, BigDecimal[]> taux = new HashMap<String, BigDecimal[]>();
+    private Map<String, BigDecimal[]> tauxParSitPro = new HashMap<String, BigDecimal[]>();
     private Map<EMontantsMax, BigDecimal> montantsMax;
     private Integer nombreInitialDeSituationsProfessionelles = 0;
 
@@ -39,8 +39,8 @@ public class APCalculateurComplementDonneeDomaine {
         return situationProfessionnelle;
     }
 
-    public Map<String, BigDecimal[]> getTaux() {
-        return taux;
+    public Map<String, BigDecimal[]> getTauxParSitPro() {
+        return tauxParSitPro;
     }
 
     public void setRepartitions(List<APRepartitionJointPrestation> repartitions) {
@@ -51,8 +51,8 @@ public class APCalculateurComplementDonneeDomaine {
         this.situationProfessionnelle = situationProfessionnelle;
     }
 
-    public void setTaux(Map<String, BigDecimal[]> taux) {
-        this.taux = taux;
+    public void setTauxParSitPro(Map<String, BigDecimal[]> tauxParSitPro) {
+        this.tauxParSitPro = tauxParSitPro;
     }
     
     public APPrestation getPrestation() {

@@ -91,7 +91,7 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
 
                     BigDecimal montantBrutRepartition = getMontantBrutRepartition(
                             montantBrutReparti, prestationCalculeeAPersister.getNombreDeJoursSoldes());
-                    final BigDecimal[] tauxAvsAc = prestationStandard.getTaux().get(sitProf.getId());
+                    final BigDecimal[] tauxAvsAc = prestationStandard.getTauxParSitPro().get(sitProf.getId());
 
                     APCotisation cotisationAvsStandardParitaire = getCotisationFromMap(prestationStandard.getMapCotisation().get(repartition), APProperties.ASSURANCE_AVS_PAR_ID.getValue());
                     APCotisation cotisationAvsStandardPersonnelle = getCotisationFromMap(prestationStandard.getMapCotisation().get(repartition), APProperties.ASSURANCE_AVS_PER_ID.getValue());
@@ -307,7 +307,7 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
         // Pour chacune des prestations standard Joint répartition
         for (final APCalculateurComplementDonneeDomaine prestationStandard : listePrestationsComplementDomaineConverties) {
 
-            prestationStandard.setTaux(donneesPersistancePourCalcul.getTaux());
+            prestationStandard.setTauxParSitPro(donneesPersistancePourCalcul.getTauxParSitPro());
             prestationStandard.setMontantsMax(donneesPersistancePourCalcul.getMontantsMax());
 
             // Recherche de la situation professionnelle

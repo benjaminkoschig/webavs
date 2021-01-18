@@ -35,7 +35,8 @@ public class APCalculateurComplementDonneesPersistence {
 
     private Map<String, String> mapTypeAffiliation = new HashMap<>();
     
-    private Map<String, BigDecimal[]> taux = new HashMap<String, BigDecimal[]>();
+    private Map<String, BigDecimal[]> tauxParSitPro = new HashMap<String, BigDecimal[]>();
+    private HashMap<String, Map<String, BigDecimal[]>> tauxParPrestation = new HashMap<String, Map<String, BigDecimal[]>>();
     private Map<String, FWCurrency> mapRMD;
     private Map<EMontantsMax, BigDecimal> montantsMax;
     private Map<String, ECanton> mapCanton;
@@ -170,12 +171,20 @@ public class APCalculateurComplementDonneesPersistence {
         this.situationProfessionnelleEmployeur = situationProfessionnelleEmployeur;
     }
 
-    public Map<String, BigDecimal[]> getTaux() {
-        return taux;
+    public Map<String, BigDecimal[]> getTauxParSitPro() {
+        return tauxParSitPro;
     }
 
-    public void setTaux(Map<String, BigDecimal[]> taux) {
-        this.taux = taux;
+    public void setTauxParSitPro(Map<String, BigDecimal[]> tauxParSitPro) {
+        this.tauxParSitPro = tauxParSitPro;
+    }
+
+    public HashMap<String, Map<String, BigDecimal[]>> getTauxParPrestation() {
+        return tauxParPrestation;
+    }
+
+    public void setTauxParPrestation(HashMap<String, Map<String, BigDecimal[]>> tauxParPrestation) {
+        this.tauxParPrestation = tauxParPrestation;
     }
 
     public Map<String, FWCurrency> getMapRMD() {

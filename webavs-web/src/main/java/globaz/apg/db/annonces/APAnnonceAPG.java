@@ -140,6 +140,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
     private String totalAPG = "";
     private String typeAnnonce = "";
     private String idDroit = "";
+    private String hasComplementCIAB = "";
 
     /**
      * (non-Javadoc)
@@ -1563,6 +1564,16 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
     }
 
     /**
+     * setter pour l'attribut hasComplementCIAB
+     *
+     * @param hasComplementCIAB
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setHasComplementCIAB(String hasComplementCIAB) {
+        this.hasComplementCIAB = hasComplementCIAB;
+    }
+
+    /**
      * Permet de transformer l'annonce en BD en annonce RAPG
      *
      * @return
@@ -1603,7 +1614,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
         champsAnnonce.setTimeStamp(getTimeStamp());
         champsAnnonce.setEnvelopeMessageId(getEnvelopeMessageId());
         champsAnnonce.setIdDroit(getIdDroit());
-
+        champsAnnonce.setHasComplementCIAB("1".equals(getHasComplementCIAB()));
         return champsAnnonce;
     }
 
@@ -1761,6 +1772,13 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
      */
     public String getControlNumber() {
         return numeroControle;
+    }
+
+    /**
+     * return the hasComplementCIAB (possèdeComplementCIAB)
+     */
+    public String getHasComplementCIAB() {
+        return hasComplementCIAB;
     }
 
     public void setIdDroit(String idDroit) {

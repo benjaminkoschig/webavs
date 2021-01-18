@@ -36,7 +36,7 @@ import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 public class APGenerateurAnnonceRAPG {
 
     public APAnnonceAPG createAnnonceSedex(BSession session, APPrestation prestation, APDroitLAPG droit,
-            String moisAnneeComptable) throws Exception {
+            String moisAnneeComptable, Boolean hasComplementCIAB) throws Exception {
         boolean isPrestationMaternite = prestation.getNoRevision().equals(IAPDroitMaternite.CS_REVISION_MATERNITE_2005);
 
         // On va rechercher le bon type de droit
@@ -68,6 +68,7 @@ public class APGenerateurAnnonceRAPG {
         annonceACreer.setNumeroCaisse(CaisseHelperFactory.getInstance().getNoCaisse(session.getApplication()));
         annonceACreer.setNumeroAgence(CaisseHelperFactory.getInstance().getNoAgence(session.getApplication()));
         annonceACreer.setMoisAnneeComptable(moisAnneeComptable);
+        annonceACreer.setHasComplementCIAB( hasComplementCIAB? "1" : "0");
         annonceACreer.setContenuAnnonce(session.getCode(prestation.getContenuAnnonce()));
 
         // LGA 06.09.2013 CE TRAITEMENT N'A PLUS LIEU D'ÊTRE SUITE AU MANDAT IR D0005 POINT 5.3.1.8 SAUF EN CAS DE

@@ -205,6 +205,11 @@ public interface IAPChampsAnnonceTTT {
     public abstract String getTotalAPG();
 
     /**
+     * @return the hasComplementCIAB
+     */
+    public abstract Boolean getHasComplementCIAB();
+
+    /**
      * @param accountingMonth
      *            the accountingMonth to set
      */
@@ -439,5 +444,11 @@ public interface IAPChampsAnnonceTTT {
      *            the totalAPG to set
      */
     public abstract void setTotalAPG(String totalAPG);
+
+    /**
+     * @param hasComplementCIAB
+     *            the hasComplementCIAB to set
+     */
+    public abstract void setHasComplementCIAB(Boolean hasComplementCIAB);
 
 }

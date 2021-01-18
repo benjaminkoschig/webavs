@@ -85,15 +85,14 @@ public class APGenererAnnoncesProcess extends BProcess {
 
             // managerPrestation.setForPrestationsSansAnnonce(true);
             managerPrestation.setForGenre(APTypeDePrestation.STANDARD.getCodesystemString());
-
+            Boolean hasComplementCIAB = Boolean.FALSE; // jamais de prestations complément CIAB comme on ne retourne que les prestations STANDARD
             BStatement statement = managerPrestation.cursorOpen(transaction);
 
             APPrestation prestation = null;
             APGenerateurAnnonceRAPG generateurAnnonceRAPG = new APGenerateurAnnonceRAPG();
             while ((prestation = (APPrestation) managerPrestation.cursorReadNext(statement)) != null) {
                 APAnnonceAPG annonceACreer = generateurAnnonceRAPG.createAnnonceSedex(session, prestation,
-                        getDroit(prestation), moisAnneeComptable);
-
+                        getDroit(prestation), moisAnneeComptable, hasComplementCIAB);
                 annonceACreer.add(transaction);
                 getMemoryLog().logMessage(
                         MessageFormat.format(getSession().getLabel("ANNONCE_AJOUTEE"),

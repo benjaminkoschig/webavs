@@ -129,6 +129,9 @@ public class APcalculateurMATCIAB2 implements IAPPrestationCalculateur<APPrestat
             // assigne la nouvelle prestation en IPRDemande.CS_TYPE_MATERNITE
             prestationACreer.setType(IPRDemande.CS_TYPE_MATERNITE);
 
+            // Récupération du basicDailyAmount
+            prestationACreer.setBasicDailyAmount(prestationACreer.getMontantJournalier());
+
             prestationCalculeeAPersister.setPrestation(prestationACreer);
             List<APRepartitionCalculeeAPersister> repartitions = new LinkedList<APRepartitionCalculeeAPersister>();
             prestationCalculeeAPersister.setRepartitions(repartitions);

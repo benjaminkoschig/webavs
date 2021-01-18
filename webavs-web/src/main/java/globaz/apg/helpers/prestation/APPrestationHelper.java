@@ -1106,6 +1106,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             prestationCalculee.setIdPrestationApg(prestationCourant.getPrestation().getIdPrestationApg());
             prestationCalculee.setDroitAcquis(new FWCurrency(prestationCourant.getPrestation().getDroitAcquis()));
             prestationCalculee.setIdDroit(prestationCourant.getPrestation().getIdDroit());
+            // Les prestations MATCIAB2 ne sont pas annoncées
             prestationCalculee.setContenuAnnonce(prestationCourant.getPrestation().getContenuAnnonce());
             prestationCalculee.setTypePrestation(prestationCourant.getPrestation().getType());
             APResultatCalcul resultatCalcul = new APResultatCalcul();
@@ -1261,6 +1262,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             final PRDemande demande = ApgServiceLocator.getEntityService().getDemandeDuDroit(session, transaction,
                     droit.getIdDroit());
 
+            Boolean hasComplementCIAB = Boolean.FALSE;
             // On stocke chaque prestation STANDARD ainsi que le droit dans un container de données
             final List<APValidationPrestationAPGContainer> containers = new ArrayList<APValidationPrestationAPGContainer>();
             for (int ctr = 0; ctr < prestations.size(); ctr++) {
@@ -1276,6 +1278,10 @@ public class APPrestationHelper extends PRAbstractHelper {
                         containers.add(container);
                     }
                 }
+                // On recherche si ie droit possède des MATCIAB1
+                if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestations.get(ctr).getGenre())) {
+                    hasComplementCIAB = Boolean.TRUE;
+                }
             }
 
             String moisAnneeComptable = JadeDateUtil.getGlobazFormattedDate(new Date());
@@ -1285,7 +1291,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             final APGenerateurAnnonceRAPG generateurAnnonceRAPG = new APGenerateurAnnonceRAPG();
             for (final APValidationPrestationAPGContainer container : containers) {
                 final APAnnonceAPG annonce = generateurAnnonceRAPG.createAnnonceSedex(session,
-                        container.getPrestation(), container.getDroit(), moisAnneeComptable);
+                        container.getPrestation(), container.getDroit(), moisAnneeComptable, hasComplementCIAB);
                 container.setAnnonce(annonce);
             }
 
@@ -1752,6 +1758,9 @@ public class APPrestationHelper extends PRAbstractHelper {
         setDateFinContrat(session, apSitProJointEmployeursIsVersementEmployeur);
         List<APPrestation> apPrestationsIsDateFinContrat = filterAPPrestationsIsDateFinContratMATCIAB1(apSitProJointEmployeursIsVersementEmployeur, apPrestationsIsDebutCotisationComplementaireAvantDebutPrestations);
 
+        // Recherche les taux par prestations et par SitPro
+        donneesPersistence.setTauxParPrestation(getTauxParPrestationsEtSitPro(session, donneesPersistence, apSitProJointEmployeursIsVersementEmployeur, apPrestationsIsDateFinContrat));
+
         donneesPersistence.setListPrestationStandard(apPrestationsIsDateFinContrat);
         donneesPersistence.setSituationProfessionnelleEmployeur(apSitProJointEmployeursIsVersementEmployeur);
 
@@ -1778,6 +1787,36 @@ public class APPrestationHelper extends PRAbstractHelper {
         donneesPersistence.setMontantsMax(montantsMax);
         return donneesPersistence;
     }
+
+    private HashMap<String, Map<String, BigDecimal[]>> getTauxParPrestationsEtSitPro(BSession session, APCalculateurComplementDonneesPersistence donneesPersistence, List<APSitProJointEmployeur> apSitProJointEmployeurs, List<APPrestation> apPrestationsIsDateFinContrat) throws Exception {
+        HashMap<String, Map<String, BigDecimal[]>> tauxParPrestation = new HashMap<String, Map<String, BigDecimal[]>>();
+
+        for (APPrestation apPrestation : apPrestationsIsDateFinContrat) {
+
+            HashMap<String, BigDecimal[]> tauxParSitPro = new HashMap<String, BigDecimal[]>();
+
+            // Récupération des taux
+            for (final APSitProJointEmployeur apSitProJointEmployeur : apSitProJointEmployeurs) {
+                // {taux AVS par, taux AC par}>
+                final BigDecimal[] taux = new BigDecimal[4];
+
+                taux[0] = getTauxAssurance(APProperties.ASSURANCE_AVS_PAR_ID.getValue(), apPrestation.getDateDebut(),
+                        session);
+                taux[1] = getTauxAssurance(APProperties.ASSURANCE_AC_PAR_ID.getValue(), apPrestation.getDateDebut(),
+                        session);
+                taux[2] = getTauxAssurance(APProperties.ASSURANCE_AVS_PER_ID.getValue(), apPrestation.getDateDebut(),
+                        session);
+                taux[3] = getTauxAssurance(APProperties.ASSURANCE_AC_PER_ID.getValue(), apPrestation.getDateDebut(),
+                        session);
+
+                tauxParSitPro.put(apSitProJointEmployeur.getIdSitPro(), taux);
+            }
+
+            tauxParPrestation.put(apPrestation.getIdPrestation(), tauxParSitPro);
+        }
+
+    return tauxParPrestation;
+}
 
     private void setDateFinContrat(BSession session, List<APSitProJointEmployeur> apSitProJointEmployeursIsVersementEmployeur) throws Exception {
         for (final APSitProJointEmployeur apSitProJointEmployeur : apSitProJointEmployeursIsVersementEmployeur) {
@@ -1929,26 +1968,11 @@ public class APPrestationHelper extends PRAbstractHelper {
 
         List<APSitProJointEmployeur> apSitProJointEmployeursIsComplement = new ArrayList<>();
 
-        // Récupération des taux
         for (final APSitProJointEmployeur apSitProJointEmployeur : apSitProJointEmployeurs) {
 
             String typeAffiliation = getTypeAffiliation(session, apSitProJointEmployeur.getIdAffilie());
 
             donneesPersistence.getMapTypeAffiliation().put(apSitProJointEmployeur.getIdSitPro(), typeAffiliation);
-
-            // {taux AVS par, taux AC par}>
-            final BigDecimal[] taux = new BigDecimal[4];
-
-            taux[0] = getTauxAssurance(APProperties.ASSURANCE_AVS_PAR_ID.getValue(), dateDebutPrestationStandard,
-                    session);
-            taux[1] = getTauxAssurance(APProperties.ASSURANCE_AC_PAR_ID.getValue(), dateDebutPrestationStandard,
-                    session);
-            taux[2] = getTauxAssurance(APProperties.ASSURANCE_AVS_PER_ID.getValue(), dateDebutPrestationStandard,
-                    session);
-            taux[3] = getTauxAssurance(APProperties.ASSURANCE_AC_PER_ID.getValue(), dateDebutPrestationStandard,
-                    session);
-
-            donneesPersistence.getTaux().put(apSitProJointEmployeur.getIdSitPro(), taux);
 
             // list les cantons
             Map<String, ECanton> mCanton = new HashMap<>();
@@ -2025,7 +2049,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             taux[3] = getTauxAssurance(APProperties.ASSURANCE_AC_PER_ID.getValue(), dateDebutPrestationStandard,
                     session);
 
-            donneesPersistence.getTaux().put(apSitProJointEmployeur.getIdSitPro(), taux);
+            donneesPersistence.getTauxParSitPro().put(apSitProJointEmployeur.getIdSitPro(), taux);
 
             // list les cantons
             Map<String, ECanton> mCanton = new HashMap<>();

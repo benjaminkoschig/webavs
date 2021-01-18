@@ -456,14 +456,14 @@
 			</band>
 		</columnHeader>
 		<detail>
-			<band height="70"  isSplitAllowed="false" >
+			<band height="57"  isSplitAllowed="false" >
 				<subreport  isUsingCache="true">
 					<reportElement
 						mode="Opaque"
 						x="0"
 						y="0"
 						width="509"
-						height="12"
+						height="14"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="subreport-5"
@@ -502,7 +502,7 @@
 						<subreportParameterExpression><![CDATA[$F{CHAMP_MONTANT_BRUT}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportParameter  name="FIELD_REMARQUE_PRESTATION">
-						<subreportParameterExpression><![CDATA[$F{FIELD_REMARQUE_PRESTATION}]]></subreportParameterExpression>
+						<subreportParameterExpression><![CDATA[]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportExpression  class="java.lang.String"><![CDATA[$P{PARAM_AP_DECISION_DETAIL}]]></subreportExpression>
 				</subreport>
@@ -510,9 +510,9 @@
 					<reportElement
 						mode="Opaque"
 						x="0"
-						y="57"
+						y="42"
 						width="509"
-						height="12"
+						height="14"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="subreport-6"
@@ -558,7 +558,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="0"
-						y="12"
+						y="14"
 						width="512"
 						height="14"
 						forecolor="#000000"
@@ -575,30 +575,10 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{CHAMP_TEXT1}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
-						mode="Opaque"
-						x="0"
-						y="26"
-						width="512"
-						height="14"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="textField-37"
-						stretchType="NoStretch"
-						positionType="Float"
-						isPrintRepeatedValues="false"
-						isRemoveLineWhenBlank="true"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="true"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{CHAMP_TEXT2}]]></textFieldExpression>
-				</textField>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="0"
-						y="43"
+						y="28"
 						width="510"
 						height="14"
 						forecolor="#000000"

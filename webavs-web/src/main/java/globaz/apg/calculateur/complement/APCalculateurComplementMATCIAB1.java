@@ -18,7 +18,6 @@ import globaz.apg.module.calcul.APCotisationData;
 import globaz.apg.module.calcul.APRepartitionPaiementData;
 import globaz.apg.module.calcul.APSituationProfessionnelleCanton;
 import globaz.apg.module.calcul.complement.APComplementCalculateur;
-import globaz.apg.module.calcul.constantes.IAPConstantes;
 import globaz.apg.properties.APProperties;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.util.JACalendar;
@@ -104,7 +103,7 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
                     montantBrutRepartition = montantBrutRepartition.multiply(new BigDecimal(prestationCalculeeAPersister.getNombreDeJoursSoldes()));
                     montantBrutRepartition = arrondir(montantBrutRepartition);
 
-                    final BigDecimal[] tauxAvsAc = prestationStandard.getTaux().get(sitProf.getId());
+                    final BigDecimal[] tauxAvsAc = prestationStandard.getTauxParSitPro().get(sitProf.getId());
 
                     APCotisation cotisationAvsParitaire = getCotisationFromMap(prestationStandard.getMapCotisation().get(repartition), APProperties.ASSURANCE_AVS_PAR_ID.getValue());
                     APCotisation cotisationAvsPersonnelle = getCotisationFromMap(prestationStandard.getMapCotisation().get(repartition), APProperties.ASSURANCE_AVS_PER_ID.getValue());
@@ -340,7 +339,7 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
         // Pour chacune des prestations standard Joint répartition
         for (final APCalculateurComplementDonneeDomaine prestationStandard : listePrestationsComplementDomaineConverties) {
 
-            prestationStandard.setTaux(donneesPersistancePourCalcul.getTaux());
+            prestationStandard.setTauxParSitPro(donneesPersistancePourCalcul.getTauxParPrestation().get(prestationStandard.getPrestation().getIdPrestation()));
             prestationStandard.setMontantsMax(donneesPersistancePourCalcul.getMontantsMax());
 
             // Recherche de la situation professionnelle
@@ -441,7 +440,7 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
             final APPrestationCalculeeAPersister prestationPersistente = new APPrestationCalculeeAPersister();
 
             final APPrestation prestation = new APPrestation();
-            // Les prestations MATCIAB1 ne doivent pas être annoncées
+            // Les prestations MATCIAB1 ne sont pas annoncées
             prestation.setContenuAnnonce(null);
             prestation.setDateCalcul(JACalendar.todayJJsMMsAAAA());
             prestation.setDateDebut(prestationDomainCalculee.getDateDebut());
@@ -456,6 +455,9 @@ public class APCalculateurComplementMATCIAB1 implements IAPPrestationCalculateur
             prestation.setGenre(String.valueOf(APTypeDePrestation.MATCIAB1.getCodesystem()));
             // assigne le noRevision en CS_REVISION_MATERNITE_2005
             prestation.setNoRevision(IAPDroitMaternite.CS_REVISION_MATERNITE_2005);
+
+            // Récupération du basicDailyAmount
+            prestation.setBasicDailyAmount(prestation.getMontantJournalier());
 
             prestation.setEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
             prestationPersistente.setPrestation(prestation);

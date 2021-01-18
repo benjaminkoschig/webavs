@@ -37,6 +37,10 @@ public class Rule307 extends Rule {
         boolean dailyIndemnityGuaranteeAI = champsAnnonce.getDailyIndemnityGuaranteeAI();
         boolean allowanceFarm = champsAnnonce.getAllowanceFarm();
         try {
+            validNotEmpty(champsAnnonce.getBasicDailyAmount(), "basicDailyAmount");
+            validNotEmpty(champsAnnonce.getNumberOfDays(), "numberOfDays");
+            validNotEmpty(champsAnnonce.getAllowanceCareExpenses(), "allowanceCareExpenses");
+            validNotEmpty(champsAnnonce.getTotalAPG(), "totalAPG");
             BigDecimal numberOfDays = new BigDecimal(champsAnnonce.getNumberOfDays());
             BigDecimal basicDailyAmount = new BigDecimal(champsAnnonce.getBasicDailyAmount());
             BigDecimal aAllowanceCareExpenses = new BigDecimal(champsAnnonce.getAllowanceCareExpenses());

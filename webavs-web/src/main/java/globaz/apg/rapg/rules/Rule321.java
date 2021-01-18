@@ -82,10 +82,13 @@ public class Rule321 extends Rule {
         }
         
         if (serviceType.equals(APGenreServiceAPG.Maternite.getCodePourAnnonce())) {
+            validNotEmpty(basicDailyAmount, "basicDailyAmount");
             if ((Float.valueOf(basicDailyAmount) > montantMiniAllocationJournalierMaternite)) {
                 return false;
             }
         } else if(!APGenreServiceAPG.isValidGenreServicePandemie(serviceType)) {
+            validNotEmpty(basicDailyAmount, "basicDailyAmount");
+            validNotEmpty(numberOfChilren, "numberOfChilren");
             if ((Integer.valueOf(numberOfChilren) > 0) && (Float.valueOf(basicDailyAmount) > montantMiniAllocationJournalierCadre)) {
                 return false;
             }
