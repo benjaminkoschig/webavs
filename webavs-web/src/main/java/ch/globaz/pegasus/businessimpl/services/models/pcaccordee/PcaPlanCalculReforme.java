@@ -130,7 +130,7 @@ public class PcaPlanCalculReforme {
 
         String dateSplit = null;
         for(List<PCAccordeePlanCalculReforme> lPcaPdc: mPcaPdc.values()) {
-            if (onlyReforme(lPcaPdc)) {
+            if (isReforme(lPcaPdc)) {
                 return lPcaPdc.get(0).getDateDebut();
             }
         }
@@ -150,6 +150,20 @@ public class PcaPlanCalculReforme {
             }
         }
         return true;
+    }
+
+    /**
+     * return vrai si le plan choisi est de type réforme
+     * @param lPcaPdc
+     * @return
+     */
+    private static boolean isReforme(List<PCAccordeePlanCalculReforme> lPcaPdc){
+        for(PCAccordeePlanCalculReforme pcaPdc : lPcaPdc) {
+            if(pcaPdc.getIsPlanRetenu() && pcaPdc.getReformePc()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

@@ -1254,7 +1254,8 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 (dateDemande.equals(dateReforme) || JadeDateUtil.isDateAfter(dateDemande, dateReforme))) {
             // calcul uniquement calcul réforme
             listePCAccordes.clear();
-        } else if (!noVersionPrecedante.isEmpty()){
+        } else if (!droit.getDemande().getSimpleDemande().getForcerCalculTransitoire() &&
+                !noVersionPrecedante.isEmpty()){
             if(!retroactif) {
                 // Si derniere periode de la version droit - 1 réforme : calcul uniquement calcul réforme
                 uniquementReformeDroitPrecedant(droit, listePCAccordes, noVersionPrecedante);
