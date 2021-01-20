@@ -552,7 +552,7 @@ public class Calcul {
      * CLE_INTER_LOYER_MONTANT_BRUT
      */
     public Montant getLoyerMontantBrut() {
-        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_LOYER_MONTANT_NET));
+        return getLoyerMontant(IPCValeursPlanCalcul.CLE_INTER_LOYER_MONTANT_BRUT, IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_LOYER_BRUT);
     }
 
     /**

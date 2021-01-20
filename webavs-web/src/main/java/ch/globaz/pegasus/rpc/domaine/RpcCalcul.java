@@ -114,14 +114,12 @@ public class RpcCalcul {
      * FC27
      */
     public Montant getRentGrossTotal() {
-        return calcul.getDepensesLoyerBrut()
-            .add(calcul.getDepensesLoyerNet())
-            .add(calcul.getDepensesLoyerCharge())
-            .add(calcul.getDepensesLoyerValeurLocativeAppHabite())
-            .add(calcul.getDepensesLoyerChargesForfaitaires())
-            .add(calcul.getDepensesLoyerDroitHabitation())
-            .add(calcul.getDepensesLoyerFraisDeChauffage())
-            .add(calcul.getDepensesLoyerPensionNonReconnue());
+        return calcul.getLoyerMontantBrut()
+                .add(calcul.getLoyerMontantNet())
+                .add(calcul.getLoyerCharge())
+                .add(calcul.getLoyerFraisDeChauffage())
+                .add(calcul.getLoyerPensionNonReconnue())
+                .add(calcul.getLoyerValeurLocativeAppHabite());
     }
 
     /**
@@ -320,9 +318,6 @@ public class RpcCalcul {
     public Montant getPartLoyerTotatBrut() {
         Montant loyer = calcul.getDepensesLoyerTotalNonPlafonne();
         Montant plafond = getLoyerMaximum();
-        if (loyer.greater(plafond)) {
-            return plafond;
-        }
         return loyer;
     }
 
@@ -441,17 +436,6 @@ public class RpcCalcul {
         return calcul.getDepensesPersonnellesTotal();
     }
 
-    /**
-     * FC27
-     */
-    public Montant getLoyerMontantNet() {
-        Montant loyer = calcul.getLoyerMontantNet();
-        Montant plafond = getLoyerMaximum();
-        if (loyer.greater(plafond)) {
-            return plafond;
-        }
-        return loyer;
-    }
 
     /**
      * Depalfonnement de loyer
