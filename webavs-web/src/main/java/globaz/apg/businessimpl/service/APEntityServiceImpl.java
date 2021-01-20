@@ -11,6 +11,7 @@ import globaz.apg.db.droits.*;
 import globaz.apg.db.prestation.*;
 import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.enums.APModeEditionDroit;
+import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.enums.APValidationDroitError;
 import globaz.apg.exceptions.APBusinessException;
 import globaz.apg.exceptions.APEntityNotFoundException;
@@ -1680,8 +1681,10 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
         for (int i = 0; i < prestationManager.size(); i++) {
             final APPrestation prestation = (APPrestation) prestationManager.getEntity(i);
-            prestation.setSession(session);
-            prestation.delete(transaction);
+            if (!APTypeDePrestation.MATCIAB2.isCodeSystemEqual(genre) || JadeNumericUtil.isEmptyOrZero(prestation.getMontantBrut()) || JadeNumericUtil.isNumericPositif(prestation.getMontantBrut())) {
+                prestation.setSession(session);
+                prestation.delete(transaction);
+            }
         }
     }
 

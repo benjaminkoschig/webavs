@@ -30,6 +30,7 @@ public class APPrestationViewBean extends APPrestation implements FWViewBeanInte
     private static final long serialVersionUID = 1L;
 
     private boolean calculACOR = false;
+    private boolean calculMATCIAB2 = false;
 
     private transient APDroitLAPG droit = null;
     private APDroitDTO droitDTO = null;
@@ -120,6 +121,15 @@ public class APPrestationViewBean extends APPrestation implements FWViewBeanInte
     }
 
     /**
+     * getter pour l'attribut calcul MATCIAB2
+     *
+     * @return la valeur courante de l'attribut calcul MATCIAB2
+     */
+    public boolean isCalculMATCIAB2() {
+        return calculMATCIAB2;
+    }
+
+    /**
      * getter pour l'attribut derniere prestation
      * 
      * @return la valeur courante de l'attribut derniere prestation
@@ -177,6 +187,16 @@ public class APPrestationViewBean extends APPrestation implements FWViewBeanInte
      */
     public void setCalculACOR(boolean calculACOR) {
         this.calculACOR = calculACOR;
+    }
+
+    /**
+     * setter pour l'attribut calcul MATCIAB2
+     *
+     * @param calculMATCIAB2
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setCalculMATCIAB2(boolean calculMATCIAB2) {
+        this.calculMATCIAB2 = calculMATCIAB2;
     }
 
     /**

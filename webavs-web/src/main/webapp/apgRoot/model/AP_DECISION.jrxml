@@ -570,7 +570,7 @@
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{CHAMP_TEXT1}]]></textFieldExpression>
@@ -592,7 +592,7 @@
 						isPrintWhenDetailOverflows="false">
 							<printWhenExpression><![CDATA[new Boolean($F{CHAMP_TEXT1}!=null)]]></printWhenExpression>
 						</reportElement>
-					<textElement textAlignment="Center" verticalAlignment="Bottom" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Center" verticalAlignment="Bottom" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_TITRE_DETAIL2}]]></textFieldExpression>
@@ -608,7 +608,7 @@
 			</band>
 		</pageFooter>
 		<lastPageFooter>
-			<band height="40"  isSplitAllowed="true" >
+			<band height="31"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="2"

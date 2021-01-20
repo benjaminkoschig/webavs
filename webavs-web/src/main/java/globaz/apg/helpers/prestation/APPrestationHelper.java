@@ -66,6 +66,7 @@ import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.JadeLogger;
@@ -455,7 +456,9 @@ public class APPrestationHelper extends PRAbstractHelper {
         for (int i = 0; i < mgr.getSize(); i++) {
             final APPrestation prestation = (APPrestation) mgr.getEntity(i);
             if (typeDePrestation == null || prestation.getGenre().equals(typeDePrestation.getCodesystemString())) {
-                prestation.delete(transaction);
+                if (typeDePrestation == null || !APTypeDePrestation.MATCIAB2.isCodeSystemEqual(typeDePrestation.getCodesystemString()) || JadeNumericUtil.isEmptyOrZero(prestation.getMontantBrut()) || JadeNumericUtil.isNumericPositif(prestation.getMontantBrut())) {
+                    prestation.delete(transaction);
+                }
             }
         }
     }
@@ -1272,10 +1275,13 @@ public class APPrestationHelper extends PRAbstractHelper {
                         || APTypeDePrestation.PANDEMIE.isCodeSystemEqual(prestations.get(ctr).getGenre())) {
                     // On évite les prestations de restitutions
                     if (!IAPAnnonce.CS_RESTITUTION.equals(prestations.get(ctr).getContenuAnnonce())) {
-                        final APValidationPrestationAPGContainer container = new APValidationPrestationAPGContainer();
-                        container.setDroit(droit);
-                        container.setPrestation(prestations.get(ctr));
-                        containers.add(container);
+                        // Si on à lancé le calcul MATCIAB2 sur un droit non modifiable on ne contrôle pas les prestations
+                        if ((!viewBean.isCalculMATCIAB2() || Arrays.asList(IAPDroitLAPG.DROITS_MODIFIABLES).contains(droit.getEtat()))) {
+                            final APValidationPrestationAPGContainer container = new APValidationPrestationAPGContainer();
+                            container.setDroit(droit);
+                            container.setPrestation(prestations.get(ctr));
+                            containers.add(container);
+                        }
                     }
                 }
                 // On recherche si ie droit possède des MATCIAB1

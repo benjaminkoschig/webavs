@@ -119,6 +119,9 @@ public class APPrestationAction extends PRDefaultAction {
                             + APPrestationHelper.ACTION_DETERMINER_TYPE_CALCUL_PRESTATIONS + viewBean.getMessage());
                 }
                 // 3 - Contrôle des plausibilité sur les prestations qui ont étés calculées
+                if (typePrestation != null && typePrestation.equals(APTypeDePrestation.MATCIAB2.getNomTypePrestation())) {
+                    viewBean.setCalculMATCIAB2(true);
+                }
                 destination = controllerLesPrestation(session, request, response, mainDispatcher, viewBean);
                 break;
             case ACOR:
@@ -285,6 +288,7 @@ public class APPrestationAction extends PRDefaultAction {
         APValidationPrestationViewBean newViewBean = new APValidationPrestationViewBean();
         newViewBean.setIdDroit(idDroit);
         getAction().changeActionPart(APPrestationHelper.ACTION_CONTROLE_PRESTATION_CALCULEES);
+        newViewBean.setCalculMATCIAB2(((APPrestationViewBean) vb).isCalculMATCIAB2());
         newViewBean = (APValidationPrestationViewBean) mainDispatcher.dispatch(newViewBean, getAction());
 
         if (FWViewBeanInterface.ERROR.equals(newViewBean.getMsgType())) {

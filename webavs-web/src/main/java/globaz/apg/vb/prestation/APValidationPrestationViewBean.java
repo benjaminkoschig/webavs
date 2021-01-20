@@ -39,7 +39,7 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
     private List<APValidationPrestationAPGContainer> prestationValidees = new ArrayList<APValidationPrestationAPGContainer>();
     private List<APErreurValidationPeriode> erreursValidationPeriodes = new ArrayList<APErreurValidationPeriode>();
     private List<String> erreursValidationsJoursIsoles = new ArrayList<String>();
-
+    private boolean calculMATCIAB2 = false;
 
 
     private List<String> messagesError = new ArrayList<>();
@@ -68,6 +68,10 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
 
     public boolean getHasErreursValidationsJoursIsoles() {
         return (erreursValidationsJoursIsoles != null) && (erreursValidationsJoursIsoles.size() > 0);
+    }
+
+    public boolean isCalculMATCIAB2() {
+        return calculMATCIAB2;
     }
 
     /**
@@ -284,6 +288,10 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
 
     public void setErreursValidationsJoursIsoles(List<String> erreursValidationsJoursIsoles) {
         this.erreursValidationsJoursIsoles = erreursValidationsJoursIsoles;
+    }
+
+    public void setCalculMATCIAB2(boolean calculMATCIAB2) {
+        this.calculMATCIAB2 = calculMATCIAB2;
     }
 
     public String getAppColor() {

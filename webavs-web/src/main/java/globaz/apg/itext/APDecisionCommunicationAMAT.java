@@ -616,6 +616,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                         // enfant et qu'il s'agit de MATCIAB2, il faut mettre le texte 2.200 à la place
                         } else if ((position == 2) && hasMATCIAB2() && !isMoreThanEnfant && state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
                             buffer.append(document.getTextes(2).getTexte(200).getDescription());
+                            if (!isEmployeursMultiples()) {
+                                buffer.append("\n");
+                            }
                         } else {
                             if (!(position == 3 && state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2)) {
                                 buffer.append(texte.getDescription());
@@ -666,7 +669,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 // Cas particulier (Destinataire employeur et lettre ACM), car paragraphe 3 est devenu générique dans le
                 // niveau 4 afin d'afficher le bon nombre de jours.
                 if (isPos3ACMEmployeur) {
-                    buffer.append(traitementLevel4Pos3ACMEmployeur(texte)); //ESVE MATERNITE A VOIR A VERIFIER
+                    buffer.append(traitementLevel4Pos3ACMEmployeur(texte));
                 } else {
                     // si c'est le texte 4.3 ou 4.2, et qu'il s'agit de MATCIAB2, il faut mettre le texte 4.200 à la place
                     if ((Integer.parseInt(texte.getPosition()) == 3 && hasMATCIAB2() && state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2 && ICTDocument.CS_EMPLOYEUR.equals(helper.getCsDestinataire()))
@@ -1122,7 +1125,12 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         if (state_dec == APDecisionCommunicationAMAT.STATE_STANDARD) {
             ref = (APReferenceDataAPG) APReferenceDataParser.loadReferenceData(getSession(), "MATERNITE", dateDebut,
                     dateFin, dateFin);
-            final double montantJournalierMax = ref.getGE().intValue();
+            final double montantJournalierMax;
+            if (hasMATCIAB1()) {
+                montantJournalierMax = ref.getGE().intValue(); // ESVE TO FIX
+            } else {
+                montantJournalierMax = ref.getGE().intValue();
+            }
             final double montantAnnuelMax = montantJournalierMax * 360;
             boolean isMontantMax = false;
 
