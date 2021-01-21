@@ -679,6 +679,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         }
         if (copie.getCopies()) {
             buildBlocCopies(data);
+            buildFooter(data);
         }
 
         return data;
