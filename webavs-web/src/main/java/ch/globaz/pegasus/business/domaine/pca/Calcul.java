@@ -265,14 +265,14 @@ public class Calcul {
     /**
      * CLE_FORTU_DETE_HYP_REAL_PROPERTY
      */
-    public Montant getFortuneDetteHypothequaireRealProperty() {
+    public Montant getFortuneDetteHypothequairePrincipale() {
         return new Montant(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_REAL_PROPERTY));
     }
 
     /**
      * CLE_FORTU_DETE_HYP_SELF_INHABITED
      */
-    public Montant getFortuneDetteHypothequaireTotalSelfinhabited() {
+    public Montant getFortuneDetteHypothequairePasPrincipale() {
         return new Montant(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_DETE_HYP_SELF_INHABITED));
     }
 

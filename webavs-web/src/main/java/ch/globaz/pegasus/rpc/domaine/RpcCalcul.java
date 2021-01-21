@@ -500,14 +500,14 @@ public class RpcCalcul {
      * FC44
      */
     public Montant getDettesHypothequairesRealProperty() {
-        return divideByTwoIfCoupleSepare(calcul.getFortuneDetteHypothequaireRealProperty());
+        return divideByTwoIfCoupleSepare(calcul.getFortuneDetteHypothequairePasPrincipale());
     }
 
     /**
      * FC43
      */
     public Montant getDettesHypothequairesSelfinhabited() {
-        return divideByTwoIfCoupleSepare(calcul.getFortuneDetteHypothequaireTotalSelfinhabited());
+        return divideByTwoIfCoupleSepare(calcul.getFortuneDetteHypothequairePrincipale());
     }
 
     /**
