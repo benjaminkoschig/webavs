@@ -570,6 +570,21 @@ public class Calcul {
     }
 
     /**
+     * CLE_INTER_LOYER_IS_FAUTEUIL_ROULANT
+     */
+    public Montant getLoyerFauteuilRoulant() {
+        TupleDonneeRapport tupleLoyers = tuple.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_LOYERS);
+        if (tupleLoyers != null) {
+            Montant valeur = Montant.ZERO;
+            for (TupleDonneeRapport tupleLoyer : tupleLoyers.getEnfants().values()) {
+                valeur = valeur.add(Montant.newAnnuel(tupleLoyer.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_LOYER_IS_FAUTEUIL_ROULANT)));
+            }
+            return valeur;
+        }
+        return Montant.ZERO;
+    }
+
+    /**
      * 64039083
      */
     public Montant getLoyerFraisDeChauffage() {

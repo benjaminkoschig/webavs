@@ -493,7 +493,7 @@ public class RpcCalcul {
      * FC41
      */
     public boolean isWheelchairSurcharge(){
-        return calcul.isWheelchairSurcharge();
+        return !calcul.getLoyerFauteuilRoulant().isZero();
     }
 
     /**
