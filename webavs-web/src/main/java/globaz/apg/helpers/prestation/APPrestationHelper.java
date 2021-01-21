@@ -1276,7 +1276,7 @@ public class APPrestationHelper extends PRAbstractHelper {
                     // On évite les prestations de restitutions
                     if (!IAPAnnonce.CS_RESTITUTION.equals(prestations.get(ctr).getContenuAnnonce())) {
                         // Si on à lancé le calcul MATCIAB2 sur un droit non modifiable on ne contrôle pas les prestations
-                        if ((!viewBean.isCalculMATCIAB2() || Arrays.asList(IAPDroitLAPG.DROITS_MODIFIABLES).contains(droit.getEtat()))) {
+                        if (!viewBean.isCalculMATCIAB2() || Arrays.asList(IAPDroitLAPG.DROITS_MODIFIABLES).contains(droit.getEtat())) {
                             final APValidationPrestationAPGContainer container = new APValidationPrestationAPGContainer();
                             container.setDroit(droit);
                             container.setPrestation(prestations.get(ctr));

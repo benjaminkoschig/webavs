@@ -1,14 +1,12 @@
 package globaz.apg.itext;
 
+import globaz.apg.ApgServiceLocator;
 import globaz.apg.api.codesystem.IAPCatalogueTexte;
 import globaz.apg.api.droits.IAPDroitAPG;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.application.APApplication;
-import globaz.apg.db.droits.APDroitMaternite;
-import globaz.apg.db.droits.APEnfantMat;
-import globaz.apg.db.droits.APEnfantMatManager;
-import globaz.apg.db.droits.APSituationProfessionnelle;
-import globaz.apg.db.droits.APSituationProfessionnelleManager;
+import globaz.apg.business.service.APEntityService;
+import globaz.apg.db.droits.*;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
 import globaz.apg.db.prestation.APRepartitionPaiements;
@@ -18,6 +16,7 @@ import globaz.apg.groupdoc.ccju.GroupdocPropagateUtil;
 import globaz.apg.module.calcul.APReferenceDataParser;
 import globaz.apg.module.calcul.rev2005.APReferenceDataAPG;
 import globaz.apg.properties.APProperties;
+import globaz.apg.services.APRechercherAssuranceFromDroitCotisationService;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.ICTListeTextes;
 import globaz.babel.api.ICTTexte;
@@ -35,10 +34,7 @@ import globaz.framework.servlets.FWServlet;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
 import globaz.framework.util.FWMessageFormat;
-import globaz.globall.db.BProcess;
-import globaz.globall.db.BSession;
-import globaz.globall.db.GlobazJobQueue;
-import globaz.globall.db.GlobazServer;
+import globaz.globall.db.*;
 import globaz.globall.format.IFormatData;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
@@ -49,7 +45,9 @@ import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.admin.user.bean.JadeUser;
 import globaz.jade.admin.user.service.JadeUserService;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.naos.api.IAFAssurance;
 import globaz.naos.application.AFApplication;
 import globaz.naos.util.AFIDEUtil;
 import globaz.osiris.external.IntRole;
@@ -704,11 +702,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
                 String titre = tiersTitre.getFormulePolitesse(tiersTitre.getLangue());
 
-                //Force un saut de page correct
-                if (hasMATCIAB1() && hasNotOnlyMATCIAB1() && loadPrestations().size() == 7) {
-                    buffer.append("\n\n");
-                }
-
                 buffer = new StringBuffer(PRStringUtils.formatMessage(buffer, titre));
                 break;
 
@@ -728,7 +721,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 titre = tiersTitre.getFormulePolitesse(tiersTitre.getLangue());
 
                 //Force un saut de page correct
-                if (hasMATCIAB1() && hasNotOnlyMATCIAB1() && loadPrestations().size() == 7) {
+                if (hasMATCIAB1() && isEmployeursMultiples() && hasNotOnlyMATCIAB1() && loadPrestations().size() == 7) {
                     buffer.append("\n\n");
                 }
 
@@ -947,6 +940,34 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
     }
 
+    private Double getMontantMaxSelonCantonSitPro() throws Exception {
+        String idAssuranceParitaireJU = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
+        String idAssuranceParitaireBE = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_BE_ID);
+        String idAssurancePersonnelJU = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_JU_ID);
+        String idAssurancePersonnelBE = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_BE_ID);
+
+        // Situations professionnelles
+        final APEntityService servicePersistance = ApgServiceLocator.getEntityService();
+        final List<APSitProJointEmployeur> apSitProJointEmployeurs = servicePersistance
+                .getSituationProfJointEmployeur(getSession(), getTransaction(), idDroit);
+
+        for (APSitProJointEmployeur apSitProJointEmployeur : apSitProJointEmployeurs) {
+            Map<IAFAssurance, String> listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercherAvecDateDebut(idDroit, apSitProJointEmployeur.getIdAffilie(), getSession());
+            for (Map.Entry<IAFAssurance, String> assurance : listAssurance.entrySet()) {
+                if (assurance.getKey().getAssuranceId().equals(idAssurancePersonnelBE) || assurance.getKey().getAssuranceId().equals(idAssuranceParitaireBE)) {
+                    return Double.valueOf(FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(), "1", "MATCIABBEM", "0", "", 0));
+                } else if (assurance.getKey().getAssuranceId().equals(idAssurancePersonnelJU) || assurance.getKey().getAssuranceId().equals(idAssuranceParitaireJU)) {
+                    return Double.valueOf(FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(), "1", "MATCIABJUM", "0", "", 0));
+                }
+            }
+        }
+        return null;
+    }
+
     private void completeCorps(final Map parametres, final StringBuffer buffer, final ICTListeTextes textes)
             throws Exception {
         Object[] arguments = null;
@@ -1125,11 +1146,12 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         if (state_dec == APDecisionCommunicationAMAT.STATE_STANDARD) {
             ref = (APReferenceDataAPG) APReferenceDataParser.loadReferenceData(getSession(), "MATERNITE", dateDebut,
                     dateFin, dateFin);
-            final double montantJournalierMax;
+            double montantJournalierMax = ref.getGE().intValue();
             if (hasMATCIAB1()) {
-                montantJournalierMax = ref.getGE().intValue(); // ESVE TO FIX
-            } else {
-                montantJournalierMax = ref.getGE().intValue();
+                Double montantTmp = getMontantMaxSelonCantonSitPro();
+                if (montantTmp != null) {
+                    montantJournalierMax = montantTmp;
+                }
             }
             final double montantAnnuelMax = montantJournalierMax * 360;
             boolean isMontantMax = false;

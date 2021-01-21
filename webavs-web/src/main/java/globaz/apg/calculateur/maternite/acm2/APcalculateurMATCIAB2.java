@@ -128,6 +128,8 @@ public class APcalculateurMATCIAB2 implements IAPPrestationCalculateur<APPrestat
             prestationACreer.setRevenuMoyenDeterminant(sommeRevenuMoyenDeterminantMATCIAB2Arrondi.toString());
             // assigne la nouvelle prestation en IPRDemande.CS_TYPE_MATERNITE
             prestationACreer.setType(IPRDemande.CS_TYPE_MATERNITE);
+            // ESVE TODO pour activer breakrule sur MATCIAB2
+            // prestationACreer.setContenuAnnonce(IAPAnnonce.CS_DEMANDE_ALLOCATION);
 
             // Récupération du basicDailyAmount
             prestationACreer.setBasicDailyAmount(prestationACreer.getMontantJournalier());
