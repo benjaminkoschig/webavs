@@ -1064,8 +1064,8 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
             if (isEmployeursMultiples() || isVersementIncomplet || isContratTravailEcheance) {
                 buffer.append(" ");
-                /*buffer.append(PRStringUtils.replaceString(textes.getTexte(6).getDescription(), "{montantAnnuel}", "{10}"));*/
-                buffer.append(textes.getTexte(6).getDescription());
+                buffer.append(PRStringUtils.replaceString(textes.getTexte(6).getDescription(), "{montantAnnuel}", "{10}"));
+//                buffer.append(textes.getTexte(6).getDescription());
             }
 
             if (isEmployeursMultiples()) {
@@ -2229,7 +2229,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                             if (!textaddedMATCIAB2) {
                                                 buffer.setLength(0);
                                                 buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
-                                                        String.valueOf(revenuMoyenDeterminant)));
+                                                        String.valueOf(JANumberFormatter.format(
+                                                                Double.parseDouble(rp.getMontantBrut()) / nbJours, 0.05, 2,
+                                                                JANumberFormatter.NEAR))));
                                                 message = createMessageFormat(buffer);
                                                 buffer.setLength(0);
                                                 champs.put(
