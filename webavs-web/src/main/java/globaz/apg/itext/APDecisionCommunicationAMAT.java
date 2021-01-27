@@ -355,7 +355,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             }
 
         } catch (final Exception e) {
-            e.printStackTrace();
             getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, "APDecisionCommunicationAMAT");
             abort();
         }

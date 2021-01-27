@@ -9,8 +9,12 @@ import ch.globaz.pegasus.business.models.habitat.TaxeJournaliereHome;
 import ch.globaz.pegasus.businessimpl.checkers.PegasusAbstractChecker;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.pegasus.utils.PCTaxeJournaliereHomeHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TaxeJournaliereHomeChecker extends PegasusAbstractChecker {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TaxeJournaliereHomeChecker.class);
 
     public static void checkForCreate(TaxeJournaliereHome taxeJournaliereHome) throws TaxeJournaliereHomeException,
             JadePersistenceException {
@@ -24,7 +28,7 @@ public class TaxeJournaliereHomeChecker extends PegasusAbstractChecker {
                     taxeJournaliereHome.getSimpleTaxeJournaliereHome().setPrixJournalier(null);
                 }
             } catch (JadeApplicationServiceNotAvailableException e) {
-                e.printStackTrace();
+                LOG.error("erreur lors de la création de la taxe journalière", e);
             }
 
         }
