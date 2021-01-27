@@ -716,12 +716,12 @@
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true">
-							<printWhenExpression><![CDATA[new Boolean($P{P_PARAM_1}!=null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_PARAM_2}!=null)]]></printWhenExpression>
 						</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="11" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_PARAM_1}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_PARAM_2}]]></textFieldExpression>
 				</textField>
 			</band>
 		</pageFooter>
