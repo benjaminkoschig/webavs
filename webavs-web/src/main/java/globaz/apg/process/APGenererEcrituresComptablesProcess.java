@@ -497,6 +497,8 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
     private APIRubrique INDEMN_GARDE_PARENTALE_17_09_20_SALARIE;
     private APIRubrique INDEMN_GARDE_PARENTALE_HANDICAP_17_09_20_INDEPENDANT;
     private APIRubrique INDEMN_GARDE_PARENTALE_HANDICAP_17_09_20_SALARIE;
+    private APIRubrique INDEMN_PERSONNE_VULNERABLE_SALARIE;
+    private APIRubrique INDEMN_PERSONNE_VULNERABLE_INDEPENDANT;
     private APIRubrique RESTIT_GARDE_ENFANT_SALARIE;
     private APIRubrique RESTIT_GARDE_ENFANT_INDEPENDANT;
     private APIRubrique RESTIT_QUARANTAINE_SALARIE;
@@ -519,6 +521,8 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
     private APIRubrique RESTIT_GARDE_PARENTALE_17_09_20_SALARIE;
     private APIRubrique RESTIT_GARDE_PARENTALE_HANDICAP_17_09_20_INDEPENDANT;
     private APIRubrique RESTIT_GARDE_PARENTALE_HANDICAP_17_09_20_SALARIE;
+    private APIRubrique RESTIT_PERSONNE_VULNERABLE_SALARIE;
+    private APIRubrique RESTIT_PERSONNE_VULNERABLE_INDEPENDANT;
 
     private String dateComptable = "";
     private String dateSurDocument = "";
@@ -3486,6 +3490,10 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 } else {
                     rubrique = RESTIT_GARDE_PARENTALE_HANDICAP_17_09_20_SALARIE;
                 }
+            } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_SALARIE_PERSONNE_VULNERABLE)) {
+                rubrique = RESTIT_PERSONNE_VULNERABLE_SALARIE;
+            } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_INDEPENDANT_PERSONNE_VULNERABLE)) {
+                rubrique = RESTIT_PERSONNE_VULNERABLE_INDEPENDANT;
             }
         } else {
             if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_GARDE_PARENTALE)) {
@@ -3548,6 +3556,10 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 } else {
                     rubrique = INDEMN_GARDE_PARENTALE_HANDICAP_17_09_20_SALARIE;
                 }
+            } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_SALARIE_PERSONNE_VULNERABLE)) {
+                rubrique = INDEMN_PERSONNE_VULNERABLE_SALARIE;
+            } else if (Objects.equals(genreSerivce, IAPDroitLAPG.CS_INDEPENDANT_PERSONNE_VULNERABLE)) {
+                rubrique = INDEMN_PERSONNE_VULNERABLE_INDEPENDANT;
             }
         }
         return rubrique;
@@ -3762,6 +3774,9 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             INDEMN_GARDE_PARENTALE_HANDICAP_17_09_20_INDEPENDANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_INDEMN_GARDE_PARENTALE_HANDICAP_17_09_20_INDEPENDANT);
             INDEMN_GARDE_PARENTALE_HANDICAP_17_09_20_SALARIE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_INDEMN_GARDE_PARENTALE_HANDICAP_17_09_20_SALARIE);
 
+            INDEMN_PERSONNE_VULNERABLE_SALARIE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_INDEMN_PERSONNE_VULNERABLE_SALARIE);
+            INDEMN_PERSONNE_VULNERABLE_INDEPENDANT= referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_INDEMN_PERSONNE_VULNERABLE_INDEPENDANT);
+
             RESTIT_GARDE_ENFANT_SALARIE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_RESTIT_GARDE_ENFANTS_POUR_SALARIE);
             RESTIT_GARDE_ENFANT_INDEPENDANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_RESTIT_GARDE_ENFANTS_POUR_INDEPENDANT);
             RESTIT_QUARANTAINE_SALARIE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_RESTIT_QUARANTAINE_POUR_SALARIE);
@@ -3785,6 +3800,9 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             RESTIT_GARDE_PARENTALE_17_09_20_SALARIE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_RESTIT_GARDE_PARENTALE_17_09_20_SALARIE);
             RESTIT_GARDE_PARENTALE_HANDICAP_17_09_20_INDEPENDANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_RESTIT_GARDE_PARENTALE_HANDICAP_17_09_20_INDEPENDANT);
             RESTIT_GARDE_PARENTALE_HANDICAP_17_09_20_SALARIE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_RESTIT_GARDE_PARENTALE_HANDICAP_17_09_20_SALARIE);
+
+            RESTIT_PERSONNE_VULNERABLE_SALARIE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_RESTIT_PERSONNE_VULNERABLE_SALARIE);
+            RESTIT_PERSONNE_VULNERABLE_INDEPENDANT= referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_RESTIT_PERSONNE_VULNERABLE_INDEPENDANT);
 
             COT_AVS_ASSURE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_COT_AVS_ASSURE);
             COT_AVS_INDEPENDANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_COT_AVS_INDEPENDANT);

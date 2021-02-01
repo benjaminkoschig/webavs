@@ -136,7 +136,7 @@
         document.getElementById("dateFinFermeture").disabled = true;
         document.getElementById("dateDebutActiviteLimitee").disabled = true;
         document.getElementById("dateFinActiviteLimitee").disabled = true;
-        <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_INDEPENDANT_FERMETURE) || StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_DIRIGEANT_SALARIE_FERMETURE)) { %>
+        <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_INDEPENDANT_FERMETURE) || StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_DIRIGEANT_SALARIE_FERMETURE) || StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_SALARIE_PERSONNE_VULNERABLE) || StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_INDEPENDANT_PERSONNE_VULNERABLE)) { %>
         document.getElementById("motifGarde").disabled = true;
         document.getElementById("motifGardeHandicap").disabled = true;
         document.getElementById("quarantaineOrdonnee").disabled = true;
@@ -306,7 +306,7 @@
         document.getElementById("dateFinFermeture").disabled = true;
         document.getElementById("dateDebutActiviteLimitee").disabled = true;
         document.getElementById("dateFinActiviteLimitee").disabled = true;
-        <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_INDEPENDANT_FERMETURE) || StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_DIRIGEANT_SALARIE_FERMETURE)) { %>
+        <%} else if (StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_INDEPENDANT_FERMETURE) || StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_DIRIGEANT_SALARIE_FERMETURE) || StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_SALARIE_PERSONNE_VULNERABLE) || StringUtils.equals(viewBean.getGenreService(),IAPDroitLAPG.CS_INDEPENDANT_PERSONNE_VULNERABLE)) { %>
         document.getElementById("motifGarde").disabled = true;
         document.getElementById("motifGardeHandicap").disabled = true;
         document.getElementById("quarantaineOrdonnee").disabled = true;

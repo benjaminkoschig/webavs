@@ -878,6 +878,8 @@
 									<ct:excludeCode code="<%=IAPDroitLAPG.CS_GARDE_PARENTALE_17_09_20%>"/>
 									<ct:excludeCode code="<%=IAPDroitLAPG.CS_QUARANTAINE_17_09_20%>"/>
 									<ct:excludeCode code="<%=IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20%>"/>
+									<ct:excludeCode code="<%=IAPDroitLAPG.CS_SALARIE_PERSONNE_VULNERABLE%>"/>
+									<ct:excludeCode code="<%=IAPDroitLAPG.CS_INDEPENDANT_PERSONNE_VULNERABLE%>"/>
 								</ct:optionsCodesSystems>
 							</ct:select>
 						</td>

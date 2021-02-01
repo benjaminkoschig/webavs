@@ -132,7 +132,9 @@ public class APGUtils {
                 || IAPDroitLAPG.CS_DIRIGEANT_SALARIE_LIMITATION_ACTIVITE.equals(csTypeAllocation)
                 || IAPDroitLAPG.CS_GARDE_PARENTALE_17_09_20.equals(csTypeAllocation)
                 || IAPDroitLAPG.CS_QUARANTAINE_17_09_20.equals(csTypeAllocation)
-                || IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20.equals(csTypeAllocation);
+                || IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_SALARIE_PERSONNE_VULNERABLE.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_INDEPENDANT_PERSONNE_VULNERABLE.equals(csTypeAllocation);
     }
 
 
@@ -157,7 +159,9 @@ public class APGUtils {
                 || IAPDroitLAPG.CS_DIRIGEANT_SALARIE_LIMITATION_ACTIVITE.equals(csTypeAllocation)
                 || IAPDroitLAPG.CS_GARDE_PARENTALE_17_09_20.equals(csTypeAllocation)
                 || IAPDroitLAPG.CS_QUARANTAINE_17_09_20.equals(csTypeAllocation)
-                || IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20.equals(csTypeAllocation);
+                || IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_SALARIE_PERSONNE_VULNERABLE.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_INDEPENDANT_PERSONNE_VULNERABLE.equals(csTypeAllocation);
     }
 
     public static String getCSDomaineFromTypeDemande(String typePrestation) {

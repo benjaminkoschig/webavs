@@ -875,6 +875,14 @@ public class APBasesCalculBuilder {
         }
     }
 
+    /**
+     * Ajoute les périodes pour pandémie aux versements des prestations
+     * @param dateDebut
+     * @param autreJours
+     * @param isIndependant
+     * @return le nombre de jour soldés total de toutes les périodes
+     * @throws Exception
+     */
     private Integer ajouterPeriodesPan(String dateDebut, int autreJours, boolean isIndependant) throws Exception {
 
         List<APPeriodeComparable> listPeriode = getApPeriodeDroit(droit.getIdDroit());
@@ -949,16 +957,36 @@ public class APBasesCalculBuilder {
         return delai;
     }
 
+    /**
+     * Ajuste la date de début et date de fin selon les plages de valeurs : date début, date fin et délai
+     * @param idDroit
+     * @param delai
+     * @param dateDebut
+     * @param listPeriode
+     * @throws Exception
+     */
     private void calcDateDebutFin(String idDroit, int delai, String dateDebut, List<APPeriodeComparable> listPeriode) throws Exception {
 
+        String dateFin = ajouterDateFinFromParam();
 
         // pour chaque période
         for (APPeriodeComparable periode : listPeriode) {
-            boolean dateDebutModif = false;
-            if(!JadeStringUtil.isEmpty(dateDebut) && JadeDateUtil.isDateBefore(periode.getDateDebutPeriode(), dateDebut)
-                && (JadeStringUtil.isEmpty(periode.getDateFinPeriode()) || JadeDateUtil.isDateAfter(periode.getDateFinPeriode(), dateDebut))) {
+            boolean dateModif = false;
+            // adapter la date de début de la période par rapport à la date de début officielle du genre de service
+            if(!JadeStringUtil.isEmpty(dateDebut) && JadeDateUtil.isDateBefore(periode.getDateDebutPeriode(), dateDebut)) {
                 periode.setDateDebutPeriode(dateDebut);
-                dateDebutModif = true;
+                dateModif = true;
+                if(!JadeStringUtil.isEmpty(periode.getDateFinPeriode()) && JadeDateUtil.isDateBefore(periode.getDateFinPeriode(), dateDebut)){
+                    periode.setDateFinPeriode(dateDebut);
+                }
+            }
+            // adapter la date de fin de la période par rapport à la date de fin officielle du genre de service
+            if(!JadeStringUtil.isEmpty(dateFin) && (JadeStringUtil.isEmpty(periode.getDateFinPeriode()) || JadeDateUtil.isDateAfter(periode.getDateFinPeriode(), dateFin))) {
+                periode.setDateFinPeriode(dateFin);
+                dateModif = true;
+                if(JadeDateUtil.isDateAfter(periode.getDateDebutPeriode(), dateFin)){
+                    periode.setDateDebutPeriode(dateFin);
+                }
             }
             // si pas de date fin mettre la fin du mois en cours pour le calcul
             if (JadeStringUtil.isEmpty(periode.getDateFinPeriode())) {
@@ -972,7 +1000,8 @@ public class APBasesCalculBuilder {
                 }
             }
 
-            if(dateDebutModif && !JadeStringUtil.isBlankOrZero(periode.getNbrJours())){
+            // si la date de début ou fin a été modifiée, ajuster le nombre de jours soldés par rapport à la période
+            if(dateModif && !JadeStringUtil.isBlankOrZero(periode.getNbrJours())){
                 int nbJours = PRDateUtils.getNbDayBetween(periode.getDateDebutPeriode(), periode.getDateFinPeriode()) + 1;
                 if(nbJours < Integer.valueOf(periode.getNbrJours())) {
                     periode.setNbrJours(Integer.toString(nbJours));
@@ -1013,6 +1042,7 @@ public class APBasesCalculBuilder {
             case IAPDroitLAPG.CS_INDEPENDANT_FERMETURE:
             case IAPDroitLAPG.CS_INDEPENDANT_MANIFESTATION_ANNULEE:
             case IAPDroitLAPG.CS_INDEPENDANT_LIMITATION_ACTIVITE:
+            case IAPDroitLAPG.CS_INDEPENDANT_PERSONNE_VULNERABLE:
                 valeur = APParameter.INDEPENDANT_JOURS_SANS_INDEMISATION.getParameterName();break;
             default:
                 valeur = "";
@@ -1138,7 +1168,11 @@ public class APBasesCalculBuilder {
         }
     }
 
-    // ajoute la date de début des versements selon le genre de service
+    /**
+     * Ajoute la date de début des versements selon le genre de service
+     * @return Date de début du genre de service
+     * @throws Exception
+     */
     private String ajouterDateDebutFromParam() throws Exception {
         APDroitPanSituation droitSituation = ApgServiceLocator.getEntityService().getDroitPanSituation(session, session.getCurrentThreadTransaction(),
                 droit.getIdDroit());
@@ -1175,6 +1209,9 @@ public class APBasesCalculBuilder {
             case IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20:
             case IAPDroitLAPG.CS_QUARANTAINE_17_09_20:
                 valeur = APParameter.DIRECTIVE_NOVEMBRE_2020.getParameterName();break;
+            case IAPDroitLAPG.CS_SALARIE_PERSONNE_VULNERABLE:
+            case IAPDroitLAPG.CS_INDEPENDANT_PERSONNE_VULNERABLE:
+                valeur = APParameter.DIRECTIVE_JANVIER_2021.getParameterName();break;
 
             default:return dateDebut;
         }
@@ -1198,6 +1235,41 @@ public class APBasesCalculBuilder {
             dateDebut = JadeDateUtil.getGlobazFormattedDate(dateDebutValide);
         }
         return dateDebut;
+    }
+
+    /**
+     * Ajoute la date de fin des versements selon le genre de service
+     * @return date de Fin du genre de service
+     * @throws Exception
+     */
+    private String ajouterDateFinFromParam() throws Exception {
+        String valeur = "";
+        switch(droit.getGenreService()){
+            case IAPDroitLAPG.CS_SALARIE_PERSONNE_VULNERABLE:
+            case IAPDroitLAPG.CS_INDEPENDANT_PERSONNE_VULNERABLE:
+                valeur = APParameter.DIRECTIVE_JANVIER_2021_FIN.getParameterName();break;
+
+            default:return null;
+        }
+        String dateFin = null;
+        FWFindParameterManager manager = new FWFindParameterManager();
+        manager.setSession(session);
+        manager.setIdCodeSysteme("1");
+        manager.setIdCleDiffere(valeur);
+        manager.find(BManager.SIZE_NOLIMIT);
+        if (manager.size() > 0){
+            FWFindParameter param = (FWFindParameter) manager.get(0);
+            Date dateFinValide = DF.parse(new ch.globaz.common.domaine.Date(param.getDateDebutValidite()).getSwissValue());
+            String fin = droit.getDateFinDroit();
+            if (JadeStringUtil.isEmpty(fin) || DF.parse(fin).after(dateFinValide)) {
+                Calendar c = Calendar.getInstance();
+                c.setTime(dateFinValide);
+                c.add(Calendar.DATE, 1);
+                commands.add(new VersementInterditCommand(c.getTime(), true));
+            }
+            dateFin = JadeDateUtil.getGlobazFormattedDate(dateFinValide);
+        }
+        return dateFin;
     }
 
     // ajouter les événements relatifs à la situation familiale APG à la liste

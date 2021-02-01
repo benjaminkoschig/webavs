@@ -79,6 +79,11 @@ public class APDroitPanSituation extends BEntity  implements IPRCloneable {
     private String lossValueActiviteLimitee = "";
     private String unitActiviteLimitee = "";
     private String reasonActiviteLimitee = "";
+    // Vulnerability
+    private String dateDebutVulnerability = "";
+    private String dateFinVulnerability = "";
+    private String reasonVulnerability = "";
+    private String partialActivityPercentVulnerability = "";
 
     /**
      * @return la chaine TABLE_NAME
@@ -461,6 +466,38 @@ public class APDroitPanSituation extends BEntity  implements IPRCloneable {
 
     public void setReasonActiviteLimitee(String reasonActiviteLimitee) {
         this.reasonActiviteLimitee = reasonActiviteLimitee;
+    }
+
+    public String getDateDebutVulnerability() {
+        return dateDebutVulnerability;
+    }
+
+    public void setDateDebutVulnerability(String dateDebutVulnerability) {
+        this.dateDebutVulnerability = dateDebutVulnerability;
+    }
+
+    public String getDateFinVulnerability() {
+        return dateFinVulnerability;
+    }
+
+    public void setDateFinVulnerability(String dateFinVulnerability) {
+        this.dateFinVulnerability = dateFinVulnerability;
+    }
+
+    public String getReasonVulnerability() {
+        return reasonVulnerability;
+    }
+
+    public void setReasonVulnerability(String reasonVulnerability) {
+        this.reasonVulnerability = reasonVulnerability;
+    }
+
+    public String getPartialActivityPercentVulnerability() {
+        return partialActivityPercentVulnerability;
+    }
+
+    public void setPartialActivityPercentVulnerability(String partialActivityPercentVulnerability) {
+        this.partialActivityPercentVulnerability = partialActivityPercentVulnerability;
     }
 }
 

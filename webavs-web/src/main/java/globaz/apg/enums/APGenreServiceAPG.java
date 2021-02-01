@@ -3,6 +3,7 @@ package globaz.apg.enums;
 import globaz.apg.api.droits.IAPDroitLAPG;
 
 import java.util.Arrays;
+import java.util.List;
 
 public enum APGenreServiceAPG {
 
@@ -45,7 +46,9 @@ public enum APGenreServiceAPG {
     DirigeantSalarieLimitationActivite("415", IAPDroitLAPG.CS_DIRIGEANT_SALARIE_LIMITATION_ACTIVITE),
     GardeParentale_17_09_20("416", IAPDroitLAPG.CS_GARDE_PARENTALE_17_09_20),
     Quarantaine_17_09_20("417", IAPDroitLAPG.CS_QUARANTAINE_17_09_20),
-    GardeParentaleHandicap_17_09_20("418", IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20);
+    GardeParentaleHandicap_17_09_20("418", IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20),
+    SalariePersonneVulnerable("419", IAPDroitLAPG.CS_SALARIE_PERSONNE_VULNERABLE),
+    IndependantPersonneVulnerable("420", IAPDroitLAPG.CS_INDEPENDANT_PERSONNE_VULNERABLE);
 
     public static APGenreServiceAPG resoudreGenreParCodeSystem(final String codeSystem) {
         for (final APGenreServiceAPG genre : APGenreServiceAPG.values()) {
@@ -80,15 +83,20 @@ public enum APGenreServiceAPG {
         return false;
     }
 
+    public static List<APGenreServiceAPG> listPandemie() {
+        return Arrays.asList(APGenreServiceAPG.GardeParentale, APGenreServiceAPG.Quarantaine, APGenreServiceAPG.IndependantPandemie,
+                APGenreServiceAPG.IndependantPerteGains, APGenreServiceAPG.GardeParentaleHandicap, APGenreServiceAPG.IndependantManifAnnulee, APGenreServiceAPG.SalarieEvenementiel,
+                APGenreServiceAPG.IndependantFermeture, APGenreServiceAPG.DirigeantSalarieFermeture, APGenreServiceAPG.IndependantManifestationAnnulee,
+                APGenreServiceAPG.DirigeantSalarieManifestationAnnulee, APGenreServiceAPG.IndependantLimitationActivite, APGenreServiceAPG.DirigeantSalarieLimitationActivite,
+                APGenreServiceAPG.GardeParentale_17_09_20, APGenreServiceAPG.Quarantaine_17_09_20, APGenreServiceAPG.GardeParentaleHandicap_17_09_20,
+                APGenreServiceAPG.SalariePersonneVulnerable, APGenreServiceAPG.IndependantPersonneVulnerable);
+    }
+
     public static boolean isValidGenreServicePandemie(String genreService) {
         if (genreService == null) {
             return false;
         }
-        for (APGenreServiceAPG gs : Arrays.asList(APGenreServiceAPG.GardeParentale, APGenreServiceAPG.Quarantaine,  APGenreServiceAPG.IndependantPandemie,
-                APGenreServiceAPG.IndependantPerteGains, APGenreServiceAPG.GardeParentaleHandicap, APGenreServiceAPG.IndependantManifAnnulee, APGenreServiceAPG.SalarieEvenementiel,
-                APGenreServiceAPG.IndependantFermeture, APGenreServiceAPG.DirigeantSalarieFermeture,APGenreServiceAPG.IndependantManifestationAnnulee,
-                APGenreServiceAPG.DirigeantSalarieManifestationAnnulee,APGenreServiceAPG.IndependantLimitationActivite,APGenreServiceAPG.DirigeantSalarieLimitationActivite,
-                APGenreServiceAPG.GardeParentale_17_09_20,APGenreServiceAPG.Quarantaine_17_09_20,APGenreServiceAPG.GardeParentaleHandicap_17_09_20)) {
+        for (APGenreServiceAPG gs : listPandemie()) {
             if (gs.getCodePourAnnonce().equals(genreService)) {
                 return true;
             }

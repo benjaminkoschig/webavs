@@ -429,6 +429,7 @@ public abstract class Rule implements APRuleDBDataProvider {
                 case IAPDroitLAPG.CS_INDEPENDANT_FERMETURE:
                 case IAPDroitLAPG.CS_INDEPENDANT_MANIFESTATION_ANNULEE:
                 case IAPDroitLAPG.CS_INDEPENDANT_LIMITATION_ACTIVITE:
+                case IAPDroitLAPG.CS_INDEPENDANT_PERSONNE_VULNERABLE:
                     valeur = APParameter.INDEPENDANT_JOURS_SANS_INDEMISATION.getParameterName();break;
                 case IAPDroitLAPG.CS_GARDE_PARENTALE_17_09_20:
                 case IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20:

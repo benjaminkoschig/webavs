@@ -33,6 +33,7 @@
 				<xs:enumeration value="GARDE_ENFANT_MOINS_12_ANS"/><!-- Vague 2 Garde remplace GARDE  et flag is  childCareWithHAndicap à  false-->
 				<xs:enumeration value="GARDE_ENFANT_HANDICAP"/><!-- Vague 2 Garde remplace GARDE  et flag is  childCareWithHAndicao à  true-->
 				<xs:enumeration value="LIMITATION_ACTIVITE"/> <!-- Vague 2 Perte de gain -->
+				<xs:enumeration value="VULNERABLE" />
 			</xs:restriction>
 		</xs:simpleType>
 	</xs:element>
@@ -48,6 +49,7 @@
 				<xs:element ref="workClosureCessation" minOccurs="0"/><!-- Vague 2 Perte de gain remplace independantWorkClosureCessation-->
 				<xs:element ref="eventCessation" minOccurs="0"/><!-- Vague 2 Perte de gain rempalce independantEventCessation-->
 				<xs:element ref="activityLimitationCessation" minOccurs="0"/> <!-- Vague 2 Perte de gain -->
+				<xs:element ref="vulnerabilityCessation" minOccurs="0" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -120,9 +122,9 @@
 			</xs:restriction>
 		</xs:simpleType>
 	</xs:element>
-
-
-
+	
+	
+	
 	<xs:element name="childCareCessation">
 		<xs:complexType>
 			<xs:sequence>
@@ -175,13 +177,13 @@
 		</xs:simpleType>
 	</xs:element>
 	<xs:element name="childCarePersonRiskProof">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="childCarePersonType"/>
-				<xs:element ref="childCarePersonDiseaseCause"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+                            <xs:complexType>
+                              <xs:sequence>
+							  	<xs:element ref="childCarePersonType"/>
+								<xs:element ref="childCarePersonDiseaseCause"/>                         
+                              </xs:sequence>
+                            </xs:complexType>
+    </xs:element>
 	<xs:element name="hasAllocationRequest" type="xs:boolean" />
 	<xs:element name="hasLucrativeActivity" type="xs:boolean" />
 	<xs:element name="childCarePartnerAllocation">
@@ -193,7 +195,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-
+	
 	<xs:element name="children">
 		<xs:complexType>
 			<xs:sequence>
@@ -260,12 +262,12 @@
 		<xs:complexType>
 			<xs:sequence>
 			 	<xs:element ref="referenceData"/> <!-- Vague 2  -->
-				<xs:element ref="otherIndemnity"/>
+			    <xs:element ref="otherIndemnity"/>
 				<xs:element ref="insuredPerson" minOccurs="0"/>
 				<xs:element ref="insuredAddress" minOccurs="0"/>
-				<xs:element ref="familyMembers" minOccurs="0"/>
+				<xs:element ref="familyMembers" minOccurs="0" />
 				<xs:element ref="beneficiaries" minOccurs="0"/> <!-- Vague 2 Perte de gain -->
-				<xs:element ref="activity"/>
+				<xs:element ref="activity" />
 				<xs:element ref="activityCessation"/>
 				<xs:element ref="paymentContact"/>
 				<xs:element ref="confirmation"/>
@@ -330,7 +332,7 @@
 	<xs:element name="RHTIndemnity" type="xs:boolean"/>
 	<xs:element name="hasLossOfProfit" type="xs:boolean"/>
 	<xs:element name="assimilablePosition" type="xs:boolean"/>
-
+	
 	<xs:element name="positionType">
 		<xs:simpleType>
 			<xs:restriction base="xs:string">
@@ -340,7 +342,7 @@
 			</xs:restriction>
 		</xs:simpleType>
 	</xs:element>
-
+	
 	<xs:element name="employmentInfo">
 		<xs:complexType>
 			<xs:sequence>
@@ -352,8 +354,8 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-
-
+		
+	
 	<xs:element name="beneficiary">
 		<xs:complexType>
 			<xs:sequence>
@@ -365,7 +367,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-
+	
 	<xs:element name="beneficiaries">
 		<xs:complexType>
 			<xs:sequence>
@@ -374,9 +376,9 @@
 		</xs:complexType>
 	</xs:element>
 	<!-- Vague 2 Perte de gain Fin ayants droits-->
-
-
-
+	
+	
+	
 	<xs:element name="file">
 		<xs:complexType>
 			<xs:sequence>
@@ -424,7 +426,7 @@
 			<xs:sequence>
 				<xs:element ref="eventDate" minOccurs="0"/> <!-- eventDate deprecated -->
 				<xs:element ref="from" minOccurs="0"/>
-				<xs:element ref="to" minOccurs="0"/>
+                <xs:element ref="to" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -478,9 +480,9 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-
+	
 <!-- vague 2 perte de gain fin-->
-
+	
 	<xs:element name="independantLossOfIncomeCessation">
 		<xs:complexType>
 			<xs:sequence>
@@ -518,6 +520,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	
 	<xs:element name="internalSortOrder" type="xs:int" />
 	<xs:element name="lastIncome" type="xs:double"/>
 	<xs:element name="leadingDocument" type="xs:boolean"/>
@@ -536,8 +539,8 @@
 	<xs:element name="messageType" type="xs:string" >
 	<xs:annotation>
           <xs:documentation>
-          318753= demande vague 1
-          318755=demande garde et quarantaine vague 2
+          318753= demande vague 1  
+          318755=demande garde et quarantaine vague 2  
           3187556=demande perte de gain vague 2</xs:documentation>
         </xs:annotation>
      </xs:element>
@@ -582,6 +585,8 @@
 	<xs:element name="childCareInstitution" type="xs:string" />
 	<xs:element name="prescribedBy" type="xs:string" />
 	<xs:element name="prescribedQuarantine" type="xs:boolean"/>
+	
+	
 	<xs:element name="product" type="xs:string" />
 	<xs:element name="productVersion" type="xs:string" />
 	<xs:element name="isQuarantineDueToTravel" type="xs:boolean"/> 	<!-- Vague 2 quarantaine-->
@@ -594,7 +599,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-
+	
 	<xs:element name="quarantineCessation">
 		<xs:complexType>
 			<xs:sequence>
@@ -650,6 +655,14 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="percentOfLossConfirmation">
+	<xs:simpleType>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CONFIRMATION_55_POURCENT"/>
+			<xs:enumeration value="CONFIRMATION_40_POURCENT"/>
+		</xs:restriction>
+	</xs:simpleType>
+  </xs:element>
   <xs:element name="activityDateStart" type="xs:date"/>
   <xs:element name="lossOfIncomeTurnoverPeriod">
     <xs:complexType>
@@ -674,11 +687,35 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element ref="isSelected"/>
+        <xs:element ref="percentOfLossConfirmation" />
         <xs:element ref="activityDateStart"/>
         <xs:element ref="lossOfIncomeTurnoverPeriod"/>
         <xs:element ref="turnovers"/>
       </xs:sequence>
     </xs:complexType>
+  </xs:element>
+  <xs:element name="vulnerabilityCessation">
+  	<xs:complexType>
+  	  <xs:sequence>
+  	    <xs:element name="reason">
+  	    	<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="CESSATION_ACTIVITE"/>
+				<xs:enumeration value="ACTIVITE_PARTIELLE"/>
+			</xs:restriction>
+		</xs:simpleType>
+  	    </xs:element>
+  	    <xs:element name="partialActivityPercent" type="xs:int" minOccurs="0"/>
+  	    <xs:element name="period">
+  	      <xs:complexType>
+  	      	<xs:sequence>
+  	      		<xs:element name="from" type="xs:date" />
+  	      		<xs:element name="to" type="xs:date" />
+  	      	</xs:sequence>
+  	      </xs:complexType>
+  	    </xs:element>
+  	  </xs:sequence>
+  	</xs:complexType>
   </xs:element>
   <!-- Vague 2 Perte de gain Fin chiffre d'affaire-->
 
@@ -710,15 +747,15 @@
 	<xs:element name="subject" type="xs:string" />
 	<xs:element name="subMessageType" type="xs:string" >
 	 <xs:annotation>
-          <xs:documentation>1sous message type
-          101=demande vague 1
-          102= prolongation vague 1
-          103= demande garde et quarantaine vague 2
+          <xs:documentation>1sous message type 
+          101=demande vague 1 
+          102= prolongation vague 1 
+          103= demande garde et quarantaine vague 2 
           104= demande perte de gain</xs:documentation>
         </xs:annotation>
      </xs:element>
-	<xs:element name="swissZipCode" type="xs:string" />
-
+    <xs:element name="swissZipCode" type="xs:string" />
+	
 	<xs:element name="lossValue" type="xs:double" />
 	<xs:element name="unit">
 		<xs:simpleType>
@@ -728,7 +765,7 @@
 			</xs:restriction>
 		</xs:simpleType>
 	</xs:element>
-
+	
 	<xs:element name="teleworking">
 		<xs:complexType>
 			<xs:sequence>
@@ -738,7 +775,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-
+	
 	<xs:element name="title" type="xs:string" />
 	<xs:element name="to" type="xs:date" />
 	<xs:element name="town" type="xs:string" />

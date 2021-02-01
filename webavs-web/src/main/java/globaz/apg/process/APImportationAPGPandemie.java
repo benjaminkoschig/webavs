@@ -1184,6 +1184,9 @@ public class APImportationAPGPandemie extends BProcess {
                 } else if (Objects.nonNull(activityCessation.getWorkClosureCessation()) && activityCessation.getWorkClosureCessation().isIsSelected()) {
                     dateDebutXml = activityCessation.getWorkClosureCessation().getWorkClosurePeriod().getFrom();
                     dateFinXml = activityCessation.getWorkClosureCessation().getWorkClosurePeriod().getTo();
+                }else if (Objects.nonNull(activityCessation.getVulnerabilityCessation()) && Objects.nonNull(activityCessation.getVulnerabilityCessation().getPeriod())) {
+                    dateDebutXml = activityCessation.getVulnerabilityCessation().getPeriod().getFrom();
+                    dateFinXml = activityCessation.getVulnerabilityCessation().getPeriod().getTo();
                 }
                 periodes.add(buildPeriode(dateDebutXml, dateFinXml, nbJours));
             }
@@ -1446,6 +1449,15 @@ public class APImportationAPGPandemie extends BProcess {
                 droitPanSituation.setDateFermetureEtablissementFin(Objects.isNull(activityCessation.getWorkClosureCessation().getWorkClosurePeriod().getTo()) ?
                         "" : tranformGregDateToGlobDate(activityCessation.getWorkClosureCessation().getWorkClosurePeriod().getTo()));
             }
+            if (Objects.nonNull(activityCessation.getVulnerabilityCessation()) && Objects.nonNull(activityCessation.getVulnerabilityCessation().getPeriod())) {
+                droitPanSituation.setDateDebutVulnerability(Objects.isNull(activityCessation.getVulnerabilityCessation().getPeriod().getFrom()) ?
+                        "" : tranformGregDateToGlobDate(activityCessation.getVulnerabilityCessation().getPeriod().getFrom()));
+                droitPanSituation.setDateFinVulnerability(Objects.isNull(activityCessation.getVulnerabilityCessation().getPeriod().getTo()) ?
+                        "" : tranformGregDateToGlobDate(activityCessation.getVulnerabilityCessation().getPeriod().getTo()));
+                droitPanSituation.setReasonVulnerability(activityCessation.getVulnerabilityCessation().getReason());
+                droitPanSituation.setPartialActivityPercentVulnerability(Objects.isNull(activityCessation.getVulnerabilityCessation().getPartialActivityPercent()) ?
+                        "" : String.valueOf(activityCessation.getVulnerabilityCessation().getPartialActivityPercent()));
+            }
 
 
             droitPanSituation.setIdDroit(droitPandemie.getIdDroit());
@@ -1642,6 +1654,12 @@ public class APImportationAPGPandemie extends BProcess {
                     return APGenreServiceAPG.DirigeantSalarieManifestationAnnulee.getCodeSysteme();
                 } else {
                     return APGenreServiceAPG.IndependantManifestationAnnulee.getCodeSysteme();
+                }
+            case "VULNERABLE":
+                if ("INDEPENDANT".equalsIgnoreCase(employementType)) {
+                    return APGenreServiceAPG.IndependantPersonneVulnerable.getCodeSysteme();
+                } else {
+                    return APGenreServiceAPG.SalariePersonneVulnerable.getCodeSysteme();
                 }
             default: return "";
         }
