@@ -1,3 +1,0 @@
--- [WEBAVS-8330] FERCIAB - S190902_006 (scripts non passés dans la version précédente pour tous les clients -> laisser à vide)
-INSERT INTO SCHEMA.JADEPROP (PROPNAME, PROPVAL, CSPY, PSPY) VALUES ('draco.majoration.declaration.manuelle.active', '', '20201215103000globaz', '20201215103000globaz');
-INSERT INTO SCHEMA.JADEPROP (PROPNAME, PROPVAL, CSPY, PSPY) VALUES ('draco.majoration.declaration.manuelle.assurance', '', '20201215103000globaz', '20201215103000globaz');
