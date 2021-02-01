@@ -189,6 +189,9 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     public boolean isMaternite() {
         return IPRDemande.CS_TYPE_MATERNITE.equals(getTypePrestation().toCodeSysteme());
     }
+    public boolean isPandemie() {
+        return IPRDemande.CS_TYPE_PANDEMIE.equals(getTypePrestation().toCodeSysteme());
+    }
 
     public boolean isModuleActifForPorterEnCompte() {
         boolean isModulePorterEnCompte = false;
@@ -1087,11 +1090,19 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      */
     public Boolean isPrestationAcmAlfaEnable() throws PropertiesException {
         final String propertyValue = getPropertyValue();
-        return APPropertyTypeDePrestationAcmValues.ACM_ALFA.getPropertyValue().equals(propertyValue);
+        if(isPandemie()){
+            return false;
+        }else{
+            return APPropertyTypeDePrestationAcmValues.ACM_ALFA.getPropertyValue().equals(propertyValue);
+        }
     }
 
     public Boolean isPrestationAcm2AlfaEnable() throws PropertiesException {
-        return APProperties.PRESTATION_ACM_2_ACTIF.getBooleanValue();
+        if(isPandemie()){
+            return false;
+        }else{
+            return APProperties.PRESTATION_ACM_2_ACTIF.getBooleanValue();
+        }
     }
 
     /**

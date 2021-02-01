@@ -67,6 +67,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
     
     checkDepartement();
     checkIbanEmployeur();
+    checkACM();
     
     if (document.forms[0].elements('_method').value == "add")
         document.forms[0].elements('userAction').value="<%=globaz.apg.servlet.IAPActions.ACTION_SITUATION_PROFESSIONNELLE%>.ajouter";
@@ -443,6 +444,12 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 			}
 		<%}%>
 	}
+  function checkACM(){
+	  // Si c'est un droit Pandémie => Pas de ACM.
+	  <%if(viewBean.isPandemie()){%>
+		  $('input[type="checkbox"][name="hasAcmAlphaPrestations"]').prop('checked', false);
+	  <%}%>
+  }
 	
 	function checkIbanEmployeur(){
 		// Si l'employeur ne possède pas d'IBAN (IBAN vaut CH0000000000000000000)
