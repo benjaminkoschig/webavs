@@ -118,6 +118,7 @@ public class APImportationAPGPandemie extends BProcess {
     private static final String ZIP_EXTENSION = ".zip";
     private static final int MAX_TREATMENT = 40;
     private static final String DATE_RETRO_DROIT_VAGUE_2 = "17.09.2020";
+    private static final String ANNEE_PRISE_COMPTE_SALAIRE = "2019";
 
     private static String userGestionnaire = "";
 
@@ -2083,7 +2084,7 @@ public class APImportationAPGPandemie extends BProcess {
                             decision.setSession(sessionPhenix);
                             decision.setForIdAffiliation(aff.getAffiliationId());
                             decision.setForIsActive(Boolean.TRUE);
-                            decision.setForAnneeDecision(Integer.toString(new JADate(droit.getDateDebutDroit()).getYear()-1));
+                            decision.setForAnneeDecision(ANNEE_PRISE_COMPTE_SALAIRE);
                             decision.find(BManager.SIZE_NOLIMIT);
 
                             // on cherche les données calculées en fonction de la
@@ -2134,15 +2135,17 @@ public class APImportationAPGPandemie extends BProcess {
         return situationProfessionnelle;
     }
 
-    private String findLastIDDroitPandemie(BSession session, final BTransaction transaction, final String idTiers){
+    private String findLastIDDroitPandemie(BSession session, final BTransaction transaction, final String idTiers, boolean lastDroit){
         try {
             List<String> etat = new ArrayList<>();
             etat.add(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
             APDroitPanJointTiersManager manager = new APDroitPanJointTiersManager();
             manager.setSession(session);
             manager.setForIdTiers(idTiers);
-            manager.setToDateDebutDroit(DATE_RETRO_DROIT_VAGUE_2);
-            manager.setToDateFinDroit(DATE_RETRO_DROIT_VAGUE_2);
+            if(!lastDroit) {
+                manager.setToDateDebutDroit(DATE_RETRO_DROIT_VAGUE_2);
+                manager.setToDateFinDroit(DATE_RETRO_DROIT_VAGUE_2);
+            }
             manager.setForEtatDroitIn(etat);
             manager.setOrderByDroitDesc(true);
             manager.find(transaction, BManager.SIZE_NOLIMIT);
@@ -2194,7 +2197,12 @@ public class APImportationAPGPandemie extends BProcess {
 
     private boolean creerSituationProfPanSelonDroitPrecedent(BSession session, final BTransaction transaction, final APDroitLAPG droit, final String idTiers) {
         // Récupération du dernier droit
-        String idLastDroit = findLastIDDroitPandemie(session, transaction, idTiers);
+        boolean lastDroit = false;
+        if((IAPDroitLAPG.CS_INDEPENDANT_PERSONNE_VULNERABLE.equals(droit.getGenreService()))) {
+            lastDroit = true;
+        }
+        String idLastDroit = findLastIDDroitPandemie(session, transaction, idTiers, lastDroit);
+
         // Récupération de(s) dernière(s) situation(s) prof
         List<APSituationProfessionnelle> listLastSituationPro = findSituationProfessionnelleByIDDroit(session, transaction, idLastDroit);
         // Création des situations professionnelles
@@ -2218,7 +2226,7 @@ public class APImportationAPGPandemie extends BProcess {
                 ecritureSource.setSession(session);
                 ecritureSource.setForCompteIndividuelId(compte.getId());
                 ecritureSource.setForAffilie(numAffilie);
-                ecritureSource.setForAnnee("2019");
+                ecritureSource.setForAnnee(ANNEE_PRISE_COMPTE_SALAIRE);
                 ecritureSource.setForIdTypeCompte(CIEcriture.CS_CI);
                 ecritureSource.setOrderBy("KBNANN DESC");
                 ecritureSource.find(transaction, BManager.SIZE_NOLIMIT);
