@@ -1,5 +1,6 @@
 package globaz.apg.businessimpl.service;
 
+import ch.globaz.common.domaine.Montant;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.business.service.APLotService;
 import globaz.globall.db.BSession;
@@ -14,21 +15,38 @@ public class APLotServiceImpl  extends JadeAbstractService implements APLotServi
 
     @Override
     public String getTotauxOPAE(BSession session, String idLot) throws Exception {
-        String sql = "SELECT (sum(vnmmot) - sum(vommon)) as totOPAE FROM :schema.apcompp"
-                +" left outer join :schema.apfaacp on vnicom = voicom"
-                +" where vnilot = :idLot and vnmmot > 0 and (vobcom = '1' or vobcom is null) and (vommon <> 0 or vommon is null)";
+        return getTotauxOPAE1(session, idLot).substract(getTotauxOPAE2(session, idLot)).toStringFormat();
+    }
 
+    private Montant getTotauxOPAE1(BSession session, String idLot) throws Exception {
+
+        String sql = "SELECT sum(vnmmot) FROM :schema.apcompp " +
+                " where vnilot = :idLot and vnmmot > 0";
+
+        return executeRequete(session, idLot, sql);
+    }
+
+    private Montant getTotauxOPAE2(BSession session, String idLot) throws Exception {
+
+        String sql = "SELECT sum(vommon) FROM :schema.apcompp "
+                +" inner join :schema.apfaacp on vnicom = voicom "
+                +" where vnilot = :idLot and (vobcom = '1') and (vommon <> 0) ";
+
+        return executeRequete(session, idLot, sql);
+    }
+
+    private Montant executeRequete(BSession session, String idLot, String sql) throws Exception {
         sql = sql.replace(":schema", Jade.getInstance().getDefaultJdbcSchema());
         sql = sql.replace(":idLot", idLot);
+
         BStatement statement = new BStatement(session.getCurrentThreadTransaction());
         statement.createStatement();
         ResultSet res = statement.executeQuery(sql);
         res.next();
-        if(res.getObject(1) == null) {
-            return null;
+        if (res.getObject(1) == null) {
+            return Montant.ZERO;
         }
-        return res.getObject(1).toString();
-
+        return Montant.valueOf((res.getObject(1).toString()));
     }
 
 }
