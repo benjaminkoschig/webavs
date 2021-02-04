@@ -84,7 +84,7 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
 
         FWViewBeanInterface viewBeanAP = (FWViewBeanInterface) session.getAttribute("viewBean");
 
-        if (Objects.nonNull(viewBeanAP) && viewBeanAP instanceof APDroitAPGPViewBean && ((APDroitAPGPViewBean)viewBeanAP).getAControler()) {
+        if (Objects.nonNull(viewBeanAP) && viewBeanAP instanceof APDroitAPGPViewBean && ((APDroitAPGPViewBean)viewBeanAP).getAControler() && !((APDroitAPGPViewBean)viewBeanAP).getModeEditionDroit().equals(APModeEditionDroit.LECTURE)) {
             try {
                 String method = request.getParameter("_method");
                 FWAction privateAction = FWAction.newInstance(userAction[0]);
@@ -244,7 +244,7 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
             viewBean = (APDroitAPGPViewBean) beforeAjouter(session, request, response, viewBean);
 
             //
-            if (viewBean.getAControler()) {
+            if (viewBean.getAControler() && !viewBean.getModeEditionDroit().equals(APModeEditionDroit.LECTURE)) {
                 APGSeodorServiceCallUtil.callWSSeodor(viewBean, mainDispatcher);
             }
 
@@ -255,7 +255,13 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
                 session.removeAttribute("viewBean");
                 session.setAttribute("viewBean", viewBean);
                 request.setAttribute("viewBean", viewBean);
-                destination =request.getServletPath() + "?" + PRDefaultAction.USER_ACTION + "=" + newAction;
+                destination = request.getServletPath() + "?" + PRDefaultAction.USER_ACTION + "=" + newAction;
+            } else if (viewBean.getModeEditionDroit().equals(APModeEditionDroit.LECTURE)) {
+                newAction = FWAction.newInstance(IAPActions.ACTION_SITUATION_PROFESSIONNELLE + ".chercher");
+                session.removeAttribute("viewBean");
+                session.setAttribute("viewBean", viewBean);
+                request.setAttribute("viewBean", viewBean);
+                destination = request.getServletPath() + "?" + PRDefaultAction.USER_ACTION + "=" + newAction;
             } else {
                 viewBean = (APDroitAPGPViewBean) mainDispatcher.dispatch(viewBean, newAction);
                 boolean goesToSuccessDest = !viewBean.getMsgType().equals(FWViewBeanInterface.ERROR);
