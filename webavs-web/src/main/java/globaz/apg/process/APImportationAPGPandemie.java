@@ -2139,6 +2139,7 @@ public class APImportationAPGPandemie extends BProcess {
         try {
             List<String> etat = new ArrayList<>();
             etat.add(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
+            etat.add(IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL);
             APDroitPanJointTiersManager manager = new APDroitPanJointTiersManager();
             manager.setSession(session);
             manager.setForIdTiers(idTiers);
