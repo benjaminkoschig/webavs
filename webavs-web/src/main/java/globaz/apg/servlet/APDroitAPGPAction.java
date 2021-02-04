@@ -84,7 +84,7 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
 
         FWViewBeanInterface viewBeanAP = (FWViewBeanInterface) session.getAttribute("viewBean");
 
-        if (Objects.nonNull(viewBeanAP) && viewBeanAP instanceof APDroitAPGPViewBean && ((APDroitAPGPViewBean)viewBeanAP).getAControler() && !((APDroitAPGPViewBean)viewBeanAP).getModeEditionDroit().equals(APModeEditionDroit.LECTURE)) {
+        if (Objects.nonNull(viewBeanAP) && viewBeanAP instanceof APDroitAPGPViewBean && ((APDroitAPGPViewBean)viewBeanAP).getAControler() && !APModeEditionDroit.LECTURE.equals(((APDroitAPGPViewBean)viewBeanAP).getModeEditionDroit())) {
             try {
                 String method = request.getParameter("_method");
                 FWAction privateAction = FWAction.newInstance(userAction[0]);
@@ -244,7 +244,7 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
             viewBean = (APDroitAPGPViewBean) beforeAjouter(session, request, response, viewBean);
 
             //
-            if (viewBean.getAControler() && !viewBean.getModeEditionDroit().equals(APModeEditionDroit.LECTURE)) {
+            if (viewBean.getAControler() && !APModeEditionDroit.LECTURE.equals(viewBean.getModeEditionDroit())) {
                 APGSeodorServiceCallUtil.callWSSeodor(viewBean, mainDispatcher);
             }
 
@@ -256,7 +256,7 @@ public class APDroitAPGPAction extends APAbstractDroitPAction {
                 session.setAttribute("viewBean", viewBean);
                 request.setAttribute("viewBean", viewBean);
                 destination = request.getServletPath() + "?" + PRDefaultAction.USER_ACTION + "=" + newAction;
-            } else if (viewBean.getModeEditionDroit().equals(APModeEditionDroit.LECTURE)) {
+            } else if (APModeEditionDroit.LECTURE.equals(viewBean.getModeEditionDroit())) {
                 newAction = FWAction.newInstance(IAPActions.ACTION_SITUATION_PROFESSIONNELLE + ".chercher");
                 session.removeAttribute("viewBean");
                 session.setAttribute("viewBean", viewBean);
