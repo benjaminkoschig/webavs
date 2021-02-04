@@ -95,8 +95,9 @@ public class PcaPlanCalculReforme {
         List<PCAccordeePlanCalculReforme> list = new ArrayList<>();
 
         if (!ValiderDecisionUtils.isDroitInitial(noVersionDroitCourant)) {
+            String noVersionDroitCourantPrecedant = Integer.toString(Integer.parseInt(noVersionDroitCourant) - 1);
             search.setForIdDroit(idDroit);
-            search.setForNoVersion(noVersionDroitCourant);
+            search.setForNoVersion(noVersionDroitCourantPrecedant);
             search.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
 
             list = PersistenceUtil.search(search);

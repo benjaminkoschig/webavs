@@ -106,9 +106,9 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             // sur un calcul rétro : vérifie s'il n'y avait une période uniquement réforme
             boolean retroactifCalcul = retroactif;
             if(retroactif && !JadeStringUtil.isBlankOrZero(version) && Integer.parseInt(version) > 1){
-                List<PCAccordeePlanCalculReforme> list = PcaPlanCalculReforme.getListPcaFromNoVersion(droit.getId(), Integer.toString(Integer.parseInt(version) - 1));
+                List<PCAccordeePlanCalculReforme> list = PcaPlanCalculReforme.getListPcaFromNoVersion(droit.getId(), version);
                 // Si la date de début est supérieure à la date de début de la dernière période, il faudra vérifier le statut réforme sur l'ancien droit
-                if(JadeDateUtil.isDateAfter(dateDebutPlageCalcul, JadeDateUtil.getFirstDateOfMonth(list.get(list.size() - 1).getDateDebut()))) {
+                if(list.isEmpty() || JadeDateUtil.isDateAfter(dateDebutPlageCalcul, JadeDateUtil.getFirstDateOfMonth(list.get(list.size() - 1).getDateDebut()))) {
                     retroactifCalcul = false;
                 } else {
                     dateSplitReforme = PcaPlanCalculReforme.getSplitDateReformeFromVersion(list);
