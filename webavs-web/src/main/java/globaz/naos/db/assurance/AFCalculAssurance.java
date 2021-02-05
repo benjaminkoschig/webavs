@@ -166,12 +166,12 @@ public class AFCalculAssurance {
      *
      */
     public static String updateTauxMoyen(BSession session, String affiliationId, String assuranceId, String typeAssurance, String assuranceGenre, String tauxGenre, String masse, String annee, String typeDocument) throws Exception {
-        if (CodeSystem.TYPE_RELEVE_BOUCLEMENT_ACOMPTE.equals(typeDocument)
-                || (CodeSystem.TYPE_RELEVE_DECOMP_FINAL_COMPTA.equals(typeDocument)
-                || DSDeclarationViewBean.CS_PRINCIPALE.equals(typeDocument)
+        if ((CodeSystem.TYPE_RELEVE_BOUCLEMENT_ACOMPTE.equals(typeDocument)
+                || CodeSystem.TYPE_RELEVE_DECOMP_FINAL_COMPTA.equals(typeDocument)
+                || DSDeclarationViewBean.CS_PRINCIPALE.equals(typeDocument))
                 && "true".equals(session.getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER, "false"))
                 && CodeSystem.GEN_VALEUR_ASS_TAUX_VARIABLE.equals(tauxGenre)
-                && CodeSystem.TYPE_ASS_FRAIS_ADMIN.equals(typeAssurance) && CodeSystem.GENRE_ASS_PARITAIRE.equals(assuranceGenre))) {
+                && CodeSystem.TYPE_ASS_FRAIS_ADMIN.equals(typeAssurance) && CodeSystem.GENRE_ASS_PARITAIRE.equals(assuranceGenre)) {
             return AFCalculAssurance.calculTauxMoyen((BSession) DSProcessValidation.getSessionNaos(session)
                     , affiliationId
                     , assuranceId
