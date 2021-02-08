@@ -40,6 +40,12 @@ public class APAnnonceAPGManager extends PRAbstractManager {
     /** Critère de recherche pour lister toutes les annonces APG (rev99 et 05) */
     public static final String FOR_TYPE_APG = "forapg";
 
+    /** Critère de recherche pour lister toutes les annonces MATERNITE */
+    public static final String FOR_TYPE_MATERNITE = "formaternite";
+
+    /** Critère de recherche pour lister toutes les annonces MATERNITE */
+    public static final String FOR_TYPE_PATERNITE = "forpaternite";
+
     /** Critère de recherche pour lister tous les types d'annonces */
     public static final String FOR_TYPE_TOUS = "tous";
 
@@ -330,10 +336,15 @@ public class APAnnonceAPGManager extends PRAbstractManager {
 
             if (forType.equals(APAnnonceAPGManager.FOR_TYPE_APG)) {
                 sqlWhere.append(APAnnonceAPG.FIELDNAME_GENRE);
-                sqlWhere.append(" NOT = '90'");
-            } else {
+                sqlWhere.append(" NOT = '90' AND ");
+                sqlWhere.append(APAnnonceAPG.FIELDNAME_GENRE);
+                sqlWhere.append(" NOT = '91'");
+            } else if (forType.equals(APAnnonceAPGManager.FOR_TYPE_MATERNITE)) {
                 sqlWhere.append(APAnnonceAPG.FIELDNAME_GENRE);
                 sqlWhere.append(" = '90'");
+            } else {
+                sqlWhere.append(APAnnonceAPG.FIELDNAME_GENRE);
+                sqlWhere.append(" = '91'");
             }
 
         }
@@ -583,10 +594,15 @@ public class APAnnonceAPGManager extends PRAbstractManager {
 
             if (forType.equals(APAnnonceAPGManager.FOR_TYPE_APG)) {
                 sqlWhere.append(APAnnonceAPG.FIELDNAME_GENRE);
-                sqlWhere.append(" NOT = '90'");
-            } else {
+                sqlWhere.append(" NOT = '90' AND ");
+                sqlWhere.append(APAnnonceAPG.FIELDNAME_GENRE);
+                sqlWhere.append(" NOT = '91'");
+            } else if (forType.equals(APAnnonceAPGManager.FOR_TYPE_MATERNITE)) {
                 sqlWhere.append(APAnnonceAPG.FIELDNAME_GENRE);
                 sqlWhere.append(" = '90'");
+            } else {
+                sqlWhere.append(APAnnonceAPG.FIELDNAME_GENRE);
+                sqlWhere.append(" = '91'");
             }
 
         }

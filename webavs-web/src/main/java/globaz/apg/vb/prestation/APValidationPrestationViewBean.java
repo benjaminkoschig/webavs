@@ -257,6 +257,8 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
     public String getActionFinalser() {
         if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(getGenreService())) {
             return "apg.droits.droitMatP.finaliserCreationDroit";
+        } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(getGenreService())) {
+            return "apg.droits.droitPatP.finaliserCreationDroit";
         } else  if (APGenreServiceAPG.isValidGenreServicePandemie(APGenreServiceAPG.resoudreGenreParCodeSystem(getGenreService()).getCodePourAnnonce())) {
             return "apg.droits.droitPan.finaliserCreationDroit";
         } else {
@@ -267,6 +269,8 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
     public String getActionCorriger() {
         if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(getGenreService())) {
             return "apg.droits.droitMatP.afficher";
+        } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(getGenreService())) {
+            return "apg.droits.droitPatP.afficher";
         } else if (APGenreServiceAPG.isValidGenreServicePandemie(APGenreServiceAPG.resoudreGenreParCodeSystem(getGenreService()).getCodePourAnnonce())) {
             return "apg.droits.droitPan.passerDroitErreur";
         } else {

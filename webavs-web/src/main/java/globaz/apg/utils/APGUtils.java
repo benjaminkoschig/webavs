@@ -3,13 +3,13 @@ package globaz.apg.utils;
 import ch.globaz.common.properties.PropertiesException;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.application.APApplication;
-import globaz.apg.db.droits.APDroitAPG;
-import globaz.apg.db.droits.APDroitLAPG;
-import globaz.apg.db.droits.APDroitMaternite;
-import globaz.apg.db.droits.APDroitPandemie;
+import globaz.apg.db.droits.*;
+import globaz.apg.db.prestation.APPrestationJointLotTiersDroit;
+import globaz.apg.db.prestation.APPrestationJointLotTiersDroitManager;
 import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.properties.APProperties;
 import globaz.externe.IPRConstantesExternes;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
@@ -72,6 +72,8 @@ public class APGUtils {
         }
         if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(genreService)) {
             droit = new APDroitMaternite();
+        } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(genreService)) {
+            droit = new APDroitPaternite();
         } else if (APGUtils.isTypeAllocationPandemie(genreService)) {
             droit = new APDroitPandemie();
         } else {
@@ -139,6 +141,21 @@ public class APGUtils {
 
 
     /**
+     * Méthode filtrant les genres de service de type pandémie.
+     *
+     * @param csTypeAllocation
+     * @return
+     */
+    public static Boolean isTypePaternite(String csTypeAllocation) {
+        return (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(csTypeAllocation));
+    }
+
+    public static Boolean isTypeMaternite(String csTypeAllocation) {
+        return (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(csTypeAllocation));
+    }
+
+
+    /**
      * Méthode filtrant les genres de service qui peuvent avoir une date de fin de droit.
      *
      * @param csTypeAllocation
@@ -170,6 +187,8 @@ public class APGUtils {
             csDomaineDefault = IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
         } else if (IPRDemande.CS_TYPE_MATERNITE.equals(typePrestation)) {
             csDomaineDefault = IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
+        } else if (IPRDemande.CS_TYPE_PATERNITE.equals(typePrestation)) {
+            csDomaineDefault = IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE;
         } else if (IPRDemande.CS_TYPE_PANDEMIE.equals(typePrestation)) {
             try {
                 csDomaineDefault = APProperties.DOMAINE_ADRESSE_APG_PANDEMIE.getValue();
@@ -182,5 +201,19 @@ public class APGUtils {
 
     public static Boolean isDroitModifiable(String etat) {
         return Arrays.asList(IAPDroitLAPG.DROITS_MODIFIABLES).contains(etat);
+    }
+    public static boolean isTypePrestation(String idPrestation, BSession session, String csTypePrestation) throws Exception {
+        APPrestationJointLotTiersDroitManager manager = new APPrestationJointLotTiersDroitManager();
+        manager.setSession(session);
+        manager.setForIdPrestation(idPrestation);
+        manager.find(BManager.SIZE_NOLIMIT);
+        APPrestationJointLotTiersDroit prestationJointLotTiersDroit;
+        for (int i = 0; i < manager.size(); i++) {
+            prestationJointLotTiersDroit = (APPrestationJointLotTiersDroit) (manager.getEntity(i));
+            if(prestationJointLotTiersDroit.getGenreService().equals(csTypePrestation)){
+                return true;
+}
+        }
+        return false;
     }
 }

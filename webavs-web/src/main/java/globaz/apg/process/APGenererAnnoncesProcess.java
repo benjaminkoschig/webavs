@@ -3,15 +3,14 @@
  */
 package globaz.apg.process;
 
+import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.db.annonces.APAnnonceAPG;
-import globaz.apg.db.droits.APDroitAPG;
-import globaz.apg.db.droits.APDroitLAPG;
-import globaz.apg.db.droits.APDroitMaternite;
-import globaz.apg.db.droits.APDroitPandemie;
+import globaz.apg.db.droits.*;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
 import globaz.apg.enums.APTypeDePrestation;
+import globaz.apg.utils.APGUtils;
 import globaz.apg.utils.APGenerateurAnnonceRAPG;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
@@ -145,8 +144,10 @@ public class APGenererAnnoncesProcess extends BProcess {
 
         if (APTypeDePrestation.PANDEMIE.getCodesystemString().equals(prestation.getGenre())) {
             droit = new APDroitPandemie();
-        } else if (prestation.getNoRevision().equals(IAPDroitMaternite.CS_REVISION_MATERNITE_2005)) {
+        } else if (APGUtils.isTypePrestation(prestation.getIdPrestation(),getSession(), IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE)) {
             droit = new APDroitMaternite();
+        } else if (APGUtils.isTypePrestation(prestation.getIdPrestation(),getSession(), IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE)) {
+            droit = new APDroitPaternite();
         } else {
             droit = new APDroitAPG();
         }

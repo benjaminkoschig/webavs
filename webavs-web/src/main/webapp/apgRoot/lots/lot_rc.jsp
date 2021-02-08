@@ -35,9 +35,14 @@ if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session
 %>
 	<ct:menuChange displayId="menu" menuId="ap-menuprincipalpan" showTab="menu"/>
 	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
+<%}else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_PATERNITE) {
+	typeLot = IPRDemande.CS_TYPE_PATERNITE;
+%>
+<ct:menuChange displayId="menu" menuId="ap-menuprincipalapat" showTab="menu"/>
+<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 <%}%>
 
-<SCRIPT language="javascript">
+	<SCRIPT language="javascript">
 	bFind = true;
 	usrAction = "apg.lots.lot.lister";
 	

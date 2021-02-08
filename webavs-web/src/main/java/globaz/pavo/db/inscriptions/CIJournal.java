@@ -37,6 +37,7 @@ public class CIJournal extends BEntity {
 
     private static final long serialVersionUID = 6799080018665175470L;
     public final static String CS_APG = "301006";
+    public final static String CS_PANDEMIE = "301015";
     public final static String CS_ASSURANCE_CHOMAGE = "301009";
     public final static String CS_ASSURANCE_FACULTATIVE = "301012";
     public final static String CS_ASSURANCE_MILITAIRE = "301010";

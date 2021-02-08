@@ -558,6 +558,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             throws Exception {
 
         if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())
+                || IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(droit.getGenreService())
                 || APGUtils.isTypeAllocationPandemie(droit.getGenreService())) {
             return;
         }
@@ -861,6 +862,7 @@ public class APPrestationHelper extends PRAbstractHelper {
          **/
         if (!JadeStringUtil.isBlankOrZero(droit.getGenreService())) {
             if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())
+                    || IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(droit.getGenreService())
                     || APGUtils.isTypeAllocationPandemie(droit.getGenreService())) {
                 return;
             }
@@ -1522,6 +1524,8 @@ public class APPrestationHelper extends PRAbstractHelper {
             String apgOuMaternite = null;
             if (droit instanceof APDroitMaternite) {
                 apgOuMaternite = APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_MATERNITE;
+            } else if (droit instanceof APDroitPaternite) {
+                apgOuMaternite = APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PATERNITE;
             } else if (droit instanceof APDroitPandemie) {
                 apgOuMaternite = APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PANDEMIE;
             } else {
@@ -1542,7 +1546,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             // -- Condition stipulant que le calcul doit s'effectuer avec ACOR
             // -------------------------------------------------------------------
             if (APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_MATERNITE.equals(apgOuMaternite)) {
-                if (APCalculAcorUtil.grantCalulAcorMaternite(session, (APDroitMaternite) droit)) {
+                if (APCalculAcorUtil.grantCalulAcorMaternite(session, droit)) {
                     final JACalendarGregorian calendar = new JACalendarGregorian();
                     // si une partie du droit se situe entre le 01.07.2001 et le 01.07.2005, le calcul doit se faire
                     // à la main.
@@ -1555,7 +1559,8 @@ public class APPrestationHelper extends PRAbstractHelper {
                         viewBean.setTypeCalculPrestation(APTypeCalculPrestation.ACOR);
                     }
                 }
-            } else if (!APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PANDEMIE.equals(apgOuMaternite)) {
+            } else if (!APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PANDEMIE.equals(apgOuMaternite)
+                    && !APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PATERNITE.equals(apgOuMaternite)) {
                 if (APCalculAcorUtil.grantCalulAcorAPG(session, (APDroitAPG) droit)) {
                     viewBean.setTypeCalculPrestation(APTypeCalculPrestation.ACOR);
                 }

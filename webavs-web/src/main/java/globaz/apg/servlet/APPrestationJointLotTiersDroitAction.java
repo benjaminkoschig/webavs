@@ -279,10 +279,10 @@ public class APPrestationJointLotTiersDroitAction extends PRDefaultAction {
 
             if (APGUtils.isTypeAllocationPandemie(plViewBean.getGenreService())) {
                 typePrestation = IPRDemande.CS_TYPE_PANDEMIE;
-            } else if (plViewBean.getNoRevision().equals(IAPDroitMaternite.CS_REVISION_MATERNITE_2005)) {
+            } else if (APGUtils.isTypeMaternite(plViewBean.getGenreService())) {
                 typePrestation = IPRDemande.CS_TYPE_MATERNITE;
-            } else {
-                typePrestation = IPRDemande.CS_TYPE_APG;
+            } else if(APGUtils.isTypePaternite(plViewBean.getGenreService())) {
+                typePrestation = IPRDemande.CS_TYPE_PATERNITE;
             }
 
             lot.setTypeLot(typePrestation);

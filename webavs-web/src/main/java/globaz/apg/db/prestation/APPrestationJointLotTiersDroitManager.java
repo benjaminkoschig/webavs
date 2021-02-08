@@ -29,6 +29,7 @@ public class APPrestationJointLotTiersDroitManager extends APPrestationManager {
     private String forTypeDroit = "";
     private String fromClause = null;
     private String fromDateDebutDroit = "";
+    private String forIdPrestation = "";
     private String likeNom = "";
     private String likeNumeroAVS = "";
     private String likeNumeroAVSNNSS = "";
@@ -71,6 +72,17 @@ public class APPrestationJointLotTiersDroitManager extends APPrestationManager {
             }
 
             sql.append(PRNSSUtil.getWhereNSS(_getCollection(), getLikeNumeroAVS(), getLikeNumeroAVSNNSS()));
+        }
+        if (!JadeStringUtil.isBlankOrZero(forIdPrestation)) {
+
+            if (sql.length() != 0) {
+                sql.append(" AND ");
+            }
+
+            sql.append(_getCollection()).append(APPrestation.TABLE_NAME).append(".")
+                    .append(APPrestation.FIELDNAME_IDPRESTATIONAPG);
+            sql.append("=");
+            sql.append(this._dbWriteString(statement.getTransaction(), forIdPrestation));
         }
 
         if (!JadeStringUtil.isEmpty(likeNom)) {
@@ -244,4 +256,12 @@ public class APPrestationJointLotTiersDroitManager extends APPrestationManager {
     public void setLikePrenom(String likePrenom) {
         this.likePrenom = likePrenom;
     }
+    public String getForIdPrestation() {
+        return forIdPrestation;
+    }
+
+    public void setForIdPrestation(String forIdPrestation) {
+        this.forIdPrestation = forIdPrestation;
+    }
+
 }

@@ -3,11 +3,14 @@
  */
 package globaz.apg.db.lots;
 
-import globaz.apg.api.droits.IAPDroitMaternite;
+import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.db.prestation.APPrestation;
+import globaz.apg.db.prestation.APPrestationJointLotTiersDroit;
+import globaz.apg.db.prestation.APPrestationJointLotTiersDroitManager;
 import globaz.apg.db.prestation.APPrestationManager;
 import globaz.apg.enums.APTypeDePrestation;
+import globaz.apg.utils.APGUtils;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BTransaction;
@@ -108,7 +111,8 @@ public class APLot extends BEntity {
         for (int i = 0; i < mgr.size(); i++) {
             prestation = (APPrestation) (mgr.getEntity(i));
 
-            if (prestation.getNoRevision().equals(IAPDroitMaternite.CS_REVISION_MATERNITE_2005)
+            if (APGUtils.isTypePrestation(prestation.getIdPrestation(),getSession(),IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE)
+                    ||APGUtils.isTypePrestation(prestation.getIdPrestation(),getSession(),IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE)
                 || APTypeDePrestation.PANDEMIE.getCodesystemString().equals(prestation.getGenre())) {
                 prestation.setEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
             } else {
@@ -135,6 +139,7 @@ public class APLot extends BEntity {
 
         compensation = null;
     }
+
 
     /**
      * @param transaction

@@ -20,6 +20,7 @@ import globaz.apg.utils.APGUtils;
 import globaz.apg.vb.droits.APDroitAPGPViewBean;
 import globaz.apg.vb.droits.APDroitPanSituationViewBean;
 import globaz.apg.vb.droits.APDroitPanViewBean;
+import globaz.apg.vb.droits.APDroitPatPViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.db.*;
 import globaz.globall.util.JACalendar;
@@ -536,6 +537,59 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         return droit;
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see globaz.apg.utils.APEntityService#creerDroitComplet(globaz.globall.db.BSession,
+     * globaz.globall.db.BTransaction, globaz.apg.vb.droits.APDroitAPGPViewBean)
+     */
+    @Override
+    public APDroitPaternite creerDroitPatComplet(final BSession session, final BTransaction transaction,
+                                           final APDroitPatPViewBean viewBean) throws IllegalArgumentException {
+        try {
+            validateSessionAndTransactionNotNull(session, transaction);
+        } catch (final Exception e) {
+            throw new IllegalArgumentException("Unable to create the new APDroitPaternite for reason : " + e.toString());
+        }
+        // On va d'abord s'assurer que le droit n'existe pas
+        if (!JadeStringUtil.isBlankOrZero(viewBean.getDroit().getIdDroit())) {
+            throw new IllegalArgumentException("Unable to create a new APDroitPaternite because it is already exist with id ["
+                    + viewBean.getDroit().getIdDroit() + "]");
+        }
+
+        // Validation des infos du viewBean
+        validationPatViewBean(session, transaction, viewBean);
+
+        PRDemande demande = null;
+        APDroitPaternite droit = null;
+        APSituationFamilialeAPG situationFamiliale = null;
+
+        try {
+            // Recherche du tiers en fonction du NSS
+            final String nss = viewBean.getNss();
+            final PRTiersWrapper tierWrapper = PRTiersHelper.getTiers(session, nss);
+
+            if ((tierWrapper == null) || (tierWrapper.getIdTiers() == null)) {
+                throw new Exception("Unable to find the idTiers for the NSS [" + nss + "]");
+            }
+
+            demande = getOrCreateDemandeDuTiersPat(session, transaction, tierWrapper.getIdTiers());
+            droit = creationDuDroitPaternite(viewBean, session, transaction, demande);
+            creerSituationProfSiIndependant(session, transaction, droit, tierWrapper.getIdTiers());
+            situationFamiliale = creerSituationFamiliale(session, transaction);
+
+            // Mise à jour de certaines entitées
+            droit.setIdSituationFam(situationFamiliale.getIdSitFamAPG());
+            droit.update(transaction);
+
+        } catch (final Exception exception) {
+            transaction.setRollbackOnly();
+            viewBean.setMsgType(FWViewBeanInterface.ERROR);
+            viewBean.setMessage(exception.toString());
+        }
+        return droit;
+    }
+
 
     private APDroitPandemie creationDuDroitPandemie(final APDroitPanViewBean viewBean, final BSession session,
                                                     final BTransaction transaction, final PRDemande demande) throws Exception {
@@ -547,6 +601,10 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         return editionDroit(session, transaction, viewBean, demande, APModeEditionDroit.CREATION);
     }
 
+    private APDroitPaternite creationDuDroitPaternite(final APDroitPatPViewBean viewBean, final BSession session,
+                                          final BTransaction transaction, final PRDemande demande) throws Exception {
+        return editionDroitPat(session, transaction, viewBean, demande, APModeEditionDroit.CREATION);
+    }
 
     private APSituationFamilialeAPG creerSituationFamiliale(final BSession session, final BTransaction transaction)
             throws Exception {
@@ -973,6 +1031,99 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         return droitAPG;
     }
 
+    private APDroitPaternite editionDroitPat(final BSession session, final BTransaction transaction,
+                                    final APDroitPatPViewBean viewBean, final PRDemande demande, final APModeEditionDroit modeEdition)
+            throws Exception {
+
+        if (modeEdition == null) {
+            throw new Exception("Any edition mode was specified for the APDroitAPG edition");
+        }
+
+        final List<PRPeriode> periodes = validerNombreJoursSoldesPat(viewBean);
+
+        List<String> datesDeDebut = new ArrayList<String>();
+        List<String> datesDeFin = new ArrayList<String>();
+        for (int ctr = 0; ctr < periodes.size(); ctr++) {
+            datesDeDebut.add(periodes.get(ctr).getDateDeDebut());
+            datesDeFin.add(periodes.get(ctr).getDateDeFin());
+        }
+        datesDeDebut = PRDateUtils.sortDate(datesDeDebut, DateOrder.NEWER_TO_OLDER);
+        datesDeFin = PRDateUtils.sortDate(datesDeFin, DateOrder.OLDER_TO_NEWER);
+        final String dateDeDebutDroit = datesDeDebut.get(0);
+        final String dateDeFinDroit = datesDeFin.get(0);
+
+        // la date de début du droit doit être ultérieure au 01.07.1999
+        if (new JACalendarGregorian().compare("01.07.1999", dateDeDebutDroit) == JACalendar.COMPARE_FIRSTUPPER) {
+            throw new Exception("Unable to create the APDroitAPG : " + session.getLabel("DROIT_TROP_ANCIEN"));
+        }
+
+        final APDroitPaternite droitPat = new APDroitPaternite();
+        droitPat.setSession(session);
+
+        if (modeEdition.equals(APModeEditionDroit.EDITION)) {
+            // On va d'abord s'assurer qu'on a bien un id droit
+            if (JadeStringUtil.isBlankOrZero(viewBean.getDroit().getIdDroit())) {
+                throw new Exception(
+                        "Unable to update the APDroitAPG with the empty id [" + viewBean.getDroit().getIdDroit() + "]");
+            }
+            // Ensuite on s'assure que le droit existe
+            droitPat.setIdDroit(viewBean.getIdDroit());
+            droitPat.retrieve(transaction);
+            if (droitPat.isNew()) {
+                throw new Exception("Unable to update the APDroitPat with id [" + viewBean.getDroit().getIdDroit()
+                        + "] because it doesn't already exist");
+            }
+            if (!IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(droitPat.getEtat())) {
+                throw new Exception("Unable to update the APDroitAPG with id [" + viewBean.getDroit().getIdDroit()
+                        + "] because it is not 'En attente'");
+            }
+        }
+
+        // Création de l'idCaisse
+        String idCaisse = null;
+        try {
+            final String noCaisse = CommonProperties.KEY_NO_CAISSE.getValue();
+            final String noAgence = CommonProperties.NUMERO_AGENCE.getValue();
+            idCaisse = noCaisse + noAgence;
+        } catch (final PropertiesException exception) {
+            throw new Exception("A fatal exception was thrown when accessing to the CommonProperties", exception);
+        }
+
+        // MAJ des champs du droit
+        droitPat.setIdDemande(demande.getIdDemande());
+        droitPat.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE);
+        droitPat.setDateDebutDroit(dateDeDebutDroit);
+        droitPat.setDateFinDroit(dateDeFinDroit);
+        droitPat.setDateReception(viewBean.getDateReception());
+        droitPat.setDateDepot(viewBean.getDateDepot());
+        droitPat.setDroitAcquis(viewBean.getDroitAcquis());
+        droitPat.setGenreService(viewBean.getGenreService());
+        droitPat.setIdGestionnaire(viewBean.getIdGestionnaire());
+        droitPat.setTauxImpotSource(viewBean.getTauxImpotSource());
+        droitPat.setIsSoumisImpotSource(viewBean.getIsSoumisCotisation());
+        droitPat.setNpa(viewBean.getNpa());
+        droitPat.setPays(viewBean.getPays());
+        droitPat.setRemarque(viewBean.getRemarque());
+        droitPat.setNoRevision(viewBean.getNoRevision());
+        droitPat.setNoControlePers(viewBean.getNoControlePers());
+        droitPat.setNoCompte(viewBean.getNoCompte());
+        droitPat.setNbrJourSoldes(viewBean.getNbrJourSoldes());
+        droitPat.setDuplicata(viewBean.getDuplicata());
+        droitPat.setCsProvenanceDroitAcquis(viewBean.getCsProvenanceDroitAcquis());
+        droitPat.setIdCaisse(idCaisse);
+        droitPat.setReference(viewBean.getReference());
+        droitPat.setCsCantonDomicile(viewBean.getCsCantonDomicile());
+
+        if (modeEdition.equals(APModeEditionDroit.CREATION)) {
+            droitPat.add(transaction);
+        } else {
+            droitPat.update(transaction);
+        }
+
+        remplacerPeriodesDroitPat(session, transaction, droitPat.getIdDroit(), viewBean.getPeriodes());
+        return droitPat;
+    }
+
     private List<PRPeriode> validerNombreJoursSoldes(final APDroitAPGPViewBean viewBean) throws Exception {
         final List<PRPeriode> periodes = viewBean.getPeriodes();
 
@@ -986,6 +1137,32 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                     + 1);
         }
         if (Integer.valueOf(viewBean.getNbrJourSoldes()) > nombreDeJoursPeriodes) {
+            throw new Exception("Le nombre de jours soldés dépasse le nombre de jours des périodes saisies");
+        }
+        return periodes;
+    }
+
+
+    private List<PRPeriode> validerNombreJoursSoldesPat(final APDroitPatPViewBean viewBean) throws Exception {
+        final List<PRPeriode> periodes = viewBean.getPeriodes();
+
+        if (periodes == null || periodes.isEmpty()) {
+            throw new Exception("Aucne périodes définie pour le droit. Au moins une période doit être définie.");
+        }
+
+        int nombreDeJoursPeriodes = 0;
+        int nombreDeJoursSaisies = 0;
+        for (PRPeriode periode : periodes) {
+            nombreDeJoursPeriodes += (PRDateUtils.getNbDayBetween(periode.getDateDeDebut(), periode.getDateDeFin())
+                    + 1);
+            if(!JadeStringUtil.isBlankOrZero(periode.getNbJour())){
+                nombreDeJoursSaisies += Integer.valueOf(periode.getNbJour());
+            }else{
+                nombreDeJoursSaisies = 0;
+            }
+
+        }
+        if (nombreDeJoursSaisies > nombreDeJoursPeriodes) {
             throw new Exception("Le nombre de jours soldés dépasse le nombre de jours des périodes saisies");
         }
         return periodes;
@@ -1053,6 +1230,15 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                 throw new APEntityNotFoundException(APDroitMaternite.class, idDroit);
             }
             return droitMaternite;
+        } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(droit.getGenreService())) {
+            final APDroitPaternite droitPaternite = new APDroitPaternite();
+            droitPaternite.setSession(session);
+            droitPaternite.setIdDroit(idDroit);
+            droitPaternite.retrieve(transaction);
+            if (droitPaternite.isNew()) {
+                throw new APEntityNotFoundException(APDroitPaternite.class, idDroit);
+            }
+            return droitPaternite;
         } else {
             final APDroitAPG droitAPG = new APDroitAPG();
             droitAPG.setSession(session);
@@ -1074,6 +1260,17 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             throw new Exception("The provided id [" + idDroit + "] does not match an APDroitMaternite");
         }
         return (APDroitMaternite) droit;
+    }
+
+    @Override
+    public APDroitPaternite getDroitPaternite(final BSession session, final BTransaction transaction,
+                                              final String idDroit) throws Exception, APEntityNotFoundException {
+
+        final APDroitLAPG droit = getDroitLAPG(session, transaction, idDroit);
+        if (!(droit instanceof APDroitPaternite)) {
+            throw new Exception("The provided id [" + idDroit + "] does not match an APDroitPaternite");
+        }
+        return (APDroitPaternite) droit;
     }
 
     @Override
@@ -1144,6 +1341,40 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         return demande;
     }
 
+    /**
+     * La PRDemande est gérée de la façon suivante :</br>
+     * - Une seule PRDemande existe pour un tiers dans un domaine
+     * particulier(rente, apg, ij, etc)</br>
+     * - Si une demande existe dans le domain des APG pour l'idTiers fournis en
+     * paramètre, elle sera retournée</br>
+     * - Si aucune demande existe dans le domain des APG pour l'idTiers, elle sera
+     * créée et retournée</br>
+     * <strong>INFO : L'état de la demande (ouverte, clôturée) n'est pas pris en compte. Toute
+     * les demande sont en état 'ouverte'</strong>
+     *
+     * @param session     LA session courante
+     * @param transaction La transaction courante
+     * @param idTiers     L'idTiers du tiers en question
+     * @return Une PRDemande liée au tiers dans le domain des APG
+     * @throws Exception Si l'idTiers est null ou vide ou en cas d'erreur de persistance
+     */
+    public PRDemande getOrCreateDemandeDuTiersPat(final BSession session, final BTransaction transaction,
+                                               final String idTiers) throws Exception {
+        validateSessionAndTransactionNotNull(session, transaction);
+        if (JadeStringUtil.isBlankOrZero(idTiers)) {
+            throw new Exception("Unable to retrieve the PRDemande with an empty idTiers [" + idTiers + "]");
+        }
+        final PRDemande demande = new PRDemande();
+        demande.setSession(session);
+        demande.setTypeDemande(IPRDemande.CS_TYPE_PATERNITE);
+        demande.setIdTiers(idTiers);
+        demande.retrieve(transaction);
+        if (demande.isNew()) {
+            demande.add(transaction);
+        }
+        return demande;
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -1157,7 +1388,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         validateSessionAndTransactionNotNull(session, transaction);
         // Le droit est chargé pour s'assurer que l'idDroit est valid et que le droit existe
         final APDroitLAPG droit = getDroitLAPG(session, transaction, idDroit);
-        if (!(droit instanceof APDroitAPG || droit instanceof APDroitPandemie)) {
+        if (!(droit instanceof APDroitAPG || droit instanceof APDroitPandemie || droit instanceof APDroitPaternite)) {
             throw new Exception("The provided id [" + idDroit + "] does not match an APDroitAPG");
         }
         // if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())) {
@@ -1312,6 +1543,54 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
      * (non-Javadoc)
      */
     @Override
+    public APDroitPaternite miseAjourDroitPat(final BSession session, final BTransaction transaction,
+                                     final APDroitPatPViewBean viewBean) throws Exception {
+        validateSessionAndTransactionNotNull(session, transaction);
+        // On va d'abord s'assurer qu'on a bien un id droit
+        if (viewBean.getDroit() == null) {
+            throw new Exception(
+                    "The viewBean from type APDroitPatPViewBean has a null APDroitLAPG. Can not found the idDroit ");
+        }
+        if (JadeStringUtil.isBlankOrZero(viewBean.getDroit().getIdDroit())) {
+            throw new Exception(
+                    "Unable to update the APDroitPaternite with the empty id [" + viewBean.getDroit().getIdDroit() + "]");
+        }
+        // Validation des infos du viewBean
+        validationPatViewBean(session, transaction, viewBean);
+
+        final APDroitPaternite droit = getDroitPaternite(session, transaction, viewBean.getDroit().getIdDroit());
+
+        droit.setSession(session);
+        droit.retrieve(transaction);
+        if (droit.isNew()) {
+            throw new Exception("Unable to retrieve the APDroitAPG with id [" + viewBean.getDroit().getIdDroit() + "]");
+        }
+        if (!droit.isModifiable()) {
+            throw new Exception(
+                    "Unable to edit the APDroitAPG with id [" + droit.getIdDroit() + "] becuse it is not editable");
+        }
+
+        // Suppression des périodes déjà existante pour ce droit
+        supprimerLesPeriodesDuDroit(session, transaction, droit.getIdDroit());
+        // Suppression des prestations
+        supprimerLesPrestationsDuDroit(session, transaction, droit.getIdDroit());
+
+        final PRDemande demande = new PRDemande();
+        demande.setSession(session);
+        demande.setIdDemande(droit.getIdDemande());
+        demande.retrieve(transaction);
+        if (demande.isNew()) {
+            throw new Exception("Unable to retrieve the PRDemande with id [" + droit.getIdDemande() + "]");
+        }
+
+        return editionDroitPat(session, transaction, viewBean, demande, APModeEditionDroit.EDITION);
+    }
+
+
+    /**
+     * (non-Javadoc)
+     */
+    @Override
     public APDroitPandemie miseAjourDroitPan(final BSession session, final BTransaction transaction,
                                              final APDroitPanViewBean viewBean) throws Exception {
         validateSessionAndTransactionNotNull(session, transaction);
@@ -1445,6 +1724,31 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             p.setDateDebutPeriode(periode.getDateDeDebut());
             p.setDateFinPeriode(periode.getDateDeFin());
             p.setNbrJours(periode.getNbJour());
+            p.add(transaction);
+        }
+    }
+
+    private void remplacerPeriodesDroitPat(BSession session, BTransaction transaction, String idDroit, List<PRPeriode> nouvellesPeriodes) throws Exception {
+        validateSessionAndTransactionNotNull(session, transaction);
+        final APDroitPaternite droit = getDroitPaternite(session, transaction, idDroit);
+
+        // On supprime les périodes existantes
+        supprimerLesPeriodesDuDroit(session, transaction, droit.getIdDroit());
+
+        // On ordonne les nouvelles périodes
+        Collections.sort(nouvellesPeriodes);
+
+        // Et on les recréer
+        for (final PRPeriode periode : nouvellesPeriodes) {
+            final APPeriodeAPG p = new APPeriodeAPG();
+            p.setSession(session);
+            p.setIdDroit(idDroit);
+            p.setDateDebutPeriode(periode.getDateDeDebut());
+            p.setDateFinPeriode(periode.getDateDeFin());
+            p.setNbrJours(periode.getNbJour());
+            p.setTauxImposition(periode.getTauxImposition());
+            p.setCantonImposition(periode.getCantonImposition());
+            p.wantCallValidate(false);
             p.add(transaction);
         }
     }
@@ -1948,6 +2252,158 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             throw new IllegalArgumentException(message.toString());
         }
     }
+
+    private void validationPatViewBean(final BSession session, final BTransaction transaction,
+                                    final APDroitPatPViewBean viewBean) throws IllegalArgumentException {
+        final List<APValidationDroitError> errors = new ArrayList<APValidationDroitError>();
+        // NSS
+        if (!PRNSSUtil.isValidNSS(viewBean.getNss(), FormatNSS.COMPLET_FORMATE)) {
+            errors.add(APValidationDroitError.NSS_INVALID);
+        }
+        // Date de dépôt
+        if (!JadeDateUtil.isGlobazDate(viewBean.getDateDepot())) {
+            errors.add(APValidationDroitError.DATE_DEPOT_VIDE);
+        }
+        // Date de réception
+        if (!JadeDateUtil.isGlobazDate(viewBean.getDateReception())) {
+            errors.add(APValidationDroitError.DATE_RECEPTION_VIDE);
+        }
+
+        final boolean isDuplicata = Boolean.TRUE.equals(viewBean.getDuplicata());
+
+        // Genre service
+        final String genreDeService = viewBean.getCuGenreService();
+        boolean isServiceTypeValid = true;
+        if ((genreDeService == null) || !APGenreServiceAPG.isValidGenreService(genreDeService)) {
+            errors.add(APValidationDroitError.GENRE_SERVICE_INVALID);
+            isServiceTypeValid = false;
+        }
+        // Jours soldés
+//        int nbrJourSoldes = 0;
+//        if ((viewBean.getNbrJourSoldes() == null) || !JadeNumericUtil.isIntegerPositif(viewBean.getNbrJourSoldes())) {
+//            errors.add(APValidationDroitError.JOURS_SOLDE_INVALID);
+//        } else {
+//            try {
+//                nbrJourSoldes = Integer.valueOf(viewBean.getNbrJourSoldes());
+//            } catch (final NumberFormatException e) {
+//                // Nothing to do with e. We only say value is invalid
+//                errors.add(APValidationDroitError.JOURS_SOLDE_INVALID);
+//            }
+//        }
+        // Périodes
+        if ((viewBean.getPeriodes() == null) || (viewBean.getPeriodes().size() == 0)) {
+            errors.add(APValidationDroitError.AUCUNE_PERIODE_DEFINIE);
+        } else {
+            final List<PRPeriode> periodes = viewBean.getPeriodes();
+            int nombrePeriodes = 0;
+            boolean periodeErrorsfounded = false;
+            for (final PRPeriode periode : periodes) {
+                if (!JadeDateUtil.isGlobazDate(periode.getDateDeDebut())
+                        || !JadeDateUtil.isGlobazDate(periode.getDateDeFin())) {
+                    periodeErrorsfounded = true;
+                    errors.add(APValidationDroitError.FORMAT_DATE_INVALID);
+                } else if ((PRDateUtils.compare(periode.getDateDeDebut(),
+                        periode.getDateDeFin()) != PRDateEquality.AFTER)
+                        && (PRDateUtils.compare(periode.getDateDeDebut(),
+                        periode.getDateDeFin()) != PRDateEquality.EQUALS)) {
+                    errors.add(APValidationDroitError.PERIODE_INCOHERENTE);
+                    periodeErrorsfounded = true;
+                } else if ((PRDateUtils.compare(PRDateUtils.convertCalendarToGlobazDate(Calendar.getInstance()),
+                        periode.getDateDeFin()) == PRDateEquality.AFTER)
+                        || (PRDateUtils.compare(PRDateUtils.convertCalendarToGlobazDate(Calendar.getInstance()),
+                        periode.getDateDeFin()) == PRDateEquality.AFTER)) {
+                    errors.add(APValidationDroitError.PERIODE_DANS_FUTUR);
+                    periodeErrorsfounded = true;
+                }
+                nombrePeriodes++;
+            }
+//            if (nbrJourSoldes < nombrePeriodes) {
+//                errors.add(APValidationDroitError.JOURS_SOLDE_INSUFFISANT);
+//            }
+            // On test le chevauchement uniquement s'il n'y a pas d'erreurs lors des contrôles précédents des périodes
+            // Ceci dans le but d'éviter les exceptions si un format de date est incorrect
+            if (!periodeErrorsfounded) {
+                if (PRDateUtils.hasChevauchementDePeriodes(periodes)) {
+                    errors.add(APValidationDroitError.CHEVAUCHEMENT_PERIODES_DETECTE);
+                }
+            }
+        }
+
+        if (isServiceTypeValid && doMoreTestOnReferenceNumber(genreDeService, isDuplicata)) {
+            // Compte ou referenceNumber
+            final String numeroDeCompte = viewBean.getNoCompte();
+            if (JadeStringUtil.isEmpty(numeroDeCompte)) {
+                errors.add(APValidationDroitError.NUMERO_REFERENCE_NON_RENSEIGNE);
+            } else if ((numeroDeCompte == null) || (numeroDeCompte.length() < 4)) {
+                errors.add(APValidationDroitError.NUMERO_REFERENCE_TROP_COURT);
+            }
+
+        }
+
+        if (isServiceTypeValid && doMoreTestOnControlNumber(genreDeService, isDuplicata)) {
+            // // Numéro de contrôle ou controlNumber
+            final String numeroDeControle = viewBean.getNoControlePers();
+            // La longueur min du controlNumber est 2 position
+            if ((numeroDeControle == null) || (numeroDeControle.length() < 2)) {
+                errors.add(APValidationDroitError.NUMERO_CONTROLE_INVALID);
+            }
+        }
+        // Test de la longueur de la remarque
+        if (isRemarqueTropLongue(viewBean.getRemarque())) {
+            errors.add(APValidationDroitError.REMARQUE_TROP_LONGUE);
+        }
+
+        // Pays
+        final String pays = viewBean.getPays();
+        if (JadeStringUtil.isBlankOrZero(pays)) {
+            errors.add(APValidationDroitError.PAYS_INVALID);
+        }
+
+        // NPA : si le pays est Suisse, le NPA doit être renseigné
+        String npa = null;
+        if (IConstantes.ID_PAYS_SUISSE.equals(viewBean.getPays())) {
+            npa = viewBean.getNpa();
+            if ((npa == null) || (npa.length() < 4)) {
+                errors.add(APValidationDroitError.NPA_VIDE);
+            }
+        }
+
+        if (!JadeStringUtil.isIntegerEmpty(npa)) {
+            // le pays doit être la suisse
+            if (!IConstantes.ID_PAYS_SUISSE.equals(pays)) {
+                errors.add(APValidationDroitError.PAYS_DOIT_ETRE_SUISSE);
+            } else {
+                // recherche du canton
+                try {
+                    final String canton = PRTiersHelper.getCanton(session, npa);
+                    if (canton == null) {
+                        errors.add(APValidationDroitError.CANTON_INTROUVABLE);
+                    }
+                } catch (final Exception e) {
+                    errors.add(APValidationDroitError.CANTON_INTROUVABLE);
+                }
+            }
+        }
+
+        // Droit acquis
+        if (!JadeStringUtil.isEmpty(viewBean.getDroitAcquis())) {
+            if (!JadeStringUtil.endsWith(viewBean.getDroitAcquis(), "5")) {
+                if (!JadeStringUtil.endsWith(viewBean.getDroitAcquis(), "0")) {
+                    errors.add(APValidationDroitError.DROITS_ACQUIS_PAS_ARRONDI);
+                }
+            }
+        }
+        errors.addAll(validerNoCompte(session, genreDeService, viewBean.getNoCompte()));
+        if (errors.size() > 0) {
+            final StringBuilder message = new StringBuilder();
+            for (final APValidationDroitError error : errors) {
+                message.append(session.getLabel(error.getErrorLabel()));
+                message.append("</br>");
+            }
+            throw new IllegalArgumentException(message.toString());
+        }
+    }
+
 
     /**
      * Validation du numero de compte en fonction du genre de service

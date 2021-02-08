@@ -6,6 +6,8 @@ public class PRPeriode implements Comparable<PRPeriode> {
     private String dateDeDebut;
     private String dateDeFin;
     private String nbJour = "";
+    private String tauxImposition = "";
+    private String cantonImposition = "";
 
     public PRPeriode() {
     }
@@ -19,6 +21,14 @@ public class PRPeriode implements Comparable<PRPeriode> {
         this.dateDeDebut = dateDeDebut;
         this.dateDeFin = dateDeFin;
         this.nbJour = nbJour;
+    }
+
+    public PRPeriode(String dateDeDebut, String dateDeFin, String nbJour, String tauxImposition, String cantonImposition) {
+        this.dateDeDebut = dateDeDebut;
+        this.dateDeFin = dateDeFin;
+        this.nbJour = nbJour;
+        this.tauxImposition = tauxImposition;
+        this.cantonImposition = cantonImposition;
     }
 
     public final String getDateDeDebut() {
@@ -111,4 +121,19 @@ public class PRPeriode implements Comparable<PRPeriode> {
         return builder.toString();
     }
 
+    public String getTauxImposition() {
+        return tauxImposition;
+    }
+
+    public void setTauxImposition(String tauxImposition) {
+        this.tauxImposition = tauxImposition;
+    }
+
+    public String getCantonImposition() {
+        return cantonImposition;
+    }
+
+    public void setCantonImposition(String cantonImposition) {
+        this.cantonImposition = cantonImposition;
+    }
 }

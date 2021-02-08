@@ -30,26 +30,29 @@ public class Rule316 extends Rule {
      */
     @Override
     public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException, IllegalArgumentException {
-        String serviceType = champsAnnonce.getServiceType();
-        String startOfPeriod = champsAnnonce.getStartOfPeriod();
-        String insurantBirthDate = champsAnnonce.getInsurantBirthDate();
-        int typeAnnonce = getTypeAnnonce(champsAnnonce);
-        if (typeAnnonce == 1) {
-            validNotEmpty(serviceType, "serviceType");
-            validNotEmpty(startOfPeriod, "startOfPeriod");
-        }
-
-        List<String> services = new ArrayList<String>();
-        services.add("20");
-        services.add("21");
-        services.add("22");
-        services.add("23");
-        if (services.contains(serviceType)) {
-            validNotEmpty(insurantBirthDate, "insurantBirthDate");
-            if (JadeDateUtil.getNbYearsBetween(insurantBirthDate, startOfPeriod) < 19) {
-                return false;
-            }
-        }
+        /**
+         * Breakrule plus utilisé
+         */
+//        String serviceType = champsAnnonce.getServiceType();
+//        String startOfPeriod = champsAnnonce.getStartOfPeriod();
+//        String insurantBirthDate = champsAnnonce.getInsurantBirthDate();
+//        int typeAnnonce = getTypeAnnonce(champsAnnonce);
+//        if (typeAnnonce == 1) {
+//            validNotEmpty(serviceType, "serviceType");
+//            validNotEmpty(startOfPeriod, "startOfPeriod");
+//        }
+//
+//        List<String> services = new ArrayList<String>();
+//        services.add("20");
+//        services.add("21");
+//        services.add("22");
+//        services.add("23");
+//        if (services.contains(serviceType)) {
+//            validNotEmpty(insurantBirthDate, "insurantBirthDate");
+//            if (JadeDateUtil.getNbYearsBetween(insurantBirthDate, startOfPeriod) < 19) {
+//                return false;
+//            }
+//        }
 
         return true;
     }

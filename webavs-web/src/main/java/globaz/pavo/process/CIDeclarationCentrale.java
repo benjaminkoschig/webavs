@@ -353,7 +353,8 @@ public class CIDeclarationCentrale extends BProcess {
                             String montantEcr = rec.getMontantEcr();
                             if ("999999".equals(rec.getNumeroAffilie().substring(0, 6))
                                     || "77777777777".equals(rec.getNumeroAffilie())
-                                    || "88888888888".equals(rec.getNumeroAffilie())) {
+                                    || "88888888888".equals(rec.getNumeroAffilie())
+                                    || "55555555555".equals(rec.getNumeroAffilie())) {
                                 ecriture.setGre(rec.getGenreEcriture());
                                 ecriture.setMontant(rec.getMontantEcr());
                                 if ("999999".equals(rec.getNumeroAffilie().substring(0, 6))) {
@@ -494,6 +495,11 @@ public class CIDeclarationCentrale extends BProcess {
                                         } else if ("77777777777".equals(rec.getNumeroAffilie())) {
                                             if (!ecriture.getWrapperUtil().rechercheEcritureEmpApg(getTransaction(),
                                                     CIJournal.CS_APG, false, true)) {
+                                                errors.add(getSession().getLabel("MSG_ECRITURE_SUMEMP"));
+                                            }
+                                        } else if ("55555555555".equals(rec.getNumeroAffilie())) {
+                                            if (!ecriture.getWrapperUtil().rechercheEcritureEmpApg(getTransaction(),
+                                                    CIJournal.CS_PANDEMIE, false, true)) {
                                                 errors.add(getSession().getLabel("MSG_ECRITURE_SUMEMP"));
                                             }
                                         } else if ("88888888888".equals(rec.getNumeroAffilie())) {
@@ -779,6 +785,14 @@ public class CIDeclarationCentrale extends BProcess {
                         journal = new CIJournal();
                         journal.setSession(getSession());
                         journal.setIdTypeInscription(CIJournal.CS_APG);
+                        journal.setIdTypeCompte(CIJournal.CS_PROVISOIRE);
+                        journal.setLibelle(getSession().getLabel("MSG_LIBELLE_JOURNAL_DECLARATION"));
+                        journal.setTotalControle(getTotalControle());
+                    }
+                    if ("55555555555".equals(rec.getNumeroAffilie())) {
+                        journal = new CIJournal();
+                        journal.setSession(getSession());
+                        journal.setIdTypeInscription(CIJournal.CS_PANDEMIE);
                         journal.setIdTypeCompte(CIJournal.CS_PROVISOIRE);
                         journal.setLibelle(getSession().getLabel("MSG_LIBELLE_JOURNAL_DECLARATION"));
                         journal.setTotalControle(getTotalControle());

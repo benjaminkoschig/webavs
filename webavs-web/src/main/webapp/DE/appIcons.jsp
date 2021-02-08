@@ -478,7 +478,13 @@
                             </a>
                         </li>
                         <%}%>
-
+                        <%if (objSession.hasRight("apg", globaz.framework.secure.FWSecureConstants.READ)) {%>
+                        <li>
+                            <a href="<%=request.getContextPath()%>/apg?typePrestation=PATERNITE" target="_top">
+                                Vaterschaftsgeld
+                            </a>
+                        </li>
+                        <%}%>
                         <%if (objSession.hasRight("cygnus", globaz.framework.secure.FWSecureConstants.READ)) {%>
                         <li>
                             <a href="<%=request.getContextPath()%>/cygnus" target="_top">

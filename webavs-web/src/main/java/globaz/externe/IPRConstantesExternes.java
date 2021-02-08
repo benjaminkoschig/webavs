@@ -12,6 +12,7 @@ public interface IPRConstantesExternes {
     public static final String ATTESTATION_FISCALE_APG = "5001PAP";
     public static final String ATTESTATION_FISCALE_MATERNITE = "5050PAP";
     public static final String ATTESTATION_FISCALE_PANDEMIE = "5051PAP";
+    public static final String ATTESTATION_FISCALE_PATERNITE = "5052PAP";
     // IJAI
     public static final String ATTESTATION_FISCALE_IJ = "5011PIJ";
     public static final String ATTESTATIONS_NON_RECUES_IJ = "5016PIJ";
@@ -21,6 +22,10 @@ public interface IPRConstantesExternes {
     public static final String CONTROLE_PRESTATIONS_LOT_IJ = "5014PIJ";
     public static final String DECISION_IJAI = "5019PIJ";
     public static final String DECISION_MATERNITE = "5003PAP";
+
+    // TODO Numéro pour paternité à changer
+    public static final String DECISION_PATERNITE = "5003PAP";
+
     public static final String DECISION_MOYENS_DE_DROIT = "5042PIJ";
     public static final String DECISION_REFUS_APG = "5038PAP";
     public static final String DECOMPTE_APG_ACM = "5005PAP";
@@ -165,5 +170,6 @@ public interface IPRConstantesExternes {
     public static final String TIERS_CS_DOMAINE_APPLICATION_IJAI = "519009";
     public static final String TIERS_CS_DOMAINE_APPLICATION_RENTE = "519006";
     public static final String TIERS_CS_DOMAINE_MATERNITE = "519003";
+    public static final String TIERS_CS_DOMAINE_PATERNITE = "519015";
     public static final String TIERS_CS_TYPE_ADRESSE_COURRIER = "508001";
 }

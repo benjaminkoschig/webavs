@@ -44,8 +44,11 @@
 <ct:menuChange displayId="menu" menuId="ap-menuprincipalpan" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 <%
-    }
+    }else if (IPRDemande.CS_TYPE_PATERNITE.equals(PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION))) {
 %>
+<ct:menuChange displayId="menu" menuId="ap-menuprincipalapat" showTab="menu"/>
+<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
+<%} %>
 <script type="text/javascript">
 <%
 	if ((PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO) != null)

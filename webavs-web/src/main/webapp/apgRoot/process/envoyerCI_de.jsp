@@ -12,7 +12,7 @@ userActionValue="apg.process.inscrireCI.executer";
 		globaz.framework.controller.FWController controller = (globaz.framework.controller.FWController) session.getAttribute("objController");
 	globaz.globall.db.BSession objSession = (globaz.globall.db.BSession)controller.getSession();
 	String eMailAddress=objSession.getUserEMail();
-	String[] noPassageList = viewBean.getNoPassageList();
+	String[] noPassageList = viewBean.getNoPassageList((String)PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION));
 %>
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%>

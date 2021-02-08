@@ -33,6 +33,7 @@ public class APMainServletAction {
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_DROIT_LAPG, APLAPGAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_SAISIE_CARTE_APG, APDroitAPGPAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_SAISIE_CARTE_AMAT, APDroitMatPAction.class);
+        APMainServletAction.ACTIONS.put(IAPActions.ACTION_SAISIE_CARTE_APAT, APDroitPatPAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_SAISIE_CARTE_PAN, APDroitPanAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_SAISIE_CARTE_PAN_SITUATION, APDroitPanSituationAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_RECAPITUALATIF_DROIT_APG, PRDefaultAction.class);
@@ -40,6 +41,7 @@ public class APMainServletAction {
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_PERE_MAT, APPereMatAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_ENFANT_MAT, APEnfantMatAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_ENFANT_PAN, APEnfantPanAction.class);
+        APMainServletAction.ACTIONS.put(IAPActions.ACTION_ENFANT_PAT, APEnfantPatAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_SITUATION_PROFESSIONNELLE,
                 APSituationProfessionnelleAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_ENFANT_APG, APEnfantAPGAction.class);
@@ -67,6 +69,7 @@ public class APMainServletAction {
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_FACTURES_LOT, APFactureACompenserAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_CALCUL_ACOR, APCalculACORAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_GENERER_COMM_DEC_AMAT, APGenererDecisionAMATAction.class);
+        APMainServletAction.ACTIONS.put(IAPActions.ACTION_GENERER_DEC_APAT, APGenererDecisionAPATAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_INFO_COMPL, APInfoComplAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_GENERER_ATTESTATIONS_APG, APGenererAttestationsAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_LISTE_CONTROLE, APListeControleAction.class);

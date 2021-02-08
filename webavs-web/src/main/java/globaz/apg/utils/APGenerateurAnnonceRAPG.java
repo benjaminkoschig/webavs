@@ -1,11 +1,11 @@
 package globaz.apg.utils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
 import globaz.apg.api.annonces.IAPAnnonce;
+import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.business.service.APAnnoncesRapgService;
@@ -13,15 +13,14 @@ import globaz.apg.db.annonces.APAnnonceAPG;
 import globaz.apg.db.annonces.APBreakRule;
 import globaz.apg.db.annonces.APBreakRuleManager;
 import globaz.apg.db.droits.*;
-import globaz.apg.db.prestation.APPrestation;
-import globaz.apg.db.prestation.APPrestationManager;
-import globaz.apg.db.prestation.APRepartitionPaiements;
-import globaz.apg.db.prestation.APRepartitionPaiementsManager;
+import globaz.apg.db.prestation.*;
 import globaz.apg.enums.APAllPlausibiliteRules;
 import globaz.apg.enums.APBreakableRules;
 import globaz.apg.enums.APTypeActiviteProfessionnel;
 import globaz.apg.enums.APTypeVersement;
 import globaz.apg.exceptions.APEntityNotFoundException;
+import globaz.apg.exceptions.APRuleExecutionException;
+import globaz.apg.interfaces.APDroitAvecParent;
 import globaz.apg.properties.APParameter;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.framework.util.FWCurrency;
@@ -34,6 +33,8 @@ import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 
 public class APGenerateurAnnonceRAPG {
+    private final int NB_JOURS_PATERNITE_14 = 14;
+    private final int NB_JOURS_PATERNITE_7 = 7;
 
     public APAnnonceAPG createAnnonceSedex(BSession session, APPrestation prestation, APDroitLAPG droit,
             String moisAnneeComptable, Boolean hasComplementCIAB) throws Exception {
@@ -43,6 +44,11 @@ public class APGenerateurAnnonceRAPG {
         String idDroit = droit.getIdDroit();
         if (droit instanceof APDroitPandemie) {
             droit = new APDroitPandemie();
+            droit.setSession(session);
+            droit.setIdDroit(idDroit);
+            droit.retrieve();
+        } else if (droit instanceof APDroitPaternite) {
+            droit = new APDroitPaternite();
             droit.setSession(session);
             droit.setIdDroit(idDroit);
             droit.retrieve();
@@ -294,7 +300,183 @@ public class APGenerateurAnnonceRAPG {
             throw new Exception("Le type d'annonce n'a pas pu être défini");
         }
 
+        /**
+         * Paternité
+         */
+        if(droit instanceof APDroitPaternite){
+            annonceACreer.setTypePaternite(getTypePaternite(annonceACreer.getNumeroAssure(), idDroit, session));
+            annonceACreer = setDataEnfant(annonceACreer, idDroit, session);
+        }
+
         return annonceACreer;
+    }
+
+    private String getTypePaternite(String nss, String idDroit, BSession session) throws Exception {
+        String typePaternite = "";
+
+        APPrestationJointLotTiersDroitManager manager3 = new APPrestationJointLotTiersDroitManager();
+        manager3.setSession(session);
+        manager3.setForIdDroit(idDroit);
+        List<APPrestationJointLotTiersDroit> tousLesDroits;
+        try {
+            manager3.find();
+            tousLesDroits = manager3.getContainer();
+        } catch (Exception e) {
+            throw (e);
+        }
+        int nombreJours = 0;
+        int nombrePeriode = manager3.size();
+        boolean HasPeriode7Jours = false;
+        for (APPrestationJointLotTiersDroit droit : tousLesDroits) {
+            nombreJours += Integer.parseInt(droit.getNombreJoursSoldes());
+            if (Integer.parseInt(droit.getNombreJoursSoldes()) == NB_JOURS_PATERNITE_7) {
+                HasPeriode7Jours = true;
+            }
+        }
+
+        if (nombrePeriode == 1 && nombreJours == NB_JOURS_PATERNITE_14) {
+            return "1";
+        }
+        if (nombrePeriode == 2 && nombreJours == NB_JOURS_PATERNITE_7) {
+            return "2";
+        }
+        if (nombrePeriode >= 2 && HasPeriode7Jours) {
+            return "4";
+        }
+        return "3";
+
+    }
+
+    private APAnnonceAPG setDataEnfant(APAnnonceAPG annonceACreer, String idDroit, BSession session) throws Exception {
+        APSituationFamilialePatManager manager = new APSituationFamilialePatManager();
+        manager.setSession(session);
+        manager.setForIdDroitPaternite(idDroit);
+        manager.find();
+        APSituationFamilialePat enfant = null;
+        String dateNaissance = "";
+        for (APSituationFamilialePat situationFamilialePat : (List<APSituationFamilialePat>) manager.getContainer()) {
+            if (JadeStringUtil.isBlankOrZero(dateNaissance)
+                    || JadeDateUtil.isDateBefore(situationFamilialePat.getDateNaissance(), dateNaissance)) {
+                enfant = situationFamilialePat;
+            }
+        }
+        annonceACreer.setPaysNaissanceEnfant(enfant.getNationalite());
+        annonceACreer.setCantonNaissanceEnfant(PRACORConst.csCantonToAcor(enfant.getCanton()));
+        annonceACreer.setNssEnfantOldestDroit(enfant.getNoAVS());
+        annonceACreer.setDateNaissanceEnfant(enfant.getDateNaissance());
+
+
+        APPrestationJointLotTiersDroitManager manager3 = new APPrestationJointLotTiersDroitManager();
+        manager3.setSession(session);
+        manager3.setForIdDroit(idDroit);
+        List<APPrestationJointLotTiersDroit> tousLesDroits;
+        try {
+            manager3.find();
+            tousLesDroits = manager3.getContainer();
+        } catch (Exception e) {
+            throw (e);
+        }
+        String dateDebutPeriodeEntier = "";
+        String dateFinPeriodeEntier = "";
+        int nombreJours = 0;
+        for (APPrestationJointLotTiersDroit droit : tousLesDroits) {
+            if (JadeStringUtil.isBlankOrZero(dateDebutPeriodeEntier)
+                    || JadeDateUtil.isDateBefore(droit.getDateDebut(), dateDebutPeriodeEntier)
+            ) {
+                dateDebutPeriodeEntier = droit.getDateDebut();
+            }
+            if (JadeStringUtil.isBlankOrZero(dateFinPeriodeEntier)
+                    || JadeDateUtil.isDateAfter(droit.getDateFin(), dateFinPeriodeEntier)) {
+                dateFinPeriodeEntier = droit.getDateFin();
+            }
+            nombreJours += Integer.parseInt(droit.getNombreJoursSoldes());
+        }
+        int nombreJoursOuverts = 0;
+        //TODO: A confirmer au niveau du calcul des dates
+        switch (nombreJours) {
+            case 1:
+            case 2 :
+            case 3:
+            case 4 :
+                nombreJoursOuverts = nombreJours;
+                break;
+            case 5:
+            case 6:
+            case 7:
+                nombreJoursOuverts = 5;
+                break;
+            case 8:
+            case 9:
+            case 10:
+            case 11:
+                nombreJoursOuverts = nombreJoursOuverts - 2;
+                break;
+            case 12:
+            case 13:
+            case 14:
+                nombreJoursOuverts = 10;
+                break;
+        }
+        annonceACreer.setNombreJoursOuvrable(String.valueOf(nombreJoursOuverts));
+
+        return annonceACreer;
+
+    }
+
+    /**
+     * Tri des droits pour garder uniquement la dernière correction d'un droit
+     *
+     * @param tousLesDroits
+     * @return
+     * @throws APRuleExecutionException
+     */
+    protected List<APDroitAvecParent> skipDroitParent(List<APDroitAvecParent> tousLesDroits)
+            throws APRuleExecutionException {
+        List<APDroitAvecParent> droitFinaux = new ArrayList<APDroitAvecParent>();
+        // On récupère tous les droits et leurs idParents s'il y en a
+        Map<String, List<APDroitAvecParent>> droitAvecParent = new HashMap<String, List<APDroitAvecParent>>();
+        for (APDroitAvecParent droit : tousLesDroits) {
+
+            // S'il n'y a pas de droit parent, on le prend directement
+            if (JadeStringUtil.isBlankOrZero(droit.getIdDroitParent())) {
+                droitFinaux.add(droit);
+            } else {
+                String idParent = droit.getIdDroitParent();
+                if (!droitAvecParent.containsKey(idParent)) {
+                    droitAvecParent.put(idParent, new ArrayList<APDroitAvecParent>());
+                }
+                droitAvecParent.get(idParent).add(droit);
+            }
+        }
+
+        // Maintenant on va prend tous les droits avec parent de plus grand id
+        for (String idDroitParent : droitAvecParent.keySet()) {
+            APDroitAvecParent droitAvecPlusGrandId = null;
+            List<APDroitAvecParent> allDroits = new ArrayList<APDroitAvecParent>();
+            for (APDroitAvecParent droit : droitAvecParent.get(idDroitParent)) {
+                if (droitAvecPlusGrandId == null) {
+                    droitAvecPlusGrandId = droit;
+                } else {
+                    try {
+                        int idDroitAvecPlusGrandId = Integer.parseInt(droitAvecPlusGrandId.getIdDroit());
+                        int idDroit = Integer.parseInt(droit.getIdDroit());
+                        if (idDroit > idDroitAvecPlusGrandId) {
+                            droitAvecPlusGrandId = droit;
+                        }
+                    } catch (Exception e) {
+                        throw new APRuleExecutionException(
+                                "Exception thrown when getting the child with big id for APDroitLAPGJointTiers. Id 1 = ["
+                                        + droitAvecPlusGrandId.getIdDroit() + "], id 2 = [" + droit.getIdDroit() + "]",
+                                e);
+                    }
+                }
+            }
+            // Test en cas d'erreur lors de l'évaluation des id...
+            if (droitAvecPlusGrandId != null) {
+                droitFinaux.add(droitAvecPlusGrandId);
+            }
+        }
+        return droitFinaux;
     }
 
     /**

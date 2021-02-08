@@ -4,6 +4,7 @@
 <%@page import="globaz.apg.api.annonces.IAPAnnonce"%>
 <%@page import="globaz.apg.pojo.APAnnonceDTO"%>
 <%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" %>
+<%@ page import="globaz.prestation.api.IPRDemande" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib uri="/WEB-INF/nss.tld" prefix="ct1" %>
 <%@ include file="/theme/find/header.jspf" %>
@@ -27,6 +28,9 @@
 	String forBusinessProcessId = (String) request.getAttribute("forBusinessProcessId");
 	String forNssNNSS = (String) request.getAttribute("forNssNNSS");
 	String partialforNss = (String) request.getAttribute("partialforNss");
+
+	String typePrestation = (String) globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,
+			globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION);
 	
 	String orderBy = (String) request.getAttribute("orderBy");
 	
@@ -36,6 +40,10 @@
 
 	if(globaz.jade.client.util.JadeStringUtil.isEmpty(orderBy)){
 		orderBy = globaz.apg.db.annonces.APAnnonceAPG.FIELDNAME_IDANNONCE;
+	}
+
+	if (typePrestation == IPRDemande.CS_TYPE_PATERNITE) {
+		bButtonNew = false;
 	}
 	//action new redéfini car le userAction dans la requête n'est pas forcément le bon
 	actionNew = servletContext + mainServletPath
@@ -47,21 +55,25 @@
 <%-- tpl:put name="zoneScripts" --%>
 <!--si APG -->
 <%
-	if ((String) globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,
-			globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION) == globaz.prestation.api.IPRDemande.CS_TYPE_APG) {
+	if ( typePrestation == globaz.prestation.api.IPRDemande.CS_TYPE_APG) {
 %>
 	<ct:menuChange displayId="menu" menuId="ap-menuprincipalapg" showTab="menu"/>
 	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 <!--sinon, maternité -->
 <%
-	} else if ((String) globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,
-			globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION) == globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE) {
+	} else if (typePrestation == globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE) {
 %>
 	<ct:menuChange displayId="menu" menuId="ap-menuprincipalamat" showTab="menu"/>
 	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 <%
+	}else if (typePrestation == IPRDemande.CS_TYPE_PATERNITE) {
+%>
+<ct:menuChange displayId="menu" menuId="ap-menuprincipalapat" showTab="menu"/>
+<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
+<%
 	}
 %>
+
 
 <SCRIPT language="javascript">
 	bFind = true;	
@@ -122,10 +134,10 @@
 		
 		$("#forEtat").val("<%=forEtat%>");
 		$("#forType").val("<%=forType%>");
-		
+
 		var errorMsg = "<%= error %>";
-		
-		
+
+
 		if(errorMsg !== "null"){
 			document.all('blockBtnCalculer').style.display = 'block';
 			$('#errorCalcul').css('width','300px');
@@ -145,7 +157,8 @@
 								<SELECT id="forType" name="forType" onChange="forTypeChange(this)">
 									<OPTION value="<%=globaz.apg.db.annonces.APAnnonceAPGManager.FOR_TYPE_TOUS%>" ><ct:FWLabel key="JSP_TOUS"/></OPTION>
 									<OPTION value="<%=globaz.apg.db.annonces.APAnnonceAPGManager.FOR_TYPE_APG%>" ><ct:FWLabel key="JSP_APG"/></OPTION>
-									<OPTION value="<%=globaz.apg.api.annonces.IAPAnnonce.CS_MATERNITE%>" ><ct:FWLabel key="JSP_MATERNITE"/></OPTION>
+									<OPTION value="<%=globaz.apg.db.annonces.APAnnonceAPGManager.FOR_TYPE_MATERNITE%>" ><ct:FWLabel key="JSP_MATERNITE"/></OPTION>
+									<OPTION value="<%=globaz.apg.db.annonces.APAnnonceAPGManager.FOR_TYPE_PATERNITE%>" ><ct:FWLabel key="JSP_PATERNITE"/></OPTION>
 								</SELECT>
 							</TD>
 						</TR>
@@ -224,7 +237,7 @@
 							</TD>
 							<TD id="resultatLabel" style="color=<%=globaz.jade.client.util.JadeStringUtil.isEmpty(totalSansRestitutuion) ? "#FFFFFF" : "black"%>">
 									<ct:FWLabel key="JSP_MONTANT_TOTAL_ALLOCATION"/> <%=globaz.apg.db.annonces.APAnnonceAPGManager.FOR_TYPE_TOUS.equals(forType) ? ""
-					: (globaz.apg.db.annonces.APAnnonceAPGManager.FOR_TYPE_APG.equals(forType) ? "APG" : "Maternité")%> <ct:FWLabel key="JSP_NON_ERRONEES"/> <%=moisAnnee%> :
+					: (globaz.apg.db.annonces.APAnnonceAPGManager.FOR_TYPE_APG.equals(forType) ? "APG" :(globaz.apg.db.annonces.APAnnonceAPGManager.FOR_TYPE_MATERNITE.equals(forType) ? "Maternité" : "Paternité"))%> <ct:FWLabel key="JSP_NON_ERRONEES"/> <%=moisAnnee%> :
 							</TD>
 							<TD id="totalSansRestitutuion" align="right" style="color=<%=globaz.jade.client.util.JadeStringUtil.isEmpty(totalSansRestitutuion) ? "#FFFFFF" : "black"%>">
 								<%=totalSansRestitutuion%>

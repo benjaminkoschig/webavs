@@ -28,22 +28,41 @@
 		actionDetail = targetLocation  + "='" + detailLink + line.getIdLot()+"'";
 	%>
     <TD class="mtd" width="">
+		<%if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_PATERNITE) {%>
+			<ct:menuPopup menu="ap-optionlotpat" detailLabelId="MENU_OPTION_DETAIL" detailLink="<%=detailLink + line.getIdLot()%>">
+				<ct:menuParam key="forIdLot" value="<%=line.getIdLot()%>"/>
+				<ct:menuParam key="etatLot" value="<%=line.getEtat()%>"/>
+				<ct:menuParam key="selectedId" value="<%=line.getIdLot()%>"/>
+				<ct:menuParam key="idLot" value="<%=line.getIdLot()%>"/>
+
+				<% if (line.getEtat().equals(globaz.apg.api.lots.IAPLot.CS_VALIDE)) {%>
+				<ct:menuExcludeNode nodeId="generercompensations"/>
+				<%}%>
+
+				<%if(!line.hasPrestations()){%>
+				<ct:menuExcludeNode nodeId="imprimerlistecontrole"/>
+				<%}%>
+
+			</ct:menuPopup>
+		<%} else {%>
     
-	   	<ct:menuPopup menu="ap-optionlot" detailLabelId="MENU_OPTION_DETAIL" detailLink="<%=detailLink + line.getIdLot()%>">
-			<ct:menuParam key="forIdLot" value="<%=line.getIdLot()%>"/>
-			<ct:menuParam key="etatLot" value="<%=line.getEtat()%>"/>
-			<ct:menuParam key="selectedId" value="<%=line.getIdLot()%>"/>
-			<ct:menuParam key="idLot" value="<%=line.getIdLot()%>"/>
-			
-		<% if (line.getEtat().equals(globaz.apg.api.lots.IAPLot.CS_VALIDE)) {%>
-			<ct:menuExcludeNode nodeId="generercompensations"/>
+	   		<ct:menuPopup menu="ap-optionlot" detailLabelId="MENU_OPTION_DETAIL" detailLink="<%=detailLink + line.getIdLot()%>">
+				<ct:menuParam key="forIdLot" value="<%=line.getIdLot()%>"/>
+				<ct:menuParam key="etatLot" value="<%=line.getEtat()%>"/>
+				<ct:menuParam key="selectedId" value="<%=line.getIdLot()%>"/>
+				<ct:menuParam key="idLot" value="<%=line.getIdLot()%>"/>
+
+				<% if (line.getEtat().equals(globaz.apg.api.lots.IAPLot.CS_VALIDE)) {%>
+				<ct:menuExcludeNode nodeId="generercompensations"/>
+				<%}%>
+
+				<%if(!line.hasPrestations()){%>
+				<ct:menuExcludeNode nodeId="imprimerlistecontrole"/>
+				<%}%>
+
+			</ct:menuPopup>
 		<%}%>
-		
-		<%if(!line.hasPrestations()){%>
-			<ct:menuExcludeNode nodeId="imprimerlistecontrole"/>
-		<%}%>
-			
-		</ct:menuPopup>
+
     
     </TD>
 	<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getIdLot()%>&nbsp;</TD>

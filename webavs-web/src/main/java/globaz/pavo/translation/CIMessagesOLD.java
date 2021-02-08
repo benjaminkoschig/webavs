@@ -181,6 +181,7 @@ public interface CIMessagesOLD {
     public static final String MSG_ECRITURE_NOM_AC = "99999999999 Assurance-chômage";
     public static final String MSG_ECRITURE_NOM_AI = "88888888888 Indemnité journalière AI";
     public static final String MSG_ECRITURE_NOM_APG = "77777777777 Allocation pour perte de gain";
+    public static final String MSG_ECRITURE_NOM_PANDEMIE = "55555555555 Allocation pour perte de gain - Pandémie";
     public static final String MSG_ECRITURE_NOM_BTA = "11111111111 Tâches d'assistance";
     public static final String MSG_ECRITURE_NOM_MIL = "66666666666 Assurance-militaire";
     public static final String MSG_ECRITURE_PARTBTA = "La part BTA doit être vide pour les genres autres que 0.";

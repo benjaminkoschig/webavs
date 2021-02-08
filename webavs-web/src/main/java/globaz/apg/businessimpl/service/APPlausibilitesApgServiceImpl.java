@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import globaz.apg.api.droits.IAPDroitLAPG;
+
 import java.util.Objects;
 
 import globaz.apg.application.APApplication;
@@ -49,8 +50,9 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
     /**
      * Méthode commune de check des plausibilités
      *
+     * @param session
      * @param rules
-     * @param champsAnnonce
+     * @param annonce
      * @return
      * @throws APPlausibilitesException
      */
@@ -96,8 +98,7 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
                     String messageError = e.toString();
                     ViolatedRule violatedRule = getViolatedRule(session, rule, messageError);
                     listErrors.add(violatedRule);
-                }
-                catch (APWebserviceException e) {
+                } catch (APWebserviceException e) {
                     String messageError = e.toString();
                     ViolatedRule violatedRule = getViolatedRule(session, rule, messageError);
                     violatedRule.setErrorMessagePopUp(messageError);
@@ -116,6 +117,7 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
         }
         return listErrors;
     }
+
 
     private ViolatedRule getViolatedRule(BSession session, Rule rule, String messageError) throws APRuleExecutionException {
         String message;
@@ -432,7 +434,6 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
      * Contrôle qu'une prestation existe pour chaque périodes
      *
      * @param droit
-     * @param periodes
      * @param prestations
      * @return
      */

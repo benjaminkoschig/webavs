@@ -261,6 +261,9 @@ public abstract class CIAnnonceWrapper {
                         if (CIJournal.CS_APG.equals(journal.getIdTypeInscription())) {
                             remoteEcritureAnnonce.put(IHEAnnoncesViewBean.NUMERO_AFILLIE, "77777777777");
                             affilieFound = true;
+                        } else if (CIJournal.CS_PANDEMIE.equals(journal.getIdTypeInscription())) {
+                            remoteEcritureAnnonce.put(IHEAnnoncesViewBean.NUMERO_AFILLIE, "55555555555");
+                            affilieFound = true;
                         } else if (CIJournal.CS_IJAI.equals(journal.getIdTypeInscription())) {
                             remoteEcritureAnnonce.put(IHEAnnoncesViewBean.NUMERO_AFILLIE, "88888888888");
                             affilieFound = true;

@@ -7,11 +7,8 @@
 package globaz.apg.utils;
 
 import java.util.Iterator;
-import globaz.apg.db.droits.APDroitAPG;
-import globaz.apg.db.droits.APDroitLAPG;
-import globaz.apg.db.droits.APDroitMaternite;
-import globaz.apg.db.droits.APSituationProfessionnelle;
-import globaz.apg.db.droits.APSituationProfessionnelleManager;
+
+import globaz.apg.db.droits.*;
 import globaz.apg.exceptions.APRulesException;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
@@ -98,7 +95,7 @@ public class APCalculAcorUtil {
         return false;
     }
 
-    public static final boolean grantCalulAcorMaternite(BSession session, APDroitMaternite droit) throws Exception {
+    public static final boolean grantCalulAcorMaternite(BSession session, APDroitLAPG droit) throws Exception {
         try {
 
             // -------------------------------------------------------------------
@@ -106,7 +103,9 @@ public class APCalculAcorUtil {
             // -------------------------------------------------------------------
             materniteRules_1(session, droit);
             materniteRules_2(session, droit);
-            materniteRules_3(session, droit);
+            if(droit instanceof APDroitMaternite) {
+                materniteRules_3(session, (APDroitMaternite) droit);
+            }
             materniteRules_4(session, droit);
             materniteRules_5(session, droit);
         } catch (APRulesException e) {
@@ -122,7 +121,7 @@ public class APCalculAcorUtil {
     }
 
     // si date de décès, le calcul doit se faire par ACOR
-    private static void materniteRules_2(BSession session, APDroitMaternite droit) throws APRulesException, Exception {
+    private static void materniteRules_2(BSession session, APDroitLAPG droit) throws APRulesException, Exception {
 
         PRTiersWrapper wrapper = PRTiersHelper.getTiersParId(session, droit.loadDemande().getIdTiers());
         String dateDeces = wrapper.getProperty(PRTiersWrapper.PROPERTY_DATE_DECES);
@@ -139,14 +138,14 @@ public class APCalculAcorUtil {
     }
 
     // si l'employeur à une date de fin de contrat
-    private static void materniteRules_4(BSession session, APDroitMaternite droit) throws APRulesException, Exception {
+    private static void materniteRules_4(BSession session, APDroitLAPG droit) throws APRulesException, Exception {
         apgRules_2(session, droit);
     }
 
     // Si l'employeur verse un salaire différent durant la période de droit
     // On ne contrôle que sur le 1er employeur, car si plus d'un employeur, on
     // passe de toute façon par ACOR (materniteRules_1())
-    private static void materniteRules_5(BSession session, APDroitMaternite droit) throws APRulesException, Exception {
+    private static void materniteRules_5(BSession session, APDroitLAPG droit) throws APRulesException, Exception {
         apgRules_3(session, droit);
     }
 

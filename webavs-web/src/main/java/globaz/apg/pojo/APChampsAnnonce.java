@@ -13,6 +13,10 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
     private String basicDailyAmount;
     private String breakRules;
     private String businessProcessId;
+    private String careLeaveEventID;
+    private String childCantonBorn;
+    private String childDomicile;
+    private String childInsurantVn;
     private String controlNumber;
     private String csEtat;
     private Boolean dailyIndemnityGuaranteeAI;
@@ -33,8 +37,11 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
     private String messageDate;
     private String messageId;
     private String messageType;
+    private String newbornDateOfBirth;
     private String numberOfChildren;
     private String numberOfDays;
+    private String numberOfWorkdays;
+    private String parternityLeaveType;
     private String paymentMethod;
     private String recipientId;
     private String referenceNumber;
@@ -56,6 +63,10 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
         basicDailyAmount = "";
         breakRules = "";
         businessProcessId = "";
+        careLeaveEventID = "";
+        childCantonBorn = "";
+        childDomicile = "";
+        childInsurantVn = "";
         controlNumber = "";
         csEtat = "";
         dailyIndemnityGuaranteeAI = Boolean.FALSE;
@@ -77,7 +88,10 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
         messageId = "";
         messageType = "";
         numberOfChildren = "";
+        newbornDateOfBirth ="";
         numberOfDays = "";
+        numberOfWorkdays ="";
+        parternityLeaveType ="";
         paymentMethod = "";
         recipientId = "";
         referenceNumber = "";
@@ -924,4 +938,61 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
         this.hasComplementCIAB = hasComplementCIAB;
     }
 
+    @Override
+    public String getChildCantonBorn() {
+        return childCantonBorn;
+}
+    @Override
+    public void setChildCantonBorn(String childCantonBorn) {
+        this.childCantonBorn = childCantonBorn;
+    }
+    @Override
+    public String getChildDomicile() {
+        return childDomicile;
+    }
+    @Override
+    public void setChildDomicile(String childDomicile) {
+        this.childDomicile = childDomicile;
+    }
+
+    @Override
+    public String getChildInsurantVn() {
+        return childInsurantVn;
+    }
+    @Override
+    public void setChildInsurantVn(String childInsurantVn) {
+        this.childInsurantVn = childInsurantVn;
+    }
+    @Override
+    public String getNewbornDateOfBirth() {
+        return newbornDateOfBirth;
+    }
+    @Override
+    public void setNewbornDateOfBirth(String newbornDateOfBirth) {
+        this.newbornDateOfBirth = newbornDateOfBirth;
+    }
+    @Override
+    public String getNumberOfWorkdays() {
+        return numberOfWorkdays;
+    }
+    @Override
+    public void setNumberOfWorkdays(String numberOfWorkdays) {
+        this.numberOfWorkdays = numberOfWorkdays;
+    }
+    @Override
+    public String getParternityLeaveType() {
+        return parternityLeaveType;
+    }
+    @Override
+    public void setParternityLeaveType(String parternityLeaveType) {
+        this.parternityLeaveType = parternityLeaveType;
+    }
+    @Override
+    public String getCareLeaveEventID() {
+        return careLeaveEventID;
+    }
+    @Override
+    public void setCareLeaveEventID(String careLeaveEventID) {
+        this.careLeaveEventID = careLeaveEventID;
+    }
 }

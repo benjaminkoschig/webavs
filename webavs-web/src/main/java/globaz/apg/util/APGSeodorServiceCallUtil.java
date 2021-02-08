@@ -9,6 +9,7 @@ import com.sun.xml.internal.ws.client.ClientTransportException;
 import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.properties.APProperties;
 import globaz.apg.vb.droits.APDroitAPGPViewBean;
+import globaz.apg.vb.droits.APDroitPatPViewBean;
 import globaz.framework.controller.FWDispatcher;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
@@ -217,6 +218,16 @@ public class APGSeodorServiceCallUtil {
     }
 
     public static void callWSSeodor(APDroitAPGPViewBean viewBean, FWDispatcher mainDispatcher) {
+        APGSeodorErreurListEntities messagesError = callWSSeodor(APGenreServiceAPG.resoudreGenreParCodeSystem(viewBean.getGenreService()).getCodePourAnnonce(), viewBean.getNss(), viewBean.getPeriodes(), viewBean.getNbrJourSoldes(), (BSession) mainDispatcher.getSession());
+
+        // On ajoute les erreurs à la ViewBean et on la tag pour afficher les erreurs lors du rechargement de la page.
+        if (!messagesError.getMessageErreur().isEmpty()) {
+            viewBean.setMessagePropError(true);
+            messagesError.setSession(((BSession) mainDispatcher.getSession()));
+            viewBean.setMessagesError(messagesError);
+        }
+    }
+    public static void callWSSeodor(APDroitPatPViewBean viewBean, FWDispatcher mainDispatcher) {
         APGSeodorErreurListEntities messagesError = callWSSeodor(APGenreServiceAPG.resoudreGenreParCodeSystem(viewBean.getGenreService()).getCodePourAnnonce(), viewBean.getNss(), viewBean.getPeriodes(), viewBean.getNbrJourSoldes(), (BSession) mainDispatcher.getSession());
 
         // On ajoute les erreurs à la ViewBean et on la tag pour afficher les erreurs lors du rechargement de la page.

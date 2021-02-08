@@ -61,6 +61,7 @@ public class APLAPGAction extends PRDefaultAction {
 
     private static final String VERS_ECRAN_RECAPITULATIF_APG = "recapitulatifDroitAPG_de.jsp";
     private static final String VERS_ECRAN_RECAPITULATIF_MAT = "recapitulatifDroitMat_de.jsp";
+    private static final String VERS_ECRAN_RECAPITULATIF_PAT = "recapitulatifDroitPat_de.jsp";
     private static final String VERS_ECRAN_RECAPITULATIF_PAN = "recapitulatifDroitPan_de.jsp";
 
     // ~ Constructors
@@ -124,6 +125,9 @@ public class APLAPGAction extends PRDefaultAction {
                     + "&" + getSelectedIdParam(request));
         } else if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(genreService)) {
             destination = this.getUserActionURL(request, IAPActions.ACTION_SAISIE_CARTE_AMAT, FWAction.ACTION_AFFICHER
+                    + "&" + getSelectedIdParam(request));
+        } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(genreService)) {
+            destination = this.getUserActionURL(request, IAPActions.ACTION_SAISIE_CARTE_APAT, FWAction.ACTION_AFFICHER
                     + "&" + getSelectedIdParam(request));
         } else {
             destination = this.getUserActionURL(request, IAPActions.ACTION_SAISIE_CARTE_APG, FWAction.ACTION_AFFICHER
@@ -290,6 +294,27 @@ public class APLAPGAction extends PRDefaultAction {
 
             PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO, dto);
 
+        } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(genreService)) {
+            destination += APLAPGAction.VERS_ECRAN_RECAPITULATIF_PAT;
+            action = FWAction.newInstance(IAPActions.ACTION_RECAPITULATIF_DROIT_PAT + "." + FWAction.ACTION_AFFICHER);
+            recViewBean = new APRecapitulatifDroitPatViewBean();
+            ((APRecapitulatifDroitPatViewBean) recViewBean).setIdDroit(selectedId);
+
+            ((APRecapitulatifDroitPatViewBean) recViewBean).setAfficherBoutonSimulerPmtBPID(afficherBouton);
+            // dispatch
+            this.saveViewBean(recViewBean, session);
+            // action.setRight(FWSecureConstants.ADD);
+            mainDispatcher.dispatch(recViewBean, action);
+
+            APDroitDTO dto = new APDroitDTO();
+            dto.setDateDebutDroit(((APRecapitulatifDroitPatViewBean) recViewBean).getDateDebutDroit());
+            dto.setGenreService(((APRecapitulatifDroitPatViewBean) recViewBean).getGenreService());
+            dto.setIdDroit(selectedId);
+            dto.setNoAVS(((APRecapitulatifDroitPatViewBean) recViewBean).getNoAVS());
+            dto.setNomPrenom(((APRecapitulatifDroitPatViewBean) recViewBean).getNomPrenom());
+
+            PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO, dto);
+
         } else {
             destination += APLAPGAction.VERS_ECRAN_RECAPITULATIF_APG;
             action = FWAction.newInstance(IAPActions.ACTION_RECAPITUALATIF_DROIT_APG + "." + FWAction.ACTION_AFFICHER);
@@ -453,6 +478,9 @@ public class APLAPGAction extends PRDefaultAction {
                     + "&" + getSelectedIdParam(request));
         } else if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(genreService)) {
             destination = this.getUserActionURL(request, IAPActions.ACTION_SAISIE_CARTE_AMAT, FWAction.ACTION_AFFICHER
+                    + "&" + getSelectedIdParam(request));
+        } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(genreService)) {
+            destination = this.getUserActionURL(request, IAPActions.ACTION_SAISIE_CARTE_APAT, FWAction.ACTION_AFFICHER
                     + "&" + getSelectedIdParam(request));
         } else {
             destination = this.getUserActionURL(request, IAPActions.ACTION_SAISIE_CARTE_APG, FWAction.ACTION_AFFICHER

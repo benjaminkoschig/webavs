@@ -20,6 +20,9 @@ public interface IAPDroitAPG {
     /** Révision 2005 */
     String CS_REVISION_APG_2005 = "52002003";
 
+    /** Maternité */
+    String CS_MATERNITE = "52002004";
+
     /**
      * Révision standard (calculée automatiquement par rapport aux dates de service de l'APG)
      */

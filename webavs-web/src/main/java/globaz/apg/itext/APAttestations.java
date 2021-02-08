@@ -103,6 +103,8 @@ public class APAttestations extends FWIDocumentManager {
     public String idTiers = "";
     private boolean isAttestationAPG = true;
     private boolean isAttestationMat = true;
+
+    private boolean isAttestationPat = true;
     private Boolean isSendToGED = Boolean.FALSE;
     Iterator iter;
     String keySyso = "";
@@ -319,7 +321,11 @@ public class APAttestations extends FWIDocumentManager {
                 adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(),
                         tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), "",
                         IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE);
-            } else {
+            } else if(isAttestationPat) {
+                adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(),
+                        tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), "",
+                        IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE);
+            }else{
                 adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(),
                         tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), "", APApplication.CS_DOMAINE_ADRESSE_APG);
             }
@@ -659,6 +665,9 @@ public class APAttestations extends FWIDocumentManager {
                 } else if(IPRDemande.CS_TYPE_MATERNITE.equals(type)) {
                     documentHelper.setCsDomaine(IAPCatalogueTexte.CS_MATERNITE);
                     documentHelper.setCsTypeDocument(IAPCatalogueTexte.CS_ATTESTATION_FISCALE_MAT);
+                } else if(IPRDemande.CS_TYPE_PATERNITE.equals(type)) {
+                    documentHelper.setCsDomaine(IAPCatalogueTexte.CS_PATERNITE);
+                    documentHelper.setCsTypeDocument(IAPCatalogueTexte.CS_ATTESTATION_FISCALE_PAT);
                 } else if(IPRDemande.CS_TYPE_PANDEMIE.equals(type)) {
                     documentHelper.setCsDomaine(IAPCatalogueTexte.CS_APG);
                     documentHelper.setCsTypeDocument(IAPCatalogueTexte.CS_ATTESTATION_FISCALE_APG);
@@ -848,7 +857,9 @@ public class APAttestations extends FWIDocumentManager {
         String suffixe;
         if(IPRDemande.CS_TYPE_MATERNITE.equals(type)) {
             suffixe = getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_MATERNITE_OK");
-        } else if(IPRDemande.CS_TYPE_PANDEMIE.equals(type)) {
+        }  if(IPRDemande.CS_TYPE_PATERNITE.equals(type)) {
+            suffixe = getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_PATERNITE_OK");
+        }else if(IPRDemande.CS_TYPE_PANDEMIE.equals(type)) {
             suffixe = getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_PANDEMIE_OK");
         } else {
             suffixe = getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_APG_OK");
@@ -998,6 +1009,8 @@ public class APAttestations extends FWIDocumentManager {
         this.type = type;
         if(IPRDemande.CS_TYPE_MATERNITE.equals(type)) {
             numeroInforom =  IPRConstantesExternes.ATTESTATION_FISCALE_MATERNITE;
+        } else if(IPRDemande.CS_TYPE_PATERNITE.equals(type)) {
+            numeroInforom = IPRConstantesExternes.ATTESTATION_FISCALE_PATERNITE;
         } else if(IPRDemande.CS_TYPE_PANDEMIE.equals(type)) {
             numeroInforom = IPRConstantesExternes.ATTESTATION_FISCALE_PANDEMIE;
         } else {
@@ -1117,4 +1130,13 @@ public class APAttestations extends FWIDocumentManager {
 
         return listObjects;
     }
+
+    public boolean isAttestationPat() {
+        return isAttestationPat;
+    }
+
+    public void setAttestationPat(boolean attestationPat) {
+        isAttestationPat = attestationPat;
+    }
+
 }

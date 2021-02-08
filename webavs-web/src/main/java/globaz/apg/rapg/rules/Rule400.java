@@ -56,6 +56,8 @@ public class Rule400 extends Rule {
         services.add("41");
         services.add("50");
         services.add(APGenreServiceAPG.Maternite.getCodePourAnnonce());
+        services.add("92");
+
 
         if (services.contains(serviceType)) {
 

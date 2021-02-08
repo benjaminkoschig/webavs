@@ -597,6 +597,7 @@
 									value="<%=viewBean.getModeEditionDroit()%>" />
 							<input type="checkbox"
 									   name="aControler"
+								   		style="display:none"
 									   id="aControler"
 									   value="<%=viewBean.getAControler()%>" />
 						</td>
@@ -862,6 +863,7 @@
 										styleClass="forceDisable">
 								<ct:optionsCodesSystems csFamille="<%=IAPDroitLAPG.CS_GROUPE_GENRE_SERVICE_APG%>">
 									<ct:excludeCode code="<%=IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE%>"/> 
+									<ct:excludeCode code="<%=IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE%>"/>
 									<ct:excludeCode code="<%=IAPDroitLAPG.CS_GARDE_PARENTALE%>"/>
 									<ct:excludeCode code="<%=IAPDroitLAPG.CS_QUARANTAINE%>"/>
 									<ct:excludeCode code="<%=IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE%>"/>

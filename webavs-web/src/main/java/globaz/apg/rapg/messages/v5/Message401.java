@@ -4,6 +4,7 @@ import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_000401._5.Message;
 import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.BreakRuleType;
 import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.DeliveryOfficeType;
 import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.InsurantDomicileType;
+import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.PaternityLeaveDataType;
 import rapg.ch.ech.xmlns.ech_0044._2.PersonIdentificationType;
 import rapg.ch.ech.xmlns.ech_0058._4.SendingApplicationType;
 
@@ -361,6 +362,16 @@ public class Message401 extends Message implements MessageRAPG {
     @Override
     public void setTotalAPG(BigDecimal value) {
         content.setTotalAPG(value);
+    }
+
+    @Override
+    public void setPaternityLeaveData(PaternityLeaveDataType paternityLeaveDataType) {
+        content.setPaternityLeaveData(paternityLeaveDataType);
+    }
+
+    @Override
+    public PaternityLeaveDataType getPaternityLeaveData() {
+        return content.getPaternityLeaveData();
     }
 
 }

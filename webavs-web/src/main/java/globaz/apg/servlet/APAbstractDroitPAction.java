@@ -231,6 +231,8 @@ public abstract class APAbstractDroitPAction extends PRDefaultAction {
             droitVB = new APDroitAPGPViewBean();
         }  else if (viewBean instanceof APRecapitulatifDroitPanViewBean) {
             droitVB = new APDroitPanViewBean();
+        }  else if (viewBean instanceof APRecapitulatifDroitPatViewBean) {
+            droitVB = new APDroitPatPViewBean();
         } else {
             return viewBean;
         }

@@ -54,7 +54,7 @@ function updateForm(tag){
 									Arbeitgeber
 								</td>
 								<td>
-								<input type = "text" size="40" value="<%=viewBean.giveEcriture().getNoNomEmployeur()%>" class='disabled' readonly tabindex='-1'>
+								<input type = "text" size="60" value="<%=viewBean.giveEcriture().getNoNomEmployeur()%>" class='disabled' readonly tabindex='-1'>
 								</td>
 							</tr>
 							<tr>

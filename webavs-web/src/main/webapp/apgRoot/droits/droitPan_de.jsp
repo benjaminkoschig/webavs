@@ -22,6 +22,7 @@
     APDroitPanViewBean viewBean = (APDroitPanViewBean) session.getAttribute("viewBean");
     HashSet exceptGenreService = new HashSet();
     exceptGenreService.add(IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE);
+    exceptGenreService.add(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE);
 
     HashSet exceptRevision = new HashSet();
     exceptRevision.add(IAPDroitMaternite.CS_REVISION_MATERNITE_2005);

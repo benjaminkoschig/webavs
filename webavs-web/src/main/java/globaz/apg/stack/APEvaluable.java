@@ -33,9 +33,12 @@ public class APEvaluable extends FWDefaultEval {
     static {
         ACTIONS_A_EMPILER.add(FWServlet.BACK);
         ACTIONS_A_EMPILER.add(IAPActions.ACTION_DROIT_LAPG + "." + FWAction.ACTION_CHERCHER);
+        ACTIONS_A_EMPILER.add(IAPActions.ACTION_SAISIE_CARTE_APAT + "." + FWAction.ACTION_AFFICHER);
         ACTIONS_A_EMPILER.add(IAPActions.ACTION_SAISIE_CARTE_AMAT + "." + FWAction.ACTION_AFFICHER);
         ACTIONS_A_EMPILER.add(IAPActions.ACTION_SAISIE_CARTE_APG + "." + FWAction.ACTION_AFFICHER);
         ACTIONS_A_EMPILER.add(IAPActions.ACTION_ENFANT_MAT + "." + FWAction.ACTION_CHERCHER);
+        ACTIONS_A_EMPILER.add(IAPActions.ACTION_ENFANT_PAT + "." + FWAction.ACTION_CHERCHER);
+        ACTIONS_A_EMPILER.add(IAPActions.ACTION_ENFANT_PAN + "." + FWAction.ACTION_CHERCHER);
         ACTIONS_A_EMPILER.add(IAPActions.ACTION_ENFANT_APG + "." + FWAction.ACTION_CHERCHER);
         ACTIONS_A_EMPILER.add(IAPActions.ACTION_ENFANT_APG + ".actionAfficherEnfantDeListe");
         ACTIONS_A_EMPILER.add(IAPActions.ACTION_PERE_MAT + "." + FWAction.ACTION_AFFICHER);
@@ -64,6 +67,7 @@ public class APEvaluable extends FWDefaultEval {
         ACTIONS_A_EMPILER.add(IAPActions.ACTION_TEXTE_JOINT_CATALOGUE_SAISIE + "." + FWAction.ACTION_CHERCHER);
         ACTIONS_A_EMPILER.add(IAPActions.ACTION_REPARTITION_PAIEMENTS + "." + FWAction.ACTION_CHERCHER);
         ACTIONS_A_EMPILER.add(IAPActions.ACTION_GENERER_COMM_DEC_AMAT + "." + FWAction.ACTION_AFFICHER);
+        ACTIONS_A_EMPILER.add(IAPActions.ACTION_GENERER_DEC_APAT + "." + FWAction.ACTION_AFFICHER);
         ACTIONS_A_EMPILER.add(IAPActions.ACTION_DROIT_LAPG + "." + "actionRecapitulatif");
         ACTIONS_A_EMPILER.add(IAPActions.ACTION_DROIT_LAPG + "." + "actionEnvoyerMail");
         ACTIONS_A_EMPILER.add(IAPActions.ACTION_ANNONCEAPG + "." + FWAction.ACTION_CHERCHER);
@@ -103,6 +107,8 @@ public class APEvaluable extends FWDefaultEval {
                 && (!action.toString().endsWith("situationProfessionnelle.afficher"))
                 && (!action.toString().endsWith("enfantAPG.afficher"))
                 && (!action.toString().endsWith("enfantMat.afficher"))
+                && (!action.toString().endsWith("enfantPat.afficher"))
+                && (!action.toString().endsWith("enfantPan.afficher"))
                 && (!action.toString().endsWith("repartitionPaiements.afficher"))
                 && (!action.toString().endsWith("cotisationJointRepartition.afficher"))) {
             return false;

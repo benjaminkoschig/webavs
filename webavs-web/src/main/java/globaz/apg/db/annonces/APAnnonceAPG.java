@@ -83,6 +83,14 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
     public static final String FIELDNAME_TIME_STAMP = "VKTSTA";
     public static final String FIELDNAME_TOTALAPG = "VKMTOA";
     public static final String FIELDNAME_TYPEANNONCE = "VKTTYP";
+    //Paternité
+    public static final String FIELDNAME_PAYS_NAISSANCE_ENFANT = "VKCHILDCOUNTRYBORN";
+    public static final String FIELDNAME_CANTON_NAISSANCE_ENFANT = "VKCHILDCANTONBORN";
+    public static final String FIELDNAME_NSS_ENFANT_OLDEST = "VKCHILDNSS";
+    public static final String FIELDNAME_DATE_NAISSANCE_ENFANT_PLUS_AGE = "VKCHILDBIRTHDAY";
+    public static final String FIELDNAME_NB_JOURS_OUVRABLES = "VKNUMWORKDAY";
+    public static final String FIELDNAME_TYPE_PATERNITE = "VKPATTYPE";
+
     public static final String TABLE_NAME = "APANNOP";
 
     // ~ Instance fields
@@ -141,6 +149,15 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
     private String typeAnnonce = "";
     private String idDroit = "";
     private String hasComplementCIAB = "";
+
+
+    //Paternité
+    private String paysNaissanceEnfant = "";
+    private String cantonNaissanceEnfant = "";
+    private String nssEnfantOldestDroit ="";
+    private String dateNaissanceEnfant = "";
+    private String nombreJoursOuvrable ="";
+    private String typePaternite = "";
 
     /**
      * (non-Javadoc)
@@ -243,6 +260,13 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
         insurantDomicileCountry = statement.dbReadNumeric(APAnnonceAPG.FIELDNAME_INSURANT_DOMICILE_COUNTRY);
         timeStamp = statement.dbReadNumeric(APAnnonceAPG.FIELDNAME_TIME_STAMP);
         envelopeMessageId = statement.dbReadString(APAnnonceAPG.FIELDNAME_ENVELOPEMESSAGEID);
+        //Paternité
+        paysNaissanceEnfant =  statement.dbReadString(APAnnonceAPG.FIELDNAME_PAYS_NAISSANCE_ENFANT);
+        cantonNaissanceEnfant =  statement.dbReadString(APAnnonceAPG.FIELDNAME_CANTON_NAISSANCE_ENFANT);
+        nssEnfantOldestDroit = statement.dbReadString(APAnnonceAPG.FIELDNAME_NSS_ENFANT_OLDEST);
+        dateNaissanceEnfant =  statement.dbReadString(APAnnonceAPG.FIELDNAME_DATE_NAISSANCE_ENFANT_PLUS_AGE);
+        nombreJoursOuvrable = statement.dbReadString(APAnnonceAPG.FIELDNAME_NB_JOURS_OUVRABLES);
+        typePaternite =  statement.dbReadString(APAnnonceAPG.FIELDNAME_TYPE_PATERNITE);
     }
 
     /**
@@ -462,6 +486,43 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
                 this._dbWriteNumeric(statement.getTransaction(), timeStamp, "timeStamp"));
         statement.writeField(APAnnonceAPG.FIELDNAME_ENVELOPEMESSAGEID,
                 this._dbWriteString(statement.getTransaction(), envelopeMessageId, "envelopeMessageId"));
+        //Paternité
+        if (!JadeStringUtil.isEmpty(paysNaissanceEnfant)) {
+            statement.writeField(APAnnonceAPG.FIELDNAME_PAYS_NAISSANCE_ENFANT, this._dbWriteString(
+                    statement.getTransaction(), paysNaissanceEnfant, "paysNaissanceEnfant"));
+        } else {
+            statement.writeField(APAnnonceAPG.FIELDNAME_PAYS_NAISSANCE_ENFANT, null);
+    }
+        if (!JadeStringUtil.isEmpty(cantonNaissanceEnfant)) {
+            statement.writeField(APAnnonceAPG.FIELDNAME_CANTON_NAISSANCE_ENFANT, this._dbWriteString(
+                    statement.getTransaction(), cantonNaissanceEnfant, "cantonNaissanceEnfant"));
+        } else {
+            statement.writeField(APAnnonceAPG.FIELDNAME_CANTON_NAISSANCE_ENFANT, null);
+        }
+        if (!JadeStringUtil.isEmpty(nssEnfantOldestDroit)) {
+            statement.writeField(APAnnonceAPG.FIELDNAME_NSS_ENFANT_OLDEST, this._dbWriteString(
+                    statement.getTransaction(), nssEnfantOldestDroit, "nssEnfantOldestDroit"));
+        } else {
+            statement.writeField(APAnnonceAPG.FIELDNAME_NSS_ENFANT_OLDEST, null);
+        }
+        if (!JadeStringUtil.isEmpty(dateNaissanceEnfant)) {
+            statement.writeField(APAnnonceAPG.FIELDNAME_DATE_NAISSANCE_ENFANT_PLUS_AGE, this._dbWriteString(
+                    statement.getTransaction(), dateNaissanceEnfant, "dateNaissanceEnfant"));
+        } else {
+            statement.writeField(APAnnonceAPG.FIELDNAME_DATE_NAISSANCE_ENFANT_PLUS_AGE, null);
+        }
+        if (!JadeStringUtil.isEmpty(nombreJoursOuvrable)) {
+            statement.writeField(APAnnonceAPG.FIELDNAME_NB_JOURS_OUVRABLES, this._dbWriteNumeric(
+                    statement.getTransaction(), nombreJoursOuvrable, "nombreJoursOuvrable"));
+        } else {
+            statement.writeField(APAnnonceAPG.FIELDNAME_NB_JOURS_OUVRABLES, null);
+        }
+        if (!JadeStringUtil.isEmpty(typePaternite)) {
+            statement.writeField(APAnnonceAPG.FIELDNAME_TYPE_PATERNITE, this._dbWriteString(
+                    statement.getTransaction(), typePaternite, "typePaternite"));
+        } else {
+            statement.writeField(APAnnonceAPG.FIELDNAME_TYPE_PATERNITE, null);
+        }
     }
 
     // ~ Methods
@@ -523,6 +584,14 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
         annonce.setSubMessageType(subMessageType);
         annonce.setInsurantDomicileCountry(insurantDomicileCountry);
         annonce.setTimeStamp(timeStamp);
+
+        //Paternité
+        annonce.setPaysNaissanceEnfant(paysNaissanceEnfant);
+        annonce.setNssEnfantOldestDroit(nssEnfantOldestDroit);
+        annonce.setDateNaissanceEnfant(dateNaissanceEnfant);
+        annonce.setNombreJoursOuvrable(nombreJoursOuvrable);
+        annonce.setTypePaternite(typePaternite);
+
 
         return annonce;
     }
@@ -589,7 +658,12 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
         setEtat(champsAnnonce.getCsEtat());
         setTimeStamp(champsAnnonce.getTimeStamp());
         setEnvelopeMessageId(champsAnnonce.getEnvelopeMessageId());
-
+        setPaysNaissanceEnfant(champsAnnonce.getChildDomicile());
+        setCantonNaissanceEnfant(champsAnnonce.getChildCantonBorn());
+        setNssEnfantOldestDroit(champsAnnonce.getChildInsurantVn());
+        setDateNaissanceEnfant(champsAnnonce.getNewbornDateOfBirth());
+        setNombreJoursOuvrable(champsAnnonce.getNumberOfWorkdays());
+        setTypePaternite(champsAnnonce.getParternityLeaveType());
     }
 
     /**
@@ -1615,6 +1689,14 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
         champsAnnonce.setEnvelopeMessageId(getEnvelopeMessageId());
         champsAnnonce.setIdDroit(getIdDroit());
         champsAnnonce.setHasComplementCIAB("1".equals(getHasComplementCIAB()));
+        //Paternité
+        champsAnnonce.setChildDomicile(getPaysNaissanceEnfant());
+        champsAnnonce.setChildCantonBorn(getCantonNaissanceEnfant());
+        champsAnnonce.setChildInsurantVn(getNssEnfantOldestDroit());
+        champsAnnonce.setNewbornDateOfBirth(getDateNaissanceEnfant());
+        champsAnnonce.setNumberOfWorkdays(getNombreJoursOuvrable());
+        champsAnnonce.setParternityLeaveType(getTypePaternite());
+
         return champsAnnonce;
     }
 
@@ -1784,5 +1866,53 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
     public void setIdDroit(String idDroit) {
         this.idDroit = idDroit;
 
+    }
+
+    public String getPaysNaissanceEnfant() {
+        return paysNaissanceEnfant;
+}
+
+    public void setPaysNaissanceEnfant(String paysNaissanceEnfant) {
+        this.paysNaissanceEnfant = paysNaissanceEnfant;
+    }
+
+    public String getNssEnfantOldestDroit() {
+        return nssEnfantOldestDroit;
+    }
+
+    public void setNssEnfantOldestDroit(String nssEnfantOldestDroit) {
+        this.nssEnfantOldestDroit = nssEnfantOldestDroit;
+    }
+
+    public String getDateNaissanceEnfant() {
+        return dateNaissanceEnfant;
+    }
+
+    public void setDateNaissanceEnfant(String dateNaissanceEnfant) {
+        this.dateNaissanceEnfant = dateNaissanceEnfant;
+    }
+
+    public String getNombreJoursOuvrable() {
+        return nombreJoursOuvrable;
+    }
+
+    public void setNombreJoursOuvrable(String nombreJoursOuvrable) {
+        this.nombreJoursOuvrable = nombreJoursOuvrable;
+    }
+
+    public String getTypePaternite() {
+        return typePaternite;
+    }
+
+    public void setTypePaternite(String typePaternite) {
+        this.typePaternite = typePaternite;
+    }
+
+    public String getCantonNaissanceEnfant() {
+        return cantonNaissanceEnfant;
+    }
+
+    public void setCantonNaissanceEnfant(String cantonNaissanceEnfant) {
+        this.cantonNaissanceEnfant = cantonNaissanceEnfant;
     }
 }

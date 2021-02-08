@@ -38,7 +38,7 @@ public class Rule310 extends Rule {
             validNotEmpty(startOfPeriod, "startOfPeriod");
         }
 
-        if ("30".equals(serviceType) || "90".equals(serviceType)) {
+        if ("30".equals(serviceType) || "90".equals(serviceType) || "91".equals(serviceType)) {
             return true;
         }
         if (!JadeStringUtil.isEmpty(champsAnnonce.getInsurantBirthDate()) && !JadeStringUtil.isEmpty(startOfPeriod)) {

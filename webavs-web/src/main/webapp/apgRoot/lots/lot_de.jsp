@@ -46,9 +46,24 @@ idEcran="PAP0027";
 	<ct:menuSetAllParams key="idLot" value="<%=viewBean.getIdLot()%>"/>
 
 	<% if (viewBean.getEtat().equals(globaz.apg.api.lots.IAPLot.CS_VALIDE)) {%>
-		<ct:menuActivateNode active="no" nodeId="generercompensations"/>
+	<ct:menuActivateNode active="no" nodeId="generercompensations"/>
 	<%} else {%>
-		<ct:menuActivateNode active="yes" nodeId="generercompensations"/>
+	<ct:menuActivateNode active="yes" nodeId="generercompensations"/>
+	<%}%>
+
+</ct:menuChange><!--sinon, paternité -->
+<%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_PATERNITE) {%>
+<ct:menuChange displayId="menu" menuId="ap-menuprincipalapat"/>
+<ct:menuChange displayId="options" menuId="ap-optionlotpat" showTab="options">
+	<ct:menuSetAllParams key="forIdLot" value="<%=viewBean.getIdLot()%>"/>
+	<ct:menuSetAllParams key="etatlot" value="<%=viewBean.getEtat()%>"/>
+	<ct:menuSetAllParams key="selectedId" value="<%=viewBean.getIdLot()%>"/>
+	<ct:menuSetAllParams key="idLot" value="<%=viewBean.getIdLot()%>"/>
+
+	<% if (viewBean.getEtat().equals(globaz.apg.api.lots.IAPLot.CS_VALIDE)) {%>
+	<ct:menuActivateNode active="no" nodeId="generercompensations"/>
+	<%} else {%>
+	<ct:menuActivateNode active="yes" nodeId="generercompensations"/>
 	<%}%>
 
 </ct:menuChange>

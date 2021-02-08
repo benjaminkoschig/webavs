@@ -39,6 +39,9 @@ boolean wantTousEtat="tous".equals(request.getParameter("forEtat"));
 <%} else if (globaz.prestation.tools.PRSessionDataContainerHelper.getData(session, globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION) == IPRDemande.CS_TYPE_PANDEMIE) { %>
 <ct:menuChange displayId="menu" menuId="ap-menuprincipalpan" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="ap-optionsempty"/>
+<%}  else if (globaz.prestation.tools.PRSessionDataContainerHelper.getData(session, globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION) == IPRDemande.CS_TYPE_PATERNITE) { %>
+<ct:menuChange displayId="menu" menuId="ap-menuprincipalapat" showTab="menu"/>
+<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 <%}%>
 
 <SCRIPT language="javascript">
@@ -130,9 +133,12 @@ boolean wantTousEtat="tous".equals(request.getParameter("forEtat"));
 				<%}%>
 				<%if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)=="52201002") {%>
 				<ct:FWLabel key="JSP_PRESTATIONS_MAT"/>
-<%}%>
-<%if ((String) globaz.prestation.tools.PRSessionDataContainerHelper.getData(session, globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION) == IPRDemande.CS_TYPE_PANDEMIE) {%>
-<ct:FWLabel key="JSP_PRESTATIONS_PAN"/>
+				<%}%>
+				<%if ((String) globaz.prestation.tools.PRSessionDataContainerHelper.getData(session, globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION) == IPRDemande.CS_TYPE_PANDEMIE) {%>
+				<ct:FWLabel key="JSP_PRESTATIONS_PAN"/>
+				<%}%>
+				<%if ((String) globaz.prestation.tools.PRSessionDataContainerHelper.getData(session, globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION) == IPRDemande.CS_TYPE_PATERNITE) {%>
+				<ct:FWLabel key="JSP_PRESTATIONS_PAT"/>
 				<%}%>
 				<%-- /tpl:put --%>
 <%@ include file="/theme/find/bodyStart2.jspf" %>

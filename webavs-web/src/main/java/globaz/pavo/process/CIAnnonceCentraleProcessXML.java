@@ -754,6 +754,8 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
             if (!journal.isNew()) {
                 if (CIJournal.CS_APG.equals(journal.getIdTypeInscription())) {
                     return "77777777777";
+                } else if (CIJournal.CS_PANDEMIE.equals(journal.getIdTypeInscription())) {
+                    return "55555555555";
                 } else if (CIJournal.CS_IJAI.equals(journal.getIdTypeInscription())) {
                     return "88888888888";
                 } else if (CIJournal.CS_ASSURANCE_CHOMAGE.equals(journal.getIdTypeInscription())||!JadeStringUtil.isBlankOrZero(ecriture.getCaisseChomage()) ) {

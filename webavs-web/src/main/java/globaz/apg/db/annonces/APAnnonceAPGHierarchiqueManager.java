@@ -33,6 +33,9 @@ public class APAnnonceAPGHierarchiqueManager extends PRAbstractManagerHierarchiq
     /** Critère de recherche pour lister toutes les annonces APG (rev99 et 05) */
     public static final String FOR_TYPE_APG = "forapg";
 
+    /** Critère de recherche pour lister toutes les annonces MATERNITE */
+    public static final String FOR_TYPE_MATERNITE = "formaternite";
+
     /** Critère de recherche pour lister tous les types d'annonces */
     public static final String FOR_TYPE_TOUS = "tous";
 
@@ -287,9 +290,12 @@ public class APAnnonceAPGHierarchiqueManager extends PRAbstractManagerHierarchiq
                 sqlWhere += " AND ";
             }
             if (forType.equals(APAnnonceAPGHierarchiqueManager.FOR_TYPE_APG)) {
-                sqlWhere += prefix + APAnnonceAPG.FIELDNAME_GENRE + "<> '90'";
+                sqlWhere += prefix + APAnnonceAPG.FIELDNAME_GENRE + "<> '90' AND ";
+                sqlWhere += prefix + APAnnonceAPG.FIELDNAME_GENRE + "<> '91'";
+            } else if (forType.equals(APAnnonceAPGHierarchiqueManager.FOR_TYPE_MATERNITE)) {
+                sqlWhere += prefix + APAnnonceAPG.FIELDNAME_GENRE + "= '90'";
             } else {
-                sqlWhere += prefix + APAnnonceAPG.FIELDNAME_GENRE + " = '90'";
+                sqlWhere += prefix + APAnnonceAPG.FIELDNAME_GENRE + " = '91'";
             }
         }
 

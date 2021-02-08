@@ -81,6 +81,8 @@ public class HEAttenteRetourCIViewBean extends globaz.hermes.db.gestion.HEOutput
                                 return pavoSession.getLabel("PRTGENRE7"); // "Allocation pour perte de gain";
                             } else if (numeroAffilie.equals("66666666666")) {
                                 return pavoSession.getLabel("PRTGENRE8"); // "Indemnité journalière de l'assurance militaire";
+                            } else if (numeroAffilie.equals("55555555555")) {
+                                return pavoSession.getLabel("PRTGENRE17"); // "Allocation pour perte de gain - pandémie";
                             } else if (numeroAffilie.startsWith("999999")) {
                                 return pavoSession.getLabel("PRTGENRE5"); // "Indemnité de chômage";
                             } else {

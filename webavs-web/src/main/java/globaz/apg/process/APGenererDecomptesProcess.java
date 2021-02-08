@@ -345,6 +345,11 @@ public class APGenererDecomptesProcess extends BProcess {
         envoyerAnnoncesSedexProcess.executeProcess();
     }
 
+    /**
+     *
+     * @param transaction 
+     * @throws Exception
+     */
     private void genereAnnonces(final BITransaction transaction) throws Exception {
         final APGenererAnnoncesProcess genererAnnoncesProcess = new APGenererAnnoncesProcess(this);
         genererAnnoncesProcess.setForIdLot(idLot);

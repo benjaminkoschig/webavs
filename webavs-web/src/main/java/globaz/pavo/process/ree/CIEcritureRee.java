@@ -185,6 +185,10 @@ public class CIEcritureRee extends BEntity {
             // APG
             return "77777777777";
         }
+        if (CIJournal.CS_PANDEMIE.equals(idTypeInscription)) {
+            // PANDEMIE
+            return "55555555555";
+        }
         if (CIJournal.CS_IJAI.equals(idTypeInscription)) {
             // AI
             return "88888888888";

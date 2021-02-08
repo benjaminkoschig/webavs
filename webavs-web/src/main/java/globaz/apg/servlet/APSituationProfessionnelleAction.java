@@ -8,12 +8,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import globaz.apg.db.droits.APDroitAPG;
-import globaz.apg.db.droits.APDroitLAPG;
-import globaz.apg.db.droits.APDroitMaternite;
-import globaz.apg.db.droits.APEmployeur;
-import globaz.apg.db.droits.APSituationProfessionnelle;
-import globaz.apg.db.droits.APSituationProfessionnelleManager;
+
+import globaz.apg.db.droits.*;
 import globaz.apg.groupdoc.ccju.GroupdocPropagateUtil;
 import globaz.apg.properties.APProperties;
 import globaz.apg.util.TypePrestation;
@@ -340,9 +336,9 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
      *            the HTTP request
      * @param response
      *            the HTTP response
-     * @param mainController
+     * @param dispatcher
      *            the main controller
-     * @param action
+     * @param viewBean
      *            the action
      * @exception Exception
      *                if an error occurred
@@ -423,6 +419,8 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
                 final String idDomainPaiementEmployeur;
                 if (IPRDemande.CS_TYPE_MATERNITE.equals(spViewBean.getTypePrestation().toCodeSysteme())) {
                     idDomainPaiementEmployeur = IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
+                } else if (IPRDemande.CS_TYPE_PATERNITE.equals(spViewBean.getTypePrestation().toCodeSysteme())) {
+                    idDomainPaiementEmployeur = IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE;
                 } else if (IPRDemande.CS_TYPE_PANDEMIE.equals(spViewBean.getTypePrestation().toCodeSysteme())) {
                     idDomainPaiementEmployeur = APProperties.DOMAINE_ADRESSE_APG_PANDEMIE.getValue();
                 } else {
@@ -569,8 +567,10 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
 
                 if (spViewBean.getTypePrestation().equals(TypePrestation.TYPE_APG)) {
                     droit = new APDroitAPG();
-                } else {
+                } else if(spViewBean.getTypePrestation().equals(TypePrestation.TYPE_MATERNITE)) {
                     droit = new APDroitMaternite();
+                }else{
+                    droit = new APDroitPaternite();
                 }
 
                 droit.setIdDroit(spViewBean.getIdDroitLAPGBackup());

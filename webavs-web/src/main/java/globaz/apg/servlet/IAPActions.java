@@ -25,11 +25,13 @@ public interface IAPActions {
     String ACTION_ENFANT_APG = "apg.droits.enfantAPG";
     String ACTION_ENFANT_MAT = "apg.droits.enfantMat";
     String ACTION_ENFANT_PAN = "apg.droits.enfantPan";
+    String ACTION_ENFANT_PAT = "apg.droits.enfantPat";
     String ACTION_ENVOYER_ANNONCE = "apg.process.envoyerAnnonces";
     String ACTION_ENVOYER_CI = "apg.process.envoyerCI";
     String ACTION_FACTURES_LOT = "apg.lots.factureACompenser";
     String ACTION_GENERER_ATTESTATIONS_APG = "apg.process.genererAttestations";
     String ACTION_GENERER_COMM_DEC_AMAT = "apg.process.genererDecisionAMAT";
+    String ACTION_GENERER_DEC_APAT = "apg.process.genererDecisionAPAT";
     String ACTION_GENERER_COMPENSATIONS = "apg.process.genererCompensations";
     String ACTION_GENERER_DECISION_REFUS = "apg.process.genererDecisionRefus";
     String ACTION_GENERER_DECOMPTES = "apg.process.genererDecomptes";
@@ -49,11 +51,13 @@ public interface IAPActions {
     String ACTION_PRESTATIONS = "apg.prestation.prestation";
     String ACTION_RECAPITUALATIF_DROIT_APG = "apg.droits.recapitulatifDroitAPG";
     String ACTION_RECAPITUALATIF_DROIT_MAT = "apg.droits.recapitulatifDroitMat";
+    String ACTION_RECAPITULATIF_DROIT_PAT = "apg.droits.recapitulatifDroitPat";
     String ACTION_RECAPITUALATIF_DROIT_PAN = "apg.droits.recapitulatifDroitPan";
     String ACTION_REPARTITION_PAIEMENTS = "apg.prestation.repartitionPaiements";
     String ACTION_SAISIE_CARTE_AMAT = "apg.droits.droitMatP";
     String ACTION_SAISIE_CARTE_APG = "apg.droits.droitAPGP";
     String ACTION_SAISIE_CARTE_PAN = "apg.droits.droitPan";
+    String ACTION_SAISIE_CARTE_APAT = "apg.droits.droitPatP";
     String ACTION_SAISIE_CARTE_PAN_SITUATION = "apg.droits.droitPanSituation";
     String ACTION_SITUATION_PROFESSIONNELLE = "apg.droits.situationProfessionnelle";
     String ACTION_TEXTE_JOINT_CATALOGUE = "apg.cattxt.texteJointCatalogue";

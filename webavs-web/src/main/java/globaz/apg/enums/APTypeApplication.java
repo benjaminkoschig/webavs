@@ -7,5 +7,6 @@ package globaz.apg.enums;
  */
 public enum APTypeApplication {
     MATERNITE,
+    PATERNITE,
     APG;
 }

@@ -31,9 +31,11 @@ idEcran="PAP0034";
 	<!--sinon, maternité -->
 	<%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE) {%>	   	
 		<ct:menuChange displayId="menu" menuId="ap-menuprincipalamat"/>
+	<%}else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_PATERNITE) {%>
+		<ct:menuChange displayId="menu" menuId="ap-menuprincipalapat"/>
 	<%}%>
-    
-    <%if (viewBean.isOkPourMiseEnLot()){%>
+
+<%if (viewBean.isOkPourMiseEnLot()){%>
 			<ct:menuChange displayId="options" menuId="ap-optionprestationlotok" showTab="options">
 				<ct:menuSetAllParams key="idPrestationCourante" value="<%=viewBean.getIdPrestationApg()%>"/>
 				<ct:menuSetAllParams key="genreService" value="<%=viewBean.getGenreService()%>"/>

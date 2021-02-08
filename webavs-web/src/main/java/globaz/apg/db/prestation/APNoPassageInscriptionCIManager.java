@@ -15,13 +15,17 @@ import globaz.globall.util.JADate;
  */
 public class APNoPassageInscriptionCIManager extends BManager {
 
+
+
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
+    private boolean pandemie = false;
+
 
     /*
      * (non-Javadoc)
@@ -50,6 +54,23 @@ public class APNoPassageInscriptionCIManager extends BManager {
         sqlWhere.append(today.getMonth());
         sqlWhere.append(today.getDay());
 
+        if (isPandemie()) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere.append(" AND ");
+            }
+            sqlWhere.append(APInscriptionCI.FIELDNAME_GENRE_PRESTATION).append("=").append(_dbWriteNumeric(statement.getTransaction(), "52015012"));
+
+        } else {
+            if (sqlWhere.length() != 0) {
+                sqlWhere.append(" AND ");
+            }
+            sqlWhere.append("(");
+            sqlWhere.append(APInscriptionCI.FIELDNAME_GENRE_PRESTATION).append("<>").append(_dbWriteNumeric(statement.getTransaction(), "52015012"));
+            sqlWhere.append(" OR ").append(APInscriptionCI.FIELDNAME_GENRE_PRESTATION).append(" is null");
+            sqlWhere.append(")");
+
+        }
+
         return sqlWhere.toString() + _getGroupBy(statement) + " " + getOrderByDefaut();
     }
 
@@ -65,4 +86,11 @@ public class APNoPassageInscriptionCIManager extends BManager {
         return "ORDER BY " + APInscriptionCI.FIELDNAME_NOPASSAGE + " DESC";
     }
 
+    public boolean isPandemie() {
+        return pandemie;
+    }
+
+    public void setPandemie(boolean pandemie) {
+        this.pandemie = pandemie;
+    }
 }

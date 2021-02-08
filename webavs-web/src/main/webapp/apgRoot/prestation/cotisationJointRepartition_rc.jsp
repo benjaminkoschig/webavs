@@ -1,4 +1,5 @@
 <%-- tpl:insert page="/theme/capage.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" %>
+<%@ page import="globaz.prestation.api.IPRDemande" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/capage/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
@@ -21,6 +22,9 @@ bButtonNew = false;
 <!--sinon, maternité -->
 <%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE) {%>
 	<ct:menuChange displayId="menu" menuId="ap-menuprincipalamat" showTab="menu"/>
+	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
+<%}else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)== IPRDemande.CS_TYPE_PATERNITE) {%>
+	<ct:menuChange displayId="menu" menuId="ap-menuprincipalapat" showTab="menu"/>
 	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 <%}%>
 

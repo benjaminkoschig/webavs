@@ -9,6 +9,9 @@ import globaz.apg.process.APEnvoyerCIProcess;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JADate;
+import globaz.prestation.api.IPRDemande;
+import org.apache.commons.lang.StringUtils;
+
 import java.util.Iterator;
 
 /**
@@ -68,10 +71,14 @@ public class APEnvoyerCIViewBean extends APEnvoyerCIProcess implements FWViewBea
      * 
      * @return
      */
-    public String[] getNoPassageList() {
+    public String[] getNoPassageList(String typePrestationModule) {
 
         APNoPassageInscriptionCIManager mgr = new APNoPassageInscriptionCIManager();
+        if (StringUtils.equals(IPRDemande.CS_TYPE_PANDEMIE, typePrestationModule)) {
+            mgr.setPandemie(true);
+        }
         mgr.setSession(getSession());
+
 
         try {
             mgr.find();

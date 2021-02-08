@@ -182,6 +182,9 @@ public class Doc1_ExtraiCompte_DS extends globaz.pavo.db.compte.CIEcritureManage
                     // return getSession().getLabel("PRTGENRE7"); //
                     // "Allocation pour perte de gain";
                     return application.getLabel("PRTGENRE7", langueImp);
+                } else if (CIUtil.unFormatAVS(affilieId).equals("55555555555")) {
+                    // "Allocation pour perte de gain - pandémie";
+                    return application.getLabel("PRTGENRE17", langueImp);
                 } else if (CIUtil.unFormatAVS(affilieId).equals("66666666666")) {
                     // return getSession().getLabel("PRTGENRE8"); //
                     // "Indemnité journalière de l'assurance militaire";

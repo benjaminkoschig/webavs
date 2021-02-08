@@ -122,7 +122,7 @@ public class APPrestationJointLotTiersDroitViewBean extends APPrestationJointLot
         }
 
         if (isMisEnLot() && (APGUtils.isTypeAllocationPandemie(getGenreService()) ||
-                getNoRevision().equals(IAPDroitMaternite.CS_REVISION_MATERNITE_2005))) {
+                APGUtils.isTypePaternite(getGenreService())|| APGUtils.isTypeMaternite(getGenreService()))) {
             except.add(IAPPrestation.CS_ETAT_PRESTATION_CONTROLE);
         }
 
@@ -278,9 +278,9 @@ public class APPrestationJointLotTiersDroitViewBean extends APPrestationJointLot
         // et pas une prestation annule
         return (isControle()
                 || (isValide() && APGUtils.isTypeAllocationPandemie(getGenreService()))
-                || (isValide() && getNoRevision().equals(
-                globaz.apg.api.droits.IAPDroitMaternite.CS_REVISION_MATERNITE_2005)))
-                && !isAnnule();
+                || (isValide() && APGUtils.isTypeMaternite(getGenreService()))
+                || (isValide() && APGUtils.isTypePaternite(getGenreService()))
+                && !isAnnule());
     }
 
     /**

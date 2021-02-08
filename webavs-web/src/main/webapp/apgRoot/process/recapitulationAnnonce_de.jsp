@@ -1,4 +1,5 @@
 <%-- tpl:insert page="/theme/process.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%@ page import="globaz.prestation.api.IPRDemande" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/process/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
@@ -24,6 +25,9 @@ idEcran="PAP2002";
 <%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE) {%>
 	<ct:menuChange displayId="menu" menuId="ap-menuprincipalamat" showTab="menu"/>
 	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
+<%}else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)== IPRDemande.CS_TYPE_PATERNITE) {%>
+<ct:menuChange displayId="menu" menuId="ap-menuprincipalapat" showTab="menu"/>
+<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 <%}%>
 <%-- /tpl:put --%>
 <%@ include file="/theme/process/bodyStart.jspf" %>

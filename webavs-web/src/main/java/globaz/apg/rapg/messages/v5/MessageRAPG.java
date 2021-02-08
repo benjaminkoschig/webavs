@@ -5,11 +5,15 @@ import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.DeliveryOfficeType;
 import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.InsurantDomicileType;
 import rapg.ch.ech.xmlns.ech_0044._2.PersonIdentificationType;
 import rapg.ch.ech.xmlns.ech_0058._4.SendingApplicationType;
+import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.PaternityLeaveDataType;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+/**
+ *
+ */
 public interface MessageRAPG {
 
     /**
@@ -615,5 +619,9 @@ public interface MessageRAPG {
      * 
      */
     public void setTotalAPG(BigDecimal value);
+
+    public void setPaternityLeaveData( PaternityLeaveDataType paternityLeaveDataType);
+
+    public  PaternityLeaveDataType getPaternityLeaveData();
 
 }

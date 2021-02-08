@@ -28,6 +28,8 @@ idEcran="PAP0022";
 	String typePrestation = "typePrestation=" + viewBean.getTypePrestation();
 	String idDroit = "forIdDroit=" + viewBean.getIdDroit();
 	String lienSurPrestation = request.getContextPath() + "/apg?userAction=" + IAPActions.ACTION_PRESTATION_JOINT_LOT_TIERS_DROIT + "." + FWAction.ACTION_CHERCHER + "&" + typePrestation + "&" + idDroit;
+
+	String typePrestationValue = ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION));
 %>
 	
 
@@ -37,12 +39,15 @@ idEcran="PAP0022";
 <%@ include file="/theme/detail/javascripts.jspf" %>
 <%-- tpl:put name="zoneScripts" --%>
 <!--si APG -->
-<%if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_APG) {%>
+<%if (typePrestationValue ==globaz.prestation.api.IPRDemande.CS_TYPE_APG) {%>
 	<ct:menuChange displayId="menu" menuId="ap-menuprincipalapg" showTab="menu"/>
 	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 <!--sinon, maternité -->
-<%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE) {%>
+<%} else if (typePrestationValue==globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE) {%>
 	<ct:menuChange displayId="menu" menuId="ap-menuprincipalamat" showTab="menu"/>
+	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
+<%} else if (typePrestationValue==globaz.prestation.api.IPRDemande.CS_TYPE_PATERNITE) {%>
+	<ct:menuChange displayId="menu" menuId="ap-menuprincipalapat" showTab="menu"/>
 	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 <%}%>
 <script language="JavaScript">
@@ -64,45 +69,93 @@ idEcran="PAP0022";
     } else {
         document.forms[0].elements('userAction').value="apg.annonces.annonceSedex.modifier";
     }
-    
-    jsonAnnonce = {
-		accountingMonth : $('#accountingMonth').val(),
-		action : $('#action').val(),
-		activityBeforeService : $('#activityBeforeService').val(),
-		allowanceCareExpenses : $('#allowanceCareExpenses').val(),
-		allowanceFarm : $('#allowanceFarm').val(),
-		averageDailyIncome : $('#averageDailyIncome').val(),
-		basicDailyAmount : $('#basicDailyAmount').val(),
-		breakRules : rulesToBreak,
-		businessProcessId : $('#businessProcessId').val(),
-		controlNumber : $('#controlNumber').val(),
-		dailyIndemnityGuaranteeAI : $('#dailyIndemnityGuaranteeAI').val(),
-		deliveryOfficeBranch : $('#deliveryOfficeBranch').val(),
-		deliveryOfficeOfficeIdentifier : $('#deliveryOfficeOfficeIdentifier').val(),
-		endOfPeriod : $('#endOfPeriod').val(),
-		eventDate : $('#eventDate').val(),
-		insurant : $('#insurant').val(),
-		idDroit: "<%=viewBean.getChampsAnnonce().getIdDroit() %>",
-		idDroitParent: "<%=viewBean.getChampsAnnonce().getIdDroitParent() %>",
-		insurantBirthDate : "<%=viewBean.getChampsAnnonce().getInsurantBirthDate() %>",
-		insurantSexe : "<%=(TIPersonne.CS_SEXE_FEMME.equals(viewBean.getChampsAnnonce().getInsurantSexe()))?2:1 %>",
-		insurantDomicileCanton : $('#insurantDomicileCanton').val(),
-		insurantDomicileCountry : $('#insurantDomicileCountry').val(),
-		//insurantDomicileNpa : $('#insurantDomicileNpa').val(),
-		insurantMaritalStatus : $('#insurantMaritalStatus').val(),
-		messageDate : $('#messageDate').val(),
-		messageId : $('#messageId').val(),
-		subMessageType : $('#subMessageType').val(),
-		messageType : $('#messageType').val(),
-		numberOfChildren : $('#numberOfChildren').val(),
-		numberOfDays : $('#numberOfDays').val(),
-		paymentMethod : $('#paymentMethod').val(),
-		referenceNumber : $('#referenceNumber').val(),
-		serviceType : $('#serviceType').val(),
-		startOfPeriod : $('#startOfPeriod').val(),
-		totalAPG : $('#totalAPG').val()
-	};
-		
+
+    // Type paternité
+    if (<%=typePrestationValue%> == <%=globaz.prestation.api.IPRDemande.CS_TYPE_PATERNITE%>) {
+		jsonAnnonce = {
+			accountingMonth : $('#accountingMonth').val(),
+			action : $('#action').val(),
+			activityBeforeService : $('#activityBeforeService').val(),
+			allowanceCareExpenses : $('#allowanceCareExpenses').val(),
+			allowanceFarm : $('#allowanceFarm').val(),
+			averageDailyIncome : $('#averageDailyIncome').val(),
+			basicDailyAmount : $('#basicDailyAmount').val(),
+			breakRules : rulesToBreak,
+			businessProcessId : $('#businessProcessId').val(),
+			controlNumber : $('#controlNumber').val(),
+			dailyIndemnityGuaranteeAI : $('#dailyIndemnityGuaranteeAI').val(),
+			newbornDateOfBirth :  $('#newbornDateOfBirth').val(),
+			numberOfWorkdays  : $('#numberOfWorkdays').val(),
+			parternityLeaveType  : $('#parternityLeaveType').val(),
+			childDomicile  : $('#childDomicile').val(),
+			childInsurantVn  : $('#childInsurantVn').val(),
+			deliveryOfficeBranch : $('#deliveryOfficeBranch').val(),
+			deliveryOfficeOfficeIdentifier : $('#deliveryOfficeOfficeIdentifier').val(),
+			endOfPeriod : $('#endOfPeriod').val(),
+			eventDate : $('#eventDate').val(),
+			insurant : $('#insurant').val(),
+			idDroit: "<%=viewBean.getChampsAnnonce().getIdDroit() %>",
+			idDroitParent: "<%=viewBean.getChampsAnnonce().getIdDroitParent() %>",
+			insurantBirthDate : "<%=viewBean.getChampsAnnonce().getInsurantBirthDate() %>",
+			insurantSexe : "<%=(TIPersonne.CS_SEXE_FEMME.equals(viewBean.getChampsAnnonce().getInsurantSexe()))?2:1 %>",
+			insurantDomicileCanton : $('#insurantDomicileCanton').val(),
+			insurantDomicileCountry : $('#insurantDomicileCountry').val(),
+			//insurantDomicileNpa : $('#insurantDomicileNpa').val(),
+			insurantMaritalStatus : $('#insurantMaritalStatus').val(),
+			messageDate : $('#messageDate').val(),
+			messageId : $('#messageId').val(),
+			subMessageType : $('#subMessageType').val(),
+			messageType : $('#messageType').val(),
+			numberOfChildren : $('#numberOfChildren').val(),
+			numberOfDays : $('#numberOfDays').val(),
+			paymentMethod : $('#paymentMethod').val(),
+			referenceNumber : $('#referenceNumber').val(),
+			serviceType : $('#serviceType').val(),
+			startOfPeriod : $('#startOfPeriod').val(),
+			totalAPG : $('#totalAPG').val()
+		};
+
+		// Autre
+	} else {
+		jsonAnnonce = {
+			accountingMonth : $('#accountingMonth').val(),
+			action : $('#action').val(),
+			activityBeforeService : $('#activityBeforeService').val(),
+			allowanceCareExpenses : $('#allowanceCareExpenses').val(),
+			allowanceFarm : $('#allowanceFarm').val(),
+			averageDailyIncome : $('#averageDailyIncome').val(),
+			basicDailyAmount : $('#basicDailyAmount').val(),
+			breakRules : rulesToBreak,
+			businessProcessId : $('#businessProcessId').val(),
+			controlNumber : $('#controlNumber').val(),
+			dailyIndemnityGuaranteeAI : $('#dailyIndemnityGuaranteeAI').val(),
+			deliveryOfficeBranch : $('#deliveryOfficeBranch').val(),
+			deliveryOfficeOfficeIdentifier : $('#deliveryOfficeOfficeIdentifier').val(),
+			endOfPeriod : $('#endOfPeriod').val(),
+			eventDate : $('#eventDate').val(),
+			insurant : $('#insurant').val(),
+			idDroit: "<%=viewBean.getChampsAnnonce().getIdDroit() %>",
+			idDroitParent: "<%=viewBean.getChampsAnnonce().getIdDroitParent() %>",
+			insurantBirthDate : "<%=viewBean.getChampsAnnonce().getInsurantBirthDate() %>",
+			insurantSexe : "<%=(TIPersonne.CS_SEXE_FEMME.equals(viewBean.getChampsAnnonce().getInsurantSexe()))?2:1 %>",
+			insurantDomicileCanton : $('#insurantDomicileCanton').val(),
+			insurantDomicileCountry : $('#insurantDomicileCountry').val(),
+			//insurantDomicileNpa : $('#insurantDomicileNpa').val(),
+			insurantMaritalStatus : $('#insurantMaritalStatus').val(),
+			messageDate : $('#messageDate').val(),
+			messageId : $('#messageId').val(),
+			subMessageType : $('#subMessageType').val(),
+			messageType : $('#messageType').val(),
+			numberOfChildren : $('#numberOfChildren').val(),
+			numberOfDays : $('#numberOfDays').val(),
+			paymentMethod : $('#paymentMethod').val(),
+			referenceNumber : $('#referenceNumber').val(),
+			serviceType : $('#serviceType').val(),
+			startOfPeriod : $('#startOfPeriod').val(),
+			totalAPG : $('#totalAPG').val()
+		};
+	}
+
     //console.log(jsonAnnonce);
     
     //v1-10-00sp1 - désactivation des contrôles
@@ -248,6 +301,29 @@ idEcran="PAP0022";
 							<TD>allowanceFarm</TD>
 							<TD><ct:inputText name="champsAnnonce.allowanceFarm" id="allowanceFarm" style="width:80"/></TD>
 						</TR>
+<%--						 Paternité--%>
+						<%if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_PATERNITE) {%>
+						<TR>
+							<TD>newbornDateOfBirth</TD>
+							<TD><ct:inputText name="champsAnnonce.newbornDateOfBirth" id="newbornDateOfBirth" notation="data-g-calendar=' '"/></TD>
+							<TD>numberOfWorkdays</TD>
+							<TD><ct:inputText name="champsAnnonce.numberOfWorkdays" id="numberOfWorkdays" style="width:80"/></TD>
+						</TR>
+						<TR>
+							<TD>parternityLeaveType</TD>
+							<TD><ct:inputText name="champsAnnonce.parternityLeaveType" id="parternityLeaveType" style="width:80"/></TD>
+							<TD>childDomicile</TD>
+							<TD><ct:inputText name="champsAnnonce.childDomicile" id="childDomicile" style="width:80"/></TD>
+						</TR>
+						<TR>
+							<TD>childInsurantVn</TD>
+							<TD><ct:inputText name="champsAnnonce.childInsurantVn" id="childInsurantVn"/></TD>
+							<TD></TD>
+							<TD></TD>
+						</TR>
+						<%}%>
+
+<%--						Fin Paternité--%>
 						<TR>
 							<TD>averageDailyIncome</TD>
 							<TD><ct:inputText name="champsAnnonce.averageDailyIncome" id="averageDailyIncome" notation="data-g-amount=' '"/></TD>

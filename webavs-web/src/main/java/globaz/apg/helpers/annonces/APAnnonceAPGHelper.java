@@ -86,6 +86,8 @@ public class APAnnonceAPGHelper extends PRAbstractHelper {
                 vb.setIdDroit(droit.getIdDroit());
                 if (IPRDemande.CS_TYPE_MATERNITE.equals(demande.getTypeDemande())) {
                     vb.setTypePrestation(APTypeApplication.MATERNITE.toString());
+                } else if (IPRDemande.CS_TYPE_PATERNITE.equals(demande.getTypeDemande())) {
+                    vb.setTypePrestation(APTypeApplication.PATERNITE.toString());
                 } else if (IPRDemande.CS_TYPE_APG.equals(demande.getTypeDemande())) {
                     vb.setTypePrestation(APTypeApplication.APG.toString());
                 }

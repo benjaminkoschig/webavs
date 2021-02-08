@@ -988,7 +988,7 @@ public class CIEcriture extends BEntity {
                     setIdAffilie(getEmployeurPartenaire());
                 }
                 // Récupération du journal
-                if ("6".equals(getAijApgAmi()) || "7".equals(getAijApgAmi()) || "8".equals(getAijApgAmi())) {
+                if ("6".equals(getAijApgAmi()) || "7".equals(getAijApgAmi()) || "5".equals(getAijApgAmi()) || "8".equals(getAijApgAmi())) {
                     CIJournal journal = getJournalEcrituresSpeciales(statement.getTransaction());
                     setIdJournal(journal.getIdJournal());
                 } else {
@@ -1005,6 +1005,7 @@ public class CIEcriture extends BEntity {
                                 || (CIJournal.CS_ASSURANCE_MILITAIRE.equals(journal.getIdTypeInscription()))
                                 || (CIJournal.CS_ASSURANCE_CHOMAGE.equals(journal.getIdTypeInscription()))
                                 || (CIJournal.CS_APG.equals(journal.getIdTypeInscription()))
+                                || (CIJournal.CS_PANDEMIE.equals(journal.getIdTypeInscription()))
                                 || (CIJournal.CS_IJAI.equals(journal.getIdTypeInscription()))) {
                             if (!CIEcriture.CS_CIGENRE_1.equals(getGenreEcriture())
                                     && !CIEcriture.CS_CIGENRE_6.equals(getGenreEcriture())
@@ -1046,6 +1047,7 @@ public class CIEcriture extends BEntity {
                     }
 
                     if ((CIJournal.CS_APG.equals(journal.getIdTypeInscription()))
+                            || (CIJournal.CS_PANDEMIE.equals(journal.getIdTypeInscription()))
                             || (CIJournal.CS_IJAI.equals(journal.getIdTypeInscription()))
                             || (CIJournal.CS_ASSURANCE_MILITAIRE.equals(journal.getIdTypeInscription()))
                             || (CIJournal.CS_ASSURANCE_CHOMAGE.equals(journal.getIdTypeInscription()))
@@ -1265,6 +1267,7 @@ public class CIEcriture extends BEntity {
                         }
                     }
                 } else if (CIJournal.CS_APG.equals(journal.getIdTypeInscription())
+                        || CIJournal.CS_PANDEMIE.equals(journal.getIdTypeInscription())
                         || CIJournal.CS_ASSURANCE_MILITAIRE.equals(journal.getIdTypeInscription())
                         || CIJournal.CS_IJAI.equals(journal.getIdTypeInscription())) {
                     if ((!JadeStringUtil.isIntegerEmpty(getExtourne()))
@@ -1339,6 +1342,7 @@ public class CIEcriture extends BEntity {
                             CIJournal journal = getJournal(statement.getTransaction(), true);
                             if (journal != null) {
                                 if (CIJournal.CS_APG.equals(journal.getIdTypeInscription())
+                                        || CIJournal.CS_PANDEMIE.equals(journal.getIdTypeInscription())
                                         || CIJournal.CS_IJAI.equals(journal.getIdTypeInscription())
                                         || !JadeStringUtil.isBlank(caisseChomage)) {
                                     setCodeSpecial(CIEcriture.CS_NONFORMATTEUR_SALARIE);
@@ -2002,7 +2006,9 @@ public class CIEcriture extends BEntity {
         }
         if (CIJournal.CS_APG.equals(ecr.getJournal(null, false).getIdTypeInscription())) {
             setAijApgAmi("7");
-
+        }
+        if (CIJournal.CS_PANDEMIE.equals(ecr.getJournal(null, false).getIdTypeInscription())) {
+            setAijApgAmi("5");
         }
         if (CIJournal.CS_IJAI.equals(ecr.getJournal(null, false).getIdTypeInscription())) {
             setAijApgAmi("8");
@@ -2017,7 +2023,7 @@ public class CIEcriture extends BEntity {
         if (!"0".equals(ecr.getPartBta())) {
             setAijApgAmi("4");
         }
-        if (!"6".equals(getAijApgAmi()) && !"7".equals(getAijApgAmi()) && !"8".equals(getAijApgAmi())) {
+        if (!"6".equals(getAijApgAmi()) && !"7".equals(getAijApgAmi()) && !"5".equals(getAijApgAmi()) && !"8".equals(getAijApgAmi())) {
             journal = getJournalduJour(null);
         } else {
             journal = getJournalEcrituresSpeciales(null);
@@ -2954,6 +2960,29 @@ public class CIEcriture extends BEntity {
             setJournal(jour);
             return jour;
         }
+        if ("5".equals(getAijApgAmi())) {
+            // recherche si déjà existant
+            CIJournalManager mgr = new CIJournalManager();
+            mgr.setSession(getSession());
+            mgr.setForIdTypeInscription(CIJournal.CS_PANDEMIE);
+            mgr.setForDate(JACalendar.todayJJsMMsAAAA());
+            mgr.find(transaction);
+            if (mgr.size() != 0) {
+                setJournal((CIJournal) mgr.getEntity(0));
+                return (CIJournal) mgr.getEntity(0);
+            }
+            // journal non trouvé -> en créer un
+            CIJournal jour = new CIJournal();
+            jour.setSession(getSession());
+            jour.setIdTypeInscription(CIJournal.CS_PANDEMIE);
+            jour.setIdTypeCompte(CIJournal.CS_CI);
+            jour.setLibelle(getSession().getLabel("MSG_JOURNAL_PANDEMIE_JOURNALIER") + " " + JACalendar.todayJJsMMsAAAA());
+            jour.setProprietaire("ssii");
+            jour.setDateInscription(JACalendar.todayJJsMMsAAAA());
+            jour.add(transaction);
+            setJournal(jour);
+            return jour;
+        }
         if ("8".equals(getAijApgAmi())) {
             // recherche si déjà existant
             CIJournalManager mgr = new CIJournalManager();
@@ -3248,6 +3277,10 @@ public class CIEcriture extends BEntity {
             // APG
             return getSession().getLabel("MSG_ECRITURE_NOM_APG");
         }
+        if (CIJournal.CS_PANDEMIE.equals(journal.getIdTypeInscription())) {
+            // APG
+            return getSession().getLabel("MSG_ECRITURE_NOM_PANDEMIE");
+        }
         if (CIJournal.CS_IJAI.equals(journal.getIdTypeInscription())) {
             // AI
             return getSession().getLabel("MSG_ECRITURE_NOM_AI");
@@ -3304,6 +3337,10 @@ public class CIEcriture extends BEntity {
         if (CIJournal.CS_APG.equals(journal.getIdTypeInscription())) {
             // APG
             return "77777777777";
+        }
+        if (CIJournal.CS_PANDEMIE.equals(journal.getIdTypeInscription())) {
+            // APG
+            return "55555555555";
         }
         if (CIJournal.CS_IJAI.equals(journal.getIdTypeInscription())) {
             // AI
@@ -4538,6 +4575,7 @@ public class CIEcriture extends BEntity {
             if (CIJournal.CS_DECLARATION_SALAIRES.equals(journal.getIdTypeInscription())
                     || CIJournal.CS_DECLARATION_COMPLEMENTAIRE.equals(journal.getIdTypeInscription())
                     || CIJournal.CS_APG.equals(journal.getIdTypeInscription())
+                    || CIJournal.CS_PANDEMIE.equals(journal.getIdTypeInscription())
                     || CIJournal.CS_IJAI.equals(journal.getIdTypeInscription())
                     || CIJournal.CS_ASSURANCE_CHOMAGE.equals(journal.getIdTypeInscription())
                     || CIJournal.CS_ASSURANCE_MILITAIRE.equals(journal.getIdTypeInscription())

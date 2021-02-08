@@ -294,6 +294,11 @@
                                 Allocation Maternité
                             </a>
                         </li>
+                        <li>
+                            <a href="<%=request.getContextPath()%>/apg?typePrestation=PATERNITE" target="_top">
+                                Allocation Paternité
+                            </a>
+                        </li>
                         <%}%>
 
                         <%if (objSession.hasRight("hermes", globaz.framework.secure.FWSecureConstants.READ)) {%>

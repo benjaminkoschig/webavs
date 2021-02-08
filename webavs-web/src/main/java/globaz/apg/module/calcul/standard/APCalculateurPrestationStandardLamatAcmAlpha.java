@@ -132,6 +132,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
     public static final String PRESTATION_APG = "APG";
     public static final String PRESTATION_MATERNITE = "MATERNITE";
+    public static final String PRESTATION_PATERNITE = "PATERNITE";
     public static final String PRESTATION_PANDEMIE = "PANDEMIE";
     private static final String REFERENCE_FILE_APG = "calculAPGReferenceData.xml";
 
@@ -1307,7 +1308,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         }
 
         // Prestation de type maternité
-        if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(elementPrecedent.getResultatCalcul().getTypeAllocation())) {
+        if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(elementPrecedent.getResultatCalcul().getTypeAllocation())
+            || IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(elementPrecedent.getResultatCalcul().getTypeAllocation())) {
             BigDecimal montantJournalierPrestationMaternite = elementPrecedent.getResultatCalcul()
                     .getMontantJournalier().getBigDecimalValue();
 
@@ -1431,6 +1433,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
             if (droit instanceof APDroitMaternite) {
                 apgOuMaternite = APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_MATERNITE;
+            } else if (droit instanceof APDroitPaternite) {
+                apgOuMaternite = APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PATERNITE;
             } else if(droit instanceof APDroitPandemie) {
                 apgOuMaternite = APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PANDEMIE;
             } else {
@@ -1445,7 +1449,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             // -- Condition stipulant que le calcul doit s'effectuer avec ACOR
             // -------------------------------------------------------------------
             if (APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_MATERNITE.equals(apgOuMaternite)) {
-                if (APCalculAcorUtil.grantCalulAcorMaternite(session, (APDroitMaternite) droit)) {
+                if (APCalculAcorUtil.grantCalulAcorMaternite(session, droit)) {
                     final JACalendarGregorian calendar = new JACalendarGregorian();
                     // si une partie du droit se situe entre le 01.07.2001 et le 01.07.2005, le calcul doit se faire
                     // à la main.
@@ -1458,7 +1462,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                         throw new APCalculACORException(session.getLabel("MODULE_CALCUL_ACOR_ERROR"));
                     }
                 }
-            } else if (!APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PANDEMIE.equals(apgOuMaternite)){
+            } else if (!APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PANDEMIE.equals(apgOuMaternite)
+                    && !APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PATERNITE.equals(apgOuMaternite)){
                 if (APCalculAcorUtil.grantCalulAcorAPG(session, (APDroitAPG) droit)) {
                     throw new APCalculACORException(session.getLabel("MODULE_CALCUL_ACOR_ERROR"));
                 }

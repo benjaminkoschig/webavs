@@ -9,6 +9,7 @@ import globaz.apg.pojo.APBreakRulesFromView;
 import globaz.apg.vb.droits.APDroitAPGPViewBean;
 import globaz.apg.vb.droits.APDroitPanSituationViewBean;
 import globaz.apg.vb.droits.APDroitPanViewBean;
+import globaz.apg.vb.droits.APDroitPatPViewBean;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.jade.service.provider.application.JadeApplicationService;
@@ -22,6 +23,9 @@ public interface APEntityService extends JadeApplicationService {
      * Créer l'intégralité du graphe d'objet lié au droit. En cas d'exception la transaction n'est pas rollbackée !!!
      */
     APDroitAPG creerDroitAPGComplet(BSession session, BTransaction transaction, APDroitAPGPViewBean viewBean)
+            throws IllegalArgumentException;
+
+    APDroitPaternite creerDroitPatComplet(BSession session, BTransaction transaction, APDroitPatPViewBean viewBean)
             throws IllegalArgumentException;
 
     APDroitPandemie creerDroitPanComplet(BSession session, BTransaction transaction, APDroitPanViewBean viewBean)
@@ -76,6 +80,14 @@ public interface APEntityService extends JadeApplicationService {
      */
     APDroitMaternite getDroitMaternite(BSession session, BTransaction transaction, String idDroit)
             throws Exception, APEntityNotFoundException;
+
+
+    /**
+     * Retourne dans tous les cas le droit paternité demandé, sinon une exception sera lancée
+     */
+    APDroitPaternite getDroitPaternite(BSession session, BTransaction transaction, String idDroit)
+            throws Exception, APEntityNotFoundException;
+
 
     /**
      * Retourne le droit demande dans le bon type, APDroitPandemie  sinon une exception sera lancée
@@ -142,6 +154,9 @@ public interface APEntityService extends JadeApplicationService {
             String idDroit) throws Exception;
 
     APDroitAPG miseAjourDroit(BSession session, BTransaction transaction, APDroitAPGPViewBean viewBean)
+            throws Exception;
+
+    APDroitPaternite miseAjourDroitPat(BSession session, BTransaction transaction, APDroitPatPViewBean viewBean)
             throws Exception;
 
     APDroitPandemie miseAjourDroitPan(BSession session, BTransaction transaction,

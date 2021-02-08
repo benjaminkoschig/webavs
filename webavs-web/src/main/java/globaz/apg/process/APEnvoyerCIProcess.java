@@ -16,6 +16,7 @@ import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeStringUtil;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -53,8 +54,7 @@ public class APEnvoyerCIProcess extends BProcess {
     /**
      * Crée une nouvelle instance de la classe APEnvoyerCIProcess.
      * 
-     * @param parent
-     *            DOCUMENT ME!
+     * @param parent DOCUMENT ME!
      */
     public APEnvoyerCIProcess(BProcess parent) {
         super(parent);
@@ -63,8 +63,7 @@ public class APEnvoyerCIProcess extends BProcess {
     /**
      * Crée une nouvelle instance de la classe APEnvoyerCIProcess.
      * 
-     * @param session
-     *            DOCUMENT ME!
+     * @param session DOCUMENT ME!
      */
     public APEnvoyerCIProcess(BSession session) {
         super(session);
@@ -96,8 +95,13 @@ public class APEnvoyerCIProcess extends BProcess {
 
         try {
             JADate today = JACalendar.today();
+            File file;
+            if (pandemie) {
+                file = File.createTempFile("PANDEMIE_INSCRIPTIONCI", ".txt");
 
-            File file = File.createTempFile("INSCRIPTIONCI", ".txt");
+            } else {
+                file = File.createTempFile("INSCRIPTIONCI", ".txt");
+            }
             file.deleteOnExit();
 
             fo = new FileOutputStream(file);
@@ -204,8 +208,7 @@ public class APEnvoyerCIProcess extends BProcess {
     }
 
     /**
-     * @throws Exception
-     *             DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     @Override
     protected void _validate() throws Exception {
@@ -226,7 +229,7 @@ public class APEnvoyerCIProcess extends BProcess {
 
     private void writeInscriptionCIInFile(APInscriptionCI inscriptionCIMerged, BufferedWriter bw) throws Exception {
 
-        bw.write(getEnregistrementCI(inscriptionCIMerged));
+        bw.write(getEnregistrementCI(inscriptionCIMerged, pandemie));
         montantBrutTotalInscriptionCI += Float.valueOf(inscriptionCIMerged.getMontantBrut()).longValue();
         nbInscriptionCIOnOneFileLine = nbInscriptionCIOnOneFileLine + 1;
 
@@ -256,8 +259,7 @@ public class APEnvoyerCIProcess extends BProcess {
     /**
      * creation du dernier enregistrement du fichier d'envoi au CI
      * 
-     * @param totalAnnonce
-     *            le montant brut total des annonces contenue dans le fichier
+     * @param totalAnnonce le montant brut total des annonces contenue dans le fichier
      * @return
      * @throws Exception
      */
@@ -313,10 +315,11 @@ public class APEnvoyerCIProcess extends BProcess {
      * Creation de lecriture du fichier d'envoi au CI correspondant a l'inscription CI
      * 
      * @param inscriptionCI
+     * @param pandemie
      * @return
      * @throws Exception
      */
-    private String getEnregistrementCI(APInscriptionCI inscriptionCI) throws Exception {
+    private String getEnregistrementCI(APInscriptionCI inscriptionCI, boolean pandemie) throws Exception {
         StringBuffer buffer = new StringBuffer(60);
         buffer.append("32");
         buffer.append("01");
@@ -332,7 +335,11 @@ public class APEnvoyerCIProcess extends BProcess {
         }
         buffer.append(nss);
         buffer.append("00");
+        if (pandemie) {
+            buffer.append("55555555555");
+        } else {
         buffer.append("77777777777");
+        }
         buffer.append((Float.valueOf(inscriptionCI.getMontantBrut()).floatValue() > 0.0) ? "0" : "1");
         buffer.append("1");
         buffer.append("00000");

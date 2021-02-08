@@ -10,6 +10,7 @@ public interface IAPCatalogueTexte {
 
     public static final String CS_ATTESTATION_FISCALE_APG = "52019007";
     public static final String CS_ATTESTATION_FISCALE_MAT = "52021007";
+    public static final String CS_ATTESTATION_FISCALE_PAT = "52042007";
     public static final String CS_ATTESTATION_FISCALE_PAN = "52031007";
     public static final String CS_ATTESTATION_MAT = "52021005";
     public static final String CS_COMMUNICATION_APG = "52019003";
@@ -17,6 +18,10 @@ public interface IAPCatalogueTexte {
     public static final String CS_DECISION_APG = "52019001";
     public static final String CS_DECISION_MAT = "52021001";
     public static final String CS_DECISION_REFUS_MAT = "52021009";
+
+    public static final String CS_DECISION_PAT = "52042001";
+    public static final String CS_DECISION_REFUS_PAT = "52042009";
+
     public static final String CS_DECOMPTE_APG = "52019002";
 
     public static final String CS_DECOMPTE_MAT = "52021002";
@@ -24,11 +29,15 @@ public interface IAPCatalogueTexte {
     public static final String CS_GROUPE_DOMAINES_APG = "APDOMAINES";
     // Domaines pour les catalogues des texte MAT
     public static final String CS_GROUPE_DOMAINES_MAT = "MATDOMAINE";
+    // Domaines pour les catalogues des texte PAT
+    public static final String CS_GROUPE_DOMAINES_PAT = "PATDOMAINE";
 
     // types de documents pour les catalogues de texte APG
     public static final String CS_GROUPE_TYPES_DOCUMENTS_APG = "APTYPES";
     // types de documents pour les catalogues de texte MAT
     public static final String CS_GROUPE_TYPES_DOCUMENTS_MAT = "MATTYPES";
+    // types de documents pour les catalogues de texte PAT
+    public static final String CS_GROUPE_TYPES_DOCUMENTS_PAT = "MATTYPES";
 
     public static final String CS_LETTRE_ENTETE_APG = "52019008";
     public static final String CS_LETTRE_ENTETE_MAT = "52021008";
@@ -47,5 +56,5 @@ public interface IAPCatalogueTexte {
     public String CS_INACTIF_APG = "";
     public String CS_INACTIF_MAT = "";
 
-    public static final String CS_PANDEMIE = "52031001";
+    public static final String CS_PATERNITE = "52041001";
 }

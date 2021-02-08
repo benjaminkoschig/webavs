@@ -94,6 +94,8 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
             + ".actionCalculerToutesLesPrestations";
     private static final String DEST_SUIVANT_PAN = IAPActions.ACTION_PRESTATIONS
             + ".actionCalculerToutesLesPrestations";
+    private static final String DEST_SUIVANT_PAT = IAPActions.ACTION_PRESTATIONS
+            + ".actionCalculerToutesLesPrestations";
 
     private static final String ERREUR_DEPARTEMENT_INTROUVABLE = "DEPARTEMENT_INTROUVABLE";
 
@@ -106,6 +108,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     private static final String LABEL_TITRE_APG = "JSP_TITRE_SAISIE_APG_2";
     private static final String LABEL_TITRE_MAT = "JSP_TITRE_SAISIE_MAT_4";
     private static final String LABEL_TITRE_PAN = "JSP_TITRE_SAISIE_PAN_4";
+    private static final String LABEL_TITRE_PAT = "JSP_TITRE_SAISIE_PAT_3";
 
     private static final Vector<String[]> MENU_DEROULANT_BLANK = new Vector<String[]>();
 
@@ -191,6 +194,10 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     }
     public boolean isPandemie() {
         return IPRDemande.CS_TYPE_PANDEMIE.equals(getTypePrestation().toCodeSysteme());
+    }
+
+    public boolean isPaternite() {
+        return IPRDemande.CS_TYPE_PATERNITE.equals(getTypePrestation().toCodeSysteme());
     }
 
     public boolean isModuleActifForPorterEnCompte() {
@@ -513,6 +520,9 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
                     + "&genreService=" + droitDTO.getGenreService();
         } else if (TypePrestation.TYPE_PANDEMIE.equals(typePrestation)) {
             return APSituationProfessionnelleViewBean.DEST_SUIVANT_PAN + "&selectedId=" + droitDTO.getIdDroit()
+                    + "&genreService=" + droitDTO.getGenreService();
+        } else if (TypePrestation.TYPE_PATERNITE.equals(typePrestation)) {
+            return APSituationProfessionnelleViewBean.DEST_SUIVANT_PAT + "&selectedId=" + droitDTO.getIdDroit()
                     + "&genreService=" + droitDTO.getGenreService();
         } else {
             return APSituationProfessionnelleViewBean.DEST_SUIVANT_APG;
@@ -862,6 +872,8 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
             return getSession().getLabel(APSituationProfessionnelleViewBean.LABEL_TITRE_APG);
         } else if (TypePrestation.TYPE_PANDEMIE.equals(typePrestation)) {
             return getSession().getLabel(APSituationProfessionnelleViewBean.LABEL_TITRE_PAN);
+        }  else if (TypePrestation.TYPE_PATERNITE.equals(typePrestation)) {
+            return getSession().getLabel(APSituationProfessionnelleViewBean.LABEL_TITRE_PAT);
         } else {
             return "";
         }

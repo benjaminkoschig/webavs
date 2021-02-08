@@ -40,6 +40,7 @@ import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_000101._5.Message;
 import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_000101._5.ObjectFactory;
 import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.InsurantDomicileType;
 import rapg.ch.ech.xmlns.ech_0044._2.PersonIdentificationType;
+import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.PaternityLeaveDataType;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.*;
@@ -72,6 +73,7 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
     public static final String ANNONCE_N = "[Annonce n°";
 
     private static final Logger LOG = LoggerFactory.getLogger(APAnnoncesRapgServiceV5Impl.class);
+    private static final String SERVICE_PATERNITE = "91";
 
     private MessageRAPG addContent(MessageRAPG message, APChampsAnnonce champsAnnonce) throws DatatypeConfigurationException {
         if (!JadeStringUtil.isEmpty(champsAnnonce.getTimeStamp())) {
@@ -150,7 +152,31 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
         if (!JadeStringUtil.isEmpty(champsAnnonce.getTimeStamp())) {
             message.setTimeStamp(JAXBUtil.getXmlCalendarTimestamp(Long.parseLong(champsAnnonce.getTimeStamp())));
         }
+        //Paternité
+        if(champsAnnonce.getServiceType().equals(SERVICE_PATERNITE)){
+            rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.ObjectFactory factory = new rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.ObjectFactory();
+            PaternityLeaveDataType paternityLeaveDataType = factory.createPaternityLeaveDataType();
+            if (!JadeStringUtil.isEmpty(champsAnnonce.getNewbornDateOfBirth())) {
+                paternityLeaveDataType.setNewbornDateOfBirth(JAXBUtil.getXmlCalendarDate(champsAnnonce.getNewbornDateOfBirth()));
+            }
+            if (!JadeStringUtil.isEmpty(champsAnnonce.getNumberOfWorkdays())) {
+                paternityLeaveDataType.setNumberOfWorkdays(Short.valueOf(champsAnnonce.getNumberOfWorkdays()));
+            }
+            if (!JadeStringUtil.isEmpty(champsAnnonce.getParternityLeaveType())) {
+                paternityLeaveDataType.setPaternityLeaveType(new BigInteger(champsAnnonce.getParternityLeaveType()));
+            }
+            rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.InsurantDomicileType insurantDomicileType = factory.createInsurantDomicileType();
+            if (!JadeStringUtil.isEmpty(champsAnnonce.getChildCantonBorn())) {
+                insurantDomicileType.setCanton(new BigInteger(champsAnnonce.getChildCantonBorn()));
+            }
+            if (!JadeStringUtil.isEmpty(champsAnnonce.getChildDomicile())) {
+                insurantDomicileType.setCountry(Integer.parseInt(champsAnnonce.getChildDomicile()));
+            }
 
+            paternityLeaveDataType.setChildDomicile(insurantDomicileType);
+            paternityLeaveDataType.setChildInsurantVn(Long.valueOf(champsAnnonce.getChildInsurantVn().replace(".", "")));
+            message.setPaternityLeaveData(paternityLeaveDataType);
+        }
         return message;
     }
 

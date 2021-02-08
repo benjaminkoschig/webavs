@@ -3,6 +3,7 @@
  */
 package globaz.apg.process;
 
+import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
@@ -10,6 +11,7 @@ import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.prestation.*;
 import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.itext.APAttestations;
+import globaz.apg.utils.APGUtils;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BProcess;
@@ -166,6 +168,7 @@ public class APGenererAttestationsProcess extends BProcess {
         String annee = getAnnee();
         String dateDebut = annee + "0101";
         String dateFin = annee + "1231";
+        boolean isAttestationPat = false;
 
         APRepartitionJointPrestationJointLotDemandeManager mgr = new APRepartitionJointPrestationJointLotDemandeManager();
 
@@ -278,8 +281,8 @@ public class APGenererAttestationsProcess extends BProcess {
                 } else {
                     isRestitution = true;
                 }
-
-                if (isPrestationLamat(prest) ||
+               isAttestationPat = isPrestationLapat(prest);
+                if (isAttestationPat||isPrestationLamat(prest) ||
                         (((Double.parseDouble(totalMontantAPG) != 0) && ((!totalMontantCotisations.isZero()) || (!totalMontantImpotSource
                         .isZero())))
                         && ((((!isRestitution) && (totalMontantCotisations.isNegative())) || ((isRestitution) && (totalMontantCotisations
@@ -424,6 +427,7 @@ public class APGenererAttestationsProcess extends BProcess {
         attestations.setTailleLot(1);
         attestations.setIsSendToGED(getIsSendToGed());
         attestations.setType(typePrestation);
+        attestations.setAttestationPat(isAttestationPat);
         attestations.executeProcess();
 
         // mergedDocInfo = createDocumentInfo();
@@ -450,6 +454,9 @@ public class APGenererAttestationsProcess extends BProcess {
 
     private boolean isPrestationLamat(APPrestation prest) {
         return (Double.parseDouble(totalMontantAPG) != 0) && APTypeDePrestation.LAMAT.isCodeSystemEqual(prest.getGenre());
+    }
+    private boolean isPrestationLapat(APPrestation prest) throws Exception {
+        return (Double.parseDouble(totalMontantAPG) != 0) && APGUtils.isTypePrestation(prest.getIdPrestation(),getSession(), IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE);
     }
 
     public String getAnnee() {

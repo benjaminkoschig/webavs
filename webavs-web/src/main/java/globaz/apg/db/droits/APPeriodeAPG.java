@@ -22,6 +22,10 @@ public class APPeriodeAPG extends BEntity implements IPRCloneable {
     public static final String FIELDNAME_IDPERIODE = "VCIPER";
     public static final String FIELDNAME_NBRJOURS = "VCNNBJ";
     public static final String FIELDNAME_TYPEPERIODE = "VCTTYP";
+
+    public static final String FIELDNAME_TAUXIMPOT = "VCDTAUXIMPOT";
+    public static final String FIELDNAME_CANTONIMPOT = "VCDCANTONIMPOT";
+
     public static final String TABLE_NAME = "APPERIP";
 
     private String dateDebutPeriode = "";
@@ -30,6 +34,9 @@ public class APPeriodeAPG extends BEntity implements IPRCloneable {
     private String idPeriode = "";
     private String nbrJours = "";
     private String typePeriode = "";
+
+    private String tauxImposition = "";
+    private String cantonImposition = "";
 
     @Override
     protected void _beforeAdd(BTransaction transaction) throws Exception {
@@ -52,6 +59,8 @@ public class APPeriodeAPG extends BEntity implements IPRCloneable {
         nbrJours = statement.dbReadNumeric(APPeriodeAPG.FIELDNAME_NBRJOURS);
         typePeriode = statement.dbReadNumeric(APPeriodeAPG.FIELDNAME_TYPEPERIODE);
         idDroit = statement.dbReadNumeric(APPeriodeAPG.FIELDNAME_IDDROIT);
+        tauxImposition = statement.dbReadNumeric(APPeriodeAPG.FIELDNAME_TAUXIMPOT);
+        cantonImposition = statement.dbReadNumeric(APPeriodeAPG.FIELDNAME_CANTONIMPOT);
     }
 
     /**
@@ -100,6 +109,10 @@ public class APPeriodeAPG extends BEntity implements IPRCloneable {
                 this._dbWriteNumeric(statement.getTransaction(), typePeriode, "typePeriode"));
         statement.writeField(APPeriodeAPG.FIELDNAME_IDDROIT,
                 this._dbWriteNumeric(statement.getTransaction(), idDroit, "idDroit"));
+        statement.writeField(APPeriodeAPG.FIELDNAME_TAUXIMPOT,
+                this._dbWriteNumeric(statement.getTransaction(), tauxImposition, "tauxImposition"));
+        statement.writeField(APPeriodeAPG.FIELDNAME_CANTONIMPOT,
+                this._dbWriteNumeric(statement.getTransaction(), cantonImposition, "cantonImposition"));
     }
 
     @Override
@@ -109,6 +122,8 @@ public class APPeriodeAPG extends BEntity implements IPRCloneable {
         clone.setDateFinPeriode(getDateFinPeriode());
         clone.setNbrJours(getNbrJours());
         clone.setTypePeriode(getTypePeriode());
+        clone.setTauxImposition(getTauxImposition());
+        clone.setCantonImposition(getCantonImposition());
 
         // On ne veut pas de la validation pendant une duplication
         clone.wantCallValidate(false);
@@ -171,5 +186,21 @@ public class APPeriodeAPG extends BEntity implements IPRCloneable {
     @Override
     public void setUniquePrimaryKey(String pk) {
         setIdPeriode(pk);
+    }
+
+    public String getTauxImposition() {
+        return tauxImposition;
+    }
+
+    public void setTauxImposition(String tauxImposition) {
+        this.tauxImposition = tauxImposition;
+    }
+
+    public String getCantonImposition() {
+        return cantonImposition;
+    }
+
+    public void setCantonImposition(String cantonImposition) {
+        this.cantonImposition = cantonImposition;
     }
 }

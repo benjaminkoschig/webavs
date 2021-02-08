@@ -142,6 +142,8 @@ public class CIDeclarationCentraleHTMLOutput implements ICIDeclarationOutput {
                             ps.println(getSession().getLabel("DT_MSG_MILITAR_VERS"));
                         } else if ("77777777777".equals(rec.getNumeroAffilie())) {
                             ps.println(getSession().getLabel("DT_MSG_APG"));
+                        } else if ("55555555555".equals(rec.getNumeroAffilie())) {
+                            ps.println(getSession().getLabel("DT_MSG_PANDEMIE"));
                         } else if ("88888888888".equals(rec.getNumeroAffilie())) {
                             ps.println(getSession().getLabel("DT_MSG_IJAI"));
                         } else {

@@ -445,10 +445,40 @@ public interface IAPChampsAnnonceTTT {
      */
     public abstract void setTotalAPG(String totalAPG);
 
+
     /**
      * @param hasComplementCIAB
      *            the hasComplementCIAB to set
      */
     public abstract void setHasComplementCIAB(Boolean hasComplementCIAB);
+	//PATERNITE
 
+    public String getChildCantonBorn();
+
+    public void setChildCantonBorn(String childCantonBorn);
+
+    public String getChildDomicile();
+
+    public void setChildDomicile(String childDomicile);
+
+
+    public  abstract String getChildInsurantVn();
+
+    public abstract void setChildInsurantVn(String childInsurantVn);
+
+    public abstract String getNewbornDateOfBirth();
+
+    public abstract void setNewbornDateOfBirth(String newbornDateOfBirth) ;
+
+    public abstract String getNumberOfWorkdays();
+
+    public abstract void setNumberOfWorkdays(String numberOfWorkdays);
+
+    public abstract String getParternityLeaveType();
+
+    public abstract void setParternityLeaveType(String parternityLeaveType);
+
+    //PROCHE-AIDANT
+    public void setCareLeaveEventID(String careLeaveEventID);
+    public String getCareLeaveEventID();
 }

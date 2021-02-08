@@ -2,8 +2,11 @@ package globaz.apg.servlet;
 
 import globaz.apg.api.annonces.IAPAnnonce;
 import globaz.apg.api.droits.IAPDroitAPG;
+import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.annonces.APAnnonceAPG;
 import globaz.apg.db.annonces.APAnnonceAPGManager;
+import globaz.apg.db.droits.APDroitAPG;
+import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.enums.APConstantes;
 import globaz.apg.pojo.APAnnonceDTO;
@@ -116,7 +119,7 @@ public class APAnnonceAPGAction extends PRDefaultAction {
                         || IAPAnnonce.CS_MATERNITE.equals(typeAnnonce)) {
                     action = FWAction
                             .newInstance(IAPActions.ACTION_ANNONCEREVISION2005 + "." + FWAction.ACTION_NOUVEAU);
-                } else if (IAPAnnonce.CS_APGSEDEX.equals(typeAnnonce)) {
+                } else if (IAPAnnonce.CS_APGSEDEX.equals(typeAnnonce) || IAPAnnonce.CS_PATERNITE.equals(typeAnnonce)) {
                     action = FWAction.newInstance(IAPActions.ACTION_ANNONCESEDEX + "." + FWAction.ACTION_NOUVEAU);
                 } else {
                     throw new Exception("type annonce absent ou non reconnu");
@@ -155,13 +158,21 @@ public class APAnnonceAPGAction extends PRDefaultAction {
                         prestation.retrieve();
                         selectedId = prestation.getIdAnnonce();
 
+                        APDroitLAPG droit = new APDroitAPG();
+                        // TODO Récupérer la session autrement.
+                        droit.setSession((BSession) mainDispatcher.getSession());
+                        droit.setIdDroit(prestation.getIdDroit());
+                        droit.retrieve();
+
                         // on met le typeAnnonce à la bonne valeur
                         if (prestation.getNoRevision().equals(IAPDroitAPG.CS_REVISION_APG_1999)) {
                             typeAnnonce = IAPAnnonce.CS_APGREVISION1999;
                         } else if (prestation.getNoRevision().equals(IAPDroitAPG.CS_REVISION_APG_2005)) {
                             typeAnnonce = IAPAnnonce.CS_APGREVISION2005;
-                        } else {
+                        } else if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())){
                             typeAnnonce = IAPAnnonce.CS_MATERNITE;
+                        } else {
+                            typeAnnonce = IAPAnnonce.CS_PATERNITE;
                         }
                     }
                 }
@@ -174,7 +185,7 @@ public class APAnnonceAPGAction extends PRDefaultAction {
                     action = FWAction.newInstance(IAPActions.ACTION_ANNONCEREVIVION1999 + ".afficher");
                 } else if (IAPAnnonce.CS_APGREVISION2005.equals(typeAnnonce)) {
                     action = FWAction.newInstance(IAPActions.ACTION_ANNONCEREVISION2005 + ".afficher");
-                } else if (IAPAnnonce.CS_APGSEDEX.equals(typeAnnonce)) {
+                } else if (IAPAnnonce.CS_APGSEDEX.equals(typeAnnonce) || IAPAnnonce.CS_PATERNITE.equals(typeAnnonce)) {
                     action = FWAction.newInstance(IAPActions.ACTION_ANNONCESEDEX + ".afficher");
                 } else {
                     // on a un type d'annonce invalide....
@@ -297,6 +308,9 @@ public class APAnnonceAPGAction extends PRDefaultAction {
                     request.setAttribute(APAnnonceDTO.PARAMETER_KEY_FULLNSS, APAnnonceDTO.getForNss());
                 }
             }
+        }
+        if(JadeStringUtil.isBlankOrZero((String) request.getAttribute(APAnnonceDTO.PARAMETER_KEY_TYPE))){
+                request.setAttribute(APAnnonceDTO.PARAMETER_KEY_TYPE,forType);
         }
 
         // ne fait que la redirection

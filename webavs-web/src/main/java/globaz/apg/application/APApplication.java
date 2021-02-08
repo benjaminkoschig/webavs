@@ -86,6 +86,10 @@ public class APApplication extends PRAbstractApplication {
 
     /**
      */
+    public static final String PROPERTY_CLONE_COPIER_DROIT_PATERNITE = "clone.copie.droit.paternite.id";
+
+    /**
+     */
     public static final String PROPERTY_CLONE_CORRIGER_DROIT_APG = "clone.correction.droit.apg.id";
 
     /** Le nom de la propriété du nom de fichier de clonage */
@@ -114,6 +118,9 @@ public class APApplication extends PRAbstractApplication {
 
     /** Le nom de la propriété de la durée de jour d'un droit maternité */
     public static final String PROPERTY_DROIT_MAT_DUREE_JOURS = "droits.maternite.dureejours";
+
+    /** Le nom de la propriété de la durée de jour d'un droit maternité */
+    public static final String PROPERTY_DROIT_PAT_DUREE_JOURS = "droits.paternite.dureejours";
 
     /** Le groupe gestionnaire APG */
     public static final String PROPERTY_GROUPE_APG_GESTIONNAIRE = "groupe.apg.gestionnaire";
@@ -241,6 +248,7 @@ public class APApplication extends PRAbstractApplication {
         FWAction.registerActionCustom(IAPActions.ACTION_DROIT_LAPG + ".simulerPaiementDroit", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("apg.droits.droitAPGP" + ".finaliserCreationDroit", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("apg.droits.droitMatP" + ".finaliserCreationDroit", FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom("apg.droits.droitPatP" + ".finaliserCreationDroit", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("apg.droits.droitPan" + ".finaliserCreationDroit", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(IAPActions.ACTION_SAISIE_CARTE_PAN+ ".passerDroitErreur", FWSecureConstants.UPDATE);
 

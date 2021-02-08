@@ -8,8 +8,12 @@ package globaz.apg.vb.droits;
 
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.commons.nss.NSUtil;
+import globaz.globall.db.BSession;
 import globaz.jade.log.JadeLogger;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import globaz.pyxis.db.adressecourrier.TILocalite;
+import globaz.pyxis.db.adressecourrier.TILocaliteManager;
+
 import java.io.Serializable;
 
 /**
@@ -46,6 +50,7 @@ public class APDroitDTO implements Serializable {
     protected String csSexe;
     protected String csEtatCivil;
     protected String dateNaissance;
+    protected String npa;
     /**
      * 
      */
@@ -57,6 +62,7 @@ public class APDroitDTO implements Serializable {
     private boolean modifiable;
     private String noAVS = "";
     private String nomPrenom = "";
+    private String canton = "";
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -81,6 +87,8 @@ public class APDroitDTO implements Serializable {
         genreService = droitDTO.genreService;
         modifiable = droitDTO.modifiable;
         idTiers = droitDTO.idTiers;
+        npa = droitDTO.npa;
+        canton = droitDTO.canton;
     }
 
     /**
@@ -94,6 +102,7 @@ public class APDroitDTO implements Serializable {
         dateDebutDroit = droit.getDateDebutDroit();
         modifiable = droit.isModifiable();
         genreService = droit.getGenreService();
+        npa = droit.getNpa();
 
         PRTiersWrapper tiers = null;
 
@@ -243,4 +252,40 @@ public class APDroitDTO implements Serializable {
         nomPrenom = string;
     }
 
+    public String getNpa() {
+        return npa;
+    }
+
+    public void setNpa(String npa) {
+        this.npa = npa;
+    }
+
+    public String getCanton(BSession session) {
+        if (npa != null && !npa.isEmpty()) {
+            TILocaliteManager localiteManager = new TILocaliteManager();
+            localiteManager.setSession(session);
+            if (npa.length() == 4) {
+                localiteManager.setForNumPostal(npa + "00");
+            } else {
+                localiteManager.setForNumPostal(npa);
+            }
+            try {
+                localiteManager.find(1);
+                if (localiteManager.size() > 0) {
+
+                    TILocalite localite = (TILocalite) localiteManager.getFirstEntity();
+                    return localite.getIdCanton();
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return null;
+    }
+
+    public void setCanton(String canton) {
+        this.canton = canton;
+    }
 }

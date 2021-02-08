@@ -28,8 +28,10 @@ String keyTypePrestation = (String) PRSessionDataContainerHelper.getData(session
 if(IPRDemande.CS_TYPE_APG.equalsIgnoreCase(keyTypePrestation)){
 %>
 	<ct:menuChange displayId="menu" menuId="ap-menuprincipalapg" showTab="menu"/>	
-<%} else {%>
+<%} else if(IPRDemande.CS_TYPE_MATERNITE.equalsIgnoreCase(keyTypePrestation)) {%>
 	<ct:menuChange displayId="menu" menuId="ap-menuprincipalamat" showTab="menu"/>
+<%} else if(IPRDemande.CS_TYPE_PATERNITE.equalsIgnoreCase(keyTypePrestation)){%>
+  <ct:menuChange displayId="menu" menuId="ap-menuprincipalapat" showTab="menu"/>
 <% } %>
 
 <ct:menuChange displayId="options" menuId="ap-optionsempty"/>

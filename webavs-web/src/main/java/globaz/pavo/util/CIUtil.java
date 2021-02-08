@@ -902,19 +902,23 @@ public class CIUtil {
 
         }
         /* Teste si la valeur de like correspond à un organisme spécial */
-        if ("666.66.666.666".equals(like)) {
+        if ("666.66.666.666".equals(like) || "66666666666".equals(like)) {
             options.append(bsession.getLabel("MSG_ECRITURE_MIL"));
         }
 
-        if ("777.77.777.777".equals(like)) {
+        if ("777.77.777.777".equals(like) || "77777777777".equals(like)) {
             options.append(bsession.getLabel("MSG_ECRITURE_APG"));
         }
 
-        if ("888.88.888.888".equals(like)) {
+        if ("555.55.555.555".equals(like) || "55555555555".equals(like)) {
+            options.append(bsession.getLabel("MSG_ECRITURE_PANDEMIE"));
+        }
+
+        if ("888.88.888.888".equals(like) || "88888888888".equals(like)) {
             options.append(bsession.getLabel("MSG_ECRITURE_AI"));
         }
 
-        if (like.startsWith("999.99.9")) {
+        if (like.startsWith("999.99.9") || "999999".equals(like)) {
             options.append(bsession.getLabel("MSG_ECRITURE_NOM_AC"));
         }
         /*

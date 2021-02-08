@@ -58,6 +58,7 @@ public class PRLettreEnTete extends FWIDocumentManager {
     public static final String DOMAINE_CORVUS = "CORVUS";
     public static final String DOMAINE_IJAI = "IJAI";
     public static final String DOMAINE_MAT = "MAT";
+    public static final String DOMAINE_PAT = "PAT";
 
     public static final String FICHIER_MODELE_ENTETE_APG = "AP_LETTRE_ENTETE";
     public static final String FICHIER_MODELE_ENTETE_CORVUS = "RE_LETTRE_ENTETE";
@@ -82,7 +83,7 @@ public class PRLettreEnTete extends FWIDocumentManager {
     public void afterBuildReport() {
 
         if (getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_APG)
-                || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_MAT)) {
+                || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_MAT) || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_PAT)) {
             getDocumentInfo().setDocumentTypeNumber(IPRConstantesExternes.LETTRE_ACCOMPAGNEMENT_APG);
         } else if (getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_IJAI)) {
             getDocumentInfo().setDocumentTypeNumber(IPRConstantesExternes.LETTRE_ACCOMPAGNEMENT_IJ);
@@ -158,6 +159,11 @@ public class PRLettreEnTete extends FWIDocumentManager {
 
                 adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(),
                         tierAdresse.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), getIdAffilie(), "519003");
+
+            } else if (getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_PAT)) {
+
+                adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(),
+                        tierAdresse.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), getIdAffilie(), "519015");
 
             } else if (getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_IJAI)) {
                 BISession remoteSession = PRSession.connectSession(getSession(), "IJ");
@@ -343,7 +349,7 @@ public class PRLettreEnTete extends FWIDocumentManager {
         try {
 
             if (getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_APG)
-                    || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_MAT)) {
+                    || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_MAT) || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_PAT)) {
                 try {
                     // le modele
                     String extensionModelCaisse = getSession().getApplication()
@@ -432,7 +438,7 @@ public class PRLettreEnTete extends FWIDocumentManager {
             documentHelper = PRBabelHelper.getDocumentHelper(getISession());
 
             if (getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_APG)
-                    || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_MAT)) {
+                    || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_MAT) || getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_PAT)) {
                 documentHelper.setCsDomaine("52018001");
                 documentHelper.setCsTypeDocument("52019008");
             } else if (getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_IJAI)) {

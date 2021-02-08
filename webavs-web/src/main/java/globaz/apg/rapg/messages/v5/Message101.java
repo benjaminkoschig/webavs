@@ -6,6 +6,7 @@ import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.DeliveryOfficeType;
 import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.InsurantDomicileType;
 import rapg.ch.ech.xmlns.ech_0044._2.PersonIdentificationType;
 import rapg.ch.ech.xmlns.ech_0058._4.SendingApplicationType;
+import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.PaternityLeaveDataType;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
@@ -381,6 +382,24 @@ public class Message101 extends Message implements MessageRAPG {
     @Override
     public void setTotalAPG(BigDecimal value) {
         content.setTotalAPG(value);
+    }
+
+    /**
+     *
+     * @param paternityLeaveDataType
+     */
+    @Override
+    public void setPaternityLeaveData(PaternityLeaveDataType paternityLeaveDataType) {
+        content.setPaternityLeaveData(paternityLeaveDataType);
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public PaternityLeaveDataType getPaternityLeaveData() {
+        return content.getPaternityLeaveData();
     }
 
 }

@@ -1,4 +1,5 @@
 <%-- tpl:insert page="/theme/detail.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%@ page import="globaz.prestation.api.IPRDemande" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
@@ -24,6 +25,10 @@
 <!--sinon, maternité -->
 <%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE) {%>
 	<ct:menuChange displayId="menu" menuId="ap-menuprincipalamat" showTab="menu"/>
+	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
+<!--sinon, paternité -->
+<%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)== IPRDemande.CS_TYPE_PATERNITE) {%>
+	<ct:menuChange displayId="menu" menuId="ap-menuprincipalapat" showTab="menu"/>
 	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 <%}%>
 
@@ -61,6 +66,7 @@
 							<TD>
 								<SELECT name="typeAnnonce">
 									<OPTION value="<%=globaz.apg.api.annonces.IAPAnnonce.CS_MATERNITE%>"><ct:FWLabel key="JSP_ANNONCE_MATERNITE"/></OPTION>
+									<OPTION value="<%=globaz.apg.api.annonces.IAPAnnonce.CS_PATERNITE%>"><ct:FWLabel key="JSP_ANNONCE_PATERNITE"/></OPTION>
 									<OPTION value="<%=globaz.apg.api.annonces.IAPAnnonce.CS_APGREVISION1999%>"><ct:FWLabel key="JSP_ANNONCE_APG_REVISION_1999"/></OPTION>
 									<OPTION value="<%=globaz.apg.api.annonces.IAPAnnonce.CS_APGREVISION2005%>"><ct:FWLabel key="JSP_ANNONCE_APG_REVISION_2005"/></OPTION>
 									<OPTION value="<%=globaz.apg.api.annonces.IAPAnnonce.CS_APGSEDEX%>"><ct:FWLabel key="JSP_ANNONCE_APG_SEDEX"/></OPTION>

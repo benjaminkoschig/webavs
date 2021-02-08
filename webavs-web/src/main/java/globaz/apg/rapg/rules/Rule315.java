@@ -31,32 +31,35 @@ public class Rule315 extends Rule {
      */
     @Override
     public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException, IllegalArgumentException {
-        String serviceType = champsAnnonce.getServiceType();
-        String startOfPeriod = champsAnnonce.getStartOfPeriod();
-        String insurantBirthDate = champsAnnonce.getInsurantBirthDate();
-        int typeAnnonce = getTypeAnnonce(champsAnnonce);
-        if (typeAnnonce == 1) {
-            validNotEmpty(serviceType, "serviceType");
-            validNotEmpty(startOfPeriod, "startOfPeriod");
-        }
-
-        List<String> services = new ArrayList<String>();
-        services.add("10");
-        services.add("11");
-        services.add("12");
-        services.add("13");
-        services.add("14");
-        services.add("15");
-        services.add("16");
-        services.add("40");
-        services.add("41");
-        services.add("50");
-        if (services.contains(serviceType)) {
-            validNotEmpty(insurantBirthDate, "insurantBirthDate");
-            if (JadeDateUtil.getNbYearsBetween(insurantBirthDate, startOfPeriod) < 18) {
-                return false;
-            }
-        }
+        /**
+         * Breakrule plus utilisé
+         */
+//        String serviceType = champsAnnonce.getServiceType();
+//        String startOfPeriod = champsAnnonce.getStartOfPeriod();
+//        String insurantBirthDate = champsAnnonce.getInsurantBirthDate();
+//        int typeAnnonce = getTypeAnnonce(champsAnnonce);
+//        if (typeAnnonce == 1) {
+//            validNotEmpty(serviceType, "serviceType");
+//            validNotEmpty(startOfPeriod, "startOfPeriod");
+//        }
+//
+//        List<String> services = new ArrayList<String>();
+//        services.add("10");
+//        services.add("11");
+//        services.add("12");
+//        services.add("13");
+//        services.add("14");
+//        services.add("15");
+//        services.add("16");
+//        services.add("40");
+//        services.add("41");
+//        services.add("50");
+//        if (services.contains(serviceType)) {
+//            validNotEmpty(insurantBirthDate, "insurantBirthDate");
+//            if (JadeDateUtil.getNbYearsBetween(insurantBirthDate, startOfPeriod) < 18) {
+//                return false;
+//            }
+//        }
 
         return true;
     }

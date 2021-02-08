@@ -14,10 +14,7 @@ import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.application.APApplication;
 import globaz.apg.db.annonces.APAnnonceAPG;
 import globaz.apg.db.annonces.APAnnonceAPGManager;
-import globaz.apg.db.droits.APDroitAPG;
-import globaz.apg.db.droits.APDroitLAPG;
-import globaz.apg.db.droits.APDroitMaternite;
-import globaz.apg.db.droits.APDroitPandemie;
+import globaz.apg.db.droits.*;
 import globaz.apg.db.lots.APLot;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
@@ -60,6 +57,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
     public static final String NEW_DROIT_ID = "newDroitId";
     public static final String RESTITUER_DROIT = "restituerDroit";
     private static final String CLONE_COPIER_DROIT_PANDEMIE = "prestation-PAN-copie-droit-PAN";
+    private static final String CLONE_COPIER_DROIT_PATERNITE = "prestation-APG-copie-droit-PATERNITE";
     private static final String CLONE_COPIER_CORRIGER_DROIT_PANDEMIE = "prestation-PAN-correction-droit-PAN";
 
     public void calculerACM(FWViewBeanInterface viewBean, FWAction action, BSession session) throws Exception {
@@ -203,7 +201,30 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
             droit.update(session.getCurrentThreadTransaction());
 
             vbDroit.setDto(new APDroitAPGDTO(droit));
-        }else if (!IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(vbDroit.getGenreService())) {
+        } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(vbDroit.getGenreService())){
+            APDroitPaternite droit = new APDroitPaternite();
+
+            droit.setSession(session);
+            droit.setIdDroit(vbDroit.getIdDroit());
+            droit.retrieve(session.getCurrentThreadTransaction());
+
+            clone = PRCloneFactory.getInstance().clone(
+                    session.getApplication().getProperty(APApplication.PROPERTY_CLONE_DEFINITION_FILENAME), session,
+                    droit, CLONE_COPIER_DROIT_PATERNITE,
+                    IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_APG_PARENT);
+            // on met à jour la date de reception et la date de depot avec la
+            // date du jour.
+            droit = new APDroitPaternite();
+            droit.setSession(session);
+            droit.setIdDroit(clone.getUniquePrimaryKey());
+            droit.retrieve(session.getCurrentThreadTransaction());
+            droit.setDateDepot(JadeDateUtil.getGlobazFormattedDate(new Date()));
+            droit.setDateReception(JadeDateUtil.getGlobazFormattedDate(new Date()));
+            droit.wantCallValidate(false);
+            droit.update(session.getCurrentThreadTransaction());
+
+            vbDroit.setDto(new APDroitAPGDTO(droit));
+        } else if (!IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(vbDroit.getGenreService())) {
             APDroitAPG droit = new APDroitAPG();
 
             droit.setSession(session);
@@ -321,7 +342,25 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
                     droit.setValiderPeriodes(false);
                     droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
                     droit.update(bTrans);
-                }else if (!IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(vbDroit.getGenreService())) {
+                } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(vbDroit.getGenreService())){
+                    APDroitPaternite droit = new APDroitPaternite();
+
+                    droit.setSession(session);
+                    droit.setIdDroit(vbDroit.getIdDroit());
+                    droit.retrieve(session.getCurrentThreadTransaction());
+
+                    PRCloneFactory.getInstance().clone(
+                            session.getApplication().getProperty(APApplication.PROPERTY_CLONE_DEFINITION_FILENAME),
+                            session, bTrans, droit,
+                            session.getApplication().getProperty(APApplication.PROPERTY_CLONE_COPIER_DROIT_PATERNITE),
+                            IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_APG_FILS);
+
+                    // le droit parent passe dans l'etat definitif
+                    droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
+                    droit.update(bTrans);
+
+                    vbDroit.setDto(new APDroitAPGDTO(droit));
+                } else if (!IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(vbDroit.getGenreService())) {
                     APDroitAPG droit = new APDroitAPG();
 
                     droit.setSession(session);
@@ -477,6 +516,20 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
                         session, droit,
                         CLONE_COPIER_CORRIGER_DROIT_PANDEMIE,
                         IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_PANDEMIE_FILS);
+
+                vbDroit.setDto(new APDroitAPGDTO(droit));
+            } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(vbDroit.getGenreService())){
+                APDroitPaternite droit = new APDroitPaternite();
+
+                droit.setSession(session);
+                droit.setIdDroit(vbDroit.getIdDroit());
+                droit.retrieve(session.getCurrentThreadTransaction());
+
+                clone = PRCloneFactory.getInstance().clone(
+                        session.getApplication().getProperty(APApplication.PROPERTY_CLONE_DEFINITION_FILENAME),
+                        session, droit,
+                        session.getApplication().getProperty(APApplication.PROPERTY_CLONE_COPIER_DROIT_PATERNITE),
+                        IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_APG_FILS);
 
                 vbDroit.setDto(new APDroitAPGDTO(droit));
             } else if (!IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(vbDroit.getGenreService())) {

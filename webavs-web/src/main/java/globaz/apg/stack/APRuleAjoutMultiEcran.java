@@ -39,7 +39,8 @@ public class APRuleAjoutMultiEcran implements FWUrlsStackRule {
             return;
         }
         if ("apg.droits.droitAPGP.afficher".equals(lastUserAction.getValue())
-                || "apg.droits.droitMatP.afficher".equals(lastUserAction.getValue())) {
+                || "apg.droits.droitMatP.afficher".equals(lastUserAction.getValue())
+                || "apg.droits.droitPatP.afficher".equals(lastUserAction.getValue())) {
 
             if ("add".equals(method.getValue())) {
                 // aStack.pop();

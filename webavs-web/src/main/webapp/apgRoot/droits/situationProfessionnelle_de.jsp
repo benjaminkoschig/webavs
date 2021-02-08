@@ -113,7 +113,8 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 	
 	// Les prestations ACM_NE sont calculée uniquement pour les cas APG et non maternité	
 	var isAPG = <%=viewBean.isAPG()%>;
-	var isMaternite = <%=viewBean.isMaternite()%>
+	var isMaternite = <%=viewBean.isMaternite()%>;
+  	var isPaternite = <%=viewBean.isPaternite()%>;
 	var isPrestationAcmNeEnable = <%=viewBean.isPrestationAcmNeEnable()%>;
 	var isPrestationAcmAlphaEnable = <%=viewBean.isPrestationAcmAlfaEnable().booleanValue()%>;
 	var isPrestationAcm2AlphaEnable = <%=viewBean.isPrestationAcm2AlfaEnable().booleanValue()%>;

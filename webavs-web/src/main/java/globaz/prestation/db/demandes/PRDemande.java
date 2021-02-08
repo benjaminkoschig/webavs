@@ -165,7 +165,7 @@ public class PRDemande extends BEntity {
     /**
      * DOCUMENT ME!
      * 
-     * @see globaz.globall.db.BEntity#__writeProperties(globaz.globall.db.BStatement)
+     * @see globaz.globall.db.BEntity#_writeProperties(globaz.globall.db.BStatement)
      * @param statement
      *            DOCUMENT ME!
      * @throws Exception

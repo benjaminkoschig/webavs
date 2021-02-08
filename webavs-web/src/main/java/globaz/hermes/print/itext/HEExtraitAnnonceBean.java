@@ -344,6 +344,8 @@ public class HEExtraitAnnonceBean {
                             return pavoSession.getApplication().getLabel("PRTGENRE6", getLangue());
                         } else if (affilieId.equals("77777777777")) {
                             return pavoSession.getApplication().getLabel("PRTGENRE7", getLangue());
+                        } else if (affilieId.equals("55555555555")) {
+                            return pavoSession.getApplication().getLabel("PRTGENRE17", getLangue());
                         } else if (affilieId.equals("66666666666")) {
                             return pavoSession.getApplication().getLabel("PRTGENRE8", getLangue());
                         } else if (affilieId.startsWith("999999")) {

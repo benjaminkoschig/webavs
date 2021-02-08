@@ -137,7 +137,7 @@
 		if(JadeStringUtil.isBlankOrZero(viewBean.getCaisseChomage()) && JadeStringUtil.isBlankOrZero(viewBean.getPartBta())){
 			isDroitSpecial =true;
 		}
-		if(journal!=null && (journal.getIdTypeInscription().equalsIgnoreCase(CIJournal.CS_APG)||journal.getIdTypeInscription().equalsIgnoreCase(CIJournal.CS_ASSURANCE_MILITAIRE)||journal.getIdTypeInscription().equalsIgnoreCase(CIJournal.CS_IJAI))){
+		if(journal!=null && (journal.getIdTypeInscription().equalsIgnoreCase(CIJournal.CS_APG)|| journal.getIdTypeInscription().equalsIgnoreCase(CIJournal.CS_PANDEMIE) || journal.getIdTypeInscription().equalsIgnoreCase(CIJournal.CS_ASSURANCE_MILITAIRE)||journal.getIdTypeInscription().equalsIgnoreCase(CIJournal.CS_IJAI))){
 			isDroitSpecial =false;
 		}
 	}
@@ -309,6 +309,9 @@ function selectAmiAiApg(data){
 	document.getElementById('partBta').style.visibility='hidden';
 	document.getElementById('partBta').style.display='none';
 	document.getElementById('aijApgAmi').value=data;
+	if(data==5){
+		document.getElementById('numeroDetailInv').value="<%=viewBean.getSession().getLabel("MSG_ECRITURE_NOM_PANDEMIE")%>";
+	}
 	if(data==6){
 		document.getElementById('numeroDetailInv').value="<%=viewBean.getSession().getLabel("MSG_ECRITURE_NOM_MIL")%>";
 	}
@@ -524,7 +527,7 @@ function resetAfterError(data){
 	document.getElementById('brancheEconomiqueView').value="";
 	
 	
-	if(data==6 || data==8 || data==7)
+	if(data==5 || data==6 || data==8 || data==7)
 	{	
 		selectAmiAiApg(data);
 	}
@@ -578,7 +581,7 @@ function updateGenreAff(data){
 	if(data==4){
 		selectPartBta(data);
 	}
-	if(data==6 || data==8 || data==7){
+	if(data==6 || data==8 || data==7  || data==5){
 		selectAmiAiApg(data);
 	}
 }
@@ -731,6 +734,7 @@ function init() {
 							<%if (BtaAff){%>
 								<option name="partBtaSelec"<%=(viewBean.getAijApgAmi().equals("4"))?"selected":""%> value="4">BGS</option>
 							<%}%>
+							<option name="AmiSelec"<%=(viewBean.getAijApgAmi().equals("5"))?"selected":""%> value="5">Epidemie - ALV</option>
 							<option name="AmiSelec"<%=(viewBean.getAijApgAmi().equals("6"))?"selected":""%> value="6">MV</option>
 							<option name="ApgSelec"<%=(viewBean.getAijApgAmi().equals("7"))?"selected":""%> value="7">ALV</option>
 							<option name="AiSelec" <%=(viewBean.getAijApgAmi().equals("8"))?"selected":""%> value="8">IVTG</option>

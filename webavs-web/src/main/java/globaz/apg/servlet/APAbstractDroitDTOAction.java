@@ -252,6 +252,9 @@ public abstract class APAbstractDroitDTOAction extends PRDefaultAction {
         } else if (isTypePan(session)) {
             droit = new APDroitPanViewBean();
             action = FWAction.newInstance(IAPActions.ACTION_SAISIE_CARTE_PAN + "." + FWAction.ACTION_AFFICHER);
+        } else if (isTypePAT(session)) {
+            droit = new APDroitPatPViewBean();
+            action = FWAction.newInstance(IAPActions.ACTION_SAISIE_CARTE_APAT + "." + FWAction.ACTION_AFFICHER);
         }
 
         try {
@@ -382,6 +385,20 @@ public abstract class APAbstractDroitDTOAction extends PRDefaultAction {
      */
     protected boolean isTypeMAT(HttpSession session) {
         return TypePrestation.TYPE_MATERNITE.equals(TypePrestation
+                .typePrestationInstanceForCS((String) PRSessionDataContainerHelper.getData(session,
+                        PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)));
+    }
+
+    /**
+     * getter pour l'attribut type APG
+     *
+     * @param session
+     *            DOCUMENT ME!
+     *
+     * @return la valeur courante de l'attribut type APG
+     */
+    protected boolean isTypePAT(HttpSession session) {
+        return TypePrestation.TYPE_PATERNITE.equals(TypePrestation
                 .typePrestationInstanceForCS((String) PRSessionDataContainerHelper.getData(session,
                         PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)));
     }

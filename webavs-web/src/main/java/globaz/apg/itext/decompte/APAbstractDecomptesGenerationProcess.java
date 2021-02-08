@@ -226,6 +226,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 // SI PANDEMIE
             } else if (IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot())){
                 docInfo.setDocumentTitle(getSession().getLabel("DOC_DECOMPTE_PANDEMIE_TITLE"));
+            } else if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())){
+                // SI PATERNITE
+                docInfo.setDocumentTitle(getSession().getLabel("DOC_DECOMPTE_PAT_TITLE"));
             } else {
                 // SI MATERNITE
                 docInfo.setDocumentTitle(getSession().getLabel("DOC_DECOMPTE_MAT_TITLE"));
@@ -548,11 +551,24 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             }
 
             // le titre
+            if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())){
+                if (isCorrectionDroit()) {
+                    parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(2).getDescription());
+                } else if (isRestitution()) {
+                    parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(3).getDescription());
+                } else {
+                    // si droit normal
+                    parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(1).getDescription());
+                }
+            } else {
             if (APTypeDeDecompte.JOUR_ISOLE.equals(decompteCourant.getTypeDeDecompte())) {
                 parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(2).getDescription());
             } else {
                 parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(1).getDescription());
             }
+            }
+
+
 
             // Les données de l'entête dès la deuxième page
             // Les autres paramètres sont repris de l'entête normal
@@ -823,6 +839,16 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         }
     }
 
+    private boolean isRestitution() {
+        // TODO A Créer
+        return false;
+    }
+
+    private boolean isCorrectionDroit() {
+        // TODO A créer
+        return false;
+    }
+
     /**
      * Méthode qui permet de vérifier si la position existe dans le catalogue de test
      *
@@ -845,6 +871,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             return APProperties.DOMAINE_ADRESSE_APG_PANDEMIE.getValue();
         }else if(IPRDemande.CS_TYPE_APG.equals(csTypePrestationsLot)){
             return IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
+        }else if(IPRDemande.CS_TYPE_PATERNITE.equals(csTypePrestationsLot)){
+            return IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE;
         }else{
             return IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
         }
@@ -1808,6 +1836,32 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         }
                     }
 
+                } else if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())){
+                    // SI PATERNITE
+                    docInfo.setDocumentTitle(getSession().getLabel("DOC_DECOMPTE_PAT_TITLE"));
+                    docInfo.setDocumentProperty("apg.typeDecompte", IPRDemande.CS_TYPE_PATERNITE);
+                    if (isTraitementDesVentilations()) {
+                        docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_APG_VENTILATION);
+                } else {
+                        switch (decompteCourant.getTypeDeDecompte()) {
+
+                            case NORMAL:
+                                docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_MAT_NORMAL);
+                                break;
+                            case ACM_GE:
+                                docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_MAT_ACM);
+                                break;
+                            case AMAT_GE:
+                                docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_MAT_LAMAT);
+                                break;
+                            case NORMAL_ACM_NE:
+                                throw new Exception(
+                                        "Incohérence de données. Impossible de générer un décompte de type Paternité avec des prestations de type ACM_NE");
+                            default:
+                                throw new Exception(
+                                        "Impossible de résoudre le type de décompte maternité pour la génération du doc info");
+                        }
+                    }
                 } else {
                     // SI MATERNITE
                     docInfo.setDocumentTitle(getSession().getLabel("DOC_DECOMPTE_MAT_TITLE"));
@@ -2040,7 +2094,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
      * Methode pour retourner le détail journalier du décompte : nb de jours + montant journalier
      *
      * @return String
-     * @param APRepartitionJointPrestation
+     * @param repartition
      */
     private String getDetailJournalier(final APRepartitionJointPrestation repartition) throws Exception {
 
@@ -2239,6 +2293,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                             // SI APG
                             if (IPRDemande.CS_TYPE_APG.equals(getCSTypePrestationsLot())) {
                                 docInfo.setDocumentTitle(getSession().getLabel("DOC_DECOMPTE_APG_TITLE"));
+                                // SI PATERNITE
+                            } else if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+                                docInfo.setDocumentTitle(getSession().getLabel("DOC_DECOMPTE_PAT_TITLE"));
                                 // SI MATERNITE
                             } else {
                                 docInfo.setDocumentTitle(getSession().getLabel("DOC_DECOMPTE_MAT_TITLE"));

@@ -9,6 +9,7 @@ import globaz.apg.db.droits.*;
 import globaz.apg.utils.APGUtils;
 import globaz.apg.vb.droits.APAbstractDroitProxyViewBean;
 import globaz.apg.vb.droits.APDroitMatPViewBean;
+import globaz.apg.vb.droits.APDroitPatPViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.globall.api.BISession;
@@ -76,7 +77,7 @@ public class APAbstractDroitPHelper extends PRAbstractHelper {
 
         PRDemande demande = droitVB.loadDemande();
 
-        // A faire uniquement dans les cas maternité- ce job est fait ailleurs pour les droit APG
+        // A faire uniquement dans les cas maternité- ce job est fait ailleurs pour les droit APG et Paternité
         if (this instanceof APDroitMatPHelper) {
             if (!FWViewBeanInterface.ERROR.equals(droitVB.getMsgType())) {
                 droitVB.getDroit().add();
@@ -181,8 +182,15 @@ public class APAbstractDroitPHelper extends PRAbstractHelper {
         // si le doit est lie a la demande APG bidon, on le supprime
         // uniquement pour les APG car le ajouter periode insert le droit dans
         // la DB
-        if (droitVB.getIdDemande().equals(PRDemande.getDemandeBidon(session,
-                (droitVB instanceof APDroitMatPViewBean) ? IPRDemande.CS_TYPE_MATERNITE : IPRDemande.CS_TYPE_APG)
+        String demande = IPRDemande.CS_TYPE_APG;
+        if (droitVB instanceof APDroitMatPViewBean) {
+            demande = IPRDemande.CS_TYPE_MATERNITE;
+        }
+        if (droitVB instanceof APDroitPatPViewBean) {
+            demande = IPRDemande.CS_TYPE_PATERNITE;
+        }
+
+        if (droitVB.getIdDemande().equals(PRDemande.getDemandeBidon(session,demande)
                 .getIdDemande())) {
             APAbstractDroitProxyViewBean viewBeanProxy = droitVB;
 
@@ -496,6 +504,8 @@ public class APAbstractDroitPHelper extends PRAbstractHelper {
         String typeDemande;
         if(droit instanceof APDroitMaternite){
             typeDemande = IPRDemande.CS_TYPE_MATERNITE;
+        }else if(droit instanceof APDroitPaternite){
+            typeDemande = IPRDemande.CS_TYPE_PATERNITE;
         } else if(droit instanceof APDroitPandemie){
             typeDemande = IPRDemande.CS_TYPE_PANDEMIE;
         } else {

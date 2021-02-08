@@ -238,16 +238,18 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
 
         if (IPRDemande.CS_TYPE_MATERNITE.equals(csTypePrestation)) {
             documentHelper.setCsDomaine(IAPCatalogueTexte.CS_MATERNITE);
-//        } else if (IPRDemande.CS_TYPE_PANDEMIE.equals(csTypePrestation)) {
-//            documentHelper.setCsDomaine(IAPCatalogueTexte.CS_APG);
+            // TODO A suppr aprés test décompte
+        } else if (IPRDemande.CS_TYPE_PATERNITE.equals(csTypePrestation)) {
+            documentHelper.setCsDomaine(IAPCatalogueTexte.CS_PATERNITE);
         } else {
             documentHelper.setCsDomaine(IAPCatalogueTexte.CS_APG);
         }
 
         if (IPRDemande.CS_TYPE_MATERNITE.equals(csTypePrestation)) {
             documentHelper.setCsTypeDocument(IAPCatalogueTexte.CS_DECOMPTE_MAT);
-//        } else if (IPRDemande.CS_TYPE_PANDEMIE.equals(csTypePrestation)) {
-//            documentHelper.setCsTypeDocument(IAPCatalogueTexte.CS_DECOMPTE_APG);
+            // TODO A Suppr aprés test décompte
+        }else if (IPRDemande.CS_TYPE_PATERNITE.equals(csTypePrestation)) {
+            documentHelper.setCsTypeDocument(IAPCatalogueTexte.CS_DECISION_PAT);
         } else {
             documentHelper.setCsTypeDocument(IAPCatalogueTexte.CS_DECOMPTE_APG);
         }

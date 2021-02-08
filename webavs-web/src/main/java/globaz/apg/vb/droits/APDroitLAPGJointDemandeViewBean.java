@@ -231,7 +231,9 @@ public class APDroitLAPGJointDemandeViewBean extends APDroitLAPGJointDemande imp
     }
 
     public String getTitreEcran() {
-        if(getTypePrestation().equals(TypePrestation.TYPE_PANDEMIE)) {
+        if(getTypePrestation().equals(TypePrestation.TYPE_PATERNITE)) {
+            return getSession().getLabel("JSP_TITRE_LISTE_PATERNITE");
+        }else if(getTypePrestation().equals(TypePrestation.TYPE_PANDEMIE)) {
             return getSession().getLabel("JSP_TITRE_LISTE_PANDEMIE");
         }else if (getTypePrestation().equals(TypePrestation.TYPE_APG)) {
             return getSession().getLabel("JSP_TITRE_LISTE_APG");

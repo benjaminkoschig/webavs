@@ -133,6 +133,25 @@
 %>
 				</ct:menuPopup>
 <%
+    } else if (IPRDemande.CS_TYPE_PATERNITE.equals((String) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION))) {
+		// sinon, maternité
+%>				<ct:menuPopup menu="ap-optionmenudroitapat" detailLabelId="MENU_OPTION_DETAIL" detailLink="<%=detailMenu%>">
+				<ct:menuParam key="selectedId" value="<%=courant.getIdDroit()%>" />
+				<ct:menuParam key="genreService" value="<%=courant.getGenreService()%>" />
+				<ct:menuParam key="forIdDroit" value="<%=courant.getIdDroit()%>" />
+				<ct:menuParam key="nomPrenom" value="<%=courant.getNomPrenom()%>" />
+				<ct:menuParam key="noAVS" value="<%=courant.getNoAVS()%>" />
+				<ct:menuParam key="detailsAssure" value="<%=courant.getDetailRequerant()%>" />
+				<ct:menuParam key="<%=VueGlobaleTiersUtils.PARAMETRE_REQUETE_ID_TIERS_VUE_GLOBALE%>" value="<%=courant.getIdTiers()%>" />
+<%
+	if (!IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(courant.getEtatDroit())) {
+	// pas de calculs de prestations si le droit est en attente
+%>					<ct:menuExcludeNode nodeId="calculertoutesprestations" />
+				<%
+					}
+				%>
+			</ct:menuPopup>
+				<%
     } else if (IPRDemande.CS_TYPE_PANDEMIE.equals((String) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION))) {
         // sinon, PandÃ©mie
     %> <ct:menuPopup menu="ap-optionmenudroitpan" detailLabelId="MENU_OPTION_DETAIL" detailLink="<%=detailMenu%>">
