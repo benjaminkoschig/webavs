@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import globaz.apg.ApgServiceLocator;
 import globaz.apg.api.annonces.IAPAnnonce;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.droits.IAPDroitMaternite;
@@ -313,23 +314,14 @@ public class APGenerateurAnnonceRAPG {
 
     private String getTypePaternite(String nss, String idDroit, BSession session) throws Exception {
         String typePaternite = "";
-
-        APPrestationJointLotTiersDroitManager manager3 = new APPrestationJointLotTiersDroitManager();
-        manager3.setSession(session);
-        manager3.setForIdDroit(idDroit);
-        List<APPrestationJointLotTiersDroit> tousLesDroits;
-        try {
-            manager3.find();
-            tousLesDroits = manager3.getContainer();
-        } catch (Exception e) {
-            throw (e);
-        }
+        List<APPeriodeAPG> periodes = ApgServiceLocator.getEntityService().getPeriodesDuDroitAPG(session,
+                session.getCurrentThreadTransaction(), idDroit);
         int nombreJours = 0;
-        int nombrePeriode = manager3.size();
+        int nombrePeriode = periodes.size();
         boolean HasPeriode7Jours = false;
-        for (APPrestationJointLotTiersDroit droit : tousLesDroits) {
-            nombreJours += Integer.parseInt(droit.getNombreJoursSoldes());
-            if (Integer.parseInt(droit.getNombreJoursSoldes()) == NB_JOURS_PATERNITE_7) {
+        for (APPeriodeAPG periodeAPG : periodes) {
+            nombreJours += Integer.parseInt(periodeAPG.getNbrJours());
+            if (Integer.parseInt(periodeAPG.getNbrJours())== NB_JOURS_PATERNITE_7) {
                 HasPeriode7Jours = true;
             }
         }
