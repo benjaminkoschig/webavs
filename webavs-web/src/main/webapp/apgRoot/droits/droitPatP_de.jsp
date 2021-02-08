@@ -61,16 +61,19 @@
 
     function validate() {
         var isModifiable = <%=viewBean.isModifiable()%>;
+        var hasError = false;
         if (document.forms[0].elements('_method').value === "read" && !isModifiable) {
             document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_ENFANT_PAT%>.chercher";
         } else {
             $('#aControler').prop("checked", true);
-            nextStepValidate();
+            hasError = nextStepValidate();
         }
-        action(COMMIT);
+        if(!hasError){
+            action(COMMIT);
+        }
     }
 
-    function nextStepValidateAfterPopupSeodor(){
+function nextStepValidateAfterPopupSeodor(){
         nssUpdateHiddenFields();
         //Récupération des dates
         // si l'utilisateur à saisit des valeurs pour les priodes sans cliquer le btn ajouter, on lui fit à sa place
@@ -116,6 +119,7 @@
         var nbrJours = $('#nbrJour').val();
         var tauxImposition = "";
         var cantonImposition = "";
+        var JOURS_MAX = 14;
         if (document.getElementById("isSoumisCotisation").checked) {
             tauxImposition = $('#tauxImpotSource').val();
             cantonImposition = $('#csCantonDomicileAffiche').val();
@@ -128,8 +132,17 @@
         // Si aucune période n'est renseigné -> message d'erreurs
         if (periodes.lenght == 0) {
             showErrorMessage("Aucune période n'est renseignée");
-            return;
+            return true;
         }
+        var nbreJoursTotal = 0;
+        for (var i = 0; i < periodes.length; i++) {
+            nbreJoursTotal += (Number(periodes[i].getNbJour()));
+        }
+        if(Number(nbreJoursTotal) >Number(JOURS_MAX)){
+            showErrorMessage("Le nombre de jours ne peut pas dépasser "+JOURS_MAX+" jours.");
+            return true;
+        }
+
 
         <%if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.CREATION)){%>
         document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_APAT%>.ajouter";
@@ -607,7 +620,7 @@
                                name="dateFinPeriode"
                                data-g-calendar=" "
                                value=""/>
-                        <input type="text"
+                        <input type="hidden"
                                name="nbJour"
                                id="nbJour"
                                value=""

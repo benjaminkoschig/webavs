@@ -1354,9 +1354,15 @@ public class APPrestationHelper extends PRAbstractHelper {
             viewBean.setGenreService(droit.getGenreService());
             viewBean.setDetailRequerant(getDetailRequerant(session, demande.getIdTiers()));
 
+            if(viewBean.hasValidationError() || viewBean.hasErreursValidationPeriodes()){
+                droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ERREUR);
+                droit.update();
+            }
+
             if (!hasErrors(session, transaction)) {
                 transaction.commit();
             }
+
 
         } catch (final Exception exception) {
             if (transaction != null) {

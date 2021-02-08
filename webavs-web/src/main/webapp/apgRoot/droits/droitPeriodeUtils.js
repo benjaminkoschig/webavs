@@ -46,6 +46,10 @@ function addPeriode() {
         cantonImpositionLibelle =$('#csCantonDomicileAffiche').children("option:selected").text();
         document.getElementById("isSoumisCotisation").checked = false;
     }
+    var dateBegin = new Date(dateDebut.split('.')[2],dateDebut.split('.')[1]-1,dateDebut.split('.')[0]);
+    var dateEnd = new Date(dateFin.split('.')[2],dateFin.split('.')[1]-1,dateFin.split('.')[0]);
+    nbJour = Math.round(Math.abs((dateBegin-dateEnd) /  (24 * 60 * 60 * 1000)))+1;
+
     if (isAjoutdePeriodeAuthorise(dateDebut, dateFin, nbJour, true)) {
         addPeriodeToTable(dateDebut, dateFin, nbJour, tauxImposition, cantonImposition, cantonImpositionLibelle);
         $('#dateDebutPeriode').val("");

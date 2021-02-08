@@ -54,7 +54,21 @@ public class Rule418 extends Rule {
         if(!(serviceType.equals(APGenreServiceAPG.Maternite.getCodePourAnnonce()) || APGenreServiceAPG.isValidGenreServicePandemie(serviceType))){
             int nombreJoursEffectueNonPat = 0;
             int nombreJoursPat = Integer.parseInt(champsAnnonce.getNumberOfDays());
-            int nombreJoursMax = JadeDateUtil.getNbDaysBetween(startOfPeriod, endOfPeriod)+1;
+            Date dateDebut = JadeDateUtil.getGlobazDate(startOfPeriod);
+            Date dateFin = JadeDateUtil.getGlobazDate(endOfPeriod);
+
+            int nombreJoursMax ;
+
+            if (dateDebut.equals(dateFin)) {
+                nombreJoursMax =  0;
+            } else {
+                if (dateDebut != null && dateFin != null && dateFin.getTime() >= dateDebut.getTime()) {
+                    double msDiff = (double)(dateFin.getTime() - dateDebut.getTime());
+                    nombreJoursMax =  (int)Math.round(msDiff / 8.64E7D);
+                } else {
+                    nombreJoursMax = 0;
+                }
+            }
             APPeriodeAPG periodeAPGCalculed = new APPeriodeAPG();
             periodeAPGCalculed.setDateDebutPeriode(startOfPeriod);
             periodeAPGCalculed.setDateFinPeriode(endOfPeriod);

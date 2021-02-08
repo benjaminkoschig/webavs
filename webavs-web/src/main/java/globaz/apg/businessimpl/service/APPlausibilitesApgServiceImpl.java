@@ -72,7 +72,7 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
                             listErrors.add(getViolatedRuleDetail(session, rule.getErrorCode(), annonce));
                         } else if (!JadeStringUtil.isEmpty(rule.getDetailMessageErreur())) {
                             listErrors.add(getViolatedRuleDetail(session, rule.getErrorCode(), rule.getDetailMessageErreur()));
-                        } else  {
+                        } else {
                             listErrors.add(getViolatedRuleDetail(session, rule.getErrorCode()));
                         }
                     }
@@ -175,7 +175,7 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
      */
     @Override
     public List<ViolatedRule> checkAnnonce(BSession session, APValidationPrestationAPGContainer container,
-            PRTiersWrapper tiers) throws APPlausibilitesException {
+                                           PRTiersWrapper tiers) throws APPlausibilitesException {
         ArrayList<String> rules = new ArrayList<String>();
         for (APAllPlausibiliteRules rule : APAllPlausibiliteRules.values()) {
             rules.add(rule.toString());
@@ -190,7 +190,7 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
     }
 
     private List<String> checkDateComptableRule209(APAnnonceAPG annonceInitiale, APAnnonceAPG annonceCorrective,
-            List<String> errorList) {
+                                                   List<String> errorList) {
 
         // getAccountingMonth retourne mm.aaaa
         String dateComptableAnnonceCorrective = "01." + annonceCorrective.getAccountingMonth();
@@ -356,7 +356,7 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
      * @throws Exception
      */
     private void tryToCheckRule209(final APChampsAnnonce champsAnnonce, BSession session,
-            final List<String> errorList) {
+                                   final List<String> errorList) {
         if (isAnnonceDeType3Ou4(champsAnnonce)) {
             if (isAccountingMonthSet(champsAnnonce)) {
                 doCheckRule209(champsAnnonce, session, errorList);
@@ -365,7 +365,7 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
     }
 
     private void doCheckRule209(final APChampsAnnonce champsAnnonce, final BSession session,
-            final List<String> errorList) {
+                                final List<String> errorList) {
 
         boolean canCheckAccountingMonth = true;
         APAnnonceAPG annonceCorrective = null;
@@ -439,13 +439,13 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
      */
     @Override
     public List<APErreurValidationPeriode> controllerPrestationEnFonctionPeriodes(BSession session, APDroitLAPG droit,
-            List<APPeriodeAPG> periodesAPG, List<APPrestation> prestations) {
+                                                                                  List<APPeriodeAPG> periodesAPG, List<APPrestation> prestations) {
         List<APErreurValidationPeriode> resultsString = new ArrayList<APErreurValidationPeriode>();
         boolean[] results = new boolean[periodesAPG.size()];
 
         List<PRPeriode> periodes = new ArrayList<PRPeriode>();
         for (APPeriodeAPG p : periodesAPG) {
-            if(JadeStringUtil.isEmpty(p.getDateFinPeriode()) && droit instanceof APDroitPandemie) {
+            if (JadeStringUtil.isEmpty(p.getDateFinPeriode()) && droit instanceof APDroitPandemie) {
                 try {
                     setDateFinPandemie(session, droit, p);
                 } catch (Exception exception) {
@@ -458,23 +458,45 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
             PRPeriode per = new PRPeriode(p.getDateDebutPeriode(), p.getDateFinPeriode());
             periodes.add(per);
         }
-
-        for (int ctr = 0; ctr < periodes.size(); ctr++) {
-            PRPeriode periode = periodes.get(ctr);
-            try {
-                for (APPrestation prestation : prestations) {
-                    if (PRDateUtils.isDateDansLaPeriode(periode, prestation.getDateDebut())
-                            && PRDateUtils.isDateDansLaPeriode(periode, prestation.getDateFin())) {
-                        results[ctr] = true;
+        if (APGUtils.isTypePaternite(droit.getGenreService())) {
+            for (int ctr = 0; ctr < periodes.size(); ctr++) {
+                PRPeriode periode = periodes.get(ctr);
+                try {
+                    for (APPrestation prestation : prestations) {
+                        PRPeriode periodePrestation = new PRPeriode(prestation.getDateDebut(), prestation.getDateFin());
+                        if (PRDateUtils.isDateDansLaPeriode(periodePrestation, periode.getDateDeDebut())
+                                && PRDateUtils.isDateDansLaPeriode(periodePrestation, periode.getDateDeFin())) {
+                            results[ctr] = true;
+                        }
                     }
+                } catch (Exception exception) {
+                    String message = session.getLabel("VALIDATION_PRESTATION_EXCEPTION_ANALYSE_DATES_PRESTATION");
+                    message = message.replace("{0}", periode.getDateDeDebut());
+                    message = message.replace("{1}", periode.getDateDeFin());
+                    resultsString.add(new APErreurValidationPeriode(periodesAPG.get(ctr), message));
                 }
-            } catch (Exception exception) {
-                String message = session.getLabel("VALIDATION_PRESTATION_EXCEPTION_ANALYSE_DATES_PRESTATION");
-                message = message.replace("{0}", periode.getDateDeDebut());
-                message = message.replace("{1}", periode.getDateDeFin());
-                resultsString.add(new APErreurValidationPeriode(periodesAPG.get(ctr), message));
+            }
+        } else {
+            for (int ctr = 0; ctr < periodes.size(); ctr++) {
+                PRPeriode periode = periodes.get(ctr);
+                try {
+
+                    for (APPrestation prestation : prestations) {
+                        if (PRDateUtils.isDateDansLaPeriode(periode, prestation.getDateDebut())
+                                && PRDateUtils.isDateDansLaPeriode(periode, prestation.getDateFin())) {
+                            results[ctr] = true;
+                        }
+                    }
+                } catch (Exception exception) {
+                    String message = session.getLabel("VALIDATION_PRESTATION_EXCEPTION_ANALYSE_DATES_PRESTATION");
+                    message = message.replace("{0}", periode.getDateDeDebut());
+                    message = message.replace("{1}", periode.getDateDeFin());
+                    resultsString.add(new APErreurValidationPeriode(periodesAPG.get(ctr), message));
+                }
             }
         }
+
+
         for (int ctr = 0; ctr < results.length; ctr++) {
             if (!results[ctr]) {
                 String message = session.getLabel("VALIDATION_PRESTATION_AUCUNE_PRESTATION_POUR_PERIODE");
@@ -487,8 +509,8 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
     }
 
     private void setDateFinPandemie(BSession session, APDroitLAPG droit, APPeriodeAPG periode) throws Exception {
-        if(IAPDroitLAPG.CS_QUARANTAINE.equals(droit.getGenreService())
-            || IAPDroitLAPG.CS_QUARANTAINE_17_09_20.equals(droit.getGenreService())) {
+        if (IAPDroitLAPG.CS_QUARANTAINE.equals(droit.getGenreService())
+                || IAPDroitLAPG.CS_QUARANTAINE_17_09_20.equals(droit.getGenreService())) {
             resolveFinJourMaxParam(session, periode, APParameter.QUARANTAINE_JOURS_MAX.getParameterName());
         } else {
             Calendar cal = Calendar.getInstance();
@@ -581,7 +603,7 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
 
     @Override
     public List<String> controllerPrestationsJoursIsoles(BSession session, List<APPrestation> prestations,
-            APDroitLAPG droit) {
+                                                         APDroitLAPG droit) {
         List<String> resultsString = new ArrayList<String>();
         try {
             if (prestations.isEmpty()) {
