@@ -291,7 +291,8 @@ public class APSituationFamilialeAPG extends BEntity implements IPRCloneable {
         // déformater le montant, sinon numberFormatException
         string = JANumberFormatter.deQuote(string);
 
-        if (!string.equals(JANumberFormatter.format(fraisGarde, 0.01, 2, JANumberFormatter.NEAR))) {
+        if (!string.equals(JANumberFormatter.format(fraisGarde, 0.01, 2, JANumberFormatter.NEAR)) &&
+                !(JadeStringUtil.isIntegerEmpty(string) && JadeStringUtil.isIntegerEmpty(fraisGarde))) {
             deleteprestationsRequis = true;
         }
 

@@ -15,7 +15,7 @@ public class APLotServiceImpl  extends JadeAbstractService implements APLotServi
 
     @Override
     public String getTotauxOPAE(BSession session, String idLot) throws Exception {
-        return getTotauxOPAE1(session, idLot).substract(getTotauxOPAE2(session, idLot)).toStringFormat();
+        return getTotauxOPAE1(session, idLot).substract(getTotauxOPAE2(session, idLot)).add(getTotauxOPAE3(session, idLot)).toStringFormat();
     }
 
     private Montant getTotauxOPAE1(BSession session, String idLot) throws Exception {
@@ -31,6 +31,15 @@ public class APLotServiceImpl  extends JadeAbstractService implements APLotServi
         String sql = "SELECT sum(vommon) FROM :schema.apcompp "
                 +" inner join :schema.apfaacp on vnicom = voicom "
                 +" where vnilot = :idLot and (vobcom = '1') and (vommon <> 0) ";
+
+        return executeRequete(session, idLot, sql);
+    }
+
+    private Montant getTotauxOPAE3(BSession session, String idLot) throws Exception {
+
+        String sql = "SELECT sum(vimmov) FROM :schema.appresp "
+                +" inner join :schema.aprepap on vhiprs = viipra "
+                +" where vhilot = :idLot and viipar <> 0 ";
 
         return executeRequete(session, idLot, sql);
     }
