@@ -447,7 +447,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 	}
   function checkACM(){
 	  // Si c'est un droit Pandémie => Pas de ACM.
-	  <%if(viewBean.isPandemie()){%>
+	  <%if(viewBean.isPandemie() || viewBean.isPaternite()){%>
 		  $('input[type="checkbox"][name="hasAcmAlphaPrestations"]').prop('checked', false);
 	  <%}%>
   }

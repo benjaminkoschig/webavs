@@ -7,6 +7,7 @@
 package globaz.apg.helpers.droits;
 
 import globaz.apg.ApgServiceLocator;
+import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.droits.APDroitMaternite;
 import globaz.apg.exceptions.APWrongViewBeanTypeException;
 import globaz.apg.vb.droits.APDroitAPGPViewBean;
@@ -87,6 +88,8 @@ public class APDroitMatPHelper extends APAbstractDroitPHelper {
             APDroitMaternite droit = ApgServiceLocator.getEntityService().getDroitMaternite(session, transaction,
                     viewBean.getIdDroit());
             APDroitAPGPViewBean actionAfficherViewBean = new APDroitAPGPViewBean();
+            droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
+            droit.update();
             actionAfficherViewBean.setDroit(droit);
 
             if (!hasErrors(session, transaction)) {

@@ -109,7 +109,6 @@ function nextStepValidateAfterPopupSeodor(){
         $('#periodesAsString').val(tmp);
         action(COMMIT);
     }
-
     function nextStepValidate() {
         nssUpdateHiddenFields();
         //Récupération des dates
@@ -119,7 +118,7 @@ function nextStepValidateAfterPopupSeodor(){
         var nbrJours = $('#nbrJour').val();
         var tauxImposition = "";
         var cantonImposition = "";
-        var JOURS_MAX = 14;
+
         if (document.getElementById("isSoumisCotisation").checked) {
             tauxImposition = $('#tauxImpotSource').val();
             cantonImposition = $('#csCantonDomicileAffiche').val();
@@ -134,15 +133,6 @@ function nextStepValidateAfterPopupSeodor(){
             showErrorMessage("Aucune période n'est renseignée");
             return true;
         }
-        var nbreJoursTotal = 0;
-        for (var i = 0; i < periodes.length; i++) {
-            nbreJoursTotal += (Number(periodes[i].getNbJour()));
-        }
-        if(Number(nbreJoursTotal) >Number(JOURS_MAX)){
-            showErrorMessage("Le nombre de jours ne peut pas dépasser "+JOURS_MAX+" jours.");
-            return true;
-        }
-
 
         <%if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.CREATION)){%>
         document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_SAISIE_CARTE_APAT%>.ajouter";

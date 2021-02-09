@@ -299,4 +299,7 @@ public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
         }
         return msgHTML.toString();
     }
+    public int getNombreJoursMax(){
+        return 1;
+    }
 }

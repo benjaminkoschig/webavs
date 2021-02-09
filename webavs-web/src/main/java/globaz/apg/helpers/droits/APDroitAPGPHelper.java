@@ -7,6 +7,7 @@
 package globaz.apg.helpers.droits;
 
 import globaz.apg.ApgServiceLocator;
+import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.droits.APDroitAPG;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APPeriodeAPG;
@@ -66,7 +67,8 @@ public class APDroitAPGPHelper extends APAbstractDroitPHelper {
             APDroitAPG droit = ApgServiceLocator.getEntityService().getDroitAPG(session, transaction,
                     viewBean.getIdDroit());
             actionAfficherViewBean.setDroit(droit);
-
+            droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
+            droit.update();
             if (!hasError(session, transaction)) {
                 transaction.commit();
             }

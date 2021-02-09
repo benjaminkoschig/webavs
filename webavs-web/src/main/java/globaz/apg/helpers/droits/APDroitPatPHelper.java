@@ -7,6 +7,7 @@
 package globaz.apg.helpers.droits;
 
 import globaz.apg.ApgServiceLocator;
+import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.droits.APDroitAPG;
 import globaz.apg.db.droits.APDroitPandemie;
 import globaz.apg.db.droits.APDroitPaternite;
@@ -238,8 +239,9 @@ public class APDroitPatPHelper extends APAbstractDroitPHelper {
             APDroitPaternite droit = ApgServiceLocator.getEntityService().getDroitPaternite(session, transaction,
                     viewBean.getIdDroit());
             APDroitAPGPViewBean actionAfficherViewBean = new APDroitAPGPViewBean();
+            droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
+            droit.update();
             actionAfficherViewBean.setDroit(droit);
-
             if (!hasErrors(session, transaction)) {
                 transaction.commit();
             }

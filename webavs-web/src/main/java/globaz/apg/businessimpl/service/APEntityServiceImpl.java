@@ -4,6 +4,7 @@ import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.prestation.IAPPrestation;
+import globaz.apg.application.APApplication;
 import globaz.apg.business.service.APEntityService;
 import globaz.apg.db.annonces.APBreakRule;
 import globaz.apg.db.annonces.APBreakRuleManager;
@@ -23,6 +24,9 @@ import globaz.apg.vb.droits.APDroitPanViewBean;
 import globaz.apg.vb.droits.APDroitPatPViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.db.*;
+import globaz.globall.parameters.FWParameters;
+import globaz.globall.parameters.FWParametersCodeManager;
+import globaz.globall.parameters.FWParametersManager;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
@@ -35,6 +39,7 @@ import globaz.naos.api.IAFAffiliation;
 import globaz.naos.application.AFApplication;
 import globaz.phenix.api.ICPDecision;
 import globaz.phenix.api.ICPDonneesCalcul;
+import globaz.phenix.toolbox.CPToolBox;
 import globaz.prestation.api.IPRDemande;
 import globaz.prestation.beans.PRPeriode;
 import globaz.prestation.db.demandes.PRDemande;
@@ -51,6 +56,7 @@ import globaz.prestation.utils.PRDateUtils.PRDateEquality;
 import globaz.pyxis.constantes.IConstantes;
 import org.apache.commons.lang.StringUtils;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -980,9 +986,9 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                 throw new Exception("Unable to update the APDroitAPG with id [" + viewBean.getDroit().getIdDroit()
                         + "] because it doesn't already exist");
             }
-            if (!IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(droitAPG.getEtat())) {
+            if (!(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(droitAPG.getEtat()) || IAPDroitLAPG.CS_ETAT_DROIT_ERREUR.equals(droitAPG.getEtat()))) {
                 throw new Exception("Unable to update the APDroitAPG with id [" + viewBean.getDroit().getIdDroit()
-                        + "] because it is not 'En attente'");
+                        + "] because it is not 'En attente/En erreur'");
             }
         }
 
@@ -1040,12 +1046,13 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         }
 
         final List<PRPeriode> periodes = validerNombreJoursSoldesPat(viewBean);
-
+        int joursSoldes = 0;
         List<String> datesDeDebut = new ArrayList<String>();
         List<String> datesDeFin = new ArrayList<String>();
         for (int ctr = 0; ctr < periodes.size(); ctr++) {
             datesDeDebut.add(periodes.get(ctr).getDateDeDebut());
             datesDeFin.add(periodes.get(ctr).getDateDeFin());
+            joursSoldes += Integer.parseInt(periodes.get(ctr).getNbJour());
         }
         datesDeDebut = PRDateUtils.sortDate(datesDeDebut, DateOrder.NEWER_TO_OLDER);
         datesDeFin = PRDateUtils.sortDate(datesDeFin, DateOrder.OLDER_TO_NEWER);
@@ -1055,6 +1062,44 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         // la date de début du droit doit être ultérieure au 01.07.1999
         if (new JACalendarGregorian().compare("01.07.1999", dateDeDebutDroit) == JACalendar.COMPARE_FIRSTUPPER) {
             throw new Exception("Unable to create the APDroitAPG : " + session.getLabel("DROIT_TROP_ANCIEN"));
+        }
+
+        /**
+         * CONTROLE SUR LE JOURS MAX ET DATE MAX
+         */
+        FWParametersManager parametersManager = new FWParametersManager();
+        parametersManager.setSession(session);
+        parametersManager.setForApplication(APApplication.DEFAULT_APPLICATION_APG);
+        parametersManager.setForIdCle("PATJOURMAX");
+        parametersManager.find();
+        BigDecimal joursMax = BigDecimal.ZERO;
+        for (int i = 0; i < parametersManager.size(); i++) {
+            FWParameters tmpEntity = (FWParameters) parametersManager.getEntity(i);
+            if(JadeDateUtil.isDateAfter(parametersManager.getFromDateDebut(),dateDeDebutDroit) || tmpEntity.getDateDebutValidite().equals(dateDeDebutDroit)){
+                joursMax = new BigDecimal(tmpEntity.getValeurNumerique());
+            }
+        }
+        if(joursSoldes> joursMax.intValue()){
+            throw new Exception(session.getLabel("ERREUR_MAX_JOURS"));
+        }
+
+        parametersManager.setSession(session);
+        parametersManager.setForApplication(APApplication.DEFAULT_APPLICATION_APG);
+        parametersManager.setForIdCle("PATMOISMAX");
+        parametersManager.find();
+        BigDecimal nombreMoisMaxApres = BigDecimal.ZERO;
+        for (int i = 0; i < parametersManager.size(); i++) {
+            FWParameters tmpEntity = (FWParameters) parametersManager.getEntity(i);
+            if(JadeDateUtil.isDateAfter(parametersManager.getFromDateDebut(),dateDeDebutDroit) || tmpEntity.getDateDebutValidite().equals(dateDeDebutDroit)){
+                nombreMoisMaxApres = new BigDecimal(tmpEntity.getValeurNumerique());
+            }
+        }
+        String dateFinMax = JadeDateUtil.addMonths(dateDeDebutDroit,nombreMoisMaxApres.intValue());
+        if(JadeDateUtil.isDateAfter(dateDeFinDroit,dateFinMax)){
+            String msgError = session.getLabel("ERREUR_MAX_DATE");
+            msgError =  PRStringUtils.replaceString(msgError, "{0}", dateDeFinDroit);
+            msgError =  PRStringUtils.replaceString(msgError, "{1}", dateFinMax);
+            throw new Exception(msgError);
         }
 
         final APDroitPaternite droitPat = new APDroitPaternite();
@@ -1073,9 +1118,9 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                 throw new Exception("Unable to update the APDroitPat with id [" + viewBean.getDroit().getIdDroit()
                         + "] because it doesn't already exist");
             }
-            if (!IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(droitPat.getEtat())) {
+            if (!(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(droitPat.getEtat())|| IAPDroitLAPG.CS_ETAT_DROIT_ERREUR.equals(droitPat.getEtat()))) {
                 throw new Exception("Unable to update the APDroitAPG with id [" + viewBean.getDroit().getIdDroit()
-                        + "] because it is not 'En attente'");
+                        + "] because it is not 'En attente/En erreur'");
             }
         }
 
@@ -1122,6 +1167,9 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
         remplacerPeriodesDroitPat(session, transaction, droitPat.getIdDroit(), viewBean.getPeriodes());
         return droitPat;
+    }
+
+    private void validateJoursEtPeriode() {
     }
 
     private List<PRPeriode> validerNombreJoursSoldes(final APDroitAPGPViewBean viewBean) throws Exception {
