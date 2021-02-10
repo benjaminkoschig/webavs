@@ -59,6 +59,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
     private static final String CLONE_COPIER_DROIT_PANDEMIE = "prestation-PAN-copie-droit-PAN";
     private static final String CLONE_COPIER_DROIT_PATERNITE = "prestation-APG-copie-droit-PATERNITE";
     private static final String CLONE_COPIER_CORRIGER_DROIT_PANDEMIE = "prestation-PAN-correction-droit-PAN";
+    private static final String CLONE_COPIER_CORRIGER_DROIT_PATERNITE = "prestation-APG-correction-droit-PATERNITE";
 
     public void calculerACM(FWViewBeanInterface viewBean, FWAction action, BSession session) throws Exception {
 
@@ -352,7 +353,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
                     PRCloneFactory.getInstance().clone(
                             session.getApplication().getProperty(APApplication.PROPERTY_CLONE_DEFINITION_FILENAME),
                             session, bTrans, droit,
-                            session.getApplication().getProperty(APApplication.PROPERTY_CLONE_COPIER_DROIT_PATERNITE),
+                            CLONE_COPIER_CORRIGER_DROIT_PATERNITE,
                             IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_APG_FILS);
 
                     // le droit parent passe dans l'etat definitif
@@ -528,7 +529,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
                 clone = PRCloneFactory.getInstance().clone(
                         session.getApplication().getProperty(APApplication.PROPERTY_CLONE_DEFINITION_FILENAME),
                         session, droit,
-                        session.getApplication().getProperty(APApplication.PROPERTY_CLONE_COPIER_DROIT_PATERNITE),
+                        CLONE_COPIER_CORRIGER_DROIT_PATERNITE,
                         IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_APG_FILS);
 
                 vbDroit.setDto(new APDroitAPGDTO(droit));

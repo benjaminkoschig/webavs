@@ -86,10 +86,6 @@ public class APApplication extends PRAbstractApplication {
 
     /**
      */
-    public static final String PROPERTY_CLONE_COPIER_DROIT_PATERNITE = "clone.copie.droit.paternite.id";
-
-    /**
-     */
     public static final String PROPERTY_CLONE_CORRIGER_DROIT_APG = "clone.correction.droit.apg.id";
 
     /** Le nom de la propriété du nom de fichier de clonage */
