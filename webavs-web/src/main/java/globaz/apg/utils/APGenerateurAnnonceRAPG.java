@@ -401,7 +401,7 @@ public class APGenerateurAnnonceRAPG {
             case 9:
             case 10:
             case 11:
-                nombreJoursOuverts = nombreJoursOuverts - 2;
+                nombreJoursOuverts = nombreJours - 2;
                 break;
             case 12:
             case 13:
