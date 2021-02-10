@@ -11,6 +11,9 @@ idEcran="PAP2002";
 		globaz.framework.controller.FWController controller = (globaz.framework.controller.FWController) session.getAttribute("objController");
 	globaz.globall.db.BSession objSession = (globaz.globall.db.BSession)controller.getSession();
 	String eMailAddress=objSession.getUserEMail();
+	String typeAPG = request.getParameter("forTypeAPG");
+	viewBean.setForTypeAPG(typeAPG);
+
 %>
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%>

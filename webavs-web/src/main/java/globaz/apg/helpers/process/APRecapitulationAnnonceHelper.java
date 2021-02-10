@@ -11,6 +11,7 @@ import globaz.framework.printing.itext.exception.FWIException;
 import globaz.globall.api.BISession;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
 
 /**
  * @author VRE
@@ -40,6 +41,9 @@ public class APRecapitulationAnnonceHelper extends FWHelper {
 
             process.setEMailAddress(raViewBean.getEMailAddress());
             process.setForMoisAnneeComptable(raViewBean.getForMoisAnneeComptable());
+            if(!JadeStringUtil.isBlankOrZero(raViewBean.getForTypeAPG())){
+                process.setForTypeAPG(raViewBean.getForTypeAPG());
+            }
             process.start();
 
         } catch (FWIException e) {

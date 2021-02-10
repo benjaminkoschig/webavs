@@ -17,6 +17,7 @@ public abstract class APAbstractRecapitulationAnnonceAdapter {
 
     private APDonneesRecapitulationAnnonce donnees;
     private String forMoisAnneeComptable;
+    private String forTypeAPG;
     private BSession session;
 
     public APAbstractRecapitulationAnnonceAdapter(BSession session, String forMoisAnneeComptable) {
@@ -36,6 +37,7 @@ public abstract class APAbstractRecapitulationAnnonceAdapter {
         APAbstractListeRecapitulationAnnoncesManager manager = getManager();
         manager.setSession(session);
         manager.setForMoisAnneeComptable(forMoisAnneeComptable);
+        manager.setForTypeAPG(forTypeAPG);
         manager.setForIsExclureAnnonceEnfant(Boolean.TRUE);
         manager.find(session.getCurrentThreadTransaction(), BManager.SIZE_NOLIMIT);
 
@@ -143,5 +145,14 @@ public abstract class APAbstractRecapitulationAnnonceAdapter {
 
     public BSession getSession() {
         return session;
+    }
+
+
+    public String getForTypeAPG() {
+        return forTypeAPG;
+    }
+
+    public void setForTypeAPG(String forTypeAPG) {
+        this.forTypeAPG = forTypeAPG;
     }
 }

@@ -1,5 +1,6 @@
 package globaz.apg.itext;
 
+import globaz.apg.api.annonces.IAPAnnonce;
 import globaz.apg.api.codesystem.IAPCatalogueTexte;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.application.APApplication;
@@ -13,9 +14,11 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JADate;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.interfaces.babel.PRBabelHelper;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.webavs.common.CommonProperties;
+
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -25,6 +28,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import ch.globaz.jade.JadeBusinessServiceLocator;
 import ch.globaz.jade.business.models.Langues;
 import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
@@ -32,13 +36,13 @@ import ch.globaz.jade.business.services.codesysteme.JadeCodeSystemeService;
 
 /**
  * Générateur de liste récapitulative des annonces APG. Regroupe les fonctionnalités communes aux annonces APG et RAPG.
- * 
+ *
  * @author PBA
  */
 public abstract class APAbstractListeRecapitulationAnnonces extends FWIDocumentManager {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private static final String CHAMP_CU_GENRE_SERVICE = "V_CU_GENRE_SERVICE";
@@ -57,6 +61,7 @@ public abstract class APAbstractListeRecapitulationAnnonces extends FWIDocumentM
 
     private APAbstractRecapitulationAnnonceAdapter adapter;
     private String forMoisAnneeComptable = "";
+    private String forTypeAPG = "";
     private boolean hasNext = true;
     private List<JadeCodeSysteme> services;
 
@@ -89,11 +94,14 @@ public abstract class APAbstractListeRecapitulationAnnonces extends FWIDocumentM
             BSessionUtil.initContext(getSession(), this);
 
             adapter = getAdapter(getSession(), getForMoisAnneeComptable());
+            adapter.setForTypeAPG(forTypeAPG);
             adapter.chargerParServices();
 
             JadeCodeSystemeService codeSystemService = JadeBusinessServiceLocator.getCodeSystemeService();
             services = codeSystemService.getFamilleCodeSysteme(IAPDroitLAPG.CS_GROUPE_GENRE_SERVICE_APG);
-
+            if(!JadeStringUtil.isBlankOrZero(forTypeAPG)){
+                services = triParTypeAPG(services,forTypeAPG);
+            }
             final Langues langue = Langues.getLangueDepuisCodeIso(getSession().getIdLangueISO());
             Collections.sort(services, new Comparator<JadeCodeSysteme>() {
                 @Override
@@ -178,6 +186,20 @@ public abstract class APAbstractListeRecapitulationAnnonces extends FWIDocumentM
         } finally {
             BSessionUtil.stopUsingContext(this);
         }
+    }
+
+    private List<JadeCodeSysteme> triParTypeAPG(List<JadeCodeSysteme> services, String forTypeAPG) {
+        List<JadeCodeSysteme> newList = new ArrayList<>();
+        for (JadeCodeSysteme cs : services) {
+            if (forTypeAPG.equals(IAPAnnonce.CS_PATERNITE)) {
+                if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(cs.getIdCodeSysteme())) {
+                    newList.add(cs);
+                }
+
+            }
+        }
+        return newList;
+
     }
 
     @Override
@@ -276,4 +298,13 @@ public abstract class APAbstractListeRecapitulationAnnonces extends FWIDocumentM
             getImporter().setParametre(name, value);
         }
     }
+
+    public String getForTypeAPG() {
+        return forTypeAPG;
+    }
+
+    public void setForTypeAPG(String forTypeAPG) {
+        this.forTypeAPG = forTypeAPG;
+    }
+
 }

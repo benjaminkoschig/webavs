@@ -1,8 +1,14 @@
 package globaz.apg.db.annonces;
 
+import globaz.apg.api.annonces.IAPAnnonce;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static globaz.apg.api.annonces.IAPAnnonce.CS_PATERNITE;
 
 /**
  * Manager regroupant les fonctionnalités communes à la recherche des données pour la récapitulation des anciennes et
@@ -21,6 +27,7 @@ public abstract class APAbstractListeRecapitulationAnnoncesManager extends BMana
     private String forEtatDifferentDe;
     private Boolean forIsExclureAnnonceEnfant;
     private String forMoisAnneeComptable;
+    private String forTypeAPG;
 
     public APAbstractListeRecapitulationAnnoncesManager() {
         super();
@@ -52,6 +59,19 @@ public abstract class APAbstractListeRecapitulationAnnoncesManager extends BMana
             sql.append(formatDateToDB(forMoisAnneeComptable));
         }
 
+        if (!JadeStringUtil.isEmpty(forTypeAPG)) {
+            if (sql.length() > 0) {
+                sql.append(" AND ");
+            }
+            sql.append(APAnnonceAPG.FIELDNAME_GENRE);
+            sql.append(" in ");
+            switch (forTypeAPG){
+                case IAPAnnonce.CS_PATERNITE:
+                    sql.append("(91)");
+                    break;
+                default:
+            }
+        }
         if ((getForIsExclureAnnonceEnfant() != null) && getForIsExclureAnnonceEnfant().booleanValue()) {
             if (sql.length() != 0) {
                 sql.append(" AND ");
@@ -108,4 +128,12 @@ public abstract class APAbstractListeRecapitulationAnnoncesManager extends BMana
     public final void setForMoisAnneeComptable(String string) {
         forMoisAnneeComptable = string;
     }
+    public String getForTypeAPG() {
+        return forTypeAPG;
+    }
+
+    public void setForTypeAPG(String forTypeAPG) {
+        this.forTypeAPG = forTypeAPG;
+    }
+
 }

@@ -22,6 +22,7 @@ public class APRecapitulationAnnonceViewBean extends PRAbstractViewBeanSupport {
 
     private String eMailAddress = "";
     private String forMoisAnneeComptable = "";
+    private String forTypeAPG = "";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -86,5 +87,12 @@ public class APRecapitulationAnnonceViewBean extends PRAbstractViewBeanSupport {
         }
 
         return retValue;
+    }
+    public String getForTypeAPG() {
+        return forTypeAPG;
+    }
+
+    public void setForTypeAPG(String forTypeAPG) {
+        this.forTypeAPG = forTypeAPG;
     }
 }
