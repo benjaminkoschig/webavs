@@ -11,7 +11,6 @@ import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.db.droits.*;
 import globaz.apg.db.prestation.*;
-import globaz.apg.itext.APDecisionCommunicationAPAT;
 import globaz.apg.itext.decompte.utils.APEmployeurTiersUtil;
 import globaz.apg.module.calcul.APReferenceDataParser;
 import globaz.apg.module.calcul.rev2005.APReferenceDataAPG;
@@ -19,6 +18,12 @@ import globaz.babel.api.ICTListeTextes;
 import globaz.framework.util.FWMessageFormat;
 import globaz.globall.db.*;
 import globaz.globall.util.*;
+import globaz.prestation.interfaces.tiers.PRTiersAdresseCopyFormater01;
+import globaz.prestation.interfaces.tiers.PRTiersAdresseCopyFormater02;
+import globaz.pyxis.constantes.IConstantes;
+import globaz.pyxis.db.adressecourrier.TIAvoirAdresse;
+import globaz.pyxis.db.tiers.TIAdministrationAdresse;
+import globaz.pyxis.db.tiers.TIAdministrationAdresseManager;
 import globaz.pyxis.db.tiers.TITiers;
 
 import ch.globaz.common.properties.PropertiesException;
@@ -706,9 +711,29 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             final String titre = tiersTitre.getFormulePolitesse(tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
 
             if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+                // chargement de la ligne de copie avec le formater
+
+                String idAdmFisc = getAdresseAdministrationFiscale(decompteCourant.getIdTiers());
+
+                String tiersAdresseFiscFormatteLine = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
+                        idAdmFisc, IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE, "", "",
+                        new PRTiersAdresseCopyFormater02(), this.getDateDocument().toString());
+
+                String tiersAdresseFiscFormatte = PRTiersHelper.getAdresseCourrierFormatee(getISession(), idAdmFisc, "",
+                        IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE);
+
+
+
+                parametres.put("P_COPIE_A", document.getTextes(1).getTexte(8).getDescription());
+                parametres.put("P_COPIE_A2", tiersAdresseFiscFormatteLine );
+
                 if (((getFirstForCopy() && getIsCopie()) || !getIsCopie())) {
                     createCorpsPaternite(parametres);
+                    // S'il s'agit de la copie et de la lettre d'entête, il faut modifier l'adresse sur ce document
+                } else if (getIsCopie() && !getFirstForCopy()) {
+                    parametres.put("P_HEADER_ADRESSE", tiersAdresseFiscFormatte);
                 }
+
             } else {
 
 
@@ -742,186 +767,199 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 parametres.put("PARAM_CORPS", buffer.toString());
             }
 
-            // le détail
+            // S'il s'agit de la lettre entête pour les décision Paternité
+            // on charge un niveau de catalogue spécifique
             if (getIsCopie() && !getFirstForCopy() && IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())){
                 parametres.put("PARAM_ISENTETE", "OUI");
+
+                StringBuilder builder = new StringBuilder();
+
+                builder.append(document.getTextes(7).getTexte(1).getDescription()+"\n\n");
+                builder.append(document.getTextes(7).getTexte(2).getDescription()+"\n\n");
+                builder.append(document.getTextes(7).getTexte(3).getDescription()+"\n\n");
+
+                parametres.put("PARAM_CORPS", builder.toString());
+
+
             } else {
+                // le détail
                 parametres.put("PARAM_ASSURE", document.getTextes(3).getTexte(1).getDescription());
                 parametres.put("PARAM_DETAIL", document.getTextes(3).getTexte(2).getDescription());
                 parametres.put("PARAM_MONTANT", document.getTextes(3).getTexte(3).getDescription());
                 parametres.put("PARAM_DEVISE", document.getTextes(3).getTexte(4).getDescription());
-            }
 
 
-            // le pied de page
-            buffer.setLength(0);
 
-            for (final Iterator<ICTTexte> textes = document.getTextes(4).iterator(); textes.hasNext(); ) {
-                final ICTTexte texte = textes.next();
+                // le pied de page
+                buffer.setLength(0);
 
-                // ne pas traiter le contenu optionnel
-                if (Integer.parseInt(texte.getPosition()) > 100) {
-                    break;
-                }
+                for (final Iterator<ICTTexte> textes = document.getTextes(4).iterator(); textes.hasNext(); ) {
+                    final ICTTexte texte = textes.next();
 
-                if ((Integer.parseInt(texte.getPosition()) >= 3) && (Integer.parseInt(texte.getPosition()) <= 9)) {
-                    break;
-                }
+                    // ne pas traiter le contenu optionnel
+                    if (Integer.parseInt(texte.getPosition()) > 100) {
+                        break;
+                    }
 
-                if (Integer.parseInt(texte.getPosition()) == 20) {
-                    break;
-                }
+                    if ((Integer.parseInt(texte.getPosition()) >= 3) && (Integer.parseInt(texte.getPosition()) <= 9)) {
+                        break;
+                    }
 
-                // Si ventilation, ne pas mettre le texte 4.1
-                if (texte.getPosition().equals("1")) {
-                    if (!isTraitementDesVentilations()) {
+                    if (Integer.parseInt(texte.getPosition()) == 20) {
+                        break;
+                    }
+
+                    // Si ventilation, ne pas mettre le texte 4.1
+                    if (texte.getPosition().equals("1")) {
+                        if (!isTraitementDesVentilations()) {
+                            buffer.append(texte.getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
+
+                            // Ajout d'une ligne aprés position 4 / 1 si un élément est contenu dans le catalogue de texte.
+                            // 400
+                            if (Objects.equals(genreService, IAPDroitLAPG.CS_GARDE_PARENTALE)
+                                    && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "400")
+                                    && Objects.nonNull(document.getTextes(4).getTexte(400))) {
+                                buffer.append("\n");
+                                buffer.append(document.getTextes(4).getTexte(400).getDescription());
+                                if (buffer.length() > 0) {
+                                    buffer.append("\n");
+                                }
+                                // 401
+                            } else if (Objects.equals(genreService, IAPDroitLAPG.CS_QUARANTAINE)
+                                    && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "401")
+                                    && Objects.nonNull(document.getTextes(4).getTexte(401))) {
+                                buffer.append("\n");
+                                buffer.append(document.getTextes(4).getTexte(401).getDescription());
+                                if (buffer.length() > 0) {
+                                    buffer.append("\n");
+                                }
+                                // 402
+                            } else if (Objects.equals(genreService, IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE)
+                                    && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "402")
+                                    && Objects.nonNull(document.getTextes(4).getTexte(402))) {
+                                buffer.append("\n");
+                                buffer.append(document.getTextes(4).getTexte(402).getDescription());
+                                if (buffer.length() > 0) {
+                                    buffer.append("\n");
+                                }
+                                // 403
+                            } else if (Objects.equals(genreService, IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS)
+                                    && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "403")
+                                    && Objects.nonNull(document.getTextes(4).getTexte(403))) {
+                                buffer.append("\n");
+                                buffer.append(document.getTextes(4).getTexte(403).getDescription());
+                                if (buffer.length() > 0) {
+                                    buffer.append("\n");
+                                }
+                                // 404
+                            } else if (Objects.equals(genreService, IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP)
+                                    && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "404")
+                                    && Objects.nonNull(document.getTextes(4).getTexte(404))) {
+                                buffer.append("\n");
+                                buffer.append(document.getTextes(4).getTexte(404).getDescription());
+                                if (buffer.length() > 0) {
+                                    buffer.append("\n");
+                                }
+                                // 405
+                            } else if (Objects.equals(genreService, IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE)
+                                    && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "405")
+                                    && Objects.nonNull(document.getTextes(4).getTexte(405))) {
+                                buffer.append("\n");
+                                buffer.append(document.getTextes(4).getTexte(405).getDescription());
+                                if (buffer.length() > 0) {
+                                    buffer.append("\n");
+                                }
+                                // 406
+                            } else if (Objects.equals(genreService, IAPDroitLAPG.CS_SALARIE_EVENEMENTIEL)
+                                    && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "406")
+                                    && Objects.nonNull(document.getTextes(4).getTexte(406))) {
+                                buffer.append("\n");
+                                buffer.append(document.getTextes(4).getTexte(406).getDescription());
+                                if (buffer.length() > 0) {
+                                    buffer.append("\n");
+                                }
+                            } else if (Objects.equals(genreService, IAPDroitLAPG.CS_INDEPENDANT_FERMETURE)
+                                    && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "410")
+                                    && Objects.nonNull(document.getTextes(4).getTexte(410))) {
+                                buffer.append("\n");
+                                buffer.append(document.getTextes(4).getTexte(410).getDescription());
+                                if (buffer.length() > 0) {
+                                    buffer.append("\n");
+                                }
+                            } else if (Objects.equals(genreService, IAPDroitLAPG.CS_DIRIGEANT_SALARIE_FERMETURE)
+                                    && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "411")
+                                    && Objects.nonNull(document.getTextes(4).getTexte(411))) {
+                                buffer.append("\n");
+                                buffer.append(document.getTextes(4).getTexte(411).getDescription());
+                                if (buffer.length() > 0) {
+                                    buffer.append("\n");
+                                }
+                            } else if (Objects.equals(genreService, IAPDroitLAPG.CS_INDEPENDANT_MANIFESTATION_ANNULEE)
+                                    && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "412")
+                                    && Objects.nonNull(document.getTextes(4).getTexte(412))) {
+                                buffer.append("\n");
+                                buffer.append(document.getTextes(4).getTexte(412).getDescription());
+                                if (buffer.length() > 0) {
+                                    buffer.append("\n");
+                                }
+                            } else if (Objects.equals(genreService, IAPDroitLAPG.CS_DIRIGEANT_SALARIE_MANIFESTATION_ANNULEE)
+                                    && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "413")
+                                    && Objects.nonNull(document.getTextes(4).getTexte(413))) {
+                                buffer.append("\n");
+                                buffer.append(document.getTextes(4).getTexte(413).getDescription());
+                                if (buffer.length() > 0) {
+                                    buffer.append("\n");
+                                }
+                            } else if (Objects.equals(genreService, IAPDroitLAPG.CS_INDEPENDANT_LIMITATION_ACTIVITE)
+                                    && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "414")
+                                    && Objects.nonNull(document.getTextes(4).getTexte(414))) {
+                                buffer.append("\n");
+                                buffer.append(document.getTextes(4).getTexte(414).getDescription());
+                                if (buffer.length() > 0) {
+                                    buffer.append("\n");
+                                }
+                            } else if (Objects.equals(genreService, IAPDroitLAPG.CS_DIRIGEANT_SALARIE_LIMITATION_ACTIVITE)
+                                    && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "415")
+                                    && Objects.nonNull(document.getTextes(4).getTexte(415))) {
+                                buffer.append("\n");
+                                buffer.append(document.getTextes(4).getTexte(415).getDescription());
+                                if (buffer.length() > 0) {
+                                    buffer.append("\n");
+                                }
+                            } else if (Objects.equals(genreService, IAPDroitLAPG.CS_GARDE_PARENTALE_17_09_20)
+                                    && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "416")
+                                    && Objects.nonNull(document.getTextes(4).getTexte(416))) {
+                                buffer.append("\n");
+                                buffer.append(document.getTextes(4).getTexte(416).getDescription());
+                                if (buffer.length() > 0) {
+                                    buffer.append("\n");
+                                }
+                            } else if (Objects.equals(genreService, IAPDroitLAPG.CS_QUARANTAINE_17_09_20)
+                                    && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "417")
+                                    && Objects.nonNull(document.getTextes(4).getTexte(417))) {
+                                buffer.append("\n");
+                                buffer.append(document.getTextes(4).getTexte(417).getDescription());
+                                if (buffer.length() > 0) {
+                                    buffer.append("\n");
+                                }
+                            } else if (Objects.equals(genreService, IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20)
+                                    && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "418")
+                                    && Objects.nonNull(document.getTextes(4).getTexte(418))) {
+                                buffer.append("\n");
+                                buffer.append(document.getTextes(4).getTexte(418).getDescription());
+                                if (buffer.length() > 0) {
+                                    buffer.append("\n");
+                                }
+                            }
+                        }
+                    } else {
                         buffer.append(texte.getDescription());
                         if (buffer.length() > 0) {
                             buffer.append("\n");
                         }
-
-                        // Ajout d'une ligne aprés position 4 / 1 si un élément est contenu dans le catalogue de texte.
-                        // 400
-                        if (Objects.equals(genreService, IAPDroitLAPG.CS_GARDE_PARENTALE)
-                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "400")
-                                && Objects.nonNull(document.getTextes(4).getTexte(400))) {
-                            buffer.append("\n");
-                            buffer.append(document.getTextes(4).getTexte(400).getDescription());
-                            if (buffer.length() > 0) {
-                                buffer.append("\n");
-                            }
-                            // 401
-                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_QUARANTAINE)
-                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "401")
-                                && Objects.nonNull(document.getTextes(4).getTexte(401))) {
-                            buffer.append("\n");
-                            buffer.append(document.getTextes(4).getTexte(401).getDescription());
-                            if (buffer.length() > 0) {
-                                buffer.append("\n");
-                            }
-                            // 402
-                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE)
-                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "402")
-                                && Objects.nonNull(document.getTextes(4).getTexte(402))) {
-                            buffer.append("\n");
-                            buffer.append(document.getTextes(4).getTexte(402).getDescription());
-                            if (buffer.length() > 0) {
-                                buffer.append("\n");
-                            }
-                            // 403
-                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS)
-                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "403")
-                                && Objects.nonNull(document.getTextes(4).getTexte(403))) {
-                            buffer.append("\n");
-                            buffer.append(document.getTextes(4).getTexte(403).getDescription());
-                            if (buffer.length() > 0) {
-                                buffer.append("\n");
-                            }
-                            // 404
-                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP)
-                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "404")
-                                && Objects.nonNull(document.getTextes(4).getTexte(404))) {
-                            buffer.append("\n");
-                            buffer.append(document.getTextes(4).getTexte(404).getDescription());
-                            if (buffer.length() > 0) {
-                                buffer.append("\n");
-                            }
-                            // 405
-                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE)
-                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "405")
-                                && Objects.nonNull(document.getTextes(4).getTexte(405))) {
-                            buffer.append("\n");
-                            buffer.append(document.getTextes(4).getTexte(405).getDescription());
-                            if (buffer.length() > 0) {
-                                buffer.append("\n");
-                            }
-                            // 406
-                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_SALARIE_EVENEMENTIEL)
-                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "406")
-                                && Objects.nonNull(document.getTextes(4).getTexte(406))) {
-                            buffer.append("\n");
-                            buffer.append(document.getTextes(4).getTexte(406).getDescription());
-                            if (buffer.length() > 0) {
-                                buffer.append("\n");
-                            }
-                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_INDEPENDANT_FERMETURE)
-                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "410")
-                                && Objects.nonNull(document.getTextes(4).getTexte(410))) {
-                            buffer.append("\n");
-                            buffer.append(document.getTextes(4).getTexte(410).getDescription());
-                            if (buffer.length() > 0) {
-                                buffer.append("\n");
-                            }
-                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_DIRIGEANT_SALARIE_FERMETURE)
-                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "411")
-                                && Objects.nonNull(document.getTextes(4).getTexte(411))) {
-                            buffer.append("\n");
-                            buffer.append(document.getTextes(4).getTexte(411).getDescription());
-                            if (buffer.length() > 0) {
-                                buffer.append("\n");
-                            }
-                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_INDEPENDANT_MANIFESTATION_ANNULEE)
-                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "412")
-                                && Objects.nonNull(document.getTextes(4).getTexte(412))) {
-                            buffer.append("\n");
-                            buffer.append(document.getTextes(4).getTexte(412).getDescription());
-                            if (buffer.length() > 0) {
-                                buffer.append("\n");
-                            }
-                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_DIRIGEANT_SALARIE_MANIFESTATION_ANNULEE)
-                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "413")
-                                && Objects.nonNull(document.getTextes(4).getTexte(413))) {
-                            buffer.append("\n");
-                            buffer.append(document.getTextes(4).getTexte(413).getDescription());
-                            if (buffer.length() > 0) {
-                                buffer.append("\n");
-                            }
-                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_INDEPENDANT_LIMITATION_ACTIVITE)
-                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "414")
-                                && Objects.nonNull(document.getTextes(4).getTexte(414))) {
-                            buffer.append("\n");
-                            buffer.append(document.getTextes(4).getTexte(414).getDescription());
-                            if (buffer.length() > 0) {
-                                buffer.append("\n");
-                            }
-                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_DIRIGEANT_SALARIE_LIMITATION_ACTIVITE)
-                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "415")
-                                && Objects.nonNull(document.getTextes(4).getTexte(415))) {
-                            buffer.append("\n");
-                            buffer.append(document.getTextes(4).getTexte(415).getDescription());
-                            if (buffer.length() > 0) {
-                                buffer.append("\n");
-                            }
-                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_GARDE_PARENTALE_17_09_20)
-                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "416")
-                                && Objects.nonNull(document.getTextes(4).getTexte(416))) {
-                            buffer.append("\n");
-                            buffer.append(document.getTextes(4).getTexte(416).getDescription());
-                            if (buffer.length() > 0) {
-                                buffer.append("\n");
-                            }
-                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_QUARANTAINE_17_09_20)
-                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "417")
-                                && Objects.nonNull(document.getTextes(4).getTexte(417))) {
-                            buffer.append("\n");
-                            buffer.append(document.getTextes(4).getTexte(417).getDescription());
-                            if (buffer.length() > 0) {
-                                buffer.append("\n");
-                            }
-                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20)
-                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "418")
-                                && Objects.nonNull(document.getTextes(4).getTexte(418))) {
-                            buffer.append("\n");
-                            buffer.append(document.getTextes(4).getTexte(418).getDescription());
-                            if (buffer.length() > 0) {
-                                buffer.append("\n");
-                            }
-                        }
-                    }
-                } else {
-                    buffer.append(texte.getDescription());
-                    if (buffer.length() > 0) {
-                        buffer.append("\n");
                     }
                 }
 
@@ -1008,6 +1046,154 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, APDecompteGenerationProcess.class.getName());
             abort();
         }
+    }
+
+    private String getAdresseAdministrationFiscale(String idTiersPrincipal) throws Exception {
+        TIAdministrationAdresseManager admAdrMgr = new TIAdministrationAdresseManager();
+        admAdrMgr.setSession(getSession());
+
+        // Trouver le canton de domicile du bénéfiaire principal
+        // Retrieve du destinataire de la décision
+
+        PRTiersWrapper tier = PRTiersHelper.getTiersAdresseDomicileParId(getSession(), idTiersPrincipal,
+                JACalendar.todayJJsMMsAAAA());
+
+        if (tier == null) {
+            throw new Exception(getSession().getLabel("PROCESS_PREP_DECISION_PAS_ADR_DOM"));
+        }
+
+        String cantonDomicile = tier.getProperty(PRTiersWrapper.PROPERTY_ID_CANTON);
+        String langueTier = tier.getProperty(PRTiersWrapper.PROPERTY_LANGUE);
+
+        admAdrMgr.setForCantonAdministration(cantonDomicile);
+        admAdrMgr.setForGenreAdministration("509011");// Administration fiscale cantonale
+        admAdrMgr.find();
+
+        if (admAdrMgr.isEmpty()) {
+//            if (!JadeStringUtil.contains(warningCopy.toString(), session.getLabel("WARNING_ADM_FISCALE"))) {
+//                warningCopy.append(session.getLabel("WARNING_ADM_FISCALE") + "\n");
+//            }
+            throw new Exception(getSession().getLabel("WARNING_ADM_FISCALE"));
+        }
+
+        String idAdmFiscale = "";
+        String idAdmFiscaleFR = "";
+        String idAdmFiscaleDE = "";
+        String idAdmFiscaleAutre = "";
+        String idAdmFiscaleNonBilingueAutre = "";
+
+        for (int i = 0; i < admAdrMgr.size(); i++) {
+
+            TIAdministrationAdresse entity = (TIAdministrationAdresse) admAdrMgr.get(i);
+
+            if (entity.getCantonAdministration().equals(IConstantes.CS_LOCALITE_CANTON_BERNE)
+                    || entity.getCantonAdministration().equals(IConstantes.CS_LOCALITE_CANTON_FRIBOURG)
+                    || entity.getCantonAdministration().equals(IConstantes.CS_LOCALITE_CANTON_VALAIS)) {
+                // si canton de Berne,Fribourg ou Valais choisir le service dans la langue du
+                // bénéficiaire principal
+                // sinon langue adm = langue tier
+
+                if (IConstantes.CS_TIERS_LANGUE_FRANCAIS.equals(langueTier)) {
+
+                    if (JadeStringUtil.isBlank(idAdmFiscaleFR)) {
+
+                        if (entity.getLangue().equals(IConstantes.CS_TIERS_LANGUE_FRANCAIS)) {
+                            idAdmFiscaleFR = entity.getIdTiers();
+                        } else if (entity.getLangue().equals(IConstantes.CS_TIERS_LANGUE_ALLEMAND)) {
+                            idAdmFiscaleDE = entity.getIdTiers();
+                        } else {
+                            idAdmFiscaleAutre = entity.getIdTiers();
+                        }
+                    }
+                } else if (IConstantes.CS_TIERS_LANGUE_ALLEMAND.equals(langueTier)
+                        || IConstantes.CS_TIERS_LANGUE_ROMANCHE.equals(langueTier)) {
+
+                    if (JadeStringUtil.isBlank(idAdmFiscaleDE)) {
+
+                        if (entity.getLangue().equals(IConstantes.CS_TIERS_LANGUE_FRANCAIS)) {
+                            idAdmFiscaleFR = entity.getIdTiers();
+                        } else if (entity.getLangue().equals(IConstantes.CS_TIERS_LANGUE_ALLEMAND)) {
+                            idAdmFiscaleDE = entity.getIdTiers();
+                        } else {
+                            idAdmFiscaleAutre = entity.getIdTiers();
+                        }
+                    }
+                } else {
+
+                    if (JadeStringUtil.isBlank(idAdmFiscaleAutre)) {
+
+                        if (entity.getLangue().equals(IConstantes.CS_TIERS_LANGUE_FRANCAIS)) {
+                            idAdmFiscaleFR = entity.getIdTiers();
+                        } else if (entity.getLangue().equals(IConstantes.CS_TIERS_LANGUE_ALLEMAND)) {
+                            idAdmFiscaleDE = entity.getIdTiers();
+                        } else {
+                            idAdmFiscaleAutre = entity.getIdTiers();
+                        }
+                    }
+                }
+            } else {
+                if (entity.getLangue().equals(langueTier)) {
+                    idAdmFiscale = entity.getIdTiers();
+                } else {
+                    idAdmFiscaleNonBilingueAutre = entity.getIdTiers();
+                }
+            }
+        }// Fin boucle for
+
+        if (JadeStringUtil.isBlank(idAdmFiscale) && JadeStringUtil.isBlank(idAdmFiscaleNonBilingueAutre)) {
+
+            // Si assuré FR, recours FR sinon DE sinon Autre
+            if (IConstantes.CS_TIERS_LANGUE_FRANCAIS.equals(langueTier)) {
+
+                if (!JadeStringUtil.isBlank(idAdmFiscaleFR)) {
+                    idAdmFiscale = idAdmFiscaleFR;
+                } else if (!JadeStringUtil.isBlank(idAdmFiscaleDE)) {
+                    idAdmFiscale = idAdmFiscaleDE;
+                } else if (!JadeStringUtil.isBlank(idAdmFiscaleAutre)) {
+                    idAdmFiscale = idAdmFiscaleAutre;
+                } else {
+                    idAdmFiscale = "";
+                }
+
+                // Si assuré DE ou RO, recours DE sinon FR sinon Autre
+            } else if (IConstantes.CS_TIERS_LANGUE_ALLEMAND.equals(langueTier)
+                    || IConstantes.CS_TIERS_LANGUE_ROMANCHE.equals(langueTier)) {
+
+                if (!JadeStringUtil.isBlank(idAdmFiscaleDE)) {
+                    idAdmFiscale = idAdmFiscaleDE;
+                } else if (!JadeStringUtil.isBlank(idAdmFiscaleFR)) {
+                    idAdmFiscale = idAdmFiscaleFR;
+                } else if (!JadeStringUtil.isBlank(idAdmFiscaleAutre)) {
+                    idAdmFiscale = idAdmFiscaleAutre;
+                } else {
+                    idAdmFiscale = "";
+                }
+
+                // Si assuré autre, recours FR sinon DE sinon Autre
+            } else {
+                if (!JadeStringUtil.isBlank(idAdmFiscaleAutre)) {
+                    idAdmFiscale = idAdmFiscaleAutre;
+                } else if (!JadeStringUtil.isBlank(idAdmFiscaleFR)) {
+                    idAdmFiscale = idAdmFiscaleFR;
+                } else if (!JadeStringUtil.isBlank(idAdmFiscaleDE)) {
+                    idAdmFiscale = idAdmFiscaleDE;
+                } else {
+                    idAdmFiscale = "";
+                }
+            }
+        }
+
+        if (JadeStringUtil.isBlank(idAdmFiscale)) {
+            if (!JadeStringUtil.isBlank(idAdmFiscaleNonBilingueAutre)) {
+                idAdmFiscale = idAdmFiscaleNonBilingueAutre;
+            }
+        }
+
+        if (!JadeStringUtil.isBlank(idAdmFiscale)) {
+            return idAdmFiscale;
+        }
+
+        return "";
     }
 
     private void createCorpsPaternite(Map<String, String> parametres) throws Exception {
