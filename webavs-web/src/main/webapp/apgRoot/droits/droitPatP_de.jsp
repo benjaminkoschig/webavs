@@ -735,7 +735,7 @@ function nextStepValidateAfterPopupSeodor(){
 <tr>
     <td>
         <label for="dateDebutDroit">
-            <ct:FWLabel key="JSP_DATE_DEBUT"/>
+            <ct:FWLabel key="JSP_DATE_DEBUT_PAT_NAISSANCE"/>
         </label>
     </td>
     <td>
