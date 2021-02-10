@@ -81,6 +81,7 @@ import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.naos.db.tauxAssurance.AFTauxAssurance;
 import globaz.naos.db.tauxAssurance.AFTauxAssuranceManager;
 import globaz.prestation.acor.PRACORException;
+import globaz.prestation.api.IPRDemande;
 import globaz.prestation.application.PRAbstractApplication;
 import globaz.prestation.beans.PRPeriode;
 import globaz.prestation.db.demandes.PRDemande;
@@ -90,6 +91,7 @@ import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRSession;
 import globaz.prestation.tools.nnss.PRNSSUtil;
 import globaz.prestation.utils.PRDateUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -1354,9 +1356,15 @@ public class APPrestationHelper extends PRAbstractHelper {
             viewBean.setGenreService(droit.getGenreService());
             viewBean.setDetailRequerant(getDetailRequerant(session, demande.getIdTiers()));
 
-            if(viewBean.hasValidationError() || viewBean.hasErreursValidationPeriodes()){
-                droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ERREUR);
-                droit.update();
+            if(StringUtils.equals(IPRDemande.CS_TYPE_PATERNITE,demande.getTypeDemande()) ||
+                    StringUtils.equals(IPRDemande.CS_TYPE_PANDEMIE,demande.getTypeDemande())) {
+                if (viewBean.hasValidationError() || viewBean.hasErreursValidationPeriodes()) {
+                    droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ERREUR);
+                    droit.update();
+                }else{
+                    droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
+                    droit.update();
+                }
             }
 
             if (!hasErrors(session, transaction)) {

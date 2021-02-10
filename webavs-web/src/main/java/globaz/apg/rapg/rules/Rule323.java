@@ -28,8 +28,6 @@ public class Rule323 extends Rule {
                   || JadeStringUtil.isBlankOrZero(champsAnnonce.getNumberOfWorkdays())
                 || JadeStringUtil.isBlankOrZero(champsAnnonce.getParternityLeaveType())
                 || JadeStringUtil.isBlankOrZero(champsAnnonce.getChildDomicile())
-                        || JadeStringUtil.isBlankOrZero(champsAnnonce.getChildCantonBorn())
-                        ||JadeStringUtil.isBlankOrZero(champsAnnonce.getChildInsurantVn())
                 )
         ){
             return false;
