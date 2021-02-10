@@ -662,14 +662,6 @@
 					<parameter name="genreService" />
 				</action>
 			</node>
-			<node>
-				<label refId="MENU_OPTION_GENERER_COMM_DEC" />
-				<action command="/apg" responseTarget="fr_main">
-					<parameter name="userAction" value="apg.process.genererDecisionAMAT.afficher" />
-					<parameter name="selectedId" />
-					<parameter name="genreService" />
-				</action>
-			</node>
 			<node id="initinfocompl">
 				<label refId="MENU_OPTION_INFO_COMPL" />
 				<action command="/apg" responseTarget="fr_main">
