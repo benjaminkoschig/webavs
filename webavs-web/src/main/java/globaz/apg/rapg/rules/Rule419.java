@@ -80,7 +80,7 @@ public class Rule419 extends Rule {
             for (int i = 0; i < droitsTries.size(); i++) {
                 APDroitPaterniteJointTiers droit = (APDroitPaterniteJointTiers) droitsTries.get(i);
                 for(APPeriodeAPG periodePat : droit.getPeriodes()){
-                    if (!JadeStringUtil.isBlank(periodePat.getNbrJours()) && IsSameOldestChild(droit.getIdDroit(),champsAnnonce.getChildInsurantVn())) {
+                    if (!JadeStringUtil.isBlank(periodePat.getNbrJours()) && IsSameOldestChild(droit.getIdDroit(),champsAnnonce.getChildInsurantVn()) && !(droit.getIdDroit().equals(champsAnnonce.getIdDroit()))) {
                         int nbreJoursAAjouter = Integer.parseInt(periodePat.getNbrJours());
                         nombreJoursPat += nbreJoursAAjouter;
                     }
