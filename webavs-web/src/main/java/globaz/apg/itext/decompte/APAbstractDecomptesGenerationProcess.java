@@ -3,13 +3,22 @@ package globaz.apg.itext.decompte;
 import java.io.File;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
+import java.text.FieldPosition;
 import java.util.*;
 
+import globaz.apg.api.droits.IAPDroitAPG;
 import globaz.apg.api.droits.IAPDroitLAPG;
+import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.db.droits.*;
 import globaz.apg.db.prestation.*;
+import globaz.apg.itext.APDecisionCommunicationAPAT;
 import globaz.apg.itext.decompte.utils.APEmployeurTiersUtil;
+import globaz.apg.module.calcul.APReferenceDataParser;
+import globaz.apg.module.calcul.rev2005.APReferenceDataAPG;
 import globaz.babel.api.ICTListeTextes;
+import globaz.framework.util.FWMessageFormat;
+import globaz.globall.db.*;
+import globaz.globall.util.*;
 import globaz.pyxis.db.tiers.TITiers;
 
 import ch.globaz.common.properties.PropertiesException;
@@ -38,15 +47,7 @@ import globaz.framework.printing.itext.fill.FWIImportManager;
 import globaz.framework.printing.itext.types.FWITemplateType;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
-import globaz.globall.db.BManager;
-import globaz.globall.db.BSession;
-import globaz.globall.db.GlobazJobQueue;
-import globaz.globall.db.GlobazServer;
 import globaz.globall.format.IFormatData;
-import globaz.globall.util.JACalendar;
-import globaz.globall.util.JADate;
-import globaz.globall.util.JAException;
-import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.properties.JadePropertiesService;
@@ -106,6 +107,20 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     private boolean restitution = false;
     private HashMap<String, String> mapEmployeurs = new HashMap();
     private String genreService = "";
+
+    // Paternité
+    private APDroitLAPG droit;
+    private final APPrestationManager prestations = new APPrestationManager();
+    private APRepartitionPaiements repartition;
+    private APPrestation prestationType;
+    private Boolean isMoreThanEnfant = false;
+    private Boolean employeursMultiples;
+    private Locale locale = null;
+
+    private JADate firstBirth;
+
+    private int nbRepEmployeur = 0;
+    private int nbRepAssure = 0;
 
     private Boolean isFirstForCopy = true;
 
@@ -580,6 +595,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 if(getIsCopie() && getFirstForCopy()){
                     parametres.put("P_COPIE", "COPIE");
                 }
+
             } else {
                 if (APTypeDeDecompte.JOUR_ISOLE.equals(decompteCourant.getTypeDeDecompte())) {
                     parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(2).getDescription());
@@ -689,35 +705,42 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             }
             final String titre = tiersTitre.getFormulePolitesse(tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
 
-            for (final Iterator<ICTTexte> textes = document.getTextes(2).iterator(); textes.hasNext();) {
-                final ICTTexte texte = textes.next();
-
-                // ne pas traiter le contenu optionnel
-                if (Integer.parseInt(texte.getPosition()) > 100) {
-                    break;
+            if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+                if (((getFirstForCopy() && getIsCopie()) || !getIsCopie())) {
+                    createCorpsPaternite(parametres);
                 }
-
-                if (buffer.length() > 0) {
-                    buffer.append("\n\n");
-                }
-                buffer.append(texte.getDescription());
-            }
-            buffer = new StringBuffer(PRStringUtils.formatMessage(buffer, titre));
-
-            buffer.append("\n\n");
-
-            // cette méthode est exécutée après createDataSource donc nous connaissons le total des prestations et donc
-            // nous savons s'il s'agit d'un document de restitution.
-
-            if (restitution) {
-                buffer.append(document.getTextes(2).getTexte(102).getDescription());
-            } else if (APTypeDeDecompte.JOUR_ISOLE.equals(decompteCourant.getTypeDeDecompte())) {
-                buffer.append(document.getTextes(2).getTexte(201).getDescription());
             } else {
-                buffer.append(document.getTextes(2).getTexte(101).getDescription());
-            }
 
-            parametres.put("PARAM_CORPS", buffer.toString());
+
+                for (final Iterator<ICTTexte> textes = document.getTextes(2).iterator(); textes.hasNext();) {
+                    final ICTTexte texte = textes.next();
+
+                    // ne pas traiter le contenu optionnel
+                    if (Integer.parseInt(texte.getPosition()) > 100) {
+                        break;
+                    }
+
+                    if (buffer.length() > 0) {
+                        buffer.append("\n\n");
+                    }
+                    buffer.append(texte.getDescription());
+                }
+                buffer = new StringBuffer(PRStringUtils.formatMessage(buffer, titre));
+
+                buffer.append("\n\n");
+
+                // cette méthode est exécutée après createDataSource donc nous connaissons le total des prestations et donc
+                // nous savons s'il s'agit d'un document de restitution.
+
+                if (restitution) {
+                    buffer.append(document.getTextes(2).getTexte(102).getDescription());
+                } else if (APTypeDeDecompte.JOUR_ISOLE.equals(decompteCourant.getTypeDeDecompte())) {
+                    buffer.append(document.getTextes(2).getTexte(201).getDescription());
+                } else {
+                    buffer.append(document.getTextes(2).getTexte(101).getDescription());
+                }
+                parametres.put("PARAM_CORPS", buffer.toString());
+            }
 
             // le détail
             if (getIsCopie() && !getFirstForCopy() && IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())){
@@ -987,9 +1010,516 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         }
     }
 
-    private boolean isRestitution() {
-        // TODO A Créer
+    private void createCorpsPaternite(Map<String, String> parametres) throws Exception {
+
+        // le corps du document
+        // ----------------------------------------------------------------------------------------
+        StringBuffer buffer = new StringBuffer();
+        ICTTexte texte;
+        int count = 0;
+
+        //On va charger les prestations ainsi que le nombre d'employeur
+        nombreEmployeurs();
+
+        final APEnfantPatManager enfMgr = new APEnfantPatManager();
+        enfMgr.setSession(getSession());
+        enfMgr.setForIdDroitPaternite(droit.getIdDroit());
+        enfMgr.find();
+
+        final JACalendar cal = new JACalendarGregorian();
+
+        if (enfMgr.size() > 1) {
+            isMoreThanEnfant = true;
+
+            firstBirth = new JADate("31.12.9999");
+
+            for (final Iterator iterator = enfMgr.iterator(); iterator.hasNext();) {
+                final APEnfantPat enfant = (APEnfantPat) iterator.next();
+
+                if (cal.compare(new JADate(enfant.getDateNaissance()), firstBirth) == JACalendar.COMPARE_FIRSTLOWER) {
+                    firstBirth = new JADate(enfant.getDateNaissance());
+                }
+
+            }
+
+        } else {
+            if (enfMgr.size() == 1) {
+                firstBirth = new JADate(((APEnfantPat) enfMgr.getFirstEntity()).getDateNaissance());
+            }
+        }
+
+        // fusionner tous les textes sauf les speciaux (position > 100)
+        try {
+            for (final Iterator textes = document.getTextes(2).iterator(); textes.hasNext();) {
+                final int position = Integer.parseInt((texte = (ICTTexte) textes.next()).getPosition());
+
+                if (position < 100) { // ignorer les textes speciaux
+
+                    if ((position > 3) && (position < 14)) {
+
+                    } else {
+
+                        if ((buffer.length() > 0) && (count < 3)) {
+                            buffer.append("\n\n"); // paragraphe (Seulement pour
+                            // les 2 premiers blocs !
+                        } else if (buffer.length() > 0) {
+                            buffer.append(" "); // Espace pour les ajouts de
+                            // lignes sans paragraphes
+                        }
+
+                        // si c'est le texte 2.2, et que la décision a plus d'un
+                        // enfant, il faut mettre le texte 2.13 à la place
+                        if ((position == 2) && isMoreThanEnfant) {
+                            buffer.append(document.getTextes(2).getTexte(13));
+                        } else {
+                            buffer.append(texte.getDescription());
+                        }
+
+                        count++;
+                    }
+                }
+            }
+        } catch (final NumberFormatException e) {
+            throw new FWIException("Valeur de position incorrecte: " + e.getMessage());
+        }
+
+        completeCorps(parametres, buffer, document.getTextes(2));
+
+    }
+
+    private void nombreEmployeurs() throws Exception {
+        // Récupérer les répartitions afin de déterminer si il y a 1
+        // décompte à l'assuré,
+        // ou 1 ou plusieurs à l' (aux) employeur(s)
+        // ou 1 ou + pour chacun
+        final APRepartitionPaiementsManager repartitionPaiementsManager = new APRepartitionPaiementsManager();
+        repartitionPaiementsManager.setSession(getSession());
+
+        for (int idPrestation = 0; idPrestation < loadPrestations().size(); ++idPrestation) {
+
+            final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
+
+            repartitionPaiementsManager.setForIdPrestation(prestation.getIdPrestationApg());
+            repartitionPaiementsManager.find(getTransaction());
+
+            for (int idRP = 0; idRP < repartitionPaiementsManager.size(); ++idRP) {
+                final APRepartitionPaiements rp = (APRepartitionPaiements) repartitionPaiementsManager.get(idRP);
+
+                if (rp.isBeneficiaireEmployeur()) {
+                    // si pas d'idAffilie --> Assuré
+                    nbRepEmployeur++;
+                } else {
+                    nbRepAssure++;
+                }
+
+            }
+        }
+    }
+
+    private APPrestationManager loadPrestations() throws FWIException {
+        if (!prestations.isLoaded()) {
+            prestations.setSession(getSession());
+            prestations.setForIdDroit(droit.getIdDroit());
+            prestations.setOrderBy(APPrestation.FIELDNAME_DATEDEBUT);
+
+            try {
+                prestations.find();
+            } catch (final Exception e) {
+                throw new FWIException("Impossible charger les prestations", e);
+            }
+        }
+
+        return prestations;
+    }
+
+    private void completeCorps(final Map parametres, final StringBuffer buffer, final ICTListeTextes textes)
+            throws Exception {
+        Object[] arguments = null;
+
+        if (decompteCourant.getIsPaiementEmployeur() && !decompteCourant.isIndependant()) {
+            arguments = completeCorpsEmployeurs(buffer, textes);
+        } else {
+            arguments = completeCorpsAssures(buffer, textes);
+        }
+
+        // remplacement
+        final FWMessageFormat message = createMessageFormat(buffer);
+
+        buffer.setLength(0); // on recycle
+
+        parametres.put("PARAM_CORPS", message.format(arguments, buffer, new FieldPosition(0)).toString());
+    }
+
+    private FWMessageFormat createMessageFormat(final StringBuffer pattern) {
+        // doubler les apostrophes pour eviter que MessageFormat se trompe
+        for (int idChar = pattern.length(); --idChar >= 0;) {
+            if (pattern.charAt(idChar) == '\'') {
+                pattern.insert(idChar, '\'');
+            }
+        }
+
+        // créer un formatteur pour la langue de la session
+        final FWMessageFormat retValue = new FWMessageFormat(pattern.toString());
+
+        if (locale == null) {
+            locale = new Locale(getSession().getIdLangueISO(), "CH");
+        }
+
+        retValue.setLocale(locale);
+
+        return retValue;
+    }
+
+    private Object[] completeCorpsAssures(final StringBuffer buffer, final ICTListeTextes textes) throws Exception {
+
+        // BZ 5373 : SI IJ AC, recalculer droitAcquis selon règle de calcul ((droitAcquis * 21.7)/30)
+        BigDecimal droitAcquis = new BigDecimal(droit.getDroitAcquis());
+
+        if (IAPDroitAPG.CS_IJ_ASSURANCE_CHOMAGE.equals(droit.getCsProvenanceDroitAcquis())) {
+            droitAcquis = (droitAcquis.multiply(new BigDecimal("21.7"))).divide(new BigDecimal("30.0"), 2,
+                    BigDecimal.ROUND_HALF_UP);
+
+            final FWCurrency droitAcquisArrondiAuCinqCentimes = new FWCurrency(droitAcquis.doubleValue());
+            droitAcquisArrondiAuCinqCentimes.round(FWCurrency.ROUND_5CT);
+            droitAcquis = new BigDecimal(droitAcquisArrondiAuCinqCentimes.toString());
+        }
+
+
+        buffer.append(" "); // espace
+        buffer.append(textes.getTexte(101).getDescription());
+
+
+        // ajouter le texte concernant l'employeur si nécessaire
+        // 1. Ajouter "L'allocation est calculée en tenant compte"
+        // 2. si versement à l'employeur, ajouter
+        // "qu'employeur réclame sa propre part"
+        // 3. si emp ne verse pas les 80%, ajouter
+        // "qu'employeur ne verse pas 80% du salaire habituel"
+        // 4. si contrat de travail --> fin, ajouter
+        // "qu'on contrat de travail arrive à échéance"
+        // --> Attention, plusieurs cas possible, et dans une seule phrase...
+        // (Gestion des virgules)
+
+        if (nbRepEmployeur > 0) {
+
+            int nbPhrase = 0;
+            boolean isVersementIncomplet = false;
+            boolean isContratTravailEcheance = false;
+
+            final APSituationProfessionnelleManager situationProfessionnelleMan = new APSituationProfessionnelleManager();
+
+            situationProfessionnelleMan.setForIdDroit(droit.getIdDroit());
+            situationProfessionnelleMan.setSession(getSession());
+
+            try {
+                situationProfessionnelleMan.find();
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+
+            for (int idSP = 0; idSP < situationProfessionnelleMan.size(); ++idSP) {
+                final APSituationProfessionnelle sp = (APSituationProfessionnelle) situationProfessionnelleMan
+                        .get(idSP);
+
+                if (!JadeStringUtil.isIntegerEmpty(sp.getMontantVerse())
+                        && !JadeStringUtil.isIntegerEmpty(sp.getPourcentMontantVerse())) {
+                    isVersementIncomplet = true;
+                }
+
+                if (!JadeStringUtil.isEmpty(sp.getDateFinContrat())) {
+                    isContratTravailEcheance = true;
+                }
+            }
+
+            if (isEmployeursMultiples() || isVersementIncomplet || isContratTravailEcheance) {
+                buffer.append(" ");
+                buffer.append(textes.getTexte(6).getDescription());
+            }
+
+            if (isEmployeursMultiples()) {
+                buffer.append(" ");
+                buffer.append(textes.getTexte(7).getDescription());
+                nbPhrase++;
+            }
+
+            if (isVersementIncomplet) {
+                if (nbPhrase > 0) {
+                    buffer.append(", ");
+                } else {
+                    buffer.append(" ");
+                }
+                buffer.append(textes.getTexte(8).getDescription());
+                nbPhrase++;
+            }
+
+            if (isContratTravailEcheance) {
+                if (nbPhrase > 0) {
+                    buffer.append(", ");
+                } else {
+                    buffer.append(" ");
+                }
+                buffer.append(textes.getTexte(9).getDescription());
+                nbPhrase++;
+            }
+
+            if (isEmployeursMultiples() || isVersementIncomplet || isContratTravailEcheance) {
+                buffer.append(".");
+            }
+
+            buffer.append("\n");
+        }
+
+        // creer les arguments a remplacer dans le texte
+
+        ITITiers tiersTitre = (ITITiers) getSession().getAPIFor(ITITiers.class);
+        final Hashtable params = new Hashtable();
+        params.put(ITITiers.FIND_FOR_IDTIERS, tiers().getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+        tiersTitre.findTiers(params);
+        final ITITiers[] t = tiersTitre.findTiers(params);
+        if ((t != null) && (t.length > 0)) {
+            tiersTitre = t[0];
+        }
+        final String titre = tiersTitre.getFormulePolitesse(tiersTitre.getLangue());
+
+        final Object[] arguments = new Object[8];
+
+        arguments[0] = titre;
+        arguments[1] = JACalendar.format(firstBirth.toString(), getCodeIsoLangue());
+        arguments[2] = JACalendar.format(droit.getDateDebutDroit());
+
+        arguments[3] = JACalendar.format(droit.getDateFinDroit());
+        // arguments[4] =
+        // JANumberFormatter.format(Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()),
+        // 1, 2 ,JANumberFormatter.NEAR);
+        arguments[5] = loadPrestationType().getMontantJournalier();
+        arguments[6] = droit.getDroitAcquis();
+
+        APReferenceDataAPG ref;
+        final JADate dateDebut = new JADate(droit.getDateDebutDroit());
+        final JADate dateFin = new JADate(droit.getDateFinDroit());
+
+        // début
+
+        final APSituationProfessionnelleManager sitProMan = new APSituationProfessionnelleManager();
+        sitProMan.setSession(getSession());
+        sitProMan.setForIdDroit(droit.getIdDroit());
+        sitProMan.find();
+
+        final BigDecimal revenuAnnuel = sitProMan.getRevenuAnnuelSituationsProfessionnelles();
+
+
+        ref = (APReferenceDataAPG) APReferenceDataParser.loadReferenceData(getSession(), "PATERNITE", dateDebut,
+                dateFin, dateFin);
+        final double montantJournalierMax = ref.getGE().intValue();
+        final double montantAnnuelMax = montantJournalierMax * 360;
+        boolean isMontantMax = false;
+
+        if (montantJournalierMax <= Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant())) {
+            arguments[7] = PRStringUtils.replaceString(textes.getTexte(10).getDescription(), "{montantAnnuelMax}",
+                    JANumberFormatter.format(montantAnnuelMax));
+            isMontantMax = true;
+        } else {
+            arguments[7] = PRStringUtils.replaceString(textes.getTexte(11).getDescription(), "{montantAnnuel}",
+                    JANumberFormatter.format(revenuAnnuel));
+        }
+
+        if (isMontantMax) {
+            arguments[4] = JANumberFormatter.format(montantJournalierMax);
+        } else {
+            arguments[4] = JANumberFormatter.format(
+                    Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 1, 2,
+                    JANumberFormatter.SUP);
+        }
+
+        return arguments;
+    }
+
+    // Retourne la première prestation n'etant pas une prestation de
+    // restitution.
+    private APPrestation loadPrestationType() throws FWIException {
+        if ((prestationType == null) && !loadPrestations().isEmpty()) {
+
+            try {
+                for (int i = 0; i < loadPrestations().getCount(); i++) {
+                    prestationType = (APPrestation) loadPrestations().get(i);
+                    if (IAPPrestation.CS_TYPE_ANNULATION.equals(prestationType.getType())) {
+                        continue;
+                    } else {
+                        // les prestations standard on la priorité
+                        if (APTypeDePrestation.STANDARD.isCodeSystemEqual(prestationType.getGenre())) {
+                            break;
+                        } else {
+                            continue;
+                        }
+                    }
+                }
+            } catch (final FWIException e) {
+                throw e;
+            } catch (final Exception e) {
+                throw new FWIException(e.getMessage());
+            }
+        }
+
+        return prestationType;
+    }
+
+    private PRTiersWrapper tiers() throws FWIException {
+        try {
+            final PRDemande demande = droit.loadDemande();
+            return PRTiersHelper.getTiersParId(getSession(), demande.getIdTiers());
+        } catch (final Exception e) {
+            throw new FWIException("TIERS_INTROUVABLE", e);
+        }
+    }
+
+    private boolean isEmployeursMultiples() throws FWIException {
+        if (employeursMultiples == null) {
+            final APSituationProfessionnelleManager sitPros = new APSituationProfessionnelleManager();
+
+            sitPros.setSession(getSession());
+            sitPros.setForIdDroit(droit.getIdDroit());
+
+            try {
+                if (sitPros.getCount() > 1) {
+                    employeursMultiples = Boolean.TRUE;
+                } else {
+                    employeursMultiples = Boolean.FALSE;
+                }
+            } catch (final Exception e) {
+                throw new FWIException("Impossible de charger les situations professionnelles");
+            }
+        }
+
+        return employeursMultiples.booleanValue();
+    }
+
+    private Object[] completeCorpsEmployeurs(final StringBuffer buffer, final ICTListeTextes textes) throws Exception {
+
+        final Object[] arguments = new Object[11];
+
+        buffer.append(" "); // espace
+        buffer.append(textes.getTexte(4).getDescription());
+
+        // ajouter le paragraphe sur la répartition de paiement si nécessaire
+        if (isEmployeursMultiples()) {
+            buffer.append(" "); // ligne
+            buffer.append(textes.getTexte(102).getDescription());
+
+            arguments[8] = repartition.getTauxRJM();
+
+            // calculer le pourcentage de l'employeur
+            final double pourcent = Double.parseDouble(repartition.getTauxRJM()) / 100d;
+
+            arguments[9] = JANumberFormatter.format(Double.parseDouble(loadPrestationType().getMontantJournalier())
+                    * pourcent, 0.05, 2, JANumberFormatter.NEAR);
+        }
+
+        // ajouter textes supp si nécessaire
+        if ((nbRepAssure > 0) && (nbRepEmployeur > 0)) {
+            if (isSituationProfessionnelleSpeciale()) {
+                buffer.append(" ");
+                buffer.append(textes.getTexte(103).getDescription());
+            }
+        }
+
+        buffer.append("\n");
+
+        // creer les arguments a remplacer dans le texte
+
+        ITITiers tiersTitre = (ITITiers) getSession().getAPIFor(ITITiers.class);
+        final Hashtable params = new Hashtable();
+        params.put(ITITiers.FIND_FOR_IDTIERS, repartition.getIdTiers());
+        tiersTitre.findTiers(params);
+        final ITITiers[] t = tiersTitre.findTiers(params);
+        if ((t != null) && (t.length > 0)) {
+            tiersTitre = t[0];
+        }
+        final String titre = tiersTitre.getFormulePolitesse(tiersTitre.getLangue());
+
+        // String codeIsoLangue =
+        // getSession().getCode(tiers().getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+
+        arguments[0] = titre;
+        arguments[1] = JACalendar.format(firstBirth.toString(), getCodeIsoLangue());
+        arguments[2] = tiers().getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
+                + tiers().getProperty(PRTiersWrapper.PROPERTY_PRENOM);
+        arguments[3] = JACalendar.format(droit.getDateDebutDroit());
+        arguments[4] = JACalendar.format(droit.getDateFinDroit());
+        arguments[5] = JANumberFormatter.format(Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()),
+                1, 2, JANumberFormatter.SUP);
+        arguments[6] = loadPrestationType().getMontantJournalier();
+        arguments[7] = droit.getDroitAcquis();
+
+        APReferenceDataAPG ref;
+        final JADate dateDebut = new JADate(droit.getDateDebutDroit());
+        final JADate dateFin = new JADate(droit.getDateFinDroit());
+
+        // début
+
+        final APSituationProfessionnelleManager sitProMan = new APSituationProfessionnelleManager();
+        sitProMan.setSession(getSession());
+        sitProMan.setForIdDroit(droit.getIdDroit());
+        sitProMan.find();
+
+        final BigDecimal revenuAnnuel = sitProMan.getRevenuAnnuelSituationsProfessionnelles();
+
+        ref = (APReferenceDataAPG) APReferenceDataParser.loadReferenceData(getSession(), "PATERNITE", dateDebut,
+                dateFin, dateFin);
+        final double montantJournalierMax = ref.getGE().intValue();
+        final double montantAnnuelMax = montantJournalierMax * 360;
+        boolean isMontantMax = false;
+
+        if (montantJournalierMax <= Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant())) {
+            arguments[10] = PRStringUtils.replaceString(textes.getTexte(5).getDescription(), "{montantAnnuelMax}",
+                    JANumberFormatter.format(montantAnnuelMax));
+
+            // arguments[10] =
+            // "supérieur à CHF "+JANumberFormatter.format(montantAnnuelMax);
+            isMontantMax = true;
+        } else {
+            arguments[10] = PRStringUtils.replaceString(textes.getTexte(6).getDescription(), "{montantAnnuel}",
+                    JANumberFormatter.format(revenuAnnuel));
+
+            // arguments[10] =
+            // "de CHF "+JANumberFormatter.format(Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant())*360);
+        }
+
+        if (isMontantMax) {
+            arguments[5] = JANumberFormatter.format(montantJournalierMax);
+        } else {
+            arguments[5] = JANumberFormatter.format(
+                    Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 1, 2,
+                    JANumberFormatter.SUP);
+        }
+
+
+
+        return arguments;
+    }
+
+    /**
+     *
+     */
+    private boolean isSituationProfessionnelleSpeciale() throws Exception {
+
+        final APSituationProfessionnelle situationProfessionnelle = new APSituationProfessionnelle();
+
+        situationProfessionnelle.setIdSituationProf(repartition.getIdSituationProfessionnelle());
+        situationProfessionnelle.setSession(getSession());
+        situationProfessionnelle.retrieve();
+
+        if (situationProfessionnelle.getIsVersementEmployeur().booleanValue()) {
+            if (!JadeStringUtil.isDecimalEmpty(situationProfessionnelle.getPourcentMontantVerse())) {
+                return true;
+            }
+        } else {
+            return false;
+        }
         return false;
+    }
+
+    private boolean isRestitution() {
+        return restitution;
     }
 
     private boolean isCorrectionDroit() {
@@ -1165,7 +1695,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         final List<Map<String, String>> lignes = new ArrayList<Map<String, String>>();
         FWCurrency total = new FWCurrency(0);
         final FWCurrency grandTotal = new FWCurrency(0);
-        APDroitLAPG droit;
+
         PRTiersWrapper tiers;
         Map<String, String> champs = new HashMap<String, String>();
         final FWCurrency totalAPG = new FWCurrency(0);
@@ -1175,10 +1705,13 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         final FWCurrency totalCompensations = new FWCurrency(0);
         int nbDecompte = 0;
 
+
+
         try {
             if (getIsCopie() && !getFirstForCopy() && IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())){
                 createLettreEntete();
             } else {
+//                droit = new APDroitLAPG();
                 // On déclare un TreeSet, triant les éléments par nom et prénom
                 final Set<APRepartitionJointPrestation> repartitionsTreeSet = new TreeSet<APRepartitionJointPrestation>(
                         new Comparator<APRepartitionJointPrestation>() {
