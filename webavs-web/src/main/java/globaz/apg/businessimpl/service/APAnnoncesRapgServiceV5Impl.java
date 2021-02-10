@@ -174,7 +174,9 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
             }
 
             paternityLeaveDataType.setChildDomicile(insurantDomicileType);
-            paternityLeaveDataType.setChildInsurantVn(Long.valueOf(champsAnnonce.getChildInsurantVn().replace(".", "")));
+            if(!JadeStringUtil.isEmpty(champsAnnonce.getChildInsurantVn())){
+                paternityLeaveDataType.setChildInsurantVn(Long.valueOf(champsAnnonce.getChildInsurantVn().replace(".", "")));
+            }
             message.setPaternityLeaveData(paternityLeaveDataType);
         }
         return message;

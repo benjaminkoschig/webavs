@@ -23,7 +23,6 @@ import java.util.Objects;
 public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
 
     private String dateDeces = null;
-
     private String dateDebutPeriode = "";
     private String dateFinPeriode = "";
     private List<PRPeriode> periodes;
@@ -298,8 +297,5 @@ public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
             msgHTML.append("<p>"+messagesError.getMessageErreur()+"<p><br>");
         }
         return msgHTML.toString();
-    }
-    public int getNombreJoursMax(){
-        return 1;
     }
 }
