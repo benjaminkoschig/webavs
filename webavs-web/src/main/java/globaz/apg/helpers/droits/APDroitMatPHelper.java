@@ -88,8 +88,8 @@ public class APDroitMatPHelper extends APAbstractDroitPHelper {
             APDroitMaternite droit = ApgServiceLocator.getEntityService().getDroitMaternite(session, transaction,
                     viewBean.getIdDroit());
             APDroitAPGPViewBean actionAfficherViewBean = new APDroitAPGPViewBean();
-            droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
-            droit.update();
+//            droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
+//            droit.update();
             actionAfficherViewBean.setDroit(droit);
 
             if (!hasErrors(session, transaction)) {

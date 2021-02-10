@@ -67,8 +67,8 @@ public class APDroitAPGPHelper extends APAbstractDroitPHelper {
             APDroitAPG droit = ApgServiceLocator.getEntityService().getDroitAPG(session, transaction,
                     viewBean.getIdDroit());
             actionAfficherViewBean.setDroit(droit);
-            droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
-            droit.update();
+//            droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
+//            droit.update();
             if (!hasError(session, transaction)) {
                 transaction.commit();
             }
