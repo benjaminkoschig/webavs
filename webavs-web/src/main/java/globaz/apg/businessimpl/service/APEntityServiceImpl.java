@@ -1075,7 +1075,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         BigDecimal joursMax = BigDecimal.ZERO;
         for (int i = 0; i < parametersManager.size(); i++) {
             FWParameters tmpEntity = (FWParameters) parametersManager.getEntity(i);
-            if(JadeDateUtil.isDateAfter(parametersManager.getFromDateDebut(),dateDeDebutDroit) || tmpEntity.getDateDebutValidite().equals(dateDeDebutDroit)){
+            if(JadeDateUtil.isDateAfter(dateDeDebutDroit,tmpEntity.getDateDebutValidite()) || tmpEntity.getDateDebutValidite().equals(dateDeDebutDroit)){
                 joursMax = new BigDecimal(tmpEntity.getValeurNumerique());
             }
         }
@@ -1090,7 +1090,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         BigDecimal nombreMoisMaxApres = BigDecimal.ZERO;
         for (int i = 0; i < parametersManager.size(); i++) {
             FWParameters tmpEntity = (FWParameters) parametersManager.getEntity(i);
-            if(JadeDateUtil.isDateAfter(parametersManager.getFromDateDebut(),dateDeDebutDroit) || tmpEntity.getDateDebutValidite().equals(dateDeDebutDroit)){
+            if(JadeDateUtil.isDateAfter(dateDeDebutDroit,tmpEntity.getDateDebutValidite()) || tmpEntity.getDateDebutValidite().equals(dateDeDebutDroit)){
                 nombreMoisMaxApres = new BigDecimal(tmpEntity.getValeurNumerique());
             }
         }
