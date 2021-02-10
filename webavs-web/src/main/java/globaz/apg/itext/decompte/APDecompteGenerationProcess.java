@@ -245,6 +245,7 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
             documentHelper.setCsDomaine(IAPCatalogueTexte.CS_APG);
         }
 
+
         if (IPRDemande.CS_TYPE_MATERNITE.equals(csTypePrestation)) {
             documentHelper.setCsTypeDocument(IAPCatalogueTexte.CS_DECOMPTE_MAT);
             // TODO A Suppr aprés test décompte
@@ -549,54 +550,80 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
     public final boolean hasNextDocument() throws FWIException {
         boolean next = false;
         APDecompte decompteCourant = null;
-        /*
-         * Si la valeur du champs 'traitementCourant' == TRAITEMENT_DONNEES, c'est que la préparation des données à été
-         * réalisée mais qu'aucun document n'a encore été généré ! On ne passe qu'une fois dans cette portion du switch
-         */
-        if (TraitementCourant.RECUPERATION_AGREGATION_DONNEES.equals(traitementCourant)) {
-            traitementCourant = TraitementCourant.TRAITEMENT_REPARTITIONS;
-            next = iteratorRepartitions.hasNext();
 
-            // Si oui, il faut récupérer le décompte en question. Si on ne trouve pas de répartition à ce niveau, on ne
-            // vas pas aller voir les ventilations
-            if (next) {
-                decompteCourant = repartitions.get(iteratorRepartitions.next());
-
-                // lors de l'execution de la copie (Type PANDEMIE), nous ne voulons pas rééditer
-                // les décomptes pour indépendant / les paiements pour employeur
-                // la boucle permet de vérifier les itérations suivantes jusqu'à trouver un décompte correspondant
-                while((getIsCopie() && (!hasRemboursementAssure(decompteCourant) || isIndependant(decompteCourant))) && next) {
-                    next = iteratorRepartitions.hasNext();
-                    if (next) {
-                        decompteCourant = repartitions.get(iteratorRepartitions.next());
-                    } else {
-                        decompteCourant = null;
-                    }
-                }
-            }
-        } else if (TraitementCourant.TRAITEMENT_REPARTITIONS.equals(traitementCourant)) {
-            // Si oui, il faut récupérer le décompte en question
-            next = iteratorRepartitions.hasNext();
-            if (next) {
-                decompteCourant = repartitions.get(iteratorRepartitions.next());
-                // lors de l'execution de la copie (Type PANDEMIE), nous ne voulons pas rééditer
-                // les décomptes pour indépendant / les paiements pour employeur
-                // la boucle permet de vérifier les itérations suivantes jusqu'à trouver un décompte correspondant
-                while((getIsCopie() && (!hasRemboursementAssure(decompteCourant) || isIndependant(decompteCourant))) && next) {
-                    next = iteratorRepartitions.hasNext();
-                    if (next) {
-                        decompteCourant = repartitions.get(iteratorRepartitions.next());
-                    } else {
-                        decompteCourant = null;
-                    }
-                }
-            }
-
+        if(!getFirstForCopy() && IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) && getIsCopie()) {
+            setFirstForCopy(true);
+            return true;
+        } else {
             /*
-             * S'il n'y à plus de documents à générer pour les répartitions, il faut générer les documents liés aux
-             * ventilations
+             * Si la valeur du champs 'traitementCourant' == TRAITEMENT_DONNEES, c'est que la préparation des données à été
+             * réalisée mais qu'aucun document n'a encore été généré ! On ne passe qu'une fois dans cette portion du switch
              */
-            if (!next) {
+            if (TraitementCourant.RECUPERATION_AGREGATION_DONNEES.equals(traitementCourant)) {
+                traitementCourant = TraitementCourant.TRAITEMENT_REPARTITIONS;
+                next = iteratorRepartitions.hasNext();
+
+                // Si oui, il faut récupérer le décompte en question. Si on ne trouve pas de répartition à ce niveau, on ne
+                // vas pas aller voir les ventilations
+                if (next) {
+                    decompteCourant = repartitions.get(iteratorRepartitions.next());
+
+                    // lors de l'execution de la copie (Type PANDEMIE), nous ne voulons pas rééditer
+                    // les décomptes pour indépendant / les paiements pour employeur
+                    // la boucle permet de vérifier les itérations suivantes jusqu'à trouver un décompte correspondant
+                    while((getIsCopie() && (!hasRemboursementAssure(decompteCourant) || isIndependant(decompteCourant))) && next && !IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+                        next = iteratorRepartitions.hasNext();
+                        if (next) {
+                            decompteCourant = repartitions.get(iteratorRepartitions.next());
+                        } else {
+                            decompteCourant = null;
+                        }
+                    }
+                }
+            } else if (TraitementCourant.TRAITEMENT_REPARTITIONS.equals(traitementCourant)) {
+                // Si oui, il faut récupérer le décompte en question
+                next = iteratorRepartitions.hasNext();
+                if (next) {
+                    decompteCourant = repartitions.get(iteratorRepartitions.next());
+                    // lors de l'execution de la copie (Type PANDEMIE), nous ne voulons pas rééditer
+                    // les décomptes pour indépendant / les paiements pour employeur
+                    // la boucle permet de vérifier les itérations suivantes jusqu'à trouver un décompte correspondant
+                    while((getIsCopie() && (!hasRemboursementAssure(decompteCourant) || isIndependant(decompteCourant))) && next && !IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+                        next = iteratorRepartitions.hasNext();
+                        if (next) {
+                            decompteCourant = repartitions.get(iteratorRepartitions.next());
+                        } else {
+                            decompteCourant = null;
+                        }
+                    }
+                }
+
+                /*
+                 * S'il n'y à plus de documents à générer pour les répartitions, il faut générer les documents liés aux
+                 * ventilations
+                 */
+                if (!next) {
+                    // Si oui, il faut récupérer le décompte en question
+                    next = iteratorVentilations.hasNext();
+                    if (next) {
+                        decompteCourant = ventilations.get(iteratorVentilations.next());
+                        // lors de l'execution de la copie (Type PANDEMIE), nous ne voulons pas rééditer
+                        // les décomptes pour indépendant / les paiements pour employeur
+                        // la boucle permet de vérifier les itérations suivantes jusqu'à trouver un décompte correspondant
+                        while((getIsCopie() && (!hasRemboursementAssure(decompteCourant) || isIndependant(decompteCourant))) && next && !IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+                            next = iteratorVentilations.hasNext();
+                            if (next) {
+                                decompteCourant = ventilations.get(iteratorVentilations.next());
+                            } else {
+                                decompteCourant = null;
+                            }
+                        }
+                        if (next){
+                            traitementCourant = TraitementCourant.TRAITEMENT_VENTILATIONS;
+                        }
+                    }
+                }
+            } else if (TraitementCourant.TRAITEMENT_VENTILATIONS.equals(traitementCourant)) {
                 // Si oui, il faut récupérer le décompte en question
                 next = iteratorVentilations.hasNext();
                 if (next) {
@@ -604,7 +631,7 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
                     // lors de l'execution de la copie (Type PANDEMIE), nous ne voulons pas rééditer
                     // les décomptes pour indépendant / les paiements pour employeur
                     // la boucle permet de vérifier les itérations suivantes jusqu'à trouver un décompte correspondant
-                    while((getIsCopie() && (!hasRemboursementAssure(decompteCourant) || isIndependant(decompteCourant))) && next) {
+                    while((getIsCopie() && (!hasRemboursementAssure(decompteCourant) || isIndependant(decompteCourant))) && next && !IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
                         next = iteratorVentilations.hasNext();
                         if (next) {
                             decompteCourant = ventilations.get(iteratorVentilations.next());
@@ -612,53 +639,37 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
                             decompteCourant = null;
                         }
                     }
-                    if (next){
-                        traitementCourant = TraitementCourant.TRAITEMENT_VENTILATIONS;
-                    }
                 }
+            } else {
+                throw new FWIException("APDecompteGenerationProcess.hasNextDocument() : unconsistent state Founded ["
+                        + traitementCourant
+                        + "], expected [TRAITEMENT_REPARTITIONS, TRAITEMENT_VENTILATIONS]. Unexpected error...");
             }
-        } else if (TraitementCourant.TRAITEMENT_VENTILATIONS.equals(traitementCourant)) {
-            // Si oui, il faut récupérer le décompte en question
-            next = iteratorVentilations.hasNext();
+
+            // Plus de décompte à générer mais next toujours à true --> incohérence
+            if ((decompteCourant == null) && next) {
+                throw new FWIException("Incohérence dans la méthode next() : il n'y à plus de décompte à générer");
+            }
+
+            // Encore des décomptes à générer mais next à false --> incohérence
+            if ((decompteCourant != null) && !next) {
+                throw new FWIException("Incohérence dans la méthode next() : il y à toujours des décomptes à générer");
+            }
+
             if (next) {
-                decompteCourant = ventilations.get(iteratorVentilations.next());
-                // lors de l'execution de la copie (Type PANDEMIE), nous ne voulons pas rééditer
-                // les décomptes pour indépendant / les paiements pour employeur
-                // la boucle permet de vérifier les itérations suivantes jusqu'à trouver un décompte correspondant
-                while((getIsCopie() && (!hasRemboursementAssure(decompteCourant) || isIndependant(decompteCourant))) && next) {
-                    next = iteratorVentilations.hasNext();
-                    if (next) {
-                        decompteCourant = ventilations.get(iteratorVentilations.next());
-                    } else {
-                        decompteCourant = null;
-                    }
+                final ICTDocument catalogueTextes = chargerCatalogue(decompteCourant);
+                if (catalogueTextes == null) {
+                    throw new FWIException("Impossible de retrouver le catalogue de textes pour la génération du décomptes");
                 }
+                setDecompteCourant(decompteCourant);
+                setCatalogueTextesCourant(catalogueTextes);
             }
-        } else {
-            throw new FWIException("APDecompteGenerationProcess.hasNextDocument() : unconsistent state Founded ["
-                    + traitementCourant
-                    + "], expected [TRAITEMENT_REPARTITIONS, TRAITEMENT_VENTILATIONS]. Unexpected error...");
-        }
-
-        // Plus de décompte à générer mais next toujours à true --> incohérence
-        if ((decompteCourant == null) && next) {
-            throw new FWIException("Incohérence dans la méthode next() : il n'y à plus de décompte à générer");
-        }
-
-        // Encore des décomptes à générer mais next à false --> incohérence
-        if ((decompteCourant != null) && !next) {
-            throw new FWIException("Incohérence dans la méthode next() : il y à toujours des décomptes à générer");
-        }
-
-        if (next) {
-            final ICTDocument catalogueTextes = chargerCatalogue(decompteCourant);
-            if (catalogueTextes == null) {
-                throw new FWIException("Impossible de retrouver le catalogue de textes pour la génération du décomptes");
+            // Dans le cas de la paternité, nous devons généré une entête lors de la création des copies
+            if (getIsCopie() && IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+                setFirstForCopy(false);
             }
-            setDecompteCourant(decompteCourant);
-            setCatalogueTextesCourant(catalogueTextes);
+            return next;
         }
-        return next;
     }
 
     private Boolean hasRemboursementAssure(APDecompte decompte){
@@ -673,11 +684,11 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
         if (Objects.isNull(decompte)) return false;
         for (final APRepartitionJointPrestation repartition : decompte.getRepartitionsPeres()) {
             try {
-            APSituationProfessionnelle situationPro = new APSituationProfessionnelle();
-            situationPro.setSession(getSession());
-            situationPro.setIdSituationProf(repartition.getIdSituationProfessionnelle());
-            situationPro.retrieve();
-            return situationPro.getIsIndependant();
+                APSituationProfessionnelle situationPro = new APSituationProfessionnelle();
+                situationPro.setSession(getSession());
+                situationPro.setIdSituationProf(repartition.getIdSituationProfessionnelle());
+                situationPro.retrieve();
+                return situationPro.getIsIndependant();
             } catch (Exception e) {
                 LOG.error("#APDecompteGenerationProcess#isIndependantImpossible de récupérer la situation pro", e);
             }

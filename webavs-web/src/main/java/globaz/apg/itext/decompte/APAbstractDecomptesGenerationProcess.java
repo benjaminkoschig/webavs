@@ -10,7 +10,6 @@ import globaz.apg.db.droits.*;
 import globaz.apg.db.prestation.*;
 import globaz.apg.itext.decompte.utils.APEmployeurTiersUtil;
 import globaz.babel.api.ICTListeTextes;
-import globaz.cygnus.api.demandes.IRFDemande;
 import globaz.pyxis.db.tiers.TITiers;
 
 import ch.globaz.common.properties.PropertiesException;
@@ -90,6 +89,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
     private static final String DETAIL_COTISATIONS_FNE = "FIELD_DETAIL_COTISATIONS_FNE";
     private static final String FICHIER_MODELE = "AP_DECOMPTE";
+    private static final String FICHIER_MODELE_PATERNITE = "AP_DECISION_PATERNITE";
     private static final String MONTANT_COTISATIONS_FNE = "FIELD_MONTANT_COTISATIONS_FNE";
     private static final String ORDER_PRINTING_BY = "orderPrintingBy";
     private static final String PARAMETER_PRESTATION_COMPLEMENTAIRE = "FIELD_PREST_COMPL";
@@ -106,6 +106,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     private boolean restitution = false;
     private HashMap<String, String> mapEmployeurs = new HashMap();
     private String genreService = "";
+
+    private Boolean isFirstForCopy = true;
 
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(APAbstractDecomptesGenerationProcess.class);
 
@@ -409,6 +411,19 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         }
     }
 
+    private void createLettreEntete() throws Exception {
+
+        final List<Map<String, String>> lignes = new ArrayList<Map<String, String>>();
+
+        Map champs = new HashMap();
+        champs.put("PARAM_ISENTETE", "OUI");
+        lignes.add(champs);
+
+        this.setDataSource(lignes);
+
+
+    }
+
     /** Remplit les différents corps du document avec le catalogue de texte. */
     @SuppressWarnings("unchecked")
     @Override
@@ -560,12 +575,17 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     // si droit normal
                     parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(1).getDescription());
                 }
+
+                // S'il s'agit d'une copie des décisions envoyées au FISC et qu'il ne s'agit pas de la lettre d'entête
+                if(getIsCopie() && getFirstForCopy()){
+                    parametres.put("P_COPIE", "COPIE");
+                }
             } else {
-            if (APTypeDeDecompte.JOUR_ISOLE.equals(decompteCourant.getTypeDeDecompte())) {
-                parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(2).getDescription());
-            } else {
-                parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(1).getDescription());
-            }
+                if (APTypeDeDecompte.JOUR_ISOLE.equals(decompteCourant.getTypeDeDecompte())) {
+                    parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(2).getDescription());
+                } else {
+                    parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(1).getDescription());
+                }
             }
 
 
@@ -580,7 +600,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             } else {
                 switch (decompteCourant.getTypeDeDecompte()) {
 
-                    case MATCIAB2:
                     case NORMAL:
                         type_decompte = document.getTextes(5).getTexte(6).getDescription();
                         break;
@@ -701,15 +720,20 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             parametres.put("PARAM_CORPS", buffer.toString());
 
             // le détail
-            parametres.put("PARAM_ASSURE", document.getTextes(3).getTexte(1).getDescription());
-            parametres.put("PARAM_DETAIL", document.getTextes(3).getTexte(2).getDescription());
-            parametres.put("PARAM_MONTANT", document.getTextes(3).getTexte(3).getDescription());
-            parametres.put("PARAM_DEVISE", document.getTextes(3).getTexte(4).getDescription());
+            if (getIsCopie() && !getFirstForCopy() && IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())){
+                parametres.put("PARAM_ISENTETE", "OUI");
+            } else {
+                parametres.put("PARAM_ASSURE", document.getTextes(3).getTexte(1).getDescription());
+                parametres.put("PARAM_DETAIL", document.getTextes(3).getTexte(2).getDescription());
+                parametres.put("PARAM_MONTANT", document.getTextes(3).getTexte(3).getDescription());
+                parametres.put("PARAM_DEVISE", document.getTextes(3).getTexte(4).getDescription());
+            }
+
 
             // le pied de page
             buffer.setLength(0);
 
-            for (final Iterator<ICTTexte> textes = document.getTextes(4).iterator(); textes.hasNext();) {
+            for (final Iterator<ICTTexte> textes = document.getTextes(4).iterator(); textes.hasNext(); ) {
                 final ICTTexte texte = textes.next();
 
                 // ne pas traiter le contenu optionnel
@@ -734,17 +758,140 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         }
 
                         // Ajout d'une ligne aprés position 4 / 1 si un élément est contenu dans le catalogue de texte.
-                        for(APGenreServiceAPG genre : APGenreServiceAPG.listPandemie()) {
-                            Integer position = Integer.parseInt(genre.getCodePourAnnonce());
-                            if(Objects.equals(genreService, genre.getCodeSysteme())
-                                    && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), genre.getCodePourAnnonce())
-                                    && Objects.nonNull(document.getTextes(4).getTexte(position))){
+                        // 400
+                        if (Objects.equals(genreService, IAPDroitLAPG.CS_GARDE_PARENTALE)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "400")
+                                && Objects.nonNull(document.getTextes(4).getTexte(400))) {
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(400).getDescription());
+                            if (buffer.length() > 0) {
                                 buffer.append("\n");
-                                buffer.append(document.getTextes(4).getTexte(position).getDescription());
-                                if (buffer.length() > 0) {
-                                    buffer.append("\n");
-                                }
-                                break;
+                            }
+                            // 401
+                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_QUARANTAINE)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "401")
+                                && Objects.nonNull(document.getTextes(4).getTexte(401))) {
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(401).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
+                            // 402
+                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "402")
+                                && Objects.nonNull(document.getTextes(4).getTexte(402))) {
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(402).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
+                            // 403
+                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_INDEPENDANT_PERTE_GAINS)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "403")
+                                && Objects.nonNull(document.getTextes(4).getTexte(403))) {
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(403).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
+                            // 404
+                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "404")
+                                && Objects.nonNull(document.getTextes(4).getTexte(404))) {
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(404).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
+                            // 405
+                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_INDEPENDANT_MANIF_ANNULEE)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "405")
+                                && Objects.nonNull(document.getTextes(4).getTexte(405))) {
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(405).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
+                            // 406
+                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_SALARIE_EVENEMENTIEL)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "406")
+                                && Objects.nonNull(document.getTextes(4).getTexte(406))) {
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(406).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
+                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_INDEPENDANT_FERMETURE)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "410")
+                                && Objects.nonNull(document.getTextes(4).getTexte(410))) {
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(410).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
+                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_DIRIGEANT_SALARIE_FERMETURE)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "411")
+                                && Objects.nonNull(document.getTextes(4).getTexte(411))) {
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(411).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
+                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_INDEPENDANT_MANIFESTATION_ANNULEE)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "412")
+                                && Objects.nonNull(document.getTextes(4).getTexte(412))) {
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(412).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
+                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_DIRIGEANT_SALARIE_MANIFESTATION_ANNULEE)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "413")
+                                && Objects.nonNull(document.getTextes(4).getTexte(413))) {
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(413).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
+                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_INDEPENDANT_LIMITATION_ACTIVITE)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "414")
+                                && Objects.nonNull(document.getTextes(4).getTexte(414))) {
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(414).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
+                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_DIRIGEANT_SALARIE_LIMITATION_ACTIVITE)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "415")
+                                && Objects.nonNull(document.getTextes(4).getTexte(415))) {
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(415).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
+                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_GARDE_PARENTALE_17_09_20)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "416")
+                                && Objects.nonNull(document.getTextes(4).getTexte(416))) {
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(416).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
+                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_QUARANTAINE_17_09_20)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "417")
+                                && Objects.nonNull(document.getTextes(4).getTexte(417))) {
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(417).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
+                            }
+                        } else if (Objects.equals(genreService, IAPDroitLAPG.CS_GARDE_PARENTALE_HANDICAP_17_09_20)
+                                && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot()) && positionExistInCatalogueTextes(document.getTextes(4), "418")
+                                && Objects.nonNull(document.getTextes(4).getTexte(418))) {
+                            buffer.append("\n");
+                            buffer.append(document.getTextes(4).getTexte(418).getDescription());
+                            if (buffer.length() > 0) {
+                                buffer.append("\n");
                             }
                         }
                     }
@@ -756,6 +903,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 }
 
             }
+
 
             parametres.put("PARAM_PIED", buffer.toString());
 
@@ -1028,695 +1176,707 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         int nbDecompte = 0;
 
         try {
+            if (getIsCopie() && !getFirstForCopy() && IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())){
+                createLettreEntete();
+            } else {
+                // On déclare un TreeSet, triant les éléments par nom et prénom
+                final Set<APRepartitionJointPrestation> repartitionsTreeSet = new TreeSet<APRepartitionJointPrestation>(
+                        new Comparator<APRepartitionJointPrestation>() {
+                            @Override
+                            public int compare(final APRepartitionJointPrestation objRepartition1,
+                                               final APRepartitionJointPrestation objRepartition2) {
 
-            // On déclare un TreeSet, triant les éléments par nom et prénom
-            final Set<APRepartitionJointPrestation> repartitionsTreeSet = new TreeSet<APRepartitionJointPrestation>(
-                    new Comparator<APRepartitionJointPrestation>() {
-                        @Override
-                        public int compare(final APRepartitionJointPrestation objRepartition1,
-                                final APRepartitionJointPrestation objRepartition2) {
+                                final String nom1 = getNom(objRepartition1, PRTiersWrapper.PROPERTY_NOM);
+                                final String nom2 = getNom(objRepartition2, PRTiersWrapper.PROPERTY_NOM);
+                                if (nom1 != null) {
+                                    final int nomComp = nom1.compareTo(nom2);
 
-                            final String nom1 = getNom(objRepartition1, PRTiersWrapper.PROPERTY_NOM);
-                            final String nom2 = getNom(objRepartition2, PRTiersWrapper.PROPERTY_NOM);
-                            if (nom1 != null) {
-                                final int nomComp = nom1.compareTo(nom2);
-
-                                if (nomComp != 0) {
-                                    return nomComp;
-                                } else {
-                                    String prenom1 = null;
-                                    try {
-                                        prenom1 = getNom(objRepartition1, PRTiersWrapper.PROPERTY_PRENOM)
-                                                + PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(
-                                                        objRepartition1.getDateDebut())
-                                                + objRepartition1.getIdRepartitionBeneficiairePaiement();
-                                    } catch (final JAException e) {
-                                        prenom1 = getNom(objRepartition1, PRTiersWrapper.PROPERTY_PRENOM)
-                                                + objRepartition1.getIdRepartitionBeneficiairePaiement();
-
-                                    }
-
-                                    String prenom2;
-                                    try {
-                                        prenom2 = getNom(objRepartition2, PRTiersWrapper.PROPERTY_PRENOM)
-                                                + PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(
-                                                        objRepartition2.getDateDebut())
-                                                + objRepartition2.getIdRepartitionBeneficiairePaiement();
-                                    } catch (final JAException e) {
-                                        prenom2 = getNom(objRepartition2, PRTiersWrapper.PROPERTY_PRENOM)
-                                                + objRepartition2.getIdRepartitionBeneficiairePaiement();
-
-                                    }
-
-                                    if (prenom1 != null) {
-                                        return prenom1.compareTo(prenom2);
+                                    if (nomComp != 0) {
+                                        return nomComp;
                                     } else {
-                                        return 0;
-                                    }
-                                }
-                            } else {
-                                return 0;
-                            }
-                        }
+                                        String prenom1 = null;
+                                        try {
+                                            prenom1 = getNom(objRepartition1, PRTiersWrapper.PROPERTY_PRENOM)
+                                                    + PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(
+                                                    objRepartition1.getDateDebut())
+                                                    + objRepartition1.getIdRepartitionBeneficiairePaiement();
+                                        } catch (final JAException e) {
+                                            prenom1 = getNom(objRepartition1, PRTiersWrapper.PROPERTY_PRENOM)
+                                                    + objRepartition1.getIdRepartitionBeneficiairePaiement();
 
-                        private String getNom(final APRepartitionJointPrestation objRepartition,
-                                final String propriete) {
-                            try {
-                                if (objRepartition != null) {
-                                    final PRDemande demande = ApgServiceLocator.getEntityService().getDemandeDuDroit(
-                                            APAbstractDecomptesGenerationProcess.this.getSession(),
-                                            APAbstractDecomptesGenerationProcess.this.getTransaction(),
-                                            objRepartition.getIdDroit());
-                                    final PRTiersWrapper tiers = PRTiersHelper.getTiersParId(
-                                            APAbstractDecomptesGenerationProcess.this.getSession(),
-                                            demande.getIdTiers());
-                                    return tiers.getProperty(propriete);
+                                        }
+
+                                        String prenom2;
+                                        try {
+                                            prenom2 = getNom(objRepartition2, PRTiersWrapper.PROPERTY_PRENOM)
+                                                    + PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(
+                                                    objRepartition2.getDateDebut())
+                                                    + objRepartition2.getIdRepartitionBeneficiairePaiement();
+                                        } catch (final JAException e) {
+                                            prenom2 = getNom(objRepartition2, PRTiersWrapper.PROPERTY_PRENOM)
+                                                    + objRepartition2.getIdRepartitionBeneficiairePaiement();
+
+                                        }
+
+                                        if (prenom1 != null) {
+                                            return prenom1.compareTo(prenom2);
+                                        } else {
+                                            return 0;
+                                        }
+                                    }
                                 } else {
+                                    return 0;
+                                }
+                            }
+
+                            private String getNom(final APRepartitionJointPrestation objRepartition,
+                                                  final String propriete) {
+                                try {
+                                    if (objRepartition != null) {
+                                        final PRDemande demande = ApgServiceLocator.getEntityService().getDemandeDuDroit(
+                                                APAbstractDecomptesGenerationProcess.this.getSession(),
+                                                APAbstractDecomptesGenerationProcess.this.getTransaction(),
+                                                objRepartition.getIdDroit());
+                                        final PRTiersWrapper tiers = PRTiersHelper.getTiersParId(
+                                                APAbstractDecomptesGenerationProcess.this.getSession(),
+                                                demande.getIdTiers());
+                                        return tiers.getProperty(propriete);
+                                    } else {
+                                        return null;
+                                    }
+
+                                } catch (final Exception e) {
                                     return null;
                                 }
+                            }
+                        });
 
-                            } catch (final Exception e) {
-                                return null;
+                repartitionsTreeSet.addAll(decompteCourant.getRepartitionsPeres());
+
+                Boolean hasPrestationAPGFederale = false;
+                for (final APRepartitionJointPrestation repartition : repartitionsTreeSet) {
+
+                    // S'il s'agit d'un type pandémie, il faudra donc envoyer des copies aux employeurs
+                    if (IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot())) {
+                        APEmployeurTiersUtil element = getEmployeurForRepartition(repartition.getIdDroit(), repartition.getIdSituationProfessionnelle());
+                        if (Objects.nonNull(element)){
+                            mapEmployeurs.put(element.getEmployeur().getIdTiers(), element.getTiers().getDesignation1() + " " + element.getTiers().getDesignation2());
+                        }
+                    }
+
+                    setTailleLot(1);
+                    setImpressionParLot(true);
+
+                    champs = new HashMap<String, String>();
+
+                    nbDecompte += 1;
+
+                    // les lignes pour la répartition elle-même
+                    // ré-initialisation du total pour chaque répartition
+                    if (!total.isZero()) {
+                        total = new FWCurrency(0);
+                    }
+
+                    // Récupération de l'idDomaine pour sélectionner la bonne adresse de paiement dans
+                    // getAdressePaiementAffilie()
+                    domaineDePaiement = repartition.getIdDomaineAdressePaiement();
+
+                    // 1. le n°AVS et le nom de l'assure
+                    droit = ApgServiceLocator.getEntityService().getDroitLAPG(getSession(), getTransaction(),
+                            repartition.getIdDroit());
+
+                    // Détermination du type de droit
+                    genreService = droit.getGenreService();
+
+                    final PRDemande demande = droit.loadDemande();
+                    tiers = PRTiersHelper.getTiersParId(getSession(), demande.getIdTiers());
+
+                    if (APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
+                        champs.put(APAbstractDecomptesGenerationProcess.PARAMETER_PRESTATION_COMPLEMENTAIRE, APPrestationLibelleCodeSystem.getLibelleJourIsole(getSession(),
+                                repartition.getGenreService(), getCodeIsoLangue()));
+                    } else if (APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
+                        champs.put(APAbstractDecomptesGenerationProcess.PARAMETER_PRESTATION_COMPLEMENTAIRE, APPrestationLibelleCodeSystem.getLibelleComplement(getSession(),
+                                getCodeIsoLangue()));
+                    }
+
+                    champs.put("FIELD_ASSURE",
+                            PRStringUtils.replaceString(document.getTextes(3).getTexte(13).getDescription(), "{nomAVS}",
+                                    tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL) + " "
+                                            + tiers.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
+                                            + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM)));
+
+                    // 2. les infos sur la prestation
+                    champs.put("FIELD_DETAIL_PERIODE",
+                            PRStringUtils.replaceString(document.getTextes(3).getTexte(14).getDescription(), "{periode}",
+                                    JACalendar.format(repartition.getDateDebut(), getCodeIsoLangue()) + " - "
+                                            + JACalendar.format(repartition.getDateFin(), getCodeIsoLangue())));
+
+                    // 3. détail sur la prestation journalière (nbr de jours + montant journalier), si non ventilé
+                    if (!isTraitementDesVentilations()) {
+                        // CHANGES
+                        // On n'ajoute pas ce détail si c'est un décompte mixte NORMAL_ACM_NE
+                        if (!APTypeDeDecompte.NORMAL_ACM_NE.equals(decompteCourant.getTypeDeDecompte())) {
+                            champs.put("FIELD_DETAIL_JOURNALIER", getDetailJournalier(repartition));
+                        }
+                    }
+
+                    // 4. le montant de la répartition
+                    if (isTraitementDesVentilations()) {
+                        champs.put("FIELD_MONTANT_APG",
+                                PRStringUtils.replaceString(document.getTextes(3).getTexte(16).getDescription(),
+                                        "{montantPeriode}",
+                                        JANumberFormatter.formatNoRound(repartition.getMontantVentile())));
+
+                    } else {
+                        champs.put("FIELD_MONTANT_APG",
+                                PRStringUtils.replaceString(document.getTextes(3).getTexte(16).getDescription(),
+                                        "{montantPeriode}", JANumberFormatter.formatNoRound(repartition.getMontantBrut())));
+
+                    }
+
+                    if ("true".equals(JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_IS_FERCIAB))
+                            && APTypeDePrestation.STANDARD.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
+                        champs.put("FIELD_APG_FED", "*");
+                        hasPrestationAPGFederale = true;
+                    }
+                    // Type de prestation complémentaire
+                    // Dans le cas des décomptes 'normal-acmne' (les 2 types de prestations sont présentes sur le
+                    // décomptes)
+                    // une remarque prestation complémentaire est insérée
+                    // 1 - le décompte doit être un décompte standard-acmne
+                    if ((decompteCourant != null)
+                            && APTypeDeDecompte.NORMAL_ACM_NE.equals(decompteCourant.getTypeDeDecompte())) {
+                        // 2 - la prestation doit être de type ACMNE
+                        if (APTypeDePrestation.ACM_NE.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
+                            champs.put(APAbstractDecomptesGenerationProcess.PARAMETER_PRESTATION_COMPLEMENTAIRE,
+                                    document.getTextes(3).getTexte(50).getDescription());
+                        }
+                    }
+
+                    // Remarques
+                    if (!JadeStringUtil.isEmpty(repartition.getRemarque())) {
+                        champs.put("FIELD_REMARQUE_PRESTATION",
+                                PRStringUtils.replaceString(document.getTextes(3).getTexte(19).getDescription(),
+                                        "{remarque}", repartition.getRemarque()));
+                    }
+
+                    if (isTraitementDesVentilations()) {
+                        totalAPG.add(repartition.getMontantVentile());
+                    } else {
+                        totalAPG.add(repartition.getMontantBrut());
+                    }
+
+                    // 5. les cotisations & l'impôt à la source
+                    final APCotisationManager apCotMan = new APCotisationManager();
+                    apCotMan.setForIdRepartitionBeneficiairePaiement(repartition.getIdRepartitionBeneficiairePaiement());
+                    apCotMan.setSession(getSession());
+                    apCotMan.find(getTransaction(), BManager.SIZE_NOLIMIT);
+
+                    final FWCurrency totalMontantCotisation = new FWCurrency(0);
+                    final FWCurrency totalMontantImpotSource = new FWCurrency(0);
+                    final FWCurrency cotisationsFNE = new FWCurrency(0);
+                    String tauxImpotSource = "";
+
+                    final String libelleCot = document.getTextes(3).getTexte(15).getDescription();
+                    String libelleAVS = "";
+                    String libelleAC = "";
+                    String libelleLFA = "";
+
+                    for (int i = 0; i < apCotMan.size(); i++) {
+                        final APCotisation apCot = (APCotisation) apCotMan.getEntity(i);
+
+                        if (APCotisation.TYPE_IMPOT.equals(apCot.getType())) {
+                            totalMontantImpotSource.add((apCot.getMontant()));
+                            tauxImpotSource = apCot.getTaux();
+                        }
+
+                        else {
+                            final int idExterneCoti = Integer.parseInt(apCot.getIdExterne());
+
+                            if (idExterneCoti == getIdAssuranceFneParitaire()) {
+                                // Le montant des coti FNE n'est pas cumulé avec les autres cotis
+                                cotisationsFNE.add(apCot.getMontant());
+                            } else {
+                                totalMontantCotisation.add((apCot.getMontant()));
+
+                                if ((idExterneCoti == getIdAssuranceAvsParitaire())
+                                        || (idExterneCoti == getIdAssuranceAvsPersonnelle())) {
+                                    libelleAVS = document.getTextes(3).getTexte(40).getDescription();
+                                }
+
+                                else if (idExterneCoti == getIdAssuranceAcParitaire()) {
+                                    libelleAC = document.getTextes(3).getTexte(41).getDescription();
+                                }
+
+                                else if ((idExterneCoti == getIdAssuranceLfaParitaire())
+                                        || (idExterneCoti == getIdAssuranceLfaPersonnelle())) {
+                                    libelleLFA = document.getTextes(3).getTexte(42).getDescription();
+                                }
                             }
                         }
-                    });
-
-            repartitionsTreeSet.addAll(decompteCourant.getRepartitionsPeres());
-
-            Boolean hasPrestationAPGFederale = false;
-            for (final APRepartitionJointPrestation repartition : repartitionsTreeSet) {
-
-                // S'il s'agit d'un type pandémie, il faudra donc envoyer des copies aux employeurs
-                if (IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot())) {
-                    APEmployeurTiersUtil element = getEmployeurForRepartition(repartition.getIdDroit(), repartition.getIdSituationProfessionnelle());
-                    if (Objects.nonNull(element)){
-                        mapEmployeurs.put(element.getEmployeur().getIdTiers(), element.getTiers().getDesignation1() + " " + element.getTiers().getDesignation2());
                     }
-                }
 
-                setTailleLot(1);
-                setImpressionParLot(true);
+                    String fieldRestitution = "";
+
+                    if (!JadeStringUtil.isBlankOrZero(decompteCourant.getIdAffilie()) && getIsAfficherNIPSurDocument()) {
+                        fieldRestitution = getSession().getLabel("NIP") + " "
+                                + tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
+                    }
+
+                    // Si c'est une restitution, on affiche la mention "restitution"
+                    final double montant = Double.parseDouble(repartition.getMontantBrut());
+                    if (montant < 0) {
+                        if (!JadeStringUtil.isBlankOrZero(fieldRestitution)) {
+                            fieldRestitution += " / ";
+                        }
+                        fieldRestitution += document.getTextes(3).getTexte(20).getDescription();
+                    }
+
+                    // Ce champ indique s'il s'agit d'une restitution, et peut également contenir le NIP.
+                    if (!JadeStringUtil.isBlankOrZero(fieldRestitution)) {
+                        champs.put("FIELD_RESTITUTION", fieldRestitution);
+                    }
+
+                    // Affichage des cotisations
+                    // CHANGES
+                    if (!totalMontantCotisation.equals(new FWCurrency(0))) {
+                        champs.put("FIELD_DETAIL_COTISATIONS", libelleCot + libelleAVS + libelleAC + libelleLFA);
+
+                        champs.put("FIELD_MONTANT_COTISATIONS",
+                                PRStringUtils.replaceString(document.getTextes(3).getTexte(17).getDescription(),
+                                        "{montantCoti}",
+                                        JANumberFormatter.formatNoRound(totalMontantCotisation.toString())));
+
+                        totalCotisations.add(totalMontantCotisation.toString());
+                    }
+
+                    // afficher Cotisations FNE sur une nouvelle ligne si le montant est supérieur à 0
+                    if (!cotisationsFNE.isZero()) {
+                        champs.put(APAbstractDecomptesGenerationProcess.DETAIL_COTISATIONS_FNE,
+                                document.getTextes(3).getTexte(51).getDescription());
+                        champs.put(APAbstractDecomptesGenerationProcess.MONTANT_COTISATIONS_FNE, cotisationsFNE.toString());
+                    }
+
+                    // Affichage de l'impôt à la source
+                    if (!totalMontantImpotSource.equals(new FWCurrency(0))) {
+                        if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+                            champs.put("FIELD_DETAIL_IMPOT",
+                                    PRStringUtils.replaceString(document.getTextes(3).getTexte(12).getDescription(),
+                                            "{tauxImposition}",
+                                            JANumberFormatter.formatNoRound(tauxImpotSource)));
+                        } else {
+                            champs.put("FIELD_DETAIL_IMPOT", document.getTextes(3).getTexte(12).getDescription());
+                        }
+
+
+                        champs.put("FIELD_MONTANT_IMPOT",
+                                PRStringUtils.replaceString(document.getTextes(3).getTexte(22).getDescription(),
+                                        "{montantImpot}",
+                                        JANumberFormatter.formatNoRound(totalMontantImpotSource.toString())));
+
+                        totalImpotSource.add(totalMontantImpotSource.toString());
+                    }
+
+
+                    if (isTraitementDesVentilations()) {
+                        total.add(repartition.getMontantVentile());
+                    } else {
+                        // ajout du montant brut moins les cotisations au total
+                        total.add(repartition.getMontantNet());
+                    }
+
+                    // les lignes pour les montants ventilés (si nécessaire)
+                    final List<APRepartitionJointPrestation> repartitionsEnfants = decompteCourant
+                            .getRepartitionsEnfants(repartition);
+
+                    if (repartitionsEnfants != null) {
+
+                        int nbVentilations = 0;
+
+                        for (final APRepartitionJointPrestation uneRepartitionEnfant : repartitionsEnfants) {
+
+                            nbVentilations++;
+
+                            ITITiers tiersNom = (ITITiers) getSession().getAPIFor(ITITiers.class);
+                            final Hashtable<String, String> params = new Hashtable<String, String>();
+                            params.put(ITITiers.FIND_FOR_IDTIERS, uneRepartitionEnfant.getIdTiersAdressePaiement());
+                            final ITITiers[] t = tiersNom.findTiers(params);
+                            if ((t != null) && (t.length > 0)) {
+                                tiersNom = t[0];
+                            }
+
+                            String nom = "";
+
+                            if (!JadeStringUtil.isEmpty(tiersNom.getDesignation1())) {
+                                nom = tiersNom.getDesignation1();
+                            }
+                            if (!JadeStringUtil.isEmpty(tiersNom.getDesignation2())) {
+                                if (!JadeStringUtil.isEmpty(nom)) {
+                                    nom = nom + " " + tiersNom.getDesignation2();
+                                } else {
+                                    nom = tiersNom.getDesignation2();
+                                }
+                            }
+                            if (!JadeStringUtil.isEmpty(tiersNom.getDesignation3())) {
+                                if (!JadeStringUtil.isEmpty(nom)) {
+                                    nom = nom + " " + tiersNom.getDesignation3();
+                                } else {
+                                    nom = tiersNom.getDesignation3();
+                                }
+                            }
+                            if (!JadeStringUtil.isEmpty(tiersNom.getDesignation4())) {
+                                if (!JadeStringUtil.isEmpty(nom)) {
+                                    nom = nom + " " + tiersNom.getDesignation4();
+                                } else {
+                                    nom = tiersNom.getDesignation4();
+                                }
+                            }
+
+                            // Verifie et format les caratères spéciaux
+                            nom = checkFormatCaracter(nom);
+
+                            champs.put("FIELD_DETAIL_VENTILATIONS_" + nbVentilations, PRStringUtils.replaceString(
+                                    document.getTextes(3).getTexte(6).getDescription(), "{ventilation}", nom));
+
+                            champs.put("FIELD_MONTANT_VENTILATIONS_" + nbVentilations, PRStringUtils.replaceString(
+                                    document.getTextes(3).getTexte(24).getDescription(), "{montantVentilation}",
+                                    "-" + JANumberFormatter.formatNoRound(uneRepartitionEnfant.getMontantVentile())));
+
+                            total.sub(uneRepartitionEnfant.getMontantVentile());
+                            totalMontantVentile.sub(uneRepartitionEnfant.getMontantVentile());
+
+                        }
+                    }
+
+                    // le total
+                    champs.put("FIELD_TOTAL_REPARTITION", document.getTextes(3).getTexte(7).getDescription());
+
+                    champs.put("FIELD_MONTANT_REPARTITION",
+                            PRStringUtils.replaceString(document.getTextes(3).getTexte(18).getDescription(),
+                                    "{montantTotal}", JANumberFormatter.formatNoRound(total.toString())));
+
+                    lignes.add(champs);
+                    grandTotal.add(total);
+
+                }
 
                 champs = new HashMap<String, String>();
 
-                nbDecompte += 1;
+                // les factures à compenser
+                final List<APFactureACompenser> facturesACompenser = decompteCourant.getFacturesACompenser();
 
-                // les lignes pour la répartition elle-même
-                // ré-initialisation du total pour chaque répartition
-                if (!total.isZero()) {
-                    total = new FWCurrency(0);
-                }
+                if ((facturesACompenser != null) && !facturesACompenser.isEmpty()) {
 
-                // Récupération de l'idDomaine pour sélectionner la bonne adresse de paiement dans
-                // getAdressePaiementAffilie()
-                domaineDePaiement = repartition.getIdDomaineAdressePaiement();
+                    // BZ 6306
+                    // Liste des compensations avec numéro de facture
+                    final ArrayList<APFactureACompenser> listeFacturesAvecNumero = new ArrayList<APFactureACompenser>();
+                    // Liste des compensation sans numéro de facture
+                    final ArrayList<APFactureACompenser> listeFacturesSansNumero = new ArrayList<APFactureACompenser>();
+                    // Buffer utilisé pour mémoriser le texte de la dernière ligne des compensations avec num de facture
+                    // Dans le cas où elles ne peuvent pas toutes êtres affichées de manière standard
+                    final StringBuffer bufferDernierLigneFactureAvecNum = new StringBuffer();
+                    // Même que ci-dessus mais pour le montant à afficher
+                    final FWCurrency totalDernierLigneFactureAvecNum = new FWCurrency();
+                    // Utilisé pour déterminer si j'ai atteint la place maximum d'affichage de la dernière ligne des
+                    // compensations avec num de facture
+                    boolean isTropFacture = false;
 
-                // 1. le n°AVS et le nom de l'assure
-                droit = ApgServiceLocator.getEntityService().getDroitLAPG(getSession(), getTransaction(),
-                        repartition.getIdDroit());
-
-                // Détermination du type de droit
-                genreService = droit.getGenreService();
-
-                final PRDemande demande = droit.loadDemande();
-                tiers = PRTiersHelper.getTiersParId(getSession(), demande.getIdTiers());
-
-                if (APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
-                    champs.put(APAbstractDecomptesGenerationProcess.PARAMETER_PRESTATION_COMPLEMENTAIRE, APPrestationLibelleCodeSystem.getLibelleJourIsole(getSession(),
-                            repartition.getGenreService(), getCodeIsoLangue()));
-                } else if (APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
-                    champs.put(APAbstractDecomptesGenerationProcess.PARAMETER_PRESTATION_COMPLEMENTAIRE, APPrestationLibelleCodeSystem.getLibelleComplement(getSession(),
-                            getCodeIsoLangue()));
-                } else if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
-                    champs.put(APAbstractDecomptesGenerationProcess.PARAMETER_PRESTATION_COMPLEMENTAIRE, APPrestationLibelleCodeSystem.getLibelleComplement(getSession(),
-                            getCodeIsoLangue())); // Texte additionel sur prestation MATCIAB1
-                }
-
-                champs.put("FIELD_ASSURE",
-                        PRStringUtils.replaceString(document.getTextes(3).getTexte(13).getDescription(), "{nomAVS}",
-                                tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL) + " "
-                                        + tiers.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
-                                        + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM)));
-
-                // 2. les infos sur la prestation
-                champs.put("FIELD_DETAIL_PERIODE",
-                        PRStringUtils.replaceString(document.getTextes(3).getTexte(14).getDescription(), "{periode}",
-                                JACalendar.format(repartition.getDateDebut(), getCodeIsoLangue()) + " - "
-                                        + JACalendar.format(repartition.getDateFin(), getCodeIsoLangue())));
-
-                // 3. détail sur la prestation journalière (nbr de jours + montant journalier), si non ventilé
-                if (!isTraitementDesVentilations()) {
-                    // CHANGES
-                    // On n'ajoute pas ce détail si c'est un décompte mixte NORMAL_ACM_NE
-                    if (!APTypeDeDecompte.NORMAL_ACM_NE.equals(decompteCourant.getTypeDeDecompte())) {
-                        champs.put("FIELD_DETAIL_JOURNALIER", getDetailJournalier(repartition));
-                    }
-                }
-
-                // 4. le montant de la répartition
-                if (isTraitementDesVentilations()) {
-                    champs.put("FIELD_MONTANT_APG",
-                            PRStringUtils.replaceString(document.getTextes(3).getTexte(16).getDescription(),
-                                    "{montantPeriode}",
-                                    JANumberFormatter.formatNoRound(repartition.getMontantVentile())));
-
-                } else {
-                    champs.put("FIELD_MONTANT_APG",
-                            PRStringUtils.replaceString(document.getTextes(3).getTexte(16).getDescription(),
-                                    "{montantPeriode}", JANumberFormatter.formatNoRound(repartition.getMontantBrut())));
-
-                }
-
-                if ("true".equals(JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_IS_FERCIAB))
-                        && APTypeDePrestation.STANDARD.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
-                    champs.put("FIELD_APG_FED", "*");
-                    hasPrestationAPGFederale = true;
-                }
-                // Type de prestation complémentaire
-                // Dans le cas des décomptes 'normal-acmne' (les 2 types de prestations sont présentes sur le
-                // décomptes)
-                // une remarque prestation complémentaire est insérée
-                // 1 - le décompte doit être un décompte standard-acmne
-                if ((decompteCourant != null)
-                        && APTypeDeDecompte.NORMAL_ACM_NE.equals(decompteCourant.getTypeDeDecompte())) {
-                    // 2 - la prestation doit être de type ACMNE
-                    if (APTypeDePrestation.ACM_NE.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
-                        champs.put(APAbstractDecomptesGenerationProcess.PARAMETER_PRESTATION_COMPLEMENTAIRE,
-                                document.getTextes(3).getTexte(50).getDescription());
-                    }
-                }
-
-                // Remarques
-                if (!JadeStringUtil.isEmpty(repartition.getRemarque())) {
-                    champs.put("FIELD_REMARQUE_PRESTATION",
-                            PRStringUtils.replaceString(document.getTextes(3).getTexte(19).getDescription(),
-                                    "{remarque}", repartition.getRemarque()));
-                }
-
-                if (isTraitementDesVentilations()) {
-                    totalAPG.add(repartition.getMontantVentile());
-                } else {
-                    totalAPG.add(repartition.getMontantBrut());
-                }
-
-                // 5. les cotisations & l'impôt à la source
-                final APCotisationManager apCotMan = new APCotisationManager();
-                apCotMan.setForIdRepartitionBeneficiairePaiement(repartition.getIdRepartitionBeneficiairePaiement());
-                apCotMan.setSession(getSession());
-                apCotMan.find(getTransaction(), BManager.SIZE_NOLIMIT);
-
-                final FWCurrency totalMontantCotisation = new FWCurrency(0);
-                final FWCurrency totalMontantImpotSource = new FWCurrency(0);
-                final FWCurrency cotisationsFNE = new FWCurrency(0);
-
-                final String libelleCot = document.getTextes(3).getTexte(15).getDescription();
-                String libelleAVS = "";
-                String libelleAC = "";
-                String libelleLFA = "";
-
-                for (int i = 0; i < apCotMan.size(); i++) {
-                    final APCotisation apCot = (APCotisation) apCotMan.getEntity(i);
-
-                    if (APCotisation.TYPE_IMPOT.equals(apCot.getType())) {
-                        totalMontantImpotSource.add((apCot.getMontant()));
-                    }
-
-                    else {
-                        final int idExterneCoti = Integer.parseInt(apCot.getIdExterne());
-
-                        if (idExterneCoti == getIdAssuranceFneParitaire()) {
-                            // Le montant des coti FNE n'est pas cumulé avec les autres cotis
-                            cotisationsFNE.add(apCot.getMontant());
+                    // BZ 6306
+                    // Je parcours une première fois la liste des factures à compenser pour les séparer dans deux listes :
+                    // La première contenant les compensations avec un numéro de facture et la deuxième pour les
+                    // compensation sans numéro de facture
+                    for (final APFactureACompenser facture : facturesACompenser) {
+                        if (JadeStringUtil.isEmpty(facture.getNoFacture()) || facture.getNoFacture().equals("0")) {
+                            listeFacturesSansNumero.add(facture);
                         } else {
-                            totalMontantCotisation.add((apCot.getMontant()));
-
-                            if ((idExterneCoti == getIdAssuranceAvsParitaire())
-                                    || (idExterneCoti == getIdAssuranceAvsPersonnelle())) {
-                                libelleAVS = document.getTextes(3).getTexte(40).getDescription();
-                            }
-
-                            else if (idExterneCoti == getIdAssuranceAcParitaire()) {
-                                libelleAC = document.getTextes(3).getTexte(41).getDescription();
-                            }
-
-                            else if ((idExterneCoti == getIdAssuranceLfaParitaire())
-                                    || (idExterneCoti == getIdAssuranceLfaPersonnelle())) {
-                                libelleLFA = document.getTextes(3).getTexte(42).getDescription();
-                            }
+                            listeFacturesAvecNumero.add(facture);
                         }
                     }
-                }
 
-                String fieldRestitution = "";
+                    // BZ 6306
+                    // Comme le modèle nous limite à 5 lignes pour les compensations, je détermine le nombre à disposition
+                    // pour les compensations avec un numéro de facture en fonction de la présence ou non de compensation
+                    // sans num de facture
 
-                if (!JadeStringUtil.isBlankOrZero(decompteCourant.getIdAffilie()) && getIsAfficherNIPSurDocument()) {
-                    fieldRestitution = getSession().getLabel("NIP") + " "
-                            + tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
-                }
+                    // Nombre max de ligne à disposition des compensations avec num de facture
+                    int nbLignesFactureAvecNum = 0;
 
-                // Si c'est une restitution, on affiche la mention "restitution"
-                final double montant = Double.parseDouble(repartition.getMontantBrut());
-                if (montant < 0) {
-                    if (!JadeStringUtil.isBlankOrZero(fieldRestitution)) {
-                        fieldRestitution += " / ";
-                    }
-                    fieldRestitution += document.getTextes(3).getTexte(20).getDescription();
-                }
-
-                // Ce champ indique s'il s'agit d'une restitution, et peut également contenir le NIP.
-                if (!JadeStringUtil.isBlankOrZero(fieldRestitution)) {
-                    champs.put("FIELD_RESTITUTION", fieldRestitution);
-                }
-
-                // Affichage des cotisations
-                // CHANGES
-                if (!totalMontantCotisation.equals(new FWCurrency(0))) {
-                    champs.put("FIELD_DETAIL_COTISATIONS", libelleCot + libelleAVS + libelleAC + libelleLFA);
-
-                    champs.put("FIELD_MONTANT_COTISATIONS",
-                            PRStringUtils.replaceString(document.getTextes(3).getTexte(17).getDescription(),
-                                    "{montantCoti}",
-                                    JANumberFormatter.formatNoRound(totalMontantCotisation.toString())));
-
-                    totalCotisations.add(totalMontantCotisation.toString());
-                }
-
-                // afficher Cotisations FNE sur une nouvelle ligne si le montant est supérieur à 0
-                if (!cotisationsFNE.isZero()) {
-                    champs.put(APAbstractDecomptesGenerationProcess.DETAIL_COTISATIONS_FNE,
-                            document.getTextes(3).getTexte(51).getDescription());
-                    champs.put(APAbstractDecomptesGenerationProcess.MONTANT_COTISATIONS_FNE, cotisationsFNE.toString());
-                }
-
-                // Affichage de l'impôt à la source
-                if (!totalMontantImpotSource.equals(new FWCurrency(0))) {
-                    champs.put("FIELD_DETAIL_IMPOT", document.getTextes(3).getTexte(12).getDescription());
-
-                    champs.put("FIELD_MONTANT_IMPOT",
-                            PRStringUtils.replaceString(document.getTextes(3).getTexte(22).getDescription(),
-                                    "{montantImpot}",
-                                    JANumberFormatter.formatNoRound(totalMontantImpotSource.toString())));
-
-                    totalImpotSource.add(totalMontantImpotSource.toString());
-                }
-
-                if (isTraitementDesVentilations()) {
-                    total.add(repartition.getMontantVentile());
-                } else {
-                    // ajout du montant brut moins les cotisations au total
-                    total.add(repartition.getMontantNet());
-                }
-
-                // les lignes pour les montants ventilés (si nécessaire)
-                final List<APRepartitionJointPrestation> repartitionsEnfants = decompteCourant
-                        .getRepartitionsEnfants(repartition);
-
-                if (repartitionsEnfants != null) {
-
-                    int nbVentilations = 0;
-
-                    for (final APRepartitionJointPrestation uneRepartitionEnfant : repartitionsEnfants) {
-
-                        nbVentilations++;
-
-                        ITITiers tiersNom = (ITITiers) getSession().getAPIFor(ITITiers.class);
-                        final Hashtable<String, String> params = new Hashtable<String, String>();
-                        params.put(ITITiers.FIND_FOR_IDTIERS, uneRepartitionEnfant.getIdTiersAdressePaiement());
-                        final ITITiers[] t = tiersNom.findTiers(params);
-                        if ((t != null) && (t.length > 0)) {
-                            tiersNom = t[0];
+                    if (!listeFacturesSansNumero.isEmpty()) {
+                        if (listeFacturesAvecNumero.size() >= 4) {
+                            nbLignesFactureAvecNum = 4;
+                        } else {
+                            nbLignesFactureAvecNum = listeFacturesAvecNumero.size();
                         }
-
-                        String nom = "";
-
-                        if (!JadeStringUtil.isEmpty(tiersNom.getDesignation1())) {
-                            nom = tiersNom.getDesignation1();
-                        }
-                        if (!JadeStringUtil.isEmpty(tiersNom.getDesignation2())) {
-                            if (!JadeStringUtil.isEmpty(nom)) {
-                                nom = nom + " " + tiersNom.getDesignation2();
-                            } else {
-                                nom = tiersNom.getDesignation2();
-                            }
-                        }
-                        if (!JadeStringUtil.isEmpty(tiersNom.getDesignation3())) {
-                            if (!JadeStringUtil.isEmpty(nom)) {
-                                nom = nom + " " + tiersNom.getDesignation3();
-                            } else {
-                                nom = tiersNom.getDesignation3();
-                            }
-                        }
-                        if (!JadeStringUtil.isEmpty(tiersNom.getDesignation4())) {
-                            if (!JadeStringUtil.isEmpty(nom)) {
-                                nom = nom + " " + tiersNom.getDesignation4();
-                            } else {
-                                nom = tiersNom.getDesignation4();
-                            }
-                        }
-
-                        // Verifie et format les caratères spéciaux
-                        nom = checkFormatCaracter(nom);
-
-                        champs.put("FIELD_DETAIL_VENTILATIONS_" + nbVentilations, PRStringUtils.replaceString(
-                                document.getTextes(3).getTexte(6).getDescription(), "{ventilation}", nom));
-
-                        champs.put("FIELD_MONTANT_VENTILATIONS_" + nbVentilations, PRStringUtils.replaceString(
-                                document.getTextes(3).getTexte(24).getDescription(), "{montantVentilation}",
-                                "-" + JANumberFormatter.formatNoRound(uneRepartitionEnfant.getMontantVentile())));
-
-                        total.sub(uneRepartitionEnfant.getMontantVentile());
-                        totalMontantVentile.sub(uneRepartitionEnfant.getMontantVentile());
-
-                    }
-                }
-
-                // le total
-                champs.put("FIELD_TOTAL_REPARTITION", document.getTextes(3).getTexte(7).getDescription());
-
-                champs.put("FIELD_MONTANT_REPARTITION",
-                        PRStringUtils.replaceString(document.getTextes(3).getTexte(18).getDescription(),
-                                "{montantTotal}", JANumberFormatter.formatNoRound(total.toString())));
-
-                lignes.add(champs);
-                grandTotal.add(total);
-
-            }
-
-            champs = new HashMap<String, String>();
-
-            // les factures à compenser
-            final List<APFactureACompenser> facturesACompenser = decompteCourant.getFacturesACompenser();
-
-            if ((facturesACompenser != null) && !facturesACompenser.isEmpty()) {
-
-                // BZ 6306
-                // Liste des compensations avec numéro de facture
-                final ArrayList<APFactureACompenser> listeFacturesAvecNumero = new ArrayList<APFactureACompenser>();
-                // Liste des compensation sans numéro de facture
-                final ArrayList<APFactureACompenser> listeFacturesSansNumero = new ArrayList<APFactureACompenser>();
-                // Buffer utilisé pour mémoriser le texte de la dernière ligne des compensations avec num de facture
-                // Dans le cas où elles ne peuvent pas toutes êtres affichées de manière standard
-                final StringBuffer bufferDernierLigneFactureAvecNum = new StringBuffer();
-                // Même que ci-dessus mais pour le montant à afficher
-                final FWCurrency totalDernierLigneFactureAvecNum = new FWCurrency();
-                // Utilisé pour déterminer si j'ai atteint la place maximum d'affichage de la dernière ligne des
-                // compensations avec num de facture
-                boolean isTropFacture = false;
-
-                // BZ 6306
-                // Je parcours une première fois la liste des factures à compenser pour les séparer dans deux listes :
-                // La première contenant les compensations avec un numéro de facture et la deuxième pour les
-                // compensation sans numéro de facture
-                for (final APFactureACompenser facture : facturesACompenser) {
-                    if (JadeStringUtil.isEmpty(facture.getNoFacture()) || facture.getNoFacture().equals("0")) {
-                        listeFacturesSansNumero.add(facture);
                     } else {
-                        listeFacturesAvecNumero.add(facture);
-                    }
-                }
-
-                // BZ 6306
-                // Comme le modèle nous limite à 5 lignes pour les compensations, je détermine le nombre à disposition
-                // pour les compensations avec un numéro de facture en fonction de la présence ou non de compensation
-                // sans num de facture
-
-                // Nombre max de ligne à disposition des compensations avec num de facture
-                int nbLignesFactureAvecNum = 0;
-
-                if (!listeFacturesSansNumero.isEmpty()) {
-                    if (listeFacturesAvecNumero.size() >= 4) {
-                        nbLignesFactureAvecNum = 4;
-                    } else {
-                        nbLignesFactureAvecNum = listeFacturesAvecNumero.size();
-                    }
-                } else {
-                    nbLignesFactureAvecNum = 5;
-                }
-
-                // Num de la ligne que je suis en train de traiter
-                int numLigneFactureAvecNum = 0;
-                // BZ 6306
-                // Je commence par traiter le compensation avec num de facture
-                for (final APFactureACompenser facture : listeFacturesAvecNumero) {
-                    numLigneFactureAvecNum++;
-
-                    // si le numéro de ligne est égale au nombre max de ligne à disposition pour les compensations avec
-                    // num de facture, je détermine si je dois l'afficher de manière standard ou concaténer plusieurs
-                    // compensation sur la même ligne
-                    boolean isTraitementStandart = true;
-                    if ((numLigneFactureAvecNum == nbLignesFactureAvecNum)
-                            && (nbLignesFactureAvecNum < listeFacturesAvecNumero.size())) {
-                        isTraitementStandart = false;
+                        nbLignesFactureAvecNum = 5;
                     }
 
-                    if ((numLigneFactureAvecNum <= nbLignesFactureAvecNum) && isTraitementStandart) {
-                        // Affichage standard
-                        final StringBuffer buffer = new StringBuffer();
-                        buffer.append(PRStringUtils.replaceString(document.getTextes(3).getTexte(25).getDescription(),
-                                "{compSurFacture}", facture.getNoFacture()));
+                    // Num de la ligne que je suis en train de traiter
+                    int numLigneFactureAvecNum = 0;
+                    // BZ 6306
+                    // Je commence par traiter le compensation avec num de facture
+                    for (final APFactureACompenser facture : listeFacturesAvecNumero) {
+                        numLigneFactureAvecNum++;
 
-                        champs.put("FIELD_COMPENSATION_" + numLigneFactureAvecNum, buffer.toString());
-                        if (Double.parseDouble(facture.getMontant()) < 0) {
+                        // si le numéro de ligne est égale au nombre max de ligne à disposition pour les compensations avec
+                        // num de facture, je détermine si je dois l'afficher de manière standard ou concaténer plusieurs
+                        // compensation sur la même ligne
+                        boolean isTraitementStandart = true;
+                        if ((numLigneFactureAvecNum == nbLignesFactureAvecNum)
+                                && (nbLignesFactureAvecNum < listeFacturesAvecNumero.size())) {
+                            isTraitementStandart = false;
+                        }
 
-                            champs.put("FIELD_MONTANT_COMPENSATION_" + numLigneFactureAvecNum,
-                                    PRStringUtils.replaceString(document.getTextes(3).getTexte(26).getDescription(),
-                                            "{montantCompensation}",
-                                            JANumberFormatter.formatNoRound(facture.getMontant())));
+                        if ((numLigneFactureAvecNum <= nbLignesFactureAvecNum) && isTraitementStandart) {
+                            // Affichage standard
+                            final StringBuffer buffer = new StringBuffer();
+                            buffer.append(PRStringUtils.replaceString(document.getTextes(3).getTexte(25).getDescription(),
+                                    "{compSurFacture}", facture.getNoFacture()));
+
+                            champs.put("FIELD_COMPENSATION_" + numLigneFactureAvecNum, buffer.toString());
+                            if (Double.parseDouble(facture.getMontant()) < 0) {
+
+                                champs.put("FIELD_MONTANT_COMPENSATION_" + numLigneFactureAvecNum,
+                                        PRStringUtils.replaceString(document.getTextes(3).getTexte(26).getDescription(),
+                                                "{montantCompensation}",
+                                                JANumberFormatter.formatNoRound(facture.getMontant())));
+
+                            } else {
+
+                                champs.put("FIELD_MONTANT_COMPENSATION_" + numLigneFactureAvecNum,
+                                        PRStringUtils.replaceString(document.getTextes(3).getTexte(26).getDescription(),
+                                                "{montantCompensation}",
+                                                "-" + JANumberFormatter.formatNoRound(facture.getMontant())));
+
+                            }
 
                         } else {
-
-                            champs.put("FIELD_MONTANT_COMPENSATION_" + numLigneFactureAvecNum,
-                                    PRStringUtils.replaceString(document.getTextes(3).getTexte(26).getDescription(),
-                                            "{montantCompensation}",
-                                            "-" + JANumberFormatter.formatNoRound(facture.getMontant())));
-
-                        }
-
-                    } else {
-                        // Affichage concaténé
-                        // Si j'ai atteint le nombre max de ligne
-                        if (numLigneFactureAvecNum == nbLignesFactureAvecNum) {
-                            // Je récupère une seul fois le texte à afficher
-                            bufferDernierLigneFactureAvecNum.append(
-                                    PRStringUtils.replaceString(document.getTextes(3).getTexte(43).getDescription(),
-                                            "{compSurFacture}", facture.getNoFacture()));
-                        } else if (numLigneFactureAvecNum <= (nbLignesFactureAvecNum + 4)) {
-                            // comme le texte a été récupéré ci-dessus, j'y ajoute le numéro de facture (max 4 num de
-                            // facture)
-                            bufferDernierLigneFactureAvecNum.append("," + facture.getNoFacture());
-                        } else {
-                            // je détermine si j'ai déjà atteint ce point
-                            if (!isTropFacture) {
-                                // Si ce n'est pas le cas, et qu'il n'y a plus la place d'afficher des num de facture,
-                                // j'affiche ",..."
-                                bufferDernierLigneFactureAvecNum.append(",...");
-                                isTropFacture = true;
+                            // Affichage concaténé
+                            // Si j'ai atteint le nombre max de ligne
+                            if (numLigneFactureAvecNum == nbLignesFactureAvecNum) {
+                                // Je récupère une seul fois le texte à afficher
+                                bufferDernierLigneFactureAvecNum.append(
+                                        PRStringUtils.replaceString(document.getTextes(3).getTexte(43).getDescription(),
+                                                "{compSurFacture}", facture.getNoFacture()));
+                            } else if (numLigneFactureAvecNum <= (nbLignesFactureAvecNum + 4)) {
+                                // comme le texte a été récupéré ci-dessus, j'y ajoute le numéro de facture (max 4 num de
+                                // facture)
+                                bufferDernierLigneFactureAvecNum.append("," + facture.getNoFacture());
+                            } else {
+                                // je détermine si j'ai déjà atteint ce point
+                                if (!isTropFacture) {
+                                    // Si ce n'est pas le cas, et qu'il n'y a plus la place d'afficher des num de facture,
+                                    // j'affiche ",..."
+                                    bufferDernierLigneFactureAvecNum.append(",...");
+                                    isTropFacture = true;
+                                }
                             }
+                            // Je calcul le total de la dernière ligne des compensations à num de facture dans le cas d'un
+                            // affichage non standard
+                            totalDernierLigneFactureAvecNum.sub(facture.getMontant());
+
                         }
-                        // Je calcul le total de la dernière ligne des compensations à num de facture dans le cas d'un
-                        // affichage non standard
-                        totalDernierLigneFactureAvecNum.sub(facture.getMontant());
-
-                    }
-                    // Je calcul le total des compensations
-                    totalCompensations.sub(facture.getMontant());
-                }
-
-                // BZ 6306 Dans le cas d'un affichage non standard, j'insère la dernière ligne
-                if (!JadeStringUtil.isEmpty(bufferDernierLigneFactureAvecNum.toString())) {
-                    champs.put("FIELD_COMPENSATION_" + nbLignesFactureAvecNum,
-                            bufferDernierLigneFactureAvecNum.toString());
-                    if (Double.parseDouble(totalDernierLigneFactureAvecNum.toString()) < 0) {
-
-                        champs.put("FIELD_MONTANT_COMPENSATION_" + nbLignesFactureAvecNum,
-                                PRStringUtils.replaceString(document.getTextes(3).getTexte(26).getDescription(),
-                                        "{montantCompensation}",
-                                        JANumberFormatter.formatNoRound(totalDernierLigneFactureAvecNum.toString())));
-
-                    } else {
-
-                        champs.put("FIELD_MONTANT_COMPENSATION_" + nbLignesFactureAvecNum, PRStringUtils.replaceString(
-                                document.getTextes(3).getTexte(26).getDescription(), "{montantCompensation}",
-                                "-" + JANumberFormatter.formatNoRound(totalDernierLigneFactureAvecNum.toString())));
-
-                    }
-                }
-
-                // BZ 6306
-                // Traitement de la liste des compensations sans num de facture
-                if (!listeFacturesSansNumero.isEmpty()) {
-                    // Dans le cas où il y a des compensations sans num de factures, une seule ligne sera affichée et le
-                    // montant sera la résultat de l'addition de toutes les compensations sans num de factures.
-                    final FWCurrency totalFactureNumZero = new FWCurrency(0);
-                    for (final APFactureACompenser facture : listeFacturesSansNumero) {
-                        // Je calcul le total des compensations sans num de facture
-                        totalFactureNumZero.sub(facture.getMontant());
                         // Je calcul le total des compensations
                         totalCompensations.sub(facture.getMontant());
                     }
 
-                    // Je détermine le num de la ligne en fonction du nombre de ligne utilisé par les compensations avec
-                    // num de facture
-                    int numLigneFactureAvecZero = 0;
-                    if (listeFacturesAvecNumero.size() >= 4) {
-                        numLigneFactureAvecZero = 5;
-                    } else {
-                        numLigneFactureAvecZero = listeFacturesAvecNumero.size() + 1;
+                    // BZ 6306 Dans le cas d'un affichage non standard, j'insère la dernière ligne
+                    if (!JadeStringUtil.isEmpty(bufferDernierLigneFactureAvecNum.toString())) {
+                        champs.put("FIELD_COMPENSATION_" + nbLignesFactureAvecNum,
+                                bufferDernierLigneFactureAvecNum.toString());
+                        if (Double.parseDouble(totalDernierLigneFactureAvecNum.toString()) < 0) {
+
+                            champs.put("FIELD_MONTANT_COMPENSATION_" + nbLignesFactureAvecNum,
+                                    PRStringUtils.replaceString(document.getTextes(3).getTexte(26).getDescription(),
+                                            "{montantCompensation}",
+                                            JANumberFormatter.formatNoRound(totalDernierLigneFactureAvecNum.toString())));
+
+                        } else {
+
+                            champs.put("FIELD_MONTANT_COMPENSATION_" + nbLignesFactureAvecNum, PRStringUtils.replaceString(
+                                    document.getTextes(3).getTexte(26).getDescription(), "{montantCompensation}",
+                                    "-" + JANumberFormatter.formatNoRound(totalDernierLigneFactureAvecNum.toString())));
+
+                        }
                     }
 
-                    champs.put("FIELD_COMPENSATION_" + numLigneFactureAvecZero,
-                            document.getTextes(3).getTexte(8).getDescription());
+                    // BZ 6306
+                    // Traitement de la liste des compensations sans num de facture
+                    if (!listeFacturesSansNumero.isEmpty()) {
+                        // Dans le cas où il y a des compensations sans num de factures, une seule ligne sera affichée et le
+                        // montant sera la résultat de l'addition de toutes les compensations sans num de factures.
+                        final FWCurrency totalFactureNumZero = new FWCurrency(0);
+                        for (final APFactureACompenser facture : listeFacturesSansNumero) {
+                            // Je calcul le total des compensations sans num de facture
+                            totalFactureNumZero.sub(facture.getMontant());
+                            // Je calcul le total des compensations
+                            totalCompensations.sub(facture.getMontant());
+                        }
 
-                    // On doit inverser le signe des factures à compenser.
-                    if (Double.parseDouble(totalFactureNumZero.toString()) < 0) {
+                        // Je détermine le num de la ligne en fonction du nombre de ligne utilisé par les compensations avec
+                        // num de facture
+                        int numLigneFactureAvecZero = 0;
+                        if (listeFacturesAvecNumero.size() >= 4) {
+                            numLigneFactureAvecZero = 5;
+                        } else {
+                            numLigneFactureAvecZero = listeFacturesAvecNumero.size() + 1;
+                        }
 
-                        champs.put("FIELD_MONTANT_COMPENSATION_" + numLigneFactureAvecZero,
-                                PRStringUtils.replaceString(document.getTextes(3).getTexte(26).getDescription(),
-                                        "{montantCompensation}",
-                                        JANumberFormatter.formatNoRound(totalFactureNumZero.toString())));
+                        champs.put("FIELD_COMPENSATION_" + numLigneFactureAvecZero,
+                                document.getTextes(3).getTexte(8).getDescription());
 
-                    } else {
+                        // On doit inverser le signe des factures à compenser.
+                        if (Double.parseDouble(totalFactureNumZero.toString()) < 0) {
 
-                        champs.put("FIELD_MONTANT_COMPENSATION_" + numLigneFactureAvecZero,
-                                PRStringUtils.replaceString(document.getTextes(3).getTexte(26).getDescription(),
-                                        "{montantCompensation}",
-                                        "-" + JANumberFormatter.formatNoRound(totalFactureNumZero.toString())));
+                            champs.put("FIELD_MONTANT_COMPENSATION_" + numLigneFactureAvecZero,
+                                    PRStringUtils.replaceString(document.getTextes(3).getTexte(26).getDescription(),
+                                            "{montantCompensation}",
+                                            JANumberFormatter.formatNoRound(totalFactureNumZero.toString())));
 
+                        } else {
+
+                            champs.put("FIELD_MONTANT_COMPENSATION_" + numLigneFactureAvecZero,
+                                    PRStringUtils.replaceString(document.getTextes(3).getTexte(26).getDescription(),
+                                            "{montantCompensation}",
+                                            "-" + JANumberFormatter.formatNoRound(totalFactureNumZero.toString())));
+
+                        }
                     }
+
+                    grandTotal.add(totalCompensations);
                 }
 
-                grandTotal.add(totalCompensations);
-            }
+                if (grandTotal.isNegative() || grandTotal.isZero()) {
+                    champs.put("FIELD_TOTAL_FINAL", document.getTextes(3).getTexte(11).getDescription());
+                } else {
+                    champs.put("FIELD_TOTAL_FINAL", document.getTextes(3).getTexte(9).getDescription());
+                }
 
-            if (grandTotal.isNegative() || grandTotal.isZero()) {
-                champs.put("FIELD_TOTAL_FINAL", document.getTextes(3).getTexte(11).getDescription());
-            } else {
-                champs.put("FIELD_TOTAL_FINAL", document.getTextes(3).getTexte(9).getDescription());
-            }
+                champs.put("FIELD_MONTANT_FINAL",
+                        PRStringUtils.replaceString(document.getTextes(3).getTexte(27).getDescription(), "{montantFinal}",
+                                JANumberFormatter.formatNoRound(grandTotal.toString())));
 
-            champs.put("FIELD_MONTANT_FINAL",
-                    PRStringUtils.replaceString(document.getTextes(3).getTexte(27).getDescription(), "{montantFinal}",
-                            JANumberFormatter.formatNoRound(grandTotal.toString())));
-
-            // Insertion de l'addresse de paiement, si non ventilé
-            if ((grandTotal.compareTo(new FWCurrency(0)) > 0)) {
-                // Récupération de l'addresse de paiement
-                final String adressePaiement = getAdressePaiementAffilie(getSession(), decompteCourant.getIdTiers(),
-                        decompteCourant.getIdAffilie());
-                // Si pas vide, insertion dans le document
-                if (!JadeStringUtil.isBlank(adressePaiement)) {
-                    // Texte d'information selon le type d'adresse de paiement
-                    // Si adresse contient une virgule, il s'agit d'une adresse de paiement bancaire
-                    if (adressePaiement.contains(",")) {
-                        champs.put("FIELD_TEXTE_ADRESSE_PAIEMENT", document.getTextes(3).getTexte(45).getDescription());
-                        // Adresse de paiement
-                        champs.put("FIELD_ADRESSE_PAIEMENT",
-                                PRStringUtils.replaceString(document.getTextes(3).getTexte(48).getDescription(),
-                                        "{adressePaiement}", adressePaiement));
-
-                    }
-                    // Sinon, si l'adresse ne contient ni virgule, ni retour à la ligne, c'est une adresse postale
-                    else if (!adressePaiement.contains(",") && !adressePaiement.contains("\n")) {
-                        champs.put("FIELD_TEXTE_ADRESSE_PAIEMENT",
-                                document.getTextes(3).getTexte(46).getDescription() + " "
-                                        + PRStringUtils.replaceString(
-                                                document.getTextes(3).getTexte(48).getDescription(),
-                                                "{adressePaiement}", adressePaiement));
-
-                    }
-                    // Sinon, c'est une adresse de mandat postale
-                    else {
-                        try {
-                            champs.put("FIELD_TEXTE_ADRESSE_PAIEMENT",
-                                    document.getTextes(3).getTexte(47).getDescription());
+                // Insertion de l'addresse de paiement, si non ventilé
+                if ((grandTotal.compareTo(new FWCurrency(0)) > 0)) {
+                    // Récupération de l'addresse de paiement
+                    final String adressePaiement = getAdressePaiementAffilie(getSession(), decompteCourant.getIdTiers(),
+                            decompteCourant.getIdAffilie());
+                    // Si pas vide, insertion dans le document
+                    if (!JadeStringUtil.isBlank(adressePaiement)) {
+                        // Texte d'information selon le type d'adresse de paiement
+                        // Si adresse contient une virgule, il s'agit d'une adresse de paiement bancaire
+                        if (adressePaiement.contains(",")) {
+                            champs.put("FIELD_TEXTE_ADRESSE_PAIEMENT", document.getTextes(3).getTexte(45).getDescription());
                             // Adresse de paiement
                             champs.put("FIELD_ADRESSE_PAIEMENT",
                                     PRStringUtils.replaceString(document.getTextes(3).getTexte(48).getDescription(),
-                                            "{adressePaiement}", adressePaiement.trim()));
-                        } catch (Exception e) {
-                            JadeLogger.error(this.getClass().getName(), e);
+                                            "{adressePaiement}", adressePaiement));
+
+                        }
+                        // Sinon, si l'adresse ne contient ni virgule, ni retour à la ligne, c'est une adresse postale
+                        else if (!adressePaiement.contains(",") && !adressePaiement.contains("\n")) {
+                            champs.put("FIELD_TEXTE_ADRESSE_PAIEMENT",
+                                    document.getTextes(3).getTexte(46).getDescription() + " "
+                                            + PRStringUtils.replaceString(
+                                            document.getTextes(3).getTexte(48).getDescription(),
+                                            "{adressePaiement}", adressePaiement));
+
+                        }
+                        // Sinon, c'est une adresse de mandat postale
+                        else {
+                            try {
+                                champs.put("FIELD_TEXTE_ADRESSE_PAIEMENT",
+                                        document.getTextes(3).getTexte(47).getDescription());
+                                // Adresse de paiement
+                                champs.put("FIELD_ADRESSE_PAIEMENT",
+                                        PRStringUtils.replaceString(document.getTextes(3).getTexte(48).getDescription(),
+                                                "{adressePaiement}", adressePaiement.trim()));
+                            } catch (Exception e) {
+                                JadeLogger.error(this.getClass().getName(), e);
+                            }
                         }
                     }
                 }
-            }
-            try {
-                if (hasPrestationAPGFederale) {
-                    champs.put("FIELD_TEXTE_PAS_SOUMIS_LAA", document.getTextes(3).getTexte(49).getDescription());
+                try {
+                    if (hasPrestationAPGFederale) {
+                        champs.put("FIELD_TEXTE_PAS_SOUMIS_LAA", document.getTextes(3).getTexte(49).getDescription());
+                    }
+                } catch (IndexOutOfBoundsException e) {
+                    Logger.logInfo("Pas de texte pour maternité : " + e.getMessage());
                 }
-            } catch (IndexOutOfBoundsException e) {
-                Logger.logInfo("Pas de texte pour maternité : " + e.getMessage());
-            }
 
-            // Anciennement champs de classe
-            restitution = grandTotal.isNegative();
+                // Anciennement champs de classe
+                restitution = grandTotal.isNegative();
 
-            // Récapitulatif si plusieurs décomptes et UNIQUEMENT pour certains caisses
-            if (!JadeStringUtil.isBlankOrZero(decompteCourant.getIdAffilie())) {
+                // Récapitulatif si plusieurs décomptes et UNIQUEMENT pour certains caisses
+                if (!JadeStringUtil.isBlankOrZero(decompteCourant.getIdAffilie())) {
 
-                if (getIsDecompteRecapitulatif()) {
+                    if (getIsDecompteRecapitulatif()) {
 
-                    // Pas de recap pour les décomptes mixtes NORMAL_ACM_NE
-                    if (!APTypeDeDecompte.NORMAL_ACM_NE.equals(decompteCourant.getTypeDeDecompte())) {
+                        // Pas de recap pour les décomptes mixtes NORMAL_ACM_NE
+                        if (!APTypeDeDecompte.NORMAL_ACM_NE.equals(decompteCourant.getTypeDeDecompte())) {
 
-                        if (nbDecompte > 1) {
+                            if (nbDecompte > 1) {
 
-                            if (!totalAPG.isZero()) {
+                                if (!totalAPG.isZero()) {
 
-                                champs.put("FIELD_RECAP", document.getTextes(3).getTexte(28).getDescription());
-                                champs.put("FIELD_RECAP_APG", document.getTextes(3).getTexte(29).getDescription());
-                                champs.put("FIELD_MONTANT_RECAP_APG",
-                                        PRStringUtils.replaceString(document.getTextes(3).getTexte(30).getDescription(),
-                                                "{montantAPGbrut}", totalAPG.toString()));
+                                    champs.put("FIELD_RECAP", document.getTextes(3).getTexte(28).getDescription());
+                                    champs.put("FIELD_RECAP_APG", document.getTextes(3).getTexte(29).getDescription());
+                                    champs.put("FIELD_MONTANT_RECAP_APG",
+                                            PRStringUtils.replaceString(document.getTextes(3).getTexte(30).getDescription(),
+                                                    "{montantAPGbrut}", totalAPG.toString()));
+                                }
+
+                                if (!totalCotisations.isZero()) {
+                                    champs.put("FIELD_RECAP_COTISATIONS",
+                                            document.getTextes(3).getTexte(31).getDescription());
+                                    champs.put("FIELD_MONTANT_RECAP_COTISATIONS",
+                                            PRStringUtils.replaceString(document.getTextes(3).getTexte(32).getDescription(),
+                                                    "{montantCotisations}", totalCotisations.toString()));
+                                }
+
+                                if (!totalImpotSource.isZero()) {
+                                    champs.put("FIELD_RECAP_IMPOT", document.getTextes(3).getTexte(35).getDescription());
+                                    champs.put("FIELD_MONTANT_RECAP_IMPOT",
+                                            PRStringUtils.replaceString(document.getTextes(3).getTexte(36).getDescription(),
+                                                    "{impotMontant}", totalImpotSource.toString()));
+                                }
+
+                                if (!totalMontantVentile.isZero()) {
+                                    champs.put("FIELD_RECAP_VENTILATION",
+                                            document.getTextes(3).getTexte(37).getDescription());
+                                    champs.put("FIELD_MONTANT_RECAP_VENTILATION",
+                                            PRStringUtils.replaceString(document.getTextes(3).getTexte(38).getDescription(),
+                                                    "{ventilationsMontant}", totalMontantVentile.toString()));
+                                }
+
+                                if (!totalCompensations.isZero()) {
+                                    champs.put("FIELD_RECAP_COMPENSATION",
+                                            document.getTextes(3).getTexte(33).getDescription());
+                                    champs.put("FIELD_MONTANT_RECAP_COMPENSATION",
+                                            PRStringUtils.replaceString(document.getTextes(3).getTexte(34).getDescription(),
+                                                    "{compensationsMontant}", totalCompensations.toString()));
+                                }
+
+                                if (grandTotal.isNegative() || grandTotal.isZero()) {
+                                    champs.put("FIELD_TOTAL_FINAL_RECAP",
+                                            document.getTextes(3).getTexte(11).getDescription());
+                                } else {
+                                    champs.put("FIELD_TOTAL_FINAL_RECAP",
+                                            document.getTextes(3).getTexte(9).getDescription());
+                                }
+
+                                champs.put("FIELD_MONTANT_FINAL_RECAP",
+                                        PRStringUtils.replaceString(document.getTextes(3).getTexte(39).getDescription(),
+                                                "{montantFinalRecap}",
+                                                JANumberFormatter.formatNoRound(grandTotal.toString())));
                             }
-
-                            if (!totalCotisations.isZero()) {
-                                champs.put("FIELD_RECAP_COTISATIONS",
-                                        document.getTextes(3).getTexte(31).getDescription());
-                                champs.put("FIELD_MONTANT_RECAP_COTISATIONS",
-                                        PRStringUtils.replaceString(document.getTextes(3).getTexte(32).getDescription(),
-                                                "{montantCotisations}", totalCotisations.toString()));
-                            }
-
-                            if (!totalImpotSource.isZero()) {
-                                champs.put("FIELD_RECAP_IMPOT", document.getTextes(3).getTexte(35).getDescription());
-                                champs.put("FIELD_MONTANT_RECAP_IMPOT",
-                                        PRStringUtils.replaceString(document.getTextes(3).getTexte(36).getDescription(),
-                                                "{impotMontant}", totalImpotSource.toString()));
-                            }
-
-                            if (!totalMontantVentile.isZero()) {
-                                champs.put("FIELD_RECAP_VENTILATION",
-                                        document.getTextes(3).getTexte(37).getDescription());
-                                champs.put("FIELD_MONTANT_RECAP_VENTILATION",
-                                        PRStringUtils.replaceString(document.getTextes(3).getTexte(38).getDescription(),
-                                                "{ventilationsMontant}", totalMontantVentile.toString()));
-                            }
-
-                            if (!totalCompensations.isZero()) {
-                                champs.put("FIELD_RECAP_COMPENSATION",
-                                        document.getTextes(3).getTexte(33).getDescription());
-                                champs.put("FIELD_MONTANT_RECAP_COMPENSATION",
-                                        PRStringUtils.replaceString(document.getTextes(3).getTexte(34).getDescription(),
-                                                "{compensationsMontant}", totalCompensations.toString()));
-                            }
-
-                            if (grandTotal.isNegative() || grandTotal.isZero()) {
-                                champs.put("FIELD_TOTAL_FINAL_RECAP",
-                                        document.getTextes(3).getTexte(11).getDescription());
-                            } else {
-                                champs.put("FIELD_TOTAL_FINAL_RECAP",
-                                        document.getTextes(3).getTexte(9).getDescription());
-                            }
-
-                            champs.put("FIELD_MONTANT_FINAL_RECAP",
-                                    PRStringUtils.replaceString(document.getTextes(3).getTexte(39).getDescription(),
-                                            "{montantFinalRecap}",
-                                            JANumberFormatter.formatNoRound(grandTotal.toString())));
                         }
                     }
                 }
+                lignes.add(champs);
             }
-            lignes.add(champs);
+
         } catch (final Exception e) {
             e.printStackTrace();
             setSendMailOnError(true);
@@ -1815,7 +1975,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                                         "Impossible de résoudre le type de décompte APG pour la génération du doc info");
                         }
                     }
-                // Si Pandémie
+                    // Si Pandémie
                 } else if (IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot())) {
 
                     // SI APG
@@ -1842,7 +2002,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     docInfo.setDocumentProperty("apg.typeDecompte", IPRDemande.CS_TYPE_PATERNITE);
                     if (isTraitementDesVentilations()) {
                         docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_APG_VENTILATION);
-                } else {
+                    } else {
                         switch (decompteCourant.getTypeDeDecompte()) {
 
                             case NORMAL:
@@ -1871,9 +2031,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     } else {
                         switch (decompteCourant.getTypeDeDecompte()) {
 
-                            case MATCIAB2:
-                                docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_MAT_MATCIAB2);
-                                break;
                             case NORMAL:
                                 docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_MAT_NORMAL);
                                 break;
@@ -2001,7 +2158,16 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         try {
             // le modèle
             final String extensionModelCaisse = getSession().getApplication().getProperty("extensionModelITextCaisse");
-            if (!JadeStringUtil.isEmpty(extensionModelCaisse)) {
+            if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+                if (!JadeStringUtil.isEmpty(extensionModelCaisse)) {
+                    setTemplateFile(APAbstractDecomptesGenerationProcess.FICHIER_MODELE_PATERNITE + extensionModelCaisse);
+                    final FWIImportManager im = getImporter();
+                    final File sourceFile = new File(
+                            im.getImportPath() + im.getDocumentTemplate() + FWITemplateType.TEMPLATE_JASPER.toString());
+                } else {
+                    setTemplateFile(APAbstractDecomptesGenerationProcess.FICHIER_MODELE_PATERNITE);
+                }
+            } else if (!JadeStringUtil.isEmpty(extensionModelCaisse)) {
                 setTemplateFile(APAbstractDecomptesGenerationProcess.FICHIER_MODELE + extensionModelCaisse);
                 final FWIImportManager im = getImporter();
                 final File sourceFile = new File(
@@ -2115,7 +2281,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
                 // Récupération du texte dans le catalogue
                 if(APTypeDeDecompte.JOUR_ISOLE.equals(decompteCourant.getTypeDeDecompte())
-                    || APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
+                        || APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
                     texteDetailJournalier = document.getTextes(3).getTexte(50).getDescription();
                 } else {
                     texteDetailJournalier = document.getTextes(3).getTexte(44).getDescription();
@@ -2377,4 +2543,11 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
     public abstract void setIsCopie(final boolean isCopie);
 
+    public Boolean getFirstForCopy() {
+        return isFirstForCopy;
+    }
+
+    public void setFirstForCopy(Boolean firstForCopy) {
+        isFirstForCopy = firstForCopy;
+    }
 }

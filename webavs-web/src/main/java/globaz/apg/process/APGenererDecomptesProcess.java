@@ -162,8 +162,8 @@ public class APGenererDecomptesProcess extends BProcess {
                     getMemoryLog().logMessage(getSession().getLabel("GENERATION_DECOMPTES_M_A_J_LOT"),
                             FWMessage.INFORMATION, "");
                     imprimerCommunication(false);
-
-                    if (StringUtils.equals(IPRDemande.CS_TYPE_PANDEMIE, typeLot)) {
+                    // Si l'on est dans un type pandémie ou paternité, il faut générer les copies.
+                    if (StringUtils.equals(IPRDemande.CS_TYPE_PANDEMIE, typeLot) || StringUtils.equals(IPRDemande.CS_TYPE_PATERNITE, typeLot)) {
                         imprimerCommunication(true);
                     }
                     if (getMemoryLog().hasErrors()) {
@@ -189,7 +189,8 @@ public class APGenererDecomptesProcess extends BProcess {
                             FWMessage.INFORMATION, "");
                 } else {
                     imprimerCommunication(false);
-                    if (StringUtils.equals(IPRDemande.CS_TYPE_PANDEMIE, typeLot)) {
+                    // Si l'on est dans un type pandémie ou paternité, il faut générer les copies.
+                    if (StringUtils.equals(IPRDemande.CS_TYPE_PANDEMIE, typeLot) || StringUtils.equals(IPRDemande.CS_TYPE_PATERNITE, typeLot)) {
                         imprimerCommunication(true);
                     }
                     if (getMemoryLog().hasErrors()) {
@@ -347,7 +348,7 @@ public class APGenererDecomptesProcess extends BProcess {
 
     /**
      *
-     * @param transaction 
+     * @param transaction
      * @throws Exception
      */
     private void genereAnnonces(final BITransaction transaction) throws Exception {
@@ -492,7 +493,6 @@ public class APGenererDecomptesProcess extends BProcess {
             CommonPropertiesUtils.validatePropertyValue(APProperties.TYPE_DE_PRESTATION_ACM, propertyValue,
                     APPropertyTypeDePrestationAcmValues.propertyValues());
 
-            //ESVE MATERNITE DECOMPTE
             final APPropertyTypeDePrestationAcmValues typeDePrestationAcm = APPropertyTypeDePrestationAcmValues
                     .valueOf(propertyValue);
             if (typeDePrestationAcm == null) {
@@ -561,7 +561,8 @@ public class APGenererDecomptesProcess extends BProcess {
                 } else {
                     droitLAPG.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
                 }
-            } else if (Arrays.asList(IAPDroitLAPG.CS_QUARANTAINE).contains(droitLAPG.getGenreService())) {
+            } else if (Arrays.asList(IAPDroitLAPG.CS_QUARANTAINE).contains(droitLAPG.getGenreService())
+                    || Arrays.asList(IAPDroitLAPG.CS_QUARANTAINE_17_09_20).contains(droitLAPG.getGenreService())) {
                 final APPrestationManager prestationManager = new APPrestationManager();
                 prestationManager.setSession(session);
                 prestationManager.setForIdDroit(droitLAPG.getIdDroit());
