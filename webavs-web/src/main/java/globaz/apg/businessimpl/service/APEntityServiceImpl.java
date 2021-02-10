@@ -1606,7 +1606,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         // Validation des infos du viewBean
         validationPatViewBean(session, transaction, viewBean);
 
-        final APDroitPaternite droit = getDroitPaternite(session, transaction, viewBean.getDroit().getIdDroit());
+         APDroitPaternite droit = getDroitPaternite(session, transaction, viewBean.getDroit().getIdDroit());
 
         droit.setSession(session);
         droit.retrieve(transaction);
@@ -1631,7 +1631,12 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             throw new Exception("Unable to retrieve the PRDemande with id [" + droit.getIdDemande() + "]");
         }
 
-        return editionDroitPat(session, transaction, viewBean, demande, APModeEditionDroit.EDITION);
+        droit =  editionDroitPat(session, transaction, viewBean, demande, APModeEditionDroit.EDITION);
+        /**
+         * Prends le jours de la date de naissance
+         */
+        droit.setDateDebutDroit(viewBean.getDateDebutDroit());
+        return droit;
     }
 
 
