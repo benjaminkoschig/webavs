@@ -385,6 +385,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
     private static final String PROP_NATURE_VERSEMENT_APG = "nature.versement.apg";
     private static final String PROP_NATURE_VERSEMENT_LAMAT = "nature.versement.lamat";
     private static final String PROP_NATURE_VERSEMENT_PANDEMIE = "nature.versement.pandemie";
+    private static final String PROP_NATURE_VERSEMENT_PATERNITE = "nature.versement.paternite";
     private static final String PROP_RUBRIQUE_COMPENSATION = "rubrique.compensation.standard";
     private static final String PROP_RUBRIQUE_COMPENSATION_ACM = "rubrique.compensation.acm";
     public static final String REQUETE_SQL_CAISSE_PROF_COL_NAME_ID_TIERS_ADMINISTRATION = "ID_TIERS_ADMINISTRATION";
@@ -1310,6 +1311,9 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         } else if ("NATURE_VERSEMENT_PANDEMIE".equals(nature)) {
             ordreVersement.setNatureOrdre(CAOrdreGroupe.NATURE_VERSEMENT_PANDEMIE);
             motif = FWMessageFormat.format(getSession().getLabel("MOTIF_PANDEMIE"), getDateSurDocument());
+        }else if ("NATURE_VERSEMENT_PATERNITE".equals(nature)) {
+            ordreVersement.setNatureOrdre(CAOrdreGroupe.NATURE_VERSEMENT_PATERNITE);
+            motif = FWMessageFormat.format(getSession().getLabel("MOTIF_PATERNITE"), getDateSurDocument());
         } else {
             throw new Exception("Nature du versement non reconnue, contrôler les properties !!! (" + nature + ")");
         }
@@ -1954,6 +1958,16 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                                         .getProperty(APGenererEcrituresComptablesProcess.PROP_NATURE_VERSEMENT_AMAT),
                                 nomPrenom, ventilation.referenceInterne);
                     }
+                } else if(typeLot.equals(IPRDemande.CS_TYPE_PATERNITE)){
+                    doOrdreVersement(
+                            compta,
+                            compteAnnexeAPG.getIdCompteAnnexe(),
+                            sectionNormale.getIdSection(),
+                            ventilation.montant,
+                            ventilation.idAdressePaiement,
+                            getSession().getApplication().getProperty(
+                                    APGenererEcrituresComptablesProcess.PROP_NATURE_VERSEMENT_PATERNITE), nomPrenom,
+                            ventilation.referenceInterne);
                 } else {
                     if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(ventilation.genrePrestation)
                             || APTypeDePrestation.ACM_NE.isCodeSystemEqual(ventilation.genrePrestation)) {
