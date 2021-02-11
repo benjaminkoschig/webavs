@@ -1636,6 +1636,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
          * Prends le jours de la date de naissance
          */
         droit.setDateDebutDroit(viewBean.getDateDebutDroit());
+        droit.update();
         return droit;
     }
 

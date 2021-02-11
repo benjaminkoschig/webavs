@@ -64,7 +64,7 @@ public class Rule418 extends Rule {
             } else {
                 if (dateDebut != null && dateFin != null && dateFin.getTime() >= dateDebut.getTime()) {
                     double msDiff = (double)(dateFin.getTime() - dateDebut.getTime());
-                    nombreJoursMax =  (int)Math.round(msDiff / 8.64E7D);
+                    nombreJoursMax =  ((int)Math.round(msDiff / 8.64E7D))+1;
                 } else {
                     nombreJoursMax = 0;
                 }
