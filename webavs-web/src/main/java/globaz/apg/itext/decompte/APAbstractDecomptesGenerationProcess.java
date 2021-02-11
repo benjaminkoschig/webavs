@@ -776,7 +776,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
                 builder.append(document.getTextes(7).getTexte(1).getDescription()+"\n\n");
                 builder.append(document.getTextes(7).getTexte(2).getDescription()+"\n\n");
-                builder.append(document.getTextes(7).getTexte(3).getDescription()+"\n\n");
 
                 parametres.put("PARAM_CORPS", builder.toString());
 
@@ -967,11 +966,15 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
 
             parametres.put("PARAM_PIED", buffer.toString());
-
             buffer.setLength(0);
-            buffer.append(document.getTextes(6).getTexte(1).getDescription());
-            buffer = new StringBuffer(PRStringUtils.formatMessage(buffer, titre));
-            buffer.append("\n");
+            if (getFirstForCopy() && getIsCopie() && IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+                buffer.append(document.getTextes(7).getTexte(3).getDescription()+"\n\n");
+            } else {
+                buffer.append(document.getTextes(6).getTexte(1).getDescription());
+                buffer = new StringBuffer(PRStringUtils.formatMessage(buffer, titre));
+                buffer.append("\n");
+
+            }
             parametres.put("PARAM_SALUTATIONS", buffer.toString());
 
             // Ajout du paramètre "copie à".
@@ -2530,7 +2533,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 // Récapitulatif si plusieurs décomptes et UNIQUEMENT pour certains caisses
                 if (!JadeStringUtil.isBlankOrZero(decompteCourant.getIdAffilie())) {
 
-                    if (getIsDecompteRecapitulatif()) {
+                    if (getIsDecompteRecapitulatif() && !IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
 
                         // Pas de recap pour les décomptes mixtes NORMAL_ACM_NE
                         if (!APTypeDeDecompte.NORMAL_ACM_NE.equals(decompteCourant.getTypeDeDecompte())) {

@@ -7,10 +7,7 @@ import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.lots.APFactureACompenser;
 import globaz.apg.db.lots.APFactureACompenserManager;
 import globaz.apg.db.lots.APLot;
-import globaz.apg.db.prestation.APPrestation;
-import globaz.apg.db.prestation.APRepartitionJointPrestation;
-import globaz.apg.db.prestation.APRepartitionJointPrestationManager;
-import globaz.apg.db.prestation.APRepartitionPaiements;
+import globaz.apg.db.prestation.*;
 import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.itext.decompte.utils.APDecompte;
 import globaz.apg.itext.decompte.utils.APDecompteGenerationParameterValidationError;
@@ -20,6 +17,7 @@ import globaz.apg.itext.decompte.utils.APPrestationJointRepartitionPOJO;
 import globaz.apg.properties.APPropertyTypeDePrestationAcmValues;
 import globaz.babel.api.ICTDocument;
 import globaz.framework.printing.itext.exception.FWIException;
+import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.GlobazJobQueue;
@@ -127,6 +125,8 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
     private boolean isDecompteRecapitulatif;
     private boolean isNumeroAffiliePourGEDForceAZeroSiVide;
     private boolean isBlankIndexGedNssAZero;
+
+    private boolean next = false;
 
     // ------------------------------------------------------------------
     // Champs de classe internes
@@ -548,7 +548,7 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
 
     @Override
     public final boolean hasNextDocument() throws FWIException {
-        boolean next = false;
+        next = false;
         APDecompte decompteCourant = null;
 
         if(!getFirstForCopy() && IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) && getIsCopie()) {
@@ -568,16 +568,11 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
                 if (next) {
                     decompteCourant = repartitions.get(iteratorRepartitions.next());
 
-                    // lors de l'execution de la copie (Type PANDEMIE), nous ne voulons pas rééditer
+                    // lors de l'execution de la copie (Type PANDEMIE ou PATERNITE), nous ne voulons pas rééditer
                     // les décomptes pour indépendant / les paiements pour employeur
                     // la boucle permet de vérifier les itérations suivantes jusqu'à trouver un décompte correspondant
-                    while((getIsCopie() && (!hasRemboursementAssure(decompteCourant) || isIndependant(decompteCourant))) && next && !IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
-                        next = iteratorRepartitions.hasNext();
-                        if (next) {
-                            decompteCourant = repartitions.get(iteratorRepartitions.next());
-                        } else {
-                            decompteCourant = null;
-                        }
+                    if (getIsCopie()) {
+                        decompteCourant = triRepartitionForCopy(decompteCourant);
                     }
                 }
             } else if (TraitementCourant.TRAITEMENT_REPARTITIONS.equals(traitementCourant)) {
@@ -585,16 +580,11 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
                 next = iteratorRepartitions.hasNext();
                 if (next) {
                     decompteCourant = repartitions.get(iteratorRepartitions.next());
-                    // lors de l'execution de la copie (Type PANDEMIE), nous ne voulons pas rééditer
+                    // lors de l'execution de la copie (Type PANDEMIE ou PATERNITE), nous ne voulons pas rééditer
                     // les décomptes pour indépendant / les paiements pour employeur
                     // la boucle permet de vérifier les itérations suivantes jusqu'à trouver un décompte correspondant
-                    while((getIsCopie() && (!hasRemboursementAssure(decompteCourant) || isIndependant(decompteCourant))) && next && !IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
-                        next = iteratorRepartitions.hasNext();
-                        if (next) {
-                            decompteCourant = repartitions.get(iteratorRepartitions.next());
-                        } else {
-                            decompteCourant = null;
-                        }
+                    if (getIsCopie()) {
+                        decompteCourant = triRepartitionForCopy(decompteCourant);
                     }
                 }
 
@@ -607,16 +597,11 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
                     next = iteratorVentilations.hasNext();
                     if (next) {
                         decompteCourant = ventilations.get(iteratorVentilations.next());
-                        // lors de l'execution de la copie (Type PANDEMIE), nous ne voulons pas rééditer
+                        // lors de l'execution de la copie (Type PANDEMIE ou PATERNITE), nous ne voulons pas rééditer
                         // les décomptes pour indépendant / les paiements pour employeur
                         // la boucle permet de vérifier les itérations suivantes jusqu'à trouver un décompte correspondant
-                        while((getIsCopie() && (!hasRemboursementAssure(decompteCourant) || isIndependant(decompteCourant))) && next && !IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
-                            next = iteratorVentilations.hasNext();
-                            if (next) {
-                                decompteCourant = ventilations.get(iteratorVentilations.next());
-                            } else {
-                                decompteCourant = null;
-                            }
+                        if (getIsCopie()) {
+                            decompteCourant = triRepartitionForCopy(decompteCourant);
                         }
                         if (next){
                             traitementCourant = TraitementCourant.TRAITEMENT_VENTILATIONS;
@@ -628,16 +613,11 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
                 next = iteratorVentilations.hasNext();
                 if (next) {
                     decompteCourant = ventilations.get(iteratorVentilations.next());
-                    // lors de l'execution de la copie (Type PANDEMIE), nous ne voulons pas rééditer
+                    // lors de l'execution de la copie (Type PANDEMIE ou PATERNITE), nous ne voulons pas rééditer
                     // les décomptes pour indépendant / les paiements pour employeur
                     // la boucle permet de vérifier les itérations suivantes jusqu'à trouver un décompte correspondant
-                    while((getIsCopie() && (!hasRemboursementAssure(decompteCourant) || isIndependant(decompteCourant))) && next && !IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
-                        next = iteratorVentilations.hasNext();
-                        if (next) {
-                            decompteCourant = ventilations.get(iteratorVentilations.next());
-                        } else {
-                            decompteCourant = null;
-                        }
+                    if (getIsCopie()) {
+                        decompteCourant = triRepartitionForCopy(decompteCourant);
                     }
                 }
             } else {
@@ -670,6 +650,53 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
             }
             return next;
         }
+    }
+
+    private APDecompte triRepartitionForCopy(APDecompte decompteCourant) {
+        // Pour la Paternité
+        if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+            while(!decompteIS(decompteCourant) && next) {
+                next = iteratorRepartitions.hasNext();
+                if (next) {
+                    decompteCourant = repartitions.get(iteratorRepartitions.next());
+                } else {
+                    decompteCourant = null;
+                }
+            }
+        } else {
+            while((!hasRemboursementAssure(decompteCourant) || isIndependant(decompteCourant)) && next) {
+                next = iteratorRepartitions.hasNext();
+                if (next) {
+                    decompteCourant = repartitions.get(iteratorRepartitions.next());
+                } else {
+                    decompteCourant = null;
+                }
+            }
+        }
+        return decompteCourant;
+    }
+
+    private boolean decompteIS(APDecompte decompteCourant) {
+        if (Objects.isNull(decompteCourant)) return false;
+        for (final APRepartitionJointPrestation repartition : decompteCourant.getRepartitionsPeres()) {
+            // 5. les cotisations & l'impôt à la source
+            final APCotisationManager apCotMan = new APCotisationManager();
+            apCotMan.setForIdRepartitionBeneficiairePaiement(repartition.getIdRepartitionBeneficiairePaiement());
+            apCotMan.setSession(getSession());
+            try {
+                apCotMan.find(getTransaction(), BManager.SIZE_NOLIMIT);
+            } catch (Exception e) {
+                LOG.error("#APDecompteGenerationProcess#decompteIS impossible de récupérer les cotisations", e);
+            }
+
+            for (int i = 0; i < apCotMan.size(); i++) {
+                final APCotisation apCot = (APCotisation) apCotMan.getEntity(i);
+                if (APCotisation.TYPE_IMPOT.equals(apCot.getType())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private Boolean hasRemboursementAssure(APDecompte decompte){
