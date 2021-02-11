@@ -13,6 +13,7 @@ idEcran="PAP2002";
 	String eMailAddress=objSession.getUserEMail();
 	String typeAPG = request.getParameter("forTypeAPG");
 	viewBean.setForTypeAPG(typeAPG);
+	request.removeAttribute("forTypeAPG");
 
 %>
 <%-- /tpl:put --%>

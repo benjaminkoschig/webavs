@@ -4,6 +4,7 @@ import globaz.apg.api.annonces.IAPAnnonce;
 import globaz.apg.api.codesystem.IAPCatalogueTexte;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.application.APApplication;
+import globaz.apg.utils.APGUtils;
 import globaz.babel.api.ICTDocument;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.printing.itext.FWIDocumentManager;
@@ -102,6 +103,7 @@ public abstract class APAbstractListeRecapitulationAnnonces extends FWIDocumentM
             if(!JadeStringUtil.isBlankOrZero(forTypeAPG)){
                 services = triParTypeAPG(services,forTypeAPG);
             }
+            services = triNotPandemie(services);
             final Langues langue = Langues.getLangueDepuisCodeIso(getSession().getIdLangueISO());
             Collections.sort(services, new Comparator<JadeCodeSysteme>() {
                 @Override
@@ -188,6 +190,18 @@ public abstract class APAbstractListeRecapitulationAnnonces extends FWIDocumentM
         }
     }
 
+    private  List<JadeCodeSysteme> triNotPandemie(List<JadeCodeSysteme> services){
+        List<JadeCodeSysteme> newList = new ArrayList<>();
+
+        for (JadeCodeSysteme cs : services) {
+            if(! APGUtils.isTypeAllocationPandemie(cs.getIdCodeSysteme())){
+                newList.add(cs);
+            }
+        }
+        return newList;
+
+    };
+
     private List<JadeCodeSysteme> triParTypeAPG(List<JadeCodeSysteme> services, String forTypeAPG) {
         List<JadeCodeSysteme> newList = new ArrayList<>();
         for (JadeCodeSysteme cs : services) {
@@ -195,7 +209,6 @@ public abstract class APAbstractListeRecapitulationAnnonces extends FWIDocumentM
                 if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(cs.getIdCodeSysteme())) {
                     newList.add(cs);
                 }
-
             }
         }
         return newList;
