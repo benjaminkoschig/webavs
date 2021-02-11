@@ -1374,8 +1374,10 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         }
 
 
-        buffer.append(" "); // espace
-        buffer.append(textes.getTexte(101).getDescription());
+        if (loadPrestationType().getMontantJournalier().equals(droitAcquis.toString())) {
+            buffer.append(" "); // espace
+            buffer.append(textes.getTexte(101).getDescription());
+        }
 
 
         // ajouter le texte concernant l'employeur si nécessaire
@@ -2726,22 +2728,12 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_APG_VENTILATION);
                     } else {
                         switch (decompteCourant.getTypeDeDecompte()) {
-
                             case NORMAL:
-                                docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_MAT_NORMAL);
+                                docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECISION_PATERNITE);
                                 break;
-                            case ACM_GE:
-                                docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_MAT_ACM);
-                                break;
-                            case AMAT_GE:
-                                docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_MAT_LAMAT);
-                                break;
-                            case NORMAL_ACM_NE:
-                                throw new Exception(
-                                        "Incohérence de données. Impossible de générer un décompte de type Paternité avec des prestations de type ACM_NE");
                             default:
                                 throw new Exception(
-                                        "Impossible de résoudre le type de décompte maternité pour la génération du doc info");
+                                        "Impossible de résoudre le type de décompte paternité pour la génération du doc info");
                         }
                     }
                 } else {

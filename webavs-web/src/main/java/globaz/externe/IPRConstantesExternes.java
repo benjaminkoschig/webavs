@@ -23,8 +23,7 @@ public interface IPRConstantesExternes {
     public static final String DECISION_IJAI = "5019PIJ";
     public static final String DECISION_MATERNITE = "5003PAP";
 
-    // TODO Numéro pour paternité à changer
-    public static final String DECISION_PATERNITE = "5003PAP";
+    public static final String DECISION_PATERNITE = "5053PAP";
 
     public static final String DECISION_MOYENS_DE_DROIT = "5042PIJ";
     public static final String DECISION_REFUS_APG = "5038PAP";
