@@ -12,7 +12,7 @@ public interface IPRConstantesExternes {
     public static final String ATTESTATION_FISCALE_APG = "5001PAP";
     public static final String ATTESTATION_FISCALE_MATERNITE = "5050PAP";
     public static final String ATTESTATION_FISCALE_PANDEMIE = "5051PAP";
-    public static final String ATTESTATION_FISCALE_PATERNITE = "5052PAP";
+    public static final String ATTESTATION_FISCALE_PATERNITE = "5054PAP";
     // IJAI
     public static final String ATTESTATION_FISCALE_IJ = "5011PIJ";
     public static final String ATTESTATIONS_NON_RECUES_IJ = "5016PIJ";
