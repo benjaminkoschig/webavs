@@ -166,7 +166,6 @@ public class APPrestationJointLotTiersDroitAction extends PRDefaultAction {
         APPrestationJointLotTiersDroitListViewBean viewBean = new APPrestationJointLotTiersDroitListViewBean();
 
         viewBean.setForIdDroit(request.getParameter("forIdDroit"));
-
         if (!JadeStringUtil.isNull(viewBean.getForIdDroit())) {
 
             APPrestationParametresRCDTO dto = new APPrestationParametresRCDTO();
@@ -184,7 +183,10 @@ public class APPrestationJointLotTiersDroitAction extends PRDefaultAction {
             } catch (Exception e) {
                // on ne met pas à jour le dto.
             }
-            PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO, new APDroitAPGDTO(droit));
+            if(!JadeStringUtil.isBlankOrZero(droit.getIdDroit())){
+                PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO, new APDroitAPGDTO(droit));
+            }
+
         }
 
         if (!JadeStringUtil.isEmpty(request.getParameter("forIdLot"))) {
