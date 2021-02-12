@@ -245,7 +245,11 @@ public class APEnfantPatViewBean extends APEnfantPat implements FWViewBeanInterf
 
     public String getCanton() {
         String canton = droitDTO.getCanton(getSession());
-        return canton == null ? super.getCanton() : canton;
+        if(JadeStringUtil.isBlankOrZero(super.getCanton())){
+            return canton;
+        }else{
+            return super.getCanton();
+        }
     }
 
 }
