@@ -1308,16 +1308,14 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     }
 
     private APPrestationManager loadPrestations() throws FWIException {
-        if (!prestations.isLoaded()) {
-            prestations.setSession(getSession());
-            prestations.setForIdDroit(droit.getIdDroit());
-            prestations.setOrderBy(APPrestation.FIELDNAME_DATEDEBUT);
+        prestations.setSession(getSession());
+        prestations.setForIdDroit(droit.getIdDroit());
+        prestations.setOrderBy(APPrestation.FIELDNAME_DATEDEBUT);
 
-            try {
-                prestations.find();
-            } catch (final Exception e) {
-                throw new FWIException("Impossible charger les prestations", e);
-            }
+        try {
+            prestations.find();
+        } catch (final Exception e) {
+            throw new FWIException("Impossible charger les prestations", e);
         }
 
         return prestations;
@@ -1532,7 +1530,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     // Retourne la première prestation n'etant pas une prestation de
     // restitution.
     private APPrestation loadPrestationType() throws FWIException {
-        if ((prestationType == null) && !loadPrestations().isEmpty()) {
+        if (!loadPrestations().isEmpty()) {
 
             try {
                 for (int i = 0; i < loadPrestations().getCount(); i++) {
