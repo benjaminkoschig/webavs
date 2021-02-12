@@ -1210,6 +1210,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         //On va charger les prestations ainsi que le nombre d'employeur
         nombreEmployeurs();
 
+        //Chargement des repartitions
+        loadRepartitions();
+
         final APEnfantPatManager enfMgr = new APEnfantPatManager();
         enfMgr.setSession(getSession());
         enfMgr.setForIdDroitPaternite(droit.getIdDroit());
@@ -1274,6 +1277,106 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
         completeCorps(parametres, buffer, document.getTextes(2));
 
+    }
+
+    private void loadRepartitions() {
+        try {
+
+            RepartitionsEmployeurIterator repartitionsEmployeur = new RepartitionsEmployeurIterator();
+            if (!decompteCourant.getIsPaiementEmployeur()) {
+                if (repartitionsEmployeur.hasNext()) {
+                    repartition = (APRepartitionPaiements) repartitionsEmployeur.next();
+                }
+
+            } else {
+                if (repartitionsEmployeur.hasNext()) {
+                    repartition = (APRepartitionPaiements) repartitionsEmployeur.next();
+                }
+            }
+        } catch (final Exception e) {
+            getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, "APAbstractDecomptesGenerationProcess");
+            abort();
+        }
+    }
+
+    // un iterateur qui filtre les repartitions pour les assures et les
+    // repartitions fils.
+    public class RepartitionsEmployeurIterator implements Iterator {
+
+        // ~ Instance fields
+        // --------------------------------------------------------------------------------------------
+
+        boolean hasNext;
+        int idRepartition;
+        APRepartitionPaiements repartition;
+        APRepartitionPaiementsManager repartitions = new APRepartitionPaiementsManager();
+
+        // ~ Constructors
+        // -----------------------------------------------------------------------------------------------
+
+        public RepartitionsEmployeurIterator() throws FWIException {
+            repartitions.setSession(getSession());
+            repartitions.setForIdPrestation(loadPrestationType().getIdPrestationApg());
+
+            try {
+                repartitions.find();
+            } catch (final Exception e) {
+                throw new FWIException("Impossible de charger les repartitions", e);
+            }
+        }
+
+        // ~ Methods
+        // ----------------------------------------------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return DOCUMENT ME!
+         */
+        @Override
+        public boolean hasNext() {
+            if (!hasNext) {
+                while (idRepartition < repartitions.size()) {
+                    repartition = (APRepartitionPaiements) repartitions.get(idRepartition++);
+
+                    if (JadeStringUtil.isIntegerEmpty(repartition.getIdParent())
+                            && repartition.isBeneficiaireEmployeur()) {
+                        hasNext = true;
+
+                        break;
+                    }
+                }
+            }
+
+            return hasNext;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return DOCUMENT ME!
+         * @throws NoSuchElementException
+         *             DOCUMENT ME!
+         */
+        @Override
+        public Object next() {
+            if (hasNext) {
+                hasNext = false;
+
+                return repartition;
+            } else {
+                throw new NoSuchElementException("plus d'elements dans cette iteration");
+            }
+        }
+
+        /**
+         * @throws UnsupportedOperationException
+         *             DOCUMENT ME!
+         */
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
     }
 
     private void nombreEmployeurs() throws Exception {
