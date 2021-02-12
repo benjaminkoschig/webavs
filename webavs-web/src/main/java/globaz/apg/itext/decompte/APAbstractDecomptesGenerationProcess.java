@@ -1477,12 +1477,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             droitAcquis = new BigDecimal(droitAcquisArrondiAuCinqCentimes.toString());
         }
 
-
-        if (loadPrestationType().getMontantJournalier().equals(droitAcquis.toString())) {
-            buffer.append(" "); // espace
-            buffer.append(textes.getTexte(101).getDescription());
-        }
-
         if (loadPrestationType().getMontantJournalier().equals(droitAcquis.toString())) {
             buffer.append(" "); // espace
             buffer.append(textes.getTexte(101).getDescription());
