@@ -117,11 +117,12 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     // Paternité
     private APDroitLAPG droit;
     private final APPrestationManager prestations = new APPrestationManager();
-    private APRepartitionPaiements repartition;
     private APPrestation prestationType;
     private Boolean isMoreThanEnfant = false;
     private Boolean employeursMultiples;
     private Locale locale = null;
+    private APRepartitionJointPrestation repartitionForPaternite;
+    private String tauxRJM = "";
 
     private JADate firstBirth;
 
@@ -1211,9 +1212,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         //On va charger les prestations ainsi que le nombre d'employeur
         nombreEmployeurs();
 
-        //Chargement des repartitions
-        loadRepartitions();
-
         final APEnfantPatManager enfMgr = new APEnfantPatManager();
         enfMgr.setSession(getSession());
         enfMgr.setForIdDroitPaternite(droit.getIdDroit());
@@ -1278,106 +1276,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
         completeCorps(parametres, buffer, document.getTextes(2));
 
-    }
-
-    private void loadRepartitions() {
-        try {
-
-            RepartitionsEmployeurIterator repartitionsEmployeur = new RepartitionsEmployeurIterator();
-            if (!decompteCourant.getIsPaiementEmployeur()) {
-                if (repartitionsEmployeur.hasNext()) {
-                    repartition = (APRepartitionPaiements) repartitionsEmployeur.next();
-                }
-
-            } else {
-                if (repartitionsEmployeur.hasNext()) {
-                    repartition = (APRepartitionPaiements) repartitionsEmployeur.next();
-                }
-            }
-        } catch (final Exception e) {
-            getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, "APAbstractDecomptesGenerationProcess");
-            abort();
-        }
-    }
-
-    // un iterateur qui filtre les repartitions pour les assures et les
-    // repartitions fils.
-    public class RepartitionsEmployeurIterator implements Iterator {
-
-        // ~ Instance fields
-        // --------------------------------------------------------------------------------------------
-
-        boolean hasNext;
-        int idRepartition;
-        APRepartitionPaiements repartition;
-        APRepartitionPaiementsManager repartitions = new APRepartitionPaiementsManager();
-
-        // ~ Constructors
-        // -----------------------------------------------------------------------------------------------
-
-        public RepartitionsEmployeurIterator() throws FWIException {
-            repartitions.setSession(getSession());
-            repartitions.setForIdPrestation(loadPrestationType().getIdPrestationApg());
-
-            try {
-                repartitions.find();
-            } catch (final Exception e) {
-                throw new FWIException("Impossible de charger les repartitions", e);
-            }
-        }
-
-        // ~ Methods
-        // ----------------------------------------------------------------------------------------------------
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @return DOCUMENT ME!
-         */
-        @Override
-        public boolean hasNext() {
-            if (!hasNext) {
-                while (idRepartition < repartitions.size()) {
-                    repartition = (APRepartitionPaiements) repartitions.get(idRepartition++);
-
-                    if (JadeStringUtil.isIntegerEmpty(repartition.getIdParent())
-                            && repartition.isBeneficiaireEmployeur()) {
-                        hasNext = true;
-
-                        break;
-                    }
-                }
-            }
-
-            return hasNext;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @return DOCUMENT ME!
-         * @throws NoSuchElementException
-         *             DOCUMENT ME!
-         */
-        @Override
-        public Object next() {
-            if (hasNext) {
-                hasNext = false;
-
-                return repartition;
-            } else {
-                throw new NoSuchElementException("plus d'elements dans cette iteration");
-            }
-        }
-
-        /**
-         * @throws UnsupportedOperationException
-         *             DOCUMENT ME!
-         */
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
     }
 
     private void nombreEmployeurs() throws Exception {
@@ -1702,10 +1600,10 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             buffer.append(" "); // ligne
             buffer.append(textes.getTexte(102).getDescription());
 
-            arguments[8] = repartition.getTauxRJM();
+            arguments[8] = tauxRJM;
 
             // calculer le pourcentage de l'employeur
-            final double pourcent = Double.parseDouble(repartition.getTauxRJM()) / 100d;
+            final double pourcent = Double.parseDouble(tauxRJM) / 100d;
 
             arguments[9] = JANumberFormatter.format(Double.parseDouble(loadPrestationType().getMontantJournalier())
                     * pourcent, 0.05, 2, JANumberFormatter.NEAR);
@@ -1725,7 +1623,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
         ITITiers tiersTitre = (ITITiers) getSession().getAPIFor(ITITiers.class);
         final Hashtable params = new Hashtable();
-        params.put(ITITiers.FIND_FOR_IDTIERS, repartition.getIdTiers());
+        params.put(ITITiers.FIND_FOR_IDTIERS, decompteCourant.getIdTiers());
         tiersTitre.findTiers(params);
         final ITITiers[] t = tiersTitre.findTiers(params);
         if ((t != null) && (t.length > 0)) {
@@ -1744,7 +1642,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         arguments[4] = JACalendar.format(droit.getDateFinDroit());
         arguments[5] = JANumberFormatter.format(Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()),
                 1, 2, JANumberFormatter.SUP);
-        arguments[6] = loadPrestationType().getMontantJournalier();
+//        arguments[6] = loadPrestationType().getMontantJournalier();
+        arguments[6] = getMontantJournalier(repartitionForPaternite);
         arguments[7] = droit.getDroitAcquis();
 
         APReferenceDataAPG ref;
@@ -1801,7 +1700,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
         final APSituationProfessionnelle situationProfessionnelle = new APSituationProfessionnelle();
 
-        situationProfessionnelle.setIdSituationProf(repartition.getIdSituationProfessionnelle());
+        situationProfessionnelle.setIdSituationProf(repartitionForPaternite.getIdSituationProfessionnelle());
         situationProfessionnelle.setSession(getSession());
         situationProfessionnelle.retrieve();
 
@@ -2110,6 +2009,10 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     // Récupération de l'idDomaine pour sélectionner la bonne adresse de paiement dans
                     // getAdressePaiementAffilie()
                     domaineDePaiement = repartition.getIdDomaineAdressePaiement();
+
+                    // Pour la paternité, récupération du taux RJM
+                    tauxRJM = repartition.getTauxRJM();
+                    repartitionForPaternite = repartition;
 
                     // 1. le n°AVS et le nom de l'assure
                     droit = ApgServiceLocator.getEntityService().getDroitLAPG(getSession(), getTransaction(),
@@ -3128,6 +3031,23 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         }
 
         return texteDetailJournalier;
+    }
+
+    public BigDecimal getMontantJournalier(APRepartitionJointPrestation repartition){
+        // Recupération du nombre de jours soldés
+        final int nbJours = Integer.parseInt(repartition.getNbJoursSoldes());
+        BigDecimal montantJournalier = new BigDecimal(0);
+
+        if (nbJours != 0) {
+            // Récupération du montant brut
+            final Double montantBrut = Double.valueOf(repartition.getMontantBrut());
+            // Division du montant brut par le nombre de jours
+            montantJournalier = BigDecimal.valueOf(montantBrut / nbJours);
+            // Arrondi du montant brut à 2 décimal
+            montantJournalier = montantJournalier.setScale(2, BigDecimal.ROUND_HALF_UP);
+        }
+
+        return montantJournalier;
     }
 
     @Override
