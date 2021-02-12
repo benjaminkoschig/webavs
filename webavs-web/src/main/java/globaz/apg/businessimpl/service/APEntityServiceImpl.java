@@ -987,7 +987,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                 throw new Exception("Unable to update the APDroitAPG with id [" + viewBean.getDroit().getIdDroit()
                         + "] because it doesn't already exist");
             }
-            if (!(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(droitAPG.getEtat()) || IAPDroitLAPG.CS_ETAT_DROIT_ERREUR.equals(droitAPG.getEtat()))) {
+            if (!(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(droitAPG.getEtat()) || IAPDroitLAPG.CS_ETAT_DROIT_ERREUR.equals(droitAPG.getEtat()) || IAPDroitLAPG.CS_ETAT_DROIT_VALIDE.equals(droitAPG.getEtat())) ) {
                 throw new Exception("Unable to update the APDroitAPG with id [" + viewBean.getDroit().getIdDroit()
                         + "] because it is not 'En attente/En erreur'");
             }
@@ -1042,7 +1042,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                                     final APDroitPatPViewBean viewBean, final PRDemande demande, final APModeEditionDroit modeEdition)
             throws Exception {
 
-        if (modeEdition == null) {
+         if (modeEdition == null) {
             throw new Exception("Any edition mode was specified for the APDroitAPG edition");
         }
 
@@ -1119,7 +1119,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                 throw new Exception("Unable to update the APDroitPat with id [" + viewBean.getDroit().getIdDroit()
                         + "] because it doesn't already exist");
             }
-            if (!(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(droitPat.getEtat())|| IAPDroitLAPG.CS_ETAT_DROIT_ERREUR.equals(droitPat.getEtat()))) {
+            if (!Arrays.asList(IAPDroitLAPG.DROITS_MODIFIABLES).contains(viewBean.getEtat())) {
                 throw new Exception("Unable to update the APDroitAPG with id [" + viewBean.getDroit().getIdDroit()
                         + "] because it is not 'En attente/En erreur'");
             }
