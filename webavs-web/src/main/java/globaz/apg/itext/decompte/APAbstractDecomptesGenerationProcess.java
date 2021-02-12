@@ -11,6 +11,7 @@ import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.db.droits.*;
 import globaz.apg.db.prestation.*;
+import globaz.apg.itext.APDecisionCommunicationAPAT;
 import globaz.apg.itext.decompte.utils.APEmployeurTiersUtil;
 import globaz.apg.module.calcul.APReferenceDataParser;
 import globaz.apg.module.calcul.rev2005.APReferenceDataAPG;
@@ -1480,6 +1481,14 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         if (loadPrestationType().getMontantJournalier().equals(droitAcquis.toString())) {
             buffer.append(" "); // espace
             buffer.append(textes.getTexte(101).getDescription());
+        }
+
+        if (loadPrestationType().getMontantJournalier().equals(droitAcquis.toString())) {
+            buffer.append(" "); // espace
+            buffer.append(textes.getTexte(101).getDescription());
+        } else {
+            buffer.append(" "); // espace
+            buffer.append(textes.getTexte(4).getDescription());
         }
 
 
