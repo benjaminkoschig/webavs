@@ -1640,8 +1640,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         arguments[4] = JACalendar.format(droit.getDateFinDroit());
         arguments[5] = JANumberFormatter.format(Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()),
                 1, 2, JANumberFormatter.SUP);
-//        arguments[6] = loadPrestationType().getMontantJournalier();
-        arguments[6] = getMontantJournalier(repartitionForPaternite);
+        arguments[6] = loadPrestationType().getMontantJournalier();
+//        arguments[6] = getMontantJournalier(repartitionForPaternite);
         arguments[7] = droit.getDroitAcquis();
 
         APReferenceDataAPG ref;
