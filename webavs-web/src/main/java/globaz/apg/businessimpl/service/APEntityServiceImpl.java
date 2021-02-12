@@ -586,6 +586,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
             // Mise à jour de certaines entitées
             droit.setIdSituationFam(situationFamiliale.getIdSitFamAPG());
+            droit.setDateDebutDroit(viewBean.getDateDebutDroit());
             droit.update(transaction);
 
         } catch (final Exception exception) {
