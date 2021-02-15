@@ -123,6 +123,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     private Locale locale = null;
     private APRepartitionJointPrestation repartitionForPaternite;
     private String tauxRJM = "";
+    private boolean impotSource = false;
 
     private JADate firstBirth;
 
@@ -724,10 +725,10 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 String tiersAdresseFiscFormatte = PRTiersHelper.getAdresseCourrierFormatee(getISession(), idAdmFisc, "",
                         IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE);
 
-
-
-                parametres.put("P_COPIE_A", document.getTextes(1).getTexte(8).getDescription());
-                parametres.put("P_COPIE_A2", tiersAdresseFiscFormatteLine );
+                if (impotSource){
+                    parametres.put("P_COPIE_A", document.getTextes(1).getTexte(8).getDescription());
+                    parametres.put("P_COPIE_A2", tiersAdresseFiscFormatteLine );
+                }
 
                 if (((getFirstForCopy() && getIsCopie()) || !getIsCopie())) {
                     createCorpsPaternite(parametres);
@@ -1629,9 +1630,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         }
         final String titre = tiersTitre.getFormulePolitesse(tiersTitre.getLangue());
 
-        // String codeIsoLangue =
-        // getSession().getCode(tiers().getProperty(PRTiersWrapper.PROPERTY_LANGUE));
-
         arguments[0] = titre;
         arguments[1] = JACalendar.format(firstBirth.toString(), getCodeIsoLangue());
         arguments[2] = tiers().getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
@@ -1641,7 +1639,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         arguments[5] = JANumberFormatter.format(Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()),
                 1, 2, JANumberFormatter.SUP);
         arguments[6] = loadPrestationType().getMontantJournalier();
-//        arguments[6] = getMontantJournalier(repartitionForPaternite);
         arguments[7] = droit.getDroitAcquis();
 
         APReferenceDataAPG ref;
@@ -1673,9 +1670,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         } else {
             arguments[10] = PRStringUtils.replaceString(textes.getTexte(6).getDescription(), "{montantAnnuel}",
                     JANumberFormatter.format(revenuAnnuel));
-
-            // arguments[10] =
-            // "de CHF "+JANumberFormatter.format(Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant())*360);
         }
 
         if (isMontantMax) {
@@ -1685,8 +1679,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 1, 2,
                     JANumberFormatter.SUP);
         }
-
-
 
         return arguments;
     }
@@ -1898,6 +1890,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         final FWCurrency totalMontantVentile = new FWCurrency(0);
         final FWCurrency totalCompensations = new FWCurrency(0);
         int nbDecompte = 0;
+        // paternité
+        impotSource = false;
 
 
 
@@ -2190,6 +2184,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
                     // Affichage de l'impôt à la source
                     if (!totalMontantImpotSource.equals(new FWCurrency(0))) {
+                        impotSource = true;
                         if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
                             champs.put("FIELD_DETAIL_IMPOT",
                                     PRStringUtils.replaceString(document.getTextes(3).getTexte(12).getDescription(),
