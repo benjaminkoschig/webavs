@@ -15,6 +15,7 @@ import globaz.apg.itext.APDecisionCommunicationAPAT;
 import globaz.apg.itext.decompte.utils.APEmployeurTiersUtil;
 import globaz.apg.module.calcul.APReferenceDataParser;
 import globaz.apg.module.calcul.rev2005.APReferenceDataAPG;
+import globaz.apg.process.APGenererEcrituresComptablesProcess;
 import globaz.babel.api.ICTListeTextes;
 import globaz.framework.util.FWMessageFormat;
 import globaz.globall.db.*;
@@ -124,6 +125,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     private APRepartitionJointPrestation repartitionForPaternite;
     private String tauxRJM = "";
     private boolean impotSource = false;
+    private boolean afficherPeriode = true;
+
+    private String PATERNITE_AFFICHAGE_PERIODE = "decision.paternite.affichage.periode";
 
     private JADate firstBirth;
 
@@ -1893,6 +1897,17 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         // paternité
         impotSource = false;
 
+        // Récupération d'une JadeProp pour l'impression des décisions paternité.
+        afficherPeriode = true;
+        if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+            try {
+                afficherPeriode = Boolean.parseBoolean(getSession().getApplication().getProperty(PATERNITE_AFFICHAGE_PERIODE));
+            } catch (Exception e) {
+                // TODO Traiter l'erreur
+                e.printStackTrace();
+            }
+        }
+
 
 
         try {
@@ -2030,20 +2045,36 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                                             + tiers.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
                                             + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM)));
 
-                    // 2. les infos sur la prestation
-                    champs.put("FIELD_DETAIL_PERIODE",
-                            PRStringUtils.replaceString(document.getTextes(3).getTexte(14).getDescription(), "{periode}",
-                                    JACalendar.format(repartition.getDateDebut(), getCodeIsoLangue()) + " - "
-                                            + JACalendar.format(repartition.getDateFin(), getCodeIsoLangue())));
+                    // Si la Jade propriéré est à True, alors on affiche la période (Paternité)
+                    if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) && !afficherPeriode) {
+                        // Si la propriété est à False, dans ce cas, les périodes ne doivent pas apparaitre, et il faut remonter d'un cran les informations journaliéres
+                        // 3. détail sur la prestation journalière (nbr de jours + montant journalier), si non ventilé
+                        if (!isTraitementDesVentilations()) {
+                            // CHANGES
+                            // On n'ajoute pas ce détail si c'est un décompte mixte NORMAL_ACM_NE
+                            if (!APTypeDeDecompte.NORMAL_ACM_NE.equals(decompteCourant.getTypeDeDecompte())) {
+                                champs.put("FIELD_DETAIL_PERIODE", getDetailJournalier(repartition));
+                            }
+                        }
+                    } else {
+                        // 2. les infos sur la prestation
+                        champs.put("FIELD_DETAIL_PERIODE",
+                                PRStringUtils.replaceString(document.getTextes(3).getTexte(14).getDescription(), "{periode}",
+                                        JACalendar.format(repartition.getDateDebut(), getCodeIsoLangue()) + " - "
+                                                + JACalendar.format(repartition.getDateFin(), getCodeIsoLangue())));
 
-                    // 3. détail sur la prestation journalière (nbr de jours + montant journalier), si non ventilé
-                    if (!isTraitementDesVentilations()) {
-                        // CHANGES
-                        // On n'ajoute pas ce détail si c'est un décompte mixte NORMAL_ACM_NE
-                        if (!APTypeDeDecompte.NORMAL_ACM_NE.equals(decompteCourant.getTypeDeDecompte())) {
-                            champs.put("FIELD_DETAIL_JOURNALIER", getDetailJournalier(repartition));
+                        // 3. détail sur la prestation journalière (nbr de jours + montant journalier), si non ventilé
+                        if (!isTraitementDesVentilations()) {
+                            // CHANGES
+                            // On n'ajoute pas ce détail si c'est un décompte mixte NORMAL_ACM_NE
+                            if (!APTypeDeDecompte.NORMAL_ACM_NE.equals(decompteCourant.getTypeDeDecompte())) {
+                                champs.put("FIELD_DETAIL_JOURNALIER", getDetailJournalier(repartition));
+                            }
                         }
                     }
+
+
+
 
                     // 4. le montant de la répartition
                     if (isTraitementDesVentilations()) {
@@ -2058,6 +2089,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                                         "{montantPeriode}", JANumberFormatter.formatNoRound(repartition.getMontantBrut())));
 
                     }
+
 
                     if ("true".equals(JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_IS_FERCIAB))
                             && APTypeDePrestation.STANDARD.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
