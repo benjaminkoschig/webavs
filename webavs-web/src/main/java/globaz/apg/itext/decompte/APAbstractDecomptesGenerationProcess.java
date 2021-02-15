@@ -971,6 +971,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
             }
 
+            // Pour paternité, si Assuré indépendant, alors il faut ajouter ce texte sur les décisions.
             if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) && !decompteCourant.getIsPaiementEmployeur() && decompteCourant.isIndependant()){
                 buffer.append("\n"+document.getTextes(4).getTexte(101).getDescription()+"\n");
             }
