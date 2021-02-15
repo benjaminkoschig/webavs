@@ -3,6 +3,7 @@
  */
 package globaz.apg.db.prestation;
 
+import globaz.apg.enums.APTypeDePrestation;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
@@ -54,18 +55,20 @@ public class APNoPassageInscriptionCIManager extends BManager {
         sqlWhere.append(today.getMonth());
         sqlWhere.append(today.getDay());
 
+        String genrePrestationPandemie = String.valueOf(APTypeDePrestation.PANDEMIE.getCodesystem());
+
         if (isPandemie()) {
             if (sqlWhere.length() != 0) {
                 sqlWhere.append(" AND ");
             }
-            sqlWhere.append(APInscriptionCI.FIELDNAME_GENRE_PRESTATION).append("=").append(_dbWriteNumeric(statement.getTransaction(), "52015012"));
+            sqlWhere.append(APInscriptionCI.FIELDNAME_GENRE_PRESTATION).append("=").append(_dbWriteNumeric(statement.getTransaction(), genrePrestationPandemie));
 
         } else {
             if (sqlWhere.length() != 0) {
                 sqlWhere.append(" AND ");
             }
             sqlWhere.append("(");
-            sqlWhere.append(APInscriptionCI.FIELDNAME_GENRE_PRESTATION).append("<>").append(_dbWriteNumeric(statement.getTransaction(), "52015012"));
+            sqlWhere.append(APInscriptionCI.FIELDNAME_GENRE_PRESTATION).append("<>").append(_dbWriteNumeric(statement.getTransaction(), genrePrestationPandemie));
             sqlWhere.append(" OR ").append(APInscriptionCI.FIELDNAME_GENRE_PRESTATION).append(" is null");
             sqlWhere.append(")");
 
