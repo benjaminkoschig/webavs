@@ -138,9 +138,14 @@ public class Rule418 extends Rule {
 
     private int getNombreJoursAAjouter(APPeriodeAPG periodeAPGCalculed, String dateDebutACompparer, String dateFinAComparer) {
         Periode periode1 = new Periode(periodeAPGCalculed.getDateDebutPeriode(),periodeAPGCalculed.getDateFinPeriode());
+        if(JadeStringUtil.isBlankOrZero(dateFinAComparer)){
+            dateFinAComparer = JadeDateUtil.getGlobazFormattedDate(new Date(JadeDateUtil.now()));
+        }
         Periode periode2 = new Periode(dateDebutACompparer,dateFinAComparer);
         String dateDebutDroitAAjouter = "";
         String dateDebutFinAAjouter = "";
+
+
         if(periode1.comparerChevauchement(periode2) == Periode.ComparaisonDePeriode.LES_PERIODES_SE_CHEVAUCHENT){
             if(JadeDateUtil.areDatesEquals(periode1.getDateDebut(), periode2.getDateDebut())){
                 dateDebutDroitAAjouter = periode1.getDateDebut();

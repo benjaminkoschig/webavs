@@ -859,14 +859,7 @@ function nextStepValidateAfterPopupSeodor(){
             <ct:FWLabel key="JSP_REMARQUE"/>
         </label>
     </td>
-    <td colspan="5">
-								<textarea id="remarque"
-                                          name="remarque"
-                                          cols="85"
-                                          rows="3"
-                                          onKeyDown="limiteur();">
-									<%=viewBean.getRemarque()%>
-								</textarea>
+    <td colspan="5"><textarea id="remarque" name="remarque" cols="85"rows="3" onKeyDown="limiteur();"><%=viewBean.getRemarque()%></textarea>
         <br/>
         <ct:FWLabel key="JSP_REMARQUE_COMMENT_8000"/>
     </td>
