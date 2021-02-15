@@ -609,9 +609,7 @@ var EDITION_MODE = false;
 											name="remarque" 
 											cols="85" 
 											rows="3" 
-											onKeyDown="limiteur();">
-									<%=viewBean.getRemarque()%>
-								</textarea>
+											onKeyDown="limiteur();"><%=viewBean.getRemarque()%></textarea>
 								<br/>
 								<ct:FWLabel key="JSP_REMARQUE_COMMENT" />
 							</td>

@@ -962,13 +962,7 @@
             <ct:FWLabel key="JSP_REMARQUE"/>
         </label>
     </td>
-    <td colspan="3">
-							<textarea name="remarque"
-                                      cols="85"
-                                      rows="3"
-                                      onKeyDown="limiteur();"><%=
-                            viewBean.getRemarque()
-                            %></textarea>
+    <td colspan="3"><textarea name="remarque" cols="85" rows="3"onKeyDown="limiteur();"><%=viewBean.getRemarque()%></textarea>
         <br/>
         <ct:FWLabel key="JSP_REMARQUE_COMMENT"/>
     </td>
