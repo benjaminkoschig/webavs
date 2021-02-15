@@ -2722,6 +2722,21 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                         break;
                 }
 
+            }else   if (typeLot.equals(IPRDemande.CS_TYPE_PATERNITE)) {
+                switch (iNature) {
+                    // AMAT et LAMAT ne doivent produire qu'un seul versement avec les montants cumulés
+                    // On va donc mettre seulement un des deux types dans le typeMontant
+                    case 0:
+                        nature = getSession().getApplication().getProperty(
+                                APGenererEcrituresComptablesProcess.PROP_NATURE_VERSEMENT_PATERNITE);
+                        typeMontant = Montants.TYPE_APG;
+
+                        break;
+                    default:
+                        iNature = 100;
+                        break;
+                }
+
             } else if (StringUtils.equals(IPRDemande.CS_TYPE_PANDEMIE, typeLot)) {
                 switch (iNature) {
                     case 0:
