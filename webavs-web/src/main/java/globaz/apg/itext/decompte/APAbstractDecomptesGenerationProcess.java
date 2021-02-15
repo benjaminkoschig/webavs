@@ -971,6 +971,10 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
             }
 
+            if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) && !decompteCourant.getIsPaiementEmployeur() && decompteCourant.isIndependant()){
+                buffer.append("\n"+document.getTextes(4).getTexte(101).getDescription()+"\n");
+            }
+
 
             parametres.put("PARAM_PIED", buffer.toString());
             buffer.setLength(0);
@@ -1903,8 +1907,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             try {
                 afficherPeriode = Boolean.parseBoolean(getSession().getApplication().getProperty(PATERNITE_AFFICHAGE_PERIODE));
             } catch (Exception e) {
-                // TODO Traiter l'erreur
-                e.printStackTrace();
+                JadeLogger.error(this.getClass().getName(), e);
             }
         }
 
