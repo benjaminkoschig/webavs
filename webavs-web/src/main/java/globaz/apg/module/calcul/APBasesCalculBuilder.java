@@ -1367,9 +1367,16 @@ public class APBasesCalculBuilder {
             ajouterTauxImposition(currentTaux, dateDebut, dateFin, currentCanton);
         }
 
+        int jourMax = Integer.parseInt(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", APParameter.PATERNITE_JOUR_MAX.getParameterName(), "0", "", 0));
+
+        if(nbJourSoldes > jourMax) {
+            nbJourSoldes = jourMax;
+        }
+
         ((APDroitPaternite) droit).setNbrJourSoldes(String.valueOf(nbJourSoldes));
         return nbJourSoldes;
     }
+
 
     /**
      * Test s'il y a un changement d'imposition entre les périodes
