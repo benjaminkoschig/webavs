@@ -126,6 +126,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     private String tauxRJM = "";
     private boolean impotSource = false;
     private boolean afficherPeriode = true;
+    private boolean hasRestitution = false;
 
     private String PATERNITE_AFFICHAGE_PERIODE = "decision.paternite.affichage.periode";
 
@@ -1272,7 +1273,15 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         // enfant, il faut mettre le texte 2.13 à la place
                         if ((position == 2) && isMoreThanEnfant) {
                             buffer.append(document.getTextes(2).getTexte(13));
-                        } else {
+
+                            // Si nous sommes en position 2, et qu'il s'agisse d'une restitution, on va chercher un autre element du catalogue (200)
+                        } else if ((position == 2) && hasRestitution) {
+                            if (isRestitution()) {
+                                buffer.append(document.getTextes(2).getTexte(200));
+                            } else {
+                                buffer.append(document.getTextes(2).getTexte(201));
+                            }
+                        }else{
                             buffer.append(texte.getDescription());
                         }
 
@@ -1901,6 +1910,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         int nbDecompte = 0;
         // paternité
         impotSource = false;
+        hasRestitution = false;
 
         // Récupération d'une JadeProp pour l'impression des décisions paternité.
         afficherPeriode = true;
@@ -2191,6 +2201,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                             fieldRestitution += " / ";
                         }
                         fieldRestitution += document.getTextes(3).getTexte(20).getDescription();
+                        hasRestitution = true;
                     }
 
                     // Ce champ indique s'il s'agit d'une restitution, et peut également contenir le NIP.
