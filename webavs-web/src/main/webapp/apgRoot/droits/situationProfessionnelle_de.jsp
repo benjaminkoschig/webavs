@@ -159,6 +159,9 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
    		document.all('blockWithoutAnneeTaxation').style.display = 'block';
 	  	document.all('blockAnneeTaxation').style.display = 'none';
    	}
+  	if(<%=viewBean.isPaternite()%>) {
+		document.forms[0].elements('isAllocationExploitation').checked = false;
+	}
    	showisAMATFExcluded();
   	manageAdressePaiement();
   }

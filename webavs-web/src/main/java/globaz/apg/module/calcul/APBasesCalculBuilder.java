@@ -486,7 +486,8 @@ public class APBasesCalculBuilder {
                     baseCourante.setSalarie(true);
                 }
 
-                if(APGUtils.isTypeAllocationPandemie(droit.getGenreService())) {
+                if(APGUtils.isTypeAllocationPandemie(droit.getGenreService())
+                    || droit instanceof APDroitPaternite) {
                     baseCourante.setAllocationExploitation(false);
                 } else {
                     baseCourante.setAllocationExploitation(sitPro.getIsAllocationExploitation().booleanValue());
