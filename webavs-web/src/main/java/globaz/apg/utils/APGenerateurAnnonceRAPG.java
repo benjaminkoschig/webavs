@@ -39,8 +39,8 @@ public class APGenerateurAnnonceRAPG {
 
     public APAnnonceAPG createAnnonceSedex(BSession session, APPrestation prestation, APDroitLAPG droit,
             String moisAnneeComptable, Boolean hasComplementCIAB) throws Exception {
-        boolean isPrestationMaternite = prestation.getNoRevision().equals(IAPDroitMaternite.CS_REVISION_MATERNITE_2005);
-
+        boolean isPrestationMaternite = APGUtils.isTypeMaternite(droit.getGenreService());
+        boolean isPrestationPaternite = APGUtils.isTypePaternite(droit.getGenreService());
         // On va rechercher le bon type de droit
         String idDroit = droit.getIdDroit();
         if (droit instanceof APDroitPandemie) {
@@ -149,7 +149,7 @@ public class APGenerateurAnnonceRAPG {
             annonceACreer.setPeriodeA(prestation.getDateFin());
             annonceACreer.setModePaiement(getModePaiement(session, prestation));
 
-            if (!isPrestationMaternite) {
+            if (!isPrestationMaternite && !isPrestationPaternite) {
                 annonceACreer.setNumeroControle(((APDroitAPG) droit).getNoControlePers());
                 // Rule 301 si service type = 90, numberOfChidren doit être vide ou non renseigné
                 annonceACreer.setNombreEnfants(getNombreEnfant(session, droit, prestation.getDateDebut()));
