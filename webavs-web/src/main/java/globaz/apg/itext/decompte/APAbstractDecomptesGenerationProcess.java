@@ -595,14 +595,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
             // le titre
             if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())){
-                if (isCorrectionDroit()) {
-                    parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(2).getDescription());
-                } else if (isRestitution()) {
-                    parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(3).getDescription());
-                } else {
-                    // si droit normal
-                    parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(1).getDescription());
-                }
+                // si droit normal
+                parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(1).getDescription());
 
                 // S'il s'agit d'une copie des décisions envoyées au FISC et qu'il ne s'agit pas de la lettre d'entête
                 if(getIsCopie() && getFirstForCopy()){
