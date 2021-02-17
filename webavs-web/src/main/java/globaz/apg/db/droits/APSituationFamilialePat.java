@@ -11,6 +11,7 @@ import globaz.apg.db.prestation.APPrestationManager;
 import globaz.commons.nss.NSUtil;
 import globaz.globall.db.*;
 import globaz.globall.util.JAStringFormatter;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.clone.factory.IPRCloneable;
 
 /**
@@ -342,6 +343,11 @@ public class APSituationFamilialePat extends BEntity implements IPRCloneable {
         clone.setNom(getNom());
         clone.setPrenom(getPrenom());
         clone.setType(getType());
+        clone.setNationalite(getNationalite());
+        if(!JadeStringUtil.isBlankOrZero(getCanton())){
+            clone.setCanton(getCanton());
+        }
+
 
         // On ne veut pas de la validation pendant une duplication
         clone.wantCallValidate(false);
