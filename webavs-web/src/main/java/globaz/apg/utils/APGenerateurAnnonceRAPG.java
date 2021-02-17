@@ -400,6 +400,8 @@ public class APGenerateurAnnonceRAPG {
                     break;
             }
             annonceACreer.setNombreJoursOuvrable(String.valueOf(nombreJoursOuverts));
+        }else{
+            annonceACreer.setNombreJoursOuvrable("0");
         }
 
         return annonceACreer;
