@@ -153,7 +153,7 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
             message.setTimeStamp(JAXBUtil.getXmlCalendarTimestamp(Long.parseLong(champsAnnonce.getTimeStamp())));
         }
         //Paternité
-        if(champsAnnonce.getServiceType().equals(SERVICE_PATERNITE)){
+        if(champsAnnonce.getServiceType().equals(SERVICE_PATERNITE) && !champsAnnonce.getAction().equals("4")){
             rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.ObjectFactory factory = new rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.ObjectFactory();
             PaternityLeaveDataType paternityLeaveDataType = factory.createPaternityLeaveDataType();
             if (!JadeStringUtil.isEmpty(champsAnnonce.getNewbornDateOfBirth())) {
