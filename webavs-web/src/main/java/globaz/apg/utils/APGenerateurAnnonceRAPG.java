@@ -237,6 +237,9 @@ public class APGenerateurAnnonceRAPG {
                     if ("3".equals(annonceACreer.getContenuAnnonce())) {
                         annonceACreer.setPeriodeDe(prestBase.getDateDebut());
                     }
+                    if(JadeStringUtil.isBlankOrZero(oldAnnonce.getBusinessProcessId())){
+                        annonceACreer.setBusinessProcessId(prestBase.getIdPrestation());
+                    }
                 } else {
                     annonceEnHistorique = true;
                 }
@@ -371,7 +374,7 @@ public class APGenerateurAnnonceRAPG {
         String dateDebutPeriodeEntier = "";
         String dateFinPeriodeEntier = "";
 
-        if(annonceACreer.getNombreJoursService() != null && JadeStringUtil.isBlankOrZero(annonceACreer.getNombreJoursService())){
+        if(annonceACreer.getNombreJoursService() != null && !JadeStringUtil.isBlankOrZero(annonceACreer.getNombreJoursService())){
             int nombreJours = Integer.parseInt(annonceACreer.getNombreJoursService());
             int nombreJoursOuverts = 0;
             //TODO: A confirmer au niveau du calcul des dates
