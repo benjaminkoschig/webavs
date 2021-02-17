@@ -370,19 +370,20 @@ public class APGenerateurAnnonceRAPG {
         }
         String dateDebutPeriodeEntier = "";
         String dateFinPeriodeEntier = "";
-        int nombreJours = 0;
-        for (APPrestationJointLotTiersDroit droit : tousLesDroits) {
-            if (JadeStringUtil.isBlankOrZero(dateDebutPeriodeEntier)
-                    || JadeDateUtil.isDateBefore(droit.getDateDebut(), dateDebutPeriodeEntier)
-            ) {
-                dateDebutPeriodeEntier = droit.getDateDebut();
-            }
-            if (JadeStringUtil.isBlankOrZero(dateFinPeriodeEntier)
-                    || JadeDateUtil.isDateAfter(droit.getDateFin(), dateFinPeriodeEntier)) {
-                dateFinPeriodeEntier = droit.getDateFin();
-            }
-            nombreJours += Integer.parseInt(droit.getNombreJoursSoldes());
-        }
+        int nombreJours = Integer.parseInt(annonceACreer.getNombreJoursService());
+//        for (APPrestationJointLotTiersDroit droit : tousLesDroits) {
+//            if (JadeStringUtil.isBlankOrZero(dateDebutPeriodeEntier)
+//                    || JadeDateUtil.isDateBefore(droit.getDateDebut(), dateDebutPeriodeEntier)
+//            ) {
+//                dateDebutPeriodeEntier = droit.getDateDebut();
+//            }
+//            if (JadeStringUtil.isBlankOrZero(dateFinPeriodeEntier)
+//                    || JadeDateUtil.isDateAfter(droit.getDateFin(), dateFinPeriodeEntier)) {
+//                dateFinPeriodeEntier = droit.getDateFin();
+//            }
+//            nombreJours += Integer.parseInt(droit.getNombreJoursSoldes());
+//        }
+
         int nombreJoursOuverts = 0;
         //TODO: A confirmer au niveau du calcul des dates
         switch (nombreJours) {
