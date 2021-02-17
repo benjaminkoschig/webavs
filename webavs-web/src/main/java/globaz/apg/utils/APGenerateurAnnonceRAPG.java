@@ -370,47 +370,37 @@ public class APGenerateurAnnonceRAPG {
         }
         String dateDebutPeriodeEntier = "";
         String dateFinPeriodeEntier = "";
-        int nombreJours = Integer.parseInt(annonceACreer.getNombreJoursService());
-//        for (APPrestationJointLotTiersDroit droit : tousLesDroits) {
-//            if (JadeStringUtil.isBlankOrZero(dateDebutPeriodeEntier)
-//                    || JadeDateUtil.isDateBefore(droit.getDateDebut(), dateDebutPeriodeEntier)
-//            ) {
-//                dateDebutPeriodeEntier = droit.getDateDebut();
-//            }
-//            if (JadeStringUtil.isBlankOrZero(dateFinPeriodeEntier)
-//                    || JadeDateUtil.isDateAfter(droit.getDateFin(), dateFinPeriodeEntier)) {
-//                dateFinPeriodeEntier = droit.getDateFin();
-//            }
-//            nombreJours += Integer.parseInt(droit.getNombreJoursSoldes());
-//        }
 
-        int nombreJoursOuverts = 0;
-        //TODO: A confirmer au niveau du calcul des dates
-        switch (nombreJours) {
-            case 1:
-            case 2 :
-            case 3:
-            case 4 :
-                nombreJoursOuverts = nombreJours;
-                break;
-            case 5:
-            case 6:
-            case 7:
-                nombreJoursOuverts = 5;
-                break;
-            case 8:
-            case 9:
-            case 10:
-            case 11:
-                nombreJoursOuverts = nombreJours - 2;
-                break;
-            case 12:
-            case 13:
-            case 14:
-                nombreJoursOuverts = 10;
-                break;
+        if(annonceACreer.getNombreJoursService() != null && JadeStringUtil.isBlankOrZero(annonceACreer.getNombreJoursService())){
+            int nombreJours = Integer.parseInt(annonceACreer.getNombreJoursService());
+            int nombreJoursOuverts = 0;
+            //TODO: A confirmer au niveau du calcul des dates
+            switch (nombreJours) {
+                case 1:
+                case 2 :
+                case 3:
+                case 4 :
+                    nombreJoursOuverts = nombreJours;
+                    break;
+                case 5:
+                case 6:
+                case 7:
+                    nombreJoursOuverts = 5;
+                    break;
+                case 8:
+                case 9:
+                case 10:
+                case 11:
+                    nombreJoursOuverts = nombreJours - 2;
+                    break;
+                case 12:
+                case 13:
+                case 14:
+                    nombreJoursOuverts = 10;
+                    break;
+            }
+            annonceACreer.setNombreJoursOuvrable(String.valueOf(nombreJoursOuverts));
         }
-        annonceACreer.setNombreJoursOuvrable(String.valueOf(nombreJoursOuverts));
 
         return annonceACreer;
 
