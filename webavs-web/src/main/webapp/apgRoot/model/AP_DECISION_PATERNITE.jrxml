@@ -762,7 +762,7 @@
 			</band>
 		</columnFooter>
 		<pageFooter>
-			<band height="0"  isSplitAllowed="false" >
+			<band height="50"  isSplitAllowed="false" >
 			</band>
 		</pageFooter>
 		<lastPageFooter>
