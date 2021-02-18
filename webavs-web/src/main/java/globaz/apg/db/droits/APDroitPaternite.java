@@ -286,7 +286,7 @@ public class APDroitPaternite extends APDroitLAPG implements IPRCloneable {
             }
         } else {
             if (!BSessionUtil.compareDateFirstGreaterOrEqual(getSession(), getDateDebutDroit(), "26.03.2005")) {
-                _addError(transaction, getSession().getLabel("DATE_DEBUT_DROIT__PAT_TROP_VIEILLE"));
+                _addError(transaction, getSession().getLabel("DATE_DEBUT_DROIT_PAT_TROP_VIEILLE"));
             }
         }
 
