@@ -68,12 +68,12 @@
             $('#aControler').prop("checked", true);
             hasError = nextStepValidate();
         }
-        if(!hasError){
+        if (!hasError) {
             action(COMMIT);
         }
     }
 
-function nextStepValidateAfterPopupSeodor(){
+    function nextStepValidateAfterPopupSeodor() {
         nssUpdateHiddenFields();
         //Récupération des dates
         // si l'utilisateur à saisit des valeurs pour les priodes sans cliquer le btn ajouter, on lui fit à sa place
@@ -109,6 +109,7 @@ function nextStepValidateAfterPopupSeodor(){
         $('#periodesAsString').val(tmp);
         action(COMMIT);
     }
+
     function nextStepValidate() {
         nssUpdateHiddenFields();
         //Récupération des dates
@@ -180,6 +181,7 @@ function nextStepValidateAfterPopupSeodor(){
         showCantonImpotSource();
         checkParametersWebService();
     }
+
     function checkParametersWebService() {
         $("#dialog_apg_webservice").dialog({
             resizable: false,
@@ -190,7 +192,7 @@ function nextStepValidateAfterPopupSeodor(){
                 id: "Correct",
                 text: "<ct:FWLabel key='JSP_CONTINUER'/>",
                 click: function () {
-                    $('#aControler').prop( "checked", false);
+                    $('#aControler').prop("checked", false);
                     EDITION_MODE = false;
                     $('#modeEditionDroit').val('<%=APModeEditionDroit.LECTURE%>');
                     nextStepValidateAfterPopupSeodor();
@@ -207,8 +209,8 @@ function nextStepValidateAfterPopupSeodor(){
                     $(this).dialog("close");
                 }
             }],
-            open : function() {
-                $(".ui-dialog-titlebar-close",".ui-dialog-titlebar").hide();
+            open: function () {
+                $(".ui-dialog-titlebar-close", ".ui-dialog-titlebar").hide();
                 $("#Ok").focus();
                 <% if(viewBean.getMessagesErrorList().getApgSeodorErreurEntityList().size()!=0) { %>
                 $('#dialog_apg_webservice').append('<%=viewBean.getMessagesErrorList().getListErreursTableHTML()%>');
@@ -416,7 +418,7 @@ function nextStepValidateAfterPopupSeodor(){
             <ct:FWLabel key="JSP_NSS_ABREGE"/>
         </label>
     </td>
-    <td colspan="5">
+    <td colspan="4">
         <%
             String params = "&provenance1=TIERS&provenance2=CI";
             String jspLocation = servletContext + "/ijRoot/numeroSecuriteSocialeSF_select.jsp";
@@ -463,11 +465,12 @@ function nextStepValidateAfterPopupSeodor(){
                name="modeEditionDroit"
                id="modeEditionDroit"
                value="<%=viewBean.getModeEditionDroit()%>"/>
-        <input type="checkbox"
+        <input type="hidden"
                name="aControler"
                id="aControler"
-               value="<%=viewBean.getAControler()%>" />
+               value="<%=viewBean.getAControler()%>"/>
     </td>
+    <td></td>
 </tr>
 <tr>
     <td>
@@ -489,7 +492,7 @@ function nextStepValidateAfterPopupSeodor(){
             <ct:FWLabel key="JSP_PRENOM"/>
         </label>
     </td>
-    <td colspan="3">
+    <td colspan="2">
         <input type="hidden"
                name="prenom"
                value="<%=viewBean.getPrenom()%>"/>
@@ -498,6 +501,7 @@ function nextStepValidateAfterPopupSeodor(){
                name="prenomAffiche"
                value="<%=viewBean.getPrenom()%>"/>
     </td>
+    <td></td>
 </tr>
 <tr>
     <td>
@@ -505,7 +509,7 @@ function nextStepValidateAfterPopupSeodor(){
             <ct:FWLabel key="JSP_SEXE"/>
         </label>
     </td>
-    <td colspan="5">
+    <td colspan="4">
         <ct:FWCodeSelectTag name="csSexeAffiche"
                             wantBlank="<%=true%>"
                             codeType="PYSEXE"
@@ -514,6 +518,7 @@ function nextStepValidateAfterPopupSeodor(){
                name="csSexe"
                value="<%=viewBean.getCsSexe()%>"/>
     </td>
+    <td></td>
 </tr>
 <tr>
     <td>
@@ -536,7 +541,7 @@ function nextStepValidateAfterPopupSeodor(){
             <ct:FWLabel key="JSP_DATE_NAISSANCE"/>
         </label>
     </td>
-    <td colspan="3">
+    <td colspan="2">
         <input type="hidden"
                name="dateNaissance"
                value="<%=viewBean.getDateNaissance()%>"/>
@@ -546,6 +551,7 @@ function nextStepValidateAfterPopupSeodor(){
                data-g-calendar=" "
                value="<%=viewBean.getDateNaissance()%>"/>
     </td>
+    <td></td>
 </tr>
 <tr>
     <td>
@@ -565,7 +571,7 @@ function nextStepValidateAfterPopupSeodor(){
             <ct:FWLabel key="JSP_PAYS_DOMICILE"/>
         </label>
     </td>
-    <td colspan="3">
+    <td colspan="2">
         <ct:FWListSelectTag name="pays"
                             data="<%=viewBean.getTiPays()%>"
                             defaut="<%=JadeStringUtil.isIntegerEmpty(viewBean.getPays()) ? TIPays.CS_SUISSE : viewBean.getPays()%>"/>
@@ -573,53 +579,53 @@ function nextStepValidateAfterPopupSeodor(){
             document.getElementById("likeNSS").onkeypress = new Function("", "return filterCharForPositivFloat(window.event);");
         </script>
     </td>
+    <td></td>
 </tr>
 <tr>
     <td colspan="6">
-        &nbsp;
+        <br>
     </td>
 </tr>
 <tr>
-    <td colspan="5">
+    <td colspan="6">
         <h6>
             <ct:FWLabel key="JSP_PERIODES"/>
         </h6>
     </td>
 </tr>
 <tr>
-    <td colspan="5">
+    <td colspan="6">
         <table width="100%">
             <tr>
+
+                <td>
+                    <label for="dateDebutPeriode">
+                        <ct:FWLabel key="JSP_PERIODE_DU"/>
+                    </label>
+                </td>
                 <td colspan="3">
-                    <td valign="center">
-                        <label for="dateDebutPeriode">
-                            <ct:FWLabel key="JSP_PERIODE_DU"/>
-                        </label>
-                    </td>
-                    <td valign="center" colspan="2">
-                        <input type="text"
-                               id="dateDebutPeriode"
-                               name="dateDebutPeriode"
-                               data-g-calendar=" "
-                               value=""/>
-                        <label for="dateFinPeriode">
-                            <ct:FWLabel key="JSP_AU"/>
-                        </label>
-                        <input type="text"
-                               id="dateFinPeriode"
-                               name="dateFinPeriode"
-                               data-g-calendar=" "
-                               value=""/>
-                        <input type="hidden"
-                               name="nbJour"
-                               id="nbJour"
-                               value=""
-                               class="numero"/>
-                        <input type="button"
-                               name=""
-                               value="<ct:FWLabel key="JSP_AJOUTER" />"
-                               onclick="addPeriode()"/>
-                    </td>
+                    <input type="text"
+                           id="dateDebutPeriode"
+                           name="dateDebutPeriode"
+                           data-g-calendar=" "
+                           value=""/>
+                    <label for="dateFinPeriode">
+                        <ct:FWLabel key="JSP_AU"/>
+                    </label>
+                    <input type="text"
+                           id="dateFinPeriode"
+                           name="dateFinPeriode"
+                           data-g-calendar=" "
+                           value=""/>
+                    <input type="hidden"
+                           name="nbJour"
+                           id="nbJour"
+                           value=""
+                           class="numero"/>
+                    <input type="button"
+                           name=""
+                           value="<ct:FWLabel key="JSP_AJOUTER" />"
+                           onclick="addPeriode()"/>
                 </td>
                 <td colspan="2" rowspan="4" width="50%">
                     <table class="areaTable" width="100%">
@@ -665,67 +671,60 @@ function nextStepValidateAfterPopupSeodor(){
                 </td>
             </tr>
             <tr>
+                <td>
+                    <label for=isSoumisCotisation">
+                        <ct:FWLabel key="JSP_SOUMIS_IMPOT_SOURCE"/>
+                    </label>
+                </td>
                 <td colspan="3">
-                    <td>
-                        <label for=isSoumisCotisation">
-                            <ct:FWLabel key="JSP_SOUMIS_IMPOT_SOURCE"/>
-                        </label>
-                    </td>
-                    <td colspan="2">
-                        <input type="checkbox"
-                               id="isSoumisCotisation"
-                               name="isSoumisCotisation"
-                                <%=viewBean.getIsSoumisCotisation().booleanValue() ? "checked" : ""%>
-                               onclick="showCantonImpotSource();"
-                               onload="showCantonImpotSource()"/>
-                    </td>
+                    <input type="checkbox"
+                           id="isSoumisCotisation"
+                           name="isSoumisCotisation"
+                            <%=viewBean.getIsSoumisCotisation().booleanValue() ? "checked" : ""%>
+                           onclick="showCantonImpotSource();"
+                           onload="showCantonImpotSource()"/>
                 </td>
             </tr>
             <tr>
+                <td>
+                    <label for=tauxImpotSource">
+                        <ct:FWLabel key="JSP_TAUX_IMPOT_SOURCE_CARTE"/>
+                    </label>
+                </td>
                 <td colspan="3">
-                    <td>
-                        <label for=tauxImpotSource">
-                            <ct:FWLabel key="JSP_TAUX_IMPOT_SOURCE_CARTE"/>
-                        </label>
-                    </td>
-                    <td colspan="2">
-                        <input type="text"
-                               id="tauxImpotSource"
-                               name="tauxImpotSource"
-                               value="<%=viewBean.getTauxImpotSource()%>"
-                               class="numero"
-                               onchange="validateFloatNumber(this);"
-                               onkeypress="return filterCharForFloat(window.event);"
-                               style="text-align: right"/>
-                        <ct:FWLabel key="JSP_TAUX_CANTON"/>
-                    </td>
+                    <input type="text"
+                           id="tauxImpotSource"
+                           name="tauxImpotSource"
+                           value="<%=viewBean.getTauxImpotSource()%>"
+                           class="numero"
+                           onchange="validateFloatNumber(this);"
+                           onkeypress="return filterCharForFloat(window.event);"
+                           style="text-align: right"/>
+                    <ct:FWLabel key="JSP_TAUX_CANTON"/>
                 </td>
             </tr>
             <tr id="availableIfSoumisCotisation">
-                <td colspan="3">
-                    <TD>
-                        &nbsp;
-                    </TD>
-                    <TD><LABEL for="csCantonImpoAffiche"><ct:FWLabel key="JSP_CANTON_IMPOT_SOURCE"/></LABEL></TD>
-                    <TD>
-                        <ct:FWCodeSelectTag name="csCantonDomicileAffiche"
-                                            wantBlank="<%=false%>"
-                                            codeType="PYCANTON"
-                                            defaut="<%=viewBean.getCsCantonDomicile()%>"/>
-                        <INPUT type="hidden" name="csCantonDomicile" value="<%=viewBean.getCsCantonDomicile()%>"/>
-                    </TD>
-                </td>
+                <TD>
+                </TD>
+                <TD><LABEL for="csCantonImpoAffiche"><ct:FWLabel key="JSP_CANTON_IMPOT_SOURCE"/></LABEL></TD>
+                <TD>
+                    <ct:FWCodeSelectTag name="csCantonDomicileAffiche"
+                                        wantBlank="<%=false%>"
+                                        codeType="PYCANTON"
+                                        defaut="<%=viewBean.getCsCantonDomicile()%>"/>
+                    <INPUT type="hidden" name="csCantonDomicile" value="<%=viewBean.getCsCantonDomicile()%>"/>
+                </TD>
             </tr>
         </table>
     </td>
 </tr>
 <tr>
-    <td colspan="4">
+    <td colspan="6">
         <ht/>
     </td>
 </tr>
 <tr>
-    <td colspan="4">
+    <td colspan="6">
         <h6>
             <ct:FWLabel key="JSP_DROIT"/>
         </h6>
@@ -750,7 +749,7 @@ function nextStepValidateAfterPopupSeodor(){
             <ct:FWLabel key="JSP_DATE_DECES"/>
         </label>
     </td>
-    <td>
+    <td colspan="2">
         <input type="hidden"
                name="dateDeces"
                value="<%=viewBean.getDateDeces()%>"/>
@@ -760,6 +759,7 @@ function nextStepValidateAfterPopupSeodor(){
                data-g-calendar=" "
                value="<%=viewBean.getDateDeces()%>"/>
     </td>
+    <td></td>
 </tr>
 <tr>
     <td>
@@ -779,13 +779,14 @@ function nextStepValidateAfterPopupSeodor(){
             <ct:FWLabel key="JSP_DATE_RECEPTION"/>
         </label>
     </td>
-    <td colspan="3">
+    <td colspan="2">
         <input type="text"
                id="dateReception"
                name="dateReception"
                data-g-calendar=" "
                value="<%=viewBean.getDateReception()%>"/>
     </td>
+    <td></td>
 </tr>
 <tr>
     <td colspan="6">
@@ -826,10 +827,10 @@ function nextStepValidateAfterPopupSeodor(){
             </ct:optionsCodesSystems>
         </ct:select>
     </td>
+    <td></td>
 </tr>
 <tr>
     <td colspan="6">
-        &nbsp;
     </td>
 </tr>
 <tr>
@@ -838,7 +839,7 @@ function nextStepValidateAfterPopupSeodor(){
             <ct:FWLabel key="JSP_REFERENCE"/>
         </label>
     </td>
-    <td colspan="5">
+    <td colspan="4">
         <input type="text"
                id="reference"
                name="reference"
@@ -852,6 +853,7 @@ function nextStepValidateAfterPopupSeodor(){
                name="arreter"
                value=""/>
     </td>
+    <td></td>
 </tr>
 <tr>
     <td>
@@ -859,16 +861,19 @@ function nextStepValidateAfterPopupSeodor(){
             <ct:FWLabel key="JSP_REMARQUE"/>
         </label>
     </td>
-    <td colspan="5"><textarea id="remarque" name="remarque" cols="85"rows="3" onKeyDown="limiteur();"><%=viewBean.getRemarque()%></textarea>
+    <td colspan="4"><textarea id="remarque" name="remarque" cols="85" rows="3"
+                              onKeyDown="limiteur();"><%=viewBean.getRemarque()%></textarea>
         <br/>
         <ct:FWLabel key="JSP_REMARQUE_COMMENT_8000"/>
     </td>
+    <td></td>
 </tr>
-<% if(viewBean.hasMessagePropError()){ %>
+<% if (viewBean.hasMessagePropError()) { %>
 <div style="display:none" align="center" id="dialog_apg_webservice"
-     title="<ct:FWLabel key='JSP_CONTROLE_SERVICE'/>" >
-    <% if(StringUtils.isNotEmpty(viewBean.getMessagesError())) { %>
-    <h3><%=viewBean.getMessagesError()%></h3>
+     title="<ct:FWLabel key='JSP_CONTROLE_SERVICE'/>">
+    <% if (StringUtils.isNotEmpty(viewBean.getMessagesError())) { %>
+    <h3><%=viewBean.getMessagesError()%>
+    </h3>
     <% } %>
 </div>
 <% } %>
