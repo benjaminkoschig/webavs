@@ -10,6 +10,10 @@ idEcran="PAP0016";
 
 APSituationProfessionnelleViewBean viewBean = (globaz.apg.vb.droits.APSituationProfessionnelleViewBean) request.getAttribute("viewBean");
 actionNew += "&" + APAbstractDroitDTOAction.PARAM_ID_DROIT + "=" + viewBean.getIdDroit();
+APDroitLAPG droitLAPG = new APDroitLAPG();
+droitLAPG.setSession(viewBean.getSession());
+droitLAPG.setIdDroit(viewBean.getIdDroit());
+droitLAPG.retrieve();
 bButtonNew = viewBean.isModifiable() && bButtonNew &&  viewBean.getSession().hasRight(IAPActions.ACTION_SITUATION_PROFESSIONNELLE, FWSecureConstants.UPDATE);
 IFrameDetailHeight = "460";
 IFrameListHeight = "100";
@@ -25,6 +29,8 @@ scrollingDetailActive = "YES";
 	<%@page import="globaz.apg.servlet.IAPActions"%>
 <%@page import="globaz.framework.secure.FWSecureConstants"%>
 <%@ page import="globaz.prestation.api.IPRDemande" %>
+<%@ page import="globaz.apg.api.droits.IAPDroitLAPG" %>
+<%@ page import="globaz.apg.db.droits.APDroitLAPG" %>
 <ct:menuChange displayId="menu" menuId="ap-menuprincipalapg" showTab="menu"/>
 	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 <!--sinon, maternité -->
@@ -135,7 +141,7 @@ scrollingDetailActive = "YES";
 	<INPUT type="button" value="<ct:FWLabel key="JSP_ARRET"/> (alt+<ct:FWLabel key="AK_SITPRO_ARRET"/>)" onclick="arret()" accesskey="<ct:FWLabel key="AK_SITPRO_ARRET"/>">
 	<% if (globaz.prestation.api.IPRDemande.CS_TYPE_APG.equals((String) session.getAttribute(globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION))) { %>
 	<INPUT type="button" value="<ct:FWLabel key="JSP_SUIVANT"/> (alt+<ct:FWLabel key="AK_SITPRO_SUIVANT"/>)" onclick="versEcranSuivant()" accesskey="<ct:FWLabel key="AK_SITPRO_SUIVANT"/>">
-	<% } else { %>
+	<% } else if(!IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF.equals(droitLAPG.getEtat()))  { %>
 	<ct:ifhasright element="<%=IAPActions.ACTION_SITUATION_PROFESSIONNELLE%>" crud="u">
 	<INPUT type="button" name="bCalculer" value="<ct:FWLabel key="JSP_CALCULER_PRESTATION"/>" onclick="versEcranSuivant()">
 	</ct:ifhasright>

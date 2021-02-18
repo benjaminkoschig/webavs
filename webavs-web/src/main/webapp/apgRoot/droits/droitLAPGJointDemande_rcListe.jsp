@@ -147,9 +147,13 @@
 	if (!IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(courant.getEtatDroit())) {
 	// pas de calculs de prestations si le droit est en attente
 %>					<ct:menuExcludeNode nodeId="calculertoutesprestations" />
-				<%
-					}
-				%>
+<%
+	}
+	if (IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF.equals(courant.getEtatDroit())){
+%>
+				<ct:menuExcludeNode nodeId="refuser" />
+				<ct:menuExcludeNode nodeId="attenteReponse" />
+<%}%>
 			</ct:menuPopup>
 				<%
     } else if (IPRDemande.CS_TYPE_PANDEMIE.equals((String) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION))) {
