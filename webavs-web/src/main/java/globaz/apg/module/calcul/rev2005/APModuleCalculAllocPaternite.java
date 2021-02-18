@@ -43,7 +43,7 @@ public class APModuleCalculAllocPaternite extends AAPModuleCalculSalaireJournali
         BigDecimal bTE = new BigDecimal(TL.toString());
 
         // TL = GE
-        if (TL.compareTo(((APReferenceDataAPG) refData).getGE()) == 0) {
+        if (TL.compareTo(((APReferenceDataAPG) refData).getGE()) >= 0) {
             // TE = Amax
             bTE = ((APReferenceDataAPG) refData).getAmax().getBigDecimalValue();
         }
