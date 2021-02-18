@@ -353,8 +353,9 @@ public class ReferenceQR extends AbstractReference {
 
         JABVR bvr = null;
 
-        if (new FWCurrency(enteteFacture.getTotalFacture()).isPositive()
-                && !enteteFacture.getIdModeRecouvrement().equals(FAEnteteFacture.CS_MODE_RECOUVREMENT_DIRECT)) {
+        if ((new FWCurrency(enteteFacture.getTotalFacture()).isPositive()
+                && !enteteFacture.getIdModeRecouvrement().equals(FAEnteteFacture.CS_MODE_RECOUVREMENT_DIRECT))
+                || (Objects.nonNull(enteteFacture) && APISection.ID_TYPE_SECTION_BULLETIN_NEUTRE.equals(enteteFacture.getIdTypeFacture()))) {
             bvr = new JABVR(JANumberFormatter.deQuote(enteteFacture.getTotalFacture()), reference, getNoAdherent());
         }
 
@@ -367,6 +368,10 @@ public class ReferenceQR extends AbstractReference {
             }
         } else {
             setReference(REFERENCE_NON_FACTURABLE);
+        }
+
+        if (Objects.nonNull(enteteFacture) && APISection.ID_TYPE_SECTION_BULLETIN_NEUTRE.equals(enteteFacture.getIdTypeFacture()) && (bvr != null)) {
+            setReference(bvr.get_ligneReference());
         }
     }
 
