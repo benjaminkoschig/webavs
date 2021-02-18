@@ -817,26 +817,45 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
                 transaction.openTransaction();
             }
 
-            APDroitLAPGJointDemandeViewBean vbDroit = (APDroitLAPGJointDemandeViewBean) vb;
-            // Si le traitement s'est bien passé, on retourne le bon viewBean pour aller sur l'affichage du droit
-            APDroitPandemie droit = ApgServiceLocator.getEntityService().getDroitPandemie(session, transaction,
-                    vbDroit.getIdDroit());
-            // On met à jour l'état du droit
-            droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE_REPONSE);
-            droit.update();
+            APDroitLAPGJointDemandeViewBean vbDroit = vaChercherGenreServiceOuEtatSiAbsent(
+                    (APDroitLAPGJointDemandeViewBean) vb, session);
+            IPRCloneable clone = null;
+            if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(vbDroit.getGenreService())){
+                // Si le traitement s'est bien passé, on retourne le bon viewBean pour aller sur l'affichage du droit
+                APDroitPaternite droit = ApgServiceLocator.getEntityService().getDroitPaternite(session, transaction,
+                        vbDroit.getIdDroit());
+                // On met à jour l'état du droit
+                droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE_REPONSE);
+                droit.update();
 
-            final List<APPrestation> prestations = ApgServiceLocator.getEntityService().getPrestationDuDroit(session,
-                    transaction, droit.getIdDroit());
-            for (APPrestation eachPrestation : prestations) {
-                eachPrestation.setEtat(IAPPrestation.CS_ETAT_PRESTATION_OUVERT);
-                eachPrestation.setIdLot("");
-                eachPrestation.update();
+                final List<APPrestation> prestations = ApgServiceLocator.getEntityService().getPrestationDuDroit(session,
+                        transaction, droit.getIdDroit());
+                for (APPrestation eachPrestation : prestations) {
+                    eachPrestation.setEtat(IAPPrestation.CS_ETAT_PRESTATION_OUVERT);
+                    eachPrestation.setIdLot("");
+                    eachPrestation.update();
+                }
+                transaction.commit();
+
+                vbDroit.setDto(new APDroitAPGDTO(droit));
+            } else {
+                // Si le traitement s'est bien passé, on retourne le bon viewBean pour aller sur l'affichage du droit
+                APDroitPandemie droit = ApgServiceLocator.getEntityService().getDroitPandemie(session, transaction,
+                        vbDroit.getIdDroit());
+                // On met à jour l'état du droit
+                droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE_REPONSE);
+                droit.update();
+                final List<APPrestation> prestations = ApgServiceLocator.getEntityService().getPrestationDuDroit(session,
+                        transaction, droit.getIdDroit());
+                for (APPrestation eachPrestation : prestations) {
+                    eachPrestation.setEtat(IAPPrestation.CS_ETAT_PRESTATION_OUVERT);
+                    eachPrestation.setIdLot("");
+                    eachPrestation.update();
+                }
+                transaction.commit();
+
+                vbDroit.setDto(new APDroitAPGDTO(droit));
             }
-
-            transaction.commit();
-
-            vbDroit.setDto(new APDroitAPGDTO(droit));
-
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
@@ -873,38 +892,67 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
                 transaction.openTransaction();
             }
 
-            APDroitLAPGJointDemandeViewBean vbDroit = (APDroitLAPGJointDemandeViewBean) vb;
-            // Si le traitement s'est bien passé, on retourne le bon viewBean pour aller sur l'affichage du droit
-            APDroitPandemie droit = ApgServiceLocator.getEntityService().getDroitPandemie(session, transaction,
-                    vbDroit.getIdDroit());
-            // On met à jour l'état du droit
-            droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_REFUSE);
-            droit.update();
+            APDroitLAPGJointDemandeViewBean vbDroit = vaChercherGenreServiceOuEtatSiAbsent(
+                    (APDroitLAPGJointDemandeViewBean) vb, session);
+            if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(vbDroit.getGenreService())){
+                // Si le traitement s'est bien passé, on retourne le bon viewBean pour aller sur l'affichage du droit
+                APDroitPaternite droit = ApgServiceLocator.getEntityService().getDroitPaternite(session, transaction,
+                        vbDroit.getIdDroit());
+                // On met à jour l'état du droit
+                droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_REFUSE);
+                droit.update();
 
-            // Suppression des prestations non définitives
-            final List<APPrestation> prestations = ApgServiceLocator.getEntityService().getPrestationDuDroit((BSession) session,
-                    transaction, droit.getIdDroit());
-            for (APPrestation eachPrestation : prestations) {
-                if (!StringUtils.equals(IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF, eachPrestation.getEtat())) {
-                    if (StringUtils.isNotEmpty(eachPrestation.getIdLot()) && eachPrestation.getIdLot() != "0") {
-                        APLot lot = new APLot();
-                        lot.setSession(session);
-                        lot.setIdLot(eachPrestation.getIdLot());
-                        lot.retrieve(transaction);
+                // Suppression des prestations non définitives
+                final List<APPrestation> prestations = ApgServiceLocator.getEntityService().getPrestationDuDroit((BSession) session,
+                        transaction, droit.getIdDroit());
+                for (APPrestation eachPrestation : prestations) {
+                    if (!StringUtils.equals(IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF, eachPrestation.getEtat())) {
+                        if (StringUtils.isNotEmpty(eachPrestation.getIdLot()) && eachPrestation.getIdLot() != "0") {
+                            APLot lot = new APLot();
+                            lot.setSession(session);
+                            lot.setIdLot(eachPrestation.getIdLot());
+                            lot.retrieve(transaction);
 
-                        if (IAPLot.CS_COMPENSE.equals(lot.getEtat())) {
-                            lot.setEtat(IAPLot.CS_OUVERT);
-                            lot.update(transaction);
+                            if (IAPLot.CS_COMPENSE.equals(lot.getEtat())) {
+                                lot.setEtat(IAPLot.CS_OUVERT);
+                                lot.update(transaction);
+                            }
                         }
+                        eachPrestation.delete(transaction);
                     }
-                    eachPrestation.delete(transaction);
                 }
+                transaction.commit();
+                vbDroit.setDto(new APDroitAPGDTO(droit));
+            } else {
+                // Si le traitement s'est bien passé, on retourne le bon viewBean pour aller sur l'affichage du droit
+                APDroitPandemie droit = ApgServiceLocator.getEntityService().getDroitPandemie(session, transaction,
+                        vbDroit.getIdDroit());
+                // On met à jour l'état du droit
+                droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_REFUSE);
+                droit.update();
+
+                // Suppression des prestations non définitives
+                final List<APPrestation> prestations = ApgServiceLocator.getEntityService().getPrestationDuDroit((BSession) session,
+                        transaction, droit.getIdDroit());
+                for (APPrestation eachPrestation : prestations) {
+                    if (!StringUtils.equals(IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF, eachPrestation.getEtat())) {
+                        if (StringUtils.isNotEmpty(eachPrestation.getIdLot()) && eachPrestation.getIdLot() != "0") {
+                            APLot lot = new APLot();
+                            lot.setSession(session);
+                            lot.setIdLot(eachPrestation.getIdLot());
+                            lot.retrieve(transaction);
+
+                            if (IAPLot.CS_COMPENSE.equals(lot.getEtat())) {
+                                lot.setEtat(IAPLot.CS_OUVERT);
+                                lot.update(transaction);
+                            }
+                        }
+                        eachPrestation.delete(transaction);
+                    }
+                }
+                transaction.commit();
+                vbDroit.setDto(new APDroitAPGDTO(droit));
             }
-
-            transaction.commit();
-
-            vbDroit.setDto(new APDroitAPGDTO(droit));
-
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();

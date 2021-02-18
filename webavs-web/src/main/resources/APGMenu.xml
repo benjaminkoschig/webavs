@@ -678,6 +678,20 @@
 					<parameter name="detailsAssure" />
 				</action>
 			</node>
+			<node id="attenteReponse">
+				<label refId="MENU_OPTION_ATTENTE_REPONSE" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.droits.droitLAPGJointDemande.actionAttenteReponse" />
+					<parameter name="selectedId" />
+				</action>
+			</node>
+			<node id="refuser">
+				<label refId="MENU_OPTION_REFUSER" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.droits.droitLAPGJointDemande.actionRefuser" />
+					<parameter name="selectedId" />
+				</action>
+			</node>
 		</nodes>
 	</menu>
 
