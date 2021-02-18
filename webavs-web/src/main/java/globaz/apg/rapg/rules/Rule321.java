@@ -1,10 +1,13 @@
 package globaz.apg.rapg.rules;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.exceptions.APRuleExecutionException;
 import globaz.apg.pojo.APChampsAnnonce;
+import globaz.apg.properties.APParameter;
+import globaz.globall.db.FWFindParameter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.enums.PRCanton;
 import globaz.pyxis.constantes.IConstantes;
@@ -40,6 +43,7 @@ public class Rule321 extends Rule {
         String serviceType = champsAnnonce.getServiceType();
         String basicDailyAmount = champsAnnonce.getBasicDailyAmount();
         String numberOfChilren = champsAnnonce.getNumberOfChildren();
+        String dateDebut = champsAnnonce.getStartOfPeriod();
         
         int typeAnnonce = getTypeAnnonce(champsAnnonce);
         if (typeAnnonce == 1) {
@@ -80,13 +84,24 @@ public class Rule321 extends Rule {
                 return false;
             }            
         }
-        
-        if (serviceType.equals(APGenreServiceAPG.Maternite.getCodePourAnnonce()) || serviceType.equals(APGenreServiceAPG.Paternite.getCodePourAnnonce())) {
+
+
+
+         if(serviceType.equals(APGenreServiceAPG.Paternite.getCodePourAnnonce()) || serviceType.equals(APGenreServiceAPG.Maternite.getCodePourAnnonce())){
             validNotEmpty(basicDailyAmount, "basicDailyAmount");
-            if ((Float.valueOf(basicDailyAmount) > montantMiniAllocationJournalierMaternite)) {
-                return false;
+            String parameterName = null;
+            parameterName = APParameter.TAUX_JOURNALIER_MAX_DROIT_ACQUIS_0_ENFANT.getParameterName();
+            try {
+                BigDecimal montantMax = new BigDecimal(
+                        FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(), "0", parameterName, dateDebut, "", 2));
+                if ((Float.valueOf(basicDailyAmount) > montantMax.floatValue())) {
+                    return false;
+                }
+            } catch (Exception e) {
+                throw new APRuleExecutionException(e);
             }
-        } else if(!APGenreServiceAPG.isValidGenreServicePandemie(serviceType)) {
+
+        }else if(!APGenreServiceAPG.isValidGenreServicePandemie(serviceType)) {
             validNotEmpty(basicDailyAmount, "basicDailyAmount");
             validNotEmpty(numberOfChilren, "numberOfChilren");
             if ((Integer.valueOf(numberOfChilren) > 0) && (Float.valueOf(basicDailyAmount) > montantMiniAllocationJournalierCadre)) {

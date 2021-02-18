@@ -31,6 +31,7 @@ import globaz.jade.jaxb.JAXBValidationException;
 import globaz.jade.sedex.JadeSedexService;
 import globaz.jade.sedex.message.SimpleSedexMessage;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.webavs.common.WebavsDocumentionLocator;
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
@@ -166,7 +167,7 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
                 paternityLeaveDataType.setPaternityLeaveType(new BigInteger(champsAnnonce.getParternityLeaveType()));
             }
             rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.InsurantDomicileType insurantDomicileType = factory.createInsurantDomicileType();
-            if (!JadeStringUtil.isEmpty(champsAnnonce.getChildCantonBorn())) {
+            if (!JadeStringUtil.isEmpty(champsAnnonce.getChildCantonBorn()) && champsAnnonce.getChildDomicile().equals(PRTiersHelper.ID_PAYS_SUISSE) ) {
                 insurantDomicileType.setCanton(new BigInteger(champsAnnonce.getChildCantonBorn()));
             }
             if (!JadeStringUtil.isEmpty(champsAnnonce.getChildDomicile())) {
@@ -470,6 +471,9 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
             message.setSendingApplication(ofEch0058.createSendingApplicationType());
             if (!JadeStringUtil.isBlankOrZero(champsAnnonce.getInsurantDomicileCanton())
                     || !JadeStringUtil.isBlankOrZero(champsAnnonce.getInsurantDomicileCountry())) {
+                InsurantDomicileType insurantDomicileType = ofCommon.createInsurantDomicileType();
+                insurantDomicileType.setCountry(Integer.parseInt(champsAnnonce.getInsurantDomicileCountry()));
+                insurantDomicileType.setCanton(new BigInteger(champsAnnonce.getInsurantDomicileCanton()));
                 message.setInsurantDomicile(ofCommon.createInsurantDomicileType());
             }
             message.setInsurant(ofEch0048.createPersonIdentificationType());
