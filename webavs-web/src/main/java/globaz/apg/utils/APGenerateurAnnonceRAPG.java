@@ -149,7 +149,7 @@ public class APGenerateurAnnonceRAPG {
             annonceACreer.setPeriodeA(prestation.getDateFin());
             annonceACreer.setModePaiement(getModePaiement(session, prestation));
 
-            if (!isPrestationMaternite && !isPrestationPaternite) {
+            if (droit instanceof APDroitAPG) {
                 annonceACreer.setNumeroControle(((APDroitAPG) droit).getNoControlePers());
                 // Rule 301 si service type = 90, numberOfChidren doit être vide ou non renseigné
                 annonceACreer.setNombreEnfants(getNombreEnfant(session, droit, prestation.getDateDebut()));
