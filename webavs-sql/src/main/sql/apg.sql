@@ -9,6 +9,10 @@ INSERT INTO schema.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSL
 INSERT INTO schema.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52001017, 'D', '91        ', 'Vaterschaftsurlaub', '202012070000Globaz           ');
 INSERT INTO schema.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52001017, 'F', '91        ', 'Allocation de paternité', '202012070000Globaz           ');
 
+-- Création de la table droit paternité
+INSERT INTO schema.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (519016, 'PYAPPLICAT', 15, 1, 0, 0, 'PATERNITE                               ', 2, 1, 2, 2, 2, 2, 10500019, 0, '202101120000Globaz       ');
+INSERT INTO schema.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (519016, 'F', 'PAT       ', 'Paternité                                                   ', '202101120000Globaz             ');
+INSERT INTO schema.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (519016, 'D', 'PAT       ', 'Vatershaft                                                   ', '202101120000Globaz              ');
 
 INSERT INTO SCHEMA.FWPARP (PPARAP,PPACDI,PPARIA,PPADDE,PPARPD,PCOSID,PPARPF,PPARVA,PPRAVN,PPRADE,CSTYUN,PCOITC,PSPY) VALUES ('APG','PATERNDATE',0,20210101,0.000000,1,0.000000,'',0,'Paternité, date de début',0,0,'20210101120000spy   ');
 
@@ -1036,7 +1040,6 @@ INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('apg.nature.ver
 
 -- Propriété pour afficher période sur Décision paternité
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('apg.decision.paternite.affichage.periode','true','202102151120000Globaz    ','202102151120000Globaz    ');
-INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('apg.domaine.adresse.paternite','','202102151120000Globaz    ','202102151120000Globaz    ');
 -- ged
 INSERT INTO SCHEMA.FWDDOC (IDDOC,IDCONF,NUMREF,DESCFR,DESCDE,DESCIT,DOCTYP,PSPY,OUTXML,OUTPDF) VALUES ((SELECT MAX(IDDOC)+1 FROM FWDDOC),1,'5053PAP','Décision d''allocation paternité',null,null,null,null,'2','1');
 INSERT INTO SCHEMA.FWDDOC (IDDOC,IDCONF,NUMREF,DESCFR,DESCDE,DESCIT,DOCTYP,PSPY,OUTXML,OUTPDF) VALUES ((SELECT MAX(IDDOC)+1 FROM FWDDOC),1,'5054PAP','Attestation fiscale paternité',null,null,null,null,'2','1');
