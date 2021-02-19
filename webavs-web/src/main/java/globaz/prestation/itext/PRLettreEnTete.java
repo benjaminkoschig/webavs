@@ -163,7 +163,7 @@ public class PRLettreEnTete extends FWIDocumentManager {
             } else if (getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_PAT)) {
 
                 adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(),
-                        tierAdresse.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), getIdAffilie(), "519016");
+                        tierAdresse.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), getIdAffilie(), "519017");
 
             } else if (getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_IJAI)) {
                 BISession remoteSession = PRSession.connectSession(getSession(), "IJ");

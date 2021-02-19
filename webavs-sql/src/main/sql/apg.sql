@@ -10,9 +10,9 @@ INSERT INTO schema.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (5200101
 INSERT INTO schema.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (52001017, 'F', '91        ', 'Allocation de paternité', '202012070000Globaz           ');
 
 -- Création de la table droit paternité
-INSERT INTO schema.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (519016, 'PYAPPLICAT', 15, 1, 0, 0, 'PATERNITE                               ', 2, 1, 2, 2, 2, 2, 10500019, 0, '202101120000Globaz       ');
-INSERT INTO schema.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (519016, 'F', 'PAT       ', 'Paternité                                                   ', '202101120000Globaz             ');
-INSERT INTO schema.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (519016, 'D', 'PAT       ', 'Vatershaft                                                   ', '202101120000Globaz              ');
+INSERT INTO schema.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSLI, PCOSDF, PCOSDM, PCOSDP, PCOIAN, PCOIDE, PCODFI, PCOITC, PCOISE, PSPY) VALUES (519017, 'PYAPPLICAT', 15, 1, 0, 0, 'PATERNITE                               ', 2, 1, 2, 2, 2, 2, 10500019, 0, '202101120000Globaz       ');
+INSERT INTO schema.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (519017, 'F', 'PAT       ', 'Paternité                                                   ', '202101120000Globaz             ');
+INSERT INTO schema.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) VALUES (519017, 'D', 'PAT       ', 'Vatershaft                                                   ', '202101120000Globaz              ');
 
 INSERT INTO SCHEMA.FWPARP (PPARAP,PPACDI,PPARIA,PPADDE,PPARPD,PCOSID,PPARPF,PPARVA,PPRAVN,PPRADE,CSTYUN,PCOITC,PSPY) VALUES ('APG','PATERNDATE',0,20210101,0.000000,1,0.000000,'',0,'Paternité, date de début',0,0,'20210101120000spy   ');
 

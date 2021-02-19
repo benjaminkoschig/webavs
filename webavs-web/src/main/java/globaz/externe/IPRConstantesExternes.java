@@ -169,6 +169,6 @@ public interface IPRConstantesExternes {
     public static final String TIERS_CS_DOMAINE_APPLICATION_IJAI = "519009";
     public static final String TIERS_CS_DOMAINE_APPLICATION_RENTE = "519006";
     public static final String TIERS_CS_DOMAINE_MATERNITE = "519003";
-    public static final String TIERS_CS_DOMAINE_PATERNITE = "519016";
+    public static final String TIERS_CS_DOMAINE_PATERNITE = "519017";
     public static final String TIERS_CS_TYPE_ADRESSE_COURRIER = "508001";
 }
