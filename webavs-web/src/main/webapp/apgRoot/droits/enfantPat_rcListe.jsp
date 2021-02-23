@@ -17,6 +17,8 @@ menuDetailLabel = viewBean.getSession().getLabel("MENU_OPTION_DETAIL");
     <TH><ct:FWLabel key="JSP_NOM"/></TH>
     <TH><ct:FWLabel key="JSP_PRENOM"/></TH>
     <TH><ct:FWLabel key="JSP_DATE_NAISSANCE"/></TH>
+<TH><ct:FWLabel key="JSP_PAYS_DOMICILE"/></TH>
+<TH><ct:FWLabel key="JSP_MEMBRE_FAMILLE_CANTON"/></TH>
     <%-- /tpl:put --%> 
 <%@ include file="/theme/list/tableHeader.jspf" %>
     <%-- tpl:put name="zoneCondition" --%>
@@ -31,6 +33,8 @@ String detailUrl = "parent.fr_detail.location.href='" + detailLink + courant.get
 		<TD class="mtd" nowrap onclick="<%=detailUrl%>"><%=courant.getNom()%></TD>
 		<TD class="mtd" nowrap onclick="<%=detailUrl%>"><%=courant.getPrenom()%></TD>
 		<TD class="mtd" nowrap onclick="<%=detailUrl%>"><%=courant.getDateNaissance()%></TD>
+        <TD class="mtd" nowrap onclick="<%=detailUrl%>"><%=courant.getNationaliteAsString()%></TD>
+        <TD class="mtd" nowrap onclick="<%=detailUrl%>"><%=courant.getCantonAsString()%></TD>
 <%-- /tpl:put --%>
 <%@ include file="/theme/list/lineEnd.jspf" %>
 	<%-- tpl:put name="zoneTableFooter" --%>

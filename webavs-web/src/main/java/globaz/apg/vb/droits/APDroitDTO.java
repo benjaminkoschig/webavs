@@ -285,6 +285,7 @@ public class APDroitDTO implements Serializable {
         return null;
     }
 
+
     public void setCanton(String canton) {
         this.canton = canton;
     }

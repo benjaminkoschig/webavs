@@ -840,11 +840,11 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
                 vbDroit.setDto(new APDroitAPGDTO(droit));
             } else {
                 // Si le traitement s'est bien passé, on retourne le bon viewBean pour aller sur l'affichage du droit
-                APDroitPandemie droit = ApgServiceLocator.getEntityService().getDroitPandemie(session, transaction,
-                        vbDroit.getIdDroit());
-                // On met à jour l'état du droit
-                droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE_REPONSE);
-                droit.update();
+            APDroitPandemie droit = ApgServiceLocator.getEntityService().getDroitPandemie(session, transaction,
+                    vbDroit.getIdDroit());
+            // On met à jour l'état du droit
+            droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE_REPONSE);
+            droit.update();
                 final List<APPrestation> prestations = ApgServiceLocator.getEntityService().getPrestationDuDroit(session,
                         transaction, droit.getIdDroit());
                 for (APPrestation eachPrestation : prestations) {
@@ -925,7 +925,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
                 vbDroit.setDto(new APDroitAPGDTO(droit));
             } else {
                 // Si le traitement s'est bien passé, on retourne le bon viewBean pour aller sur l'affichage du droit
-                APDroitPandemie droit = ApgServiceLocator.getEntityService().getDroitPandemie(session, transaction,
+            APDroitPandemie droit = ApgServiceLocator.getEntityService().getDroitPandemie(session, transaction,
                         vbDroit.getIdDroit());
                 // On met à jour l'état du droit
                 droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_REFUSE);

@@ -1,8 +1,12 @@
 package ch.globaz.pegasus.businessimpl.services.adresse;
 
+import globaz.globall.context.BJadeThreadActivator;
+import globaz.globall.context.exception.BJadeMultipleJdbcConnectionInSameThreadException;
 import globaz.globall.db.BManager;
+import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.util.JACalendar;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.pyxis.application.TIApplication;
