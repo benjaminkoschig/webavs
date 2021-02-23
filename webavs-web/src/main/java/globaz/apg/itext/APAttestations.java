@@ -324,7 +324,7 @@ public class APAttestations extends FWIDocumentManager {
             } else if(isAttestationPat) {
                 adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(),
                         tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), "",
-                        IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE);
+                        APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue());
             }else{
                 adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(),
                         tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), "", APApplication.CS_DOMAINE_ADRESSE_APG);

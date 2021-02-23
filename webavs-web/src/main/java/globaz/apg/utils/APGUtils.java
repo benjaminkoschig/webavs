@@ -188,7 +188,11 @@ public class APGUtils {
         } else if (IPRDemande.CS_TYPE_MATERNITE.equals(typePrestation)) {
             csDomaineDefault = IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
         } else if (IPRDemande.CS_TYPE_PATERNITE.equals(typePrestation)) {
-            csDomaineDefault = IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE;
+            try {
+                csDomaineDefault = APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue();
+            } catch (PropertiesException e) {
+                csDomaineDefault = IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
+            }
         } else if (IPRDemande.CS_TYPE_PANDEMIE.equals(typePrestation)) {
             try {
                 csDomaineDefault = APProperties.DOMAINE_ADRESSE_APG_PANDEMIE.getValue();

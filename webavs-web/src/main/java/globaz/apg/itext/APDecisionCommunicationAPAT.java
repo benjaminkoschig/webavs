@@ -1235,7 +1235,7 @@ public class APDecisionCommunicationAPAT extends FWIDocumentManager {
 
         try {
             adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(), idTiers, "",
-                    IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE);
+                    APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue());
         } catch (final Exception e) {
             throw new FWIException("Impossible de charger l'adresse de l'assuré", e);
         }
@@ -1275,7 +1275,7 @@ public class APDecisionCommunicationAPAT extends FWIDocumentManager {
         try {
 
             adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(), repartition.getIdTiers(),
-                    repartition.getIdAffilie(), IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE);
+                    repartition.getIdAffilie(), APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue());
 
             if (!JadeStringUtil.isIntegerEmpty(repartition.getIdAffilie())) {
                 final IPRAffilie affilie = PRAffiliationHelper.getEmployeurParIdAffilie(getISession(), getSession()

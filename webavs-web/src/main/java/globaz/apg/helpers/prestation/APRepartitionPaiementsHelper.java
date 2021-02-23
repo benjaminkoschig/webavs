@@ -340,7 +340,7 @@ public class APRepartitionPaiementsHelper extends PRAbstractHelper {
             if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())) {
                 rpViewBean.setIdDomaineAdressePaiement(IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE);
             } else if(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(droit.getGenreService())) {
-                rpViewBean.setIdDomaineAdressePaiement(IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE);
+                rpViewBean.setIdDomaineAdressePaiement(APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue());
             } else if(APGUtils.isTypeAllocationPandemie(droit.getGenreService())) {
                 rpViewBean.setIdDomaineAdressePaiement(APProperties.DOMAINE_ADRESSE_APG_PANDEMIE.getValue());
             } else {
@@ -357,7 +357,7 @@ public class APRepartitionPaiementsHelper extends PRAbstractHelper {
             if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())) {
                 rpViewBean.setIdDomaineAdressePaiement(IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE);
             }else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(droit.getGenreService())) {
-                rpViewBean.setIdDomaineAdressePaiement(IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE);
+                rpViewBean.setIdDomaineAdressePaiement(APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue());
             } else if(APGUtils.isTypeAllocationPandemie(droit.getGenreService())) {
                 rpViewBean.setIdDomaineAdressePaiement(APProperties.DOMAINE_ADRESSE_APG_PANDEMIE.getValue());
             } else {
@@ -399,7 +399,7 @@ public class APRepartitionPaiementsHelper extends PRAbstractHelper {
             } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(droit.getGenreService())) {
 
                 adresse = PRTiersHelper.getAdressePaiementData(session, session.getCurrentThreadTransaction(),
-                        rpViewBean.getIdTiersAdressePaiement(), IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE,
+                        rpViewBean.getIdTiersAdressePaiement(), APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue(),
                         rpViewBean.getIdAffilieAdrPmt(), JACalendar.todayJJsMMsAAAA());
 
             } else if (APGUtils.isTypeAllocationPandemie(droit.getGenreService())) {

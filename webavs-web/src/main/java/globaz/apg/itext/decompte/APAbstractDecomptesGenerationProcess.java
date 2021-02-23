@@ -718,11 +718,11 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 String idAdmFisc = getAdresseAdministrationFiscale(decompteCourant.getIdTiers());
 
                 String tiersAdresseFiscFormatteLine = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
-                        idAdmFisc, IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE, "", "",
+                        idAdmFisc, APProperties.DOMAINE_ADRESSE_APG_PANDEMIE.getValue(), "", "",
                         new PRTiersAdresseCopyFormater02(), this.getDateDocument().toString());
 
                 String tiersAdresseFiscFormatte = PRTiersHelper.getAdresseCourrierFormatee(getISession(), idAdmFisc, "",
-                        IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE);
+                        APProperties.DOMAINE_ADRESSE_APG_PANDEMIE.getValue());
 
                 if (impotSource){
                     parametres.put("P_COPIE_A", document.getTextes(1).getTexte(8).getDescription());
@@ -1748,7 +1748,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         }else if(IPRDemande.CS_TYPE_APG.equals(csTypePrestationsLot)){
             return IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
         }else if(IPRDemande.CS_TYPE_PATERNITE.equals(csTypePrestationsLot)){
-            return IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE;
+            return APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue();
         }else{
             return IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
         }
