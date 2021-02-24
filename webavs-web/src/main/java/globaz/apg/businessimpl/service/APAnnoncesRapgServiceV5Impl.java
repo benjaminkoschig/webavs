@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package globaz.apg.businessimpl.service;
 
@@ -154,7 +154,7 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
             message.setTimeStamp(JAXBUtil.getXmlCalendarTimestamp(Long.parseLong(champsAnnonce.getTimeStamp())));
         }
         //Paternité
-        if(champsAnnonce.getServiceType().equals(SERVICE_PATERNITE) && !champsAnnonce.getAction().equals("4")){
+        if (champsAnnonce.getServiceType().equals(SERVICE_PATERNITE) && !champsAnnonce.getAction().equals("4")) {
             rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.ObjectFactory factory = new rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.ObjectFactory();
             PaternityLeaveDataType paternityLeaveDataType = factory.createPaternityLeaveDataType();
             if (!JadeStringUtil.isEmpty(champsAnnonce.getNewbornDateOfBirth())) {
@@ -167,7 +167,7 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
                 paternityLeaveDataType.setPaternityLeaveType(new BigInteger(champsAnnonce.getParternityLeaveType()));
             }
             rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.InsurantDomicileType insurantDomicileType = factory.createInsurantDomicileType();
-            if (!JadeStringUtil.isEmpty(champsAnnonce.getChildCantonBorn()) && champsAnnonce.getChildDomicile().equals(PRTiersHelper.ID_PAYS_SUISSE) ) {
+            if (!JadeStringUtil.isEmpty(champsAnnonce.getChildCantonBorn()) && champsAnnonce.getChildDomicile().equals(PRTiersHelper.ID_PAYS_SUISSE)) {
                 insurantDomicileType.setCanton(new BigInteger(champsAnnonce.getChildCantonBorn()));
             }
             if (!JadeStringUtil.isEmpty(champsAnnonce.getChildDomicile())) {
@@ -175,7 +175,7 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
             }
 
             paternityLeaveDataType.setChildDomicile(insurantDomicileType);
-            if(!JadeStringUtil.isEmpty(champsAnnonce.getChildInsurantVn())){
+            if (!JadeStringUtil.isEmpty(champsAnnonce.getChildInsurantVn())) {
                 paternityLeaveDataType.setChildInsurantVn(Long.valueOf(champsAnnonce.getChildInsurantVn().replace(".", "")));
             }
             message.setPaternityLeaveData(paternityLeaveDataType);
@@ -214,7 +214,7 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
 
     /**
      * Conversion d'une annonce de la DB en annonce controlable par les services
-     * 
+     *
      * @param annonce
      * @return
      * @throws APAnnoncesException
@@ -249,13 +249,13 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
 
     private Schema getSchema() throws SAXException {
         SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Source[] sources = new Source[] {
-                new StreamSource(getClass().getResource(XSD_FOLDER+XSD_101).toExternalForm()),
-                new StreamSource(getClass().getResource(XSD_FOLDER+XSD_301).toExternalForm()),
-                new StreamSource(getClass().getResource(XSD_FOLDER+XSD_401).toExternalForm()),
-                new StreamSource(getClass().getResource(XSD_FOLDER+XSD_COMMON).toExternalForm()),
-                new StreamSource(getClass().getResource(XSD_FOLDER+XSD_44).toExternalForm()),
-                new StreamSource(getClass().getResource(XSD_FOLDER+XSD_58).toExternalForm()),
+        Source[] sources = new Source[]{
+                new StreamSource(getClass().getResource(XSD_FOLDER + XSD_101).toExternalForm()),
+                new StreamSource(getClass().getResource(XSD_FOLDER + XSD_301).toExternalForm()),
+                new StreamSource(getClass().getResource(XSD_FOLDER + XSD_401).toExternalForm()),
+                new StreamSource(getClass().getResource(XSD_FOLDER + XSD_COMMON).toExternalForm()),
+                new StreamSource(getClass().getResource(XSD_FOLDER + XSD_44).toExternalForm()),
+                new StreamSource(getClass().getResource(XSD_FOLDER + XSD_58).toExternalForm()),
         };
         return sf.newSchema(sources);
     }
@@ -287,13 +287,13 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.apg.business.services.annonces.AnnoncesRapgService#envoyerAnnonces(java.lang.String,
      * java.lang.String)
      */
     @Override
     public List<APChampsAnnonce> envoyerAnnonces(List<APChampsAnnonce> listChampsAnnonces, FWMemoryLog memoryLog,
-            BSession session) throws APAnnoncesException, APPlausibilitesException,
+                                                 BSession session) throws APAnnoncesException, APPlausibilitesException,
             JadeApplicationServiceNotAvailableException {
 
         if (listChampsAnnonces.isEmpty()) {
@@ -352,7 +352,7 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
                     GlobazServer.getCurrentSystem().getApplication("APG").getProperty("rapg.recipientid"));
 
             JAXBElement<EnvelopeType> element = of0090.createEnvelope(enveloppe);
-            String envelopeFile = JAXBServices.getInstance().marshal(element, true, false, new Class<?>[] {});
+            String envelopeFile = JAXBServices.getInstance().marshal(element, true, false, new Class<?>[]{});
 
             JadeSedexService.getInstance().sendGroupedMessage(envelopeFile, messagesToSend);
 
@@ -385,8 +385,8 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
 
     private void marshalAnnonce(String idAnnonce, ArrayList<SimpleSedexMessage> messagesToSend, List<String> errorsValidation, APChampsAnnonce champsAnnonce, Object m) throws JAXBException, SAXException {
         try {
-            Class<?>[] classes = new Class<?>[] {InsurantDomicileType.class, PersonIdentificationType.class,
-                    ReportType.class };
+            Class<?>[] classes = new Class<?>[]{InsurantDomicileType.class, PersonIdentificationType.class,
+                    ReportType.class};
             if (APAnnoncesRapgService.subMessageType1.equals(champsAnnonce.getSubMessageType())) {
                 classes = (Class<?>[]) ArrayUtils.addAll(classes, new Class[]{ObjectFactory.class, Message.class});
             } else if (APAnnoncesRapgService.subMessageType3.equals(champsAnnonce.getSubMessageType())) {
@@ -403,7 +403,7 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
             String fileName = Jade.getInstance().getPersistenceDir() + JadeFilenameUtil.addFilenameSuffixUID(TEMP_FILENAME);
             marshaller.marshal(m, new File(fileName));
 
-            checkValidationErrors((JAXBValidationEventHandler)(marshaller.getEventHandler()));
+            checkValidationErrors((JAXBValidationEventHandler) (marshaller.getEventHandler()));
 
             // Ajout du message dans la liste de messages à envoyer
             SimpleSedexMessage ssm = new SimpleSedexMessage();
@@ -423,7 +423,7 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.apg.business.services.annonces.AnnoncesRapgService#fullWithConstants(ch.globaz.apg.business.models.
      * annonces.ChampsAnnonce)
@@ -446,7 +446,7 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.apg.business.services.annonces.AnnoncesRapgService#preparerAnnonce(ch.globaz.apg.business.models.annonces
      * .ChampsAnnonce)
@@ -469,13 +469,7 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
             message.setMinorVersion(BigInteger.valueOf(0));
             message.setDeliveryOffice(ofCommon.createDeliveryOfficeType());
             message.setSendingApplication(ofEch0058.createSendingApplicationType());
-            if (!JadeStringUtil.isBlankOrZero(champsAnnonce.getInsurantDomicileCanton())
-                    || !JadeStringUtil.isBlankOrZero(champsAnnonce.getInsurantDomicileCountry())) {
-                InsurantDomicileType insurantDomicileType = ofCommon.createInsurantDomicileType();
-                insurantDomicileType.setCountry(Integer.parseInt(champsAnnonce.getInsurantDomicileCountry()));
-                insurantDomicileType.setCanton(new BigInteger(champsAnnonce.getInsurantDomicileCanton()));
-                message.setInsurantDomicile(ofCommon.createInsurantDomicileType());
-            }
+            message.setInsurantDomicile(ofCommon.createInsurantDomicileType());
             message.setInsurant(ofEch0048.createPersonIdentificationType());
             if (!JadeStringUtil.isEmpty(champsAnnonce.getBreakRules())) {
                 message.setBreakRules(ofCommon.createBreakRuleType());

@@ -5,6 +5,7 @@ import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.application.APApplication;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
+import globaz.apg.properties.APParameter;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.*;
 import globaz.globall.util.JACalendar;
@@ -18,6 +19,8 @@ import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.constantes.IConstantes;
+
+import java.math.BigDecimal;
 
 /**
  * BEntity représentant un droit paternité Créé le 01 Décembre 2020
@@ -195,13 +198,13 @@ public class APDroitPaternite extends APDroitLAPG implements IPRCloneable {
     @Override
     protected void _beforeAdd(BTransaction transaction) throws Exception {
         super._beforeAdd(transaction);
-        calculerDateFinDroit();
+        calculerDateFinDroit(transaction.getSession());
     }
 
     @Override
     protected void _beforeUpdate(BTransaction transaction) throws Exception {
         super._beforeUpdate(transaction);
-        calculerDateFinDroit();
+        calculerDateFinDroit(transaction.getSession());
     }
 
     /**
@@ -337,8 +340,10 @@ public class APDroitPaternite extends APDroitLAPG implements IPRCloneable {
 
     /**
      * Calculer la date de fin du droit pour ce droit paternité.
+     * @param session
+     * @param httpSession
      */
-    public void calculerDateFinDroit() throws Exception {
+    public void calculerDateFinDroit(BSession session) throws Exception {
         JADate debut = new JADate(getDateDebutDroit());
         JACalendar cal = new JACalendarGregorian();
         /*
@@ -346,8 +351,15 @@ public class APDroitPaternite extends APDroitLAPG implements IPRCloneable {
          * la création de cette classe, cette durée est de 98 jours. Comme cette valeur peut changer, elle est stockée
          * comme propriété de l'application.
          */
-        JADate fin = cal.addDays(debut, APDroitPaternite.getDureeDroitPat(getSession()) - 1);
+        String parameterName = null;
+        parameterName = APParameter.PATERNITE_JOUR_MAX.getParameterName();
+        BSessionUtil.initContext(session, this);
+        BigDecimal joursMax = new BigDecimal(
+                    FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", parameterName, debut.toStr("."), "", 2));
+
+        JADate fin = cal.addDays(debut, joursMax.intValue() - 1);
         setDateFinDroit(fin.toStr("."));
+        BSessionUtil.stopUsingContext( this);
     }
 
     @Override

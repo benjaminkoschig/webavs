@@ -16,6 +16,7 @@ import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWDefaultServletAction;
 import globaz.framework.controller.FWDispatcher;
 import globaz.framework.servlets.FWServlet;
+import globaz.globall.db.BSession;
 import globaz.globall.http.JSPUtils;
 import globaz.prestation.servlet.PRDefaultAction;
 import globaz.prestation.tools.PRSessionDataContainerHelper;
@@ -292,7 +293,7 @@ public class APDroitPatPAction extends APAbstractDroitPAction {
     protected FWViewBeanInterface beforeAjouter(HttpSession session, HttpServletRequest request,
             HttpServletResponse response, FWViewBeanInterface viewBean) {
         try {
-            ((APDroitPaternite) ((APDroitPatPViewBean) viewBean).getDroit()).calculerDateFinDroit();
+            ((APDroitPaternite) ((APDroitPatPViewBean) viewBean).getDroit()).calculerDateFinDroit((BSession)session.getAttribute("objSession"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -317,7 +318,7 @@ public class APDroitPatPAction extends APAbstractDroitPAction {
     protected FWViewBeanInterface beforeModifier(HttpSession session, HttpServletRequest request,
             HttpServletResponse response, FWViewBeanInterface viewBean) {
         try {
-            ((APDroitPaternite) ((APDroitPatPViewBean) viewBean).getDroit()).calculerDateFinDroit();
+            ((APDroitPaternite) ((APDroitPatPViewBean) viewBean).getDroit()).calculerDateFinDroit((BSession)session.getAttribute("objSession"));
         } catch (Exception e) {
             e.printStackTrace();
         }
