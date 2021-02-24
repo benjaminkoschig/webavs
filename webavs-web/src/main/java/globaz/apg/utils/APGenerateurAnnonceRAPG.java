@@ -152,9 +152,12 @@ public class APGenerateurAnnonceRAPG {
             if (droit instanceof APDroitAPG) {
                 annonceACreer.setNumeroControle(((APDroitAPG) droit).getNoControlePers());
                 // Rule 301 si service type = 90, numberOfChidren doit être vide ou non renseigné
-                annonceACreer.setNombreEnfants(getNombreEnfant(session, droit, prestation.getDateDebut()));
                 annonceACreer.setNumeroCompte(((APDroitAPG) droit).getNoCompte());
+                annonceACreer.setNombreEnfants(getNombreEnfant(session, droit, prestation.getDateDebut()));
+            }else if(droit instanceof APDroitPaternite){
+                annonceACreer.setNombreEnfants(getNombreEnfant(session, droit, prestation.getDateDebut()));
             }
+
             if (!JadeStringUtil.isIntegerEmpty(droit.getNpa())) {
                 annonceACreer
                         .setCantonEtat(PRACORConst.csCantonToAcor(PRTiersHelper.getCanton(session, droit.getNpa())));
@@ -570,7 +573,19 @@ public class APGenerateurAnnonceRAPG {
     private String getNombreEnfant(BSession session, APDroitLAPG droit, String dateDebutPrestation) throws Exception {
         if (droit instanceof APDroitMaternite) {
             return "0";
-        } else {
+        } else if(droit instanceof APDroitPaternite) {
+
+            APEnfantPatManager enfantAPGManager = new APEnfantPatManager();
+            enfantAPGManager.setSession(session);
+            enfantAPGManager.setForIdDroitPaternite(droit.getIdDroit());
+            enfantAPGManager.find();
+
+            int nbEnfantsPendantPrestation = 0;
+            nbEnfantsPendantPrestation =  enfantAPGManager.size();
+
+
+            return Integer.toString( nbEnfantsPendantPrestation);
+        } else{
             APSituationFamilialeAPG situationFamilialeAPG = ((APDroitAPG) droit).loadSituationFamilliale();
 
             APEnfantAPGManager enfantAPGManager = new APEnfantAPGManager();
