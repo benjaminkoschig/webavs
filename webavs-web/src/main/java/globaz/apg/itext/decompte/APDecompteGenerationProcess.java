@@ -1,7 +1,9 @@
 package globaz.apg.itext.decompte;
 
+import globaz.apg.ApgServiceLocator;
 import globaz.apg.api.codesystem.IAPCatalogueTexte;
 import globaz.apg.api.process.IAPGenererCompensationProcess;
+import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APEmployeur;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.lots.APFactureACompenser;
@@ -24,7 +26,9 @@ import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.prestation.api.IPRDemande;
+import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.db.employeurs.PRDepartement;
 import globaz.prestation.interfaces.af.IPRAffilie;
 import globaz.prestation.interfaces.af.PRAffiliationHelper;
@@ -327,11 +331,26 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
         // des décomptes
         final List<APPrestationJointRepartitionPOJO> repartitionPojo = conversionDonneesDBVersDonneesDecompte(repartitionDB);
 
+        // Pour paternité
+        try {
+            rectificationCleRegroupementPourPaternite(repartitionPojo);
+        }catch (Exception e) {
+            LOG.error("APDecompteGenerationProcess#rectificationCleRegroupementPourPaternite:Une erreur est survenu lors de la mise en place du Tri sur Assuré pour les décomptes employeurs :" +e);
+        }
+
+
         // 4 - On génère les clés de regroupement en fonction des paramètres de regroupement pour chaque répartition
         genererClesDeRegroupement(repartitionPojo);
 
         // 5 - Regroupement des prestations pour chaque décomptes
         final Map<String, APDecompte> decomptes = regrouperPrestation(repartitionPojo);
+
+        // Pour paternité
+        try {
+            suppressionRectificationApresGenerationCles(repartitionPojo);
+        } catch (Exception e) {
+            LOG.error("APDecompteGenerationProcess#suppressionRectificationApresGenerationCles:Une erreur est survenu lors de la mise en place du Tri sur Assuré pour les décomptes employeurs :" +e);
+        }
 
         // Ok, maintenant que les prestation sont regroupées, ils s'agit de déterminer quelle est le type de chaque
         // rapport
@@ -344,6 +363,35 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
         // this.ajouterVentilationsEtCompensations(decomptes);
 
         return decomptes;
+    }
+
+    private void suppressionRectificationApresGenerationCles(List<APPrestationJointRepartitionPOJO> repartitionPojo) throws Exception {
+        for (final APPrestationJointRepartitionPOJO repartition : repartitionPojo) {
+            // 1. le n°AVS et le nom de l'assure
+            APDroitLAPG droit = ApgServiceLocator.getEntityService().getDroitLAPG(getSession(), getTransaction(),
+                    repartition.getPrestationJointRepartition().getIdDroit());
+            PRDemande demande = droit.loadDemande();
+
+            if (IPRDemande.CS_TYPE_PATERNITE.equals(demande.getTypeDemande())){
+                repartition.getDonneePourRegroupement().setIdTiers(repartition.getDonneePourRegroupement().getIdTiersSauv());
+            }
+        }
+    }
+
+    private void rectificationCleRegroupementPourPaternite(List<APPrestationJointRepartitionPOJO> repartitionPojo) throws Exception {
+        for (final APPrestationJointRepartitionPOJO repartition : repartitionPojo) {
+
+            // 1. le n°AVS et le nom de l'assure
+            APDroitLAPG droit = ApgServiceLocator.getEntityService().getDroitLAPG(getSession(), getTransaction(),
+                    repartition.getPrestationJointRepartition().getIdDroit());
+
+            PRDemande demande = droit.loadDemande();
+            if (IPRDemande.CS_TYPE_PATERNITE.equals(demande.getTypeDemande())){
+                repartition.getDonneePourRegroupement().setIdTiersSauv(repartition.getDonneePourRegroupement().getIdTiers());
+                repartition.getDonneePourRegroupement().setIdTiers(demande.getIdTiers());
+            }
+        }
+
     }
 
     private void genererClesDeRegroupement(final List<APPrestationJointRepartitionPOJO> data) {

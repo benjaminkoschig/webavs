@@ -45,6 +45,8 @@ public class APDonneeRegroupementDecompte {
     private boolean isModuleCompensationPorteEnCompteActif;
     private boolean isPorteEncompte;
     private String idAdressePaiement;
+    // Paternité
+    private String idTiersSauv;
 
     /**
      * Mapping utilisé pour le regroupement des prestations Standard et ACM_NE
@@ -349,4 +351,11 @@ public class APDonneeRegroupementDecompte {
         return isIndependant;
     }
 
+    public String getIdTiersSauv() {
+        return idTiersSauv;
+    }
+
+    public void setIdTiersSauv(String idTiersSauv) {
+        this.idTiersSauv = idTiersSauv;
+    }
 }
