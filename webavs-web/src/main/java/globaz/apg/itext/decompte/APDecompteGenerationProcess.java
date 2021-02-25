@@ -333,7 +333,9 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
 
         // Pour paternité
         try {
-            rectificationCleRegroupementPourPaternite(repartitionPojo);
+            if (IPRDemande.CS_TYPE_PATERNITE.equals(loadCsTypePrestation())) {
+                rectificationCleRegroupementPourPaternite(repartitionPojo);
+            }
         }catch (Exception e) {
             LOG.error("APDecompteGenerationProcess#rectificationCleRegroupementPourPaternite:Une erreur est survenu lors de la mise en place du Tri sur Assuré pour les décomptes employeurs :" +e);
         }
@@ -347,7 +349,9 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
 
         // Pour paternité
         try {
-            suppressionRectificationApresGenerationCles(repartitionPojo);
+            if (IPRDemande.CS_TYPE_PATERNITE.equals(loadCsTypePrestation())) {
+                suppressionRectificationApresGenerationCles(repartitionPojo);
+            }
         } catch (Exception e) {
             LOG.error("APDecompteGenerationProcess#suppressionRectificationApresGenerationCles:Une erreur est survenu lors de la mise en place du Tri sur Assuré pour les décomptes employeurs :" +e);
         }
@@ -367,29 +371,14 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
 
     private void suppressionRectificationApresGenerationCles(List<APPrestationJointRepartitionPOJO> repartitionPojo) throws Exception {
         for (final APPrestationJointRepartitionPOJO repartition : repartitionPojo) {
-            // 1. le n°AVS et le nom de l'assure
-            APDroitLAPG droit = ApgServiceLocator.getEntityService().getDroitLAPG(getSession(), getTransaction(),
-                    repartition.getPrestationJointRepartition().getIdDroit());
-            PRDemande demande = droit.loadDemande();
-
-            if (IPRDemande.CS_TYPE_PATERNITE.equals(demande.getTypeDemande())){
-                repartition.getDonneePourRegroupement().setIdTiers(repartition.getDonneePourRegroupement().getIdTiersSauv());
-            }
+            repartition.getDonneePourRegroupement().setIdTiers(repartition.getDonneePourRegroupement().getIdTiersSauv());
         }
     }
 
     private void rectificationCleRegroupementPourPaternite(List<APPrestationJointRepartitionPOJO> repartitionPojo) throws Exception {
         for (final APPrestationJointRepartitionPOJO repartition : repartitionPojo) {
-
-            // 1. le n°AVS et le nom de l'assure
-            APDroitLAPG droit = ApgServiceLocator.getEntityService().getDroitLAPG(getSession(), getTransaction(),
-                    repartition.getPrestationJointRepartition().getIdDroit());
-
-            PRDemande demande = droit.loadDemande();
-            if (IPRDemande.CS_TYPE_PATERNITE.equals(demande.getTypeDemande())){
                 repartition.getDonneePourRegroupement().setIdTiersSauv(repartition.getDonneePourRegroupement().getIdTiers());
-                repartition.getDonneePourRegroupement().setIdTiers(demande.getIdTiers());
-            }
+                repartition.getDonneePourRegroupement().setIdTiers(repartition.getPrestationJointRepartition().getIdDroit());
         }
 
     }
