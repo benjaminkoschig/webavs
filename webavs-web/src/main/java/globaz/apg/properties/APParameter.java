@@ -36,7 +36,8 @@ public enum APParameter {
     DIRECTIVE_JANVIER_2021("PANVULDATD"),
     DIRECTIVE_JANVIER_2021_FIN("PANVULDATF"),
     PATERNITE("PATERNDATE"),
-    PATERNITE_JOUR_MAX("PATJOURMAX");
+    PATERNITE_JOUR_MAX("PATJOURMAX"),
+    PATERNITE_MOIS_MAX("PATMOISMAX");
     private String parameterName;
 
     private APParameter(String parameterName) {

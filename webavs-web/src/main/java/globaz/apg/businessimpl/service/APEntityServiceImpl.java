@@ -17,6 +17,7 @@ import globaz.apg.enums.APValidationDroitError;
 import globaz.apg.exceptions.APBusinessException;
 import globaz.apg.exceptions.APEntityNotFoundException;
 import globaz.apg.pojo.APBreakRulesFromView;
+import globaz.apg.properties.APParameter;
 import globaz.apg.utils.APGUtils;
 import globaz.apg.vb.droits.APDroitAPGPViewBean;
 import globaz.apg.vb.droits.APDroitPanSituationViewBean;
@@ -1068,33 +1069,24 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         /**
          * CONTROLE SUR LE JOURS MAX ET DATE MAX
          */
-        FWParametersManager parametersManager = new FWParametersManager();
-        parametersManager.setSession(session);
-        parametersManager.setForApplication(APApplication.DEFAULT_APPLICATION_APG);
-        parametersManager.setForIdCle("PATJOURMAX");
-        parametersManager.find();
-        BigDecimal joursMax = BigDecimal.ZERO;
-        for (int i = 0; i < parametersManager.size(); i++) {
-            FWParameters tmpEntity = (FWParameters) parametersManager.getEntity(i);
-            if(JadeDateUtil.isDateAfter(dateDeDebutDroit,tmpEntity.getDateDebutValidite()) || tmpEntity.getDateDebutValidite().equals(dateDeDebutDroit)){
-                joursMax = new BigDecimal(tmpEntity.getValeurNumerique());
-            }
-        }
+
+        String parameterName = null;
+        parameterName = APParameter.PATERNITE_JOUR_MAX.getParameterName();
+        BSessionUtil.initContext(session, this);
+        BigDecimal joursMax = new BigDecimal(
+                FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", parameterName,dateDeDebutDroit, "", 2));
+
+
+
         if(joursSoldes> joursMax.intValue()){
             throw new Exception(session.getLabel("ERREUR_MAX_JOURS"));
         }
 
-        parametersManager.setSession(session);
-        parametersManager.setForApplication(APApplication.DEFAULT_APPLICATION_APG);
-        parametersManager.setForIdCle("PATMOISMAX");
-        parametersManager.find();
-        BigDecimal nombreMoisMaxApres = BigDecimal.ZERO;
-        for (int i = 0; i < parametersManager.size(); i++) {
-            FWParameters tmpEntity = (FWParameters) parametersManager.getEntity(i);
-            if(JadeDateUtil.isDateAfter(dateDeDebutDroit,tmpEntity.getDateDebutValidite()) || tmpEntity.getDateDebutValidite().equals(dateDeDebutDroit)){
-                nombreMoisMaxApres = new BigDecimal(tmpEntity.getValeurNumerique());
-            }
-        }
+        parameterName = APParameter.PATERNITE_MOIS_MAX.getParameterName();
+        BSessionUtil.initContext(session, this);
+        BigDecimal nombreMoisMaxApres = new BigDecimal(
+                FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "0", parameterName,dateDeDebutDroit, "", 2));
+
         String dateFinMax = JadeDateUtil.addMonths(dateDeDebutDroit,nombreMoisMaxApres.intValue());
         if(JadeDateUtil.isDateAfter(dateDeFinDroit,dateFinMax)){
             String msgError = session.getLabel("ERREUR_MAX_DATE");
