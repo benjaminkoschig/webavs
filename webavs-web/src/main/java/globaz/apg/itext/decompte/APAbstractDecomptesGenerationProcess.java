@@ -124,6 +124,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     private Locale locale = null;
     private APRepartitionJointPrestation repartitionForPaternite;
     private String tauxRJM = "";
+    private String idCantonImpotSource = "";
     private boolean impotSource = false;
     private boolean afficherPeriode = true;
     private boolean hasRestitution = false;
@@ -714,25 +715,16 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
             if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
                 // chargement de la ligne de copie avec le formater
-
-                String idAdmFisc = getAdresseAdministrationFiscale(decompteCourant.getIdTiers());
-
-                String tiersAdresseFiscFormatteLine = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
-                        idAdmFisc, APProperties.DOMAINE_ADRESSE_APG_PANDEMIE.getValue(), "", "",
-                        new PRTiersAdresseCopyFormater02(), this.getDateDocument().toString());
-
-                String tiersAdresseFiscFormatte = PRTiersHelper.getAdresseCourrierFormatee(getISession(), idAdmFisc, "",
-                        APProperties.DOMAINE_ADRESSE_APG_PANDEMIE.getValue());
-
                 if (impotSource){
                     parametres.put("P_COPIE_A", document.getTextes(1).getTexte(8).getDescription());
-                    parametres.put("P_COPIE_A2", tiersAdresseFiscFormatteLine );
+                    parametres.put("P_COPIE_A2", getAdresseFiscFormatteLine(decompteCourant.getIdTiers(), idCantonImpotSource));
                 }
 
                 if (((getFirstForCopy() && getIsCopie()) || !getIsCopie())) {
                     createCorpsPaternite(parametres);
                     // S'il s'agit de la copie et de la lettre d'entête, il faut modifier l'adresse sur ce document
                 } else if (getIsCopie() && !getFirstForCopy()) {
+                    String tiersAdresseFiscFormatte = getAdresseFiscFormatte(decompteCourant.getIdTiers(), idCantonImpotSource);
                     parametres.put("P_HEADER_ADRESSE", tiersAdresseFiscFormatte);
                 }
 
@@ -1058,7 +1050,34 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         }
     }
 
-    private String getAdresseAdministrationFiscale(String idTiersPrincipal) throws Exception {
+    private String getAdresseFiscFormatteLine(String idTiers, String idCanton) {
+
+        try {
+            String idAdmFisc = getAdresseAdministrationFiscale(idTiers, idCanton);
+            String tiersAdresseFiscFormatteLine = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
+                    idAdmFisc, IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE, "", "",
+                    new PRTiersAdresseCopyFormater02(), this.getDateDocument().toString());
+            return tiersAdresseFiscFormatteLine;
+        } catch (Exception e) {
+            // Si erreur à la récupération de l'adresse Fiscale
+            return "";
+        }
+    }
+
+    private String getAdresseFiscFormatte(String idTiers, String idCanton) {
+        try {
+            String idAdmFisc = getAdresseAdministrationFiscale(idTiers, idCanton);
+            String tiersAdresseFiscFormatte = PRTiersHelper.getAdresseCourrierFormatee(getISession(), idAdmFisc, "",
+                    IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE);
+            return tiersAdresseFiscFormatte;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+
+    }
+
+    private String getAdresseAdministrationFiscale(String idTiersPrincipal, String idCanton) throws Exception {
         TIAdministrationAdresseManager admAdrMgr = new TIAdministrationAdresseManager();
         admAdrMgr.setSession(getSession());
 
@@ -1072,7 +1091,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             throw new Exception(getSession().getLabel("PROCESS_PREP_DECISION_PAS_ADR_DOM"));
         }
 
-        String cantonDomicile = tier.getProperty(PRTiersWrapper.PROPERTY_ID_CANTON);
+//        String cantonDomicile = tier.getProperty(PRTiersWrapper.PROPERTY_ID_CANTON);
+        String cantonDomicile = idCanton;
         String langueTier = tier.getProperty(PRTiersWrapper.PROPERTY_LANGUE);
 
         admAdrMgr.setForCantonAdministration(cantonDomicile);
@@ -1919,84 +1939,85 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
 
         try {
-            if (getIsCopie() && !getFirstForCopy() && IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())){
-                createLettreEntete();
-            } else {
-//                droit = new APDroitLAPG();
-                // On déclare un TreeSet, triant les éléments par nom et prénom
-                final Set<APRepartitionJointPrestation> repartitionsTreeSet = new TreeSet<APRepartitionJointPrestation>(
-                        new Comparator<APRepartitionJointPrestation>() {
-                            @Override
-                            public int compare(final APRepartitionJointPrestation objRepartition1,
-                                               final APRepartitionJointPrestation objRepartition2) {
+            // On déclare un TreeSet, triant les éléments par nom et prénom
+            final Set<APRepartitionJointPrestation> repartitionsTreeSet = new TreeSet<APRepartitionJointPrestation>(
+                    new Comparator<APRepartitionJointPrestation>() {
+                        @Override
+                        public int compare(final APRepartitionJointPrestation objRepartition1,
+                                           final APRepartitionJointPrestation objRepartition2) {
 
-                                final String nom1 = getNom(objRepartition1, PRTiersWrapper.PROPERTY_NOM);
-                                final String nom2 = getNom(objRepartition2, PRTiersWrapper.PROPERTY_NOM);
-                                if (nom1 != null) {
-                                    final int nomComp = nom1.compareTo(nom2);
+                            final String nom1 = getNom(objRepartition1, PRTiersWrapper.PROPERTY_NOM);
+                            final String nom2 = getNom(objRepartition2, PRTiersWrapper.PROPERTY_NOM);
+                            if (nom1 != null) {
+                                final int nomComp = nom1.compareTo(nom2);
 
-                                    if (nomComp != 0) {
-                                        return nomComp;
-                                    } else {
-                                        String prenom1 = null;
-                                        try {
-                                            prenom1 = getNom(objRepartition1, PRTiersWrapper.PROPERTY_PRENOM)
-                                                    + PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(
-                                                    objRepartition1.getDateDebut())
-                                                    + objRepartition1.getIdRepartitionBeneficiairePaiement();
-                                        } catch (final JAException e) {
-                                            prenom1 = getNom(objRepartition1, PRTiersWrapper.PROPERTY_PRENOM)
-                                                    + objRepartition1.getIdRepartitionBeneficiairePaiement();
-
-                                        }
-
-                                        String prenom2;
-                                        try {
-                                            prenom2 = getNom(objRepartition2, PRTiersWrapper.PROPERTY_PRENOM)
-                                                    + PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(
-                                                    objRepartition2.getDateDebut())
-                                                    + objRepartition2.getIdRepartitionBeneficiairePaiement();
-                                        } catch (final JAException e) {
-                                            prenom2 = getNom(objRepartition2, PRTiersWrapper.PROPERTY_PRENOM)
-                                                    + objRepartition2.getIdRepartitionBeneficiairePaiement();
-
-                                        }
-
-                                        if (prenom1 != null) {
-                                            return prenom1.compareTo(prenom2);
-                                        } else {
-                                            return 0;
-                                        }
-                                    }
+                                if (nomComp != 0) {
+                                    return nomComp;
                                 } else {
-                                    return 0;
-                                }
-                            }
+                                    String prenom1 = null;
+                                    try {
+                                        prenom1 = getNom(objRepartition1, PRTiersWrapper.PROPERTY_PRENOM)
+                                                + PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(
+                                                objRepartition1.getDateDebut())
+                                                + objRepartition1.getIdRepartitionBeneficiairePaiement();
+                                    } catch (final JAException e) {
+                                        prenom1 = getNom(objRepartition1, PRTiersWrapper.PROPERTY_PRENOM)
+                                                + objRepartition1.getIdRepartitionBeneficiairePaiement();
 
-                            private String getNom(final APRepartitionJointPrestation objRepartition,
-                                                  final String propriete) {
-                                try {
-                                    if (objRepartition != null) {
-                                        final PRDemande demande = ApgServiceLocator.getEntityService().getDemandeDuDroit(
-                                                APAbstractDecomptesGenerationProcess.this.getSession(),
-                                                APAbstractDecomptesGenerationProcess.this.getTransaction(),
-                                                objRepartition.getIdDroit());
-                                        final PRTiersWrapper tiers = PRTiersHelper.getTiersParId(
-                                                APAbstractDecomptesGenerationProcess.this.getSession(),
-                                                demande.getIdTiers());
-                                        return tiers.getProperty(propriete);
-                                    } else {
-                                        return null;
                                     }
 
-                                } catch (final Exception e) {
+                                    String prenom2;
+                                    try {
+                                        prenom2 = getNom(objRepartition2, PRTiersWrapper.PROPERTY_PRENOM)
+                                                + PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(
+                                                objRepartition2.getDateDebut())
+                                                + objRepartition2.getIdRepartitionBeneficiairePaiement();
+                                    } catch (final JAException e) {
+                                        prenom2 = getNom(objRepartition2, PRTiersWrapper.PROPERTY_PRENOM)
+                                                + objRepartition2.getIdRepartitionBeneficiairePaiement();
+
+                                    }
+
+                                    if (prenom1 != null) {
+                                        return prenom1.compareTo(prenom2);
+                                    } else {
+                                        return 0;
+                                    }
+                                }
+                            } else {
+                                return 0;
+                            }
+                        }
+
+                        private String getNom(final APRepartitionJointPrestation objRepartition,
+                                              final String propriete) {
+                            try {
+                                if (objRepartition != null) {
+                                    final PRDemande demande = ApgServiceLocator.getEntityService().getDemandeDuDroit(
+                                            APAbstractDecomptesGenerationProcess.this.getSession(),
+                                            APAbstractDecomptesGenerationProcess.this.getTransaction(),
+                                            objRepartition.getIdDroit());
+                                    final PRTiersWrapper tiers = PRTiersHelper.getTiersParId(
+                                            APAbstractDecomptesGenerationProcess.this.getSession(),
+                                            demande.getIdTiers());
+                                    return tiers.getProperty(propriete);
+                                } else {
                                     return null;
                                 }
+
+                            } catch (final Exception e) {
+                                return null;
                             }
-                        });
+                        }
+                    });
 
-                repartitionsTreeSet.addAll(decompteCourant.getRepartitionsPeres());
+            repartitionsTreeSet.addAll(decompteCourant.getRepartitionsPeres());
 
+            if (getIsCopie() && !getFirstForCopy() && IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())){
+                createLettreEntete();
+                getIdCantonImpotSource(repartitionsTreeSet);
+
+            } else {
                 Boolean hasPrestationAPGFederale = false;
                 for (final APRepartitionJointPrestation repartition : repartitionsTreeSet) {
 
@@ -2153,6 +2174,16 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         if (APCotisation.TYPE_IMPOT.equals(apCot.getType())) {
                             totalMontantImpotSource.add((apCot.getMontant()));
                             tauxImpotSource = apCot.getTaux();
+                            if (idCantonImpotSource == "") {
+                                APPeriodeAPGManager mgr = new APPeriodeAPGManager();
+                                mgr.setSession(getSession());
+                                mgr.setForIdDroit(droit.getIdDroit());
+                                mgr.find();
+
+                                if (!mgr.isEmpty()) {
+                                    idCantonImpotSource = ((APPeriodeAPG) mgr.get(0)).getCantonImposition();
+                                }
+                            }
                         }
 
                         else {
@@ -2654,6 +2685,31 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             this.setDataSource(lignes);
         }
 
+    }
+
+    private void getIdCantonImpotSource(Set<APRepartitionJointPrestation> repartitionsTreeSet) throws Exception {
+        for (final APRepartitionJointPrestation repartition : repartitionsTreeSet) {
+            final APCotisationManager apCotMan = new APCotisationManager();
+            apCotMan.setForIdRepartitionBeneficiairePaiement(repartition.getIdRepartitionBeneficiairePaiement());
+            apCotMan.setSession(getSession());
+            apCotMan.find(getTransaction(), BManager.SIZE_NOLIMIT);
+            for (int i = 0; i < apCotMan.size(); i++) {
+                final APCotisation apCot = (APCotisation) apCotMan.getEntity(i);
+
+                if (APCotisation.TYPE_IMPOT.equals(apCot.getType())) {
+                    if (idCantonImpotSource == "") {
+                        APPeriodeAPGManager mgr = new APPeriodeAPGManager();
+                        mgr.setSession(getSession());
+                        mgr.setForIdDroit(repartition.getIdDroit());
+                        mgr.find();
+
+                        if (!mgr.isEmpty()) {
+                            idCantonImpotSource = ((APPeriodeAPG) mgr.get(0)).getCantonImposition();
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private APEmployeurTiersUtil getEmployeurForRepartition(String idDroit, String idSituationProfessionnelle) throws Exception {
