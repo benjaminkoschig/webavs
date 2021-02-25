@@ -151,7 +151,7 @@ public enum APProperties implements IProperties {
             return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
         }
     },
-    DOMAINE_ADRESSE_APG_PATERNITE("apg.domaine.adresse.paternite", "Code système du domaine paternite des adresses") {
+    DOMAINE_ADRESSE_APG_PATERNITE("domaine.adresse.paternite", "Code système du domaine paternite des adresses") {
         @Override
         public boolean isValidValue(final String propertyValue) {
             return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
