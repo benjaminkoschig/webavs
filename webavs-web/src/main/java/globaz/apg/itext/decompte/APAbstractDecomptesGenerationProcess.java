@@ -1055,7 +1055,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         try {
             String idAdmFisc = getAdresseAdministrationFiscale(idTiers, idCanton);
             String tiersAdresseFiscFormatteLine = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
-                    idAdmFisc, IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE, "", "",
+                    idAdmFisc, APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue(), "", "",
                     new PRTiersAdresseCopyFormater02(), this.getDateDocument().toString());
             return tiersAdresseFiscFormatteLine;
         } catch (Exception e) {
@@ -1068,7 +1068,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         try {
             String idAdmFisc = getAdresseAdministrationFiscale(idTiers, idCanton);
             String tiersAdresseFiscFormatte = PRTiersHelper.getAdresseCourrierFormatee(getISession(), idAdmFisc, "",
-                    IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE);
+                    APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue());
             return tiersAdresseFiscFormatte;
         } catch (Exception e) {
             e.printStackTrace();
