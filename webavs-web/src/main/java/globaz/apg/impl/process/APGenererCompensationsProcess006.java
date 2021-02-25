@@ -3,6 +3,7 @@
  */
 package globaz.apg.impl.process;
 
+import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.lots.IAPLot;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.api.process.IAPGenererCompensationProcess;
@@ -20,6 +21,7 @@ import globaz.apg.db.prestation.APRepartitionPaiementsJointEmployeur;
 import globaz.apg.db.prestation.APRepartitionPaiementsJointEmployeurManager;
 import globaz.apg.process.Key;
 import globaz.apg.process.MontantsPorterEnCompte;
+import globaz.apg.properties.APProperties;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
 import globaz.framework.util.FWMessageFormat;
@@ -475,7 +477,7 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
              */
             isOk &= checkTiersActif(repartitionJointPrestation, tw);
             isOk &= checkAdressePaiementSiVentilation(repartitionJointPrestation, tw);
-            isOk &= checkAdresseCourrier(repartitionJointPrestation, tw);
+            isOk &= checkAdresseCourrier(repartitionJointPrestation,droitLAPG, tw);
             isOk &= checkEtatCivil(repartitionJointPrestation, droitLAPG);
             isOk &= checkMontants(repartitionJointPrestation, droitLAPG);
             isOk &= checkRepartition(repartitionJointPrestation, droitLAPG);
@@ -566,26 +568,50 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
         return isOk;
     }
 
-    private boolean checkAdresseCourrier(APRepartitionJointPrestation repartitionJointPrestation, PRTiersWrapper tw)
+    private boolean checkAdresseCourrier(APRepartitionJointPrestation repartitionJointPrestation, APDroitLAPG droitLAPG, PRTiersWrapper tw)
             throws Exception {
         boolean isOk = true;
 
         // adresse de courrier absente
-        if (JadeStringUtil.isEmpty(PRTiersHelper.getAdresseCourrierFormatee(getSession(),
-                repartitionJointPrestation.getIdTiers(), repartitionJointPrestation.getIdAffilie(),
-                APApplication.CS_DOMAINE_ADRESSE_APG))) {
 
-            String nss = "";
-            if (tw != null) {
-                nss = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
-            }
-            final String nom = repartitionJointPrestation.getNom();
-            final String idPrestationAPG = repartitionJointPrestation.getIdPrestationApg();
-            final String messageAdresseAbsente = getSession().getLabel("ADRESSE_COURRIER_ABSENTE");
+        switch(droitLAPG.getGenreService()) {
+            case IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE:
+                if (JadeStringUtil.isEmpty(PRTiersHelper.getAdresseCourrierFormatee(getSession(),
+                        repartitionJointPrestation.getIdTiers(), repartitionJointPrestation.getIdAffilie(),
+                        APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue()))) {
 
-            memoryLog(messageAdresseAbsente, FWMessage.ERREUR, nom, nss, idPrestationAPG);
-            isOk = false;
+                    String nss = "";
+                    if (tw != null) {
+                        nss = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+                    }
+                    final String nom = repartitionJointPrestation.getNom();
+                    final String idPrestationAPG = repartitionJointPrestation.getIdPrestationApg();
+                    final String messageAdresseAbsente = getSession().getLabel("ADRESSE_COURRIER_ABSENTE");
+
+                    memoryLog(messageAdresseAbsente, FWMessage.ERREUR, nom, nss, idPrestationAPG);
+                    isOk = false;
+                }
+                break;
+            default:
+                if (JadeStringUtil.isEmpty(PRTiersHelper.getAdresseCourrierFormatee(getSession(),
+                        repartitionJointPrestation.getIdTiers(), repartitionJointPrestation.getIdAffilie(),
+                        APApplication.CS_DOMAINE_ADRESSE_APG))) {
+
+                    String nss = "";
+                    if (tw != null) {
+                        nss = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+                    }
+                    final String nom = repartitionJointPrestation.getNom();
+                    final String idPrestationAPG = repartitionJointPrestation.getIdPrestationApg();
+                    final String messageAdresseAbsente = getSession().getLabel("ADRESSE_COURRIER_ABSENTE");
+
+                    memoryLog(messageAdresseAbsente, FWMessage.ERREUR, nom, nss, idPrestationAPG);
+                    isOk = false;
+                }
         }
+
+
+
 
         return isOk;
     }

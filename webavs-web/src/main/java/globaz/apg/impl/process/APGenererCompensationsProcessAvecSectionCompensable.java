@@ -1,5 +1,6 @@
 package globaz.apg.impl.process;
 
+import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.lots.IAPLot;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.api.process.IAPGenererCompensationProcess;
@@ -17,6 +18,7 @@ import globaz.apg.db.prestation.APRepartitionPaiementsJointEmployeurManager;
 import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.exceptions.APTechnicalException;
 import globaz.apg.process.Key;
+import globaz.apg.properties.APProperties;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
 import globaz.globall.api.BISession;
@@ -219,18 +221,38 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
                 }
 
                 // adresse de courrier absente
-                if (JadeStringUtil.isEmpty(PRTiersHelper.getAdresseCourrierFormatee(getSession(),
-                        repartitionJointPrestation.getIdTiers(), repartitionJointPrestation.getIdAffilie(),
-                        APApplication.CS_DOMAINE_ADRESSE_APG))) {
 
-                    String noAVS = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
 
-                    getMemoryLog().logMessage(
-                            java.text.MessageFormat.format(getSession().getLabel("ADRESSE_COURRIER_ABSENTE"),
-                                    new Object[] { repartitionJointPrestation.getNom(), noAVS,
-                                            repartitionJointPrestation.getIdPrestationApg() }), FWMessage.ERREUR,
-                            getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
+                switch(droitLAPG.getGenreService()) {
+                    case IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE:
+                        if (JadeStringUtil.isEmpty(PRTiersHelper.getAdresseCourrierFormatee(getSession(),
+                                repartitionJointPrestation.getIdTiers(), repartitionJointPrestation.getIdAffilie(),
+                                APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue()))) {
+
+                            String noAVS = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+
+                            getMemoryLog().logMessage(
+                                    java.text.MessageFormat.format(getSession().getLabel("ADRESSE_COURRIER_ABSENTE"),
+                                            new Object[] { repartitionJointPrestation.getNom(), noAVS,
+                                                    repartitionJointPrestation.getIdPrestationApg() }), FWMessage.ERREUR,
+                                    getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
+                        }
+                        break;
+                    default:
+                        if (JadeStringUtil.isEmpty(PRTiersHelper.getAdresseCourrierFormatee(getSession(),
+                                repartitionJointPrestation.getIdTiers(), repartitionJointPrestation.getIdAffilie(),
+                                APApplication.CS_DOMAINE_ADRESSE_APG))) {
+
+                            String noAVS = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+
+                            getMemoryLog().logMessage(
+                                    java.text.MessageFormat.format(getSession().getLabel("ADRESSE_COURRIER_ABSENTE"),
+                                            new Object[] { repartitionJointPrestation.getNom(), noAVS,
+                                                    repartitionJointPrestation.getIdPrestationApg() }), FWMessage.ERREUR,
+                                    getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
+                        }
                 }
+
 
                 // Etat civil absent
 
