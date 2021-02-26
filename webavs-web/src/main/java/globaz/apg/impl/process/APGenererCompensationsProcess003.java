@@ -330,23 +330,47 @@ public class APGenererCompensationsProcess003 extends BProcess implements IAPGen
 
                     Key key;
                     // Cas ou le bénéficiaire est l'assuré de base
-                    if (idAssureDeBase.equals(repartitionPaiementsJointEmployeur.getIdTiers())) {
 
-                        key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
-                                repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
-                                repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", false);
+                    if(repartitionPaiementsJointEmployeur.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE)){
+                        if (idAssureDeBase.equals(repartitionPaiementsJointEmployeur.getIdTiers())) {
+
+                            key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
+                                    repartitionPaiementsJointEmployeur.getIdAffilie(),  repartitionPaiementsJointEmployeur.getIdDroit(),
+                                    repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", false);
+                        }
+                        // Cas ou le bénéficiaire est un affilié
+                        else if (!JadeStringUtil.isIntegerEmpty(repartitionPaiementsJointEmployeur.getIdAffilie())) {
+                            key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
+                                    repartitionPaiementsJointEmployeur.getIdAffilie(),  repartitionPaiementsJointEmployeur.getIdDroit(),
+                                    repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "",
+                                    isPorteEnCompte);
+                        } else {
+                            key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
+                                    repartitionPaiementsJointEmployeur.getIdAffilie(),  repartitionPaiementsJointEmployeur.getIdDroit(),
+                                    repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", false);
+                        }
+
+
+                    }else{
+                        if (idAssureDeBase.equals(repartitionPaiementsJointEmployeur.getIdTiers())) {
+
+                            key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
+                                    repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
+                                    repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", false);
+                        }
+                        // Cas ou le bénéficiaire est un affilié
+                        else if (!JadeStringUtil.isIntegerEmpty(repartitionPaiementsJointEmployeur.getIdAffilie())) {
+                            key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
+                                    repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
+                                    repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "",
+                                    isPorteEnCompte);
+                        } else {
+                            key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
+                                    repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
+                                    repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", false);
+                        }
                     }
-                    // Cas ou le bénéficiaire est un affilié
-                    else if (!JadeStringUtil.isIntegerEmpty(repartitionPaiementsJointEmployeur.getIdAffilie())) {
-                        key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
-                                repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
-                                repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "",
-                                isPorteEnCompte);
-                    } else {
-                        key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
-                                repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
-                                repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", false);
-                    }
+
 
                     key.idDomaineAdressePaiement = repartitionPaiementsJointEmployeur.getIdDomaineAdressePaiement();
                     key.idTiersAdressePaiement = repartitionPaiementsJointEmployeur.getIdTiersAdressePaiement();

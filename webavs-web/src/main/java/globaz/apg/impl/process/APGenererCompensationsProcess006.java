@@ -389,22 +389,43 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
 
             final Key key;
             // Cas ou le bénéficiaire est l'assuré de base
-            if (idAssureDeBase.equals(repartition.getIdTiers())) {
+            if(repartition.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE)){
+                if (idAssureDeBase.equals(repartition.getIdTiers())) {
+                    key = new Key(repartition.getIdTiers(), repartition.getIdAffilie(),  repartition.getIdDroit(),
+                            repartition.getIdParticularite(), repartition.getGenrePrestationPrestation(), false, false, "",
+                            false);
+                }
+                // Cas ou le bénéficiaire est un affilié
+                else if (!JadeStringUtil.isIntegerEmpty(repartition.getIdAffilie())) {
+                    key = new Key(repartition.getIdTiers(), repartition.getIdAffilie(), repartition.getIdDroit(),
+                            repartition.getIdParticularite(), repartition.getGenrePrestationPrestation(), false, false, "",
+                            isPorteEnCompte);
+                } else {
+                    key = new Key(repartition.getIdTiers(), repartition.getIdAffilie(), repartition.getIdDroit(),
+                            repartition.getIdParticularite(), repartition.getGenrePrestationPrestation(), false, false, "",
+                            false);
+                }
+            }else{
+                if (idAssureDeBase.equals(repartition.getIdTiers())) {
+                    key = new Key(repartition.getIdTiers(), repartition.getIdAffilie(), "0",
+                            repartition.getIdParticularite(), repartition.getGenrePrestationPrestation(), false, false, "",
+                            false);
+                }
+                // Cas ou le bénéficiaire est un affilié
+                else if (!JadeStringUtil.isIntegerEmpty(repartition.getIdAffilie())) {
+                    key = new Key(repartition.getIdTiers(), repartition.getIdAffilie(), "0",
+                            repartition.getIdParticularite(), repartition.getGenrePrestationPrestation(), false, false, "",
+                            isPorteEnCompte);
+                } else {
+                    key = new Key(repartition.getIdTiers(), repartition.getIdAffilie(), "0",
+                            repartition.getIdParticularite(), repartition.getGenrePrestationPrestation(), false, false, "",
+                            false);
+                }
 
-                key = new Key(repartition.getIdTiers(), repartition.getIdAffilie(), "0",
-                        repartition.getIdParticularite(), repartition.getGenrePrestationPrestation(), false, false, "",
-                        false);
             }
-            // Cas ou le bénéficiaire est un affilié
-            else if (!JadeStringUtil.isIntegerEmpty(repartition.getIdAffilie())) {
-                key = new Key(repartition.getIdTiers(), repartition.getIdAffilie(), "0",
-                        repartition.getIdParticularite(), repartition.getGenrePrestationPrestation(), false, false, "",
-                        isPorteEnCompte);
-            } else {
-                key = new Key(repartition.getIdTiers(), repartition.getIdAffilie(), "0",
-                        repartition.getIdParticularite(), repartition.getGenrePrestationPrestation(), false, false, "",
-                        false);
-            }
+
+
+
             // key = new Key(repartition.getIdTiers(), repartition.getIdAffilie(), "0",
             // repartition.getIdParticularite(),
             // repartition.getGenrePrestationPrestation(), isEmployeur, isIndependant, "", false);

@@ -345,10 +345,17 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
                     if (APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(genre)) {
                         genre = APTypeDePrestation.ACM_ALFA.getCodesystemString();
                     }
+                    Key key;
+                    if(repartitionPaiementsJointEmployeur.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE)) {
+                         key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
+                                repartitionPaiementsJointEmployeur.getIdAffilie(), repartitionPaiementsJointEmployeur.getIdDroit(),
+                                repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", false);
 
-                    Key key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
-                            repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
-                            repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", false);
+                    }else{
+                         key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
+                                repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
+                                repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", false);
+                    }
 
                     key.idDomaineAdressePaiement = repartitionPaiementsJointEmployeur.getIdDomaineAdressePaiement();
                     key.idTiersAdressePaiement = repartitionPaiementsJointEmployeur.getIdTiersAdressePaiement();
