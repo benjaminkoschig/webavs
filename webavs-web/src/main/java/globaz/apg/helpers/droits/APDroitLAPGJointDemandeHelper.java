@@ -525,14 +525,11 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
                 droit.setSession(session);
                 droit.setIdDroit(vbDroit.getIdDroit());
                 droit.retrieve(session.getCurrentThreadTransaction());
-                droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
-                droit.update();
                 clone = PRCloneFactory.getInstance().clone(
                         session.getApplication().getProperty(APApplication.PROPERTY_CLONE_DEFINITION_FILENAME),
                         session, droit,
                         CLONE_COPIER_CORRIGER_DROIT_PATERNITE,
-                        IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_APG_FILS);
-
+                        IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_PATERNITE_RESTI_FILS);
                 vbDroit.setDto(new APDroitAPGDTO(droit));
 
             } else if (!IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(vbDroit.getGenreService())) {
