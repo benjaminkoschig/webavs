@@ -1194,25 +1194,6 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         return droitPat;
     }
 
-    private JadeContext initContext(BSession session) throws Exception {
-        JadeContextImplementation ctxtImpl = new JadeContextImplementation();
-        ctxtImpl.setApplicationId(session.getApplicationId());
-        ctxtImpl.setLanguage(session.getIdLangueISO());
-        ctxtImpl.setUserEmail(session.getUserEMail());
-        ctxtImpl.setUserId(session.getUserId());
-        ctxtImpl.setUserName(session.getUserName());
-        String[] roles = JadeAdminServiceLocatorProvider.getInstance().getServiceLocator().getRoleUserService()
-                .findAllIdRoleForIdUser(session.getUserId());
-        if ((roles != null) && (roles.length > 0)) {
-            ctxtImpl.setUserRoles(JadeConversionUtil.toList(roles));
-        }
-        return ctxtImpl;
-
-    }
-
-    private void validateJoursEtPeriode() {
-    }
-
     private List<PRPeriode> validerNombreJoursSoldes(final APDroitAPGPViewBean viewBean) throws Exception {
         final List<PRPeriode> periodes = viewBean.getPeriodes();
 
