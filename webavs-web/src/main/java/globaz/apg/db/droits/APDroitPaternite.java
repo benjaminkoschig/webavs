@@ -203,13 +203,11 @@ public class APDroitPaternite extends APDroitLAPG implements IPRCloneable {
     @Override
     protected void _beforeAdd(BTransaction transaction) throws Exception {
         super._beforeAdd(transaction);
-        calculerDateFinDroit(transaction.getSession());
     }
 
     @Override
     protected void _beforeUpdate(BTransaction transaction) throws Exception {
         super._beforeUpdate(transaction);
-        calculerDateFinDroit(transaction.getSession());
     }
 
     /**
@@ -341,45 +339,6 @@ public class APDroitPaternite extends APDroitLAPG implements IPRCloneable {
         statement.writeField(APDroitPaternite.FIELDNAME_REMARQUE,
                 this._dbWriteString(statement.getTransaction(), remarque, "remarque"));
 
-    }
-
-    /**
-     * Calculer la date de fin du droit pour ce droit paternité.
-     * @param session
-     * @param httpSession
-     */
-    public void calculerDateFinDroit(BSession session) throws Exception {
-        JADate debut = new JADate(getDateDebutDroit());
-        JACalendar cal = new JACalendarGregorian();
-        /*
-         * calculer la date de fin de droit en fonction de la durée officielle de l'allocation paternité. Au moment de
-         * la création de cette classe, cette durée est de 98 jours. Comme cette valeur peut changer, elle est stockée
-         * comme propriété de l'application.
-         */
-        String parameterName = null;
-        parameterName = APParameter.PATERNITE_JOUR_MAX.getParameterName();
-        JadeThreadActivator.startUsingJdbcContext(this, initContext(session));
-        BigDecimal joursMax = new BigDecimal(
-                    FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", parameterName, debut.toStr("."), "", 2));
-        JADate fin = cal.addDays(debut, joursMax.intValue() - 1);
-        setDateFinDroit(fin.toStr("."));
-        JadeThreadActivator.stopUsingContext(Thread.currentThread());
-
-    }
-
-    private JadeContext initContext(BSession session)  throws Exception{
-        JadeContextImplementation ctxtImpl = new JadeContextImplementation();
-        ctxtImpl.setApplicationId(session.getApplicationId());
-        ctxtImpl.setLanguage(session.getIdLangueISO());
-        ctxtImpl.setUserEmail(session.getUserEMail());
-        ctxtImpl.setUserId(session.getUserId());
-        ctxtImpl.setUserName(session.getUserName());
-        String[] roles = JadeAdminServiceLocatorProvider.getInstance().getServiceLocator().getRoleUserService()
-                .findAllIdRoleForIdUser(session.getUserId());
-        if ((roles != null) && (roles.length > 0)) {
-            ctxtImpl.setUserRoles(JadeConversionUtil.toList(roles));
-        }
-        return ctxtImpl;
     }
 
     @Override

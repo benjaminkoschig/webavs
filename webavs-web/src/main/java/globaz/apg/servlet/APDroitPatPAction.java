@@ -197,7 +197,6 @@ public class APDroitPatPAction extends APAbstractDroitPAction {
         String destination = null;
 
         try {
-
             JSPUtils.setBeanProperties(request, viewBean);
             viewBean = (APDroitPatPViewBean) beforeAjouter(session, request, response, viewBean);
             viewBean = (APDroitPatPViewBean) mainDispatcher.dispatch(viewBean, newAction);
@@ -273,57 +272,6 @@ public class APDroitPatPAction extends APAbstractDroitPAction {
         }
 
         goSendRedirect(destination, request, response);
-    }
-
-
-    /**
-     * DOCUMENT ME!
-     * 
-     * @param session
-     *            DOCUMENT ME!
-     * @param request
-     *            DOCUMENT ME!
-     * @param response
-     *            DOCUMENT ME!
-     * @param viewBean
-     *            DOCUMENT ME!
-     * @return DOCUMENT ME!
-     */
-    @Override
-    protected FWViewBeanInterface beforeAjouter(HttpSession session, HttpServletRequest request,
-            HttpServletResponse response, FWViewBeanInterface viewBean) {
-        try {
-            ((APDroitPaternite) ((APDroitPatPViewBean) viewBean).getDroit()).calculerDateFinDroit((BSession)session.getAttribute("objSession"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return viewBean;
-    }
-
-    /**
-     * DOCUMENT ME!
-     * 
-     * @param session
-     *            DOCUMENT ME!
-     * @param request
-     *            DOCUMENT ME!
-     * @param response
-     *            DOCUMENT ME!
-     * @param viewBean
-     *            DOCUMENT ME!
-     * @return DOCUMENT ME!
-     */
-    @Override
-    protected FWViewBeanInterface beforeModifier(HttpSession session, HttpServletRequest request,
-            HttpServletResponse response, FWViewBeanInterface viewBean) {
-        try {
-            ((APDroitPaternite) ((APDroitPatPViewBean) viewBean).getDroit()).calculerDateFinDroit((BSession)session.getAttribute("objSession"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return viewBean;
     }
 
 }
