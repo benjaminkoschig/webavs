@@ -83,6 +83,8 @@ public class APCompensation extends BEntity {
     private Boolean isIndependant = false;
     private Boolean isEmployeur = false;
     private Boolean isPorteEnCompte = false;
+    //NO-PERSIS
+    private String idDroit;
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -369,4 +371,11 @@ public class APCompensation extends BEntity {
         this.isPorteEnCompte = isPorteEnCompte;
     }
 
+    public String getIdDroit() {
+        return idDroit;
+    }
+
+    public void setIdDroit(String idDroit) {
+        this.idDroit = idDroit;
+    }
 }

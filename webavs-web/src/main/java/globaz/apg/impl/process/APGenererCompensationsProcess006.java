@@ -219,25 +219,32 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
 
         final BStatement statement = repartitionPaiementsJointEmployeurManager.cursorOpen(transaction);
 
-        APRepartitionPaiements repartitionPaiements;
-        while ((repartitionPaiements = (APRepartitionPaiements) repartitionPaiementsJointEmployeurManager
+        APRepartitionPaiementsJointEmployeur repartitionPaiements;
+        while ((repartitionPaiements = (APRepartitionPaiementsJointEmployeur) repartitionPaiementsJointEmployeurManager
                 .cursorReadNext(statement)) != null) {
             if (compensation.getIsPorteEnCompte()) {
                 if (isSituationProfPorteEnCompte(repartitionPaiements.getIdSituationProfessionnelle())) {
-                    repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
+                    if(repartitionPaiements.getIdDroit().equals(compensation.getIdDroit()) && repartitionPaiements.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE) ){
+                        repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
+                    }else{
+                        repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
+                    }
                     repartitionPaiements.wantMiseAJourLot(false);
                     repartitionPaiements.update(transaction);
                     memoryLog(getSession().getLabel("REPARTITION_MISE_A_JOUR"), "",
                             repartitionPaiements.getIdRepartitionBeneficiairePaiement());
                 }
             } else {
-                repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
+                if(repartitionPaiements.getIdDroit().equals(compensation.getIdDroit()) && repartitionPaiements.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE) ){
+                    repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
+                }else{
+                    repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
+                }
                 repartitionPaiements.wantMiseAJourLot(false);
                 repartitionPaiements.update(transaction);
                 memoryLog(getSession().getLabel("REPARTITION_MISE_A_JOUR"), "",
                         repartitionPaiements.getIdRepartitionBeneficiairePaiement());
             }
-
         }
 
         repartitionPaiementsJointEmployeurManager.cursorClose(statement);
@@ -309,6 +316,7 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
         compensation.setIsIndependant(key.isIndependant);
         compensation.setIsEmployeur(key.isEmployeur);
         compensation.setIsPorteEnCompte(key.isPorteEnCompte);
+        compensation.setIdDroit(key.idExtra1);
 
         compensation.add(transaction);
 

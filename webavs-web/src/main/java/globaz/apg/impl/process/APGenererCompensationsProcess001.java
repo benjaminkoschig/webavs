@@ -419,7 +419,7 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                         sommes.put(key, new FWCurrency(montantRepartition.toString()));
                     }
 
-                    if (sommePourUnTiers.containsKey(repartitionPaiementsJointEmployeur.getIdTiers())) {
+                    if (sommePourUnTiers.containsKey(key)) {
                         FWCurrency sommePourCeTiers = (FWCurrency) sommePourUnTiers
                                 .get(repartitionPaiementsJointEmployeur.getIdTiers());
                         sommePourCeTiers.add(new FWCurrency(montantRepartition.toString()));
@@ -454,6 +454,7 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                     compensation.setMontantTotal(((FWCurrency) sommes.get(key)).toString());
                     compensation.setDettes(getDettes(key.idTiers));
                     compensation.setGenrePrestation(key.genrePrestation);
+                    compensation.setIdDroit(key.idExtra1);
                     compensation.add(transaction);
                     getMemoryLog().logMessage(
                             MessageFormat.format(getSession().getLabel("COMPENSATION_AJOUTEE"),
@@ -650,15 +651,15 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                     statement = repartitionPaiementsJointEmployeurManager.cursorOpen(transaction);
                     repartitionPaiementsJointEmployeur = null;
 
-                    APRepartitionPaiements repartitionPaiements = null;
-
-                    while ((repartitionPaiements = (APRepartitionPaiements) repartitionPaiementsJointEmployeurManager
+                    while ((repartitionPaiementsJointEmployeur = (APRepartitionPaiementsJointEmployeur) repartitionPaiementsJointEmployeurManager
                             .cursorReadNext(statement)) != null) {
-                        repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
-                        repartitionPaiements.wantMiseAJourLot(false);
-                        repartitionPaiements.update(transaction);
+                        if(compensation.getIdDroit().equals(repartitionPaiementsJointEmployeur.getIdDroit()) && repartitionPaiementsJointEmployeur.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE) ){
+                            repartitionPaiementsJointEmployeur.setIdCompensation(compensation.getIdCompensation());
+                        }
+                        repartitionPaiementsJointEmployeur.wantMiseAJourLot(false);
+                        repartitionPaiementsJointEmployeur.update(transaction);
                         getMemoryLog().logMessage(
-                                "repart updatée " + repartitionPaiements.getIdRepartitionBeneficiairePaiement(), "",
+                                "repart updatée " + repartitionPaiementsJointEmployeur.getIdRepartitionBeneficiairePaiement(), "",
                                 "");
                     }
 

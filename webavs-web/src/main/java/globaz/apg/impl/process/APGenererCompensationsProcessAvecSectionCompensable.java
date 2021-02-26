@@ -407,6 +407,7 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
                     compensation.setMontantTotal(sommes.get(key).toString());
                     compensation.setDettes(getDettes(key.idTiers));
                     compensation.setGenrePrestation(key.genrePrestation);
+                    compensation.setIdDroit(key.idExtra1);
                     compensation.add(transaction);
                     getMemoryLog().logMessage(
                             MessageFormat.format(getSession().getLabel("COMPENSATION_AJOUTEE"),
@@ -592,11 +593,15 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
                     statement = repartitionPaiementsJointEmployeurManager.cursorOpen(transaction);
                     repartitionPaiementsJointEmployeur = null;
 
-                    APRepartitionPaiements repartitionPaiements = null;
+                    APRepartitionPaiementsJointEmployeur repartitionPaiements = null;
 
-                    while ((repartitionPaiements = (APRepartitionPaiements) repartitionPaiementsJointEmployeurManager
+                    while ((repartitionPaiements = (APRepartitionPaiementsJointEmployeur) repartitionPaiementsJointEmployeurManager
                             .cursorReadNext(statement)) != null) {
-                        repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
+                        if(repartitionPaiements.getIdDroit().equals(compensation.getIdDroit()) && repartitionPaiements.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE) ){
+                            repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
+                        }else{
+                            repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
+                        }
                         repartitionPaiements.wantMiseAJourLot(false);
                         repartitionPaiements.update(transaction);
                         getMemoryLog()
