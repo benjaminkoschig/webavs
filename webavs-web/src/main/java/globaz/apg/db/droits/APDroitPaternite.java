@@ -282,16 +282,16 @@ public class APDroitPaternite extends APDroitLAPG implements IPRCloneable {
         // check de la date de debut:
         // normalement: pas avant le 26.03.2005 (98 jours avant le 01.07.2005)
         // si caisse GE: pas avant le (112 jours avant le 01.07.2001)
-        if ("true".equals(PRAbstractApplication.getApplication(APApplication.DEFAULT_APPLICATION_APG).getProperty(
-                "isDroitPaterniteCantonale"))) {
-            if (!BSessionUtil.compareDateFirstGreaterOrEqual(getSession(), getDateDebutDroit(), "12.03.2001")) {
-                _addError(transaction, getSession().getLabel("DATE_DEBUT_DROIT_GE_PAT_TROP_VIEILLE"));
-            }
-        } else {
-            if (!BSessionUtil.compareDateFirstGreaterOrEqual(getSession(), getDateDebutDroit(), "26.03.2005")) {
-                _addError(transaction, getSession().getLabel("DATE_DEBUT_DROIT_PAT_TROP_VIEILLE"));
-            }
-        }
+//        if ("true".equals(PRAbstractApplication.getApplication(APApplication.DEFAULT_APPLICATION_APG).getProperty(
+//                "isDroitPaterniteCantonale"))) {
+//            if (!BSessionUtil.compareDateFirstGreaterOrEqual(getSession(), getDateDebutDroit(), "12.03.2001")) {
+//                _addError(transaction, getSession().getLabel("DATE_DEBUT_DROIT_GE_PAT_TROP_VIEILLE"));
+//            }
+//        } else {
+//            if (!BSessionUtil.compareDateFirstGreaterOrEqual(getSession(), getDateDebutDroit(), "26.03.2005")) {
+//                _addError(transaction, getSession().getLabel("DATE_DEBUT_DROIT_PAT_TROP_VIEILLE"));
+//            }
+//        }
 
         // check de la date de debut:
         // la date de debut du droit ne peut pas etre supperieure a la date du
@@ -353,13 +353,12 @@ public class APDroitPaternite extends APDroitLAPG implements IPRCloneable {
          */
         String parameterName = null;
         parameterName = APParameter.PATERNITE_JOUR_MAX.getParameterName();
-        BSessionUtil.initContext(session, this);
-        BigDecimal joursMax = new BigDecimal(
-                    FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", parameterName, debut.toStr("."), "", 2));
-
-        JADate fin = cal.addDays(debut, joursMax.intValue() - 1);
+//        BSessionUtil.initContext(session, this);
+//        BigDecimal joursMax = new BigDecimal(
+//                    FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", parameterName, debut.toStr("."), "", 2));
+        JADate fin = cal.addDays(debut, 14 - 1);
         setDateFinDroit(fin.toStr("."));
-        BSessionUtil.stopUsingContext( this);
+//        BSessionUtil.stopUsingContext(this);
     }
 
     @Override
@@ -367,7 +366,7 @@ public class APDroitPaternite extends APDroitLAPG implements IPRCloneable {
         APDroitPaternite clone = new APDroitPaternite();
 
         clone.setNpa(getNpa());
-        clone.setDateDebutDroit(getDateDebutDroit());
+//        clone.setDateDebutDroit(getDateDebutDroit());
         clone.setDateDepot(getDateDepot());
         clone.setDateReception(getDateReception());
         clone.setGenreService(getGenreService());
