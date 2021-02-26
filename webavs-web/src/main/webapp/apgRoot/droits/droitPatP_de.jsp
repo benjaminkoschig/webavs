@@ -11,6 +11,10 @@
 <%@ page import="globaz.apg.vb.droits.APDroitPatPViewBean" %>
 <%@ page import="globaz.prestation.beans.PRPeriode" %>
 <%@ page import="org.apache.commons.lang.StringUtils" %>
+<%@ page import="globaz.globall.db.BSessionUtil" %>
+<%@ page import="java.math.BigDecimal" %>
+<%@ page import="globaz.globall.db.FWFindParameter" %>
+<%@ page import="globaz.apg.properties.APParameter" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib uri="/WEB-INF/nss.tld" prefix="ct1" %>
@@ -26,12 +30,13 @@
     bButtonValidate = false;
     bButtonCancel = false;
     bButtonDelete = false;
+
 %>
 <%@ include file="/theme/detail/javascripts.jspf" %>
 <script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/apgRoot/droits/droitPeriodeUtils.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/apgRoot/droits/enfantUtils.js"></script>
-
+<script type="text/javascript" src="<%=servletContext%>/apgRoot/scripts/apgUtils.js"></script>
 <ct:menuChange displayId="menu" menuId="ap-menuprincipalapat" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 
@@ -45,6 +50,46 @@
     var ACTION_DROIT = "apg.droits.droitPatP",
         jsonAnnonce;
 
+    function checkDateDebutAPG(date) {
+        var dateRaw = date.split('.');
+        var dateDebut = new Date(dateRaw[0] + '/' + dateRaw[1] + '/' + dateRaw[2]);
+        var user = '<%=viewBean.getSession().getUserName()%>';
+        var isError = false;
+
+        var options ={
+            serviceClassName: '<%=viewBean.getName()%>',
+            serviceMethodName: 'actionDateMin',
+            parametres: date.value+","+user,
+            callBack: function (data) {
+                var dateMin = new Date(data);
+                if (dateDebut < dateMin) {
+                    var text = '<%=viewBean.getSession().getLabel("ERREUR_MIN_DATE_NAI")%>';
+                    var day = dateMin.getDate();
+                    if (day < 10) {
+                        day = '0' + day;
+                    }
+                    var month = dateMin.getMonth() + 1;
+                    if (month < 10) {
+                        month = '0' + month;
+                    }
+                    text = text.replace("{0}", day + '.' + month + '.' + dateMin.getFullYear());
+                    showErrorMessage(text);
+                    isError = true;
+                }else{
+                    isError = false;
+                }
+
+            }
+        }
+        apgUtils.lancementServiceSync(options);
+        return isError;
+    }
+    function checkDateDebutAPGNaissance(date) {
+        var isError = checkDateDebutAPG(date);
+        if(isError){
+            document.getElementById("dateDebutDroit").value = "";
+        }
+    }
     function add() {
         nssUpdateHiddenFields();
         document.forms[0].elements('userAction').value = "apg.droits.droitPatP.ajouter"
@@ -740,6 +785,7 @@
         <input type="text"
                id="dateDebutDroit"
                name="dateDebutDroit"
+               onChange="checkDateDebutAPGNaissance(dateDebutDroit.value);"
                data-g-calendar=" "
                value="<%=viewBean.getDateDebutDroit()%>"/>
     </td>

@@ -117,7 +117,6 @@ public class APDroitPatPHelper extends APAbstractDroitPHelper {
             String message = "Une exception est survenue lors de la création du droit : " + exception.toString();
             viewBean.setMsgType(FWViewBeanInterface.ERROR);
             viewBean.setMessage(message);
-            transaction.addErrors(message);
             throw new Exception(message);
         } finally {
             if (transaction != null) {
@@ -269,4 +268,8 @@ public class APDroitPatPHelper extends APAbstractDroitPHelper {
     private boolean hasErrors(BSession session, BTransaction transaction) {
         return session.hasErrors() || (transaction == null) || transaction.hasErrors() || transaction.isRollbackOnly();
     }
+
+
+
+
 }

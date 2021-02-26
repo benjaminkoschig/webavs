@@ -1,19 +1,30 @@
 package globaz.apg.vb.droits;
 
+import ch.globaz.vulpecula.web.views.association.FacturationAPViewService;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.droits.APDroitPaternite;
 import globaz.apg.enums.APModeEditionDroit;
+import globaz.apg.properties.APParameter;
 import globaz.apg.util.APGSeodorErreurListEntities;
 import globaz.commons.nss.NSUtil;
+import globaz.globall.db.*;
 import globaz.globall.util.JACalendar;
+import globaz.jade.admin.JadeAdminServiceLocatorProvider;
+import globaz.jade.client.util.JadeConversionUtil;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeContext;
+import globaz.jade.context.JadeContextImplementation;
+import globaz.jade.context.JadeThreadActivator;
 import globaz.prestation.beans.PRPeriode;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.utils.PRDateUtils;
+import org.apache.commons.httpclient.util.DateUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * <H1>Description</H1> Créé le 5 juil. 05
@@ -29,6 +40,9 @@ public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
     private String remarque = "";
     private APGSeodorErreurListEntities messagesError = new APGSeodorErreurListEntities();
     private boolean hasMessagePropError = false;
+
+
+    private String dateFromJS = "";
 
     /**
      * Crée une nouvelle instance de la classe APDroitPatPViewBean.
@@ -298,4 +312,54 @@ public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
         }
         return msgHTML.toString();
     }
+    public String actionDateMin(String date,String user){
+        String parameterName = null;
+
+
+        parameterName = APParameter.PATERNITE.getParameterName();
+        String dateMin = "01/01/2021";
+        try {
+            BSession session = BSessionUtil.getSessionFromThreadContext();
+            if(session== null){
+                session = BSessionUtil.createSession("APG",user);
+            }
+            JadeThreadActivator.startUsingJdbcContext(this, initContext(session));
+            FWFindParameterManager manager = new FWFindParameterManager();
+            manager.setSession(session);
+            manager.setIdCodeSysteme("1");
+            manager.setIdCleDiffere(parameterName);
+            manager.find(BManager.SIZE_NOLIMIT);
+            JadeThreadActivator.stopUsingContext(Thread.currentThread());
+            session.releaseAllTransactions();
+            if (manager.size() > 0){
+                FWFindParameter param= (FWFindParameter) manager.getFirstEntity();
+                Date d =new SimpleDateFormat("yyyyMMdd").parse(param.getDateDebutValidite());
+                dateMin = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH).format(d);
+            }else{
+                dateMin =  "01/01/2021";
+            }
+        } catch (Exception e) {
+            JadeThreadActivator.stopUsingContext(this);
+            return dateMin;
+        }
+        return dateMin;
+    }
+    public String getName() {
+        return APDroitPatPViewBean.class.getName();
+    }
+    private final JadeContext initContext(BSession session) throws Exception {
+        JadeContextImplementation ctxtImpl = new JadeContextImplementation();
+        ctxtImpl.setApplicationId(session.getApplicationId());
+        ctxtImpl.setLanguage(session.getIdLangueISO());
+        ctxtImpl.setUserEmail(session.getUserEMail());
+        ctxtImpl.setUserId(session.getUserId());
+        ctxtImpl.setUserName(session.getUserName());
+        String[] roles = JadeAdminServiceLocatorProvider.getInstance().getServiceLocator().getRoleUserService()
+                .findAllIdRoleForIdUser(session.getUserId());
+        if ((roles != null) && (roles.length > 0)) {
+            ctxtImpl.setUserRoles(JadeConversionUtil.toList(roles));
+        }
+        return ctxtImpl;
+    }
+
 }

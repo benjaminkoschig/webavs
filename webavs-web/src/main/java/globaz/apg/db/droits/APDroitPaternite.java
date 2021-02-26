@@ -12,7 +12,12 @@ import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAUtil;
+import globaz.jade.admin.JadeAdminServiceLocatorProvider;
+import globaz.jade.client.util.JadeConversionUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeContext;
+import globaz.jade.context.JadeContextImplementation;
+import globaz.jade.context.JadeThreadActivator;
 import globaz.prestation.application.PRAbstractApplication;
 import globaz.prestation.clone.factory.IPRCloneable;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
@@ -353,12 +358,28 @@ public class APDroitPaternite extends APDroitLAPG implements IPRCloneable {
          */
         String parameterName = null;
         parameterName = APParameter.PATERNITE_JOUR_MAX.getParameterName();
-//        BSessionUtil.initContext(session, this);
-//        BigDecimal joursMax = new BigDecimal(
-//                    FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", parameterName, debut.toStr("."), "", 2));
-        JADate fin = cal.addDays(debut, 14 - 1);
+        JadeThreadActivator.startUsingJdbcContext(this, initContext(session));
+        BigDecimal joursMax = new BigDecimal(
+                    FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", parameterName, debut.toStr("."), "", 2));
+        JADate fin = cal.addDays(debut, joursMax.intValue() - 1);
         setDateFinDroit(fin.toStr("."));
-//        BSessionUtil.stopUsingContext(this);
+        JadeThreadActivator.stopUsingContext(Thread.currentThread());
+
+    }
+
+    private JadeContext initContext(BSession session)  throws Exception{
+        JadeContextImplementation ctxtImpl = new JadeContextImplementation();
+        ctxtImpl.setApplicationId(session.getApplicationId());
+        ctxtImpl.setLanguage(session.getIdLangueISO());
+        ctxtImpl.setUserEmail(session.getUserEMail());
+        ctxtImpl.setUserId(session.getUserId());
+        ctxtImpl.setUserName(session.getUserName());
+        String[] roles = JadeAdminServiceLocatorProvider.getInstance().getServiceLocator().getRoleUserService()
+                .findAllIdRoleForIdUser(session.getUserId());
+        if ((roles != null) && (roles.length > 0)) {
+            ctxtImpl.setUserRoles(JadeConversionUtil.toList(roles));
+        }
+        return ctxtImpl;
     }
 
     @Override
