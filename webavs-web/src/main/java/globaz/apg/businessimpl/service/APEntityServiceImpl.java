@@ -1,5 +1,6 @@
 package globaz.apg.businessimpl.service;
 
+import ch.globaz.al.business.constantes.ALCSTiers;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
 import globaz.apg.api.droits.IAPDroitLAPG;
@@ -31,10 +32,15 @@ import globaz.globall.parameters.FWParametersManager;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
+import globaz.jade.admin.JadeAdminServiceLocatorProvider;
+import globaz.jade.client.util.JadeConversionUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
+import globaz.jade.context.JadeContext;
+import globaz.jade.context.JadeContextImplementation;
+import globaz.jade.context.JadeThreadActivator;
 import globaz.jade.patterns.JadeAbstractService;
 import globaz.naos.api.IAFAffiliation;
 import globaz.naos.application.AFApplication;
@@ -59,6 +65,7 @@ import org.apache.commons.lang.StringUtils;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -67,6 +74,7 @@ import java.util.stream.Collectors;
  *
  * @author lga
  */
+
 /**
  * @author lga
  */
@@ -499,7 +507,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
      */
     @Override
     public APDroitAPG creerDroitAPGComplet(final BSession session, final BTransaction transaction,
-            final APDroitAPGPViewBean viewBean) throws IllegalArgumentException {
+                                           final APDroitAPGPViewBean viewBean) throws IllegalArgumentException {
         try {
             validateSessionAndTransactionNotNull(session, transaction);
         } catch (final Exception e) {
@@ -552,7 +560,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
      */
     @Override
     public APDroitPaternite creerDroitPatComplet(final BSession session, final BTransaction transaction,
-                                           final APDroitPatPViewBean viewBean) throws IllegalArgumentException {
+                                                 final APDroitPatPViewBean viewBean) throws IllegalArgumentException {
         try {
             validateSessionAndTransactionNotNull(session, transaction);
         } catch (final Exception e) {
@@ -610,7 +618,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
     }
 
     private APDroitPaternite creationDuDroitPaternite(final APDroitPatPViewBean viewBean, final BSession session,
-                                          final BTransaction transaction, final PRDemande demande) throws Exception {
+                                                      final BTransaction transaction, final PRDemande demande) throws Exception {
         return editionDroitPat(session, transaction, viewBean, demande, APModeEditionDroit.CREATION);
     }
 
@@ -627,7 +635,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
      * avec cette affiliation
      */
     private APSituationProfessionnelle creerSituationProfSiIndependant(final BSession session,
-            final BTransaction transaction, final APDroitLAPG droit, final String idTiers) throws Exception {
+                                                                       final BTransaction transaction, final APDroitLAPG droit, final String idTiers) throws Exception {
 
         APSituationProfessionnelle situationProfessionnelle = null;
         String masseAnnuel = "0";
@@ -676,8 +684,8 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                             params.put(ICPDecision.FIND_FOR_ANNEE_DECISION,
                                     Integer.toString(new JADate(droit.getDateDebutDroit()).getYear() - 1));
                         } else {
-                        params.put(ICPDecision.FIND_FOR_ANNEE_DECISION,
-                                Integer.toString(new JADate(droit.getDateDebutDroit()).getYear()));
+                            params.put(ICPDecision.FIND_FOR_ANNEE_DECISION,
+                                    Integer.toString(new JADate(droit.getDateDebutDroit()).getYear()));
 
                         }
                         params.put(ICPDecision.FIND_FOR_ID_AFFILIATION, aff.getAffiliationId());
@@ -698,7 +706,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                             if (APGUtils.isTypeAllocationPandemie(droit.getGenreService())) {
                                 parms.put(ICPDonneesCalcul.FIND_FOR_ID_DONNEES_CALCUL, ICPDonneesCalcul.CS_REV_NET);
                             } else {
-                            parms.put(ICPDonneesCalcul.FIND_FOR_ID_DONNEES_CALCUL, ICPDonneesCalcul.CS_REV_CI);
+                                parms.put(ICPDonneesCalcul.FIND_FOR_ID_DONNEES_CALCUL, ICPDonneesCalcul.CS_REV_CI);
                             }
 
                             final ICPDonneesCalcul[] donneesCalculs = donneesCalcul.findDonneesCalcul(parms);
@@ -809,7 +817,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
      * avec cette affiliation
      */
     private APSituationProfessionnelle creerSituationProfPanSiIndependant(final BSession session,
-                                                                       final BTransaction transaction, final APDroitLAPG droit, final String idTiers) throws Exception {
+                                                                          final BTransaction transaction, final APDroitLAPG droit, final String idTiers) throws Exception {
 
         APSituationProfessionnelle situationProfessionnelle = null;
         String masseAnnuel = "0";
@@ -916,7 +924,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                             situationProfessionnelle.wantCallValidate(false);
                             situationProfessionnelle.add(transaction);
                         }
-                    }else{
+                    } else {
                         // Si des situations professionnelles sont trouvées dans le dernier droit pandémie et ont été créées
                         // dans le nouveau droit, alors pas besoin d'itérer sur les affiliations, tout a été créés
                         return situationProfessionnelle;
@@ -947,7 +955,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
     }
 
     private APDroitAPG editionDroit(final BSession session, final BTransaction transaction,
-            final APDroitAPGPViewBean viewBean, final PRDemande demande, final APModeEditionDroit modeEdition)
+                                    final APDroitAPGPViewBean viewBean, final PRDemande demande, final APModeEditionDroit modeEdition)
             throws Exception {
 
         if (modeEdition == null) {
@@ -988,7 +996,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                 throw new Exception("Unable to update the APDroitAPG with id [" + viewBean.getDroit().getIdDroit()
                         + "] because it doesn't already exist");
             }
-            if (!(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(droitAPG.getEtat()) || IAPDroitLAPG.CS_ETAT_DROIT_ERREUR.equals(droitAPG.getEtat()) || IAPDroitLAPG.CS_ETAT_DROIT_VALIDE.equals(droitAPG.getEtat())) ) {
+            if (!(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(droitAPG.getEtat()) || IAPDroitLAPG.CS_ETAT_DROIT_ERREUR.equals(droitAPG.getEtat()) || IAPDroitLAPG.CS_ETAT_DROIT_VALIDE.equals(droitAPG.getEtat()))) {
                 throw new Exception("Unable to update the APDroitAPG with id [" + viewBean.getDroit().getIdDroit()
                         + "] because it is not 'En attente/En erreur'");
             }
@@ -1040,10 +1048,10 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
     }
 
     private APDroitPaternite editionDroitPat(final BSession session, final BTransaction transaction,
-                                    final APDroitPatPViewBean viewBean, final PRDemande demande, final APModeEditionDroit modeEdition)
+                                             final APDroitPatPViewBean viewBean, final PRDemande demande, final APModeEditionDroit modeEdition)
             throws Exception {
 
-         if (modeEdition == null) {
+        if (modeEdition == null) {
             throw new Exception("Any edition mode was specified for the APDroitAPG edition");
         }
 
@@ -1069,31 +1077,55 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         /**
          * CONTROLE SUR LE JOURS MAX ET DATE MAX
          */
+        final String dateNaissance = viewBean.getDateDebutDroit();
 
+        if (JadeStringUtil.isBlankOrZero(dateNaissance)) {
+            throw new Exception(session.getLabel("DATE_DE_NAISSANCE_VIDE"));
+        }
         String parameterName = null;
+        parameterName = APParameter.PATERNITE.getParameterName();
+        FWFindParameterManager manager = new FWFindParameterManager();
+        manager.setSession(session);
+        manager.setIdCodeSysteme("1");
+        manager.setIdCleDiffere(parameterName);
+        manager.find(BManager.SIZE_NOLIMIT);
+        String dateMin = "01.01.2021";
+        if (manager.size() > 0) {
+            FWFindParameter param = (FWFindParameter) manager.getFirstEntity();
+            Date d = new SimpleDateFormat("yyyyMMdd").parse(param.getDateDebutValidite());
+            dateMin = new SimpleDateFormat("dd.MM.yyyy", Locale.FRENCH).format(d);
+        }
+        if (JadeDateUtil.isDateBefore(dateNaissance, dateMin)) {
+            String msgError = session.getLabel("ERREUR_MIN_DATE_NAI");
+            msgError = PRStringUtils.replaceString(msgError, "{0}", dateMin);
+            throw new Exception(msgError);
+        }
+
         parameterName = APParameter.PATERNITE_JOUR_MAX.getParameterName();
-        BSessionUtil.initContext(session, this);
         BigDecimal joursMax = new BigDecimal(
-                FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", parameterName,dateDeDebutDroit, "", 2));
+                FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", parameterName, dateDeDebutDroit, "", 2));
 
-
-
-        if(joursSoldes> joursMax.intValue()){
+        if (joursSoldes > joursMax.intValue()) {
             throw new Exception(session.getLabel("ERREUR_MAX_JOURS"));
         }
 
         parameterName = APParameter.PATERNITE_MOIS_MAX.getParameterName();
-        BSessionUtil.initContext(session, this);
         BigDecimal nombreMoisMaxApres = new BigDecimal(
-                FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "0", parameterName,dateDeDebutDroit, "", 2));
+                FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "0", parameterName, dateDeDebutDroit, "", 2));
 
-        String dateFinMax = JadeDateUtil.addMonths(dateDeDebutDroit,nombreMoisMaxApres.intValue());
-        if(JadeDateUtil.isDateAfter(dateDeFinDroit,dateFinMax)){
+        String dateFinMax = JadeDateUtil.addMonths(dateDeDebutDroit, nombreMoisMaxApres.intValue());
+        if (JadeDateUtil.isDateAfter(dateDeFinDroit, dateFinMax)) {
             String msgError = session.getLabel("ERREUR_MAX_DATE");
-            msgError =  PRStringUtils.replaceString(msgError, "{0}", dateDeFinDroit);
-            msgError =  PRStringUtils.replaceString(msgError, "{1}", dateFinMax);
+            msgError = PRStringUtils.replaceString(msgError, "{0}", dateDeFinDroit);
+            msgError = PRStringUtils.replaceString(msgError, "{1}", dateFinMax);
             throw new Exception(msgError);
         }
+
+        if (viewBean.getCsSexe().equals(ALCSTiers.SEXE_FEMME)) {
+            throw new Exception(session.getLabel("ERROR_PATERNITE_S"));
+        }
+
+        //FIN DE CONTROLE
 
         final APDroitPaternite droitPat = new APDroitPaternite();
         droitPat.setSession(session);
@@ -1162,6 +1194,22 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         return droitPat;
     }
 
+    private JadeContext initContext(BSession session) throws Exception {
+        JadeContextImplementation ctxtImpl = new JadeContextImplementation();
+        ctxtImpl.setApplicationId(session.getApplicationId());
+        ctxtImpl.setLanguage(session.getIdLangueISO());
+        ctxtImpl.setUserEmail(session.getUserEMail());
+        ctxtImpl.setUserId(session.getUserId());
+        ctxtImpl.setUserName(session.getUserName());
+        String[] roles = JadeAdminServiceLocatorProvider.getInstance().getServiceLocator().getRoleUserService()
+                .findAllIdRoleForIdUser(session.getUserId());
+        if ((roles != null) && (roles.length > 0)) {
+            ctxtImpl.setUserRoles(JadeConversionUtil.toList(roles));
+        }
+        return ctxtImpl;
+
+    }
+
     private void validateJoursEtPeriode() {
     }
 
@@ -1196,9 +1244,9 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         for (PRPeriode periode : periodes) {
             nombreDeJoursPeriodes += (PRDateUtils.getNbDayBetween(periode.getDateDeDebut(), periode.getDateDeFin())
                     + 1);
-            if(!JadeStringUtil.isBlankOrZero(periode.getNbJour())){
+            if (!JadeStringUtil.isBlankOrZero(periode.getNbJour())) {
                 nombreDeJoursSaisies += Integer.valueOf(periode.getNbJour());
-            }else{
+            } else {
                 nombreDeJoursSaisies = 0;
             }
 
@@ -1294,7 +1342,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
     @Override
     public APDroitMaternite getDroitMaternite(final BSession session, final BTransaction transaction,
-            final String idDroit) throws Exception, APEntityNotFoundException {
+                                              final String idDroit) throws Exception, APEntityNotFoundException {
 
         final APDroitLAPG droit = getDroitLAPG(session, transaction, idDroit);
         if (!(droit instanceof APDroitMaternite)) {
@@ -1329,7 +1377,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
     @SuppressWarnings("unchecked")
     @Override
     public List<APEnfantAPG> getEnfantsAPGDuDroitAPG(final BSession session, final BTransaction transaction,
-            final String idDroit) throws Exception {
+                                                     final String idDroit) throws Exception {
         validateSessionAndTransactionNotNull(session, transaction);
         final APDroitLAPG droit = getDroitLAPG(session, transaction, idDroit);
 
@@ -1366,7 +1414,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
      * @throws Exception Si l'idTiers est null ou vide ou en cas d'erreur de persistance
      */
     public PRDemande getOrCreateDemandeDuTiers(final BSession session, final BTransaction transaction,
-            final String idTiers) throws Exception {
+                                               final String idTiers) throws Exception {
         validateSessionAndTransactionNotNull(session, transaction);
         if (JadeStringUtil.isBlankOrZero(idTiers)) {
             throw new Exception("Unable to retrieve the PRDemande with an empty idTiers [" + idTiers + "]");
@@ -1400,7 +1448,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
      * @throws Exception Si l'idTiers est null ou vide ou en cas d'erreur de persistance
      */
     public PRDemande getOrCreateDemandeDuTiersPat(final BSession session, final BTransaction transaction,
-                                               final String idTiers) throws Exception {
+                                                  final String idTiers) throws Exception {
         validateSessionAndTransactionNotNull(session, transaction);
         if (JadeStringUtil.isBlankOrZero(idTiers)) {
             throw new Exception("Unable to retrieve the PRDemande with an empty idTiers [" + idTiers + "]");
@@ -1425,7 +1473,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
     @SuppressWarnings("unchecked")
     @Override
     public List<APPeriodeAPG> getPeriodesDuDroitAPG(final BSession session, final BTransaction transaction,
-            final String idDroit) throws Exception {
+                                                    final String idDroit) throws Exception {
         validateSessionAndTransactionNotNull(session, transaction);
         // Le droit est chargé pour s'assurer que l'idDroit est valid et que le droit existe
         final APDroitLAPG droit = getDroitLAPG(session, transaction, idDroit);
@@ -1448,7 +1496,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
     @Override
     @SuppressWarnings("unchecked")
     public List<APPrestation> getPrestationDuDroit(final BSession session, final BTransaction transaction,
-            final String idDroit) throws Exception {
+                                                   final String idDroit) throws Exception {
         final APDroitLAPG droit = getDroitLAPG(session, transaction, idDroit);
         final APPrestationManager prestationManager = new APPrestationManager();
         prestationManager.setSession(session);
@@ -1459,7 +1507,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
     @Override
     public List<APRepartitionJointPrestation> getRepartitionJointPrestationDuDroit(final BSession session,
-            final BTransaction transaction, final String idDroit) throws Exception {
+                                                                                   final BTransaction transaction, final String idDroit) throws Exception {
 
         // Seulement pour validation : idDroit, droit existe, ...
         final APDroitLAPG droit = getDroitLAPG(session, transaction, idDroit);
@@ -1483,7 +1531,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
      */
     @Override
     public List<APRepartitionPaiements> getRepartitionsPaiementsDuDroit(final BSession session,
-            final BTransaction transaction, final String idDroit) throws Exception {
+                                                                        final BTransaction transaction, final String idDroit) throws Exception {
         final List<APRepartitionPaiements> repartitions = new ArrayList<APRepartitionPaiements>();
         final List<APPrestation> prestations = getPrestationDuDroit(session, transaction, idDroit);
         final APRepartitionPaiementsManager manager = new APRepartitionPaiementsManager();
@@ -1500,7 +1548,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
     @Override
     public List<APSitProJointEmployeur> getSituationProfJointEmployeur(final BSession session,
-            final BTransaction transaction, final String idDroit) throws Exception {
+                                                                       final BTransaction transaction, final String idDroit) throws Exception {
 
         final List<APSitProJointEmployeur> apSitProJoiEmpList = new ArrayList<APSitProJointEmployeur>();
 
@@ -1511,8 +1559,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
         apSitProJoiEmpMgr.find(BManager.SIZE_NOLIMIT);
 
-        @SuppressWarnings("unchecked")
-        final Iterator<APSitProJointEmployeur> iter = apSitProJoiEmpMgr.iterator();
+        @SuppressWarnings("unchecked") final Iterator<APSitProJointEmployeur> iter = apSitProJoiEmpMgr.iterator();
 
         while (iter.hasNext()) {
             final APSitProJointEmployeur apSitProJoiEmp = iter.next();
@@ -1538,7 +1585,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
      */
     @Override
     public APDroitAPG miseAjourDroit(final BSession session, final BTransaction transaction,
-            final APDroitAPGPViewBean viewBean) throws Exception {
+                                     final APDroitAPGPViewBean viewBean) throws Exception {
         validateSessionAndTransactionNotNull(session, transaction);
         // On va d'abord s'assurer qu'on a bien un id droit
         if (viewBean.getDroit() == null) {
@@ -1585,7 +1632,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
      */
     @Override
     public APDroitPaternite miseAjourDroitPat(final BSession session, final BTransaction transaction,
-                                     final APDroitPatPViewBean viewBean) throws Exception {
+                                              final APDroitPatPViewBean viewBean) throws Exception {
         validateSessionAndTransactionNotNull(session, transaction);
         // On va d'abord s'assurer qu'on a bien un id droit
         if (viewBean.getDroit() == null) {
@@ -1599,7 +1646,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         // Validation des infos du viewBean
         validationPatViewBean(session, transaction, viewBean);
 
-         APDroitPaternite droit = getDroitPaternite(session, transaction, viewBean.getDroit().getIdDroit());
+        APDroitPaternite droit = getDroitPaternite(session, transaction, viewBean.getDroit().getIdDroit());
 
         droit.setSession(session);
         droit.retrieve(transaction);
@@ -1624,12 +1671,14 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             throw new Exception("Unable to retrieve the PRDemande with id [" + droit.getIdDemande() + "]");
         }
 
-        droit =  editionDroitPat(session, transaction, viewBean, demande, APModeEditionDroit.EDITION);
+        droit = editionDroitPat(session, transaction, viewBean, demande, APModeEditionDroit.EDITION);
         /**
          * Prends le jours de la date de naissance
          */
-        droit.setDateDebutDroit(viewBean.getDateDebutDroit());
-        droit.update();
+        if (!JadeStringUtil.isBlankOrZero(viewBean.getDateDebutDroit())) {
+            droit.setDateDebutDroit(viewBean.getDateDebutDroit());
+            droit.update();
+        }
         return droit;
     }
 
@@ -1683,7 +1732,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
 
     private void reactiverDroitParent(final BSession session, final BTransaction transaction,
-            final String idDroitParent) throws Exception {
+                                      final String idDroitParent) throws Exception {
         final APPrestationManager pMgr = new APPrestationManager();
 
         pMgr.setSession(session);
@@ -1715,7 +1764,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
     @Override
     public void remplacerBreakRulesDuDroit(final BSession session, final BTransaction transaction, final String idDroit,
-            final List<APBreakRulesFromView> nouvellesBreakRules) throws Exception {
+                                           final List<APBreakRulesFromView> nouvellesBreakRules) throws Exception {
         validateSessionAndTransactionNotNull(session, transaction);
         supprimerLesBreakRulesDuDroit(session, transaction, idDroit);
 
@@ -1944,7 +1993,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
     }
 
     private void supprimerEnfantsDeLaSituationFamilialleDuDroit(final BSession session, final BTransaction transaction,
-            final String idSituationFamiliale) throws Exception {
+                                                                final String idSituationFamiliale) throws Exception {
         if (JadeStringUtil.isBlankOrZero(idSituationFamiliale)) {
             throw new Exception("Unable to delete the APEnfantAPG from the APSituationFamilialeAPG with an empty id ["
                     + idSituationFamiliale + "]");
@@ -1962,7 +2011,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
     @Override
     public void supprimerLesBreakRulesDuDroit(final BSession session, final BTransaction transaction,
-            final String idDroit) throws Exception, APEntityNotFoundException {
+                                              final String idDroit) throws Exception, APEntityNotFoundException {
         validateSessionAndTransactionNotNull(session, transaction);
         final APDroitLAPG droitLAPG = getDroitLAPG(session, transaction, idDroit);
 
@@ -1974,7 +2023,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
     }
 
     private void supprimerLesPeriodesDuDroit(final BSession session, final BTransaction transaction,
-            final String idDroit) throws Exception {
+                                             final String idDroit) throws Exception {
         if (JadeStringUtil.isBlankOrZero(idDroit)) {
             throw new Exception(
                     "Unable to delete the APPeriodeAPG for an APDroitAPG with an empty id [" + idDroit + "]");
@@ -1997,7 +2046,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
      */
     @Override
     public void supprimerLesPrestationsDuDroit(final BSession session, final BTransaction transaction,
-            final String idDroit) throws Exception {
+                                               final String idDroit) throws Exception {
         if (JadeStringUtil.isBlankOrZero(idDroit)) {
             throw new Exception(
                     "Unable to delete the APPrestation for an APDroitAPG with an empty id [" + idDroit + "]");
@@ -2019,7 +2068,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
      */
     @Override
     public void supprimerLesPrestationsDuDroitParGenre(final BSession session, final BTransaction transaction,
-                                               final String idDroit, String genre) throws Exception {
+                                                       final String idDroit, String genre) throws Exception {
         if (JadeStringUtil.isBlankOrZero(idDroit)) {
             throw new Exception(
                     "Unable to delete the APPrestation for an APDroitAPG with an empty id [" + idDroit + "]");
@@ -2092,7 +2141,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
      * @throws Exception
      */
     private void supprimerLesSituationProfessionnelle(final BSession session, final BTransaction transaction,
-            final String idDroit) throws Exception {
+                                                      final String idDroit) throws Exception {
         if (JadeStringUtil.isBlankOrZero(idDroit)) {
             throw new Exception("Unable to search the APSituationProfessionnelle for an APDroitAPG with an empty id ["
                     + idDroit + "]");
@@ -2120,7 +2169,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
      * @throws Exception
      */
     private void supprimerSituationFamilialle(final BSession session, final BTransaction transaction,
-            final String idSituationFamiliale) throws Exception {
+                                              final String idSituationFamiliale) throws Exception {
         if (JadeStringUtil.isBlankOrZero(idSituationFamiliale)) {
             throw new Exception(
                     "Unable to delete the APSituationFamilialeAPG with an empty id [" + idSituationFamiliale + "]");
@@ -2150,7 +2199,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
     }
 
     private void validationViewBean(final BSession session, final BTransaction transaction,
-            final APDroitAPGPViewBean viewBean) throws IllegalArgumentException {
+                                    final APDroitAPGPViewBean viewBean) throws IllegalArgumentException {
         final List<APValidationDroitError> errors = new ArrayList<APValidationDroitError>();
         // NSS
         if (!PRNSSUtil.isValidNSS(viewBean.getNss(), FormatNSS.COMPLET_FORMATE)) {
@@ -2201,13 +2250,13 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                 } else if ((PRDateUtils.compare(periode.getDateDeDebut(),
                         periode.getDateDeFin()) != PRDateEquality.AFTER)
                         && (PRDateUtils.compare(periode.getDateDeDebut(),
-                                periode.getDateDeFin()) != PRDateEquality.EQUALS)) {
+                        periode.getDateDeFin()) != PRDateEquality.EQUALS)) {
                     errors.add(APValidationDroitError.PERIODE_INCOHERENTE);
                     periodeErrorsfounded = true;
                 } else if ((PRDateUtils.compare(PRDateUtils.convertCalendarToGlobazDate(Calendar.getInstance()),
                         periode.getDateDeFin()) == PRDateEquality.AFTER)
                         || (PRDateUtils.compare(PRDateUtils.convertCalendarToGlobazDate(Calendar.getInstance()),
-                                periode.getDateDeFin()) == PRDateEquality.AFTER)) {
+                        periode.getDateDeFin()) == PRDateEquality.AFTER)) {
                     errors.add(APValidationDroitError.PERIODE_DANS_FUTUR);
                     periodeErrorsfounded = true;
                 }
@@ -2301,7 +2350,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
     }
 
     private void validationPatViewBean(final BSession session, final BTransaction transaction,
-                                    final APDroitPatPViewBean viewBean) throws IllegalArgumentException {
+                                       final APDroitPatPViewBean viewBean) throws IllegalArgumentException {
         final List<APValidationDroitError> errors = new ArrayList<APValidationDroitError>();
         // NSS
         if (!PRNSSUtil.isValidNSS(viewBean.getNss(), FormatNSS.COMPLET_FORMATE)) {
@@ -2458,7 +2507,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
      * @param
      */
     private List<APValidationDroitError> validerNoCompte(final BSession session, final String genreServiceCS,
-            final String numeroCompte) {
+                                                         final String numeroCompte) {
         final List<APValidationDroitError> errors = new ArrayList<APValidationDroitError>();
 
         final String genreService = session.getCode(genreServiceCS);
