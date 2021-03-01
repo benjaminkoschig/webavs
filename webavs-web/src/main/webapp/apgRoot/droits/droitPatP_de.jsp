@@ -15,6 +15,7 @@
 <%@ page import="java.math.BigDecimal" %>
 <%@ page import="globaz.globall.db.FWFindParameter" %>
 <%@ page import="globaz.apg.properties.APParameter" %>
+<%@ page import="globaz.globall.db.FWFindParameterManager" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib uri="/WEB-INF/nss.tld" prefix="ct1" %>
@@ -30,6 +31,7 @@
     bButtonValidate = false;
     bButtonCancel = false;
     bButtonDelete = false;
+    String dateDebutValidite = viewBean.getDateValidite();
 
 %>
 <%@ include file="/theme/detail/javascripts.jspf" %>
@@ -55,33 +57,24 @@
         var dateDebut = new Date(dateRaw[0] + '/' + dateRaw[1] + '/' + dateRaw[2]);
         var user = '<%=viewBean.getSession().getUserName()%>';
         var isError = false;
-
-        var options ={
-            serviceClassName: '<%=viewBean.getName()%>',
-            serviceMethodName: 'actionDateMin',
-            parametres: date.value+","+user,
-            callBack: function (data) {
-                var dateMin = new Date(data);
-                if (dateDebut < dateMin) {
-                    var text = '<%=viewBean.getSession().getLabel("ERREUR_MIN_DATE_NAI")%>';
-                    var day = dateMin.getDate();
-                    if (day < 10) {
-                        day = '0' + day;
-                    }
-                    var month = dateMin.getMonth() + 1;
-                    if (month < 10) {
-                        month = '0' + month;
-                    }
-                    text = text.replace("{0}", day + '.' + month + '.' + dateMin.getFullYear());
-                    showErrorMessage(text);
-                    isError = true;
-                }else{
-                    isError = false;
-                }
-
+        var dateMin = new Date('<%=dateDebutValidite%>');
+        if (dateDebut < dateMin) {
+            var text = '<%=viewBean.getSession().getLabel("ERREUR_MIN_DATE_NAI")%>';
+            var day = dateMin.getDate();
+            if (day < 10) {
+                day = '0' + day;
             }
+            var month = dateMin.getMonth() + 1;
+            if (month < 10) {
+                month = '0' + month;
+            }
+            text = text.replace("{0}", day + '.' + month + '.' + dateMin.getFullYear());
+            showErrorMessage(text);
+            isError = true;
+        } else {
+            isError = false;
         }
-        apgUtils.lancementServiceSync(options);
+
         return isError;
     }
     function checkDateDebutAPGNaissance(date) {

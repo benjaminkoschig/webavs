@@ -28,7 +28,7 @@ import java.util.*;
 
 /**
  * <H1>Description</H1> Créé le 5 juil. 05
- * 
+ *
  * @author vre
  */
 public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
@@ -72,7 +72,7 @@ public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
 
     /**
      * getter pour l'attribut droit acquis
-     * 
+     *
      * @return la valeur courante de l'attribut droit acquis
      */
     public String getDroitAcquis() {
@@ -81,7 +81,7 @@ public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
 
     /**
      * Méthode qui retourne le NNSS formaté sans le préfixe (756.) ou alors le NSS normal
-     * 
+     *
      * @return NNSS formaté sans préfixe ou NSS normal
      */
     public String getNumeroAvsFormateSansPrefixe() {
@@ -90,9 +90,8 @@ public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
 
     /**
      * setter pour l'attribut date deces
-     * 
-     * @param string
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param string une nouvelle valeur pour cet attribut
      */
     @Override
     public void setDateDeces(String string) {
@@ -101,9 +100,8 @@ public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
 
     /**
      * setter pour l'attribut droit acquis
-     * 
-     * @param droitAcquis
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param droitAcquis une nouvelle valeur pour cet attribut
      */
     public void setDroitAcquis(String droitAcquis) {
         getDroit().setDroitAcquis(droitAcquis);
@@ -140,6 +138,7 @@ public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
     public void setMessagePropError(boolean hasMessagePropError) {
         this.hasMessagePropError = hasMessagePropError;
     }
+
     private boolean isPeriodeDejaExistante(PRPeriode newPeriode) {
         for (PRPeriode periode : periodes) {
             PRDateUtils.PRDateEquality equality1 = PRDateUtils.compare(periode.getDateDeDebut(), newPeriode.getDateDeDebut());
@@ -206,8 +205,7 @@ public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
     /**
      * setter pour l'attribut nbr jour soldes
      *
-     * @param string
-     *            une nouvelle valeur pour cet attribut
+     * @param string une nouvelle valeur pour cet attribut
      */
     public void setNbrJourSoldes(String string) {
         getDroit().setNbrJourSoldes(string);
@@ -298,68 +296,84 @@ public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
     public void setRemarque(String remarque) {
         this.remarque = remarque;
     }
-    public APGSeodorErreurListEntities getMessagesErrorList(){
+
+    public APGSeodorErreurListEntities getMessagesErrorList() {
         return messagesError;
     }
 
     public void setMessagesError(APGSeodorErreurListEntities messagesError) {
         this.messagesError = messagesError;
     }
+
     public String getMessagesError() {
         StringBuilder msgHTML = new StringBuilder();
         if (Objects.nonNull(messagesError.getMessageErreur())) {
-            msgHTML.append("<p>"+messagesError.getMessageErreur()+"<p><br>");
+            msgHTML.append("<p>" + messagesError.getMessageErreur() + "<p><br>");
         }
         return msgHTML.toString();
     }
-    public String actionDateMin(String date,String user){
-        String parameterName = null;
 
-
-        parameterName = APParameter.PATERNITE.getParameterName();
-        String dateMin = "01/01/2021";
-        try {
-            BSession session = BSessionUtil.getSessionFromThreadContext();
-            if(session== null){
-                session = BSessionUtil.createSession("APG",user);
-            }
-            JadeThreadActivator.startUsingJdbcContext(this, initContext(session));
-            FWFindParameterManager manager = new FWFindParameterManager();
-            manager.setSession(session);
-            manager.setIdCodeSysteme("1");
-            manager.setIdCleDiffere(parameterName);
-            manager.find(BManager.SIZE_NOLIMIT);
-            JadeThreadActivator.stopUsingContext(Thread.currentThread());
-            session.releaseAllTransactions();
-            if (manager.size() > 0){
-                FWFindParameter param= (FWFindParameter) manager.getFirstEntity();
-                Date d =new SimpleDateFormat("yyyyMMdd").parse(param.getDateDebutValidite());
-                dateMin = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH).format(d);
-            }else{
-                dateMin =  "01/01/2021";
-            }
-        } catch (Exception e) {
-            JadeThreadActivator.stopUsingContext(this);
-            return dateMin;
-        }
-        return dateMin;
-    }
+    //    public String actionDateMin(String date,String user){
+//        String parameterName = null;
+//
+//
+//        parameterName = APParameter.PATERNITE.getParameterName();
+//        String dateMin = "01/01/2021";
+//        try {
+//            BSession session = BSessionUtil.getSessionFromThreadContext();
+//            if(session== null){
+//                session = BSessionUtil.createSession("APG",user);
+//            }
+//            JadeThreadActivator.startUsingJdbcContext(this, initContext(session));
+//            FWFindParameterManager manager = new FWFindParameterManager();
+//            manager.setSession(session);
+//            manager.setIdCodeSysteme("1");
+//            manager.setIdCleDiffere(parameterName);
+//            if(JadeDateUtil.isGlobazDate(date)){
+//                manager.setDateDebutValidite(date);
+//            }
+//            manager.find(BManager.SIZE_NOLIMIT);
+//            JadeThreadActivator.stopUsingContext(Thread.currentThread());
+//            session.releaseAllTransactions();
+//            if (manager.size() > 0){
+//                FWFindParameter param= (FWFindParameter) manager.getFirstEntity();
+//                Date d =new SimpleDateFormat("yyyyMMdd").parse(param.getDateDebutValidite());
+//                dateMin = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH).format(d);
+//            }else{
+//                dateMin =  "01/01/2021";
+//            }
+//        } catch (Exception e) {
+//            JadeThreadActivator.stopUsingContext(this);
+//            return dateMin;
+//        }
+//        return dateMin;
+//    }
     public String getName() {
         return APDroitPatPViewBean.class.getName();
     }
-    private final JadeContext initContext(BSession session) throws Exception {
-        JadeContextImplementation ctxtImpl = new JadeContextImplementation();
-        ctxtImpl.setApplicationId(session.getApplicationId());
-        ctxtImpl.setLanguage(session.getIdLangueISO());
-        ctxtImpl.setUserEmail(session.getUserEMail());
-        ctxtImpl.setUserId(session.getUserId());
-        ctxtImpl.setUserName(session.getUserName());
-        String[] roles = JadeAdminServiceLocatorProvider.getInstance().getServiceLocator().getRoleUserService()
-                .findAllIdRoleForIdUser(session.getUserId());
-        if ((roles != null) && (roles.length > 0)) {
-            ctxtImpl.setUserRoles(JadeConversionUtil.toList(roles));
+
+    public String getDateValidite() {
+        String dateMin = "01/01/2021";
+        String parameterName = APParameter.PATERNITE_JOUR_MAX.getParameterName();
+        FWFindParameterManager manager = new FWFindParameterManager();
+        manager.setSession(getSession());
+        manager.setIdCodeSysteme("1");
+        manager.setIdCleDiffere(parameterName);
+        try {
+            manager.find(BManager.SIZE_NOLIMIT);
+            if (manager.size() > 0) {
+                FWFindParameter param = (FWFindParameter) manager.getFirstEntity();
+                Date d = new SimpleDateFormat("yyyyMMdd").parse(param.getDateDebutValidite());
+                dateMin = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH).format(d);
+            } else {
+                dateMin = "01/01/2021";
+            }
+
+        } catch (Exception e) {
+           return  "01/01/2021";
         }
-        return ctxtImpl;
+        return dateMin;
     }
+
 
 }
