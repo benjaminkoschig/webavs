@@ -67,7 +67,7 @@ public class APDroitPaterniteJointTiersManager extends PRAbstractManager {
             for (APDroitPaterniteJointTiers unDroitDuTiers : droitsPourUnTiers) {
                 APPeriodeAPG periodeAPG = new APPeriodeAPG();
                 periodeAPG.setDateDebutPeriode(unDroitDuTiers.getUneDateDebutPeriode());
-                periodeAPG.setDateFinPeriode(unDroitDuTiers.getUneDateDebutPeriode());
+                periodeAPG.setDateFinPeriode(unDroitDuTiers.getUneDateFinPeriode());
                 periodeAPG.setNbrJours(unDroitDuTiers.getNbrJourSoldes());
                 if (droitParIdDroit.containsKey(unDroitDuTiers.getIdDroit())) {
                     APDroitPaterniteJointTiers droit = droitParIdDroit.get(unDroitDuTiers.getIdDroit());

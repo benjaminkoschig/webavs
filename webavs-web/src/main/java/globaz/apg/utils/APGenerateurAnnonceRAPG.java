@@ -22,12 +22,14 @@ import globaz.apg.enums.APTypeVersement;
 import globaz.apg.exceptions.APEntityNotFoundException;
 import globaz.apg.exceptions.APRuleExecutionException;
 import globaz.apg.interfaces.APDroitAvecParent;
+import globaz.apg.module.calcul.wrapper.APPeriodeWrapper;
 import globaz.apg.properties.APParameter;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
 import globaz.globall.db.FWFindParameter;
 import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadePeriodWrapper;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
@@ -84,6 +86,25 @@ public class APGenerateurAnnonceRAPG {
         // // Si c'est pas la première, il faut la mettre en type 3
         if (isPrestationMaternite && "1".equals(annonceACreer.getContenuAnnonce())) {
             if (!JadeDateUtil.areDatesEquals(droit.getDateDebutDroit(), prestation.getDateDebut())) {
+                // Mettre le type d'annonce à 3, pour les suivantes (plus à 1)
+                annonceACreer.setContenuAnnonce("3");
+            }
+        }
+        if(isPrestationPaternite && "1".equals(annonceACreer.getContenuAnnonce())){
+            APDroitPaterniteJointTiersManager manager2 = new APDroitPaterniteJointTiersManager();
+            manager2.setSession(session);
+            manager2.setForIdDroit(idDroit);
+            manager2.find();
+            String dateDebut1erPeriode = "";
+            for (int i = 0; i < manager2.size(); i++) {
+                APDroitPaterniteJointTiers droitTiers = ( APDroitPaterniteJointTiers) manager2.get(i);
+                for(APPeriodeAPG periodePat : droitTiers.getPeriodes()) {
+                    if(JadeStringUtil.isBlankOrZero(dateDebut1erPeriode) ||JadeDateUtil.isDateBefore(periodePat.getDateDebutPeriode(),dateDebut1erPeriode) ){
+                        dateDebut1erPeriode = periodePat.getDateDebutPeriode();
+                    }
+                }
+            }
+            if (!JadeDateUtil.areDatesEquals(dateDebut1erPeriode, prestation.getDateDebut())) {
                 // Mettre le type d'annonce à 3, pour les suivantes (plus à 1)
                 annonceACreer.setContenuAnnonce("3");
             }
