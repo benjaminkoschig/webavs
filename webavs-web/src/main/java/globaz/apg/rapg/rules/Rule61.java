@@ -50,7 +50,7 @@ public class Rule61 extends Rule {
         if (serviceType.equals(APGenreServiceAPG.Quarantaine.getCodePourAnnonce())
             ||serviceType.equals(APGenreServiceAPG.Quarantaine_17_09_20.getCodePourAnnonce())) {
             try {
-                int jourMax = Integer.parseInt(FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(), "1", APParameter.QUARANTAINE_JOURS_MAX.getParameterName(), "0", "", 0));
+                int jourMax = Integer.parseInt(FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(), "1", APParameter.QUARANTAINE_JOURS_MAX.getParameterName(), champsAnnonce.getStartOfPeriod(), "", 0));
 
                 List<APPeriodeComparable> listPeriode = getPeriodes(champsAnnonce.getIdDroit());
 
