@@ -137,7 +137,7 @@ public class Rule61 extends Rule {
         for (APPeriodeComparable periode : listPeriode) {
             // si pas de date fin mettre la fin du mois en cours pour le calcul
             if (JadeStringUtil.isEmpty(periode.getDateFinPeriode())) {
-                int jourMax = Integer.parseInt(FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(), "1", APParameter.QUARANTAINE_JOURS_MAX.getParameterName(), "0", "", 0));
+                int jourMax = Integer.parseInt(FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(), "1", APParameter.QUARANTAINE_JOURS_MAX.getParameterName(), periode.getDateDebutPeriode(), "", 0));
                 String dateFin = JadeDateUtil.addDays(periode.getDateDebutPeriode(), delai + jourMax - 1);
                 periode.setDateFinPeriode(dateFin);
             }

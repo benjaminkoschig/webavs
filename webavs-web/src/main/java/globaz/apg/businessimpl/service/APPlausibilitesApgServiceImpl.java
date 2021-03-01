@@ -521,7 +521,7 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
     }
 
     private void resolveFinJourMaxParam(BSession session, APPeriodeAPG periode, String param) throws Exception {
-        int jourMax = Integer.parseInt(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", param, "0", "", 0));
+        int jourMax = Integer.parseInt(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", param, periode.getDateDebutPeriode(), "", 0));
         String dateFin = JadeDateUtil.addDays(periode.getDateDebutPeriode(), jourMax);
         periode.setDateFinPeriode(dateFin);
     }

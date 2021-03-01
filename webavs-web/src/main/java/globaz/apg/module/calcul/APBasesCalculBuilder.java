@@ -1030,13 +1030,13 @@ public class APBasesCalculBuilder {
         }
 
         if(!valeur.isEmpty()) {
-            jourCarence = Integer.valueOf(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", valeur, "0", "", 0));
+            jourCarence = Integer.valueOf(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", valeur, droit.getDateDebutDroit(), "", 0));
         }
         return jourCarence;
     }
 
     private void resolveFinJourMaxParam(APPeriodeComparable periode, String param, int delai) throws Exception {
-        int jourMax = Integer.parseInt(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", param, "0", "", 0));
+        int jourMax = Integer.parseInt(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", param, droit.getDateDebutDroit(), "", 0));
         String dateFin = JadeDateUtil.addDays(periode.getDateDebutPeriode(), delai + jourMax - 1);
         periode.setDateFinPeriode(dateFin);
     }
