@@ -1082,7 +1082,7 @@ public class APBasesCalculBuilder {
             case IAPDroitLAPG.CS_QUARANTAINE:
             case IAPDroitLAPG.CS_QUARANTAINE_17_09_20:
                 autreJours = 0;
-                jourMaximum = getJourMax(APParameter.QUARANTAINE_JOURS_MAX.getParameterName(), null);break;
+                jourMaximum = getJourMax(APParameter.QUARANTAINE_JOURS_MAX.getParameterName(), droit.getDateDebutDroit());break;
             default:
                 jourMaximum = null;
         }
