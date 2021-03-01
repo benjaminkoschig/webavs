@@ -357,7 +357,6 @@ public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
         String parameterName = APParameter.PATERNITE_JOUR_MAX.getParameterName();
         FWFindParameterManager manager = new FWFindParameterManager();
         manager.setSession(getSession());
-        manager.setIdCodeSysteme("1");
         manager.setIdCleDiffere(parameterName);
         try {
             manager.find(BManager.SIZE_NOLIMIT);

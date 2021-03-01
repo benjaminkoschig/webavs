@@ -1086,7 +1086,6 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         parameterName = APParameter.PATERNITE.getParameterName();
         FWFindParameterManager manager = new FWFindParameterManager();
         manager.setSession(session);
-        manager.setIdCodeSysteme("1");
         manager.setIdCleDiffere(parameterName);
         manager.find(BManager.SIZE_NOLIMIT);
         String dateMin = "01.01.2021";
