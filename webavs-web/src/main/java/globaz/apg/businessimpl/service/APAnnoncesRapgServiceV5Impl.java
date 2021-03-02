@@ -102,6 +102,8 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
         }
         if (!JadeStringUtil.isBlankOrZero(champsAnnonce.getInsurantDomicileCountry())) {
             message.getInsurantDomicile().setCountry(Integer.parseInt(champsAnnonce.getInsurantDomicileCountry()));
+        }else{
+            message.setInsurantDomicile(null);
         }
         if (!JadeStringUtil.isEmpty(champsAnnonce.getAccountingMonth())) {
             message.setAccountingMonth(JAXBUtil.getXmlCalendarDateMonthYear(JadeDateUtil.getGlobazDate("01."
