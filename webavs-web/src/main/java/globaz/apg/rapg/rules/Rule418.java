@@ -100,7 +100,9 @@ public class Rule418 extends Rule {
                 APDroitAPGJointTiers droit = (APDroitAPGJointTiers) droitsTries.get(i);
                 for(JadePeriodWrapper periodePat : droit.getPeriodes()) {
                     int nbreJoursAAjouter = getNombreJoursAAjouter(periodeAPGCalculed, periodePat.getDateDebut(),periodePat.getDateFin());
-                    nombreJoursEffectueNonPat += nbreJoursAAjouter;
+                    if(!droit.getIdDroit().equals(champsAnnonce.getIdDroit())){
+                        nombreJoursEffectueNonPat += nbreJoursAAjouter;
+                    }
                 }
             }
             APDroitPaterniteJointTiersManager manager2 = new APDroitPaterniteJointTiersManager();
