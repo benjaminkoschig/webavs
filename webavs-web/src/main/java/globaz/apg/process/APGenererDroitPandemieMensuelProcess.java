@@ -456,7 +456,7 @@ public class APGenererDroitPandemieMensuelProcess extends BProcess {
             }
             String oldIdRepartition = repartition.getIdRepartitionBeneficiairePaiement();
             repartition.loadSituationProfessionnelle();
-
+            repartition.setIdInscriptionCI(null);
             repartition.setIdPrestationApg(newId);
             repartition.setIdRepartitionBeneficiairePaiement(null);
             repartition.setId(null);
