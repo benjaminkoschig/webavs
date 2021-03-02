@@ -60,7 +60,7 @@ public class Rule418 extends Rule {
             int nombreJoursMax ;
 
             if (dateDebut.equals(dateFin)) {
-                nombreJoursMax =  0;
+                nombreJoursMax =  1;
             } else {
                 if (dateDebut != null && dateFin != null && dateFin.getTime() >= dateDebut.getTime()) {
                     double msDiff = (double)(dateFin.getTime() - dateDebut.getTime());
