@@ -10,6 +10,7 @@ import globaz.apg.vb.annonces.APAnnonceSedexViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.globall.api.BISession;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 import java.util.Iterator;
@@ -34,7 +35,7 @@ public class APAnnonceSedexHelper extends APAnnonceAPGHelper {
             APAnnonceAPGManager annonceManager = new APAnnonceAPGManager();
             annonceManager.setSession(session);
             annonceManager.setForEnvelopeMessageId(envelopeMessageId);
-            annonceManager.find();
+            annonceManager.find(BManager.SIZE_NOLIMIT);
             Iterator<APAnnonceAPG> it = annonceManager.iterator();
             while (it.hasNext()) {
                 APAnnonceAPG annonce = it.next();
