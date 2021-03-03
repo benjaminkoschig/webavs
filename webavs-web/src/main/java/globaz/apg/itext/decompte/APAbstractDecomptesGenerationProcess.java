@@ -715,16 +715,17 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
             if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
                 // chargement de la ligne de copie avec le formater
+                String langue = tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE);
                 if (impotSource){
                     parametres.put("P_COPIE_A", document.getTextes(1).getTexte(8).getDescription());
-                    parametres.put("P_COPIE_A2", getAdresseFiscFormatteLine(decompteCourant.getIdTiers(), idCantonImpotSource));
+                    parametres.put("P_COPIE_A2", getAdresseFiscFormatteLine(langue, idCantonImpotSource));
                 }
 
                 if (((getFirstForCopy() && getIsCopie()) || !getIsCopie())) {
                     createCorpsPaternite(parametres);
                     // S'il s'agit de la copie et de la lettre d'entête, il faut modifier l'adresse sur ce document
                 } else if (getIsCopie() && !getFirstForCopy()) {
-                    String tiersAdresseFiscFormatte = getAdresseFiscFormatte(decompteCourant.getIdTiers(), idCantonImpotSource);
+                    String tiersAdresseFiscFormatte = getAdresseFiscFormatte(langue, idCantonImpotSource);
                     parametres.put("P_HEADER_ADRESSE", tiersAdresseFiscFormatte);
                 }
 
@@ -1046,14 +1047,15 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             }
         } catch (final Exception e) {
             getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, APDecompteGenerationProcess.class.getName());
+            setSendMailOnError(true);
             abort();
         }
     }
 
-    private String getAdresseFiscFormatteLine(String idTiers, String idCanton) {
+    private String getAdresseFiscFormatteLine(String langue, String idCanton) {
 
         try {
-            String idAdmFisc = getAdresseAdministrationFiscale(idTiers, idCanton);
+            String idAdmFisc = getAdresseAdministrationFiscale(langue, idCanton);
             String tiersAdresseFiscFormatteLine = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
                     idAdmFisc, APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue(), "", "",
                     new PRTiersAdresseCopyFormater02(), this.getDateDocument().toString());
@@ -1077,23 +1079,23 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
     }
 
-    private String getAdresseAdministrationFiscale(String idTiersPrincipal, String idCanton) throws Exception {
+    private String getAdresseAdministrationFiscale(String langue, String idCanton) throws Exception {
         TIAdministrationAdresseManager admAdrMgr = new TIAdministrationAdresseManager();
         admAdrMgr.setSession(getSession());
 
         // Trouver le canton de domicile du bénéfiaire principal
         // Retrieve du destinataire de la décision
 
-        PRTiersWrapper tier = PRTiersHelper.getTiersAdresseDomicileParId(getSession(), idTiersPrincipal,
-                JACalendar.todayJJsMMsAAAA());
-
-        if (tier == null) {
-            throw new Exception(getSession().getLabel("PROCESS_PREP_DECISION_PAS_ADR_DOM"));
-        }
+//        PRTiersWrapper tier = PRTiersHelper.getTiersAdresseDomicileParId(getSession(), idTiersPrincipal,
+//                JACalendar.todayJJsMMsAAAA());
+//
+//        if (tier == null) {
+//            throw new Exception(getSession().getLabel("PROCESS_PREP_DECISION_PAS_ADR_DOM"));
+//        }
 
 //        String cantonDomicile = tier.getProperty(PRTiersWrapper.PROPERTY_ID_CANTON);
         String cantonDomicile = idCanton;
-        String langueTier = tier.getProperty(PRTiersWrapper.PROPERTY_LANGUE);
+        String langueTier = langue;
 
         admAdrMgr.setForCantonAdministration(cantonDomicile);
         admAdrMgr.setForGenreAdministration("509011");// Administration fiscale cantonale
