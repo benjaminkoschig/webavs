@@ -1087,12 +1087,21 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         FWFindParameterManager manager = new FWFindParameterManager();
         manager.setSession(session);
         manager.setIdCleDiffere(parameterName);
+        manager.setIdCodeSysteme("1");
         manager.find(BManager.SIZE_NOLIMIT);
         String dateMin = "01.01.2021";
         if (manager.size() > 0) {
             FWFindParameter param = (FWFindParameter) manager.getFirstEntity();
             Date d = new SimpleDateFormat("yyyyMMdd").parse(param.getDateDebutValidite());
             dateMin = new SimpleDateFormat("dd.MM.yyyy", Locale.FRENCH).format(d);
+        }else{
+            manager.setIdCodeSysteme("1");
+            manager.find(BManager.SIZE_NOLIMIT);
+            if (manager.size() > 0) {
+                FWFindParameter param = (FWFindParameter) manager.getFirstEntity();
+                Date d = new SimpleDateFormat("yyyyMMdd").parse(param.getDateDebutValidite());
+                dateMin = new SimpleDateFormat("dd.MM.yyyy", Locale.FRENCH).format(d);
+            }
         }
         if (JadeDateUtil.isDateBefore(dateNaissance, dateMin)) {
             String msgError = session.getLabel("ERREUR_MIN_DATE_NAI");
@@ -1100,17 +1109,46 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             throw new Exception(msgError);
         }
 
-        parameterName = APParameter.PATERNITE_JOUR_MAX.getParameterName();
-        BigDecimal joursMax = new BigDecimal(
-                FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", parameterName, dateDeDebutDroit, "", 2));
+        BigDecimal joursMax = new BigDecimal(14);
 
+        parameterName = APParameter.PATERNITE_JOUR_MAX.getParameterName();
+        manager.setIdCleDiffere(parameterName);
+        manager.setIdCodeSysteme("1");
+        manager.find(BManager.SIZE_NOLIMIT);
+        if (manager.size() > 0) {
+            FWFindParameter param = (FWFindParameter) manager.getFirstEntity();
+            joursMax = new BigDecimal(param.getValeurNumParametre());
+        }else{
+            manager.setIdCodeSysteme("0");
+            manager.find(BManager.SIZE_NOLIMIT);
+            if (manager.size() > 0) {
+                FWFindParameter param = (FWFindParameter) manager.getFirstEntity();
+                joursMax = new BigDecimal(param.getValeurNumParametre());
+            }
+        }
         if (joursSoldes > joursMax.intValue()) {
             throw new Exception(session.getLabel("ERREUR_MAX_JOURS"));
         }
 
+        BigDecimal nombreMoisMaxApres =  new BigDecimal(6);
+
         parameterName = APParameter.PATERNITE_MOIS_MAX.getParameterName();
-        BigDecimal nombreMoisMaxApres = new BigDecimal(
-                FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "0", parameterName, dateDeDebutDroit, "", 2));
+        manager.setIdCleDiffere(parameterName);
+        manager.setIdCodeSysteme("1");
+        manager.find(BManager.SIZE_NOLIMIT);
+
+        if (manager.size() > 0) {
+            FWFindParameter param = (FWFindParameter) manager.getFirstEntity();
+            nombreMoisMaxApres = new BigDecimal(param.getValeurNumParametre());
+        }else{
+            manager.setIdCodeSysteme("0");
+            manager.find(BManager.SIZE_NOLIMIT);
+            if (manager.size() > 0) {
+                FWFindParameter param = (FWFindParameter) manager.getFirstEntity();
+                nombreMoisMaxApres = new BigDecimal(param.getValeurNumParametre());
+            }
+        }
+
 
         String dateFinMax = JadeDateUtil.addMonths(dateDeDebutDroit, nombreMoisMaxApres.intValue());
         if (JadeDateUtil.isDateAfter(dateDeFinDroit, dateFinMax)) {
@@ -1119,6 +1157,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             msgError = PRStringUtils.replaceString(msgError, "{1}", dateFinMax);
             throw new Exception(msgError);
         }
+
 
         if (viewBean.getCsSexe().equals(ALCSTiers.SEXE_FEMME)) {
             throw new Exception(session.getLabel("ERROR_PATERNITE_S"));
