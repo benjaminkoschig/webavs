@@ -40,6 +40,8 @@ public class APRapgConsultationUtilV2 {
 
     private static final String SSL_SOCKET_FACTORY_ORACLE_JDK = "com.sun.xml.ws.transport.https.client.SSLSocketFactory";
     private static final String SSL_SOCKET_FACTORY_JAX_WS_RI = "com.sun.xml.internal.ws.transport.https.client.SSLSocketFactory";
+    private static final String SSL_SOCKET_FACTORY_OPEN_JDK = "javax.net.ssl.SSLSocketFactory";
+    private static final String SSL_SOCKET_FACTORY_IBM_JDK = "com.ibm.websphere.ssl.protocol.SSLSocketFactory";
     private static final Logger logger = LoggerFactory.getLogger(APRapgConsultationUtil.class);
 
     public static List<RegisterStatusRecordType> findAnnonces(BSession session, String nss, String numCaisse, String numBranche) throws PropertiesException, APWebserviceException {
@@ -85,7 +87,7 @@ public class APRapgConsultationUtilV2 {
                         }
                         logger.warn(builder.toString());
                     }
-                    if(response.getMessage() != null){
+                    if (response.getMessage() != null) {
                         return response.getMessage().getContent().getRegisterStatusRecords();
                     } else {
                         return null;
@@ -137,8 +139,8 @@ public class APRapgConsultationUtilV2 {
         final RapgConsultation20 port = rapgConsultationService.getRapgConsultationPort20();
 
         // Set endpoint address (URL) of the webservice.
+        final Map<String, Object> ctxt = ((BindingProvider) port).getRequestContext();
         if (StringUtils.isNotEmpty(urlRAPGWS)) {
-            final Map<String, Object> ctxt = ((BindingProvider) port).getRequestContext();
             ctxt.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, urlRAPGWS);
         }
 
@@ -189,6 +191,8 @@ public class APRapgConsultationUtilV2 {
             final Map<String, Object> ctxt = ((BindingProvider) proxy).getRequestContext();
             ctxt.put(SSL_SOCKET_FACTORY_JAX_WS_RI, sc.getSocketFactory());
             ctxt.put(SSL_SOCKET_FACTORY_ORACLE_JDK, sc.getSocketFactory());
+            ctxt.put(SSL_SOCKET_FACTORY_IBM_JDK, sc.getSocketFactory());
+            ctxt.put(SSL_SOCKET_FACTORY_OPEN_JDK, sc.getSocketFactory());
 
         } catch (final FileNotFoundException e) {
             System.err.println("File " + certFileName + " doesn't exist");
