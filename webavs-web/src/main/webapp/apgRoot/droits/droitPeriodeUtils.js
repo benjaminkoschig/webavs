@@ -59,6 +59,8 @@ function addPeriode() {
         $('#nbJour').val("");
         $('#tauxImpotSource').val(0.00);
         $('#csCantonDomicileAffiche').val("");
+        $('#isSoumisCotisation').prop( "disabled", true);
+        $('#tauxImpotSource').prop( "disabled", true);
     }
 }
 
@@ -79,6 +81,8 @@ function editPeriode(index) {
     if (periode.getCantonImposition() != '' && periode.getCantonImposition() != '0') {
         document.getElementById("isSoumisCotisation").checked = true;
     }
+    $('#isSoumisCotisation').prop( "disabled", false);
+    $('#tauxImpotSource').prop( "disabled", false);
     showCantonImpotSource();
 }
 

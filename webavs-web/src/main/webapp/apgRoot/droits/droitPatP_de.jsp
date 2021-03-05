@@ -285,6 +285,26 @@
         } else {
             document.getElementById("linkTiers").style.visibility = "hidden";
         }
+        $('#isSoumisCotisation').prop( "disabled", true);
+        $('#tauxImpotSource').prop( "disabled", true);
+    }
+
+    function periodeChange() {
+        var dateDebut = $('#dateDebutPeriode').val();
+        var dateFin = $('#dateFinPeriode').val();
+        var impot = $('#isSoumisCotisation');
+        var taux = $('#tauxImpotSource');
+
+        if(impot.is(':disabled')
+            && dateDebut != ''
+            && dateFin != '') {
+            impot.prop( "disabled", false);
+            taux.prop( "disabled", false);
+        } else if(!impot.is(':disabled')
+            && (dateDebut == '' || dateFin == '')) {
+            impot.prop( "disabled", true);
+            taux.prop( "disabled", true);
+        }
     }
 
     function nssFailure() {
@@ -404,6 +424,8 @@
             EDITION_MODE = true;
             $('#modeEditionDroit').val('<%=APModeEditionDroit.EDITION%>');
             repaintTablePeriodes();
+            $('#isSoumisCotisation').prop( "disabled", true);
+            $('#tauxImpotSource').prop( "disabled", true);
         });
 
         <%
@@ -646,6 +668,7 @@
                            id="dateDebutPeriode"
                            name="dateDebutPeriode"
                            data-g-calendar=" "
+                           onChange="periodeChange();"
                            value=""/>
                     <label for="dateFinPeriode">
                         <ct:FWLabel key="JSP_AU"/>
@@ -654,6 +677,7 @@
                            id="dateFinPeriode"
                            name="dateFinPeriode"
                            data-g-calendar=" "
+                           onChange="periodeChange();"
                            value=""/>
                     <input type="hidden"
                            name="nbJour"
