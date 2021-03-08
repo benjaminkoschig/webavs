@@ -597,17 +597,25 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
 
                     while ((repartitionPaiements = (APRepartitionPaiementsJointEmployeur) repartitionPaiementsJointEmployeurManager
                             .cursorReadNext(statement)) != null) {
-                        if(repartitionPaiements.getIdDroit().equals(compensation.getIdDroit()) && repartitionPaiements.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE) ){
-                            repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
+                        if( repartitionPaiements.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE) ){
+                            if(repartitionPaiements.getIdDroit().equals(compensation.getIdDroit())){
+                                repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
+                                repartitionPaiements.wantMiseAJourLot(false);
+                                repartitionPaiements.update(transaction);
+                                getMemoryLog()
+                                        .logMessage(
+                                                "repart updatée " + repartitionPaiements.getIdRepartitionBeneficiairePaiement(),
+                                                "", "");
+                            }
                         }else{
                             repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
+                            repartitionPaiements.wantMiseAJourLot(false);
+                            repartitionPaiements.update(transaction);
+                            getMemoryLog()
+                                    .logMessage(
+                                            "repart updatée " + repartitionPaiements.getIdRepartitionBeneficiairePaiement(),
+                                            "", "");
                         }
-                        repartitionPaiements.wantMiseAJourLot(false);
-                        repartitionPaiements.update(transaction);
-                        getMemoryLog()
-                                .logMessage(
-                                        "repart updatée " + repartitionPaiements.getIdRepartitionBeneficiairePaiement(),
-                                        "", "");
                     }
 
                     repartitionPaiementsJointEmployeurManager = null;

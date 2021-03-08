@@ -224,29 +224,43 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
                 .cursorReadNext(statement)) != null) {
             if (compensation.getIsPorteEnCompte()) {
                 if (isSituationProfPorteEnCompte(repartitionPaiements.getIdSituationProfessionnelle())) {
-                    if(repartitionPaiements.getIdDroit().equals(compensation.getIdDroit()) && repartitionPaiements.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE) ){
-                        repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
+                    /**
+                     * Paternité : On vérie si le même droit pour prendre le bon ID de compensation.
+                     */
+                    if(repartitionPaiements.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE) ){
+                        if(repartitionPaiements.getIdDroit().equals(compensation.getIdDroit())){
+                            repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
+                            repartitionPaiements.wantMiseAJourLot(false);
+                            repartitionPaiements.update(transaction);
+                            memoryLog(getSession().getLabel("REPARTITION_MISE_A_JOUR"), "",
+                                    repartitionPaiements.getIdRepartitionBeneficiairePaiement());
+                        }
                     }else{
                         repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
+                        repartitionPaiements.wantMiseAJourLot(false);
+                        repartitionPaiements.update(transaction);
+                        memoryLog(getSession().getLabel("REPARTITION_MISE_A_JOUR"), "",
+                                repartitionPaiements.getIdRepartitionBeneficiairePaiement());
                     }
+                }
+            } else {
+                if(repartitionPaiements.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE) ){
+                    if(repartitionPaiements.getIdDroit().equals(compensation.getIdDroit())){
+                        repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
+                        repartitionPaiements.wantMiseAJourLot(false);
+                        repartitionPaiements.update(transaction);
+                        memoryLog(getSession().getLabel("REPARTITION_MISE_A_JOUR"), "",
+                                repartitionPaiements.getIdRepartitionBeneficiairePaiement());
+                    }
+                }else{
+                    repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
                     repartitionPaiements.wantMiseAJourLot(false);
                     repartitionPaiements.update(transaction);
                     memoryLog(getSession().getLabel("REPARTITION_MISE_A_JOUR"), "",
                             repartitionPaiements.getIdRepartitionBeneficiairePaiement());
                 }
-            } else {
-                if(repartitionPaiements.getIdDroit().equals(compensation.getIdDroit()) && repartitionPaiements.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE) ){
-                    repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
-                }else{
-                    repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
-                }
-                repartitionPaiements.wantMiseAJourLot(false);
-                repartitionPaiements.update(transaction);
-                memoryLog(getSession().getLabel("REPARTITION_MISE_A_JOUR"), "",
-                        repartitionPaiements.getIdRepartitionBeneficiairePaiement());
             }
         }
-
         repartitionPaiementsJointEmployeurManager.cursorClose(statement);
         repartitionPaiementsJointEmployeurManager.clear();
     }
