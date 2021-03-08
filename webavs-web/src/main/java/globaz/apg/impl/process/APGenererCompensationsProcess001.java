@@ -655,6 +655,8 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                             .cursorReadNext(statement)) != null) {
                         if(compensation.getIdDroit().equals(repartitionPaiementsJointEmployeur.getIdDroit()) && repartitionPaiementsJointEmployeur.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE) ){
                             repartitionPaiementsJointEmployeur.setIdCompensation(compensation.getIdCompensation());
+                        }else{
+                            repartitionPaiementsJointEmployeur.setIdCompensation(compensation.getIdCompensation());
                         }
                         repartitionPaiementsJointEmployeur.wantMiseAJourLot(false);
                         repartitionPaiementsJointEmployeur.update(transaction);
