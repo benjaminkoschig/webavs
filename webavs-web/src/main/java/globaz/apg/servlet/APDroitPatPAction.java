@@ -6,6 +6,7 @@
  */
 package globaz.apg.servlet;
 
+import globaz.apg.application.APApplication;
 import globaz.apg.db.droits.APDroitPaternite;
 import globaz.apg.exceptions.APWrongViewBeanTypeException;
 import globaz.apg.util.APGSeodorServiceCallUtil;
@@ -243,7 +244,13 @@ public class APDroitPatPAction extends APAbstractDroitPAction {
             if (viewBean.getAControler()) {
                 APGSeodorServiceCallUtil.callWSSeodor(viewBean, mainDispatcher);
             }
-            if (viewBean.hasMessagePropError()) {
+            BSession mSession = (BSession) mainDispatcher.getSession();
+            final boolean isCheckVerifJour = Boolean.valueOf(mSession.getApplication().getProperty(
+                    APApplication.PROPERTY_PAT_WARN_VERIF_JOUR, "false"));
+            if (viewBean.getCheckWarn() && isCheckVerifJour) {
+                viewBean.checkWarningVerifJour(mSession);
+            }
+            if (viewBean.hasMessagePropError() || viewBean.hasMessageWarn()) {
                 newAction = FWAction.newInstance(IAPActions.ACTION_SAISIE_CARTE_APAT + ".afficher");
                 session.removeAttribute("viewBean");
                 session.setAttribute("viewBean", viewBean);

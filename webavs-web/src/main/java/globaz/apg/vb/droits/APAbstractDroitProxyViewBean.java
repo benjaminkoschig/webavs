@@ -46,6 +46,7 @@ public abstract class APAbstractDroitProxyViewBean extends PRAbstractViewBeanSup
     private String csCantonDomicile = "";
 
     private boolean aControler = false;
+    private boolean checkWarn = false;
 
     protected APAbstractDroitProxyViewBean(APDroitLAPG droit) {
         this.droit = droit;
@@ -598,5 +599,13 @@ public abstract class APAbstractDroitProxyViewBean extends PRAbstractViewBeanSup
 
     public void setAControler(boolean aControler) {
         this.aControler = aControler;
+    }
+
+    public boolean getCheckWarn() {
+        return checkWarn;
+    }
+
+    public void setCheckWarn(boolean checkWarn) {
+        this.checkWarn = checkWarn;
     }
 }

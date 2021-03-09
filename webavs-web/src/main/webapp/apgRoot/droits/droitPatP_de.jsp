@@ -27,6 +27,7 @@
     APDroitPatPViewBean viewBean = (APDroitPatPViewBean) session.getAttribute("viewBean");
     selectedIdValue = viewBean.getIdDroit();
     viewBean.setAControler(false);
+    viewBean.setCheckWarn(false);
     bButtonUpdate = viewBean.isModifiable() && bButtonUpdate;
     bButtonValidate = false;
     bButtonCancel = false;
@@ -104,6 +105,7 @@
             document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_ENFANT_PAT%>.chercher";
         } else {
             $('#aControler').prop("checked", true);
+            $('#checkWarn').prop("checked", true);
             hasError = nextStepValidate();
         }
         if (!hasError) {
@@ -218,6 +220,7 @@
         }
         showCantonImpotSource();
         checkParametersWebService();
+        checkMsgWarn();
     }
 
     function checkParametersWebService() {
@@ -252,6 +255,42 @@
                 $("#Ok").focus();
                 <% if(viewBean.getMessagesErrorList().getApgSeodorErreurEntityList().size()!=0) { %>
                 $('#dialog_apg_webservice').append('<%=viewBean.getMessagesErrorList().getListErreursTableHTML()%>');
+                <% } %>
+            }
+        });
+    }
+
+    function checkMsgWarn() {
+        $("#dialog_apg_warn").dialog({
+            resizable: false,
+            height: 300,
+            width: 500,
+            modal: true,
+            buttons: [{
+                id: "oui",
+                text: "<ct:FWLabel key='JSP_OUI'/>",
+                click: function () {
+                    $('#checkWarn').prop("checked", false);
+                    EDITION_MODE = false;
+                    $('#modeEditionDroit').val('<%=APModeEditionDroit.LECTURE%>');
+                    nextStepValidateAfterPopupSeodor();
+                    $(this).dialog("close");
+                }
+            }, {
+                id: "non",
+                text: "<ct:FWLabel key='JSP_NON'/>",
+                click: function () {
+                    action(UPDATE);
+                    upd();
+                    EDITION_MODE = true;
+                    repaintTablePeriodes();
+                    $(this).dialog("close");
+                }
+            }],
+            open: function () {
+                $(".ui-dialog-titlebar-close", ".ui-dialog-titlebar").hide();
+                <% if(viewBean.hasMessageWarn()) { %>
+                $('#dialog_apg_warn').append("<%=viewBean.getMessagesWarn()%>");$('#dialog_apg_warn').prop("vertical-align", "middle");
                 <% } %>
             }
         });
@@ -331,6 +370,7 @@
         document.getElementById("nss").value = document.getElementById("likeNSS").value;
         document.getElementById("csSexe").value = document.getElementById("csSexeAffiche").value;
         document.getElementById("aControler").value = $('#aControler').is(':checked');
+        document.getElementById("checkWarn").value = $('#checkWarn').is(':checked');
         if (!document.getElementById("isSoumisCotisation").checked) {
             document.getElementById("csCantonDomicile").value = '';
         } else {
@@ -529,6 +569,10 @@
                name="aControler"
                id="aControler"
                value="<%=viewBean.getAControler()%>"/>
+        <input type="hidden"
+               name="checkWarn"
+               id="checkWarn"
+               value="<%=viewBean.getCheckWarn()%>"/>
     </td>
     <td></td>
 </tr>
@@ -939,6 +983,13 @@
     <% } %>
 </div>
 <% } %>
+
+<% if (viewBean.hasMessageWarn()) { %>
+<div style="display:none;vertical-align:middle" id="dialog_apg_warn"
+     title="<ct:FWLabel key='JSP_WARN'/>">
+</div>
+<% } %>
+
 <%@ include file="plausibilites.jsp" %>
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>

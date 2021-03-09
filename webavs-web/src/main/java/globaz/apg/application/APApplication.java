@@ -172,6 +172,10 @@ public class APApplication extends PRAbstractApplication {
 
     /** Propriété d'activation MATCIAB1 et MATCIAB2 */
     public static final String PROPERTY_APG_FERCIAB_MATERNITE = "apg.FERCIAB.maternite";
+
+    /** Le nom de la propriété sur la vérification du nombre de jour saisi */
+    public static final String PROPERTY_PAT_WARN_VERIF_JOUR = "droits.paternite.verifier.jour";
+
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
 

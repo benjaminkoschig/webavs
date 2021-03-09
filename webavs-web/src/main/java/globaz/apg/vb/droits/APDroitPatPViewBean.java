@@ -40,6 +40,8 @@ public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
     private String remarque = "";
     private APGSeodorErreurListEntities messagesError = new APGSeodorErreurListEntities();
     private boolean hasMessagePropError = false;
+    private String messagesWarn = "";
+    private boolean hasMessageWarn = false;
 
 
     private String dateFromJS = "";
@@ -150,6 +152,25 @@ public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
         return false;
     }
 
+    public String getMessagesWarn() {
+        StringBuilder msgHTML = new StringBuilder();
+        if (Objects.nonNull(messagesWarn)) {
+            msgHTML.append(messagesWarn+"<br>");
+        }
+        return msgHTML.toString();
+    }
+
+    public void setMessagesWarn(String messagesWarn) {
+        this.messagesWarn = messagesWarn;
+    }
+
+    public boolean hasMessageWarn() {
+        return hasMessageWarn;
+    }
+
+    public void setMessageWarn(boolean hasMessageWarn) {
+        this.hasMessageWarn = hasMessageWarn;
+    }
 
     /**
      * Cette méthode est appelée lors du submit du formulaire de saisie d'un droit APG 1 : saisie des périodes</br> 2 :
@@ -372,6 +393,30 @@ public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
            return  "01/01/2021";
         }
         return dateMin;
+    }
+
+
+    public int getJourPaternite(BSession session) {
+        try {
+            return Integer.parseInt(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", APParameter.PATERNITE_JOUR_MAX.getParameterName(), "0", "", 0));
+        } catch (Exception e) {
+            return 14;
+        }
+    }
+
+    public void checkWarningVerifJour(BSession session){
+        int nbJourSolde = 0;
+        int nbJourMax = getJourPaternite(session);
+        for(PRPeriode p: periodes) {
+            nbJourSolde += Integer.valueOf(p.getNbJour());
+        }
+        hasMessageWarn = nbJourSolde < nbJourMax;
+        if(hasMessageWarn) {
+            messagesWarn = session.getLabel("JSP_WARN_PATERNITE_NB_JOUR");
+            messagesWarn = messagesWarn.replace("{0}", Integer.toString(nbJourMax));
+        } else {
+            messagesWarn = "";
+        }
     }
 
 

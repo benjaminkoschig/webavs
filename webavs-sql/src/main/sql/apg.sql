@@ -1052,3 +1052,6 @@ INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('apg.decision.p
 -- ged
 INSERT INTO SCHEMA.FWDDOC (IDDOC,IDCONF,NUMREF,DESCFR,DESCDE,DESCIT,DOCTYP,PSPY,OUTXML,OUTPDF) VALUES ((SELECT MAX(IDDOC)+1 FROM FWDDOC),1,'5053PAP','Décision d''allocation paternité',null,null,null,null,'2','1');
 INSERT INTO SCHEMA.FWDDOC (IDDOC,IDCONF,NUMREF,DESCFR,DESCDE,DESCIT,DOCTYP,PSPY,OUTXML,OUTPDF) VALUES ((SELECT MAX(IDDOC)+1 FROM FWDDOC),1,'5054PAP','Attestation fiscale paternité',null,null,null,null,'2','1');
+
+-- propriété pour afficher la popup warning si pas nombre de jour à 14
+INSERT INTO SCHEMA.JADEPROP (PROPNAME, PROPVAL, CSPY, PSPY) VALUES ('apg.droits.paternite.verifier.jour', 'true', '202101202120000Globaz    ', '202101202120000Globaz    ');
