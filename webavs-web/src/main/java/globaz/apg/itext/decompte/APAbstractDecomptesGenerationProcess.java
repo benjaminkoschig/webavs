@@ -787,6 +787,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 // le pied de page
                 buffer.setLength(0);
 
+                // Ajout de la remarque du droit
+                buffer.append(droit.getRemarque() + "\n\n");
+
                 for (final Iterator<ICTTexte> textes = document.getTextes(4).iterator(); textes.hasNext(); ) {
                     final ICTTexte texte = textes.next();
 
@@ -1242,7 +1245,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         final APEnfantPatManager enfMgr = new APEnfantPatManager();
         enfMgr.setSession(getSession());
         enfMgr.setForIdDroitPaternite(droit.getIdDroit());
-        enfMgr.find();
+        enfMgr.find(getTransaction());
 
         final JACalendar cal = new JACalendarGregorian();
 
@@ -1298,7 +1301,11 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                                 buffer.append(document.getTextes(2).getTexte(201));
                             }
                         }else{
-                            buffer.append(texte.getDescription());
+                            if (position == 3 && hasRestitution && (Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()) == 0)) {
+                                // TODO Pour le moment, pas de consigne sur ce qu'il faut afficher. Arrivera dans une version futur
+                            } else {
+                                buffer.append(texte.getDescription());
+                            }
                         }
 
                         count++;
@@ -1399,6 +1406,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         // BZ 5373 : SI IJ AC, recalculer droitAcquis selon règle de calcul ((droitAcquis * 21.7)/30)
         BigDecimal droitAcquis = new BigDecimal(droit.getDroitAcquis());
 
+        Double revenuMoyenDeterminant = Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant());
+
         if (IAPDroitAPG.CS_IJ_ASSURANCE_CHOMAGE.equals(droit.getCsProvenanceDroitAcquis())) {
             droitAcquis = (droitAcquis.multiply(new BigDecimal("21.7"))).divide(new BigDecimal("30.0"), 2,
                     BigDecimal.ROUND_HALF_UP);
@@ -1408,7 +1417,10 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             droitAcquis = new BigDecimal(droitAcquisArrondiAuCinqCentimes.toString());
         }
 
-        if (loadPrestationType().getMontantJournalier().equals(droitAcquis.toString())) {
+        // Si le revenu moyen determinant est nulle, on n'affiche pas le texte
+        if (revenuMoyenDeterminant == 0) {
+            // TODO pour le moment, pas de consigne concernant ce qu'il faut faire. Sera fait lors d'une prochaine version.
+        }else if (loadPrestationType().getMontantJournalier().equals(droitAcquis.toString())) {
             buffer.append(" "); // espace
             buffer.append(textes.getTexte(101).getDescription());
         } else {
@@ -1555,7 +1567,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             arguments[4] = JANumberFormatter.format(montantJournalierMax);
         } else {
             arguments[4] = JANumberFormatter.format(
-                    Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 1, 2,
+                    revenuMoyenDeterminant, 1, 2,
                     JANumberFormatter.SUP);
         }
 
@@ -1624,9 +1636,17 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     private Object[] completeCorpsEmployeurs(final StringBuffer buffer, final ICTListeTextes textes) throws Exception {
 
         final Object[] arguments = new Object[11];
+        Double revenuMoyenDeterminant = Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant());
 
-        buffer.append(" "); // espace
-        buffer.append(textes.getTexte(4).getDescription());
+        // Si le revenu est égale à 0, alors on supprime le paragraphe de la décision.
+        if (revenuMoyenDeterminant != 0) {
+            buffer.append(" "); // espace
+            buffer.append(textes.getTexte(4).getDescription());
+        } else {
+            // TODO Une correction sera apporté dans une version futur.
+        }
+
+
 
         // ajouter le paragraphe sur la répartition de paiement si nécessaire
         if (isEmployeursMultiples()) {
