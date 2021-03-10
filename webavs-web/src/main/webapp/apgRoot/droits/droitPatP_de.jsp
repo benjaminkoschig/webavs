@@ -96,6 +96,8 @@
         document.getElementById("dateDecesAffiche").disabled = true;
         document.getElementById("csEtatCivilAffiche").disabled = true;
         document.getElementById("csSexeAffiche").disabled = true;
+        $('#isSoumisCotisation').prop( "disabled", true);
+        $('#tauxImpotSource').prop( "disabled", true);
     }
 
     function validate() {
