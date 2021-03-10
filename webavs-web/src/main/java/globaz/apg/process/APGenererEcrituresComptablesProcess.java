@@ -21,6 +21,7 @@ import globaz.apg.pojo.AcmNeFneBean;
 import globaz.apg.pojo.ComplementBean;
 import globaz.apg.properties.APProperties;
 import globaz.apg.services.APRechercherAssuranceFromDroitCotisationService;
+import globaz.apg.utils.APGUtils;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.util.FWCurrency;
@@ -348,6 +349,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         public boolean isEmployeur = false;
         public boolean isIndependant = false;
         public boolean isMaternite = false;
+        public boolean isPartenite = false;
         public boolean isRestitution = false;
         public String montant = "";
         public String montantBrutCotisationFNE = "";
@@ -3003,6 +3005,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             repartition.isRestitution = isRestitution;
             repartition.idCompensation = repartJointCotJointPrest.getIdCompensation();
             repartition.isMaternite = noRevision.equals(IAPDroitMaternite.CS_REVISION_MATERNITE_2005) ? true : false;
+            repartition.isPartenite = APGUtils.isTypePaternite(repartJointCotJointPrest.getGenreService());
             repartition.isEmployeur = isEmployeur;
             repartition.isIndependant = repartJointCotJointPrest.getIsIndependant().booleanValue();
             repartition.anneeCotisation = String.valueOf(new JADate(repartJointCotJointPrest.getDateDebutPrestation())
@@ -3134,16 +3137,25 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             if (idAssureDeBase.equals(idTiers)) {
                 // choix de la section
                 repartition.section = getSection(idTiers, idAffilie, isRestitution);
-                key = new Key(idTiers, idAffilie, "0", "0", "0", false, false, repartition.idAdressePaiement, false);
+                if(repartition.isPartenite){
+                    key = new Key(idTiers, idAffilie, droit.getIdDroit(), "0", "0", false, false, repartition.idAdressePaiement, false);
+                }else{
+                    key = new Key(idTiers, idAffilie, "0", "0", "0", false, false, repartition.idAdressePaiement, false);
+                }
+
 
             }
             // Cas ou le bénéficiaire est un affilié
             else if (!JadeStringUtil.isIntegerEmpty(idAffilie)) {
                 // choix de la section
                 repartition.section = getSection(idTiers, idAffilie, isRestitution);
-                key = new Key(idTiers, idAffilie, "0", "0", "0", false, false, repartition.idAdressePaiement,
-                        isPorteEnCompte);
-
+                if(repartition.isPartenite){
+                    key = new Key(idTiers, idAffilie, droit.getIdDroit(), "0", "0", false, false, repartition.idAdressePaiement,
+                            isPorteEnCompte);
+                }else{
+                    key = new Key(idTiers, idAffilie, "0", "0", "0", false, false, repartition.idAdressePaiement,
+                            isPorteEnCompte);
+                }
             }
             // Cas ou le bénéficiaire est un employeur non affilié,
             // la clé est composé de l'idtiers du l'assuré principal.

@@ -4,6 +4,7 @@
 package globaz.apg.db.prestation;
 
 import globaz.apg.application.APApplication;
+import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APEmployeur;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.properties.APProperties;
@@ -122,6 +123,21 @@ public class APRepartJointCotJointPrestJointEmployeur extends APRepartitionPaiem
         fromClauseBuffer.append(point);
         fromClauseBuffer.append(APEmployeur.FIELDNAME_ID_EMPLOYEUR);
 
+        //joiture droit
+        fromClauseBuffer.append(leftJoin);
+        fromClauseBuffer.append(schema);
+        fromClauseBuffer.append(APDroitLAPG.TABLE_NAME_LAPG);
+        fromClauseBuffer.append(on);
+        fromClauseBuffer.append(schema);
+        fromClauseBuffer.append(APDroitLAPG.TABLE_NAME_LAPG);
+        fromClauseBuffer.append(point);
+        fromClauseBuffer.append(APDroitLAPG.FIELDNAME_IDDROIT_LAPG);
+        fromClauseBuffer.append(egal);
+        fromClauseBuffer.append(schema);
+        fromClauseBuffer.append(APPrestation.TABLE_NAME);
+        fromClauseBuffer.append(point);
+        fromClauseBuffer.append(APPrestation.FIELDNAME_IDDROIT);
+
         return fromClauseBuffer.toString();
     }
 
@@ -139,8 +155,8 @@ public class APRepartJointCotJointPrestJointEmployeur extends APRepartitionPaiem
     private String montantCotisation = "";
     private String noRevision = "";
     private String tauxCotisation = "";
-
     private String typeCotisation = "";
+    private String genreService = "";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -205,7 +221,7 @@ public class APRepartJointCotJointPrestJointEmployeur extends APRepartitionPaiem
         isIndependant = statement.dbReadBoolean(APSituationProfessionnelle.FIELDNAME_ISINDEPENDANT);
         tauxCotisation = statement.dbReadNumeric(APCotisation.FIELDNAME_TAUX);
         montantBrutCotisation = statement.dbReadNumeric(APCotisation.FIELDNAME_MONTANTBRUT);
-
+        genreService =  statement.dbReadNumeric(APDroitLAPG.FIELDNAME_GENRESERVICE);
     }
 
     /**
@@ -374,4 +390,11 @@ public class APRepartJointCotJointPrestJointEmployeur extends APRepartitionPaiem
         return typeCotisation;
     }
 
+    public String getGenreService() {
+        return genreService;
+    }
+
+    public void setGenreService(String genreService) {
+        this.genreService = genreService;
+    }
 }
