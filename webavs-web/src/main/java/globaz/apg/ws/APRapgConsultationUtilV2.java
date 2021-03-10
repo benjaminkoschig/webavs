@@ -1,7 +1,6 @@
 package globaz.apg.ws;
 
 import ch.admin.zas.rapg.ws.consultation._2.RapgConsultation20;
-import ch.admin.zas.rapg.ws.consultation._2.RapgConsultationService20;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.CommonPropertiesUtils;
 import ch.globaz.common.properties.PropertiesException;
@@ -24,6 +23,7 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
+import javax.xml.ws.Service;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -46,6 +46,7 @@ public class APRapgConsultationUtilV2 {
 
     public static List<RegisterStatusRecordType> findAnnonces(BSession session, String nss, String numCaisse, String numBranche) throws PropertiesException, APWebserviceException {
         String urlRAPGWS = CommonPropertiesUtils.getValue(CommonProperties.RAPG_ENDPOINT_ADDRESS);
+//        String certFileName = "C:\\Users\\ebsc\\Documents\\certificat_sedex\\SedexCertif\\T6-051010-1_2.p12";
         String certFileName = CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_PATH);
         String certPassword = CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_PASSWORD);
         String certType = CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_TYPE);
@@ -133,10 +134,14 @@ public class APRapgConsultationUtilV2 {
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         URL wsdlLocation = classloader.getResource(pathWsdl);
         QName qName = new QName(nameSpace, name);
-        final RapgConsultationService20 rapgConsultationService = new RapgConsultationService20(wsdlLocation, qName);
+
+        Service service = Service.create(wsdlLocation,
+                qName);
+
+//        final RapgConsultationService20 rapgConsultationService = new RapgConsultationService20(wsdlLocation, qName);
         //Getting the port. Entry point for the Webservice.
 
-        final RapgConsultation20 port = rapgConsultationService.getRapgConsultationPort20();
+        final RapgConsultation20 port = service.getPort(RapgConsultation20.class);
 
         // Set endpoint address (URL) of the webservice.
         final Map<String, Object> ctxt = ((BindingProvider) port).getRequestContext();
@@ -165,6 +170,7 @@ public class APRapgConsultationUtilV2 {
         KeyStore ks = null;
 
         try {
+
             sc = SSLContext.getInstance(CommonProperties.RAPG_SSL_CONTEXT_TYPE.getValue());
 
             // Read the certificate
