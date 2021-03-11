@@ -120,7 +120,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     private final APPrestationManager prestations = new APPrestationManager();
     private APPrestation prestationType;
     private Boolean isMoreThanEnfant = false;
-    private Boolean employeursMultiples;
+    private Boolean employeursMultiples = null;
     private Locale locale = null;
     private APRepartitionJointPrestation repartitionForPaternite;
     private String tauxRJM = "";
@@ -1330,6 +1330,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         final APRepartitionPaiementsManager repartitionPaiementsManager = new APRepartitionPaiementsManager();
         repartitionPaiementsManager.setSession(getSession());
 
+        nbRepEmployeur = 0;
+        nbRepAssure = 0;
+
         for (int idPrestation = 0; idPrestation < loadPrestations().size(); ++idPrestation) {
 
             final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
@@ -1615,23 +1618,20 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     }
 
     private boolean isEmployeursMultiples() throws FWIException {
-        if (employeursMultiples == null) {
-            final APSituationProfessionnelleManager sitPros = new APSituationProfessionnelleManager();
+        final APSituationProfessionnelleManager sitPros = new APSituationProfessionnelleManager();
 
-            sitPros.setSession(getSession());
-            sitPros.setForIdDroit(droit.getIdDroit());
+        sitPros.setSession(getSession());
+        sitPros.setForIdDroit(droit.getIdDroit());
 
-            try {
-                if (sitPros.getCount() > 1) {
-                    employeursMultiples = Boolean.TRUE;
-                } else {
-                    employeursMultiples = Boolean.FALSE;
-                }
-            } catch (final Exception e) {
-                throw new FWIException("Impossible de charger les situations professionnelles");
+        try {
+            if (sitPros.getCount() > 1) {
+                employeursMultiples = Boolean.TRUE;
+            } else {
+                employeursMultiples = Boolean.FALSE;
             }
+        } catch (final Exception e) {
+            throw new FWIException("Impossible de charger les situations professionnelles");
         }
-
         return employeursMultiples.booleanValue();
     }
 
