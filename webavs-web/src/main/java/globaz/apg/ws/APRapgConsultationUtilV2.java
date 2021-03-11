@@ -47,8 +47,8 @@ public class APRapgConsultationUtilV2 {
 
     public static List<RegisterStatusRecordType> findAnnonces(BSession session, String nss, String numCaisse, String numBranche) throws PropertiesException, APWebserviceException {
         String urlRAPGWS = CommonPropertiesUtils.getValue(CommonProperties.RAPG_ENDPOINT_ADDRESS);
-        String certFileName = "C:\\Users\\ebsc\\Documents\\certificat_sedex\\SedexCertif\\T6-051010-1_2.p12";
-//        String certFileName = CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_PATH);
+//        String certFileName = "C:\\Users\\ebsc\\Documents\\certificat_sedex\\SedexCertif\\T6-051010-1_2.p12";
+        String certFileName = CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_PATH);
         String certPassword = CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_PASSWORD);
         String certType = CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_TYPE);
 
