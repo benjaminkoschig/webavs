@@ -32,6 +32,7 @@ import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -46,8 +47,8 @@ public class APRapgConsultationUtilV2 {
 
     public static List<RegisterStatusRecordType> findAnnonces(BSession session, String nss, String numCaisse, String numBranche) throws PropertiesException, APWebserviceException {
         String urlRAPGWS = CommonPropertiesUtils.getValue(CommonProperties.RAPG_ENDPOINT_ADDRESS);
-//        String certFileName = "C:\\Users\\ebsc\\Documents\\certificat_sedex\\SedexCertif\\T6-051010-1_2.p12";
-        String certFileName = CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_PATH);
+        String certFileName = "C:\\Users\\ebsc\\Documents\\certificat_sedex\\SedexCertif\\T6-051010-1_2.p12";
+//        String certFileName = CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_PATH);
         String certPassword = CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_PASSWORD);
         String certType = CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_TYPE);
 
@@ -193,12 +194,13 @@ public class APRapgConsultationUtilV2 {
             keyFactory.init(ks, certPassword.toCharArray());
             final KeyManager[] km = keyFactory.getKeyManagers();
             sc.init(keyFactory.getKeyManagers(), null, null);
-
             final Map<String, Object> ctxt = ((BindingProvider) proxy).getRequestContext();
             ctxt.put(SSL_SOCKET_FACTORY_JAX_WS_RI, sc.getSocketFactory());
             ctxt.put(SSL_SOCKET_FACTORY_ORACLE_JDK, sc.getSocketFactory());
             ctxt.put(SSL_SOCKET_FACTORY_IBM_JDK, sc.getSocketFactory());
             ctxt.put(SSL_SOCKET_FACTORY_OPEN_JDK, sc.getSocketFactory());
+
+            ((BindingProvider) proxy).getBinding().setHandlerChain(Collections.singletonList(new APRapgHandler()));
 
         } catch (final FileNotFoundException e) {
             System.err.println("File " + certFileName + " doesn't exist");
