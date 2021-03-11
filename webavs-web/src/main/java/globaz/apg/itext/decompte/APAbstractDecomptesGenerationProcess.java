@@ -787,8 +787,10 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 // le pied de page
                 buffer.setLength(0);
 
-                // Ajout de la remarque du droit
-                buffer.append(droit.getRemarque() + "\n\n");
+                if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+                    // Ajout de la remarque du droit
+                    buffer.append(droit.getRemarque() + "\n\n");
+                }
 
                 for (final Iterator<ICTTexte> textes = document.getTextes(4).iterator(); textes.hasNext(); ) {
                     final ICTTexte texte = textes.next();
@@ -1301,7 +1303,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                                 buffer.append(document.getTextes(2).getTexte(201));
                             }
                         }else{
-                            if (position == 3 && hasRestitution && (Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()) == 0)) {
+                            if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) && position == 3 && hasRestitution && (Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()) == 0)) {
                                 // TODO Pour le moment, pas de consigne sur ce qu'il faut afficher. Arrivera dans une version futur
                             } else {
                                 buffer.append(texte.getDescription());
@@ -1418,7 +1420,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         }
 
         // Si le revenu moyen determinant est nulle, on n'affiche pas le texte
-        if (revenuMoyenDeterminant == 0) {
+        if (revenuMoyenDeterminant == 0 && IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
             // TODO pour le moment, pas de consigne concernant ce qu'il faut faire. Sera fait lors d'une prochaine version.
         }else if (loadPrestationType().getMontantJournalier().equals(droitAcquis.toString())) {
             buffer.append(" "); // espace
@@ -1639,14 +1641,12 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         Double revenuMoyenDeterminant = Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant());
 
         // Si le revenu est égale à 0, alors on supprime le paragraphe de la décision.
-        if (revenuMoyenDeterminant != 0) {
+        if (revenuMoyenDeterminant == 0 && IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+            // TODO Une correction sera apporté dans une version futur.
+        } else {
             buffer.append(" "); // espace
             buffer.append(textes.getTexte(4).getDescription());
-        } else {
-            // TODO Une correction sera apporté dans une version futur.
         }
-
-
 
         // ajouter le paragraphe sur la répartition de paiement si nécessaire
         if (isEmployeursMultiples()) {
