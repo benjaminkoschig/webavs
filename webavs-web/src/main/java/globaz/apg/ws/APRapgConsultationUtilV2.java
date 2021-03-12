@@ -1,6 +1,7 @@
 package globaz.apg.ws;
 
 import ch.admin.zas.rapg.ws.consultation._2.RapgConsultation20;
+import ch.admin.zas.rapg.ws.consultation._2.RapgConsultationService20;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.CommonPropertiesUtils;
 import ch.globaz.common.properties.PropertiesException;
@@ -23,7 +24,6 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
-import javax.xml.ws.Service;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -32,7 +32,6 @@ import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -41,13 +40,10 @@ public class APRapgConsultationUtilV2 {
 
     private static final String SSL_SOCKET_FACTORY_ORACLE_JDK = "com.sun.xml.ws.transport.https.client.SSLSocketFactory";
     private static final String SSL_SOCKET_FACTORY_JAX_WS_RI = "com.sun.xml.internal.ws.transport.https.client.SSLSocketFactory";
-    private static final String SSL_SOCKET_FACTORY_OPEN_JDK = "javax.net.ssl.SSLSocketFactory";
-    private static final String SSL_SOCKET_FACTORY_IBM_JDK = "com.ibm.websphere.ssl.protocol.SSLSocketFactory";
     private static final Logger logger = LoggerFactory.getLogger(APRapgConsultationUtil.class);
 
     public static List<RegisterStatusRecordType> findAnnonces(BSession session, String nss, String numCaisse, String numBranche) throws PropertiesException, APWebserviceException {
         String urlRAPGWS = CommonPropertiesUtils.getValue(CommonProperties.RAPG_ENDPOINT_ADDRESS);
-//        String certFileName = "C:\\Users\\ebsc\\Documents\\certificat_sedex\\SedexCertif\\T6-051010-1_2.p12";
         String certFileName = CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_PATH);
         String certPassword = CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_PASSWORD);
         String certType = CommonPropertiesUtils.getValue(CommonProperties.RAPG_KEYSTORE_TYPE);
@@ -135,14 +131,10 @@ public class APRapgConsultationUtilV2 {
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         URL wsdlLocation = classloader.getResource(pathWsdl);
         QName qName = new QName(nameSpace, name);
-
-        Service service = Service.create(wsdlLocation,
-                qName);
-
-//        final RapgConsultationService20 rapgConsultationService = new RapgConsultationService20(wsdlLocation, qName);
+        final RapgConsultationService20 rapgConsultationService = new RapgConsultationService20(wsdlLocation, qName);
         //Getting the port. Entry point for the Webservice.
 
-        final RapgConsultation20 port = service.getPort(RapgConsultation20.class);
+        final RapgConsultation20 port = rapgConsultationService.getRapgConsultationPort20();
 
         // Set endpoint address (URL) of the webservice.
         final Map<String, Object> ctxt = ((BindingProvider) port).getRequestContext();
@@ -197,10 +189,6 @@ public class APRapgConsultationUtilV2 {
             final Map<String, Object> ctxt = ((BindingProvider) proxy).getRequestContext();
             ctxt.put(SSL_SOCKET_FACTORY_JAX_WS_RI, sc.getSocketFactory());
             ctxt.put(SSL_SOCKET_FACTORY_ORACLE_JDK, sc.getSocketFactory());
-            ctxt.put(SSL_SOCKET_FACTORY_IBM_JDK, sc.getSocketFactory());
-            ctxt.put(SSL_SOCKET_FACTORY_OPEN_JDK, sc.getSocketFactory());
-
-            ((BindingProvider) proxy).getBinding().setHandlerChain(Collections.singletonList(new APRapgHandler()));
 
         } catch (final FileNotFoundException e) {
             System.err.println("File " + certFileName + " doesn't exist");
