@@ -65,8 +65,8 @@ public class AMSedexPTServletAction extends AMAbstractServletAction {
 
         process.setEmail(request.getParameter("email"));
         process.setAnnee(request.getParameter("annee"));
-        process.dateReductionPrimeA = request.getParameter("dateReductionPrimeA");
-        process.dateReductionPrimeDe = request.getParameter("dateReductionPrimeDe");
+        process.setDateReductionPrimeA(request.getParameter("dateReductionPrimeA"));
+        process.setDateReductionPrimeDe(request.getParameter("dateReductionPrimeDe"));
         process.setIsSimulation(isSimulation(request));
 
         try {

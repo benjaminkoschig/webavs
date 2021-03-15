@@ -42,8 +42,8 @@ import java.util.stream.Collectors;
 public class AnnonceSedexPTGenererAnnonceProcess extends AMALabstractProcess {
     private String email = null;
     private String annee = null;
-    public String dateReductionPrimeDe = null;
-    public String dateReductionPrimeA = null;
+    private String dateReductionPrimeDe = null;
+    private String dateReductionPrimeA = null;
     private Boolean isSimulation = Boolean.TRUE;;
 
     @Override
@@ -205,6 +205,23 @@ public class AnnonceSedexPTGenererAnnonceProcess extends AMALabstractProcess {
     public void setAnnee(String annee) {
         this.annee = annee;
     }
+
+    public String getDateReductionPrimeDe() {
+        return dateReductionPrimeDe;
+    }
+
+    public void setDateReductionPrimeDe(String dateReductionPrimeDe) {
+        this.dateReductionPrimeDe = dateReductionPrimeDe;
+    }
+
+    public String getDateReductionPrimeA() {
+        return dateReductionPrimeA;
+    }
+
+    public void setDateReductionPrimeA(String dateReductionPrimeA) {
+        this.dateReductionPrimeA = dateReductionPrimeA;
+    }
+
     public boolean getIsSimulation() {
         return isSimulation;
     }

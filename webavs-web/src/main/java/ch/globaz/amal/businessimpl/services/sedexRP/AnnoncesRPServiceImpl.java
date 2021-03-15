@@ -1508,7 +1508,7 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
      *            Annonces à envoyer
      */
     private int _sendGroupedAnnonce(List<SimpleAnnonceSedex> listAnnonces) {
-
+        arrayListErrorsSedexId = new ArrayList<String>();
         List<SimpleSedexMessage> listSedexMessages = new ArrayList<SimpleSedexMessage>();
         String envelopeMessageId = JadeUUIDGenerator.createLongUID().toString();
         String msgType = "";
