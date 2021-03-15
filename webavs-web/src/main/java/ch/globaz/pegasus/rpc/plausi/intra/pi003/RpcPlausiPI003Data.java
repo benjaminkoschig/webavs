@@ -16,7 +16,7 @@ public class RpcPlausiPI003Data extends RpcPlausiCommonCalculData {
 
     @Override
     public boolean isValide() {
-        if (FC9 == 1 || FC9 == 2) {
+        if (!isReforme && (FC9 == 1 || FC9 == 2)) {
             resolveX1();
             // La valeur FC7 > X1 => invalid
             return FC7.less(X1);

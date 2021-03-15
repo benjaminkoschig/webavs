@@ -186,7 +186,7 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
 
             PersonalCalculationElementsTypeRef0 pce = (PersonalCalculationElementsTypeRef0) createCommPersonalCalculationElementsType(annoncePerson, false);
             AnnoncePersonalCalculationElements apce = annoncePerson.getPersonalCalculationElements();
-            if (apce.getHcEffectiveHelp() != null) { // n'existe pas encore
+            if (apce.getHcEffectiveHelp() != null && !apce.getHcEffectiveHelp().isZero()) { // n'existe pas encore
                 pce.setHcEffectiveHelp(apce.getHcEffectiveHelp().longValue());
             }
             person.setPersonalCalculationElements(pce);

@@ -14,7 +14,7 @@ class RpcPlausiPI009Data extends RpcPlausiCommonCalculData {
 
     @Override
     public boolean isValide() {
-        if (!FC2.equals(BigInteger.valueOf(6))) {
+        if (isReforme || !FC2.equals(BigInteger.valueOf(6))) {
             return true;
         } else {
             sumDepense = depense.sum();

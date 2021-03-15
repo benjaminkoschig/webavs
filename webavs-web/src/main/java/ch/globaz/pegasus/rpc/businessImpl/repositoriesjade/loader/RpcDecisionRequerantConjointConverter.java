@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import ch.globaz.pegasus.business.constantes.EPCRegionLoyer;
 import ch.globaz.pegasus.business.domaine.demande.EtatDemande;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,7 @@ class RpcDecisionRequerantConjointConverter {
 
     private final Map<String, RpcAddress> mapAdressesCourrier;
     private final Map<String, RpcAddress> mapAdressesDomicile;
+    private final Map<String, RpcAddress> mapAdressesLocalite;
     private final PcaConverter pcaConverter = new PcaConverter();
     private final PersonneElementsCalculConverter personneElementsCalculConverter = new PersonneElementsCalculConverter();
     private final PersonneAvsConverter toPersonneAvs;
@@ -55,11 +57,12 @@ class RpcDecisionRequerantConjointConverter {
     private final Date dateAnnonceComptable;
 
     public RpcDecisionRequerantConjointConverter(Map<String, RpcAddress> mapAdressesCourrier,
-            Map<String, RpcAddress> mapAdressesDomicile, PersonneAvsConverter personneAvsConverter,
+            Map<String, RpcAddress> mapAdressesDomicile,  Map<String, RpcAddress> mapAdressesLocalite, PersonneAvsConverter personneAvsConverter,
             Map<String, Map<String, List<MembreFamilleWithDonneesFinanciere>>> mapMembresFamilles,
             Map<String, Calcul> mapIdPlanCalculWithCalcul, Parameters parameters, Date dateAnnonceComptable) {
         this.mapAdressesCourrier = mapAdressesCourrier;
         this.mapAdressesDomicile = mapAdressesDomicile;
+        this.mapAdressesLocalite = mapAdressesLocalite;
         membresFamilles = mapMembresFamilles;
         this.mapIdPlanCalculWithCalcul = mapIdPlanCalculWithCalcul;
         this.parameters = parameters;
@@ -177,7 +180,17 @@ class RpcDecisionRequerantConjointConverter {
             throw new RpcTechnicalException(
                     "Trop de décisions trouvées pour cette version droit: " + versionDroit.getId());
         }
+
+        checkAdress(decisionRequerantConjoint);
+
         return decisionRequerantConjoint;
+    }
+
+    private void checkAdress(RpcDecisionRequerantConjoint decisionRequerantConjoint){
+        String idLocalite = decisionRequerantConjoint.getRequerantDatas().getCalcul().getLocalite();
+        if(idLocalite != null) {
+            decisionRequerantConjoint.getRequerantDatas().getPersonsElementsCalcul().resolveRequerant().setLegalAddress(mapAdressesLocalite.get(idLocalite));
+        }
     }
 
     private PersonsElementsCalcul convertToPersonElementsCalcul(
@@ -205,6 +218,8 @@ class RpcDecisionRequerantConjointConverter {
 
         List<MembreFamilleWithDonneesFinanciere> membresFam = membresFamilleWithDonneesFinanciere;
 
+        MembreFamilleWithDonneesFinanciere  membreRequerant = null;
+
         if (isCoupleSepare) {
             List<MembreFamilleWithDonneesFinanciere> membresFamNew = new ArrayList<>();
             for (MembreFamilleWithDonneesFinanciere membreFamilleWithDonneesFinanciere : membresFamilleWithDonneesFinanciere) {
@@ -219,24 +234,40 @@ class RpcDecisionRequerantConjointConverter {
             }
         }
 
+        for (MembreFamilleWithDonneesFinanciere membreFamilleWithDonneesFinanciere : membresFamilleWithDonneesFinanciere) {
+            if(RoleMembreFamille.REQUERANT.equals(membreFamilleWithDonneesFinanciere.getRoleMembreFamille())) {
+                membreRequerant = membreFamilleWithDonneesFinanciere;
+            }
+        }
+
         for (MembreFamilleWithDonneesFinanciere membreFamilleWithDonneesFinanciere : membresFam) {
             /**
              * Comme l'information attendu LivingAdress n'est pas claire, et non connu dans WebAVs, laissée vide pour ne
              * pas la renseigner dans l'XML
              * Il faudrait peut-être aller chercher les adresse des homes.
              */
-            // RpcAddress courrier = resolveRpcAddress(mapAdressesCourrier, membreFamilleWithDonneesFinanciere,
-            // membresFamilleWithDonneesFinanciere, false);
 
-            RpcAddress domicile = resolveRpcAddress(mapAdressesDomicile, membreFamilleWithDonneesFinanciere,
-                    membresFamilleWithDonneesFinanciere, true);
+            RpcAddress domicile = resolveRpcAddress(mapAdressesLocalite, membreFamilleWithDonneesFinanciere);
+
+            if(domicile == null) {
+                domicile = resolveRpcAddress(mapAdressesDomicile, membreFamilleWithDonneesFinanciere,
+                        membresFamilleWithDonneesFinanciere, true);
+            }
 
             personsElementsCalculs.add(personneElementsCalculConverter.convert(membreFamilleWithDonneesFinanciere, para,
                     dateDebut, isCantonValais, isLvpc, domicile, new RpcAddress(), roleMembreFamille, isCoupleSepare,
-                    tauxChangeRentesEtrangere));
+                    tauxChangeRentesEtrangere, membreRequerant));
         }
 
         return new PersonsElementsCalcul(personsElementsCalculs);// .fusionElementsRequerantConjoint(roleMembreFamille);
+    }
+
+    private RpcAddress resolveRpcAddress(Map<String, RpcAddress> mapAdresses,
+                                         MembreFamilleWithDonneesFinanciere membreFamilleWithDonneesFinanciere){
+        if(!JadeStringUtil.isBlankOrZero(membreFamilleWithDonneesFinanciere.getFamille().getDonneesPersonnelles().getIdDernierDomicileLegale())) {
+            return mapAdresses.get(membreFamilleWithDonneesFinanciere.getFamille().getDonneesPersonnelles().getIdDernierDomicileLegale());
+        }
+        return null;
     }
 
     private RpcAddress resolveRpcAddress(Map<String, RpcAddress> mapAdresses,

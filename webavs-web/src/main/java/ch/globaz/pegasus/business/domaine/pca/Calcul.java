@@ -2,6 +2,7 @@ package ch.globaz.pegasus.business.domaine.pca;
 
 import ch.globaz.pegasus.business.constantes.EPCRegionLoyer;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
+import globaz.jade.client.util.JadeStringUtil;
 import org.apache.commons.lang.math.Fraction;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
@@ -89,6 +90,14 @@ public class Calcul {
     }
 
     /**
+     * CLE_FORTU_FOR_MOBI_TOTAL
+     */
+    public Montant getFortuneMobilierTotal() {
+        return new Montant(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_FOR_MOBI_TOTAL));
+    }
+
+
+    /**
      * CLE_FORTU_SOUS_TOTAL
      */
     public Montant getFortuneSousTotal() {
@@ -157,14 +166,18 @@ public class Calcul {
      * CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE
      */
     public Montant getRevenusActiviteLucrativeRevenuPrivilegie() {
-        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE));
+        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE)).add(
+                Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE_CONJOINT))).add(
+                Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE_ENFANT)));
     }
 
     /**
      * CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE
      */
     public Montant getRevenusActiviteLucrativeRevenuPrisEnCompte() {
-        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE));
+        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE)).add(
+                Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE_CONJOINT))).add(
+                Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE_ENFANT)));
     }
 
 
@@ -433,14 +446,18 @@ public class Calcul {
      * CLE_REVEN_ACT_LUCR_ACTIVITE_DEPENDANTE
      */
     public Montant getRevenusActiviteLucrativeDependante() {
-        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_DEPENDANTE));
+        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_DEPENDANTE)).add(
+                Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_DEPENDANTE_CONJOINT))).add(
+                Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_DEPENDANTE_ENFANT)));
     }
 
     /**
      * CLE_REVEN_ACT_LUCR_ACTIVITE_INDEPENDANTE
      */
     public Montant getRevenusActiviteLucrativeIndependante() {
-        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_INDEPENDANTE));
+        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_INDEPENDANTE)).add(
+                Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_INDEPENDANTE_CONJOINT))).add(
+                Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_INDEPENDANTE_ENFANT)));
     }
 
     /**
@@ -448,7 +465,9 @@ public class Calcul {
      */
     public Montant getRevenusActiviteLucrativeIndependanteAgricole() {
         return Montant.newAnnuel(tuple
-                .getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_INDEPENDANTE_AGRICOLE));
+                .getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_INDEPENDANTE_AGRICOLE)).add(
+                Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_INDEPENDANTE_AGRICOLE_CONJOINT))).add(
+                Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_INDEPENDANTE_AGRICOLE_ENFANT)));
     }
 
     /**
@@ -483,7 +502,9 @@ public class Calcul {
      * CLE_REVEN_ACT_LUCR_REVENU_HYPOTHETIQUE
      */
     public Montant getRevenusActiviteLucrativeRevenuHypothetique() {
-        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_HYPOTHETIQUE));
+        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_HYPOTHETIQUE)).add(
+                Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_HYPOTHETIQUE_CONJOINT))).add(
+                Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_HYPOTHETIQUE_ENFANT)));
     }
 
     /**
@@ -749,19 +770,33 @@ public class Calcul {
                     regionLoyer = tupleLoyer.getLegendeEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_ZONE);
                 }
             }
-            if (regionLoyer == null) {
-                for (TupleDonneeRapport tupleLoyer : tupleLoyers.getEnfants().values()) {
-                    if(IPCDroits.CS_ROLE_FAMILLE_CONJOINT.equals(tupleLoyer.getLegendeEnfant(IPCValeursPlanCalcul.CLE_INTER_LOYER_ROLE_PROPRIETAIRE))) {
-                        regionLoyer = tupleLoyer.getLegendeEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_ZONE);
-                    }
-                }
-            }
         }
         if(regionLoyer == null) {
             regionLoyer = tuple.getLegendeEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_ZONE);
         }
 
         return EPCRegionLoyer.fromValue(regionLoyer);
+    }
+
+    /**
+     * PLAFOND_LOYER_LOCALITE
+     */
+    public String getLocalite() {
+        String regionLocalite = null;
+        TupleDonneeRapport tupleHab = tuple.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_HABITATION_PRINCIPALE);
+        if(tupleHab != null) {
+            regionLocalite = Integer.toString(tupleHab.getValeurEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_LOCALITE).intValue());
+        }
+        TupleDonneeRapport tupleLoyers = tuple.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_LOYERS);
+        if (JadeStringUtil.isBlankOrZero(regionLocalite) && tupleLoyers != null) {
+            for (TupleDonneeRapport tupleLoyer : tupleLoyers.getEnfants().values()) {
+                if(IPCDroits.CS_ROLE_FAMILLE_REQUERANT.equals(tupleLoyer.getLegendeEnfant(IPCValeursPlanCalcul.CLE_INTER_LOYER_ROLE_PROPRIETAIRE))) {
+                    regionLocalite = Integer.toString(tupleLoyer.getValeurEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_LOCALITE).intValue());
+                }
+            }
+        }
+
+        return JadeStringUtil.isBlankOrZero(regionLocalite) ? null : regionLocalite;
     }
 
 

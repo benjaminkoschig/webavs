@@ -50,6 +50,7 @@ public class TaxeJournaliereHomeServiceImpl extends PegasusServiceLocator implem
                     .getSimpleDonneeFinanciereHeaderService().create(
                             taxeJournaliereHome.getSimpleDonneeFinanciereHeader()));
 
+            taxeJournaliereHome.getSimpleTaxeJournaliereHome().setOldDonneeFinanciere(taxeJournaliereHome.getSimpleDonneeFinanciereHeader().getOldDonneeFinanciere());
             // creation du simpleTaxeJournaliereHome
             taxeJournaliereHome.setSimpleTaxeJournaliereHome((PegasusImplServiceLocator
                     .getSimpleTaxeJournaliereHomeService().create(taxeJournaliereHome.getSimpleTaxeJournaliereHome())));
@@ -200,6 +201,7 @@ public class TaxeJournaliereHomeServiceImpl extends PegasusServiceLocator implem
                             taxeJournaliereHome.getSimpleDonneeFinanciereHeader()));
 
             // mise a jour du simpleTaxeJournaliereHome
+            taxeJournaliereHome.getSimpleTaxeJournaliereHome().setOldDonneeFinanciere(taxeJournaliereHome.getSimpleDonneeFinanciereHeader().getOldDonneeFinanciere());
             taxeJournaliereHome.setSimpleTaxeJournaliereHome((PegasusImplServiceLocator
                     .getSimpleTaxeJournaliereHomeService().update(taxeJournaliereHome.getSimpleTaxeJournaliereHome())));
 

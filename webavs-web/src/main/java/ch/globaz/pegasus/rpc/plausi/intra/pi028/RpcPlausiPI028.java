@@ -5,12 +5,13 @@ import java.util.List;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceCase;
 import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceDecision;
+import ch.globaz.pegasus.rpc.plausi.common.RpcPlausiCommonCalcul;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiApplyToDecision;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiCategory;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiMetier;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiType;
 
-public class RpcPlausiPI028 implements RpcPlausiMetier<RpcPlausiPI028Data> {
+public class RpcPlausiPI028 extends RpcPlausiCommonCalcul {
 
     Montant maxPar1;
     Montant maxPar2;
@@ -23,6 +24,8 @@ public class RpcPlausiPI028 implements RpcPlausiMetier<RpcPlausiPI028Data> {
     @Override
     public RpcPlausiPI028Data buildPlausi(AnnonceDecision decision, AnnonceCase data) {
         final RpcPlausiPI028Data plausiData = new RpcPlausiPI028Data(this);
+
+        plausiData.setReforme(decision.getAnnonce().getPcaDecision().getPca().getReformePC());
 
         plausiData.Par1 = maxPar1;
         plausiData.Par2 = maxPar2;

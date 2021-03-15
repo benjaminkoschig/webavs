@@ -679,7 +679,6 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         }
         if (copie.getCopies()) {
             buildBlocCopies(data);
-            buildFooter(data);
         }
 
         return data;
@@ -791,8 +790,6 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         }
         buildBlocCopies(data);
 
-        buildFooter(data);
-
         return data;
     }
 
@@ -894,7 +891,14 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
         if (isReformePC()) {
             data.addData("B_MONTANT_VERS_ASSURE", babelDoc.getTextes(3).getTexte(31).getDescription());
-            data.addData("MONTANT_VERS_ASSURE", SingleDACBuilder.MONNAIE + " " + new FWCurrency(getMontantPc()).toStringFormat());
+            switch (getEtatDecision()) {
+                case REFUS:
+                    data.addData("MONTANT_VERS_ASSURE", babelDoc.getTextes(3).getTexte(42).getDescription());
+                    break;
+                case OCTROI:
+                default:
+                    data.addData("MONTANT_VERS_ASSURE", SingleDACBuilder.MONNAIE + " " + new FWCurrency(getMontantPc()).toStringFormat());
+            }
 
             data.addData("B_MONTANT_VERSEE_ASS", babelDoc.getTextes(3).getTexte(32).getDescription());
             data.addData("B_MONTANT_VERSEE_ASS2", babelDoc.getTextes(3).getTexte(35).getDescription());

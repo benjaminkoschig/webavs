@@ -1,10 +1,11 @@
 package ch.globaz.pegasus.rpc.plausi.intra.pi011;
 
 import ch.globaz.common.domaine.Montant;
+import ch.globaz.pegasus.rpc.plausi.common.RpcPlausiCommonCalculData;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausi;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiHeader;
 
-class RpcPlausiPI011Data extends RpcPlausiHeader {
+class RpcPlausiPI011Data extends RpcPlausiCommonCalculData {
     String idPca;
     Montant FC18;
     Montant X3;
@@ -18,12 +19,15 @@ class RpcPlausiPI011Data extends RpcPlausiHeader {
     Montant FC16;
     Montant tolerance;
 
-    public RpcPlausiPI011Data(RpcPlausi<RpcPlausiPI011Data> plausi) {
+    public RpcPlausiPI011Data(RpcPlausi<RpcPlausiCommonCalculData> plausi) {
         super(plausi);
     }
 
     @Override
     public boolean isValide() {
+        if(isReforme) {
+            return true;
+        }
         resolveX3();
         return FC18.substract(X3).abs().less(tolerance);
     }

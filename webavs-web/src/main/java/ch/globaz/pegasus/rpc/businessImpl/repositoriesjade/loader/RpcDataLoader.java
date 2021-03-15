@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import ch.globaz.pegasus.businessimpl.services.adresse.AdresseLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
@@ -130,6 +132,7 @@ public class RpcDataLoader {
             LOG.info(
                     "This parmeters will be use to load RPC datas: partitionSize[{}],partitionBlobSize[{}],limitSize[{}],parallel[{}]",
                     partitionSize, partitionBlobSize, limitSize, parallel);
+
         } catch (PropertiesException e) {
             throw new RuntimeException(e);
         } catch (JsonSyntaxException e) {
@@ -326,6 +329,8 @@ public class RpcDataLoader {
         RpcAdresseLoader adresseLoader = RpcAdresseLoader.build().partitionSize(partitionSize).parallel(parallel)
                 .load(container.getAllIdTiersForAdresse());
 
+        Map<String, RpcAddress> mapAdresseLocalite = RpcAdresseLoader.getMapRpcAdresseFromIdLocalite(AdresseLoader.loadCanton());
+
         Map<String, RpcAddress> mapAdressesDomicile = adresseLoader.resolve(
                 IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, AdresseService.CS_TYPE_DOMICILE);
 
@@ -347,7 +352,7 @@ public class RpcDataLoader {
         PersonneAvsConverter personneAvsConverter = personneConverter(paysLoader.getPaysList(), decisionsRefus,
                 mapDecision);
 
-        return new RpcDatasListConverter(mapDecision, decisionsRefus, mapAdressesCourrier, mapAdressesDomicile,
+        return new RpcDatasListConverter(mapDecision, decisionsRefus, mapAdressesCourrier, mapAdressesDomicile, mapAdresseLocalite,
                 container.getMapMembresFamilles(), mapIdPlanCalculWithCalcul, personneAvsConverter, parameters,
                 dateMoisAnnoncesPrise);
     }
@@ -506,10 +511,18 @@ public class RpcDataLoader {
 
     // Control de population de retours d'annonces
     private List<RPCDecionsPriseDansLeMois> loadDecisionEnErreurMoisPrecedent(Date dateDernierPaiement) {
-        List<String> decisionsEnErreur = new ArrayList<String>();
 
-        String startPeriod = dateDernierPaiement.addMonth(-1).getFirstDayOfMonth().getSwissValue();
-        String endPeriod = dateDernierPaiement.addMonth(-1).getLastDayOfMonth().getSwissValue();
+        Integer nbMois = 1;
+        try {
+            nbMois = Integer.parseInt(EPCProperties.RPC_NB_MOIS_ANNONCES_RENVOIE.getValue());
+        } catch (PropertiesException e1) {
+            LOG.info("propriété manquante : "+EPCProperties.RPC_NB_MOIS_ANNONCES_RENVOIE.getPropertyName());
+        }
+
+        List<String> decisionsPourRenvoie = new ArrayList<String>();
+
+        String startPeriod = dateDernierPaiement.addMonth(-nbMois).getFirstDayOfMonth().getSwissValue();
+        String endPeriod = dateDernierPaiement.addMonth(-nbMois).getLastDayOfMonth().getSwissValue();
 
         SimpleLotAnnonceSearch lotSearch = new SimpleLotAnnonceSearch();
         lotSearch.setForStartDate(startPeriod);
@@ -517,22 +530,21 @@ public class RpcDataLoader {
         lotSearch.setWhereKey("byPeriod");
         List<SimpleLotAnnonce> lots = RepositoryJade.searchForAndFetch(lotSearch, limitSize);
         if (!lots.isEmpty()) {
-            RetourAnnonceSearch retourSearch = new RetourAnnonceSearch();
-            retourSearch.setForCategoryPlausi(plausiCategoryERROR);
-            retourSearch.setForIdLot(lots.get(0).getId());
-            List<RetourAnnonce> retoursEnErreur = RepositoryJade.searchForAndFetch(retourSearch, limitSize);
-            for (RetourAnnonce enErreur : retoursEnErreur) {
-                if(ANNONCE_POUR_ENVOIE.equals(enErreur.getSimpleAnnonce().getCsEtat())
-                        && isDecisionAvecFin(enErreur)) {
-                    decisionsEnErreur.add(enErreur.getSimpleDecisionHeader().getIdDecisionHeader());
+            AnnonceDecisionSearch annonceSearch = new AnnonceDecisionSearch();
+            annonceSearch.setForEtat(ANNONCE_POUR_ENVOIE);
+            annonceSearch.setForIdLot(lots.get(0).getId());
+            List<AnnonceDecision> annoncePourRenvoie = RepositoryJade.searchForAndFetch(annonceSearch, limitSize);
+            for (AnnonceDecision pourRenvoie : annoncePourRenvoie) {
+                if(isDecisionAvecFin(pourRenvoie)) {
+                    decisionsPourRenvoie.add(pourRenvoie.getSimpleDecisionHeader().getIdDecisionHeader());
                 }
             }
-            if (!decisionsEnErreur.isEmpty()) {
+            if (!decisionsPourRenvoie.isEmpty()) {
                 RPCDecionsPriseDansLeMoisSearch search = new RPCDecionsPriseDansLeMoisSearch();
                 search.setWhereKey("avecDateFin");
-                search.setForDateDecisionMoisAnneMoins1(dateDernierPaiement.addMonth(-1).getLastDayOfMonth()
+                search.setForDateDecisionMoisAnneMoins1(dateDernierPaiement.addMonth(-nbMois).getLastDayOfMonth()
                         .getSwissMonthValue());
-                search.setForIdsDecsion(decisionsEnErreur);
+                search.setForIdsDecsion(decisionsPourRenvoie);
                 if(!simulationListNss.isEmpty()) {
                     search.setForNss(simulationListNss);
                 }
@@ -543,10 +555,10 @@ public class RpcDataLoader {
         return new ArrayList<RPCDecionsPriseDansLeMois>();
     }
 
-    private boolean isDecisionAvecFin(RetourAnnonce enErreur) {
-        return IPCDecision.CS_TYPE_SUPPRESSION_SC.equals(enErreur.getSimpleDecisionHeader().getCsTypeDecision())
-        || IPCDecision.CS_TYPE_REFUS_AC.equals(enErreur.getSimpleDecisionHeader().getCsTypeDecision())
-        || IPCDecision.CS_TYPE_REFUS_SC.equals(enErreur.getSimpleDecisionHeader().getCsTypeDecision());
+    private boolean isDecisionAvecFin(AnnonceDecision annonce) {
+        return IPCDecision.CS_TYPE_SUPPRESSION_SC.equals(annonce.getSimpleDecisionHeader().getCsTypeDecision())
+        || IPCDecision.CS_TYPE_REFUS_AC.equals(annonce.getSimpleDecisionHeader().getCsTypeDecision())
+        || IPCDecision.CS_TYPE_REFUS_SC.equals(annonce.getSimpleDecisionHeader().getCsTypeDecision());
     }
 
     private List<DecisionRefus> loadDecisionsRefus(Date dateDernierPaiement) {

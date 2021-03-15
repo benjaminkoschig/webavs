@@ -84,6 +84,45 @@ class RpcAdresseLoader {
         return map;
     }
 
+    public static Map<String, RpcAddress> getMapRpcAdresseFromIdLocalite(final Map<String, Canton> cantons) {
+        List<RpcAddress> list = loadRpcAdresseFromIdLocalite(cantons);
+        Map<String, RpcAddress> map = new HashMap<>();
+        for (RpcAddress address: list) {
+            map.put(address.getId(), address);
+        }
+        return map;
+    }
+
+    private static List<RpcAddress> loadRpcAdresseFromIdLocalite(final Map<String, Canton> cantons) {
+        SQLWriter writer = SQLWriter
+                .write()
+                .select()
+                .fields("SCHEMA." + ITILocaliteDefTable.TABLE_NAME + "." + ITILocaliteDefTable.CS_CANTON,
+                        "SCHEMA." + ITILocaliteDefTable.TABLE_NAME + "." + ITIAdresseDefTable.ID_LOCALITE,
+                        "SCHEMA." + ITILocaliteDefTable.TABLE_NAME + "." + ITILocaliteDefTable.NUMERO_COMMUNE_OFS)
+                .from("SCHEMA.TILOCAP");
+
+        return SCM.newInstance(RpcAddress.class).query(writer.toSql()).mapper(new Mapper<RpcAddress>() {
+            @Override
+            public RpcAddress map(ResultSet rs, int index) {
+                try {
+                    String id = rs.getString(ITILocaliteDefTable.ID_LOCALITE);
+                    String idCanton = rs.getString(ITILocaliteDefTable.CS_CANTON);
+                    String nofs = rs.getString(ITILocaliteDefTable.NUMERO_COMMUNE_OFS);
+
+                    if (nofs != null) {
+                        nofs = nofs.trim();
+                    }
+                    Canton canton = cantons.get(idCanton);
+
+                    return new RpcAddress(canton, nofs, id, "", "", "");
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }).execute();
+    }
+
     private static Map<String, List<RpcAddress>> loadRpcAdresse(List<String> idsTiers, final Map<String, Canton> cantons) {
         String toDay = JACalendar.today().toStrAMJ();
         SQLWriter writer = SQLWriter

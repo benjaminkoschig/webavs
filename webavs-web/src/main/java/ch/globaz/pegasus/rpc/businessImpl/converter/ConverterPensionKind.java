@@ -63,6 +63,7 @@ public class ConverterPensionKind {
         aMap.put(IPCRenteAvsAi.CS_TYPE_SANS_RENTE_INVALIDITE, 993);
         // 994 = Indemnités journalières
         aMap.put(IPCIJAI.CS_TYPE_DONNEE_FINANCIERE,994);
+        aMap.put(IPCRenteAvsAi.CS_TYPE_RENTE_IJAI,994);
         // 999 = Pas de rente
         aMap.put(IPCRenteAvsAi.CS_TYPE_SANS_RENTE, 999);
         returnValueOnCS = Collections.unmodifiableMap(aMap);

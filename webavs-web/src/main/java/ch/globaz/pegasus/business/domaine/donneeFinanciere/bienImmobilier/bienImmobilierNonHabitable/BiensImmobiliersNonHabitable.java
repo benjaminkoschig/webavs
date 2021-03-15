@@ -49,4 +49,13 @@ public class BiensImmobiliersNonHabitable extends
         });
     }
 
+    public Montant sumMontantRendementPartProprieteArrondi(ProprieteType type) {
+        return filtreByProprieteType(type).sum(new Each<BienImmobilierNonHabitable>() {
+            @Override
+            public Montant getMontant(BienImmobilierNonHabitable donnneeFianciere) {
+                return donnneeFianciere.computeRendementPartPropriete().arrondiAUnIntier();
+            }
+        });
+    }
+
 }

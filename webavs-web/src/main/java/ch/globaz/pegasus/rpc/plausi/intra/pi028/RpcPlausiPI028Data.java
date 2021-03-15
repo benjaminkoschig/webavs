@@ -1,10 +1,11 @@
 package ch.globaz.pegasus.rpc.plausi.intra.pi028;
 
 import ch.globaz.common.domaine.Montant;
+import ch.globaz.pegasus.rpc.plausi.common.RpcPlausiCommonCalculData;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausi;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiHeader;
 
-public class RpcPlausiPI028Data extends RpcPlausiHeader {
+public class RpcPlausiPI028Data extends RpcPlausiCommonCalculData {
 
     Montant Par1;
     Montant Par2;
@@ -13,14 +14,14 @@ public class RpcPlausiPI028Data extends RpcPlausiHeader {
     Boolean isCoupleSepare;
     Boolean hasAPI = false; // FIXME
 
-    public RpcPlausiPI028Data(RpcPlausi<RpcPlausiPI028Data> plausi) {
+    public RpcPlausiPI028Data(RpcPlausi<RpcPlausiCommonCalculData> plausi) {
         super(plausi);
     }
 
     @Override
     public boolean isValide() {
         Boolean isOk = true;
-        if (FC11.greater(new Montant(0))) {
+        if (!isReforme && FC11.greater(new Montant(0))) {
             if (isCoupleSepare) {
                 isOk = FC17.greaterOrEquals(Par2.divide(2));
             } else if (hasAPI) {

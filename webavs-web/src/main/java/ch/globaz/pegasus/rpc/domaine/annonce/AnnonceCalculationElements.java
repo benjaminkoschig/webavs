@@ -129,6 +129,17 @@ public class AnnonceCalculationElements {
             livingSituationType = LivingSituationType.NORMAL;
         }
 
+        // transfert des sommes des revenues loyer et rendement USUFRUITIER de FC21 dans FC23
+        for(PersonElementsCalcul personne : personnesElementsCalcul) {
+            Montant loyerRendementUsu = personne.getUsufructLoyerRendement();
+            if(personne.isCoupleSepare()) {
+                loyerRendementUsu = loyerRendementUsu.divide(2).arrondiAUnIntierInferior();
+            }
+
+            propertyIncome = propertyIncome.substract(loyerRendementUsu);
+            usufructIncome = usufructIncome.add(loyerRendementUsu);
+        }
+
 
         if (!realProperty.isZero() || !mortgageDebtsRealProperty.isZero() || !mortgageInterest.isZero()
                 || !maintenanceFees.isZero() || !interestFeesEligible.isZero() || !propertyIncome.isZero()) {

@@ -4,16 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceCase;
 import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceDecision;
+import ch.globaz.pegasus.rpc.plausi.common.RpcPlausiCommonCalcul;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiApplyToDecision;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiCategory;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiMetier;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiType;
 
-public class RpcPlausiPI015 implements RpcPlausiMetier<RpcPlausiPI015Data> {
+public class RpcPlausiPI015 extends RpcPlausiCommonCalcul {
 
     @Override
     public RpcPlausiPI015Data buildPlausi(AnnonceDecision decision, AnnonceCase data) {
         final RpcPlausiPI015Data dataPlausi = new RpcPlausiPI015Data(this);
+
+        dataPlausi.setReforme(decision.getAnnonce().getPcaDecision().getPca().getReformePC());
 
         dataPlausi.idPca = decision.getPcaDecisionId();
 

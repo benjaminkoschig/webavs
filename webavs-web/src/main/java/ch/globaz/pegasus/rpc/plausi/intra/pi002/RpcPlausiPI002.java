@@ -23,6 +23,8 @@ public class RpcPlausiPI002 extends RpcPlausiCommonCalcul {
     public RpcPlausiCommonCalculData buildPlausi(AnnonceDecision decision, AnnonceCase data) {
         final RpcPlausiPI002Data plausiData = new RpcPlausiPI002Data(this);
 
+        plausiData.setReforme(decision.getAnnonce().getPcaDecision().getPca().getReformePC());
+
         plausiData.tolerance = tolerance;
 
         plausiData.FC7 = decision.getAmountNoHC();

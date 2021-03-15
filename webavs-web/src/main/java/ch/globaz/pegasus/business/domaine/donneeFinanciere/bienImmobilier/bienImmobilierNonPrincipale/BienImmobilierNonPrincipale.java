@@ -69,6 +69,13 @@ public class BienImmobilierNonPrincipale extends BienImmobilier {
         return Montant.ZERO_ANNUEL;
     }
 
+    public Montant computeLoyersEnCaissesPartPropriete() {
+        if (proprieteType.isUsufruit() || proprieteType.isProprietaire()) {
+            return loyerEncaisse.multiply(part);
+        }
+        return Montant.ZERO_ANNUEL;
+    }
+
     @Override
     public Montant computeFortune() {
         if (proprieteType.isProprietaire()) {

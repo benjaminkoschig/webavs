@@ -5,12 +5,13 @@ import java.util.List;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceCase;
 import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceDecision;
+import ch.globaz.pegasus.rpc.plausi.common.RpcPlausiCommonCalcul;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiApplyToDecision;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiCategory;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiMetier;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiType;
 
-public class RpcPlausiPI011 implements RpcPlausiMetier<RpcPlausiPI011Data> {
+public class RpcPlausiPI011 extends RpcPlausiCommonCalcul {
     private final Montant tolerance;
 
     public RpcPlausiPI011(Montant tolerance) {
@@ -21,6 +22,8 @@ public class RpcPlausiPI011 implements RpcPlausiMetier<RpcPlausiPI011Data> {
     public RpcPlausiPI011Data buildPlausi(AnnonceDecision decision, AnnonceCase data) {
         final RpcPlausiPI011Data dataPlausi = new RpcPlausiPI011Data(this);
 
+        dataPlausi.setReforme(decision.getAnnonce().getPcaDecision().getPca().getReformePC());
+
         dataPlausi.tolerance = tolerance;
         dataPlausi.idPca = decision.getPcaDecisionId();
 
@@ -29,7 +32,7 @@ public class RpcPlausiPI011 implements RpcPlausiMetier<RpcPlausiPI011Data> {
         dataPlausi.FC11 = decision.getSelfInhabitedProperty();
         dataPlausi.FC12 = decision.getOtherWealth();
         dataPlausi.FC13 = decision.getDivestedWealth();
-        dataPlausi.FC14 = decision.getMortgageDebts();
+        dataPlausi.FC14 = decision.getMortgageDebts().add(decision.geMortgageDebtsSelfInhabited()).add(decision.getMortgageDebtsRealProperty());
         dataPlausi.FC15 = decision.getOtherDebts();
         dataPlausi.FC16 = decision.getWealthDeductible();
         dataPlausi.FC17 = decision.getSelfInhabitedPropertyDeductible();

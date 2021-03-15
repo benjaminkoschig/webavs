@@ -66,13 +66,7 @@ public class RpcCalcul {
      */
     public Montant getAutreFortunes() {
         return divideByTwoIfCoupleSepare(toZeroIfNegate(calcul.getFortuneSousTotal()
-                .substract(calcul.getFortuneImmoBienPrincipalDeduit()).substract(calcul.getFortuneDessaisieTotal())
-                .substract(calcul.getFortuneImmoBiensNonHabitablePrincipale())
-                .substract(calcul.getFortuneImmoBiensNonHabitables())));
-        // return (toZeroIfNegate(calcul.getFortuneSousTotal().substract(calcul.getFortuneImmoBienPrincipalDeduit())
-        // .substract(calcul.getFortuneDessaisieTotal())
-        // .substract(calcul.getFortuneImmoBiensNonHabitablePrincipale())
-        // .substract(calcul.getFortuneImmoBiensNonHabitables())));
+                .substract(calcul.getFortuneImmobilierTotal()).substract(calcul.getFortuneDessaisieTotal())));
     }
 
     /**
@@ -490,6 +484,15 @@ public class RpcCalcul {
     }
 
     /**
+     * Localité du requérant pris dans les loyers ou le bien d'habitation principal
+      * @return l'id localité du réquérant
+     */
+    public String getLocalite(){
+        return calcul.getLocalite();
+    }
+
+
+    /**
      * FC41
      */
     public boolean isWheelchairSurcharge(){
@@ -500,7 +503,8 @@ public class RpcCalcul {
      * FC44
      */
     public Montant getDettesHypothequairesRealProperty() {
-        return divideByTwoIfCoupleSepare(calcul.getFortuneDetteHypothequairePasPrincipale());
+        return divideByTwoIfCoupleSepare(calcul.getFortuneDetteHypothequairePasPrincipale()
+                .add(calcul.getFortuneDetteHypothequaireTotalNothabited()));
     }
 
     /**

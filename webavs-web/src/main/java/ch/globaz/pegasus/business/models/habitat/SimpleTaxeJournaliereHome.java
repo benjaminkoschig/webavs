@@ -26,7 +26,7 @@ public class SimpleTaxeJournaliereHome extends JadeSimpleModel {
     private Boolean isDeplafonner = null;
     private String montantFraisLongueDuree = null;
     private Boolean isVersementDirect = Boolean.FALSE;
-    private Boolean isCopie = Boolean.FALSE;
+    private Boolean isOldDonneeFinanciere = Boolean.FALSE;
 
     private String idAdressePaiement = null;
 
@@ -222,12 +222,12 @@ public class SimpleTaxeJournaliereHome extends JadeSimpleModel {
         this.idAdressePaiement = idAdressePaiement;
     }
 
-    public Boolean getCopie() {
-        return isCopie;
+    public Boolean getOldDonneeFinanciere() {
+        return isOldDonneeFinanciere;
     }
 
-    public void setCopie(Boolean copie) {
-        isCopie = copie;
+    public void setOldDonneeFinanciere(Boolean isOldDonneeFinanciere) {
+        this.isOldDonneeFinanciere = isOldDonneeFinanciere;
     }
 
     public String getPrixJournalier() {

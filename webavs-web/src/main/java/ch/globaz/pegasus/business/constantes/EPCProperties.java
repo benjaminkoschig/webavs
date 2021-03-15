@@ -62,7 +62,8 @@ public enum EPCProperties implements IProperties {
     RPC_SIMULATION("rpc.simulation"),
     REFORME_PC("activer.reforme.pc"),
     DATE_REFORME_PC("date.reforme.pc"),
-    RPC_TEST_PREVALIDATION("rpc.test.prevalidation");
+    RPC_TEST_PREVALIDATION("rpc.test.prevalidation"),
+    RPC_NB_MOIS_ANNONCES_RENVOIE("rpc.nb.mois.annonces.renvoie");
 
     private String property;
 

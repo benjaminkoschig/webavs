@@ -4727,7 +4727,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
                     .getDateDebut(), oldDF.getSimpleDonneeFinanciereHeader().getDateDebut()) || forClosePeriode)) {
                 String oldDateFin = newDonneeFinanciere.getSimpleDonneeFinanciereHeader().getDateFin();
 
-                // oldDF.getSimpleDonneeFinanciereHeader().getDateDebut()//.equalsIgnoreCase(oldDF.getSimpleDonneeFinanciereHeader().getDateDebut())
+                oldDF.getSimpleDonneeFinanciereHeader().setOldDonneeFinanciere(true);
 
                 if (forClosePeriode) {
                     oldDF.getSimpleDonneeFinanciereHeader().setIsCopieFromPreviousVersion(Boolean.TRUE);
@@ -4742,7 +4742,6 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
                 // header
                 if (simpleVersionDroit.getId().equals(oldDF.getSimpleDonneeFinanciereHeader().getIdVersionDroit())) {
                     oldDF.getSimpleDonneeFinanciereHeader().setDateFin(oldDateFin);
-
                     oldDF = (AbstractDonneeFinanciereModel) updateServiceMethod.invoke(service, new Object[]{oldDF});
                 } else {
                     AbstractDonneeFinanciereModel dfCorrige = (AbstractDonneeFinanciereModel) JadePersistenceUtil

@@ -22,6 +22,7 @@ public class SimpleDonneeFinanciereHeader extends JadeSimpleModel {
 
     private Boolean isDessaisissementRevenu = Boolean.FALSE;
     private Boolean isPeriodeClose = Boolean.FALSE;
+    private Boolean isOldDonneeFinanciere = Boolean.FALSE;
 
     public Boolean getIsPeriodeClose() {
         return isPeriodeClose;
@@ -239,4 +240,11 @@ public class SimpleDonneeFinanciereHeader extends JadeSimpleModel {
         this.isSupprime = isSupprime;
     }
 
+    public Boolean getOldDonneeFinanciere() {
+        return isOldDonneeFinanciere;
+    }
+
+    public void setOldDonneeFinanciere(Boolean oldDonneeFinanciere) {
+        isOldDonneeFinanciere = oldDonneeFinanciere;
+    }
 }

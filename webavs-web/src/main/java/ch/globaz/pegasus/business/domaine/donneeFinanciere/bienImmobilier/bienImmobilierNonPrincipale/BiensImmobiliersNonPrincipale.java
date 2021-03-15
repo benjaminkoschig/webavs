@@ -98,4 +98,24 @@ public class BiensImmobiliersNonPrincipale extends
         });
     }
 
+    public Montant sumLoyersEnCaissesPartPropriete() {
+
+        return this.sum(new Each<BienImmobilierNonPrincipale>() {
+            @Override
+            public Montant getMontant(BienImmobilierNonPrincipale donnneeFianciere) {
+                return donnneeFianciere.computeLoyersEnCaissesPartPropriete();
+            }
+        });
+    }
+
+    public Montant sumLoyersEnCaissesPartProprieteArrondi() {
+
+        return this.sum(new Each<BienImmobilierNonPrincipale>() {
+            @Override
+            public Montant getMontant(BienImmobilierNonPrincipale donnneeFianciere) {
+                return donnneeFianciere.computeLoyersEnCaissesPartPropriete().arrondiAUnIntier();
+            }
+        });
+    }
+
 }

@@ -3,6 +3,7 @@ package ch.globaz.pegasus.rpc.businessImpl.repositoriesjade.loader;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCIJAI;
+import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCRenteAvsAi;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.*;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.api.avsAi.ApiAvsAi;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.assuranceRenteViagere.AssuranceRenteViagere;
@@ -16,6 +17,7 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.contratEntretienViage
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.iJAi.IjsAi;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.pensionAlimentaire.PensionAlimentaireType;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.renteAvsAi.RenteAvsAi;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.renteAvsAi.TypeSansRente;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenuActiviteLucrativeIndependante.RevenuActiviteLucrativeIndependante;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenueActiviteLucrativeDependante.RevenuActiviteLucrativeDependante;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.revenueHypothtique.RevenuHypothtique;
@@ -59,7 +61,8 @@ public class PersonneElementsCalculConverter {
 
     public PersonElementsCalcul convert(MembreFamilleWithDonneesFinanciere donneesFinanciere, Parameters parameters,
             Date dateDebut, boolean isCantonValais, boolean isLvpc, RpcAddress legalAddress, RpcAddress livingAddress,
-            RoleMembreFamille roleMembreFamille, boolean isCoupleSepare, TupleDonneeRapport tauxChangeRentesEtrangere) {
+            RoleMembreFamille roleMembreFamille, boolean isCoupleSepare, TupleDonneeRapport tauxChangeRentesEtrangere,
+            MembreFamilleWithDonneesFinanciere membreRequerant) {
         PersonElementsCalcul perElCal = new PersonElementsCalcul();
 
         perElCal.setMembreFamille(donneesFinanciere.getFamille());
@@ -116,7 +119,7 @@ public class PersonneElementsCalculConverter {
         perElCal.setRetraitCapitalLpp(Montant.ZERO); // Nous ne disposons pas de cette information.
 
         perElCal.setPrimeLamal(resolvePrimeLamal(parameters.getForfaitsPrimesAssuranceMaladie(),
-                donneesFinanciere.getFamille(), dateDebut));
+                donneesFinanciere.getFamille(), membreRequerant.getFamille(), dateDebut));
 
         perElCal.setPrimeEffective(df.getPrimeAssuranceMaladie().sumDepense());
 
@@ -137,7 +140,7 @@ public class PersonneElementsCalculConverter {
 
         perElCal.setFraisGarde(resolveFraisGarde(df));
 
-        Montant rip = getMontantRIP(parameters.getForfaitsPrimesAssuranceMaladie(), donneesFinanciere.getFamille(), dateDebut);
+        Montant rip = getMontantRIP(parameters.getForfaitsPrimesAssuranceMaladie(), donneesFinanciere.getFamille(), membreRequerant.getFamille(), dateDebut);
         perElCal.setMontantRIP(rip == null ? Montant.ZERO : rip);
 
         if (taxeJournaliereHome != null) {
@@ -249,6 +252,19 @@ public class PersonneElementsCalculConverter {
 
         perElCal.setUsufructIncome(usuIncome);
 
+        Montant usuLoyerRendement = df.getBiensImmobiliersServantHbitationPrincipale()
+                .filtreByProprieteType(ProprieteType.USUFRUITIER)
+                .sumLoyersEnCaissesPartProprieteArrondi();
+
+        usuLoyerRendement = usuLoyerRendement.add(df.getBiensImmobiliersNonPrincipale()
+                .filtreByProprieteType(ProprieteType.USUFRUITIER)
+                .sumLoyersEnCaissesPartProprieteArrondi());
+
+        usuLoyerRendement = usuLoyerRendement.add(df.getBiensImmobiliersNonHabitable()
+                .sumMontantRendementPartProprieteArrondi(ProprieteType.USUFRUITIER));
+
+        perElCal.setUsufructLoyerRendement(usuLoyerRendement);
+
         BiensImmobiliersServantHabitationPrincipale biensImmobiliersPrincipaleUsufrutier = df.getBiensImmobiliersServantHbitationPrincipale().filtreByProprieteType(ProprieteType.USUFRUITIER);
         BiensImmobiliersNonPrincipale biensImmobiliersNonPrincipaleUsufrutier = df.getBiensImmobiliersNonPrincipale().filtreByProprieteType(ProprieteType.USUFRUITIER);
         if (biensImmobiliersPrincipaleUsufrutier.size() != 0 || biensImmobiliersNonPrincipaleUsufrutier.size() != 0) {
@@ -266,6 +282,9 @@ public class PersonneElementsCalculConverter {
 
         // information s'il y a des rentes API même si pas en home
         perElCal.setRentHasApi(!df.getApisAvsAi().sumRevenuAnnuel().isZero());
+
+        // infomation couple séparé par la maladie
+        perElCal.setCoupleSepare(isCoupleSepare);
 
         return perElCal;
     }
@@ -334,10 +353,14 @@ public class PersonneElementsCalculConverter {
             }
         }
 
+
         for (RenteAvsAi rente : typesRente) {
             if (rente.getMontant().greater(maxMontantRente)) {
                 maxMontantRente = rente.getMontant();
                 typeRenteCSRente = rente.getTypeRente().getValue();
+                if(IPCRenteAvsAi.CS_TYPE_SANS_RENTE.equals(typeRenteCSRente) && rente.getTypeSansRente() != null && !TypeSansRente.INDEFINIT.equals(rente.getTypeSansRente())) {
+                    typeRenteCSRente = rente.getTypeSansRente().getValue();
+                }
                 if(ConverterPensionKind.isRentAi(typeRenteCSRente)) {
                     degreInvalidite = rente.getDegreInvalidite();
                 }
@@ -408,9 +431,8 @@ public class PersonneElementsCalculConverter {
         return plafonds.resolveMostRecent().getMontant();
     }
 
-    Montant resolvePrimeLamal(ForfaitsPrimeAssuranceMaladie forfaitsPrimeAssuranceMaladie, MembreFamille membreFamille,
-            Date dateDebut) {
-        ForfaitPrimeAssuranceMaladie forfaitPrimeAssuranceMaladie = getForfaitPrimeAssuranceMaladie(forfaitsPrimeAssuranceMaladie, membreFamille, dateDebut);
+    Montant resolvePrimeLamal(ForfaitsPrimeAssuranceMaladie forfaitsPrimeAssuranceMaladie, MembreFamille membreFamille, MembreFamille membreRequerant, Date dateDebut) {
+        ForfaitPrimeAssuranceMaladie forfaitPrimeAssuranceMaladie = getForfaitPrimeAssuranceMaladie(forfaitsPrimeAssuranceMaladie, membreFamille, membreRequerant, dateDebut);
         return  forfaitPrimeAssuranceMaladie.getMontantPrimeMoy();
     }
 
@@ -423,10 +445,10 @@ public class PersonneElementsCalculConverter {
      * @param dateDebut
      * @return le forfait prime assurance maladie associé.
      */
-    private ForfaitPrimeAssuranceMaladie getForfaitPrimeAssuranceMaladie(ForfaitsPrimeAssuranceMaladie forfaitsPrimeAssuranceMaladie, MembreFamille membreFamille, Date dateDebut) {
+    private ForfaitPrimeAssuranceMaladie getForfaitPrimeAssuranceMaladie(ForfaitsPrimeAssuranceMaladie forfaitsPrimeAssuranceMaladie, MembreFamille membreFamille, MembreFamille membreRequerant, Date dateDebut) {
         Date dateNaissance = new Date(membreFamille.getPersonne().getDateNaissance());
 
-        String idLocalite = membreFamille.getDonneesPersonnelles().getIdDernierDomicileLegale();
+        String idLocalite = membreRequerant.getDonneesPersonnelles().getIdDernierDomicileLegale();
 
         if ("0".equals(idLocalite) || idLocalite == null || idLocalite.isEmpty()) {
             throw new RpcBusinessException("pegasus.rpc.dernierDomicileLegale.mandatory");
@@ -454,8 +476,8 @@ public class PersonneElementsCalculConverter {
      * @param dateDebut
      * @return
      */
-    private Montant getMontantRIP(ForfaitsPrimeAssuranceMaladie forfaitsPrimeAssuranceMaladie, MembreFamille membreFamille, Date dateDebut){
-        ForfaitPrimeAssuranceMaladie forfaitPrimeAssuranceMaladie = getForfaitPrimeAssuranceMaladie(forfaitsPrimeAssuranceMaladie, membreFamille, dateDebut);
+    private Montant getMontantRIP(ForfaitsPrimeAssuranceMaladie forfaitsPrimeAssuranceMaladie, MembreFamille membreFamille, MembreFamille membreRequerant, Date dateDebut){
+        ForfaitPrimeAssuranceMaladie forfaitPrimeAssuranceMaladie = getForfaitPrimeAssuranceMaladie(forfaitsPrimeAssuranceMaladie, membreFamille, membreRequerant, dateDebut);
         return  forfaitPrimeAssuranceMaladie.getMontantPrimeReductionMaxCanton();
     }
 

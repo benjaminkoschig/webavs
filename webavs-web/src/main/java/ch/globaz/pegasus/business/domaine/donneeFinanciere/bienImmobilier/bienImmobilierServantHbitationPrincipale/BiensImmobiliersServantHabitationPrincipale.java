@@ -124,12 +124,22 @@ public class BiensImmobiliersServantHabitationPrincipale
         });
     }
 
-    public Montant sumLoyersEnCaissesPartPorietaire() {
+    public Montant sumLoyersEnCaissesPartPropriete() {
 
         return this.sum(new Each<BienImmobilierServantHabitationPrincipale>() {
             @Override
             public Montant getMontant(BienImmobilierServantHabitationPrincipale donnneeFianciere) {
                 return donnneeFianciere.computeLoyersEnCaissesPartPropriete();
+            }
+        });
+    }
+
+    public Montant sumLoyersEnCaissesPartProprieteArrondi() {
+
+        return this.sum(new Each<BienImmobilierServantHabitationPrincipale>() {
+            @Override
+            public Montant getMontant(BienImmobilierServantHabitationPrincipale donnneeFianciere) {
+                return donnneeFianciere.computeLoyersEnCaissesPartPropriete().arrondiAUnIntier();
             }
         });
     }

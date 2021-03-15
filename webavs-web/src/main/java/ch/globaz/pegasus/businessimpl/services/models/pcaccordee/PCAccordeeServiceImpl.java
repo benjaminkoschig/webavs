@@ -1103,22 +1103,20 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
         simplePlanDeCalculSearch = PegasusImplServiceLocator.getSimplePlanDeCalculService().search(simplePlanDeCalculSearch);
         if (simplePlanDeCalculSearch.getSize() == 1) {
             SimplePlanDeCalcul oldPlanDeCalculNonRetenu = (SimplePlanDeCalcul) simplePlanDeCalculSearch.getSearchResults()[0];
-            if (oldPlanDeCalculNonRetenu.getReformePc() == isReforme) {
-                // on met à jour l'ancien plan de calcul non retenu.
-                oldPlanDeCalculNonRetenu = PegasusImplServiceLocator.getSimplePlanDeCalculService().read(oldPlanDeCalculNonRetenu.getId());
-                oldPlanDeCalculNonRetenu.setIsPlanNonRetenu(false);
-                PegasusImplServiceLocator.getSimplePlanDeCalculService().update(oldPlanDeCalculNonRetenu);
-                SimplePlanDeCalculSearch simplePlanDeCalculNonRetenuSearch = new SimplePlanDeCalculSearch();
-                simplePlanDeCalculNonRetenuSearch.setForIdPCAccordee(idPCAccordee);
-                simplePlanDeCalculNonRetenuSearch.setForReformePC(!isReforme);
-                simplePlanDeCalculNonRetenuSearch = PegasusImplServiceLocator.getSimplePlanDeCalculService().search(simplePlanDeCalculNonRetenuSearch);
-                if (simplePlanDeCalculNonRetenuSearch.getSize() > 0){
-                    // on met à jour le nouveau plan de calcul non retenu.
-                    SimplePlanDeCalcul newPlanDeCalculNonRetenu = (SimplePlanDeCalcul) simplePlanDeCalculNonRetenuSearch.getSearchResults()[0];
-                    newPlanDeCalculNonRetenu = PegasusImplServiceLocator.getSimplePlanDeCalculService().read(newPlanDeCalculNonRetenu.getId());
-                    newPlanDeCalculNonRetenu.setIsPlanNonRetenu(true);
-                    PegasusImplServiceLocator.getSimplePlanDeCalculService().update(newPlanDeCalculNonRetenu);
-                }
+            // on met à jour l'ancien plan de calcul non retenu.
+            oldPlanDeCalculNonRetenu = PegasusImplServiceLocator.getSimplePlanDeCalculService().read(oldPlanDeCalculNonRetenu.getId());
+            oldPlanDeCalculNonRetenu.setIsPlanNonRetenu(false);
+            PegasusImplServiceLocator.getSimplePlanDeCalculService().update(oldPlanDeCalculNonRetenu);
+            SimplePlanDeCalculSearch simplePlanDeCalculNonRetenuSearch = new SimplePlanDeCalculSearch();
+            simplePlanDeCalculNonRetenuSearch.setForIdPCAccordee(idPCAccordee);
+            simplePlanDeCalculNonRetenuSearch.setForReformePC(!isReforme);
+            simplePlanDeCalculNonRetenuSearch = PegasusImplServiceLocator.getSimplePlanDeCalculService().search(simplePlanDeCalculNonRetenuSearch);
+            if (simplePlanDeCalculNonRetenuSearch.getSize() > 0){
+                // on met à jour le nouveau plan de calcul non retenu.
+                SimplePlanDeCalcul newPlanDeCalculNonRetenu = (SimplePlanDeCalcul) simplePlanDeCalculNonRetenuSearch.getSearchResults()[0];
+                newPlanDeCalculNonRetenu = PegasusImplServiceLocator.getSimplePlanDeCalculService().read(newPlanDeCalculNonRetenu.getId());
+                newPlanDeCalculNonRetenu.setIsPlanNonRetenu(true);
+                PegasusImplServiceLocator.getSimplePlanDeCalculService().update(newPlanDeCalculNonRetenu);
             }
         }
     }

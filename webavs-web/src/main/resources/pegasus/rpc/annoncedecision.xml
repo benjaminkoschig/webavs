@@ -19,6 +19,8 @@
 		<search-definition>
 			<search-group operator="AND">	
 				<search-field name="forIdAnnonce" operation="EQUALS" field-ref="simpleAnnonce.id"/>
+				<search-field name="forEtat" operation="EQUALS" field-ref="simpleAnnonce.csEtat"/>
+				<search-field name="forIdLot" operation="EQUALS" field-ref="simpleAnnonce.idLot"/>
 			</search-group>
 		</search-definition>
 	</complexe-model>

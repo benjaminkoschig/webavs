@@ -69,7 +69,7 @@ public class StrategieBienImmoPrincipal extends StrategieCalculDepense {
             }
 
             // plafond des loyers réforme PC
-            if(context.contains(Attribut.REFORME)) {
+            if(context.contains(Attribut.REFORME) && !tupleHabitatPrincipal.containsValeurEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_LOCALITE)) {
                 this.getOrCreateChild(tupleHabitatPrincipal, IPCValeursPlanCalcul.PLAFOND_LOYER_LOCALITE, donnee.getBienImmoPrincipalIdLocalite());
                 this.getOrCreateChild(tupleHabitatPrincipal, IPCValeursPlanCalcul.PLAFOND_LOYER_NBTOTALFAMILLE, donnee.getNbTotalFamille());
                 this.getOrCreateChild(tupleHabitatPrincipal, IPCValeursPlanCalcul.PLAFOND_LOYER_DATEDEBUT, 0f).setLegende(donnee.getDateDebutDonneeFinanciere());

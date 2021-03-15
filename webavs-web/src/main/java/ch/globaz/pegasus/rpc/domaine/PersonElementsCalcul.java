@@ -45,6 +45,7 @@ public class PersonElementsCalcul {
 
     private Montant valeurLocativeProprietaire;
     private Montant usufructIncome;
+    private Montant usufructLoyerRendement;
 
     private String typeRenteCS;
     private Float degreInvalidite;
@@ -52,6 +53,7 @@ public class PersonElementsCalcul {
     private Montant fraisGarde;
     private Montant montantRIP;
     private boolean isUsufrutuier;
+    private boolean isCoupleSepare;
 
     public Montant getValeurLocativeProprietaire() {
         return valeurLocativeProprietaire;
@@ -75,6 +77,17 @@ public class PersonElementsCalcul {
 
     public void addUsufructIncome(PersonElementsCalcul elementsCalcul) {
         usufructIncome = usufructIncome.add(elementsCalcul.getUsufructIncome());
+    }
+    public void setUsufructLoyerRendement(Montant usufructLoyerRendement) {
+        this.usufructLoyerRendement = usufructLoyerRendement;
+    }
+
+    public void addUsufructLoyerRendement(PersonElementsCalcul elementsCalcul) {
+        usufructLoyerRendement = usufructLoyerRendement.add(elementsCalcul.getUsufructLoyerRendement());
+    }
+
+    public Montant getUsufructLoyerRendement() {
+        return usufructLoyerRendement;
     }
 
     public boolean getHomeIsApiFacturee() {
@@ -464,5 +477,13 @@ public class PersonElementsCalcul {
 
     public void setDegreInvalidite(Float degreInvalidite) {
         this.degreInvalidite = degreInvalidite;
+    }
+
+    public boolean isCoupleSepare() {
+        return isCoupleSepare;
+    }
+
+    public void setCoupleSepare(boolean coupleSepare) {
+        isCoupleSepare = coupleSepare;
     }
 }

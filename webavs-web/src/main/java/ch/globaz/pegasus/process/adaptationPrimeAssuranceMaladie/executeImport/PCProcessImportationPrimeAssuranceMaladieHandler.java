@@ -507,11 +507,11 @@ public class PCProcessImportationPrimeAssuranceMaladieHandler extends PCProcessD
             }
 
             if (IPCTypePrimeAssuranceMaladie.CS_TYPE_PRIME_JEUNE_ADULTE.equals(primeAssuranceMoyenne.getSimpleForfaitPrimesAssuranceMaladie().getCsTypePrime())
-                    && (age < AGE_ADULTE)) {
+                    && (age < AGE_ADULTE) && (age >= AGE_JEUNE_ADULTE)) {
                 montantPrimeMoyenne = primeAssuranceMoyenne.getSimpleForfaitPrimesAssuranceMaladie().getMontantPrimeMoy();
             }
 
-            if (IPCTypePrimeAssuranceMaladie.CS_TYPE_PRIME_ADULTE.equals(primeAssuranceMoyenne.getSimpleForfaitPrimesAssuranceMaladie().getCsTypePrime())) {
+            if (IPCTypePrimeAssuranceMaladie.CS_TYPE_PRIME_ADULTE.equals(primeAssuranceMoyenne.getSimpleForfaitPrimesAssuranceMaladie().getCsTypePrime()) && (age >= AGE_ADULTE)) {
                 montantPrimeMoyenne = primeAssuranceMoyenne.getSimpleForfaitPrimesAssuranceMaladie().getMontantPrimeMoy();
             }
         }

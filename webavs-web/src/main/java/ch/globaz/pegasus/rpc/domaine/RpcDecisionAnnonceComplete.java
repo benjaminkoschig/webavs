@@ -131,7 +131,8 @@ public class RpcDecisionAnnonceComplete {
     }
 
     public boolean isRefusRaisonEco() {
-        return getPcaDecision().getDecision().getType().isRefusApresCalcul();
+        return getPcaDecision().getDecision().getType().isRefusApresCalcul()
+                || (!isNotRefus() && getPcaDecision().getDecision().getType().isTypeApresCalcul());
     }
 
     public PcaGenre resolvePcaGenre(PersonElementsCalcul personData) {

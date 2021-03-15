@@ -1,5 +1,6 @@
 package ch.globaz.amal.businessimpl.services.sedexRP;
 
+import java.io.StringWriter;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
@@ -23,11 +24,12 @@ import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import ch.gdk_cds.xmlns.pv_5205_000801._3.Message;
 import ch.globaz.amal.business.models.detailfamille.SimpleDetailFamilleSearch;
+import ch.globaz.amal.businessimpl.services.sedexRP.builder.*;
 import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
 import com.google.common.collect.Lists;
 import globaz.jade.smtp.JadeSmtpClient;
-import org.apache.commons.collections.iterators.EntrySetMapIterator;
 import org.apache.commons.lang.StringUtils;
 import org.xml.sax.SAXException;
 import ch.ech.xmlns.ech_0090._1.EnvelopeType;
@@ -54,10 +56,6 @@ import ch.globaz.amal.business.models.famille.SimpleFamille;
 import ch.globaz.amal.business.services.AmalServiceLocator;
 import ch.globaz.amal.business.services.sedexRP.AnnoncesRPService;
 import ch.globaz.amal.businessimpl.services.AmalImplServiceLocator;
-import ch.globaz.amal.businessimpl.services.sedexRP.builder.AnnonceBuilderAbstract;
-import ch.globaz.amal.businessimpl.services.sedexRP.builder.AnnonceBuilderFactory;
-import ch.globaz.amal.businessimpl.services.sedexRP.builder.AnnonceBuilderReturnInfosContainer;
-import ch.globaz.amal.businessimpl.services.sedexRP.builder.AnnonceInfosContainer;
 import ch.globaz.amal.businessimpl.services.sedexRP.handler.AnnonceHandlerAbstract;
 import ch.globaz.amal.businessimpl.services.sedexRP.handler.AnnonceRPHandlerFactory;
 import ch.globaz.amal.businessimpl.services.sedexRP.utils.AMSedexRPUtil;
@@ -116,6 +114,7 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
     public static String CSV_SEPARATOR = ";";
     private ArrayList<String> arrayListErrorsCreation = new ArrayList<String>();
     private ArrayList<String> arrayListErrorsSend = new ArrayList<String>();
+    private ArrayList<String> arrayListErrorsSedexId = new ArrayList<String>();
     private JadeContext context;
     private boolean isSimulation = false;
     private Map<String, Object> mapEtatDec = new HashMap<String, Object>();
@@ -1518,29 +1517,72 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
         int incr = 1;
         ArrayList<SimpleAnnonceSedex> listAnnoncesUpdated = new ArrayList<SimpleAnnonceSedex>();
         for (SimpleAnnonceSedex simpleAnnonceSedex : listAnnonces) {
-            try {
-                msgType = simpleAnnonceSedex.getMessageType();
+            // Envoi groupé en une seul annonce de toutes les annonces de prime tarifaire
+            if (AMMessagesTypesAnnonceSedex.DEMANDE_PRIME_TARIFAIRE.getValue().equals(simpleAnnonceSedex.getMessageType())) {
+                try {
+                    // La création du message regroupé n'a lieu qu'une fois pour toutes les annonces de prime tarifaires
+                    if (nbItemsSend == 0) {
+                        String originalContent = simpleAnnonceSedex.getMessageContent();
+                        msgType = simpleAnnonceSedex.getMessageType();
 
-                recipientId = AMSedexRPUtil.getSedexIdFromIdTiers(simpleAnnonceSedex.getIdTiersCM());
+                        recipientId = AMSedexRPUtil.getSedexIdFromIdTiers(simpleAnnonceSedex.getIdTiersCM());
 
-                SimpleSedexMessage sedexMessage = _createSimpleSedexMessage(simpleAnnonceSedex);
-                sedexMessage.increment = String.valueOf(incr);
-                listSedexMessages.add(sedexMessage);
+                        // Remplace le contenu initial de la première annonce par le resultat du regroupement des personnes pour généré un envoi groupé
+                        simpleAnnonceSedex.setMessageContent(regroupeAnnoncesPrimeTarifaire(listAnnonces, simpleAnnonceSedex));
 
-                String dateToday = "";
-                Calendar cal = Calendar.getInstance();
-                SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
-                dateToday = sdf.format(cal.getTime());
-                // On ajout la date à l'annonce
-                simpleAnnonceSedex.setDateMessage(dateToday);
-                // On set le status à "Envoyé"
-                simpleAnnonceSedex.setStatus(AMStatutAnnonceSedex.ENVOYE.getValue());
-                AmalImplServiceLocator.getSimpleAnnonceSedexService().update(simpleAnnonceSedex);
-                listAnnoncesUpdated.add(simpleAnnonceSedex);
-                nbItemsSend++;
-                incr++;
-            } catch (Exception e) {
-                _setErrorOnSend(simpleAnnonceSedex, e);
+                        SimpleSedexMessage sedexMessage = _createSimpleSedexMessage(simpleAnnonceSedex);
+                        sedexMessage.increment = String.valueOf(incr);
+                        listSedexMessages.add(sedexMessage);
+
+                        // Reset le contenu initial de la première annonce car les annonces groupées ne sont pas sauvegardées en DB
+                        simpleAnnonceSedex.setMessageContent(originalContent);
+
+                        nbItemsSend++;
+                        incr++;
+                    }
+
+                    // Update en status "Envoyé" toutes les annonces de prime tarifaire impliquées dans l'envoi groupé
+                    if (!arrayListErrorsSedexId.contains(simpleAnnonceSedex.getIdAnnonceSedex())) {
+                        String dateToday = "";
+                        Calendar cal = Calendar.getInstance();
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+                        dateToday = sdf.format(cal.getTime());
+                        // On ajout la date à l'annonce
+                        simpleAnnonceSedex.setDateMessage(dateToday);
+                        // On set le status à "Envoyé"
+                        simpleAnnonceSedex.setStatus(AMStatutAnnonceSedex.ENVOYE.getValue());
+                        AmalImplServiceLocator.getSimpleAnnonceSedexService().update(simpleAnnonceSedex);
+                        listAnnoncesUpdated.add(simpleAnnonceSedex);
+                    }
+                } catch (Exception e) {
+                    _setErrorOnSend(simpleAnnonceSedex, e);
+                    arrayListErrorsSedexId.add(simpleAnnonceSedex.getIdAnnonceSedex());
+                }
+            } else {
+                try {
+                    msgType = simpleAnnonceSedex.getMessageType();
+
+                    recipientId = AMSedexRPUtil.getSedexIdFromIdTiers(simpleAnnonceSedex.getIdTiersCM());
+
+                    SimpleSedexMessage sedexMessage = _createSimpleSedexMessage(simpleAnnonceSedex);
+                    sedexMessage.increment = String.valueOf(incr);
+                    listSedexMessages.add(sedexMessage);
+
+                    String dateToday = "";
+                    Calendar cal = Calendar.getInstance();
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+                    dateToday = sdf.format(cal.getTime());
+                    // On ajout la date à l'annonce
+                    simpleAnnonceSedex.setDateMessage(dateToday);
+                    // On set le status à "Envoyé"
+                    simpleAnnonceSedex.setStatus(AMStatutAnnonceSedex.ENVOYE.getValue());
+                    AmalImplServiceLocator.getSimpleAnnonceSedexService().update(simpleAnnonceSedex);
+                    listAnnoncesUpdated.add(simpleAnnonceSedex);
+                    nbItemsSend++;
+                    incr++;
+                } catch (Exception e) {
+                    _setErrorOnSend(simpleAnnonceSedex, e);
+                }
             }
         }
 
@@ -1597,6 +1639,67 @@ public class AnnoncesRPServiceImpl implements AnnoncesRPService {
             _setErrorOnSend(null, e);
         }
         return nbItemsSend;
+    }
+
+    /**
+     * Regroupement des annonces de primes tarifaire
+     * La première annonces est utilisé comme modèle pour
+     * générer la structure de l'annonces (entêtes etc...)
+     * puis les personnes trouvées dans les autres annonces
+     * sont ajoutées une par une au contenu de l'annonce.
+     *
+     * @param listAnnoncesDemandePrimeTarifaire
+     * @param simpleAnnonceSedex
+     *
+     * @return une annonce contenant toutes les personnes trouvées dans la liste de prime tarifaire
+     */
+    private String regroupeAnnoncesPrimeTarifaire(List<SimpleAnnonceSedex> listAnnoncesDemandePrimeTarifaire, SimpleAnnonceSedex simpleAnnonceSedex)  throws AnnonceSedexException, ClassNotFoundException, JAXBException, SAXException, MalformedURLException,
+            IOException, JAXBValidationError, JAXBValidationWarning {
+
+        String messageContent = simpleAnnonceSedex.getMessageContent();
+
+        // Récupération du builder
+        AnnonceBuilderAbstract annonceBuilderAbstract = AnnonceBuilderFactory.getAnnonceBuilder(simpleAnnonceSedex);
+
+        // Récupération de la class associée à l'annonce
+        Class<?>[] addClasses = new Class[]{Class.forName(annonceBuilderAbstract.whichClass().getName())};
+        // Construction de l'objet JAXB Header depuis la chaine XML
+        Object o_header = _getHeaderAnnonce(simpleAnnonceSedex, addClasses);
+        // Construction de l'objet JAXB Content depuis la chaine XML
+        Object o_content = _getContentAnnonce(simpleAnnonceSedex, addClasses);
+
+        if (o_content instanceof Message) {
+            // Evite un doublon de la première personne
+            ((Message) o_content).getContent().getPremiumQuery().getPerson().clear();
+
+            // Regroupement des personnes trouvé dans le contenu de la listeAnnonces
+            for (SimpleAnnonceSedex simpleAnnonceSedexLoop : listAnnoncesDemandePrimeTarifaire) {
+                if (!arrayListErrorsSedexId.contains(simpleAnnonceSedexLoop.getIdAnnonceSedex())) {
+                    try {
+                        // Construction de l'objet JAXB Content depuis la chaine XML
+                        Object o_content_sub = _getContentAnnonce(simpleAnnonceSedexLoop, addClasses);
+
+                        // Ajoute la personne dans la liste de personnes
+                        if (o_content_sub instanceof Message) {
+                            ((Message) o_content).getContent().getPremiumQuery().getPerson().add(((Message) o_content_sub).getContent().getPremiumQuery().getPerson().get(0));
+                        }
+                    } catch (Exception e) {
+                        _setErrorOnSend(simpleAnnonceSedexLoop, e);
+                        arrayListErrorsSedexId.add(simpleAnnonceSedex.getIdAnnonceSedex());
+                    }
+                }
+            }
+        }
+
+        // Construction du message
+        Object o_message = annonceBuilderAbstract.createMessage(o_header, o_content);
+
+        // Marshalling pour créer le String
+        StringWriter swFull = new StringWriter();
+        JAXBServices.getInstance().marshal(o_message, swFull, false, false, addClasses);
+        messageContent = swFull.toString();
+
+        return messageContent;
     }
 
     /**

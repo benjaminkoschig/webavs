@@ -152,7 +152,7 @@ public class StrategieLoyer extends StrategieCalculDepense {
         this.getOrCreateChild(tupleLoyerActuel, charges.getCleDepenseMontantCharges(), charges.getMontantCharges());
 
         // plafond des loyers réforme PC
-        if(context.contains(Attribut.REFORME)) {
+        if(context.contains(Attribut.REFORME) && !tupleLoyerActuel.containsValeurEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_LOCALITE)) {
             this.getOrCreateChild(tupleLoyerActuel, IPCValeursPlanCalcul.PLAFOND_LOYER_LOCALITE, donnee.getIdLocalite());
             this.getOrCreateChild(tupleLoyerActuel, IPCValeursPlanCalcul.PLAFOND_LOYER_NBTOTALFAMILLE, donnee.getNbTotalFamille());
             this.getOrCreateChild(tupleLoyerActuel, IPCValeursPlanCalcul.PLAFOND_LOYER_DATEDEBUT, 0f).setLegende(donnee.getDateDebutDonneeFinanciere());
