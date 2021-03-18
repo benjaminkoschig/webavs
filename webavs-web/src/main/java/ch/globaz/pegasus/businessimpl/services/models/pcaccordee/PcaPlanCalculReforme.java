@@ -4,6 +4,7 @@ import ch.globaz.pegasus.business.models.pcaccordee.PCAccordeePlanCalculReforme;
 import ch.globaz.pegasus.business.models.pcaccordee.PCAccordeePlanCalculReformeSearch;
 import ch.globaz.pegasus.businessimpl.services.models.decision.validation.ValiderDecisionUtils;
 import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
@@ -132,7 +133,7 @@ public class PcaPlanCalculReforme {
         String dateSplit = null;
         for(List<PCAccordeePlanCalculReforme> lPcaPdc: mPcaPdc.values()) {
             if (isReforme(lPcaPdc)) {
-                return lPcaPdc.get(0).getDateDebut();
+                return "01."+lPcaPdc.get(0).getDateDebut();
             }
         }
 
