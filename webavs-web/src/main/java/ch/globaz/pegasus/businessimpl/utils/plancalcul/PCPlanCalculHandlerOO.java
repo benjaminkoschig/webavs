@@ -359,6 +359,10 @@ public class PCPlanCalculHandlerOO {
                             + dacOO.getDecisionHeader().getSimpleDecisionHeader().getDateFinDecision());
         }
 
+        if (!isRetenu) {
+            data.addData("NON_RETENU", babelDoc.getTextes(1).getTexte(15).getDescription());
+        }
+
         data.addData("PCAL_HEADER", PRStringUtils.replaceString(babelDoc.getTextes(1).getTexte(4).getDescription(), PCPlanCalculHandlerOO.DECISION_DU, dacOO.getDecisionHeader().getSimpleDecisionHeader().getDateDecision()) + " " + toAppendToPcalHeader);
         data.addData("PCAL_JUSTIFICATIF", babelDoc.getTextes(1).getTexte(10).getDescription());
         data.addData("PCAL_FORTUNE", babelDoc.getTextes(1).getTexte(5).getDescription());
