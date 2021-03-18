@@ -785,18 +785,27 @@ public class Calcul {
         String regionLocalite = null;
         TupleDonneeRapport tupleHab = tuple.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_HABITATION_PRINCIPALE);
         if(tupleHab != null) {
-            regionLocalite = Integer.toString(tupleHab.getValeurEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_LOCALITE).intValue());
+            regionLocalite = getLocalite(tupleHab);
         }
         TupleDonneeRapport tupleLoyers = tuple.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_LOYERS);
         if (JadeStringUtil.isBlankOrZero(regionLocalite) && tupleLoyers != null) {
             for (TupleDonneeRapport tupleLoyer : tupleLoyers.getEnfants().values()) {
                 if(IPCDroits.CS_ROLE_FAMILLE_REQUERANT.equals(tupleLoyer.getLegendeEnfant(IPCValeursPlanCalcul.CLE_INTER_LOYER_ROLE_PROPRIETAIRE))) {
-                    regionLocalite = Integer.toString(tupleLoyer.getValeurEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_LOCALITE).intValue());
+                    regionLocalite = getLocalite(tupleLoyer);
                 }
             }
         }
 
         return JadeStringUtil.isBlankOrZero(regionLocalite) ? null : regionLocalite;
+    }
+
+    private String getLocalite(TupleDonneeRapport tupple){
+        String regionLocalite = null;
+        regionLocalite = tupple.getLegendeEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_LOCALITE);
+        if(JadeStringUtil.isBlankOrZero(regionLocalite)) {
+            regionLocalite = Integer.toString(tupple.getValeurEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_LOCALITE).intValue());
+        }
+        return regionLocalite;
     }
 
 

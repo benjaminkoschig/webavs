@@ -243,7 +243,7 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
         //return donneeLoyer.getValeurEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER);
 
         ForfaitPrimeAssuranceMaladieLocaliteSearch loyerMaxLocaliteSearch = new ForfaitPrimeAssuranceMaladieLocaliteSearch();
-        String idLocalite = Integer.toString(donneeLoyer.getValeurEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_LOCALITE).intValue());
+        String idLocalite = donneeLoyer.getLegendeEnfant(IPCValeursPlanCalcul.PLAFOND_LOYER_LOCALITE);
         if (JadeStringUtil.isBlankOrZero(idLocalite)) {
             throw new CalculException("pegasus.calcul.commune.mandatory", idLocalite);
         }
