@@ -144,9 +144,12 @@ public class APDroitPatPAction extends APAbstractDroitPAction {
                 }
 
                 viewBean = this.beforeAfficher(session, request, response, viewBean);
+                boolean hasWarn = ((APDroitPatPViewBean) viewBean).hasMessageWarn();
                 viewBean = mainDispatcher.dispatch(viewBean, privateAction);
-                viewBean.setMessage("");
-                viewBean.setMsgType("");
+                if(!hasWarn) {
+                    viewBean.setMessage("");
+                    viewBean.setMsgType("");
+                }
                 session.removeAttribute("viewBean");
                 session.setAttribute("viewBean", viewBean);
                 request.setAttribute("viewBean", viewBean);
@@ -200,6 +203,7 @@ public class APDroitPatPAction extends APAbstractDroitPAction {
         try {
             JSPUtils.setBeanProperties(request, viewBean);
             viewBean = (APDroitPatPViewBean) beforeAjouter(session, request, response, viewBean);
+
             viewBean = (APDroitPatPViewBean) mainDispatcher.dispatch(viewBean, newAction);
 
             boolean goesToSuccessDest = !viewBean.getMsgType().equals(FWViewBeanInterface.ERROR);
@@ -212,6 +216,7 @@ public class APDroitPatPAction extends APAbstractDroitPAction {
                 request.setAttribute(FWServlet.VIEWBEAN, viewBean);
                 destination = _getDestAjouterEchec(session, request, response, viewBean);
             }
+
 
         } catch (Exception e) {
             this.saveViewBean(viewBean, session);

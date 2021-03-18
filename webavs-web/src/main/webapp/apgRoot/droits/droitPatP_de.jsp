@@ -286,6 +286,7 @@
                     upd();
                     EDITION_MODE = true;
                     repaintTablePeriodes();
+
                     $(this).dialog("close");
                 }
             }],
@@ -986,7 +987,7 @@
 </div>
 <% } %>
 
-<% if (viewBean.hasMessageWarn()) { %>
+<% if (viewBean.hasMessageWarn() && viewBean.getMessage().isEmpty()) { %>
 <div style="display:none;vertical-align:middle" id="dialog_apg_warn"
      title="<ct:FWLabel key='JSP_WARN'/>">
 </div>
