@@ -115,6 +115,21 @@
         }
     }
 
+    function validateSansCheck() {
+        var isModifiable = <%=viewBean.isModifiable()%>;
+        var hasError = false;
+        if (document.forms[0].elements('_method').value === "read" && !isModifiable) {
+            document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_ENFANT_PAT%>.chercher";
+        } else {
+            $('#aControler').prop("checked", false);
+            $('#checkWarn').prop("checked", false);
+            hasError = nextStepValidate();
+        }
+        if (!hasError) {
+            action(COMMIT);
+        }
+    }
+
     function nextStepValidateAfterPopupSeodor() {
         nssUpdateHiddenFields();
         //Récupération des dates
@@ -273,9 +288,15 @@
                 text: "<ct:FWLabel key='JSP_OUI'/>",
                 click: function () {
                     $('#checkWarn').prop("checked", false);
-                    EDITION_MODE = false;
-                    $('#modeEditionDroit').val('<%=APModeEditionDroit.LECTURE%>');
-                    nextStepValidateAfterPopupSeodor();
+                    if(<%=viewBean.getModeEditionDroit().equals(APModeEditionDroit.CREATION)%>){
+                        $('#modeEditionDroit').val('<%=APModeEditionDroit.CREATION%>');
+                        document.forms[0].elements('_method').value = "add";
+                    }
+                    if(<%=viewBean.getModeEditionDroit().equals(APModeEditionDroit.EDITION)%>){
+                        $('#modeEditionDroit').val('<%=APModeEditionDroit.EDITION%>');
+                        document.forms[0].elements('_method').value = "upd";
+                    }
+                    validateSansCheck();
                     $(this).dialog("close");
                 }
             }, {
@@ -286,7 +307,10 @@
                     upd();
                     EDITION_MODE = true;
                     repaintTablePeriodes();
-
+                    if(<%=viewBean.getModeEditionDroit().equals(APModeEditionDroit.CREATION)%>){
+                        $('#modeEditionDroit').val('<%=APModeEditionDroit.CREATION%>');
+                        document.forms[0].elements('_method').value = "add";
+                    }
                     $(this).dialog("close");
                 }
             }],

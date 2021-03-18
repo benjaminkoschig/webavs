@@ -1,6 +1,6 @@
 /*
  * Créé le 5 juil. 05
- * 
+ *
  * Pour changer le modèle de ce fichier généré, allez à : Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code
  * et commentaires
  */
@@ -31,7 +31,7 @@ import java.util.Objects;
 
 /**
  * <H1>Description</H1>
- * 
+ *
  * @author vre
  */
 public class APDroitPatPAction extends APAbstractDroitPAction {
@@ -58,7 +58,7 @@ public class APDroitPatPAction extends APAbstractDroitPAction {
      */
     @Override
     protected String _getDestAjouterSucces(HttpSession session, HttpServletRequest request,
-            HttpServletResponse response, FWViewBeanInterface viewBean) {
+                                           HttpServletResponse response, FWViewBeanInterface viewBean) {
         APDroitDTO dto = new APDroitDTO(((APDroitPatPViewBean) viewBean).getDroit());
         PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO, dto);
 
@@ -73,7 +73,7 @@ public class APDroitPatPAction extends APAbstractDroitPAction {
      */
     @Override
     protected String _getDestModifierSucces(HttpSession session, HttpServletRequest request,
-            HttpServletResponse response, FWViewBeanInterface viewBean) {
+                                            HttpServletResponse response, FWViewBeanInterface viewBean) {
         APDroitDTO dto = new APDroitDTO(((APDroitPatPViewBean) viewBean).getDroit());
         PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO, dto);
 
@@ -83,7 +83,7 @@ public class APDroitPatPAction extends APAbstractDroitPAction {
 
     /**
      * On arrive sur cette action depuis l'écran de contrôle des prestation suite à la création d'un droit.
-     * 
+     *
      * @param session
      * @param request
      * @param response
@@ -93,7 +93,7 @@ public class APDroitPatPAction extends APAbstractDroitPAction {
      * @throws Exception
      */
     public String finaliserCreationDroit(HttpSession session, HttpServletRequest request, HttpServletResponse response,
-            FWDispatcher mainDispatcher, FWViewBeanInterface vb) throws Exception {
+                                         FWDispatcher mainDispatcher, FWViewBeanInterface vb) throws Exception {
 
         if (!(vb instanceof APValidationPrestationViewBean)) {
             throw new APWrongViewBeanTypeException(
@@ -113,14 +113,14 @@ public class APDroitPatPAction extends APAbstractDroitPAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.framework.controller.FWDefaultServletAction#actionAfficher(javax .servlet.http.HttpSession,
      * javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
      * globaz.framework.controller.FWDispatcher)
      */
     @Override
     protected void actionAfficher(HttpSession session, HttpServletRequest request, HttpServletResponse response,
-            FWDispatcher mainDispatcher) throws ServletException, IOException {
+                                  FWDispatcher mainDispatcher) throws ServletException, IOException {
 
         String[] userAction = request.getParameterValues("userAction");
         String destination;
@@ -203,20 +203,32 @@ public class APDroitPatPAction extends APAbstractDroitPAction {
         try {
             JSPUtils.setBeanProperties(request, viewBean);
             viewBean = (APDroitPatPViewBean) beforeAjouter(session, request, response, viewBean);
-
-            viewBean = (APDroitPatPViewBean) mainDispatcher.dispatch(viewBean, newAction);
-
-            boolean goesToSuccessDest = !viewBean.getMsgType().equals(FWViewBeanInterface.ERROR);
-
-            if (goesToSuccessDest) {
-                request.setAttribute(FWServlet.VIEWBEAN, viewBean);
-                destination = _getDestAjouterSucces(session, request, response, viewBean);
-            } else {
-                session.setAttribute("viewBean", viewBean);
-                request.setAttribute(FWServlet.VIEWBEAN, viewBean);
-                destination = _getDestAjouterEchec(session, request, response, viewBean);
+            BSession mSession = (BSession) mainDispatcher.getSession();
+            final boolean isCheckVerifJour = Boolean.valueOf(mSession.getApplication().getProperty(
+                    APApplication.PROPERTY_PAT_WARN_VERIF_JOUR, "false"));
+            if (viewBean.getCheckWarn() && isCheckVerifJour) {
+                viewBean.checkWarningVerifJour(mSession);
             }
+            if (viewBean.hasMessagePropError() || viewBean.hasMessageWarn()) {
+                newAction = FWAction.newInstance(IAPActions.ACTION_SAISIE_CARTE_APAT + ".afficher");
+                session.removeAttribute("viewBean");
+                session.setAttribute("viewBean", viewBean);
+                request.setAttribute("viewBean", viewBean);
+                destination =request.getServletPath() + "?" + PRDefaultAction.USER_ACTION + "=" + newAction;
+            }else {
+                viewBean = (APDroitPatPViewBean) mainDispatcher.dispatch(viewBean, newAction);
 
+                boolean goesToSuccessDest = !viewBean.getMsgType().equals(FWViewBeanInterface.ERROR);
+
+                if (goesToSuccessDest) {
+                    request.setAttribute(FWServlet.VIEWBEAN, viewBean);
+                    destination = _getDestAjouterSucces(session, request, response, viewBean);
+                } else {
+                    session.setAttribute("viewBean", viewBean);
+                    request.setAttribute(FWServlet.VIEWBEAN, viewBean);
+                    destination = _getDestAjouterEchec(session, request, response, viewBean);
+                }
+            }
 
         } catch (Exception e) {
             this.saveViewBean(viewBean, session);
