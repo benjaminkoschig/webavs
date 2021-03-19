@@ -1,5 +1,6 @@
 package ch.globaz.pegasus.process.adaptation;
 
+import ch.globaz.pegasus.primeassurancemaladie.PrimeAssuranceMaladieFromCSV;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.util.HashMap;
@@ -28,6 +29,32 @@ public abstract class PCProcessDroitUpdateAbsract extends AbstractEntity impleme
         Droit[] droits = PCAdaptationUtils.findUpdatableDroits(entity.getIdRef(),
                 "01." + properties.get(PCProcessAdapationEnum.DATE_ADAPTATION).trim(),
                 IPCDroits.CS_MOTIF_DROIT_ADAPTATION, dataToSave);
+
+        currentDroit = droits[0];
+        droitACalculer = droits[1];
+        if (dataToSave.containsKey(PCProcessAdapationEnum.HAS_DELETE_VERSION_DROIT)
+                && "true".equalsIgnoreCase(dataToSave.get(PCProcessAdapationEnum.HAS_DELETE_VERSION_DROIT))) {
+            hasDeleteVersionDroit = true;
+        }
+    }
+
+    /**
+     * Méthode pour récupérer uniquement les droits validés et ne pas supprimer les droits en cours (Au calcul / Calculé / Enregistré)
+     *
+     * @param listePrimeFromCsv
+     * @throws DroitException
+     * @throws JadeApplicationServiceNotAvailableException
+     * @throws JadePersistenceException
+     * @throws DemandeException
+     * @throws DossierException
+     */
+    public void fillDroitToUpdateForPrimeLAMal(Map<String, PrimeAssuranceMaladieFromCSV> listePrimeFromCsv) throws DroitException, JadeApplicationServiceNotAvailableException,
+            JadePersistenceException, DemandeException, DossierException {
+
+        // remplie le droit courant et définit le droit à calculer
+        Droit[] droits = PCAdaptationUtils.findUpdatableDroitsForPrimeLAMal(entity.getIdRef(),
+                "01." + properties.get(PCProcessAdapationEnum.DATE_ADAPTATION).trim(),
+                IPCDroits.CS_MOTIF_DROIT_ADAPTATION, listePrimeFromCsv);
 
         currentDroit = droits[0];
         droitACalculer = droits[1];

@@ -16,9 +16,12 @@ import ch.globaz.pegasus.business.models.assurancemaladie.SimplePrimeAssuranceMa
 import ch.globaz.pegasus.business.models.droit.*;
 import ch.globaz.pegasus.business.models.parametre.ForfaitPrimeAssuranceMaladieLocalite;
 import ch.globaz.pegasus.business.models.parametre.ForfaitPrimeAssuranceMaladieLocaliteSearch;
+import ch.globaz.pegasus.business.models.renteijapi.RenteAvsAi;
+import ch.globaz.pegasus.business.models.renteijapi.RenteAvsAiSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.businessimpl.services.models.calcul.PeriodesServiceImpl;
 import ch.globaz.pegasus.primeassurancemaladie.PrimeAssuranceMaladieFromCSV;
+import ch.globaz.pegasus.process.adaptation.PCAdaptationUtils;
 import ch.globaz.pegasus.process.adaptation.PCProcessAdapationEnum;
 import ch.globaz.pegasus.process.adaptation.PCProcessDroitUpdateAbsract;
 import ch.globaz.simpleoutputlist.exception.TechnicalException;
@@ -30,6 +33,7 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
 import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import org.slf4j.Logger;
@@ -49,10 +53,12 @@ public class PCProcessImportationPrimeAssuranceMaladieHandler extends PCProcessD
     private static final Logger LOG = LoggerFactory.getLogger(PCProcessImportationPrimeAssuranceMaladieHandler.class);
 
     private BSession bsession;
-    private LinkedList<String> errors = new LinkedList();
+    private LinkedList<String> errors = new LinkedList<>();
 
     private Map<String, PrimeAssuranceMaladieFromCSV> listePrimeAssuranceMaladieFromCSV= null;
     private List<String> listeWarn;
+    // TODO implémenter la gestion des adaptations Annuels. Actuellement sur false, le processus se comportera comme pour une adaptation prime LAMal
+    private boolean isAdaptationAnnuel;
     private static final int AGE_ADULTE = 26;
     private static final int AGE_JEUNE_ADULTE = 19;
 
@@ -64,9 +70,10 @@ public class PCProcessImportationPrimeAssuranceMaladieHandler extends PCProcessD
 
 
 
-    public PCProcessImportationPrimeAssuranceMaladieHandler(Map<String, PrimeAssuranceMaladieFromCSV> listePrimeAssuranceMaladieFromCSV) {
+    public PCProcessImportationPrimeAssuranceMaladieHandler(Map<String, PrimeAssuranceMaladieFromCSV> listePrimeAssuranceMaladieFromCSV, boolean isAdaptationAnnuel) {
         this.listePrimeAssuranceMaladieFromCSV = listePrimeAssuranceMaladieFromCSV;
         listeWarn = new ArrayList<>();
+        this.isAdaptationAnnuel = isAdaptationAnnuel;
     }
 
 
@@ -75,7 +82,11 @@ public class PCProcessImportationPrimeAssuranceMaladieHandler extends PCProcessD
 
         try {
             initBsession();
-            fillDroitToUpdate();
+            if (isAdaptationAnnuel) {
+                fillDroitToUpdate();
+            } else {
+                fillDroitToUpdateForPrimeLAMal(listePrimeAssuranceMaladieFromCSV);
+            }
             // Pour ne pas envoyer de double mail, un mail d'erreur de validation est déjà généré
             LOG.info("PCProcessImportationPrimeAssuranceMaladieHandler - Start Import - Création Prime d'assurance maladie");
             // S'il n'y pas de droit validé, alors, pas de mise à jour de prime.
@@ -107,7 +118,6 @@ public class PCProcessImportationPrimeAssuranceMaladieHandler extends PCProcessD
         ModificateurDroitDonneeFinanciere modificateurDroitDonneeFinanciere;
         requerant = findDroitFamilleFromIdDroit(currentDroit.getId());
 
-
         if (Objects.isNull(requerant)) {
             throw new AdaptationException("Le requérant n'a pas été trouvé.");
         }else {
@@ -123,13 +133,16 @@ public class PCProcessImportationPrimeAssuranceMaladieHandler extends PCProcessD
             membreSearch = PegasusServiceLocator.getDroitService().searchMembreFamilleEtendu(membreSearch);
 
             // Il faut maintenant ajouter la prime à l'ensemble de sa famille
-            for (Object object : membreSearch.getSearchResults()) {
+            for (JadeAbstractModel object : membreSearch.getSearchResults()) {
                 MembreFamilleEtendu membreFamille = (MembreFamilleEtendu) object;
 
                 if (!Objects.equals(membreFamille.getDroitMembreFamille().getMembreFamille().getPersonneEtendue().getPersonneEtendue().getNumAvsActuel().trim()
                         , requerant.getMembreFamille().getPersonneEtendue().getPersonneEtendue().getNumAvsActuel().trim())) {
-
-                    createPrimeForMembreFamille(membreFamille.getDroitMembreFamille(), modificateurDroitDonneeFinanciere);
+                    if (isRenteOuverteForNSS(membreFamille)){
+                        createPrimeForMembreFamille(membreFamille.getDroitMembreFamille(), modificateurDroitDonneeFinanciere);
+                    } else {
+                        listeWarn.add("Le NSS suivant ne possède pas de rente ouverte : "+ membreFamille.getDroitMembreFamille().getMembreFamille().getPersonneEtendue().getPersonneEtendue().getNumAvsActuel());
+                    }
                 }
             }
 
@@ -137,6 +150,40 @@ public class PCProcessImportationPrimeAssuranceMaladieHandler extends PCProcessD
                 JadeProcessCommonUtils.addWarning(listeWarn.toString());
             }
         }
+    }
+
+    /**
+     * Méthode qui va vérifier si une rente est existante pour un membreFamille
+     *
+     * @param membreFamille
+     * @return
+     * @throws DroitException
+     * @throws JadeApplicationServiceNotAvailableException
+     * @throws JadePersistenceException
+     */
+    private boolean isRenteOuverteForNSS(MembreFamilleEtendu membreFamille) throws DroitException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
+        DroitSearch droitSearch;
+        RenteAvsAiSearch renteAvsAiSearch = new RenteAvsAiSearch();
+        droitSearch = PCAdaptationUtils.findDroitValideFromIdDroit(membreFamille.getDroitMembreFamille().getSimpleDroitMembreFamille().getIdDroit());
+        for (JadeAbstractModel model : droitSearch.getSearchResults()) {
+            Droit droit = (Droit) model;
+            // On va rechercher la rente Avs Ai lié au droit
+            renteAvsAiSearch.setForNumeroVersion(droit.getSimpleVersionDroit().getIdVersionDroit());
+            renteAvsAiSearch.setForDateFin("0");
+            renteAvsAiSearch.setWhereKey("forVersioned");
+            renteAvsAiSearch.setIdDroitMembreFamille(membreFamille.getDroitMembreFamille().getSimpleDroitMembreFamille().getId());
+            renteAvsAiSearch = PegasusServiceLocator.getDroitService().searchRenteAvsAi(renteAvsAiSearch);
+            if (renteAvsAiSearch.getSearchResults().length > 0) {
+                // On vérifie si la rente est active. Si c'est le cas, alors la ceration de la prime peut avoir lieu
+                for(JadeAbstractModel objet : renteAvsAiSearch.getSearchResults()) {
+                    RenteAvsAi rente = (RenteAvsAi) objet;
+                    if (rente.getSimpleDonneeFinanciereHeader().getDateFin().isEmpty()) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -155,55 +202,75 @@ public class PCProcessImportationPrimeAssuranceMaladieHandler extends PCProcessD
     private void createPrimeForMembreFamille(DroitMembreFamille membreFamille, ModificateurDroitDonneeFinanciere modificateurDroitDonneeFinanciere) throws JadePersistenceException, AdaptationException, JadeApplicationServiceNotAvailableException, DroitException, ForfaitsPrimesAssuranceMaladieException, AssuranceMaladieException {
         PrimeAssuranceMaladieFromCSV assuranceMaladie;
 
-        if (listePrimeAssuranceMaladieFromCSV.containsKey(membreFamille.getMembreFamille().getPersonneEtendue().getPersonneEtendue().getNumAvsActuel())) {
-            assuranceMaladie = createAssuranceMaladieFromCSV(membreFamille.getMembreFamille().getPersonneEtendue().getPersonneEtendue().getNumAvsActuel());
-        }else {
-            assuranceMaladie = createAssuranceMaladieCSVFromDroitFamille(membreFamille);
-        }
-
-        // Création de la prime à persister
-        PrimeAssuranceMaladie primeAssuranceMaladie = createEntityPrimeAssurancemaladieToPersist(assuranceMaladie, membreFamille);
+        String numAVS = membreFamille.getMembreFamille().getPersonneEtendue().getPersonneEtendue().getNumAvsActuel();
         // On recherche la prime existante
         PrimeAssuranceMaladieSearch searchAssuranceMaladie = searchPrimeAssuranceMaladie(membreFamille);
 
-        // Si le montant de la prime à importer est la même que celle qui existe, on ne créera pas de prime
-        if (!isExistingPrimeAssuranceMaladieWithSameMontant(searchAssuranceMaladie, assuranceMaladie)) {
-            boolean isCloseAndCreateNewPeriode = false;
-            if (searchAssuranceMaladie.getSearchResults().length > 0) {
-                LocalDate dateAdaptation = LocalDate.parse(properties.get(PCProcessAdapationEnum.DATE_ADAPTATION), formatter);
-                PrimeAssuranceMaladie oldPrimeAssuranceMaladie = findPrimeFromSearchResult(searchAssuranceMaladie);
-                if (Objects.nonNull(oldPrimeAssuranceMaladie)) {
-                    if (LocalDate.parse(oldPrimeAssuranceMaladie.getSimpleDonneeFinanciereHeader().getDateDebut(), formatter).isBefore(dateAdaptation)) {
-                        isCloseAndCreateNewPeriode = true;
-                        // Ajout d'une date de fin
-                        oldPrimeAssuranceMaladie.getSimpleDonneeFinanciereHeader().setDateFin(dateAdaptation.minusMonths(1).format(formatter));
-                        // Update de la prime avec la date de fin
-                        updateOldPrimeAssuranceMaladie(modificateurDroitDonneeFinanciere, membreFamille, oldPrimeAssuranceMaladie, assuranceMaladie.getNss());
-                        primeAssuranceMaladie.setSimpleDonneeFinanciereHeader(updateDonneeFinanciereAfterUpdateOldPrime(oldPrimeAssuranceMaladie, primeAssuranceMaladie));
-                    } else if (LocalDate.parse(oldPrimeAssuranceMaladie.getSimpleDonneeFinanciereHeader().getDateDebut(), formatter).isEqual(dateAdaptation)) {
-                        // S'il existe une prime avec la même date que l'adaptation, il faut la supprimer avant de la recréer
-                        deleteOldPrimeAssuranceMaladie(modificateurDroitDonneeFinanciere, oldPrimeAssuranceMaladie, assuranceMaladie.getNss());
-                    } else {
-                        throw new AdaptationException("Une prime existe déjà avec une date ultérieure à l'adaptation.");
+        if (listePrimeAssuranceMaladieFromCSV.containsKey(numAVS)) {
+            // S'il n y a pas de prime dans le CSV et qu'une prime existe en DB, on renvoie une erreur
+            if(montantPrimeCsvIsBlankOrZero(searchAssuranceMaladie, listePrimeAssuranceMaladieFromCSV.get(numAVS))) {
+                // un avertissement sera renvoyé pour pouvoir traiter le reste de sa famille
+                listeWarn.add("Le montant de la prime du CSV est nulle ou vide, et une prime existe pour le NSS : " + numAVS);
+            } else {
+                assuranceMaladie = createAssuranceMaladieFromCSV(membreFamille.getMembreFamille().getPersonneEtendue().getPersonneEtendue().getNumAvsActuel());
+
+                // Création de la prime à persister
+                PrimeAssuranceMaladie primeAssuranceMaladie = createEntityPrimeAssurancemaladieToPersist(assuranceMaladie, membreFamille);
+
+                // Si le montant de la prime à importer est la même que celle qui existe, on ne créera pas de prime
+                if (!isExistingPrimeAssuranceMaladieWithSameMontant(searchAssuranceMaladie, assuranceMaladie)) {
+                    boolean isCloseAndCreateNewPeriode = false;
+                    if (searchAssuranceMaladie.getSearchResults().length > 0) {
+                        LocalDate dateAdaptation = LocalDate.parse(properties.get(PCProcessAdapationEnum.DATE_ADAPTATION), formatter);
+                        PrimeAssuranceMaladie oldPrimeAssuranceMaladie = findPrimeFromSearchResult(searchAssuranceMaladie);
+                        if (Objects.nonNull(oldPrimeAssuranceMaladie)) {
+                            if (LocalDate.parse(oldPrimeAssuranceMaladie.getSimpleDonneeFinanciereHeader().getDateDebut(), formatter).isBefore(dateAdaptation)) {
+                                isCloseAndCreateNewPeriode = true;
+                                // Ajout d'une date de fin
+                                oldPrimeAssuranceMaladie.getSimpleDonneeFinanciereHeader().setDateFin(dateAdaptation.minusMonths(1).format(formatter));
+                                // Update de la prime avec la date de fin
+                                updateOldPrimeAssuranceMaladie(modificateurDroitDonneeFinanciere, membreFamille, oldPrimeAssuranceMaladie, assuranceMaladie.getNss());
+                                primeAssuranceMaladie.setSimpleDonneeFinanciereHeader(updateDonneeFinanciereAfterUpdateOldPrime(oldPrimeAssuranceMaladie, primeAssuranceMaladie));
+                            } else if (LocalDate.parse(oldPrimeAssuranceMaladie.getSimpleDonneeFinanciereHeader().getDateDebut(), formatter).isEqual(dateAdaptation)) {
+                                // S'il existe une prime avec la même date que l'adaptation, il faut la supprimer avant de la recréer
+                                deleteOldPrimeAssuranceMaladie(modificateurDroitDonneeFinanciere, oldPrimeAssuranceMaladie, assuranceMaladie.getNss());
+                            } else {
+                                throw new AdaptationException("Une prime existe déjà avec une date ultérieure à l'adaptation.");
+                            }
+                        }
                     }
+
+                    if (isCloseAndCreateNewPeriode) {
+                        createAndClosePrimeAssuranceMaladie(modificateurDroitDonneeFinanciere, primeAssuranceMaladie, assuranceMaladie.getNss());
+                    } else {
+                        // Création de la prime
+                        createPrimeAssuranceMaladie(modificateurDroitDonneeFinanciere, membreFamille, primeAssuranceMaladie, assuranceMaladie.getNss());
+                        // ajout d'un avertissement si le montant de la prime est la prime moyenne
+                    }
+                    if (assuranceMaladie.isPrimeMoyenne()) {
+                        listeWarn.add(messageAvertissementPrimeMoyenne + assuranceMaladie.getNss() + "\n");
+                    }
+                } else {
+                    listeWarn.add(messageAvertissementMontantExistant + assuranceMaladie.getNss() + "\n");
                 }
             }
-
-            if (isCloseAndCreateNewPeriode) {
-                createAndClosePrimeAssuranceMaladie(modificateurDroitDonneeFinanciere, primeAssuranceMaladie, assuranceMaladie.getNss());
-            } else {
-                // Création de la prime
-                createPrimeAssuranceMaladie(modificateurDroitDonneeFinanciere, membreFamille, primeAssuranceMaladie, assuranceMaladie.getNss());
-                // ajout d'un avertissement si le montant de la prime est la prime moyenne
-            }
-            if (assuranceMaladie.isPrimeMoyenne()) {
-                listeWarn.add(messageAvertissementPrimeMoyenne + assuranceMaladie.getNss() + "\n");
-            }
-        } else {
-            listeWarn.add(messageAvertissementMontantExistant + assuranceMaladie.getNss() + "\n");
+        }else {
+            throw new AdaptationException("Le Nss suivant n'a pas été trouvé dans le fichier CSV : " + numAVS);
         }
+    }
 
-
+    private boolean montantPrimeCsvIsBlankOrZero(PrimeAssuranceMaladieSearch searchAssuranceMaladie, PrimeAssuranceMaladieFromCSV primeAssuranceMaladieFromCSV) throws AdaptationException {
+        if (primeAssuranceMaladieFromCSV.getMontant().isEmpty()
+                || (!primeAssuranceMaladieFromCSV.getMontant().isEmpty() && Double.valueOf(0).equals(Double.valueOf(primeAssuranceMaladieFromCSV.getMontant())))) {
+            // On regarde si on trouve une prime
+            if (isExistingPrimeAssuranceMaladie(searchAssuranceMaladie)) {
+                return true;
+            } else {
+                // Dans le cas ou une prime n'existerait pas en DB, on renvoie une erreur
+                throw new AdaptationException("La prime récupérée du CSV est vide ou nulle, et il n'y a pas de prime en DB pour le NSS : "+ primeAssuranceMaladieFromCSV.getNss());
+            }
+        }
+        return false;
     }
 
     private PrimeAssuranceMaladieFromCSV createAssuranceMaladieFromCSV(String numAvsActuel) throws JadePersistenceException, AdaptationException, JadeApplicationServiceNotAvailableException, DroitException, ForfaitsPrimesAssuranceMaladieException {
@@ -253,7 +320,7 @@ public class PCProcessImportationPrimeAssuranceMaladieHandler extends PCProcessD
     private PrimeAssuranceMaladie findPrimeFromSearchResult(PrimeAssuranceMaladieSearch searchAssuranceMaladie){
         PrimeAssuranceMaladie primeAssuranceMaladie;
 
-        for (Object object : searchAssuranceMaladie.getSearchResults()) {
+        for (JadeAbstractModel object : searchAssuranceMaladie.getSearchResults()) {
             primeAssuranceMaladie = (PrimeAssuranceMaladie) object;
             if (primeAssuranceMaladie.getSimpleDonneeFinanciereHeader().getDateFin().isEmpty()){
                 return primeAssuranceMaladie;
@@ -297,16 +364,26 @@ public class PCProcessImportationPrimeAssuranceMaladieHandler extends PCProcessD
      */
     private boolean isExistingPrimeAssuranceMaladieWithSameMontant(PrimeAssuranceMaladieSearch searchAssuranceMaladie, PrimeAssuranceMaladieFromCSV newPrimeAssuranceMaladie) {
         if (searchAssuranceMaladie.getSearchResults().length > 0 && !newPrimeAssuranceMaladie.getMontant().isEmpty()) {
-            for(Object object : searchAssuranceMaladie.getSearchResults()) {
+            for(JadeAbstractModel object : searchAssuranceMaladie.getSearchResults()) {
                 PrimeAssuranceMaladie primeAssuranceMaladieExistante = (PrimeAssuranceMaladie) object;
                 // Si l'on trouve une prime assurance avec le même montant
                 // Alors pas d'ecriture de prime
-                if (new Float(primeAssuranceMaladieExistante.getSimplePrimeAssuranceMaladie().getMontant()).equals(new Float(newPrimeAssuranceMaladie.getMontant()))){
+                if (Float.valueOf(primeAssuranceMaladieExistante.getSimplePrimeAssuranceMaladie().getMontant()).equals(Float.valueOf(newPrimeAssuranceMaladie.getMontant()))){
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    /**
+     * Recherche si une prime existe avec le meme montant
+     *
+     * @param searchAssuranceMaladie ?
+     * @return
+     */
+    private boolean isExistingPrimeAssuranceMaladie(PrimeAssuranceMaladieSearch searchAssuranceMaladie) {
+        return searchAssuranceMaladie.getSearchResults().length > 0;
     }
 
     /**
@@ -499,7 +576,7 @@ public class PCProcessImportationPrimeAssuranceMaladieHandler extends PCProcessD
 
         ForfaitPrimeAssuranceMaladieLocaliteSearch primeAssuranceMoyenneSearch = (ForfaitPrimeAssuranceMaladieLocaliteSearch) result.get(ConstantesCalcul.CONTAINTER_PRIME_MOYENNE_ASSURANCE_MALADIE);
 
-        for (Object object : primeAssuranceMoyenneSearch.getSearchResults()) {
+        for (JadeAbstractModel object : primeAssuranceMoyenneSearch.getSearchResults()) {
             ForfaitPrimeAssuranceMaladieLocalite primeAssuranceMoyenne = (ForfaitPrimeAssuranceMaladieLocalite) object;
             if (IPCTypePrimeAssuranceMaladie.CS_TYPE_PRIME_ENFANT.equals(primeAssuranceMoyenne.getSimpleForfaitPrimesAssuranceMaladie().getCsTypePrime())
                     && (age < AGE_JEUNE_ADULTE)) {
@@ -583,7 +660,7 @@ public class PCProcessImportationPrimeAssuranceMaladieHandler extends PCProcessD
         membreSearch = PegasusServiceLocator.getDroitService().searchMembreFamilleEtendu(membreSearch);
         for (Iterator it = Arrays.asList(membreSearch.getSearchResults()).iterator(); it.hasNext(); ) {
             MembreFamilleEtendu membre = (MembreFamilleEtendu) it.next();
-            List listeMembres = new ArrayList();
+            List<MembreFamilleEtendu> listeMembres = new ArrayList<>();
             listeMembres.add(membre);
 
             if (Objects.isNull(requerant) && membre.getDroitMembreFamille().getSimpleDroitMembreFamille().getCsRoleFamillePC()

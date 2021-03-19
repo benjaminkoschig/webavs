@@ -34,11 +34,14 @@ public class PCProcessImportationPrimeAssuranceMaladieStep implements JadeProces
         JadeProcessStepBeforable, JadeProcessStepCheckable, JadeProcessStepInit, JadeProcessStepInfoCurrentStep {
 
     private HashMap<String, PrimeAssuranceMaladieFromCSV> listePrimeAssuranceMaladieFromCSV= null;
+    private boolean isAdaptationAnnuel = true;
 
     private static final String CSV_EXTENSION = ".csv";
     private String pathCsvToimport = "";
     private static final char SEPARATOR = ';';
     private JadeProcessExecut infoProcess;
+    // Référence au nom dans le menu qui execute le process PEGASUSMenu.xml
+    private static String NAME_PROCESS_LAMAL = "AdaptationPrimeLAmalPC";
 
     @Override
     public void checker(JadeProcessStep step, Map<Enum<?>, String> map) {
@@ -68,7 +71,11 @@ public class PCProcessImportationPrimeAssuranceMaladieStep implements JadeProces
 
     @Override
     public JadeProcessEntityInterface getEntityHandler() {
-        return new PCProcessImportationPrimeAssuranceMaladieHandler(listePrimeAssuranceMaladieFromCSV);
+        // S'il s'agit du process des primes LAMal, le comportement du process devra être différent.
+        if (infoProcess !=null && this.infoProcess.getSimpleExecutionProcess().getName().contains(NAME_PROCESS_LAMAL)){
+            isAdaptationAnnuel = false;
+        }
+        return new PCProcessImportationPrimeAssuranceMaladieHandler(listePrimeAssuranceMaladieFromCSV, isAdaptationAnnuel);
     }
 
 
@@ -101,26 +108,41 @@ public class PCProcessImportationPrimeAssuranceMaladieStep implements JadeProces
 
     private void importFile(String nomFichierCsvDistant) throws IOException, JadeServiceActivatorException, JadeClassCastException, JadeServiceLocatorException {
         if (nomFichierCsvDistant.endsWith(CSV_EXTENSION)) {
-            BufferedReader reader = null;
             // Traitement du fichier CSV
             String fileName = JadeFsFacade.readFile(nomFichierCsvDistant);
-            reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
+            BufferedReader reader = null;
+            FileInputStream fileinputStream = null;
+            InputStreamReader inputStreamReader = null;
+            try {
+                fileinputStream = new FileInputStream(fileName);
+                inputStreamReader = new InputStreamReader(fileinputStream);
+                reader = new BufferedReader(inputStreamReader);
+                String line;
+                while ((line = reader.readLine()) != null) {
 
-            String line;
-            while ((line = reader.readLine()) != null) {
+                    // Regex des NSS pour s'assurer sur la ligne du CSV commence bien par un NSS.
+                    Pattern patternRegexNss = Pattern.compile("[0-9]{1,3}.[0-9]{1,4}.[0-9]{1,4}.[0-9]{1,2}");
+                    Pattern patternRegexNssWithoutDot = Pattern.compile("[0-9]{13}");
+                    Matcher matcherRegexNss = patternRegexNss.matcher(line) ;
+                    Matcher matcherRegexNssWithoutDot = patternRegexNssWithoutDot.matcher(line) ;
+                    boolean isLineStartWithNSS = matcherRegexNss.lookingAt() ;
+                    boolean isLineStartWithNSSWithoutDot = matcherRegexNssWithoutDot.lookingAt() ;
 
-                // Regex des NSS pour s'assurer sur la ligne du CSV commence bien par un NSS.
-                Pattern patternRegexNss = Pattern.compile("[0-9]{1,3}.[0-9]{1,4}.[0-9]{1,4}.[0-9]{1,2}");
-                Pattern patternRegexNssWithoutDot = Pattern.compile("[0-9]{13}");
-                Matcher matcherRegexNss = patternRegexNss.matcher(line) ;
-                Matcher matcherRegexNssWithoutDot = patternRegexNssWithoutDot.matcher(line) ;
-                boolean isLineStartWithNSS = matcherRegexNss.lookingAt() ;
-                boolean isLineStartWithNSSWithoutDot = matcherRegexNssWithoutDot.lookingAt() ;
-
-                if (isLineStartWithNSS || isLineStartWithNSSWithoutDot) {
-                    // On extrait les éléments de la ligne
-                    PrimeAssuranceMaladieFromCSV assuranceMaladie = extractDataFromCSV(line, isLineStartWithNSSWithoutDot);
-                    listePrimeAssuranceMaladieFromCSV.put(assuranceMaladie.getNss(), assuranceMaladie);
+                    if (isLineStartWithNSS || isLineStartWithNSSWithoutDot) {
+                        // On extrait les éléments de la ligne
+                        PrimeAssuranceMaladieFromCSV assuranceMaladie = extractDataFromCSV(line, isLineStartWithNSSWithoutDot);
+                        listePrimeAssuranceMaladieFromCSV.put(assuranceMaladie.getNss(), assuranceMaladie);
+                    }
+                }
+            } finally {
+                if (reader != null) {
+                    reader.close();
+                }
+                if (fileinputStream != null) {
+                    fileinputStream.close();
+                }
+                if (inputStreamReader != null) {
+                    inputStreamReader.close();
                 }
             }
         }
