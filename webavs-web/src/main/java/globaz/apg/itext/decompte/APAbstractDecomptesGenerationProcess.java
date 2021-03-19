@@ -1074,7 +1074,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue());
             return tiersAdresseFiscFormatte;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("APAbstractDecomptesGenerationProcess#getAdresseFiscFormatte - Erreur à la récupération de l'adresse du Fisc");
             return "";
         }
 
