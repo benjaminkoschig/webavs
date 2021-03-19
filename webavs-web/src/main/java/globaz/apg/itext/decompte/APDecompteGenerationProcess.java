@@ -369,13 +369,13 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
         return decomptes;
     }
 
-    private void suppressionRectificationApresGenerationCles(List<APPrestationJointRepartitionPOJO> repartitionPojo) throws Exception {
+    private void suppressionRectificationApresGenerationCles(List<APPrestationJointRepartitionPOJO> repartitionPojo) {
         for (final APPrestationJointRepartitionPOJO repartition : repartitionPojo) {
             repartition.getDonneePourRegroupement().setIdTiers(repartition.getDonneePourRegroupement().getIdTiersSauv());
         }
     }
 
-    private void rectificationCleRegroupementPourPaternite(List<APPrestationJointRepartitionPOJO> repartitionPojo) throws Exception {
+    private void rectificationCleRegroupementPourPaternite(List<APPrestationJointRepartitionPOJO> repartitionPojo) {
         for (final APPrestationJointRepartitionPOJO repartition : repartitionPojo) {
                 repartition.getDonneePourRegroupement().setIdTiersSauv(repartition.getDonneePourRegroupement().getIdTiers());
                 repartition.getDonneePourRegroupement().setIdTiers(repartition.getPrestationJointRepartition().getIdDroit());
