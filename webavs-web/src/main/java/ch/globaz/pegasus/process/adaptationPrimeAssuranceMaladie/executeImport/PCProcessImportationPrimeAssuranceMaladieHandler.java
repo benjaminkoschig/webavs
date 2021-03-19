@@ -57,7 +57,6 @@ public class PCProcessImportationPrimeAssuranceMaladieHandler extends PCProcessD
 
     private Map<String, PrimeAssuranceMaladieFromCSV> listePrimeAssuranceMaladieFromCSV= null;
     private List<String> listeWarn;
-    // TODO implémenter la gestion des adaptations Annuels. Actuellement sur false, le processus se comportera comme pour une adaptation prime LAMal
     private boolean isAdaptationAnnuel;
     private static final int AGE_ADULTE = 26;
     private static final int AGE_JEUNE_ADULTE = 19;
