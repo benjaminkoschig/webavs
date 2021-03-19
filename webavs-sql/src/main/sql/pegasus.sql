@@ -1,0 +1,1 @@
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('pegasus.rpc.nb.mois.annonces.renvoie','1','202103191120000Globaz    ','202103191120000Globaz    ');
