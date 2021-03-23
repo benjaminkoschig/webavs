@@ -5,7 +5,7 @@ import ch.globaz.pegasus.rpc.plausi.common.RpcPlausiCommonCalculData;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausi;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiHeader;
 
-public class RpcPlausiPI028Data extends RpcPlausiCommonCalculData {
+public class RpcPlausiPI028Data extends RpcPlausiHeader{
 
     Montant Par1;
     Montant Par2;
@@ -13,8 +13,9 @@ public class RpcPlausiPI028Data extends RpcPlausiCommonCalculData {
     Montant FC11;
     Boolean isCoupleSepare;
     Boolean hasAPI = false; // FIXME
+    Boolean isReforme = false;
 
-    public RpcPlausiPI028Data(RpcPlausi<RpcPlausiCommonCalculData> plausi) {
+    public RpcPlausiPI028Data(RpcPlausi<RpcPlausiPI028Data> plausi) {
         super(plausi);
     }
 
@@ -32,8 +33,8 @@ public class RpcPlausiPI028Data extends RpcPlausiCommonCalculData {
         }
         return isOk;
     }
-    
-//    public void resolveHasAPI(List<MembreFamilleWithDonneesFinanciere> membresFamille) {
+
+    //    public void resolveHasAPI(List<MembreFamilleWithDonneesFinanciere> membresFamille) {
 //        hasAPI = false;
 //        for (MembreFamilleWithDonneesFinanciere membre : membresFamille) {
 //            if (!membre.getDonneesFinancieres().getApisAvsAi().isEmpty()) {

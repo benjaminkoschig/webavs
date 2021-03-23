@@ -11,7 +11,7 @@ import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiCategory;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiMetier;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiType;
 
-public class RpcPlausiPI011 extends RpcPlausiCommonCalcul {
+public class RpcPlausiPI011 implements RpcPlausiMetier<RpcPlausiPI011Data>{
     private final Montant tolerance;
 
     public RpcPlausiPI011(Montant tolerance) {
@@ -22,7 +22,7 @@ public class RpcPlausiPI011 extends RpcPlausiCommonCalcul {
     public RpcPlausiPI011Data buildPlausi(AnnonceDecision decision, AnnonceCase data) {
         final RpcPlausiPI011Data dataPlausi = new RpcPlausiPI011Data(this);
 
-        dataPlausi.setReforme(decision.getAnnonce().getPcaDecision().getPca().getReformePC());
+        dataPlausi.isReforme = decision.getAnnonce().getPcaDecision().getPca().getReformePC();
 
         dataPlausi.tolerance = tolerance;
         dataPlausi.idPca = decision.getPcaDecisionId();

@@ -10,13 +10,13 @@ import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiCategory;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiMetier;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiType;
 
-public class RpcPlausiPI015 extends RpcPlausiCommonCalcul {
+public class RpcPlausiPI015 implements RpcPlausiMetier<RpcPlausiPI015Data> {
 
     @Override
     public RpcPlausiPI015Data buildPlausi(AnnonceDecision decision, AnnonceCase data) {
         final RpcPlausiPI015Data dataPlausi = new RpcPlausiPI015Data(this);
 
-        dataPlausi.setReforme(decision.getAnnonce().getPcaDecision().getPca().getReformePC());
+        dataPlausi.isReforme = decision.getAnnonce().getPcaDecision().getPca().getReformePC();
 
         dataPlausi.idPca = decision.getPcaDecisionId();
 

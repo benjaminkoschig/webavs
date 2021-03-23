@@ -5,15 +5,16 @@ import ch.globaz.pegasus.rpc.plausi.common.RpcPlausiCommonCalculData;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausi;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiHeader;
 
-public class RpcPlausiPI064Data extends RpcPlausiCommonCalculData {
+public class RpcPlausiPI064Data extends RpcPlausiHeader {
     String idPca;
     Montant FC41;
     Montant E6;
     Montant E28;
     double par1;
     Montant par2;
+    boolean isReforme;
 
-    public RpcPlausiPI064Data(RpcPlausi<RpcPlausiCommonCalculData> plausi) {
+    public RpcPlausiPI064Data(RpcPlausi<RpcPlausiPI064Data> plausi) {
         super(plausi);
     }
 

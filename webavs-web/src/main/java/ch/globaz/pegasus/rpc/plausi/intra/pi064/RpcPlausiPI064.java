@@ -12,7 +12,7 @@ import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiCategory;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiMetier;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiType;
 
-public class RpcPlausiPI064 extends RpcPlausiCommonCalcul {
+public class RpcPlausiPI064 implements RpcPlausiMetier<RpcPlausiPI064Data> {
     private final Map<Integer, Double> parameters1;
     private final Map<Integer, Montant> parameters2;
 
@@ -26,7 +26,7 @@ public class RpcPlausiPI064 extends RpcPlausiCommonCalcul {
 
         final RpcPlausiPI064Data dataPlausi = new RpcPlausiPI064Data(this);
 
-        dataPlausi.setReforme(decision.getAnnonce().getPcaDecision().getPca().getReformePC());
+        dataPlausi.isReforme = decision.getAnnonce().getPcaDecision().getPca().getReformePC();
 
         Integer pensionKind = 0;
         dataPlausi.FC41 = decision.getIncomeConsideredTotal();
