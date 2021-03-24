@@ -141,7 +141,7 @@ public class AnnonceCalculationElements {
         }
 
 
-        if (!realProperty.isZero() || !mortgageDebtsRealProperty.isZero() || !mortgageInterest.isZero()
+        if (!realProperty.isZero() || !mortgageDebts.isZero() || !mortgageDebtsRealProperty.isZero() || !mortgageInterest.isZero()
                 || !maintenanceFees.isZero() || !interestFeesEligible.isZero() || !propertyIncome.isZero()) {
             property = true;
         } else {
