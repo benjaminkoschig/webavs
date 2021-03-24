@@ -17,6 +17,7 @@ import rpc.ch.ech.xmlns.ech_0007._5.CantonAbbreviationType;
 import rpc.ch.ech.xmlns.ech_0007._5.CantonFlAbbreviationType;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
 
@@ -109,6 +110,8 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
             ElAmountsTypeRef1 elAmount = (ElAmountsTypeRef1) createCommElAmountsType(annonceDecision, true);
             elAmount.setElLimit(annonceDecision.getElAmounts().getElLimit());
             xmlDeci.setElAmounts(elAmount);
+        } else {
+            xmlDeci.setElAmounts((ElAmountsTypeRef1) createEmptyCommElAmountsType(false));
         }
 
         xmlDeci.setRequestDateOfReceipt(annonceDecision.getRequestDateofReceipt());
@@ -136,6 +139,8 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
             ElAmountsTypeRef0 elAmount = (ElAmountsTypeRef0) createCommElAmountsType(annonceDecision, false);
             elAmount.setElLimit(annonceDecision.getElAmounts().getElLimit());
             xmlDeci.setElAmounts(elAmount);
+        } else {
+            xmlDeci.setElAmounts((ElAmountsTypeRef0) createEmptyCommElAmountsType(false));
         }
         CommonCalculationElementsType commCalculationElementsType = createCommCalculationElementsType(annonceDecision.getCalculationElements(), false);
         CalculationElementsTypeRef0 calcElmnt = convertCalculationElementRef0(annonceDecision.getCalculationElements(), commCalculationElementsType);
@@ -156,6 +161,20 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
         }
         commElAmout.setAmountNoHC(annonceDecision.getElAmounts().getAmountNoHC().longValue());
         commElAmout.setAmountWithHC(annonceDecision.getElAmounts().getAmountWithHC().longValue());
+        return commElAmout;
+    }
+
+    private CommonElAmountsType createEmptyCommElAmountsType(boolean isReformePC) {
+        CommonElAmountsType commElAmout;
+        if(isReformePC){
+            commElAmout = factory.createElAmountsTypeRef1();
+            ((ElAmountsTypeRef1) commElAmout).setElLimit(0);
+        }else{
+            commElAmout = factory.createElAmountsTypeRef0();
+            ((ElAmountsTypeRef0) commElAmout).setElLimit(0);
+        }
+        commElAmout.setAmountNoHC(0);
+        commElAmout.setAmountWithHC(0);
         return commElAmout;
     }
 
