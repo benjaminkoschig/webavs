@@ -250,7 +250,7 @@ public class PCProcessImportationPrimeAssuranceMaladieHandler extends PCProcessD
                         listeWarn.add(messageAvertissementPrimeMoyenne + assuranceMaladie.getNss() + "\n");
                     }
                 } else {
-                    listeWarn.add(messageAvertissementMontantExistant + assuranceMaladie.getNss() + "\n");
+                    throw new AdaptationException(messageAvertissementMontantExistant + assuranceMaladie.getNss());
                 }
             }
         }else {
