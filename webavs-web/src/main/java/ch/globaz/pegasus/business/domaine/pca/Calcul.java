@@ -832,4 +832,13 @@ public class Calcul {
         return "";
 //        return tuple.getValeurEnfant(IPCValeursPlanCalcul.DATE)
     }
+
+
+    public boolean hasPartCoupleSepare() {
+        return tuple.getLegendeEnfant(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL_PART) != null;
+    }
+
+    public String getPartCoupleSepare(){
+        return tuple.getLegendeEnfant(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL_PART);
+    }
 }

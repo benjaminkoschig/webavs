@@ -9,6 +9,7 @@ import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.rpc.businessImpl.converter.Converter2469_101;
 import ch.globaz.pegasus.utils.PCApplicationUtil;
 import globaz.jade.log.JadeLogger;
+import org.apache.commons.lang.math.Fraction;
 
 public class RpcCalcul {
 
@@ -65,7 +66,7 @@ public class RpcCalcul {
      * FC12
      */
     public Montant getAutreFortunes() {
-        return divideByTwoIfCoupleSepare(toZeroIfNegate(calcul.getFortuneSousTotal()
+        return divideIfCoupleSepare(toZeroIfNegate(calcul.getFortuneSousTotal()
                 .substract(calcul.getFortuneImmobilierTotal()).substract(calcul.getFortuneDessaisieTotal())));
     }
 
@@ -73,7 +74,7 @@ public class RpcCalcul {
      * FC13
      */
     public Montant getFortuneDessaisie() {
-        return divideByTwoIfCoupleSepare(calcul.getFortuneDessaisieTotal());
+        return divideIfCoupleSepare(calcul.getFortuneDessaisieTotal());
         // return (calcul.getFortuneDessaisieTotal());
     }
 
@@ -82,14 +83,14 @@ public class RpcCalcul {
      */
     public Montant getAutresDettes() {
         // return (calcul.getFortuneAutresDettesTotal());
-        return divideByTwoIfCoupleSepare(calcul.getFortuneAutresDettesTotal());
+        return divideIfCoupleSepare(calcul.getFortuneAutresDettesTotal());
     }
 
     /**
      * FC16
      */
     public Montant getFranchiseSurFortune() {
-        return divideByTwoIfCoupleSepare(calcul.getFortuneDeductionLegaleTotal());
+        return divideIfCoupleSepare(calcul.getFortuneDeductionLegaleTotal());
         // return (calcul.getFortuneDeductionLegaleTotal());
     }
 
@@ -97,7 +98,7 @@ public class RpcCalcul {
      * FC18
      */
     public Montant getFortuneAPrendreEnCompte() {
-        return divideByTwoIfCoupleSepare(calcul.getFortuneTotalNetTotal());
+        return divideIfCoupleSepare(calcul.getFortuneTotalNetTotal());
         // return (calcul.getFortuneTotalNetTotal());
         // FIXME eclaircir la spec
         // return new Montant(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_SOUS_TOTAL));
@@ -178,7 +179,7 @@ public class RpcCalcul {
         Montant somme = calcul.getFortuneImmoBiensNonHabitablePrincipale();
         somme = somme.add(calcul.getFortuneImmoBiensNonHabitables());
 
-        return divideByTwoIfCoupleSepare(somme);
+        return divideIfCoupleSepare(somme);
         // return (somme);
     }
 
@@ -186,7 +187,7 @@ public class RpcCalcul {
      * FC14
      */
     public Montant getDettesHypothequaires() {
-        return divideByTwoIfCoupleSepare(calcul.getFortuneDetteHypothequaireTotal());
+        return divideIfCoupleSepare(calcul.getFortuneDetteHypothequaireTotal());
         // return (calcul.getFortuneDetteHypothequaireTotal());
     }
 
@@ -237,7 +238,7 @@ public class RpcCalcul {
      * FC11
      */
     public Montant getValeurImmeubleHabitation() {
-        return divideByTwoIfCoupleSepare(calcul.getFortuneImmoBiensHabitationPrincipale());
+        return divideIfCoupleSepare(calcul.getFortuneImmoBiensHabitationPrincipale());
         // return (calcul.getFortuneImmoBiensHabitationPrincipale());
     }
 
@@ -245,7 +246,7 @@ public class RpcCalcul {
      * FC17
      */
     public Montant getFranchiseImmeubleHabitation() {
-        return divideByTwoIfCoupleSepare(calcul.getFortuneImmoDeductionForfaitaire());
+        return divideIfCoupleSepare(calcul.getFortuneImmoDeductionForfaitaire());
         // return (calcul.getFortuneImmoDeductionForfaitaire());
     }
 
@@ -468,6 +469,23 @@ public class RpcCalcul {
         return sum;
     }
 
+    private Montant divideIfCoupleSepare(Montant sum) {
+        if (isCoupleSepare) {
+            if(calcul.hasPartCoupleSepare()) {
+                try {
+                    Fraction fraction = Fraction.getFraction(calcul.getPartCoupleSepare());
+                    return sum.multiply(fraction.doubleValue()).arrondiAUnIntierInferior();
+                } catch (NumberFormatException e) {
+                    return sum.divide(2).arrondiAUnIntierInferior();
+                }
+            } else {
+                return sum.divide(2).arrondiAUnIntierInferior();
+            }
+
+        }
+        return sum;
+    }
+
     private Montant toZeroIfNegate(Montant montant) {
         if (montant.isNegative()) {
             return Montant.ZERO_ANNUEL;
@@ -503,7 +521,7 @@ public class RpcCalcul {
      * FC44
      */
     public Montant getDettesHypothequairesRealProperty() {
-        return divideByTwoIfCoupleSepare(calcul.getFortuneDetteHypothequairePasPrincipale()
+        return divideIfCoupleSepare(calcul.getFortuneDetteHypothequairePasPrincipale()
                 .add(calcul.getFortuneDetteHypothequaireTotalNothabited()));
     }
 
@@ -511,7 +529,7 @@ public class RpcCalcul {
      * FC43
      */
     public Montant getDettesHypothequairesSelfinhabited() {
-        return divideByTwoIfCoupleSepare(calcul.getFortuneDetteHypothequairePrincipale());
+        return divideIfCoupleSepare(calcul.getFortuneDetteHypothequairePrincipale());
     }
 
     /**
