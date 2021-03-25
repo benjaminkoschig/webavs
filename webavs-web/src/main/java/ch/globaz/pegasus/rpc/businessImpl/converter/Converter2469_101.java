@@ -475,10 +475,10 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
         RentsTypeRef0 rents;
         if(isReformePC){
             rents = factory.createRentsTypeRef1();
-            rents.setWheelchairSurcharge(calculationElements.isWheelchairSurcharge());
         }else{
             rents = factory.createRentsTypeRef0();
         }
+        rents.setWheelchairSurcharge(calculationElements.isWheelchairSurcharge());
         rents.setGrossRental(calculationElements.getGrossRental().longValue());
         rents.setRentCategory(calculationElements.getRentCategory());
         rents.setRentGrossTotal(calculationElements.getRentGrossTotal().longValue());
