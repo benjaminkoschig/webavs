@@ -340,6 +340,7 @@ public class PersonneElementsCalculConverter {
         String typeRenteCSIJ = "";
         String typeRenteCSAPI = "";
         String typeRenteCSRente = "";
+        String typeRenteCSSansRente = "";
         Float degreInvalidite = null;
         
         if(ijsAi != null && !ijsAi.isEmpty()) {
@@ -354,6 +355,7 @@ public class PersonneElementsCalculConverter {
         }
 
 
+
         for (RenteAvsAi rente : typesRente) {
             if (rente.getMontant().greater(maxMontantRente)) {
                 maxMontantRente = rente.getMontant();
@@ -364,6 +366,8 @@ public class PersonneElementsCalculConverter {
                 if(ConverterPensionKind.isRentAi(typeRenteCSRente)) {
                     degreInvalidite = rente.getDegreInvalidite();
                 }
+            } else if (typeRenteCSSansRente.isEmpty() && IPCRenteAvsAi.CS_TYPE_SANS_RENTE.equals(rente.getTypeRente().getValue()) && rente.getTypeSansRente() != null && !TypeSansRente.INDEFINIT.equals(rente.getTypeSansRente())) {
+                typeRenteCSSansRente = rente.getTypeSansRente().getValue();
             }
         }
         
@@ -374,7 +378,11 @@ public class PersonneElementsCalculConverter {
             typeRenteCS = typeRenteCSAPI;
         } else if (!typeRenteCSIJ.isEmpty()){
             typeRenteCS = typeRenteCSIJ;
+        } else if(!typeRenteCSSansRente.isEmpty()) {
+            typeRenteCS = typeRenteCSSansRente;
         }
+
+
 
         perElCal.setDegreInvalidite(degreInvalidite);
         perElCal.setTypeRenteCS(typeRenteCS);
