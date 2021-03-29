@@ -431,7 +431,7 @@ public class APGenererCompensationsProcess003 extends BProcess implements IAPGen
                     compensation.setMontantTotal(((FWCurrency) sommes.get(key)).toString());
                     compensation.setDettes(getDettes(key.idTiers));
                     compensation.setGenrePrestation(key.genrePrestation);
-                    compensation.setIdCompensation(key.idExtra1);
+                    compensation.setIdDroit(key.idExtra1);
                     compensation.add(transaction);
                     getMemoryLog().logMessage(
                             MessageFormat.format(getSession().getLabel("COMPENSATION_AJOUTEE"),
