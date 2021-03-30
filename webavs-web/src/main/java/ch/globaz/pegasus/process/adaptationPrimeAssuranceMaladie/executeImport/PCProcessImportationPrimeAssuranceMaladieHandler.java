@@ -265,7 +265,7 @@ public class PCProcessImportationPrimeAssuranceMaladieHandler extends PCProcessD
     }
 
     private boolean montantPrimeCsvIsBlankOrZero(PrimeAssuranceMaladieSearch searchAssuranceMaladie, PrimeAssuranceMaladieFromCSV primeAssuranceMaladieFromCSV) throws AdaptationException {
-        if (primeAssuranceMaladieFromCSV.getMontant().isEmpty()
+        if (primeAssuranceMaladieFromCSV.getMontant() == null || primeAssuranceMaladieFromCSV.getMontant().isEmpty()
                 || (!primeAssuranceMaladieFromCSV.getMontant().isEmpty() && Double.valueOf(0).equals(Double.valueOf(primeAssuranceMaladieFromCSV.getMontant())))) {
             // On regarde si on trouve une prime
             if (isExistingPrimeAssuranceMaladie(searchAssuranceMaladie)) {
