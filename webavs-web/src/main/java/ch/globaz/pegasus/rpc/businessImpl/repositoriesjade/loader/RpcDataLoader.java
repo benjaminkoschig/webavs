@@ -249,7 +249,7 @@ public class RpcDataLoader {
         decionsPriseDansLeMois.addAll(decionsMoisSuivantDuMoisPrecedent);
         
         /* Control de population: Retours annonce en erreur dans le lot precedent et avec fin de droit */
-        List<RPCDecionsPriseDansLeMois> decionsEnErreurMoisPrecedent = loadDecisionEnErreurMoisPrecedent(dateMoisAnnoncesPrise);
+        List<RPCDecionsPriseDansLeMois> decionsEnErreurMoisPrecedent = loadDecisionEnErreurMoisPrecedent(dateDernierPaiement);
         infos.setNbErrorRetoursAnnoncePreviousMonth(decionsEnErreurMoisPrecedent.size());
         LOG.info("Retours decisions en erreur : {}", infos.getNbErrorRetoursAnnoncePreviousMonth());
         decionsPriseDansLeMois.addAll(decionsEnErreurMoisPrecedent);
