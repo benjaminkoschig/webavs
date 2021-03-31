@@ -154,11 +154,6 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
     }
 
     private void calculFinalise(Droit droit, boolean retroactif, String dateDebutPlageCalcul, DonneesHorsDroitsProvider containerGlobal, Map<String, JadeAbstractSearchModel> cacheDonneesBD, List<PeriodePCAccordee> listePCAccordes) throws JadePersistenceException, JadeApplicationException {
-        // calcul des éventuels jours d'appoint
-        PegasusImplServiceLocator.getCalculComparatifService().calculJoursAppoint(
-                listePCAccordes,
-                (CalculPcaReplaceSearch) cacheDonneesBD
-                        .get(ConstantesCalcul.CONTAINER_DONNEES_PCACCORDEES_REPLACED));
 
         calculeDroitPersistence(droit, retroactif, listePCAccordes, cacheDonneesBD);
 

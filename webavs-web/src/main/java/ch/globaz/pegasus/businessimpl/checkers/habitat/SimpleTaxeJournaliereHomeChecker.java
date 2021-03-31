@@ -112,10 +112,6 @@ public class SimpleTaxeJournaliereHomeChecker extends PegasusAbstractChecker {
             }
 
         }
-        if(!JadeStringUtil.isEmpty(taxeJournaliereHome.getDateEntreeHome()) && !taxeJournaliereHome.getOldDonneeFinanciere()) {
-            JadeThread.logError(taxeJournaliereHome.getClass().getName(),
-                    "pegasus.simpleTaxeJournalierHome.entreehome.mandatory");
-        }
 
     }
 

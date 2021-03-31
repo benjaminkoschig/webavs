@@ -127,9 +127,15 @@ var dialogMontantLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOM
                                   	
                                   </p>
 								</div>
-								
-								
-			
+
+								<div class="dialog-entreehome" style="display: none">
+									<p>
+										<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+										<ct:FWLabel key="JSP_PC_TAXE_JOURNALIERE_HOME_ENTREE_MANDATORY"/>
+
+									</p>
+								</div>
+
 								<table class="areaDFDataTable">
 									<thead>
 										<tr>

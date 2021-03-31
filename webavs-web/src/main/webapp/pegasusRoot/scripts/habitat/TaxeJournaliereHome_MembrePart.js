@@ -11,6 +11,7 @@ function TaxeJournaliereHome (container) {
 	this.modifiedZoneClass = "areaDFModified";
 	this.membreId = null;
 	this.$dialogue = that.mainContainer.find(".dialog-confirm");
+	this.$dialogueEntreeHome = that.mainContainer.find(".dialog-entreehome");
 
 	// functions
 	this.afterRetrieve = function ($data, idEntity) {
@@ -96,6 +97,8 @@ function TaxeJournaliereHome (container) {
 				$listTypeChambre.empty();
 				$listTypeChambre.append('<span>Loading...</span>');
 				that.$dialogue.dialog('destroy');
+				that.$dialogueEntreeHome.dialog('destroy');
+
 				$.ajax({
 					type: "GET",
 					url: "pegasus",
@@ -135,6 +138,7 @@ function TaxeJournaliereHome (container) {
 								that.$dialogue.dialog("open");
 							});
 						}
+
 						if(that.detail.find('.prixJournalier').val() == 0.00){
 							that.updatePrixJournalier();
 						}
@@ -211,6 +215,27 @@ function TaxeJournaliereHome (container) {
 			this.detail.find('.prixJournalier').val(montant.prixChambre.montant);
 		}
 	};
+
+	this.checkEntreeHome = function (data) {
+		var jourAppoint = that.detail.find('[name=dateEntreeHome]');
+		if (jourAppoint && jourAppoint.val() != '') {
+
+			that.$dialogueEntreeHome.dialog({
+				resizable: false,
+				autoOpen: false,
+				modal: false,
+				buttons: {
+					'ok': function () {
+						$(this).dialog('close');
+						that.validateEdition();
+					}
+				}
+			});
+			that.$dialogueEntreeHome.dialog("open");
+		} else {
+			that.validateEdition();
+		}
+	}
 }
 
 $(function () {
@@ -236,7 +261,7 @@ $(function () {
 			zone.stopEdition();
 		}).end()
 		.find('.btnAjaxValidate').click(function () {
-			zone.validateEdition();
+			zone.checkEntreeHome();
 		}).end()
 		.find('.btnAjaxDelete').click(function () {
 			zone.ajaxDeleteEntity(zone.selectedEntityId);
