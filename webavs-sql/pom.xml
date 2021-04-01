@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>ch.globaz</groupId>
 		<artifactId>webavs-parent</artifactId>
-		<version>1.25.3-CANT</version>
+		<version>1.25.6-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>webavs-sql</artifactId>
