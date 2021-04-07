@@ -35,4 +35,6 @@ public interface IPRDemande {
     String CS_TYPE_RFM = "52201006";
     String CS_TYPE_PANDEMIE = "52201008";
     String CS_TYPE_PATERNITE = "52201009";
+    String CS_TYPE_PROCHE_AIDANT = "52201010";
+
 }

@@ -299,6 +299,11 @@
                                 Allocation Paternité
                             </a>
                         </li>
+                        <li>
+                            <a href="<%=request.getContextPath()%>/apg?typePrestation=PROCHE_AIDANT" target="_top">
+                                Proche aidant
+                            </a>
+                        </li>
                         <%}%>
 
                         <%if (objSession.hasRight("hermes", globaz.framework.secure.FWSecureConstants.READ)) {%>

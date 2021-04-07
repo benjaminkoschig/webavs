@@ -34,6 +34,7 @@ public class APMainServletAction {
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_SAISIE_CARTE_APG, APDroitAPGPAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_SAISIE_CARTE_AMAT, APDroitMatPAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_SAISIE_CARTE_APAT, APDroitPatPAction.class);
+        APMainServletAction.ACTIONS.put(IAPActions.ACTION_SAISIE_CARTE_PAI, APDroitPatPAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_SAISIE_CARTE_PAN, APDroitPanAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_SAISIE_CARTE_PAN_SITUATION, APDroitPanSituationAction.class);
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_RECAPITUALATIF_DROIT_APG, PRDefaultAction.class);

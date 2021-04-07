@@ -484,6 +484,11 @@
                                 Vaterschaftsgeld
                             </a>
                         </li>
+                        <li>
+                            <a href="<%=request.getContextPath()%>/apg?typePrestation=PROCHE_AIDANT" target="_top">
+                                Betreuenden Angehörigen
+                            </a>
+                        </li>
                         <%}%>
                         <%if (objSession.hasRight("cygnus", globaz.framework.secure.FWSecureConstants.READ)) {%>
                         <li>

@@ -26,6 +26,7 @@ public interface IAPActions {
     String ACTION_ENFANT_MAT = "apg.droits.enfantMat";
     String ACTION_ENFANT_PAN = "apg.droits.enfantPan";
     String ACTION_ENFANT_PAT = "apg.droits.enfantPat";
+    String ACTION_ENFANT_PAI = "apg.droits.enfantPai";
     String ACTION_ENVOYER_ANNONCE = "apg.process.envoyerAnnonces";
     String ACTION_ENVOYER_CI = "apg.process.envoyerCI";
     String ACTION_FACTURES_LOT = "apg.lots.factureACompenser";
@@ -58,6 +59,7 @@ public interface IAPActions {
     String ACTION_SAISIE_CARTE_APG = "apg.droits.droitAPGP";
     String ACTION_SAISIE_CARTE_PAN = "apg.droits.droitPan";
     String ACTION_SAISIE_CARTE_APAT = "apg.droits.droitPatP";
+    String ACTION_SAISIE_CARTE_PAI = "apg.droits.droitPaiP";
     String ACTION_SAISIE_CARTE_PAN_SITUATION = "apg.droits.droitPanSituation";
     String ACTION_SITUATION_PROFESSIONNELLE = "apg.droits.situationProfessionnelle";
     String ACTION_TEXTE_JOINT_CATALOGUE = "apg.cattxt.texteJointCatalogue";

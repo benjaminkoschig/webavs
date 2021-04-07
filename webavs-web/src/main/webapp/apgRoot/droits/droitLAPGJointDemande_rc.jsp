@@ -48,6 +48,11 @@
 %>
 <ct:menuChange displayId="menu" menuId="ap-menuprincipalapat" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="ap-optionsempty"/>
+<%
+	}else if (IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION))) {
+%>
+<ct:menuChange displayId="menu" menuId="ap-menuprincipalprai" showTab="menu"/>
+<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 <%} %>
 <script type="text/javascript">
 <%

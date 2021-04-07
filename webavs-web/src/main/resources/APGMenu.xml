@@ -1120,4 +1120,109 @@
 			</node>
 		</nodes>
 	</menu>
+	<menu id="ap-menuprincipalprai">
+		<label refId="MENU_PRINCIPAL" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_DROITS" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.droits.droitLAPGJointDemande.chercher" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_PRESTATIONS" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.prestation.prestationJointLotTiersDroit.chercher" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_LOTS" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.lots.lot.chercher" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_ANNONCES" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.annonces.annonceAPG.chercher" />
+					<parameter name="forType" value="forpaternite" />
+				</action>
+			</node>
+			<!-- Menu Listes -->
+			<node>
+				<label refId="MENU_LISTES" />
+				<nodes>
+					<node>
+						<label refId="MENU_OPTION_RECAP_ANNONCES" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.recapitulationAnnonce.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_ATTESTATIONS_FISCALES" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.genererAttestations.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_LISTE_PRESTATION_VERSEE" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.listePrestationVersee.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_LISTE_PRESTATION_CIAB" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.listePrestationCIAB.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_LISTE_TAXATIONS_DEFINITIVES" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.listeTaxationsDefinitives.afficher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<!-- Menu Traitements -->
+			<node>
+				<label refId="MENU_TRAITEMENTS_TITRE" />
+				<nodes>
+					<!--					<node>-->
+					<!--						<label refId="MENU_OPTION_GENERER_COMPENSATIONS" />-->
+					<!--						<action command="/apg" responseTarget="fr_main">-->
+					<!--							<parameter name="userAction" value="apg.process.genererCompensations.afficher" />-->
+					<!--						</action>-->
+					<!--					</node>-->
+					<node>
+						<label refId="MENU_OPTION_ENVOYER_ANNONCES" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.envoyerAnnonces.afficher" />
+							<parameter name="forTypeAPG" value="52012005" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<!-- Menu Paramètres -->
+			<node>
+				<label refId="MENU_PARAMETRES" />
+				<nodes>
+					<node>
+						<label refId="MENU_OPTION_CATALOGUES_TEXTES" />
+						<action command="/babel" responseTarget="fr_main">
+							<parameter name="userAction" value="babel.cat.document.chercher" />
+							<parameter name="csGroupeDomaines" value="PATDOMAINE" />
+							<parameter name="csGroupeTypesDocuments" value="PATTYPES" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_TAUX_IMPOSITIONS" />
+						<action command="/cepheus" responseTarget="fr_main">
+							<parameter name="userAction" value="cepheus.tauxImposition.tauxImposition.chercher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+		</nodes>
+	</menu>
 </menus>

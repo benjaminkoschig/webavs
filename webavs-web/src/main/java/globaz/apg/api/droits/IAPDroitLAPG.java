@@ -19,6 +19,8 @@ public interface IAPDroitLAPG {
     // TODO Definir code
     String CS_ALLOCATION_DE_PATERNITE = "52001017";
 
+    String CS_ALLOCATION_PROCHE_AIDANT = "52001018";
+
     /** DOCUMENT ME! */
     String CS_ARMEE_SERVICE_NORMAL = "52001001";
 

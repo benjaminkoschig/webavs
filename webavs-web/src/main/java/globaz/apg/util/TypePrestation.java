@@ -50,11 +50,14 @@ public class TypePrestation implements Serializable {
 
     public static final TypePrestation TYPE_PATERNITE = new TypePrestation(IPRDemande.CS_TYPE_PATERNITE);
 
+    public static final TypePrestation TYPE_PROCHE_AIDANT = new TypePrestation(IPRDemande.CS_TYPE_PROCHE_AIDANT);
+
     static {
         ACTIONS.put(IPRDemande.CS_TYPE_APG, IAPActions.ACTION_SAISIE_CARTE_APG);
         ACTIONS.put(IPRDemande.CS_TYPE_MATERNITE, IAPActions.ACTION_SAISIE_CARTE_AMAT);
         ACTIONS.put(IPRDemande.CS_TYPE_PANDEMIE, IAPActions.ACTION_SAISIE_CARTE_PAN);
         ACTIONS.put(IPRDemande.CS_TYPE_PATERNITE, IAPActions.ACTION_SAISIE_CARTE_APAT);
+        ACTIONS.put(IPRDemande.CS_TYPE_PROCHE_AIDANT, IAPActions.ACTION_SAISIE_CARTE_PAI);
     }
 
     // ~ Instance fields
@@ -78,6 +81,8 @@ public class TypePrestation implements Serializable {
                 return TYPE_PANDEMIE;
             case "PATERNITE":
                 return TYPE_PATERNITE;
+            case "PROCHE_AIDANT":
+                return TYPE_PROCHE_AIDANT;
             default:
         return TYPE_INCONNU;
     }
@@ -104,6 +109,8 @@ public class TypePrestation implements Serializable {
                 return TYPE_PANDEMIE;
             case IPRDemande.CS_TYPE_PATERNITE:
                 return TYPE_PATERNITE;
+            case IPRDemande.CS_TYPE_PROCHE_AIDANT:
+                return TYPE_PROCHE_AIDANT;
             default:
         return TYPE_INCONNU;
     }
@@ -180,6 +187,7 @@ public class TypePrestation implements Serializable {
                 GROUPES.put(IPRDemande.CS_TYPE_MATERNITE, loadNomGroupe(APApplication.PROPERTY_GROUPE_MATERNITE_GESTIONNAIRE));
                 GROUPES.put(IPRDemande.CS_TYPE_PANDEMIE, loadNomGroupe(APApplication.PROPERTY_GROUPE_APG_GESTIONNAIRE));
                 GROUPES.put(IPRDemande.CS_TYPE_PATERNITE, loadNomGroupe(APApplication.PROPERTY_GROUPE_MATERNITE_GESTIONNAIRE));
+                GROUPES.put(IPRDemande.CS_TYPE_PROCHE_AIDANT, loadNomGroupe(APApplication.PROPERTY_GROUPE_MATERNITE_GESTIONNAIRE));
             }
         }
 

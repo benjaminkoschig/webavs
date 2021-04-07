@@ -129,6 +129,9 @@ public class APLAPGAction extends PRDefaultAction {
         } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(genreService)) {
             destination = this.getUserActionURL(request, IAPActions.ACTION_SAISIE_CARTE_APAT, FWAction.ACTION_AFFICHER
                     + "&" + getSelectedIdParam(request));
+        } else if (IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(genreService)) {
+            destination = this.getUserActionURL(request, IAPActions.ACTION_SAISIE_CARTE_PAI, FWAction.ACTION_AFFICHER
+                    + "&" + getSelectedIdParam(request));
         } else {
             destination = this.getUserActionURL(request, IAPActions.ACTION_SAISIE_CARTE_APG, FWAction.ACTION_AFFICHER
                     + "&" + getSelectedIdParam(request));
