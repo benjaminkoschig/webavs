@@ -9,6 +9,7 @@
 <%@ page import="globaz.jade.client.util.JadeStringUtil" %>
 <%@ page import="globaz.prestation.api.IPRDemande" %>
 <%@ page import="globaz.prestation.tools.PRSessionDataContainerHelper" %>
+<%@ page import="globaz.apg.menu.MenuPrestation" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib uri="/WEB-INF/nss.tld" prefix="ct1" %>
@@ -23,37 +24,13 @@
     APDroitLAPGJointDemandeViewBean viewBean = (APDroitLAPGJointDemandeViewBean) request.getAttribute("viewBean");
 
     actionNew = servletContext + mainServletPath + "?userAction=" + viewBean.getTypePrestation().toUserAction() + ".afficher&_method=add";
+	MenuPrestation menuPrestation = MenuPrestation.of(session);
 %>
 <%@ include file="/theme/find/javascripts.jspf" %>
+
+<ct:menuChange displayId="menu" menuId="<%=menuPrestation.getMenuIdPrincipal()%>" showTab="menu"/>
+<ct:menuChange displayId="options" menuId="<%=menuPrestation.getMenuIdOptionsEmpty()%>"/>
 <script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
-<%
-    if (IPRDemande.CS_TYPE_APG.equals(PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION))) {
-        // Si APG Militaire
-%> <ct:menuChange displayId="menu" menuId="ap-menuprincipalapg" showTab="menu"/>
-<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<%
-} else if (IPRDemande.CS_TYPE_MATERNITE.equals(PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION))) {
-    // Si APG Maternité
-%>
-<ct:menuChange displayId="menu" menuId="ap-menuprincipalamat" showTab="menu"/>
-<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<%
-} else if (IPRDemande.CS_TYPE_PANDEMIE.equals(PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION))) {
-    // Si Pandémie
-%>
-<ct:menuChange displayId="menu" menuId="ap-menuprincipalpan" showTab="menu"/>
-<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<%
-    }else if (IPRDemande.CS_TYPE_PATERNITE.equals(PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION))) {
-%>
-<ct:menuChange displayId="menu" menuId="ap-menuprincipalapat" showTab="menu"/>
-<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<%
-	}else if (IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION))) {
-%>
-<ct:menuChange displayId="menu" menuId="ap-menuprincipalprai" showTab="menu"/>
-<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<%} %>
 <script type="text/javascript">
 <%
 	if ((PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO) != null)

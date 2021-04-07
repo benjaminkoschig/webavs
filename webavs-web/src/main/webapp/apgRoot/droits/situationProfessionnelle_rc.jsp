@@ -1,7 +1,13 @@
 <%-- tpl:insert page="/theme/capage.jtpl" --%>
-<%@page import="globaz.apg.servlet.APAbstractDroitDTOAction"%>
-<%@page import="globaz.apg.vb.droits.APSituationProfessionnelleViewBean"%>
 <%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" %>
+<%@ page import="globaz.apg.servlet.APAbstractDroitDTOAction"%>
+<%@ page import="globaz.apg.vb.droits.APSituationProfessionnelleViewBean"%>
+<%@ page import="globaz.apg.servlet.IAPActions"%>
+<%@ page import="globaz.framework.secure.FWSecureConstants"%>
+<%@ page import="globaz.prestation.api.IPRDemande" %>
+<%@ page import="globaz.apg.api.droits.IAPDroitLAPG" %>
+<%@ page import="globaz.apg.db.droits.APDroitLAPG" %>
+<%@ page import="globaz.apg.menu.MenuPrestation" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/capage/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
@@ -19,33 +25,13 @@ IFrameDetailHeight = "460";
 IFrameListHeight = "100";
 subTableHeight = 20;
 scrollingDetailActive = "YES";
+	MenuPrestation menuPrestation = MenuPrestation.of(session);
 %>
 	<%-- /tpl:put --%>
 <%@ include file="/theme/capage/javascripts.jspf" %>
 <%-- tpl:put name="zoneScripts" --%>
-<!--si APG -->
-<!--si APG -->
-<%if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_APG) {%>
-	<%@page import="globaz.apg.servlet.IAPActions"%>
-<%@page import="globaz.framework.secure.FWSecureConstants"%>
-<%@ page import="globaz.prestation.api.IPRDemande" %>
-<%@ page import="globaz.apg.api.droits.IAPDroitLAPG" %>
-<%@ page import="globaz.apg.db.droits.APDroitLAPG" %>
-<ct:menuChange displayId="menu" menuId="ap-menuprincipalapg" showTab="menu"/>
-	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<!--sinon, maternité -->
-<%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE) {%>
-	<ct:menuChange displayId="menu" menuId="ap-menuprincipalamat" showTab="menu"/>
-	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<!--sinon, paternité -->
-<%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_PATERNITE) {%>
-<ct:menuChange displayId="menu" menuId="ap-menuprincipalapat" showTab="menu"/>
-<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<!--sinon, pandémie -->
-<%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)== IPRDemande.CS_TYPE_PANDEMIE) {%>
-<ct:menuChange displayId="menu" menuId="ap-menuprincipalpan" showTab="menu"/>
-	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<%}%>
+<ct:menuChange displayId="menu" menuId="<%=menuPrestation.getMenuIdPrincipal()%>" showTab="menu"/>
+<ct:menuChange displayId="options" menuId="<%=menuPrestation.getMenuIdOptionsEmpty()%>"/>
 <SCRIPT>
 // pour le gestion des avertissements après l'action EcranSuivant
 	var isModification = false;

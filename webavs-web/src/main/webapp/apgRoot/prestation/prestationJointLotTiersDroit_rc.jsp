@@ -10,6 +10,7 @@
 <%@page import="globaz.jade.publish.client.JadePublishDocument"%>
 <%@page import="globaz.framework.bean.FWViewBeanInterface"%>
 <%@ page import="globaz.prestation.api.IPRDemande" %>
+<%@ page import="globaz.apg.menu.MenuPrestation" %>
 <script type="text/javascript"
 			src="<%=servletContext%>/scripts/nss.js"></script>
 		<%@ taglib uri="/WEB-INF/nss.tld" prefix="ct1" %>
@@ -23,26 +24,14 @@ globaz.apg.vb.prestation.APPrestationJointLotTiersDroitListViewBean viewBean = (
 bButtonNew = false;
 boolean wantTousType="tous".equals(request.getParameter("forTypeDroit"));
 boolean wantTousEtat="tous".equals(request.getParameter("forEtat"));
+MenuPrestation menuPrestation = MenuPrestation.of(session);
 
 %>    
 <%-- /tpl:put --%>
 <%@ include file="/theme/find/javascripts.jspf" %>
 <%-- tpl:put name="zoneScripts" --%>
-<!--si APG -->
-<%if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_APG) {%>
-	<ct:menuChange displayId="menu" menuId="ap-menuprincipalapg" showTab="menu"/>
-	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<!--sinon, maternité -->
-<%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE) {%>
-	<ct:menuChange displayId="menu" menuId="ap-menuprincipalamat" showTab="menu"/>
-	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<%} else if (globaz.prestation.tools.PRSessionDataContainerHelper.getData(session, globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION) == IPRDemande.CS_TYPE_PANDEMIE) { %>
-<ct:menuChange displayId="menu" menuId="ap-menuprincipalpan" showTab="menu"/>
-<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<%}  else if (globaz.prestation.tools.PRSessionDataContainerHelper.getData(session, globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION) == IPRDemande.CS_TYPE_PATERNITE) { %>
-<ct:menuChange displayId="menu" menuId="ap-menuprincipalapat" showTab="menu"/>
-<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<%}%>
+<ct:menuChange displayId="menu" menuId="<%=menuPrestation.getMenuIdPrincipal()%>" showTab="menu"/>
+<ct:menuChange displayId="options" menuId="<%=menuPrestation.getMenuIdOptionsEmpty()%>"/>
 
 <SCRIPT language="javascript">
 	bFind = true;

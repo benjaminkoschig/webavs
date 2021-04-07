@@ -1,4 +1,5 @@
 <%-- tpl:insert page="/theme/detail.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%@ page import="globaz.apg.menu.MenuPrestation" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
@@ -11,7 +12,9 @@
 	bButtonValidate = true;
 	bButtonDelete =  true;
 	bButtonUpdate = true;
-	bButtonNew = false;		
+	bButtonNew = false;
+
+	MenuPrestation menuPrestation = MenuPrestation.of(session);
 %>
 
 
@@ -20,23 +23,8 @@
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/javascripts.jspf" %>
 <%-- tpl:put name="zoneScripts" --%>
-<!--si APG -->
-<%if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_APG) {%>
-	<ct:menuChange displayId="menu" menuId="ap-menuprincipalapg" showTab="menu"/>
-	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<!--sinon, maternité -->
-<%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE) {%>
-	<ct:menuChange displayId="menu" menuId="ap-menuprincipalamat" showTab="menu"/>
-	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<!--sinon, paternité -->
-<%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_PATERNITE) {%>
-<ct:menuChange displayId="menu" menuId="ap-menuprincipalapat" showTab="menu"/>
-<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<!--sinon, pandémie -->
-<%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)== globaz.prestation.api.IPRDemande.CS_TYPE_PANDEMIE) {%>
-<ct:menuChange displayId="menu" menuId="ap-menuprincipalpan" showTab="menu"/>
-<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<%}%>
+<ct:menuChange displayId="menu" menuId="<%=menuPrestation.getMenuIdPrincipal()%>" showTab="menu"/>
+<ct:menuChange displayId="options" menuId="<%=menuPrestation.getMenuIdOptionsEmpty()%>"/>
 
 <SCRIPT language="javaScript">
 

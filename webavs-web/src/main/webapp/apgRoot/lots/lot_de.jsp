@@ -1,4 +1,8 @@
-<%-- tpl:insert page="/theme/detail.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%-- tpl:insert page="/theme/detail.jtpl" --%>
+<%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%@ page import="globaz.apg.servlet.IAPActions"%>
+<%@ page import="globaz.framework.secure.FWSecureConstants"%>
+<%@ page import="globaz.apg.menu.MenuPrestation" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
@@ -9,37 +13,20 @@ idEcran="PAP0027";
 	selectedIdValue = viewBean.getIdLot();
 	bButtonDelete = !viewBean.isValide()&& viewBean.getSession().hasRight(IAPActions.ACTION_LOTS, FWSecureConstants.UPDATE);
 	bButtonUpdate = !viewBean.isValide()&& viewBean.getSession().hasRight(IAPActions.ACTION_LOTS, FWSecureConstants.UPDATE);
-	
+
 	//bButtonNew=true;
 	//bButtonDelete=true;
+	MenuPrestation menuPrestation = MenuPrestation.of(session);
+
 %>
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%>
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/javascripts.jspf" %>
 <%-- tpl:put name="zoneScripts" --%>
-<!--si APG -->
-<%if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_APG) {%>
-<%@page import="globaz.apg.servlet.IAPActions"%>
-<%@page import="globaz.framework.secure.FWSecureConstants"%>
-<ct:menuChange displayId="menu" menuId="ap-menuprincipalapg"/>
-<ct:menuChange displayId="options" menuId="ap-optionlot" showTab="options">
-	<ct:menuSetAllParams key="forIdLot" value="<%=viewBean.getIdLot()%>"/>
-	<ct:menuSetAllParams key="etatlot" value="<%=viewBean.getEtat()%>"/>
-	<ct:menuSetAllParams key="selectedId" value="<%=viewBean.getIdLot()%>"/>
-	<ct:menuSetAllParams key="idLot" value="<%=viewBean.getIdLot()%>"/>
-	
-	<% if (viewBean.getEtat().equals(globaz.apg.api.lots.IAPLot.CS_VALIDE)) {%>
-		<ct:menuActivateNode active="no" nodeId="generercompensations"/>
-	<%} else {%>
-		<ct:menuActivateNode active="yes" nodeId="generercompensations"/>
-	<%}%>
 
-</ct:menuChange>
-<!--sinon, maternité -->
-<%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE) {%>
-<ct:menuChange displayId="menu" menuId="ap-menuprincipalamat"/>
-<ct:menuChange displayId="options" menuId="ap-optionlot" showTab="options">
+<ct:menuChange displayId="menu" menuId="<%=menuPrestation.getMenuIdPrincipal()%>"/>
+<ct:menuChange displayId="options" menuId="<%=menuPrestation.getMenuIdOptionsLot()%>" showTab="options">
 	<ct:menuSetAllParams key="forIdLot" value="<%=viewBean.getIdLot()%>"/>
 	<ct:menuSetAllParams key="etatlot" value="<%=viewBean.getEtat()%>"/>
 	<ct:menuSetAllParams key="selectedId" value="<%=viewBean.getIdLot()%>"/>
@@ -50,70 +37,38 @@ idEcran="PAP0027";
 	<%} else {%>
 	<ct:menuActivateNode active="yes" nodeId="generercompensations"/>
 	<%}%>
-
-</ct:menuChange><!--sinon, paternité -->
-<%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_PATERNITE) {%>
-<ct:menuChange displayId="menu" menuId="ap-menuprincipalapat"/>
-<ct:menuChange displayId="options" menuId="ap-optionlotpat" showTab="options">
-	<ct:menuSetAllParams key="forIdLot" value="<%=viewBean.getIdLot()%>"/>
-	<ct:menuSetAllParams key="etatlot" value="<%=viewBean.getEtat()%>"/>
-	<ct:menuSetAllParams key="selectedId" value="<%=viewBean.getIdLot()%>"/>
-	<ct:menuSetAllParams key="idLot" value="<%=viewBean.getIdLot()%>"/>
-
-	<% if (viewBean.getEtat().equals(globaz.apg.api.lots.IAPLot.CS_VALIDE)) {%>
-	<ct:menuActivateNode active="no" nodeId="generercompensations"/>
-	<%} else {%>
-	<ct:menuActivateNode active="yes" nodeId="generercompensations"/>
-	<%}%>
-
 </ct:menuChange>
-<!--pandémie -->
-<%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_PANDEMIE) {%>
-<ct:menuChange displayId="menu" menuId="ap-menuprincipalpan"/>
-<ct:menuChange displayId="options" menuId="ap-optionlotpan" showTab="options">
-	<ct:menuSetAllParams key="forIdLot" value="<%=viewBean.getIdLot()%>"/>
-	<ct:menuSetAllParams key="etatlot" value="<%=viewBean.getEtat()%>"/>
-	<ct:menuSetAllParams key="selectedId" value="<%=viewBean.getIdLot()%>"/>
-	<ct:menuSetAllParams key="idLot" value="<%=viewBean.getIdLot()%>"/>
 
-	<% if (viewBean.getEtat().equals(globaz.apg.api.lots.IAPLot.CS_VALIDE)) {%>
-	<ct:menuActivateNode active="no" nodeId="generercompensations"/>
-	<%} else {%>
-	<ct:menuActivateNode active="yes" nodeId="generercompensations"/>
-	<%}%>
 
-</ct:menuChange>
-<%}%>
+<SCRIPT language="javascript">
 
-<SCRIPT language="javascript"> 
-	
 	function add() {
 	    document.forms[0].elements('userAction').value="apg.lots.lot.ajouter";
 	}
-	
+
 	function upd() {
 	}
-	
+
 	function validate() {
 	    state = validateFields();
 	    if (document.forms[0].elements('_method').value == "add")
 	        document.forms[0].elements('userAction').value="apg.lots.lot.ajouter";
 	    else
 	        document.forms[0].elements('userAction').value="apg.lots.lot.modifier";
-	    
+
 	    return state;
-	
+
 	}
-	
+
 	function cancel() {
-	
+
 	if (document.forms[0].elements('_method').value == "add")
 	  document.forms[0].elements('userAction').value="back";
 	 else
 	  document.forms[0].elements('userAction').value="apg.lots.lot.chercher";
-	  
+
 	}
-	
+
 	function del() {
 	    if (window.confirm("<ct:FWLabel key='JSP_DELETE_MESSAGE_INFO'/>")){
 	        document.forms[0].elements('userAction').value="apg.lots.lot.supprimer";
@@ -122,7 +77,7 @@ idEcran="PAP0027";
 	}
 
 	function init(){
-	
+
 	}
 </SCRIPT>
 <%-- /tpl:put --%>

@@ -61,7 +61,9 @@
 		<ebback-api.version>9.2.0</ebback-api.version>
 		<cxf.version>3.2.1</cxf.version>
 		<list-adapt-rentes.version>1.0.0</list-adapt-rentes.version>
-
+		<lombok.version>1.18.20</lombok.version>
+		<assertj-core.version>3.19.0</assertj-core.version>
+		<mockito-core.version>3.8.0</mockito-core.version>
 		<!-- CONTINUOUS INTEGRATION -->
 		<ci.url>http://ci-devtools.ju.globaz.ch:8080/jenkins</ci.url>
 	</properties>
@@ -642,6 +644,25 @@
 				<groupId>ch.globaz</groupId>
 				<artifactId>list-adapt-rentes</artifactId>
 				<version>${list-adapt-rentes.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>${lombok.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.assertj</groupId>
+				<artifactId>assertj-core</artifactId>
+				<version>${assertj-core.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
+				<version>${mockito-core.version}</version>
+				<scope>test</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

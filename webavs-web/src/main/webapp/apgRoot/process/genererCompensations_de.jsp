@@ -1,4 +1,8 @@
-<%-- tpl:insert page="/theme/process.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%-- tpl:insert page="/theme/process.jtpl" --%>
+<%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%@ page import="java.util.Vector"%>
+<%@ page import="globaz.apg.menu.MenuPrestation" %>
+<%@ page import="globaz.apg.db.lots.APLotManager" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/process/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
@@ -15,35 +19,19 @@ idEcran="PAP3005";
 	} else {
 	 	userActionValue="apg.process.genererCompensations.executer";
 	}
-    java.util.Vector v = null;
-			globaz.framework.controller.FWController controller = (globaz.framework.controller.FWController) session.getAttribute("objController");
+	globaz.framework.controller.FWController controller = (globaz.framework.controller.FWController) session.getAttribute("objController");
 	globaz.globall.db.BSession objSession = (globaz.globall.db.BSession)controller.getSession();
 	String eMailAddress=objSession.getUserEMail();
+	MenuPrestation menuPrestation = MenuPrestation.of(session);
+	Vector<?> v = APLotManager.getIdsDescriptionsLotsOuvertsOuCompenses(viewBean.getSession(), menuPrestation.getCsTypePrestation());
 %>
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%>
 <%-- /tpl:put --%>
 <%@ include file="/theme/process/javascripts.jspf" %>
 <%-- tpl:put name="zoneScripts" --%>
-<!--si APG -->
-<%if ((String) globaz.prestation.tools.PRSessionDataContainerHelper.getData(session, globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION) == globaz.prestation.api.IPRDemande.CS_TYPE_APG) {
-    v = globaz.apg.db.lots.APLotManager.getIdsDescriptionsLotsOuvertsOuCompenses(viewBean.getSession(), IPRDemande.CS_TYPE_APG);%>
-	<%@page import="java.util.Vector"%>
-<%@ page import="globaz.prestation.api.IPRDemande" %>
-<%@ page import="globaz.apg.api.droits.IAPDroitLAPG" %>
-<%@ page import="globaz.apg.utils.APGUtils" %>
-<ct:menuChange displayId="menu" menuId="ap-menuprincipalapg" showTab="menu"/>
-	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<!--sinon, maternité -->
-<%} else if ((String) globaz.prestation.tools.PRSessionDataContainerHelper.getData(session, globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION) == globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE) {
-    v = globaz.apg.db.lots.APLotManager.getIdsDescriptionsLotsOuvertsOuCompenses(viewBean.getSession(), IPRDemande.CS_TYPE_MATERNITE);%>%>
-	<ct:menuChange displayId="menu" menuId="ap-menuprincipalamat" showTab="menu"/>
-<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<%} else if ((String) globaz.prestation.tools.PRSessionDataContainerHelper.getData(session, globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION) == IPRDemande.CS_TYPE_PANDEMIE) {
-    v = globaz.apg.db.lots.APLotManager.getIdsDescriptionsLotsOuvertsOuCompenses(viewBean.getSession(), IPRDemande.CS_TYPE_PANDEMIE);%>%>
-<ct:menuChange displayId="menu" menuId="ap-menuprincipalpan" showTab="menu"/>
-	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<%}%>
+<ct:menuChange displayId="menu" menuId="<%=menuPrestation.getMenuIdPrincipal()%>" showTab="menu"/>
+<ct:menuChange displayId="options" menuId="<%=menuPrestation.getMenuIdOptionsEmpty()%>"/>
 <%-- /tpl:put --%>
 <%@ include file="/theme/process/bodyStart.jspf" %>
 			<%-- tpl:put name="zoneTitle" --%><ct:FWLabel key="JSP_GENERER_COMPENSATIONS"/><%-- /tpl:put --%>
