@@ -2,6 +2,7 @@ package globaz.apg.menu;
 
 import globaz.prestation.api.IPRDemande;
 import globaz.prestation.tools.PRSessionDataContainerHelper;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -11,16 +12,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Le but de cette class est d'avoir la logique des menus répétitif pour la gestion des différentes allocation.
+ * Le but de cette class est d'avoir la logique des menus rÃ©pÃ©titif pour la gestion des diffÃ©rentes allocation.
  */
 @Getter
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
 public class MenuPrestation {
 
     private static final String AP_OPTIONSEMPTY = "ap-optionsempty";
     private static final String AP_OPTIONLOT = "ap-optionlot";
     private static final Map<String, MenuPrestation> MENU_MAP = generateMap();
+    private static final  Map<String, String> MAIN_TITLE_MAP = generateMapForTitle();
 
     private final String menuIdPrincipal;
     private final String menuIdOptionsLot;
@@ -36,6 +38,20 @@ public class MenuPrestation {
 
     public String getMenuIdOptionsEmpty() {
         return AP_OPTIONSEMPTY;
+    }
+
+    public String getTitre() {
+        return MAIN_TITLE_MAP.getOrDefault(this.csTypePrestation, "GESTION_APG");
+    }
+
+    private static Map<String, String> generateMapForTitle() {
+        Map<String, String> map = new HashMap<>();
+        map.put(IPRDemande.CS_TYPE_APG, "GESTION_APG");
+        map.put(IPRDemande.CS_TYPE_MATERNITE, "GESTION_APG");
+        map.put(IPRDemande.CS_TYPE_PANDEMIE, "GESTION_APG");
+        map.put(IPRDemande.CS_TYPE_PATERNITE, "GESTION_APG");
+        map.put(IPRDemande.CS_TYPE_PROCHE_AIDANT, "GESTION_PROCHE_AIDANT");
+        return map;
     }
 
     private static Map<String, MenuPrestation> generateMap() {
