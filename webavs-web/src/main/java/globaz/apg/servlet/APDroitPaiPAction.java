@@ -126,7 +126,7 @@ public class APDroitPaiPAction extends APAbstractDroitPAction {
 
         FWViewBeanInterface viewBeanAP = (FWViewBeanInterface) session.getAttribute("viewBean");
 
-        if (Objects.nonNull(viewBeanAP) && viewBeanAP instanceof APDroitPaiPViewBean) {
+        if (Objects.nonNull(viewBeanAP) && viewBeanAP instanceof APDroitPaiPViewBean && ((APDroitPaiPViewBean)viewBeanAP).getAControler()) {
             try {
                 String method = request.getParameter("_method");
                 FWAction privateAction = FWAction.newInstance(userAction[0]);

@@ -51,7 +51,7 @@
     <%}%>
 
     var ACTION_DROIT = "<%=IAPActions.ACTION_SAISIE_CARTE_PAI%>";
-       //var jsonAnnonce;
+    var jsonAnnonce;
 
     function checkDateDebutAPG(date) {
         var dateRaw = date.split('.');
@@ -86,7 +86,7 @@
     }
     function add() {
         nssUpdateHiddenFields();
-        document.forms[0].elements('userAction').value = "apg.droits.droitPaiP.ajouter"
+        document.forms[0].elements('userAction').value = ACTION_DROIT+".ajouter"
     }
 
     function upd() {
@@ -219,13 +219,13 @@
         if (document.forms[0].elements('_method').value == "add") {
             document.forms[0].elements('userAction').value = "back";
         } else {
-            document.forms[0].elements('userAction').value = "apg.droits.droitPaiP.afficher";
+            document.forms[0].elements('userAction').value = ACTION_DROIT+".afficher";
         }
     }
 
     function del() {
         if (window.confirm("<ct:FWLabel key='JSP_DELETE_MESSAGE_INFO'/>")) {
-            document.forms[0].elements('userAction').value = "apg.droits.droitPaiP.supprimer";
+            document.forms[0].elements('userAction').value = ACTION_DROIT+".supprimer";
             document.forms[0].submit();
         }
     }
@@ -324,7 +324,7 @@
 
     function arret() {
         nssUpdateHiddenFields();
-        document.forms[0].elements('userAction').value = "apg.droits.droitPaiP.arreterEtape1";
+        document.forms[0].elements('userAction').value = ACTION_DROIT+".arreterEtape1";
         document.forms[0].elements('arreter').value = "on";
         document.forms[0].submit();
     }

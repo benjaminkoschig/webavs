@@ -1725,7 +1725,8 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         validateSessionAndTransactionNotNull(session, transaction);
         // Le droit est chargé pour s'assurer que l'idDroit est valid et que le droit existe
         final APDroitLAPG droit = getDroitLAPG(session, transaction, idDroit);
-        if (!(droit instanceof APDroitAPG || droit instanceof APDroitPandemie || droit instanceof APDroitPaternite)) {
+        if (!(droit instanceof APDroitAPG || droit instanceof APDroitPandemie || droit instanceof APDroitPaternite
+                || droit instanceof APDroitProcheAidant)) {
             throw new Exception("The provided id [" + idDroit + "] does not match an APDroitAPG");
         }
         // if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())) {
@@ -1948,7 +1949,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         }
         // Validation des infos du viewBean
         // TODO
-        //validationPatViewBean(session, transaction, viewBean);
+        validationPaiViewBean(session, transaction, viewBean);
 
         APDroitProcheAidant droit = getDroitProcheAidant(session, transaction, viewBean.getDroit().getIdDroit());
 
@@ -2829,6 +2830,156 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         }
     }
 
+    private void validationPaiViewBean(final BSession session, final BTransaction transaction,
+                                       final APDroitPaiPViewBean viewBean) throws IllegalArgumentException {
+        final List<APValidationDroitError> errors = new ArrayList<APValidationDroitError>();
+        // NSS
+        if (!PRNSSUtil.isValidNSS(viewBean.getNss(), FormatNSS.COMPLET_FORMATE)) {
+            errors.add(APValidationDroitError.NSS_INVALID);
+        }
+        // Date de dépôt
+        if (!JadeDateUtil.isGlobazDate(viewBean.getDateDepot())) {
+            errors.add(APValidationDroitError.DATE_DEPOT_VIDE);
+        }
+        // Date de réception
+        if (!JadeDateUtil.isGlobazDate(viewBean.getDateReception())) {
+            errors.add(APValidationDroitError.DATE_RECEPTION_VIDE);
+        }
+
+        final boolean isDuplicata = Boolean.TRUE.equals(viewBean.getDuplicata());
+
+        // Genre service
+        final String genreDeService = viewBean.getCuGenreService();
+        boolean isServiceTypeValid = true;
+        if ((genreDeService == null) || !APGenreServiceAPG.isValidGenreService(genreDeService)) {
+            errors.add(APValidationDroitError.GENRE_SERVICE_INVALID);
+            isServiceTypeValid = false;
+        }
+        // Jours soldés
+//        int nbrJourSoldes = 0;
+//        if ((viewBean.getNbrJourSoldes() == null) || !JadeNumericUtil.isIntegerPositif(viewBean.getNbrJourSoldes())) {
+//            errors.add(APValidationDroitError.JOURS_SOLDE_INVALID);
+//        } else {
+//            try {
+//                nbrJourSoldes = Integer.valueOf(viewBean.getNbrJourSoldes());
+//            } catch (final NumberFormatException e) {
+//                // Nothing to do with e. We only say value is invalid
+//                errors.add(APValidationDroitError.JOURS_SOLDE_INVALID);
+//            }
+//        }
+        // Périodes
+        if ((viewBean.getPeriodes() == null) || (viewBean.getPeriodes().size() == 0)) {
+            errors.add(APValidationDroitError.AUCUNE_PERIODE_DEFINIE);
+        } else {
+            final List<PRPeriode> periodes = viewBean.getPeriodes();
+            int nombrePeriodes = 0;
+            boolean periodeErrorsfounded = false;
+            for (final PRPeriode periode : periodes) {
+                if (!JadeDateUtil.isGlobazDate(periode.getDateDeDebut())
+                        || !JadeDateUtil.isGlobazDate(periode.getDateDeFin())) {
+                    periodeErrorsfounded = true;
+                    errors.add(APValidationDroitError.FORMAT_DATE_INVALID);
+                } else if ((PRDateUtils.compare(periode.getDateDeDebut(),
+                        periode.getDateDeFin()) != PRDateEquality.AFTER)
+                        && (PRDateUtils.compare(periode.getDateDeDebut(),
+                        periode.getDateDeFin()) != PRDateEquality.EQUALS)) {
+                    errors.add(APValidationDroitError.PERIODE_INCOHERENTE);
+                    periodeErrorsfounded = true;
+                } else if ((PRDateUtils.compare(PRDateUtils.convertCalendarToGlobazDate(Calendar.getInstance()),
+                        periode.getDateDeFin()) == PRDateEquality.AFTER)
+                        || (PRDateUtils.compare(PRDateUtils.convertCalendarToGlobazDate(Calendar.getInstance()),
+                        periode.getDateDeFin()) == PRDateEquality.AFTER)) {
+                    errors.add(APValidationDroitError.PERIODE_DANS_FUTUR);
+                    periodeErrorsfounded = true;
+                }
+                nombrePeriodes++;
+            }
+//            if (nbrJourSoldes < nombrePeriodes) {
+//                errors.add(APValidationDroitError.JOURS_SOLDE_INSUFFISANT);
+//            }
+            // On test le chevauchement uniquement s'il n'y a pas d'erreurs lors des contrôles précédents des périodes
+            // Ceci dans le but d'éviter les exceptions si un format de date est incorrect
+            if (!periodeErrorsfounded) {
+                if (PRDateUtils.hasChevauchementDePeriodes(periodes)) {
+                    errors.add(APValidationDroitError.CHEVAUCHEMENT_PERIODES_DETECTE);
+                }
+            }
+        }
+
+        if (isServiceTypeValid && doMoreTestOnReferenceNumber(genreDeService, isDuplicata)) {
+            // Compte ou referenceNumber
+            final String numeroDeCompte = viewBean.getNoCompte();
+            if (JadeStringUtil.isEmpty(numeroDeCompte)) {
+                errors.add(APValidationDroitError.NUMERO_REFERENCE_NON_RENSEIGNE);
+            } else if ((numeroDeCompte == null) || (numeroDeCompte.length() < 4)) {
+                errors.add(APValidationDroitError.NUMERO_REFERENCE_TROP_COURT);
+            }
+
+        }
+
+        if (isServiceTypeValid && doMoreTestOnControlNumber(genreDeService, isDuplicata)) {
+            // // Numéro de contrôle ou controlNumber
+            final String numeroDeControle = viewBean.getNoControlePers();
+            // La longueur min du controlNumber est 2 position
+            if ((numeroDeControle == null) || (numeroDeControle.length() < 2)) {
+                errors.add(APValidationDroitError.NUMERO_CONTROLE_INVALID);
+            }
+        }
+        // Test de la longueur de la remarque
+        if (isRemarqueTropLongue(viewBean.getRemarque())) {
+            errors.add(APValidationDroitError.REMARQUE_TROP_LONGUE);
+        }
+
+        // Pays
+        final String pays = viewBean.getPays();
+        if (JadeStringUtil.isBlankOrZero(pays)) {
+            errors.add(APValidationDroitError.PAYS_INVALID);
+        }
+
+        // NPA : si le pays est Suisse, le NPA doit être renseigné
+        String npa = null;
+        if (IConstantes.ID_PAYS_SUISSE.equals(viewBean.getPays())) {
+            npa = viewBean.getNpa();
+            if ((npa == null) || (npa.length() < 4)) {
+                errors.add(APValidationDroitError.NPA_VIDE);
+            }
+        }
+
+        if (!JadeStringUtil.isIntegerEmpty(npa)) {
+            // le pays doit être la suisse
+            if (!IConstantes.ID_PAYS_SUISSE.equals(pays)) {
+                errors.add(APValidationDroitError.PAYS_DOIT_ETRE_SUISSE);
+            } else {
+                // recherche du canton
+                try {
+                    final String canton = PRTiersHelper.getCanton(session, npa);
+                    if (canton == null) {
+                        errors.add(APValidationDroitError.CANTON_INTROUVABLE);
+                    }
+                } catch (final Exception e) {
+                    errors.add(APValidationDroitError.CANTON_INTROUVABLE);
+                }
+            }
+        }
+
+        // Droit acquis
+        if (!JadeStringUtil.isEmpty(viewBean.getDroitAcquis())) {
+            if (!JadeStringUtil.endsWith(viewBean.getDroitAcquis(), "5")) {
+                if (!JadeStringUtil.endsWith(viewBean.getDroitAcquis(), "0")) {
+                    errors.add(APValidationDroitError.DROITS_ACQUIS_PAS_ARRONDI);
+                }
+            }
+        }
+        errors.addAll(validerNoCompte(session, genreDeService, viewBean.getNoCompte()));
+        if (errors.size() > 0) {
+            final StringBuilder message = new StringBuilder();
+            for (final APValidationDroitError error : errors) {
+                message.append(session.getLabel(error.getErrorLabel()));
+                message.append("</br>");
+            }
+            throw new IllegalArgumentException(message.toString());
+        }
+    }
 
     /**
      * Validation du numero de compte en fonction du genre de service
