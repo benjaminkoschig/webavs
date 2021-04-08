@@ -506,6 +506,8 @@ public class APAbstractDroitPHelper extends PRAbstractHelper {
             typeDemande = IPRDemande.CS_TYPE_MATERNITE;
         }else if(droit instanceof APDroitPaternite){
             typeDemande = IPRDemande.CS_TYPE_PATERNITE;
+        } else if(droit instanceof APDroitProcheAidant){
+            typeDemande = IPRDemande.CS_TYPE_PROCHE_AIDANT;
         } else if(droit instanceof APDroitPandemie){
             typeDemande = IPRDemande.CS_TYPE_PANDEMIE;
         } else {

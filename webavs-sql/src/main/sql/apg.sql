@@ -2,10 +2,16 @@ insert into schema.fwcosp (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcos
 insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (52201010,'D','PAI','Betreuenden Angehörigen','20210401120000spy');
 insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (52201010,'F','PAI','Proche aidant','20210401120000spy');
 
--- Création de la table droit paternité
+-- Création de la table droit proche aidant
 CREATE TABLE APDROITPROCHEAIDANT
 (
     ID_DROIT DECIMAL(15)  NOT NULL,
     PSPY VARCHAR(24),
+    VBBDUP DECIMAL(1),
+    VBISIF DECIMAL(15),
+    VBNNCP DECIMAL(9),
+    VBNNOC DECIMAL(9),
+    VBTREV DECIMAL(8),
+    REMARQUE VARCHAR (8000),
     PRIMARY KEY (ID_DROIT)
 );

@@ -54,6 +54,7 @@ public interface IAPActions {
     String ACTION_RECAPITUALATIF_DROIT_MAT = "apg.droits.recapitulatifDroitMat";
     String ACTION_RECAPITULATIF_DROIT_PAT = "apg.droits.recapitulatifDroitPat";
     String ACTION_RECAPITUALATIF_DROIT_PAN = "apg.droits.recapitulatifDroitPan";
+    String ACTION_RECAPITULATIF_DROIT_PAI = "apg.droits.recapitulatifDroitPai";
     String ACTION_REPARTITION_PAIEMENTS = "apg.prestation.repartitionPaiements";
     String ACTION_SAISIE_CARTE_AMAT = "apg.droits.droitMatP";
     String ACTION_SAISIE_CARTE_APG = "apg.droits.droitAPGP";

@@ -63,6 +63,7 @@ public class APLAPGAction extends PRDefaultAction {
     private static final String VERS_ECRAN_RECAPITULATIF_MAT = "recapitulatifDroitMat_de.jsp";
     private static final String VERS_ECRAN_RECAPITULATIF_PAT = "recapitulatifDroitPat_de.jsp";
     private static final String VERS_ECRAN_RECAPITULATIF_PAN = "recapitulatifDroitPan_de.jsp";
+    private static final String VERS_ECRAN_RECAPITULATIF_PAI = "recapitulatifDroitPai_de.jsp";
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -317,7 +318,7 @@ public class APLAPGAction extends PRDefaultAction {
             dto.setNomPrenom(((APRecapitulatifDroitPatViewBean) recViewBean).getNomPrenom());
 
             PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO, dto);
-
+            
         } else {
             destination += APLAPGAction.VERS_ECRAN_RECAPITULATIF_APG;
             action = FWAction.newInstance(IAPActions.ACTION_RECAPITUALATIF_DROIT_APG + "." + FWAction.ACTION_AFFICHER);
