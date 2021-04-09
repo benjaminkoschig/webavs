@@ -11,6 +11,7 @@ public enum APTypeDePrestation implements Comparable<APTypeDePrestation> {
     COMPCIAB("COMPCIAB", 52015006, true, false),
     MATCIAB1("MATCIAB1", 52015008, false, true),
     MATCIAB2("MATCIAB2", 52015009, false, true),
+    PROCHE_AIDANT("PROCHE_AIDANT", 52015010, true, true),
     JOUR_ISOLE("ISOLES", 52015007, true, false),
     PANDEMIE("PANDEMIE", 52015012, true, false);
 

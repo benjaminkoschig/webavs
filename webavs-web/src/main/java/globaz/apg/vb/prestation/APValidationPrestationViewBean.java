@@ -11,6 +11,7 @@ import globaz.apg.pojo.APBreakRulesFromView;
 import globaz.apg.pojo.APErreurValidationPeriode;
 import globaz.apg.pojo.APValidationPrestationAPGContainer;
 import globaz.apg.pojo.ViolatedRule;
+import globaz.apg.servlet.IAPActions;
 import globaz.apg.util.APGSeodorErreurListEntities;
 import globaz.framework.bean.FWViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -259,6 +260,8 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
             return "apg.droits.droitMatP.finaliserCreationDroit";
         } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(getGenreService())) {
             return "apg.droits.droitPatP.finaliserCreationDroit";
+        } else if (IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(getGenreService())) {
+            return IAPActions.ACTION_SAISIE_CARTE_PAI +"finaliserCreationDroit";
         } else  if (APGenreServiceAPG.isValidGenreServicePandemie(APGenreServiceAPG.resoudreGenreParCodeSystem(getGenreService()).getCodePourAnnonce())) {
             return "apg.droits.droitPan.finaliserCreationDroit";
         } else {
@@ -271,6 +274,8 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
             return "apg.droits.droitMatP.afficher";
         } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(getGenreService())) {
             return "apg.droits.droitPatP.afficher";
+        } else if (IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(getGenreService())) {
+            return IAPActions.ACTION_SAISIE_CARTE_PAI +".afficher";
         } else if (APGenreServiceAPG.isValidGenreServicePandemie(APGenreServiceAPG.resoudreGenreParCodeSystem(getGenreService()).getCodePourAnnonce())) {
             return "apg.droits.droitPan.passerDroitErreur";
         } else {

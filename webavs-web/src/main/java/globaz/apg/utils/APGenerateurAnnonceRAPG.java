@@ -55,6 +55,11 @@ public class APGenerateurAnnonceRAPG {
             droit.setSession(session);
             droit.setIdDroit(idDroit);
             droit.retrieve();
+        } else if (droit instanceof APDroitProcheAidant) {
+            droit = new APDroitProcheAidant();
+            droit.setSession(session);
+            droit.setIdDroit(idDroit);
+            droit.retrieve();
        } else if (isPrestationMaternite) {
             droit = new APDroitMaternite();
             droit.setSession(session);

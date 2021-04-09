@@ -134,6 +134,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
     public static final String PRESTATION_MATERNITE = "MATERNITE";
     public static final String PRESTATION_PATERNITE = "PATERNITE";
     public static final String PRESTATION_PANDEMIE = "PANDEMIE";
+    public static final String PRESTATION_PROCHE_AIDANT = "PROCHE_AIDANT";
     private static final String REFERENCE_FILE_APG = "calculAPGReferenceData.xml";
 
     private APPrestationViewBean viewBean;
@@ -1307,9 +1308,10 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             return result;
         }
 
-        // Prestation de type maternité
+        // Prestation de type maternité, paternité ou proche-aidant
         if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(elementPrecedent.getResultatCalcul().getTypeAllocation())
-            || IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(elementPrecedent.getResultatCalcul().getTypeAllocation())) {
+                || IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(elementPrecedent.getResultatCalcul().getTypeAllocation())
+                || IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(elementPrecedent.getResultatCalcul().getTypeAllocation())) {
             BigDecimal montantJournalierPrestationMaternite = elementPrecedent.getResultatCalcul()
                     .getMontantJournalier().getBigDecimalValue();
 
@@ -1435,6 +1437,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                 apgOuMaternite = APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_MATERNITE;
             } else if (droit instanceof APDroitPaternite) {
                 apgOuMaternite = APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PATERNITE;
+            } else if (droit instanceof APDroitProcheAidant) {
+                apgOuMaternite = APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PROCHE_AIDANT;
             } else if(droit instanceof APDroitPandemie) {
                 apgOuMaternite = APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PANDEMIE;
             } else {
@@ -1463,7 +1467,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                     }
                 }
             } else if (!APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PANDEMIE.equals(apgOuMaternite)
-                    && !APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PATERNITE.equals(apgOuMaternite)){
+                    && !APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PATERNITE.equals(apgOuMaternite)
+                    && !APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PROCHE_AIDANT.equals(apgOuMaternite)){
                 if (APCalculAcorUtil.grantCalulAcorAPG(session, (APDroitAPG) droit)) {
                     throw new APCalculACORException(session.getLabel("MODULE_CALCUL_ACOR_ERROR"));
                 }

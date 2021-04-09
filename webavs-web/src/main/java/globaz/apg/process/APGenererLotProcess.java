@@ -103,6 +103,10 @@ public class APGenererLotProcess extends BProcess {
                 prestationManager.setForEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
                 prestationManager.setNotForEtatDroit(java.util.Arrays.asList(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE,IAPDroitLAPG.CS_ETAT_DROIT_ERREUR, IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE_REPONSE, IAPDroitLAPG.CS_ETAT_DROIT_REFUSE, IAPDroitLAPG.CS_ETAT_DROIT_TRANSFERE));
                 prestationManager.setToDateFin(getPrestationDateFin());
+            } else if (typePrestation.equals(IPRDemande.CS_TYPE_PROCHE_AIDANT)) {
+                prestationManager.setForEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
+                prestationManager.setNotForEtatDroit(java.util.Arrays.asList(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE,IAPDroitLAPG.CS_ETAT_DROIT_ERREUR, IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE_REPONSE, IAPDroitLAPG.CS_ETAT_DROIT_REFUSE, IAPDroitLAPG.CS_ETAT_DROIT_TRANSFERE));
+                prestationManager.setToDateFin(getPrestationDateFin());
             } else if (typePrestation.equals(IPRDemande.CS_TYPE_PANDEMIE)) {
                 prestationManager.setSession(getSession());
                 prestationManager.setForEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);

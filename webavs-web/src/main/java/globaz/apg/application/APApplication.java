@@ -250,6 +250,7 @@ public class APApplication extends PRAbstractApplication {
         FWAction.registerActionCustom("apg.droits.droitMatP" + ".finaliserCreationDroit", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("apg.droits.droitPatP" + ".finaliserCreationDroit", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("apg.droits.droitPan" + ".finaliserCreationDroit", FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom(IAPActions.ACTION_SAISIE_CARTE_PAI + ".finaliserCreationDroit", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(IAPActions.ACTION_SAISIE_CARTE_PAN+ ".passerDroitErreur", FWSecureConstants.UPDATE);
 
         // FWAction.registerActionCustom(IAPActions.ACTION_GENERER_COMM_DEC_AMAT,

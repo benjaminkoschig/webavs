@@ -167,7 +167,7 @@ public class Rule418 extends Rule {
                     dateDebutFinAAjouter = periode2.getDateFin();
                 }
             }
-            return JadeDateUtil.getNbDaysBetween(dateDebutDroitAAjouter, dateDebutFinAAjouter)+1;
+            return JadeDateUtil.getNbDayBetween(dateDebutDroitAAjouter, dateDebutFinAAjouter)+1;
         }
         return 0;
     }

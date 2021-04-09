@@ -46,6 +46,8 @@ public class APModuleCalculAPG implements IAPCalculateur {
             alloc = new APModuleCalculAllocMaternite();
         } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(baseCalcul.getTypeAllocation())) {
             alloc = new APModuleCalculAllocPaternite();
+        } else if (IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(baseCalcul.getTypeAllocation())) {
+            alloc = new APModuleCalculAllocProcheAidant();
         } else if ((IAPDroitLAPG.CS_SERVICE_EN_QUALITE_DE_RECRUE.equals(baseCalcul.getTypeAllocation())
                 && (baseCalcul.getNombreEnfants() == 0)) ||
         // Formation base protection civile

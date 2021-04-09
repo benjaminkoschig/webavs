@@ -487,7 +487,8 @@ public class APBasesCalculBuilder {
                 }
 
                 if(APGUtils.isTypeAllocationPandemie(droit.getGenreService())
-                    || droit instanceof APDroitPaternite) {
+                        || droit instanceof APDroitPaternite
+                        || droit instanceof APDroitProcheAidant) {
                     baseCourante.setAllocationExploitation(false);
                 } else {
                     baseCourante.setAllocationExploitation(sitPro.getIsAllocationExploitation().booleanValue());
@@ -932,6 +933,16 @@ public class APBasesCalculBuilder {
 
                 fin.setTime(DF.parse(periode.getDateFinPeriode()));
                 couperParMois(debut, fin);
+            } else {
+                Calendar bCal = getCalendarInstance();
+                // couper par année si nécessaire
+                calendar.setTime(bCommand.date);
+                bCal.setTime(eCommand.date);
+
+                for (int year = calendar.get(Calendar.YEAR); year < bCal.get(Calendar.YEAR); ++year) {
+                    calendar.set(year, Calendar.DECEMBER, 31);
+                    commands.add(new NouvelleBaseCommand(calendar.getTime(), false));
+                }
             }
         }
 
@@ -1378,6 +1389,76 @@ public class APBasesCalculBuilder {
         return nbJourSoldes;
     }
 
+    private Integer ajouterSituationFamilialePai() throws Exception {
+        List<APPeriodeComparable> listPeriode = getApPeriodeDroit(droit.getIdDroit());
+
+        // ajouter les enfants aux commandes
+        APEnfantMatManager mgr = new APEnfantMatManager();
+
+        mgr.setSession(session);
+        mgr.setForIdDroitMaternite(droit.getIdDroit());
+        mgr.find(session.getCurrentThreadTransaction());
+
+        if(mgr.getContainerSize() == 0) {
+            // aucun enfant
+            return 0;
+        }
+
+        int nbJourSoldes = 0;
+
+        // pour chaque période
+        String dateDebut = listPeriode.get(0).getDateDebutPeriode();
+        String dateFin = listPeriode.get(0).getDateFinPeriode();
+        String currentCanton = listPeriode.get(0).getCantonImposition();
+        String currentTaux = listPeriode.get(0).getTauxImposition();
+
+        for (APPeriodeComparable periode : listPeriode) {
+
+            if(changeImposition(periode, currentCanton, currentTaux)){
+                ajouterSituationFamilialePai(dateDebut, dateFin);
+                if (!JadeStringUtil.isBlankOrZero(currentCanton)) {
+                    ajouterTauxImposition(currentTaux, dateDebut, dateFin, currentCanton);
+                }
+                dateDebut = periode.getDateDebutPeriode();
+                dateFin = periode.getDateFinPeriode();
+                currentCanton = periode.getCantonImposition();
+                currentTaux = periode.getTauxImposition();
+            }
+
+            if(JadeDateUtil.isDateBefore(periode.getDateDebutPeriode(), dateDebut)) {
+                dateDebut = periode.getDateDebutPeriode();
+            }
+            if(JadeDateUtil.isDateAfter(periode.getDateFinPeriode(), dateFin)) {
+                dateFin = periode.getDateFinPeriode();
+            }
+
+            Integer nbJourBetween =  PRDateUtils.getNbDayBetween(periode.getDateDebutPeriode(), periode.getDateFinPeriode()) + 1;
+            if(!JadeStringUtil.isBlankOrZero(periode.getNbrJours())) {
+                Integer nbJour = Integer.valueOf(periode.getNbrJours());
+                if (nbJourBetween > nbJour) {
+                    nbJourBetween = nbJour;
+                }
+            }
+            nbJourSoldes += nbJourBetween;
+
+        }
+        ajouterSituationFamilialePai(dateDebut, dateFin);
+        if (!JadeStringUtil.isBlankOrZero(currentCanton)){
+            ajouterTauxImposition(currentTaux, dateDebut, dateFin, currentCanton);
+        }
+
+        // TODO : définir le nombre de jour max
+        //int jourMax = Integer.parseInt(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", APParameter.PATERNITE_JOUR_MAX.getParameterName(), "0", "", 0));
+
+//        if(nbJourSoldes > jourMax) {
+//            nbJourSoldes = jourMax;
+//        }
+
+        ((APDroitProcheAidant) droit).setNbrJourSoldes(String.valueOf(nbJourSoldes));
+        return nbJourSoldes;
+    }
+
+
 
     /**
      * Test s'il y a un changement d'imposition entre les périodes
@@ -1425,6 +1506,35 @@ public class APBasesCalculBuilder {
             commands.add(commandDebut);
             commands.add(commandFin);
         }
+
+        Calendar bCal = getCalendarInstance();
+        // couper par année si nécessaire
+        calendar.setTime(commandDebut.date);
+        bCal.setTime(commandFin.date);
+
+        for (int year = calendar.get(Calendar.YEAR); year < bCal.get(Calendar.YEAR); ++year) {
+            calendar.set(year, Calendar.DECEMBER, 31);
+            commands.add(new NouvelleBaseCommand(calendar.getTime(), false));
+        }
+    }
+
+    // ajouter les événements relatifs à la situation familiale paternité à la
+    // liste des commandes.
+    private void ajouterSituationFamilialePai(String dateDebut, String dateFin) throws Exception {
+        // obtenir les date des débuts et de fin du droit
+        Date debut = DF.parse(dateDebut);
+        Calendar fin = getCalendarInstance();
+
+        fin.setTime(DF.parse(dateFin));
+
+        // creer les commandes de début de droit et de find de droit à
+        // l'allocation proche aidant
+        EnfantMatCommand commandDebut = new EnfantMatCommand(debut, true);
+        EnfantMatCommand commandFin = new EnfantMatCommand(fin.getTime(), false);
+
+        // 1 seul enfant par droit
+        commands.add(commandDebut);
+        commands.add(commandFin);
 
         Calendar bCal = getCalendarInstance();
         // couper par année si nécessaire
@@ -1565,7 +1675,8 @@ public class APBasesCalculBuilder {
 
     private void ajouterTauxImposition() throws Exception {
         if (!(droit instanceof APDroitPaternite)
-            && droit.getIsSoumisImpotSource().booleanValue()) {
+                && !(droit instanceof APDroitProcheAidant)
+                && droit.getIsSoumisImpotSource().booleanValue()) {
 
             // si pas de date fin mettre la fin du mois en cours pour le calcul
             String dateFinDuDroit = droit.getDateFinDroit();
@@ -1673,6 +1784,9 @@ public class APBasesCalculBuilder {
         } else if(droit instanceof APDroitPaternite) {
             getDateMinDebutParam(APParameter.PATERNITE.getParameterName(), "");
             nbJoursSoldes = ajouterSituationFamilialePat();
+        } else if(droit instanceof APDroitProcheAidant) {
+            getDateMinDebutParam(APParameter.PROCHE_AIDANT.getParameterName(), "");
+            nbJoursSoldes = ajouterSituationFamilialePai();
         } else {
             /*
              * pour le cas où on traite un droit maternité, on ne traite que la situation familiale et on découpe les

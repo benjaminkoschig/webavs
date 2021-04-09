@@ -561,6 +561,7 @@ public class APPrestationHelper extends PRAbstractHelper {
 
         if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())
                 || IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(droit.getGenreService())
+                || IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(droit.getGenreService())
                 || APGUtils.isTypeAllocationPandemie(droit.getGenreService())) {
             return;
         }
@@ -865,6 +866,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         if (!JadeStringUtil.isBlankOrZero(droit.getGenreService())) {
             if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())
                     || IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(droit.getGenreService())
+                    || IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(droit.getGenreService())
                     || APGUtils.isTypeAllocationPandemie(droit.getGenreService())) {
                 return;
             }
@@ -1357,6 +1359,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             viewBean.setDetailRequerant(getDetailRequerant(session, demande.getIdTiers()));
 
             if(StringUtils.equals(IPRDemande.CS_TYPE_PATERNITE,demande.getTypeDemande()) ||
+                    StringUtils.equals(IPRDemande.CS_TYPE_PROCHE_AIDANT,demande.getTypeDemande()) ||
                     StringUtils.equals(IPRDemande.CS_TYPE_PANDEMIE,demande.getTypeDemande())) {
                 if (viewBean.hasValidationError() || viewBean.hasErreursValidationPeriodes()) {
                     droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ERREUR);
@@ -1542,6 +1545,8 @@ public class APPrestationHelper extends PRAbstractHelper {
                 apgOuMaternite = APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PATERNITE;
             } else if (droit instanceof APDroitPandemie) {
                 apgOuMaternite = APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PANDEMIE;
+            } else if (droit instanceof APDroitProcheAidant) {
+                apgOuMaternite = APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PROCHE_AIDANT;
             } else {
                 apgOuMaternite = APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_APG;
             }
@@ -1574,7 +1579,8 @@ public class APPrestationHelper extends PRAbstractHelper {
                     }
                 }
             } else if (!APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PANDEMIE.equals(apgOuMaternite)
-                    && !APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PATERNITE.equals(apgOuMaternite)) {
+                    && !APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PATERNITE.equals(apgOuMaternite)
+                    && !APCalculateurPrestationStandardLamatAcmAlpha.PRESTATION_PROCHE_AIDANT.equals(apgOuMaternite)) {
                 if (APCalculAcorUtil.grantCalulAcorAPG(session, (APDroitAPG) droit)) {
                     viewBean.setTypeCalculPrestation(APTypeCalculPrestation.ACOR);
                 }
