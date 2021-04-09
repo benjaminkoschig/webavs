@@ -102,6 +102,7 @@
 
     function validate() {
         var isModifiable = <%=viewBean.isModifiable()%>;
+        $('#button_suivant').prop( "disabled", true);
         var hasError = false;
         if (document.forms[0].elements('_method').value === "read" && !isModifiable) {
             document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_ENFANT_PAT%>.chercher";
@@ -112,6 +113,8 @@
         }
         if (!hasError) {
             action(COMMIT);
+        } else {
+            $('#button_suivant').prop( "disabled", false);
         }
     }
 
@@ -1024,6 +1027,7 @@
        onclick="arret()"
        accesskey="<ct:FWLabel key="AK_MATERNITE_ARRET" />"/>
 <input type="button"
+       id="button_suivant"
        value="<ct:FWLabel key="JSP_SUIVANT" /> (alt+<ct:FWLabel key="AK_MATERNITE_SUIVANT" />)"
        onclick="validate()"
        accesskey="<ct:FWLabel key="AK_MATERNITE_SUIVANT" />"/>

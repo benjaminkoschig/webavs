@@ -1,23 +1,32 @@
-<%-- tpl:insert page="/theme/capage.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" %>
+<%-- tpl:insert page="/theme/capage.jtpl" --%>
+<%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" %>
+<%@page import="globaz.framework.secure.FWSecureConstants"%>
+<%@page import="globaz.apg.servlet.IAPActions"%>
+<%@ page import="globaz.prestation.api.PRTypeDemande" %>
+<%@ page import="globaz.apg.vb.droits.APTypePresationDemandeResolver" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/capage/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
 <%
-idEcran="PAP0009";
+    idEcran="PAP0009";
+    String action = IAPActions.ACTION_ENFANT_PAT;
+    String titre = "JSP_TITRE_SAISIE_PAT_2";
+    PRTypeDemande typePrestation = APTypePresationDemandeResolver.resolveEnumTypePrestation(session);
+    if(typePrestation.isProcheAidant()){
+        action = IAPActions.ACTION_ENFANT_PAI;
+        titre = "JSP_TITRE_SAISIE_PAI_2";
+    }
 
 // récupère le viewBean qui a ete stocke dans la session par l'action APEnfantPatAction
-globaz.apg.vb.droits.APEnfantPatViewBean viewBean = (globaz.apg.vb.droits.APEnfantPatViewBean) request.getAttribute("viewBean");
-bButtonNew = viewBean.isModifiable() && bButtonNew &&  viewBean.getSession().hasRight(IAPActions.ACTION_ENFANT_PAT, FWSecureConstants.UPDATE);
+    globaz.apg.vb.droits.APEnfantPatViewBean viewBean = (globaz.apg.vb.droits.APEnfantPatViewBean) request.getAttribute("viewBean");
+    bButtonNew = viewBean.isModifiable() && bButtonNew &&  viewBean.getSession().hasRight(action, FWSecureConstants.UPDATE);
 actionNew += "&" + globaz.apg.servlet.APAbstractDroitDTOAction.PARAM_ID_DROIT + "=" + viewBean.getIdDroitPaternite();
 // on aggrandit un peu le frame de detail
 IFrameDetailHeight = "250";
-
 %>
 <%-- /tpl:put --%>
 <%@ include file="/theme/capage/javascripts.jspf" %>
 <%-- tpl:put name="zoneScripts" --%>
-<%@page import="globaz.framework.secure.FWSecureConstants"%>
-<%@page import="globaz.apg.servlet.IAPActions"%>
 <ct:menuChange displayId="menu" menuId="ap-menuprincipalapat" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 
@@ -81,7 +90,7 @@ IFrameDetailHeight = "250";
 </SCRIPT>
 <%-- /tpl:put --%>
 <%@ include file="/theme/capage/bodyStart.jspf" %>
-				<%-- tpl:put name="zoneTitle" --%><ct:FWLabel key="JSP_TITRE_SAISIE_PAT_2"/><%-- /tpl:put --%>
+                <%-- tpl:put name="zoneTitle" --%><ct:FWLabel key="<%=titre%>"/><%-- /tpl:put --%>
 <%@ include file="/theme/capage/bodyStart2.jspf" %>
 						<%-- tpl:put name="zoneMain" --%>
 						<TR><TD>

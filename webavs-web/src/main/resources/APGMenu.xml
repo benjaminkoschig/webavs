@@ -709,6 +709,106 @@
 		</nodes>
 	</menu>
 
+    <menu id="ap-optionmenudroitprai">
+        <label refId="MENU_OPTION_TITLE" />
+        <nodes>
+            <node>
+                <label refId="MENU_OPTION_VOIR_PRESTATIONS" />
+                <action command="/apg" responseTarget="fr_main">
+                    <parameter name="userAction" value="apg.prestation.prestationJointLotTiersDroit.chercher" />
+                    <parameter name="forIdDroit" />
+                    <parameter name="forEtat" value="tous" />
+                    <parameter name="forTypeDroit" value="tous" />
+                    <parameter name="genreService" />
+                </action>
+            </node>
+            <node>
+                <label refId="MENU_OPTION_RECAPITULATIF_DROIT" />
+                <action command="/apg" responseTarget="fr_main">
+                    <parameter name="userAction" value="apg.droits.droitLAPGJointDemande.actionRecapitulatif" />
+                    <parameter name="selectedId" />
+                    <parameter name="genreService" />
+                </action>
+            </node>
+            <node>
+                <label refId="MENU_OPTION_COPIER_DROIT" />
+                <action command="/apg" responseTarget="fr_main">
+                    <parameter name="userAction" value="apg.droits.droitLAPGJointDemande.copierDroit" />
+                    <parameter name="selectedId" />
+                    <parameter name="genreService" />
+                </action>
+            </node>
+            <node>
+                <label refId="MENU_OPTION_CORRIGER_DROIT" />
+                <action command="/apg" responseTarget="fr_main">
+                    <parameter name="userAction" value="apg.droits.droitLAPGJointDemande.corrigerDroit" />
+                    <parameter name="selectedId" />
+                    <parameter name="genreService" />
+                </action>
+            </node>
+            <node>
+                <label refId="MENU_OPTION_RESTITUER_DROIT" />
+                <action command="/apg" responseTarget="fr_main">
+                    <parameter name="userAction" value="apg.droits.droitLAPGJointDemande.restituerDroit" />
+                    <parameter name="selectedId" />
+                    <parameter name="genreService" />
+                </action>
+            </node>
+            <node id="attenteReponse">
+                <label refId="MENU_OPTION_ATTENTE_REPONSE" />
+                <action command="/apg" responseTarget="fr_main">
+                    <parameter name="userAction" value="apg.droits.droitLAPGJointDemande.actionAttenteReponse" />
+                    <parameter name="selectedId" />
+                </action>
+            </node>
+            <node id="refuser">
+                <label refId="MENU_OPTION_REFUSER" />
+                <action command="/apg" responseTarget="fr_main">
+                    <parameter name="userAction" value="apg.droits.droitLAPGJointDemande.actionRefuser" />
+                    <parameter name="selectedId" />
+                </action>
+            </node>
+            <node id="calculertoutesprestations">
+                <label refId="MENU_OPTION_CALCULER_PRESTATIONS" />
+                <action command="/apg" responseTarget="fr_main">
+                    <parameter name="userAction" value="apg.prestation.prestation.actionCalculerToutesLesPrestations" />
+                    <parameter name="selectedId" />
+                    <parameter name="genreService" />
+                </action>
+            </node>
+            <node id="initinfocompl">
+                <label refId="MENU_OPTION_INFO_COMPL" />
+                <action command="/apg" responseTarget="fr_main">
+                    <parameter name="userAction" value="apg.droits.infoCompl.actionAfficherInfoCompl" />
+                    <parameter name="selectedId" />
+                    <parameter name="noAVS" />
+                </action>
+            </node>
+            <node>
+                <label refId="MENU_OPTION_BREAK_RULES" />
+                <action command="/apg" responseTarget="fr_main">
+                    <parameter name="userAction" value="apg.annonces.breakRule.chercher" />
+                    <parameter name="forIdDroit" />
+                    <parameter name="detailsAssure" />
+                </action>
+            </node>
+            <node id="attenteReponse">
+                <label refId="MENU_OPTION_ATTENTE_REPONSE" />
+                <action command="/apg" responseTarget="fr_main">
+                    <parameter name="userAction" value="apg.droits.droitLAPGJointDemande.actionAttenteReponse" />
+                    <parameter name="selectedId" />
+                </action>
+            </node>
+            <node id="refuser">
+                <label refId="MENU_OPTION_REFUSER" />
+                <action command="/apg" responseTarget="fr_main">
+                    <parameter name="userAction" value="apg.droits.droitLAPGJointDemande.actionRefuser" />
+                    <parameter name="selectedId" />
+                </action>
+            </node>
+        </nodes>
+    </menu>
+
 	<!-- Menu Option only detail    -->
 	<menu id="ap-optionsempty">
 		<label refId="MENU_OPTIONS" />

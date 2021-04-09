@@ -1,7 +1,6 @@
 <%@page import="ch.globaz.utils.VueGlobaleTiersUtils"%>
 <%@page import="globaz.apg.api.droits.IAPDroitLAPG"%>
-<%@page import="globaz.prestation.api.IPRDemande"%>
-<%@page import="globaz.prestation.tools.PRSessionDataContainerHelper"%>
+
 <%@page import="globaz.apg.vb.droits.APDroitLAPGJointDemandeViewBean"%>
 <%@page import="globaz.prestation.tools.PRIterateurHierarchique"%>
 <%@page import="globaz.apg.vb.droits.APDroitLAPGJointDemandeListViewBean"%>
@@ -13,6 +12,9 @@
 <%@ page import="globaz.apg.utils.APGUtils" %>
 <%@ page import="globaz.apg.enums.APTypeDePrestation" %>
 <%@ page import="globaz.apg.helpers.prestation.APPrestationHelper" %>
+<%@ page import="globaz.prestation.api.PRTypeDemande" %>
+<%@ page import="globaz.apg.vb.droits.APTypePresationDemandeResolver" %>
+<%@ page import="globaz.apg.menu.MenuPrestation" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 
@@ -27,6 +29,7 @@
 	menuName = viewBean.getMenuName();
 
 	menuDetailLabel = viewBean.getSession().getLabel("MENU_OPTION_DETAIL");
+    PRTypeDemande typePrestation = APTypePresationDemandeResolver.resolveEnumTypePrestation(session);
 %>
 <script type="text/javascript">
 	function afficherCacher(id) {
@@ -81,7 +84,7 @@
 <%
 		}
 	}
-	if (IPRDemande.CS_TYPE_APG.equals((String) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION))) {
+	if (typePrestation.isApg()) {
 		// si APG -> plus de calcul séparé de prestations
 %>				<ct:menuPopup menu="ap-optionmenudroitapg" detailLabelId="MENU_OPTION_DETAIL" detailLink="<%=detailMenu%>">
 					<ct:menuParam key="selectedId" value="<%=courant.getIdDroit()%>" />
@@ -102,7 +105,7 @@
 					<ct:menuExcludeNode nodeId="calculeracm" />
 				</ct:menuPopup>
 <%
-	} else if (IPRDemande.CS_TYPE_MATERNITE.equals((String) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION))) {
+	} else if (typePrestation.isMaternite()) {
 		// sinon, maternité
 %>				<ct:menuPopup menu="ap-optionmenudroitamat" detailLabelId="MENU_OPTION_DETAIL" detailLink="<%=detailMenu%>">
 					<ct:menuParam key="selectedId" value="<%=courant.getIdDroit()%>" />
@@ -133,7 +136,7 @@
 %>
 				</ct:menuPopup>
 <%
-    } else if (IPRDemande.CS_TYPE_PATERNITE.equals((String) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION))) {
+    } else if (typePrestation.isPaternite()) {
 		// sinon, maternité
 %>				<ct:menuPopup menu="ap-optionmenudroitapat" detailLabelId="MENU_OPTION_DETAIL" detailLink="<%=detailMenu%>">
 				<ct:menuParam key="selectedId" value="<%=courant.getIdDroit()%>" />
@@ -156,7 +159,7 @@
 <%}%>
 			</ct:menuPopup>
 				<%
-    } else if (IPRDemande.CS_TYPE_PANDEMIE.equals((String) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION))) {
+    } else if (typePrestation.isPandemie()) {
         // sinon, PandÃ©mie
     %> <ct:menuPopup menu="ap-optionmenudroitpan" detailLabelId="MENU_OPTION_DETAIL" detailLink="<%=detailMenu%>">
     <ct:menuParam key="selectedId" value="<%=courant.getIdDroit()%>"/>
@@ -172,36 +175,50 @@
             // pas de calculs de prestations si le droit est en attente
     %> <ct:menuExcludeNode nodeId="envoyerParEmail"/>
     <%
-        }
-    %>
-    <%
-        if (!Arrays.asList(IAPDroitLAPG.DROITS_MODIFIABLES).contains(courant.getEtatDroit())) {
+        } if (!Arrays.asList(IAPDroitLAPG.DROITS_MODIFIABLES).contains(courant.getEtatDroit())) {
             // pas de calculs de prestations ni de mise en attente rÃ©ponse ni de mise en refus si le droit n'est pas en "attente" (attente, validÃ©, en erreur ou attente rÃ©ponse)
     %>
     <ct:menuExcludeNode nodeId="calculertoutesprestations"/>
     <ct:menuExcludeNode nodeId="refuser"/>
     <%
-        }
-    %>
-    <%
-        if (!Arrays.asList(IAPDroitLAPG.DROITS_MODIFIABLES).contains(courant.getEtatDroit()) || courant.getEtatDroit().equals(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE_REPONSE)) {
+        } if (!Arrays.asList(IAPDroitLAPG.DROITS_MODIFIABLES).contains(courant.getEtatDroit()) || courant.getEtatDroit().equals(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE_REPONSE)) {
     %>
     <ct:menuExcludeNode nodeId="attenteReponse"/>
     <%
-        }
-    %>
-    <%
-        if (!(Arrays.asList(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF, IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL).contains(courant.getEtatDroit()) && APGUtils.isGenreServiceAvecDateFin(courant.getGenreService()) && courant.getDateFinDroit().isEmpty())) {
+        } if (!(Arrays.asList(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF, IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL).contains(courant.getEtatDroit()) && APGUtils.isGenreServiceAvecDateFin(courant.getGenreService()) && courant.getDateFinDroit().isEmpty())) {
     %> <ct:menuExcludeNode nodeId="finDeDroit"/>
     <%
         }
     %>
 </ct:menuPopup>
     <%
-	}
+	 } if(typePrestation.isProcheAidant()) {
+        // sinon, maternité
+	%>
+    <ct:menuPopup menu="ap-optionmenudroitprai" detailLabelId="MENU_OPTION_DETAIL" detailLink="<%=detailMenu%>">
+        <ct:menuParam key="selectedId" value="<%=courant.getIdDroit()%>" />
+        <ct:menuParam key="genreService" value="<%=courant.getGenreService()%>" />
+        <ct:menuParam key="forIdDroit" value="<%=courant.getIdDroit()%>" />
+        <ct:menuParam key="nomPrenom" value="<%=courant.getNomPrenom()%>" />
+        <ct:menuParam key="noAVS" value="<%=courant.getNoAVS()%>" />
+        <ct:menuParam key="detailsAssure" value="<%=courant.getDetailRequerant()%>" />
+        <ct:menuParam key="<%=VueGlobaleTiersUtils.PARAMETRE_REQUETE_ID_TIERS_VUE_GLOBALE%>" value="<%=courant.getIdTiers()%>" />
+        <%
+            if (!IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(courant.getEtatDroit())) {
+                // pas de calculs de prestations si le droit est en attente
+        %> <ct:menuExcludeNode nodeId="calculertoutesprestations" />
+        <%
+            }
+            if (IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF.equals(courant.getEtatDroit())){
+        %>
+        <ct:menuExcludeNode nodeId="refuser" />
+        <ct:menuExcludeNode nodeId="attenteReponse" />
+        <%}%>
+    </ct:menuPopup>
+    <%}
 	if (iterH.isPere()) {
-%>				<input	id="bouton_<%=courant.getIdDroit()%>" 
-						type="button" 
+%>				<input	id="bouton_<%=courant.getIdDroit()%>"
+						type="button"
 						value="+" 
 						onclick="afficherCacher(<%=courant.getIdDroit()%>)" />
 <%

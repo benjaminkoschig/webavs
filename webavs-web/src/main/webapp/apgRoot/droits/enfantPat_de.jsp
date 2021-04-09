@@ -2,10 +2,13 @@
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
-		<%@page import="globaz.apg.servlet.IAPActions"%>
-<%@page import="globaz.framework.secure.FWSecureConstants"%>
+<%@ page import="globaz.apg.servlet.IAPActions"%>
+<%@ page import="globaz.framework.secure.FWSecureConstants"%>
 <%@ page import="globaz.jade.client.util.JadeStringUtil" %>
 <%@ page import="globaz.pyxis.db.adressecourrier.TIPays" %>
+<%@ page import="globaz.apg.menu.MenuPrestation" %>
+<%@ page import="globaz.apg.vb.droits.APTypePresationDemandeResolver" %>
+<%@ page import="globaz.prestation.api.PRTypeDemande" %>
 <script type="text/javascript"
 			src="<%=servletContext%>/scripts/nss.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/apgRoot/droits/enfantUtils.js"></script>
@@ -23,6 +26,7 @@ boolean isDroitPaterniteCantonale = "true".equals(globaz.prestation.application.
 bButtonUpdate = viewBean.isModifiable() && bButtonUpdate &&  viewBean.getSession().hasRight(IAPActions.ACTION_ENFANT_PAT, FWSecureConstants.UPDATE);
 bButtonDelete = viewBean.isModifiable() && bButtonDelete &&  viewBean.getSession().hasRight(IAPActions.ACTION_ENFANT_PAT, FWSecureConstants.UPDATE);
 bButtonValidate = viewBean.isModifiable() && bButtonValidate &&  viewBean.getSession().hasRight(IAPActions.ACTION_ENFANT_PAT, FWSecureConstants.UPDATE);
+    PRTypeDemande typePrestation = APTypePresationDemandeResolver.resolveEnumTypePrestation(session);
 %>
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%>
@@ -30,10 +34,11 @@ bButtonValidate = viewBean.isModifiable() && bButtonValidate &&  viewBean.getSes
 <%@ include file="/theme/detail/javascripts.jspf" %>
 <%-- tpl:put name="zoneScripts" --%>
 <SCRIPT>
+
   function add() {
     document.forms[0].elements('userAction').value="<%=globaz.apg.servlet.IAPActions.ACTION_ENFANT_PAT%>.ajouter"
   }
-  
+
   function upd() {
 	  parent.isModification = true;
   }
@@ -48,7 +53,7 @@ bButtonValidate = viewBean.isModifiable() && bButtonValidate &&  viewBean.getSes
 	} else {
 		$('#canton').val("");
 	}
-  
+
     state = true;
     if (!controleDateNaissance($('#dateNaissance').val())) {
     	state = false;
@@ -74,7 +79,7 @@ bButtonValidate = viewBean.isModifiable() && bButtonValidate &&  viewBean.getSes
         document.forms[0].submit();
     }
   }
-  
+
   function init(){
   	parent.isNouveau = false;
 	<%if ("new".equalsIgnoreCase(request.getParameter("_valid"))) {%>
@@ -84,7 +89,7 @@ bButtonValidate = viewBean.isModifiable() && bButtonValidate &&  viewBean.getSes
 		}
 		parent.isNouveau = true;
 	<%}%>
-	
+
 	<%if(isDroitPaterniteCantonale){%>
 		// set le label "Date de naissance" / "Date d'adoption" en fonction de isAdoption
 	    <%if (viewBean.getIsAdoption().booleanValue()) {%>
@@ -94,12 +99,12 @@ bButtonValidate = viewBean.isModifiable() && bButtonValidate &&  viewBean.getSes
 		<%}%>
 	<%}%>
   }
-  
+
   function upperCaseFirstChar(input){
   	input.value = input.value.charAt(0).toUpperCase() +
                   input.value.substring(1).toLowerCase();
   }
-  
+
   function boutonAdoptionChange() {
   	<%if(isDroitPaterniteCantonale){%>
 		// change le label "Date de naissance" / "Date d'adoption"
@@ -122,7 +127,19 @@ bButtonValidate = viewBean.isModifiable() && bButtonValidate &&  viewBean.getSes
 	  return true;
   }
 
+  var isProcheAidant=<%=typePrestation.isProcheAidant()%>;
   $(document).ready(function() {
+      var frList = window.parent.fr_list;
+      if(frList && isProcheAidant) {
+          $(frList.document).ready(function () {
+              setTimeout(function (){
+                  if ($("#tableListContainer tr", frList.document).length > 1) {
+                      $("#btnVal").prop("disabled",true);
+                  }
+              },600)
+          });
+      }
+
 	  onChangeNationalite();
 	  $('#nationaliteAffichee').on('change',function () {
 		  onChangeNationalite();

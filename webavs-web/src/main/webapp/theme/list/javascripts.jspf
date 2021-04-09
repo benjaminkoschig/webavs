@@ -48,7 +48,7 @@ function doOnload() {
 
 <BODY onLoad="doOnload();"
       style="margin-left:0px; margin-right:0px;"  bgcolor="#F0F0F0">
-<TABLE width="100%" border="0" cellspacing="0">
+<TABLE width="100%" id="tableListContainer" border="0" cellspacing="0">
 	<TBODY>
 		<TR align="center" >
 		<% if (isSelection) { %>
