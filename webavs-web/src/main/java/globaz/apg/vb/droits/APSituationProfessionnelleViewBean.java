@@ -3,17 +3,6 @@
  */
 package globaz.apg.vb.droits;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.Vector;
 import ch.globaz.common.properties.CommonPropertiesUtils;
 import ch.globaz.common.properties.PropertiesException;
 import globaz.apg.api.assurance.IAPAssurance;
@@ -29,7 +18,6 @@ import globaz.apg.servlet.IAPActions;
 import globaz.apg.util.TypePrestation;
 import globaz.apg.utils.APGUtils;
 import globaz.commons.nss.NSUtil;
-import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BManager;
@@ -71,6 +59,19 @@ import globaz.pyxis.adresse.formater.TIAdressePaiementBanqueFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementCppFormater;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.Vector;
+
 /**
  * <H1>Description</H1>
  *
@@ -83,18 +84,14 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      */
     private static final long serialVersionUID = 1L;
 
-    private static final Object[] METHODES_SEL_ADRESSE = new Object[] {
-            new String[] { "setIdTiersPaiementEmployeurDepuisAdresse", "idTiers" },
-            new String[] { "idDomainePaiementEmployeur", "idApplication" } };
+    private static final Object[] METHODES_SEL_ADRESSE = new Object[]{
+            new String[]{"setIdTiersPaiementEmployeurDepuisAdresse", "idTiers"},
+            new String[]{"idDomainePaiementEmployeur", "idApplication"}};
 
     // ~ Static fields/initializers
     // -------------------------------------------------------------------------------------
     private static final String DEST_SUIVANT_APG = IAPActions.ACTION_ENFANT_APG + ".chercher";
-    private static final String DEST_SUIVANT_MAT = IAPActions.ACTION_PRESTATIONS
-            + ".actionCalculerToutesLesPrestations";
-    private static final String DEST_SUIVANT_PAN = IAPActions.ACTION_PRESTATIONS
-            + ".actionCalculerToutesLesPrestations";
-    private static final String DEST_SUIVANT_PAT = IAPActions.ACTION_PRESTATIONS
+    private static final String DEST_CALCULER_PRESTATIONS = IAPActions.ACTION_PRESTATIONS
             + ".actionCalculerToutesLesPrestations";
 
     private static final String ERREUR_DEPARTEMENT_INTROUVABLE = "DEPARTEMENT_INTROUVABLE";
@@ -109,21 +106,23 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     private static final String LABEL_TITRE_MAT = "JSP_TITRE_SAISIE_MAT_4";
     private static final String LABEL_TITRE_PAN = "JSP_TITRE_SAISIE_PAN_4";
     private static final String LABEL_TITRE_PAT = "JSP_TITRE_SAISIE_PAT_3";
+    private static final String LABEL_TITRE_PRAI = "JSP_TITRE_SAISIE_PAI_3";
 
     private static final Vector<String[]> MENU_DEROULANT_BLANK = new Vector<String[]>();
 
     private static final String METHODE_NAME_APRECHERCHERTYPEACMSERVICE_RECHERCHER = "rechercher";
 
-    private static final Object[] METHODES_SEL_EMPLOYEUR = new Object[] {
-            new String[] { "idTiersEmployeurDepuisPyxis", "idTiers" }, new String[] { "nomEmployeur", "nom" },
-            new String[] { "numAffilieEmployeur", "numAffilieActuel" },
-            new String[] { "dateDebutAffiliation", "debutActivite" },
-            new String[] { "dateFinAffiliation", "finActivite" }
+    private static final Object[] METHODES_SEL_EMPLOYEUR = new Object[]{
+            new String[]{"idTiersEmployeurDepuisPyxis", "idTiers"}, new String[]{"nomEmployeur", "nom"},
+            new String[]{"numAffilieEmployeur", "numAffilieActuel"},
+            new String[]{"dateDebutAffiliation", "debutActivite"},
+            new String[]{"dateFinAffiliation", "finActivite"}
             /* ,new String[] { "genreAffiliation", "genreAffilie" } */
     };
 
+
     static {
-        APSituationProfessionnelleViewBean.MENU_DEROULANT_BLANK.add(new String[] { "", "" });
+        APSituationProfessionnelleViewBean.MENU_DEROULANT_BLANK.add(new String[]{"", ""});
     }
 
     static {
@@ -192,9 +191,11 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     public boolean isMaternite() {
         return IPRDemande.CS_TYPE_MATERNITE.equals(getTypePrestation().toCodeSysteme());
     }
+
     public boolean isPandemie() {
         return IPRDemande.CS_TYPE_PANDEMIE.equals(getTypePrestation().toCodeSysteme());
     }
+
     public boolean isPaternite() {
         return IPRDemande.CS_TYPE_PATERNITE.equals(getTypePrestation().toCodeSysteme());
     }
@@ -248,8 +249,9 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
                     && !JadeStringUtil.isBlankOrZero(idDomainPaiementEmployeur)) {
 
                 detailTiers = PRTiersHelper.getAdressePaiementData(getSession(),
-                        getSession().getCurrentThreadTransaction(), idTiersPaiementEmployeur, idDomainPaiementEmployeur,
-                        getIdAffilieEmployeur(), JACalendar.todayJJsMMsAAAA());
+                                                                   getSession()
+                                                                           .getCurrentThreadTransaction(), idTiersPaiementEmployeur, idDomainPaiementEmployeur,
+                                                                   getIdAffilieEmployeur(), JACalendar.todayJJsMMsAAAA());
             } else {
                 // si un employeur défini dans la situation
 
@@ -258,8 +260,9 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
 
                 // nous recherchons en cascade du domaine APG ou MATERNITE
                 detailTiers = PRTiersHelper.getAdressePaiementData(getSession(),
-                        getSession().getCurrentThreadTransaction(), idTiersPaiementEmployeur, idDomainPaiementEmployeur,
-                        getIdAffilieEmployeur(), JACalendar.todayJJsMMsAAAA());
+                                                                   getSession()
+                                                                           .getCurrentThreadTransaction(), idTiersPaiementEmployeur, idDomainPaiementEmployeur,
+                                                                   getIdAffilieEmployeur(), JACalendar.todayJJsMMsAAAA());
             }
 
             setAdressePaiementEmployeur(detailTiers);
@@ -396,14 +399,15 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
 
     public Vector<String[]> getCsAssociationData() {
 
-        final Map<String, String> csAssociationDataMap = PRCodeSystem.getLibellesPourGroupeInMap(getSession(),
+        final Map<String, String> csAssociationDataMap = PRCodeSystem.getLibellesPourGroupeInMap(
+                getSession(),
                 IAPAssurance.CS_GROUPE_TYPE_ASSURANCE);
 
         final Vector<String[]> csAssociationDataVec = new Vector<String[]>();
 
-        csAssociationDataVec.add(new String[] { "", "" });
+        csAssociationDataVec.add(new String[]{"", ""});
         for (final Entry<String, String> entry : csAssociationDataMap.entrySet()) {
-            csAssociationDataVec.add(new String[] { entry.getValue(), entry.getKey() });
+            csAssociationDataVec.add(new String[]{entry.getValue(), entry.getKey()});
         }
 
         return csAssociationDataVec;
@@ -473,7 +477,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
                     for (int idDepartement = 0; idDepartement < mgr.size(); ++idDepartement) {
                         final PRDepartement departement = (PRDepartement) mgr.get(idDepartement);
 
-                        retValue.add(new String[] { departement.getIdParticularite(), departement.getDepartement() });
+                        retValue.add(new String[]{departement.getIdParticularite(), departement.getDepartement()});
                     }
 
                     return retValue;
@@ -515,14 +519,10 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * @return la valeur courante de l'attribut dest ecran suivant
      */
     public String getDestEcranSuivant() {
-        if (TypePrestation.TYPE_MATERNITE.equals(typePrestation)) {
-            return APSituationProfessionnelleViewBean.DEST_SUIVANT_MAT + "&selectedId=" + droitDTO.getIdDroit()
-                    + "&genreService=" + droitDTO.getGenreService();
-        } else if (TypePrestation.TYPE_PANDEMIE.equals(typePrestation)) {
-            return APSituationProfessionnelleViewBean.DEST_SUIVANT_PAN + "&selectedId=" + droitDTO.getIdDroit()
-                    + "&genreService=" + droitDTO.getGenreService();
-        } else if (TypePrestation.TYPE_PATERNITE.equals(typePrestation)) {
-            return APSituationProfessionnelleViewBean.DEST_SUIVANT_PAT + "&selectedId=" + droitDTO.getIdDroit()
+        if (Arrays.asList(TypePrestation.TYPE_MATERNITE, TypePrestation.TYPE_PANDEMIE,
+                          TypePrestation.TYPE_PATERNITE, TypePrestation.TYPE_PROCHE_AIDANT)
+                  .contains(typePrestation)) {
+            return APSituationProfessionnelleViewBean.DEST_CALCULER_PRESTATIONS + "&selectedId=" + droitDTO.getIdDroit()
                     + "&genreService=" + droitDTO.getGenreService();
         } else {
             return APSituationProfessionnelleViewBean.DEST_SUIVANT_APG;
@@ -534,8 +534,9 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         String adresseLine = "";
         String TIERS_CS_DOMAINE = APGUtils.getCSDomaineFromTypeDemande(getTypePrestation().toCodeSysteme());
         final TIAdressePaiementData detailTiers = PRTiersHelper.getAdressePaiementData(getSession(),
-                getSession().getCurrentThreadTransaction(), getIdTier(), TIERS_CS_DOMAINE,
-                null, JACalendar.todayJJsMMsAAAA());
+                                                                                       getSession()
+                                                                                               .getCurrentThreadTransaction(), getIdTier(), TIERS_CS_DOMAINE,
+                                                                                       null, JACalendar.todayJJsMMsAAAA());
 
         final TIAdressePaiementDataSource dataSource = new TIAdressePaiementDataSource();
         dataSource.load(detailTiers);
@@ -556,6 +557,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * Méthode qui retourne le détail du requérant formaté pour les détails
      *
      * @return le détail du requérant formaté
+     *
      * @throws Exception
      */
     public String getDetailRequerantDetail() throws Exception {
@@ -566,15 +568,17 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
 
             String nationalite = "";
 
-            if (!"999".equals(getSession().getCode(getSession().getSystemCode("CIPAYORI",
+            if (!"999".equals(getSession().getCode(getSession().getSystemCode(
+                    "CIPAYORI",
                     tiers.getProperty(PRTiersWrapper.PROPERTY_ID_PAYS_DOMICILE))))) {
-                nationalite = getSession().getCodeLibelle(getSession().getSystemCode("CIPAYORI",
+                nationalite = getSession().getCodeLibelle(getSession().getSystemCode(
+                        "CIPAYORI",
                         tiers.getProperty(PRTiersWrapper.PROPERTY_ID_PAYS_DOMICILE)));
             }
 
             return PRNSSUtil.formatDetailRequerantDetail(getNoAVSDroit(), getNomPrenomDroit(),
-                    tiers.getProperty(PRTiersWrapper.PROPERTY_DATE_NAISSANCE),
-                    getSession().getCodeLibelle(tiers.getProperty(PRTiersWrapper.PROPERTY_SEXE)), nationalite);
+                                                         tiers.getProperty(PRTiersWrapper.PROPERTY_DATE_NAISSANCE),
+                                                         getSession().getCodeLibelle(tiers.getProperty(PRTiersWrapper.PROPERTY_SEXE)), nationalite);
 
         } else {
             return "";
@@ -623,6 +627,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * (non-Javadoc)
      *
      * @return la valeur courante de l'attribut heures semaine
+     *
      * @see globaz.apg.db.droits.APSituationProfessionnelle#getHeuresSemaine()
      */
     @Override
@@ -747,7 +752,8 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
             try {
                 nomEmployeur = loadEmployeur().loadNom();
             } catch (final Exception e) {
-                _addError(getSession().getCurrentThreadTransaction(),
+                _addError(
+                        getSession().getCurrentThreadTransaction(),
                         getSession().getLabel(APSituationProfessionnelleViewBean.ERREUR_EMPLOYEUR_INTROUVABLE));
             }
         }
@@ -787,7 +793,8 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
                     numAffilieEmployeur = affilie.getNumAffilie();
                 }
             } catch (final Exception e) {
-                _addError(getSession().getCurrentThreadTransaction(),
+                _addError(
+                        getSession().getCurrentThreadTransaction(),
                         getSession().getLabel(APSituationProfessionnelleViewBean.ERREUR_EMPLOYEUR_INTROUVABLE));
             }
         }
@@ -812,7 +819,8 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
 
                 }
             } catch (final Exception e) {
-                _addError(getSession().getCurrentThreadTransaction(),
+                _addError(
+                        getSession().getCurrentThreadTransaction(),
                         getSession().getLabel(APSituationProfessionnelleViewBean.ERREUR_EMPLOYEUR_INTROUVABLE));
             }
         }
@@ -872,8 +880,10 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
             return getSession().getLabel(APSituationProfessionnelleViewBean.LABEL_TITRE_APG);
         } else if (TypePrestation.TYPE_PANDEMIE.equals(typePrestation)) {
             return getSession().getLabel(APSituationProfessionnelleViewBean.LABEL_TITRE_PAN);
-        }  else if (TypePrestation.TYPE_PATERNITE.equals(typePrestation)) {
+        } else if (TypePrestation.TYPE_PATERNITE.equals(typePrestation)) {
             return getSession().getLabel(APSituationProfessionnelleViewBean.LABEL_TITRE_PAT);
+        } else if (TypePrestation.TYPE_PROCHE_AIDANT.equals(typePrestation)) {
+            return getSession().getLabel(APSituationProfessionnelleViewBean.LABEL_TITRE_PRAI);
         } else {
             return "";
         }
@@ -983,10 +993,10 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
                     for (int i = 0; i < cotisations.length; i++) {
 
                         if (BSessionUtil.compareDateFirstLowerOrEqual(getSession(), cotisations[i].getDateDebut(),
-                                droit.getDateDebutDroit())
+                                                                      droit.getDateDebutDroit())
                                 && (BSessionUtil.compareDateFirstGreaterOrEqual(getSession(),
-                                        cotisations[i].getDateFin(), droit.getDateDebutDroit())
-                                        || JadeStringUtil.isEmpty(cotisations[i].getDateFin()))) {
+                                                                                cotisations[i].getDateFin(), droit.getDateDebutDroit())
+                                || JadeStringUtil.isEmpty(cotisations[i].getDateFin()))) {
 
                             // on cherche l'assurance
                             final IAFAssurance assurance = (IAFAssurance) getSession().getAPIFor(IAFAssurance.class);
@@ -1026,7 +1036,8 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
                         .setISession(PRSession.connectSession(getSession(), AFApplication.DEFAULT_APPLICATION_NAOS));
                 final Hashtable<String, String> criteres = new Hashtable<String, String>();
                 criteres.put(IAFSuiviCaisseAffiliation.FIND_FOR_AFFILIATION_ID, getIdAffilieEmployeur());
-                criteres.put(IAFSuiviCaisseAffiliation.FIND_FOR_GENRE_CAISSE,
+                criteres.put(
+                        IAFSuiviCaisseAffiliation.FIND_FOR_GENRE_CAISSE,
                         IAFSuiviCaisseAffiliation.GENRE_CAISSE_AVS);
                 final IAFSuiviCaisseAffiliation[] result = suiveCaisseAffiliation.findSuiviCaisse(criteres);
 
@@ -1047,7 +1058,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
                             // Si date de fin du suivi est plus grande ou égale
                             // au début du droit
                             if (BSessionUtil.compareDateFirstGreaterOrEqual(getSession(), result[i].getDateFin(),
-                                    droit.getDateDebutDroit())) {
+                                                                            droit.getDateDebutDroit())) {
                                 return false;
                             }
 
@@ -1057,7 +1068,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
                             // Si date de début du suivi est plus petite ou
                             // égale au début du droit
                             if (BSessionUtil.compareDateFirstLowerOrEqual(getSession(), result[i].getDateDebut(),
-                                    droit.getDateDebutDroit())) {
+                                                                          droit.getDateDebutDroit())) {
                                 return false;
                             }
                         }
@@ -1083,9 +1094,10 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * Si la caisse à activé les prestations complémentaires ACM NE via la propriété :
      * APProperties.TYPE_DE_PRESTATION_ACM
      *
-     * @see APProperties
      * @return Si la caisse à activé les prestations complémentaires ACM NE
+     *
      * @throws PropertiesException
+     * @see APProperties
      */
     public boolean isPrestationAcmNeEnable() throws PropertiesException {
         final String propertyValue = getPropertyValue();
@@ -1096,29 +1108,31 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * Si la caisse à activé les prestations complémentaires ACM ALFA via la propriété :
      * APProperties.TYPE_DE_PRESTATION_ACM
      *
-     * @see APProperties
      * @return Si la caisse à activé les prestations complémentaires ACM ALFA
+     *
      * @throws PropertiesException
+     * @see APProperties
      */
     public Boolean isPrestationAcmAlfaEnable() throws PropertiesException {
         final String propertyValue = getPropertyValue();
-        if(isPandemie() || isPaternite()){
+        if (isPandemie() || isPaternite()) {
             return false;
-        }else{
+        } else {
             return APPropertyTypeDePrestationAcmValues.ACM_ALFA.getPropertyValue().equals(propertyValue);
         }
     }
 
     public Boolean isPrestationAcm2AlfaEnable() throws PropertiesException {
-        if(isPandemie() || isPaternite()){
+        if (isPandemie() || isPaternite()) {
             return false;
-        }else{
+        } else {
             return APProperties.PRESTATION_ACM_2_ACTIF.getBooleanValue();
         }
     }
 
     /**
      * @return
+     *
      * @throws PropertiesException
      */
     private String getPropertyValue() throws PropertiesException {
@@ -1126,7 +1140,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         final String propertyValue = APProperties.TYPE_DE_PRESTATION_ACM.getValue();
         // validation en fonction de son domaine de valeur. Exception si valeur ne fait pas partie du domaine
         CommonPropertiesUtils.validatePropertyValue(APProperties.TYPE_DE_PRESTATION_ACM, propertyValue,
-                APPropertyTypeDePrestationAcmValues.propertyValues());
+                                                    APPropertyTypeDePrestationAcmValues.propertyValues());
         return propertyValue;
     }
 
@@ -1173,9 +1187,9 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
 
         try {
             propertyValeur = Boolean.TRUE.toString()
-                    .equals(globaz.prestation.application.PRAbstractApplication
-                            .getApplication(globaz.apg.application.APApplication.DEFAULT_APPLICATION_APG)
-                            .getProperty(propertyName));
+                                         .equals(globaz.prestation.application.PRAbstractApplication
+                                                         .getApplication(globaz.apg.application.APApplication.DEFAULT_APPLICATION_APG)
+                                                         .getProperty(propertyName));
 
         } catch (final Exception e) {
             setMessage(e.getMessage());
@@ -1278,7 +1292,9 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         return TypePrestation.TYPE_APG.equals(typePrestation);
     }
 
-    /** DOCUMENT ME! */
+    /**
+     * DOCUMENT ME!
+     */
     public void resetAffilie() {
         nomEmployeur = "";
     }
@@ -1380,8 +1396,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * Note: cette methode insere un blanc dans le vecteur en premiere position.
      * </p>
      *
-     * @param affiliationsEmployeur
-     *                                  une nouvelle valeur pour cet attribut
+     * @param affiliationsEmployeur une nouvelle valeur pour cet attribut
      */
     public void setAffiliationsEmployeur(final Vector<String[]> affiliationsEmployeur) {
         if (affiliationsEmployeur != null) {
@@ -1425,8 +1440,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     /**
      * setter pour l'attribut droit DTO
      *
-     * @param droitDTO
-     *                     une nouvelle valeur pour cet attribut
+     * @param droitDTO une nouvelle valeur pour cet attribut
      */
     public void setDroitDTO(final APDroitDTO droitDTO) {
         this.droitDTO = droitDTO;
@@ -1443,8 +1457,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     /**
      * setter pour l'attribut id affilie employeur
      *
-     * @param idAffilieEmployeur
-     *                               une nouvelle valeur pour cet attribut
+     * @param idAffilieEmployeur une nouvelle valeur pour cet attribut
      */
     public void setIdAffilieEmployeur(final String idAffilieEmployeur) {
         try {
@@ -1458,8 +1471,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     /**
      * setter pour l'attribut id droit LAPGBackup
      *
-     * @param idDroitLAPGBackup
-     *                              une nouvelle valeur pour cet attribut
+     * @param idDroitLAPGBackup une nouvelle valeur pour cet attribut
      */
     public void setIdDroitLAPGBackup(final String idDroitLAPGBackup) {
         this.idDroitLAPGBackup = idDroitLAPGBackup;
@@ -1468,8 +1480,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     /**
      * setter pour l'attribut id particulier
      *
-     * @param string
-     *                   une nouvelle valeur pour cet attribut
+     * @param string une nouvelle valeur pour cet attribut
      */
     public void setIdParticularite(final String string) {
         try {
@@ -1483,8 +1494,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     /**
      * setter pour l'attribut id particularite employeur
      *
-     * @param idParticulariteEmployeur
-     *                                     une nouvelle valeur pour cet attribut
+     * @param idParticulariteEmployeur une nouvelle valeur pour cet attribut
      */
     public void setIdParticulariteEmployeur(final String idParticulariteEmployeur) {
         try {
@@ -1498,8 +1508,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     /**
      * setter pour l'attribut id tiers employeur
      *
-     * @param idTiersEmployeur
-     *                             une nouvelle valeur pour cet attribut
+     * @param idTiersEmployeur une nouvelle valeur pour cet attribut
      */
     public void setIdTiersEmployeur(final String idTiersEmployeur) {
         try {
@@ -1517,8 +1526,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * fait que l'on revient depuis pyxis, il est necessaire de reinitialiser ce champ a la fin.
      * </p>
      *
-     * @param idTiersEmployeur
-     *                             une nouvelle valeur pour cet attribut
+     * @param idTiersEmployeur une nouvelle valeur pour cet attribut
      */
     public void setIdTiersEmployeurDepuisPyxis(final String idTiersEmployeur) {
         setIdTiersEmployeur(idTiersEmployeur);
@@ -1538,8 +1546,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * fait que l'on revient depuis pyxis, il est necessaire de reinitialiser ce champ a la fin.
      * </p>
      *
-     * @param idTiersEmployeur
-     *                             une nouvelle valeur pour cet attribut
+     * @param idTiersEmployeur une nouvelle valeur pour cet attribut
      */
     public void setIdTiersPaiementEmployeurDepuisAdresse(final String idTiersPaiement) {
         setIdTiersPaiementEmployeur(idTiersPaiement);
@@ -1557,8 +1564,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     /**
      * setter pour l'attribut nom employeur
      *
-     * @param string
-     *                   une nouvelle valeur pour cet attribut
+     * @param string une nouvelle valeur pour cet attribut
      */
     public void setNomEmployeur(final String string) {
         nomEmployeur = string;
@@ -1601,7 +1607,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
 
             } else {
                 IPRAffilie affilie = PRAffiliationHelper.getEmployeurParIdAffilie(getSession(),
-                        getSession().getCurrentThreadTransaction(), idAffilie, idTiers);
+                                                                                  getSession().getCurrentThreadTransaction(), idAffilie, idTiers);
 
                 if (affilie != null) {
                     result = affilie.getNom();
@@ -1623,7 +1629,8 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
             result = cleanNomEmployeur(result);
 
         } catch (final Exception e) {
-            _addError(getSession().getCurrentThreadTransaction(),
+            _addError(
+                    getSession().getCurrentThreadTransaction(),
                     getSession().getLabel(APSituationProfessionnelleViewBean.ERREUR_EMPLOYEUR_INTROUVABLE));
         }
 
@@ -1638,6 +1645,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * commande DOS : ECHO
      *
      * @param result
+     *
      * @return
      */
     private String cleanNomEmployeur(String result) {
@@ -1656,8 +1664,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     /**
      * setter pour l'attribut num affilie employeur
      *
-     * @param numAffilieEmployeur
-     *                                une nouvelle valeur pour cet attribut
+     * @param numAffilieEmployeur une nouvelle valeur pour cet attribut
      */
     public void setNumAffilieEmployeur(final String numAffilieEmployeur) {
         this.numAffilieEmployeur = numAffilieEmployeur;
@@ -1666,8 +1673,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     /**
      * setter pour l'attribut retour depuis pyxis
      *
-     * @param retourDepuisPyxis
-     *                              une nouvelle valeur pour cet attribut
+     * @param retourDepuisPyxis une nouvelle valeur pour cet attribut
      */
     public void setRetourDepuisPyxis(final boolean retourDepuisPyxis) {
         this.retourDepuisPyxis = retourDepuisPyxis;
@@ -1676,8 +1682,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     /**
      * setter pour l'attribut retour depuis pyxis
      *
-     * @param retourDepuisAdresse
-     *                                une nouvelle valeur pour cet attribut
+     * @param retourDepuisAdresse une nouvelle valeur pour cet attribut
      */
     public void setRetourDepuisAdresse(final boolean retourDepuisAdresse) {
         this.retourDepuisAdresse = retourDepuisAdresse;
@@ -1725,8 +1730,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     /**
      * setter pour l'attribut type prestation
      *
-     * @param prestation
-     *                       une nouvelle valeur pour cet attribut
+     * @param prestation une nouvelle valeur pour cet attribut
      */
     public void setTypePrestation(final TypePrestation prestation) {
         typePrestation = prestation;
