@@ -429,7 +429,6 @@
             if (element.codeSexe !== null) {
                 for (var i = 0; i < document.getElementById("csSexeAffiche").length; i++) {
                     if (element.codeSexe === document.getElementById("csSexeAffiche").options[i].value) {
-                    if (element.codeSexe === document.getElementById("csSexeAffiche").options[i].value) {
                         document.getElementById("csSexeAffiche").options[i].selected = true;
                     }
                 }
