@@ -624,8 +624,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         }
 
         // Validation des infos du viewBean
-        // TODO
-        //validationPaiViewBean(session, transaction, viewBean);
+        validationPaiViewBean(session, transaction, viewBean);
 
         PRDemande demande = null;
         APDroitProcheAidant droit = null;
@@ -1948,7 +1947,6 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                     "Unable to update the APDroitPaternite with the empty id [" + viewBean.getDroit().getIdDroit() + "]");
         }
         // Validation des infos du viewBean
-        // TODO
         validationPaiViewBean(session, transaction, viewBean);
 
         APDroitProcheAidant droit = getDroitProcheAidant(session, transaction, viewBean.getDroit().getIdDroit());
@@ -2832,7 +2830,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
     private void validationPaiViewBean(final BSession session, final BTransaction transaction,
                                        final APDroitPaiPViewBean viewBean) throws IllegalArgumentException {
-        final List<APValidationDroitError> errors = new ArrayList<APValidationDroitError>();
+        final List<APValidationDroitError> errors = new ArrayList<>();
         // NSS
         if (!PRNSSUtil.isValidNSS(viewBean.getNss(), FormatNSS.COMPLET_FORMATE)) {
             errors.add(APValidationDroitError.NSS_INVALID);
@@ -2856,17 +2854,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             isServiceTypeValid = false;
         }
         // Jours soldés
-//        int nbrJourSoldes = 0;
-//        if ((viewBean.getNbrJourSoldes() == null) || !JadeNumericUtil.isIntegerPositif(viewBean.getNbrJourSoldes())) {
-//            errors.add(APValidationDroitError.JOURS_SOLDE_INVALID);
-//        } else {
-//            try {
-//                nbrJourSoldes = Integer.valueOf(viewBean.getNbrJourSoldes());
-//            } catch (final NumberFormatException e) {
-//                // Nothing to do with e. We only say value is invalid
-//                errors.add(APValidationDroitError.JOURS_SOLDE_INVALID);
-//            }
-//        }
+
         // Périodes
         if ((viewBean.getPeriodes() == null) || (viewBean.getPeriodes().size() == 0)) {
             errors.add(APValidationDroitError.AUCUNE_PERIODE_DEFINIE);
@@ -2894,11 +2882,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                 }
                 nombrePeriodes++;
             }
-//            if (nbrJourSoldes < nombrePeriodes) {
-//                errors.add(APValidationDroitError.JOURS_SOLDE_INSUFFISANT);
-//            }
-            // On test le chevauchement uniquement s'il n'y a pas d'erreurs lors des contrôles précédents des périodes
-            // Ceci dans le but d'éviter les exceptions si un format de date est incorrect
+
             if (!periodeErrorsfounded) {
                 if (PRDateUtils.hasChevauchementDePeriodes(periodes)) {
                     errors.add(APValidationDroitError.CHEVAUCHEMENT_PERIODES_DETECTE);

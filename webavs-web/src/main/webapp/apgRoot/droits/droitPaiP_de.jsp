@@ -40,7 +40,7 @@
 <script type="text/javascript" src="<%=servletContext%>/apgRoot/droits/droitPeriodeUtils.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/apgRoot/droits/enfantUtils.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/apgRoot/scripts/apgUtils.js"></script>
-<ct:menuChange displayId="menu" menuId="ap-menuprincipalapat" showTab="menu"/>
+<ct:menuChange displayId="menu" menuId="ap-menuprincipalprai" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 
 <script type="text/javascript">
@@ -429,6 +429,7 @@
             if (element.codeSexe !== null) {
                 for (var i = 0; i < document.getElementById("csSexeAffiche").length; i++) {
                     if (element.codeSexe === document.getElementById("csSexeAffiche").options[i].value) {
+                    if (element.codeSexe === document.getElementById("csSexeAffiche").options[i].value) {
                         document.getElementById("csSexeAffiche").options[i].selected = true;
                     }
                 }
@@ -511,7 +512,7 @@
 
 </script>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
-<ct:FWLabel key="JSP_TITRE_SAISIE_PAT_1"/>
+<ct:FWLabel key="JSP_TITRE_SAISIE_PAI_1"/>
 <%@ include file="/theme/detail/bodyStart2.jspf" %>
 <tr>
     <td>
@@ -865,14 +866,13 @@
 <tr>
     <td>
         <label for="dateDebutDroit">
-            <ct:FWLabel key="JSP_DATE_DEBUT_PAT_NAISSANCE"/>
+            <ct:FWLabel key="JSP_DATE_DEBUT"/>
         </label>
     </td>
     <td>
         <input type="text"
                id="dateDebutDroit"
                name="dateDebutDroit"
-               onChange="checkDateDebutAPGNaissance(dateDebutDroit.value);"
                data-g-calendar=" "
                value="<%=viewBean.getDateDebutDroit()%>"/>
     </td>

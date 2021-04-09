@@ -10,8 +10,7 @@ public enum APGenreServiceAPG {
     CoursMoniteursJeunesTireurs("50", IAPDroitLAPG.CS_COURS_MONITEURS_JEUNES_TIREURS),
     Maternite("90", IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE),
     Paternite("91", IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE),
-    // TODO
-    ProcheAidant("91", IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT),
+    ProcheAidant("92", IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT),
     JeunesseEtSportFormationCadres("30", IAPDroitLAPG.CS_FORMATION_DE_CADRE_JEUNESSE_SPORTS),
     MilitaireEcoleDeRecrue("11", IAPDroitLAPG.CS_SERVICE_EN_QUALITE_DE_RECRUE),
     MilitairePaiementGallons("12", IAPDroitLAPG.CS_SERVICE_AVANCEMENT),
