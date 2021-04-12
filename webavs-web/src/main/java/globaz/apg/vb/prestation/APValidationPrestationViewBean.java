@@ -261,7 +261,7 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
         } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(getGenreService())) {
             return "apg.droits.droitPatP.finaliserCreationDroit";
         } else if (IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(getGenreService())) {
-            return IAPActions.ACTION_SAISIE_CARTE_PAI +"finaliserCreationDroit";
+            return IAPActions.ACTION_SAISIE_CARTE_PAI +".finaliserCreationDroit";
         } else  if (APGenreServiceAPG.isValidGenreServicePandemie(APGenreServiceAPG.resoudreGenreParCodeSystem(getGenreService()).getCodePourAnnonce())) {
             return "apg.droits.droitPan.finaliserCreationDroit";
         } else {
