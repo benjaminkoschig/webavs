@@ -668,7 +668,11 @@ public class APAttestations extends FWIDocumentManager {
                 } else if(IPRDemande.CS_TYPE_PATERNITE.equals(type)) {
                     documentHelper.setCsDomaine(IAPCatalogueTexte.CS_PATERNITE);
                     documentHelper.setCsTypeDocument(IAPCatalogueTexte.CS_ATTESTATION_FISCALE_PAT);
-                } else if(IPRDemande.CS_TYPE_PANDEMIE.equals(type)) {
+                } else if(IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(type)) {
+                    documentHelper.setCsDomaine(IAPCatalogueTexte.CS_PROCHE_AIDANT);
+                    documentHelper.setCsTypeDocument(IAPCatalogueTexte.CS_ATTESTATION_FISCALE_PAI);
+                }
+                else if(IPRDemande.CS_TYPE_PANDEMIE.equals(type)) {
                     documentHelper.setCsDomaine(IAPCatalogueTexte.CS_APG);
                     documentHelper.setCsTypeDocument(IAPCatalogueTexte.CS_ATTESTATION_FISCALE_APG);
                     documentHelper.setNom("attestation_pandemie");

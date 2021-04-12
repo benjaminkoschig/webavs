@@ -245,6 +245,8 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
             // TODO A suppr aprés test décompte
         } else if (IPRDemande.CS_TYPE_PATERNITE.equals(csTypePrestation)) {
             documentHelper.setCsDomaine(IAPCatalogueTexte.CS_PATERNITE);
+        } else if (IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(csTypePrestation)) {
+            documentHelper.setCsDomaine(IAPCatalogueTexte.CS_PROCHE_AIDANT);
         } else {
             documentHelper.setCsDomaine(IAPCatalogueTexte.CS_APG);
         }
@@ -255,6 +257,8 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
             // TODO A Suppr aprés test décompte
         }else if (IPRDemande.CS_TYPE_PATERNITE.equals(csTypePrestation)) {
             documentHelper.setCsTypeDocument(IAPCatalogueTexte.CS_DECISION_PAT);
+        }else if (IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(csTypePrestation)) {
+            documentHelper.setCsTypeDocument(IAPCatalogueTexte.CS_DECISION_PAI);
         } else {
             documentHelper.setCsTypeDocument(IAPCatalogueTexte.CS_DECOMPTE_APG);
         }
@@ -333,7 +337,7 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
 
         // Pour paternité
         try {
-            if (IPRDemande.CS_TYPE_PATERNITE.equals(loadCsTypePrestation())) {
+            if (IPRDemande.CS_TYPE_PATERNITE.equals(loadCsTypePrestation()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(loadCsTypePrestation())) {
                 rectificationCleRegroupementPourPaternite(repartitionPojo);
             }
         }catch (Exception e) {
@@ -349,7 +353,7 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
 
         // Pour paternité
         try {
-            if (IPRDemande.CS_TYPE_PATERNITE.equals(loadCsTypePrestation())) {
+            if (IPRDemande.CS_TYPE_PATERNITE.equals(loadCsTypePrestation()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(loadCsTypePrestation())) {
                 suppressionRectificationApresGenerationCles(repartitionPojo);
             }
         } catch (Exception e) {
@@ -588,7 +592,7 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
         next = false;
         APDecompte decompteCourant = null;
 
-        if(!getFirstForCopy() && IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) && getIsCopie()) {
+        if(!getFirstForCopy() && (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) && getIsCopie()) {
             setFirstForCopy(true);
             return true;
         } else {
@@ -691,7 +695,7 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
 
     private APDecompte triRepartitionForCopy(APDecompte decompteCourant) {
         // Pour la Paternité
-        if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+        if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) {
             while(!decompteIS(decompteCourant) && next) {
                 next = iteratorRepartitions.hasNext();
                 if (next) {

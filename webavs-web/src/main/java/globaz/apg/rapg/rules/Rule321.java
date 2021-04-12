@@ -87,7 +87,9 @@ public class Rule321 extends Rule {
 
 
 
-         if(serviceType.equals(APGenreServiceAPG.Paternite.getCodePourAnnonce()) || serviceType.equals(APGenreServiceAPG.Maternite.getCodePourAnnonce())){
+         if(serviceType.equals(APGenreServiceAPG.Paternite.getCodePourAnnonce()) ||
+            serviceType.equals(APGenreServiceAPG.Maternite.getCodePourAnnonce())  ||
+            serviceType.equals(APGenreServiceAPG.ProcheAidant.getCodePourAnnonce())){
             validNotEmpty(basicDailyAmount, "basicDailyAmount");
             String parameterName = null;
             parameterName = APParameter.TAUX_JOURNALIER_MAX_DROIT_ACQUIS_0_ENFANT.getParameterName();

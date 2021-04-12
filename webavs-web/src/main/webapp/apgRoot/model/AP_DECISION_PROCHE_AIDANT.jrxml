@@ -1,0 +1,841 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="untitled_report_1"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="510"
+		 columnSpacing="0"
+		 leftMargin="58"
+		 rightMargin="25"
+		 topMargin="0"
+		 bottomMargin="0"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="2" />
+	<parameter name="PARAM_LIEU_DATE" isForPrompting="false" class="java.lang.String">
+		<parameterDescription><![CDATA[Le lieu et la date]]></parameterDescription>
+	</parameter>
+	<parameter name="PARAM_ASSURE" isForPrompting="false" class="java.lang.String">
+		<parameterDescription><![CDATA[Les no avs et nom de l'assuré]]></parameterDescription>
+	</parameter>
+	<parameter name="PARAM_ASSURE_LABEL" isForPrompting="false" class="java.lang.String">
+		<parameterDescription><![CDATA[le label des noms et no AVS de l'assuré]]></parameterDescription>
+	</parameter>
+	<parameter name="PARAM_TITRE" isForPrompting="false" class="java.lang.String">
+		<parameterDescription><![CDATA[le titre de la page]]></parameterDescription>
+	</parameter>
+	<parameter name="PARAM_CORPS" isForPrompting="false" class="java.lang.String">
+		<parameterDescription><![CDATA[le corps principal du texte]]></parameterDescription>
+	</parameter>
+	<parameter name="PARAM_PIED" isForPrompting="false" class="java.lang.String">
+		<parameterDescription><![CDATA[Ce qui vient apres la boucle de details]]></parameterDescription>
+	</parameter>
+	<parameter name="PARAM_CHF" isForPrompting="false" class="java.lang.String">
+		<parameterDescription><![CDATA[l'abbréviation de la devise]]></parameterDescription>
+	</parameter>
+	<parameter name="PARAM_ALLOCATION_DU" isForPrompting="false" class="java.lang.String">
+		<parameterDescription><![CDATA[le texte pour 'allocation du']]></parameterDescription>
+	</parameter>
+	<parameter name="PARAM_JOURS_A" isForPrompting="false" class="java.lang.String">
+		<parameterDescription><![CDATA[le texte pour 'jours à']]></parameterDescription>
+	</parameter>
+	<parameter name="PARAM_AU" isForPrompting="false" class="java.lang.String">
+		<parameterDescription><![CDATA[le texte pour 'au']]></parameterDescription>
+	</parameter>
+	<parameter name="PARAM_TITRE_DETAIL" isForPrompting="false" class="java.lang.String">
+		<parameterDescription><![CDATA[Le titre des colonnes de la boucle de detail]]></parameterDescription>
+	</parameter>
+	<parameter name="PARAM_AFFILIE_LABEL" isForPrompting="false" class="java.lang.String">
+		<parameterDescription><![CDATA[le label de la ligne affilie]]></parameterDescription>
+	</parameter>
+	<parameter name="PARAM_AFFILIE" isForPrompting="false" class="java.lang.String">
+		<parameterDescription><![CDATA[le numero d'affilie]]></parameterDescription>
+	</parameter>
+	<parameter name="P_SUBREPORT_HEADER" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_SUBREPORT_SIGNATURE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_SUBREPORT_FOOTER" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_HEADER_DATE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="PARAM_TITRE2" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_HEADER_NO_AFFILIE_PAGE2" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_HEADER_NO_AVS_PAGE2" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_HEADER_NOM_PAGE2" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="PARAM_SALUTATIONS" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_COPIE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_COPIE_A" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_COPIE_A2" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="PARAM_AP_DECOMPTE_DETAIL" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="PARAM_AP_DECOMPTE_DETAIL2" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="PARAM_AP_DECOMPTE_DETAIL3" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="PARAM_DEVISE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="PARAM_DETAIL" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="PARAM_MONTANT" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_COPIE2" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="PARAM_ISENTETE" isForPrompting="false" class="java.lang.String"/>
+	<field name="CHAMP_DATE_DEBUT" class="java.lang.String">
+		<fieldDescription><![CDATA[la date de début de la prestation]]></fieldDescription>
+	</field>
+	<field name="CHAMP_DATE_FIN" class="java.lang.String">
+		<fieldDescription><![CDATA[la date de fin de la prestation]]></fieldDescription>
+	</field>
+	<field name="CHAMP_NB_JOURS" class="java.lang.String">
+		<fieldDescription><![CDATA[le nombre de jours de la prestation]]></fieldDescription>
+	</field>
+	<field name="CHAMP_MONTANT_JOURNALIER" class="java.lang.String">
+		<fieldDescription><![CDATA[le montant journalier de la prestation]]></fieldDescription>
+	</field>
+	<field name="CHAMP_MONTANT_BRUT" class="java.lang.String">
+		<fieldDescription><![CDATA[le montant brut de la prestation]]></fieldDescription>
+	</field>
+	<field name="FIELD_REMARQUE_PRESTATION" class="java.lang.String"/>
+	<field name="FIELD_DETAIL_VENTILATIONS_3" class="java.lang.String"/>
+	<field name="FIELD_RECAP_COTISATIONS" class="java.lang.String"/>
+	<field name="FIELD_MONTANT_FINAL_RECAP" class="java.lang.String"/>
+	<field name="FIELD_TOTAL_REPARTITION" class="java.lang.String"/>
+	<field name="FIELD_MONTANT_IMPOT" class="java.lang.String"/>
+	<field name="FIELD_TEXTE_PAS_SOUMIS_LAA" class="java.lang.String"/>
+	<field name="FIELD_DETAIL_VENTILATIONS_5" class="java.lang.String"/>
+	<field name="FIELD_DETAIL_COTISATIONS_FNE" class="java.lang.String"/>
+	<field name="FIELD_RECAP_APG" class="java.lang.String"/>
+	<field name="FIELD_MONTANT_VENTILATIONS_3" class="java.lang.String"/>
+	<field name="FIELD_RECAP_COMPENSATION" class="java.lang.String"/>
+	<field name="FIELD_ASSURE" class="java.lang.String"/>
+	<field name="FIELD_MONTANT_COTISATIONS_FNE" class="java.lang.String"/>
+	<field name="FIELD_TOTAL_FINAL" class="java.lang.String"/>
+	<field name="FIELD_MONTANT_RECAP_IMPOT" class="java.lang.String"/>
+	<field name="FIELD_TEXTE_ADRESSE_PAIEMENT" class="java.lang.String"/>
+	<field name="FIELD_MONTANT_VENTILATIONS_5" class="java.lang.String"/>
+	<field name="FIELD_TOTAL_FINAL_RECAP" class="java.lang.String"/>
+	<field name="FIELD_RECAP_VENTILATION" class="java.lang.String"/>
+	<field name="FIELD_MONTANT_RECAP_COTISATIONS" class="java.lang.String"/>
+	<field name="FIELD_MONTANT_RECAP_COMPENSATION" class="java.lang.String"/>
+	<field name="FIELD_MONTANT_VENTILATIONS_1" class="java.lang.String"/>
+	<field name="FIELD_MONTANT_APG" class="java.lang.String"/>
+	<field name="FIELD_MONTANT_COMPENSATION_5" class="java.lang.String"/>
+	<field name="FIELD_COMPENSATION_1" class="java.lang.String"/>
+	<field name="FIELD_DETAIL_IMPOT" class="java.lang.String"/>
+	<field name="FIELD_DETAIL_COTISATIONS" class="java.lang.String"/>
+	<field name="FIELD_MONTANT_COMPENSATION_4" class="java.lang.String"/>
+	<field name="FIELD_COMPENSATION_3" class="java.lang.String"/>
+	<field name="FIELD_REMARQUE" class="java.lang.String"/>
+	<field name="FIELD_DETAIL_VENTILATIONS_2" class="java.lang.String"/>
+	<field name="FIELD_MONTANT_RECAP_VENTILATION" class="java.lang.String"/>
+	<field name="FIELD_DETAIL_PERIODE" class="java.lang.String"/>
+	<field name="FIELD_DETAIL_JOURNALIER" class="java.lang.String"/>
+	<field name="FIELD_COMPENSATION_4" class="java.lang.String"/>
+	<field name="FIELD_MONTANT_FINAL" class="java.lang.String"/>
+	<field name="FIELD_DETAIL_VENTILATIONS_1" class="java.lang.String"/>
+	<field name="FIELD_RESTITUTION" class="java.lang.String"/>
+	<field name="FIELD_ADRESSE_PAIEMENT" class="java.lang.String"/>
+	<field name="FIELD_MONTANT_VENTILATIONS_4" class="java.lang.String"/>
+	<field name="FIELD_RECAP_IMPOT" class="java.lang.String"/>
+	<field name="FIELD_COMPENSATION_5" class="java.lang.String"/>
+	<field name="FIELD_MONTANT_COTISATIONS" class="java.lang.String"/>
+	<field name="FIELD_COMPENSATION_2" class="java.lang.String"/>
+	<field name="FIELD_REMARQUE_VAL" class="java.lang.String"/>
+	<field name="FIELD_MONTANT_REPARTITION" class="java.lang.String"/>
+	<field name="FIELD_PREST_COMPL" class="java.lang.String"/>
+	<field name="FIELD_MONTANT_COMPENSATION_1" class="java.lang.String"/>
+	<field name="FIELD_MONTANT_VENTILATIONS_2" class="java.lang.String"/>
+	<field name="FIELD_DETAIL_VENTILATIONS_4" class="java.lang.String"/>
+	<field name="FIELD_MONTANT_RECAP_APG" class="java.lang.String"/>
+	<field name="FIELD_MONTANT_COMPENSATION_3" class="java.lang.String"/>
+	<field name="FIELD_MONTANT_COMPENSATION_2" class="java.lang.String"/>
+	<field name="FIELD_APG_FED" class="java.lang.String"/>
+	<field name="FIELD_RECAP" class="java.lang.String"/>
+		<group  name="oo" isStartNewColumn="false" isStartNewPage="false" isResetPageNumber="false" isReprintHeaderOnEachPage="false" minHeightToStartNewPage="0" >
+			<groupExpression><![CDATA[null]]></groupExpression>
+			<groupHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="24"  isSplitAllowed="false" >
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="12"
+						width="510"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="subreport-4"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<parametersMapExpression><![CDATA[new HashMap($P{REPORT_PARAMETERS_MAP})]]></parametersMapExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{P_SUBREPORT_SIGNATURE}]]></subreportExpression>
+				</subreport>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="0"
+						y="0"
+						width="510"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-33"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="false"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_SALUTATIONS}]]></textFieldExpression>
+				</textField>
+			</band>
+			</groupFooter>
+		</group>
+		<group  name="ooo" isStartNewColumn="false" isStartNewPage="false" isResetPageNumber="false" isReprintHeaderOnEachPage="false" minHeightToStartNewPage="0" >
+			<groupExpression><![CDATA[null]]></groupExpression>
+			<groupHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="14"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="0"
+						y="2"
+						width="510"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-25"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="false"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_PIED}]]></textFieldExpression>
+				</textField>
+			</band>
+			</groupFooter>
+		</group>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="301"  isSplitAllowed="true" >
+				<printWhenExpression><![CDATA[new Boolean($V{PAGE_NUMBER}.intValue()==1)]]></printWhenExpression>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="0"
+						y="288"
+						width="510"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-26"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_CORPS}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="0"
+						y="259"
+						width="510"
+						height="20"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-27"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[new Boolean($P{PARAM_ISENTETE}==null || "".equals($P{PARAM_ISENTETE}))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" isStyledText="true" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="14" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_TITRE}]]></textFieldExpression>
+				</textField>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Opaque"
+						x="-58"
+						y="0"
+						width="592"
+						height="225"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="subreport-5"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<parametersMapExpression><![CDATA[new HashMap($P{REPORT_PARAMETERS_MAP})]]></parametersMapExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{P_SUBREPORT_HEADER}]]></subreportExpression>
+				</subreport>
+				<rectangle radius="0" >
+					<reportElement
+						mode="Transparent"
+						x="0"
+						y="258"
+						width="510"
+						height="22"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="rectangle-1"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[new Boolean($P{PARAM_ISENTETE}==null || "".equals($P{PARAM_ISENTETE}))]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</rectangle>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="1"
+						y="231"
+						width="126"
+						height="18"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-34"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true">
+							<printWhenExpression><![CDATA[new Boolean($P{P_COPIE}!=null && !"".equals($P{P_COPIE}))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
+						<font fontName="SansSerif" pdfFontName="ARIAL.TTF" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_COPIE}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="375"
+						y="235"
+						width="77"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-1"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[TEST PCE]]></text>
+				</staticText>
+			</band>
+		</title>
+		<pageHeader>
+			<band height="58"  isSplitAllowed="true" >
+				<printWhenExpression><![CDATA[new Boolean($V{PAGE_NUMBER}.intValue()>1)]]></printWhenExpression>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="1"
+						y="10"
+						width="252"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-28"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[new Boolean($P{PARAM_TITRE2}!=null && !"".equals($P{PARAM_TITRE2}))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" isStyledText="true" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_TITRE2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="2"
+						y="33"
+						width="212"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-29"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[new Boolean($P{P_HEADER_NO_AVS_PAGE2}!=null && !"".equals($P{P_HEADER_NO_AVS_PAGE2}))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
+						<font fontName="SansSerif" pdfFontName="ARIAL.TTF" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_NO_AVS_PAGE2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="2"
+						y="33"
+						width="213"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-30"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[new Boolean($P{P_HEADER_NO_AFFILIE_PAGE2}!=null && !"".equals($P{P_HEADER_NO_AFFILIE_PAGE2}))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
+						<font fontName="SansSerif" pdfFontName="ARIAL.TTF" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_NO_AFFILIE_PAGE2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="404"
+						y="10"
+						width="105"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-31"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" isStyledText="true" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Page " + String.valueOf($V{PAGE_NUMBER})]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="219"
+						y="33"
+						width="290"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-32"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[new Boolean($P{P_HEADER_NOM_PAGE2}!=null && !"".equals($P{P_HEADER_NOM_PAGE2}))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
+						<font fontName="SansSerif" pdfFontName="ARIAL.TTF" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_NOM_PAGE2}]]></textFieldExpression>
+				</textField>
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="34"  isSplitAllowed="true" >
+				<rectangle radius="0" >
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="3"
+						width="510"
+						height="20"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="rectangle-2"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[new Boolean($P{PARAM_ISENTETE}==null || "".equals($P{PARAM_ISENTETE}))]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</rectangle>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="4"
+						y="6"
+						width="178"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-37"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_ASSURE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="437"
+						y="6"
+						width="70"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-38"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_MONTANT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="187"
+						y="6"
+						width="248"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-39"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_DETAIL}]]></textFieldExpression>
+				</textField>
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="24"  isSplitAllowed="false" >
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Opaque"
+						x="1"
+						y="0"
+						width="509"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="subreport-6"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="false"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<parametersMapExpression><![CDATA[new HashMap($P{REPORT_PARAMETERS_MAP})]]></parametersMapExpression>
+					<subreportParameter  name="PARAM_FIELD_ASSURE">
+						<subreportParameterExpression><![CDATA[$F{FIELD_ASSURE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_DETAIL_PERIODE">
+						<subreportParameterExpression><![CDATA[$F{FIELD_DETAIL_PERIODE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_DEVISE">
+						<subreportParameterExpression><![CDATA[$P{PARAM_DEVISE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_MONTANT_APG">
+						<subreportParameterExpression><![CDATA[$F{FIELD_MONTANT_APG}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_REMARQUE_PRESTATION">
+						<subreportParameterExpression><![CDATA[$F{FIELD_REMARQUE_PRESTATION}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_RESTITUTION">
+						<subreportParameterExpression><![CDATA[$F{FIELD_RESTITUTION}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_DETAIL_COTISATIONS">
+						<subreportParameterExpression><![CDATA[$F{FIELD_DETAIL_COTISATIONS}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_MONTANT_COTISATIONS">
+						<subreportParameterExpression><![CDATA[$F{FIELD_MONTANT_COTISATIONS}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_DETAIL_IMPOT">
+						<subreportParameterExpression><![CDATA[$F{FIELD_DETAIL_IMPOT}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_MONTANT_IMPOT">
+						<subreportParameterExpression><![CDATA[$F{FIELD_MONTANT_IMPOT}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_DETAIL_VENTILATIONS_1">
+						<subreportParameterExpression><![CDATA[$F{FIELD_DETAIL_VENTILATIONS_1}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_MONTANT_VENTILATIONS_1">
+						<subreportParameterExpression><![CDATA[$F{FIELD_MONTANT_VENTILATIONS_1}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_TOTAL_REPARTITION">
+						<subreportParameterExpression><![CDATA[$F{FIELD_TOTAL_REPARTITION}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_MONTANT_REPARTITION">
+						<subreportParameterExpression><![CDATA[$F{FIELD_MONTANT_REPARTITION}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_DETAIL_VENTILATIONS_2">
+						<subreportParameterExpression><![CDATA[$F{FIELD_DETAIL_VENTILATIONS_2}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_DETAIL_VENTILATIONS_3">
+						<subreportParameterExpression><![CDATA[$F{FIELD_DETAIL_VENTILATIONS_3}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_DETAIL_VENTILATIONS_4">
+						<subreportParameterExpression><![CDATA[$F{FIELD_DETAIL_VENTILATIONS_4}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_DETAIL_VENTILATIONS_5">
+						<subreportParameterExpression><![CDATA[$F{FIELD_DETAIL_VENTILATIONS_5}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_MONTANT_VENTILATIONS_2">
+						<subreportParameterExpression><![CDATA[$F{FIELD_MONTANT_VENTILATIONS_2}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_MONTANT_VENTILATIONS_3">
+						<subreportParameterExpression><![CDATA[$F{FIELD_MONTANT_VENTILATIONS_3}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_MONTANT_VENTILATIONS_4">
+						<subreportParameterExpression><![CDATA[$F{FIELD_MONTANT_VENTILATIONS_4}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_MONTANT_VENTILATIONS_5">
+						<subreportParameterExpression><![CDATA[$F{FIELD_MONTANT_VENTILATIONS_5}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_REMARQUE">
+						<subreportParameterExpression><![CDATA[$F{FIELD_REMARQUE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_REMARQUE_VAL">
+						<subreportParameterExpression><![CDATA[$F{FIELD_REMARQUE_VAL}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_DETAIL_JOURNALIER">
+						<subreportParameterExpression><![CDATA[$F{FIELD_DETAIL_JOURNALIER}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_PREST_COMPL">
+						<subreportParameterExpression><![CDATA[$F{FIELD_PREST_COMPL}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_MONTANT_COTISATIONS_FNE">
+						<subreportParameterExpression><![CDATA[$F{FIELD_MONTANT_COTISATIONS_FNE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_DETAIL_COTISATIONS_FNE">
+						<subreportParameterExpression><![CDATA[$F{FIELD_DETAIL_COTISATIONS_FNE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_APG_FED">
+						<subreportParameterExpression><![CDATA[$F{FIELD_APG_FED}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_AP_DECOMPTE_DETAIL3">
+						<subreportParameterExpression><![CDATA[$P{PARAM_AP_DECOMPTE_DETAIL3}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PARAM_AP_DECOMPTE_DETAIL}]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Opaque"
+						x="1"
+						y="12"
+						width="509"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="subreport-7"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="false"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<parametersMapExpression><![CDATA[new HashMap($P{REPORT_PARAMETERS_MAP})]]></parametersMapExpression>
+					<subreportParameter  name="PARAM_DEVISE">
+						<subreportParameterExpression><![CDATA[$P{PARAM_DEVISE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_COMPENSATION_1">
+						<subreportParameterExpression><![CDATA[$F{FIELD_COMPENSATION_1}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_MONTANT_COMPENSATION_1">
+						<subreportParameterExpression><![CDATA[$F{FIELD_MONTANT_COMPENSATION_1}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_TOTAL_FINAL">
+						<subreportParameterExpression><![CDATA[$F{FIELD_TOTAL_FINAL}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_MONTANT_FINAL">
+						<subreportParameterExpression><![CDATA[$F{FIELD_MONTANT_FINAL}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_RECAP">
+						<subreportParameterExpression><![CDATA[$F{FIELD_RECAP}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_RECAP_APG">
+						<subreportParameterExpression><![CDATA[$F{FIELD_RECAP_APG}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_MONTANT_RECAP_APG">
+						<subreportParameterExpression><![CDATA[$F{FIELD_MONTANT_RECAP_APG}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_RECAP_COTISATIONS">
+						<subreportParameterExpression><![CDATA[$F{FIELD_RECAP_COTISATIONS}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_MONTANT_RECAP_COTISATIONS">
+						<subreportParameterExpression><![CDATA[$F{FIELD_MONTANT_RECAP_COTISATIONS}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_RECAP_IMPOT">
+						<subreportParameterExpression><![CDATA[$F{FIELD_RECAP_IMPOT}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_MONTANT_RECAP_IMPOT">
+						<subreportParameterExpression><![CDATA[$F{FIELD_MONTANT_RECAP_IMPOT}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_RECAP_VENTILATION">
+						<subreportParameterExpression><![CDATA[$F{FIELD_RECAP_VENTILATION}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_MONTANT_RECAP_VENTILATION">
+						<subreportParameterExpression><![CDATA[$F{FIELD_MONTANT_RECAP_VENTILATION}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_RECAP_COMPENSATION">
+						<subreportParameterExpression><![CDATA[$F{FIELD_RECAP_COMPENSATION}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_MONTANT_RECAP_COMPENSATION">
+						<subreportParameterExpression><![CDATA[$F{FIELD_MONTANT_RECAP_COMPENSATION}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_TOTAL_FINAL_RECAP">
+						<subreportParameterExpression><![CDATA[$F{FIELD_TOTAL_FINAL_RECAP}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_MONTANT_FINAL_RECAP">
+						<subreportParameterExpression><![CDATA[$F{FIELD_MONTANT_FINAL_RECAP}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_COMPENSATION_2">
+						<subreportParameterExpression><![CDATA[$F{FIELD_COMPENSATION_2}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_COMPENSATION_3">
+						<subreportParameterExpression><![CDATA[$F{FIELD_COMPENSATION_3}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_COMPENSATION_4">
+						<subreportParameterExpression><![CDATA[$F{FIELD_COMPENSATION_4}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_COMPENSATION_5">
+						<subreportParameterExpression><![CDATA[$F{FIELD_COMPENSATION_5}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_MONTANT_COMPENSATION_2">
+						<subreportParameterExpression><![CDATA[$F{FIELD_MONTANT_COMPENSATION_2}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_MONTANT_COMPENSATION_3">
+						<subreportParameterExpression><![CDATA[$F{FIELD_MONTANT_COMPENSATION_3}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_MONTANT_COMPENSATION_4">
+						<subreportParameterExpression><![CDATA[$F{FIELD_MONTANT_COMPENSATION_4}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_MONTANT_COMPENSATION_5">
+						<subreportParameterExpression><![CDATA[$F{FIELD_MONTANT_COMPENSATION_5}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_TEXTE_ADRESSE_PAIEMENT">
+						<subreportParameterExpression><![CDATA[$F{FIELD_TEXTE_ADRESSE_PAIEMENT}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_ADRESSE_PAIEMENT">
+						<subreportParameterExpression><![CDATA[$F{FIELD_ADRESSE_PAIEMENT}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_TEXTE_PAS_SOUMIS_LAA">
+						<subreportParameterExpression><![CDATA[$F{FIELD_TEXTE_PAS_SOUMIS_LAA}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PARAM_AP_DECOMPTE_DETAIL2}]]></subreportExpression>
+				</subreport>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="50"  isSplitAllowed="false" >
+			</band>
+		</pageFooter>
+		<lastPageFooter>
+			<band height="50"  isSplitAllowed="false" >
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="0"
+						width="45"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-35"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true">
+							<printWhenExpression><![CDATA[new Boolean($P{P_COPIE_A}!=null && !"".equals($P{P_COPIE_A}))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
+						<font fontName="SansSerif" pdfFontName="ARIAL.TTF" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_COPIE_A}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="48"
+						y="0"
+						width="444"
+						height="30"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-36"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true">
+							<printWhenExpression><![CDATA[new Boolean($P{P_COPIE_A}!=null && !"".equals($P{P_COPIE_A}))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="SansSerif" pdfFontName="ARIAL.TTF" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_COPIE_A2}]]></textFieldExpression>
+				</textField>
+			</band>
+		</lastPageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

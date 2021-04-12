@@ -1311,8 +1311,8 @@
 						<label refId="MENU_OPTION_CATALOGUES_TEXTES" />
 						<action command="/babel" responseTarget="fr_main">
 							<parameter name="userAction" value="babel.cat.document.chercher" />
-							<parameter name="csGroupeDomaines" value="PATDOMAINE" />
-							<parameter name="csGroupeTypesDocuments" value="PATTYPES" />
+							<parameter name="csGroupeDomaines" value="PAIDOMAINE" />
+							<parameter name="csGroupeTypesDocuments" value="PAITYPES" />
 						</action>
 					</node>
 					<node>

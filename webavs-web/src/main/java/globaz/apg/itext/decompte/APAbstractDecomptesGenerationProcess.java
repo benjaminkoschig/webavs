@@ -94,6 +94,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     private static final String DETAIL_COTISATIONS_FNE = "FIELD_DETAIL_COTISATIONS_FNE";
     private static final String FICHIER_MODELE = "AP_DECOMPTE";
     private static final String FICHIER_MODELE_PATERNITE = "AP_DECISION_PATERNITE";
+    private static final String FICHIER_MODELE_PROCHE_AIDANT = "AP_DECISION_PROCHE_AIDANT";
     private static final String MONTANT_COTISATIONS_FNE = "FIELD_MONTANT_COTISATIONS_FNE";
     private static final String ORDER_PRINTING_BY = "orderPrintingBy";
     private static final String PARAMETER_PRESTATION_COMPLEMENTAIRE = "FIELD_PREST_COMPL";
@@ -126,6 +127,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     private boolean hasRestitution = false;
 
     private String PATERNITE_AFFICHAGE_PERIODE = "decision.paternite.affichage.periode";
+    private String PROCHE_AIDANT_AFFICHAGE_PERIODE = "decision.procheaidant.affichage.periode";
 
     private JADate firstBirth;
 
@@ -256,7 +258,11 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             } else if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())){
                 // SI PATERNITE
                 docInfo.setDocumentTitle(getSession().getLabel("DOC_DECOMPTE_PAT_TITLE"));
-            } else {
+            } else if (IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())){
+                // SI PROCHE AIDANT
+                docInfo.setDocumentTitle(getSession().getLabel("DOC_DECOMPTE_PAI_TITLE"));
+            }
+            else {
                 // SI MATERNITE
                 docInfo.setDocumentTitle(getSession().getLabel("DOC_DECOMPTE_MAT_TITLE"));
             }
@@ -591,7 +597,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             }
 
             // le titre
-            if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())){
+            if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())){
                 // si droit normal
                 parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(1).getDescription());
 
@@ -709,7 +715,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             }
             final String titre = tiersTitre.getFormulePolitesse(tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
 
-            if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+            if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot()) ) {
                 // chargement de la ligne de copie avec le formater
                 String langue = tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE);
                 if (impotSource){
@@ -760,7 +766,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
             // S'il s'agit de la lettre entête pour les décision Paternité
             // on charge un niveau de catalogue spécifique
-            if (getIsCopie() && !getFirstForCopy() && IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())){
+            if (getIsCopie() && !getFirstForCopy() && (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) ||
+                                                      (IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())))){
                 parametres.put("PARAM_ISENTETE", "OUI");
 
                 StringBuilder builder = new StringBuilder();
@@ -783,7 +790,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 // le pied de page
                 buffer.setLength(0);
 
-                if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+                if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) {
                     // Ajout de la remarque du droit
                     buffer.append(droit.getRemarque() + "\n\n");
                 }
@@ -961,14 +968,14 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             }
 
             // Pour paternité, si Assuré indépendant, alors il faut ajouter ce texte sur les décisions.
-            if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) && !decompteCourant.getIsPaiementEmployeur() && decompteCourant.isIndependant()){
+            if ((IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) && !decompteCourant.getIsPaiementEmployeur() && decompteCourant.isIndependant()){
                 buffer.append("\n"+document.getTextes(4).getTexte(101).getDescription()+"\n");
             }
 
 
             parametres.put("PARAM_PIED", buffer.toString());
             buffer.setLength(0);
-            if (getFirstForCopy() && getIsCopie() && IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+            if (getFirstForCopy() && getIsCopie() && (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot()))) {
                 buffer.append(document.getTextes(7).getTexte(3).getDescription()+"\n\n");
             } else {
                 buffer.append(document.getTextes(6).getTexte(1).getDescription());
@@ -984,7 +991,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             // si l'on est sur un décompte Pandémie
 
             if (!decompteCourant.isIndependant() && !decompteCourant.getIsPaiementEmployeur()
-                    && !mapEmployeurs.isEmpty() && IPRDemande.CS_TYPE_PANDEMIE.equals(getCSTypePrestationsLot())){
+                    && !mapEmployeurs.isEmpty() && (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot()))){
                 try{
                     buffer.setLength(0);
                     if (mapEmployeurs.size()>1) {
@@ -1299,7 +1306,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                                 buffer.append(document.getTextes(2).getTexte(201));
                             }
                         }else{
-                            if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) && position == 3 && hasRestitution && (Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()) == 0)) {
+                            if ((IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) && position == 3 && hasRestitution && (Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()) == 0)) {
                                 // TODO Pour le moment, pas de consigne sur ce qu'il faut afficher. Arrivera dans une version futur
                             } else {
                                 buffer.append(texte.getDescription());
@@ -1419,7 +1426,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         }
 
         // Si le revenu moyen determinant est nulle, on n'affiche pas le texte
-        if (revenuMoyenDeterminant == 0 && IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+        if (revenuMoyenDeterminant == 0 && (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot()))) {
             // TODO pour le moment, pas de consigne concernant ce qu'il faut faire. Sera fait lors d'une prochaine version.
         }else if (loadPrestationType().getMontantJournalier().equals(droitAcquis.toString())) {
             buffer.append(" "); // espace
@@ -1637,7 +1644,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         Double revenuMoyenDeterminant = Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant());
 
         // Si le revenu est égale à 0, alors on supprime le paragraphe de la décision.
-        if (revenuMoyenDeterminant == 0 && IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+        if (revenuMoyenDeterminant == 0 && (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot()))) {
             // TODO Une correction sera apporté dans une version futur.
         } else {
             buffer.append(" "); // espace
@@ -1786,6 +1793,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         }else if(IPRDemande.CS_TYPE_APG.equals(csTypePrestationsLot)){
             return IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
         }else if(IPRDemande.CS_TYPE_PATERNITE.equals(csTypePrestationsLot)){
+            return APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue();
+        }else if(IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(csTypePrestationsLot)){
             return APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue();
         }else{
             return IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
@@ -1946,7 +1955,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
         // Récupération d'une JadeProp pour l'impression des décisions paternité.
         afficherPeriode = true;
-        if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+        if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) {
             try {
                 afficherPeriode = Boolean.parseBoolean(getSession().getApplication().getProperty(PATERNITE_AFFICHAGE_PERIODE));
             } catch (Exception e) {
@@ -2031,7 +2040,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
             repartitionsTreeSet.addAll(decompteCourant.getRepartitionsPeres());
 
-            if (getIsCopie() && !getFirstForCopy() && IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())){
+            if (getIsCopie() && !getFirstForCopy() && (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot()))){
                 createLettreEntete();
                 getIdCantonImpotSource(repartitionsTreeSet);
 
@@ -2093,7 +2102,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                                             + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM)));
 
                     // Si la Jade propriéré est à True, alors on affiche la période (Paternité)
-                    if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) && !afficherPeriode) {
+                    if ((IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) && !afficherPeriode) {
                         // Si la propriété est à False, dans ce cas, les périodes ne doivent pas apparaitre, et il faut remonter d'un cran les informations journaliéres
                         // 3. détail sur la prestation journalière (nbr de jours + montant journalier), si non ventilé
                         if (!isTraitementDesVentilations()) {
@@ -2275,7 +2284,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     // Affichage de l'impôt à la source
                     if (!totalMontantImpotSource.equals(new FWCurrency(0))) {
                         impotSource = true;
-                        if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+                        if ((IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot()))) {
                             champs.put("FIELD_DETAIL_IMPOT",
                                     PRStringUtils.replaceString(document.getTextes(3).getTexte(12).getDescription(),
                                             "{tauxImposition}",
@@ -2627,7 +2636,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 // Récapitulatif si plusieurs décomptes et UNIQUEMENT pour certains caisses
                 if (!JadeStringUtil.isBlankOrZero(decompteCourant.getIdAffilie())) {
 
-                    if (getIsDecompteRecapitulatif() && !IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+                    if (getIsDecompteRecapitulatif() && !(IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot()))) {
 
                         // Pas de recap pour les décomptes mixtes NORMAL_ACM_NE
                         if (!APTypeDeDecompte.NORMAL_ACM_NE.equals(decompteCourant.getTypeDeDecompte())) {
@@ -2837,7 +2846,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         }
                     }
 
-                } else if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())){
+                } else if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
                     // SI PATERNITE
                     docInfo.setDocumentTitle(getSession().getLabel("DOC_DECOMPTE_PAT_TITLE"));
                     docInfo.setDocumentProperty("apg.typeDecompte", IPRDemande.CS_TYPE_PATERNITE);
@@ -2853,6 +2862,22 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                                         "Impossible de résoudre le type de décompte paternité pour la génération du doc info");
                         }
                     }
+                } else if (IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())){
+                        // SI PROCHE AIDANT
+                        docInfo.setDocumentTitle(getSession().getLabel("DOC_DECOMPTE_PAI_TITLE"));
+                        docInfo.setDocumentProperty("apg.typeDecompte", IPRDemande.CS_TYPE_PROCHE_AIDANT);
+                        if (isTraitementDesVentilations()) {
+                            docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_APG_VENTILATION);
+                        } else {
+                            switch (decompteCourant.getTypeDeDecompte()) {
+                                case NORMAL:
+                                    docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECISION_PROCHE_AIDANT);
+                                    break;
+                                default:
+                                    throw new Exception(
+                                            "Impossible de résoudre le type de décompte paternité pour la génération du doc info");
+                            }
+                        }
                 } else {
                     // SI MATERNITE
                     docInfo.setDocumentTitle(getSession().getLabel("DOC_DECOMPTE_MAT_TITLE"));
@@ -2997,6 +3022,15 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                             im.getImportPath() + im.getDocumentTemplate() + FWITemplateType.TEMPLATE_JASPER.toString());
                 } else {
                     setTemplateFile(APAbstractDecomptesGenerationProcess.FICHIER_MODELE_PATERNITE);
+                }
+            } else if (IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) {
+                if (!JadeStringUtil.isEmpty(extensionModelCaisse)) {
+                    setTemplateFile(APAbstractDecomptesGenerationProcess.FICHIER_MODELE_PROCHE_AIDANT + extensionModelCaisse);
+                    final FWIImportManager im = getImporter();
+                    final File sourceFile = new File(
+                            im.getImportPath() + im.getDocumentTemplate() + FWITemplateType.TEMPLATE_JASPER.toString());
+                } else {
+                    setTemplateFile(APAbstractDecomptesGenerationProcess.FICHIER_MODELE_PROCHE_AIDANT);
                 }
             } else if (!JadeStringUtil.isEmpty(extensionModelCaisse)) {
                 setTemplateFile(APAbstractDecomptesGenerationProcess.FICHIER_MODELE + extensionModelCaisse);
@@ -3310,8 +3344,12 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                                 // SI PATERNITE
                             } else if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
                                 docInfo.setDocumentTitle(getSession().getLabel("DOC_DECOMPTE_PAT_TITLE"));
+                                // SI PROCHE AIDANT
+                            } else if (IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) {
+                                docInfo.setDocumentTitle(getSession().getLabel("DOC_DECOMPTE_PAI_TITLE"));
                                 // SI MATERNITE
-                            } else {
+                            }
+                            else {
                                 docInfo.setDocumentTitle(getSession().getLabel("DOC_DECOMPTE_MAT_TITLE"));
                             }
                         } catch (final Exception e) {
