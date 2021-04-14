@@ -212,6 +212,20 @@ public class APGenererCompensationsProcess003 extends BProcess implements IAPGen
                                     getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
                         }
                         break;
+                    case IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT:
+                        if (JadeStringUtil.isEmpty(PRTiersHelper.getAdresseCourrierFormatee(getSession(),
+                                repartitionJointPrestation.getIdTiers(), repartitionJointPrestation.getIdAffilie(),
+                                APProperties.DOMAINE_ADRESSE_APG_PROCHE_AIDANT.getValue()))) {
+
+                            String noAVS = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+
+                            getMemoryLog().logMessage(
+                                    java.text.MessageFormat.format(getSession().getLabel("ADRESSE_COURRIER_ABSENTE"),
+                                            new Object[] { repartitionJointPrestation.getNom(), noAVS,
+                                                    repartitionJointPrestation.getIdPrestationApg() }), FWMessage.ERREUR,
+                                    getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
+                        }
+                        break;
                     default:
                         if (JadeStringUtil.isEmpty(PRTiersHelper.getAdresseCourrierFormatee(getSession(),
                                 repartitionJointPrestation.getIdTiers(), repartitionJointPrestation.getIdAffilie(),

@@ -74,6 +74,8 @@ public class APGUtils {
             droit = new APDroitMaternite();
         } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(genreService)) {
             droit = new APDroitPaternite();
+        } else if (IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(genreService)) {
+            droit = new APDroitProcheAidant();
         } else if (APGUtils.isTypeAllocationPandemie(genreService)) {
             droit = new APDroitPandemie();
         } else {
@@ -194,6 +196,12 @@ public class APGUtils {
         } else if (IPRDemande.CS_TYPE_PATERNITE.equals(typePrestation)) {
             try {
                 csDomaineDefault = APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue();
+            } catch (PropertiesException e) {
+                csDomaineDefault = IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
+            }
+        } else if (IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(typePrestation)) {
+            try {
+                csDomaineDefault = APProperties.DOMAINE_ADRESSE_APG_PROCHE_AIDANT.getValue();
             } catch (PropertiesException e) {
                 csDomaineDefault = IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
             }

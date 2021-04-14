@@ -421,6 +421,8 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
                     idDomainPaiementEmployeur = IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
                 } else if (IPRDemande.CS_TYPE_PATERNITE.equals(spViewBean.getTypePrestation().toCodeSysteme())) {
                     idDomainPaiementEmployeur = APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue();
+                } else if (IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(spViewBean.getTypePrestation().toCodeSysteme())) {
+                    idDomainPaiementEmployeur = APProperties.DOMAINE_ADRESSE_APG_PROCHE_AIDANT.getValue();
                 } else if (IPRDemande.CS_TYPE_PANDEMIE.equals(spViewBean.getTypePrestation().toCodeSysteme())) {
                     idDomainPaiementEmployeur = APProperties.DOMAINE_ADRESSE_APG_PANDEMIE.getValue();
                 } else {

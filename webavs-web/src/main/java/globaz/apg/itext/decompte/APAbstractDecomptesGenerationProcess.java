@@ -1795,7 +1795,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         }else if(IPRDemande.CS_TYPE_PATERNITE.equals(csTypePrestationsLot)){
             return APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue();
         }else if(IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(csTypePrestationsLot)){
-            return APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue();
+            return APProperties.DOMAINE_ADRESSE_APG_PROCHE_AIDANT.getValue();
         }else{
             return IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
         }

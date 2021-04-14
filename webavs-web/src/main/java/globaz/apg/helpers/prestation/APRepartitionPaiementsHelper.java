@@ -341,6 +341,8 @@ public class APRepartitionPaiementsHelper extends PRAbstractHelper {
                 rpViewBean.setIdDomaineAdressePaiement(IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE);
             } else if(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(droit.getGenreService())) {
                 rpViewBean.setIdDomaineAdressePaiement(APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue());
+            } else if(IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(droit.getGenreService())) {
+                rpViewBean.setIdDomaineAdressePaiement(APProperties.DOMAINE_ADRESSE_APG_PROCHE_AIDANT.getValue());
             } else if(APGUtils.isTypeAllocationPandemie(droit.getGenreService())) {
                 rpViewBean.setIdDomaineAdressePaiement(APProperties.DOMAINE_ADRESSE_APG_PANDEMIE.getValue());
             } else {
@@ -358,6 +360,8 @@ public class APRepartitionPaiementsHelper extends PRAbstractHelper {
                 rpViewBean.setIdDomaineAdressePaiement(IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE);
             }else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(droit.getGenreService())) {
                 rpViewBean.setIdDomaineAdressePaiement(APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue());
+            } else if(IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(droit.getGenreService())) {
+                rpViewBean.setIdDomaineAdressePaiement(APProperties.DOMAINE_ADRESSE_APG_PROCHE_AIDANT.getValue());
             } else if(APGUtils.isTypeAllocationPandemie(droit.getGenreService())) {
                 rpViewBean.setIdDomaineAdressePaiement(APProperties.DOMAINE_ADRESSE_APG_PANDEMIE.getValue());
             } else {
@@ -400,6 +404,12 @@ public class APRepartitionPaiementsHelper extends PRAbstractHelper {
 
                 adresse = PRTiersHelper.getAdressePaiementData(session, session.getCurrentThreadTransaction(),
                         rpViewBean.getIdTiersAdressePaiement(), APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue(),
+                        rpViewBean.getIdAffilieAdrPmt(), JACalendar.todayJJsMMsAAAA());
+
+            } else if (IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(droit.getGenreService())) {
+
+                adresse = PRTiersHelper.getAdressePaiementData(session, session.getCurrentThreadTransaction(),
+                        rpViewBean.getIdTiersAdressePaiement(), APProperties.DOMAINE_ADRESSE_APG_PROCHE_AIDANT.getValue(),
                         rpViewBean.getIdAffilieAdrPmt(), JACalendar.todayJJsMMsAAAA());
 
             } else if (APGUtils.isTypeAllocationPandemie(droit.getGenreService())) {

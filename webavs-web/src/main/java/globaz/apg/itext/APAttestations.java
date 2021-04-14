@@ -105,6 +105,7 @@ public class APAttestations extends FWIDocumentManager {
     private boolean isAttestationMat = true;
 
     private boolean isAttestationPat = true;
+    private boolean isAttestationPai = true;
     private Boolean isSendToGED = Boolean.FALSE;
     Iterator iter;
     String keySyso = "";
@@ -325,6 +326,10 @@ public class APAttestations extends FWIDocumentManager {
                 adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(),
                         tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), "",
                         APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue());
+            } else if(isAttestationPai) {
+                adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(),
+                        tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), "",
+                        APProperties.DOMAINE_ADRESSE_APG_PROCHE_AIDANT.getValue());
             }else{
                 adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(),
                         tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), "", APApplication.CS_DOMAINE_ADRESSE_APG);
@@ -1141,6 +1146,14 @@ public class APAttestations extends FWIDocumentManager {
 
     public void setAttestationPat(boolean attestationPat) {
         isAttestationPat = attestationPat;
+    }
+
+    public boolean isAttestationPai() {
+        return isAttestationPai;
+    }
+
+    public void setAttestationPai(boolean attestationPai) {
+        isAttestationPai = attestationPai;
     }
 
 }

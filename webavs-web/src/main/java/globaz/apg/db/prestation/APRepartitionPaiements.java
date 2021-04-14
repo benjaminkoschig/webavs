@@ -436,6 +436,8 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
             return IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
         } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(droit.getGenreService())) {
             return APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue();
+        } else if (IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(droit.getGenreService())) {
+                return APProperties.DOMAINE_ADRESSE_APG_PROCHE_AIDANT.getValue();
         } else {
             return IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
         }

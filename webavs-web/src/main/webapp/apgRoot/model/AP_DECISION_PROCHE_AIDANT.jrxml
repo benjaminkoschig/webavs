@@ -339,27 +339,6 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_COPIE}]]></textFieldExpression>
 				</textField>
-				<staticText>
-					<reportElement
-						mode="Opaque"
-						x="375"
-						y="235"
-						width="77"
-						height="14"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-1"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<text><![CDATA[TEST PCE]]></text>
-				</staticText>
 			</band>
 		</title>
 		<pageHeader>

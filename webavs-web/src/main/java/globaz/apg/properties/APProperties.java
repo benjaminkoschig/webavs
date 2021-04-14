@@ -158,6 +158,13 @@ public enum APProperties implements IProperties {
         }
     },
 
+    DOMAINE_ADRESSE_APG_PROCHE_AIDANT("domaine.adresse.proche.aidant", "Code système du domaine proche aidant des adresses") {
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
+        }
+    },
+
     STORAGE_APG_PANDEMIE_FOLDER("path.stockage.covid19", "Chemin du stockage des zip pour pandémie") {
         @Override
         public boolean isValidValue(final String propertyValue) {

@@ -3,7 +3,7 @@
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
 <%
-idEcran="PAP0035";
+	idEcran="PAP0035";
 
 	globaz.apg.vb.prestation.APPrestationJointLotTiersDroitViewBean viewBean = (globaz.apg.vb.prestation.APPrestationJointLotTiersDroitViewBean) session.getAttribute("viewBean");
 	selectedIdValue = viewBean.getIdPrestationApg();

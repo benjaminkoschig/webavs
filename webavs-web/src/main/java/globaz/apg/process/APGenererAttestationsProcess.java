@@ -169,6 +169,7 @@ public class APGenererAttestationsProcess extends BProcess {
         String dateDebut = annee + "0101";
         String dateFin = annee + "1231";
         boolean isAttestationPat = false;
+        boolean isAttestationPai = false;
 
         APRepartitionJointPrestationJointLotDemandeManager mgr = new APRepartitionJointPrestationJointLotDemandeManager();
 
@@ -282,7 +283,8 @@ public class APGenererAttestationsProcess extends BProcess {
                     isRestitution = true;
                 }
                isAttestationPat = isPrestationLapat(prest);
-                if (isAttestationPat||isPrestationLamat(prest) ||
+                isAttestationPai = isPrestationLapai(prest);
+                if (isAttestationPat||isAttestationPai||isPrestationLamat(prest) ||
                         (((Double.parseDouble(totalMontantAPG) != 0) && ((!totalMontantCotisations.isZero()) || (!totalMontantImpotSource
                         .isZero())))
                         && ((((!isRestitution) && (totalMontantCotisations.isNegative())) || ((isRestitution) && (totalMontantCotisations
@@ -428,6 +430,7 @@ public class APGenererAttestationsProcess extends BProcess {
         attestations.setIsSendToGED(getIsSendToGed());
         attestations.setType(typePrestation);
         attestations.setAttestationPat(isAttestationPat);
+        attestations.setAttestationPai(isAttestationPai);
         attestations.executeProcess();
 
         // mergedDocInfo = createDocumentInfo();
@@ -457,6 +460,9 @@ public class APGenererAttestationsProcess extends BProcess {
     }
     private boolean isPrestationLapat(APPrestation prest) throws Exception {
         return (Double.parseDouble(totalMontantAPG) != 0) && APGUtils.isTypePrestation(prest.getIdPrestation(),getSession(), IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE);
+    }
+    private boolean isPrestationLapai(APPrestation prest) throws Exception {
+        return (Double.parseDouble(totalMontantAPG) != 0) && APGUtils.isTypePrestation(prest.getIdPrestation(),getSession(), IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT);
     }
 
     public String getAnnee() {

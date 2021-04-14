@@ -24,7 +24,9 @@
 
 	//initialisation du menu d'option
 	if ((IAPPrestation.CS_ETAT_PRESTATION_VALIDE.equals(viewBean.getForEtat()) 
-			&& (IPRDemande.CS_TYPE_MATERNITE.equals(viewBean.getForTypeDroit()) || IPRDemande.CS_TYPE_PATERNITE.equals(viewBean.getForTypeDroit())))
+			&& (IPRDemande.CS_TYPE_MATERNITE.equals(viewBean.getForTypeDroit()) ||
+				IPRDemande.CS_TYPE_PATERNITE.equals(viewBean.getForTypeDroit()) ||
+				IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(viewBean.getForTypeDroit())))
 		|| IAPPrestation.CS_ETAT_PRESTATION_CONTROLE.equals(viewBean.getForEtat())){
 		menuName = IAppMenu.MENU_OPTION_PRESTATION_LOT_OK;
 	} else {
