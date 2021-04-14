@@ -1,6 +1,6 @@
 /*
  * Créé le 3 juin 05
- * 
+ *
  * Pour changer le modèle de ce fichier généré, allez à : Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code
  * et commentaires
  */
@@ -14,7 +14,12 @@ import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.application.APApplication;
 import globaz.apg.db.annonces.APAnnonceAPG;
 import globaz.apg.db.annonces.APAnnonceAPGManager;
-import globaz.apg.db.droits.*;
+import globaz.apg.db.droits.APDroitAPG;
+import globaz.apg.db.droits.APDroitLAPG;
+import globaz.apg.db.droits.APDroitMaternite;
+import globaz.apg.db.droits.APDroitPandemie;
+import globaz.apg.db.droits.APDroitPaternite;
+import globaz.apg.db.droits.APDroitProcheAidant;
 import globaz.apg.db.lots.APLot;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
@@ -45,7 +50,7 @@ import java.util.List;
 
 /**
  * <H1>Description</H1>
- * 
+ *
  * @author scre
  */
 public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
@@ -58,8 +63,11 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
     public static final String RESTITUER_DROIT = "restituerDroit";
     private static final String CLONE_COPIER_DROIT_PANDEMIE = "prestation-PAN-copie-droit-PAN";
     private static final String CLONE_COPIER_DROIT_PATERNITE = "prestation-APG-copie-droit-PATERNITE";
+    private static final String CLONE_COPIER_DROIT_PROCHE_AIDANT = "prestation-APG-copie-droit-PROCHE_AIDANT";
     private static final String CLONE_COPIER_CORRIGER_DROIT_PANDEMIE = "prestation-PAN-correction-droit-PAN";
     private static final String CLONE_COPIER_CORRIGER_DROIT_PATERNITE = "prestation-APG-correction-droit-PATERNITE";
+    private static final String CLONE_COPIER_CORRIGER_DROIT_PROCHE_AIDANT = "prestation-APG-correction-droit-PROCHE_AIDANT";
+
 
     public void calculerACM(FWViewBeanInterface viewBean, FWAction action, BSession session) throws Exception {
 
@@ -119,7 +127,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
 
     /**
      * Calcul d'une nouvelle prestation rétroactive pour ajouter le supplément alloué par certaines caisses cantonales
-     * 
+     *
      * @param viewBean
      *            DOCUMENT ME!
      * @param action
@@ -162,7 +170,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
 
     /**
      * DOCUMENT ME!
-     * 
+     *
      * @param viewBean
      *            DOCUMENT ME!
      * @param action
@@ -177,7 +185,32 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
         APDroitLAPGJointDemandeViewBean vbDroit = vaChercherGenreServiceOuEtatSiAbsent(
                 (APDroitLAPGJointDemandeViewBean) viewBean, session);
         IPRCloneable clone = null;
-        if(APGUtils.isTypeAllocationPandemie(vbDroit.getGenreService())){
+        if (APGUtils.isTypeProcheAidant(vbDroit.getGenreService())) {
+            APDroitProcheAidant droit = new APDroitProcheAidant();
+
+            droit.setSession(session);
+            droit.setIdDroit(vbDroit.getIdDroit());
+            droit.retrieve(session.getCurrentThreadTransaction());
+            droit.wantCallExternalServices(false);
+
+            clone = PRCloneFactory.getInstance().clone(
+                    session.getApplication().getProperty(APApplication.PROPERTY_CLONE_DEFINITION_FILENAME), session,
+                    droit, CLONE_COPIER_DROIT_PROCHE_AIDANT,
+                    IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_APG_PARENT);
+
+            // on met à jour la date de reception et la date de depot avec la
+            // date du jour.
+            droit = new APDroitProcheAidant();
+            droit.setSession(session);
+            droit.setIdDroit(clone.getUniquePrimaryKey());
+            droit.retrieve(session.getCurrentThreadTransaction());
+            droit.setDateDepot(JadeDateUtil.getGlobazFormattedDate(new Date()));
+            droit.setDateReception(JadeDateUtil.getGlobazFormattedDate(new Date()));
+            droit.wantCallValidate(false);
+            droit.update(session.getCurrentThreadTransaction());
+
+            vbDroit.setDto(new APDroitAPGDTO(droit));
+        } else if (APGUtils.isTypeAllocationPandemie(vbDroit.getGenreService())) {
             APDroitPandemie droit = new APDroitPandemie();
 
             droit.setSession(session);
@@ -202,7 +235,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
             droit.update(session.getCurrentThreadTransaction());
 
             vbDroit.setDto(new APDroitAPGDTO(droit));
-        } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(vbDroit.getGenreService())){
+        } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(vbDroit.getGenreService())) {
             APDroitPaternite droit = new APDroitPaternite();
 
             droit.setSession(session);
@@ -284,7 +317,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
 
     /**
      * DOCUMENT ME!
-     * 
+     *
      * @param viewBean
      *            DOCUMENT ME!
      * @param action
@@ -306,28 +339,43 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
             APPrestationManager prestMan = null;
             try {
 
-                    prestMan = new APPrestationManager();
-                    prestMan.setForIdDroit(vbDroit.getIdDroit());
-                    prestMan.setSession(session);
+                prestMan = new APPrestationManager();
+                prestMan.setForIdDroit(vbDroit.getIdDroit());
+                prestMan.setSession(session);
 
-                    bTrans.openTransaction();
-                    statement = prestMan.cursorOpen(bTrans);
-                    APPrestation prestation = null;
+                bTrans.openTransaction();
+                statement = prestMan.cursorOpen(bTrans);
+                APPrestation prestation = null;
 
-                    while ((prestation = (APPrestation) prestMan.cursorReadNext(statement)) != null) {
-                        // les prestations non-versees sont annulee
-                        // point ouvert 00616
-                        // les prestations ne sont plus supprimees, mais mises
-                        // dans l'etat annule
-                        if (!IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestation.getEtat())) {
-                            prestation.setEtat(IAPPrestation.CS_ETAT_PRESTATION_ANNULE);
-                            prestation.update(bTrans);
-                        }
+                while ((prestation = (APPrestation) prestMan.cursorReadNext(statement)) != null) {
+                    // les prestations non-versees sont annulee
+                    // point ouvert 00616
+                    // les prestations ne sont plus supprimees, mais mises
+                    // dans l'etat annule
+                    if (!IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestation.getEtat())) {
+                        prestation.setEtat(IAPPrestation.CS_ETAT_PRESTATION_ANNULE);
+                        prestation.update(bTrans);
                     }
-                    prestMan.cursorClose(statement);
+                }
+                prestMan.cursorClose(statement);
 
                 // on clone le droit parent
-                if(APGUtils.isTypeAllocationPandemie(vbDroit.getGenreService())){
+                if (APGUtils.isTypeProcheAidant(vbDroit.getGenreService())) {
+                    APDroitProcheAidant droit = new APDroitProcheAidant();
+                    droit.setSession(session);
+                    droit.setIdDroit(vbDroit.getIdDroit());
+                    droit.retrieve(bTrans);
+
+                    PRCloneFactory.getInstance().clone(
+                            session.getApplication().getProperty(APApplication.PROPERTY_CLONE_DEFINITION_FILENAME),
+                            session, bTrans, droit,
+                            CLONE_COPIER_CORRIGER_DROIT_PROCHE_AIDANT,
+                            IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_APG_FILS);
+
+                    vbDroit.setDto(new APDroitAPGDTO(droit));
+                    droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
+                    droit.update(bTrans);
+                } else if (APGUtils.isTypeAllocationPandemie(vbDroit.getGenreService())) {
                     APDroitPandemie droit = new APDroitPandemie();
                     droit.setSession(session);
                     droit.setIdDroit(vbDroit.getIdDroit());
@@ -343,7 +391,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
                     droit.setValiderPeriodes(false);
                     droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
                     droit.update(bTrans);
-                } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(vbDroit.getGenreService())){
+                } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(vbDroit.getGenreService())) {
                     APDroitPaternite droit = new APDroitPaternite();
 
                     droit.setSession(session);
@@ -432,7 +480,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
 
     /**
      * @see globaz.framework.controller.FWHelper#execute(globaz.framework.bean.FWViewBeanInterface,
-     *      globaz.framework.controller.FWAction, globaz.globall.api.BISession)
+     * globaz.framework.controller.FWAction, globaz.globall.api.BISession)
      */
     @Override
     protected FWViewBeanInterface execute(FWViewBeanInterface viewBean, FWAction action, BISession session) {
@@ -441,7 +489,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
 
     /**
      * DOCUMENT ME!
-     * 
+     *
      * @param viewBean
      *            DOCUMENT ME!
      * @param action
@@ -456,7 +504,8 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
                 (APDroitLAPGJointDemandeViewBean) viewBean, session);
 
         if (vbDroit.getEtatDroit().equals(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF)
-            || (APGUtils.isTypeAllocationPandemie(vbDroit.getGenreService()) && vbDroit.getEtatDroit().equals(IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL))) {
+                || (APGUtils.isTypeAllocationPandemie(vbDroit.getGenreService()) && vbDroit.getEtatDroit()
+                                                                                           .equals(IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL))) {
             IPRCloneable clone = null;
 
             BStatement statement = null;
@@ -466,22 +515,22 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
             // valides ou ouvertes pour ce droit dans l'état ANNULE
 
             try {
-            prestMan = new APPrestationManager();
-            prestMan.setForIdDroit(vbDroit.getIdDroit());
-            prestMan.setSession(session);
+                prestMan = new APPrestationManager();
+                prestMan.setForIdDroit(vbDroit.getIdDroit());
+                prestMan.setSession(session);
 
-            bTrans.openTransaction();
-            statement = prestMan.cursorOpen(bTrans);
-            APPrestation prestation = null;
+                bTrans.openTransaction();
+                statement = prestMan.cursorOpen(bTrans);
+                APPrestation prestation = null;
 
-            while ((prestation = (APPrestation) prestMan.cursorReadNext(statement)) != null) {
-                // les prestations non-versees sont annulee
-                if (!IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestation.getEtat())) {
-                    prestation.setEtat(IAPPrestation.CS_ETAT_PRESTATION_ANNULE);
-                    prestation.update(bTrans);
+                while ((prestation = (APPrestation) prestMan.cursorReadNext(statement)) != null) {
+                    // les prestations non-versees sont annulee
+                    if (!IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestation.getEtat())) {
+                        prestation.setEtat(IAPPrestation.CS_ETAT_PRESTATION_ANNULE);
+                        prestation.update(bTrans);
+                    }
                 }
-            }
-            prestMan.cursorClose(statement);
+                prestMan.cursorClose(statement);
             } catch (Exception e) {
                 if (bTrans != null) {
                     bTrans.rollback();
@@ -505,7 +554,21 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
             }
 
 
-            if(APGUtils.isTypeAllocationPandemie(vbDroit.getGenreService())){
+            if (APGUtils.isTypeProcheAidant(vbDroit.getGenreService())) {
+                APDroitProcheAidant droit = new APDroitProcheAidant();
+
+                droit.setSession(session);
+                droit.setIdDroit(vbDroit.getIdDroit());
+                droit.retrieve(session.getCurrentThreadTransaction());
+
+                clone = PRCloneFactory.getInstance().clone(
+                        session.getApplication().getProperty(APApplication.PROPERTY_CLONE_DEFINITION_FILENAME),
+                        session, droit,
+                        CLONE_COPIER_CORRIGER_DROIT_PROCHE_AIDANT,
+                        IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_PANDEMIE_FILS);
+
+                vbDroit.setDto(new APDroitAPGDTO(droit));
+            } else if (APGUtils.isTypeAllocationPandemie(vbDroit.getGenreService())) {
                 APDroitPandemie droit = new APDroitPandemie();
 
                 droit.setSession(session);
@@ -519,7 +582,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
                         IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_PANDEMIE_FILS);
 
                 vbDroit.setDto(new APDroitAPGDTO(droit));
-            } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(vbDroit.getGenreService())){
+            } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(vbDroit.getGenreService())) {
                 APDroitPaternite droit = new APDroitPaternite();
 
                 droit.setSession(session);
@@ -574,7 +637,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
 
     /**
      * Supprime toutes les prestations du droit, et classes liées.
-     * 
+     *
      * @param session
      * @param transaction
      * @param droit
@@ -598,7 +661,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
      * Action custom permettant de simuler le paiement d'un droit. Est utilisé pour récupéré des anciens cas de l'AS400
      * qui doivent être restitué. 1) Creation d'un lot a l'état "Définitif" contenant les prestations du droit 2) Mise à
      * jours des prestations du droit à l'état "Définitif" 3) Mise à jours de l'état du droit à "Définitif"
-     * 
+     *
      * @param viewBean
      * @param action
      * @param session
@@ -652,8 +715,9 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
                 APLot lot = new APLot();
                 lot.setSession(session);
                 lot.setDateCreation(JACalendar.today().toStr("."));
-                lot.setDescription(java.text.MessageFormat.format(session.getLabel("LOT_REPRISE"),
-                        new Object[] { JACalendar.today().toStr(".") }));
+                lot.setDescription(java.text.MessageFormat.format(
+                        session.getLabel("LOT_REPRISE"),
+                        new Object[]{JACalendar.today().toStr(".")}));
                 lot.setEtat(IAPLot.CS_OUVERT);
 
                 if (APGUtils.isTypeAllocationPandemie(droit.getGenreService())) {
@@ -770,7 +834,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
      * Il se peut que le viewBean dans copierdroit corriger ou restituer n'ait pas de genre service, ce qui pose un
      * problème pour savoir quel type de copie faire. Cette méthode va rechercher le genre de service de ce viewBean si
      * il est absent.
-     * 
+     *
      * @param viewBean
      *            DOCUMENT ME!
      * @param session
@@ -819,16 +883,16 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
             APDroitLAPGJointDemandeViewBean vbDroit = vaChercherGenreServiceOuEtatSiAbsent(
                     (APDroitLAPGJointDemandeViewBean) vb, session);
             IPRCloneable clone = null;
-            if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(vbDroit.getGenreService())){
+            if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(vbDroit.getGenreService())) {
                 // Si le traitement s'est bien passé, on retourne le bon viewBean pour aller sur l'affichage du droit
                 APDroitPaternite droit = ApgServiceLocator.getEntityService().getDroitPaternite(session, transaction,
-                        vbDroit.getIdDroit());
+                                                                                                vbDroit.getIdDroit());
                 // On met à jour l'état du droit
                 droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE_REPONSE);
                 droit.update();
 
                 final List<APPrestation> prestations = ApgServiceLocator.getEntityService().getPrestationDuDroit(session,
-                        transaction, droit.getIdDroit());
+                                                                                                                 transaction, droit.getIdDroit());
                 for (APPrestation eachPrestation : prestations) {
                     eachPrestation.setEtat(IAPPrestation.CS_ETAT_PRESTATION_OUVERT);
                     eachPrestation.setIdLot("");
@@ -839,13 +903,13 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
                 vbDroit.setDto(new APDroitAPGDTO(droit));
             } else {
                 // Si le traitement s'est bien passé, on retourne le bon viewBean pour aller sur l'affichage du droit
-            APDroitPandemie droit = ApgServiceLocator.getEntityService().getDroitPandemie(session, transaction,
-                    vbDroit.getIdDroit());
-            // On met à jour l'état du droit
-            droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE_REPONSE);
-            droit.update();
+                APDroitPandemie droit = ApgServiceLocator.getEntityService().getDroitPandemie(session, transaction,
+                                                                                              vbDroit.getIdDroit());
+                // On met à jour l'état du droit
+                droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE_REPONSE);
+                droit.update();
                 final List<APPrestation> prestations = ApgServiceLocator.getEntityService().getPrestationDuDroit(session,
-                        transaction, droit.getIdDroit());
+                                                                                                                 transaction, droit.getIdDroit());
                 for (APPrestation eachPrestation : prestations) {
                     eachPrestation.setEtat(IAPPrestation.CS_ETAT_PRESTATION_OUVERT);
                     eachPrestation.setIdLot("");
@@ -893,17 +957,17 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
 
             APDroitLAPGJointDemandeViewBean vbDroit = vaChercherGenreServiceOuEtatSiAbsent(
                     (APDroitLAPGJointDemandeViewBean) vb, session);
-            if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(vbDroit.getGenreService())){
+            if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(vbDroit.getGenreService())) {
                 // Si le traitement s'est bien passé, on retourne le bon viewBean pour aller sur l'affichage du droit
                 APDroitPaternite droit = ApgServiceLocator.getEntityService().getDroitPaternite(session, transaction,
-                        vbDroit.getIdDroit());
+                                                                                                vbDroit.getIdDroit());
                 // On met à jour l'état du droit
                 droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_REFUSE);
                 droit.update();
 
                 // Suppression des prestations non définitives
                 final List<APPrestation> prestations = ApgServiceLocator.getEntityService().getPrestationDuDroit((BSession) session,
-                        transaction, droit.getIdDroit());
+                                                                                                                 transaction, droit.getIdDroit());
                 for (APPrestation eachPrestation : prestations) {
                     if (!StringUtils.equals(IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF, eachPrestation.getEtat())) {
                         if (StringUtils.isNotEmpty(eachPrestation.getIdLot()) && eachPrestation.getIdLot() != "0") {
@@ -924,15 +988,15 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
                 vbDroit.setDto(new APDroitAPGDTO(droit));
             } else {
                 // Si le traitement s'est bien passé, on retourne le bon viewBean pour aller sur l'affichage du droit
-            APDroitPandemie droit = ApgServiceLocator.getEntityService().getDroitPandemie(session, transaction,
-                        vbDroit.getIdDroit());
+                APDroitPandemie droit = ApgServiceLocator.getEntityService().getDroitPandemie(session, transaction,
+                                                                                              vbDroit.getIdDroit());
                 // On met à jour l'état du droit
                 droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_REFUSE);
                 droit.update();
 
                 // Suppression des prestations non définitives
                 final List<APPrestation> prestations = ApgServiceLocator.getEntityService().getPrestationDuDroit((BSession) session,
-                        transaction, droit.getIdDroit());
+                                                                                                                 transaction, droit.getIdDroit());
                 for (APPrestation eachPrestation : prestations) {
                     if (!StringUtils.equals(IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF, eachPrestation.getEtat())) {
                         if (StringUtils.isNotEmpty(eachPrestation.getIdLot()) && eachPrestation.getIdLot() != "0") {
@@ -964,8 +1028,6 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
             }
         }
     }
-
-
 
 
 }

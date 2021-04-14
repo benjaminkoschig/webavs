@@ -4,7 +4,9 @@ import ch.globaz.common.mail.CommonFilesUtils;
 import ch.globaz.common.process.ProcessMailUtils;
 import ch.globaz.common.properties.PropertiesException;
 import globaz.apg.api.droits.IAPDroitLAPG;
+import globaz.apg.db.droits.APAbstractRecapitulatifDroit;
 import globaz.apg.db.droits.APDroitLAPG;
+import globaz.apg.db.droits.APRecapitulatifDroitPat;
 import globaz.apg.helpers.droits.APDroitLAPGJointDemandeHelper;
 import globaz.apg.properties.APProperties;
 import globaz.apg.util.TypePrestation;
@@ -228,8 +230,8 @@ public class APLAPGAction extends PRDefaultAction {
      */
     public String actionRecapitulatif(HttpSession session, HttpServletRequest request, HttpServletResponse response,
             FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) throws ServletException, IOException {
-        String genreService = request.getParameter("genreService");
         String selectedId = getSelectedId(request);
+        String genreService = assureQueGenreServiceEstLa(request.getParameter("genreService"), selectedId, session, mainDispatcher);
 
         // ACK : LGA avril 2013 : Si l'utilisateur est déjà allé sur l'écran de recap des APG
         // et qu'une erreur est apparue lors de la simulation du paiement, s'il fait back ou revient
@@ -239,12 +241,6 @@ public class APLAPGAction extends PRDefaultAction {
             viewBean.setMsgType(null);
             viewBean.setMessage(null);
         }
-
-        genreService = assureQueGenreServiceEstLa(genreService, selectedId, session, mainDispatcher);
-
-        String destination = getRelativeURLwithoutClassPart(request, session);
-        FWViewBeanInterface recViewBean = null;
-        FWAction action = null;
 
         // Faut-il afficher le bouton 'Simuler paiement avec BPID'
         boolean afficherBouton = false;
@@ -257,89 +253,40 @@ public class APLAPGAction extends PRDefaultAction {
              */
         }
 
+        String destination = getRelativeURLwithoutClassPart(request, session);
+        FWAction action;
+        APRecapitulatifDroitViewBean recViewBean ;
+
         if (APGUtils.isTypeAllocationPandemie(genreService)) {
             destination += APLAPGAction.VERS_ECRAN_RECAPITULATIF_PAN;
             action = FWAction.newInstance(IAPActions.ACTION_RECAPITUALATIF_DROIT_PAN + "." + FWAction.ACTION_AFFICHER);
             recViewBean = new APRecapitulatifDroitPanViewBean();
-            ((APRecapitulatifDroitPanViewBean) recViewBean).setIdDroit(selectedId);
-
-            ((APRecapitulatifDroitPanViewBean) recViewBean).setAfficherBoutonSimulerPmtBPID(afficherBouton);
-            // dispatch
-            this.saveViewBean(recViewBean, session);
-            // action.setRight(FWSecureConstants.ADD);
-            mainDispatcher.dispatch(recViewBean, action);
-
-            APDroitDTO dto = new APDroitDTO();
-            dto.setDateDebutDroit(((APRecapitulatifDroitPanViewBean) recViewBean).getDateDebutDroit());
-            dto.setGenreService(((APRecapitulatifDroitPanViewBean) recViewBean).getGenreService());
-            dto.setIdDroit(selectedId);
-            dto.setNoAVS(((APRecapitulatifDroitPanViewBean) recViewBean).getNoAVS());
-            dto.setNomPrenom(((APRecapitulatifDroitPanViewBean) recViewBean).getNomPrenom());
-
-            PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO, dto);
         } else if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(genreService)) {
             destination += APLAPGAction.VERS_ECRAN_RECAPITULATIF_MAT;
             action = FWAction.newInstance(IAPActions.ACTION_RECAPITUALATIF_DROIT_MAT + "." + FWAction.ACTION_AFFICHER);
             recViewBean = new APRecapitulatifDroitMatViewBean();
-            ((APRecapitulatifDroitMatViewBean) recViewBean).setIdDroit(selectedId);
-
-            ((APRecapitulatifDroitMatViewBean) recViewBean).setAfficherBoutonSimulerPmtBPID(afficherBouton);
-            // dispatch
-            this.saveViewBean(recViewBean, session);
-            // action.setRight(FWSecureConstants.ADD);
-            mainDispatcher.dispatch(recViewBean, action);
-
-            APDroitDTO dto = new APDroitDTO();
-            dto.setDateDebutDroit(((APRecapitulatifDroitMatViewBean) recViewBean).getDateDebutDroit());
-            dto.setGenreService(((APRecapitulatifDroitMatViewBean) recViewBean).getGenreService());
-            dto.setIdDroit(selectedId);
-            dto.setNoAVS(((APRecapitulatifDroitMatViewBean) recViewBean).getNoAVS());
-            dto.setNomPrenom(((APRecapitulatifDroitMatViewBean) recViewBean).getNomPrenom());
-
-            PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO, dto);
-
         } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(genreService)) {
             destination += APLAPGAction.VERS_ECRAN_RECAPITULATIF_PAT;
             action = FWAction.newInstance(IAPActions.ACTION_RECAPITULATIF_DROIT_PAT + "." + FWAction.ACTION_AFFICHER);
             recViewBean = new APRecapitulatifDroitPatViewBean();
-            ((APRecapitulatifDroitPatViewBean) recViewBean).setIdDroit(selectedId);
-
-            ((APRecapitulatifDroitPatViewBean) recViewBean).setAfficherBoutonSimulerPmtBPID(afficherBouton);
-            // dispatch
-            this.saveViewBean(recViewBean, session);
-            // action.setRight(FWSecureConstants.ADD);
-            mainDispatcher.dispatch(recViewBean, action);
-
-            APDroitDTO dto = new APDroitDTO();
-            dto.setDateDebutDroit(((APRecapitulatifDroitPatViewBean) recViewBean).getDateDebutDroit());
-            dto.setGenreService(((APRecapitulatifDroitPatViewBean) recViewBean).getGenreService());
-            dto.setIdDroit(selectedId);
-            dto.setNoAVS(((APRecapitulatifDroitPatViewBean) recViewBean).getNoAVS());
-            dto.setNomPrenom(((APRecapitulatifDroitPatViewBean) recViewBean).getNomPrenom());
-
-            PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO, dto);
-            
+        } else if (IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(genreService)) {
+            destination += APLAPGAction.VERS_ECRAN_RECAPITULATIF_PAI;
+            action = FWAction.newInstance(IAPActions.ACTION_RECAPITULATIF_DROIT_PAI + "." + FWAction.ACTION_AFFICHER);
+            recViewBean = new APRecapitulatifDroitPaiViewBean();
         } else {
             destination += APLAPGAction.VERS_ECRAN_RECAPITULATIF_APG;
             action = FWAction.newInstance(IAPActions.ACTION_RECAPITUALATIF_DROIT_APG + "." + FWAction.ACTION_AFFICHER);
             recViewBean = new APRecapitulatifDroitAPGViewBean();
-            ((APRecapitulatifDroitAPGViewBean) recViewBean).setIdDroit(selectedId);
-
-            ((APRecapitulatifDroitAPGViewBean) recViewBean).setAfficherBoutonSimulerPmtBPID(afficherBouton);
-            // dispatch
-            this.saveViewBean(recViewBean, session);
-            // action.setRight(FWSecureConstants.ADD);
-            mainDispatcher.dispatch(recViewBean, action);
-
-            APDroitDTO dto = new APDroitDTO();
-            dto.setDateDebutDroit(((APRecapitulatifDroitAPGViewBean) recViewBean).getDateDebutDroit());
-            dto.setGenreService(((APRecapitulatifDroitAPGViewBean) recViewBean).getGenreService());
-            dto.setIdDroit(selectedId);
-            dto.setNoAVS(((APRecapitulatifDroitAPGViewBean) recViewBean).getNoAVS());
-            dto.setNomPrenom(((APRecapitulatifDroitAPGViewBean) recViewBean).getNomPrenom());
-
-            PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO, dto);
         }
+
+        recViewBean.setIdDroit(selectedId);
+        recViewBean.setAfficherBoutonSimulerPmtBPID(afficherBouton);
+        // dispatch
+        this.saveViewBean(recViewBean, session);
+        mainDispatcher.dispatch(recViewBean, action);
+        APDroitDTO dto = generateApDroitDTO(selectedId, recViewBean);
+        PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_DROIT_DTO, dto);
+
 
         // récupérer le message d'erreur pour le cas ou l'on vient du calcul
         if ((viewBean != null)
@@ -350,6 +297,16 @@ public class APLAPGAction extends PRDefaultAction {
         }
 
         return destination;
+    }
+
+    private APDroitDTO generateApDroitDTO(final String selectedId, final APRecapitulatifDroitViewBean recViewBean) {
+        APDroitDTO dto = new APDroitDTO();
+        dto.setDateDebutDroit(recViewBean.getDateDebutDroit());
+        dto.setGenreService(recViewBean.getGenreService());
+        dto.setIdDroit(selectedId);
+        dto.setNoAVS(recViewBean.getNoAVS());
+        dto.setNomPrenom(recViewBean.getNomPrenom());
+        return dto;
     }
 
     private String assureQueGenreServiceEstLa(String genreService, String id, HttpSession session,
@@ -472,7 +429,7 @@ public class APLAPGAction extends PRDefaultAction {
     public String copierDroit(HttpSession session, HttpServletRequest request, HttpServletResponse response,
             FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) throws ServletException, IOException {
 
-        String destination = FWDefaultServletAction.ERROR_PAGE;
+        String destination;
         String genreService = request.getParameter("genreService");
         String selectedId = getSelectedId(request);
 
@@ -485,6 +442,9 @@ public class APLAPGAction extends PRDefaultAction {
                     + "&" + getSelectedIdParam(request));
         } else if (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(genreService)) {
             destination = this.getUserActionURL(request, IAPActions.ACTION_SAISIE_CARTE_APAT, FWAction.ACTION_AFFICHER
+                    + "&" + getSelectedIdParam(request));
+        } else if (IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(genreService)) {
+            destination = this.getUserActionURL(request, IAPActions.ACTION_SAISIE_CARTE_PAI, FWAction.ACTION_AFFICHER
                     + "&" + getSelectedIdParam(request));
         } else {
             destination = this.getUserActionURL(request, IAPActions.ACTION_SAISIE_CARTE_APG, FWAction.ACTION_AFFICHER

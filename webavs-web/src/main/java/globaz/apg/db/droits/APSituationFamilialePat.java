@@ -1,6 +1,6 @@
 /*
  * Créé le 13 mai 05
- * 
+ *
  * Pour changer le modèle de ce fichier généré, allez à : Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code
  * et commentaires
  */
@@ -9,14 +9,20 @@ package globaz.apg.db.droits;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
 import globaz.commons.nss.NSUtil;
-import globaz.globall.db.*;
+import globaz.globall.db.BConstants;
+import globaz.globall.db.BEntity;
+import globaz.globall.db.BManager;
+import globaz.globall.db.BStatement;
+import globaz.globall.db.BTransaction;
 import globaz.globall.util.JAStringFormatter;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.prestation.api.PRTypeDemande;
 import globaz.prestation.clone.factory.IPRCloneable;
+import lombok.Setter;
 
 /**
  * DOCUMENT ME!
- * 
+ *
  * @author vre
  */
 public class APSituationFamilialePat extends BEntity implements IPRCloneable {
@@ -114,6 +120,9 @@ public class APSituationFamilialePat extends BEntity implements IPRCloneable {
 
     /** DOCUMENT ME! */
     protected String canton = "";
+
+    @Setter
+    private PRTypeDemande typeDemande = PRTypeDemande.PATERNITE;
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -332,7 +341,7 @@ public class APSituationFamilialePat extends BEntity implements IPRCloneable {
     /**
      * @param actionType
      *            DOCUMENT ME!
-     * 
+     *
      * @return DOCUMENT ME!
      */
     @Override
@@ -357,7 +366,7 @@ public class APSituationFamilialePat extends BEntity implements IPRCloneable {
 
     /**
      * getter pour l'attribut date naissance
-     * 
+     *
      * @return la valeur courante de l'attribut date naissance
      */
     public String getDateNaissance() {
@@ -366,7 +375,7 @@ public class APSituationFamilialePat extends BEntity implements IPRCloneable {
 
     /**
      * getter pour l'attribut Id Droit Paternite
-     * 
+     *
      * @return la valeur courante de l'attribut Id Droit Paternite
      */
     public String getIdDroitPaternite() {
@@ -375,7 +384,7 @@ public class APSituationFamilialePat extends BEntity implements IPRCloneable {
 
     /**
      * getter pour l'attribut Id Sit Fam Paternite
-     * 
+     *
      * @return la valeur courante de l'attribut Id Sit Fam Paternite
      */
     public String getIdSitFamPaternite() {
@@ -391,7 +400,7 @@ public class APSituationFamilialePat extends BEntity implements IPRCloneable {
 
     /**
      * getter pour l'attribut no AVS
-     * 
+     *
      * @return la valeur courante de l'attribut no AVS
      */
     public String getNoAVS() {
@@ -400,7 +409,7 @@ public class APSituationFamilialePat extends BEntity implements IPRCloneable {
 
     /**
      * getter pour l'attribut nom
-     * 
+     *
      * @return la valeur courante de l'attribut nom
      */
     public String getNom() {
@@ -409,7 +418,7 @@ public class APSituationFamilialePat extends BEntity implements IPRCloneable {
 
     /**
      * getter pour l'attribut prenom
-     * 
+     *
      * @return la valeur courante de l'attribut prenom
      */
     public String getPrenom() {
@@ -418,7 +427,7 @@ public class APSituationFamilialePat extends BEntity implements IPRCloneable {
 
     /**
      * getter pour l'attribut Type
-     * 
+     *
      * @return la valeur courante de l'attribut Type
      */
     public String getType() {
@@ -427,7 +436,7 @@ public class APSituationFamilialePat extends BEntity implements IPRCloneable {
 
     /**
      * getter pour l'attribut unique primary key
-     * 
+     *
      * @return la valeur courante de l'attribut unique primary key
      */
     @Override
@@ -437,9 +446,9 @@ public class APSituationFamilialePat extends BEntity implements IPRCloneable {
 
     /**
      * DOCUMENT ME!
-     * 
+     *
      * @return DOCUMENT ME!
-     * 
+     *
      * @throws Exception
      *             DOCUMENT ME!
      */
@@ -464,7 +473,7 @@ public class APSituationFamilialePat extends BEntity implements IPRCloneable {
 
     /**
      * setter pour l'attribut date naissance
-     * 
+     *
      * @param string
      *            une nouvelle valeur pour cet attribut
      */
@@ -478,7 +487,7 @@ public class APSituationFamilialePat extends BEntity implements IPRCloneable {
 
     /**
      * setter pour l'attribut Id Droit Paternite
-     * 
+     *
      * @param idDroitPaternite
      *            une nouvelle valeur pour cet attribut
      */
@@ -488,7 +497,7 @@ public class APSituationFamilialePat extends BEntity implements IPRCloneable {
 
     /**
      * setter pour l'attribut Id Sit Fam Paternite
-     * 
+     *
      * @param isSitFamPaternite
      *            une nouvelle valeur pour cet attribut
      */
@@ -505,7 +514,7 @@ public class APSituationFamilialePat extends BEntity implements IPRCloneable {
 
     /**
      * setter pour l'attribut no AVS
-     * 
+     *
      * @param string
      *            une nouvelle valeur pour cet attribut
      */
@@ -515,7 +524,7 @@ public class APSituationFamilialePat extends BEntity implements IPRCloneable {
 
     /**
      * setter pour l'attribut nom
-     * 
+     *
      * @param string
      *            une nouvelle valeur pour cet attribut
      */
@@ -525,7 +534,7 @@ public class APSituationFamilialePat extends BEntity implements IPRCloneable {
 
     /**
      * setter pour l'attribut prenom
-     * 
+     *
      * @param string
      *            une nouvelle valeur pour cet attribut
      */
@@ -535,7 +544,7 @@ public class APSituationFamilialePat extends BEntity implements IPRCloneable {
 
     /**
      * setter pour l'attribut Type
-     * 
+     *
      * @param type
      *            une nouvelle valeur pour cet attribut
      */
@@ -561,7 +570,7 @@ public class APSituationFamilialePat extends BEntity implements IPRCloneable {
 
     /**
      * setter pour l'attribut unique primary key
-     * 
+     *
      * @param pk
      *            une nouvelle valeur pour cet attribut
      */

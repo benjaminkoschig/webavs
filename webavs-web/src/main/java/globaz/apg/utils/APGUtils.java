@@ -118,7 +118,7 @@ public class APGUtils {
      * @param csTypeAllocation
      * @return
      */
-    public static Boolean isTypeAllocationPandemie(String csTypeAllocation) {
+    public static boolean isTypeAllocationPandemie(String csTypeAllocation) {
         return (IAPDroitLAPG.CS_GARDE_PARENTALE.equals(csTypeAllocation)
                 || IAPDroitLAPG.CS_QUARANTAINE.equals(csTypeAllocation)
                 || IAPDroitLAPG.CS_INDEPENDANT_PANDEMIE.equals(csTypeAllocation)
@@ -146,12 +146,16 @@ public class APGUtils {
      * @param csTypeAllocation
      * @return
      */
-    public static Boolean isTypePaternite(String csTypeAllocation) {
+    public static boolean isTypePaternite(String csTypeAllocation) {
         return (IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(csTypeAllocation));
     }
 
-    public static Boolean isTypeMaternite(String csTypeAllocation) {
+    public static boolean isTypeMaternite(String csTypeAllocation) {
         return (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(csTypeAllocation));
+    }
+
+    public static boolean isTypeProcheAidant(String csTypeAllocation) {
+        return (IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(csTypeAllocation));
     }
 
 

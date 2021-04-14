@@ -18,7 +18,7 @@ import globaz.prestation.tools.nnss.PRNSSUtil;
  *
  * @author vre
  */
-public class APRecapitulatifDroitPanViewBean extends APRecapitulatifDroitPan implements FWViewBeanInterface {
+public class APRecapitulatifDroitPanViewBean extends APRecapitulatifDroitPan implements APRecapitulatifDroitViewBean {
 
     /**
      *

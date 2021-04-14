@@ -429,4 +429,13 @@ public abstract class APAbstractRecapitulatifDroit extends BEntity {
     public void setIdTiers(String idTiers) {
         this.idTiers = idTiers;
     }
+
+    /**
+     * getter pour l'attribut prenom nom
+     *
+     * @return la valeur courante de l'attribut prenom nom
+     */
+    public String getNomPrenom() {
+        return this.nom + " " + this.prenom;
+    }
 }

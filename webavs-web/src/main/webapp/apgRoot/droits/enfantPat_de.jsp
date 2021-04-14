@@ -130,7 +130,7 @@ bButtonValidate = viewBean.isModifiable() && bButtonValidate &&  viewBean.getSes
   var isProcheAidant=<%=typePrestation.isProcheAidant()%>;
   $(document).ready(function() {
       var frList = window.parent.fr_list;
-      if(frList && isProcheAidant) {
+      if(frList && isProcheAidant && parent.isNouveau) {
           $(frList.document).ready(function () {
               setTimeout(function (){
                   if ($("#tableListContainer tr", frList.document).length > 1) {
@@ -172,7 +172,7 @@ bButtonValidate = viewBean.isModifiable() && bButtonValidate &&  viewBean.getSes
 							<TD><ct:FWCalendarTag name="dateNaissance" value="<%=viewBean.getDateNaissance()%>"/></TD>
 							<TD><LABEL for="noAVS"><ct:FWLabel key="JSP_NSS_ABREGE"/>&nbsp;</LABEL></TD>
 							<TD>
-									<ct1:nssPopup name="noAVS" onFailure="nssFailure();" onChange="nssChange(tag);"
+									<ct1:nssPopup name="noAVS"  onFailure="nssFailure();" onChange="nssChange(tag);"
 										value="<%=viewBean.getNumeroAvsFormateSansPrefixe()%>" newnss="<%=viewBean.isNNSS()%>"
 										avsMinNbrDigit="99" nssMinNbrDigit="99"   />
 

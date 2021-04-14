@@ -23,7 +23,7 @@ import globaz.prestation.tools.nnss.PRNSSUtil;
  * 
  * @author vre
  */
-public class APRecapitulatifDroitMatViewBean extends APRecapitulatifDroitMat implements FWViewBeanInterface {
+public class APRecapitulatifDroitMatViewBean extends APRecapitulatifDroitMat implements APRecapitulatifDroitViewBean {
 
     /**
      * 
@@ -31,6 +31,7 @@ public class APRecapitulatifDroitMatViewBean extends APRecapitulatifDroitMat imp
     private static final long serialVersionUID = 1L;
 
     private boolean afficherBoutonSimulerPmtBPID;
+
 
     /**
      * Utilisé dans le cas ou l'on veut recréer une annonce liée à une prestation suite à une reprise de données Permet

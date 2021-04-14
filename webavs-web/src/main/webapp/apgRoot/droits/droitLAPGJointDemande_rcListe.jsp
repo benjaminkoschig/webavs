@@ -14,7 +14,8 @@
 <%@ page import="globaz.apg.helpers.prestation.APPrestationHelper" %>
 <%@ page import="globaz.prestation.api.PRTypeDemande" %>
 <%@ page import="globaz.apg.vb.droits.APTypePresationDemandeResolver" %>
-<%@ page import="globaz.apg.menu.MenuPrestation" %>
+<%@ page import="java.net.URLEncoder" %>
+<%@ page import="java.nio.charset.StandardCharsets" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 
@@ -201,7 +202,7 @@
         <ct:menuParam key="forIdDroit" value="<%=courant.getIdDroit()%>" />
         <ct:menuParam key="nomPrenom" value="<%=courant.getNomPrenom()%>" />
         <ct:menuParam key="noAVS" value="<%=courant.getNoAVS()%>" />
-        <ct:menuParam key="detailsAssure" value="<%=courant.getDetailRequerant()%>" />
+        <ct:menuParam key="detailsAssure" value="<%=URLEncoder.encode(courant.getDetailRequerant(), StandardCharsets.ISO_8859_1.toString())%>" />
         <ct:menuParam key="<%=VueGlobaleTiersUtils.PARAMETRE_REQUETE_ID_TIERS_VUE_GLOBALE%>" value="<%=courant.getIdTiers()%>" />
         <%
             if (!IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(courant.getEtatDroit())) {

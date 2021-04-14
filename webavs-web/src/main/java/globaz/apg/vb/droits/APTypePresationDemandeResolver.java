@@ -14,4 +14,5 @@ public class APTypePresationDemandeResolver {
     public static PRTypeDemande resolveEnumTypePrestation(HttpSession httpSession) {
         return PRTypeDemande.toEnumByCs(resolveTypePrestation(httpSession));
     }
+
 }

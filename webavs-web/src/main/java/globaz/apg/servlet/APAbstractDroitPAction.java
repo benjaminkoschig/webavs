@@ -222,7 +222,6 @@ public abstract class APAbstractDroitPAction extends PRDefaultAction {
             HttpServletResponse response, FWViewBeanInterface viewBean) {
         // on retourne un viewBean correct pour les cas ou cette action a ete
         // appellee depuis la page de recapitulation
-        FWViewBeanInterface retValue = viewBean;
         APAbstractDroitProxyViewBean droitVB;
 
         if (viewBean instanceof APRecapitulatifDroitMatViewBean) {
@@ -233,6 +232,8 @@ public abstract class APAbstractDroitPAction extends PRDefaultAction {
             droitVB = new APDroitPanViewBean();
         }  else if (viewBean instanceof APRecapitulatifDroitPatViewBean) {
             droitVB = new APDroitPatPViewBean();
+        }  else if (viewBean instanceof APRecapitulatifDroitPaiViewBean) {
+            droitVB = new APDroitPaiPViewBean();
         } else {
             return viewBean;
         }
@@ -240,15 +241,6 @@ public abstract class APAbstractDroitPAction extends PRDefaultAction {
         droitVB.setISession(viewBean.getISession());
         droitVB.setIdDroit(((APAbstractRecapitulatifDroit) viewBean).getIdDroit());
 
-        try {
-            // HACK: desactive car lors du processus d'effacement, on va de
-            // toutes facons recharger le droit.
-            // droit.retrieve();
-            retValue = droitVB;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return retValue;
+        return droitVB;
     }
 }

@@ -171,6 +171,28 @@
 		</linkedClass>
 	</clone>
 
+    <clone id="prestation-APG-copie-droit-PROCHE_AIDANT" class="globaz.apg.db.droits.APDroitProcheAidant">
+
+        <linkedClass class="globaz.apg.db.droits.APSituationFamilialePat"
+                     relationType="1_TO_N"
+                     idParent="idDroitPaternite"
+                     manager="globaz.apg.db.droits.APSituationFamilialePatManager"
+                     forIdParent="forIdDroitPaternite"/>
+
+        <linkedClass class="globaz.apg.db.droits.APSituationProfessionnelle"
+                     relationType="1_TO_N"
+                     idParent="idDroit"
+                     manager="globaz.apg.db.droits.APSituationProfessionnelleManager"
+                     forIdParent="forIdDroit">
+
+            <linkedClass class="globaz.apg.db.droits.APEmployeur"
+                         relationType="1_TO_1"
+                         idParent="idEmployeur"
+                         forIdParent="na"
+                         manager="na"/>
+        </linkedClass>
+    </clone>
+
 	<clone id="prestation-APG-correction-droit-PATERNITE" class="globaz.apg.db.droits.APDroitPaternite">
 
 		<linkedClass class="globaz.apg.db.droits.APSituationFamilialePat"
@@ -178,7 +200,6 @@
 					 idParent="idDroitPaternite"
 					 manager="globaz.apg.db.droits.APSituationFamilialePatManager"
 					 forIdParent="forIdDroitPaternite"/>
-
 
 		<linkedClass class="globaz.apg.db.droits.APPeriodeAPG"
 					 relationType="1_TO_N"
