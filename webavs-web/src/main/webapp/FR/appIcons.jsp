@@ -301,7 +301,7 @@
                         </li>
                         <li>
                             <a href="<%=request.getContextPath()%>/apg?typePrestation=PROCHE_AIDANT" target="_top">
-                                Proche aidant
+                                Allocation Prise en charge
                             </a>
                         </li>
                         <%}%>
