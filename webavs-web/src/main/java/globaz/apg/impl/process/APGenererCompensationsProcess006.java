@@ -617,28 +617,19 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
 
         // adresse de courrier absente
 
-        switch(droitLAPG.getGenreService()) {
-            case IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE:
-                if (JadeStringUtil.isEmpty(PRTiersHelper.getAdresseCourrierFormatee(getSession(),
-                        repartitionJointPrestation.getIdTiers(), repartitionJointPrestation.getIdAffilie(),
-                        APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue()))) {
-
-                    String nss = "";
-                    if (tw != null) {
-                        nss = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
-                    }
-                    final String nom = repartitionJointPrestation.getNom();
-                    final String idPrestationAPG = repartitionJointPrestation.getIdPrestationApg();
-                    final String messageAdresseAbsente = getSession().getLabel("ADRESSE_COURRIER_ABSENTE");
-
-                    memoryLog(messageAdresseAbsente, FWMessage.ERREUR, nom, nss, idPrestationAPG);
-                    isOk = false;
-                }
-                break;
+        boolean isProcheAidant = false;
+        // adresse de courrier absente
+        switch(droitLAPG.getGenreService()){
             case IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT:
+                isProcheAidant = true;
+            case IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE :
+                String domaine = APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue();
+                if(isProcheAidant){
+                    domaine = APProperties.DOMAINE_ADRESSE_APG_PROCHE_AIDANT.getValue();
+                }
                 if (JadeStringUtil.isEmpty(PRTiersHelper.getAdresseCourrierFormatee(getSession(),
                         repartitionJointPrestation.getIdTiers(), repartitionJointPrestation.getIdAffilie(),
-                        APProperties.DOMAINE_ADRESSE_APG_PROCHE_AIDANT.getValue()))) {
+                        domaine))) {
 
                     String nss = "";
                     if (tw != null) {
@@ -797,7 +788,6 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
      * 
      * @param session
      * @param idParent
-     * @param idLot
      * @return
      * @throws Exception
      */

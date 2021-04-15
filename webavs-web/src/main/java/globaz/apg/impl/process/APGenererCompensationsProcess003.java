@@ -197,25 +197,19 @@ public class APGenererCompensationsProcess003 extends BProcess implements IAPGen
 
                 // adresse de courrier absente
 
-                switch(droitLAPG.getGenreService()) {
-                    case IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE:
-                        if (JadeStringUtil.isEmpty(PRTiersHelper.getAdresseCourrierFormatee(getSession(),
-                                repartitionJointPrestation.getIdTiers(), repartitionJointPrestation.getIdAffilie(),
-                                APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue()))) {
-
-                            String noAVS = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
-
-                            getMemoryLog().logMessage(
-                                    java.text.MessageFormat.format(getSession().getLabel("ADRESSE_COURRIER_ABSENTE"),
-                                            new Object[] { repartitionJointPrestation.getNom(), noAVS,
-                                                    repartitionJointPrestation.getIdPrestationApg() }), FWMessage.ERREUR,
-                                    getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
-                        }
-                        break;
+                boolean isProcheAidant = false;
+                // adresse de courrier absente
+                switch(droitLAPG.getGenreService()){
                     case IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT:
+                        isProcheAidant = true;
+                    case IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE :
+                        String domaine = APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue();
+                        if(isProcheAidant){
+                            domaine = APProperties.DOMAINE_ADRESSE_APG_PROCHE_AIDANT.getValue();
+                        }
                         if (JadeStringUtil.isEmpty(PRTiersHelper.getAdresseCourrierFormatee(getSession(),
                                 repartitionJointPrestation.getIdTiers(), repartitionJointPrestation.getIdAffilie(),
-                                APProperties.DOMAINE_ADRESSE_APG_PROCHE_AIDANT.getValue()))) {
+                                domaine))) {
 
                             String noAVS = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
 

@@ -207,12 +207,19 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                             FWMessage.ERREUR, getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
                 }
 
+                boolean isProcheAidant = false;
                 // adresse de courrier absente
                 switch(droitLAPG.getGenreService()){
+                    case IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT:
+                        isProcheAidant = true;
                     case IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE :
+                        String domaine = APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue();
+                        if(isProcheAidant){
+                            domaine = APProperties.DOMAINE_ADRESSE_APG_PROCHE_AIDANT.getValue();
+                        }
                         if (JadeStringUtil.isEmpty(
                                 PRTiersHelper.getAdresseCourrierFormatee(getSession(), repartitionJointPrestation.getIdTiers(),
-                                        repartitionJointPrestation.getIdAffilie(),  APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue()))) {
+                                        repartitionJointPrestation.getIdAffilie(),  domaine))) {
 
                             String noAVS = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
 
