@@ -277,13 +277,13 @@ public class APImportationAPGPandemie extends BProcess {
                             if (isAssimEmployeur) {
                                 adresseEmailAssure = message.getContent().getActivity().getCompanies().getCompany().get(0).getEmail();
                             } else {
-                            adresseEmailAssure = message.getContent().getInsuredAddress().getEmail();
+                                adresseEmailAssure = message.getContent().getInsuredAddress().getEmail();
                             }
 
                             if (isTraitementSuccess) {
                                 for(String nss : nssTraites) {
-                                savingFileInDb(nss, destTmpXMLPath, state);
-                                infos.add("Traitement du fichier suivant réussi : " + nameOriginalZipFile);
+                                    savingFileInDb(nss, destTmpXMLPath, state);
+                                    infos.add("Traitement du fichier suivant réussi : " + nameOriginalZipFile);
                                     infos.add("Assuré(s) concerné(s) : " + nss);
                                 }
                             }
@@ -503,7 +503,7 @@ public class APImportationAPGPandemie extends BProcess {
             if (!(Objects.isNull(storageFolder) || (storageFolder.isEmpty()))) {
                 // Création du répertoire de storage
                 for (String nss : nssTraites) {
-                storageFolderTemp = CommonFilesUtils.createPathFiles(nss, storageFolder);
+                    storageFolderTemp = CommonFilesUtils.createPathFiles(nss, storageFolder);
                 }
 
                 // copy du zip dans le storage
@@ -833,47 +833,47 @@ public class APImportationAPGPandemie extends BProcess {
         boolean isTraitementSuccess = true;
         PaymentContact adressePaiement = content.getPaymentContact();
 
-                // Création du contact avec l'email récupéré du XML
+        // Création du contact avec l'email récupéré du XML
         createContact(tiers, email);
 
-                // Création rôle APG du tiers
-                LOG.info("ImportAPGPandemie - Creating APG Role...");
-                creationRoleApgTiers(tiers.getIdTiers());
+        // Création rôle APG du tiers
+        LOG.info("ImportAPGPandemie - Creating APG Role...");
+        creationRoleApgTiers(tiers.getIdTiers());
 
-                // Création de l'adresse APG-Pandémie du tiers
+        // Création de l'adresse APG-Pandémie du tiers
         // Vague 2
         String npaFormat = getNpaFormat(getZipCode(adresseAssure));
 
-                if(isDonneesAdresseValide(adresseAssure, npaFormat)) {
-                    LOG.info("ImportAPGPandemie - Creating Adresses...");
-                    createAdresseApgPandemie(tiers, adresseAssure, adressePaiement, npaFormat);
-                }else{
-                    LOG.warn("ImportAPGPandemie - Adresse non créée (données non remplies)");
-                    infos.add("Adresse non créée : Les données récupérées ne sont pas complètes / correctes");
-                }
+        if(isDonneesAdresseValide(adresseAssure, npaFormat)) {
+            LOG.info("ImportAPGPandemie - Creating Adresses...");
+            createAdresseApgPandemie(tiers, adresseAssure, adressePaiement, npaFormat);
+        }else{
+            LOG.warn("ImportAPGPandemie - Adresse non créée (données non remplies)");
+            infos.add("Adresse non créée : Les données récupérées ne sont pas complètes / correctes");
+        }
 
-                // Création de la demande du droit
-                LOG.info("ImportAPGPandemie - Creating Demande APG Pandemie...");
-                PRDemande demande = creationDemande(tiers.getIdTiers());
+        // Création de la demande du droit
+        LOG.info("ImportAPGPandemie - Creating Demande APG Pandemie...");
+        PRDemande demande = creationDemande(tiers.getIdTiers());
 
-                // Création du droit
-                LOG.info("ImportAPGPandemie - Creating Droit APG Pandemie...");
-                APDroitPandemie newDroit = creationDroit(demande, content, transaction, npaFormat);
-                // Création des périodes du droit
-                LOG.info("ImportAPGPandemie - Creating Periodes APG Pandemie...");
-                createPeriodes(transaction, newDroit.getIdDroit());
+        // Création du droit
+        LOG.info("ImportAPGPandemie - Creating Droit APG Pandemie...");
+        APDroitPandemie newDroit = creationDroit(demande, content, transaction, npaFormat, salary);
+        // Création des périodes du droit
+        LOG.info("ImportAPGPandemie - Creating Periodes APG Pandemie...");
+        createPeriodes(transaction, newDroit.getIdDroit());
 
-                // Création droit pandémie
-                LOG.info("ImportAPGPandemie - Creating Data Pandemie...");
+        // Création droit pandémie
+        LOG.info("ImportAPGPandemie - Creating Data Pandemie...");
         APDroitPanSituation newDroitPademie = creationDroitPandemie(newDroit, membresFamilleAssure, isIndependant, adressePaiement, activiteProfessionnelle, salary, activiteArret, transaction);
 
 
 
-                // Création de la situation professionnelle pour indépendant
-                LOG.info("ImportAPGPandemie - Creating Situation Professionnelle Pandemie...");
+        // Création de la situation professionnelle pour indépendant
+        LOG.info("ImportAPGPandemie - Creating Situation Professionnelle Pandemie...");
         if(isEmploye){
             creerSituationProfQuarantaine(transaction, newDroit, salary);
-                }else{
+        }else{
             // Si le tiers possédait déjà un droit pandémie, on créé la même situation professionnelle qu'il y avait de ce dernier droit
             boolean situationProfessionnelleCreeSucess = creerSituationProfPanSelonDroitPrecedent(getSession(), transaction, newDroit, tiers.getIdTiers());
             // Si aucune situation professionnelle n'a été créé (pas de droit pandémie, ou problème de création
@@ -884,18 +884,18 @@ public class APImportationAPGPandemie extends BProcess {
                     creerSituationProfAssimileEmployeur(transaction, nss, newDroit, salary);
                 }
             }
-                }
-                if (!hasError(bsession, transaction)) {
-                    transaction.commit();
-                    LOG.info("ImportAPGPandemie - Traitement in success...");
-                }else{
-                    transaction.rollback();
-                    isProcessErrorTechnique = true;
-                    errors.add("Un problème est survenu lors de la création du droit pour cet assuré : "+nss);
-                    LOG.error("APImportationAPGPandemie#processCreationDroitGlobal : erreur lors de la création du droit\nSession errors : "
-                            +bsession.getErrors()+"\nTransactions errors : "+transaction.getErrors());
-                    isTraitementSuccess = false;
-                }
+        }
+        if (!hasError(bsession, transaction)) {
+            transaction.commit();
+            LOG.info("ImportAPGPandemie - Traitement in success...");
+        }else{
+            transaction.rollback();
+            isProcessErrorTechnique = true;
+            errors.add("Un problème est survenu lors de la création du droit pour cet assuré : "+nss);
+            LOG.error("APImportationAPGPandemie#processCreationDroitGlobal : erreur lors de la création du droit\nSession errors : "
+                    +bsession.getErrors()+"\nTransactions errors : "+transaction.getErrors());
+            isTraitementSuccess = false;
+        }
 
 
         return isTraitementSuccess;
@@ -1162,8 +1162,8 @@ public class APImportationAPGPandemie extends BProcess {
                         dateDebutXml = activityCessation.getQuarantineCessation().getQuarantineTravel().getFrom();
                         dateFinXml = activityCessation.getQuarantineCessation().getQuarantineTravel().getTo();
                     } else {
-                    dateDebutXml = activityCessation.getQuarantineCessation().getQuarantinePeriod().getFrom();
-                    dateFinXml = activityCessation.getQuarantineCessation().getQuarantinePeriod().getTo();
+                        dateDebutXml = activityCessation.getQuarantineCessation().getQuarantinePeriod().getFrom();
+                        dateFinXml = activityCessation.getQuarantineCessation().getQuarantinePeriod().getTo();
                     }
                 } else if (Objects.nonNull(activityCessation.getIndependantWorkClosureCessation()) && activityCessation.getIndependantWorkClosureCessation().isIsSelected()) {
                     dateDebutXml = activityCessation.getIndependantWorkClosureCessation().getIndependantWorkClosurePeriod().getFrom();
@@ -1378,9 +1378,9 @@ public class APImportationAPGPandemie extends BProcess {
             // Activity
             droitPanSituation.setActiviteSalarie(!isIndependant);
             if (Objects.nonNull(activity.getActivityCategory())) {
-            droitPanSituation.setCategorieEntreprise(Objects.isNull(activity.getActivityCategory().getActivityType())?
-                    "": transformCatEntrepriseToCode(activity.getActivityCategory().getActivityType()));
-            droitPanSituation.setCategorieEntrepriseLibelle(activity.getActivityCategory().getActivityOtherDetail());
+                droitPanSituation.setCategorieEntreprise(Objects.isNull(activity.getActivityCategory().getActivityType())?
+                        "": transformCatEntrepriseToCode(activity.getActivityCategory().getActivityType()));
+                droitPanSituation.setCategorieEntrepriseLibelle(activity.getActivityCategory().getActivityOtherDetail());
             }
             droitPanSituation.setCopieDecompteEmployeur(salary.isSendDecompteToEmployer());
             // ActivityCessation
@@ -1388,7 +1388,7 @@ public class APImportationAPGPandemie extends BProcess {
                 // Création de la situation Familiale
                 creationSituationFamiliale(membresFamilleAssure, droitPandemie.getId(), transaction);
                 // Vague 2
-                    droitPanSituation.setMotifGarde(Objects.isNull(activityCessation.getChildCareCessation().getChildCareCause()) ?
+                droitPanSituation.setMotifGarde(Objects.isNull(activityCessation.getChildCareCessation().getChildCareCause()) ?
                         "" : transformMotifGardeVague2ToCode(activityCessation.getChildCareCessation().getChildCareCause()));
 
                 // Vague 1
@@ -1424,20 +1424,20 @@ public class APImportationAPGPandemie extends BProcess {
             }
 
             // Vague 2
-             if (Objects.nonNull(activityCessation.getActivityLimitationCessation()) && activityCessation.getActivityLimitationCessation().isIsSelected()) {
-                 droitPanSituation.setDateDebutActiviteLimitee(Objects.isNull(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getFrom()) ?
-                         "" : tranformGregDateToGlobDate(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getFrom()));
-                 droitPanSituation.setDateFinActiviteLimitee(Objects.isNull(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getTo()) ?
-                         "" : tranformGregDateToGlobDate(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getTo()));
-                 droitPanSituation.setStartDateActiviteLimitee(Objects.isNull(activityCessation.getActivityLimitationCessation().getActivityDateStart()) ?
-                         "" : tranformGregDateToGlobDate(activityCessation.getActivityLimitationCessation().getActivityDateStart()));
-                 droitPanSituation.setLossValueActiviteLimitee(Objects.isNull(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getLossValue()) ?
-                         "" : String.valueOf(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getLossValue()));
-                 droitPanSituation.setUnitActiviteLimitee(Objects.isNull(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getUnit()) ?
-                         "" : String.valueOf(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getUnit()));
-                 droitPanSituation.setReasonActiviteLimitee(Objects.isNull(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getReason()) ?
-                         "" : activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getReason());
-             }
+            if (Objects.nonNull(activityCessation.getActivityLimitationCessation()) && activityCessation.getActivityLimitationCessation().isIsSelected()) {
+                droitPanSituation.setDateDebutActiviteLimitee(Objects.isNull(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getFrom()) ?
+                        "" : tranformGregDateToGlobDate(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getFrom()));
+                droitPanSituation.setDateFinActiviteLimitee(Objects.isNull(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getTo()) ?
+                        "" : tranformGregDateToGlobDate(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getTo()));
+                droitPanSituation.setStartDateActiviteLimitee(Objects.isNull(activityCessation.getActivityLimitationCessation().getActivityDateStart()) ?
+                        "" : tranformGregDateToGlobDate(activityCessation.getActivityLimitationCessation().getActivityDateStart()));
+                droitPanSituation.setLossValueActiviteLimitee(Objects.isNull(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getLossValue()) ?
+                        "" : String.valueOf(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getLossValue()));
+                droitPanSituation.setUnitActiviteLimitee(Objects.isNull(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getUnit()) ?
+                        "" : String.valueOf(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getUnit()));
+                droitPanSituation.setReasonActiviteLimitee(Objects.isNull(activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getReason()) ?
+                        "" : activityCessation.getActivityLimitationCessation().getLossOfIncomeTurnoverPeriod().getReason());
+            }
             if (Objects.nonNull(activityCessation.getEventCessation()) && activityCessation.getEventCessation().isIsSelected()) {
                 // Deprecated
 //                droitPanSituation.setDateDebutManifestationAnnulee(tranformGregDateToGlobDate(activityCessation.getEventCessation().getEventPeriod().getEventDate()));
@@ -1583,7 +1583,7 @@ public class APImportationAPGPandemie extends BProcess {
         }
     }
 
-    private APDroitPandemie creationDroit(PRDemande demande, Content content, BTransaction transaction, String npa) throws Exception {
+    private APDroitPandemie creationDroit(PRDemande demande, Content content, BTransaction transaction, String npa, Salary salary) throws Exception {
         APDroitPandemie droitPandemie = new APDroitPandemie();
         droitPandemie.setSession(bsession);
         try {
@@ -1597,7 +1597,7 @@ public class APImportationAPGPandemie extends BProcess {
             droitPandemie.setDateReception(date.getSwissValue());
             droitPandemie.setDateDebutDroit(getDateDebutDroit());
             droitPandemie.setDateFinDroit(getDateFinDroit());
-            droitPandemie.setIsSoumisImpotSource(content.getActivity().getSalary().isWithholdingTax());
+            droitPandemie.setIsSoumisImpotSource(salary.isWithholdingTax());
             droitPandemie.setNpa(npa);
             droitPandemie.setPays("100");
             // On met l'id du Gestionnaire, s'il s'agit d'une demande faite par un gestionnaire
