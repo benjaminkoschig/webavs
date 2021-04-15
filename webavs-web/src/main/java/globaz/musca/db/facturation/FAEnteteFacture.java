@@ -117,6 +117,8 @@ public class FAEnteteFacture extends BEntity implements IFAEnteteFacture, Serial
 
     public static final String FIELD_REFCOLLABORATEUR = "REFCOLLABORATEUR";
     public static final String FIELD_REFERENCE_FACTURE = "REFERENCEFACTURE";
+
+    public static final String FIELD_EBILL_TRANSACTION_ID = "EBILLTRANSACTIONID";
     public static final String FIELD_TOTALFACTURE = "TOTALFACTURE";
     public final static String TABLE_ADRESSE_PAYEMENT = "TIADRPP"; // AP
 
@@ -150,7 +152,8 @@ public class FAEnteteFacture extends BEntity implements IFAEnteteFacture, Serial
             + FAEnteteFacture.FIELD_ID_DOMAINE_LVS + ", " + FAEnteteFacture.TABLE_FAENTFP + "."
             + FAEnteteFacture.FIELD_ID_DOMAINE_REMBOURSEMENT + ", " + FAEnteteFacture.TABLE_FAENTFP + "."
             + FAEnteteFacture.FIELD_ESTRENTIERNA + ", " + FAEnteteFacture.TABLE_FAENTFP + "."
-            + FAEnteteFacture.FIELD_ID_CONTROLE;
+            + FAEnteteFacture.FIELD_ID_CONTROLE + ", " + FAEnteteFacture.TABLE_FAENTFP + "."
+            + FAEnteteFacture.FIELD_EBILL_TRANSACTION_ID;
 
     private ITITiers _tiers = null;
     private String dateReceptionDS = "";
@@ -189,6 +192,7 @@ public class FAEnteteFacture extends BEntity implements IFAEnteteFacture, Serial
     private boolean processusMasse = false;
     private String referenceFacture = "";
     private String remarque = "";
+    private String eBillTransactionID = "";
 
     private String tierDesignation1 = "";
 
@@ -528,6 +532,7 @@ public class FAEnteteFacture extends BEntity implements IFAEnteteFacture, Serial
         idControle = statement.dbReadNumeric(FAEnteteFacture.FIELD_ID_CONTROLE);
         idCSModeImpression = statement.dbReadNumeric(FAEnteteFacture.FIELD_MODIMP);
         referenceFacture = statement.dbReadString(FAEnteteFacture.FIELD_REFERENCE_FACTURE);
+        eBillTransactionID = statement.dbReadString(FAEnteteFacture.FIELD_EBILL_TRANSACTION_ID);
 
         if (isUseEntityForLSV()) {
             idTiAdressePaiement = statement.dbReadNumeric(FAEnteteFacture.FIELD_AAP_ADRESSE_PAYEMENT);
@@ -702,6 +707,9 @@ public class FAEnteteFacture extends BEntity implements IFAEnteteFacture, Serial
                 this._dbWriteNumeric(statement.getTransaction(), getIdCSModeImpression(), "idCSModeImpression"));
         statement.writeField(FAEnteteFacture.FIELD_REFERENCE_FACTURE,
                 this._dbWriteString(statement.getTransaction(), getReferenceFacture(), "referenceFacture"));
+        statement.writeField(FAEnteteFacture.FIELD_EBILL_TRANSACTION_ID,
+                this._dbWriteString(statement.getTransaction(), geteBillTransactionID(), "eBillTransactionID"));
+
     }
 
     /*
@@ -1269,7 +1277,7 @@ public class FAEnteteFacture extends BEntity implements IFAEnteteFacture, Serial
     }
 
     /**
-     * @see sIFAEnteteFacture#getRemarque() Retourne le texte de la remarque avec l'idremarque (FAREMAP) contenue dans
+     * @see IFAEnteteFacture#getRemarque() Retourne le texte de la remarque avec l'idremarque (FAREMAP) contenue dans
      *      l'entête.
      */
     @Override
@@ -1364,6 +1372,10 @@ public class FAEnteteFacture extends BEntity implements IFAEnteteFacture, Serial
     @Override
     public String getTotalFacture() {
         return JANumberFormatter.fmt(totalFacture.toString(), true, true, false, 2);
+    }
+
+    public FWCurrency getTotalFactureCurrency() {
+        return new FWCurrency(totalFacture);
     }
 
     public String getTypeDescription() {
@@ -1690,6 +1702,18 @@ public class FAEnteteFacture extends BEntity implements IFAEnteteFacture, Serial
         } else {
             idCSModeImpression = FAEnteteFacture.CS_MODE_IMP_STANDARD;
         }
+    }
+
+    public void seteBillTransactionID(String eBillTransactionID) {
+        this.eBillTransactionID = eBillTransactionID;
+    }
+
+    public String geteBillTransactionID() {
+        return eBillTransactionID;
+    }
+
+    public void addEBillTransactionID(BTransaction transaction) throws Exception {
+        seteBillTransactionID(this._incCounter(transaction, "", FIELD_EBILL_TRANSACTION_ID));
     }
 
     @Override

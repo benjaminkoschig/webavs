@@ -1,7 +1,6 @@
 package globaz.osiris.print.itext;
 
 import ch.globaz.common.properties.CommonProperties;
-import ch.globaz.vulpecula.documents.DocumentConstants;
 import globaz.aquila.api.ICOApplication;
 import globaz.aquila.api.ICOEtape;
 import globaz.aquila.api.ICOGestionContentieuxExterne;
@@ -32,12 +31,9 @@ import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.admin.user.bean.JadeUser;
 import globaz.jade.admin.user.service.JadeUserService;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.musca.api.musca.PaireIdExterneEBill;
 import globaz.musca.application.FAApplication;
-import globaz.musca.db.facturation.FAAfact;
-import globaz.musca.db.facturation.FAEnteteFacture;
-import globaz.musca.db.facturation.FAModuleFacturation;
-import globaz.musca.db.facturation.FAModulePassage;
-import globaz.musca.db.facturation.FAPassage;
+import globaz.musca.db.facturation.*;
 import globaz.musca.external.ServicesFacturation;
 import globaz.musca.itext.FAImpressionFacture_Param;
 import globaz.musca.process.FAImpressionFactureProcess;
@@ -64,12 +60,7 @@ import globaz.osiris.utils.CADateUtil;
 import globaz.pyxis.application.TIApplication;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
@@ -101,6 +92,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
     private String montantMinimeNeg = null;
     private String montantMinimePos = null;
     private String montantSansCentime;
+    public Map<PaireIdExterneEBill, List<Map>> lignesParPaireIdExterneEBill = new LinkedHashMap();
 
     private FAPassage passage;
 
@@ -237,6 +229,8 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                     }
                 }
             }
+            String test = getDocumentInfo().getOriginalFileName();
+            String test2 = getDocumentInfo().getCurrentFileName();
         } catch (Exception e) {
             getDocumentInfo().setDocumentProperty("numero.affilie.non.formatte", numAff);
         }
@@ -521,7 +515,10 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                     loadSection();
                 }
 
+                //Extrait les lignes dans une liste
                 List data = _buildLignes();
+                // Met les lignes trouvées dans une hashMap identifié de manière unique par une pair d'idExterne
+                lignesParPaireIdExterneEBill.put(new PaireIdExterneEBill(afact.getIdExterneRole(), afact.getIdExterneFactureCompensation(), _getMontantApresCompensation()), data);
 
                 super.setParametres(FAImpressionFacture_Param.P_TOTAL_ROW, new Integer(data.size()));
                 super.setDataSource(data.toArray(new Object[data.size()]));
@@ -1372,5 +1369,13 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
             headerOnEachPage = true;
         }
         return headerOnEachPage;
+    }
+
+    public Map<PaireIdExterneEBill, List<Map>> getLignesParPaireIdExterneEBill() {
+        return lignesParPaireIdExterneEBill;
+    }
+
+    public void setLignesParPaireIdExterneEBill(Map<PaireIdExterneEBill, List<Map>> lignesParPaireIdExterneEBill) {
+        this.lignesParPaireIdExterneEBill = lignesParPaireIdExterneEBill;
     }
 }

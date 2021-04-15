@@ -194,4 +194,18 @@
                        printMethod="javax.xml.bind.DatatypeConverter.printInt"/>
     </jaxb:bindings>
 
+    <jaxb:bindings schemaLocation="../xsd/acor/xsd/Typebase/General/Caisses-OAI-Agences-types.xsd"
+                   node="/xs:schema/xs:simpleType[@name='IrgendeineZweigstelle_weakType']">
+        <jaxb:javaType name="java.lang.Integer"
+                       parseMethod="javax.xml.bind.DatatypeConverter.parseInt"
+                       printMethod="javax.xml.bind.DatatypeConverter.printInt"/>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/acor/xsd/acor-rentes-in-host.xsd"
+                   node="/xs:schema/xs:simpleType[@name='acorMutationscode_Type']">
+        <jaxb:javaType name="java.lang.Integer"
+                       parseMethod="javax.xml.bind.DatatypeConverter.parseInt"
+                       printMethod="javax.xml.bind.DatatypeConverter.printInt"/>
+    </jaxb:bindings>
+
 </jaxb:bindings>

@@ -234,7 +234,7 @@
                                 <include>acor/xsd/annoncesRc/annoncesCompta/*.xsd</include>
                                 <include>acor/xsd/annoncesRc/annoncesPC/*.xsd</include>
                                 <include>acor/xsd/annoncesRc/assuranceMilitaire/*.xsd</include>
-                                <include>acor/xsd/annoncesRc/assuranceCACI/*.xsd</include>
+                                <include>acor/xsd/annoncesRc/CACI/*.xsd</include>
                                 <include>acor/xsd/annoncesRc/Prestations/*.xsd</include>
                                 <include>acor/xsd/annoncesRc/testAnnonce/*.xsd</include>
                                 <include>acor/xsd/euro/*.xsd</include>
@@ -301,6 +301,42 @@
                             <bindingDirectory>src/main/resources/xjb</bindingDirectory>
                             <bindingIncludes>
                                 <include>aquila-bindings.xjb</include>
+                            </bindingIncludes>
+                        </configuration>
+                    </execution>
+					<execution>
+                        <id>generate-ebill-invoice</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <specVersion>2.1</specVersion>
+                            <schemaDirectory>src/main/resources/xsd</schemaDirectory>
+                            <generateDirectory>target/generated-sources/xjc-ebill-invoice</generateDirectory>
+                            <schemaIncludes>
+                                <include>ebill/invoice/*.xsd</include>
+                            </schemaIncludes>
+                            <bindingDirectory>src/main/resources/xjb</bindingDirectory>
+                            <bindingIncludes>
+                                <include>ebill-invoice-bindings.xjb</include>
+                            </bindingIncludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-ebill-protocole</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <specVersion>2.1</specVersion>
+                            <schemaDirectory>src/main/resources/xsd</schemaDirectory>
+                            <generateDirectory>target/generated-sources/xjc-ebill-protocole</generateDirectory>
+                            <schemaIncludes>
+                                <include>ebill/protocole/*.xsd</include>
+                            </schemaIncludes>
+                            <bindingDirectory>src/main/resources/xjb</bindingDirectory>
+                            <bindingIncludes>
+                                <include>ebill-protocole-bindings.xjb</include>
                             </bindingIncludes>
                         </configuration>
                     </execution>
@@ -972,6 +1008,61 @@
             <groupId>ch.globaz</groupId>
             <artifactId>list-adapt-rentes</artifactId>
         </dependency>
+        <!-- ACOR V4 WEB TOKEN-->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.11.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.11.1</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-gson</artifactId> <!-- or jjwt-jackson if jackson is preferred -->
+            <version>0.11.1</version>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- ACOR V4 WebServices REST -->
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+        <!--DEPENDANCES POUR TOMCAT EN LOCAL-->
+<!--        <dependency>-->
+<!--            <groupId>org.glassfish.jersey.core</groupId>-->
+<!--            <artifactId>jersey-server</artifactId>-->
+<!--            <version>2.13</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.glassfish.jersey.containers</groupId>-->
+<!--            <artifactId>jersey-container-servlet</artifactId>-->
+<!--            <version>2.13</version>-->
+<!--        </dependency>-->
+        <!--FIN DEPENDANCES POUR TOMCAT EN LOCAL-->
+        <!-- ACOR V4 WebServices CORS -->
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <!-- ACOR V4 String to JSON -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20200518</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.5.3</version>
+        </dependency>
+        <!-- END ACOR V4 -->
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

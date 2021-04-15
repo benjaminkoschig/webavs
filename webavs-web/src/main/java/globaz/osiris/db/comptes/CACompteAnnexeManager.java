@@ -52,6 +52,7 @@ public class CACompteAnnexeManager extends BManager implements Serializable {
     private boolean motifBloqueDefini = false;
     public String orderBy = new String();
     private String untilIdExterneRole = new String();
+    private String forEBillAccountID;
 
     private String untilNoSatConsul = new String();
 
@@ -425,6 +426,14 @@ public class CACompteAnnexeManager extends BManager implements Serializable {
             }
 
             sqlWhere += CACompteAnnexe.FIELD_IDEXTERNEROLE + " in (" + ids + ")";
+        }
+
+        if (!JadeStringUtil.isBlank(getForEBillAccountID())) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+            sqlWhere += CACompteAnnexe.FIELD_EBILL_ID + " = "
+                    + this._dbWriteString(statement.getTransaction(), getForEBillAccountID());
         }
 
         return sqlWhere;
@@ -948,4 +957,11 @@ public class CACompteAnnexeManager extends BManager implements Serializable {
         verrouille = boolean1;
     }
 
+    public String getForEBillAccountID() {
+        return forEBillAccountID;
+    }
+
+    public void setForEBillAccountID(String forEBillAccountID) {
+        this.forEBillAccountID = forEBillAccountID;
+    }
 }

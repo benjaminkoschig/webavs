@@ -227,7 +227,7 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
     /* CHANGED */protected int nbImprimer = 0; // compteur d'entêtes de facture
     // nombre d'entêtes de facture que le manager contient
     protected int nbPasImprime = 0;
-    private int shouldNbImprimer = 0;
+    protected int shouldNbImprimer = 0;
     private int sizeManager = 0;
     private java.lang.String tillIdExterneRole = new String();
     // public static final int TAILLE_LOT =
@@ -341,7 +341,6 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
 
         BStatement statement = null;
         try {
-            // IFAPrintDoc enteteFacture = null;
             FAEnteteFacture entete = null;
 
             statement = manager.cursorOpen(getTransaction());
@@ -1162,7 +1161,7 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
         return tillIdExterneRole;
     }
 
-    private String giveConditionInfoRom336() {
+    protected String giveConditionInfoRom336() {
 
         StringBuffer theConditionInfoRom336 = new StringBuffer();
 

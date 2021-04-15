@@ -29,7 +29,6 @@ import java.util.List;
  *         Window>Preferences>Java>Code Generation.
  */
 public class FASolde_BVR extends FAImpressionGenerique {
-    // private FAAfactManager manager = null;
     protected CAImpressionBulletinsSoldes_Doc _document = null;
     private FAAfactManager manager = null;
 
@@ -41,7 +40,7 @@ public class FASolde_BVR extends FAImpressionGenerique {
     }
 
     /**
-     * @see globaz.musca.external.IntModuleImpression#beginPrinting(IFAPassage, FAImpressionFactureProcess)
+     * @see globaz.musca.external.IntModuleImpression#beginPrinting(IFAPassage, IFAImpressionFactureProcess)
      */
     @Override
     public boolean beginPrinting(IFAPassage intPassage, IFAImpressionFactureProcess c) throws Exception {

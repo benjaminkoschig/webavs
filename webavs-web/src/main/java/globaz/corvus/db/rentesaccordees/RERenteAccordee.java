@@ -294,9 +294,9 @@ public class RERenteAccordee extends REPrestationsAccordees {
 
         if (!JadeStringUtil.isBlankOrZero(dateFinDroitPrevueEcheance)) {
             if (!PRDateValidator.isDateFormat_MMxAAAA(getDateFinDroitPrevueEcheance())) {
-                _addError(statement.getTransaction(), getSession().getLabel("ERREUR_DATE_FIN_DROIT_ECHEANCE_NON_VALID"));
+                _addError(statement.getTransaction(), getSession().getLabel("ERREUR_DATE_FIN_DROIT_ECHEANCE_NON_VALIDE"));
                 setMsgType(FWViewBeanInterface.ERROR);
-                setMessage(getSession().getLabel("ERREUR_DATE_FIN_DROIT_ECHEANCE_NON_VALID"));
+                setMessage(getSession().getLabel("ERREUR_DATE_FIN_DROIT_ECHEANCE_NON_VALIDE"));
             }
         }
 

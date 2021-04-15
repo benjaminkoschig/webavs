@@ -10,6 +10,11 @@
 <%@ page import="globaz.prestation.acor.PRACORConst" %>
 <%@ page import="globaz.prestation.jsp.taglib.PRDisplayRequerantInfoTag" %>
 <%@ page import="globaz.framework.bean.FWViewBeanInterface" %>
+<%@ page import="globaz.corvus.acor.utils.Acor2020TokenService" %>
+<%@ page import="globaz.prestation.interfaces.tiers.PRTiersWrapper" %>
+<%@ page import="globaz.prestation.interfaces.tiers.PRTiersHelper" %>
+<%@ page import="globaz.jade.client.util.JadeDateUtil" %>
+<%@ page import="java.util.Date" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib uri="/corvusRoot/corvustaglib.tld" prefix="re" %>
@@ -17,6 +22,9 @@
     idEcran = "PRE0008";
 
     RECalculACORDemandeRenteViewBean viewBean = (RECalculACORDemandeRenteViewBean) session.getAttribute("viewBean");
+
+    BSession bSession = (globaz.globall.db.BSession) controller.getSession();
+    PRTiersWrapper tw = PRTiersHelper.getTiersById(bSession, viewBean.getIdTiers());
 
     String requerantDescription = request.getParameter("requerantDescription");
     selectedIdValue = request.getParameter("selectedId");
@@ -58,6 +66,11 @@
 
     function exporterScriptACOR() {
         document.forms[0].elements('userAction').value = "<%=IREActions.ACTION_CALCUL_DEMANDE_RENTE%>.actionExporterScriptACOR";
+        document.forms[0].submit();
+    }
+
+    function callACORWeb() {
+        document.forms[0].elements('userAction').value = "<%=IREActions.ACTION_CALCUL_DEMANDE_RENTE%>.actionCallACORWeb";
         document.forms[0].submit();
     }
 
@@ -189,13 +202,18 @@
             ajaxUtils.addOverlay($('html'));
             importXML();
         });
+        $('#lienAcorWeb').one('click', function () {
+            ajaxUtils.addOverlay($('html'));
+            document.forms("mainForm").userAction.value = "corvus.rentesaccordees.renteAccordeeJointDemandeRente.chercher";
+            document.forms[0].submit();
+        });
     });
 </script>
 <script language="vbscript">
 <%
     if (viewBean.isFileContent()) {
         System.out.println("B.1");
-        String dossierInHost = PRACORConst.dossierACOR((globaz.globall.db.BSession) controller.getSession());
+        String dossierInHost = PRACORConst.dossierACOR(bSession);
         System.out.println("B.2");
         dossierInHost += PRACORConst.DOSSIER_IN_HOST;
         System.out.println("B.3 " + dossierInHost);
@@ -211,7 +229,7 @@
 		fileSystemObj.DeleteFile "<%=filesToDelete%>"
 
 	<%
-    String startAcorCmd = viewBean.getStartAcorCmd((globaz.globall.db.BSession) controller.getSession());
+    String startAcorCmd = viewBean.getStartAcorCmd(bSession);
     System.out.println("B.5 " + startAcorCmd);
     java.util.Map filesContent = viewBean.getFilesContent();
 
@@ -241,6 +259,24 @@
 	Set objShell = CreateObject("WScript.shell")
 	objShell.Exec("<%=startAcorCmd%>")
 
+<%}else if(viewBean.isAcorV4Web()) {
+
+        String startNavigateurAcorCmd = viewBean.getStartNavigateurAcor(bSession);
+        Date actualDate = new Date();
+        String day = JadeDateUtil.getDMYDate(actualDate);
+        String token = Acor2020TokenService.createToken(viewBean, day, JadeDateUtil.getHMTime(actualDate), day, bSession);
+        String adresseWebAcor = viewBean.getAdresseWebACOR(bSession,"import",token);
+%>
+        Set shell = CreateObject ("Shell.Application")
+<%if (startNavigateurAcorCmd == null || startNavigateurAcorCmd.isEmpty()){%>
+
+        shell.Open "<%=adresseWebAcor%>"
+
+<%} else {%>
+
+        shell.ShellExecute "<%=startNavigateurAcorCmd%>", "<%=adresseWebAcor%>", "", "", 1
+
+<%}%>
 <%}%>
 
 
@@ -261,6 +297,9 @@
 </div>
 <tr>
     <td colspan="4">
+        <input type="hidden"
+               name="noAVSAssure"
+               value="<%=tw.getNSS()%>"/>
         <input type="hidden"
                name="contenuAnnoncePay"/>
         <input type="hidden"
@@ -306,11 +345,47 @@
     </p>
 </td>
 </tr>
-<%
-} else {
-%>
+<% } //TODO supprimer ce else
+else { %>
+<%--<%--%>
+<%--    // TODO Contrôle valeur Null--%>
+<%--} else if (REProperties.ACOR_UTILISER_VERSION_WEB.getBooleanValue()) {--%>
+<%--%>--%>
 <tr>
     <td colspan="4">
+        <h6>
+            <ct:FWLabel key="JSP_CADR_ETAPE_1"/>
+        </h6>
+        <p>
+            <a href="#" onclick="callACORWeb()">
+                <ct:FWLabel key="JSP_OUVRIR_ACOR_WEB"/>
+            </a>
+        </p>
+        <h6>
+            <ct:FWLabel key="JSP_CADR_ETAPE_2"/>
+        </h6>
+        <p>
+            <ct:FWLabel key="JSP_CADR_CALCULER_ACOR"/>
+        </p>
+        <h6>
+            <ct:FWLabel key="JSP_CADR_ETAPE_3"/>
+        </h6>
+        <p>
+            <ct:ifhasright element="<%=IREActions.ACTION_CALCUL_DEMANDE_RENTE %>" crud="u">
+                <a id="lienAcorWeb" href="#" name="lienAcorWeb">
+                    <ct:FWLabel key="JSP_AFFICHER_DONNEES_IMPORTEES_ACOR"/>
+                </a>
+            </ct:ifhasright>
+        </p>
+    </td>
+</tr>
+<%--<%--%>
+<%--    } else {--%>
+<%--%>--%>
+<tr>
+    <td colspan="4">
+        <p>---------------------------------------------------------------------------------------------</p>
+        <p>ANCIEN ACOR</p>
         <h6>
             <ct:FWLabel key="JSP_CADR_ETAPE_1"/>
         </h6>

@@ -203,6 +203,36 @@ public class RECalculACORDemandeRenteAction extends PRDefaultAction {
     }
 
     /**
+     * Méthode qui appelle le service Web ACOR v4
+     *
+     * @param session
+     * @param request
+     * @param response
+     * @param mainDispatcher
+     * @param viewBean
+     * @return
+     * @throws Exception
+     */
+    public String actionCallACORWeb(HttpSession session, HttpServletRequest request,
+                                           HttpServletResponse response, FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) throws Exception {
+
+        try {
+
+            // l'ecriture se fait depuis le helper
+            mainDispatcher.dispatch(viewBean, getAction());
+
+        } catch (Exception e) {
+            viewBean.setMsgType(FWViewBeanInterface.ERROR);
+            viewBean.setMessage(e.getMessage());
+        }
+        this.saveViewBean(viewBean, session);
+
+        FWAction action = FWAction.newInstance("corvus.acor.calculACORDemandeRente.reAfficher");
+        return this.getUserActionURL(request, action.toString());
+
+    }
+
+    /**
      * Sauve la feuille de calcul ACOR si besoin et importe les données contenues dans les fichiers retournes par ACOR
      * dans le cadre du calcul.
      * 

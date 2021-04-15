@@ -92,6 +92,13 @@ public class CAApplication extends globaz.globall.db.BApplication implements Ser
     public static final String PROPERTY_OSIRIS_CONTENTIEUX_AQUILA = "contentieuxAquila";
     public static final String PROPERTY_OSIRIS_CTX_AVS_UNIQUEMENT = "contentieuxAvsUniquement";
     public static final String PROPERTY_OSIRIS_DATE_VALEUR_BVR = "dateValeurBVR";
+
+    // propriétés eBill
+    public static final String PROPERTY_OSIRIS_EBILL_ACTIVE = "eBill.activer";
+    public static final String PROPERTY_OSIRIS_EBILL_BILLER_ID = "eBill.numero.BillerID";
+    public static final String PROPERTY_OSIRIS_EBILL_EMAILS = "osiris.eBill.email.traitements";
+    public static final String PROPERTY_OSIRIS_PLAGE_VALEURS_EBILL = "EBILLACNT";
+
     // propriétés de l'application
     public static final String PROPERTY_OSIRIS_EXTERNAL_APPLICATION = "osiris.application.externalApplication";
     public static final String PROPERTY_OSIRIS_FORMAT_ADMIN_NUM_AFFILIE = "formatAdminNumAffilie";

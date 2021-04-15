@@ -1623,6 +1623,15 @@ public class FAAfact extends BEntity implements Serializable, IFAPrintDoc, Clone
         return JANumberFormatter.fmt(masseFacture.toString(), true, false, true, 2);
     }
 
+    /**
+     * Retourne la masse facture au format Currency.
+     *
+     * @return globaz.framework.util.FWCurrency
+     */
+    public FWCurrency getMasseFactureToCurrency() {
+        return new FWCurrency(masseFacture);
+    }
+
     public String getMasseInitiale() {
         if (JadeStringUtil.endsWith(masseInitiale, "-")) {
             return masseInitiale;

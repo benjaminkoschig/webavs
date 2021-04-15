@@ -1,11 +1,17 @@
 package globaz.corvus.vb.acor;
 
+import ch.globaz.common.jadedb.TransactionWrapper;
+import ch.globaz.common.properties.PropertiesException;
+import globaz.corvus.properties.REProperties;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.PRACORException;
 import globaz.prestation.vb.PRAbstractViewBeanSupport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.PrintWriter;
 import java.util.Map;
 
@@ -18,6 +24,8 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
 
     // ~ Instance fields
     // ------------------------------------------------------------------------------------------------
+
+    private static final Logger LOG = LoggerFactory.getLogger(REAbstractCalculACORViewBean.class);
 
     private boolean calculable;
     private String contenuAnnoncePay;
@@ -160,6 +168,26 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
             e.printStackTrace();
             // Ne devrait jamais arriver !!!
             return "C:\\Acor\\" + PRACORConst.EXECUTABLE_ACOR + "\"";
+        }
+    }
+
+    public String getStartNavigateurAcor(BSession session) {
+        try {
+            return PRACORConst.navigateurACOR(session);
+        } catch (PRACORException e) {
+            e.printStackTrace();
+            // Ne devrait jamais arriver !!!
+            return "C:\\Program Files\\" + PRACORConst.EXECUTABLE_FIREFOX_ACOR;
+        }
+    }
+
+    public String getAdresseWebACOR(BSession session,String askAction, String token) {
+
+        try {
+            return REProperties.ACOR_ADRESSE_WEB.getValue() + askAction + "/"+ token;
+        } catch (PropertiesException e) {
+            LOG.warn("La propriété n'existe pas ou n'est pas renseigné :", e);
+            return "";
         }
     }
 

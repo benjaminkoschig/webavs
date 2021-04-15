@@ -63,6 +63,14 @@
 					<xs:element name="caisseAgence" type="trax:IrgendeineZweigstelle_weakType"/>
 					<xs:element name="adresseCaisse" type="rentes_in_host:organisationAdresseType"/>
 					<xs:element name="moisRapport">
+						<xs:annotation>
+							<xs:documentation>
+								0 = mois de traitement, 1 = mois suivant le mois de traitement.
+								This information is set (as a Date) in the PoolMeldungZurZAS/lot/PoolKopf/rc:Erstellungsdatum.
+								the total of amount payed (f_calcul/evenement/bases_calcul/decision/prestation/rente/versement/montant) with one month more if "moisRapport = 1"
+								(idem for the coresponding field of annonce.pay : f_calcul/annexes/pay
+							</xs:documentation>
+						</xs:annotation>
 						<xs:simpleType>
 							<xs:restriction base="xs:int">
 								<xs:enumeration value="0"/>

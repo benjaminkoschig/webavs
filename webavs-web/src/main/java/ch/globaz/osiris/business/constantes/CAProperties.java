@@ -18,6 +18,14 @@ public enum CAProperties implements IProperties {
     ISO_SEPA_FTP_USER("iso.sepa.ftp.user", "user sftp pour les transmission ISO20022"),
     ISO_SEPA_FTP_PASS("iso.sepa.ftp.pass", "pass sftp pour les transmission ISO20022 (pour la plateforme de test)"),
 
+    EBILL_FTP_HOST("eBill.ftp.host", "host sftp pour les factures eBill"),
+    EBILL_FTP_PORT("eBill.ftp.port", "port sftp pour les factures eBill"),
+    EBILL_FTP_USER("eBill.ftp.login", "user sftp pour les factures eBill"),
+    EBILL_FTP_KEY_PASSPHRASE("eBill.key.passphrase", "key passphrase pour eBill"),
+    EBILL_FTP_KNOWN_HOSTS("eBill.known.hosts", "known hosts file pour eBill"),
+    EBILL_FTP_IN("eBill.dossier.Inbox","nom du dossier pour les inscriptions et les traitements eBill"),
+    EBILL_FTP_OUT("eBill.dossier.Outbox","nom du dossier pour les factures eBill"),
+
     ISO_SEPA_FTP_CAMT054_HOST("iso.sepa.ftp.camt054.host", "host sftp pour les receptions camt054 ISO20022"),
     ISO_SEPA_FTP_CAMT054_PORT("iso.sepa.ftp.camt054.port", "port sftp pour les receptions camt054 ISO20022"),
     ISO_SEPA_FTP_CAMT054_USER("iso.sepa.ftp.camt054.user", "user sftp pour les receptions camt054 ISO20022"),

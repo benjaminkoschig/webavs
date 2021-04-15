@@ -3,7 +3,7 @@
 		   xmlns:informations="http://www.zas.admin.ch/xmlns/acor-informations/0"
 		   targetNamespace="http://www.zas.admin.ch/xmlns/acor-informations/0"
 		   elementFormDefault="qualified"
-		   version="1.1">
+		   version="1.2">
 	<xs:element name="informationReport" type="informations:informationsType"/>
 	<xs:complexType name="informationsType">
 		<xs:sequence>
@@ -29,7 +29,24 @@
 	<xs:complexType name="fileInformationType">
 		<xs:sequence>
 			<xs:element name="name" type="xs:string"/>
-			<xs:element name="version" type="informations:versionType"/>
+			<xs:element name="version" type="informations:versionType">
+				<xs:annotation>
+					<xs:documentation>
+						Exemple : si il s'agit d'un système expert externe la version est celle du livrable (xar)
+						corespondant : acor-se-3.61.1-rente-3.48.1.xar aura
+						version=3.48.1 et generalVersion=3.61.1
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="generalVersion" type="informations:versionType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Exemple : si il s'agit d'un système expert externe la version générale est celle du projet java
+						corespondant au livrable (xar) du système expert : acor-se-3.61.1-rente-3.48.1.xar aura
+						version=3.48.1 et generalVersion=3.61.1
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="path" type="xs:anyURI" minOccurs="0" maxOccurs="1"/>
 		</xs:sequence>
 	</xs:complexType>

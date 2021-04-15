@@ -395,6 +395,9 @@ public interface IREDemandeRente {
     public final static String CS_REVISION_10EME_REVISION = "52805002";
     public final static String CS_REVISION_9EME_REVISION = "52805001";
 
+    public final static String REVISION_10EME_REVISION = "10";
+    public final static String REVISION_9EME_REVISION = "9";
+
     public final static String CS_TYPE_CALCUL_BILATERALES = "52803004";
     public final static String CS_TYPE_CALCUL_PMT_PROVISOIRE = "52803002";
     /**

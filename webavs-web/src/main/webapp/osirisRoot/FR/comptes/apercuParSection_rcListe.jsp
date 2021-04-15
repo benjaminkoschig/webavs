@@ -32,6 +32,8 @@ if (size > 0) {
     <TH align="right">Solde</TH>
     <TH align="right" width="20">&nbsp;</TH>
     <TH align="left">Contentieux</TH>
+	<TH align="left">Statut eBill</TH>
+	<TH align="left">Erreur eBill</TH>
     <% CASection _ligne=null; %>
 <%-- /tpl:put --%>
 <%@ include file="/theme/list/tableHeader.jspf" %>
@@ -79,6 +81,8 @@ if (size > 0) {
 	<TD class="mtd" nowrap onClick="<%=actionDetail%>" width="110" align="right"><%=_ligne.getSoldeFormate()%></TD>
 	<TD class="mtd" nowrap onClick="<%=actionDetail%>" width="20" align="right"><%if (_ligne.getAttenteLSVDD().booleanValue()){%> <IMG src="<%=servletContext%>/images/pending.gif" title="Attente LSV/DD"><%} else {%>&nbsp;<%}%></TD>
 	<TD class="mtd" nowrap onClick="<%=actionDetail%>" width="200" align="left"><%=_ligne.getResumeContentieux()%></TD>
+	<TD class="mtd" nowrap onClick="<%=actionDetail%>" width="50" align="left"><% if (_ligne.geteBillEtat() != null){%> <IMG src="<%= servletContext %>/images/<%=viewBean.geteBillEtatTraitementImage(_ligne.geteBillEtat())%>" title="TransactionID : <%=_ligne.geteBillTransactionID()%>"> <%} else { %> &nbsp; <% } %></TD>
+	<TD class="mtd" nowrap onClick="<%=actionDetail%>" width="200" align="left"><%=_ligne.geteBillErreur()%></TD>
 <%-- /tpl:put --%>
 <%@ include file="/theme/list/lineEnd.jspf" %>
 	<%-- tpl:put name="zoneTableFooter" --%> 

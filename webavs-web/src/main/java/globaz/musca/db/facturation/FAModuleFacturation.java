@@ -20,6 +20,7 @@ public class FAModuleFacturation extends BEntity implements Serializable {
 
     public final static String CS_MODULE_BULLETIN_NEUTRE = "905028";
     public final static String CS_MODULE_BULLETINS_SOLDES = "905014";
+    public final static String CS_MODULE_BULLETINS_SOLDES_EBILL = "905019";
     public final static String CS_MODULE_COMPENSATION = "905004";
     public final static String CS_MODULE_COMPENSATION_APG = "905020";
     public final static String CS_MODULE_COMPENSATION_NEW = "905026";

@@ -10,8 +10,16 @@
 		<filter-name>RequestFilter</filter-name>
 		<filter-class>globaz.jade.servlet.filter.JadeRequestFilter</filter-class>
 	</filter>
-	
-	<!-- 
+	<filter>
+		<filter-name>corvusServletFilter</filter-name>
+		<filter-class>globaz.corvus.ws.CORSFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>corvusServletFilter</filter-name>
+		<url-pattern>/rest/*</url-pattern>
+	</filter-mapping>
+	<!--
 	<filter id="GlobazGZIPFilter">
 		<filter-name>GZIPFilter</filter-name>
 		<filter-class>globaz.jade.servlet.filter.JadeGZipFilter</filter-class>
@@ -293,6 +301,24 @@
 		<servlet-class>ch.globaz.amal.web.servlet.AMMainServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+
+	<servlet id="Acor2020WSRestServlet">
+		<servlet-name>Acor2020WSRest</servlet-name>
+		<!-- TOMCAT -->
+		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+		<!-- IBM -->
+<!--		<servlet-class>com.ibm.websphere.jaxrs.server.IBMRestServlet</servlet-class>-->
+		<init-param>
+			<param-name>javax.ws.rs.Application</param-name>
+			<param-value>globaz.corvus.ws.WebAvsAcor2020Application</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping id="Acor2020WSRestServletMapping">
+		<servlet-name>Acor2020WSRest</servlet-name>
+		<url-pattern>/rest/*</url-pattern>
+	</servlet-mapping>
+
 	<servlet-mapping id="GlobazVulpeculaServletMapping">
 		<servlet-name>vulpecula</servlet-name>
 		<url-pattern>/vulpecula</url-pattern>

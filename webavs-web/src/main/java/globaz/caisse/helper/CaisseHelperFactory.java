@@ -39,7 +39,7 @@ public class CaisseHelperFactory {
     public final static String CS_RENTIER = "517038";
     private static CaisseHelperFactory instance = null;
 
-    private static final String PLUSIEURS_TYPE_AFFILIE = "plusieursTypeAffilie";
+    public static final String PLUSIEURS_TYPE_AFFILIE = "plusieursTypeAffilie";
     private static final String PROP_DEFAULT_CANTON_CAISSE_LOCATION = "default.canton.caisse.location";
 
     /**

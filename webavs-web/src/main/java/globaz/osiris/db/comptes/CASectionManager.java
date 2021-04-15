@@ -44,6 +44,7 @@ public class CASectionManager extends BManager implements Serializable {
     }
 
     private String forIdCompteAnnexe = "";
+    private String forEBillTransactionID = "";
     private String forIdExterne = "";
     private String forIdJournal = "";
     private String forIdPassageComp = "";
@@ -126,6 +127,15 @@ public class CASectionManager extends BManager implements Serializable {
             sql.append(CASectionManager.ALIAS_TABLE_SECTION).append(".").append(CASection.FIELD_IDCOMPTEANNEXE);
             sql.append("=");
             sql.append(this._dbWriteNumeric(statement.getTransaction(), getForIdCompteAnnexe()));
+        }
+
+        if (!JadeStringUtil.isBlank(getForEBillTransactionID())) {
+            if (sql.length() != 0) {
+                sql.append(" AND ");
+            }
+            sql.append(CASectionManager.ALIAS_TABLE_SECTION).append(".").append(CASection.FIELD_EBILL_TRANSACTION_ID);
+            sql.append("=");
+            sql.append(this._dbWriteString(statement.getTransaction(), getForEBillTransactionID()));
         }
 
         if (!JadeStringUtil.isBlank(getForIdSection())) {
@@ -565,6 +575,10 @@ public class CASectionManager extends BManager implements Serializable {
         return forIdCompteAnnexe;
     }
 
+    public String getForEBillTransactionID() {
+        return forEBillTransactionID;
+    }
+
     public String getForIdExterne() {
         return forIdExterne;
     }
@@ -710,6 +724,10 @@ public class CASectionManager extends BManager implements Serializable {
 
     public void setForIdCompteAnnexe(String newForIdCompteAnnexe) {
         forIdCompteAnnexe = newForIdCompteAnnexe;
+    }
+
+    public void setForEBillTransactionID(String newForEbillTransactionId) {
+        forEBillTransactionID = newForEbillTransactionId;
     }
 
     public void setForIdExterne(String newForIdExterne) {

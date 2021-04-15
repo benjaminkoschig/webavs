@@ -22,6 +22,7 @@
 	} catch (Exception e){
 		// Le reste de la page doit tout de même fonctionner
 	}
+    boolean isEBillActive = CAApplication.getApplicationOsiris().getCAParametres().isEbill(viewBean.getSession());
   %>
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%><%-- /tpl:put --%>
@@ -116,7 +117,24 @@ top.document.title = "Comptes - détail d'un compte annexe - " + top.location.hre
             <TD>
               <TEXTAREA cols="40" rows="6" class="libelleLongDisabled" readonly><%=viewBean.getTitulaireEntete()%></TEXTAREA>
             </TD>
-            <TD colspan="2" align="right" valign="top">&nbsp;</TD>
+    <% if (isEBillActive) {%>
+    <TD colspan="2" align="Left" valign="top">&nbsp;
+        <TABLE>
+            <TR>
+                <TD width="125">eBill AccountID</TD>
+                <TD>
+                    <INPUT type="numero" name="eBillAccountID" size="30" maxlength="17" value="<%=viewBean.geteBillAccountID()%>">
+                </TD>
+            </TR>
+            <TR>
+                <td width="125">eBill E-Mail</td>
+                <TD>
+                    <INPUT type="mail" name="eBillMail" size="30" maxlength="30" value="<%=viewBean.geteBillMail()%>">
+                </TD>
+            </TR>
+        </TABLE>
+    </TD>
+    <%}%>
           </TR>
           <TR>
             <TD width="125">Depuis-jusqu'au </TD>

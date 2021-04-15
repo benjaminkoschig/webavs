@@ -11,7 +11,6 @@ import globaz.docinfo.CTDocumentInfoHelper;
 import globaz.docinfo.FADocumentInfoHelper;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.framework.bean.FWViewBeanInterface;
-import globaz.framework.printing.itext.api.FWIImporterInterface;
 import globaz.framework.printing.itext.exception.FWIException;
 import globaz.framework.printing.itext.fill.FWIImportParametre;
 import globaz.framework.util.FWCurrency;
@@ -31,6 +30,7 @@ import globaz.jade.admin.user.bean.JadeUser;
 import globaz.jade.admin.user.service.JadeUserService;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
+import globaz.musca.api.musca.PaireIdExterneEBill;
 import globaz.musca.application.FAApplication;
 import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.musca.db.facturation.FAModuleFacturation;
@@ -51,10 +51,11 @@ import ch.globaz.common.document.reference.ReferenceQR;
 import globaz.osiris.exceptions.CATechnicalException;
 import globaz.osiris.translation.CACodeSystem;
 import globaz.webavs.common.CommonProperties;
-import java.util.ArrayList;
 
-import net.sf.jasperreports.engine.JasperFillManager;
+import java.util.*;
+
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.design.JRDesignField;
 
 /**
  * Le document imprime les zones de facture selon les paramètres suivants: _modeRecouvrement : aucun, bvr,
@@ -82,6 +83,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
     public final static String TEMPLATE_FILENAME4DECSAL = "MUSCA_BVR4DECSAL_QR"; // Template
     private static String TEMPLATE_NAME= "MUSCA_BVR_NEUTRE_QR"; // Par défaut
     private Boolean isEbusiness = false;
+    public Map<PaireIdExterneEBill, List<Map>> lignesParPaireIdExterne = new LinkedHashMap();
 
     public static String getTemplateFilename(FAEnteteFacture entFacture) {
         if (FAImpressionFacture_BVR_Doc.CODEDECOMPTESALAIRE13.equalsIgnoreCase(entFacture.getIdExterneFacture()
@@ -653,6 +655,33 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
         }
     }
 
+    /**
+     * @param list
+     * @param libelle
+     * @param montantInitial
+     * @param montantDejaFacture
+     * @param masseFacture
+     * @param taux
+     * @param montant
+     * @param dateDebut
+     * @param dateFin
+     * @param index
+     */
+    private void _addLine(List list, String libelle, Double montantInitial, Double montantDejaFacture, Double masseFacture, String taux, Double montant, String dateDebut, String dateFin,
+            Integer index) {
+            Map m = new HashMap();
+            m.put("COL_1", libelle);
+            m.put("COL_2", montantInitial);
+            m.put("COL_3", montantDejaFacture);
+            m.put("COL_4", masseFacture);
+            m.put("COL_5", taux);
+            m.put("COL_6", montant);
+            m.put("COL_7_DEBUT", dateDebut);
+            m.put("COL_7_FIN", dateFin);
+            m.put("COL_ID", index);
+            list.add(m);
+    }
+
     @Override
     public void createDataSource() throws Exception {
 
@@ -670,6 +699,12 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
         if (JadeStringUtil.isIntegerEmpty(currentDataSource.getEnteteFacture().getIdEntete())) {
             return;
         }
+
+        //Extrait les lignes dans une liste
+        List data = buildLignes();
+        // Met les lignes trouvées dans une hashMap identifié de manière unique par une pair d'idExterne
+        lignesParPaireIdExterne.put(new PaireIdExterneEBill(currentDataSource.getEnteteFacture().getIdExterneRole(), currentDataSource.getEnteteFacture().getIdExterneFacture()), data);  // TODO ESVE A CONTROLLER
+
         super.setDataSource(currentDataSource.getImpressionFacture_DS());
         super.setParametres(FAImpressionFacture_Param.P_TOTAL_ROW, currentDataSource.getNbDeLigne());
 
@@ -736,6 +771,49 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
         }
 
         totalTimeDataSource += (System.currentTimeMillis() - currentTime);
+    }
+
+    private List buildLignes() throws CloneNotSupportedException, net.sf.jasperreports.engine.JRException {
+        List list = new ArrayList();
+        FAImpressionFacture_DS faImpressionFacture_ds = (FAImpressionFacture_DS) currentDataSource.getImpressionFacture_DS().clone();
+        for (int i = 0; i < currentDataSource.getNbDeLigne(); i++) {
+            faImpressionFacture_ds.next();
+            JRDesignField field = new JRDesignField();
+
+            field.setName("COL_ID");
+            Integer index = (Integer) faImpressionFacture_ds.getFieldValueSansModifEtatObject(field);
+
+            field.setName("COL_1");
+            String libelleCourant = (String) faImpressionFacture_ds.getFieldValueSansModifEtatObject(field);
+
+            field.setName("COL_2");
+            Double montantInitial = (Double) faImpressionFacture_ds.getFieldValueSansModifEtatObject(field);
+
+            field.setName("COL_3");
+            Double montantDejaFacture = (Double) faImpressionFacture_ds.getFieldValueSansModifEtatObject(field);
+
+            field.setName("COL_4");
+            Double masseFacture = (Double) faImpressionFacture_ds.getFieldValueSansModifEtatObject(field);
+
+            field.setName("COL_5");
+            String taux = (String) faImpressionFacture_ds.getFieldValueSansModifEtatObject(field);
+
+            field.setName("COL_6");
+            Double montant = (Double) faImpressionFacture_ds.getFieldValueSansModifEtatObject(field);
+
+            field.setName("COL_7_DEBUT");
+            String dateDebut = (String) faImpressionFacture_ds.getFieldValueSansModifEtatObject(field);
+
+            field.setName("COL_7_FIN");
+            String dateFin = (String) faImpressionFacture_ds.getFieldValueSansModifEtatObject(field);
+
+            _addLine(list, libelleCourant, montantInitial, montantDejaFacture, masseFacture, taux, montant, dateDebut, dateFin, index);
+
+        }
+
+        faImpressionFacture_ds.resetStatus();
+
+        return list;
     }
 
     private void fillDocumentInfo() throws Exception {
@@ -1153,4 +1231,11 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
         TEMPLATE_NAME = templateName;
     }
 
+    public Map<PaireIdExterneEBill, List<Map>> getLignesParPaireIdExterne() {
+        return lignesParPaireIdExterne;
+    }
+
+    public void setLignesParPaireIdExterne(Map<PaireIdExterneEBill, List<Map>> lignesParPaireIdExterne) {
+        this.lignesParPaireIdExterne = lignesParPaireIdExterne;
+    }
 }

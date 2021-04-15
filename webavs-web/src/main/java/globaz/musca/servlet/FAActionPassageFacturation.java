@@ -9,38 +9,25 @@ import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.musca.application.FAApplication;
-import globaz.musca.db.facturation.FAModuleFacturation;
-import globaz.musca.db.facturation.FAModulePassage;
-import globaz.musca.db.facturation.FAModulePassageManager;
-import globaz.musca.db.facturation.FANewPassageImprimerDecomptesSansLSVRembViewBean;
-import globaz.musca.db.facturation.FANewPassageImprimerDecomptesViewBean;
-import globaz.musca.db.facturation.FAPassageGenererViewBean;
-import globaz.musca.db.facturation.FAPassageImprimerDecomptesSansLSVRembViewBean;
-import globaz.musca.db.facturation.FAPassageImprimerDecomptesViewBean;
-import globaz.musca.db.facturation.FAPassageImprimerLettreRentierViewBean;
-import globaz.musca.db.facturation.FAPassageListerAfactsAQuittancerViewBean;
-import globaz.musca.db.facturation.FAPassageListerAfactsViewBean;
-import globaz.musca.db.facturation.FAPassageListerCompensationViewBean;
-import globaz.musca.db.facturation.FAPassageListerDecomptesViewBean;
-import globaz.musca.db.facturation.FAPassageListerIndeRevenuMinViewBean;
-import globaz.musca.db.facturation.FAPassageListerTaxationViewBean;
-import globaz.musca.db.facturation.FAPassageModuleFacturationViewBean;
-import globaz.musca.db.facturation.FAPassageViewBean;
+import globaz.musca.db.facturation.*;
 import globaz.musca.external.ServicesFacturation;
 import globaz.musca.process.FAGenericProcess;
+import globaz.musca.process.FAImpressionFactureEBillProcess;
 import globaz.musca.process.FAImpressionFactureProcess;
 import globaz.musca.process.FANewImpressionFactureProcess;
 import globaz.musca.util.FAUtil;
 import globaz.naos.db.controleEmployeur.AFImprimerDecisionViewBean;
+import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.interets.CAApercuInteretMoratoireViewBean;
 import globaz.osiris.db.interets.CAInteretMoratoire;
 import globaz.osiris.db.interets.CAInteretMoratoireViewBean;
-import java.io.IOException;
-import java.util.Iterator;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * Insérez la description du type ici. Date de création : (10.10.2002 16:08:43)
@@ -49,9 +36,11 @@ import javax.servlet.http.HttpSession;
  */
 public class FAActionPassageFacturation extends FWDefaultServletAction {
     public final static String CLASSE_IMPLE_FACTURE_SANS_LSVREMB = "globaz.musca.api.musca.FAImpressionFactureSansLSVRemb";
+    public final static String CLASSE_IMPLE_FACTURE_SANS_LSVREMB_EBILL = "globaz.musca.api.musca.FAImpressionFactureSansLSVRembEBill";
     public final static String CLASSE_IMPLE_FACTURE_STANDARD = "globaz.musca.api.musca.FAImpressionFacture_BVR";
     public final static String CLASSE_IMPLE_NEW_FACTURE_SANS_LSVREMB = "globaz.musca.api.musca.FANewImpressionFactureSansLSVRemb";
     public final static String CLASSE_IMPLE_NEW_FACTURE_STANDARD = "globaz.musca.api.musca.FANewImpressionFacture_BVR";
+    public final static String CLASSE_IMPLE_FACTURE_EBILL = "globaz.musca.api.musca.FAImpressionFactureEBill";
 
     /**
      * Commentaire relatif au constructeur CGActionMandat.
@@ -294,9 +283,14 @@ public class FAActionPassageFacturation extends FWDefaultServletAction {
             transaction = new BTransaction(viewBean.getSession());
             transaction.openTransaction();
 
+            boolean isEBillActive = CAApplication.getApplicationOsiris().getCAParametres().isEbill(viewBean.getSession());
+            if (isEBillActive) {
+                viewBean.setIdModuleFact(ServicesFacturation.getIdModFacturationByType(viewBean.getSession(), transaction,
+                        FAModuleFacturation.CS_MODULE_BULLETINS_SOLDES_EBILL)); //TODO ESVE FORCED?
+            } else {
             viewBean.setIdModuleFact(ServicesFacturation.getIdModFacturationByType(viewBean.getSession(), transaction,
-                    FAModuleFacturation.CS_MODULE_BULLETINS_SOLDES));
-
+                        FAModuleFacturation.CS_MODULE_BULLETINS_SOLDES)); //TODO ESVE FORCED?
+            }
             viewBean.setFromIdExterneRole(request.getParameter("fromIdExterneRole"));
             viewBean.setTillIdExterneRole(request.getParameter("tillIdExterneRole"));
 
@@ -737,6 +731,7 @@ public class FAActionPassageFacturation extends FWDefaultServletAction {
 
             boolean oldSystem = false;
             boolean newSystem = false;
+            boolean eBillSystem = false;
 
             FAModulePassageManager moduleMana = new FAModulePassageManager();
             moduleMana.setSession(NewSession);
@@ -759,6 +754,10 @@ public class FAActionPassageFacturation extends FWDefaultServletAction {
                     viewBean = new FAPassageImprimerDecomptesSansLSVRembViewBean();
                     oldSystem = true;
                 }
+                if (FAActionPassageFacturation.CLASSE_IMPLE_FACTURE_SANS_LSVREMB_EBILL.equals(classeImplementation)) {
+                    viewBean = new FAPassageImprimerFactureEBillSansLSVRembViewBean();
+                    eBillSystem = true;
+                }
                 if (FAActionPassageFacturation.CLASSE_IMPLE_NEW_FACTURE_STANDARD.equals(classeImplementation)) {
                     viewBean = new FANewPassageImprimerDecomptesViewBean();
                     newSystem = true;
@@ -767,12 +766,19 @@ public class FAActionPassageFacturation extends FWDefaultServletAction {
                     viewBean = new FANewPassageImprimerDecomptesSansLSVRembViewBean();
                     newSystem = true;
                 }
+                if (FAActionPassageFacturation.CLASSE_IMPLE_FACTURE_EBILL.equals(classeImplementation)) {
+                    viewBean = new FAPassageImprimerFactureEBillViewBean();
+                    eBillSystem = true;
+                }
 
                 if (oldSystem) {
                     ((FAImpressionFactureProcess) viewBean).setLibelle(libellePassage);
                 }
                 if (newSystem) {
                     ((FANewImpressionFactureProcess) viewBean).setLibelle(libellePassage);
+                }
+                if (eBillSystem) {
+                    ((FAImpressionFactureEBillProcess) viewBean).setLibelle(libellePassage);
                 }
 
                 globaz.globall.http.JSPUtils.setBeanProperties(request, viewBean);
@@ -787,6 +793,9 @@ public class FAActionPassageFacturation extends FWDefaultServletAction {
                 if (newSystem) {
                     viewBean = (FANewImpressionFactureProcess) mainDispatcher.dispatch(viewBean, getAction());
                 }
+                if (eBillSystem) {
+                    viewBean = (FAImpressionFactureEBillProcess) mainDispatcher.dispatch(viewBean, getAction());
+                }
 
                 // mettre en session le viewbean
                 session.removeAttribute("viewBean");
@@ -800,8 +809,10 @@ public class FAActionPassageFacturation extends FWDefaultServletAction {
                 } else {
                     if (oldSystem) {
                         _destination = getRelativeURL(request, session) + "ImprimerDecomptes_de.jsp";
-                    } else {
+                    } else if (newSystem){
                         _destination = getRelativeURL(request, session) + "NewImprimerDecomptes_de.jsp";
+                    } else if (eBillSystem) {
+                        _destination = getRelativeURL(request, session) + "ImprimerDecomptesEBill_de.jsp";
                     }
 
                 }
@@ -809,8 +820,10 @@ public class FAActionPassageFacturation extends FWDefaultServletAction {
                 if (moduleMana.size() == 2) {
                     boolean oldSys = false;
                     boolean newSys = false;
+                    boolean sysEBill = false;
                     String oldClasse = "";
                     String newClasse = "";
+                    String eBillClasse = "";
 
                     for (Iterator iterator = moduleMana.iterator(); iterator.hasNext();) {
                         FAModulePassage mod = (FAModulePassage) iterator.next();
@@ -864,6 +877,41 @@ public class FAActionPassageFacturation extends FWDefaultServletAction {
                     }
 
                     if (oldSys) {
+                        FAGenericProcess viewBean = null;
+                        String libellePassage = FAUtil.getLibellePassage(selectedId, session);
+                        if (FAActionPassageFacturation.CLASSE_IMPLE_FACTURE_STANDARD.equals(oldClasse)) {
+                            viewBean = new FAPassageImprimerDecomptesViewBean();
+                            oldSystem = true;
+                        }
+                        if (FAActionPassageFacturation.CLASSE_IMPLE_FACTURE_SANS_LSVREMB.equals(oldClasse)) {
+                            viewBean = new FAPassageImprimerDecomptesSansLSVRembViewBean();
+                        }
+
+                        ((FAImpressionFactureProcess) viewBean).setLibelle(libellePassage);
+
+                        globaz.globall.http.JSPUtils.setBeanProperties(request, viewBean);
+
+                        viewBean.setIdPassage(selectedId);
+                        viewBean.setSession(NewSession);
+
+                        // GESTION DES DROITS
+                        viewBean = (FAImpressionFactureProcess) mainDispatcher.dispatch(viewBean, getAction());
+
+                        // mettre en session le viewbean
+                        session.removeAttribute("viewBean");
+                        session.setAttribute("viewBean", viewBean);
+
+                        /*
+                         * choix destination
+                         */
+                        if (viewBean.getMsgType().equals(FWViewBeanInterface.ERROR)) {
+                            _destination = FWDefaultServletAction.ERROR_PAGE;
+                        } else {
+                            _destination = getRelativeURL(request, session) + "ImprimerDecomptes_de.jsp";
+                        }
+                    }
+
+                    if (sysEBill) {
                         FAGenericProcess viewBean = null;
                         String libellePassage = FAUtil.getLibellePassage(selectedId, session);
                         if (FAActionPassageFacturation.CLASSE_IMPLE_FACTURE_STANDARD.equals(oldClasse)) {

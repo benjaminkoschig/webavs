@@ -1,5 +1,8 @@
 package globaz.prestation.acor;
 
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.EnfantSexType;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.SexType;
+import globaz.corvus.properties.REProperties;
 import globaz.globall.db.BSession;
 import globaz.hera.api.ISFSituationFamiliale;
 import globaz.jade.client.util.JadeStringUtil;
@@ -177,6 +180,8 @@ public class PRACORConst {
 
     public static String EXECUTABLE_ACOR = "aoappc\\aostart.exe";
 
+    public static String EXECUTABLE_FIREFOX_ACOR = "Mozilla Firefox\\firefox.exe";
+
     public static final String NF_ANNONCE_PAY = "annonce.pay";
     public static final String NF_ANNONCE_RR = "annonce.rr";
 
@@ -195,6 +200,12 @@ public class PRACORConst {
     public static final String NF_FCALCUL_XML = "f_calcul.xml";
     public static final String NF_PERIODES = "PERIODES";
     public static final String NF_RENTES = "RENTES";
+
+    // Spécifique ACOR V4
+    public static final String CODE_HOMME = "MALE";
+    public static final String CODE_FEMME = "FEMALE";
+    public static final String CODE_CANTON_ETRANGER = "505027";
+    public static final String CANTON_ET_PAYS_INCONNU = "999";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -772,7 +783,7 @@ public class PRACORConst {
      * 
      * @param session
      *            DOCUMENT ME!
-     * @param csGenreIndemnite
+     * @param csPeriode
      *            DOCUMENT ME!
      * 
      * @return DOCUMENT ME!
@@ -834,6 +845,42 @@ public class PRACORConst {
             return PRACORConst.CA_HOMME;
         } else {
             return PRACORConst.CA_HOMME;
+        }
+    }
+
+    /**
+     * Retourne le code compatible ACOR 2020 in_host pour le sexe.
+     *
+     * @param csSexe
+     *            le code systeme du sexe à traduire.
+     *
+     * @return le code ACOR correspondant ou CA_HOMME si inconnu ou vide.
+     */
+    public static final SexType csSexeToAcor2020(String csSexe) {
+        if (PRACORConst.CS_FEMME.equals(csSexe)) {
+            return SexType.FEMALE;
+        } else if (PRACORConst.CS_HOMME.equals(csSexe)) {
+            return SexType.MALE;
+        } else {
+            return SexType.MALE;
+        }
+    }
+
+    /**
+     * Retourne le code compatible ACOR 2020 in_host pour le sexe de l'enfant.
+     *
+     * @param csSexe
+     *            le code systeme du sexe à traduire.
+     *
+     * @return le code ACOR correspondant ou inconnu.
+     */
+    public static final EnfantSexType csSexeEnfantToAcor2020(String csSexe) {
+        if (PRACORConst.CS_FEMME.equals(csSexe)) {
+            return EnfantSexType.FEMALE;
+        } else if (PRACORConst.CS_HOMME.equals(csSexe)) {
+            return EnfantSexType.MALE;
+        } else {
+            return EnfantSexType.UNKNOWN;
         }
     }
 
@@ -925,5 +972,25 @@ public class PRACORConst {
         } catch (Exception e) {
             throw new PRACORException(session.getLabel("PROPRIETE_DOSSIER_ACOR_INTROUVABLE"), e);
         }
+    }
+
+    /**
+     * Retourne le chemin complet par défaut vers le dossier FireFox.
+     *
+     * @param session
+     *            la session pour cette application
+     *
+     * @return le chemin complet termine par un séparateur de dossier.
+     *
+     * @throws PRACORException
+     *             DOCUMENT ME!
+     */
+    public static final String navigateurACOR(BSession session) throws PRACORException {
+
+        try {
+            return REProperties.NAVIGATEUR_ACOR.getValue();
+        } catch (Exception e) {
+            throw new PRACORException(session.getLabel("PROPRIETE_DOSSIER_NAVIGATEUR_ACOR_INTROUVABLE"), e);
+}
     }
 }

@@ -5,7 +5,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.crypto.JadeDefaultEncrypters;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.slf4j.Logger;
@@ -67,16 +72,16 @@ public abstract class AbstractSepa implements Serializable {
      * 
      * @throws SepaException en cas d'erreur de connexion au FTP.
      */
-    protected ChannelSftp connect(String server, Integer port, String user, String password, List<String> keyFiles) {
+    protected ChannelSftp connect(String server, Integer port, String user, String password, HashMap<String, Boolean> keyFiles, String keyPassphrase, String knownHosts) {
         Validate.notEmpty(server, "server was not specified");
         Validate.notEmpty(user, "you must specify a user, even when using a private key file");
         Validate.isTrue((StringUtils.isBlank(password) || keyFiles.isEmpty())
                 && (StringUtils.isNotBlank(password) || !keyFiles.isEmpty()),
                 "you must specify a password or a key file, but not both");
 
-        for (String keyFile : keyFiles) {
-            if (StringUtils.isNotBlank(keyFile)) {
-                Validate.isTrue(new File(keyFile).isFile(), "keyFile does not exist");
+        for (Map.Entry<String, Boolean> keyFile : keyFiles.entrySet()) {
+            if (StringUtils.isNotBlank(keyFile.getKey())) {
+                Validate.isTrue(new File(keyFile.getKey()).isFile(), "keyFile does not exist");
             }
         }
 
@@ -84,10 +89,15 @@ public abstract class AbstractSepa implements Serializable {
         Session session;
 
         try {
-            for (String keyFile : keyFiles) {
-                if (StringUtils.isNotBlank(keyFile)) {
+            for (Map.Entry<String, Boolean> keyFile : keyFiles.entrySet()) {
+                if (StringUtils.isNotBlank(keyFile.getKey())) {
                     try {
-                        jsch.addIdentity(keyFile);
+                        if (StringUtils.isNotBlank(keyPassphrase) && keyFile.getValue()) {
+                            jsch.addIdentity(keyFile.getKey(), keyPassphrase);
+                            LOG.info("Passphrase set to the key file: {}", keyFile);
+                        } else {
+                            jsch.addIdentity(keyFile.getKey());
+                        }
                         LOG.info("Private key file added: {}", keyFile);
                     } catch (JSchException e) {
                         LOG.warn("Private key file not added ({}): {}", e.toString(), keyFile);
@@ -102,6 +112,9 @@ public abstract class AbstractSepa implements Serializable {
                 session.setPassword(password);
             }
 
+            if (StringUtils.isNotBlank(knownHosts)) {
+                 jsch.setKnownHosts(knownHosts);
+            } else {
             /**
              * FIXME CRITICAL SECURITY BREACH!!!
              * as per original code in globaz.jade.fs.service.jsch.JadeFsService#~576, we need to explicitly
@@ -113,6 +126,7 @@ public abstract class AbstractSepa implements Serializable {
              * production and send shame on us. But as ever, nobody really cares...
              */
             session.setConfig("StrictHostKeyChecking", "no");
+            }
             session.connect();
 
             LOG.info("successfully connected to {}", server);
@@ -182,17 +196,23 @@ public abstract class AbstractSepa implements Serializable {
         }
     }
 
-    protected List<String> loadPrivateKeyPathFromJadeConfigFile() {
+    public void disconnectQuietly() {
+        if (client != null) {
+            client.disconnect();
+        }
+    }
+
+    protected HashMap<String, Boolean> loadPrivateKeyPathFromJadeConfigFile() {
         /*** try fetching a private ssh key from legacy config files, mimic Jade behavior */
         final InputStream jadeFsServerConfig = getClass().getResourceAsStream(LEGACY_JADE_CONFIG_FILE);
 
         if (jadeFsServerConfig == null) {
             LOG.info("file {} not found. skipping retrieval of private ssh key for connecting to SFTP",
                     LEGACY_JADE_CONFIG_FILE);
-            return new ArrayList<String>();
+            return new HashMap<String, Boolean>();
         }
 
-        final List<String> privateKeyList = new ArrayList<String>();
+        final HashMap<String, Boolean> privateKeyList = new HashMap<String, Boolean>();
 
         final Document doc = CAJaxbUtil.parseDocument(jadeFsServerConfig);
         final NodeList allProtocols = doc.getDocumentElement().getElementsByTagName("protocols");
@@ -212,8 +232,9 @@ public abstract class AbstractSepa implements Serializable {
 
                         if (n instanceof Element && n.getNodeName().startsWith(PRIVATEKEY_NODENAME_PREFIX)) {
                             String privateKey = StringUtils.trimToNull(n.getTextContent());
+                            Boolean hasPassphrase = Boolean.parseBoolean(((Element) n).getAttribute("passphrase"));
                             LOG.info("resolved private ssh key to be {}", privateKey);
-                            privateKeyList.add(privateKey);
+                            privateKeyList.put(privateKey, hasPassphrase);
                         }
                     }
                 }
@@ -234,13 +255,15 @@ public abstract class AbstractSepa implements Serializable {
     /** Connecte sur le ftp cible, dans le folder adapté à l'envoi de messages SEPA. */
     protected ChannelSftp getClient() {
         if (client == null) {
-            final List<String> privateKeyList = loadPrivateKeyPathFromJadeConfigFile();
+            final HashMap<String, Boolean> privateKeyList = loadPrivateKeyPathFromJadeConfigFile();
 
             // try fetching configuration from database
             String login = null;
             String password = null;
             Integer port = null;
             String host = null;
+            String keyPassphrase = null;
+            String knownHosts = null;
             try {
                 host = getValueProperties(getHost());
                 String sport = getValueProperties(getPort());
@@ -251,17 +274,28 @@ public abstract class AbstractSepa implements Serializable {
 
                 login = getValueProperties(getUser());
                 password = getValueProperties(getPassword());
+                keyPassphrase = getValuePropertiesEncrypted(getKeyPassphrase());
+                knownHosts = getValueProperties(getKnownHosts());
 
             } catch (Exception e) {
                 throw new SepaException("unable to retrieve ftp config: " + e, e);
             }
 
             // go connect
-            client = connect(host, port, login, password, privateKeyList);
+            client = connect(host, port, login, password, privateKeyList, keyPassphrase, knownHosts);
 
         }
         // go connect
         return client;
+    }
+
+    private String getValuePropertiesEncrypted(final CAProperties property) throws Exception {
+        String encryptedProperty = getValueProperties(property);
+        if (JadeStringUtil.isEmpty(encryptedProperty)) {
+            return "";
+        }
+
+        return JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(encryptedProperty);
     }
 
     private String getValueProperties(final CAProperties property) throws PropertiesException {
@@ -299,4 +333,23 @@ public abstract class AbstractSepa implements Serializable {
      * @return La propriété PASSWORD
      */
     protected abstract CAProperties getPassword();
+
+    /**
+     * Le fils peut définir la passphrase du fichier
+     *
+     * @return La propriété KEY_PASSPHRASE
+     */
+    protected CAProperties getKeyPassphrase() {
+       return null;
+    }
+
+    /**
+     * Le fils peut définir le fichier known hosts
+     *
+     * @return La propriété KNOWN_HOSTS
+     */
+    protected CAProperties getKnownHosts() {
+       return null;
+    }
+
 }

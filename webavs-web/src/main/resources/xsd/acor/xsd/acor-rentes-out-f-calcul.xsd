@@ -16,7 +16,7 @@
 		   xmlns:arc95="http://www.zas.admin.ch/xmlns/arc95-out/0"
 		   xmlns:im="http://www.zas.admin.ch/xmlns/acor-im/0"
 		   xmlns:inhost="http://www.zas.admin.ch/xmlns/acor-rentes-in-host/0"
-		   elementFormDefault="unqualified" attributeFormDefault="unqualified" version="7.0">
+		   elementFormDefault="unqualified" attributeFormDefault="unqualified" version="7.2">
 	<!--NOTE : il faudrait passer en elementFormDefault="qualified" et targetNamespace="http://www.zas.admin.ch/xmlns/acor-rentes-out-f-calcul/0" et xmlns="http://www.zas.admin.ch/xmlns/acor-rentes-out-f-calcul/0"
 	mais cela pose des problème de xslt, on reste pour l'instanta "sans" namespace, le composant acor-converter (etclips-util sont prévu pour produire
 	un f_calcul.xml avec un namespace par défaut http://www.zas.admin.ch/xmlns/acor-rentes-out-f-calcul/0 (sans les prefixe dans le xml) mais cela ne suffit pas pour xslt. Pour activer
@@ -171,6 +171,23 @@
 			<xs:enumeration value="97"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:complexType name="ElemComplexite">
+		<xs:sequence>
+			<xs:element name="type_elem" type="xs:string"/>
+			<xs:element name="somme_val" type="xs:integer"/>
+			<xs:element name="val_inc" type="xs:integer"/>
+			<xs:element name="val_max" type="xs:integer"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EvalComplexite">
+		<xs:sequence>
+			<xs:element name="l_elements" type="ElemComplexite" maxOccurs="unbounded"/>
+			<xs:element name="somme_val" type="xs:integer"/>
+			<xs:element name="val_max" type="xs:integer"/>
+			<xs:element name="complx_normalisee" type="xs:float"/>
+			<xs:element name="niveau_complx" type="xs:integer"/>
+		</xs:sequence>
+	</xs:complexType>
 	<xs:complexType name="BaseEchelle">
 		<xs:sequence>
 			<xs:element name="an_niveau" type="AAAA">
@@ -182,7 +199,7 @@
 				<xs:simpleType>
 					<xs:restriction base="xs:int">
 						<xs:minInclusive value="0"/>
-						<xs:maxInclusive value="44"/>
+						<xs:maxInclusive value="45"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
@@ -1041,7 +1058,7 @@
 				<xs:simpleType>
 					<xs:restriction base="xs:int">
 						<xs:minInclusive value="0"/>
-						<xs:maxInclusive value="44"/>
+						<xs:maxInclusive value="45"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
@@ -5238,6 +5255,7 @@ s=survivant</xs:documentation>
 									<xs:documentation>Contenu du formulaire swap</xs:documentation>
 								</xs:annotation>
 							</xs:element>
+							<xs:element name="eval_complexite" type="EvalComplexite" minOccurs="0" maxOccurs="1"/>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>

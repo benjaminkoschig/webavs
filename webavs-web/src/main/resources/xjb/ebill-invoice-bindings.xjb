@@ -1,0 +1,18 @@
+<jaxb:bindings xmlns:xs="http://www.w3.org/2001/XMLSchema"
+               xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" version="2.1">
+
+    <jaxb:bindings schemaLocation="../xsd/ebill/invoice/ybInvoice_V2.0.3.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="osiris.ch.ebill.send.invoice"/>
+        </jaxb:schemaBindings>
+
+        <jaxb:bindings node="//xs:complexType[@name='BillType']">
+            <jaxb:class name="InvoiceBillType"/>
+        </jaxb:bindings>
+        <jaxb:bindings node="//xs:element[@name='Envelope']">
+            <jaxb:class name="InvoiceEnvelope"/>
+        </jaxb:bindings>
+    </jaxb:bindings>
+
+</jaxb:bindings>

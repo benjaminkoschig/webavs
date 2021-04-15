@@ -1,5 +1,7 @@
 package globaz.corvus.helpers.acor;
 
+import acor.xsd.fcalcul.FCalcul;
+import ch.admin.zas.xmlns.acor_rentes_in_host._0.InHostType;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.*;
@@ -8,14 +10,11 @@ import javax.servlet.ServletException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-
-import acor.xsd.fcalcul.FCalcul;
 import ch.globaz.common.domaine.Checkers;
 import ch.globaz.corvus.business.services.CorvusCrudServiceLocator;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.corvus.domaine.BaseCalcul;
 import ch.globaz.corvus.domaine.DemandeRente;
-import ch.globaz.corvus.domaine.DemandeRenteVieillesse;
 import ch.globaz.corvus.domaine.RenteAccordee;
 import ch.globaz.corvus.domaine.constantes.CodeCasSpecialRente;
 import ch.globaz.corvus.domaine.constantes.EtatDemandeRente;
@@ -30,6 +29,7 @@ import globaz.corvus.acor.parser.REFeuilleCalculVO;
 import globaz.corvus.acor.parser.rev09.REACORParser;
 import globaz.corvus.acor.parser.rev09.REACORParser.ReturnedValue;
 import globaz.corvus.acor.parser.xml.rev10.REACORAnnonceXmlReader;
+import globaz.corvus.acor2020.REExportationCalculAcor2020;
 import globaz.corvus.api.annonces.IREAnnonces;
 import globaz.corvus.api.basescalcul.IREBasesCalcul;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
@@ -43,23 +43,8 @@ import globaz.corvus.db.basescalcul.REBasesCalculDixiemeRevision;
 import globaz.corvus.db.basescalcul.REBasesCalculManager;
 import globaz.corvus.db.ci.RERassemblementCI;
 import globaz.corvus.db.ci.RERassemblementCIManager;
-import globaz.corvus.db.demandes.REDemandeRente;
-import globaz.corvus.db.demandes.REDemandeRenteAPI;
-import globaz.corvus.db.demandes.REDemandeRenteInvalidite;
-import globaz.corvus.db.demandes.REDemandeRenteSurvivant;
-import globaz.corvus.db.demandes.REDemandeRenteVieillesse;
-import globaz.corvus.db.demandes.REPeriodeAPI;
-import globaz.corvus.db.demandes.REPeriodeAPIManager;
-import globaz.corvus.db.rentesaccordees.REPrestationDue;
-import globaz.corvus.db.rentesaccordees.REPrestationsDuesJointDemandeRente;
-import globaz.corvus.db.rentesaccordees.REPrestationsDuesJointDemandeRenteManager;
-import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteManager;
-import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
-import globaz.corvus.db.rentesaccordees.RERenteAccordee;
-import globaz.corvus.db.rentesaccordees.RERenteAccordeeManager;
-import globaz.corvus.db.rentesaccordees.RERenteCalculee;
-import globaz.corvus.db.rentesaccordees.RERenteVerseeATort;
-import globaz.corvus.db.rentesaccordees.RERenteVerseeATortManager;
+import globaz.corvus.db.demandes.*;
+import globaz.corvus.db.rentesaccordees.*;
 import globaz.corvus.db.rentesverseesatort.RECalculRentesVerseesATortManager;
 import globaz.corvus.db.rentesverseesatort.wrapper.RECalculRentesVerseesATortConverter;
 import globaz.corvus.db.rentesverseesatort.wrapper.RECalculRentesVerseesATortWrapper;
@@ -71,8 +56,9 @@ import globaz.corvus.module.calcul.api.REMontantPrestationAPIParPeriode;
 import globaz.corvus.regles.REDemandeRegles;
 import globaz.corvus.regles.REReglesException;
 import globaz.corvus.utils.REPmtMensuel;
+import globaz.corvus.utils.acor.BaseCalculWrapper;
+import globaz.corvus.utils.acor.DemandeRenteWrapper;
 import globaz.corvus.utils.beneficiaire.principal.REBeneficiairePrincipal;
-import globaz.corvus.utils.codeprestation.enums.RECodePrestationResolver;
 import globaz.corvus.vb.acor.RECalculACORDemandeRenteViewBean;
 import globaz.corvus.vb.annonces.REAnnoncePonctuelleViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -84,11 +70,7 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BTransaction;
-import globaz.globall.util.JACalendar;
-import globaz.globall.util.JACalendarGregorian;
-import globaz.globall.util.JADate;
-import globaz.globall.util.JAException;
-import globaz.globall.util.JANumberFormatter;
+import globaz.globall.util.*;
 import globaz.hera.api.ISFMembreFamille;
 import globaz.hera.api.ISFMembreFamilleRequerant;
 import globaz.hera.api.ISFRelationFamiliale;
@@ -101,16 +83,22 @@ import globaz.prestation.acor.PRACORException;
 import globaz.prestation.acor.PRAcorFileContent;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.db.infos.PRInfoCompl;
-import globaz.prestation.enums.codeprestation.PRTypeCodePrestation;
 import globaz.prestation.helpers.PRAbstractHelper;
 import globaz.prestation.helpers.PRHybridHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRDateFormater;
-import globaz.prestation.utils.PRDateUtils;
-import globaz.prestation.utils.PRDateUtils.PRDateEquality;
 import org.apache.commons.lang.StringUtils;
+
+import javax.servlet.ServletException;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.StringReader;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <H1>Description</H1>
@@ -123,228 +111,10 @@ import org.apache.commons.lang.StringUtils;
  */
 public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
-    /**
-     * Cette classe abstraite est la pour factoriser la génération de la clé de comparaison.
-     * La clé de comparaison est identique mais généré sur des données différentes si on traite la base de calcul ou la
-     * demande de rente
-     *
-     * @author lga
-     */
-    private abstract class CleWrapper {
-
-        private TypeDemandeRente typeDemandeRente;
-        private String idTiers;
-        private boolean ajournement = false;
-
-        public CleWrapper(DemandeRente demandeRente) {
-            build(demandeRente);
-        }
-
-        public CleWrapper(REBasesCalcul baseCalcul, List<RERenteAccordee> renteAccordees) {
-            build(baseCalcul, renteAccordees);
-        }
-
-        /**
-         * Cette méthode construit les données pour la génération de la clé de comparaison sur la base de la demande de
-         * rente
-         *
-         * @param demandeRente La demande de rente
-         */
-        private void build(DemandeRente demandeRente) {
-            if (demandeRente.getRequerant() == null || demandeRente.getRequerant().getId() == null
-                    || demandeRente.getRequerant().getId() == 0) {
-                throw new NullPointerException(
-                        "Unable to found the idTiersRequerant for DemandeRente with id [" + demandeRente.getId() + "]");
-            } else {
-                idTiers = demandeRente.getRequerant().getId().toString();
-            }
-
-            if (demandeRente.getTypeDemandeRente() == null) {
-                throw new NullPointerException(
-                        "Unable to found the TypeDemandeRente for DemandeRente with id [" + demandeRente.getId() + "]");
-            } else {
-                typeDemandeRente = demandeRente.getTypeDemandeRente();
-            }
-
-            if (demandeRente instanceof DemandeRenteVieillesse) {
-                boolean ajournementDemande = ((DemandeRenteVieillesse) demandeRente).isAvecAjournement();
-                String dateRevocationAjournement = ((DemandeRenteVieillesse) demandeRente)
-                        .getDateRevocationAjournement();
-                boolean dateAjournementVide = JadeStringUtil.isBlankOrZero(dateRevocationAjournement);
-                ajournement = ajournementDemande && dateAjournementVide;
-            }
-        }
-
-        /**
-         * Cette méthode construit les données pour la génération de la clé de comparaison sur la base d'une base de
-         * calcul et de ses rentes accordées
-         *
-         * @param baseCalcul     La base de calcul en question
-         * @param renteAccordees Les rentes accordées liées à la base de calcul
-         */
-        private void build(REBasesCalcul baseCalcul, List<RERenteAccordee> renteAccordees) {
-
-            // Résolution de l'idTiers pour la génération de la clé de comparaison
-            if (JadeStringUtil.isBlankOrZero(baseCalcul.getIdTiersBaseCalcul())) {
-                throw new NullPointerException(
-                        "Unable to found the idTiersBaseCalcul for REBaseCalcul with id [" + baseCalcul.getId() + "]");
-            } else {
-                idTiers = baseCalcul.getIdTiersBaseCalcul();
-            }
-
-            // Analyse des rentes accordées (la 1ère) de la base de calcul pour déterminer le type de demande de rente
-            // correspondant à la badse de calcul
-            if (renteAccordees == null || renteAccordees.size() == 0) {
-                throw new NullPointerException("Unable to define the TypeDemandeRente for REBaseCalcul with id ["
-                        + baseCalcul.getId() + "] because REREnteAccordee list is null or empty");
-            } else {
-                RERenteAccordee ra = renteAccordees.get(0);
-                // La résolution est fait via la classe RECodePrestationResolver mais le type retourné doit être
-                // convertis...
-                PRTypeCodePrestation type = RECodePrestationResolver.getGenreDePrestation(ra.getCodePrestation());
-                switch (type) {
-                    case INVALIDITE:
-                        typeDemandeRente = TypeDemandeRente.DEMANDE_INVALIDITE;
-                        break;
-                    case VIEILLESSE:
-                        typeDemandeRente = TypeDemandeRente.DEMANDE_VIEILLESSE;
-                        break;
-                    case SURVIVANT:
-                        typeDemandeRente = TypeDemandeRente.DEMANDE_SURVIVANT;
-                        break;
-                    default:
-                        throw new IllegalArgumentException(
-                                "Unable to define the RETypeDemandeRente of the REBasesCalcul with id ["
-                                        + baseCalcul.getId() + "]. The first RERenteAccordee with id ["
-                                        + ra.getIdPrestationAccordee() + "] has an unknow codePrestation ["
-                                        + ra.getCodePrestation() + "]");
-                }
-            }
-
-            // Analyse de la'journement de la base de calcul
-            ajournement = hasCodeCasSpecial08(renteAccordees);
-
-        }
-
-        public boolean hasCodeCasSpecial08(List<RERenteAccordee> renteAccordees) {
-            for (RERenteAccordee ra : renteAccordees) {
-                if (hasCodeCasSpecial(ra, "08")) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public boolean isAjournement() {
-            return ajournement;
-        }
-
-        public TypeDemandeRente getTypeDemandeRente() {
-            return typeDemandeRente;
-        }
-
-        public String getCleDeComparaison() {
-            StringBuilder sb = new StringBuilder();
-            sb.append(typeDemandeRente.toString());
-            sb.append("-");
-            if (!TypeDemandeRente.DEMANDE_SURVIVANT.equals(typeDemandeRente)) {
-                sb.append(idTiers);
-                sb.append("-");
-            }
-            sb.append(ajournement);
-            return sb.toString();
-        }
-
-        protected boolean hasCodeCasSpecial(RERenteAccordee renteAccordee, String codeCasSpecialRecherche) {
-            return codeCasSpecialRecherche.equals(renteAccordee.getCodeCasSpeciaux1())
-                    || codeCasSpecialRecherche.equals(renteAccordee.getCodeCasSpeciaux2())
-                    || codeCasSpecialRecherche.equals(renteAccordee.getCodeCasSpeciaux3())
-                    || codeCasSpecialRecherche.equals(renteAccordee.getCodeCasSpeciaux4())
-                    || codeCasSpecialRecherche.equals(renteAccordee.getCodeCasSpeciaux5());
-        }
-    }
-
-    private class DemandeRenteWrapper extends CleWrapper implements Comparable<DemandeRenteWrapper> {
-        private DemandeRente demandeRente;
-
-        public DemandeRenteWrapper(DemandeRente demandeRente) {
-            super(demandeRente);
-            this.demandeRente = demandeRente;
-        }
-
-        public DemandeRente getDemandeRente() {
-            return demandeRente;
-        }
-
-        @Override
-        public int compareTo(DemandeRenteWrapper demande) {
-            PRDateEquality result = null;
-            try {
-                result = PRDateUtils.compare(getDemandeRente().getDateDebutDuDroitInitial(),
-                        demande.getDemandeRente().getDateDebutDuDroitInitial());
-            } catch (Exception e) {
-                return 0;
-            }
-            switch (result) {
-                case BEFORE:
-                    return -1;
-                case EQUALS:
-                    return 0;
-                case AFTER:
-                    return 1;
-                case INCOMPARABLE:
-
-                default:
-                    break;
-            }
-            return 0;
-        }
-
-    }
-
-    private class BaseCalculWrapper extends CleWrapper {
-        private REBasesCalcul basesCalcul;
-        private List<RERenteAccordee> renteAccordees;
-
-        public BaseCalculWrapper(REBasesCalcul basesCalcul, List<RERenteAccordee> renteAccordees) {
-            super(basesCalcul, renteAccordees);
-            this.basesCalcul = basesCalcul;
-            this.renteAccordees = renteAccordees;
-        }
-
-        public REBasesCalcul getBasesCalcul() {
-            return basesCalcul;
-        }
-
-        public boolean hasCodeCasSpecial08() {
-            for (RERenteAccordee ra : renteAccordees) {
-                if (hasCodeCasSpecial(ra, "08")) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
 
     private static final String DATE_FIN_DEMANDE = "01.01.1000";
 
     private static final String DATE_DEBUT_DEMANDE = "31.12.9999";
-
-    // Clé pour le traitement des annonces ponctuelles
-    class KeyAP {
-        public String genreRente = "";
-        public String idTiers = "";
-    }
-
-    // Valeur pour le traitement des annonces ponctuelles
-    class ValueAP {
-        String ancienMontantRA = "";
-        String ancienRAM = "";
-        String idRA = "";
-        List<String> idsRCI = new ArrayList<String>();
-        String nouveauMontantRA = "";
-        String nouveauRAM = "";
-    }
 
     /**
      * Met à jours le champ anneeMontantRam selon le cas identifié ci-dessus. Rentes en cours : [ ] = RA (date début et
@@ -1557,6 +1327,9 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
             }
         }
 
+        REExportationCalculAcor2020 exportAcor = new REExportationCalculAcor2020(session, caViewBean.getIdDemandeRente());
+        InHostType inHost = exportAcor.createInHost();
+
         if (!viewBean.getMsgType().equals(FWViewBeanInterface.ERROR)) {
             Map<String, PRAcorFileContent> filesContent = new HashMap<String, PRAcorFileContent>();
 
@@ -1565,6 +1338,27 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                     PRACORConst.dossierACOR(session));
             caViewBean.setFilesContent(filesContent);
             caViewBean.setIsFileContent(true);
+        }
+
+        return viewBean;
+    }
+
+    /**
+     * Helper de l'appel au service Web ACOR
+     *
+     * @param viewBean
+     * @param action
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    public FWViewBeanInterface actionCallACORWeb(final FWViewBeanInterface viewBean, final FWAction action,
+                                                        final BSession session) throws Exception {
+
+        RECalculACORDemandeRenteViewBean caViewBean = (RECalculACORDemandeRenteViewBean) viewBean;
+
+        if (!viewBean.getMsgType().equals(FWViewBeanInterface.ERROR)) {
+            caViewBean.setIsAcorV4Web(true);
         }
 
         return viewBean;
@@ -1693,7 +1487,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                  * |---------|---------------------------------|
                  */
 
-                Map<KeyAP, ValueAP> mapAP = new HashMap<KeyAP, ValueAP>();
+                Map<KeyAP, ValueAP> mapAP = new HashMap<>();
 
                 boolean isCIAdditionnel = false;
 
@@ -3105,7 +2899,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      */
     private List<BaseCalculWrapper> getBCWrapperDeLaDemande(DemandeRente demandeCourante, BSession session)
             throws Exception {
-        List<BaseCalculWrapper> basesCalculWrappers = new ArrayList<RECalculACORDemandeRenteHelper.BaseCalculWrapper>();
+        List<BaseCalculWrapper> basesCalculWrappers = new ArrayList<>();
 
         REDemandeRente demandeEntity = new REDemandeRente();
         demandeEntity.setSession(session);
@@ -3635,4 +3429,21 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                 isRenteAvecSupplementPourPersonneVeuve, isRenteAvecDebutDroit5AnsAvantDepotDemande,
                 isRenteAvecMontantMinimumMajoreInvalidite, isRenteReduitePourSurassurance);
     }
+
+    // Clé pour le traitement des annonces ponctuelles
+    class KeyAP {
+        public String genreRente = "";
+        public String idTiers = "";
+    }
+
+    // Valeur pour le traitement des annonces ponctuelles
+    class ValueAP {
+        String ancienMontantRA = "";
+        String ancienRAM = "";
+        String idRA = "";
+        List<String> idsRCI = new ArrayList<String>();
+        String nouveauMontantRA = "";
+        String nouveauRAM = "";
+    }
+
 }

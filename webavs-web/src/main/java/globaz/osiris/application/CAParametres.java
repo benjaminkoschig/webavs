@@ -1,9 +1,17 @@
 package globaz.osiris.application;
 
-import globaz.globall.db.BTransaction;
-import globaz.globall.db.FWFindParameter;
+import globaz.globall.db.*;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jade.crypto.JadeDefaultEncrypters;
+import globaz.jade.crypto.JadeEncrypterNotFoundException;
+import globaz.jade.log.JadeLogger;
+import globaz.jade.log.JadeLoggerUtil;
 import globaz.osiris.db.comptes.CACompteAnnexe;
+import globaz.webavs.common.CommonProperties;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -161,7 +169,7 @@ public class CAParametres {
         return CAParametres.tauxMargeDeltaInteretCalculeOP;
     }
 
-    private CAApplication applictation;
+    private CAApplication caApplication;
 
     private Properties msg = null;
 
@@ -174,11 +182,11 @@ public class CAParametres {
     public CAParametres(CAApplication application) {
         super();
 
-        applictation = application;
+        caApplication = application;
     }
 
     public int getAncienNoAdherentBVR() {
-        return Integer.parseInt(applictation.getProperty(CAApplication.PROPERTY_OSIRIS_ANCIEN_NO_ADHERENT_BVR, "0"));
+        return Integer.parseInt(caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_ANCIEN_NO_ADHERENT_BVR, "0"));
     }
 
     /**
@@ -187,7 +195,7 @@ public class CAParametres {
      * @return String
      */
     public String getApplicationExterne() {
-        return applictation.getProperty(CAApplication.PROPERTY_OSIRIS_EXTERNAL_APPLICATION, null);
+        return caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_EXTERNAL_APPLICATION, null);
     }
 
     /**
@@ -197,7 +205,7 @@ public class CAParametres {
      * @return int de la valeur de la date à prendre en compte (0 par défaut)
      */
     public int getDateValeurBVR() {
-        return Integer.parseInt(applictation.getProperty(CAApplication.PROPERTY_OSIRIS_DATE_VALEUR_BVR, "0"));
+        return Integer.parseInt(caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_DATE_VALEUR_BVR, "0"));
     }
 
     /**
@@ -206,7 +214,7 @@ public class CAParametres {
      * @return le format d'un nuéméro d'affilié.
      */
     public String getFormatAdminNumAffilie() {
-        return applictation.getProperty(CAApplication.PROPERTY_OSIRIS_FORMAT_ADMIN_NUM_AFFILIE, "");
+        return caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_FORMAT_ADMIN_NUM_AFFILIE, "");
     }
 
     /**
@@ -216,7 +224,7 @@ public class CAParametres {
      */
     public int getLimiteImpressionEcritureJournal() {
         try {
-            return Integer.parseInt(applictation.getProperty(
+            return Integer.parseInt(caApplication.getProperty(
                     CAApplication.PROPERTY_LIMITE_IMPRESSION_ECRITURES_JOURNAL, "10000"));
         } catch (Exception e) {
             return CAParametres.limiteImpressionEcrituresJournal;
@@ -263,7 +271,7 @@ public class CAParametres {
      */
     public String getModeParDefautBulletinNeutre() {
         try {
-            String mode = applictation.getProperty(CAApplication.PROPERTY_OSIRIS_MODE_TRAITEMENT_BULLETIN_NEUTRE, null);
+            String mode = caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_MODE_TRAITEMENT_BULLETIN_NEUTRE, null);
             if (mode == null || JadeStringUtil.isBlankOrZero(mode)) {
                 return CACompteAnnexe.CS_BN_INACTIF;
             } else {
@@ -281,18 +289,18 @@ public class CAParametres {
      * @return the apercuJournauxUser
      */
     public boolean isApercuJournauxUser() {
-        return Boolean.valueOf(applictation.getProperty(CAApplication.PROPERTY_OSIRIS_APERCU_JOURNAUX_USER, "false"))
+        return Boolean.valueOf(caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_APERCU_JOURNAUX_USER, "false"))
                 .booleanValue();
     }
 
     public boolean isBulletinNeutre() {
-        return Boolean.valueOf(applictation.getProperty(CAApplication.PROPERTY_OSIRIS_BULLETIN_NEUTRE, "false"))
+        return Boolean.valueOf(caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_BULLETIN_NEUTRE, "false"))
                 .booleanValue();
     }
 
     public boolean isCheckMontantARembourser() {
         return Boolean.valueOf(
-                applictation.getProperty(CAApplication.PROPERTY_OSIRIS_CHECK_MONTANT_A_REMBOURSER, "true"))
+                caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_CHECK_MONTANT_A_REMBOURSER, "true"))
                 .booleanValue();
     }
 
@@ -302,7 +310,7 @@ public class CAParametres {
      * @return boolean
      */
     public boolean isComptabiliteAvs() {
-        return Boolean.valueOf(applictation.getProperty(CAApplication.PROPERTY_OSIRIS_COMPTABILITE_AVS, "false"))
+        return Boolean.valueOf(caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_COMPTABILITE_AVS, "false"))
                 .booleanValue();
     }
 
@@ -310,7 +318,7 @@ public class CAParametres {
      * @return the confidentiel
      */
     public boolean isConfidentiel() {
-        return Boolean.valueOf(applictation.getProperty(CAApplication.PROPERTY_OSIRIS_IMPRESSIONCONFIDENTIEL, "false"))
+        return Boolean.valueOf(caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_IMPRESSIONCONFIDENTIEL, "false"))
                 .booleanValue();
     }
 
@@ -320,7 +328,7 @@ public class CAParametres {
      * @return boolean true si contentieux externe, false si propriété false ou non trouvée
      */
     public boolean isContentieuxAquila() {
-        return Boolean.valueOf(applictation.getProperty(CAApplication.PROPERTY_OSIRIS_CONTENTIEUX_AQUILA, "false"))
+        return Boolean.valueOf(caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_CONTENTIEUX_AQUILA, "false"))
                 .booleanValue();
     }
 
@@ -328,7 +336,7 @@ public class CAParametres {
      * @return the contentieuxAvsUniquement
      */
     public boolean isContentieuxAvsUniquement() {
-        return Boolean.valueOf(applictation.getProperty(CAApplication.PROPERTY_OSIRIS_CTX_AVS_UNIQUEMENT, "false"))
+        return Boolean.valueOf(caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_CTX_AVS_UNIQUEMENT, "false"))
                 .booleanValue();
     }
 
@@ -340,7 +348,7 @@ public class CAParametres {
      */
     public boolean isImpressionBulletinSoldeApresComptabilisation() {
         return Boolean.valueOf(
-                applictation.getProperty(CAApplication.PROPERTY_IMPRESSION_BULLETIN_SOLDE_APRES_COMPTABILISATION,
+                caApplication.getProperty(CAApplication.PROPERTY_IMPRESSION_BULLETIN_SOLDE_APRES_COMPTABILISATION,
                         "false")).booleanValue();
     }
 
@@ -353,7 +361,7 @@ public class CAParametres {
 
     public boolean isInteretRemuneratoireActif() {
         return Boolean.valueOf(
-                applictation.getProperty(CAApplication.PROPERTY_OSIRIS_INTERET_REMUNERATOIRE_ACTIF, "true"))
+                caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_INTERET_REMUNERATOIRE_ACTIF, "true"))
                 .booleanValue();
     }
 
@@ -365,7 +373,7 @@ public class CAParametres {
      */
     public boolean isInteretSurCotArrSurSectSeparee() {
         return Boolean.valueOf(
-                applictation.getProperty(CAApplication.PROPERTY_OSIRIS_INTERETSURCOTARRSURSECTIONSEPAREE, "false"))
+                caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_INTERETSURCOTARRSURSECTIONSEPAREE, "false"))
                 .booleanValue();
     }
 
@@ -375,7 +383,7 @@ public class CAParametres {
      * @return the rappelSurPlan
      */
     public boolean isRappelSurPlan() {
-        return Boolean.valueOf(applictation.getProperty(CAApplication.PROPERTY_OSIRIS_RAPPEL_SUR_PLAN, "false"))
+        return Boolean.valueOf(caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_RAPPEL_SUR_PLAN, "false"))
                 .booleanValue();
     }
 
@@ -386,7 +394,7 @@ public class CAParametres {
      */
     public boolean isIncrementerNumSectionRecouvrement() {
         return Boolean.valueOf(
-                applictation.getProperty(CAApplication.PROPERTY_OSIRIS_INCREMENTER_NUM_SECTION_RECOUVREMENT, "true"))
+                caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_INCREMENTER_NUM_SECTION_RECOUVREMENT, "true"))
                 .booleanValue();
     }
 
@@ -395,7 +403,7 @@ public class CAParametres {
      */
     public boolean isRequisitionALAdresseDomicile() {
         return Boolean.valueOf(
-                applictation.getProperty(CAApplication.PROPERTY_OSIRIS_REQUISITION_A_ADRESSE_DOMICILE, "false"))
+                caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_REQUISITION_A_ADRESSE_DOMICILE, "false"))
                 .booleanValue();
     }
 
@@ -404,8 +412,74 @@ public class CAParametres {
     }
 
     public boolean isModeRecalculSoldesSectionsCompteAnnexes() {
-        return Boolean.valueOf(applictation.getProperty(CAApplication.PROPERTY_OSIRIS_RECALCUL_SOLDES, "true"))
+        return Boolean.valueOf(caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_RECALCUL_SOLDES, "true"))
                 .booleanValue();
+    }
+
+    /// Proprieté à utiliser pour la validation de la chaine complete
+    /// eBill = ACTIVE
+    /// Caisse avec droits d'utiliser eBill
+    public boolean isEbill(BSession session){
+        // Flag générale eBill (ON/OFF)
+        boolean isEbill = getPropertyEbillActive();
+        if(isEbill){
+            // Vérifier que la caisse avs est dans la liste crypté (Applications->Administration->Plages de valeurs -> OSIRIS + EBILLACNT
+            String noCaisse = caApplication.getProperty(CommonProperties.KEY_NO_CAISSE_FORMATE, "");
+            List<String> getListCaisses = null;
+            try {
+                getListCaisses = getListCaissesEBill(session);
+            } catch (Exception e) {
+                JadeLogger.warn(this, e.getMessage());
+            }
+            isEbill = getListCaisses.contains(noCaisse);
+        }
+        return isEbill;
+    }
+
+    private List<String> getListCaissesEBill(BSession session) throws Exception {
+        List<String> listCaissesEbill = new ArrayList<>();
+        FWFindParameterManager mgr = getPlageValeurEbill(session);
+        for(int idx = 0; idx < mgr.size(); idx++){
+            FWFindParameter param = (FWFindParameter) mgr.get(idx);
+            if(!JadeStringUtil.isBlank(param.getValeurAlphaParametre())){
+                listCaissesEbill.add(JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(param.getValeurAlphaParametre()));
+            }
+        }
+        return listCaissesEbill;
+    }
+
+    private FWFindParameterManager getPlageValeurEbill(BSession session) throws Exception {
+        FWFindParameterManager mgr = new FWFindParameterManager();
+        mgr.setSession(session);
+        mgr.setIdApplParametre(caApplication.getName());
+        mgr.setIdCleDiffere(CAApplication.PROPERTY_OSIRIS_PLAGE_VALEURS_EBILL);
+        mgr.find(BManager.SIZE_NOLIMIT);
+        return mgr;
+    }
+
+    public boolean getPropertyEbillActive(){
+        return Boolean.valueOf(caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_EBILL_ACTIVE, "false"))
+                .booleanValue();
+    }
+
+    public String getEbillBillerId(){
+        return caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_EBILL_BILLER_ID, "");
+    }
+
+    public List<String> getEbillNotificationEmails(){
+        List<String> emailList = new ArrayList<>();
+        String emails = caApplication.getProperty(CAApplication.PROPERTY_OSIRIS_EBILL_EMAILS, "");
+        String sep = ";";
+        if(emails.contains(",")){
+            sep = ",";
+        } else if(emails.contains(":")){
+            sep = ":";
+        }
+        String[] splitEmails = emails.split(sep);
+        for(String email : splitEmails){
+            emailList.add(email);
+        }
+        return emailList;
     }
 
 }

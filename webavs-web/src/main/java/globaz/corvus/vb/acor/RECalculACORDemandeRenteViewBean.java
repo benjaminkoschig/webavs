@@ -19,6 +19,7 @@ public class RECalculACORDemandeRenteViewBean extends REAbstractCalculACORViewBe
     private String idDemandeRente;
     private String idTiers;
     private boolean isFileContent = false;
+    private boolean isAcorV4Web = false;
 
     public String getCsTypeDemandeRente() {
         return csTypeDemandeRente;
@@ -37,6 +38,10 @@ public class RECalculACORDemandeRenteViewBean extends REAbstractCalculACORViewBe
 
     public boolean isFileContent() {
         return isFileContent;
+    }
+
+    public boolean isAcorV4Web() {
+        return isAcorV4Web;
     }
 
     /**
@@ -70,6 +75,10 @@ public class RECalculACORDemandeRenteViewBean extends REAbstractCalculACORViewBe
 
     public void setIsFileContent(boolean elm) {
         isFileContent = elm;
+    }
+
+    public void setIsAcorV4Web(boolean isAcorV4Web) {
+        this.isAcorV4Web = isAcorV4Web;
     }
 
 }

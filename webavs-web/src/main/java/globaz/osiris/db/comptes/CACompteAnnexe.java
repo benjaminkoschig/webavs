@@ -50,6 +50,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import ch.globaz.al.business.constantes.ALCSTiers;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Insérez la description du type ici. Date de création : (10.12.2001 12:56:55)
@@ -107,11 +108,17 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
     public static final String FIELD_SOLDE = "SOLDE";
     public static final String FIELD_MODEBULLETINNEUTRE = "MODEBN";
 
+    public static final String FIELD_EBILL_ID= "EBILLID";
+    public static final String FIELD_EBILL_MAIL= "EBILLMAIL";
+
     public static final String GENRE_COMPTE_STANDARD = "0";
     public static final String LABEL_OPERATION_AUXILIAIRE_NON_INSEREE = "OPERATION_AUXILIAIRE_NON_INSEREE";
     private static final int NUM_CONSULAT_LENGTH = 3;
 
     public static final String TABLE_CACPTAP = "CACPTAP";
+
+    private static final int EBILL_ACCOUNT_ID_LENGTH = 17;
+
     private Boolean aSurveiller = new Boolean(false);
 
     private Boolean bloquerAmendeStatutaire = new Boolean(false);
@@ -146,6 +153,9 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
     private String solde = "0.00";
     // D0009
     private String modeBulletinNeutre = CACompteAnnexe.CS_BN_DEFAUT;
+
+    private String eBillAccountID = new String();
+    private String eBillMail = new String();
 
     private FWParametersUserCode ucMotifContentieuxSuspendu = null;
 
@@ -279,6 +289,9 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
         descriptionUpperCase = statement.dbReadString(CACompteAnnexe.FIELD_DESCUPCASE);
         // D0009
         modeBulletinNeutre = statement.dbReadNumeric(CACompteAnnexe.FIELD_MODEBULLETINNEUTRE);
+
+        eBillAccountID = statement.dbReadString(CACompteAnnexe.FIELD_EBILL_ID);
+        eBillMail = statement.dbReadString(CACompteAnnexe.FIELD_EBILL_MAIL);
     }
 
     /**
@@ -300,6 +313,12 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
         } catch (Exception e) {
             _addError(statement.getTransaction(), e.getMessage());
         }
+
+        // on contrôle le eBill Account ID = 17
+        if (!geteBillAccountID().isEmpty() && geteBillAccountID().length() != EBILL_ACCOUNT_ID_LENGTH) {
+            _addError(statement.getTransaction(), getSession().getLabel("7373"));
+        }
+
         // Contrôles sur le contentieux au niveau de compte annexe
         if (!CAApplication.getApplicationOsiris().getCAParametres().isContentieuxAquila()) {
             if (!getContEstBloque().booleanValue()) {
@@ -435,6 +454,9 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
         // D0009
         statement.writeField(CACompteAnnexe.FIELD_MODEBULLETINNEUTRE,
                 this._dbWriteNumeric(statement.getTransaction(), getModeBulletinNeutre(), "modeBulletinNeutre"));
+
+        statement.writeField(CACompteAnnexe.FIELD_EBILL_ID, this._dbWriteString(statement.getTransaction(), geteBillAccountID(), "eBillAccountID"));
+        statement.writeField(CACompteAnnexe.FIELD_EBILL_MAIL, this._dbWriteString(statement.getTransaction(), geteBillMail(), "eBillMail"));
     }
 
     /**
@@ -1948,5 +1970,24 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
         } catch (Exception e) {
             return super.toString();
         }
+    }
+
+    public String geteBillAccountID() {
+        if (JadeStringUtil.isBlankOrZero(eBillAccountID)) {
+            eBillAccountID = StringUtils.EMPTY;
+        }
+        return eBillAccountID;
+    }
+
+    public void seteBillAccountID(String eBillAccountID) {
+        this.eBillAccountID = eBillAccountID;
+    }
+
+    public String geteBillMail() {
+        return eBillMail;
+    }
+
+    public void seteBillMail(String eBillMail) {
+        this.eBillMail = eBillMail;
     }
 }

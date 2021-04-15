@@ -51,6 +51,7 @@ import globaz.osiris.db.contentieux.CASectionAuxPoursuitesManager;
 import globaz.osiris.db.contentieux.CASectionAuxPoursuitesNotRadieeManager;
 import globaz.osiris.db.contentieux.CASectionAvecSectionsPoursuiteManager;
 import globaz.osiris.db.contentieux.CASequenceContentieux;
+import globaz.osiris.db.ebill.enums.CATraitementEtatEBillEnum;
 import globaz.osiris.db.utils.CAGestionRemarque;
 import globaz.osiris.db.utils.CARemarque;
 import globaz.osiris.db.utils.IntRemarque;
@@ -96,6 +97,9 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
     public static final String FIELD_IDLASTETATAQUILA = "IDLASTETATAQUILA";
     public static final String FIELD_IDMODECOMPENSATION = "IDMODECOMPENS";
     public static final String FIELD_IDMOTCONSUS = "IDMOTCONSUS";
+    public static final String FIELD_EBILL_TRANSACTION_ID = "EBILLTRANSACTIONID";
+    public static final String FIELD_EBILL_ETAT = "EBILLETAT";
+    public static final String FIELD_EBILL_ERREUR = "EBILLERREUR";
     public static final String FIELD_IDPASSAGECOMP = "IDPASSAGECOMP";
     public static final String FIELD_IDPLANRECOUVREMENT = "IDPLANRECOUVREMENT";
     public static final String FIELD_IDPOSJOU = "IDPOSJOU";
@@ -159,6 +163,9 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
     private String idLastEtatAquila = "";
     private String idModeCompensation = "";
     private String idMotifContentieuxSuspendu = "";
+    private String eBillTransactionID = "";
+    private String eBillEtat = "";
+    private String eBillErreur = "";
     private String idPassageComp = "";
     private String idPlanRecouvrement = "";
     private String idPosteJournalisation = "";
@@ -381,6 +388,9 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         dateDebutPeriode = statement.dbReadDateAMJ(CASection.FIELD_DATEDEBUTPERIODE);
         dateFinPeriode = statement.dbReadDateAMJ(CASection.FIELD_DATEFINPERIODE);
         idMotifContentieuxSuspendu = statement.dbReadNumeric(CASection.FIELD_IDMOTCONSUS);
+        eBillTransactionID = statement.dbReadString(CASection.FIELD_EBILL_TRANSACTION_ID);
+        eBillEtat = statement.dbReadString(CASection.FIELD_EBILL_ETAT);
+        eBillErreur = statement.dbReadString(CASection.FIELD_EBILL_ERREUR);
         categorieSection = statement.dbReadNumeric(CASection.FIELD_CATEGORIESECTION);
         idJournal = statement.dbReadNumeric(CASection.FIELD_IDJOURNAL);
         idLastEtapeCtx = statement.dbReadNumeric(CASection.FIELD_IDLASTETAPECTX);
@@ -547,6 +557,12 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
                 this._dbWriteDateAMJ(statement.getTransaction(), getDateFinPeriode(), "dateFinPeriode"));
         statement.writeField(CASection.FIELD_IDMOTCONSUS,
                 this._dbWriteNumeric(statement.getTransaction(), getIdMotifContentieuxSuspendu(), "idMotConSus"));
+        statement.writeField(CASection.FIELD_EBILL_TRANSACTION_ID,
+                this._dbWriteString(statement.getTransaction(), geteBillTransactionID(), "eBillTransactionID"));
+        statement.writeField(CASection.FIELD_EBILL_ETAT,
+                this._dbWriteString(statement.getTransaction(), eBillEtat, "eBillEtat"));
+        statement.writeField(CASection.FIELD_EBILL_ERREUR,
+                this._dbWriteString(statement.getTransaction(), geteBillErreur(), "eBillErreur"));
         statement.writeField(CASection.FIELD_CATEGORIESECTION,
                 this._dbWriteNumeric(statement.getTransaction(), getCategorieSection(), "categorieSection"));
         statement.writeField(CASection.FIELD_IDJOURNAL,
@@ -1561,6 +1577,18 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return idMotifContentieuxSuspendu;
     }
 
+    public String geteBillTransactionID() {
+        return eBillTransactionID;
+    }
+
+    public CATraitementEtatEBillEnum geteBillEtat() {
+        return CATraitementEtatEBillEnum.parValeur(eBillEtat);
+    }
+
+    public String geteBillErreur() {
+        return eBillErreur;
+    }
+
     @Override
     public String getIdPassageComp() {
         return idPassageComp;
@@ -2399,6 +2427,18 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         idMotifContentieuxSuspendu = newIdMotifContentieuxSuspendu;
         ucMotifContentieuxSuspendu = null;
         csMotifContentieuxSuspendu = null;
+    }
+
+    public void seteBillTransactionID(String eBillTransactionID) {
+        this.eBillTransactionID = eBillTransactionID;
+    }
+
+    public void seteBillEtat(String eBillEtat) {
+        this.eBillEtat = eBillEtat;
+    }
+
+    public void seteBillErreur(String eBillErreur) {
+        this.eBillErreur = eBillErreur;
     }
 
     /**

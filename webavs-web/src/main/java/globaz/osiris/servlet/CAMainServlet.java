@@ -22,34 +22,12 @@ import globaz.jade.log.JadeLogger;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.servlet.action.avance.CAAvanceAction;
 import globaz.osiris.servlet.action.bvrftp.CABvrFtpAction;
-import globaz.osiris.servlet.action.compte.CAApercuComptes;
-import globaz.osiris.servlet.action.compte.CAApercuParSectionAction;
-import globaz.osiris.servlet.action.compte.CACompteCourantAction;
-import globaz.osiris.servlet.action.compte.CAComptesAnnexesAction;
-import globaz.osiris.servlet.action.compte.CAExtournerOperationAction;
-import globaz.osiris.servlet.action.compte.CAExtournerSectionAction;
-import globaz.osiris.servlet.action.compte.CAHistoriqueCompteAnnexeAction;
-import globaz.osiris.servlet.action.compte.CAJournalAction;
-import globaz.osiris.servlet.action.compte.CAJournalOperationAction;
-import globaz.osiris.servlet.action.compte.CAReferenceRubriqueAction;
-import globaz.osiris.servlet.action.compte.CARoleAction;
-import globaz.osiris.servlet.action.compte.CARubriqueAction;
-import globaz.osiris.servlet.action.compte.CASectionAction;
-import globaz.osiris.servlet.action.compte.CATransfertSoldesAction;
-import globaz.osiris.servlet.action.compte.CATypeOperationAction;
-import globaz.osiris.servlet.action.compte.CATypeSectionAction;
-import globaz.osiris.servlet.action.contentieux.CAAnnulerEtapeContentieuxAction;
-import globaz.osiris.servlet.action.contentieux.CACalculTaxeAction;
-import globaz.osiris.servlet.action.contentieux.CAEtapeAction;
-import globaz.osiris.servlet.action.contentieux.CAGestionEtapeAction;
-import globaz.osiris.servlet.action.contentieux.CAOperationContentieuxAction;
-import globaz.osiris.servlet.action.contentieux.CASequenceContentieuxAction;
+import globaz.osiris.servlet.action.compte.*;
+import globaz.osiris.servlet.action.contentieux.*;
+import globaz.osiris.servlet.action.ebill.CAInscriptionEBillAction;
+import globaz.osiris.servlet.action.ebill.CATraitementEBillAction;
 import globaz.osiris.servlet.action.historique.CAHistoriqueBulletinSoldeAction;
-import globaz.osiris.servlet.action.interets.CADetailInteretMoratoireAction;
-import globaz.osiris.servlet.action.interets.CAGenreInteretAction;
-import globaz.osiris.servlet.action.interets.CAInteretMoratoireAction;
-import globaz.osiris.servlet.action.interets.CAPlanCalculInteretAction;
-import globaz.osiris.servlet.action.interets.CARubriqueSoumiseInteretAction;
+import globaz.osiris.servlet.action.interets.*;
 import globaz.osiris.servlet.action.lettrage.CAActionLettrage;
 import globaz.osiris.servlet.action.message.CAApercuJournalisationAction;
 import globaz.osiris.servlet.action.message.CAApercuMessageAction;
@@ -65,13 +43,15 @@ import globaz.osiris.servlet.action.services.CAListDirectoryAction;
 import globaz.osiris.servlet.action.services.CARechercheMontantOperationAction;
 import globaz.osiris.servlet.action.services.CARechercheMontantSectionAction;
 import globaz.osiris.stack.rules.NaviRules;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.log4j.Logger;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author user To change this generated comment edit the template variable "typecomment":
@@ -84,6 +64,8 @@ public class CAMainServlet extends FWServlet {
      * 
      */
     private static final long serialVersionUID = 1L;
+
+    private static final Logger LOG = Logger.getLogger(CAMainServlet.class);
 
     /** Nom du menu CA */
     private static final String MENU_MAIN_AL = "CA-MenuPrincipal";
@@ -106,6 +88,17 @@ public class CAMainServlet extends FWServlet {
      */
     @Override
     public FWController createController(BISession session) throws Exception {
+        // on retire les menus eBill si la fonctionnalité n'est pas active.
+        // Idéalement, cette action doit être faite dans le customize mais nous avons besoin de la session.
+        try {
+            if (!((CAApplication) GlobazSystem
+                    .getApplication(CAApplication.DEFAULT_APPLICATION_OSIRIS)).getCAParametres().isEbill((BSession) session)) {
+                FWMenuBlackBox.ensureNodeDoesntExist("eBill", "CA-MenuPrincipal");
+            }
+        } catch (Exception e) {
+            LOG.error("Une erreur est intervenue lors du contrôle sur les menus 'eBill'.",e);
+        }
+
         return new FWDispatcher(session, "osiris", "CA");
     }
 
@@ -173,6 +166,8 @@ public class CAMainServlet extends FWServlet {
             doActionRetours(session, request, response, mainController, actionClass);
         } else if (actionSuite.equals("historique")) {
             doActionHistorique(session, request, response, mainController, actionClass);
+        } else if (actionSuite.equals("ebill")) {
+            doActionEBill(session, request, response, mainController, actionClass);
         } else {
             FWDefaultServletAction act = new FWDefaultServletAction(this);
             act.doAction(session, request, response, mainController);
@@ -181,6 +176,18 @@ public class CAMainServlet extends FWServlet {
         if (JadeLogger.isDebugEnabled()) {
             JadeLogger.debug(this, "UserAction processed : " + action.toString());
         }
+    }
+
+    private void doActionEBill(HttpSession session, HttpServletRequest request, HttpServletResponse response, FWController mainController, String actionSuite) throws ServletException, IOException {
+        FWDefaultServletAction act;
+        if (actionSuite.toLowerCase().contains("inscriptionEBill".toLowerCase())) {
+            act = new CAInscriptionEBillAction(this);
+        } else if (actionSuite.toLowerCase().contains("traitementEBill".toLowerCase())) {
+            act = new CATraitementEBillAction(this);
+        } else {
+            act = new FWDefaultServletAction(this);
+        }
+        act.doAction(session, request, response, mainController);
     }
 
     public void doActionAvance(javax.servlet.http.HttpSession session, javax.servlet.http.HttpServletRequest request,
@@ -485,7 +492,7 @@ public class CAMainServlet extends FWServlet {
      * 2. Set menu properties from OSIRIS.properties <br/>
      * <b>Note : </b> Will be deprecated.
      * 
-     * @param session
+     * @param bb
      * @throws ServletException
      * @throws Exception
      */

@@ -117,6 +117,29 @@
 							<parameter name="userAction" value="osiris.process.remboursementAutomatique.afficher" />
 						</action>
 					</node>
+                    <node id="eBill">
+                        <label defaultValue="eBill">
+                            <language iso="de">eBill</language>
+                        </label>
+                        <nodes>
+                            <node>
+                                <label defaultValue="Inscription">
+                                    <language iso="de">Anmeldung</language>
+                                </label>
+                                <action command="/osiris" responseTarget="fr_main">
+                                    <parameter name="userAction" value="osiris.ebill.fichierInscriptionEBill.chercher"/>
+                                </action>
+                            </node>
+							<node>
+								<label defaultValue="Traitement">
+									<language iso="de">Bearbeitung</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.ebill.fichierTraitementEBill.chercher"/>"/>
+								</action>
+							</node>
+                        </nodes>
+                    </node>
 				</nodes>
 			</node>
 
@@ -1615,6 +1638,70 @@
 					<parameter name="typeBvrFtp"></parameter>
 					<parameter name="isYellowReportFile"></parameter>
 					<parameter name="distantDirectoryName"></parameter>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+    <!-- ************************** -->
+    <!-- Menu Option fichiers Inscription EBill    -->
+    <!-- ************************** -->
+    <menu id="CA-fichier-inscription-eBill">
+        <label refId="OPTIONS"/>
+        <nodes>
+            <node>
+                <label refId="FICHIER_INSCRIPTION_EBILL"/>
+                <action command="/osiris" responseTarget="fr_main">
+                    <parameter name="userAction" value="osiris.ebill.inscriptionEBill.chercher"/>
+                    <parameter name="idFichier"></parameter>
+                    <parameter name="nom"></parameter>
+                    <parameter name="date"></parameter>
+                    <parameter name="statutFichier"></parameter>
+                </action>
+            </node>
+        </nodes>
+    </menu>
+
+    <menu id="CA-inscription-eBill">
+        <label refId="OPTIONS"/>
+        <nodes>
+            <node>
+                <label refId="INSCRIPTION_EBILL"/>
+                <action command="/osiris" responseTarget="fr_main">
+                    <parameter name="userAction" value="osiris.ebill.inscriptionEBill.afficher"/>
+                    <parameter name="selectedId"></parameter>
+                </action>
+            </node>
+        </nodes>
+    </menu>
+
+	<!-- ************************** -->
+	<!-- Menu Option fichiers Traitement EBill    -->
+	<!-- ************************** -->
+	<menu id="CA-fichier-traitement-eBill">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="FICHIER_TRAITEMENT_EBILL" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.ebill.traitementEBill.chercher" />
+					<parameter name="idFichier"></parameter>
+					<parameter name="nom"></parameter>
+					<parameter name="date"></parameter>
+					<parameter name="statutFichier"></parameter>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<menu id="CA-traitement-eBill">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="TRAITEMENT_EBILL" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.ebill.traitementEBill.afficher" />
+					<parameter name="selectedId"></parameter>
 				</action>
 			</node>
 		</nodes>

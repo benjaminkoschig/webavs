@@ -1,0 +1,19 @@
+<jaxb:bindings xmlns:xs="http://www.w3.org/2001/XMLSchema"
+               xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" version="2.1">
+
+    <!-- Configure our custom xsd -->
+    <jaxb:bindings schemaLocation="../xsd/ebill/protocole/ProcessProtocol.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="osiris.ch.ebill.response.protocol"/>
+        </jaxb:schemaBindings>
+
+        <jaxb:bindings node="//xs:complexType[@name='BillType']">
+            <jaxb:class name="ProtocolBillType"/>
+        </jaxb:bindings>
+        <jaxb:bindings node="//xs:element[@name='Envelope']">
+            <jaxb:class name="ProtocolEnvelope"/>
+        </jaxb:bindings>
+    </jaxb:bindings>
+
+</jaxb:bindings>
