@@ -22,6 +22,7 @@ public class CORSFilter implements Filter {
                 "GET, POST, PUT, DELETE, OPTIONS, HEAD");
         httpResponse.addHeader("Access", "HEAD, GET, OPTIONS");
 
+        chain.doFilter(request, response) ;
     }
 
     @Override
