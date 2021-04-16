@@ -94,9 +94,6 @@ public class REExportationCalculAcor2020 {
     private static final String XSD_FOLDER = "/xsd/acor/xsd/";
     private static final String XSD_NAME = "acor-rentes-in-host.xsd";
 
-    public REExportationCalculAcor2020(){
-    }
-
     public REExportationCalculAcor2020(BSession bSession, String idDemandeRente){
         session = bSession;
         idDemande = idDemandeRente;
@@ -104,6 +101,7 @@ public class REExportationCalculAcor2020 {
     }
 
     public InHostType createInHost(){
+        LOG.info("Création du inHost.");
         InHostType inHost = new InHostType();
         try {
             demandeRente =  REDemandeRente.loadDemandeRente(session, transaction, idDemande, null);
@@ -121,7 +119,7 @@ public class REExportationCalculAcor2020 {
             inHost.getEnfant().addAll(createListEnfants(membresCatEnfants));
             inHost.getFamille().addAll(createListFamilles(membresCatConjoints, membresCatExConjointsConjoints));
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Erreur lors de la construction du inHost.", e);
         }
         return inHost;
     }
@@ -206,7 +204,7 @@ public class REExportationCalculAcor2020 {
             String noAgence = session.getApplication().getProperty(CommonProperties.KEY_NO_AGENCE);
             caisseAgence = Integer.valueOf(noCaisse+noAgence);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Erreur lors de la récupération du numéro de la caisse.", e);
         }
         return caisseAgence;
     }
@@ -269,7 +267,7 @@ public class REExportationCalculAcor2020 {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Erreur lors de la récupération des rentes en cours.", e);
         }
     }
 
@@ -930,7 +928,7 @@ public class REExportationCalculAcor2020 {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Erreur lors de la récupération des périodes par membres.",e);
             periodes = new ISFPeriode[0];
         }
         return periodes;
@@ -1005,7 +1003,7 @@ public class REExportationCalculAcor2020 {
                 ciTypes.add(ci);
             }
         } catch (PRACORException e) {
-            e.printStackTrace();
+            LOG.error("Erreur lors de la récupération des inscriptions CI.", e);
         }
         return ciTypes;
     }
@@ -1074,7 +1072,7 @@ public class REExportationCalculAcor2020 {
 
             return DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
         } catch (ParseException | DatatypeConfigurationException e) {
-            e.printStackTrace();
+            LOG.error("Erreur lors de la conversion des années de cotisations.", e);
         }
         return null;
     }
@@ -1288,7 +1286,7 @@ public class REExportationCalculAcor2020 {
                 donneesPostalesType.setBanque(banqueAdresseType);
             }
         } catch (Exception e) {
-            JadeLogger.error(this, e);
+            LOG.error("Erreur lors de la création des données postales.", e);
         }
         return donneesPostalesType;
     }
@@ -1318,6 +1316,7 @@ public class REExportationCalculAcor2020 {
                 prop = null;
             }
         } catch (Exception e) {
+            LOG.error("Erreur lors de la récupération des propriétées d'adresse courrier.", e);
             prop = null;
         }
         return prop;
@@ -1692,8 +1691,7 @@ public class REExportationCalculAcor2020 {
             }
             navs = formatNssToLong(strNss);
         } catch (Exception e) {
-            // TODO
-            e.printStackTrace();
+            LOG.error("Erreur lors de la récupération du numéro AVS de la demande.", e);
         }
         return navs;
     }
@@ -1714,7 +1712,7 @@ public class REExportationCalculAcor2020 {
             }
 
         } catch (Exception e) {
-            // TODO
+            LOG.error("Erreur lors de la récupération du numéro AVS de la demande du survivant.", e);
         }
         return nssDemande;
     }
@@ -1967,8 +1965,8 @@ public class REExportationCalculAcor2020 {
     }
 
     public String getDateTraimentFormat(){
-        JADate dateTraitement = null;
-        JADate datePmt = null;
+        JADate dateTraitement;
+        JADate datePmt;
         try {
             // -- BZ6830 --//
             if (JadeDateUtil.isGlobazDate(demandeRente.getDateTraitement())) {
@@ -1994,6 +1992,7 @@ public class REExportationCalculAcor2020 {
             }
 
         } catch (Exception e) {
+            LOG.error("Erreur lors de la récupération de la date de traitement formaté.", e);
             return null;
         }
     }
@@ -2025,6 +2024,7 @@ public class REExportationCalculAcor2020 {
             }
 
         } catch (Exception e) {
+            LOG.error("Erreur lors de la récupération de la date de traitement.", e);
             return null;
         }
     }
@@ -2043,7 +2043,7 @@ public class REExportationCalculAcor2020 {
 
             return DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
         } catch (ParseException | DatatypeConfigurationException e) {
-            e.printStackTrace();
+            LOG.error("Erreur lors de la récupération de la date de dépôt.", e);
         }
         return null;
     }
@@ -2061,7 +2061,7 @@ public class REExportationCalculAcor2020 {
 
             return DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
         } catch (ParseException | DatatypeConfigurationException e) {
-            e.printStackTrace();
+            LOG.error("Erreur lors du formatage d'une date.", e);
         }
         return null;
     }

@@ -60,6 +60,7 @@ import globaz.prestation.db.infos.PRInfoCompl;
 import globaz.prestation.helpers.PRHybridHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
@@ -74,14 +75,15 @@ public class REImportationCalculAcor2020 {
     public static final int CAS_RECALCUL_DEMANDE_NON_VALIDEE = 3;
     private static final String DATE_FIN_DEMANDE = "01.01.1000";
     private static final String DATE_DEBUT_DEMANDE = "31.12.9999";
+
+    private static final Logger LOG = Logger.getLogger(REImportationCalculAcor2020.class);
+
     private Set<String> rentesWithoutBte = new HashSet<>();
 
     public void actionImporterScriptACOR(String idDemande, String idTiers, String json,
                                          final BSession session) throws Exception {
-
+        LOG.info("Importation des données calculées.");
         Long idCopieDemande = null;
-        //TODO : Extraire le message et l'envoyer par mail à la fin du traitement.
-        String message = null;
         BITransaction transaction = null;
         LinkedList<Long> idsRentesAccordeesNouveauDroit = new LinkedList<>();
 
@@ -313,7 +315,8 @@ public class REImportationCalculAcor2020 {
                 long idTiersDemande = Long.valueOf(idTiers);
 
                 // L'appel de cette méthode peut dans certain cas retourner un message d'information à l'utilisateur
-                message = separerLesDemandesSiBesoin(idTiersDemande, idDemandeLong);
+                String message = separerLesDemandesSiBesoin(idTiersDemande, idDemandeLong);
+                LOG.info(message);
 
             } catch (NumberFormatException exception) {
                 String msg = "Unable to get id of the REDemandeRente [" + idDemande
@@ -378,8 +381,6 @@ public class REImportationCalculAcor2020 {
 
     public void actionImporterScriptACOR9(String idDemande, String idTiers, String json, BSession session) throws Exception {
         Long idCopieDemande = null;
-        //TODO : Extraire le message et l'envoyer par mail à la fin du traitement.
-        String message = null;
         BITransaction transaction = null;
         LinkedList<Long> idsRentesAccordeesNouveauDroit = new LinkedList<>();
 
@@ -579,7 +580,8 @@ public class REImportationCalculAcor2020 {
                 long idTiersDemande = Long.valueOf(idTiers);
 
                 // L'appel de cette méthode peut dans certain cas retourner un message d'information à l'utilisateur
-                message = separerLesDemandesSiBesoin(idTiersDemande, idDemandeLong);
+                String message = separerLesDemandesSiBesoin(idTiersDemande, idDemandeLong);
+                LOG.info(message);
 
             } catch (NumberFormatException exception) {
                 String msg = "Unable to get id of the REDemandeRente [" + idDemande
@@ -819,7 +821,7 @@ public class REImportationCalculAcor2020 {
                 demande.update();
             }
         } catch (Exception e) {
-            JadeLogger.error(this, e);
+            LOG.error("Erreur lors de la réinitialisation de la demande.",e);
             throw new RETechnicalException(e.toString(), e);
         }
     }
@@ -854,11 +856,11 @@ public class REImportationCalculAcor2020 {
             value = mapper.readValue(json, FCalcul.class);
 
         } catch (JsonParseException e) {
-            e.printStackTrace();
+            LOG.error("Erreur de parsing du json fCalcul.", e);
         } catch (JsonMappingException e) {
-            e.printStackTrace();
+            LOG.error("Erreur de mapping du json fCalcul.", e);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Erreur de connexion lors de la conversion du json fCalcul.", e);
         }
         return value;
     }
@@ -871,11 +873,11 @@ public class REImportationCalculAcor2020 {
             value = mapper.readValue(json, Resultat9.class);
 
         } catch (JsonParseException e) {
-            e.printStackTrace();
+            LOG.error("Erreur de parsing du json resultat9.", e);
         } catch (JsonMappingException e) {
-            e.printStackTrace();
+            LOG.error("Erreur de mapping du json resultat9.", e);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Erreur de connexion lors de la conversion du json resultat9.", e);
         }
         return value;
     }
@@ -965,7 +967,7 @@ public class REImportationCalculAcor2020 {
      * @throws Exception
      */
     private int importationCIAdditionnelsDepuisCalculACOR9(final BSession session, final BITransaction transaction,
-                                                          final Map<KeyAP, ValueAP> mapAP, final REDemandeRente demandeRente, Resultat9 resultat9) throws PRACORException, Exception {
+                                                           final Map<KeyAP, ValueAP> mapAP, final REDemandeRente demandeRente, Resultat9 resultat9) throws PRACORException, Exception {
 
         List<REFeuilleCalculVO> fcs = REACORParser.parseCIAdd(session, transaction,
                 demandeRente, new StringReader(resultat9.getAnnexes().getPay()));
@@ -1206,7 +1208,7 @@ public class REImportationCalculAcor2020 {
      * @throws Exception
      */
     private Long importationDesAnnoncesDuCalculACOR9(final BSession session, final BITransaction transaction,
-                                                    final LinkedList<Long> rentesAccordees, final int noCasATraiter, final REDemandeRente demande, final Resultat9 resultat9)
+                                                     final LinkedList<Long> rentesAccordees, final int noCasATraiter, final REDemandeRente demande, final Resultat9 resultat9)
             throws PRACORException, Exception {
 
         // TODO : utiliser le REAcor2020Parser pour mapper à partir de fcalcul et non plus annonce.pay
@@ -1227,7 +1229,7 @@ public class REImportationCalculAcor2020 {
 //          }
 
         // TODO : voir comment récupérer annonces.xml avec la nouvelle version ACOR.
-          /* Lecture du fichier annonce.xml si annonce.rr n'existe pas
+        /* Lecture du fichier annonce.xml si annonce.rr n'existe pas
          */
 //        if (!JadeStringUtil.isEmpty(caViewbean.getContenuAnnonceXML())) {
 //            REACORAnnonceXmlReader annonceXmlReader = new REACORAnnonceXmlReader();
