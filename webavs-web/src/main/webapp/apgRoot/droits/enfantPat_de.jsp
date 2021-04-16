@@ -6,9 +6,6 @@
 <%@ page import="globaz.framework.secure.FWSecureConstants"%>
 <%@ page import="globaz.jade.client.util.JadeStringUtil" %>
 <%@ page import="globaz.pyxis.db.adressecourrier.TIPays" %>
-<%@ page import="globaz.apg.menu.MenuPrestation" %>
-<%@ page import="globaz.apg.vb.droits.APTypePresationDemandeResolver" %>
-<%@ page import="globaz.prestation.api.PRTypeDemande" %>
 <script type="text/javascript"
 			src="<%=servletContext%>/scripts/nss.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/apgRoot/droits/enfantUtils.js"></script>
@@ -25,8 +22,6 @@ boolean isDroitPaterniteCantonale = "true".equals(globaz.prestation.application.
 // les boutons suivants ne s'affichent dans leur contexte habituel QUE lorsque le droit est modifiable.
 bButtonUpdate = viewBean.isModifiable() && bButtonUpdate &&  viewBean.getSession().hasRight(IAPActions.ACTION_ENFANT_PAT, FWSecureConstants.UPDATE);
 bButtonDelete = viewBean.isModifiable() && bButtonDelete &&  viewBean.getSession().hasRight(IAPActions.ACTION_ENFANT_PAT, FWSecureConstants.UPDATE);
-bButtonValidate = viewBean.isModifiable() && bButtonValidate &&  viewBean.getSession().hasRight(IAPActions.ACTION_ENFANT_PAT, FWSecureConstants.UPDATE);
-    PRTypeDemande typePrestation = APTypePresationDemandeResolver.resolveEnumTypePrestation(session);
 %>
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%>
@@ -127,7 +122,7 @@ bButtonValidate = viewBean.isModifiable() && bButtonValidate &&  viewBean.getSes
 	  return true;
   }
 
-  var isProcheAidant=<%=typePrestation.isProcheAidant()%>;
+  var isProcheAidant=<%=viewBean.getTypeDemande().isProcheAidant()%>;
   $(document).ready(function() {
       var frList = window.parent.fr_list;
       if(frList && isProcheAidant && parent.isNouveau) {

@@ -203,6 +203,10 @@ Date.prototype.getWeekDays = function(d) {
 	return days;
 };
 
+Date.prototype.daysBetween = function (d) {
+    return Math.round(Math.abs(this-d) / Date.msPERDAY) + 1;
+}
+
 Date.prototype.getMonthsBetween = function(d) {
 	var sDate, eDate;   
 	var d1 = this.getFullYear() * 12 + this.getMonth();
@@ -268,6 +272,9 @@ Date.toDate = function(d) {
 	} else if (d instanceof Date) {
 		newDate = new Date(d.getTime());
 	} else if (typeof d == "string") {
+	    if(d.indexOf(".")>-1){
+	        return globazNotation.utilsDate.tryToConvertToJsDate(d);
+        }
 		newDate = new Date(d);
 	} else if (arguments.length >= 3) {
 		var dte = [0, 0, 0, 0, 0, 0];
@@ -302,3 +309,8 @@ Date.prototype.isSameDate = function(anotherDate) {
 	}
 	return true;
 }
+
+Date.prototype.daysInMonth = function() {
+    return new Date(this.getFullYear(), this.getMonth()+1, 0).getDate();
+}
+

@@ -1439,6 +1439,9 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                     + 1);
             if (!JadeStringUtil.isBlankOrZero(periode.getNbJour())) {
                 nombreDeJoursSaisies += Integer.valueOf(periode.getNbJour());
+                if (!JadeStringUtil.isBlankOrZero(periode.getNbJoursupplementaire())) {
+                    nombreDeJoursPeriodes += Integer.parseInt(periode.getNbJoursupplementaire());
+                }
             } else {
                 nombreDeJoursSaisies = 0;
             }
@@ -2172,6 +2175,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             p.setNbrJours(periode.getNbJour());
             p.setTauxImposition(periode.getTauxImposition());
             p.setCantonImposition(periode.getCantonImposition());
+            p.setNbJourSupplementaire(periode.getNbJoursupplementaire());
             p.wantCallValidate(false);
             p.add(transaction);
         }

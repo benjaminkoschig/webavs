@@ -17,7 +17,11 @@ import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.utils.PRDateUtils;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 /**
  * <H1>Description</H1> Créé le 5 juil. 05
@@ -145,6 +149,13 @@ public class APDroitPaiPViewBean extends APAbstractDroitProxyViewBean {
         return false;
     }
 
+    public int calculerNbjourTotalIndemnise() {
+        if (JadeStringUtil.isBlankOrZero(this.getDroit().getIdDroit())) {
+            return 0;
+        }
+        return this.getDroit().calculerNbjourTotalIndemnise();
+    }
+
     public String getMessagesWarn() {
         StringBuilder msgHTML = new StringBuilder();
         if (Objects.nonNull(messagesWarn)) {
@@ -194,6 +205,9 @@ public class APDroitPaiPViewBean extends APAbstractDroitProxyViewBean {
                 }
                 if (dates.length > 4) {
                     periode.setCantonImposition(dates[4]);
+                }
+                if (dates.length > 5) {
+                    periode.setNbJoursupplementaire(dates[5]);
                 }
                 if (!isPeriodeDejaExistante(periode)) {
                     periodes.add(periode);
@@ -327,41 +341,6 @@ public class APDroitPaiPViewBean extends APAbstractDroitProxyViewBean {
         return msgHTML.toString();
     }
 
-    //    public String actionDateMin(String date,String user){
-//        String parameterName = null;
-//
-//
-//        parameterName = APParameter.PATERNITE.getParameterName();
-//        String dateMin = "01/01/2021";
-//        try {
-//            BSession session = BSessionUtil.getSessionFromThreadContext();
-//            if(session== null){
-//                session = BSessionUtil.createSession("APG",user);
-//            }
-//            JadeThreadActivator.startUsingJdbcContext(this, initContext(session));
-//            FWFindParameterManager manager = new FWFindParameterManager();
-//            manager.setSession(session);
-//            manager.setIdCodeSysteme("1");
-//            manager.setIdCleDiffere(parameterName);
-//            if(JadeDateUtil.isGlobazDate(date)){
-//                manager.setDateDebutValidite(date);
-//            }
-//            manager.find(BManager.SIZE_NOLIMIT);
-//            JadeThreadActivator.stopUsingContext(Thread.currentThread());
-//            session.releaseAllTransactions();
-//            if (manager.size() > 0){
-//                FWFindParameter param= (FWFindParameter) manager.getFirstEntity();
-//                Date d =new SimpleDateFormat("yyyyMMdd").parse(param.getDateDebutValidite());
-//                dateMin = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH).format(d);
-//            }else{
-//                dateMin =  "01/01/2021";
-//            }
-//        } catch (Exception e) {
-//            JadeThreadActivator.stopUsingContext(this);
-//            return dateMin;
-//        }
-//        return dateMin;
-//    }
     public String getName() {
         return APDroitPaiPViewBean.class.getName();
     }

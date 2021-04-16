@@ -121,9 +121,6 @@ public class APSituationFamilialePat extends BEntity implements IPRCloneable {
     /** DOCUMENT ME! */
     protected String canton = "";
 
-    @Setter
-    private PRTypeDemande typeDemande = PRTypeDemande.PATERNITE;
-
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
 

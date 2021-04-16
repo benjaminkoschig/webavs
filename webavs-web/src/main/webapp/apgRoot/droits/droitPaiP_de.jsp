@@ -10,11 +10,6 @@
 <%@ page import="globaz.prestation.interfaces.util.nss.PRUtil" %>
 <%@ page import="globaz.prestation.beans.PRPeriode" %>
 <%@ page import="org.apache.commons.lang.StringUtils" %>
-<%@ page import="globaz.globall.db.BSessionUtil" %>
-<%@ page import="java.math.BigDecimal" %>
-<%@ page import="globaz.globall.db.FWFindParameter" %>
-<%@ page import="globaz.apg.properties.APParameter" %>
-<%@ page import="globaz.globall.db.FWFindParameterManager" %>
 <%@ page import="globaz.apg.vb.droits.APDroitPaiPViewBean" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
@@ -33,18 +28,18 @@
     bButtonCancel = false;
     bButtonDelete = false;
     String dateDebutValidite = viewBean.getDateValidite();
-
 %>
 <%@ include file="/theme/detail/javascripts.jspf" %>
 <script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/apgRoot/droits/droitPeriodeUtils.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/apgRoot/droits/enfantUtils.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/apgRoot/scripts/apgUtils.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/dates.js"></script>
 <ct:menuChange displayId="menu" menuId="ap-menuprincipalprai" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 
 <script type="text/javascript">
-
+    var JOUR_SUPPLEMENTAIRE = true;
     var EDITION_MODE = false;
     <%if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.CREATION) || viewBean.getModeEditionDroit().equals(APModeEditionDroit.EDITION) ){%>
     EDITION_MODE = true;
@@ -78,15 +73,17 @@
 
         return isError;
     }
+
     function checkDateDebutAPGNaissance(date) {
         var isError = checkDateDebutAPG(date);
-        if(isError){
+        if (isError) {
             document.getElementById("dateDebutDroit").value = "";
         }
     }
+
     function add() {
         nssUpdateHiddenFields();
-        document.forms[0].elements('userAction').value = ACTION_DROIT+".ajouter"
+        document.forms[0].elements('userAction').value = ACTION_DROIT + ".ajouter"
     }
 
     function upd() {
@@ -96,13 +93,13 @@
         document.getElementById("dateDecesAffiche").disabled = true;
         document.getElementById("csEtatCivilAffiche").disabled = true;
         document.getElementById("csSexeAffiche").disabled = true;
-        $('#isSoumisCotisation').prop( "disabled", true);
-        $('#tauxImpotSource').prop( "disabled", true);
+        $('#isSoumisCotisation').prop("disabled", true);
+        $('#tauxImpotSource').prop("disabled", true);
     }
 
     function validate() {
         var isModifiable = <%=viewBean.isModifiable()%>;
-        $('#button_suivant').prop( "disabled", true);
+        $('#button_suivant').prop("disabled", true);
         var hasError = false;
         if (document.forms[0].elements('_method').value === "read" && !isModifiable) {
             document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_ENFANT_PAT%>.chercher";
@@ -114,7 +111,7 @@
         if (!hasError) {
             action(COMMIT);
         } else {
-            $('#button_suivant').prop( "disabled", false);
+            $('#button_suivant').prop("disabled", false);
         }
     }
 
@@ -195,16 +192,16 @@
             return true;
         }
         <%if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.CREATION)){%>
-        document.forms[0].elements('userAction').value = ACTION_DROIT+".ajouter";
+        document.forms[0].elements('userAction').value = ACTION_DROIT + ".ajouter";
         <%} else if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.EDITION)){%>
-        document.forms[0].elements('userAction').value = ACTION_DROIT+".modifier";
+        document.forms[0].elements('userAction').value = ACTION_DROIT + ".modifier";
         <%} else if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.LECTURE)){%>
-            if (EDITION_MODE == true) {
-                document.forms[0].elements('userAction').value = ACTION_DROIT+".modifier";
-            } else {
-                document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_ENFANT_PAT%>.chercher";
+        if (EDITION_MODE == true) {
+            document.forms[0].elements('userAction').value = ACTION_DROIT + ".modifier";
+        } else {
+            document.forms[0].elements('userAction').value = "<%=IAPActions.ACTION_ENFANT_PAT%>.chercher";
 
-            }
+        }
         <%}%>
 
         var tmp = "";
@@ -222,13 +219,13 @@
         if (document.forms[0].elements('_method').value == "add") {
             document.forms[0].elements('userAction').value = "back";
         } else {
-            document.forms[0].elements('userAction').value = ACTION_DROIT+".afficher";
+            document.forms[0].elements('userAction').value = ACTION_DROIT + ".afficher";
         }
     }
 
     function del() {
         if (window.confirm("<ct:FWLabel key='JSP_DELETE_MESSAGE_INFO'/>")) {
-            document.forms[0].elements('userAction').value = ACTION_DROIT+".supprimer";
+            document.forms[0].elements('userAction').value = ACTION_DROIT + ".supprimer";
             document.forms[0].submit();
         }
     }
@@ -290,11 +287,11 @@
                 text: "<ct:FWLabel key='JSP_OUI'/>",
                 click: function () {
                     $('#checkWarn').prop("checked", false);
-                    if(<%=viewBean.getModeEditionDroit().equals(APModeEditionDroit.CREATION)%>){
+                    if (<%=viewBean.getModeEditionDroit().equals(APModeEditionDroit.CREATION)%>) {
                         $('#modeEditionDroit').val('<%=APModeEditionDroit.CREATION%>');
                         document.forms[0].elements('_method').value = "add";
                     }
-                    if(<%=viewBean.getModeEditionDroit().equals(APModeEditionDroit.EDITION)%>){
+                    if (<%=viewBean.getModeEditionDroit().equals(APModeEditionDroit.EDITION)%>) {
                         $('#modeEditionDroit').val('<%=APModeEditionDroit.EDITION%>');
                         document.forms[0].elements('_method').value = "upd";
                     }
@@ -309,7 +306,7 @@
                     upd();
                     EDITION_MODE = true;
                     repaintTablePeriodes();
-                    if(<%=viewBean.getModeEditionDroit().equals(APModeEditionDroit.CREATION)%>){
+                    if (<%=viewBean.getModeEditionDroit().equals(APModeEditionDroit.CREATION)%>) {
                         $('#modeEditionDroit').val('<%=APModeEditionDroit.CREATION%>');
                         document.forms[0].elements('_method').value = "add";
                     }
@@ -319,7 +316,8 @@
             open: function () {
                 $(".ui-dialog-titlebar-close", ".ui-dialog-titlebar").hide();
                 <% if(viewBean.hasMessageWarn()) { %>
-                $('#dialog_apg_warn').append("<%=viewBean.getMessagesWarn()%>");$('#dialog_apg_warn').prop("vertical-align", "middle");
+                $('#dialog_apg_warn').append("<%=viewBean.getMessagesWarn()%>");
+                $('#dialog_apg_warn').prop("vertical-align", "middle");
                 <% } %>
             }
         });
@@ -327,7 +325,7 @@
 
     function arret() {
         nssUpdateHiddenFields();
-        document.forms[0].elements('userAction').value = ACTION_DROIT+".arreterEtape1";
+        document.forms[0].elements('userAction').value = ACTION_DROIT + ".arreterEtape1";
         document.forms[0].elements('arreter').value = "on";
         document.forms[0].submit();
     }
@@ -353,8 +351,8 @@
         } else {
             document.getElementById("linkTiers").style.visibility = "hidden";
         }
-        $('#isSoumisCotisation').prop( "disabled", true);
-        $('#tauxImpotSource').prop( "disabled", true);
+        $('#isSoumisCotisation').prop("disabled", true);
+        $('#tauxImpotSource').prop("disabled", true);
     }
 
     function periodeChange() {
@@ -363,15 +361,15 @@
         var impot = $('#isSoumisCotisation');
         var taux = $('#tauxImpotSource');
 
-        if(impot.is(':disabled')
+        if (impot.is(':disabled')
             && dateDebut != ''
             && dateFin != '') {
-            impot.prop( "disabled", false);
-            taux.prop( "disabled", false);
-        } else if(!impot.is(':disabled')
+            impot.prop("disabled", false);
+            taux.prop("disabled", false);
+        } else if (!impot.is(':disabled')
             && (dateDebut == '' || dateFin == '')) {
-            impot.prop( "disabled", true);
-            taux.prop( "disabled", true);
+            impot.prop("disabled", true);
+            taux.prop("disabled", true);
         }
     }
 
@@ -487,14 +485,45 @@
         }
     }
 
-    $(document).ready(function () {
+    function addPeriodePai(){
+        var sum = 0
+        $("#periodes .nbJourPourUnePeriode").each(function(index, element){
+            if($(element).text()) {
+                sum = sum + ($(element).text() * 1)
+            }
+        });
 
+        var nbJourSup = $('#jourSupplementaire').val()
+        if(nbJourSup){
+            sum = sum+nbJourSup*1;
+        }
+
+        var dateDebut = Date.toDate($('#dateDebutPeriode').val());
+        var dateFin = Date.toDate($('#dateFinPeriode').val());
+        var nbJour = dateDebut.daysBetween(dateFin);
+
+        if(sum+nbJour > dateDebut.daysInMonth()) {
+            globazNotation.utils.dialogWarn("<ct:FWLabel key="JSP_NBJOUR_SUP_MOIS"/>", {
+                "Ok": function () {
+                    $(this).dialog("close");
+                    addPeriode()
+                },
+                "Annuler": function () {
+                    $(this).dialog("close");
+                }
+            });
+        } else {
+            addPeriode()
+        }
+    }
+
+    $(document).ready(function () {
         $('#btnUpd').click(function () {
             EDITION_MODE = true;
             $('#modeEditionDroit').val('<%=APModeEditionDroit.EDITION%>');
             repaintTablePeriodes();
-            $('#isSoumisCotisation').prop( "disabled", true);
-            $('#tauxImpotSource').prop( "disabled", true);
+            $('#isSoumisCotisation').prop("disabled", true);
+            $('#tauxImpotSource').prop("disabled", true);
         });
 
         <%
@@ -507,9 +536,11 @@
         var tis = '<%=periode.getTauxImposition() %>';
         var cis = '<%=periode.getCantonImposition() %>';
         var cisLibelle = '<%=objSession.getCodeLibelle(periode.getCantonImposition()) %>';
-        addPeriodeToTable(ddd, ddf, ndj, tis, cis, cisLibelle);
+        var nbJourSup = '<%=periode.getNbJoursupplementaire() %>';
+        addPeriodeToTable(ddd, ddf, ndj, tis, cis, cisLibelle, nbJourSup);
         <%
     }%>
+
     });
 
 </script>
@@ -681,7 +712,7 @@
         <input type="text"
                id="dateNaissanceAffiche"
                name="dateNaissanceAffiche"
-               data-g-calendar=" "
+               data-g-calendar="mandatory:false"
                value="<%=viewBean.getDateNaissance()%>"/>
     </td>
     <td></td>
@@ -740,7 +771,7 @@
                     <input type="text"
                            id="dateDebutPeriode"
                            name="dateDebutPeriode"
-                           data-g-calendar=" "
+                           data-g-calendar="mandatory:false"
                            onChange="periodeChange();"
                            value=""/>
                     <label for="dateFinPeriode">
@@ -749,7 +780,7 @@
                     <input type="text"
                            id="dateFinPeriode"
                            name="dateFinPeriode"
-                           data-g-calendar=" "
+                           data-g-calendar="mandatory:false"
                            onChange="periodeChange();"
                            value=""/>
                     <input type="hidden"
@@ -760,17 +791,20 @@
                     <input type="button"
                            name=""
                            value="<ct:FWLabel key="JSP_AJOUTER" />"
-                           onclick="addPeriode()"/>
+                           onclick="addPeriodePai()"/>
                 </td>
                 <td colspan="2" rowspan="4" width="50%">
                     <table class="areaTable" width="100%">
                         <thead>
                         <tr>
-                            <th width="30%">
+                            <th width="25%">
                                 <ct:FWLabel key="DATE_DE_DEBUT"/>
                             </th>
-                            <th width="30%">
+                            <th width="25%">
                                 <ct:FWLabel key="DATE_DE_FIN"/>
+                            </th>
+                            <th width="10%">
+                                <ct:FWLabel key="JSP_JOURS_SUPPL"/>
                             </th>
                             <th width="10%">
                                 <ct:FWLabel key="JSP_NB_JOURS_SOLDES"/>
@@ -791,8 +825,9 @@
                         <table id="periodes" name=periode" class="areaTable" width="100%">
                             <thead>
                             <tr style="height: 0px;">
-                                <th width="30%"></th>
-                                <th width="30%"></th>
+                                <th width="25%"></th>
+                                <th width="25%"></th>
+                                <th width="10%"></th>
                                 <th width="10%"></th>
                                 <th width="10%"></th>
                                 <th width="10%"></th>
@@ -803,6 +838,21 @@
                             </tbody>
                         </table>
                     </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="jourSupplementaire">
+                        <ct:FWLabel key="JSP_JOURS_SUPPLEMENTAIRES"/>
+                    </label>
+                </td>
+                <td colspan="3">
+                    <input type="text"
+                           data-g-integer="sizeMax:2"
+                           size="5"
+                           id="jourSupplementaire"
+                           name="jourSupplementaire"
+                    />
                 </td>
             </tr>
             <tr>
@@ -875,7 +925,7 @@
         <input type="text"
                id="dateDebutDroit"
                name="dateDebutDroit"
-               data-g-calendar=" "
+               data-g-calendar="mandatory:true"
                value="<%=viewBean.getDateDebutDroit()%>"/>
     </td>
     <td>
@@ -922,6 +972,30 @@
     </td>
     <td></td>
 </tr>
+<tr>
+    <td colspan="6">
+        &nbsp;
+    </td>
+</tr>
+<tr>
+    <td>
+        <label for="dateReception">
+            <ct:FWLabel key="JSP_NOMBRE_JOURS_TOTAL_DEJA_PAYES"/>
+        </label>
+    </td>
+    <td>
+        <input type="text"
+               size="5"
+               disabled="disabled"
+               readonly="readonly"
+               id="nbTotalJourPayes"
+               name="nbTotalJourPayes"
+               value="<%=viewBean.calculerNbjourTotalIndemnise()%>"/>
+    </td>
+    <td colspan="4"></td>
+</tr>
+
+
 <tr>
     <td colspan="6">
         &nbsp;

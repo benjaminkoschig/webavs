@@ -19,7 +19,6 @@ globazNotation.utils = {
 		return this._n_cpt;
 	},
 
-	// this.console1(s_html, titre, 'ui-state-infos',overflow);
 	console1: function (s_html, s_title, s_class, b_overflow) {
 		this.console(s_html, s_title, s_class, undefined, b_overflow);
 	},
@@ -156,6 +155,25 @@ globazNotation.utils = {
 		this.console1(s_html, titre, 'ui-state-highlight', overflow);
 	},
 
+    dialogWarn: function (s_html, o_buttons) {
+        var $html = $('<div class="globaz_utils_console">' + s_html + '</div>');
+        $html.dialog({
+            minHeight:300,
+            position: 'center',
+            title: jQuery.i18n.prop('notation.avertissement.message'),
+            show: "blind",
+            hide: "blind",
+            closeOnEscape: true,
+            dialogClass: 'ui-state-highlight',
+            buttons: o_buttons
+        })
+        if(o_buttons) {
+            $html.dialog("widget").find(".ui-dialog-buttonpane").css("background", "#fff0");
+            $html.dialog("widget").find(".ui-dialog-buttonpane").css("background-color", "#fff0");
+            $html.dialog("widget").find(".ui-dialog-buttonpane").css("background-image", "none");
+        }
+    },
+
 	// fonction pour afficher les attribut de l'objet utils pour les tests
 	displaysObject: function (obj) {
 		var s = "<p>tes</p><p>";
@@ -174,12 +192,10 @@ globazNotation.utils = {
 	},
 
 	isEmpty: function (value) {
-		// return $.isEmptyObject(value);
 		if (this.isString(value)) {
 			value = $.trim(value);
 		}
 		if (value !== null && value !== undefined && value !== '' && value !== 'undefined' && value !== 'null') {
-			//if ($.isArray(value) || $.isPlainObject(value)) { if ($.isEmptyObject(value)) { return false; }else { return true; } } else{ return false; }
 			return false;
 		} else {
 			return true;

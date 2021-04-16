@@ -8,6 +8,7 @@ public class PRPeriode implements Comparable<PRPeriode> {
     private String nbJour = "";
     private String tauxImposition = "";
     private String cantonImposition = "";
+    private String nbJoursupplementaire = "";
 
     public PRPeriode() {
     }
@@ -135,5 +136,16 @@ public class PRPeriode implements Comparable<PRPeriode> {
 
     public void setCantonImposition(String cantonImposition) {
         this.cantonImposition = cantonImposition;
+    }
+
+    public String getNbJoursupplementaire() {
+        if ("0".equals(this.nbJoursupplementaire)) {
+            return "";
+        }
+        return nbJoursupplementaire;
+    }
+
+    public void setNbJoursupplementaire(final String nbJoursupplementaire) {
+        this.nbJoursupplementaire = nbJoursupplementaire;
     }
 }

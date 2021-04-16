@@ -1,12 +1,20 @@
 package globaz.apg.db.droits;
 
+import ch.globaz.common.sql.SQLWriter;
+import ch.globaz.queryexec.bridge.jade.SCM;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.application.APApplication;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
 import globaz.globall.api.GlobazSystem;
-import globaz.globall.db.*;
+import globaz.globall.db.BConstants;
+import globaz.globall.db.BEntity;
+import globaz.globall.db.BManager;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.db.BStatement;
+import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
@@ -17,10 +25,11 @@ import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.constantes.IConstantes;
+import lombok.Data;
 
 /**
  * BEntity représentant un droit paternité Créé le 01 Décembre 2020
- * 
+ *
  * @author eniv
  */
 public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
@@ -60,7 +69,31 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
         }
     }
 
-    public APDroitProcheAidant() {
+    public APDroitProcheAidant() { }
+
+    public int calculerNbjourTotalIndemnise() {
+        String etatsDroit = String.join(
+                ",",
+                IAPDroitLAPG.CS_ETAT_DROIT_VALIDE,
+                IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF,
+                IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL);
+
+        SQLWriter sqlWriter = SQLWriter.writeWithSchema()
+                                       .append("select sum(VCNNBJ) as nbJours")
+                                       .append("from schema." + APDroitLAPG.TABLE_NAME_LAPG)
+                                       .join("schema.APDROITPROCHEAIDANT ON schema.APDROITPROCHEAIDANT.ID_DROIT = schema.APDROIP.VAIDRO")
+                                       .join("schema.APPERIP ON schema.APPERIP.VCIDRO = schema.APDROIP.VAIDRO")
+                                       .join("schema.APSIFMP ON schema.APSIFMP.VQIDRM = schema.APDROIP.VAIDRO")
+                                       .append("where schema.APSIFMP.VQLAVS = (")
+                                       .append("select schema.APSIFMP.VQLAVS as nss_enfant")
+                                       .from(APDroitLAPG.TABLE_NAME_LAPG)
+                                       .join("schema.APDROITPROCHEAIDANT ON schema.APDROITPROCHEAIDANT.ID_DROIT = schema.APDROIP.VAIDRO")
+                                       .join("schema.APSIFMP ON schema.APSIFMP.VQIDRM = schema.APDROIP.VAIDRO")
+                                       .append(" where schema.APDROIP.VAIDRO = '?')", this.getIdDroit())
+                                       .append(" and schema.APDROIP.VATETA in(?)", etatsDroit);
+
+        return SCM.newInstance(NbJour.class).session(this.getSession()).query(sqlWriter.toSql())
+                  .executeAggregate().intValue();
     }
 
     /**
@@ -204,9 +237,10 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
     /**
      * crée la jointure entre les tables APDroitLAPG et APDroitPaternite pour la lecture
      *
-     * @param statement
-     *            DOCUMENT ME!
+     * @param statement DOCUMENT ME!
+     *
      * @return DOCUMENT ME!
+     *
      * @see BEntity#_getFrom(BStatement)
      */
     @Override
@@ -235,6 +269,7 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
 
     /**
      * @return la chaine TABLE_NAME_PAT
+     *
      * @see BEntity#_getTableName()
      */
     @Override
@@ -262,36 +297,13 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
      */
     @Override
     protected void _validate(BStatement statement) throws Exception {
-        // validation de DroitLAPG
+
         _validateBase(statement);
-
-        // check des dates
         BTransaction transaction = statement.getTransaction();
-
-        // _checkDate(transaction, dateDeces,
-        // getSession().getLabel("DATE_DECES_INCORRECTE"));
-//        _checkDate(transaction, dateRepriseActiv, getSession().getLabel("DATE_REPRISE_ACTIVITE_INCORRECTE"));
         _propertyMandatory(transaction, getDateDebutDroit(), getSession().getLabel("DATE_DEBUT_INCORRECTE"));
 
-        // check de la date de debut:
-        // normalement: pas avant le 26.03.2005 (98 jours avant le 01.07.2005)
-        // si caisse GE: pas avant le (112 jours avant le 01.07.2001)
-//        if ("true".equals(PRAbstractApplication.getApplication(APApplication.DEFAULT_APPLICATION_APG).getProperty(
-//                "isDroitPaterniteCantonale"))) {
-//            if (!BSessionUtil.compareDateFirstGreaterOrEqual(getSession(), getDateDebutDroit(), "12.03.2001")) {
-//                _addError(transaction, getSession().getLabel("DATE_DEBUT_DROIT_GE_PAT_TROP_VIEILLE"));
-//            }
-//        } else {
-//            if (!BSessionUtil.compareDateFirstGreaterOrEqual(getSession(), getDateDebutDroit(), "26.03.2005")) {
-//                _addError(transaction, getSession().getLabel("DATE_DEBUT_DROIT_PAT_TROP_VIEILLE"));
-//            }
-//        }
-
-        // check de la date de debut:
-        // la date de debut du droit ne peut pas etre supperieure a la date du
-        // jour
         if (BSessionUtil.compareDateFirstGreater(getSession(), getDateDebutDroit(),
-                new JADate(JACalendar.todayJJsMMsAAAA()).toStr("."))) {
+                                                 new JADate(JACalendar.todayJJsMMsAAAA()).toStr("."))) {
             _addError(transaction, getSession().getLabel("DATE_DEBUT_DROIT_POSTERIEURE_DATE_DU_JOUR"));
         }
     }
@@ -301,7 +313,8 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
      */
     @Override
     protected void _writePrimaryKey(BStatement statement) throws Exception {
-        statement.writeKey(APDroitProcheAidant.FIELDNAME_IDDROIT_PAI,
+        statement.writeKey(
+                APDroitProcheAidant.FIELDNAME_IDDROIT_PAI,
                 this._dbWriteNumeric(statement.getTransaction(), getIdDroit(), "idDroit"));
     }
 
@@ -314,20 +327,26 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
             // si l'action est une copie, copier sans validation
             super._writeProperties(statement);
         } else {
-            statement.writeField(APDroitProcheAidant.FIELDNAME_IDDROIT_PAI,
+            statement.writeField(
+                    APDroitProcheAidant.FIELDNAME_IDDROIT_PAI,
                     this._dbWriteNumeric(statement.getTransaction(), getIdDroit(), "idDroit"));
         }
-        statement.writeField(APDroitAPG.FIELDNAME_IDSITUATIONFAM,
+        statement.writeField(
+                APDroitAPG.FIELDNAME_IDSITUATIONFAM,
                 this._dbWriteNumeric(statement.getTransaction(), idSituationFam, "idSituationFam"));
-        statement.writeField(APDroitAPG.FIELDNAME_NOCOMPTE,
+        statement.writeField(
+                APDroitAPG.FIELDNAME_NOCOMPTE,
                 this._dbWriteNumeric(statement.getTransaction(), noCompte, "noCompte"));
-        statement.writeField(APDroitAPG.FIELDNAME_NOCONTROLEPERS,
+        statement.writeField(
+                APDroitAPG.FIELDNAME_NOCONTROLEPERS,
                 this._dbWriteNumeric(statement.getTransaction(), noControlePers, "noControlePers"));
         statement.writeField(APDroitProcheAidant.FIELDNAME_DUPLICATA, this._dbWriteBoolean(statement.getTransaction(),
-                duplicata, BConstants.DB_TYPE_BOOLEAN_CHAR, "duplicata"));
-        statement.writeField(APDroitAPG.FIELDNAME_REVISION,
+                                                                                           duplicata, BConstants.DB_TYPE_BOOLEAN_CHAR, "duplicata"));
+        statement.writeField(
+                APDroitAPG.FIELDNAME_REVISION,
                 this._dbWriteNumeric(statement.getTransaction(), noRevision, "noRevision"));
-        statement.writeField(APDroitProcheAidant.FIELDNAME_REMARQUE,
+        statement.writeField(
+                APDroitProcheAidant.FIELDNAME_REMARQUE,
                 this._dbWriteString(statement.getTransaction(), remarque, "remarque"));
 
     }
@@ -337,7 +356,6 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
         APDroitProcheAidant clone = new APDroitProcheAidant();
 
         clone.setNpa(getNpa());
-//        clone.setDateDebutDroit(getDateDebutDroit());
         clone.setDateDepot(getDateDepot());
         clone.setDateReception(getDateReception());
         clone.setGenreService(getGenreService());
@@ -382,9 +400,9 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
         // On ne veut pas de la validation pendant une duplication
         clone.wantCallValidate(false);
         // Etat par défaut : attente
-        if(actionType == ACTION_CREER_NOUVEAU_DROIT_PATERNITE_RESTI_FILS){
+        if (actionType == ACTION_CREER_NOUVEAU_DROIT_PATERNITE_RESTI_FILS) {
             clone.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
-        }else{
+        } else {
             clone.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE);
         }
 
@@ -406,6 +424,7 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
      * Réactive le pspy pour la table des droits PAT.
      *
      * @return true
+     *
      * @see BEntity#hasSpy()
      */
     @Override
@@ -416,8 +435,7 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
     /**
      * setter pour l'attribut unique primary key
      *
-     * @param pk
-     *            une nouvelle valeur pour cet attribut
+     * @param pk une nouvelle valeur pour cet attribut
      */
     @Override
     public void setUniquePrimaryKey(String pk) {
@@ -450,7 +468,7 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
             APEnfantPat enfant = (APEnfantPat) mgr.get(idEnfant);
             if (JAUtil.isDateEmpty(enfant.getDateNaissance())
                     || BSessionUtil.compareDateFirstLowerOrEqual(getSession(), enfant.getDateNaissance(),
-                            getDateDebutDroit())) {
+                                                                 getDateDebutDroit())) {
                 enfantAvant = true;
                 break;
             }
@@ -587,5 +605,10 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
     @Override
     public void setRemarque(String remarque) {
         this.remarque = remarque;
+    }
+
+    @Data
+    private static class NbJour {
+        private int nbJours;
     }
 }

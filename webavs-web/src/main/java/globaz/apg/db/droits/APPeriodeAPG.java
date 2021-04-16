@@ -13,7 +13,7 @@ import globaz.prestation.clone.factory.IPRCloneable;
 public class APPeriodeAPG extends BEntity implements IPRCloneable {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     public static final String FIELDNAME_DATEDEBUT = "VCDDEB";
@@ -22,9 +22,9 @@ public class APPeriodeAPG extends BEntity implements IPRCloneable {
     public static final String FIELDNAME_IDPERIODE = "VCIPER";
     public static final String FIELDNAME_NBRJOURS = "VCNNBJ";
     public static final String FIELDNAME_TYPEPERIODE = "VCTTYP";
-
     public static final String FIELDNAME_TAUXIMPOT = "VCDTAUXIMPOT";
     public static final String FIELDNAME_CANTONIMPOT = "VCDCANTONIMPOT";
+    public static final String FIELDNAME_NB_JOURS_SUPPLEMENTAIRE = "VCNNBJOURSUP";
 
     public static final String TABLE_NAME = "APPERIP";
 
@@ -34,9 +34,9 @@ public class APPeriodeAPG extends BEntity implements IPRCloneable {
     private String idPeriode = "";
     private String nbrJours = "";
     private String typePeriode = "";
-
     private String tauxImposition = "";
     private String cantonImposition = "";
+    private String nbJourSupplementaire = "";
 
     @Override
     protected void _beforeAdd(BTransaction transaction) throws Exception {
@@ -61,6 +61,7 @@ public class APPeriodeAPG extends BEntity implements IPRCloneable {
         idDroit = statement.dbReadNumeric(APPeriodeAPG.FIELDNAME_IDDROIT);
         tauxImposition = statement.dbReadNumeric(APPeriodeAPG.FIELDNAME_TAUXIMPOT);
         cantonImposition = statement.dbReadNumeric(APPeriodeAPG.FIELDNAME_CANTONIMPOT);
+        nbJourSupplementaire = statement.dbReadNumeric(APPeriodeAPG.FIELDNAME_NB_JOURS_SUPPLEMENTAIRE);
     }
 
     /**
@@ -91,28 +92,40 @@ public class APPeriodeAPG extends BEntity implements IPRCloneable {
      */
     @Override
     protected void _writePrimaryKey(globaz.globall.db.BStatement statement) throws Exception {
-        statement.writeKey(APPeriodeAPG.FIELDNAME_IDPERIODE,
+        statement.writeKey(
+                APPeriodeAPG.FIELDNAME_IDPERIODE,
                 this._dbWriteNumeric(statement.getTransaction(), idPeriode, "idPeriode"));
     }
 
     @Override
     protected void _writeProperties(globaz.globall.db.BStatement statement) throws Exception {
-        statement.writeField(APPeriodeAPG.FIELDNAME_IDPERIODE,
+        statement.writeField(
+                APPeriodeAPG.FIELDNAME_IDPERIODE,
                 this._dbWriteNumeric(statement.getTransaction(), idPeriode, "idPeriode"));
-        statement.writeField(APPeriodeAPG.FIELDNAME_DATEDEBUT,
+        statement.writeField(
+                APPeriodeAPG.FIELDNAME_DATEDEBUT,
                 this._dbWriteDateAMJ(statement.getTransaction(), dateDebutPeriode, "dateDebutPeriode"));
-        statement.writeField(APPeriodeAPG.FIELDNAME_DATEFIN,
+        statement.writeField(
+                APPeriodeAPG.FIELDNAME_DATEFIN,
                 this._dbWriteDateAMJ(statement.getTransaction(), dateFinPeriode, "dateFinPeriode"));
-        statement.writeField(APPeriodeAPG.FIELDNAME_NBRJOURS,
+        statement.writeField(
+                APPeriodeAPG.FIELDNAME_NBRJOURS,
                 this._dbWriteNumeric(statement.getTransaction(), nbrJours, "nbrJours"));
-        statement.writeField(APPeriodeAPG.FIELDNAME_TYPEPERIODE,
+        statement.writeField(
+                APPeriodeAPG.FIELDNAME_TYPEPERIODE,
                 this._dbWriteNumeric(statement.getTransaction(), typePeriode, "typePeriode"));
-        statement.writeField(APPeriodeAPG.FIELDNAME_IDDROIT,
+        statement.writeField(
+                APPeriodeAPG.FIELDNAME_IDDROIT,
                 this._dbWriteNumeric(statement.getTransaction(), idDroit, "idDroit"));
-        statement.writeField(APPeriodeAPG.FIELDNAME_TAUXIMPOT,
+        statement.writeField(
+                APPeriodeAPG.FIELDNAME_TAUXIMPOT,
                 this._dbWriteNumeric(statement.getTransaction(), tauxImposition, "tauxImposition"));
-        statement.writeField(APPeriodeAPG.FIELDNAME_CANTONIMPOT,
+        statement.writeField(
+                APPeriodeAPG.FIELDNAME_CANTONIMPOT,
                 this._dbWriteNumeric(statement.getTransaction(), cantonImposition, "cantonImposition"));
+        statement.writeField(
+                APPeriodeAPG.FIELDNAME_NB_JOURS_SUPPLEMENTAIRE,
+                this._dbWriteNumeric(statement.getTransaction(), nbJourSupplementaire, "nbJourSupplementarie"));
     }
 
     @Override
@@ -202,5 +215,13 @@ public class APPeriodeAPG extends BEntity implements IPRCloneable {
 
     public void setCantonImposition(String cantonImposition) {
         this.cantonImposition = cantonImposition;
+    }
+
+    public String getNbJourSupplementaire() {
+        return nbJourSupplementaire;
+    }
+
+    public void setNbJourSupplementaire(final String nbJourSupplementaire) {
+        this.nbJourSupplementaire = nbJourSupplementaire;
     }
 }

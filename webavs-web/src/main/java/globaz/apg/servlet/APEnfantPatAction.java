@@ -8,6 +8,7 @@ package globaz.apg.servlet;
 
 import globaz.apg.vb.droits.APDroitDTO;
 import globaz.apg.vb.droits.APEnfantPatViewBean;
+import globaz.apg.vb.droits.APTypePresationDemandeResolver;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.servlets.FWServlet;
 
@@ -54,6 +55,7 @@ public class APEnfantPatAction extends APAbstractDroitDTOAction {
     @Override
     protected FWViewBeanInterface initViewBean(FWViewBeanInterface viewBean, APDroitDTO droitDTO, HttpSession session) {
         ((APEnfantPatViewBean) viewBean).setDroitDTO(droitDTO);
+        ((APEnfantPatViewBean) viewBean).setTypeDemande(APTypePresationDemandeResolver.resolveEnumTypePrestation(session));
 
         return viewBean;
     }

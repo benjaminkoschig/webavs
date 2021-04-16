@@ -8,6 +8,9 @@ package globaz.apg.db.droits;
 
 import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.globall.db.BStatement;
+import globaz.prestation.api.PRTypeDemande;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <H1>Description</H1>
@@ -27,7 +30,13 @@ public class APEnfantPat extends APSituationFamilialePat {
      *
      */
     private static final long serialVersionUID = 1L;
+    private static final String NUMERO_AVS_OBLIGATOIRE = "NUMERO_AVS_OBLIGATOIRE";
     private static final String ERREUR_DATE_NAISSANCE_INCORRECTE = "DATE_NAISSANCE_INCORRECTE";
+
+
+    @Setter
+    @Getter
+    private PRTypeDemande typeDemande = PRTypeDemande.PATERNITE;
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -51,6 +60,10 @@ public class APEnfantPat extends APSituationFamilialePat {
                 getSession().getLabel(ERREUR_DATE_NAISSANCE_INCORRECTE))) {
             _checkDate(statement.getTransaction(), dateNaissance,
                     getSession().getLabel(ERREUR_DATE_NAISSANCE_INCORRECTE));
+        }
+
+        if(typeDemande.isProcheAidant()) {
+            _propertyMandatory(statement.getTransaction(), this.noAVS, getSession().getLabel(NUMERO_AVS_OBLIGATOIRE));
         }
     }
 }
