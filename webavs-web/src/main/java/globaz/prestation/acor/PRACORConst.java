@@ -10,6 +10,8 @@ import globaz.prestation.api.IPRSituationProfessionnelle;
 import globaz.pyxis.db.adressecourrier.TILocalite;
 import globaz.webavs.common.CommonProperties;
 
+import java.util.Objects;
+
 /**
  * <H1>Description</H1>
  * 
@@ -946,6 +948,32 @@ public class PRACORConst {
 
         // le code correspond au code utilisateur
         return session.getCode(csTypeLien);
+    }
+
+    /**
+     * retourne le code correspondant de ACOR pour le code systeme type de lien.
+     *
+     * @param session
+     *            DOCUMENT ME!
+     * @param csTypeLien
+     *            DOCUMENT ME!
+     *
+     * @return DOCUMENT ME!
+     */
+    public static final String csTypeLienFamilleToACOR(BSession session, String csTypeLien) {
+        if (JadeStringUtil.isBlank(csTypeLien)) {
+            return PRACORConst.CA_CELIBATAIRE;
+        }
+
+        if (Objects.equals(ISFSituationFamiliale.CS_TYPE_LIEN_VEUF, csTypeLien) || Objects.equals(ISFSituationFamiliale.CS_TYPE_LIEN_DIVORCE, csTypeLien)) {
+            return session.getCode(ISFSituationFamiliale.CS_TYPE_LIEN_MARIE);
+        } else if (Objects.equals(ISFSituationFamiliale.CS_TYPE_LIEN_LPART_DECES, csTypeLien) || Objects.equals(ISFSituationFamiliale.CS_TYPE_LIEN_LPART_DISSOUT, csTypeLien)) {
+            return session.getCode(ISFSituationFamiliale.CS_TYPE_LIEN_LPART_ENREGISTRE);
+        } else {
+            // le code correspond au code utilisateur
+            return session.getCode(csTypeLien);
+        }
+
     }
 
     public static final String csVetoToAcor(BSession session, String csVeto) {
