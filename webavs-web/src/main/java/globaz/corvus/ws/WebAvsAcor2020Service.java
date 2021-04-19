@@ -62,13 +62,8 @@ public class WebAvsAcor2020Service {
                 return Response.ok(objMapper.writeValueAsString(inHost)).build();
             } catch (Exception e) {
                 if (e instanceof ValidationException || e instanceof JAXBException) {
-                    try {
-                        LOG.error("Les données n'ont pas pu être chargée correctement.", e);
-                        return Response.ok(objMapper.writeValueAsString(getStandardError(ERROR_ACOR_EXTERN_IMPORT_IN_HOST, e, 0, OriginType.TECHNICAL_IMPORT))).build();
-                    } catch (JsonProcessingException jsonProcessingException) {
-                        LOG.error("Erreur lors de l'envoi de la réponse au serveur ACOR.", e);
-                        jsonProcessingException.printStackTrace();
-                    }
+                    LOG.error("Les données n'ont pas pu être chargée correctement.", e);
+                    return Response.ok(getStandardError(ERROR_ACOR_EXTERN_IMPORT_IN_HOST, e, 0, OriginType.TECHNICAL_IMPORT)).build();
                 }
                 LOG.error("Une erreur inconnue est intervenue lors de l'importation.", e);
                 return Response.ok(getStandardError(ERROR_ACOR_EXTERN_IMPORT_UNKOWN, e, 0, OriginType.TECHNICAL_IMPORT)).build();
