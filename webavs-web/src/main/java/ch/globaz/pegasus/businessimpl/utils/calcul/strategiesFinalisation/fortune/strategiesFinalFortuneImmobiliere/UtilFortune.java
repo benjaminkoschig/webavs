@@ -24,7 +24,7 @@ public class UtilFortune {
         boolean refusForce = false;
         if(isReformeApplicableDroit(context)) {
             float totalFortune;
-            if(donnee.containsValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL_AVANT_FRACTION)) {
+            if(donnee.containsValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL_AVANT_FRACTION) && ! (Boolean) context.get(CalculContext.Attribut.IS_FRATRIE) ) {
                 totalFortune = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL_AVANT_FRACTION);
             } else {
                 totalFortune = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL);
