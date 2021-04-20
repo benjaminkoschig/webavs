@@ -7,6 +7,7 @@ import globaz.hermes.service.HEAnnoncesCentrale;
 import globaz.jade.client.util.JadeListUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
@@ -117,7 +118,7 @@ public class PCProcessAdaptationStep implements JadeProcessStepInterface, JadePr
 
     private List<RenteMembreFamilleCalculeField> addChildToList(RenteMembreFamilleCalculeFieldSearch newSearch, List<RenteMembreFamilleCalculeField> list) {
         List<RenteMembreFamilleCalculeField> newList = list;
-        for (Object objet : newSearch.getSearchResults()) {
+        for (JadeAbstractModel objet : newSearch.getSearchResults()) {
             RenteMembreFamilleCalculeField model = (RenteMembreFamilleCalculeField) objet;
             boolean toAdd = true;
             for (RenteMembreFamilleCalculeField listElement : list) {
