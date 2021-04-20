@@ -23,6 +23,7 @@ public class RenteMembreFamilleCalculeField extends JadeComplexModel {
     private String montantAvsAi;
     private String nom;
     private String nss;
+    private String dateNaissance;
     private String prenom;
     private String noCaisseAvs;
 
@@ -186,4 +187,11 @@ public class RenteMembreFamilleCalculeField extends JadeComplexModel {
 
     }
 
+    public String getDateNaissance() {
+        return dateNaissance;
+    }
+
+    public void setDateNaissance(String dateNaissance) {
+        this.dateNaissance = dateNaissance;
+    }
 }

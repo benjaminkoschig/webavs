@@ -11,6 +11,7 @@
 			<select-field name="idTiers" field-ref="membreFamilleEtendu.droitMembreFamille.membreFamille.personneEtendue.tiers.idTiers" />
 			<select-field name="idDroitMembreFamille" field-ref="membreFamilleEtendu.droitMembreFamille.simpleDroitMembreFamille.idDroitMembreFamille" />
 			<select-field name="nss" field-ref="membreFamilleEtendu.droitMembreFamille.membreFamille.personneEtendue.personneEtendue.numAvsActuel" />
+			<select-field name="dateNaissance" field-ref="membreFamilleEtendu.droitMembreFamille.membreFamille.personneEtendue.personne.dateNaissance" />
 			<select-field name="nom" field-ref="membreFamilleEtendu.droitMembreFamille.membreFamille.personneEtendue.tiers.designation1" />
 			<select-field name="prenom" field-ref="membreFamilleEtendu.droitMembreFamille.membreFamille.personneEtendue.tiers.designation2" />
 			<select-field name="csTypeRenteAVS" field-ref="simpleRenteAvsAi.csTypeRente" /> 

@@ -9,6 +9,11 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,6 +41,7 @@ public class PCProcessAdaptationStep implements JadeProcessStepInterface, JadePr
     private String idProcess;
     private Map<Enum<?>, String> mapProperties;
     private Map<String, List<RenteMembreFamilleCalculeField>> mapRente;
+    private int JEUNE_ADULTE = 19;
 
     @Override
     public void before(JadeProcessStep step, Map<Enum<?>, String> map) throws JadeApplicationException,
@@ -92,6 +98,12 @@ public class PCProcessAdaptationStep implements JadeProcessStepInterface, JadePr
 
         list = PersistenceUtil.typeSearch(search, search.whichModelClass());
 
+        // Ajout des enfants exclus du plan de calcul retenu
+        RenteMembreFamilleCalculeFieldSearch newSearch = new RenteMembreFamilleCalculeFieldSearch();
+        search.setForIsPlanRetenu(false);
+        newSearch = PegasusServiceLocator.getRenteIjApiService().searchRenteMembreFamilleCalcule(search);
+        list = addChildToList(newSearch, list);
+
         Map<String, List<RenteMembreFamilleCalculeField>> mapRente = JadeListUtil.groupBy(list,
                 new JadeListUtil.Key<RenteMembreFamilleCalculeField>() {
                     @Override
@@ -101,6 +113,33 @@ public class PCProcessAdaptationStep implements JadeProcessStepInterface, JadePr
                 });
 
         return mapRente;
+    }
+
+    private List<RenteMembreFamilleCalculeField> addChildToList(RenteMembreFamilleCalculeFieldSearch newSearch, List<RenteMembreFamilleCalculeField> list) {
+        List<RenteMembreFamilleCalculeField> newList = list;
+        for (Object objet : newSearch.getSearchResults()) {
+            RenteMembreFamilleCalculeField model = (RenteMembreFamilleCalculeField) objet;
+            boolean toAdd = true;
+            for (RenteMembreFamilleCalculeField listElement : list) {
+                if (listElement.getIdDemandePC().equals(model.getIdDemandePC()) && listElement.getNss().equals(model.getNss())) {
+                    toAdd = false;
+                    break;
+                }
+            }
+            if (toAdd && isChild(model)) {
+                newList.add(model);
+            }
+        }
+        return newList;
+
+    }
+
+    private boolean isChild(RenteMembreFamilleCalculeField model) {
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern("dd.MM.yyyy").toFormatter();
+        LocalDate dateNaissance = LocalDate.parse(model.getDateNaissance(), formatter);
+        LocalDate toDay = LocalDate.now();
+
+        return toDay.minusYears(JEUNE_ADULTE).isBefore(dateNaissance);
     }
 
     @Override
