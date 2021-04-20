@@ -17,8 +17,8 @@ function ExecutionProcess(container) {
 	this.n_idEntity = null;
 	this.ids = "";
 	//this.titleContainer = this.mainContainer.find(".areaTitre");
-	
-	// functions	
+
+	// functions
 	this.afterRetrieve = function (data) {
 		var t_defTablePropertie = [{s_lable: "Libelle", s_name: "libelle", s_class: "libelle"}, {s_lable: "Value", s_name: "value", s_class: "propertiesValues"}];
 		var t_defTableInfoLog = [{s_lable: "TranslateMessage", s_name: "messageId"}, {s_lable: "InfosLog", s_name: "infosLog"}, {s_lable: "idEntite", s_name: "idEntite"}];
@@ -33,15 +33,15 @@ function ExecutionProcess(container) {
 		if (data.simpleLogInfos && data.simpleLogInfos.length > 0) {
 			var $tableInfoLog = utilsTable.createTable(t_defTableInfoLog, data.simpleLogInfos, "InfoLogs");
 			this.$logInfos.append($tableInfoLog);
-		}	
-		
+		}
+
 		if (data.urlEntite) {
 			this.$userActionDetail.show();
 			this.$userActionDetail.find('a').attr("href", data.urlEntite);
 		} else {
 			this.$userActionDetail.hide();
 		}
-		
+
 		//this.detail.dialog( "option", "width",this.detail.outerWidth() );
 		this.detail.dialog("open");
 		this.detail.dialog({ title: data.simpleEntite.description});
@@ -50,12 +50,12 @@ function ExecutionProcess(container) {
 			n_widthDialogue = n_maxDialogue;
 		} else if (this.detail.width() > n_widthDialogue) {
 			//n_widthDialogue = this.detail.width() + 60;
-		} 
+		}
 		this.detail.dialog("option", "width", n_widthDialogue);
 		this.detail.dialog("option", "position", 'center');
 
 	};
-	
+
 	this.getParametresForFind = function () {
 		var that = this;
 		var map = {"searchModel.forRecherche": that.mainContainer.find(".forRecherche").val(),
@@ -72,12 +72,12 @@ function ExecutionProcess(container) {
 		});
 		return map;
 	};
-	
+
 	this.addParamettersForRead = function () {
 		return {"idStep":this.mainContainer.find(".idStep").val()};
 	};
-	
-	
+
+
 	this.getParametres = function() {
 		var that = this;
 
@@ -92,22 +92,22 @@ function ExecutionProcess(container) {
 			'displayInject': this.table.find("thead").find(".inject").length >0
 		};
 		return $.extend(o_map, this.getParametresForFind());
-	};	
-	
+	};
+
 	this.clearFields = function() {
 	//	this.detail.clearInputForm();
 	};
-	
+
 	this.getParentViewBean=function() {
-		//return droit;	
+		//return droit;
 	};
-	
+
 	this.setParentViewBean = function (newViewBean) {
 		//droit=newViewBean;
 	};
-	
+
 	//override
-	
+
 	this.onUpdateAjaxComplete = function (data, idEntity) {
 		AbstractScalableAJAXTableZone.onUpdateAjaxComplete.call(this, data, idEntity);
 		var $validerStep = $(".validerStep");
@@ -121,21 +121,21 @@ function ExecutionProcess(container) {
 				$validerStep.button("enable");
 			}
 		}
-		
+
 		var $tr = this.table.find("[identity='"+data.viewBean.simpleEntite.idEntite+"']");
 		var map = {};
 		this.table.find(".forCsEtat").find("option").each(function () {
 			map[this.value]=this.label;
 		});
-			
-		var $tds = $tr.find("td"); 
+
+		var $tds = $tr.find("td");
 		$tds.eq(2).text(map[data.viewBean.simpleEntite.csEtat]);
 		$tds.eq(1).text(data.viewBean.numStep);
 		$tds.find(".manual").prop("checked",data.viewBean.simpleEntite.isManual);
 		if("INJECT" === data.viewBean.simpleEntite.csEtat){
 			$tr.removeClass("entiteError");
 			$tr.removeClass("entiteWarning");
-		
+
 		}
 		if("ERROR" === data.viewBean.simpleEntite.csEtat){
 			$tr.addClass("entiteError");
@@ -144,7 +144,7 @@ function ExecutionProcess(container) {
 			$tr.addClass("entiteWarning");
 		}
 	};
-	
+
 	this.changeManual = function (element) {
 		var $this = $(element), $execute, $tr, b_entiteError;
 		that.currentViewBean = null;
@@ -154,12 +154,12 @@ function ExecutionProcess(container) {
 		if (that.isManual) {
 			$execute.prop("checked", false);
 		}
-		
+
 		$execute.prop("disabled", that.isManual);
 		that.n_idEntity = $tr.attr('idEntity');
 		that.ajaxUpdateEntity();
 	};
-	
+
 
 	this.inject = function (element) {
 		var $this = $(element), $tr ;
@@ -167,13 +167,13 @@ function ExecutionProcess(container) {
 		this.isInject = true;
 		$tr = $this.closest('tr');
 		this.n_idEntity = $tr.attr('idEntity');
-		this.ids = this.n_idEntity; 
+		this.ids = this.n_idEntity;
 		this.idExecuteProcess = ID_EXECUTE_PROCEESS;
 		this.ajaxUpdateEntity();
 		this.isInject = false;
 	};
-	
-	
+
+
 	this.formatTable = function () {
 		var that = this;
 		$manual = this.mainContainer.find(".manual");
@@ -186,7 +186,7 @@ function ExecutionProcess(container) {
 				b_entiteError = $tr.hasClass("entiteError");
 				$execute.prop("disabled", !b_entiteError);
 			}
-			
+
 			$this.change(function () {
 				that.changeManual(this);
 			})
@@ -199,11 +199,11 @@ function ExecutionProcess(container) {
 			cookieIds.put($this);
 		});
 	};
-	
+
 	this.saveManual = function () {
-		
+
 	};
-	
+
 	// initialization
 
 	this.init(function () {
@@ -221,7 +221,7 @@ function ExecutionProcess(container) {
 			that.detail.dialog("close");
 		});
 		this.detail.dialog({ autoOpen: false});
-		
+
 		this.table.on("click", ".inject", function () {
 			that.inject(this);
 		});
@@ -233,6 +233,7 @@ function ExecutionProcess(container) {
 var executeSelectedError = {
 	$executeSelected: null,
 	$executeOnError: null,
+	$isManualOnError: null,
 	$executeStep: null,
 	$validerStep: null,
 	$nextStep: null,
@@ -240,15 +241,18 @@ var executeSelectedError = {
 	init: function ($container) {
 		this.$executeSelected =  $container.find(".executeSelected");
 		this.$executeOnError = $container.find(".executeOnError");
+		this.$isManualOnError = $container.find(".isManualOnError");
 		this.$executeSelected.button({disabled: true});
 		this.$executeOnError.button({disabled: (!B_PROCESS_ON_ERROR && (S_STATE_PROCESS === S_INIT || S_STATE_PROCESS === S_RUNNING_STEP))});
+		this.$isManualOnError.button({disabled: (!B_PROCESS_ON_ERROR && (S_STATE_PROCESS === S_INIT || S_STATE_PROCESS === S_RUNNING_STEP))});
 		this.addEvent();
 	},
 
-	execute: function(o_data, $button) { 
+	execute: function(o_data, $button) {
 		o_data.idExecutionProcess = ID_EXECUTE_PROCEESS;
 		o_data.keyProcess = S_KEY_PROCESS;
 		this.$executeOnError.button("option", "disabled", true);
+		this.$isManualOnError.button("option", "disabled", true);
 		this.$executeSelected.button("option", "disabled", true);
 		buttonExecut.$executeStep.button("option", "disabled", true);
 		buttonExecut.$validerStep.button("option", "disabled", true);
@@ -258,7 +262,7 @@ var executeSelectedError = {
 		}
 		ajaxUtils.ajaxExecut(S_ACTION, o_data, function (data) {
 			cookieIds.clean();
-			buttonExecut.filProgressBar($(".executeStep"), true, "getInfos"); 
+			buttonExecut.filProgressBar($(".executeStep"), true, "getInfos");
 		});
 	},
 
@@ -272,7 +276,11 @@ var executeSelectedError = {
 		this.$executeOnError.click(function () {
 			that.execute({serviceMethodName: "executeEntiteOnError"}, that.$executeOnError);
 		});
-		
+
+		this.$isManualOnError.click(function () {
+			that.execute({serviceMethodName: "executeIsManualOnError"}, that.$executeOnError)
+		});
+
 		this.$executeSelected.click(function () {
 			if (that.b_executionChecked) {
 				var ids = cookieIds.getIds();
@@ -302,7 +310,7 @@ $(function () {
 			this.zone = zone;
 
 			executeSelectedError.init($that);
-			
+
 		}
 	});
 

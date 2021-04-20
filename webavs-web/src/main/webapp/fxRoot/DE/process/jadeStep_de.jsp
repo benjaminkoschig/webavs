@@ -45,7 +45,7 @@
 }
 
 .detailEntity {
-	
+
 }
 
 #tableDetailEntity {
@@ -116,14 +116,15 @@
 		<div class="area">
 			<input type="hidden" class="idStep"
 				value="<%=viewBean.getProcessStep().getSimpleStep().getIdStep()%>">
-				<div calss="zoneAjaxWithoutBackground zoneAjaxWithoutBorder">
+				<div class="zoneAjaxWithoutBackground zoneAjaxWithoutBorder">
 					<%
 						if (!JadeProcessStepStateEnum.VALIDATE.equals(viewBean.getProcessStep().getSimpleStep().getCsState())) {
 					%>
 					<%if (hasRightNew) { %>
 					<span class="boutton" style="text-align: left; margin: 4px">
-						<span class="executeSelected">Exécuter les entités sélectionnées</span> 
+						<span class="executeSelected">Exécuter les entités sélectionnées</span>
 						<span class="executeOnError">Exécuter les entités en erreurs</span>
+						<span class="isManualOnError">Mettre en Manuel toutes les entités en erreurs</span>
 					</span>
 					<% } %>
 					<%
@@ -142,11 +143,11 @@
 						</span>
 					</ct:ifhasright>
 				</div>
-	
+
 				<div style="clear: both" />
-	
+
 				<table class="areaTabel areaDataTable" width="96%">
-	
+
 					<colgroup></colgroup>
 					<colgroup style="background-color: #0000FF; width: 70px"></colgroup>
 					<colgroup style="width: 130px"></colgroup>
@@ -203,7 +204,7 @@
 											String k = "for" + entry.getValue().getKeyValue().substring(0, 1).toUpperCase()
 													+ entry.getValue().getKeyValue().substring(1).toLowerCase() + "Recherche";
 							%>
-	
+
 							<td class="ui-widget-header">
 								<%
 									if (entry.getValue().isSearch()) {
@@ -243,7 +244,7 @@
 							</th>
 							<th data-orderKey='time'>Temps(ms)</th>
 							<th>N°</th>
-	
+
 							<%
 								if (viewBean.getJadeProcessDefinitionBean().getDisplayValue() != null) {
 									for (Map.Entry<String, JadeProcessDisplayValue> entry : viewBean.getJadeProcessDefinitionBean()
@@ -263,7 +264,7 @@
 							<%
 								if (viewBean.getIsCurrentSetInjectable()) {
 							%>
-							<th class="inject"">Réintégré</th>
+							<th class="inject">Réintégré</th>
 							<%
 								}
 							%>

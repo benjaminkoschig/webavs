@@ -88,7 +88,7 @@
 
 				<div class="area">
 					<div class="formTableLess">
-						<fieldset class="ui-widget"">
+						<fieldset class="ui-widget">
 							<legend class="ui-widget-header ">Description</legend>
 							<div class="ui-widget-content content">
 								<div>
@@ -141,7 +141,7 @@
 					<div class="areaDetail"> 			
 						<div class="formTableLess">
 						<c:if test ="${viewBean.hasProperties}">
-							<fieldset class="ui-widget"">
+							<fieldset class="ui-widget">
 								<legend class="ui-widget-header "> <ct:FWLabel key="JADE_PROCESS_PARAMETRES"/></legend>
 								<div class="ui-widget-content content">
 									<div id="detailProperties" ></div>

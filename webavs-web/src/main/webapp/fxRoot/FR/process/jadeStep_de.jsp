@@ -45,7 +45,7 @@
 }
 
 .detailEntity {
-	
+
 }
 
 #tableDetailEntity {
@@ -115,15 +115,16 @@
 	<div class="currentStep">
 		<div class="area">
 			<input type="hidden" class="idStep"
-				value="<%=viewBean.getProcessStep().getSimpleStep().getIdStep()%>">
-				<div calss="zoneAjaxWithoutBackground zoneAjaxWithoutBorder">
-					<%
-						if (!JadeProcessStepStateEnum.VALIDATE.equals(viewBean.getProcessStep().getSimpleStep().getCsState())) {
-					%>
-					<%if (hasRightNew) { %>
-					<span class="boutton" style="text-align: left; margin: 4px">
-						<span class="executeSelected">Exécuter les entités sélectionnées</span> 
+				   value="<%=viewBean.getProcessStep().getSimpleStep().getIdStep()%>">
+			<div class="zoneAjaxWithoutBackground zoneAjaxWithoutBorder">
+				<%
+					if (!JadeProcessStepStateEnum.VALIDATE.equals(viewBean.getProcessStep().getSimpleStep().getCsState())) {
+				%>
+				<%if (hasRightNew) { %>
+				<span class="boutton" style="text-align: left; margin: 4px">
+						<span class="executeSelected">Exécuter les entités sélectionnées</span>
 						<span class="executeOnError">Exécuter les entités en erreurs</span>
+                        <span class="isManualOnError">Mettre en Manuel toutes les entités en erreurs</span>
 					</span>
 					<% } %>
 					<%
@@ -142,11 +143,11 @@
 						</span>
 					</ct:ifhasright>
 				</div>
-	
+
 				<div style="clear: both" />
-	
+
 				<table class="areaTabel areaDataTable" width="96%">
-	
+
 					<colgroup></colgroup>
 					<colgroup style="background-color: #0000FF; width: 70px"></colgroup>
 					<colgroup style="width: 130px"></colgroup>
@@ -169,114 +170,114 @@
 					%>
 					<%
 						}
+					}
+				%>
+				<thead>
+				<tr class="ui-widget-header search">
+					<td class="ui-widget-header"><input type="text" value=""
+														class="forRecherche" /></td>
+					<td class="ui-widget-header"><input type="text"
+														value="<%=(viewBean.isByIdProcess()) ? "" : viewBean.getProcessStep().getSimpleStep().getOrdre()%>"
+														class="forStep" /></td>
+					<td class="ui-widget-header"><ct:select
+							styleClass="forCsEtat" name="forCsEtat"
+							notation="data-g-selectautocomplete='addIcon:false'"
+							wantBlank="true">
+						<%
+							for (JadeProcessEntityStateEnum e : JadeProcessEntityStateEnum.values()) {
+						%>
+						<ct:option label="<%=e.toLabel()%>" value="<%=e.toString()%>" />
+						<%
+							}
+						%>
+					</ct:select></td>
+					<td class="ui-widget-header" colspan="3"></td>
+					<td class="ui-widget-header"><input type="text"
+														class="forId" /></td>
+					<%
+						if (viewBean.getJadeProcessDefinitionBean().getDisplayValue() != null) {
+							for (Map.Entry<String, JadeProcessDisplayValue> entry : viewBean.getJadeProcessDefinitionBean()
+									.getDisplayValue().entrySet()) {
+					%>
+					<%
+						if (entry.getValue().isDisplayInHtml()) {
+							String k = "for" + entry.getValue().getKeyValue().substring(0, 1).toUpperCase()
+									+ entry.getValue().getKeyValue().substring(1).toLowerCase() + "Recherche";
+					%>
+
+					<td class="ui-widget-header">
+						<%
+							if (entry.getValue().isSearch()) {
+						%> <input type="text"
+								  class="dynamicSearch <%=k%>"></input> <%
 						}
 					%>
-					<thead>
-						<tr class="ui-widget-header search">
-							<td class="ui-widget-header"><input type="text" value=""
-								class="forRecherche" /></td>
-							<td class="ui-widget-header"><input type="text"
-								value="<%=(viewBean.isByIdProcess()) ? "" : viewBean.getProcessStep().getSimpleStep().getOrdre()%>"
-								class="forStep" /></td>
-							<td class="ui-widget-header"><ct:select
-									styleClass="forCsEtat" name="forCsEtat"
-									notation="data-g-selectautocomplete='addIcon:false'"
-									wantBlank="true">
-									<%
-										for (JadeProcessEntityStateEnum e : JadeProcessEntityStateEnum.values()) {
-									%>
-									<ct:option label="<%=e.toLabel()%>" value="<%=e.toString()%>" />
-									<%
-										}
-									%>
-								</ct:select></td>
-							<td class="ui-widget-header" colspan="3"></td>
-							<td class="ui-widget-header"><input type="text"
-								class="forId" /></td>
-							<%
-								if (viewBean.getJadeProcessDefinitionBean().getDisplayValue() != null) {
-									for (Map.Entry<String, JadeProcessDisplayValue> entry : viewBean.getJadeProcessDefinitionBean()
-											.getDisplayValue().entrySet()) {
-							%>
-							<%
-								if (entry.getValue().isDisplayInHtml()) {
-											String k = "for" + entry.getValue().getKeyValue().substring(0, 1).toUpperCase()
-													+ entry.getValue().getKeyValue().substring(1).toLowerCase() + "Recherche";
-							%>
-	
-							<td class="ui-widget-header">
-								<%
-									if (entry.getValue().isSearch()) {
-								%> <input type="text"
-								class="dynamicSearch <%=k%>"></input> <%
-	 	}
-	 %>
-							</td>
-							<%
-								}
-							%>
-							<%
-								}
-								}
-							%>
-							<%
-								if (viewBean.getIsCurrentSetInjectable()) {
-							%>
-							<td class="inject"></td>
-							<%
-								}
-							%>
-						</tr>
-						<tr>
-							<th search="recherche">Entités</th>
-							<th>Etapes</th>
-							<th>Statuts</th>
-							<th class="notSortable">Manuel
-								<%if(hasRightUpdate) {%>
-									<input type="checkbox" data-g-mastercheckbox=" " />
-								<% } %>
-							</th>
-							<th class="notSortable">Réexécution
-								<%if(hasRightUpdate) {%>
-									<input type="checkbox" data-g-mastercheckbox=" " />
-								<%} %>
-							</th>
-							<th data-orderKey='time'>Temps(ms)</th>
-							<th>N°</th>
-	
-							<%
-								if (viewBean.getJadeProcessDefinitionBean().getDisplayValue() != null) {
-									for (Map.Entry<String, JadeProcessDisplayValue> entry : viewBean.getJadeProcessDefinitionBean()
-											.getDisplayValue().entrySet()) {
-							%>
-							<%
-								if (entry.getValue().isDisplayInHtml()) {
-							%>
-							<th><%=entry.getValue().getLibelle()%></th>
-							<%
-								}
-							%>
-							<%
-								}
-								}
-							%>
-							<%
-								if (viewBean.getIsCurrentSetInjectable()) {
-							%>
-							<th class="inject"">Réintégré</th>
-							<%
-								}
-							%>
-						</tr>
-					</thead>
-					<tbody></tbody>
-				</table>
-				<div class="areaDetail">
-					<div class="getWithUserAction">
-						<a href="">Voir dans l'application</a>
-					</div>
-					<span id="logInfos"></span> <span id="properties"></span>
+					</td>
+					<%
+						}
+					%>
+					<%
+							}
+						}
+					%>
+					<%
+						if (viewBean.getIsCurrentSetInjectable()) {
+					%>
+					<td class="inject"></td>
+					<%
+						}
+					%>
+				</tr>
+				<tr>
+					<th search="recherche">Entités</th>
+					<th>Etapes</th>
+					<th>Statuts</th>
+					<th class="notSortable">Manuel
+						<%if(hasRightUpdate) {%>
+						<input type="checkbox" data-g-mastercheckbox=" " />
+						<% } %>
+					</th>
+					<th class="notSortable">Réexécution
+						<%if(hasRightUpdate) {%>
+						<input type="checkbox" data-g-mastercheckbox=" " />
+						<%} %>
+					</th>
+					<th data-orderKey='time'>Temps(ms)</th>
+					<th>N°</th>
+
+					<%
+						if (viewBean.getJadeProcessDefinitionBean().getDisplayValue() != null) {
+							for (Map.Entry<String, JadeProcessDisplayValue> entry : viewBean.getJadeProcessDefinitionBean()
+									.getDisplayValue().entrySet()) {
+					%>
+					<%
+						if (entry.getValue().isDisplayInHtml()) {
+					%>
+					<th><%=entry.getValue().getLibelle()%></th>
+					<%
+						}
+					%>
+					<%
+							}
+						}
+					%>
+					<%
+						if (viewBean.getIsCurrentSetInjectable()) {
+					%>
+					<th class="inject">Réintégré</th>
+					<%
+						}
+					%>
+				</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+			<div class="areaDetail">
+				<div class="getWithUserAction">
+					<a href="">Voir dans l'application</a>
 				</div>
+				<span id="logInfos"></span> <span id="properties"></span>
+			</div>
 		</div>
 	</div>
 </div>
