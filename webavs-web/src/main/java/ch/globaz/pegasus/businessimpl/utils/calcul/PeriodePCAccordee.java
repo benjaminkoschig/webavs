@@ -832,6 +832,15 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
                     strategie.calcule(donnee, context, tupleRoot);
                 }
 
+                // Traitement Sejour partiel pour Conjoint
+                if (!donnee.getSejourMoisPartielNombreJour().isEmpty()) {
+                    if (personne.isConjoint()) {
+                        donnee.setSejourMoisPartielNombreJourConjoint(donnee.getSejourMoisPartielNombreJour());
+                    } else {
+                        donnee.setSejourMoisPartielNombreJourRequerant(donnee.getSejourMoisPartielNombreJour());
+                    }
+                }
+
                 if (dealDonneeWithoutDessaisissementFotune) {
                     if (calculReforme && personne.isConjoint() && (personneSansRente || personneAvecIJAI)) {
                         callStrategies(context, tupleRoot, donnee, PeriodePCAccordee.conjointFactories);

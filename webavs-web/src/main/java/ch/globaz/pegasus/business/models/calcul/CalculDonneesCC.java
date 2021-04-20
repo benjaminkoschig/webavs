@@ -5,7 +5,7 @@ import globaz.jade.persistence.model.JadeComplexModel;
 public class CalculDonneesCC extends JadeComplexModel {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private String allocationFamilialeMontantMensuel = null;
@@ -289,7 +289,7 @@ public class CalculDonneesCC extends JadeComplexModel {
     private String vehiculeFractionNumerateur = null;
 
     private String vehiculeMontant = null;
-    
+
     private String imputationFortune = null;
 
     private String idLocalite = null;
@@ -311,6 +311,10 @@ public class CalculDonneesCC extends JadeComplexModel {
     private String sejourMoisPartielFraisNourriture = null;
 
     private String sejourMoisPartielNombreJour = null;
+
+    private String sejourMoisPartielNombreJourRequerant = null;
+
+    private String sejourMoisPartielNombreJourConjoint = null;
 
     private Boolean sejourMoisPartielVersementDirect = Boolean.FALSE;
 
@@ -2293,7 +2297,7 @@ public class CalculDonneesCC extends JadeComplexModel {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -2409,5 +2413,21 @@ public class CalculDonneesCC extends JadeComplexModel {
 
     public void setTaxeJournalierePrixJournalier(String taxeJournalierePrixJournalier) {
         this.taxeJournalierePrixJournalier = taxeJournalierePrixJournalier;
+    }
+
+    public String getSejourMoisPartielNombreJourRequerant() {
+        return sejourMoisPartielNombreJourRequerant;
+    }
+
+    public void setSejourMoisPartielNombreJourRequerant(String sejourMoisPartielNombreJourRequerant) {
+        this.sejourMoisPartielNombreJourRequerant = sejourMoisPartielNombreJourRequerant;
+    }
+
+    public String getSejourMoisPartielNombreJourConjoint() {
+        return sejourMoisPartielNombreJourConjoint;
+    }
+
+    public void setSejourMoisPartielNombreJourConjoint(String sejourMoisPartielNombreJourConjoint) {
+        this.sejourMoisPartielNombreJourConjoint = sejourMoisPartielNombreJourConjoint;
     }
 }

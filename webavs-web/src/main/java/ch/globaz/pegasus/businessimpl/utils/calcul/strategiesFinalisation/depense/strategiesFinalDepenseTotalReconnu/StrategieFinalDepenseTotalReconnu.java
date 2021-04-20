@@ -1,10 +1,5 @@
 package ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense.strategiesFinalDepenseTotalReconnu;
 
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.log.JadeLogger;
-
-import java.util.Calendar;
-import java.util.Date;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
@@ -13,6 +8,11 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext.Attribut;
 import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.ControlleurVariablesMetier;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.StrategieCalculFinalisation;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.log.JadeLogger;
+
+import java.util.Calendar;
+import java.util.Date;
 
 public class StrategieFinalDepenseTotalReconnu implements StrategieCalculFinalisation {
     protected final static String[] champs = { IPCValeursPlanCalcul.CLE_DEPEN_BES_VITA_TOTAL,
@@ -222,14 +222,20 @@ public class StrategieFinalDepenseTotalReconnu implements StrategieCalculFinalis
     protected void checkSejourMoisPartiel(CalculContext context, TupleDonneeRapport donnee) throws CalculException{
             TupleDonneeRapport tupleMoisPartiel = donnee.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL);
             if (tupleMoisPartiel != null) {
-                int nbJour = 0;
-                nbJour += tupleMoisPartiel.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_NOMBRE_JOURS);
+                int nbJourRequerant = 0;
+                int nbJourConjoint = 0;
+                nbJourRequerant += tupleMoisPartiel.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_NOMBRE_JOURS_REQUERANT);
+                nbJourConjoint += tupleMoisPartiel.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_NOMBRE_JOURS_CONJOINT);
 
                 String dateDebutPeriode = (String) context.get(Attribut.DATE_DEBUT_PERIODE);
                 int nbrJourMax = JadeDateUtil.getGlobazCalendar(JadeDateUtil.getLastDateOfMonth(dateDebutPeriode)).getActualMaximum(Calendar.DAY_OF_MONTH);
-                if(nbJour > nbrJourMax){
+                if(nbJourRequerant > nbrJourMax){
                     throw new CalculBusinessException(
-                            "pegasus.calcul.strategie.final.depenseTotalReconnu.nbjoursSejourPartiel.integrity", Integer.toString(nbJour));
+                            "pegasus.calcul.strategie.final.depenseTotalReconnu.nbjoursSejourPartiel.integrity", Integer.toString(nbJourRequerant));
+                }
+                if(nbJourConjoint > nbrJourMax){
+                    throw new CalculBusinessException(
+                            "pegasus.calcul.strategie.final.depenseTotalReconnu.nbjoursSejourPartiel.conjoint.integrity", Integer.toString(nbJourConjoint));
                 }
             }
     }

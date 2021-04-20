@@ -31,6 +31,8 @@ public class StrategieSejourMoisPartiel extends StrategieCalculDepense {
         float prixJournalier = checkAmountAndParseAsFloat(donnee.getSejourMoisPartielPrixJournalier());
         float fraisNourriture = checkAmountAndParseAsFloat(donnee.getSejourMoisPartielFraisNourriture());
         float nbJours = checkAmountAndParseAsFloat(donnee.getSejourMoisPartielNombreJour());
+        float nbJoursRequerant = checkAmountAndParseAsFloat(donnee.getSejourMoisPartielNombreJourRequerant());
+        float nbJoursConjoint = checkAmountAndParseAsFloat(donnee.getSejourMoisPartielNombreJourConjoint());
         boolean versementDirect = donnee.getSejourMoisPartielVersementDirect();
         float home = checkAmountAndParseAsFloat(donnee.getSejourMoisPartielHome());
 
@@ -40,6 +42,8 @@ public class StrategieSejourMoisPartiel extends StrategieCalculDepense {
         this.getOrCreateChild(tupleSejourMoisPartiel, IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_PRIX_JOURNALIER, prixJournalier);
         this.getOrCreateChild(tupleSejourMoisPartiel, IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_FRAIS_NOURRITURE, fraisNourriture);
         this.getOrCreateChild(tupleSejourMoisPartiel, IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_NOMBRE_JOURS, nbJours);
+        this.getOrCreateChild(tupleSejourMoisPartiel, IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_NOMBRE_JOURS_REQUERANT, nbJoursRequerant);
+        this.getOrCreateChild(tupleSejourMoisPartiel, IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_NOMBRE_JOURS_CONJOINT, nbJoursConjoint);
         this.getOrCreateChild(tupleSejourMoisPartiel, IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_VERSEMENT_DIRECT, versementDirect ? 1f : 0f);
         this.getOrCreateChild(tupleSejourMoisPartiel, IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_HOME, home);
 
