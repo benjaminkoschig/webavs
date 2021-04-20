@@ -1447,12 +1447,11 @@ public class APBasesCalculBuilder {
             ajouterTauxImposition(currentTaux, dateDebut, dateFin, currentCanton);
         }
 
-        // TODO : définir le nombre de jour max
-        //int jourMax = Integer.parseInt(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", APParameter.PATERNITE_JOUR_MAX.getParameterName(), "0", "", 0));
+        int jourMax = Integer.parseInt(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", APParameter.PROCHE_AIDANT_JOUR_MAX.getParameterName(), "", "", 0));
 
-//        if(nbJourSoldes > jourMax) {
-//            nbJourSoldes = jourMax;
-//        }
+        if(nbJourSoldes > jourMax) {
+            nbJourSoldes = jourMax;
+        }
 
         ((APDroitProcheAidant) droit).setNbrJourSoldes(String.valueOf(nbJourSoldes));
         return nbJourSoldes;

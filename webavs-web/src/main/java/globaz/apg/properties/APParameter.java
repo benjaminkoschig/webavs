@@ -38,7 +38,9 @@ public enum APParameter {
     PATERNITE("PATERNDATE"),
     PATERNITE_JOUR_MAX("PATJOURMAX"),
     PATERNITE_MOIS_MAX("PATMOISMAX"),
-    PROCHE_AIDANT("PROAIDDATE");
+    PROCHE_AIDANT("PROAIDDATE"),
+    PROCHE_AIDANT_JOUR_MAX("PAIJOURMAX"),
+    PROCHE_AIDANT_MOIS_MAX("PAIMOISMAX");
     private String parameterName;
 
     private APParameter(String parameterName) {
