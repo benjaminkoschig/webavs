@@ -511,7 +511,8 @@ public class RFValidationDemandeService {
                 && JadeStringUtil.isBlankOrZero(viewBean.getIdDemandeParent())) {
             RFUtils.setMsgErreurViewBean(viewBean, "ERREUR_RF_DEM_S_MONTANT_FACTURE_OBLIGATOIRE");
         } else {
-            if (!RFUtils.isMontantArrondiCinqCts(montantFacture).booleanValue()) {
+            if (RFUtils.isQdArrondi(viewBean.getCodeTypeDeSoinList(), viewBean.getCodeSousTypeDeSoinList())
+                    && !RFUtils.isMontantArrondiCinqCts(montantFacture).booleanValue()) {
                 RFUtils.setMsgErreurViewBean(viewBean, "ERREUR_RF_DEM_S_MONTANT_FACTURE_ARRONDI");
             }
         }

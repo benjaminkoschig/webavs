@@ -1316,4 +1316,11 @@ public class RFUtils {
 
         return false;
     }
+
+    public static boolean isQdArrondi(String codeTypeDeSoin, String codeSousTypeDeSoin) {
+        return !(IRFCodeTypesDeSoins.TYPE_20_FINANCEMENT_DES_SOINS.equals(codeTypeDeSoin)
+                && IRFCodeTypesDeSoins.SOUS_TYPE_20_1_FINANCEMENT_DES_SOINS.equals(codeSousTypeDeSoin))
+                || !(IRFCodeTypesDeSoins.TYPE_25_SOIN_A_DOMICILE.equals(codeTypeDeSoin)
+                        && IRFCodeTypesDeSoins.SOUS_TYPE_25_1_SOIN_A_DOMICILE.equals(codeSousTypeDeSoin));
+    }
 }
