@@ -69,6 +69,7 @@ public class Acor2020TokenService {
         claims.put("email", bSession.getUserEMail());
         claims.put("userId", bSession.getUserId());
         claims.put("idTiers", bean.getIdTiers());
+        claims.put("recordId", bean.getNoAVSAssure());
 
         String jws = Jwts.builder().setHeader(header).setClaims(claims).setIssuer("auth0").setIssuedAt(new Date()).setExpiration(cal.getTime())
                 .signWith(key).compact();
@@ -82,7 +83,7 @@ public class Acor2020TokenService {
 
         nomHote = (nomHote.substring(nomHote.length() - 1, nomHote.length()).equals("/") ? nomHote.substring(0, nomHote.length() - 1) : nomHote);
 
-        acorBaseUrl = REProperties.ACOR_ADRESSE_WEB.getValue() + "/backend/acor-ws-core-web";
+        acorBaseUrl = REProperties.ACOR_ADRESSE_WEB.getValue() + "backend/acor-ws-core-web";
         export9Url = nomHote + "/export9";
         exportUrl = nomHote + "/export";
         importUrl = nomHote + "/import";

@@ -1327,9 +1327,6 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
             }
         }
 
-        REExportationCalculAcor2020 exportAcor = new REExportationCalculAcor2020(session, caViewBean.getIdDemandeRente());
-        InHostType inHost = exportAcor.createInHost();
-
         if (!viewBean.getMsgType().equals(FWViewBeanInterface.ERROR)) {
             Map<String, PRAcorFileContent> filesContent = new HashMap<String, PRAcorFileContent>();
 

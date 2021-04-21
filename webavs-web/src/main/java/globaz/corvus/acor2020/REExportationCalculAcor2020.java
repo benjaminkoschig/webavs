@@ -310,6 +310,7 @@ public class REExportationCalculAcor2020 {
         if (commonRente.getFinDroit() != null) {
             // Non utilisé
             // TODO : valeur 0 non valide (Enum Mutationscode_Type dans Prestations-types.xsd) ->
+//          // TODO : information contenu dans la rente accordée : RERenteAccordee --> YLLCMU
 //            commonRente.setCodeMutation(0);
         }
         // 6. montant de la prestation
@@ -1638,6 +1639,8 @@ public class REExportationCalculAcor2020 {
                             relation.getTypeLien(), dateMariage);
                 }
 
+
+                // TODO : la gestion des dates de fin de relation reste un mystère.
                 if (!ISFSituationFamiliale.CS_TYPE_LIEN_MARIE.equals(relation.getTypeLien())
                         && !ISFSituationFamiliale.CS_TYPE_LIEN_LPART_ENREGISTRE.equals(relation
                         .getTypeLien()) && !ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(relation
