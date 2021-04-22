@@ -634,19 +634,19 @@ public class REExportationCalculAcor2020 {
         // 10. echelle de rente
         donnesEchelle.setSkala(formatRequiredShort(rente.getEchelle()));
         // 11. durée cotisation avant 73
-        donnesEchelle.setDureeEtrangereAvant73(formatRequiredBigDecimalDuree(rente.getDureeCotAv73()));
+        donnesEchelle.setDureeEtrangereAvant73(formatRequiredBigDecimalDuree(rente.getDureeCotiEtrangereAv73()));
         // 12. durée cotisation après 73
-        donnesEchelle.setDureeEtrangereApres73(formatRequiredBigDecimalDuree(rente.getDureeCotAp73()));
+        donnesEchelle.setDureeEtrangereApres73(formatRequiredBigDecimalDuree(rente.getDureeCotiEtrangereAp73()));
         // 13. mois appoint avant 73
         donnesEchelle.setAnrechnungVor1973FehlenderBeitragsmonate(formatRequiredInteger(rente.getMoisAppointAv73()));
         // 14. mois appoint après 73
         donnesEchelle.setAnrechnungAb1973Bis1978FehlenderBeitragsmonate(formatRequiredInteger(rente.getMoisAppointAp73()));
         // 15. durée cotis. de la classe d'age
         donnesEchelle.setBeitragsjahreJahrgang(formatRequiredInteger(rente.getDureeCotiClasseAge()));
-        // 39. durée cotis.étrangère av. 73
-        donnesEchelle.setBeitragsdauerVor1973(formatRequiredBigDecimalDuree(rente.getDureeCotiEtrangereAv73()));
-        // 40.durée cotis. étrangère ap. 73
-        donnesEchelle.setBeitragsdauerAb1973(formatRequiredBigDecimalDuree(rente.getDureeCotiEtrangereAp73()));
+        // 39. durée cotis av. 73
+        donnesEchelle.setBeitragsdauerVor1973(formatRequiredBigDecimalDuree(rente.getDureeCotAv73()));
+        // 40.durée cotis ap. 73
+        donnesEchelle.setBeitragsdauerAb1973(formatRequiredBigDecimalDuree(rente.getDureeCotAp73()));
         return donnesEchelle;
     }
 
@@ -1286,7 +1286,8 @@ public class REExportationCalculAcor2020 {
                 // Apparemment pour récupérer l'IBAN il ne faut pas utiliser la méthode getIban() mais getCompte()... ->
                 // trop facile sinon
                 // 13. IBAN
-                banqueAdresseType.setIban(adressePaiement.getCompte());
+                // On doit supprimer les espaces pour respecter le xsd ACOR
+                banqueAdresseType.setIban(adressePaiement.getCompte().replace(" ",""));
                 donneesPostalesType.setBanque(banqueAdresseType);
             }
         } catch (Exception e) {
@@ -1402,7 +1403,7 @@ public class REExportationCalculAcor2020 {
             enfant.setMereInconnue(true);
         }
         // TODO rechercher etat civil et mapper selon EtatCivil-types.xsd
-        enfant.setEtatCivil((short) 1);
+        enfant.setEtatCivil(Short.valueOf(PRACORConst.csTypeLienToACOR(session, membre.getCsEtatCivil())));
         if (!JadeStringUtil.isBlankOrZero(detail.getDateAdoption())) {
             enfant.setDateAdoption(formatDate(detail.getDateAdoption(), "yyyy-MM-dd"));
         }
