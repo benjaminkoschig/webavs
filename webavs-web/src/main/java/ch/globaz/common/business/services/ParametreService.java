@@ -1,9 +1,11 @@
 package ch.globaz.common.business.services;
 
-import globaz.framework.util.FWCurrency;
-import globaz.jade.service.provider.application.JadeApplicationService;
-import java.math.BigDecimal;
 import ch.globaz.common.business.interfaces.ParametrePlageValeurInterface;
+import globaz.framework.util.FWCurrency;
+import globaz.globall.db.BSession;
+import globaz.jade.service.provider.application.JadeApplicationService;
+
+import java.math.BigDecimal;
 
 // TODO la place de ce service serait plutôt dans l'impl car c'est un service
 // technique qu'on ne va pas publier
@@ -12,7 +14,7 @@ public interface ParametreService extends JadeApplicationService {
 
     /**
      * Retourne une plage de valeurs numériques sous forme d'un tableau de trois éléments FWCurrency.
-     * 
+     *
      * @param parametrePlageValeur
      *            l'énumération représentant la clé de la plage de valeur
      * @param date
@@ -30,7 +32,7 @@ public interface ParametreService extends JadeApplicationService {
 
     /**
      * Retourne la valeur numérique d'un paramètre sous forme de BigDecimal
-     * 
+     *
      * @param parametrePlageValeur
      *            l'énumération représentant la clé de la plage de valeur
      * @param date
@@ -44,7 +46,7 @@ public interface ParametreService extends JadeApplicationService {
 
     /**
      * Retourne la valeur numérique d'un paramètre sous forme de FWCurrency
-     * 
+     *
      * @param parametrePlageValeur
      *            l'énumération représentant la clé de la plage de valeur
      * @param date
@@ -58,7 +60,7 @@ public interface ParametreService extends JadeApplicationService {
 
     /**
      * Retourne la valeur numérique d'un paramètre sous forme de FWCurrency
-     * 
+     *
      * @param parametrePlageValeur
      *            l'énumération représentant la clé de la plage de valeur
      * @param date
@@ -71,4 +73,6 @@ public interface ParametreService extends JadeApplicationService {
      */
     public FWCurrency getValeurNumeriqueFWCurrency(ParametrePlageValeurInterface parametrePlageValeur, String date,
             String applicationId) throws Exception;
+
+    Integer getInteger(ParametrePlageValeurInterface parametrePlageValeur, String date, BSession session);
 }

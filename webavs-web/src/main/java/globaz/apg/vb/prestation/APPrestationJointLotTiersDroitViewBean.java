@@ -3,7 +3,6 @@
  */
 package globaz.apg.vb.prestation;
 
-import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.db.prestation.APPrestationJointLotTiersDroit;
 import globaz.apg.utils.APGUtils;
@@ -280,6 +279,7 @@ public class APPrestationJointLotTiersDroitViewBean extends APPrestationJointLot
                 || (isValide() && APGUtils.isTypeAllocationPandemie(getGenreService()))
                 || (isValide() && APGUtils.isTypeMaternite(getGenreService()))
                 || (isValide() && APGUtils.isTypePaternite(getGenreService()))
+                || (isValide() && APGUtils.isTypeProcheAidant(getGenreService()))
                 && !isAnnule());
     }
 

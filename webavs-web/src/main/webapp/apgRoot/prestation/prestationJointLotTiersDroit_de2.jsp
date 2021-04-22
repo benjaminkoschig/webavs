@@ -7,7 +7,8 @@
 
 	globaz.apg.vb.prestation.APPrestationJointLotTiersDroitViewBean viewBean = (globaz.apg.vb.prestation.APPrestationJointLotTiersDroitViewBean) session.getAttribute("viewBean");
 	selectedIdValue = viewBean.getIdPrestationApg();
-	String typePrestation = APGUtils.isTypeAllocationPandemie(viewBean.getGenreService()) ? IPRDemande.CS_TYPE_PANDEMIE : APGUtils.isTypeMaternite(viewBean.getGenreService())?globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE: APGUtils.isTypePaternite(viewBean.getGenreService()) ? IPRDemande.CS_TYPE_PATERNITE:globaz.prestation.api.IPRDemande.CS_TYPE_APG;
+
+	String typePrestation = APTypePresationDemandeResolver.resolveTypePrestation(session);
 	java.util.Vector v = globaz.apg.db.lots.APLotManager.getIdsDescriptionsLotsOuvertsOuCompenses(viewBean.getSession(),typePrestation);
 	bButtonDelete = false;
 	
@@ -25,7 +26,7 @@
 	<%if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_APG) {%>
    		<%@page import="java.util.Vector"%>
 <%@ page import="globaz.prestation.api.IPRDemande" %>
-<%@ page import="globaz.apg.utils.APGUtils" %>
+<%@ page import="globaz.apg.vb.droits.APTypePresationDemandeResolver" %>
 <ct:menuChange displayId="menu" menuId="ap-menuprincipalapg"/>
 	<!--sinon, maternité -->
 	<%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE) {%>	   	

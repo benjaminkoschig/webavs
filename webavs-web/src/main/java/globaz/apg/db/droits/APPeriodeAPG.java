@@ -224,4 +224,8 @@ public class APPeriodeAPG extends BEntity implements IPRCloneable {
     public void setNbJourSupplementaire(final String nbJourSupplementaire) {
         this.nbJourSupplementaire = nbJourSupplementaire;
     }
+
+    public int calculeNbJourTotal() {
+        return Integer.parseInt(this.nbJourSupplementaire) + Integer.parseInt(this.nbrJours);
+    }
 }

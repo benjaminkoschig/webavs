@@ -1,12 +1,14 @@
 package globaz.apg.db.droits;
 
 import ch.globaz.common.sql.SQLWriter;
+import ch.globaz.common.sql.converters.LocalDateConverter;
 import ch.globaz.queryexec.bridge.jade.SCM;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.application.APApplication;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
+import globaz.apg.properties.APParameter;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BConstants;
 import globaz.globall.db.BEntity;
@@ -26,6 +28,10 @@ import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.constantes.IConstantes;
 import lombok.Data;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * BEntity représentant un droit paternité Créé le 01 Décembre 2020
@@ -50,6 +56,8 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
     private String noControlePers = "";
     private String noRevision = "";
     private String remarque = "";
+    private Optional<NbJourDateMin> nbJourDateMin;
+
 
     /**
      * retourne la durée en jours d'un droit paternité.
@@ -72,27 +80,88 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
     public APDroitProcheAidant() { }
 
     public int calculerNbjourTotalIndemnise() {
-        String etatsDroit = String.join(
-                ",",
-                IAPDroitLAPG.CS_ETAT_DROIT_VALIDE,
-                IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF,
-                IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL);
+        Optional<NbJourDateMin> nbJourDateMin = loadNbJourDateMin();
+        return nbJourDateMin.map(NbJourDateMin::getNbJours)
+                            .orElse(0);
+    }
 
+    public int calculerNbJourDisponible() {
+        return this.getNbJourMax() - calculerNbjourTotalIndemnise();
+    }
+
+    private Integer getNbJourMax() {
+        return APParameter.PROCHE_AIDANT_JOUR_MAX.findValueOrWithDateNow(this.getDateDebutDroit(), this.getSession());
+    }
+
+    public Optional<LocalDate> calculerDelai() {
+        Integer nbMois = APParameter.PROCHE_AIDANT_MOIS_MAX.findValueOrWithDateNow(this.getDateDebutDroit(), this.getSession());
+        Optional<NbJourDateMin> nbJourDateMin = loadNbJourDateMin();
+
+        return nbJourDateMin.map(NbJourDateMin::getDateDebutMin)
+                            .map(localDate -> localDate.plusMonths(nbMois));
+    }
+
+    @Override
+    protected void _beforeRetrieve(final BTransaction transaction) throws Exception {
+        super._beforeRetrieve(transaction);
+        this.nbJourDateMin = null;
+    }
+
+    private Optional<NbJourDateMin> loadNbJourDateMin() {
+        if (this.getIdDroit() == null || JadeStringUtil.isBlankOrZero(this.getIdDroit())) {
+            return Optional.empty();
+        }
+        if (nbJourDateMin == null) {
+            String etatsDroit = String.join(
+                    ",",
+                    IAPDroitLAPG.CS_ETAT_DROIT_VALIDE,
+                    IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
+
+            SQLWriter sqlWriter = SQLWriter.writeWithSchema()
+                                           .append("select sum(VCNNBJ) as nb_jours, min(schema.APPERIP.VCDDEB) as date_debut_min")
+                                           .append("from schema." + APDroitLAPG.TABLE_NAME_LAPG)
+                                           .join("schema.APDROITPROCHEAIDANT ON schema.APDROITPROCHEAIDANT.ID_DROIT = schema.APDROIP.VAIDRO")
+                                           .join("schema.APPERIP ON schema.APPERIP.VCIDRO = schema.APDROIP.VAIDRO")
+                                           .join("schema.APSIFMP ON schema.APSIFMP.VQIDRM = schema.APDROIP.VAIDRO")
+                                           .append("where schema.APSIFMP.VQLAVS = (")
+                                           .append("select schema.APSIFMP.VQLAVS as nss_enfant")
+                                           .from(APDroitLAPG.TABLE_NAME_LAPG)
+                                           .join("schema.APDROITPROCHEAIDANT ON schema.APDROITPROCHEAIDANT.ID_DROIT = schema.APDROIP.VAIDRO")
+                                           .join("schema.APSIFMP ON schema.APSIFMP.VQIDRM = schema.APDROIP.VAIDRO")
+                                           .append(" where schema.APDROIP.VAIDRO = '?')", this.getIdDroit())
+                                           .append(" and schema.APDROIP.VATETA in(?)", etatsDroit)
+                                           .append(" and (schema.APDROIP.VAIPAR is null or schema.APDROIP.VAIPAR = 0")
+                                           .append(" and 0 = (select count(child.VAIDRO) as nb")
+                                           .append(" from schema.APDROIP as child")
+                                           .append(" where child.VAIPAR = schema.APDROIP.VAIDRO")
+                                           .append(" and child.VATETA in (52003007, 52003002, 52003003))")
+                                           .append(" or ((schema.APDROIP.VAIPAR is not null or schema.APDROIP.VAIPAR != 0)")
+                                           .append(" and schema.APDROIP.VAIDRO = (select max(child.VAIDRO)")
+                                           .append(" from schema.APDROIP as child")
+                                           .append(" where child.VAIPAR = schema.APDROIP.VAIDRO")
+                                           .append(" and child.VATETA in (?))))", etatsDroit);
+
+            List<NbJourDateMin> list = SCM.newInstance(NbJourDateMin.class)
+                                          .session(this.getSession()).query(sqlWriter.toSql())
+                                          .converters(new LocalDateConverter())
+                                          .execute();
+            if (list.isEmpty()) {
+                return Optional.empty();
+            }
+            this.nbJourDateMin = Optional.of(list.get(0));
+        }
+        return this.nbJourDateMin;
+    }
+
+    public int calculerNbjourTotalDuDroit() {
         SQLWriter sqlWriter = SQLWriter.writeWithSchema()
-                                       .append("select sum(VCNNBJ) as nbJours")
+                                       .append("select sum(VCNNBJ) as nb_Jours")
                                        .append("from schema." + APDroitLAPG.TABLE_NAME_LAPG)
                                        .join("schema.APDROITPROCHEAIDANT ON schema.APDROITPROCHEAIDANT.ID_DROIT = schema.APDROIP.VAIDRO")
                                        .join("schema.APPERIP ON schema.APPERIP.VCIDRO = schema.APDROIP.VAIDRO")
-                                       .join("schema.APSIFMP ON schema.APSIFMP.VQIDRM = schema.APDROIP.VAIDRO")
-                                       .append("where schema.APSIFMP.VQLAVS = (")
-                                       .append("select schema.APSIFMP.VQLAVS as nss_enfant")
-                                       .from(APDroitLAPG.TABLE_NAME_LAPG)
-                                       .join("schema.APDROITPROCHEAIDANT ON schema.APDROITPROCHEAIDANT.ID_DROIT = schema.APDROIP.VAIDRO")
-                                       .join("schema.APSIFMP ON schema.APSIFMP.VQIDRM = schema.APDROIP.VAIDRO")
-                                       .append(" where schema.APDROIP.VAIDRO = '?')", this.getIdDroit())
-                                       .append(" and schema.APDROIP.VATETA in(?)", etatsDroit);
+                                       .append(" where schema.APDROIP.VAIDRO = ?", this.getIdDroit());
 
-        return SCM.newInstance(NbJour.class).session(this.getSession()).query(sqlWriter.toSql())
+        return SCM.newInstance(NbJourDateMin.class).session(this.getSession()).query(sqlWriter.toSql())
                   .executeAggregate().intValue();
     }
 
@@ -608,7 +677,8 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
     }
 
     @Data
-    private static class NbJour {
-        private int nbJours;
+    public static class NbJourDateMin {
+        private Integer nbJours;
+        private LocalDate dateDebutMin;
     }
 }

@@ -90,7 +90,6 @@
         document.getElementById("nomAffiche").disabled = true;
         document.getElementById("prenomAffiche").disabled = true;
         document.getElementById("dateNaissanceAffiche").disabled = true;
-        document.getElementById("dateDecesAffiche").disabled = true;
         document.getElementById("csEtatCivilAffiche").disabled = true;
         document.getElementById("csSexeAffiche").disabled = true;
         $('#isSoumisCotisation').prop("disabled", true);
@@ -382,7 +381,6 @@
         document.getElementById("prenomAffiche").disabled = false;
         document.getElementById("nomPrenom").value = "";
         document.getElementById("dateNaissanceAffiche").disabled = false;
-        document.getElementById("dateDecesAffiche").disabled = false;
         document.getElementById("csEtatCivilAffiche").disabled = false;
         document.getElementById("csSexeAffiche").disabled = false;
         checkNss(param_nss);
@@ -392,7 +390,6 @@
         document.getElementById("nom").value = document.getElementById("nomAffiche").value;
         document.getElementById("prenom").value = document.getElementById("prenomAffiche").value;
         document.getElementById("dateNaissance").value = document.getElementById("dateNaissanceAffiche").value;
-        document.getElementById("dateDeces").value = document.getElementById("dateDecesAffiche").value;
         document.getElementById("csEtatCivil").value = document.getElementById("csEtatCivilAffiche").value;
         document.getElementById("nss").value = document.getElementById("likeNSS").value;
         document.getElementById("csSexe").value = document.getElementById("csSexeAffiche").value;
@@ -449,11 +446,6 @@
                 document.getElementById("dateNaissanceAffiche").value = element.dateNaissance;
             }
 
-            if (element.dateDeces !== null) {
-                document.getElementById("dateDeces").value = element.dateDeces;
-                document.getElementById("dateDecesAffiche").value = element.dateDeces;
-            }
-
             if (element.codeEtatCivil !== null) {
                 for (var i = 0; i < document.getElementById("csEtatCivilAffiche").length; i++) {
                     if (element.codeEtatCivil === document.getElementById("csEtatCivilAffiche").options[i].value) {
@@ -467,7 +459,6 @@
                 document.getElementById("nomAffiche").disabled = true;
                 document.getElementById("prenomAffiche").disabled = true;
                 document.getElementById("dateNaissanceAffiche").disabled = true;
-                document.getElementById("dateDecesAffiche").disabled = true;
                 document.getElementById("csEtatCivilAffiche").disabled = true;
                 document.getElementById("csSexeAffiche").disabled = true;
             }
@@ -929,19 +920,16 @@
                value="<%=viewBean.getDateDebutDroit()%>"/>
     </td>
     <td>
-        <label for="dateDecesAffiche">
-            <ct:FWLabel key="JSP_DATE_DECES"/>
+        <label for="dateFinDroit">
+            <ct:FWLabel key="JSP_DATE_FIN_DROIT"/>
         </label>
     </td>
     <td colspan="2">
-        <input type="hidden"
-               name="dateDeces"
-               value="<%=viewBean.getDateDeces()%>"/>
         <input type="text"
-               id="dateDecesAffiche"
-               name="dateDecesAffiche"
+               id="dateFinDroit"
+               name="dateFinDroit"
                data-g-calendar=" "
-               value="<%=viewBean.getDateDeces()%>"/>
+               value="<%=viewBean.getDateFinDroit()%>"/>
     </td>
     <td></td>
 </tr>
@@ -980,7 +968,7 @@
 <tr>
     <td>
         <label for="dateReception">
-            <ct:FWLabel key="JSP_NOMBRE_JOURS_TOTAL_DEJA_PAYES"/>
+            <ct:FWLabel key="JSP_NOMBRE_JOURS_COMPTABILISE"/>
         </label>
     </td>
     <td>
@@ -992,7 +980,32 @@
                name="nbTotalJourPayes"
                value="<%=viewBean.calculerNbjourTotalIndemnise()%>"/>
     </td>
-    <td colspan="4"></td>
+    <td>
+        <label for="dateMax">
+            <ct:FWLabel key="JSP_DELAI_CADRE"/>
+        </label>
+    </td>
+    <td>
+        <input type="text"
+               size="11"
+               disabled="disabled"
+               readonly="readonly"
+               id="dateMax"
+               name="dateMax"
+               value="<%=viewBean.getDelaiCadre()%>"/>
+    </td>
+    <td>
+        <label for="nbJourDisponible">
+            <ct:FWLabel key="JSP_NB_JOUR_DISPONIBLE"/>
+        </label>
+        <input type="text"
+               size="11"
+               disabled="disabled"
+               readonly="readonly"
+               id="nbJourDisponible"
+               name="nbJourDisponible"
+               value="<%=viewBean.calculerNbJourDisponible()%>"/>
+    </td>
 </tr>
 
 

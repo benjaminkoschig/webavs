@@ -746,44 +746,44 @@
                     <parameter name="genreService" />
                 </action>
             </node>
-            <node>
-                <label refId="MENU_OPTION_RESTITUER_DROIT" />
-                <action command="/apg" responseTarget="fr_main">
-                    <parameter name="userAction" value="apg.droits.droitLAPGJointDemande.restituerDroit" />
-                    <parameter name="selectedId" />
-                    <parameter name="genreService" />
-                </action>
-            </node>
-            <node id="attenteReponse">
-                <label refId="MENU_OPTION_ATTENTE_REPONSE" />
-                <action command="/apg" responseTarget="fr_main">
-                    <parameter name="userAction" value="apg.droits.droitLAPGJointDemande.actionAttenteReponse" />
-                    <parameter name="selectedId" />
-                </action>
-            </node>
-            <node id="refuser">
-                <label refId="MENU_OPTION_REFUSER" />
-                <action command="/apg" responseTarget="fr_main">
-                    <parameter name="userAction" value="apg.droits.droitLAPGJointDemande.actionRefuser" />
-                    <parameter name="selectedId" />
-                </action>
-            </node>
-            <node id="calculertoutesprestations">
-                <label refId="MENU_OPTION_CALCULER_PRESTATIONS" />
-                <action command="/apg" responseTarget="fr_main">
-                    <parameter name="userAction" value="apg.prestation.prestation.actionCalculerToutesLesPrestations" />
-                    <parameter name="selectedId" />
-                    <parameter name="genreService" />
-                </action>
-            </node>
-            <node id="initinfocompl">
-                <label refId="MENU_OPTION_INFO_COMPL" />
-                <action command="/apg" responseTarget="fr_main">
-                    <parameter name="userAction" value="apg.droits.infoCompl.actionAfficherInfoCompl" />
-                    <parameter name="selectedId" />
-                    <parameter name="noAVS" />
-                </action>
-            </node>
+<!--            <node>-->
+<!--                <label refId="MENU_OPTION_RESTITUER_DROIT" />-->
+<!--                <action command="/apg" responseTarget="fr_main">-->
+<!--                    <parameter name="userAction" value="apg.droits.droitLAPGJointDemande.restituerDroit" />-->
+<!--                    <parameter name="selectedId" />-->
+<!--                    <parameter name="genreService" />-->
+<!--                </action>-->
+<!--            </node>-->
+<!--            <node id="attenteReponse">-->
+<!--                <label refId="MENU_OPTION_ATTENTE_REPONSE" />-->
+<!--                <action command="/apg" responseTarget="fr_main">-->
+<!--                    <parameter name="userAction" value="apg.droits.droitLAPGJointDemande.actionAttenteReponse" />-->
+<!--                    <parameter name="selectedId" />-->
+<!--                </action>-->
+<!--            </node>-->
+<!--            <node id="refuser">-->
+<!--                <label refId="MENU_OPTION_REFUSER" />-->
+<!--                <action command="/apg" responseTarget="fr_main">-->
+<!--                    <parameter name="userAction" value="apg.droits.droitLAPGJointDemande.actionRefuser" />-->
+<!--                    <parameter name="selectedId" />-->
+<!--                </action>-->
+<!--            </node>-->
+<!--            <node id="calculertoutesprestations">-->
+<!--                <label refId="MENU_OPTION_CALCULER_PRESTATIONS" />-->
+<!--                <action command="/apg" responseTarget="fr_main">-->
+<!--                    <parameter name="userAction" value="apg.prestation.prestation.actionCalculerToutesLesPrestations" />-->
+<!--                    <parameter name="selectedId" />-->
+<!--                    <parameter name="genreService" />-->
+<!--                </action>-->
+<!--            </node>-->
+<!--            <node id="initinfocompl">-->
+<!--                <label refId="MENU_OPTION_INFO_COMPL" />-->
+<!--                <action command="/apg" responseTarget="fr_main">-->
+<!--                    <parameter name="userAction" value="apg.droits.infoCompl.actionAfficherInfoCompl" />-->
+<!--                    <parameter name="selectedId" />-->
+<!--                    <parameter name="noAVS" />-->
+<!--                </action>-->
+<!--            </node>-->
             <node>
                 <label refId="MENU_OPTION_BREAK_RULES" />
                 <action command="/apg" responseTarget="fr_main">
@@ -1227,68 +1227,68 @@
 					<parameter name="userAction" value="apg.lots.lot.chercher" />
 				</action>
 			</node>
-			<node>
-				<label refId="MENU_OPTION_ANNONCES" />
-				<action command="/apg" responseTarget="fr_main">
-					<parameter name="userAction" value="apg.annonces.annonceAPG.chercher" />
-					<parameter name="forType" value="forpaternite" />
-				</action>
-			</node>
+<!--			<node>-->
+<!--				<label refId="MENU_OPTION_ANNONCES" />-->
+<!--				<action command="/apg" responseTarget="fr_main">-->
+<!--					<parameter name="userAction" value="apg.annonces.annonceAPG.chercher" />-->
+<!--					<parameter name="forType" value="forpaternite" />-->
+<!--				</action>-->
+<!--			</node>-->
 			<!-- Menu Listes -->
-			<node>
-				<label refId="MENU_LISTES" />
-				<nodes>
-					<node>
-						<label refId="MENU_OPTION_RECAP_ANNONCES" />
-						<action command="/apg" responseTarget="fr_main">
-							<parameter name="userAction" value="apg.process.recapitulationAnnonce.afficher" />
-						</action>
-					</node>
-					<node>
-						<label refId="MENU_OPTION_ATTESTATIONS_FISCALES" />
-						<action command="/apg" responseTarget="fr_main">
-							<parameter name="userAction" value="apg.process.genererAttestations.afficher" />
-						</action>
-					</node>
-					<node>
-						<label refId="MENU_OPTION_LISTE_PRESTATION_VERSEE" />
-						<action command="/apg" responseTarget="fr_main">
-							<parameter name="userAction" value="apg.process.listePrestationVersee.afficher" />
-						</action>
-					</node>
-					<node>
-						<label refId="MENU_OPTION_LISTE_PRESTATION_CIAB" />
-						<action command="/apg" responseTarget="fr_main">
-							<parameter name="userAction" value="apg.process.listePrestationCIAB.afficher" />
-						</action>
-					</node>
-					<node>
-						<label refId="MENU_OPTION_LISTE_TAXATIONS_DEFINITIVES" />
-						<action command="/apg" responseTarget="fr_main">
-							<parameter name="userAction" value="apg.process.listeTaxationsDefinitives.afficher" />
-						</action>
-					</node>
-				</nodes>
-			</node>
+<!--			<node>-->
+<!--				<label refId="MENU_LISTES" />-->
+<!--				<nodes>-->
+<!--					<node>-->
+<!--						<label refId="MENU_OPTION_RECAP_ANNONCES" />-->
+<!--						<action command="/apg" responseTarget="fr_main">-->
+<!--							<parameter name="userAction" value="apg.process.recapitulationAnnonce.afficher" />-->
+<!--						</action>-->
+<!--					</node>-->
+<!--					<node>-->
+<!--						<label refId="MENU_OPTION_ATTESTATIONS_FISCALES" />-->
+<!--						<action command="/apg" responseTarget="fr_main">-->
+<!--							<parameter name="userAction" value="apg.process.genererAttestations.afficher" />-->
+<!--						</action>-->
+<!--					</node>-->
+<!--					<node>-->
+<!--						<label refId="MENU_OPTION_LISTE_PRESTATION_VERSEE" />-->
+<!--						<action command="/apg" responseTarget="fr_main">-->
+<!--							<parameter name="userAction" value="apg.process.listePrestationVersee.afficher" />-->
+<!--						</action>-->
+<!--					</node>-->
+<!--					<node>-->
+<!--						<label refId="MENU_OPTION_LISTE_PRESTATION_CIAB" />-->
+<!--						<action command="/apg" responseTarget="fr_main">-->
+<!--							<parameter name="userAction" value="apg.process.listePrestationCIAB.afficher" />-->
+<!--						</action>-->
+<!--					</node>-->
+<!--					<node>-->
+<!--						<label refId="MENU_OPTION_LISTE_TAXATIONS_DEFINITIVES" />-->
+<!--						<action command="/apg" responseTarget="fr_main">-->
+<!--							<parameter name="userAction" value="apg.process.listeTaxationsDefinitives.afficher" />-->
+<!--						</action>-->
+<!--					</node>-->
+<!--				</nodes>-->
+<!--			</node>-->
 			<!-- Menu Traitements -->
-			<node>
-				<label refId="MENU_TRAITEMENTS_TITRE" />
-				<nodes>
-					<!--					<node>-->
-					<!--						<label refId="MENU_OPTION_GENERER_COMPENSATIONS" />-->
-					<!--						<action command="/apg" responseTarget="fr_main">-->
-					<!--							<parameter name="userAction" value="apg.process.genererCompensations.afficher" />-->
-					<!--						</action>-->
-					<!--					</node>-->
-					<node>
-						<label refId="MENU_OPTION_ENVOYER_ANNONCES" />
-						<action command="/apg" responseTarget="fr_main">
-							<parameter name="userAction" value="apg.process.envoyerAnnonces.afficher" />
-							<parameter name="forTypeAPG" value="52012005" />
-						</action>
-					</node>
-				</nodes>
-			</node>
+<!--			<node>-->
+<!--				<label refId="MENU_TRAITEMENTS_TITRE" />-->
+<!--				<nodes>-->
+<!--					&lt;!&ndash;					<node>&ndash;&gt;-->
+<!--					&lt;!&ndash;						<label refId="MENU_OPTION_GENERER_COMPENSATIONS" />&ndash;&gt;-->
+<!--					&lt;!&ndash;						<action command="/apg" responseTarget="fr_main">&ndash;&gt;-->
+<!--					&lt;!&ndash;							<parameter name="userAction" value="apg.process.genererCompensations.afficher" />&ndash;&gt;-->
+<!--					&lt;!&ndash;						</action>&ndash;&gt;-->
+<!--					&lt;!&ndash;					</node>&ndash;&gt;-->
+<!--					<node>-->
+<!--						<label refId="MENU_OPTION_ENVOYER_ANNONCES" />-->
+<!--						<action command="/apg" responseTarget="fr_main">-->
+<!--							<parameter name="userAction" value="apg.process.envoyerAnnonces.afficher" />-->
+<!--							<parameter name="forTypeAPG" value="52012005" />-->
+<!--						</action>-->
+<!--					</node>-->
+<!--				</nodes>-->
+<!--			</node>-->
 			<!-- Menu Paramètres -->
 			<node>
 				<label refId="MENU_PARAMETRES" />

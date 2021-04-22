@@ -1,5 +1,8 @@
 package ch.globaz.common.businessimpl.services;
 
+import ch.globaz.common.business.interfaces.ParametrePlageValeurInterface;
+import ch.globaz.common.business.services.ParametreService;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
@@ -7,11 +10,11 @@ import globaz.globall.db.BStatement;
 import globaz.globall.db.FWFindParameter;
 import globaz.globall.db.FWFindParameterManager;
 import globaz.jade.client.util.JadeDateUtil;
-import java.math.BigDecimal;
-import ch.globaz.common.business.interfaces.ParametrePlageValeurInterface;
-import ch.globaz.common.business.services.ParametreService;
-import ch.globaz.ij.businessimpl.exception.TechnicalException;
+import lombok.extern.slf4j.Slf4j;
 
+import java.math.BigDecimal;
+
+@Slf4j
 public class ParametreServiceImpl implements ParametreService {
 
     private FWFindParameter getParameter(ParametrePlageValeurInterface parametrePlageValeur, String date)
@@ -20,18 +23,16 @@ public class ParametreServiceImpl implements ParametreService {
         return this.getParameter(parametrePlageValeur, date, session, session.getApplicationId());
     }
 
-    private FWFindParameter getParameter(ParametrePlageValeurInterface parametrePlageValeur, String date,
-            BSession session, String applicationId) throws Exception {
+    private FWFindParameter getParameter(ParametrePlageValeurInterface parametrePlageValeur,
+                                         String date,
+                                         BSession session, String applicationId) throws Exception {
 
         if (!JadeDateUtil.isGlobazDate(date)) {
-            // TODO revoir la gestion de cette exception selon qu'on utilise une table dédiée ou un service commun
-            throw new TechnicalException("Date parameter is mandatory or value " + date + " is not a valid date");
+            throw new CommonTechnicalException("Date parameter is mandatory or value " + date + " is not a valid date");
         }
 
         FWFindParameterManager param = new FWFindParameterManager() {
-            /**
-             * 
-             */
+
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -55,12 +56,10 @@ public class ParametreServiceImpl implements ParametreService {
         param.setIdApplParametre(applicationId);
         param.setIdCleDiffere(parametrePlageValeur.getCle());
         param.setDateDebutValidite(date);
-        param.find();
+        param.find(1);
 
         if (param.getSize() == 0) {
-            // TODO revoir la gestion de cette exception selon qu'on utilise une table dédiée ou un service commun
-            throw new Exception("Aucun paramètre défini pour la clé &0 à la date &1" + parametrePlageValeur.getCle()
-                    + date);
+            throw new CommonTechnicalException("Aucun paramètre défini pour la clé " + parametrePlageValeur + " à la date " + date);
         }
 
         return (FWFindParameter) param.getFirstEntity();
@@ -101,6 +100,20 @@ public class ParametreServiceImpl implements ParametreService {
             throws Exception {
         FWFindParameter parametre = this.getParameter(parametrePlageValeur, date);
         return new BigDecimal(parametre.getValeurNumParametre());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Integer getInteger(final ParametrePlageValeurInterface parametrePlageValeur, final String date, final BSession session) {
+        try {
+            FWFindParameter parameter = this.getParameter(parametrePlageValeur, date, session, session.getApplicationId());
+            return new BigDecimal(parameter.getValeurNumParametre()).intValue();
+        } catch (Exception e) {
+            LOG.error("Error for this parameter: " + parametrePlageValeur.getCle(), e);
+            throw new CommonTechnicalException("Error for this parameter: " + parametrePlageValeur.getCle(), e);
+        }
     }
 
     /**

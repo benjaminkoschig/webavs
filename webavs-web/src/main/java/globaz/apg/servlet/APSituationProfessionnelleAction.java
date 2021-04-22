@@ -3,19 +3,21 @@
  */
 package globaz.apg.servlet;
 
-import java.io.IOException;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import globaz.apg.db.droits.*;
+import globaz.apg.db.droits.APDroitAPG;
+import globaz.apg.db.droits.APDroitLAPG;
+import globaz.apg.db.droits.APDroitMaternite;
+import globaz.apg.db.droits.APDroitPaternite;
+import globaz.apg.db.droits.APDroitProcheAidant;
+import globaz.apg.db.droits.APEmployeur;
+import globaz.apg.db.droits.APSituationProfessionnelle;
+import globaz.apg.db.droits.APSituationProfessionnelleManager;
 import globaz.apg.groupdoc.ccju.GroupdocPropagateUtil;
 import globaz.apg.properties.APProperties;
 import globaz.apg.util.TypePrestation;
 import globaz.apg.vb.droits.APDroitAPGDTO;
 import globaz.apg.vb.droits.APDroitDTO;
 import globaz.apg.vb.droits.APSituationProfessionnelleViewBean;
+import globaz.apg.vb.droits.APTypePresationDemandeResolver;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
@@ -36,6 +38,12 @@ import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.servlet.PRDefaultAction;
 import globaz.prestation.tools.PRSessionDataContainerHelper;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 /**
  * <H1>Description</H1>
@@ -560,7 +568,8 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
                 .getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)));
 
         // le dto
-        APDroitDTO dto = (APDroitDTO) PRSessionDataContainerHelper.getData(session,
+        APDroitDTO dto = (APDroitDTO) PRSessionDataContainerHelper.getData(
+                session,
                 PRSessionDataContainerHelper.KEY_DROIT_DTO);
 
         if (!spViewBean.getIdDroitLAPGBackup().equals(dto.getIdDroit())) {
@@ -569,9 +578,11 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
 
                 if (spViewBean.getTypePrestation().equals(TypePrestation.TYPE_APG)) {
                     droit = new APDroitAPG();
-                } else if(spViewBean.getTypePrestation().equals(TypePrestation.TYPE_MATERNITE)) {
+                } else if (spViewBean.getTypePrestation().equals(TypePrestation.TYPE_MATERNITE)) {
                     droit = new APDroitMaternite();
-                }else{
+                } else if (APTypePresationDemandeResolver.resolveEnumTypePrestation(session).isProcheAidant()) {
+                    droit = new APDroitProcheAidant();
+                } else {
                     droit = new APDroitPaternite();
                 }
 
@@ -591,6 +602,8 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
                 spViewBean.setMsgType(FWViewBeanInterface.ERROR);
             }
         }
+
+        spViewBean.setTypeDemande(APTypePresationDemandeResolver.resolveEnumTypePrestation(session));
 
         spViewBean.setDroitDTO(dto);
     }

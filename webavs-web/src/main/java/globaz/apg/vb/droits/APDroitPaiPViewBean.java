@@ -1,5 +1,6 @@
 package globaz.apg.vb.droits;
 
+import ch.globaz.common.util.Dates;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.droits.APDroitProcheAidant;
 import globaz.apg.enums.APModeEditionDroit;
@@ -154,6 +155,16 @@ public class APDroitPaiPViewBean extends APAbstractDroitProxyViewBean {
             return 0;
         }
         return this.getDroit().calculerNbjourTotalIndemnise();
+    }
+
+    public String getDelaiCadre() {
+        return this.getDroit().calculerDelai()
+                   .map(Dates::formatSwiss)
+                   .orElse("");
+    }
+
+    public int calculerNbJourDisponible() {
+        return this.getDroit().calculerNbJourDisponible();
     }
 
     public String getMessagesWarn() {

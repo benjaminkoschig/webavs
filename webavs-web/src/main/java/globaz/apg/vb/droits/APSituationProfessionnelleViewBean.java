@@ -9,6 +9,7 @@ import globaz.apg.api.assurance.IAPAssurance;
 import globaz.apg.api.process.IAPGenererCompensationProcess;
 import globaz.apg.application.APApplication;
 import globaz.apg.db.droits.APDroitLAPG;
+import globaz.apg.db.droits.APDroitProcheAidant;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.properties.APProperties;
 import globaz.apg.properties.APPropertyTypeDePrestationAcmValues;
@@ -42,6 +43,7 @@ import globaz.pavo.db.compte.CICompteIndividuel;
 import globaz.pavo.db.compte.CICompteIndividuelManager;
 import globaz.prestation.api.IPRDemande;
 import globaz.prestation.api.IPRSituationProfessionnelle;
+import globaz.prestation.api.PRTypeDemande;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.db.employeurs.PRDepartement;
 import globaz.prestation.db.employeurs.PRDepartementManager;
@@ -58,6 +60,8 @@ import globaz.pyxis.adresse.datasource.TIAdressePaiementDataSource;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBanqueFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementCppFormater;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -175,6 +179,9 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     private boolean isIbanValide;
     private String lineAdressePaiementEmployeur;
     private Boolean isRetourRechercheAffilie = false;
+    @Getter
+    @Setter
+    private PRTypeDemande typeDemande;
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -1744,4 +1751,17 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         this.isRetourRechercheAffilie = isRetourRechercheAffilie;
     }
 
+    public int calculerNbjourTotalIndemnise() {
+        APDroitProcheAidant apDroitProcheAidant = new APDroitProcheAidant();
+        apDroitProcheAidant.setSession(this.getSession());
+        apDroitProcheAidant.setIdDroit(this.idDroit);
+        return apDroitProcheAidant.calculerNbjourTotalIndemnise();
+    }
+
+    public int calculerNbjourDuDroit() {
+        APDroitProcheAidant apDroitProcheAidant = new APDroitProcheAidant();
+        apDroitProcheAidant.setSession(this.getSession());
+        apDroitProcheAidant.setIdDroit(this.idDroit);
+        return apDroitProcheAidant.calculerNbjourTotalDuDroit();
+    }
 }

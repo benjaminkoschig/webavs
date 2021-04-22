@@ -1447,7 +1447,7 @@ public class APBasesCalculBuilder {
             ajouterTauxImposition(currentTaux, dateDebut, dateFin, currentCanton);
         }
 
-        int jourMax = Integer.parseInt(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", APParameter.PROCHE_AIDANT_JOUR_MAX.getParameterName(), "", "", 0));
+        Integer jourMax = APParameter.PROCHE_AIDANT_JOUR_MAX.findValue(this.droit.getDateDebutDroit(), this.session);
 
         if(nbJourSoldes > jourMax) {
             nbJourSoldes = jourMax;
@@ -1784,7 +1784,7 @@ public class APBasesCalculBuilder {
             getDateMinDebutParam(APParameter.PATERNITE.getParameterName(), "");
             nbJoursSoldes = ajouterSituationFamilialePat();
         } else if(droit instanceof APDroitProcheAidant) {
-            getDateMinDebutParam(APParameter.PROCHE_AIDANT.getParameterName(), "");
+            getDateMinDebutParam(APParameter.PROCHE_AIDANT_DATE_DE_DEBUT.getParameterName(), "");
             nbJoursSoldes = ajouterSituationFamilialePai();
         } else {
             /*

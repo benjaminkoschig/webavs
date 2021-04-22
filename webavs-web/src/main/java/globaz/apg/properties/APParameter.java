@@ -1,10 +1,16 @@
 package globaz.apg.properties;
 
+import ch.globaz.common.business.services.ParametreService;
+import ch.globaz.common.businessimpl.CommonServiceLocator;
+import ch.globaz.common.exceptions.CommonTechnicalException;
+import ch.globaz.common.util.Dates;
+import globaz.globall.db.BSession;
+import globaz.jade.client.util.JadeStringUtil;
+
 /**
  * Type énuméré utilisé pour définir les paramètres FWPARP liés au module APG et MATERNITE
  *
  * @author lga
- *
  */
 public enum APParameter {
 
@@ -38,13 +44,21 @@ public enum APParameter {
     PATERNITE("PATERNDATE"),
     PATERNITE_JOUR_MAX("PATJOURMAX"),
     PATERNITE_MOIS_MAX("PATMOISMAX"),
-    PROCHE_AIDANT("PROAIDDATE"),
-    PROCHE_AIDANT_JOUR_MAX("PAIJOURMAX"),
-    PROCHE_AIDANT_MOIS_MAX("PAIMOISMAX");
-    private String parameterName;
+    PROCHE_AIDANT_DATE_DE_DEBUT("PROAIDDATE"),
+    PROCHE_AIDANT_JOUR_MAX("PAIJOURMAX", Integer.class),
+    PROCHE_AIDANT_MOIS_MAX("PAIMOISMAX", Integer.class);
 
-    private APParameter(String parameterName) {
+    private final String parameterName;
+    private final ParametreService parametreService = CommonServiceLocator.getParametreService();
+    private final Class<?> type;
+
+    APParameter(String parameterName) {
+        this(parameterName, null);
+    }
+
+    APParameter(final String parameterName, final Class<?> type) {
         this.parameterName = parameterName;
+        this.type = type;
     }
 
     /**
@@ -56,4 +70,18 @@ public enum APParameter {
         return parameterName;
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> T findValue(String date, BSession session) {
+        if (Integer.class.equals(this.type)) {
+            return (T) parametreService.getInteger(() -> this.parameterName, date, session);
+        }
+        throw new CommonTechnicalException("The type is not yet implemented");
+    }
+
+    public <T> T findValueOrWithDateNow(String date, BSession session) {
+        if (JadeStringUtil.isBlankOrZero(date)) {
+            date = Dates.nowFormatSwiss();
+        }
+        return this.findValue(date, session);
+    }
 }

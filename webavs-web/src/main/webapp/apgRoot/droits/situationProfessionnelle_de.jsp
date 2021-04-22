@@ -633,7 +633,13 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 							<TD><INPUT type="text" name="heuresSemaine" value="<%=viewBean.getHeuresSemaine()%>" class="numeroCourt" style="text-align:right" onchange="validateFloatNumber(this);" onkeypress="montantHoraireChange(); return filterCharForFloat(window.event);"><ct:FWLabel key="JSP_PAR_SEMAINE"/></TD>
 							<TD><LABEL for="salaireHoraire"><ct:FWLabel key="JSP_SALAIRE_HORAIRE"/></LABEL></TD>
 							<TD><INPUT type="text" name="salaireHoraire" value="<%=viewBean.getSalaireHoraire()%>" class="montant" onchange="validateFloatNumber(this);checkMontantHoraire();" onkeypress="montantHoraireChange(); return filterCharForFloat(window.event);"></TD>
-							<TD colspan="2"></TD>
+                            <TD><LABEL for="nbJoursIndemnise"><ct:FWLabel key="JSP_NOMBRE_JOURS_COMPTABILIS"/></LABEL></TD>
+                            <%if(viewBean.getTypeDemande().isProcheAidant()){%>
+                            <TD>
+                                <INPUT type="text" id="nbJoursIndemnise" style="width:30px" name="nbJoursIndemnise" value="<%=viewBean.calculerNbjourDuDroit()%>" /> /
+                                <INPUT type="text" id="nbJoursPaye" readonly disabled style="width:30px" name="nbJoursPaye" value="<%=viewBean.calculerNbjourDuDroit()%>" />
+                            </TD>
+                            <%}%>
 						</TR>
 						<TR>
 							<TD class="withoutAdressePaiement" colspan="2">&nbsp;</TD>
