@@ -1,5 +1,11 @@
-
 periodes = [];
+
+try {
+    JOUR_SUPPLEMENTAIRE;
+} catch (e) {
+    JOUR_SUPPLEMENTAIRE = false;
+}
+
 Periode = function (dateDeDebut, dateDeFin, nbJour, tauxImposition, cantonImposition, cantonImpositionLibelle) {
     this.dateDeDebut = dateDeDebut;
     this.dateDeFin = dateDeFin;
@@ -28,16 +34,29 @@ Periode = function (dateDeDebut, dateDeFin, nbJour, tauxImposition, cantonImposi
         return this.cantonImpositionLibelle;
     };
     this.toString = function () {
-        if(this.jourSupplementaire){
-            return this.dateDeDebut + "-" + this.dateDeFin + "-" + this.nbJour+ "-" + this.tauxImposition + "-" + this.cantonImposition + "-" + this.jourSupplementaire;
+        if (this.jourSupplementaire) {
+            return this.dateDeDebut + "-" + this.dateDeFin + "-" + this.nbJour + "-" + this.tauxImposition + "-" + this.cantonImposition + "-" + this.jourSupplementaire;
         }
-        return this.getDateDeDebut() + "-" + this.getDateDeFin() + "-" + this.getNbJour()+ "-" + this.getTauxImposition() + "-" + this.getCantonImposition();
+        return this.getDateDeDebut() + "-" + this.getDateDeFin() + "-" + this.getNbJour() + "-" + this.getTauxImposition() + "-" + this.getCantonImposition();
     }
     this.toJson = function () {
-        if(this.jourSupplementaire){
-            return {jourSupplementaire:this.jourSupplementaire, dateDeDebut: this.dateDeDebut, dateDeFin: this.dateDeFin, nbJour: this.nbJour, tauxImposition: this.tauxImposition, cantonImposition: this.cantonImposition};
+        if (this.jourSupplementaire) {
+            return {
+                jourSupplementaire: this.jourSupplementaire,
+                dateDeDebut: this.dateDeDebut,
+                dateDeFin: this.dateDeFin,
+                nbJour: this.nbJour,
+                tauxImposition: this.tauxImposition,
+                cantonImposition: this.cantonImposition
+            };
         }
-        return {dateDeDebut: this.dateDeDebut, dateDeFin: this.dateDeFin, nbJour: this.nbJour, tauxImposition: this.tauxImposition, cantonImposition: this.cantonImposition};
+        return {
+            dateDeDebut: this.dateDeDebut,
+            dateDeFin: this.dateDeFin,
+            nbJour: this.nbJour,
+            tauxImposition: this.tauxImposition,
+            cantonImposition: this.cantonImposition
+        };
     };
 }
 
@@ -48,34 +67,35 @@ function addPeriode() {
     var tauxImposition = "";
     var cantonImposition = "";
     var cantonImpositionLibelle = "";
-    var isError = checkDateDebutAPG(dateDebut)  ;
+    var isError = checkDateDebutAPG(dateDebut);
     var $jourSupplementaire = $('#jourSupplementaire');
 
     if (document.getElementById("isSoumisCotisation").checked) {
         tauxImposition = $('#tauxImpotSource').val();
         cantonImposition = $('#csCantonDomicileAffiche').val();
-        cantonImpositionLibelle =$('#csCantonDomicileAffiche').children("option:selected").text();
+        cantonImpositionLibelle = $('#csCantonDomicileAffiche').children("option:selected").text();
         document.getElementById("isSoumisCotisation").checked = false;
     }
-    var dateBegin = new Date(dateDebut.split('.')[2],dateDebut.split('.')[1]-1,dateDebut.split('.')[0]);
-    var dateEnd = new Date(dateFin.split('.')[2],dateFin.split('.')[1]-1,dateFin.split('.')[0]);
+    var dateBegin = new Date(dateDebut.split('.')[2], dateDebut.split('.')[1] - 1, dateDebut.split('.')[0]);
+    var dateEnd = new Date(dateFin.split('.')[2], dateFin.split('.')[1] - 1, dateFin.split('.')[0]);
 
-    nbJour = Math.round(Math.abs((dateBegin-dateEnd) /  (24 * 60 * 60 * 1000)))+1;
+    nbJour = Math.round(Math.abs((dateBegin - dateEnd) / (24 * 60 * 60 * 1000))) + 1;
 
-    if(JOUR_SUPPLEMENTAIRE && $jourSupplementaire.val()) {
-        nbJour=nbJour+($jourSupplementaire.val()*1)
+    if (JOUR_SUPPLEMENTAIRE && $jourSupplementaire.val()) {
+        nbJour = nbJour + ($jourSupplementaire.val() * 1)
     }
 
+
     if (isAjoutdePeriodeAuthorise(dateDebut, dateFin, nbJour, true) && !isError) {
-        addPeriodeToTable(dateDebut, dateFin, nbJour, tauxImposition, cantonImposition, cantonImpositionLibelle,$jourSupplementaire.val());
+        addPeriodeToTable(dateDebut, dateFin, nbJour, tauxImposition, cantonImposition, cantonImpositionLibelle, $jourSupplementaire.val());
         $('#dateDebutPeriode').val("");
         $('#dateFinPeriode').val("");
         $('#nbJour').val("");
         $jourSupplementaire.val("");
         $('#tauxImpotSource').val(0.00);
         $('#csCantonDomicileAffiche').val("");
-        $('#isSoumisCotisation').prop( "disabled", true);
-        $('#tauxImpotSource').prop( "disabled", true);
+        $('#isSoumisCotisation').prop("disabled", true);
+        $('#tauxImpotSource').prop("disabled", true);
     }
 }
 
@@ -93,14 +113,14 @@ function editPeriode(index) {
     $('#nbJour').val(periode.getNbJour());
     $('#tauxImpotSource').val(periode.getTauxImposition());
     $('#csCantonDomicileAffiche').val(periode.getCantonImposition());
-    if(periode.jourSupplementaire) {
+    if (periode.jourSupplementaire) {
         $('#jourSupplementaire').val(periode.jourSupplementaire);
     }
     if (periode.getCantonImposition() != '' && periode.getCantonImposition() != '0') {
         document.getElementById("isSoumisCotisation").checked = true;
     }
-    $('#isSoumisCotisation').prop( "disabled", false);
-    $('#tauxImpotSource').prop( "disabled", false);
+    $('#isSoumisCotisation').prop("disabled", false);
+    $('#tauxImpotSource').prop("disabled", false);
     showCantonImpotSource();
 }
 
@@ -108,7 +128,7 @@ function editPeriode(index) {
 function addPeriodeToTable(dateDebut, dateFin, nbJour, tauxImposition, cantonImposition, cantonImpositionLibelle, jourSupplementaire) {
     if (isAjoutdePeriodeAuthorise(dateDebut, dateFin, nbJour, false)) {
         var periode = new Periode(dateDebut, dateFin, nbJour, tauxImposition, cantonImposition, cantonImpositionLibelle);
-        if(jourSupplementaire) {
+        if (jourSupplementaire) {
             periode.jourSupplementaire = jourSupplementaire;
         }
         periodes.push(periode);
@@ -121,15 +141,15 @@ function repaintTablePeriodes() {
     $('#periodes tbody > tr').remove();
     for (var ctr = 0; ctr < periodes.length; ctr++) {
         var periode = periodes[ctr];
-        var width="30%";
-        if(JOUR_SUPPLEMENTAIRE){
-            width="25%";
-        }
-        var ddd = '<td width="'+width+'" align="center">' + periode.getDateDeDebut() + '</td>';
-        var ddf = '<td width="'+width+'" align="center">' + periode.getDateDeFin() + '</td>';
-        var jsp='';
+        var width = "30%";
         if (JOUR_SUPPLEMENTAIRE) {
-            jsp =  '<td width="10%" align="center">'+ periode.jourSupplementaire + '</td>';
+            width = "25%";
+        }
+        var ddd = '<td width="' + width + '" align="center">' + periode.getDateDeDebut() + '</td>';
+        var ddf = '<td width="' + width + '" align="center">' + periode.getDateDeFin() + '</td>';
+        var jsp = '';
+        if (JOUR_SUPPLEMENTAIRE) {
+            jsp = '<td width="10%" align="center">' + periode.jourSupplementaire + '</td>';
         }
         var njg = '<td width="10%" align="center" class="nbJourPourUnePeriode">' + periode.getNbJour() + '</td>';
         if (periode.getCantonImposition() == 0) {
