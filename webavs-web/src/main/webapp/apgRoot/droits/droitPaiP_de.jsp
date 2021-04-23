@@ -487,15 +487,7 @@
         var nbJour = dateDebut.daysBetween(dateFin);
 
         if(sum+nbJour > dateDebut.daysInMonth()) {
-            globazNotation.utils.consoleError("<ct:FWLabel key="JSP_NBJOUR_SUP_MOIS"/>", {
-                "Ok": function () {
-                    $(this).dialog("close");
-                    addPeriode()
-                },
-                "Annuler": function () {
-                    $(this).dialog("close");
-                }
-            });
+            globazNotation.utils.consoleError("<ct:FWLabel key="JSP_NBJOUR_SUP_MOIS"/>", "<ct:FWLabel key="JSP_NBJOUR_SUP_MOIS_TITRE"/>");
         } else {
             addPeriode()
         }
@@ -913,18 +905,31 @@
                value="<%=viewBean.getDateDebutDroit()%>"/>
     </td>
     <td>
+        <label for="dateMax">
+            <ct:FWLabel key="JSP_DELAI_CADRE"/>
+        </label>
+    </td>
+    <td>
+        <input type="text"
+               size="11"
+               disabled="disabled"
+               readonly="readonly"
+               id="dateMax"
+               name="dateMax"
+               value="<%=viewBean.getDelaiCadre()%>"/>
+    </td>
+    <td>
         <label for="dateFinDroit">
             <ct:FWLabel key="JSP_DATE_FIN_DROIT"/>
         </label>
     </td>
-    <td colspan="2">
+    <td>
         <input type="text"
                id="dateFinDroit"
                name="dateFinDroit"
                data-g-calendar=" "
                value="<%=viewBean.getDateFinDroit()%>"/>
     </td>
-    <td></td>
 </tr>
 <tr>
     <td>
@@ -974,23 +979,12 @@
                value="<%=viewBean.calculerNbjourTotalIndemnise()%>"/>
     </td>
     <td>
-        <label for="dateMax">
-            <ct:FWLabel key="JSP_DELAI_CADRE"/>
-        </label>
-    </td>
-    <td>
-        <input type="text"
-               size="11"
-               disabled="disabled"
-               readonly="readonly"
-               id="dateMax"
-               name="dateMax"
-               value="<%=viewBean.getDelaiCadre()%>"/>
-    </td>
-    <td>
         <label for="nbJourDisponible">
             <ct:FWLabel key="JSP_NB_JOUR_DISPONIBLE"/>
         </label>
+
+    </td>
+    <td>
         <input type="text"
                size="11"
                disabled="disabled"
@@ -999,6 +993,7 @@
                name="nbJourDisponible"
                value="<%=viewBean.calculerNbJourDisponible()%>"/>
     </td>
+    <td colspan="" ></td>
 </tr>
 
 

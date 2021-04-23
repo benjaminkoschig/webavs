@@ -11,6 +11,7 @@ import globaz.apg.application.APApplication;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APDroitProcheAidant;
 import globaz.apg.db.droits.APSituationProfessionnelle;
+import globaz.apg.menu.MenuPrestation;
 import globaz.apg.properties.APProperties;
 import globaz.apg.properties.APPropertyTypeDePrestationAcmValues;
 import globaz.apg.services.APRechercherAssuranceFromDroitCotisationService;
@@ -20,6 +21,7 @@ import globaz.apg.util.TypePrestation;
 import globaz.apg.utils.APGUtils;
 import globaz.commons.nss.NSUtil;
 import globaz.framework.bean.FWViewBeanInterface;
+import globaz.framework.util.FWMessageFormat;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
@@ -63,6 +65,7 @@ import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -73,6 +76,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
 
@@ -1702,6 +1706,13 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         retourDesTiers = b;
     }
 
+    public void setNbJourIndemnise(final String nbJourIndemnise) {
+        this.nbJourIndemnise = Optional.of(nbJourIndemnise)
+                                       .filter(s -> !s.trim().isEmpty())
+                                       .map(Integer::parseInt)
+                                       .orElse(null);
+    }
+
     /**
      * @see globaz.apg.db.droits.APSituationProfessionnelle#setRevenuIndependant(java.lang.String)
      */
@@ -1751,17 +1762,43 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         this.isRetourRechercheAffilie = isRetourRechercheAffilie;
     }
 
-    public int calculerNbjourTotalIndemnise() {
-        APDroitProcheAidant apDroitProcheAidant = new APDroitProcheAidant();
-        apDroitProcheAidant.setSession(this.getSession());
-        apDroitProcheAidant.setIdDroit(this.idDroit);
-        return apDroitProcheAidant.calculerNbjourTotalIndemnise();
+    public MenuPrestation getMenuPrestation() {
+        return MenuPrestation.of(this.getTypeDemande());
+    }
+
+    public Integer resolveNbJourIndemnise() {
+        if (this.nbJourIndemnise != null && this.nbJourIndemnise > 0) {
+            return this.nbJourIndemnise;
+        }
+        return this.calculerNbjourDuDroit() - this.calculerNbjourIndemiserPourCeDroit();
+    }
+
+    public boolean displayJourIndemnise() {
+        return this.typeDemande.isProcheAidant();
     }
 
     public int calculerNbjourDuDroit() {
-        APDroitProcheAidant apDroitProcheAidant = new APDroitProcheAidant();
-        apDroitProcheAidant.setSession(this.getSession());
-        apDroitProcheAidant.setIdDroit(this.idDroit);
-        return apDroitProcheAidant.calculerNbjourTotalDuDroit();
+        if (this.typeDemande.isProcheAidant()) {
+            APDroitProcheAidant apDroitProcheAidant = new APDroitProcheAidant();
+            apDroitProcheAidant.setSession(this.getSession());
+            apDroitProcheAidant.setIdDroit(this.idDroit);
+            return apDroitProcheAidant.calculerNbjourTotalDuDroit();
+        }
+        return 0;
+    }
+
+
+    public int calculerNbjourIndemiserPourCeDroit() {
+        if (this.typeDemande.isProcheAidant()) {
+            APDroitProcheAidant apDroitProcheAidant = new APDroitProcheAidant();
+            apDroitProcheAidant.setSession(this.getSession());
+            apDroitProcheAidant.setIdDroit(this.idDroit);
+            return apDroitProcheAidant.calculerNbJourIndemnise();
+        }
+        return 0;
+    }
+
+    public String translate(String label, Object... arguments) {
+        return MessageFormat.format(FWMessageFormat.prepareQuotes(getSession().getLabel(label), false), arguments);
     }
 }

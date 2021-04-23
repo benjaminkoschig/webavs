@@ -23,6 +23,9 @@ bButtonValidate = viewBean.isModifiable() && bButtonValidate && controller.getSe
 bButtonUpdate = viewBean.isModifiable() && bButtonUpdate && controller.getSession().hasRight(IAPActions.ACTION_SITUATION_PROFESSIONNELLE, FWSecureConstants.UPDATE);
 bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSession().hasRight(IAPActions.ACTION_SITUATION_PROFESSIONNELLE, FWSecureConstants.UPDATE);
 
+int nbJourDejaIndemnise = viewBean.calculerNbjourIndemiserPourCeDroit() - viewBean.getNbJourIndemnise();
+
+int nbJourDroit= viewBean.calculerNbjourDuDroit();
 
 %>
 <%-- /tpl:put --%>
@@ -33,7 +36,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 <%-- tpl:put name="zoneScripts" --%>
 		<script language="JavaScript">
 
-  
+
   function add() {
     document.forms[0].elements('userAction').value="<%=globaz.apg.servlet.IAPActions.ACTION_SITUATION_PROFESSIONNELLE%>.ajouter"
   }
@@ -41,20 +44,20 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
     pourcentClick(document.forms[0].elements('isPourcentAutreRemun'), document.forms[0].elements('periodiciteAutreRemun'));
    	pourcentClick(document.forms[0].elements('isPourcentMontantVerse'), document.forms[0].elements('periodiciteMontantVerse'));
    	parent.isModification = true;
-   	
+
   	if (document.all('isIndependant').checked) {
 	  	document.forms[0].elements('isVersementEmployeur')[0].disabled = true;
 	  	document.forms[0].elements('isVersementEmployeur')[1].disabled = true;
 	}
   	disableIsAllocExpl();
   }
-  
+
   function disableIsAllocExpl(){
 	if(isEmployeurActif() && isJourIsole()){
 		document.forms[0].elements('isAllocationExploitation').checked = false;
 	}
   }
-  
+
   function isJourIsole(){
 	var isJourIsole = <%=viewBean.isJourIsole()%>;
 	return isJourIsole;
@@ -64,11 +67,12 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
     state = true;
     parent.isNouveau = false;
     parent.isModification = false;
-    
+
+    state = checkNombreJourIndemnise();
     checkDepartement();
     checkIbanEmployeur();
     checkACM();
-    
+
     if (document.forms[0].elements('_method').value == "add")
         document.forms[0].elements('userAction').value="<%=globaz.apg.servlet.IAPActions.ACTION_SITUATION_PROFESSIONNELLE%>.ajouter";
     else
@@ -89,7 +93,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
         document.forms[0].submit();
     }
   }
-  	
+
   function init(){
   	parent.isNouveau = false;
 	<%if ("new".equalsIgnoreCase(request.getParameter("_valid"))) {%>
@@ -99,19 +103,19 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 		}
     	parent.isNouveau = true;
 	<%}%>
-	
+
 	document.forms[0].target="fr_main";
-	
+
 	var isRetourPyxis=false;
-	
+
 	// retour depuis Pyxis
-	if(parent.isNouveau && 
+	if(parent.isNouveau &&
 	   <%=!globaz.jade.client.util.JadeStringUtil.isEmpty(viewBean.getIdAffilieEmployeur())%>){
 		isRetourPyxis=true;
 		checkPeriodeApgPeriodeAff();
 	}
-	
-	// Les prestations ACM_NE sont calculée uniquement pour les cas APG et non maternité	
+
+	// Les prestations ACM_NE sont calculée uniquement pour les cas APG et non maternité
 	var isAPG = <%=viewBean.isAPG()%>;
 	var isMaternite = <%=viewBean.isMaternite()%>;
   	var isPaternite = <%=viewBean.isPaternite()%>;
@@ -119,7 +123,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 	var isPrestationAcmAlphaEnable = <%=viewBean.isPrestationAcmAlfaEnable().booleanValue()%>;
 	var isPrestationAcm2AlphaEnable = <%=viewBean.isPrestationAcm2AlfaEnable().booleanValue()%>;
 	var isPorteEnCompte = <%=viewBean.getIsPorteEnCompte().booleanValue()%>;
-	
+
 	// Création d'une instance contenant tous les paramètres du droit en cours
 	var viewControllerData = new ViewControllerData();
 	viewControllerData.className = '<%=viewBean.getNameClassForAPRechercherTypeAcmService()%>';
@@ -129,11 +133,11 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 	viewControllerData.isAcm2AlphaEnable = isMaternite && viewControllerData.isAcmAlphaEnable && isPrestationAcm2AlphaEnable;
 	viewControllerData.isAcmNeEnable = isAPG && isPrestationAcmNeEnable;
 	viewControllerData.isPorteEnCompte = isPorteEnCompte;
-	
+
 	if (document.forms[0].elements('_method').value == "add"){
 		$('input[type="checkbox"][name="hasAcmAlphaPrestations"]').attr('checked', viewControllerData.isAcmAlphaEnable);
 		$('input[type="checkbox"][name="hasAcm2AlphaPrestations"]').attr('checked', viewControllerData.isAcm2AlphaEnable);
-	} else {		
+	} else {
 		$('input[type="checkbox"][name="hasAcmAlphaPrestations"]').attr('checked', <%=viewBean.getHasAcmAlphaPrestations().booleanValue()%>);
 		$('input[type="checkbox"][name="hasAcm2AlphaPrestations"]').attr('checked', <%=viewBean.getHasAcm2AlphaPrestations().booleanValue()%>);
 	}
@@ -141,10 +145,10 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 	// Création d'une instance du controlleur de vue de cette page
 	var viewController = new ViewController(viewControllerData);
 	viewController.init(isRetourPyxis);
-	
+
 	manageAdressePaiement();
   }
-  
+
   function postInit(){
   	if (document.all('isIndependant').checked) {
   		document.forms[0].elements('isVersementEmployeur')[0].checked = true;
@@ -165,12 +169,12 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
    	showisAMATFExcluded();
   	manageAdressePaiement();
   }
-  	
+
   function montantIndependantChange() {
   	// revenu indépendant
   	document.all('specialEmployeur').style.display = 'none';
   	document.forms[0].elements('isIndependant').checked = true;
-  	
+
   	// on vide tous les champs des autres salaires
   	document.forms[0].elements('heuresSemaine').value = '';
   	document.forms[0].elements('salaireHoraire').value = '';
@@ -178,7 +182,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
   	document.forms[0].elements('autreSalaire').value = '';
   	document.forms[0].elements('montantVerse').value = '';
   }
-  
+
   function manageAdressePaiement(){
 	  if(document.forms[0].elements('isVersementEmployeur')[0].checked && <%=!JadeStringUtil.isBlankOrZero(viewBean.getIdAffilieEmployeur()) %>){
 		  $(".withoutAdressePaiement").hide();
@@ -188,29 +192,29 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 		  $(".withAdressePaiement").hide();
 	  }
   }
-  
+
   function boutonIndependantChange() {
 	  	if (document.all('isIndependant').checked) {
-	  		
+
 	  		document.all('specialEmployeur').style.display = 'none';
-	  		
+
 		  	document.forms[0].elements('isIndependant').checked = true;
-			
+
 			document.forms[0].elements('isVersementEmployeur')[0].checked = true;
 			document.forms[0].elements('isVersementEmployeur')[1].checked = false;
 		  	document.forms[0].elements('isVersementEmployeur')[0].disabled = true;
 		  	document.forms[0].elements('isVersementEmployeur')[1].disabled = true;
-	  	
+
 	  		// on vide tous les champs des autres salaires
 		  	document.forms[0].elements('heuresSemaine').value = '';
 		  	document.forms[0].elements('salaireHoraire').value = '';
 		  	document.forms[0].elements('salaireMensuel').value = '';
 		  	document.forms[0].elements('autreSalaire').value = '';
 		  	document.forms[0].elements('montantVerse').value = '';
-		  	
+
 		  	document.all('blockWithoutAnneeTaxation').style.display = 'none';
 		  	document.all('blockAnneeTaxation').style.display = 'block';
-		  	
+
 		  	document.forms[0].elements('anneeTaxation').value = '<%=viewBean.getAnneeFromDateDebutDroit()%>';
 
 		  	//si independant cocher auto. alloc. expl. sauf si non-actif
@@ -223,11 +227,11 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 		  	  	disableIsAllocExpl();
 		  	}
 		} else {
-			
+
 	  		document.all('specialEmployeur').style.display = 'block';
-	  		
+
 	  		document.forms[0].elements('isIndependant').checked = false;
-	  		
+
 			document.forms[0].elements('isVersementEmployeur')[0].checked = false;
 			document.forms[0].elements('isVersementEmployeur')[1].checked = true;
 	  	  	document.forms[0].elements('isVersementEmployeur')[0].disabled = false;
@@ -235,29 +239,29 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 
 		  	document.all('blockWithoutAnneeTaxation').style.display = 'block';
 		  	document.all('blockAnneeTaxation').style.display = 'none';
-		  	
+
 		  	document.forms[0].elements('anneeTaxation').value = '';
-		  	
+
 		  	document.forms[0].elements('isAllocationExploitation').checked = false;
 		}
-	  	
+
 	  	manageAdressePaiement();
   }
-  
+
   function montantHoraireChange() {
   	// revenu salarié
   	document.all('specialEmployeur').style.display = 'block';
   	document.forms[0].elements('isIndependant').checked = false;
   	document.forms[0].elements('revenuIndependant').value = '';
-  	
+
   	// on vide tous les champs des autres salaires
   	document.forms[0].elements('salaireMensuel').value = '';
   	document.forms[0].elements('autreSalaire').value = '';
-  	
+
   	// on set les menus deroulant de pourcentage
   	setMenusDeroulantsPourcentages(<%=globaz.prestation.api.IPRSituationProfessionnelle.CS_PERIODICITE_HEURE%>);
   }
-  
+
   function checkMontantHoraire(){
     var valeurCourante = toFloat(document.forms[0].elements('salaireHoraire').value);
   	if(parseFloat(valeurCourante)>100){
@@ -266,40 +270,40 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 		parent.warningObj.text = "";
 	}
   }
-  
+
   function montantMensuelChange() {
   	// revenu salarié
   	document.all('specialEmployeur').style.display = 'block';
   	document.forms[0].elements('isIndependant').checked = false;
   	document.forms[0].elements('revenuIndependant').value = '';
-  	
+
   	// on vide tous les champs des autres salaires
   	document.forms[0].elements('heuresSemaine').value = '';
   	document.forms[0].elements('salaireHoraire').value = '';
   	document.forms[0].elements('autreSalaire').value = '';
-  	
+
   	// on set les menus deroulant de pourcentage
   	setMenusDeroulantsPourcentages(<%=globaz.prestation.api.IPRSituationProfessionnelle.CS_PERIODICITE_MOIS%>);
   }
-  
+
   function montantAutreChange() {
   	// revenu salarié
   	document.all('specialEmployeur').style.display = 'block';
   	document.forms[0].elements('isIndependant').checked = false;
   	document.forms[0].elements('revenuIndependant').value = '';
-  	
+
   	// on vide tous les champs des autres salaires
   	document.forms[0].elements('heuresSemaine').value = '';
   	document.forms[0].elements('salaireHoraire').value = '';
   	document.forms[0].elements('salaireMensuel').value = '';
-  	
+
   	// on set les menus deroulant de pourcentage
   	setMenusDeroulantsPourcentages(document.forms[0].elements('periodiciteAutreSalaire').value);
   }
-  
+
   function pourcentClick(checkbox, select) {
   	select.disabled = checkbox.checked;
-  	
+
   	if (checkbox.checked) {
   		if (document.forms[0].elements('salaireHoraire').value != '') {
 		  	select.value = <%=globaz.prestation.api.IPRSituationProfessionnelle.CS_PERIODICITE_HEURE%>;
@@ -310,37 +314,37 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
   		}
   	}
   }
-  
+
   function setMenusDeroulantsPourcentages(codeSysteme) {
   	if (document.forms[0].elements('isPourcentMontantVerse').checked) {
 	  	document.forms[0].elements('periodiciteMontantVerse').value = codeSysteme;
 	}
-	
+
   	if (document.forms[0].elements('isPourcentAutreRemun').checked) {
 	  	document.forms[0].elements('periodiciteAutreRemun').value = codeSysteme;
 	}
   }
-  
+
   function periodiciteAutreSalaireChangee() {
   	setMenusDeroulantsPourcentages(document.forms[0].elements('periodiciteAutreSalaire').value);
   }
-  
+
   function readOnly(flag) {
   	// empeche la propriete disabled des elements etant de la classe css 'forceDisable' d'etre modifiee
     for(i=0; i < document.forms[0].length; i++) {
-        if (!document.forms[0].elements[i].readOnly && 
+        if (!document.forms[0].elements[i].readOnly &&
         	document.forms[0].elements[i].className != 'forceDisable' &&
         	document.forms[0].elements[i].type != 'hidden') {
         	// On ne souhaite pas passer ce champs 'csAssuranceAssociation' en disabled
-        	if(document.forms[0].elements[i].name != 'csAssuranceAssociation'){        		
+        	if(document.forms[0].elements[i].name != 'csAssuranceAssociation'){
             	document.forms[0].elements[i].disabled = flag;
         	}
         }
     }
   }
-  
+
 	function rechercherAffilie(value) {
-	
+
 		if (value!=""){
 			// si le numero d'affilie n'a pas une longueur de 8 -> ###.####
 			// on essaye de rajouter le formatage si la longueur vaut 7 ####### -> ###.####
@@ -350,94 +354,94 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 				 document.forms[0].elements('numAffilieEmployeur').value = valueForm;
 				 value = valueForm;
 			}
-			  						
+
 			document.forms[0].elements('userAction').value="<%=globaz.apg.servlet.IAPActions.ACTION_SITUATION_PROFESSIONNELLE%>.rechercherAffilie";
 			document.forms[0].submit();
-			
+
 			//checkPeriodeApgPeriodeAff();
-		}		
+		}
 	}
-	
+
 	function checkPeriodeApgPeriodeAff(){
 		parent.warningObj.text = "";
 		<%
 		if(JadeDateUtil.isGlobazDate(viewBean.getDateFinAffiliation())){%>
 				parent.warningObj.text = "<%=FWMessageFormat.format(viewBean.getSession().getLabel("JSP_DATE_AFFILIATION_NON_VIDE_NUMAFFILIE"),viewBean.getNumAffilieEmployeur() ,globaz.prestation.tools.PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(viewBean.getDateFinAffiliation()))%>"
 		<%}else {%>
-			
+
 			<%if(!globaz.jade.client.util.JadeStringUtil.isIntegerEmpty(viewBean.getIdAffilieEmployeur())){%>
-			
+
 				// l'affilie ne cotise pas a notre caisse
 				<%if(!viewBean.hasCotisationsInOurCaisseForPeriodeDroit()){%>
-				
+
 					parent.warningObj.text = "<ct:FWLabel key='JSP_AFFILIE_COTISE_PAS_CAISSE'/></br>";
 				<%}%>
-			
+
 				// l'affilie n'a pas de salarie
 				<%if(!viewBean.hasCotisationsAssuranceParitaire()){%>
-				
+
 					parent.warningObj.text += "<ct:FWLabel key='JSP_AFFILIE_SANS_SALARIE'/>";
 				<%}%>
 			<%}%>
-					
+
 		<%}%>
-		
+
 		// on set automatiquement le flag LAMat a true si
 		// - le droit est un droit Mat
 		// - la caisse donne la LAMat
 		// - l'affilie cotise une assurance LAMat
-		<%if("true".equals(globaz.prestation.application.PRAbstractApplication.getApplication(globaz.apg.application.APApplication.DEFAULT_APPLICATION_APG).getProperty("isDroitMaterniteCantonale")) && 
+		<%if("true".equals(globaz.prestation.application.PRAbstractApplication.getApplication(globaz.apg.application.APApplication.DEFAULT_APPLICATION_APG).getProperty("isDroitMaterniteCantonale")) &&
 		     globaz.apg.util.TypePrestation.TYPE_MATERNITE.equals(viewBean.getTypePrestation())) {%>
-		     
+
 		     <%if(viewBean.hasCotisationAssuranceLAMat()){%>
 				document.forms[0].elements('hasLaMatPrestations').checked = true;
 			<%}else{%>
 				document.forms[0].elements('hasLaMatPrestations').checked = false;
 			<%}%>
 		<%}%>
-		
+
 		parent.showWarnings();
 		parent.warningObj.text = "";
 	}
-	
+
 	function isEmployeurActif(){
 		<%
 		boolean dateDebutDroitGreaterOrEqualDateDebut = true;
 		boolean dateDebutDroitLowerOrEqualDateFin = true;
-		
+
 		if(!globaz.jade.client.util.JadeStringUtil.isNull(viewBean.getDateDebutAffiliation())){
-			dateDebutDroitGreaterOrEqualDateDebut = globaz.globall.db.BSessionUtil.compareDateFirstGreaterOrEqual(viewBean.getSession(), 
-			                                                                                                      viewBean.getDateDebutDroit(), 
+			dateDebutDroitGreaterOrEqualDateDebut = globaz.globall.db.BSessionUtil.compareDateFirstGreaterOrEqual(viewBean.getSession(),
+			                                                                                                      viewBean.getDateDebutDroit(),
 			                                                                                                      viewBean.getDateDebutAffiliation());
 		}
-		
+
 		if(!globaz.jade.client.util.JadeStringUtil.isNull(viewBean.getDateFinAffiliation())){
-			dateDebutDroitLowerOrEqualDateFin = globaz.globall.db.BSessionUtil.compareDateFirstLowerOrEqual(viewBean.getSession(), 
-		                                                                           							viewBean.getDateDebutDroit(), 
+			dateDebutDroitLowerOrEqualDateFin = globaz.globall.db.BSessionUtil.compareDateFirstLowerOrEqual(viewBean.getSession(),
+		                                                                           							viewBean.getDateDebutDroit(),
 		                                                                           							viewBean.getDateFinAffiliation());
 		}
 
 		if(!(dateDebutDroitGreaterOrEqualDateDebut &&
-		    (dateDebutDroitLowerOrEqualDateFin || 
+		    (dateDebutDroitLowerOrEqualDateFin ||
 		      globaz.jade.client.util.JadeStringUtil.isEmpty(viewBean.getDateFinAffiliation())))){%>
 			return false;
 		<%} else {%>
 			return true;
 		<%}%>
 	}
-	
+
     function boutonCollaborateurAgricoleChange() {
     	if(document.forms[0].elements('isCollaborateurAgricole').checked){
 	  		document.forms[0].elements('isTravailleurAgricole').checked = false;
 	  	}
 	}
-	
+
     function boutonTravailleurAgricoleChange() {
     	if(document.forms[0].elements('isTravailleurAgricole').checked){
 	  		document.forms[0].elements('isCollaborateurAgricole').checked = false;
 	  	}
 	}
-	
+
 	function checkDepartement(){
 		// l'affilie possede une liste de departement
 		<%if(viewBean.getDepartementsData().size()>1){%>
@@ -454,7 +458,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 		  $('input[type="checkbox"][name="hasAcmAlphaPrestations"]').prop('checked', false);
 	  <%}%>
   }
-	
+
 	function checkIbanEmployeur(){
 		// Si l'employeur ne possède pas d'IBAN (IBAN vaut CH0000000000000000000)
 		<%if(!viewBean.getIsIbanValide()){%>
@@ -465,29 +469,29 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 			}
 		<%}%>
 	}
-	
+
 	function toFloat(input){
-		var output = input.replace("'", ""); 
+		var output = input.replace("'", "");
 		return output;
 	}
-	
+
 	function OnClickACM(){
 		var isACMChecked = $('input[type="checkbox"][name="hasAcmAlphaPrestations"]').is(":checked");
 		// si checkbox ACM a été clické et sa valeur est coché, alors on coche obligatoiremment ACM2
 		// si checkbox ACM a été clické et sa valeur est décoché, alors on décoche obligatoiremment ACM2
 		$('input[type="checkbox"][name="hasAcm2AlphaPrestations"]').prop('checked', isACMChecked);
 	}
-	
+
 	function OnClickACM2(){
 		var isACMChecked = $('input[type="checkbox"][name="hasAcmAlphaPrestations"]').is(':checked');
 		var isACM2Checked = $('input[type="checkbox"][name="hasAcm2AlphaPrestations"]').is(':checked');
-		
+
 		// si checkbox ACM2 a été clické et sa valeur est coché ET ACM est décoché, alors on coche obligatoirement ACM
 		if(!isACMChecked && isACM2Checked){
 			$('input[type="checkbox"][name="hasAcmAlphaPrestations"]').prop('checked', true);
 		}
 	}
-	
+
 	function showisAMATFExcluded(){
 		var isAMATFExluded = $('input[type="checkbox"][name="hasLaMatPrestations"]').is(':checked');
 		var excludeAmat = document.getElementById("idisAMATFExcluded");
@@ -498,8 +502,8 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 			var isAMATFExluded = $('input[type="checkbox"][name="isAMATFExcluded"]').prop("checked", false);
 		}
 	}
-	
-	
+
+
 	function OnClickPorterEnCompte(){
 		var isPorteEnCompte = $('#isPorteEnCompte').is(':checked');
 		if(isPorteEnCompte){
@@ -508,6 +512,20 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 			$("#personnelDeclarePar").hide();
 		}
 	}
+
+  function checkNombreJourIndemnise() {
+      if (<%=viewBean.displayJourIndemnise()%>) {
+          var $nbJourIndemnise = $("#nbJourIndemnise");
+          var nbJourJourSaisieTotal = ($nbJourIndemnise.val() * 1) +  <%=nbJourDejaIndemnise%>;
+          if (nbJourJourSaisieTotal > <%=nbJourDroit%>) {
+              globazNotation.utils.consoleError(
+                      "<%=viewBean.translate("JSP_NB_JOUR_INDEMNISE_EMPLOYEUR_TROP_GRAND",nbJourDroit -nbJourDejaIndemnise)%>",
+                      "<%=viewBean.translate("JSP_NB_JOUR_INDEMNISE_EMPLOYEUR_TROP_GRAND_TITRE")%>")
+              return false;
+          }
+      }
+      return true;
+  }
 </script>
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
@@ -519,7 +537,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 							<TD>
 								<INPUT type="text" name="nomEmployeur" value="<%=viewBean.getNomEmployeur()%>" class="disabled" readonly>
 								<% if (viewBean.isModifiable()) { %>
-									<ct:FWSelectorTag name="selecteurEmployeur"	
+									<ct:FWSelectorTag name="selecteurEmployeur"
 										methods="<%=viewBean.getMethodesSelecteurEmployeur()%>"
 										providerApplication="pyxis"
 										providerPrefix="TI"
@@ -527,7 +545,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 										target="fr_main"
 										redirectUrl="<%=mainServletPath%>"/>
 								<% } %>
-								
+
 								<INPUT type="hidden" name="idTiersEmployeur" value="<%=viewBean.getIdTiersEmployeur()%>">
 								<INPUT type="hidden" name="dateDebutAffiliation" value="<%=viewBean.getDateDebutAffiliation()%>">
 								<INPUT type="hidden" name="dateFinAffiliation" value="<%=viewBean.getDateFinAffiliation()%>">
@@ -535,26 +553,26 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 							</TD>
 							<TD><LABEL for="idAffilie"><ct:FWLabel key="JSP_NO_AFFILIE"/></LABEL></TD>
 							<TD>
-								<% if (viewBean.isRetourDesTiers()){%>		
+								<% if (viewBean.isRetourDesTiers()){%>
 									<ct:FWListSelectTag data="<%=viewBean.getAffiliationsEmployeur()%>" name="idAffilieEmployeur" defaut="<%=viewBean.getIdAffilieEmployeur()%>"/>
 									<script language="javascript">
 									 	  	firstElement = document.getElementById("selecteurEmployeur");
 									 	  	secondElement  = document.getElementById("idAffilieEmployeur");
-									 	  	firstElement.onblur = function() {secondElement.focus();};				 	  	
-								 	</script>	
+									 	  	firstElement.onblur = function() {secondElement.focus();};
+								 	</script>
 								<%} else {%>
 									<INPUT type="text" name="numAffilieEmployeur" value="<%=viewBean.getNumAffilieEmployeur()%>"  onchange="rechercherAffilie(value)" class="montant">
 									<script language="javascript">
 									 	  	firstElement = document.getElementById("selecteurEmployeur");
 									 	  	secondElement  = document.getElementById("numAffilieEmployeur");
 									 	  	//TODO: Provoquait une erreure
-									 	  	//firstElement.onblur = function() {secondElement.focus();};				 	  	
-								 	</script>		
+									 	  	//firstElement.onblur = function() {secondElement.focus();};
+								 	</script>
 									<INPUT type="hidden" name="idAffilieEmployeur" value ="<%=viewBean.getIdAffilieEmployeur()%>">
 								<%}%>
 							</TD>
 							<TD><LABEL for="adressePaiement"><ct:FWLabel key="JSP_ADRESSE_DE_PAIEMENT"/></LABEL></TD>
-							
+
 							<TD>
 								<INPUT type="radio" name="isVersementEmployeur" value="on" <%=viewBean.getIsVersementEmployeur().booleanValue()?"CHECKED":""%> onclick="manageAdressePaiement()" disabled=<%=viewBean.getIsVersementEmployeur().booleanValue()?"disabled":""%>> <ct:FWLabel key="JSP_EMPLOYEUR"/>
 							    <INPUT type="radio" name="isVersementEmployeur" value="" <%=!viewBean.getIsVersementEmployeur().booleanValue()?"CHECKED":""%> onclick="manageAdressePaiement()" disabled=<%=viewBean.getIsVersementEmployeur().booleanValue()?"disabled":""%>> <ct:FWLabel key="JSP_ASSURE"/>
@@ -583,7 +601,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 							</TD>
 							<%}%>
 							<TD>
-								<%if (viewBean.isDroitMaterniteCantonaleFromProperties() && 
+								<%if (viewBean.isDroitMaterniteCantonaleFromProperties() &&
 								      globaz.apg.util.TypePrestation.TYPE_MATERNITE.equals(viewBean.getTypePrestation())) {%>
 									<LABEL for="hasLaMatPrestations"><ct:FWLabel key="JSP_LAMAT" /></LABEL>
 									<INPUT id="idhasLaMatPrestations" type="checkbox" name="hasLaMatPrestations" onclick="showisAMATFExcluded()" value="on" <%=viewBean.getHasLaMatPrestations().booleanValue()?"CHECKED":""%>>
@@ -595,8 +613,8 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 								<%}%>
 								<!-- ************************* D0063 ************************** -->
 								<!-- Sélection des types ACM selon propertie "apg.type.de.prestation" -->
-								
-								<DIV class="prestationAcmAlpha">				
+
+								<DIV class="prestationAcmAlpha">
 										<LABEL for="hasAcmAlphaPrestations"><ct:FWLabel key="JSP_ACM" /></LABEL>
 										<INPUT type="checkbox" onclick="OnClickACM()" name="hasAcmAlphaPrestations">
 								</DIV>
@@ -611,9 +629,9 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 							<TR class="prestationAcmNe">
 								<TD><LABEL for="nomAssociation"><ct:FWLabel key="JSP_ASSOCIATION" /></LABEL></TD>
 								<TD>
-									<input name="nomAssociation" type="text" class="disabled" value="<%=viewBean.getNomAssociation()%>" readonly>	
+									<input name="nomAssociation" type="text" class="disabled" value="<%=viewBean.getNomAssociation()%>" readonly>
 								</TD>
-								
+
 								<TD><LABEL for="montantJournalierAcmNe"><ct:FWLabel key="JSP_TOTAL_ACM" /></LABEL></TD>
 								<TD><INPUT type="text" name="montantJournalierAcmNe" value="<%=viewBean.getMontantJournalierAcmNe()%>"
 										class="montant" onchange="validateFloatNumber(this);" onkeypress="return filterCharForFloat(window.event);" >
@@ -622,22 +640,24 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 							<TR class="prestationAcmNe"><TD colspan="6"><HR></TD></TR>
 							<TR class="prestationNonAcm"><TD><INPUT type="hidden" name="hasAcmAlphaPrestations" value="" ></TD></TR>
 							<TR class="prestationNonAcm2"><TD><INPUT type="hidden" name="hasAcm2AlphaPrestations" value="" ></TD></TR>
-													
+
 							<INPUT type="hidden" id="nomTypePrestationAcmAlpha" value="<%=globaz.apg.enums.APTypeDePrestation.ACM_ALFA.getNomTypePrestation()%>" >
-							<INPUT type="hidden" id="nomTypePrestationAcmNe" value="<%=globaz.apg.enums.APTypeDePrestation.ACM_NE.getNomTypePrestation()%>" >				
+							<INPUT type="hidden" id="nomTypePrestationAcmNe" value="<%=globaz.apg.enums.APTypeDePrestation.ACM_NE.getNomTypePrestation()%>" >
 							<INPUT type="hidden" id="csAssuranceAssociation" name="csAssuranceAssociation"  value="<%=viewBean.getCsAssuranceAssociation()%>">
-													
+
 						<!-- ************************* D0063 ************************** -->
 						<TR>
 							<TD><LABEL for="heuresSemaine"><ct:FWLabel key="JSP_HEURES"/></LABEL></TD>
 							<TD><INPUT type="text" name="heuresSemaine" value="<%=viewBean.getHeuresSemaine()%>" class="numeroCourt" style="text-align:right" onchange="validateFloatNumber(this);" onkeypress="montantHoraireChange(); return filterCharForFloat(window.event);"><ct:FWLabel key="JSP_PAR_SEMAINE"/></TD>
 							<TD><LABEL for="salaireHoraire"><ct:FWLabel key="JSP_SALAIRE_HORAIRE"/></LABEL></TD>
 							<TD><INPUT type="text" name="salaireHoraire" value="<%=viewBean.getSalaireHoraire()%>" class="montant" onchange="validateFloatNumber(this);checkMontantHoraire();" onkeypress="montantHoraireChange(); return filterCharForFloat(window.event);"></TD>
-                            <TD><LABEL for="nbJoursIndemnise"><ct:FWLabel key="JSP_NOMBRE_JOURS_COMPTABILIS"/></LABEL></TD>
-                            <%if(viewBean.getTypeDemande().isProcheAidant()){%>
+                            <%if (viewBean.getTypeDemande().isProcheAidant()) {%>
+                            <TD><LABEL for="nbJourIndemnise"><ct:FWLabel key="JSP_NOMBRE_JOURS_INDEMNISES"/></LABEL></TD>
                             <TD>
-                                <INPUT type="text" id="nbJoursIndemnise" style="width:30px" name="nbJoursIndemnise" value="<%=viewBean.calculerNbjourDuDroit()%>" /> /
-                                <INPUT type="text" id="nbJoursPaye" readonly disabled style="width:30px" name="nbJoursPaye" value="<%=viewBean.calculerNbjourDuDroit()%>" />
+                                <INPUT type="text" data-g-integer="mandatory:true,sizeMax:3" id="nbJourIndemnise" style="width: 40px" name="nbJourIndemnise"
+                                       value="<%=viewBean.resolveNbJourIndemnise()%>"/> /
+                                <INPUT type="text" data-g-integer="sizeMax:3" disabled readonly style="width: 40px" id="nbJoursTotalIndemnise" name="nbJoursTotalIndemnise"
+                                       value="<%=nbJourDroit%>"/>
                             </TD>
                             <%}%>
 						</TR>
@@ -645,7 +665,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 							<TD class="withoutAdressePaiement" colspan="2">&nbsp;</TD>
 							<TD class="withAdressePaiement"><ct:FWLabel key="JSP_ADRESSE_DE_PAIEMENT"/><input type="hidden" name="crNomPrenom" value="crNomPrenom"/><input type="hidden" name="nomEmployeurAvecVirgule" value="<%=viewBean.getNomEmployeurAvecVirgule()%>"/></TD>
 							<% Object[] adresseParams= new Object[]{new String[]{"idTiersEmployeur","idTiers"}, new String[]{"nomEmployeurAvecVirgule","cr1Text"}, new String[]{"crNomPrenom", "cr1"} }; %>
-							
+
 							<TD class="withAdressePaiement">
 								<ct:FWSelectorTag name="selecteurAdresses"
 									methods="<%=viewBean.getMethodesSelectionAdressePaiement()%>"
@@ -758,7 +778,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 							<TD colspan="3">
 						</TR>
 				<%} %>
-				
+
 						<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
 				<%-- tpl:put name="zoneButtons" --%>

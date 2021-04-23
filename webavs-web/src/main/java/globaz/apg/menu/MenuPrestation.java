@@ -2,6 +2,7 @@ package globaz.apg.menu;
 
 import globaz.apg.vb.droits.APTypePresationDemandeResolver;
 import globaz.prestation.api.IPRDemande;
+import globaz.prestation.api.PRTypeDemande;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,10 @@ public class MenuPrestation {
 
     public static MenuPrestation of(final String csTypePrestation) {
         return MENU_MAP.get(csTypePrestation);
+    }
+
+    public static MenuPrestation of(final PRTypeDemande typeDemande) {
+        return MENU_MAP.get(typeDemande.getCsType());
     }
 
     public String getMenuIdOptionsEmpty() {

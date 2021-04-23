@@ -260,12 +260,7 @@ public class APDroitPaiPAction extends APAbstractDroitPAction {
             if (viewBean.getAControler()) {
                 APGSeodorServiceCallUtil.callWSSeodor(viewBean, mainDispatcher);
             }
-            BSession mSession = (BSession) mainDispatcher.getSession();
-//            final boolean isCheckVerifJour = Boolean.valueOf(mSession.getApplication().getProperty(
-//                    APApplication.PROPERTY_PAT_WARN_VERIF_JOUR, "false"));
-//            if (viewBean.getCheckWarn() && isCheckVerifJour) {
-//                viewBean.checkWarningVerifJour(mSession);
-//            }
+
             if (viewBean.hasMessagePropError() || viewBean.hasMessageWarn()) {
                 newAction = FWAction.newInstance(IAPActions.ACTION_SAISIE_CARTE_PAI + ".afficher");
                 session.removeAttribute("viewBean");

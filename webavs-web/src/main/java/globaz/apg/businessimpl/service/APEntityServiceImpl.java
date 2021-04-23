@@ -1350,7 +1350,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         droitAPG.setIdDemande(demande.getIdDemande());
         droitAPG.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE);
         droitAPG.setDateDebutDroit(dateDeDebutDroit);
-        droitAPG.setDateFinDroit(dateDeFinDroit);
+        droitAPG.setDateFinDroit(viewBean.getDateFinDroit());
         droitAPG.setDateReception(viewBean.getDateReception());
         droitAPG.setDateDepot(viewBean.getDateDepot());
         droitAPG.setDroitAcquis(viewBean.getDroitAcquis());
@@ -1978,9 +1978,8 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         }
 
         droit = editionDroitPai(session, transaction, viewBean, demande, APModeEditionDroit.EDITION);
-        /**
-         * Prends le jours de la date de naissance
-         */
+
+        droit.setDateFinDroit(viewBean.getDateFinDroit());
         if (!JadeStringUtil.isBlankOrZero(viewBean.getDateDebutDroit())) {
             droit.setDateDebutDroit(viewBean.getDateDebutDroit());
             droit.update();

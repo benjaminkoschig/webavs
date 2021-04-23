@@ -29,6 +29,7 @@ import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.constantes.IConstantes;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -151,6 +152,16 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
             this.nbJourDateMin = Optional.of(list.get(0));
         }
         return this.nbJourDateMin;
+    }
+
+    public int calculerNbJourIndemnise() {
+        SQLWriter sqlWriter = SQLWriter.writeWithSchema()
+                                       .append("select sum(VFNJIN) from schema.APSIPRP where schema.APSIPRP.VFIDRO = ?", this.getIdDroit());
+
+        return SCM.newInstance(BigDecimal.class)
+                  .session(this.getSession())
+                  .query(sqlWriter.toSql())
+                  .executeAggregate().intValue();
     }
 
     public int calculerNbjourTotalDuDroit() {

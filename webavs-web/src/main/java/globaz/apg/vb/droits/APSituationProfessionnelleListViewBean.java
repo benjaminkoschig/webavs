@@ -6,6 +6,8 @@ package globaz.apg.vb.droits;
 import globaz.apg.db.droits.APSituationProfessionnelleManager;
 import globaz.framework.bean.FWListViewBeanInterface;
 import globaz.globall.db.BEntity;
+import globaz.prestation.api.PRTypeDemande;
+import lombok.Setter;
 
 /**
  * <H1>Description</H1>
@@ -15,6 +17,8 @@ import globaz.globall.db.BEntity;
 public class APSituationProfessionnelleListViewBean extends APSituationProfessionnelleManager implements
         FWListViewBeanInterface {
 
+    @Setter
+    private PRTypeDemande typeDemande;
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
 
@@ -34,5 +38,9 @@ public class APSituationProfessionnelleListViewBean extends APSituationProfessio
     @Override
     protected BEntity _newEntity() throws Exception {
         return new APSituationProfessionnelleViewBean();
+    }
+
+    public boolean displayJourIndemnise() {
+        return this.typeDemande.isProcheAidant();
     }
 }

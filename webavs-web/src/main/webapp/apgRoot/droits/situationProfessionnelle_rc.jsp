@@ -4,10 +4,8 @@
 <%@ page import="globaz.apg.vb.droits.APSituationProfessionnelleViewBean"%>
 <%@ page import="globaz.apg.servlet.IAPActions"%>
 <%@ page import="globaz.framework.secure.FWSecureConstants"%>
-<%@ page import="globaz.prestation.api.IPRDemande" %>
 <%@ page import="globaz.apg.api.droits.IAPDroitLAPG" %>
 <%@ page import="globaz.apg.db.droits.APDroitLAPG" %>
-<%@ page import="globaz.apg.menu.MenuPrestation" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/capage/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
@@ -20,18 +18,19 @@ APDroitLAPG droitLAPG = new APDroitLAPG();
 droitLAPG.setSession(viewBean.getSession());
 droitLAPG.setIdDroit(viewBean.getIdDroit());
 droitLAPG.retrieve();
-bButtonNew = viewBean.isModifiable() && bButtonNew &&  viewBean.getSession().hasRight(IAPActions.ACTION_SITUATION_PROFESSIONNELLE, FWSecureConstants.UPDATE);
+bButtonNew = viewBean.isModifiable() && bButtonNew && viewBean.getSession().hasRight(IAPActions.ACTION_SITUATION_PROFESSIONNELLE, FWSecureConstants.UPDATE);
 IFrameDetailHeight = "460";
 IFrameListHeight = "100";
 subTableHeight = 20;
 scrollingDetailActive = "YES";
-	MenuPrestation menuPrestation = MenuPrestation.of(session);
+
+
 %>
 	<%-- /tpl:put --%>
 <%@ include file="/theme/capage/javascripts.jspf" %>
 <%-- tpl:put name="zoneScripts" --%>
-<ct:menuChange displayId="menu" menuId="<%=menuPrestation.getMenuIdPrincipal()%>" showTab="menu"/>
-<ct:menuChange displayId="options" menuId="<%=menuPrestation.getMenuIdOptionsEmpty()%>"/>
+<ct:menuChange displayId="menu" menuId="<%=viewBean.getMenuPrestation().getMenuIdPrincipal()%>" showTab="menu"/>
+<ct:menuChange displayId="options" menuId="<%=viewBean.getMenuPrestation().getMenuIdOptionsEmpty()%>"/>
 <SCRIPT>
 // pour le gestion des avertissements après l'action EcranSuivant
 	var isModification = false;

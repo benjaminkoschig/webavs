@@ -15,10 +15,9 @@
 <%@ page import="java.util.Date"%>
 <%@ page import="org.slf4j.Logger" %>
 <%@ page import="org.slf4j.LoggerFactory" %>
-<%@ page import="ch.globaz.common.businessimpl.services.ParametreServiceImpl" %>
 <%
 	String servletContext = request.getContextPath();
-    Logger log = LoggerFactory.getLogger(ParametreServiceImpl.class);
+    Logger log = LoggerFactory.getLogger("ErrorPage.jsp");
 %>
 <html>
 	<head>

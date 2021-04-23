@@ -3,6 +3,8 @@
  */
 package globaz.apg.db.droits;
 
+import ch.globaz.common.jadedb.JadePropertyReader;
+import ch.globaz.common.jadedb.JadePropertyWriter;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
 import globaz.apg.enums.APAssuranceTypeAssociation;
@@ -20,6 +22,8 @@ import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.api.IPRSituationProfessionnelle;
 import globaz.prestation.clone.factory.IPRCloneable;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <H1>Bentity de la situation professionnelle</H1>
@@ -119,6 +123,8 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
 
     public static final String FIELDNAME_SALAIRENATURE = "VFMSAN";
 
+    public static final String FIELDNAME_NB_JOUR_INDEMNISE= "VFNJIN";
+
     public static final String TABLE_NAME_SITUATION_PROFESSIONNELLE = "APSIPRP";
 
     protected String anneeTaxation = "";
@@ -205,6 +211,10 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
     protected String salaireMensuel = "";
 
     protected String salaireNature = "";
+
+    @Getter
+    @Setter
+    protected Integer nbJourIndemnise = 0;
 
     @Override
     protected void _afterAdd(BTransaction transaction) throws Exception {
@@ -359,6 +369,8 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
                 APSituationProfessionnelle.FIELDNAME_MONTANT_JOURNALIER_ACM_NE, 2);
 
         isAMATFExcluded = statement.dbReadBoolean(APSituationProfessionnelle.FIELDNAME_ISAMATFEEXCLUDED);
+
+        this.nbJourIndemnise = JadePropertyReader.readInteger(APSituationProfessionnelle.FIELDNAME_NB_JOUR_INDEMNISE, statement);
     }
 
     @Override
@@ -658,6 +670,7 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         statement.writeField(APSituationProfessionnelle.FIELDNAME_ISAMATFEEXCLUDED, this._dbWriteBoolean(
                 statement.getTransaction(), isAMATFExcluded, BConstants.DB_TYPE_BOOLEAN_CHAR, "isAMATFExcluded"));
 
+        JadePropertyWriter.writeNumeric(APSituationProfessionnelle.FIELDNAME_NB_JOUR_INDEMNISE,nbJourIndemnise,statement);
     }
 
     @Override
@@ -712,6 +725,7 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
 
         // Par contre, il faut mettre a jours l'incrément.
         clone.setIdSituationProf(this._incCounter(getSession().getCurrentThreadTransaction(), "0"));
+        clone.setNbJourIndemnise(this.nbJourIndemnise);
 
         return clone;
     }

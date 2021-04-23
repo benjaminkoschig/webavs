@@ -4,6 +4,7 @@
 <%@page import="globaz.apg.servlet.IAPActions"%>
 <%@ page import="globaz.prestation.api.PRTypeDemande" %>
 <%@ page import="globaz.apg.vb.droits.APTypePresationDemandeResolver" %>
+<%@ page import="globaz.apg.menu.MenuPrestation" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/capage/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
@@ -27,7 +28,7 @@ IFrameDetailHeight = "250";
 <%-- /tpl:put --%>
 <%@ include file="/theme/capage/javascripts.jspf" %>
 <%-- tpl:put name="zoneScripts" --%>
-<ct:menuChange displayId="menu" menuId="ap-menuprincipalapat" showTab="menu"/>
+<ct:menuChange displayId="menu" menuId="<%= MenuPrestation.of(session).getMenuIdPrincipal()%>" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 
 <SCRIPT>
@@ -86,6 +87,9 @@ IFrameDetailHeight = "250";
 		isNouveau = true;
 		return 1;
 	}
+    $(function (){
+        $("#btnNew").click(onClickNew)
+    })
 	
 </SCRIPT>
 <%-- /tpl:put --%>

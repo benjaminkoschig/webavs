@@ -18,5 +18,5 @@
 				<%if (bButtonFind) {%>
 					<INPUT type="submit" name="btnFind" value="<%=btnFindLabel%>"> <!-- onClick="onClickFind();showWaitingPopup()"> -->
 				<%} if (bButtonNew) {%>
-					<INPUT type="button" name="btnNew" value="<%=btnNewLabel%>" onClick="fr_detail.location.href='<%=actionNew%>'">
+					<INPUT type="button" id="btnNew" name="btnNew" value="<%=btnNewLabel%>" onClick="fr_detail.location.href='<%=actionNew%>'">
 				<%}%>
