@@ -4,14 +4,23 @@ import ch.globaz.common.mail.CommonFilesUtils;
 import ch.globaz.common.process.ProcessMailUtils;
 import ch.globaz.common.properties.PropertiesException;
 import globaz.apg.api.droits.IAPDroitLAPG;
-import globaz.apg.db.droits.APAbstractRecapitulatifDroit;
 import globaz.apg.db.droits.APDroitLAPG;
-import globaz.apg.db.droits.APRecapitulatifDroitPat;
 import globaz.apg.helpers.droits.APDroitLAPGJointDemandeHelper;
 import globaz.apg.properties.APProperties;
 import globaz.apg.util.TypePrestation;
 import globaz.apg.utils.APGUtils;
-import globaz.apg.vb.droits.*;
+import globaz.apg.vb.droits.APDroitAPGDTO;
+import globaz.apg.vb.droits.APDroitDTO;
+import globaz.apg.vb.droits.APDroitLAPGJointDemandeListViewBean;
+import globaz.apg.vb.droits.APDroitLAPGJointDemandeViewBean;
+import globaz.apg.vb.droits.APDroitPanViewBean;
+import globaz.apg.vb.droits.APDroitParametresRCDTO;
+import globaz.apg.vb.droits.APRecapitulatifDroitAPGViewBean;
+import globaz.apg.vb.droits.APRecapitulatifDroitMatViewBean;
+import globaz.apg.vb.droits.APRecapitulatifDroitPaiViewBean;
+import globaz.apg.vb.droits.APRecapitulatifDroitPanViewBean;
+import globaz.apg.vb.droits.APRecapitulatifDroitPatViewBean;
+import globaz.apg.vb.droits.APRecapitulatifDroitViewBean;
 import globaz.apg.vb.prestation.APPrestationViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
@@ -29,7 +38,6 @@ import globaz.prestation.servlet.PRDefaultAction;
 import globaz.prestation.tools.PRSessionDataContainerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mail.MailSendException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -661,7 +669,7 @@ public class APLAPGAction extends PRDefaultAction {
         }
     }
 
-    private void sendEmail(BSession session, String numAVS, String filesPath) throws MailSendException, IOException {
+    private void sendEmail(BSession session, String numAVS, String filesPath) throws IOException {
         List<String> filesToJoin = CommonFilesUtils.selectFilesToJoin(filesPath, numAVS);
         StringBuilder corps = new StringBuilder();
         if (!filesToJoin.isEmpty()) {
@@ -671,11 +679,9 @@ public class APLAPGAction extends PRDefaultAction {
         }
         List<String> emailsAdresses = new ArrayList<>();
         emailsAdresses.add(getEMailAddress(session));
-        try {
-            ProcessMailUtils.sendMail(emailsAdresses, getEMailObject(session, numAVS), corps.toString(), filesToJoin);
-        } catch (Exception e) {
-            throw new MailSendException("Erreur à l'envoi de l'e-mail", e);
-        }
+
+        ProcessMailUtils.sendMail(emailsAdresses, getEMailObject(session, numAVS), corps.toString(), filesToJoin);
+
     }
 
     public final String getEMailAddress(BSession session) {

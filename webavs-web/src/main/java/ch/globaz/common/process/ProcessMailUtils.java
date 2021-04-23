@@ -1,5 +1,6 @@
 package ch.globaz.common.process;
 
+import ch.globaz.common.exceptions.CommonTechnicalException;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
@@ -15,12 +16,10 @@ import ch.globaz.common.LabelCommonProvider;
 import ch.globaz.common.process.byitem.ProcessItemsHandlerJadeJob;
 import com.google.common.base.Throwables;
 import com.google.gson.Gson;
-import com.sun.star.lang.IllegalArgumentException;
 
 public class ProcessMailUtils {
 
-    public static void sendMail(List<String> mailsList, String subject, String body, List<String> joinsFilesPathsList)
-            throws Exception {
+    public static void sendMail(List<String> mailsList, String subject, String body, List<String> joinsFilesPathsList) {
         if (subject == null) {
             throw new IllegalArgumentException("subject cannot be null");
         }
@@ -39,7 +38,11 @@ public class ProcessMailUtils {
             joinsFilesPathsTab = joinsFilesPathsList.toArray(new String[joinsFilesPathsList.size()]);
         }
 
-        JadeSmtpClient.getInstance().sendMail(mailsTab, subject, body, joinsFilesPathsTab);
+        try {
+            JadeSmtpClient.getInstance().sendMail(mailsTab, subject, body, joinsFilesPathsTab);
+        } catch (Exception e) {
+            throw new CommonTechnicalException("Erreur à l'envoi de l'e-mail", e);
+        }
     }
 
     /**
