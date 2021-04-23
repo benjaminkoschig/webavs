@@ -119,7 +119,7 @@ $(function () {
 		%>
 			<tr>
 				<td><ct:FWLabel key="JSP_PC_IMPRDECAL_GED_CHECKBOX_LABEL" /></td>
-				<td><input type="checkbox"  name="toGed"/></td>
+				<td><input type="checkbox"  name="toGed" <%=viewBean.getToGed()? "checked" : ""%>/></td>
 			</tr>
 		<%
 	}%>

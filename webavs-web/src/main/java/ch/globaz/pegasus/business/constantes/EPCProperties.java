@@ -33,6 +33,7 @@ public enum EPCProperties implements IProperties {
     DECISION_TRANSFERT_AGENCESAVS_CODE("pegasus.decision.transfert.agenceavs.code"),
     DECISION_TRANSFERT_ANNEXES_ASSURES("pegasus.decision.transfert.annexeassures"),
     DECISION_TRANSFERT_COPIE_AGENCEAVS("pegasus.decision.transfert.copie.agenceavs"),
+    DECISION_FORCER_MISE_EN_GED("pegasus.decision.forcer.mise.ged"),
     GESTION_ANNONCES_LAPRAMS("pegasus.droit.gestionAnnonceLAPRAMS"),
     GESTION_ANNONCES_LAPRAMS_SUFFIXE("pegasus.droit.annonceLAPRAMS.suffixe"),
     GESTION_COMMUNICATION_OCC("pegasus.droit.gestionCommunicationOCC"),

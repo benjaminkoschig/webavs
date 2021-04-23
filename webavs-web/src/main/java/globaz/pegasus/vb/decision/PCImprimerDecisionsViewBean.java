@@ -1,5 +1,6 @@
 package globaz.pegasus.vb.decision;
 
+import ch.globaz.pegasus.business.constantes.EPCProperties;
 import globaz.externe.IPRConstantesExternes;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
@@ -22,9 +23,12 @@ import ch.globaz.pegasus.business.models.decision.DecisionApresCalcul;
 import ch.globaz.pegasus.business.models.decision.DecisionApresCalculSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.businessimpl.utils.PCGedUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PCImprimerDecisionsViewBean extends BJadePersistentObjectViewBean {
 
+    private static final Logger LOG = LoggerFactory.getLogger(PCImprimerDecisionsViewBean.class);
     private String dateDoc = null;
 
     private DecisionApresCalculSearch decisionApresCalculSearch = null;
@@ -185,7 +189,14 @@ public class PCImprimerDecisionsViewBean extends BJadePersistentObjectViewBean {
         // lien GED
         isDecisionForGed = PCGedUtils.isDocumentInGed(IPRConstantesExternes.PC_REF_INFOROM_DECISION_APRES_CALCUL,
                 getSession());
-
+        // On force la mise en GED si propriété existante et activée
+        try {
+            toGed = EPCProperties.DECISION_FORCER_MISE_EN_GED.getBooleanValue();
+        } catch (PropertiesException e) {
+            // Si la propriété n'exite pas, on catch l'erreur, et on met à false le boolean
+            LOG.error("La properties : " + EPCProperties.DECISION_FORCER_MISE_EN_GED.getProperty() + " n'existe pas.", e);
+            toGed = false;
+        }
     }
 
     public void setDateDoc(String dateDoc) {
