@@ -14,7 +14,6 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -95,14 +94,11 @@ public class PCProcessAdaptationStep implements JadeProcessStepInterface, JadePr
 
         search = PegasusServiceLocator.getRenteIjApiService().searchRenteMembreFamilleCalcule(search);
 
-        List<RenteMembreFamilleCalculeField> list;
-
-        list = PersistenceUtil.typeSearch(search, search.whichModelClass());
+        List<RenteMembreFamilleCalculeField> list = PersistenceUtil.typeSearch(search, search.whichModelClass());
 
         // Ajout des enfants exclus du plan de calcul retenu
-        RenteMembreFamilleCalculeFieldSearch newSearch = new RenteMembreFamilleCalculeFieldSearch();
         search.setForIsPlanRetenu(false);
-        newSearch = PegasusServiceLocator.getRenteIjApiService().searchRenteMembreFamilleCalcule(search);
+        RenteMembreFamilleCalculeFieldSearch newSearch = PegasusServiceLocator.getRenteIjApiService().searchRenteMembreFamilleCalcule(search);
         list = addChildToList(newSearch, list);
 
         Map<String, List<RenteMembreFamilleCalculeField>> mapRente = JadeListUtil.groupBy(list,
