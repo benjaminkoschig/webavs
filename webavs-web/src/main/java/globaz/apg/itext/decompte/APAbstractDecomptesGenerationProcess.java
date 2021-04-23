@@ -4,8 +4,11 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.text.FieldPosition;
+import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.util.*;
 
+import ch.globaz.common.util.Dates;
 import globaz.apg.api.droits.IAPDroitAPG;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.prestation.IAPPrestation;
@@ -790,9 +793,19 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 // le pied de page
                 buffer.setLength(0);
 
-                if (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) {
+                if (IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) {
+                    String delaiCadreFormat = ((APDroitProcheAidant) droit).calculerDelai()
+                            .map(Dates::formatSwiss)
+                            .orElse("");
+                    buffer.append(PRStringUtils.replaceString(document.getTextes(3).getTexte(49).getDescription(),"{delaiCadre}", delaiCadreFormat))
+                            .append("\n\n");
+                }
+
+                // Pour paternité et proche aidant, si Assuré indépendant, alors il faut ajouter ce texte sur les décisions.
+                if ((IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot()))
+                    && !droit.getRemarque().isEmpty()) {
                     // Ajout de la remarque du droit
-                    buffer.append(droit.getRemarque() + "\n\n");
+                    buffer.append(droit.getRemarque()).append("\n\n");
                 }
 
                 for (final Iterator<ICTTexte> textes = document.getTextes(4).iterator(); textes.hasNext(); ) {
@@ -2109,7 +2122,12 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                             // CHANGES
                             // On n'ajoute pas ce détail si c'est un décompte mixte NORMAL_ACM_NE
                             if (!APTypeDeDecompte.NORMAL_ACM_NE.equals(decompteCourant.getTypeDeDecompte())) {
-                                champs.put("FIELD_DETAIL_PERIODE", getDetailJournalier(repartition));
+                                // info suppl,
+                                if (IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) {
+                                    champs.put("FIELD_DETAIL_PERIODE", Dates.displayMonthFullname(repartition.getDateDebut(), getCodeIsoLangue()) + " - " + getDetailJournalier(repartition));
+                                } else {
+                                    champs.put("FIELD_DETAIL_PERIODE", getDetailJournalier(repartition));
+                                }
                             }
                         }
                     } else {

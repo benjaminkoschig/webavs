@@ -2,7 +2,9 @@ package ch.globaz.common.util;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.time.temporal.TemporalAccessor;
+import java.util.Locale;
 
 public class Dates {
     private static final DateTimeFormatter DATE_TIME_SWISS_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -24,5 +26,10 @@ public class Dates {
 
     public static String nowFormatSwiss() {
         return formatSwiss(LocalDate.now());
+    }
+
+    public static final String displayMonthFullname(String swissFormatDate, String codeIso) {
+        Locale locale = new Locale(codeIso);
+        return LocalDate.parse(swissFormatDate, DATE_TIME_SWISS_FORMATTER).getMonth().getDisplayName(TextStyle.FULL, locale);
     }
 }
