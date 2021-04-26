@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2019 sp1 (http://www.altova.com) von ﻿Bundesamt für Informatik und (Bundesamt für Informatik und) bearbeitet -->
+<!-- edited with XMLSpy v2013 sp1 (x64) (http://www.altova.com) by Bundesamt für Informatik und Telekommunikation (Bundesamt für Informatik und Telekommunikation) -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:core="http://www.gotess.org/xns/core" xmlns:e203="http://www.gotess.org/xns/e203" xmlns:xlink="http://www.w3.org/1999/xlink" targetNamespace="http://www.gotess.org/xns/e203" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
+	<xsd:import namespace="http://www.gotess.org/xns/core" schemaLocation="core.xsd"/>
+	<xsd:complexType name="CurrentName">
+		<xsd:sequence>
+			<xsd:element name="Surname" type="xsd:string"/>
+			<xsd:element name="ChristianName" type="xsd:string" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="Pension">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="fr">rente</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Type" type="xsd:string"/>
+				<xsd:element name="Start" type="xsd:date"/>
+				<xsd:element name="Montant" type="xsd:int"/>
+				<xsd:element name="InstitutionName" type="xsd:string"/>
+				<xsd:element ref="core:Country"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:complexType name="Birth">
+		<xsd:complexContent>
+			<xsd:extension base="core:Birth"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="SpouseOrPartner">
+		<xsd:sequence>
+			<xsd:element name="CurrentName" type="e203:CurrentName"/>
+			<xsd:element name="PreviousName" type="core:SimpleName" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">field11.2</xsd:documentation>
+					<xsd:documentation xml:lang="en">previous name</xsd:documentation>
+					<xsd:documentation xml:lang="de">früherer Name</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="NAVS" type="xsd:string"/>
+			<xsd:element name="Birth" type="e203:Birth"/>
+			<xsd:element ref="core:Nationality" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">field 11.4</xsd:documentation>
+					<xsd:documentation xml:lang="en">code letter for nationality</xsd:documentation>
+					<xsd:documentation xml:lang="de">Kennbuchstabe der Nationalität des Versicherten unter Verwendung der internationalen Kraftfahrzeugkennzeichen.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Type" type="xsd:int">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="fr">1 veuve, 2 veuf, 3 ex (autre) </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="AssuranceNumber" type="xsd:string"/>
+			<xsd:element ref="core:Address" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">field 11.5</xsd:documentation>
+					<xsd:documentation xml:lang="en">personal address</xsd:documentation>
+					<xsd:documentation xml:lang="de">Adresse</xsd:documentation>
+					<xsd:documentation xml:lang="en">Street, number, post code, town, country, telephone number</xsd:documentation>
+					<xsd:documentation xml:lang="de">Straße, Hausnummer, Postleitzahl, Ort, Land, Telefonnummer</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element ref="e203:Bank" minOccurs="0"/>
+			<xsd:element ref="core:Married">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="fr">date de mariage</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Child" type="xsd:boolean"/>
+			<xsd:element name="Divorce" type="xsd:date" minOccurs="0"/>
+			<xsd:element name="Separation" type="xsd:date" minOccurs="0"/>
+			<xsd:element ref="e203:Remariage" minOccurs="0"/>
+			<xsd:element ref="e203:Activity">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="fr">salarie, fonctionnaire, non salarie, revenu</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element ref="e203:EleveEnfant" minOccurs="0"/>
+			<xsd:element ref="e203:Pension" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="fr">rente en cours</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="SicknessBenefitEntitled" type="xsd:boolean" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="Children">
+		<xsd:sequence>
+			<xsd:element name="Child" type="e203:Child" minOccurs="1" maxOccurs="unbounded"/>
+			<xsd:element name="Remarks" type="xsd:string" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="Child">
+		<xsd:sequence>
+			<xsd:element name="ChildName" type="e203:CurrentName"/>
+			<xsd:element name="Birth" type="e203:Birth"/>
+			<xsd:element ref="core:Nationality" minOccurs="0"/>
+			<xsd:element name="Death" type="xsd:date" minOccurs="0"/>
+			<xsd:element name="Relationship" type="xsd:int"/>
+			<xsd:element name="ChildBenefit" type="e203:ChildBenefit" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ChildBenefit">
+		<xsd:sequence>
+			<xsd:element name="Guarantee" type="xsd:int"/>
+			<xsd:element name="Until" type="xsd:date"/>
+			<xsd:element name="Payments" type="e203:Payments"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="InsuredPerson203">
+		<xsd:complexContent>
+			<xsd:extension base="core:InsuredPerson">
+				<xsd:sequence>
+					<xsd:element name="AdditionalInformation" type="core:AdditionalInformation">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="fr">informations supplementaires</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Occupation" type="xsd:boolean" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="fr">activite professionnelle</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="DeathDetails" type="core:DeathDetails">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="fr">details sur le deces</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Pension" type="core:Pension">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="fr">pension du decede au moment du deces ou pendant le mariage</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="RequestedDelay" type="core:RequestedDelay" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="fr">ajournement</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="Payments">
+		<xsd:sequence>
+			<xsd:element name="Value" type="xsd:int"/>
+			<xsd:element name="Currency" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="Remariage">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="fr">remariage du survivant</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Date" type="xsd:date"/>
+				<xsd:element name="Conjoint" type="xsd:string"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="EleveEnfant">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Prestation" type="xsd:boolean"/>
+				<xsd:element name="Institution" type="xsd:string"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="Activity">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Salarie" type="xsd:boolean"/>
+				<xsd:element name="Fonctionnaire" type="xsd:boolean"/>
+				<xsd:element name="NonSalarie" type="xsd:boolean"/>
+				<xsd:element name="MontantAnnuel" type="xsd:string"/>
+				<xsd:element name="AnneeRevenu" type="xsd:string"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="Bank">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="ReceiverName" type="xsd:string"/>
+				<xsd:element name="BankName" type="xsd:string"/>
+				<xsd:element ref="core:Address" minOccurs="0"/>
+				<xsd:element name="BankSWIFT" type="core:string1..11" minOccurs="0"/>
+				<xsd:element name="BankIBAN" type="core:string1..34" minOccurs="0"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="M_E203">
+		<xsd:annotation>
+			<xsd:documentation>e203 Form</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="DocumentDate" type="xsd:date">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="fr">date du document</xsd:documentation>
+						<xsd:documentation xml:lang="fr">champ 20.4</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="Countries" type="core:Countries">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="fr">Pays pour le tableau dans l'entête</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="ReceivingInstitution" type="core:InsuranceInstitution">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="fr">Institution destinataire partie 1</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="SendingInstitution" type="core:InsuranceInstitution" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="fr">Institution emetrice partie 20</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="InsuredPerson" type="e203:InsuredPerson203">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="fr">Assure decede partie </xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="SpouseOrPartner" type="e203:SpouseOrPartner" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="fr">rubrique 11</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="Children" type="e203:Children" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="fr">rubrique 12</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="DateDemande" type="xsd:date">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="fr">date de depot de la demande</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="EffetPension" type="xsd:date" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="fr">date de debut de droit à la r13</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="OverpayConsumption" type="xsd:boolean" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="fr">retenues pour compensation</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="SubsequentPayment" type="xsd:boolean" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="fr">les arrerages peuvent être verses direcement au beneficiaire</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="Signature" type="xsd:string"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

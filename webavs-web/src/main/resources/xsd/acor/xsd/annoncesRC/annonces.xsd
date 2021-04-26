@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright : Centrale de Compensation AVS/AI, Genève (2004). -->
+<!-- edited with XMLSPY v2004 rel. 2 U (http://www.xmlspy.com) by OFIT (private) -->
+<!-- edited with XML Spy v4.3 U (http://www.xmlspy.com) by andreas frutiger (private) -->
+<xs:schema targetNamespace="http://www.zas.admin.ch/RC" 
+			xmlns="http://www.zas.admin.ch/RC" 
+			xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+			elementFormDefault="qualified" 
+			attributeFormDefault="unqualified" 
+			version="1.1">
+	<xs:include schemaLocation="CACI/annonceAccuseReceptionRA-types.xsd"/>
+	<xs:include schemaLocation="CACI/annonceCI-types.xsd"/>
+	<xs:include schemaLocation="CACI/annonceRA-types.xsd"/>
+	<xs:include schemaLocation="CACI/annonceAutorisationCI-types.xsd"/>
+	<xs:include schemaLocation="CACI/annonceOrdreTransmissionCI-types.xsd"/>
+	<xs:include schemaLocation="CACI/annonceCIComplement-types.xsd"/>
+	<xs:include schemaLocation="CACI/annonceComparaisonEnteteCI-types.xsd"/>
+	<xs:include schemaLocation="CACI/annonceConfirmationRCISplitting-types.xsd"/>
+	<xs:include schemaLocation="CACI/annonceRevocation-types.xsd"/>
+	<xs:include schemaLocation="./annonceEnteteFin-types.xsd"/>
+	
+	<!-- Annonces à la Centrale -->
+
+	<xs:element name="PoolMeldungZurZAS">
+		<xs:annotation>
+			<xs:documentation>Pool d'annonces en entrée entourées par une entete et une fin.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="PoolKopf" type="PoolKopf_Type"/>
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element name="VAIKMeldungZurZAS" type="VAIKMeldungZurZAS_Type"/>
+					<!-- xs:element ref="LeistungMeldungZurZAS"/> -->
+					<xs:element name="MeldungInFehler" type="MeldungInFehler_Type"/>
+				</xs:choice>
+				<xs:element name="Fuss" type="PoolFuss_Type" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<!-- Réponses de la centrale -->
+	
+	<xs:element name="PoolMeldungVonZAS">
+		<xs:annotation>
+			<xs:documentation>Pool d'annonces en sortie entourées par une entete et une fin.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="PoolKopf" type="PoolKopf_Type"/>
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element name="VAIKMeldungVonZAS" type="VAIKMeldungVonZAS_Type"/>
+					<xs:element name="MeldungInFehler" type="MeldungInFehler_Type"/>
+				</xs:choice>
+				<xs:element name="Fuss" type="PoolFuss_Type" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<!-- Définition de types -->
+	
+	<xs:complexType name="MeldungInFehler_Type">
+		<xs:annotation>
+			<xs:documentation>code application inconnu ou annonce illisible</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="RoherInhaltRecord" type="xs:string" maxOccurs="unbounded"/>
+			<xs:element name="Fehlermeldung" type="xs:string"/>
+			<xs:element name="UnlesbareDatenFeldname" type="xs:string"/>
+			<xs:element name="UnlesbareDatenFeldinhalt" type="xs:string"/>
+			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType" nillable="true" minOccurs="0"/>
+			<xs:element name="KasseneigenerHinweis" type="KasseneigenerHinweis_Type" minOccurs="0"/>
+			<xs:element name="Meldungsnummer" type="Meldungsnummer_Type" minOccurs="0"/>
+			<xs:choice>
+				<xs:element name="ZusatzInfoVAIK">
+					<xs:annotation>
+						<xs:documentation>Information intéressante spécifique à une annonce dont le code application est 11</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="MZRSchluesselzahl" type="MZRSchluesselzahl_weakType" minOccurs="0"/>
+							<xs:element name="Versichertennummer" type="Versichertennummer11oder13Stellen_Type" minOccurs="0"/>
+							<xs:element name="VersichertenAngaben" minOccurs="0">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="TVersicherteAngabenFakultativ"/>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="ZusatzInfoAndere">
+					<xs:annotation>
+						<xs:documentation>Information intéressante spécifique à une annonce dont le code application n'est pas 11</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Anwendungsgebiet">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:minLength value="2"/>
+										<xs:maxLength value="2"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="VAIKMeldungZurZAS_Type">
+		<xs:annotation>
+			<xs:documentation>Domaine CA/CI, annonce de la caisse à la CdC</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:element name="VAIKMeldungNeuerVersicherter" type="VAIKMeldungNeuerVersicherter_Type"/>
+			<xs:element name="VAIKMeldungAenderungVersichertenDaten" type="VAIKMeldungAenderungVersichertenDaten_Type"/>
+			<xs:element name="VAIKMeldungVerkettungVersichertenNr" type="VAIKMeldungVerkettungVersichertenNr_Type"/>
+			<xs:element name="VAIKMeldungVAErsatz" type="VAIKMeldungVAErsatz_Type"/>
+			<xs:element name="VAIKMeldungIKEroeffnung" type="VAIKMeldungIKEroeffnung_Type"/>
+			<xs:element name="VAIKMeldungZIK" type="VAIKMeldungZIK_Type"/>
+			<xs:element name="VAIKMeldungZIKRueckgaengigmachung" type="VAIKMeldungZIKRueckgaengigmachung_Type"/>
+			<xs:element name="VAIKMeldungIKKopieAuszug" type="VAIKMeldungIKKopieAuszug_Type"/>
+			<xs:element name="VAIKMeldungSplitting" type="VAIKMeldungSplitting_Type"/>
+			<xs:element name="VAIKMeldungSplittingRueckgaengigmachung" type="VAIKMeldungSplittingRueckgaengigmachung_Type"/>
+			<xs:element name="VAIKMeldungKassenWechsel" type="VAIKMeldungKassenWechsel_Type"/>
+			<xs:element name="VAIKMeldungEintrittAHVIV" type="VAIKMeldungEintrittAHVIV_Type"/>
+			<xs:element name="VAIKMeldungAustauschReferenzNummer" type="VAIKMeldungAustauschReferenzNummer_Type"/>
+			<xs:element name="IKMeldung" type="IKMeldung_Type"/>
+			<xs:element name="IKStatistikMeldung" type="IKStatistikMeldung_Type"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="VAIKMeldungVonZAS_Type">
+		<xs:annotation>
+			<xs:documentation>Domaine CA/CI, annonce de la CdC à la caisse</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:element name="VAIKEmpfangsbestaetigung" type="VAIKEmpfangsbestaetigung_Type"/>
+			<xs:element name="IKEroeffnungsermaechtigung" type="IKEroeffnungsermaechtigung_Type"/>
+			<xs:element name="IKUebermittlungsauftrag" type="IKUebermittlungsauftrag_Type"/>
+			<xs:element name="IKErgaenzungsanzeige" type="IKErgaenzungsanzeige_Type"/>
+			<xs:element name="IKBestandesmeldung" type="IKBestandesmeldung_Type"/>
+			<xs:element name="IKUebermittlungsauftragBestaetigung" type="IKUebermittlungsauftragBestaetigung_Type"/>
+			<xs:element name="IKRueckgaengigmachung" type="IKRueckgaengigmachung_Type"/>
+			<xs:element name="IKMeldung" type="IKMeldung_Type"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="Datentraegerstyp_Type">
+		<xs:simpleContent>
+			<xs:extension base="TDatentraegerstyp">
+				<xs:attribute name="poolscode" type="xs:boolean" use="optional" default="true"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	
+	<!-- xs:element name="LeistungMeldungZurZAS">
+		<xs:annotation>
+			<xs:documentation>Domaine Prestations, annonce de la caisse à la CdC</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:choice>
+				<xs:element ref="OrdentlicheRente10Meldung"/>
+				<xs:element ref="OrdentlicheRente9Meldung"/>
+				<xs:element ref="AusserordentlicheRente10Meldung"/>
+				<xs:element ref="AusserordentlicheRente9Meldung"/>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element> 
+	<xs:element name="LeistungMeldungVonZAS">
+		<xs:annotation>
+			<xs:documentation>Domaine Prestations, annonce de la CdC à la caisse</xs:documentation>
+		</xs:annotation>
+		<xs:complexType/>
+	</xs:element>  -->
+</xs:schema>

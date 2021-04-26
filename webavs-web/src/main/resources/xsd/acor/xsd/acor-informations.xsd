@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		   xmlns:informations="http://www.zas.admin.ch/xmlns/acor-informations/0"
+		   targetNamespace="http://www.zas.admin.ch/xmlns/acor-informations/0"
+		   elementFormDefault="qualified"
+		   version="1.2">
+	<xs:element name="informationReport" type="informations:informationsType"/>
+	<xs:complexType name="informationsType">
+		<xs:sequence>
+			<xs:element name="applicationVersion" type="informations:versionType"/>
+			<xs:element name="systemExpertsInformations" type="informations:expertSystemsInformationType"/>
+			<xs:element name="xsdInformations" type="informations:xsdInformationType"/>
+			<xs:element name="guiInformations" type="informations:guiInformationType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="jvmParameters" type="informations:jvmParametersType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="jvmParametersType">
+		<xs:sequence>
+			<xs:element name="parameter" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="name" type="xs:string"/>
+						<xs:element name="value" type="xs:string"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="fileInformationType">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string"/>
+			<xs:element name="version" type="informations:versionType">
+				<xs:annotation>
+					<xs:documentation>
+						Exemple : si il s'agit d'un système expert externe la version est celle du livrable (xar)
+						corespondant : acor-se-3.61.1-rente-3.48.1.xar aura
+						version=3.48.1 et generalVersion=3.61.1
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="generalVersion" type="informations:versionType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Exemple : si il s'agit d'un système expert externe la version générale est celle du projet java
+						corespondant au livrable (xar) du système expert : acor-se-3.61.1-rente-3.48.1.xar aura
+						version=3.48.1 et generalVersion=3.61.1
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="path" type="xs:anyURI" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="versionType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="([0-9]\.?)*-?(DEV|SNAPSHOT)?"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="xsdInformationType">
+		<xs:sequence>
+			<xs:element name="javaXsdProjectVersion" type="informations:versionType"/>
+			<xs:element name="xsd" type="informations:fileInformationType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="expertSystemsInformationType">
+		<xs:sequence>
+			<xs:element name="javaExpertSystemProjectVersion" type="informations:versionType"/>
+			<xs:element name="expertSystem" type="informations:fileInformationType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="externalExpertSystem" type="informations:fileInformationType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="guiInformationType">
+		<xs:sequence>
+			<xs:element name="packagedVersion" type="informations:versionType"/>
+			<xs:element name="externalVersion" type="informations:versionType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
