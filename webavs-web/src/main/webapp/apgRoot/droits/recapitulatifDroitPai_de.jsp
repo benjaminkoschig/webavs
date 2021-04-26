@@ -1,12 +1,10 @@
 <%-- tpl:insert page="/theme/detail.jtpl" --%>
 <%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
 <%@page import="globaz.apg.application.APApplication"%>
-<%@page import="globaz.framework.secure.FWSecureConstants"%>
-<%@page import="globaz.apg.servlet.IAPActions"%>
 <%@ page import="globaz.apg.vb.droits.APRecapitulatifDroitPaiViewBean" %>
-
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
+
 <%-- tpl:put name="zoneInit" --%>
 <%
 idEcran="PAP0014";
@@ -27,8 +25,8 @@ bButtonNew = false;
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/javascripts.jspf" %>
 <%-- tpl:put name="zoneScripts" --%>
-<ct:menuChange displayId="menu" menuId="ap-menuprincipalapat"/>
-<ct:menuChange displayId="options" menuId="ap-optionmenudroitapat" showTab="options">
+<ct:menuChange displayId="menu" menuId="<%=viewBean.resolveMenuPrincipale()%>"/>
+<ct:menuChange displayId="options" menuId="<%=viewBean.resolveMenuOptionDroit()%>" showTab="options">
 	<ct:menuSetAllParams key="forIdDroit" value="<%=viewBean.getIdDroit()%>"/>
 	<ct:menuSetAllParams key="selectedId" value="<%=viewBean.getIdDroit()%>"/>
 	<ct:menuSetAllParams key="genreService" value="<%=viewBean.getGenreService()%>"/>

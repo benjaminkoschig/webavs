@@ -21,6 +21,7 @@ import globaz.apg.vb.droits.APRecapitulatifDroitPaiViewBean;
 import globaz.apg.vb.droits.APRecapitulatifDroitPanViewBean;
 import globaz.apg.vb.droits.APRecapitulatifDroitPatViewBean;
 import globaz.apg.vb.droits.APRecapitulatifDroitViewBean;
+import globaz.apg.vb.droits.APTypePresationDemandeResolver;
 import globaz.apg.vb.prestation.APPrestationViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
@@ -287,6 +288,7 @@ public class APLAPGAction extends PRDefaultAction {
             recViewBean = new APRecapitulatifDroitAPGViewBean();
         }
 
+        recViewBean.setTypeDemande(APTypePresationDemandeResolver.resolveEnumTypePrestation(session));
         recViewBean.setIdDroit(selectedId);
         recViewBean.setAfficherBoutonSimulerPmtBPID(afficherBouton);
         // dispatch

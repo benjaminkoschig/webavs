@@ -11,6 +11,7 @@ import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRUserUtils;
 import globaz.prestation.tools.nnss.PRNSSUtil;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
@@ -22,6 +23,9 @@ public class APRecapitulatifDroitPaiViewBean extends APRecapitulatifDroitPai imp
     private static final long serialVersionUID = 1L;
 
     private boolean afficherBoutonSimulerPmtBPID;
+    @Getter
+    @Setter
+    private PRTypeDemande typeDemande;
     /**
      * Utilisé dans le cas ou l'on veut recréer une annonce liée à une prestation suite à une reprise de données Permet
      * d'insérer le BPID voulut pour l'annonce qui sera créé
@@ -147,5 +151,6 @@ public class APRecapitulatifDroitPaiViewBean extends APRecapitulatifDroitPai imp
     public void setPidAnnonce(String pidAnnonce) {
         this.pidAnnonce = pidAnnonce;
     }
+
 }
 
