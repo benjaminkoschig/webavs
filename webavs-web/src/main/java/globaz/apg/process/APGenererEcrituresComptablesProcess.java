@@ -3787,7 +3787,8 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             matciabBEBean.setRubriquePersonnelCotisationAVS(referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.MATCIAB_BE_PERSONNEL_COTISATIONS_AVS));
 
-            mapComplementBean.put(ECanton.BE.getValue(), matciabBEBean);        }else if (typeLot.equals(IPRDemande.CS_TYPE_PATERNITE)) {
+            mapComplementBean.put(ECanton.BE.getValue(), matciabBEBean);
+        }else if (typeLot.equals(IPRDemande.CS_TYPE_PATERNITE)) {
             AVEC_AC_EMPLOYEUR = referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.PATERNITE_EMPLOYEUR_AVEC_AC);
             SANS_AC_EMPLOYEUR = referenceRubrique
@@ -3805,31 +3806,6 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
             SANS_COTISATION = referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.PATERNITE_SANS_COTISATIONS);
-
-//            SANS_COTISATION_LAMAT_ADOPTION_ASSURE = referenceRubrique
-//                    .getRubriqueByCodeReference(APIReferenceRubrique.PRESTATION_LAMATGE_ADOPTION_ASSURE);
-//            SANS_COTISATION_LAMAT_ADOPTION_EMPLOYEUR = referenceRubrique
-//                    .getRubriqueByCodeReference(APIReferenceRubrique.PRESTATION_LAMATGE_ADOPTION_EMPLOYEUR);
-//            SANS_COTISATION_LAMAT_ADOPTION_INDEPENDANT = referenceRubrique
-//                    .getRubriqueByCodeReference(APIReferenceRubrique.PRESTATION_LAMATGE_ADOPTION_INDEPENDANT);
-//
-//            SANS_COTISATION_LAMAT_NAISSANCE_ASSURE = referenceRubrique
-//                    .getRubriqueByCodeReference(APIReferenceRubrique.PRESTATION_LAMATGE_NAISSANCE_ASSURE);
-//            SANS_COTISATION_LAMAT_NAISSANCE_EMPLOYEUR = referenceRubrique
-//                    .getRubriqueByCodeReference(APIReferenceRubrique.PRESTATION_LAMATGE_NAISSANCE_EMPLOYEUR);
-//            SANS_COTISATION_LAMAT_NAISSANCE_INDEPENDANT = referenceRubrique
-//                    .getRubriqueByCodeReference(APIReferenceRubrique.PRESTATION_LAMATGE_NAISSANCE_INDEPENDANT);
-
-//            PRESTATION_A_RESTITUER_LAMAT_ASSURE = referenceRubrique
-//                    .getRubriqueByCodeReference(APIReferenceRubrique.PRESTATION_LAMATGE_RESTITUTION_ASSURE);
-//            PRESTATION_A_RESTITUER_LAMAT_EMPLOYEUR = referenceRubrique
-//                    .getRubriqueByCodeReference(APIReferenceRubrique.PRESTATION_LAMATGE_RESTITUTION_EMPLOYEUR);
-//            PRESTATION_A_RESTITUER_LAMAT_INDEPENDANT = referenceRubrique
-//                    .getRubriqueByCodeReference(APIReferenceRubrique.PRESTATION_LAMATGE_RESTITUTION_INDEPENDANT);
-
-//            COMPENSATION_LAMAT = referenceRubrique
-//                    .getRubriqueByCodeReference(APIReferenceRubrique.COMPENSATION_APG_MAT);
-
             PRESTATION_A_RESTITUER_ASSURE = referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.PATERNITE_PRESTATION_A_RESTITUER_ASSURE);
             PRESTATION_A_RESTITUER_EMPLOYEUR = referenceRubrique
@@ -3853,32 +3829,57 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                     .getRubriqueByCodeReference(APIReferenceRubrique.PATERNITE_FONDS_DE_COMPENSATION_EMPLOYEUR);
             FONDS_DE_COMPENSATION_INDEPENDANT = referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.PATERNITE_FONDS_DE_COMPENSATION_INDEPENDANT);
-
-//            FONDS_DE_COMPENSATION_ACM = referenceRubrique
-//                    .getRubriqueByCodeReference(APIReferenceRubrique.PATERNITE_ACM_FONDS_DE_COMPENSATION);
-
-            IMPOT_SOURCE_ASSURE = referenceRubrique
+           IMPOT_SOURCE_ASSURE = referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.PATERNITE_IMPOT_A_LA_SOURCE_ASSURE);
             IMPOT_SOURCE_INDEPENDANT = referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.PATERNITE_IMPOT_A_LA_SOURCE_INDEPENDANT);
-
-//            IMPOT_SOURCE_LAMAT_CANTONALE_ASSURE = referenceRubrique
-//                    .getRubriqueByCodeReference(APIReferenceRubrique.PATERNITE_IMPOT_A_LA_SOURCE_LAMAT_CANTONALE_ASSURE);
-//            IMPOT_SOURCE_LAMAT_CANTONALE_INDEPENDANT = referenceRubrique
-//                    .getRubriqueByCodeReference(APIReferenceRubrique.pATERNITE_IMPOT_A_LA_SOURCE_LAMAT_CANTONALE_INDEPENDANT);
-
-//            IMPOT_SOURCE_ACM = referenceRubrique
-//                    .getRubriqueByCodeReference(APIReferenceRubrique.PATERNITE_IMPOT_A_LA_SOURCE_ACM);
-
             COT_LFA = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PATERNITE_COTISATION_LFA);
             FRAIS_ADMINISTRATION = referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.PATERNITE_FRAIS_ADMINISTRATION);
             COMPENSATION = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.COMPENSATION_APG_MAT);
-//            COMPENSATION_ACM = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.COMPENSATION_ALFA);
-//            ACM_MONTANT_BRUT = referenceRubrique
-//                    .getRubriqueByCodeReference(APIReferenceRubrique.PATERNITE_ACM_MONTANT_BRUT);
-//            ACM_RESTITUTION = referenceRubrique
-//                    .getRubriqueByCodeReference(APIReferenceRubrique.PATERNITE_ACM_RESTITUTION);
+        }else if (typeLot.equals(IPRDemande.CS_TYPE_PROCHE_AIDANT)) {
+            AVEC_AC_EMPLOYEUR = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PROCHE_AIDANT_EMPLOYEUR_AVEC_AC);
+            SANS_AC_EMPLOYEUR = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PROCHE_AIDANT_EMPLOYEUR_SANS_AC);
+            AVEC_AC_ASSURE = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PROCHE_AIDANT_AVEC_AC_ASSURE);
+            AVEC_AC_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PROCHE_AIDANT_AVEC_AC_INDEPENDANT);
+            SANS_AC_ASSURE = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PROCHE_AIDANT_SANS_AC_ASSURE);
+            SANS_AC_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PROCHE_AIDANT_SANS_AC_INDEPENDANT);
+            SANS_COTISATION = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PROCHE_AIDANT_SANS_COTISATIONS);
+            PRESTATION_A_RESTITUER_ASSURE = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PROCHE_AIDANT_PRESTATION_A_RESTITUER_ASSURE);
+            PRESTATION_A_RESTITUER_EMPLOYEUR = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PROCHE_AIDANT_PRESTATION_A_RESTITUER_EMPLOYEUR);
+            PRESTATION_A_RESTITUER_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PROCHE_AIDANT_PRESTATION_A_RESTITUER_INDEPENDANT);
+            COT_AVS_ASSURE = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PROCHE_AIDANT_COTISATION_AVS_ASSURE);
+            COT_AVS_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PROCHE_AIDANT_COTISATION_AVS_INDEPENDANT);
+            COT_AC_ASSURE = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PROCHE_AIDANT_COTISATION_AC_ASSURE);
+            COT_AC_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PROCHE_AIDANT_COTISATION_AC_INDEPENDANT);
+            FONDS_DE_COMPENSATION_ASSURE = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PROCHE_AIDANT_FONDS_DE_COMPENSATION_ASSURE);
+            FONDS_DE_COMPENSATION_EMPLOYEUR = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PROCHE_AIDANT_FONDS_DE_COMPENSATION_EMPLOYEUR);
+            FONDS_DE_COMPENSATION_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PROCHE_AIDANT_FONDS_DE_COMPENSATION_INDEPENDANT);
+            IMPOT_SOURCE_ASSURE = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PROCHE_AIDANT_IMPOT_A_LA_SOURCE_ASSURE);
+            IMPOT_SOURCE_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PROCHE_AIDANT_IMPOT_A_LA_SOURCE_INDEPENDANT);
+            COT_LFA = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PROCHE_AIDANT_COTISATION_LFA);
+            FRAIS_ADMINISTRATION = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PROCHE_AIDANT_FRAIS_ADMINISTRATION);
+            COMPENSATION = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.COMPENSATION_APG_MAT);
         } else if (typeLot.equals(IPRDemande.CS_TYPE_PANDEMIE)) {
             INDEMN_GARDE_ENFANT_SALARIE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_INDEMN_GARDE_ENFANTS_POUR_SALARIE);
             INDEMN_GARDE_ENFANT_INDEPENDANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PANDEMIE_INDEMN_GARDE_ENFANTS_POUR_INDEPENDANT);
