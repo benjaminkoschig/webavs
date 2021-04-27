@@ -290,31 +290,14 @@ var executeSelectedError = {
 		});
 	},
 	ajaxUpdateErrorToManual: function () {
-		// ajaxUtils.beforeAjax(this.mainContainer);
 		this.$isManualOnError.button("option", "disabled", true);
 		buttonExecut.$executeStep.button("option", "disabled", true);
 		buttonExecut.$validerStep.button("option", "disabled", true);
 		var that = this;
-		// var parametres = this.getParametres();
-		var parametres =  {
-			'simpleEntite.isManual': that.isManual,
-			'idExecutionProcess:': ID_EXECUTE_PROCEESS,
-			'keyProcess': S_KEY_PROCESS,
-			'idEntity': that.n_idEntity,
-			'injectEntity': that.isInject,
-			'ids': that.ids,
-			'idCurrentStep': S_RUNNING_STEP
-		};
-		var pbar = that.$isManualOnError.closest(".stepInfos").find(".progressStep").data("notation_progressbar");
-		if(pbar){
-			pbar.setValue(0);
-		}
+		var parametres =  {};
 		parametres.idExecutionProcess = ID_EXECUTE_PROCEESS;
 		parametres.processErrorToManual = "true";
 		parametres.userAction = "fx.process.jadeStepAjax.modifierAJAX";
-		// parametres.parentViewBean = this.getParentViewBean();
-		//this.n_offset = 0;
-		// parametres = this.addParmetresForPagination(parametres);
 		$.ajax({
 			data: parametres,
 			contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
