@@ -1,6 +1,8 @@
 package ch.globaz.al.businessimpl.services.rafam;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.AllowanceType;
 import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.BeneficiaryType;
 import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.ChildType;
@@ -19,6 +21,7 @@ import ch.globaz.al.business.exceptions.rafam.ALRafamSedexException;
 import ch.globaz.al.business.models.allocataire.AgricoleModel;
 import ch.globaz.al.business.models.allocataire.AgricoleSearchModel;
 import ch.globaz.al.business.models.dossier.DossierComplexModel;
+import ch.globaz.al.business.models.droit.CalculBusinessModel;
 import ch.globaz.al.business.models.droit.DroitComplexModel;
 import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
 import ch.globaz.al.business.services.ALServiceLocator;
@@ -191,7 +194,7 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
                 droit.getEnfantComplexModel().getPersonneEtendueComplexModel().getPersonneEtendue().getNumAvsActuel());
         annonce.setGenrePrestation(type.getCodeCentrale());
         annonce.setBaseLegale(getBaseLegale(dossier, droit).getCodeCentrale());
-        annonce.setCanton(getCantonBaseLegale(dossier, droit));
+        annonce.setCanton(getCantonBaseLegaleCascade(dossier, droit, annonce));
 
         if (!type.equals(RafamFamilyAllowanceType.ADOPTION) && !type.equals(RafamFamilyAllowanceType.NAISSANCE)
                 && !type.equals(RafamFamilyAllowanceType.DIFFERENCE_ADOPTION)
@@ -299,7 +302,7 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
                 droit.getEnfantComplexModel().getPersonneEtendueComplexModel().getPersonneEtendue().getNumAvsActuel());
         annonce.setGenrePrestation(type.getCodeCentrale());
         annonce.setBaseLegale(getBaseLegale(dossier, droit).getCodeCentrale());
-        annonce.setCanton(getCantonBaseLegale(dossier, droit));
+        annonce.setCanton(getCantonBaseLegaleCascade(dossier, droit, annonce));
 
         if (!type.equals(RafamFamilyAllowanceType.ADOPTION) && !type.equals(RafamFamilyAllowanceType.NAISSANCE)
                 && !type.equals(RafamFamilyAllowanceType.DIFFERENCE_ADOPTION)
@@ -1152,5 +1155,44 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
         }
 
         return annonce;
+    }
+
+    /**
+     * Retourne le canton base legale pour un dossier allocation familiale
+     * selon la cascade 1) canton Droit 2) canton Validité 3) canton Affilié
+     *
+     * @param dossier : le dossier.
+     * @param droit   : le droit.
+     * @param annonce : l'annonce.
+     * @return String du canton
+     */
+    private String getCantonBaseLegaleCascade(DossierComplexModel dossier, DroitComplexModel droit, AnnonceRafamModel annonce) throws JadeApplicationException, JadePersistenceException {
+        String dateDebut =  droit.getDroitModel().getDebutDroit();
+        String dateFin =  droit.getDroitModel().getFinDroitForcee();
+        Date dateDuJour = new Date();
+        String dateCalcul = JadeDateUtil.getGlobazFormattedDate(dateDuJour);
+        if(!JadeStringUtil.isEmpty(dateDebut)
+            && JadeDateUtil.getGlobazDate(dateDebut).after(dateDuJour)) {
+            dateCalcul = dateDebut;
+        } else if(!JadeStringUtil.isEmpty(dateFin)
+            && JadeDateUtil.getGlobazDate(dateFin).before(dateDuJour)) {
+            dateCalcul = dateFin;
+        }
+        List<CalculBusinessModel> droitsList = new ArrayList<>();
+
+        droitsList = ALServiceLocator.getCalculBusinessService().getCalcul(dossier, dateCalcul);
+
+        CalculBusinessModel droitTrouve = null;
+        for (CalculBusinessModel droitIteration : droitsList) {
+           if (annonce.getIdDroit().equals(droitIteration.getDroit().getDroitModel().getIdDroit())) {
+                droitTrouve = droitIteration;
+           }
+        }
+
+        String canton = droitTrouve != null && !JadeStringUtil.isEmpty((droitTrouve).getTarif())
+                ? JadeCodesSystemsUtil.getCode((droitTrouve).getTarif())
+                : getCantonBaseLegale(dossier, droit);
+
+        return canton;
     }
 }
