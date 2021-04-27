@@ -58,6 +58,9 @@ public class EcheancesAffilieDirect extends EcheancesAffilieAbstract {
 
         document.addData("droitEcheanceAffilieDir_texteFin",
                 this.getText("al.echeances.AffilieAvisEcheanceDirect.texte.fin", langueDocument));
+        // texte revision
+        document.addData("droitEcheanceAffilieDir_texteRevision",
+                this.getText("al.echeances.AffilieAvisEcheance.texteRevision", langueDocument));
     }
 
 }

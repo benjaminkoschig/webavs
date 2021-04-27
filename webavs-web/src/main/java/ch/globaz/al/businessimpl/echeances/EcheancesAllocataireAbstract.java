@@ -549,6 +549,9 @@ public abstract class EcheancesAllocataireAbstract extends AbstractDocument impl
         // texte de fin
         document.addData("droitEcheanceAllocataireInd_texteFin",
                 this.getText("al.echeances.AffilieAvisEcheance.texte.fin", langueDocument));
+        // texte revision
+        document.addData("droitEcheanceAllocataireInd_texteRevision",
+                this.getText("al.echeances.AffilieAvisEcheance.texteRevision", langueDocument));
         // texte copie en gras
         document.addData("droitEcheanceAllocataireInd_texteCopie",
                 this.getText("al.echeances.AffilieAvisEcheance.texteCopie", langueDocument));

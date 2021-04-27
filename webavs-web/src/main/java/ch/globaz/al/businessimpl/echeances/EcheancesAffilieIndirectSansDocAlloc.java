@@ -65,6 +65,9 @@ public class EcheancesAffilieIndirectSansDocAlloc extends EcheancesAffilieAbstra
         // texte en gras remettre copie à
         document.addData("droitEcheanceAffilieInd_texteCopie",
                 this.getText("al.echeances.AffilieAvisEcheance.texteCopie", langueDocument));
+        // texte revision
+        document.addData("droitEcheanceAffilieInd_texteRevision",
+                this.getText("al.echeances.AffilieAvisEcheance.texteRevision", langueDocument));
         // suite texte normal copie
         document.addData("droitEcheanceAffilieInd_texteCopieFin",
                 this.getText("al.echeances.AffilieAvisEcheance.texteCopieFin", langueDocument));
