@@ -398,10 +398,13 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             PeriodePCAccordee pcAccordes = listePCAccordes.get(i);
             PeriodePCAccordee pcAccordesReforme = listePCAccordesReforme.get(i);
             Date dateDebut = pcAccordesReforme.getDateDebut();
-            if(isReforme || pcAccordes.isNePasCalculer()) {
+            if(isReforme && isRefusFortune(pcAccordesReforme)) {
+                throw new CalculException("pegasus.calcul.seuil.fortune.depasse", pcAccordesReforme.getCalculsComparatifs().get(0).getFortune());
+            } else if((isReforme || pcAccordes.isNePasCalculer()) && !isRefusFortune(pcAccordesReforme) ) {
                 // la période précédente a déterminée qu'un calcul réforme était plus favorable : tous les suivants sont uniquement réforme
                 // ou sur un calcul rétro : une ancienne version de droit était déjà un calcul uniquement réforme
                 keepReformeOnly(pcAccordes, pcAccordesReforme);
+                isReforme = true;
             } else if (JadeDateUtil.isDateBefore(JadeDateUtil.getGlobazFormattedDate(dateDebut), dateReforme)
                     || isRefusFortune(pcAccordesReforme)) {
                 // periode de cette pca avant la réforme à ne pas comparer ou refus seuil de fortune sur le calcul réforme
@@ -424,6 +427,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 isReforme = pcAccordes.determineCCFavorable();
             }
         }
+
     }
 
     /**
