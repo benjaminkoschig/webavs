@@ -81,11 +81,6 @@ function addPeriode() {
 
     nbJour = Math.round(Math.abs((dateBegin - dateEnd) / (24 * 60 * 60 * 1000))) + 1;
 
-    if (JOUR_SUPPLEMENTAIRE && $jourSupplementaire.val()) {
-        nbJour = nbJour + ($jourSupplementaire.val() * 1)
-    }
-
-
     if (isAjoutdePeriodeAuthorise(dateDebut, dateFin, nbJour, true) && !isError) {
         addPeriodeToTable(dateDebut, dateFin, nbJour, tauxImposition, cantonImposition, cantonImpositionLibelle, $jourSupplementaire.val());
         $('#dateDebutPeriode').val("");
@@ -148,10 +143,11 @@ function repaintTablePeriodes() {
         var ddd = '<td width="' + width + '" align="center">' + periode.getDateDeDebut() + '</td>';
         var ddf = '<td width="' + width + '" align="center">' + periode.getDateDeFin() + '</td>';
         var jsp = '';
+
+        var njg = '<td width="10%" align="center" class="nbJourPourUnePeriode">' + periode.getNbJour()  + '</td>';
         if (JOUR_SUPPLEMENTAIRE) {
             jsp = '<td width="10%" align="center">' + periode.jourSupplementaire + '</td>';
         }
-        var njg = '<td width="10%" align="center" class="nbJourPourUnePeriode">' + periode.getNbJour() + '</td>';
         if (periode.getCantonImposition() == 0) {
             var tis = '<td width="10%" align="center"></td>';
             var cis = '<td width="10%" align="center"></td>';
@@ -168,7 +164,7 @@ function repaintTablePeriodes() {
             var deleteBtn = '<td width="10%" align="center">';
             var editBtn = '</td>';
         }
-        var html = '<tr>' + ddd + ddf + jsp + njg + tis + cis + deleteBtn + spacer + editBtn + '</tr>';
+        var html = '<tr>' + ddd + ddf + njg + jsp + tis + cis + deleteBtn + spacer + editBtn + '</tr>';
         $('#periodes tbody').append(html);
     }
 }

@@ -1,5 +1,6 @@
 package globaz.prestation.beans;
 
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.utils.PRDateUtils;
 
 public class PRPeriode implements Comparable<PRPeriode> {
@@ -144,6 +145,17 @@ public class PRPeriode implements Comparable<PRPeriode> {
         }
         return nbJoursupplementaire;
     }
+
+    public String getNbJourMinusSupplementaire() {
+        if (JadeStringUtil.isBlankOrZero(this.nbJoursupplementaire)) {
+            return this.nbJour;
+        }
+        if (JadeStringUtil.isBlankOrZero(this.nbJour)) {
+            return "";
+        }
+        return String.valueOf(Integer.parseInt(this.nbJour) - Integer.parseInt(this.nbJoursupplementaire));
+    }
+
 
     public void setNbJoursupplementaire(final String nbJoursupplementaire) {
         this.nbJoursupplementaire = nbJoursupplementaire;

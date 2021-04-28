@@ -508,7 +508,7 @@
             %>
         var ddd = '<%=periode.getDateDeDebut()%>';
         var ddf = '<%=periode.getDateDeFin() %>';
-        var ndj = '<%=periode.getNbJour() %>';
+        var ndj = '<%=periode.getNbJour()%>';
         var tis = '<%=periode.getTauxImposition() %>';
         var cis = '<%=periode.getCantonImposition() %>';
         var cisLibelle = '<%=objSession.getCodeLibelle(periode.getCantonImposition()) %>';
@@ -780,10 +780,10 @@
                                 <ct:FWLabel key="DATE_DE_FIN"/>
                             </th>
                             <th width="10%">
-                                <ct:FWLabel key="JSP_JOURS_SUPPL"/>
+                                <ct:FWLabel key="JSP_NB_JOURS_SOLDES"/>
                             </th>
                             <th width="10%">
-                                <ct:FWLabel key="JSP_NB_JOURS_SOLDES"/>
+                                <ct:FWLabel key="JSP_JOURS_SUPPL"/>
                             </th>
                             <th width="10%">
                                 <ct:FWLabel key="MENU_OPTION_TAUX_IMPOSITIONS_RACC"/>
