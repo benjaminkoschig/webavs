@@ -33,7 +33,7 @@ public class APModuleCalculAllocProcheAidant extends AAPModuleCalculSalaireJourn
             throws Exception {
 
         if (baseCalcul.isSansActiviteLucrative()) {
-            throw new APCalculException("Activité lucrative obligatoire pour bénéficier d'une allocation maternité.");
+            throw new APCalculException("Activité lucrative obligatoire pour bénéficier d'une allocation proche aidant.");
         }
 
         APResultatCalcul result = super.calculerMontantAllocation(baseCalcul, refData);
