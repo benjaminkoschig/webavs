@@ -123,6 +123,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
     public final static String NATURE_VERSEMENT_AF = "209007";
     public static final String NATURE_VERSEMENT_PANDEMIE = "209013";
     public static final String NATURE_VERSEMENT_PATERNITE = "209014";
+    public static final String NATURE_VERSEMENT_PROCHEAIDANT = "209015";
     public final static String NATURE_VERSEMENT_AMC = "209011";
     public final static String NATURE_VERSEMENT_APG = "209003";
     public final static String NATURE_VERSEMENT_FCF = "209010";
