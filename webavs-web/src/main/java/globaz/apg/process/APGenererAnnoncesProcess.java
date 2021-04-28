@@ -148,6 +148,8 @@ public class APGenererAnnoncesProcess extends BProcess {
             droit = new APDroitMaternite();
         } else if (APGUtils.isTypePrestation(prestation.getIdPrestation(),getSession(), IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE)) {
             droit = new APDroitPaternite();
+        } else if (APGUtils.isTypePrestation(prestation.getIdPrestation(),getSession(), IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT)) {
+            droit = new APDroitProcheAidant();
         } else {
             droit = new APDroitAPG();
         }

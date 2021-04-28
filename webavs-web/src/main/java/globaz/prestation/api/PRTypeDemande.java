@@ -10,13 +10,17 @@ import java.util.function.Function;
 @Getter
 public enum PRTypeDemande {
 
-    APG(IPRDemande.CS_TYPE_APG),
-    MATERNITE(IPRDemande.CS_TYPE_MATERNITE),
-    PANDEMIE(IPRDemande.CS_TYPE_PANDEMIE),
-    PATERNITE(IPRDemande.CS_TYPE_PATERNITE),
-    PROCHE_AIDANT(IPRDemande.CS_TYPE_PROCHE_AIDANT);
+    APG(IPRDemande.CS_TYPE_APG, "APG"),
+    MATERNITE(IPRDemande.CS_TYPE_MATERNITE, "MATERNITE"),
+    PANDEMIE(IPRDemande.CS_TYPE_PANDEMIE, "PANDEMIE"),
+    PATERNITE(IPRDemande.CS_TYPE_PATERNITE, "PATERNITE"),
+    PROCHE_AIDANT(IPRDemande.CS_TYPE_PROCHE_AIDANT, "PROCHE_AIDANT");
 
     private final String csType;
+    /**
+     * Utilisé pour récupérer les valeurs des références pour le calcul de la prestation (calculAPGReferenceData.xml)
+     */
+    private final String calculreferenceData;
 
     /**
      * Permet de savoir si l'enum est de type proche aidant.

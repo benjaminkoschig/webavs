@@ -8,6 +8,7 @@ package globaz.apg.module.calcul;
 
 import globaz.apg.api.droits.IAPDroitAPG;
 import globaz.apg.module.calcul.interfaces.IAPReferenceDataPrestation;
+import globaz.apg.module.calcul.rev2005.APReferenceDataAPG;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
@@ -23,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import globaz.prestation.api.IPRDemande;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -56,6 +59,7 @@ public class APReferenceDataParser {
     private static final String TAG_CLASS = "class";
 
     private static final String TAG_PRESTATION = "prestation";
+    public static final String CALCUL_APGREFERENCE_DATA_XML = "calculAPGReferenceData.xml";
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -82,7 +86,7 @@ public class APReferenceDataParser {
     public static final IAPReferenceDataPrestation loadReferenceData(BSession session, String prestationType,
             JADate startDate, JADate endDate, JADate dateRevision) throws Exception {
         // révision
-        List refData = INSTANCE.loadReferencesData(session, "calculAPGReferenceData.xml", prestationType, startDate,
+        List refData = INSTANCE.loadReferencesData(session, CALCUL_APGREFERENCE_DATA_XML, prestationType, startDate,
                 endDate, endDate);
 
         if (refData.isEmpty()) {

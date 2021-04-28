@@ -21,6 +21,7 @@ import globaz.babel.api.ICTListeTextes;
 import globaz.framework.util.FWMessageFormat;
 import globaz.globall.db.*;
 import globaz.globall.util.*;
+import globaz.prestation.api.PRTypeDemande;
 import globaz.prestation.interfaces.tiers.PRTiersAdresseCopyFormater02;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.tiers.TIAdministrationAdresse;
@@ -728,7 +729,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 }
 
                 if (((getFirstForCopy() && getIsCopie()) || !getIsCopie())) {
-                    createCorpsPaternite(parametres);
+                    createCorps(parametres);
                     // S'il s'agit de la copie et de la lettre d'entête, il faut modifier l'adresse sur ce document
                 } else if (getIsCopie() && !getFirstForCopy()) {
                     String tiersAdresseFiscFormatte = getAdresseFiscFormatte(langue, idCantonImpotSource);
@@ -1127,7 +1128,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         return "";
     }
 
-    private void createCorpsPaternite(Map<String, String> parametres) throws Exception {
+    private void createCorps(Map<String, String> parametres) throws Exception {
 
         // le corps du document
         // ----------------------------------------------------------------------------------------
@@ -1435,7 +1436,11 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
         APReferenceDataAPG ref;
         final JADate dateDebut = new JADate(droit.getDateDebutDroit());
-        final JADate dateFin = new JADate(droit.getDateFinDroit());
+        String dateFinDroit = droit.getDateFinDroit();
+        if(JadeStringUtil.isBlankOrZero(dateFinDroit)) {
+            dateFinDroit = droit.getDateDebutDroit();
+        }
+        final JADate dateFin = new JADate(dateFinDroit);
 
         // début
 
@@ -1446,9 +1451,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
         final BigDecimal revenuAnnuel = sitProMan.getRevenuAnnuelSituationsProfessionnelles();
 
+        ref = (APReferenceDataAPG) APReferenceDataParser.loadReferenceData(getSession(), PRTypeDemande.toEnumByCs(getCSTypePrestationsLot()).getCalculreferenceData(), dateDebut,
+                    dateFin, dateFin);
 
-        ref = (APReferenceDataAPG) APReferenceDataParser.loadReferenceData(getSession(), "PATERNITE", dateDebut,
-                dateFin, dateFin);
         final double montantJournalierMax = ref.getGE().intValue();
         final double montantAnnuelMax = montantJournalierMax * 360;
         boolean isMontantMax = false;
@@ -1591,7 +1596,11 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
         APReferenceDataAPG ref;
         final JADate dateDebut = new JADate(droit.getDateDebutDroit());
-        final JADate dateFin = new JADate(droit.getDateFinDroit());
+        String dateFinDroit = droit.getDateFinDroit();
+        if(JadeStringUtil.isBlankOrZero(dateFinDroit)) {
+            dateFinDroit = droit.getDateDebutDroit();
+        }
+        final JADate dateFin = new JADate(dateFinDroit);
 
         // début
 
@@ -1602,8 +1611,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
         final BigDecimal revenuAnnuel = sitProMan.getRevenuAnnuelSituationsProfessionnelles();
 
-        ref = (APReferenceDataAPG) APReferenceDataParser.loadReferenceData(getSession(), "PATERNITE", dateDebut,
+        ref = (APReferenceDataAPG) APReferenceDataParser.loadReferenceData(getSession(), PRTypeDemande.toEnumByCs(getCSTypePrestationsLot()).getCalculreferenceData(), dateDebut,
                 dateFin, dateFin);
+
         final double montantJournalierMax = ref.getGE().intValue();
         final double montantAnnuelMax = montantJournalierMax * 360;
         boolean isMontantMax = false;
