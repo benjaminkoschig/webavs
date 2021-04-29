@@ -3,6 +3,7 @@ package ch.globaz.common.businessimpl.services;
 import ch.globaz.common.business.interfaces.ParametrePlageValeurInterface;
 import ch.globaz.common.business.services.ParametreService;
 import ch.globaz.common.exceptions.CommonTechnicalException;
+import ch.globaz.common.exceptions.Exceptions;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
@@ -17,15 +18,14 @@ import java.math.BigDecimal;
 @Slf4j
 public class ParametreServiceImpl implements ParametreService {
 
-    private FWFindParameter getParameter(ParametrePlageValeurInterface parametrePlageValeur, String date)
-            throws Exception {
+    private FWFindParameter getParameter(ParametrePlageValeurInterface parametrePlageValeur, String date) {
         BSession session = BSessionUtil.getSessionFromThreadContext();
         return this.getParameter(parametrePlageValeur, date, session, session.getApplicationId());
     }
 
     private FWFindParameter getParameter(ParametrePlageValeurInterface parametrePlageValeur,
                                          String date,
-                                         BSession session, String applicationId) throws Exception {
+                                         BSession session, String applicationId)  {
 
         if (!JadeDateUtil.isGlobazDate(date)) {
             throw new CommonTechnicalException("Date parameter is mandatory or value " + date + " is not a valid date");
@@ -56,7 +56,7 @@ public class ParametreServiceImpl implements ParametreService {
         param.setIdApplParametre(applicationId);
         param.setIdCleDiffere(parametrePlageValeur.getCle());
         param.setDateDebutValidite(date);
-        param.find(1);
+        Exceptions.checkedToUnChecked(()->param.find(1));
 
         if (param.getSize() == 0) {
             throw new CommonTechnicalException("Aucun paramètre défini pour la clé " + parametrePlageValeur + " à la date " + date);
@@ -66,14 +66,14 @@ public class ParametreServiceImpl implements ParametreService {
     }
 
     private FWFindParameter getParameter(ParametrePlageValeurInterface parametrePlageValeur, String date,
-            String applicationId) throws Exception {
+            String applicationId) {
         BSession session = BSessionUtil.getSessionFromThreadContext();
         return this.getParameter(parametrePlageValeur, date, session, applicationId);
     }
 
     @Override
     public FWCurrency[] getPlageValeurNumeriqueFWCurrency(ParametrePlageValeurInterface parametrePlageValeur,
-            String date) throws Exception {
+            String date)  {
         FWFindParameter parametre = this.getParameter(parametrePlageValeur, date);
 
         FWCurrency[] result = new FWCurrency[3];
@@ -96,8 +96,7 @@ public class ParametreServiceImpl implements ParametreService {
      * {@inheritDoc}
      */
     @Override
-    public BigDecimal getValeurNumeriqueBigDecimal(ParametrePlageValeurInterface parametrePlageValeur, String date)
-            throws Exception {
+    public BigDecimal getValeurNumeriqueBigDecimal(ParametrePlageValeurInterface parametrePlageValeur, String date) {
         FWFindParameter parametre = this.getParameter(parametrePlageValeur, date);
         return new BigDecimal(parametre.getValeurNumParametre());
     }
@@ -112,7 +111,7 @@ public class ParametreServiceImpl implements ParametreService {
             return new BigDecimal(parameter.getValeurNumParametre()).intValue();
         } catch (Exception e) {
             LOG.error("Error for this parameter: " + parametrePlageValeur.getCle(), e);
-            throw new CommonTechnicalException("Error for this parameter: " + parametrePlageValeur.getCle(), e);
+            throw e;
         }
     }
 

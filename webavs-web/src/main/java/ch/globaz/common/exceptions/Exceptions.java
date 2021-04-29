@@ -7,7 +7,6 @@ import java.util.function.Consumer;
 /**
  * Classe utilitaire pour faciliter la gestion des exceptions.
  */
-@SuppressWarnings("squid:S2221"/*Le but principale est de catcher les exceptions et de renvoyer une runtime*/)
 public final class Exceptions {
 
     private Exceptions() {
