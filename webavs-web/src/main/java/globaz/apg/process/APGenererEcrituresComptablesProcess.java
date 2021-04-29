@@ -1934,7 +1934,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             while (ventilationsIterator.hasNext()) {
                 final Ventilation ventilation = (Ventilation) ventilationsIterator.next();
 
-                String natureProperty = getNatureProprieteOrdreVersement(ventilation);
+                String natureProperty = resolveNatureProprieteOrdreVersement(ventilation.genrePrestation);
 
                 if(natureProperty != null ) {
                     doOrdreVersement(compta, compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(),
@@ -2764,20 +2764,20 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
     }
 
     /**
-     * @param ventilation
+     * @param genrePrestation
      * @return le nom de la propriété contenant la nature de l'Ordre de versement
      */
-    private String getNatureProprieteOrdreVersement(Ventilation ventilation) {
+    private String resolveNatureProprieteOrdreVersement(String genrePrestation) {
 
         if (typeLot.equals(IPRDemande.CS_TYPE_MATERNITE)) {
-            if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(ventilation.genrePrestation)
-                    || APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(ventilation.genrePrestation)) {
+            if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(genrePrestation)
+                    || APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(genrePrestation)) {
                 return APGenererEcrituresComptablesProcess.PROP_NATURE_VERSEMENT_ACM_MAT;
-            } else if (APTypeDePrestation.LAMAT.isCodeSystemEqual(ventilation.genrePrestation)) {
+            } else if (APTypeDePrestation.LAMAT.isCodeSystemEqual(genrePrestation)) {
                 return APGenererEcrituresComptablesProcess.PROP_NATURE_VERSEMENT_LAMAT;
-            } else if (APTypeDePrestation.STANDARD.isCodeSystemEqual(ventilation.genrePrestation)
-                    || APTypeDePrestation.MATCIAB1.isCodeSystemEqual(ventilation.genrePrestation)
-                    || APTypeDePrestation.MATCIAB2.isCodeSystemEqual(ventilation.genrePrestation)) {
+            } else if (APTypeDePrestation.STANDARD.isCodeSystemEqual(genrePrestation)
+                    || APTypeDePrestation.MATCIAB1.isCodeSystemEqual(genrePrestation)
+                    || APTypeDePrestation.MATCIAB2.isCodeSystemEqual(genrePrestation)) {
                 return APGenererEcrituresComptablesProcess.PROP_NATURE_VERSEMENT_AMAT;
             }
         } else if(typeLot.equals(IPRDemande.CS_TYPE_PATERNITE)){
@@ -2785,12 +2785,12 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         } else if(typeLot.equals(IPRDemande.CS_TYPE_PROCHE_AIDANT)){
             return APGenererEcrituresComptablesProcess.PROP_NATURE_VERSEMENT_PROCHEAIDANT;
         } else {
-            if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(ventilation.genrePrestation)
-                    || APTypeDePrestation.ACM_NE.isCodeSystemEqual(ventilation.genrePrestation)) {
+            if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(genrePrestation)
+                    || APTypeDePrestation.ACM_NE.isCodeSystemEqual(genrePrestation)) {
                 return APGenererEcrituresComptablesProcess.PROP_NATURE_VERSEMENT_ACM_APG;
-            } else if (APTypeDePrestation.STANDARD.isCodeSystemEqual(ventilation.genrePrestation)) {
+            } else if (APTypeDePrestation.STANDARD.isCodeSystemEqual(genrePrestation)) {
                 return APGenererEcrituresComptablesProcess.PROP_NATURE_VERSEMENT_APG;
-            } else if (APTypeDePrestation.PANDEMIE.isCodeSystemEqual(ventilation.genrePrestation)) {
+            } else if (APTypeDePrestation.PANDEMIE.isCodeSystemEqual(genrePrestation)) {
                 return APGenererEcrituresComptablesProcess.PROP_NATURE_VERSEMENT_PANDEMIE;
             }
         }
