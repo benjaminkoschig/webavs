@@ -169,7 +169,7 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
 
     public int calculerNbjourTotalDuDroit() {
         SQLWriter sqlWriter = SQLWriter.writeWithSchema()
-                                       .append("select sum(VCNNBJ) as nb_Jours")
+                                       .append("select sum(VCNNBJ + VCNNBJOURSUP) as nb_Jours")
                                        .append("from schema." + APDroitLAPG.TABLE_NAME_LAPG)
                                        .join("schema.APDROITPROCHEAIDANT ON schema.APDROITPROCHEAIDANT.ID_DROIT = schema.APDROIP.VAIDRO")
                                        .join("schema.APPERIP ON schema.APPERIP.VCIDRO = schema.APDROIP.VAIDRO")
