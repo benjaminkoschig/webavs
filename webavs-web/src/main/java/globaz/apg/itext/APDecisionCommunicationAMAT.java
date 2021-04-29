@@ -251,6 +251,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
     private String idDroit;
 
     String revenuMoyenDeterminant;
+    double revenuMoyenDeterminantMAX;
     private String idTiersAssure = "";
     private boolean isDecompteRempli = false;
 
@@ -1145,14 +1146,19 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         if (state_dec == APDecisionCommunicationAMAT.STATE_STANDARD) {
             ref = (APReferenceDataAPG) APReferenceDataParser.loadReferenceData(getSession(), "MATERNITE", dateDebut,
                     dateFin, dateFin);
-            double montantJournalierMax = ref.getGE().intValue();
+            final double montantJournalierMax = ref.getGE().intValue();
+            final double montantAnnuelMax = montantJournalierMax * 360;
+
             if (hasMATCIAB1()) {
-                Double montantTmp = getMontantMaxSelonCantonSitPro();
-                if (montantTmp != null) {
-                    montantJournalierMax = montantTmp;
+                Double tmp = getMontantMaxSelonCantonSitPro();
+                if (tmp != null) {
+                    revenuMoyenDeterminantMAX = tmp;
                 }
             }
-            final double montantAnnuelMax = montantJournalierMax * 360;
+            revenuMoyenDeterminant = JANumberFormatter.format(
+                        Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 0.05, 2,
+                        JANumberFormatter.NEAR);
+
             boolean isMontantMax = false;
 
             if (montantJournalierMax <= Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant())) {
@@ -1166,14 +1172,10 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
             if (isMontantMax) {
                 arguments[4] = JANumberFormatter.format(montantJournalierMax);
-                revenuMoyenDeterminant = JANumberFormatter.format(montantJournalierMax);
             } else {
                 arguments[4] = JANumberFormatter.format(
                         Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 1, 2,
                         JANumberFormatter.SUP);
-                revenuMoyenDeterminant = JANumberFormatter.format(
-                        Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 0.05, 2,
-                        JANumberFormatter.NEAR);
             }
 
             // Si c'est une décision Lamat (Maternité cantonale)
@@ -1294,6 +1296,17 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                     dateFin, dateFin);
             final double montantJournalierMax = ref.getGE().intValue();
             final double montantAnnuelMax = montantJournalierMax * 360;
+
+            if (hasMATCIAB1()) {
+                Double tmp = getMontantMaxSelonCantonSitPro();
+                if (tmp != null) {
+                    revenuMoyenDeterminantMAX = tmp;
+                }
+            }
+            revenuMoyenDeterminant = JANumberFormatter.format(
+                        Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 0.05, 2,
+                        JANumberFormatter.NEAR);
+
             boolean isMontantMax = false;
 
             if (montantJournalierMax <= Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant())) {
@@ -1307,12 +1320,8 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
             if (isMontantMax) {
                 arguments[5] = JANumberFormatter.format(montantJournalierMax);
-                revenuMoyenDeterminant = JANumberFormatter.format(montantJournalierMax);
             } else {
                 arguments[5] = JANumberFormatter.format(
-                        Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 1, 2,
-                        JANumberFormatter.SUP);
-                revenuMoyenDeterminant = JANumberFormatter.format(
                         Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 1, 2,
                         JANumberFormatter.SUP);
             }
@@ -1852,7 +1861,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                         new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
                                                         buffer, new FieldPosition(0)).toString());
 
-                                        if (APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) { // tableau standard indépendant un seul employeur
+                                        if (APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) { // tableau MATCIAB2 assuré un seul employeurs
                                             if (!textaddedMATCIAB2) {
                                                 buffer.setLength(0);
                                                 buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
@@ -1869,7 +1878,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                             }
                                         }
 
-                                        if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre())) { // tableau standard indépendant un seul employeur
+                                        if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre())) {
                                             if (!textaddedMATCIAB1) { // tableau MATCIAB1 assuré un seul employeurs
 
                                                 if (hasNotOnlyMATCIAB1()) {
@@ -1956,7 +1965,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                         new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
                                                         buffer, new FieldPosition(0)).toString());
 
-                                        if (APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) {
+                                        if (APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) { // tableau MATCIAB2 indépendant/employeur un seul employeur
                                             if (!textaddedMATCIAB2) {
                                                 buffer.setLength(0);
                                                 buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
@@ -2224,7 +2233,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                                         new Object[]{JANumberFormatter.formatNoRound(rp.getMontantBrut())},
                                                         buffer, new FieldPosition(0)).toString());
 
-                                        if (APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) {
+                                        if (APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) { // tableau MATCIAB2 indépendant/employeur plusieurs employeurs
                                             if (!textaddedMATCIAB2) {
                                                 buffer.setLength(0);
                                                 buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
@@ -2247,11 +2256,19 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                         if (APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre())) {
                                             if (!textaddedMATCIAB1) { // tableau MATCIAB1 indépendant/employeur plusieurs employeurs
 
+                                                // calculer le pourcentage de l'employeur
+                                                final double pourcent = Double.parseDouble(rp.getTauxRJM()) / 100d;
+
+                                                double revenuMoyenDeterminantMATCIABLimite = Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()) * pourcent;
+                                                if (revenuMoyenDeterminantMATCIABLimite >= revenuMoyenDeterminantMAX) {
+                                                    revenuMoyenDeterminantMATCIABLimite = revenuMoyenDeterminantMAX;
+                                                }
+
                                                 if (hasNotOnlyMATCIAB1()) {
                                                     buffer.setLength(0);
                                                     buffer.append("\n");
                                                     buffer.append(PRStringUtils.replaceString(documentEmployeurs.getTextes(1).getTexte(200).getDescription(), "{0}",
-                                                            String.valueOf(revenuMoyenDeterminant)));
+                                                            JANumberFormatter.format(revenuMoyenDeterminantMATCIABLimite, 0.05, 2, JANumberFormatter.NEAR)));
                                                     buffer.append("\n");
                                                 } else {
                                                     buffer.setLength(0);
