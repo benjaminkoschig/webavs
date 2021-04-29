@@ -28,8 +28,15 @@ public class Dates {
         return formatSwiss(LocalDate.now());
     }
 
-    public static final String displayMonthFullname(String swissFormatDate, String codeIso) {
+    public static String displayMonthFullname(String swissFormatDate, String codeIso) {
         Locale locale = new Locale(codeIso);
         return LocalDate.parse(swissFormatDate, DATE_TIME_SWISS_FORMATTER).getMonth().getDisplayName(TextStyle.FULL, locale);
+    }
+
+    public static LocalDate toDate(String date) {
+        if (date == null || date.trim().isEmpty()) {
+            return null;
+        }
+        return LocalDate.parse(date, DATE_TIME_SWISS_FORMATTER);
     }
 }

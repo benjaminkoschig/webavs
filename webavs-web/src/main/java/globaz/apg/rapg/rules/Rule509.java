@@ -5,6 +5,7 @@ import globaz.apg.db.droits.APDroitLAPGJointTiersManager;
 import globaz.apg.exceptions.APRuleExecutionException;
 import globaz.apg.interfaces.APDroitAvecParent;
 import globaz.apg.pojo.APChampsAnnonce;
+import globaz.globall.db.BManager;
 import globaz.jade.client.util.JadeStringUtil;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +61,7 @@ public class Rule509 extends Rule {
         mgr.setSession(getSession());
         List<APDroitAvecParent> droitsTries = null;
         try {
-            mgr.find();
+            mgr.find(BManager.SIZE_NOLIMIT);
             // On récupère tous les droits y compris le droit courant (celui que l'utilisateur est en train de saisir)
             List<APDroitAvecParent> tousLesDroits = mgr.getContainer();
             // On élimine tous les droits parents qui sont corrigés par un droit

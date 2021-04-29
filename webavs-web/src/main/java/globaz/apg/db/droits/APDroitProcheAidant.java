@@ -2,6 +2,7 @@ package globaz.apg.db.droits;
 
 import ch.globaz.common.sql.SQLWriter;
 import ch.globaz.common.sql.converters.LocalDateConverter;
+import ch.globaz.common.util.Dates;
 import ch.globaz.queryexec.bridge.jade.SCM;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.prestation.IAPPrestation;
@@ -96,10 +97,12 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
 
     public Optional<LocalDate> calculerDelai() {
         Integer nbMois = APParameter.PROCHE_AIDANT_MOIS_MAX.findValueOrWithDateNow(this.getDateDebutDroit(), this.getSession());
-        Optional<NbJourDateMin> nbJourDateMin = loadNbJourDateMin();
-
-        return nbJourDateMin.map(NbJourDateMin::getDateDebutMin)
-                            .map(localDate -> localDate.plusMonths(nbMois));
+        return loadNbJourDateMin().map(value -> {
+            if (value.getDateDebutMin() == null) {
+                return Dates.toDate(this.getDateDebutDroit());
+            }
+            return value.getDateDebutMin();
+        }).map(localDate -> localDate.plusMonths(nbMois));
     }
 
     @Override

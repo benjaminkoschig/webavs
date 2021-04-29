@@ -14,6 +14,19 @@ public class DatesTest {
 
     @Test
     public void formatSwiss_sansDate_ok() {
-        Assertions.assertThat(Dates.formatSwiss(null)).isEqualTo("");
+        Assertions.assertThat(Dates.formatSwiss(null)).isEmpty();
     }
+
+    @Test
+    public void toDate_sansDate_ok() {
+        Assertions.assertThat(Dates.toDate(null)).isNull();
+        Assertions.assertThat(Dates.toDate("")).isNull();
+        Assertions.assertThat(Dates.toDate("   ")).isNull();
+    }
+
+    @Test
+    public void toDate_avecSwissForamt_ok() {
+        Assertions.assertThat(Dates.toDate("01.02.2021")).isEqualTo(LocalDate.of(2021,2,1));
+    }
+
 }

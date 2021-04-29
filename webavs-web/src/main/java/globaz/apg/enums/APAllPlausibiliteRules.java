@@ -76,6 +76,8 @@ public enum APAllPlausibiliteRules {
     R_418(false, 418),
     R_419(false, 419),
     R_420(false, 420),
+    R_421(false, 421),
+    R_422(false, 422),
     R_500(true, 500),
     R_501(true, 501),
     R_502(true, 502),
@@ -93,11 +95,11 @@ public enum APAllPlausibiliteRules {
         return APAllPlausibiliteRules.valueOf("R_" + code);
     }
 
-    private boolean breakable;
+    private final boolean breakable;
 
-    private int code;
+    private final int code;
 
-    private APAllPlausibiliteRules(boolean breakable, int code) {
+    APAllPlausibiliteRules(boolean breakable, int code) {
         this.breakable = breakable;
         this.code = code;
     }
