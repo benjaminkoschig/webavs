@@ -27,7 +27,6 @@
     bButtonValidate = false;
     bButtonCancel = false;
     bButtonDelete = false;
-    String dateDebutValidite = viewBean.getDateValidite();
 %>
 <%@ include file="/theme/detail/javascripts.jspf" %>
 <script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
@@ -47,39 +46,6 @@
 
     var ACTION_DROIT = "<%=IAPActions.ACTION_SAISIE_CARTE_PAI%>";
     var jsonAnnonce;
-
-    function checkDateDebutAPG(date) {
-        var dateRaw = date.split('.');
-        var dateDebut = new Date(dateRaw[0] + '/' + dateRaw[1] + '/' + dateRaw[2]);
-        var user = '<%=viewBean.getSession().getUserName()%>';
-        var isError = false;
-        var dateMin = new Date('<%=dateDebutValidite%>');
-        if (dateDebut < dateMin) {
-            var text = '<%=viewBean.getSession().getLabel("ERREUR_MIN_DATE_NAI")%>';
-            var day = dateMin.getDate();
-            if (day < 10) {
-                day = '0' + day;
-            }
-            var month = dateMin.getMonth() + 1;
-            if (month < 10) {
-                month = '0' + month;
-            }
-            text = text.replace("{0}", day + '.' + month + '.' + dateMin.getFullYear());
-            showErrorMessage(text);
-            isError = true;
-        } else {
-            isError = false;
-        }
-
-        return isError;
-    }
-
-    function checkDateDebutAPGNaissance(date) {
-        var isError = checkDateDebutAPG(date);
-        if (isError) {
-            document.getElementById("dateDebutDroit").value = "";
-        }
-    }
 
     function add() {
         nssUpdateHiddenFields();
@@ -127,6 +93,10 @@
         if (!hasError) {
             action(COMMIT);
         }
+    }
+
+    function checkDateDebutAPG(){
+
     }
 
     function nextStepValidateAfterPopupSeodor() {

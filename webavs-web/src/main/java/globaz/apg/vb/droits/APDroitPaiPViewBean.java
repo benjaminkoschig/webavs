@@ -356,28 +356,6 @@ public class APDroitPaiPViewBean extends APAbstractDroitProxyViewBean {
         return APDroitPaiPViewBean.class.getName();
     }
 
-    public String getDateValidite() {
-        String dateMin = "01/01/2021";
-        String parameterName = APParameter.PATERNITE_JOUR_MAX.getParameterName();
-        FWFindParameterManager manager = new FWFindParameterManager();
-        manager.setSession(getSession());
-        manager.setIdCleDiffere(parameterName);
-        try {
-            manager.find(BManager.SIZE_NOLIMIT);
-            if (manager.size() > 0) {
-                FWFindParameter param = (FWFindParameter) manager.getFirstEntity();
-                Date d = new SimpleDateFormat("yyyyMMdd").parse(param.getDateDebutValidite());
-                dateMin = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH).format(d);
-            } else {
-                dateMin = "01/01/2021";
-            }
-
-        } catch (Exception e) {
-           return  "01/01/2021";
-        }
-        return dateMin;
-    }
-
 
     public int getJourPaternite(BSession session) {
         try {
