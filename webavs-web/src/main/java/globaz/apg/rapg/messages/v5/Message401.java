@@ -2,6 +2,7 @@ package globaz.apg.rapg.messages.v5;
 
 import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_000401._5.Message;
 import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.BreakRuleType;
+import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.CareLeaveDataType;
 import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.DeliveryOfficeType;
 import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.InsurantDomicileType;
 import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.PaternityLeaveDataType;
@@ -372,6 +373,11 @@ public class Message401 extends Message implements MessageRAPG {
     @Override
     public PaternityLeaveDataType getPaternityLeaveData() {
         return content.getPaternityLeaveData();
+    }
+
+    @Override
+    public void setCareLeaveDataType(final CareLeaveDataType careLeaveDataType) {
+        content.setCareLeaveData(careLeaveDataType);
     }
 
 }

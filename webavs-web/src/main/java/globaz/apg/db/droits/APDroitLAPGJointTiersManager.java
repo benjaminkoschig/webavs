@@ -3,10 +3,12 @@ package globaz.apg.db.droits;
 import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.db.PRAbstractManager;
+import globaz.prestation.db.demandes.PRDemande;
 import globaz.pyxis.db.tiers.ITIPersonneAvsDefTable;
 import globaz.pyxis.db.tiers.ITITiersDefTable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author PBA
@@ -14,7 +16,7 @@ import java.util.List;
 public class APDroitLAPGJointTiersManager extends PRAbstractManager {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private String forDroitContenuDansDateDebut;
@@ -23,6 +25,8 @@ public class APDroitLAPGJointTiersManager extends PRAbstractManager {
     private String forIdTiers;
     private String likeNumeroAvs;
     private List<String> forEtatDroitNotIn;
+
+    private List<String> forCsTypeDemandeIn;
 
     public APDroitLAPGJointTiersManager() {
         super();
@@ -42,6 +46,7 @@ public class APDroitLAPGJointTiersManager extends PRAbstractManager {
 
         String tableDroitLAPG = _getCollection() + APDroitLAPG.TABLE_NAME_LAPG;
         String tableTiers = _getCollection() + ITITiersDefTable.TABLE_NAME;
+        String tableDemandePrestation = _getCollection() + PRDemande.TABLE_NAME;
         String tablePersonneAvs = _getCollection() + ITIPersonneAvsDefTable.TABLE_NAME;
 
         sql.append(tableDroitLAPG).append(".").append(APDroitLAPG.FIELDNAME_IDDROIT_LAPG);
@@ -131,6 +136,15 @@ public class APDroitLAPGJointTiersManager extends PRAbstractManager {
             sql.append(")");
         }
 
+        if ((forCsTypeDemandeIn != null) && (!forCsTypeDemandeIn.isEmpty())) {
+            if (sql.length() > 0) {
+                sql.append(" AND ");
+            }
+            sql.append(tableDemandePrestation).append(".").append(PRDemande.FIELDNAME_TYPE_DEMANDE);
+            sql.append(" IN ");
+            sql.append(forCsTypeDemandeIn.stream().collect(Collectors.joining(",", "(", ")")));
+        }
+
         if (!forIdDroitNotIn.isEmpty()) {
             if (sql.length() > 0) {
                 sql.append(" AND ");
@@ -216,4 +230,7 @@ public class APDroitLAPGJointTiersManager extends PRAbstractManager {
         this.forEtatDroitNotIn = forEtatDroitNotIn;
     }
 
+    public void setForCsTypeDemandeIn(List<String> forCsTypeDemandeIn) {
+        this.forCsTypeDemandeIn = forCsTypeDemandeIn;
+    }
 }

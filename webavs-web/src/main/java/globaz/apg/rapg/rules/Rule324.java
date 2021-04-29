@@ -24,7 +24,7 @@ public class Rule324 extends Rule {
             validNotEmpty(serviceType, "serviceType");
         }
 
-        if(serviceType.equals("92") && JadeStringUtil.isBlankOrZero(champsAnnonce.getCareLeaveEventID())){
+        if(APGenreServiceAPG.ProcheAidant.getCodePourAnnonce().equals(serviceType) && JadeStringUtil.isBlankOrZero(champsAnnonce.getCareLeaveEventID())){
             return false;
         }
         return true;

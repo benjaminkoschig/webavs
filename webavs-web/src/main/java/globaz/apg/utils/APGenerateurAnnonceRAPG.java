@@ -1,20 +1,36 @@
 package globaz.apg.utils;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
+import ch.globaz.common.util.CaisseInfoPropertiesWrapper;
 import globaz.apg.ApgServiceLocator;
 import globaz.apg.api.annonces.IAPAnnonce;
-import globaz.apg.api.droits.IAPDroitLAPG;
-import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.business.service.APAnnoncesRapgService;
 import globaz.apg.db.annonces.APAnnonceAPG;
 import globaz.apg.db.annonces.APBreakRule;
 import globaz.apg.db.annonces.APBreakRuleManager;
-import globaz.apg.db.droits.*;
-import globaz.apg.db.prestation.*;
+import globaz.apg.db.droits.APDroitAPG;
+import globaz.apg.db.droits.APDroitLAPG;
+import globaz.apg.db.droits.APDroitMaternite;
+import globaz.apg.db.droits.APDroitPandemie;
+import globaz.apg.db.droits.APDroitPaternite;
+import globaz.apg.db.droits.APDroitPaterniteJointTiers;
+import globaz.apg.db.droits.APDroitPaterniteJointTiersManager;
+import globaz.apg.db.droits.APDroitProcheAidant;
+import globaz.apg.db.droits.APEnfantAPG;
+import globaz.apg.db.droits.APEnfantAPGManager;
+import globaz.apg.db.droits.APEnfantPatManager;
+import globaz.apg.db.droits.APPeriodeAPG;
+import globaz.apg.db.droits.APSituationFamilialeAPG;
+import globaz.apg.db.droits.APSituationFamilialePat;
+import globaz.apg.db.droits.APSituationFamilialePatManager;
+import globaz.apg.db.droits.APSituationProfessionnelle;
+import globaz.apg.db.droits.APSituationProfessionnelleManager;
+import globaz.apg.db.prestation.APPrestation;
+import globaz.apg.db.prestation.APPrestationJointLotTiersDroit;
+import globaz.apg.db.prestation.APPrestationJointLotTiersDroitManager;
+import globaz.apg.db.prestation.APPrestationManager;
+import globaz.apg.db.prestation.APRepartitionPaiements;
+import globaz.apg.db.prestation.APRepartitionPaiementsManager;
 import globaz.apg.enums.APAllPlausibiliteRules;
 import globaz.apg.enums.APBreakableRules;
 import globaz.apg.enums.APTypeActiviteProfessionnel;
@@ -22,18 +38,26 @@ import globaz.apg.enums.APTypeVersement;
 import globaz.apg.exceptions.APEntityNotFoundException;
 import globaz.apg.exceptions.APRuleExecutionException;
 import globaz.apg.interfaces.APDroitAvecParent;
-import globaz.apg.module.calcul.wrapper.APPeriodeWrapper;
 import globaz.apg.properties.APParameter;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.framework.util.FWCurrency;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.FWFindParameter;
 import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadePeriodWrapper;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class APGenerateurAnnonceRAPG {
     private final int NB_JOURS_PATERNITE_14 = 14;
@@ -75,7 +99,7 @@ public class APGenerateurAnnonceRAPG {
             throw new APEntityNotFoundException(APDroitLAPG.class, idDroit);
         }
         // creation de l'annonce
-        APAnnonceAPG annonceACreer = new APAnnonceAPG();
+        final APAnnonceAPG annonceACreer = new APAnnonceAPG();
         annonceACreer.setSession(session);
         annonceACreer.setTimeStamp(JadeDateUtil.getCurrentTime().toString());
         annonceACreer.setTypeAnnonce(IAPAnnonce.CS_APGSEDEX);
@@ -243,11 +267,11 @@ public class APGenerateurAnnonceRAPG {
             prestManager.setSession(session);
             prestManager.setOrderBy(
                     APPrestation.FIELDNAME_DATEDEBUT + " asc, " + APPrestation.FIELDNAME_IDANNONCE + " asc ");
-            prestManager.find();
+            prestManager.find(BManager.SIZE_NOLIMIT);
             // Si il n'y a rien on essaie peut-être que c'était un duplicata (seulement dans le cas des mat)
             if (prestManager.getSize() == 0) {
                 prestManager.setForContenuAnnonce(IAPAnnonce.CS_DUPLICATA);
-                prestManager.find();
+                prestManager.find(BManager.SIZE_NOLIMIT);
             }
 
             boolean annonceEnHistorique = false;
@@ -338,7 +362,19 @@ public class APGenerateurAnnonceRAPG {
          */
         if(droit instanceof APDroitPaternite){
             annonceACreer.setTypePaternite(getTypePaternite(annonceACreer.getNumeroAssure(), idDroit, session));
-            annonceACreer = setDataEnfant(annonceACreer, idDroit, session);
+            setDataEnfant(annonceACreer, idDroit, session);
+        }
+
+        if(droit instanceof APDroitProcheAidant){
+            APSituationFamilialePatManager manager = new APSituationFamilialePatManager();
+            manager.setSession(session);
+            manager.setForIdDroitPaternite(idDroit);
+            manager.find(BManager.SIZE_NOLIMIT);
+            manager.<APSituationFamilialePat>getContainerAsList().stream().findFirst()
+                   .ifPresent(enfant-> annonceACreer.setNssEnfantOldestDroit(enfant.getNoAVS()));
+
+            // TODO DMA 29.04.2021 : ajouter un identifiant à la place du "0"
+            annonceACreer.setCareLeaveEventID(CaisseInfoPropertiesWrapper.noCaisseNoAgence()+"0");
         }
 
         return annonceACreer;
@@ -375,7 +411,7 @@ public class APGenerateurAnnonceRAPG {
         APSituationFamilialePatManager manager = new APSituationFamilialePatManager();
         manager.setSession(session);
         manager.setForIdDroitPaternite(idDroit);
-        manager.find();
+        manager.find(BManager.SIZE_NOLIMIT);
         APSituationFamilialePat enfant = null;
         String dateNaissance = "";
         for (APSituationFamilialePat situationFamilialePat : (List<APSituationFamilialePat>) manager.getContainer()) {
@@ -395,7 +431,7 @@ public class APGenerateurAnnonceRAPG {
         manager3.setForIdDroit(idDroit);
         List<APPrestationJointLotTiersDroit> tousLesDroits;
         try {
-            manager3.find();
+            manager3.find(BManager.SIZE_NOLIMIT);
             tousLesDroits = manager3.getContainer();
         } catch (Exception e) {
             throw (e);

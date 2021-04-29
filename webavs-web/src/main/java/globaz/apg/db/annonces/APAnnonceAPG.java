@@ -3,7 +3,6 @@
  */
 package globaz.apg.db.annonces;
 
-import java.util.Hashtable;
 import globaz.apg.api.annonces.IAPAnnonce;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
@@ -20,6 +19,8 @@ import globaz.prestation.tools.PRHierarchique;
 import globaz.prestation.tools.PRSession;
 import globaz.pyxis.api.ITIPays;
 import globaz.pyxis.application.TIApplication;
+
+import java.util.Hashtable;
 
 /**
  * <H1>Description</H1>
@@ -158,6 +159,9 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
     private String dateNaissanceEnfant = "";
     private String nombreJoursOuvrable ="";
     private String typePaternite = "";
+
+
+    private String careLeaveEventID = "";
 
     /**
      * (non-Javadoc)
@@ -1697,6 +1701,9 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
         champsAnnonce.setNumberOfWorkdays(getNombreJoursOuvrable());
         champsAnnonce.setParternityLeaveType(getTypePaternite());
 
+        //Proche aidant
+        champsAnnonce.setCareLeaveEventID(getCareLeaveEventID());
+
         return champsAnnonce;
     }
 
@@ -1914,5 +1921,13 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     public void setCantonNaissanceEnfant(String cantonNaissanceEnfant) {
         this.cantonNaissanceEnfant = cantonNaissanceEnfant;
+    }
+
+    public void setCareLeaveEventID(final String careLeaveEventID) {
+        this.careLeaveEventID = careLeaveEventID;
+    }
+
+    public String getCareLeaveEventID() {
+        return careLeaveEventID;
     }
 }

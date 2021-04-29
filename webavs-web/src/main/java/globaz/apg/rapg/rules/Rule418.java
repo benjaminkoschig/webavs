@@ -1,8 +1,16 @@
 package globaz.apg.rapg.rules;
 
 import ch.globaz.common.domaine.Periode;
+import ch.globaz.common.exceptions.Exceptions;
 import globaz.apg.api.droits.IAPDroitLAPG;
-import globaz.apg.db.droits.*;
+import globaz.apg.db.droits.APDroitAPGJointTiers;
+import globaz.apg.db.droits.APDroitAPGJointTiersManager;
+import globaz.apg.db.droits.APDroitLAPGJointTiers;
+import globaz.apg.db.droits.APDroitLAPGJointTiersManager;
+import globaz.apg.db.droits.APDroitPaterniteJointTiers;
+import globaz.apg.db.droits.APDroitPaterniteJointTiersManager;
+import globaz.apg.db.droits.APPeriodeAPG;
+import globaz.apg.db.droits.APPeriodeAPGManager;
 import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.exceptions.APRuleExecutionException;
 import globaz.apg.interfaces.APDroitAvecParent;
@@ -11,9 +19,13 @@ import globaz.globall.db.BManager;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadePeriodWrapper;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.prestation.api.IPRDemande;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Si entre le premier et le dernier jour de congé de paternité ou de congé de proche-aidant :
@@ -88,7 +100,7 @@ public class Rule418 extends Rule {
             manager.setForEtatDroitNotIn(etatIndesirable);
             List<APDroitAvecParent> droitsTries = null;
             try {
-                manager.find();
+                manager.find(BManager.SIZE_NOLIMIT);
                 List<APDroitAvecParent> tousLesDroits = manager.getContainer();
                 droitsTries = skipDroitParent(tousLesDroits);
             } catch (Exception e) {
@@ -111,7 +123,7 @@ public class Rule418 extends Rule {
             manager2.setForEtatDroitNotIn(etatIndesirable);
             droitsTries = null;
             try {
-                manager2.find();
+                manager2.find(BManager.SIZE_NOLIMIT);
                 List<APDroitAvecParent> tousLesDroits = manager2.getContainer();
                 droitsTries = skipDroitParent(tousLesDroits);
             } catch (Exception e) {
@@ -130,12 +142,43 @@ public class Rule418 extends Rule {
                 }
             }
 
-            if (nombreJoursEffectueNonPat + nombreJoursPat > nombreJoursMax) {
+            Integer nombreJoursProcheAidant = rechercherNombreJourProcheAidant(champsAnnonce, nss, periodeAPGCalculed, etatIndesirable);
+
+            if (nombreJoursEffectueNonPat + nombreJoursPat + nombreJoursProcheAidant > nombreJoursMax) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    private Integer rechercherNombreJourProcheAidant(APChampsAnnonce champsAnnonce,
+                                                     String nss,
+                                                     APPeriodeAPG periodeAPGCalculed,
+                                                     List<String> etatIndesirable) throws APRuleExecutionException {
+
+        APDroitLAPGJointTiersManager apDroitLAPGJointTiersManager = new APDroitLAPGJointTiersManager();
+        apDroitLAPGJointTiersManager.setSession(this.getSession());
+        apDroitLAPGJointTiersManager.setLikeNumeroAvs(nss);
+        apDroitLAPGJointTiersManager.setForEtatDroitNotIn(etatIndesirable);
+        apDroitLAPGJointTiersManager.setForDroitContenuDansDateDebut(periodeAPGCalculed.getDateDebutPeriode());
+        apDroitLAPGJointTiersManager.setForDroitContenuDansDateFin(periodeAPGCalculed.getDateFinPeriode());
+        apDroitLAPGJointTiersManager.setForIdDroitNotIn(Collections.singletonList(champsAnnonce.getIdDroit()));
+        apDroitLAPGJointTiersManager.setForCsTypeDemandeIn(Collections.singletonList(IPRDemande.CS_TYPE_PROCHE_AIDANT));
+        Exceptions.checkedToUnChecked(() -> apDroitLAPGJointTiersManager.find(BManager.SIZE_NOLIMIT));
+        List<APDroitLAPGJointTiers> droits = skipDroitParent(apDroitLAPGJointTiersManager.getContainerAsList());
+
+        return droits.stream()
+                     .map(droit -> {
+                         APPeriodeAPGManager periodeAPGManager = new APPeriodeAPGManager();
+                         periodeAPGManager.setSession(this.getSession());
+                         periodeAPGManager.setForIdDroit(droit.getIdDroit());
+                         Exceptions.checkedToUnChecked(() -> periodeAPGManager.find(BManager.SIZE_NOLIMIT));
+                         return periodeAPGManager.<APPeriodeAPG>getContainerAsList();
+                     })
+                     .flatMap(Collection::stream)
+                     .map(periode -> getNombreJoursAAjouter(periodeAPGCalculed, periode.getDateDebutPeriode(), periode.getDateFinPeriode()))
+                     .reduce(0, Integer::sum);
     }
 
     private int getNombreJoursAAjouter(APPeriodeAPG periodeAPGCalculed, String dateDebutACompparer, String dateFinAComparer) {

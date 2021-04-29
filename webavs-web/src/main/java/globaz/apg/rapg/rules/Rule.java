@@ -78,7 +78,7 @@ public abstract class Rule implements APRuleDBDataProvider {
 
     public void throwRuleExecutionException(Exception exception) throws APRuleExecutionException {
         throw new APRuleExecutionException("An internal Exception was thrown on rule ["
-                + this.getClass().getSimpleName() + "] execution : " + exception.toString());
+                + this.getClass().getSimpleName() + "] execution : " + exception.toString(),exception);
     }
 
     /**
@@ -280,12 +280,12 @@ public abstract class Rule implements APRuleDBDataProvider {
      * @return
      * @throws APRuleExecutionException
      */
-    protected List<APDroitAvecParent> skipDroitParent(List<APDroitAvecParent> tousLesDroits)
+    protected <T extends APDroitAvecParent> List<T> skipDroitParent(List<T> tousLesDroits)
             throws APRuleExecutionException {
-        List<APDroitAvecParent> droitFinaux = new ArrayList<APDroitAvecParent>();
+        List<T> droitFinaux = new ArrayList<>();
         // On récupère tous les droits et leurs idParents s'il y en a
-        Map<String, List<APDroitAvecParent>> droitAvecParent = new HashMap<String, List<APDroitAvecParent>>();
-        for (APDroitAvecParent droit : tousLesDroits) {
+        Map<String, List<T>> droitAvecParent = new HashMap<>();
+        for (T droit : tousLesDroits) {
 
             // S'il n'y a pas de droit parent, on le prend directement
             if (JadeStringUtil.isBlankOrZero(droit.getIdDroitParent())) {
@@ -293,7 +293,7 @@ public abstract class Rule implements APRuleDBDataProvider {
             } else {
                 String idParent = droit.getIdDroitParent();
                 if (!droitAvecParent.containsKey(idParent)) {
-                    droitAvecParent.put(idParent, new ArrayList<APDroitAvecParent>());
+                    droitAvecParent.put(idParent, new ArrayList<>());
                 }
                 droitAvecParent.get(idParent).add(droit);
             }
@@ -301,9 +301,9 @@ public abstract class Rule implements APRuleDBDataProvider {
 
         // Maintenant on va prend tous les droits avec parent de plus grand id
         for (String idDroitParent : droitAvecParent.keySet()) {
-            APDroitAvecParent droitAvecPlusGrandId = null;
+            T droitAvecPlusGrandId = null;
             List<APDroitAvecParent> allDroits = new ArrayList<APDroitAvecParent>();
-            for (APDroitAvecParent droit : droitAvecParent.get(idDroitParent)) {
+            for (T droit : droitAvecParent.get(idDroitParent)) {
                 if (droitAvecPlusGrandId == null) {
                     droitAvecPlusGrandId = droit;
                 } else {

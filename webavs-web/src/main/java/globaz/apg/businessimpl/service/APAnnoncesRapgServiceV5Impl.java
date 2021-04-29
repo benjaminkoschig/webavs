@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_000101._5.Message;
 import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_000101._5.ObjectFactory;
+import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.CareLeaveDataType;
 import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.InsurantDomicileType;
 import rapg.ch.ech.xmlns.ech_0044._2.PersonIdentificationType;
 import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.PaternityLeaveDataType;
@@ -182,6 +183,16 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
             }
             message.setPaternityLeaveData(paternityLeaveDataType);
         }
+
+
+        CareLeaveDataType careLeaveDataType = new CareLeaveDataType();
+        if (!JadeStringUtil.isEmpty(champsAnnonce.getChildInsurantVn())) {
+            careLeaveDataType.setChildInsurantVn(Long.parseLong(champsAnnonce.getChildInsurantVn().replace(".", "")));
+        }
+        if (!JadeStringUtil.isEmpty(champsAnnonce.getCareLeaveEventID())) {
+            careLeaveDataType.setCareLeaveEventID(Integer.parseInt(champsAnnonce.getCareLeaveEventID()));
+        }
+        message.setCareLeaveDataType(careLeaveDataType);
         return message;
     }
 

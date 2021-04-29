@@ -1,6 +1,7 @@
 package globaz.apg.rapg.messages.v5;
 
 import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.BreakRuleType;
+import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.CareLeaveDataType;
 import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.DeliveryOfficeType;
 import rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._5.InsurantDomicileType;
 import rapg.ch.ech.xmlns.ech_0044._2.PersonIdentificationType;
@@ -623,5 +624,7 @@ public interface MessageRAPG {
     public void setPaternityLeaveData( PaternityLeaveDataType paternityLeaveDataType);
 
     public  PaternityLeaveDataType getPaternityLeaveData();
+
+    void setCareLeaveDataType(CareLeaveDataType careLeaveDataType);
 
 }

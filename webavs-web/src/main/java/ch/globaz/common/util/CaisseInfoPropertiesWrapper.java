@@ -7,9 +7,8 @@ import ch.globaz.common.properties.PropertiesException;
 /**
  * Pojo regroupant les informations du numero de caisse
  * Sous forme de Singleton
- * 
+ *
  * @author sce
- * 
  */
 public class CaisseInfoPropertiesWrapper {
 
@@ -17,30 +16,19 @@ public class CaisseInfoPropertiesWrapper {
     private String noAgence = null;
     private String noCaisseFormatee = null;
 
-    private static CaisseInfoPropertiesWrapper instance = new CaisseInfoPropertiesWrapper();
+    private static final CaisseInfoPropertiesWrapper instance = new CaisseInfoPropertiesWrapper();
 
     private CaisseInfoPropertiesWrapper() {
         loadCaisseProperties();
     }
 
     private void loadCaisseProperties() {
-
-        String noCaisse = null;
-        String noAgence = null;
-        String noCaisseFormatee = null;
-
         try {
-            noCaisse = CommonPropertiesUtils.getValue(CommonProperties.KEY_NO_CAISSE);
-            noCaisseFormatee = CommonPropertiesUtils.getValue(CommonProperties.KEY_NO_CAISSE_FORMATE);
-            noAgence = CommonPropertiesUtils.getValue(CommonProperties.NUMERO_AGENCE);
-
-            this.noCaisse = noCaisse;
-            this.noAgence = noAgence;
-            this.noCaisseFormatee = noCaisseFormatee;
-
+            this.noCaisse = CommonPropertiesUtils.getValue(CommonProperties.KEY_NO_CAISSE);
+            this.noAgence = CommonPropertiesUtils.getValue(CommonProperties.KEY_NO_CAISSE_FORMATE);
+            this.noCaisseFormatee = CommonPropertiesUtils.getValue(CommonProperties.NUMERO_AGENCE);
         } catch (PropertiesException e) {
-            throw new IllegalArgumentException("A problem occured with a properties needed to instantiate the wrapper",
-                    e);
+            throw new IllegalArgumentException("A problem occured with a properties needed to instantiate the wrapper", e);
         }
     }
 
@@ -54,6 +42,18 @@ public class CaisseInfoPropertiesWrapper {
 
     public String getNoCaisseFormatee() {
         return noCaisseFormatee;
+    }
+
+    public static String noAgence() {
+        return getInstance().noAgence;
+    }
+
+    public static String noCaisse() {
+        return getInstance().noCaisse;
+    }
+
+    public static String noCaisseNoAgence() {
+        return noCaisse() + noAgence();
     }
 
     public static CaisseInfoPropertiesWrapper getInstance() {
