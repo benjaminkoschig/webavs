@@ -105,6 +105,11 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
         }).map(localDate -> localDate.plusMonths(nbMois));
     }
 
+    public Optional<LocalDate> resolveDateDebutDelaiCadre() {
+        Optional<NbJourDateMin> nbJourDateMin = loadNbJourDateMin();
+        return nbJourDateMin.map(NbJourDateMin::getDateDebutMin);
+    }
+
     @Override
     protected void _beforeRetrieve(final BTransaction transaction) throws Exception {
         super._beforeRetrieve(transaction);

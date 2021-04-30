@@ -29,6 +29,7 @@ import globaz.pyxis.db.tiers.TIAdministrationAdresseManager;
 import globaz.pyxis.db.tiers.TITiers;
 
 import ch.globaz.common.properties.PropertiesException;
+import org.apache.commons.lang.StringUtils;
 import org.safehaus.uuid.Logger;
 import globaz.apg.ApgServiceLocator;
 import globaz.apg.application.APApplication;
@@ -796,10 +797,19 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 buffer.setLength(0);
 
                 if (IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) {
-                    String delaiCadreFormat = ((APDroitProcheAidant) droit).calculerDelai()
+                    String delaiCadreFin = ((APDroitProcheAidant) droit).calculerDelai()
                             .map(Dates::formatSwiss)
                             .orElse("");
-                    buffer.append(PRStringUtils.replaceString(document.getTextes(3).getTexte(49).getDescription(),"{delaiCadre}", delaiCadreFormat))
+                    String delaiCadreDebut = ((APDroitProcheAidant) droit).resolveDateDebutDelaiCadre()
+                            .map(Dates::formatSwiss)
+                            .orElse("");
+                    String delaiCadre = document.getTextes(3).getTexte(49).getDescription();
+                    buffer.append(PRStringUtils.replaceString(PRStringUtils.replaceString(delaiCadre, "{dateDebut}", delaiCadreDebut), "{dateFin}", delaiCadreFin));
+
+                    buffer.append("\t\t\t\t");
+                    String nbJourRestant = Integer.toString(((APDroitProcheAidant) droit).calculerNbJourDisponible());
+                    String ndJourRestantText = document.getTextes(3).getTexte(50).getDescription();
+                    buffer.append(PRStringUtils.replaceString(ndJourRestantText, "{nbJourDispo}", nbJourRestant))
                             .append("\n\n");
                 }
 
@@ -2015,7 +2025,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                             if (!APTypeDeDecompte.NORMAL_ACM_NE.equals(decompteCourant.getTypeDeDecompte())) {
                                 // info suppl,
                                 if (IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) {
-                                    champs.put("FIELD_DETAIL_PERIODE", Dates.displayMonthFullname(repartition.getDateDebut(), getCodeIsoLangue()) + " - " + getDetailJournalier(repartition));
+                                    champs.put("FIELD_DETAIL_PERIODE", StringUtils.capitalize(Dates.displayMonthFullname(repartition.getDateDebut(), getCodeIsoLangue()) + " - " + getDetailJournalier(repartition)));
                                 } else {
                                     champs.put("FIELD_DETAIL_PERIODE", getDetailJournalier(repartition));
                                 }
