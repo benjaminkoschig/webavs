@@ -15,6 +15,7 @@ public class APPeriodeComparable extends APPeriodeAPG implements Comparable<APPe
         setIdDroit(clone.getIdDroit());
         setCantonImposition(clone.getCantonImposition());
         setTauxImposition(clone.getTauxImposition());
+        setNbJourSupplementaire(clone.getNbJourSupplementaire());
         ori =clone;
     }
 

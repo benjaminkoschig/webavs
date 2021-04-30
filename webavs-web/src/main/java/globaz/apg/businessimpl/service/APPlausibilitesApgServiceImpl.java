@@ -458,7 +458,8 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
             PRPeriode per = new PRPeriode(p.getDateDebutPeriode(), p.getDateFinPeriode());
             periodes.add(per);
         }
-        if (APGUtils.isTypePaternite(droit.getGenreService())) {
+        if (APGUtils.isTypePaternite(droit.getGenreService())
+            || APGUtils.isTypeProcheAidant(droit.getGenreService())) {
             for (int ctr = 0; ctr < periodes.size(); ctr++) {
                 PRPeriode periode = periodes.get(ctr);
                 try {

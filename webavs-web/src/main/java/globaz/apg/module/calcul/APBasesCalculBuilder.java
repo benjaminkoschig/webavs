@@ -1390,6 +1390,7 @@ public class APBasesCalculBuilder {
         List<APPeriodeComparable> listPeriode = getApPeriodeDroit(droit.getIdDroit());
 
         int nbJourSoldes = 0;
+        int nbJourSupplementaire = 0;
 
         String dateDebut = listPeriode.get(0).getDateDebutPeriode();
         String dateFin = listPeriode.get(0).getDateFinPeriode();
@@ -1424,13 +1425,16 @@ public class APBasesCalculBuilder {
                     nbJourPeriodeCourante = nbJourPeriodeSaisie;
                 }
             }
-            nbJourSoldes += nbJourPeriodeCourante;
 
+            nbJourSoldes += nbJourPeriodeCourante;
+            nbJourSupplementaire += Integer.parseInt(periode.getNbJourSupplementaire());
         }
         ajouterEnfantPai(dateDebut, dateFin);
         if (!JadeStringUtil.isBlankOrZero(currentCanton)){
             ajouterTauxImposition(currentTaux, dateDebut, dateFin, currentCanton);
         }
+
+        nbJourSoldes += nbJourSupplementaire;
 
         calculNbJourSoldesMax(nbJourSoldes);
     }
