@@ -23,7 +23,7 @@ bButtonValidate = viewBean.isModifiable() && bButtonValidate && controller.getSe
 bButtonUpdate = viewBean.isModifiable() && bButtonUpdate && controller.getSession().hasRight(IAPActions.ACTION_SITUATION_PROFESSIONNELLE, FWSecureConstants.UPDATE);
 bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSession().hasRight(IAPActions.ACTION_SITUATION_PROFESSIONNELLE, FWSecureConstants.UPDATE);
 
-int nbJourDejaIndemnise = viewBean.calculerNbjourIndemiserPourCeDroit() - viewBean.getNbJourIndemnise();
+int nbJourDejaIndemnise = viewBean.calculNbJourDejaIndemnise();
 
 int nbJourDroit= viewBean.calculerNbjourDuDroit();
 

@@ -1798,6 +1798,13 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         return 0;
     }
 
+    public int calculNbJourDejaIndemnise() {
+        if (this.typeDemande.isProcheAidant()) {
+            return calculerNbjourIndemiserPourCeDroit() - getNbJourIndemnise();
+        }
+        return 0;
+    }
+
     public String translate(String label, Object... arguments) {
         return MessageFormat.format(FWMessageFormat.prepareQuotes(getSession().getLabel(label), false), arguments);
     }
