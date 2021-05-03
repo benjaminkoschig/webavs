@@ -6,6 +6,7 @@
  */
 package globaz.apg.helpers.droits;
 
+import ch.globaz.common.exceptions.Exceptions;
 import globaz.apg.ApgServiceLocator;
 import globaz.apg.api.annonces.IAPAnnonce;
 import globaz.apg.api.droits.IAPDroitLAPG;
@@ -20,6 +21,8 @@ import globaz.apg.db.droits.APDroitMaternite;
 import globaz.apg.db.droits.APDroitPandemie;
 import globaz.apg.db.droits.APDroitPaternite;
 import globaz.apg.db.droits.APDroitProcheAidant;
+import globaz.apg.db.droits.APSituationProfessionnelle;
+import globaz.apg.db.droits.APSituationProfessionnelleManager;
 import globaz.apg.db.lots.APLot;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
@@ -209,6 +212,8 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
             droit.wantCallValidate(false);
             droit.update(session.getCurrentThreadTransaction());
 
+            updateNbJourIndemniseAZeroDansSituationProfessionnel(session, droit.getIdDroit());
+
             vbDroit.setDto(new APDroitAPGDTO(droit));
         } else if (APGUtils.isTypeAllocationPandemie(vbDroit.getGenreService())) {
             APDroitPandemie droit = new APDroitPandemie();
@@ -313,6 +318,22 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
         APDroitLAPGJointDemandeViewBean nvDroit = new APDroitLAPGJointDemandeViewBean();
         nvDroit.setIdDroit(clone.getUniquePrimaryKey());
         return nvDroit;
+    }
+
+    private void updateNbJourIndemniseAZeroDansSituationProfessionnel(final BSession session, final String idDroit) throws Exception {
+        APSituationProfessionnelleManager situationProfessionnelleManager = new APSituationProfessionnelleManager();
+        situationProfessionnelleManager.setSession(session);
+        situationProfessionnelleManager.setForIdDroit(idDroit);
+        situationProfessionnelleManager.find(BManager.SIZE_NOLIMIT);
+        situationProfessionnelleManager
+                .<APSituationProfessionnelle>getContainerAsList()
+                .forEach(situationProfessionnelle -> Exceptions.checkedToUnChecked(() -> {
+                        situationProfessionnelle.wantCallValidate(false);
+                        situationProfessionnelle.setSession(session);
+                        situationProfessionnelle.setNbJourIndemnise(0);
+                        situationProfessionnelle.update(session.getCurrentThreadTransaction());
+                    })
+                );
     }
 
     /**
