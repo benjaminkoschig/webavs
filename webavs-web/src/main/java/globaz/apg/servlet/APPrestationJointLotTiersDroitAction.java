@@ -285,6 +285,8 @@ public class APPrestationJointLotTiersDroitAction extends PRDefaultAction {
                 typePrestation = IPRDemande.CS_TYPE_MATERNITE;
             } else if(APGUtils.isTypePaternite(plViewBean.getGenreService())) {
                 typePrestation = IPRDemande.CS_TYPE_PATERNITE;
+            } else if(APGUtils.isTypeProcheAidant(plViewBean.getGenreService())) {
+                typePrestation = IPRDemande.CS_TYPE_PROCHE_AIDANT;
             }
 
             lot.setTypeLot(typePrestation);

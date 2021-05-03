@@ -121,7 +121,8 @@ public class APPrestationJointLotTiersDroitViewBean extends APPrestationJointLot
         }
 
         if (isMisEnLot() && (APGUtils.isTypeAllocationPandemie(getGenreService()) ||
-                APGUtils.isTypePaternite(getGenreService())|| APGUtils.isTypeMaternite(getGenreService()))) {
+                APGUtils.isTypePaternite(getGenreService())|| APGUtils.isTypeMaternite(getGenreService())
+                || APGUtils.isTypeProcheAidant(getGenreService()))) {
             except.add(IAPPrestation.CS_ETAT_PRESTATION_CONTROLE);
         }
 
