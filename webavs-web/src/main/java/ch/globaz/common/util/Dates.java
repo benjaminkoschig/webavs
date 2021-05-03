@@ -33,6 +33,15 @@ public class Dates {
         return LocalDate.parse(swissFormatDate, DATE_TIME_SWISS_FORMATTER).getMonth().getDisplayName(TextStyle.FULL, locale);
     }
 
+    public static String displayMonthFullnameYear(String swissFormatDate, String codeIso) {
+        if (swissFormatDate == null || swissFormatDate.trim().isEmpty()) {
+            return null;
+        }
+        LocalDate date = LocalDate.parse(swissFormatDate, DATE_TIME_SWISS_FORMATTER);
+        Locale locale = new Locale(codeIso);
+        return date.getMonth().getDisplayName(TextStyle.FULL, locale) + " " + date.getYear();
+    }
+
     public static LocalDate toDate(String date) {
         if (date == null || date.trim().isEmpty()) {
             return null;

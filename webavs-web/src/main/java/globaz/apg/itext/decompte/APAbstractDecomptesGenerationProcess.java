@@ -803,14 +803,12 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     String delaiCadreDebut = ((APDroitProcheAidant) droit).resolveDateDebutDelaiCadre()
                             .map(Dates::formatSwiss)
                             .orElse("");
-                    String delaiCadre = document.getTextes(3).getTexte(49).getDescription();
-                    buffer.append(PRStringUtils.replaceString(PRStringUtils.replaceString(delaiCadre, "{dateDebut}", delaiCadreDebut), "{dateFin}", delaiCadreFin));
-
-                    buffer.append("\t\t\t\t");
                     String nbJourRestant = Integer.toString(((APDroitProcheAidant) droit).calculerNbJourDisponible());
-                    String ndJourRestantText = document.getTextes(3).getTexte(50).getDescription();
-                    buffer.append(PRStringUtils.replaceString(ndJourRestantText, "{nbJourDispo}", nbJourRestant))
-                            .append("\n\n");
+                    String delaiCadre = document.getTextes(3).getTexte(50).getDescription();
+                    delaiCadre = PRStringUtils.replaceString(delaiCadre, "{dateDebut}", delaiCadreDebut);
+                    delaiCadre = PRStringUtils.replaceString(delaiCadre, "{dateFin}", delaiCadreFin);
+                    delaiCadre = PRStringUtils.replaceString(delaiCadre, "{nbJourDispo}", nbJourRestant);
+                    buffer.append(delaiCadre).append("\n\n");;
                 }
 
                 // Pour paternité et proche aidant, si Assuré indépendant, alors il faut ajouter ce texte sur les décisions.
@@ -2025,7 +2023,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                             if (!APTypeDeDecompte.NORMAL_ACM_NE.equals(decompteCourant.getTypeDeDecompte())) {
                                 // info suppl,
                                 if (IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) {
-                                    champs.put("FIELD_DETAIL_PERIODE", StringUtils.capitalize(Dates.displayMonthFullname(repartition.getDateDebut(), getCodeIsoLangue()) + " - " + getDetailJournalier(repartition)));
+                                    champs.put("FIELD_DETAIL_PERIODE", StringUtils.capitalize(Dates.displayMonthFullnameYear(repartition.getDateDebut(), getCodeIsoLangue())
+                                            + " - "
+                                            + getDetailJournalier(repartition)));
                                 } else {
                                     champs.put("FIELD_DETAIL_PERIODE", getDetailJournalier(repartition));
                                 }
