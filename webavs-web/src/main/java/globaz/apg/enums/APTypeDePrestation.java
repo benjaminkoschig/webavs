@@ -6,7 +6,6 @@ public enum APTypeDePrestation implements Comparable<APTypeDePrestation> {
     ACM2_ALFA("ACM2_ALFA", 52015005, false, true),
     ACM_NE("ACM_NE", 52015004, true, false),
     LAMAT("LAMAT", 52015003, true, true),
-    LAPAT("LAPAT", 52015008, true, true),
     STANDARD("Standard", 52015001, true, true),
     COMPCIAB("COMPCIAB", 52015006, true, false),
     MATCIAB1("MATCIAB1", 52015008, false, true),
