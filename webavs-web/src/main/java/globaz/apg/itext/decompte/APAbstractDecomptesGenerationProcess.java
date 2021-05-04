@@ -2014,7 +2014,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                                             + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM)));
 
                     // Si la Jade propriéré est à True, alors on affiche la période (Paternité)
-                    if ((IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) && !afficherPeriode) {
+                    if ((IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) && !afficherPeriode) {
                         // Si la propriété est à False, dans ce cas, les périodes ne doivent pas apparaitre, et il faut remonter d'un cran les informations journaliéres
                         // 3. détail sur la prestation journalière (nbr de jours + montant journalier), si non ventilé
                         if (!isTraitementDesVentilations()) {
@@ -2022,14 +2022,14 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                             // On n'ajoute pas ce détail si c'est un décompte mixte NORMAL_ACM_NE
                             if (!APTypeDeDecompte.NORMAL_ACM_NE.equals(decompteCourant.getTypeDeDecompte())) {
                                 // info suppl,
-                                if (IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) {
-                                    champs.put("FIELD_DETAIL_PERIODE", StringUtils.capitalize(Dates.displayMonthFullnameYear(repartition.getDateDebut(), getCodeIsoLangue())
-                                            + " - "
-                                            + getDetailJournalier(repartition)));
-                                } else {
-                                    champs.put("FIELD_DETAIL_PERIODE", getDetailJournalier(repartition));
-                                }
+                                champs.put("FIELD_DETAIL_PERIODE", getDetailJournalier(repartition));
                             }
+                        }
+                    } else if ( IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) {
+                        if (!isTraitementDesVentilations()) {
+                            champs.put("FIELD_DETAIL_PERIODE", StringUtils.capitalize(Dates.displayMonthFullnameYear(repartition.getDateDebut(), getCodeIsoLangue())
+                                    + " - "
+                                    + getDetailJournalier(repartition)));
                         }
                     } else {
                         // 2. les infos sur la prestation
