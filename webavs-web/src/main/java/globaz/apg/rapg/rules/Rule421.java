@@ -2,6 +2,7 @@ package globaz.apg.rapg.rules;
 
 import globaz.apg.db.droits.APDroitProcheAidant;
 import globaz.apg.enums.APAllPlausibiliteRules;
+import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.exceptions.APRuleExecutionException;
 import globaz.apg.pojo.APChampsAnnonce;
 
@@ -21,10 +22,12 @@ public class Rule421 extends Rule {
 
     @Override
     public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException {
-        APDroitProcheAidant apDroitProcheAidant = new APDroitProcheAidant();
-        apDroitProcheAidant.setIdDroit(champsAnnonce.getIdDroit());
-        apDroitProcheAidant.setSession(this.getSession());
-
-        return apDroitProcheAidant.calculerNbJourDisponible() >= 0;
+        if(champsAnnonce.getServiceType().equals(APGenreServiceAPG.ProcheAidant.getCodePourAnnonce())) {
+            APDroitProcheAidant apDroitProcheAidant = new APDroitProcheAidant();
+            apDroitProcheAidant.setIdDroit(champsAnnonce.getIdDroit());
+            apDroitProcheAidant.setSession(this.getSession());
+            return apDroitProcheAidant.calculerNbJourDisponible() >= 0;
+        }
+        return true;
     }
 }

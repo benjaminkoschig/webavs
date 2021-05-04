@@ -4,6 +4,7 @@ import ch.globaz.common.exceptions.Exceptions;
 import ch.globaz.common.util.Dates;
 import globaz.apg.db.droits.APDroitProcheAidant;
 import globaz.apg.enums.APAllPlausibiliteRules;
+import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.exceptions.APRuleExecutionException;
 import globaz.apg.pojo.APChampsAnnonce;
 
@@ -23,14 +24,16 @@ public class Rule422 extends Rule {
 
     @Override
     public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException {
+        if(champsAnnonce.getServiceType().equals(APGenreServiceAPG.ProcheAidant.getCodePourAnnonce())) {
+            APDroitProcheAidant apDroitProcheAidant = new APDroitProcheAidant();
+            apDroitProcheAidant.setIdDroit(champsAnnonce.getIdDroit());
+            apDroitProcheAidant.setSession(this.getSession());
+            Exceptions.checkedToUnChecked(() -> apDroitProcheAidant.retrieve());
 
-        APDroitProcheAidant apDroitProcheAidant = new APDroitProcheAidant();
-        apDroitProcheAidant.setIdDroit(champsAnnonce.getIdDroit());
-        apDroitProcheAidant.setSession(this.getSession());
-        Exceptions.checkedToUnChecked(()->apDroitProcheAidant.retrieve());
-
-        return apDroitProcheAidant.calculerDelai()
-                                  .map(delai->delai.isAfter(Dates.toDate(champsAnnonce.getEndOfPeriod())))
-                                  .orElse(true);
+            return apDroitProcheAidant.calculerDelai()
+                                      .map(delai -> delai.isAfter(Dates.toDate(champsAnnonce.getEndOfPeriod())))
+                                      .orElse(true);
+        }
+        return true;
     }
 }
