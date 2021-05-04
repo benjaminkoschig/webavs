@@ -92,6 +92,8 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
     public static final String FIELDNAME_NB_JOURS_OUVRABLES = "VKNUMWORKDAY";
     public static final String FIELDNAME_TYPE_PATERNITE = "VKPATTYPE";
 
+    public static final String FIELDNAME_CARE_LEAVE_EVENT_ID = "VKCAREEVENTID";
+
     public static final String TABLE_NAME = "APANNOP";
 
     // ~ Instance fields
@@ -271,6 +273,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
         dateNaissanceEnfant =  statement.dbReadString(APAnnonceAPG.FIELDNAME_DATE_NAISSANCE_ENFANT_PLUS_AGE);
         nombreJoursOuvrable = statement.dbReadString(APAnnonceAPG.FIELDNAME_NB_JOURS_OUVRABLES);
         typePaternite =  statement.dbReadString(APAnnonceAPG.FIELDNAME_TYPE_PATERNITE);
+        careLeaveEventID =  statement.dbReadString(APAnnonceAPG.FIELDNAME_CARE_LEAVE_EVENT_ID);
     }
 
     /**
@@ -527,6 +530,12 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
         } else {
             statement.writeField(APAnnonceAPG.FIELDNAME_TYPE_PATERNITE, null);
         }
+        if (!JadeStringUtil.isEmpty(careLeaveEventID)) {
+            statement.writeField(APAnnonceAPG.FIELDNAME_CARE_LEAVE_EVENT_ID, this._dbWriteNumeric(
+                    statement.getTransaction(), careLeaveEventID, "careLeaveEventID"));
+        } else {
+            statement.writeField(APAnnonceAPG.FIELDNAME_CARE_LEAVE_EVENT_ID, null);
+        }
     }
 
     // ~ Methods
@@ -596,6 +605,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
         annonce.setNombreJoursOuvrable(nombreJoursOuvrable);
         annonce.setTypePaternite(typePaternite);
 
+        annonce.setCareLeaveEventID(careLeaveEventID);
 
         return annonce;
     }
@@ -668,6 +678,8 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
         setDateNaissanceEnfant(champsAnnonce.getNewbornDateOfBirth());
         setNombreJoursOuvrable(champsAnnonce.getNumberOfWorkdays());
         setTypePaternite(champsAnnonce.getParternityLeaveType());
+        //Proche aidant
+        champsAnnonce.setCareLeaveEventID(getCareLeaveEventID());
     }
 
     /**

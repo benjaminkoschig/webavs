@@ -52,6 +52,8 @@ public interface IAPAnnonce {
 
     public static final String CS_PATERNITE = "52012005";
 
+    public static final String CS_PROCHE_AIDANT = "52012006";
+
     /**
      */
     public static final String CS_OUVERT = "52013001";

@@ -17,6 +17,8 @@ import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.tiers.IPRTiers;
 import globaz.prestation.tools.PRAbstractManagerHierarchique;
 
+import static globaz.apg.db.annonces.APAnnonceAPGManager.FOR_TYPE_PROCHE_AIDANT;
+
 /**
  * <H1>Description</H1>
  * 
@@ -291,9 +293,12 @@ public class APAnnonceAPGHierarchiqueManager extends PRAbstractManagerHierarchiq
             }
             if (forType.equals(APAnnonceAPGHierarchiqueManager.FOR_TYPE_APG)) {
                 sqlWhere += prefix + APAnnonceAPG.FIELDNAME_GENRE + "<> '90' AND ";
-                sqlWhere += prefix + APAnnonceAPG.FIELDNAME_GENRE + "<> '91'";
+                sqlWhere += prefix + APAnnonceAPG.FIELDNAME_GENRE + "<> '91' AND ";
+                sqlWhere += prefix + APAnnonceAPG.FIELDNAME_GENRE + "<> '92'";
             } else if (forType.equals(APAnnonceAPGHierarchiqueManager.FOR_TYPE_MATERNITE)) {
                 sqlWhere += prefix + APAnnonceAPG.FIELDNAME_GENRE + "= '90'";
+            } else if (forType.equals(FOR_TYPE_PROCHE_AIDANT)) {
+                sqlWhere += prefix + APAnnonceAPG.FIELDNAME_GENRE + "= '92'";
             } else {
                 sqlWhere += prefix + APAnnonceAPG.FIELDNAME_GENRE + " = '91'";
             }

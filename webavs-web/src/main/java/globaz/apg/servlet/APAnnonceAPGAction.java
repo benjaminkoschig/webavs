@@ -1,5 +1,6 @@
 package globaz.apg.servlet;
 
+import ch.globaz.utils.VueGlobaleTiersUtils;
 import globaz.apg.api.annonces.IAPAnnonce;
 import globaz.apg.api.droits.IAPDroitAPG;
 import globaz.apg.api.droits.IAPDroitLAPG;
@@ -13,6 +14,7 @@ import globaz.apg.pojo.APAnnonceDTO;
 import globaz.apg.vb.annonces.APAnnonceAPGListViewBean;
 import globaz.apg.vb.annonces.APAnnonceAPGViewBean;
 import globaz.apg.vb.annonces.APAnnonceSedexViewBean;
+import globaz.apg.vb.droits.APTypePresationDemandeResolver;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWDefaultServletAction;
@@ -23,12 +25,12 @@ import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.servlet.PRDefaultAction;
-import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import ch.globaz.utils.VueGlobaleTiersUtils;
+import java.io.IOException;
 
 /**
  * @author DVH
@@ -119,7 +121,8 @@ public class APAnnonceAPGAction extends PRDefaultAction {
                         || IAPAnnonce.CS_MATERNITE.equals(typeAnnonce)) {
                     action = FWAction
                             .newInstance(IAPActions.ACTION_ANNONCEREVISION2005 + "." + FWAction.ACTION_NOUVEAU);
-                } else if (IAPAnnonce.CS_APGSEDEX.equals(typeAnnonce) || IAPAnnonce.CS_PATERNITE.equals(typeAnnonce)) {
+                } else if (IAPAnnonce.CS_APGSEDEX.equals(typeAnnonce) || IAPAnnonce.CS_PATERNITE.equals(typeAnnonce)
+                        || IAPAnnonce.CS_PROCHE_AIDANT.equals(typeAnnonce)) {
                     action = FWAction.newInstance(IAPActions.ACTION_ANNONCESEDEX + "." + FWAction.ACTION_NOUVEAU);
                 } else {
                     throw new Exception("type annonce absent ou non reconnu");
@@ -171,6 +174,8 @@ public class APAnnonceAPGAction extends PRDefaultAction {
                             typeAnnonce = IAPAnnonce.CS_APGREVISION2005;
                         } else if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())){
                             typeAnnonce = IAPAnnonce.CS_MATERNITE;
+                        } else if (IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(droit.getGenreService())){
+                            typeAnnonce = IAPAnnonce.CS_PROCHE_AIDANT;
                         } else {
                             typeAnnonce = IAPAnnonce.CS_PATERNITE;
                         }
@@ -185,7 +190,8 @@ public class APAnnonceAPGAction extends PRDefaultAction {
                     action = FWAction.newInstance(IAPActions.ACTION_ANNONCEREVIVION1999 + ".afficher");
                 } else if (IAPAnnonce.CS_APGREVISION2005.equals(typeAnnonce)) {
                     action = FWAction.newInstance(IAPActions.ACTION_ANNONCEREVISION2005 + ".afficher");
-                } else if (IAPAnnonce.CS_APGSEDEX.equals(typeAnnonce) || IAPAnnonce.CS_PATERNITE.equals(typeAnnonce)) {
+                } else if (IAPAnnonce.CS_APGSEDEX.equals(typeAnnonce) || IAPAnnonce.CS_PATERNITE.equals(typeAnnonce)
+                        || IAPAnnonce.CS_PROCHE_AIDANT.equals(typeAnnonce)) {
                     action = FWAction.newInstance(IAPActions.ACTION_ANNONCESEDEX + ".afficher");
                 } else {
                     // on a un type d'annonce invalide....
@@ -208,6 +214,8 @@ public class APAnnonceAPGAction extends PRDefaultAction {
             viewBean = (APAnnonceAPGViewBean) beforeAfficher(session, request, response, viewBean);
             viewBean = (APAnnonceAPGViewBean) mainDispatcher.dispatch(viewBean, action);
             viewBean.setTypeAnnonce(typeAnnonce);
+
+            viewBean.setTypeDemande(APTypePresationDemandeResolver.resolveEnumTypePrestation(session));
 
             if (!JadeStringUtil.isBlank(viewBean.getIdTiers())) {
                 VueGlobaleTiersUtils.stockerIdTiersPourVueGlobale(session, viewBean.getIdTiers());

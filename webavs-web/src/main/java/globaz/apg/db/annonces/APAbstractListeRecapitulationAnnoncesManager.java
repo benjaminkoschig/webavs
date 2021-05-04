@@ -5,11 +5,6 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static globaz.apg.api.annonces.IAPAnnonce.CS_PATERNITE;
-
 /**
  * Manager regroupant les fonctionnalités communes à la recherche des données pour la récapitulation des anciennes et
  * nouvelles annonces APG (avant septembre 2012, ou après)
@@ -69,10 +64,13 @@ public abstract class APAbstractListeRecapitulationAnnoncesManager extends BMana
                 case IAPAnnonce.CS_PATERNITE:
                     sql.append("(91)");
                     break;
+                case IAPAnnonce.CS_PROCHE_AIDANT:
+                    sql.append("(92)");
+                    break;
                 default:
             }
         }
-        if ((getForIsExclureAnnonceEnfant() != null) && getForIsExclureAnnonceEnfant().booleanValue()) {
+        if ((getForIsExclureAnnonceEnfant() != null) && getForIsExclureAnnonceEnfant()) {
             if (sql.length() != 0) {
                 sql.append(" AND ");
             }

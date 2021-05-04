@@ -14,6 +14,7 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.GlobazJobQueue;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ import java.util.List;
  * 
  * @author dde
  */
+@Slf4j
 public class APEnvoyerAnnoncesSedexProcess extends BProcess {
 
     private static final long serialVersionUID = 1L;
@@ -122,8 +124,10 @@ public class APEnvoyerAnnoncesSedexProcess extends BProcess {
                 e1.printStackTrace();
             }
 
+
             getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, getSession().getLabel("ENVOYER_ANNONCES"));
 
+            LOG.error("ERROR TO SEND ANNONCE",e);
             return false;
         }
 

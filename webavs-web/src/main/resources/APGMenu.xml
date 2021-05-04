@@ -1227,23 +1227,23 @@
 					<parameter name="userAction" value="apg.lots.lot.chercher" />
 				</action>
 			</node>
-<!--			<node>-->
-<!--				<label refId="MENU_OPTION_ANNONCES" />-->
-<!--				<action command="/apg" responseTarget="fr_main">-->
-<!--					<parameter name="userAction" value="apg.annonces.annonceAPG.chercher" />-->
-<!--					<parameter name="forType" value="forpaternite" />-->
-<!--				</action>-->
-<!--			</node>-->
+			<node>
+				<label refId="MENU_OPTION_ANNONCES" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.annonces.annonceAPG.chercher" />
+					<parameter name="forType" value="forprocheAidant" />
+				</action>
+			</node>
 			<!-- Menu Listes -->
-<!--			<node>-->
-<!--				<label refId="MENU_LISTES" />-->
-<!--				<nodes>-->
-<!--					<node>-->
-<!--						<label refId="MENU_OPTION_RECAP_ANNONCES" />-->
-<!--						<action command="/apg" responseTarget="fr_main">-->
-<!--							<parameter name="userAction" value="apg.process.recapitulationAnnonce.afficher" />-->
-<!--						</action>-->
-<!--					</node>-->
+			<node>
+				<label refId="MENU_LISTES" />
+				<nodes>
+					<node>
+						<label refId="MENU_OPTION_RECAP_ANNONCES" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.recapitulationAnnonce.afficher" />
+						</action>
+					</node>
 <!--					<node>-->
 <!--						<label refId="MENU_OPTION_ATTESTATIONS_FISCALES" />-->
 <!--						<action command="/apg" responseTarget="fr_main">-->
@@ -1268,27 +1268,27 @@
 <!--							<parameter name="userAction" value="apg.process.listeTaxationsDefinitives.afficher" />-->
 <!--						</action>-->
 <!--					</node>-->
-<!--				</nodes>-->
-<!--			</node>-->
+				</nodes>
+			</node>
 			<!-- Menu Traitements -->
-<!--			<node>-->
-<!--				<label refId="MENU_TRAITEMENTS_TITRE" />-->
-<!--				<nodes>-->
-<!--					&lt;!&ndash;					<node>&ndash;&gt;-->
-<!--					&lt;!&ndash;						<label refId="MENU_OPTION_GENERER_COMPENSATIONS" />&ndash;&gt;-->
-<!--					&lt;!&ndash;						<action command="/apg" responseTarget="fr_main">&ndash;&gt;-->
-<!--					&lt;!&ndash;							<parameter name="userAction" value="apg.process.genererCompensations.afficher" />&ndash;&gt;-->
-<!--					&lt;!&ndash;						</action>&ndash;&gt;-->
-<!--					&lt;!&ndash;					</node>&ndash;&gt;-->
-<!--					<node>-->
-<!--						<label refId="MENU_OPTION_ENVOYER_ANNONCES" />-->
-<!--						<action command="/apg" responseTarget="fr_main">-->
-<!--							<parameter name="userAction" value="apg.process.envoyerAnnonces.afficher" />-->
-<!--							<parameter name="forTypeAPG" value="52012005" />-->
-<!--						</action>-->
-<!--					</node>-->
-<!--				</nodes>-->
-<!--			</node>-->
+			<node>
+				<label refId="MENU_TRAITEMENTS_TITRE" />
+				<nodes>
+					<!--					<node>-->
+					<!--						<label refId="MENU_OPTION_GENERER_COMPENSATIONS" />-->
+					<!--						<action command="/apg" responseTarget="fr_main">-->
+					<!--							<parameter name="userAction" value="apg.process.genererCompensations.afficher" />-->
+					<!--						</action>-->
+					<!--					</node>-->
+					<node>
+						<label refId="MENU_OPTION_ENVOYER_ANNONCES" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.envoyerAnnonces.afficher" />
+							<parameter name="forTypeAPG" value="52012005" />
+						</action>
+					</node>
+				</nodes>
+			</node>
 			<!-- Menu Paramètres -->
 			<node>
 				<label refId="MENU_PARAMETRES" />

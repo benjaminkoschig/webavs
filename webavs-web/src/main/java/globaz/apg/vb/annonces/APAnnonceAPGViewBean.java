@@ -5,6 +5,9 @@ import globaz.apg.db.annonces.APAnnonceAPG;
 import globaz.apg.db.annonces.APAnnonceAPGManager;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.framework.bean.FWViewBeanInterface;
+import globaz.prestation.api.PRTypeDemande;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author DVH
@@ -19,6 +22,9 @@ public class APAnnonceAPGViewBean extends APAnnonceAPG implements FWViewBeanInte
     private String idDroit;
     private String idPrestation;
     private String typePrestation;
+    @Getter
+    @Setter
+    private PRTypeDemande typeDemande;
 
     public APAnnonceAPGViewBean() {
         super();
