@@ -4,13 +4,10 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.text.FieldPosition;
-import java.time.LocalDate;
-import java.time.format.TextStyle;
 import java.util.*;
 
 import ch.globaz.common.util.Dates;
 import globaz.apg.api.droits.IAPDroitAPG;
-import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.db.droits.*;
 import globaz.apg.db.prestation.*;
@@ -803,8 +800,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     String delaiCadreDebut = ((APDroitProcheAidant) droit).resolveDateDebutDelaiCadre()
                             .map(Dates::formatSwiss)
                             .orElse("");
-                    String nbJourRestant = Integer.toString(((APDroitProcheAidant) droit).calculerNbJourDisponible());
+                    String nbJourRestant = Integer.toString(((APDroitProcheAidant) droit).calculerNbJourDisponibleSansPeriodePlusRecente());
                     String delaiCadre = document.getTextes(3).getTexte(50).getDescription();
+
                     delaiCadre = PRStringUtils.replaceString(delaiCadre, "{dateDebut}", delaiCadreDebut);
                     delaiCadre = PRStringUtils.replaceString(delaiCadre, "{dateFin}", delaiCadreFin);
                     delaiCadre = PRStringUtils.replaceString(delaiCadre, "{nbJourDispo}", nbJourRestant);

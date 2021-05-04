@@ -58,7 +58,6 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
     private String noControlePers = "";
     private String noRevision = "";
     private String remarque = "";
-    private Optional<NbJourDateMin> nbJourDateMin;
 
 
     /**
@@ -82,13 +81,19 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
     public APDroitProcheAidant() { }
 
     public int calculerNbjourTotalIndemnise() {
-        Optional<NbJourDateMin> nbJourDateMin = loadNbJourDateMin();
-        return nbJourDateMin.map(NbJourDateMin::getNbJours)
-                            .orElse(0);
+        return  calculerNbjourTotalIndemnise(false);
+    }
+
+    private int calculerNbjourTotalIndemnise(boolean filtrerPeriodePlusAnciennne) {
+        return  loadNbJourDateMin(filtrerPeriodePlusAnciennne).map(NbJourDateMin::getNbJours).orElse(0);
+    }
+
+    public int calculerNbJourDisponibleSansPeriodePlusRecente() {
+        return this.getNbJourMax() - calculerNbjourTotalIndemnise(true);
     }
 
     public int calculerNbJourDisponible() {
-        return this.getNbJourMax() - calculerNbjourTotalIndemnise();
+        return this.getNbJourMax() - calculerNbjourTotalIndemnise(false);
     }
 
     private Integer getNbJourMax() {
@@ -97,7 +102,7 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
 
     public Optional<LocalDate> calculerDelai() {
         Integer nbMois = APParameter.PROCHE_AIDANT_MOIS_MAX.findValueOrWithDateNow(this.getDateDebutDroit(), this.getSession());
-        return loadNbJourDateMin().map(value -> {
+        return loadNbJourDateMin(false).map(value -> {
             if (value.getDateDebutMin() == null) {
                 return Dates.toDate(this.getDateDebutDroit());
             }
@@ -106,65 +111,68 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
     }
 
     public Optional<LocalDate> resolveDateDebutDelaiCadre() {
-        Optional<NbJourDateMin> nbJourDateMin = loadNbJourDateMin();
+        Optional<NbJourDateMin> nbJourDateMin = loadNbJourDateMin(false);
         return nbJourDateMin.map(NbJourDateMin::getDateDebutMin);
     }
 
     @Override
     protected void _beforeRetrieve(final BTransaction transaction) throws Exception {
         super._beforeRetrieve(transaction);
-        this.nbJourDateMin = null;
     }
 
-    private Optional<NbJourDateMin> loadNbJourDateMin() {
+    private Optional<NbJourDateMin> loadNbJourDateMin(boolean filtrerPeriodePlusAnciennne) {
         if (this.getIdDroit() == null || JadeStringUtil.isBlankOrZero(this.getIdDroit())) {
             return Optional.empty();
         }
-        if (nbJourDateMin == null) {
-            String etatsDroit = String.join(
-                    ",",
-                    IAPDroitLAPG.CS_ETAT_DROIT_VALIDE,
-                    IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
+        String etatsDroit = String.join(
+                ",",
+                IAPDroitLAPG.CS_ETAT_DROIT_VALIDE,
+                IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
 
-            SQLWriter sqlWriter = SQLWriter.writeWithSchema()
-                                           .append("select sum(VCNNBJ) as nb_jours, min(schema.APPERIP.VCDDEB) as date_debut_min")
-                                           .append("from schema." + APDroitLAPG.TABLE_NAME_LAPG)
-                                           .join("schema.APDROITPROCHEAIDANT ON schema.APDROITPROCHEAIDANT.ID_DROIT = schema.APDROIP.VAIDRO")
-                                           .join("schema.APPERIP ON schema.APPERIP.VCIDRO = schema.APDROIP.VAIDRO")
-                                           .join("schema.APSIFMP ON schema.APSIFMP.VQIDRM = schema.APDROIP.VAIDRO")
-                                           .append("where schema.APSIFMP.VQLAVS = (")
-                                           .append("select schema.APSIFMP.VQLAVS as nss_enfant")
-                                           .from(APDroitLAPG.TABLE_NAME_LAPG)
-                                           .join("schema.APDROITPROCHEAIDANT ON schema.APDROITPROCHEAIDANT.ID_DROIT = schema.APDROIP.VAIDRO")
-                                           .join("schema.APSIFMP ON schema.APSIFMP.VQIDRM = schema.APDROIP.VAIDRO")
-                                           .append(" where schema.APDROIP.VAIDRO = '?')", this.getIdDroit())
-                                           .append(" and schema.APDROIP.VATETA in(?)", etatsDroit)
-                                           .append(" and (schema.APDROIP.VAIPAR is null or schema.APDROIP.VAIPAR = 0")
-                                           .append(" and 0 = (select count(child.VAIDRO) as nb")
-                                           .append(" from schema.APDROIP as child")
-                                           .append(" where child.VAIPAR = schema.APDROIP.VAIDRO")
-                                           .append(" and child.VATETA in (52003007, 52003002, 52003003))")
-                                           .append(" or ((schema.APDROIP.VAIPAR is not null or schema.APDROIP.VAIPAR != 0)")
-                                           .append(" and schema.APDROIP.VAIDRO = (select max(child.VAIDRO)")
-                                           .append(" from schema.APDROIP as child")
-                                           .append(" where child.VAIPAR = schema.APDROIP.VAIDRO")
-                                           .append(" and child.VATETA in (?))))", etatsDroit);
+        SQLWriter sqlWriter = SQLWriter.writeWithSchema()
+                                       .append("select sum(VCNNBJ + VCNNBJOURSUP) as nb_jours, min(schema.APPERIP.VCDDEB) as date_debut_min")
+                                       .append("from schema." + APDroitLAPG.TABLE_NAME_LAPG)
+                                       .join("schema.APDROITPROCHEAIDANT ON schema.APDROITPROCHEAIDANT.ID_DROIT = schema.APDROIP.VAIDRO")
+                                       .join("schema.APPERIP ON schema.APPERIP.VCIDRO = schema.APDROIP.VAIDRO")
+                                       .join("schema.APSIFMP ON schema.APSIFMP.VQIDRM = schema.APDROIP.VAIDRO")
+                                       .append("where schema.APSIFMP.VQLAVS = (")
+                                       .append("select schema.APSIFMP.VQLAVS as nss_enfant")
+                                       .from(APDroitLAPG.TABLE_NAME_LAPG)
+                                       .join("schema.APDROITPROCHEAIDANT ON schema.APDROITPROCHEAIDANT.ID_DROIT = schema.APDROIP.VAIDRO")
+                                       .join("schema.APSIFMP ON schema.APSIFMP.VQIDRM = schema.APDROIP.VAIDRO")
+                                       .append(" where schema.APDROIP.VAIDRO = ?)", this.getIdDroit())
+                                       .append(" and schema.APDROIP.VATETA in(?)", etatsDroit)
+                                       .append(" and (schema.APDROIP.VAIPAR is null or schema.APDROIP.VAIPAR = 0")
+                                       .append(" and 0 = (select count(child.VAIDRO) as nb")
+                                       .append(" from schema.APDROIP as child")
+                                       .append(" where child.VAIPAR = schema.APDROIP.VAIDRO")
+                                       .append(" and child.VATETA in (?))", etatsDroit)
+                                       .append(" or ((schema.APDROIP.VAIPAR is not null or schema.APDROIP.VAIPAR != 0)")
+                                       .append(" and schema.APDROIP.VAIDRO = (select max(child.VAIDRO)")
+                                       .append(" from schema.APDROIP as child")
+                                       .append(" where child.VAIPAR = schema.APDROIP.VAIDRO")
+                                       .append(" and child.VATETA in (?))))", etatsDroit);
+                                       if(filtrerPeriodePlusAnciennne) {
+                                           sqlWriter .append("and schema.APPERIP.VCDFIN <= (select max(periodeMax.VCDFIN)")
+                                                   .append("                                 from schema.APDROIP as currentDroit")
+                                                   .append("                                inner join schema.APPERIP as periodeMax  ")
+                                                   .append("                                   ON periodeMax.VCIDRO = currentDroit.VAIDRO")
+                                                   .append("                      where VAIDRO = ?)", this.getIdDroit());
+                                       }
 
-            List<NbJourDateMin> list = SCM.newInstance(NbJourDateMin.class)
-                                          .session(this.getSession()).query(sqlWriter.toSql())
-                                          .converters(new LocalDateConverter())
-                                          .execute();
-            if (list.isEmpty()) {
-                return Optional.empty();
-            }
-            this.nbJourDateMin = Optional.of(list.get(0));
+        List<NbJourDateMin> list = SCM.newInstance(NbJourDateMin.class)
+                                      .session(this.getSession()).query(sqlWriter.toSql())
+                                      .converters(new LocalDateConverter())
+                                      .execute();
+        if (list.isEmpty()) {
+            return Optional.empty();
         }
-        return this.nbJourDateMin;
+        return Optional.of(list.get(0));
     }
 
     public int calculerNbJourIndemnise() {
         SQLWriter sqlWriter = SQLWriter.writeWithSchema()
-                                       .append("select sum(VFNJIN) from schema.APSIPRP where schema.APSIPRP.VFIDRO = ?", this.getIdDroit());
+                                       .append("select sum(VFNJIN + VCNNBJOURSUP) from schema.APSIPRP where schema.APSIPRP.VFIDRO = ?", this.getIdDroit());
 
         return SCM.newInstance(BigDecimal.class)
                   .session(this.getSession())
