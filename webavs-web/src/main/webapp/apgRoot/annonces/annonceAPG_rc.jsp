@@ -5,6 +5,7 @@
 <%@page import="globaz.apg.pojo.APAnnonceDTO"%>
 <%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" %>
 <%@ page import="globaz.prestation.api.IPRDemande" %>
+<%@ page import="globaz.apg.menu.MenuPrestation" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib uri="/WEB-INF/nss.tld" prefix="ct1" %>
 <%@ include file="/theme/find/header.jspf" %>
@@ -48,32 +49,16 @@
 	//action new redéfini car le userAction dans la requête n'est pas forcément le bon
 	actionNew = servletContext + mainServletPath
 			+ "?userAction=apg.annonces.annonceAPG.choisirType&_method=add";
+
+    String menuIdPrincipal = MenuPrestation.of(session).getMenuIdPrincipal();
 %>
 <%-- /tpl:put --%>
 <%@ include file="/theme/find/javascripts.jspf" %>
 <script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
 <%-- tpl:put name="zoneScripts" --%>
-<!--si APG -->
-<%
-	if ( typePrestation == globaz.prestation.api.IPRDemande.CS_TYPE_APG) {
-%>
-	<ct:menuChange displayId="menu" menuId="ap-menuprincipalapg" showTab="menu"/>
-	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<!--sinon, maternité -->
-<%
-	} else if (typePrestation == globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE) {
-%>
-	<ct:menuChange displayId="menu" menuId="ap-menuprincipalamat" showTab="menu"/>
-	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<%
-	}else if (typePrestation == IPRDemande.CS_TYPE_PATERNITE) {
-%>
-<ct:menuChange displayId="menu" menuId="ap-menuprincipalapat" showTab="menu"/>
-<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
-<%
-	}
-%>
 
+	<ct:menuChange displayId="menu" menuId="<%= MenuPrestation.of(session).getMenuIdPrincipal()%>" showTab="menu"/>
+	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 
 <SCRIPT language="javascript">
 	bFind = true;	
@@ -159,6 +144,7 @@
 									<OPTION value="<%=globaz.apg.db.annonces.APAnnonceAPGManager.FOR_TYPE_APG%>" ><ct:FWLabel key="JSP_APG"/></OPTION>
 									<OPTION value="<%=globaz.apg.db.annonces.APAnnonceAPGManager.FOR_TYPE_MATERNITE%>" ><ct:FWLabel key="JSP_MATERNITE"/></OPTION>
 									<OPTION value="<%=globaz.apg.db.annonces.APAnnonceAPGManager.FOR_TYPE_PATERNITE%>" ><ct:FWLabel key="JSP_PATERNITE"/></OPTION>
+                                    <OPTION value="<%=globaz.apg.db.annonces.APAnnonceAPGManager.FOR_TYPE_PROCHE_AIDANT%>" ><ct:FWLabel key="JSP_ANNONCE_PROCHE_AIDANT"/></OPTION>
 								</SELECT>
 							</TD>
 						</TR>

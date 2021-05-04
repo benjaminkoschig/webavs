@@ -67,7 +67,8 @@
 								<SELECT name="typeAnnonce">
 									<OPTION value="<%=globaz.apg.api.annonces.IAPAnnonce.CS_MATERNITE%>"><ct:FWLabel key="JSP_ANNONCE_MATERNITE"/></OPTION>
 									<OPTION value="<%=globaz.apg.api.annonces.IAPAnnonce.CS_PATERNITE%>"><ct:FWLabel key="JSP_ANNONCE_PATERNITE"/></OPTION>
-									<OPTION value="<%=globaz.apg.api.annonces.IAPAnnonce.CS_APGREVISION1999%>"><ct:FWLabel key="JSP_ANNONCE_APG_REVISION_1999"/></OPTION>
+                                    <OPTION value="<%=globaz.apg.api.annonces.IAPAnnonce.CS_PROCHE_AIDANT%>"><ct:FWLabel key="ANNONCE_PROCHE_AIDANT"/></OPTION>
+                                    <OPTION value="<%=globaz.apg.api.annonces.IAPAnnonce.CS_APGREVISION1999%>"><ct:FWLabel key="JSP_ANNONCE_APG_REVISION_1999"/></OPTION>
 									<OPTION value="<%=globaz.apg.api.annonces.IAPAnnonce.CS_APGREVISION2005%>"><ct:FWLabel key="JSP_ANNONCE_APG_REVISION_2005"/></OPTION>
 									<OPTION value="<%=globaz.apg.api.annonces.IAPAnnonce.CS_APGSEDEX%>"><ct:FWLabel key="JSP_ANNONCE_APG_SEDEX"/></OPTION>
 								</SELECT>
