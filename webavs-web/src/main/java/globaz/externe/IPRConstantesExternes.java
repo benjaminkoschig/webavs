@@ -13,6 +13,7 @@ public interface IPRConstantesExternes {
     public static final String ATTESTATION_FISCALE_MATERNITE = "5050PAP";
     public static final String ATTESTATION_FISCALE_PANDEMIE = "5051PAP";
     public static final String ATTESTATION_FISCALE_PATERNITE = "5054PAP";
+    public static final String ATTESTATION_FISCALE_PROCHE_AIDANT = "5056PAP";
     // IJAI
     public static final String ATTESTATION_FISCALE_IJ = "5011PIJ";
     public static final String ATTESTATIONS_NON_RECUES_IJ = "5016PIJ";
@@ -24,7 +25,7 @@ public interface IPRConstantesExternes {
     public static final String DECISION_MATERNITE = "5003PAP";
 
     public static final String DECISION_PATERNITE = "5053PAP";
-    public static final String DECISION_PROCHE_AIDANT = "5063PAP";
+    public static final String DECISION_PROCHE_AIDANT = "5055PAP";
 
     public static final String DECISION_MOYENS_DE_DROIT = "5042PIJ";
     public static final String DECISION_REFUS_APG = "5038PAP";

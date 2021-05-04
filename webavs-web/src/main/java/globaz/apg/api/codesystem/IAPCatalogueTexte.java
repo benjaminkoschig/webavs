@@ -10,9 +10,9 @@ public interface IAPCatalogueTexte {
 
     public static final String CS_ATTESTATION_FISCALE_APG = "52019007";
     public static final String CS_ATTESTATION_FISCALE_MAT = "52021007";
+    public static final String CS_ATTESTATION_FISCALE_PAN = "52031007";
     public static final String CS_ATTESTATION_FISCALE_PAT = "52042007";
     public static final String CS_ATTESTATION_FISCALE_PAI = "53042007";
-    public static final String CS_ATTESTATION_FISCALE_PAN = "52031007";
     public static final String CS_ATTESTATION_MAT = "52021005";
     public static final String CS_COMMUNICATION_APG = "52019003";
     public static final String CS_COMMUNICATION_MAT = "52021003";

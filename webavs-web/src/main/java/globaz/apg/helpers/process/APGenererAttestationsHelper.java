@@ -36,9 +36,10 @@ public class APGenererAttestationsHelper extends PRAbstractHelper {
             for (Iterator iterator = l.iterator(); iterator.hasNext();) {
                 String s = (String) iterator.next();
                 if (s != null && (s.startsWith(IPRConstantesExternes.ATTESTATION_FISCALE_APG)
-                    || s.startsWith(IPRConstantesExternes.ATTESTATION_FISCALE_MATERNITE)
+                        || s.startsWith(IPRConstantesExternes.ATTESTATION_FISCALE_MATERNITE)
                         || s.startsWith(IPRConstantesExternes.ATTESTATION_FISCALE_PATERNITE)
-                    || s.startsWith(IPRConstantesExternes.ATTESTATION_FISCALE_PANDEMIE)
+                        || s.startsWith(IPRConstantesExternes.ATTESTATION_FISCALE_PANDEMIE)
+                        || s.startsWith(IPRConstantesExternes.ATTESTATION_FISCALE_PROCHE_AIDANT)
                 )) {
                     ((APGenererAttestationsViewBean) viewBean).setDisplaySendToGed("1");
                     break;

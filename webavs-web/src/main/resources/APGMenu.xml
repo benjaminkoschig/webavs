@@ -1244,12 +1244,12 @@
 							<parameter name="userAction" value="apg.process.recapitulationAnnonce.afficher" />
 						</action>
 					</node>
-<!--					<node>-->
-<!--						<label refId="MENU_OPTION_ATTESTATIONS_FISCALES" />-->
-<!--						<action command="/apg" responseTarget="fr_main">-->
-<!--							<parameter name="userAction" value="apg.process.genererAttestations.afficher" />-->
-<!--						</action>-->
-<!--					</node>-->
+					<node>
+						<label refId="MENU_OPTION_ATTESTATIONS_FISCALES" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.genererAttestations.afficher" />
+						</action>
+					</node>
 <!--					<node>-->
 <!--						<label refId="MENU_OPTION_LISTE_PRESTATION_VERSEE" />-->
 <!--						<action command="/apg" responseTarget="fr_main">-->

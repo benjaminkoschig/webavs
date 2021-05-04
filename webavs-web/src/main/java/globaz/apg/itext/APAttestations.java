@@ -866,9 +866,11 @@ public class APAttestations extends FWIDocumentManager {
         String suffixe;
         if(IPRDemande.CS_TYPE_MATERNITE.equals(type)) {
             suffixe = getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_MATERNITE_OK");
-        }  if(IPRDemande.CS_TYPE_PATERNITE.equals(type)) {
+        } else if(IPRDemande.CS_TYPE_PATERNITE.equals(type)) {
             suffixe = getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_PATERNITE_OK");
-        }else if(IPRDemande.CS_TYPE_PANDEMIE.equals(type)) {
+        } else if(IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(type)) {
+            suffixe = getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_PROCHE_AIDANT_OK");
+        } else if(IPRDemande.CS_TYPE_PANDEMIE.equals(type)) {
             suffixe = getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_PANDEMIE_OK");
         } else {
             suffixe = getSession().getLabel("EMAIL_OBJECT_ATT_FISCALES_APG_OK");
@@ -1022,6 +1024,8 @@ public class APAttestations extends FWIDocumentManager {
             numeroInforom = IPRConstantesExternes.ATTESTATION_FISCALE_PATERNITE;
         } else if(IPRDemande.CS_TYPE_PANDEMIE.equals(type)) {
             numeroInforom = IPRConstantesExternes.ATTESTATION_FISCALE_PANDEMIE;
+        } else if(IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(type)) {
+            numeroInforom = IPRConstantesExternes.ATTESTATION_FISCALE_PROCHE_AIDANT;
         } else {
             numeroInforom = IPRConstantesExternes.ATTESTATION_FISCALE_APG;
         }
