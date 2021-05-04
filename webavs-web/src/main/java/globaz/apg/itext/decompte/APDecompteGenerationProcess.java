@@ -592,7 +592,7 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
         next = false;
         APDecompte decompteCourant = null;
 
-        if(!getFirstForCopy() && (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) && getIsCopie()) {
+        if(!getFirstForCopy() && (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot())) && getIsCopie()) {
             setFirstForCopy(true);
             return true;
         } else {
@@ -685,8 +685,8 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
                 setDecompteCourant(decompteCourant);
                 setCatalogueTextesCourant(catalogueTextes);
             }
-            // Dans le cas de la paternité, nous devons généré une entête lors de la création des copies
-            if (getIsCopie() && IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot())) {
+            // Dans le cas de la paternité et proche aidant, nous devons généré une entête lors de la création des copies
+            if (getIsCopie() && (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot()))) {
                 setFirstForCopy(false);
             }
             return next;

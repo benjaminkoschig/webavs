@@ -163,7 +163,9 @@ public class APGenererDecomptesProcess extends BProcess {
                             FWMessage.INFORMATION, "");
                     imprimerCommunication(false);
                     // Si l'on est dans un type pandémie ou paternité, il faut générer les copies.
-                    if (StringUtils.equals(IPRDemande.CS_TYPE_PANDEMIE, typeLot) || StringUtils.equals(IPRDemande.CS_TYPE_PATERNITE, typeLot)) {
+                    if (StringUtils.equals(IPRDemande.CS_TYPE_PANDEMIE, typeLot)
+                            || StringUtils.equals(IPRDemande.CS_TYPE_PATERNITE, typeLot)
+                            || StringUtils.equals(IPRDemande.CS_TYPE_PROCHE_AIDANT, typeLot)) {
                         imprimerCommunication(true);
                     }
                     if (getMemoryLog().hasErrors()) {
@@ -190,7 +192,9 @@ public class APGenererDecomptesProcess extends BProcess {
                 } else {
                     imprimerCommunication(false);
                     // Si l'on est dans un type pandémie ou paternité, il faut générer les copies.
-                    if (StringUtils.equals(IPRDemande.CS_TYPE_PANDEMIE, typeLot) || StringUtils.equals(IPRDemande.CS_TYPE_PATERNITE, typeLot)) {
+                    if (StringUtils.equals(IPRDemande.CS_TYPE_PANDEMIE, typeLot)
+                            || StringUtils.equals(IPRDemande.CS_TYPE_PATERNITE, typeLot)
+                            || StringUtils.equals(IPRDemande.CS_TYPE_PROCHE_AIDANT, typeLot)) {
                         imprimerCommunication(true);
                     }
                     if (getMemoryLog().hasErrors()) {
