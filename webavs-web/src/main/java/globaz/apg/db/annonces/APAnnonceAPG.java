@@ -679,7 +679,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
         setNombreJoursOuvrable(champsAnnonce.getNumberOfWorkdays());
         setTypePaternite(champsAnnonce.getParternityLeaveType());
         //Proche aidant
-        champsAnnonce.setCareLeaveEventID(getCareLeaveEventID());
+        setCareLeaveEventID(getCareLeaveEventID());
     }
 
     /**
