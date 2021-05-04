@@ -25,8 +25,8 @@ public class CaisseInfoPropertiesWrapper {
     private void loadCaisseProperties() {
         try {
             this.noCaisse = CommonPropertiesUtils.getValue(CommonProperties.KEY_NO_CAISSE);
-            this.noAgence = CommonPropertiesUtils.getValue(CommonProperties.KEY_NO_CAISSE_FORMATE);
-            this.noCaisseFormatee = CommonPropertiesUtils.getValue(CommonProperties.NUMERO_AGENCE);
+            this.noAgence = CommonPropertiesUtils.getValue(CommonProperties.NUMERO_AGENCE);
+            this.noCaisseFormatee = CommonPropertiesUtils.getValue(CommonProperties.KEY_NO_CAISSE_FORMATE);
         } catch (PropertiesException e) {
             throw new IllegalArgumentException("A problem occured with a properties needed to instantiate the wrapper", e);
         }
