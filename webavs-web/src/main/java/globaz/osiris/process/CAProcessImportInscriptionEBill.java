@@ -189,13 +189,14 @@ public class CAProcessImportInscriptionEBill extends BProcess {
         // Si le fichier n'a pas pu être enregistré en BDD, on ne le traite et le problème sera remonté dans le rapport par mail.
         if (Objects.nonNull(fichierInscription)) {
 
-            String localPath = Jade.getInstance().getSharedDir() + serviceFtp.getFolderInName() + nomFichierDistant;
+            String localPath = Jade.getInstance().getPersistenceDir() + serviceFtp.getFolderInName() + nomFichierDistant;
             File localFile = new File(localPath);
             try {
 
                 // Download du fichier CSV
                 try (FileOutputStream retrievedFile = new FileOutputStream(localFile)) {
                     serviceFtp.retrieveFile(nomFichierDistant, retrievedFile);
+                    serviceFtp.deleteFile(nomFichierDistant);
                 }
 
                 // Traitement du fichier CSV
@@ -242,8 +243,11 @@ public class CAProcessImportInscriptionEBill extends BProcess {
         String nomFichier = fichier.getNomFichier();
         if (toutesInscriptionsEnSucces) {
             fichier.setStatutFichier(String.valueOf(CAFichierInscriptionStatutEBillEnum.TRAITE.getIndex()));
-        } else {
+        } else if (inscriptionOK > 0) {
             fichier.setStatutFichier(String.valueOf(CAFichierInscriptionStatutEBillEnum.TRAITE_ERREUR.getIndex()));
+            filesToSend.add(localFile.getAbsolutePath());
+        } else {
+            fichier.setStatutFichier(String.valueOf(CAFichierInscriptionStatutEBillEnum.NON_TRAITE.getIndex()));
             filesToSend.add(localFile.getAbsolutePath());
         }
         try {
@@ -259,13 +263,13 @@ public class CAProcessImportInscriptionEBill extends BProcess {
      *
      * @param fichier         : le fichier lié à l'inscription.
      * @param eachInscription : l'inscription à sauvegarder.
-     * @param traite          : booléen qui indique si la mise à jour du compte annexe s'est bien faite.
+     * @param result          : booléen qui indique si la mise à jour du compte annexe s'est bien faite.
      * @return vrai si la sauvegarde est en succès.
      */
-    private boolean saveInscription(CAFichierInscriptionEBill fichier, CAInscriptionEBill eachInscription, boolean traite) {
+    private boolean saveInscription(CAFichierInscriptionEBill fichier, CAInscriptionEBill eachInscription, boolean result) {
         eachInscription.setSession(getSession());
         eachInscription.setIdFichier(fichier.getIdFichier());
-        if (traite) {
+        if (result) {
             eachInscription.setStatut(CAStatutEBillEnum.NUMERO_STATUT_TRAITE_AUTOMATIQUEMENT);
         } else {
             eachInscription.setStatut(CAStatutEBillEnum.NUMERO_STATUT_A_TRAITER);

@@ -35,10 +35,10 @@
     notationManager.b_stop = true;
 </script>
 <TH colspan="2">eBillAccountID</TH>
-<TH align="left">Name/Vorname oder Unternehmen</TH>
+<TH align="left">Name</TH>
 <TH nowrap align="left">Teilnehmernummer</TH>
 <TH align="left">Typ</TH>
-<TH align="left">Statut interne</TH>
+<TH align="left">Internen Status</TH>
 <%	globaz.osiris.db.ebill.CAInscriptionEBill _inscriptionEBill = null ; %>
 <%-- /tpl:put --%>
 <%@ include file="/theme/list/tableHeader.jspf" %>

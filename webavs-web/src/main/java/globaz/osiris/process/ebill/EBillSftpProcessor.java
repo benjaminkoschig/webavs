@@ -20,12 +20,12 @@ public class EBillSftpProcessor extends AbstractSepa {
     private static final Logger LOG = LoggerFactory.getLogger(EBillSftpProcessor.class);
 
     public EBillSftpProcessor() throws PropertiesException {
-        String localInDirPath = Jade.getInstance().getSharedDir() + getFolderInName();
+        String localInDirPath = Jade.getInstance().getPersistenceDir() + getFolderInName();
         File localInDir = new File(localInDirPath);
         if (!localInDir.exists()) {
             localInDir.mkdir();
         }
-        String localOutDirPath = Jade.getInstance().getSharedDir() + getFolderOutName();
+        String localOutDirPath = Jade.getInstance().getPersistenceDir() + getFolderOutName();
         File localOutDir = new File(localOutDirPath);
         if (!localOutDir.exists()) {
             localOutDir.mkdir();
@@ -97,6 +97,11 @@ public class EBillSftpProcessor extends AbstractSepa {
     public void retrieveFile(final String fileName, final OutputStream stream) throws PropertiesException, SftpException {
         //retrieveData(getClient(),getInFolderNameFtp() + fileName, stream);
         getClient().get(getInFolderNameFtp() + fileName, stream);
+    }
+
+    public void deleteFile(final String fileName) throws PropertiesException, SftpException {
+        //deleteFile(getClient(), getInFolderNameFtp() + fileName);
+        getClient().rm(getInFolderNameFtp() + fileName);
     }
 
     @Override

@@ -190,13 +190,14 @@ public class CAProcessImportTraitementEBill extends BProcess {
         // Si le fichier n'a pas pu être enregistré en BDD, on ne le traite et le problème sera remonté dans le rapport par mail.
         if (Objects.nonNull(fichier)) {
 
-            String localPath = Jade.getInstance().getSharedDir() + serviceFtp.getFolderInName() + nomFichierDistant;
+            String localPath = Jade.getInstance().getPersistenceDir() + serviceFtp.getFolderInName() + nomFichierDistant;
             File localFile = new File(localPath);
             try {
 
                 // Download du fichier XML
                 try (FileOutputStream retrievedFile = new FileOutputStream(localFile)) {
                     serviceFtp.retrieveFile(nomFichierDistant, retrievedFile);
+                    serviceFtp.deleteFile(nomFichierDistant);
                 }
 
                 // Traitement du fichier XML

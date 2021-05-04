@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 public class CAInscriptionEBill extends BEntity implements Serializable {
 
-    public static final String TABLE_INSCRIPTION_EBILL = "INSCRIPTION_EBILL";
+    public static final String TABLE_INSCRIPTION_EBILL = "EBILL_INSCRIPTION";
     public static final String FIELD_ID_INSCRIPTION = "ID_INSCRIPTION";
     public static final String FIELD_ID_FICHIER = "ID_FICHIER";
     public static final String FIELD_EBILL_ACCOUNT_ID = "EBILL_ACCOUNT_ID";
@@ -66,7 +66,7 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
     protected void _readProperties(BStatement bStatement) throws Exception {
         idInscription = bStatement.dbReadNumeric(CAInscriptionEBill.FIELD_ID_INSCRIPTION);
         idFichier = bStatement.dbReadNumeric(CAInscriptionEBill.FIELD_ID_FICHIER);
-        eBillAccountID = bStatement.dbReadNumeric(CAInscriptionEBill.FIELD_EBILL_ACCOUNT_ID);
+        eBillAccountID = bStatement.dbReadString(CAInscriptionEBill.FIELD_EBILL_ACCOUNT_ID);
         numeroAffilie = bStatement.dbReadString(CAInscriptionEBill.FIELD_NUMERO_AFFILIE);
         type = bStatement.dbReadNumeric(CAInscriptionEBill.FIELD_TYPE);
         nom = bStatement.dbReadString(CAInscriptionEBill.FIELD_NOM);

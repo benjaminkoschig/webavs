@@ -35,7 +35,7 @@
     notationManager.b_stop = true;
 </script>
 <TH colspan="2">eBillAccountID</TH>
-<TH align="left">Nom/Pr&eacute;nom ou Entreprise</TH>
+<TH align="left">Nom</TH>
 <TH nowrap align="left">No affili&eacute;</TH>
 <TH align="left">Type</TH>
 <TH align="left">Statut interne</TH>
