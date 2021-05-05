@@ -277,6 +277,9 @@ public class SQLWriterTest {
         assertThat(SQLWriter.write().append("select * from t = ?", 2).toSql()).isEqualTo("select * from t = 2");
 
         assertThat(SQLWriter.write().append("select * from", "").toSql()).isEqualTo("");
+        assertThat(SQLWriter.write().append("select * from")
+                            .append("where t1 = '?'", "1").toSql()).isEqualTo(
+                "select * from where t1 = '1'");
         assertThat(SQLWriter.write().append("select * from where t1 = '?'", "1").toSql()).isEqualTo(
                 "select * from where t1 = '1'");
 

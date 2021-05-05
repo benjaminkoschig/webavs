@@ -2,6 +2,7 @@ package ch.globaz.common.sql;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -831,8 +832,9 @@ public class SQLWriter {
      */
     public SQLWriter append(String sqlFragment, String... params) {
         if (isNotEmpty(params)) {
-            for (String p : params) {
-                paramsToUse.add(p);
+            paramsToUse.addAll(Arrays.asList(params));
+            if(query.length()>0) {
+                query.append(" ");
             }
             query.append(sqlFragment);
         }
