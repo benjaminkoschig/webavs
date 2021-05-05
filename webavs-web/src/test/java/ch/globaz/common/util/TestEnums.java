@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Class utilitaire pour faciliter les tests des enums.
  */
 @SuppressWarnings("unused")
-public class Enums {
+public class TestEnums {
 
     /**
      * Permet de tester un fonction d'une enum qui indique si il s'agit de la valeur de l'énum.

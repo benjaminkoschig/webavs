@@ -1,6 +1,6 @@
 package globaz.prestation.api;
 
-import ch.globaz.common.util.Enums;
+import ch.globaz.common.util.TestEnums;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
@@ -10,7 +10,7 @@ public class PRTypeDemandeTest {
 
     @Test
     public void isProcheAidant_correct() {
-        Enums.assertFunctionEqualEnum(PRTypeDemande.class, PRTypeDemande::isProcheAidant, PRTypeDemande.PROCHE_AIDANT);
+        TestEnums.assertFunctionEqualEnum(PRTypeDemande.class, PRTypeDemande::isProcheAidant, PRTypeDemande.PROCHE_AIDANT);
     }
 
     @Test
