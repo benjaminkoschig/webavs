@@ -6,7 +6,10 @@
  */
 package globaz.apg.servlet;
 
+import globaz.apg.api.droits.APGenreService;
+import globaz.apg.businessimpl.service.APProcheAidantServiceHelper;
 import globaz.apg.db.droits.APDroitLAPG;
+import globaz.apg.db.droits.APDroitProcheAidant;
 import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.exceptions.APEmptyIdException;
 import globaz.apg.helpers.prestation.APPrestationHelper;
@@ -61,6 +64,7 @@ public class APPrestationAction extends PRDefaultAction {
         String idDroit = resoudreIdDroit(vb, request);
         String genreService = resoudreGenreService(vb, request);
         String typePrestation = resoudreTypePrestation(vb, request);
+        APGenreService droitGenreService = APGenreService.toEnumByCs(genreService);
 
         if (JadeStringUtil.isBlankOrZero(idDroit)) {
             throw new APEmptyIdException(APDroitLAPG.class, idDroit);
@@ -141,6 +145,14 @@ public class APPrestationAction extends PRDefaultAction {
                     + APPrestationHelper.ACTION_DETERMINER_TYPE_CALCUL_PRESTATIONS + viewBean.getMessage());
         }
 
+        if(droitGenreService.isProcheAidant()){
+            APDroitProcheAidant droitProcheAidant = new APDroitProcheAidant();
+            droitProcheAidant.setISession(mainDispatcher.getSession());
+            droitProcheAidant.setIdDroit(idDroit);
+            droitProcheAidant.retrieve();
+            APProcheAidantServiceHelper procheAidantServiceHelper = new APProcheAidantServiceHelper(droitProcheAidant.getSession());
+            procheAidantServiceHelper.changementDateDebutDroitsPourLesDroitsQuiOnUneDateDeDebutPlusRecente(droitProcheAidant);
+        }
         return destination;
     }
 

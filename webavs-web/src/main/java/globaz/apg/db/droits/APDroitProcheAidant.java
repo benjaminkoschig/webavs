@@ -111,8 +111,8 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
     }
 
     public Optional<LocalDate> resolveDateDebutDelaiCadre() {
-        Optional<NbJourDateMin> nbJourDateMin = loadNbJourDateMin(false);
-        return nbJourDateMin.map(NbJourDateMin::getDateDebutMin);
+        return loadNbJourDateMin(false)
+                .map(nbJourDateMin->nbJourDateMin.dateDebutMin.minusDays(1));
     }
 
     @Override
@@ -172,7 +172,7 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
 
     public int calculerNbJourIndemnise() {
         SQLWriter sqlWriter = SQLWriter.writeWithSchema()
-                                       .append("select sum(VFNJIN + VCNNBJOURSUP) from schema.APSIPRP where schema.APSIPRP.VFIDRO = ?", this.getIdDroit());
+                                       .append("select sum(VFNJIN) from schema.APSIPRP where schema.APSIPRP.VFIDRO = ?", this.getIdDroit());
 
         return SCM.newInstance(BigDecimal.class)
                   .session(this.getSession())
@@ -180,16 +180,21 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
                   .executeAggregate().intValue();
     }
 
-    public int calculerNbjourTotalDuDroit() {
+    public Optional<NbJourDateMin> rechercherNbJourDateMinPourLeDroit() {
         SQLWriter sqlWriter = SQLWriter.writeWithSchema()
-                                       .append("select sum(VCNNBJ + VCNNBJOURSUP) as nb_Jours")
+                                       .append("select sum(VCNNBJ + VCNNBJOURSUP) as nb_Jours, min(schema.APPERIP.VCDDEB) as date_debut_min")
                                        .append("from schema." + APDroitLAPG.TABLE_NAME_LAPG)
                                        .join("schema.APDROITPROCHEAIDANT ON schema.APDROITPROCHEAIDANT.ID_DROIT = schema.APDROIP.VAIDRO")
                                        .join("schema.APPERIP ON schema.APPERIP.VCIDRO = schema.APDROIP.VAIDRO")
-                                       .append(" where schema.APDROIP.VAIDRO = ?", this.getIdDroit());
+                                       .append("where schema.APDROIP.VAIDRO = ?", this.getIdDroit());
 
-        return SCM.newInstance(NbJourDateMin.class).session(this.getSession()).query(sqlWriter.toSql())
-                  .executeAggregate().intValue();
+        return SCM.newInstance(NbJourDateMin.class).session(this.getSession())
+                  .converters(new LocalDateConverter())
+                  .query(sqlWriter.toSql()).execute().stream().findFirst();
+    }
+
+    public int calculerNbjourTotalDuDroit() {
+        return rechercherNbJourDateMinPourLeDroit().map(NbJourDateMin::getNbJours).orElse(0);
     }
 
     /**

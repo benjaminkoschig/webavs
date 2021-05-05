@@ -1,10 +1,8 @@
 package globaz.prestation.api;
 
+import ch.globaz.common.util.Enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.util.Arrays;
-import java.util.function.Function;
 
 @AllArgsConstructor
 @Getter
@@ -75,13 +73,7 @@ public enum PRTypeDemande {
      * @return L'enum correspondante aux code système.
      */
     public static PRTypeDemande toEnumByCs(String codeSystem) {
-        return toEnum(codeSystem, PRTypeDemande.class, PRTypeDemande::getCsType);
+        return Enums.toEnum(codeSystem, PRTypeDemande.class, PRTypeDemande::getCsType);
     }
 
-    private static <T extends Enum<?>> T toEnum(final String codeSystem, Class<T> enumClass, Function<T, String> function) {
-        return Arrays.stream(enumClass.getEnumConstants())
-                     .filter(typeDemande -> function.apply(typeDemande).equals(codeSystem))
-                     .findFirst()
-                     .orElseThrow(() -> new EnumConstantNotPresentException(enumClass, codeSystem));
-    }
 }

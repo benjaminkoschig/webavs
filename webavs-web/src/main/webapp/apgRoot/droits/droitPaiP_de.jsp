@@ -105,20 +105,13 @@
         // si l'utilisateur à saisit des valeurs pour les priodes sans cliquer le btn ajouter, on lui fit à sa place
         var dateDebut = $('#dateDebutPeriode').val();
         var dateFin = $('#dateFinPeriode').val();
-        var nbrJours = $('#nbrJour').val();
-        var tauxImposition = "";
-        var cantonImposition = "";
-        if (document.getElementById("isSoumisCotisation").checked) {
-            tauxImposition = $('#tauxImpotSource').val();
-            cantonImposition = $('#csCantonDomicileAffiche').val();
-        }
 
         // Si au moins un des 3 champs n'est pas vide
         if (dateDebut || dateFin) {
-            addPeriode();
+            addPeriodePai();
         }
         // Si aucune période n'est renseigné -> message d'erreurs
-        if (periodes.lenght == 0) {
+        if (periodes.lenght === 0) {
             showErrorMessage("Aucune période n'est renseignée");
             return;
         }
@@ -447,18 +440,50 @@
             }
         });
 
-        var nbJourSup = $('#jourSupplementaire').val()
-        if(nbJourSup){
-            sum = sum+nbJourSup*1;
-        }
+        var month = null;
+        $("#periodes .dateDebut").each(function(index, element){
+            month =  Date.toDate($(element).text()).getMonth()
+        })
 
         var dateDebut = Date.toDate($('#dateDebutPeriode').val());
         var dateFin = Date.toDate($('#dateFinPeriode').val());
-        var nbJour = dateDebut.daysBetween(dateFin);
 
-        if(sum+nbJour > dateDebut.daysInMonth()) {
+        if(dateDebut.getMonth() !== dateFin.getMonth()){
+            globazNotation.utils.consoleError("<ct:FWLabel key="JSP_PERIODE_PAS_SUR_MEME_MOIS"/>");
+            return;
+        }
+
+        if(month!=null && (dateDebut.getMonth()!==month || dateFin.getMonth()!==month)){
+            globazNotation.utils.consoleError("<ct:FWLabel key="JSP_PERIODE_PAS_DANS_MEME_MOIS"/>");
+            return;
+        }
+
+        var nbJourBetweenPeriode = dateDebut.daysBetween(dateFin);
+
+        var nbJourSup = $('#jourSupplementaire').val()
+        var nbJourSolde =  $('#nbJourSolde').val()*1
+
+        if(nbJourSup){
+            nbJourSup=nbJourSup*1;
+        } else {
+            nbJourSup = 0
+        }
+        sum = sum+nbJourSup+nbJourSolde;
+
+        if(nbJourSolde>nbJourBetweenPeriode){
+            globazNotation.utils.consoleError("<ct:FWLabel key="JSP_NBJOUR_PERIODE_TROP_PETITE"/>");
+            return;
+        }
+
+        if(sum > dateDebut.daysInMonth()) {
             globazNotation.utils.consoleError("<ct:FWLabel key="JSP_NBJOUR_SUP_MOIS"/>", "<ct:FWLabel key="JSP_NBJOUR_SUP_MOIS_TITRE"/>");
         } else {
+            var t = [dateDebut];
+            $('#periodes .dateDebut').each(function(){
+                t.push(Date.toDate($.trim(this.innerText)));
+            });
+            var d_older= t.sort(function (a, b){return a-b})[0];
+            $("#dateDebutDroit").val(d_older.swissFormat())
             addPeriode()
         }
     }
@@ -788,11 +813,22 @@
             </tr>
             <tr>
                 <td>
-                    <label for="jourSupplementaire">
-                        <ct:FWLabel key="JSP_JOURS_SUPPLEMENTAIRES"/>
+                    <label for="nbJourSolde">
+                        <ct:FWLabel key="JSP_NB_JOURS_SOLDES"/>
                     </label>
+
                 </td>
                 <td colspan="3">
+                    <input type="text"
+                           data-g-integer="sizeMax:2"
+                           size="5"
+                           id="nbJourSolde"
+                           name="nbJourSolde"
+                    />
+
+                    <label style="margin-left:40px " for="jourSupplementaire">
+                        <ct:FWLabel key="JSP_JOURS_SUPPLEMENTAIRES"/>
+                    </label>
                     <input type="text"
                            data-g-integer="sizeMax:2"
                            size="5"
@@ -871,7 +907,9 @@
         <input type="text"
                id="dateDebutDroit"
                name="dateDebutDroit"
-               data-g-calendar="mandatory:true"
+               data-g-calendar="mandatory:false"
+               readonly
+               disabled
                value="<%=viewBean.getDateDebutDroit()%>"/>
     </td>
     <td>

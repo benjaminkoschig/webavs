@@ -12,24 +12,24 @@ Date.prototype.MONTHNAMES = Date.MONTHNAMES;
 
 Date.prototype.msPERDAY = Date.msPERDAY;
 
-Date.prototype.copy = function () { 
-	return new Date( this.getTime() ); 
+Date.prototype.copy = function () {
+	return new Date( this.getTime() );
 };
 
-Date.prototype.getFullDay = function() { 
-	return this.DAYNAMES[this.getDay()]; 
+Date.prototype.getFullDay = function() {
+	return this.DAYNAMES[this.getDay()];
 };
 
-Date.prototype.getDayAbbr = function() { 
-	return this.getFullDay().slice(0, 3); 
+Date.prototype.getDayAbbr = function() {
+	return this.getFullDay().slice(0, 3);
 };
 
 Date.prototype.getFullMonth = function() {
-	return this.MONTHNAMES[this.getMonth()]; 
+	return this.MONTHNAMES[this.getMonth()];
 };
 
-Date.prototype.getMonthAbbr = function() { 
-	return this.getFullMonth().slice(0, 3); 
+Date.prototype.getMonthAbbr = function() {
+	return this.getFullMonth().slice(0, 3);
 };
 
 Date.prototype.to12HourTimeString = function () {
@@ -64,7 +64,7 @@ Date.prototype.getDaysBetween = function(d) {
 	var tmp = d.copy();
 	tmp.setHours(this.getHours(), this.getMinutes(), this.getSeconds(), this.getMilliseconds());
 	var diff = tmp.getTime() - this.getTime();
-	return diff/this.msPERDAY;        
+	return diff/this.msPERDAY;
 };
 
 Date.prototype.getDayOfYear = function() {
@@ -194,9 +194,9 @@ Date.prototype.getWeekDays = function(d) {
 			endDay = d.getDay();
 		}
 		wkEnds = Math.floor(days/7);
-		if (startDay != 6 && startDay > endDay) 
+		if (startDay != 6 && startDay > endDay)
 			wkEnds++;
-		if (startDay != endDay && (startDay == 6 || endDay == 6) ) 
+		if (startDay != endDay && (startDay == 6 || endDay == 6) )
 			days--;
 		days -= (wkEnds * 2);
 	}
@@ -208,7 +208,7 @@ Date.prototype.daysBetween = function (d) {
 }
 
 Date.prototype.getMonthsBetween = function(d) {
-	var sDate, eDate;   
+	var sDate, eDate;
 	var d1 = this.getFullYear() * 12 + this.getMonth();
 	var d2 = d.getFullYear() * 12 + d.getMonth();
 	var sign;
@@ -286,7 +286,7 @@ Date.toDate = function(d) {
 		newDate = new Date(d);
 	} else {
 		newDate = null;
-	}  
+	}
 	if (newDate == "Invalid Date")
 		return null;
 	else
@@ -314,3 +314,23 @@ Date.prototype.daysInMonth = function() {
     return new Date(this.getFullYear(), this.getMonth()+1, 0).getDate();
 }
 
+Date.prototype.swissFormat = function () {
+    var year= this.getFullYear();
+    var month =this.getMonth() + 1;
+    var day= this.getDate()
+
+    if (day === undefined || day == null || day === 'undefined' || day === 0) {
+        if (month < 10) {
+            month = "0" + month;
+        }
+        return month + "." + year;
+    } else {
+        if (day < 10) {
+            day = "0" + day;
+        }
+        if (month < 10) {
+            month = "0" + month;
+        }
+        return day + "." + month + "." + year;
+    }
+}
