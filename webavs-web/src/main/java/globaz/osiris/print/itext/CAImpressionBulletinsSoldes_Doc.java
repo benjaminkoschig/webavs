@@ -720,6 +720,15 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
         return bvr;
     }
 
+    /**
+     * Renvoie la référence QR.
+     *
+     * @return la référence QR.
+     */
+    public ReferenceQR getQrFacture() {
+        return qrFacture;
+    }
+
     public Boolean getCallEcran() {
         return callEcran;
     }

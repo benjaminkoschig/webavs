@@ -36,11 +36,13 @@ import globaz.osiris.api.APIRubrique;
 import globaz.osiris.api.APISection;
 import globaz.osiris.api.APISectionDescriptor;
 import globaz.osiris.api.OsirisDef;
+import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CAJournal;
 import globaz.osiris.db.comptes.CAOperation;
 import globaz.osiris.db.comptes.CARubrique;
 import globaz.osiris.db.comptes.CASection;
+import globaz.osiris.db.ebill.enums.CATraitementEtatEBillEnum;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
 import ch.globaz.common.document.reference.ReferenceBVR;
 import globaz.pyxis.constantes.IConstantes;
@@ -54,13 +56,13 @@ import java.math.BigDecimal;
 
 /**
  * Génération de la facturation. Date de création : (25.11.2002 11:52:37)
- * 
+ *
  * @author: BTCBProcess
  */
 public class FAPassageComptabiliserProcess extends FAGenericProcess {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     protected FAApplication app = null;
@@ -101,9 +103,8 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
 
     /**
      * Commentaire relatif au constructeur Doc2_3006Batch.
-     * 
-     * @exception java.lang.Exception
-     *                La description de l'exception.
+     *
+     * @throws java.lang.Exception La description de l'exception.
      */
     public FAPassageComptabiliserProcess(BProcess parent) throws Exception {
         super(parent);
@@ -111,9 +112,8 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
 
     /**
      * Constructeur du type BProcess.
-     * 
-     * @param session
-     *            la session utilisée par le process
+     *
+     * @param session la session utilisée par le process
      */
     public FAPassageComptabiliserProcess(globaz.globall.db.BSession session) {
         super(session);
@@ -174,7 +174,7 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
 
     /**
      * Method _comitterCompta.
-     * 
+     *
      * @param compta
      * @param numeroJournal
      * @return true si la compta a été commitée
@@ -265,7 +265,7 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
     /**
      * Method _createOrdreVersement. Poure toutes écritures mégatives, créer un ordre de versement à partir du montant
      * de l'écriture de signe opposé
-     * 
+     *
      * @param ecr
      */
     public void _createOrdreVersement(FAEnteteFacture entFacture, APICompteAnnexe cpt, APISection sec) {
@@ -444,6 +444,9 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
 
                     treatInfoCompensation(entFacture, sec);
 
+                    // MAJ de la section si on est sur eBill.
+                    updateSectionEtatEtTransactionID(entFacture, sec);
+
                     // Créer des écritures à partir des afacts du décompte
                     if (!compta.hasFatalErrors()) {
                         try {
@@ -468,6 +471,29 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
         } finally {
             // fermer le cursor du manager des entêtes de facture
             return closeAll(entFactureManager, statement);
+        }
+    }
+
+    /**
+     * Mise à jour de la section si on est sur un cas eBill
+     *
+     * @param entFacture : en-tête de facture
+     * @param sec        : section
+     */
+    private void updateSectionEtatEtTransactionID(FAEnteteFacture entFacture, APISection sec) throws Exception {
+        boolean isEBillActive = CAApplication.getApplicationOsiris().getCAParametres().isEbill(getSession());
+
+        if (isEBillActive && StringUtils.isNotEmpty(entFacture.geteBillTransactionID())) {
+            CASection sect = new CASection();
+            sect.setSession(getSession());
+            sect.setIdSection(sec.getIdSection());
+            sect.retrieve();
+            if (!sect.isNew() && !sect.hasErrors()) {
+                sect.seteBillEtat(CATraitementEtatEBillEnum.NUMERO_ETAT_REJECTED_OR_PENDING);
+                sect.seteBillErreur("");
+                sect.seteBillTransactionID(entFacture.geteBillTransactionID());
+                sect.update();
+            }
         }
     }
 
@@ -508,8 +534,8 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
 
     /**
      * Method _getJournalFromCompta.
-     * 
-     * @param compta
+     *
+     * @param progressCounter
      * @return APIJournal
      */
     public APIGestionComptabiliteExterne _getCompta(long progressCounter) {
@@ -584,7 +610,7 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
     }
 
     private void closeAndCommit(FAEnteteFacture entFacture, FAAfactManager afactManager, BStatement stmt,
-            FAAfact osiAfact) throws Exception {
+                                FAAfact osiAfact) throws Exception {
         // fermer le cursor
         afactManager.cursorClose(stmt);
         stmt = null;
@@ -631,7 +657,7 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
                 idTypeSection = APISection.ID_TYPE_SECTION_DECOMPTE_CAP_CGAS;
             } else if (idSousTypeFacture.equals(APISection.ID_CATEGORIE_SECTION_ALLOCATIONS_FAMILIALES)) {
                 idTypeSection = APISection.ID_TYPE_SECTION_AF;
-            } else if (idSousTypeFacture.equals(APISection.ID_CATEGORIE_SECTION_APG) || StringUtils.equals(APISection.ID_CATEGORIE_SECTION_PANDEMIE,idSousTypeFacture)) {
+            } else if (idSousTypeFacture.equals(APISection.ID_CATEGORIE_SECTION_APG) || StringUtils.equals(APISection.ID_CATEGORIE_SECTION_PANDEMIE, idSousTypeFacture)) {
                 idTypeSection = APISection.ID_TYPE_SECTION_APG;
             } else if (idSousTypeFacture.equals(APISection.ID_CATEGORIE_SECTION_IJAI)) {
                 idTypeSection = APISection.ID_TYPE_SECTION_IJAI;
@@ -661,7 +687,7 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
     }
 
     private APIEcriture createEcriture(FAEnteteFacture entFacture, APICompteAnnexe cpt, String idSection,
-            FAAfact osiAfact) throws Exception {
+                                       FAAfact osiAfact) throws Exception {
         APIEcriture ecr = null;
         ecr = compta.createEcriture(givePkProviderForOperation().getNextPrimaryKey());
 
@@ -705,7 +731,7 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
     }
 
     private APIEcriture createEcritureCompensation(FAEnteteFacture entFacture, String idSectionCompensation,
-            FAAfact osiAfact, APISection secCompensation) throws Exception {
+                                                   FAAfact osiAfact, APISection secCompensation) throws Exception {
         FWCurrency montant = osiAfact.getMontantFactureToCurrency();
         APIEcriture ecrComp = compta.createEcriture();
         ecrComp.setIdCompte(osiAfact.getIdRubrique());
@@ -834,7 +860,7 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
 
     /**
      * Renvoie la référence BVR.
-     * 
+     *
      * @return la référence BVR.
      */
     public ReferenceBVR getBvr() {
@@ -846,7 +872,7 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
 
     /**
      * Returns the fromIdExterneRole.
-     * 
+     *
      * @return String
      */
     @Override
@@ -883,7 +909,7 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
 
     /**
      * Returns the tillIdExterneRole.
-     * 
+     *
      * @return String
      */
     @Override
@@ -981,7 +1007,7 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
 
     /**
      * Returns the doCloseComta.
-     * 
+     *
      * @return boolean
      */
     public boolean isDoCloseCompta() {
@@ -989,8 +1015,7 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
     }
 
     /**
-     * @param passageCompenser
-     * @param osiAfact
+     * @param idExterneRubrique
      * @return
      */
     private boolean isRubriqueCompensation(String idExterneRubrique) {
@@ -999,17 +1024,17 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
         return passageCompenser.getRubriqueCode(APIReferenceRubrique.RUBRIQUE_DE_LISSAGE).equalsIgnoreCase(
                 idExterneRubrique)
                 || passageCompenser.getRubriqueCode(APIReferenceRubrique.COMPENSATION_REPORT_DE_SOLDE)
-                        .equalsIgnoreCase(idExterneRubrique)
+                .equalsIgnoreCase(idExterneRubrique)
                 || passageCompenser.getRubriqueCode(APIReferenceRubrique.COMPENSATION_REPORT_DE_TAXE).equalsIgnoreCase(
-                        idExterneRubrique)
+                idExterneRubrique)
                 || passageCompenser.getRubriqueCode(APIReferenceRubrique.COMPENSATION_APG_MAT).equalsIgnoreCase(
-                        idExterneRubrique)
+                idExterneRubrique)
                 || passageCompenser.getRubriqueCode(APIReferenceRubrique.COMPENSATION_IJAI).equalsIgnoreCase(
-                        idExterneRubrique)
+                idExterneRubrique)
                 || passageCompenser.getRubriqueCode(APIReferenceRubrique.COMPENSATION_ALFA).equalsIgnoreCase(
-                        idExterneRubrique)
+                idExterneRubrique)
                 || passageCompenser.getRubriqueCode(APIReferenceRubrique.COMPENSATION_RENTES).equalsIgnoreCase(
-                        idExterneRubrique);
+                idExterneRubrique);
     }
 
     @Override
@@ -1142,9 +1167,8 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
 
     /**
      * Sets the doCloseComta.
-     * 
-     * @param doCloseComta
-     *            The doCloseComta to set
+     *
+     * @param doCloseCompta
      */
     public void setDoCloseCompta(boolean doCloseCompta) {
         this.doCloseCompta = doCloseCompta;
@@ -1152,9 +1176,8 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
 
     /**
      * Sets the fromIdExterneRole.
-     * 
-     * @param fromIdExterneRole
-     *            The fromIdExterneRole to set
+     *
+     * @param fromIdExterneRole The fromIdExterneRole to set
      */
     @Override
     public void setFromIdExterneRole(String fromIdExterneRole) {
@@ -1199,9 +1222,8 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
 
     /**
      * Sets the tillIdExterneRole.
-     * 
-     * @param tillIdExterneRole
-     *            The tillIdExterneRole to set
+     *
+     * @param tillIdExterneRole The tillIdExterneRole to set
      */
     @Override
     public void setTillIdExterneRole(String tillIdExterneRole) {
@@ -1265,7 +1287,7 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
     }
 
     private TIAvoirPaiementManager treatOrdresVersementRecouvrement(FAEnteteFacture entFacture, APICompteAnnexe cpt,
-            APISection sec) throws Exception {
+                                                                    APISection sec) throws Exception {
         TIAvoirPaiementManager adresse = findAvoirPaiement(entFacture);
         if (adresse.size() > 0) {
             createOrdreVersementOrRecouvrement(entFacture, cpt, sec);

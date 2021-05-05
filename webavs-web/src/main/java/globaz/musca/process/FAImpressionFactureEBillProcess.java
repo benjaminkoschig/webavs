@@ -1,9 +1,12 @@
 package globaz.musca.process;
 
+import ch.globaz.common.document.reference.ReferenceBVR;
+import ch.globaz.common.document.reference.ReferenceQR;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.skirnir.client.SkirnirUtils;
 import globaz.docinfo.FADocumentInfoHelper;
 import globaz.framework.bean.FWViewBeanInterface;
+import globaz.framework.printing.itext.api.FWIDocumentInterface;
 import globaz.framework.util.FWMessage;
 import globaz.globall.api.BIContainer;
 import globaz.globall.db.*;
@@ -215,7 +218,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
 
     @Override
     public boolean _createDocument(BIContainer container, IntModuleImpression interface_moduleImpression,
-            String impressionClassName) {
+                                   String impressionClassName) {
 
         BStatement statement = null;
         BManager manager = null;
@@ -377,12 +380,13 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
      * @param compteAnnexe            : le compte annexe
      * @param entete                  : l'entête de la facture
      * @param enteteReference         : l'entête de référence pour les bulletin de soldes (vide dans le cas d'une facture bvr)
-     * @param afactManager            : contient les lignes de factures (vide dans le cas d'un bulletin de soldes)
      * @param montantBulletinSoldes   : contient le montant total de la factures (seulement rempli dans le case d'un bulletin de soldes)
      * @param lignesParPaireIdExterne : contient les lignes de bulletins de soldes (vide dans le cas d'une factures)
+     * @param reference               : la référence BVR ou QR.
      * @param attachedDocument        : le fichier crée par l'impression classique à joindre en base64 dans le fichier eBill
+     * @throws Exception
      */
-    private void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, FAAfactManager afactManager, String montantBulletinSoldes, List<Map> lignesParPaireIdExterne, JadePublishDocument attachedDocument) throws Exception {
+    private void creerFichierEBill(CACompteAnnexe compteAnnexe, FAEnteteFacture entete, FAEnteteFacture enteteReference, String montantBulletinSoldes, List<Map> lignesParPaireIdExterne, String reference, JadePublishDocument attachedDocument) throws Exception {
 
         String billerId = CAApplication.getApplicationOsiris().getCAParametres().getEbillBillerId();
 
@@ -390,17 +394,16 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
         entete.addEBillTransactionID(getTransaction());
         entete.update();
 
-        // Retrouve la section et met à jour le status eBill de la section
-        CASection section = updateSectionEtatEtTransactionID(compteAnnexe, entete.getIdExterneFacture(), entete.geteBillTransactionID());
+        // met à jour le status eBill de la section
+        updateSectionEtatEtTransactionID(compteAnnexe, entete.getIdExterneFacture(), entete.geteBillTransactionID());
 
         // Initialisation de l'objet à marshaller dans la facture eBill
         FAImpressionFactureEBillXml factureEBill = new FAImpressionFactureEBillXml();
         factureEBill.setEntete(entete);
         factureEBill.setEnteteReference(enteteReference);
         factureEBill.setPassage(passage);
-        factureEBill.setAfactManager(afactManager);
+        factureEBill.setReference(reference);
         factureEBill.setLignesParPaireIdExterne(lignesParPaireIdExterne);
-        factureEBill.setSection(section);
         factureEBill.setBillerId(billerId);
         factureEBill.setSession(getSession());
         factureEBill.setMontantBulletinSoldes(montantBulletinSoldes);
@@ -435,9 +438,8 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
      *
      * @param compteAnnexe  le compte annexe utilisé pour trouver la section.
      * @param transactionId l'id de transaction lié au traitement.
-     * @return la section si la mise à jour est en succès sinon false.
      */
-    private CASection updateSectionEtatEtTransactionID(final CACompteAnnexe compteAnnexe, final String idExterneFacture, final String transactionId) {
+    private void updateSectionEtatEtTransactionID(final CACompteAnnexe compteAnnexe, final String idExterneFacture, final String transactionId) {
         try {
             // Récupération de la section
             CASectionManager manager = new CASectionManager();
@@ -454,15 +456,12 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
                 section.seteBillErreur("");
                 section.seteBillTransactionID(transactionId);
                 section.update();
-                return section;
             } else {
                 getMemoryLog().logMessage("Impossible de trouver une section unique avec l'id externe : " + idExterneFacture, FWViewBeanInterface.WARNING, this.getClass().getName());
-                return null;
             }
 
         } catch (Exception e) {
             getMemoryLog().logMessage("Impossible de trouver une section avec l'id externe : " + idExterneFacture + " : " + e.getMessage(), FWViewBeanInterface.WARNING, this.getClass().getName());
-            return null;
         }
     }
 
@@ -815,9 +814,9 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
             docinfo.setDocumentSubject(objetMail);
 
             // on ajoute les logs au docInfo sinon ils ne sont plus récupérer.
-            getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAPAPIER") + facturePapier ,
+            getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAPAPIER") + facturePapier,
                     FWMessage.INFORMATION, this.getClass().getName());
-            getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill ,
+            getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_EBILL_FAELEC") + factureEBill,
                     FWMessage.INFORMATION, this.getClass().getName());
             docinfo.setDocumentNotes(getMemoryLog().getMessagesInString());
 
@@ -995,20 +994,45 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
                 for (Map.Entry<PaireIdExterneEBill, List<Map>> lignesParPaireIdExterne : ((FAImpressionFacture_BVR_Doc) myMod.get_document()).getLignesParPaireIdExterne().entrySet()) {
 
                     Map.Entry<FAEnteteFacture, FAAfactManager> afactParEnteteFactureEBill = getAfactParEnteteFactureEBill(lignesParPaireIdExterne.getKey());
-                    if (afactParEnteteFactureEBill != null){
+                    if (afactParEnteteFactureEBill != null) {
                         FAEnteteFacture entete = afactParEnteteFactureEBill.getKey();
-                        FAAfactManager afactManager = afactParEnteteFactureEBill.getValue();
 
+                        String reference = getReference(myMod.get_document());
                         CACompteAnnexe compteAnnexe = getCompteAnnexe(entete, getSession(), getTransaction());
                         if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())) {
                             JadePublishDocument attachedDocument = removeAndReturnAttachedDocument(entete);
-                            creerFichierEBill(compteAnnexe, entete, null, afactManager, null, lignesParPaireIdExterne.getValue(), attachedDocument);
+                            creerFichierEBill(compteAnnexe, entete, null, null, lignesParPaireIdExterne.getValue(), reference, attachedDocument);
                             factureEBill++;
                         }
                     }
                 }
             }
         }
+    }
+
+    /**
+     * Récupération de la référence dans le document.
+     *
+     * @param document : le document d'impression
+     * @return le code référence.
+     */
+    private String getReference(FWIDocumentInterface document) {
+        String reference;
+        ReferenceQR qrFacture = null;
+        ReferenceBVR bvrFacture = new ReferenceBVR();
+        if (document instanceof CAImpressionBulletinsSoldes_Doc) {
+            qrFacture = ((CAImpressionBulletinsSoldes_Doc) document).getQrFacture();
+            bvrFacture = ((CAImpressionBulletinsSoldes_Doc) document).getBvr();
+        } else if (document instanceof FAImpressionFacture_BVR_Doc) {
+            qrFacture = ((FAImpressionFacture_BVR_Doc) document).getQrFacture();
+            bvrFacture = ((FAImpressionFacture_BVR_Doc) document).getBvr();
+        }
+        if (Objects.nonNull(qrFacture)) {
+            reference = qrFacture.getReference();
+        } else {
+            reference = bvrFacture.getLigneReference();
+        }
+        return reference;
     }
 
     /**
@@ -1029,12 +1053,13 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
 
                     CACompteAnnexe compteAnnexe = getCompteAnnexe(entete, getSession(), getTransaction());
                     CACompteAnnexe compteAnnexeReference = getCompteAnnexe(enteteReference, getSession(), getTransaction());
+                    String reference = getReference(myMod.get_document());
                     if (compteAnnexe != null && compteAnnexeReference != null
                             && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())
                             && !JadeStringUtil.isBlankOrZero(compteAnnexeReference.geteBillAccountID())
                             && !JadeStringUtil.isBlankOrZero(enteteReference.geteBillTransactionID())) {
                         JadePublishDocument attachedDocument = removeAndReturnAttachedDocument(enteteReference);
-                        creerFichierEBill(compteAnnexe, entete, enteteReference, null, lignesParPaireIdExterneEBill.getKey().getMontant(), lignesParPaireIdExterneEBill.getValue(), attachedDocument);
+                        creerFichierEBill(compteAnnexe, entete, enteteReference, lignesParPaireIdExterneEBill.getKey().getMontant(), lignesParPaireIdExterneEBill.getValue(), reference, attachedDocument);
                         factureEBill++;
                     }
 
@@ -1105,7 +1130,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
      * cette méthode est utilisé dans le processus d'impression des bulletins de soldes eBill.
      *
      * @param paireIdExterneEBill : une combinaison d'idExterneRole et d'idExterneFactureCompensation
-     * @param idPassage : l'id de passage
+     * @param idPassage           : l'id de passage
      * @return l'entête
      */
     private FAEnteteFacture getAfactParEnteteFactureEBill(PaireIdExterneEBill paireIdExterneEBill, String idPassage) throws Exception {

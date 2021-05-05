@@ -315,7 +315,7 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
         }
 
         // on contrôle le eBill Account ID = 17
-        if (!geteBillAccountID().isEmpty() && geteBillAccountID().length() != EBILL_ACCOUNT_ID_LENGTH) {
+        if (!StringUtils.isNumeric(geteBillAccountID()) || !geteBillAccountID().isEmpty() && geteBillAccountID().length() != EBILL_ACCOUNT_ID_LENGTH) {
             _addError(statement.getTransaction(), getSession().getLabel("7373"));
         }
 

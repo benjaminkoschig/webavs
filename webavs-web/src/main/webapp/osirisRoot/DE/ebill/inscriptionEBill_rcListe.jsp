@@ -58,7 +58,7 @@
 </TD>
 <TD class="mtd" onClick="<%=actionDetail%>"><%=_inscriptionEBill.geteBillAccountID()%></TD>
 <TD class="mtd" onClick="<%=actionDetail%>"><%=_inscriptionEBill.getNomPrenomOuEntreprise()%></TD>
-<TD class="mtd" onClick="<%=actionDetail%>"><%=_inscriptionEBill.getNumeroAffilie()%></TD>
+<TD class="mtd" onClick="<%=actionDetail%>"><%=_inscriptionEBill.getChampNumeroAffilie()%></TD>
 <TD class="mtd" onClick="<%=actionDetail%>"><%=_inscriptionEBill.getLibelleType()%></TD>
 <TD class="mtd" onClick="<%=actionDetail%>"><%=_inscriptionEBill.getLibelleStatut()%></TD>
 

@@ -458,6 +458,17 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
     }
 
     /**
+     * Renvoie la référence QR.
+     *
+     * @return la référence QR.
+     */
+    public ReferenceQR getQrFacture() {
+        return qrFacture;
+    }
+
+
+
+    /**
      * Retourne le template Jasper PRINCIPAL utilisé pour générer le document. (p.ex : DOCUMENT_VIDE pour
      * DOCUMENT_VIDE.japser)
      *

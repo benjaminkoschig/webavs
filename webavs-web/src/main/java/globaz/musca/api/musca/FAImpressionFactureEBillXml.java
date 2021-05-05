@@ -6,10 +6,12 @@ import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
 import globaz.jade.publish.client.JadePublishDocument;
 import globaz.musca.application.FAApplication;
-import globaz.musca.db.facturation.*;
+import globaz.musca.db.facturation.FAAfact;
+import globaz.musca.db.facturation.FAEnteteFacture;
+import globaz.musca.db.facturation.FAModuleImpression;
+import globaz.musca.db.facturation.FAPassage;
 import globaz.osiris.api.APISection;
 import globaz.osiris.api.APISectionDescriptor;
-import globaz.osiris.db.comptes.CASection;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,14 +57,13 @@ public class FAImpressionFactureEBillXml {
     private ReferenceEBill eBillFacture;
     private FAEnteteFacture entete;
     private FAEnteteFacture enteteReference;
-    private FAAfactManager afactManager;
     private FAAfact afact;
     private List<Map> lignesParPaireIdExterne;
     private FAPassage passage;
-    private CASection section;
     private String billerId;
     private BSession session;
     private String eBillAccountID;
+    private String reference;
 
     public FAImpressionFactureEBillXml() throws Exception {
     }
@@ -119,7 +120,7 @@ public class FAImpressionFactureEBillXml {
         }
 
         // init de la référence eBill
-        eBillFacture.initReferenceEBill(session, entete.getIdTiers(), section);
+        eBillFacture.initReferenceEBill(entete.getIdTiers());
     }
 
     /**
@@ -450,12 +451,12 @@ public class FAImpressionFactureEBillXml {
         if (eBillFacture.isBVR()) {
             BillHeaderType.PaymentInformation.ESR esr = of.createBillHeaderTypePaymentInformationESR();
             esr.setESRCustomerNumber(eBillFacture.getNumeroCC());
-            esr.setESRReferenceNumber(eBillFacture.getLigneReference());
+            esr.setESRReferenceNumber(reference);
             paymentInformation.setESR(esr);
         } else if (eBillFacture.isQR()) {
             BillHeaderType.PaymentInformation.IBAN iban = of.createBillHeaderTypePaymentInformationIBAN();
             iban.setIBAN(eBillFacture.getNumeroCC());
-            iban.setCreditorReference(eBillFacture.getLigneReference());
+            iban.setCreditorReference(reference);
             paymentInformation.setIBAN(iban);
         }
 
@@ -562,21 +563,6 @@ public class FAImpressionFactureEBillXml {
         return lineItem;
     }
 
-    private TaxLineItemType createTaxLineItem() {
-        ObjectFactory of = new ObjectFactory();
-        TaxLineItemType tax = of.createTaxLineItemType();
-
-        TaxDetailType taxDetail = of.createTaxDetailType();
-        taxDetail.setRate(new BigDecimal(0.0));
-        taxDetail.setAmount(new BigDecimal(1.0));
-        taxDetail.setBaseAmountExclusiveTax(new BigDecimal(0.0));
-        taxDetail.setBaseAmountInclusiveTax(new BigDecimal(0.0));
-        tax.setTotalTax(new BigDecimal(1.0));
-        tax.setTaxDetail(taxDetail);
-
-        return tax;
-    }
-
     /**
      * Création du Summary de la facture eBill
      *
@@ -598,15 +584,6 @@ public class FAImpressionFactureEBillXml {
 
         return summaryType;
     }
-
-    private TaxType createTaxSummary() {
-        ObjectFactory of = new ObjectFactory();
-        TaxType taxType = of.createTaxType();
-        taxType.setTotalTax(new BigDecimal(1.0));
-
-        return taxType;
-    }
-
 
     public FAEnteteFacture getEntete() {
         return entete;
@@ -655,18 +632,6 @@ public class FAImpressionFactureEBillXml {
         return sectionDescriptor.getDateEcheanceFacturation();
     }
 
-    public void setSection(CASection aSection) {
-        section = aSection;
-    }
-
-    public CASection getSection() {
-        return section;
-    }
-
-    public void setAfactManager(FAAfactManager afactManager) {
-        this.afactManager = afactManager;
-    }
-
     public FAAfact getAfact() {
         return afact;
     }
@@ -707,4 +672,7 @@ public class FAImpressionFactureEBillXml {
         this.lignesParPaireIdExterne = lignesParPaireIdExterne;
     }
 
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
 }

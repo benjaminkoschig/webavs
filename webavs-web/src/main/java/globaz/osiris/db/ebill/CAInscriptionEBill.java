@@ -1,13 +1,19 @@
 package globaz.osiris.db.ebill;
 
+import ch.globaz.common.document.reference.AbstractReference;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
+import globaz.globall.db.GlobazServer;
+import globaz.globall.format.IFormatData;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.ebill.enums.CAInscriptionTypeEBillEnum;
 import globaz.osiris.db.ebill.enums.CAStatutEBillEnum;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class CAInscriptionEBill extends BEntity implements Serializable {
 
@@ -172,6 +178,25 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
         this.eBillAccountID = eBillAccountID;
     }
 
+    public String getChampNumeroAffilie() {
+        if (numeroAffilie.isEmpty()) {
+            String numero = StringUtils.EMPTY;
+            if (Objects.nonNull(numRefBVR) && !StringUtils.equals(numRefBVR.substring(0, 2), AbstractReference.IDENTIFIANT_REF_IDCOMPTEANNEXE)) {
+                try {
+                    CAApplication application = (CAApplication) GlobazServer.getCurrentSystem().getApplication(CAApplication.DEFAULT_APPLICATION_OSIRIS);
+                    IFormatData affilieFormater = application.getAffileFormater();
+                    return affilieFormater.format(new Long(numRefBVR.substring(3, 15)).toString());
+                } catch (Exception e) {
+                    return numero;
+                }
+            } else {
+                return numero;
+            }
+        } else {
+            return numeroAffilie;
+        }
+    }
+
     public String getNumeroAffilie() {
         return numeroAffilie;
     }
@@ -184,7 +209,7 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
         return CAInscriptionTypeEBillEnum.parValeur(type);
     }
 
-    public String getLibelleType(){
+    public String getLibelleType() {
         return getSession().getLabel(getType().getDescription());
     }
 
@@ -193,7 +218,7 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
     }
 
     public String getNomPrenomOuEntreprise() {
-        if(!JadeStringUtil.isEmpty(entreprise)) {
+        if (!JadeStringUtil.isEmpty(entreprise)) {
             return entreprise;
         } else {
             return (!JadeStringUtil.isEmpty(nom) ? nom : "") + (!JadeStringUtil.isEmpty(prenom) ? prenom : "");
@@ -265,10 +290,10 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
     }
 
     public CAStatutEBillEnum getStatut() {
-        return   CAStatutEBillEnum.parValeur(statut);
+        return CAStatutEBillEnum.parValeur(statut);
     }
 
-    public String getLibelleStatut(){
+    public String getLibelleStatut() {
         return getSession().getLabel(getStatut().getDescription());
     }
 

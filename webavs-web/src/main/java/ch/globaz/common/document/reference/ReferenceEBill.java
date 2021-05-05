@@ -83,12 +83,12 @@ public class ReferenceEBill extends AbstractReference {
     private boolean isLSV;
 
     /**
-     * @param session
-     * @param idTiers
-     * @param section
+     * Initialisation de la référence eBill.
+     *
+     * @param idTiers : id du tiers.
      * @throws PropertiesException
      */
-    public void initReferenceEBill(BSession session, String idTiers, CASection section) throws Exception {
+    public void initReferenceEBill(String idTiers) throws Exception {
 
         // Récupération de l'adresse du débiteur.
         initAdresseDeb(idTiers);
@@ -102,8 +102,6 @@ public class ReferenceEBill extends AbstractReference {
         // Récupération du type de payment QR=>IBAN, BVR=>ESR, LSV=>DD ou Notes de crédit=>CREDIT.
         initPaymentType();
 
-        // Générer numéro référence
-        genererNumeroReference(section);
     }
 
     private void initPaymentType() {
@@ -215,22 +213,6 @@ public class ReferenceEBill extends AbstractReference {
                 stringBuffer.append(separator);
             }
             stringBuffer.append(value);
-        }
-    }
-
-    /**
-     * Méthode permettant de générer le numéro de référence.
-     *
-     * @param section la section
-     */
-    private void genererNumeroReference(CASection section) {
-        try {
-            String numReference = genererNumReference(section.getCompteAnnexe().getIdRole(), section.getCompteAnnexe().getIdExterneRole(), false, section.getIdTypeSection()
-                    , section.getIdExterne(), section.getIdCompteAnnexe());
-            JABVR bvr = new JABVR(section.getSolde(), numReference, getNoAdherent());
-            setLigneReference(bvr.get_ligneReference());
-        } catch (Exception e) {
-            LOG.error("Impossible de générer le numéro de référence. ", e);
         }
     }
 
