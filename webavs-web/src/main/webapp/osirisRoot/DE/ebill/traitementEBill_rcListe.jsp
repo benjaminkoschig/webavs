@@ -38,7 +38,7 @@
 <TH align="left">TransactionID</TH>
 <TH align="left">Name/Vorname oder Unternehmen</TH>
 <TH nowrap align="left">Teilnehmernummer</TH>
-<TH align="left">Statut interne</TH>
+<TH align="left">Interner Status</TH>
 <TH align="left">Fehler Code</TH>
 <TH align="left">eBill Stand</TH>
 <%	globaz.osiris.db.ebill.CATraitementEBill _traitementEBill = null ; %>

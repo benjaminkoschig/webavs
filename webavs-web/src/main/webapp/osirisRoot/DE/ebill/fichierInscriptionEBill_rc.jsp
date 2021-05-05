@@ -41,13 +41,13 @@
 <%@ include file="/theme/find/bodyStart2.jspf" %>
 <%-- tpl:put name="zoneMain" --%>
 <TR>
-    <TD>Date lecture</TD>
+    <TD>Gelesenes Datum</TD>
     <TD nowrap width="400" colspan="2">
         <ct:FWCalendarTag name="forDateLecture" doClientValidation="CALENDAR" value=""/>
     </TD>
 </TR>
 <TR>
-    <TD>Statut fichier</TD>
+    <TD>Datei-Status</TD>
     <TD nowrap>
     <select name="forStatutFichier" tabindex="2">
         <option value=""></option>

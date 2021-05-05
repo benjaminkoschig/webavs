@@ -73,12 +73,12 @@
         <INPUT type="hidden" name="forIdFichier" value="<%=viewBean.getIdFichier()%>">
         <input disabled name="name" value="<%=nom%>" class="libelleLong">
     </TD>
-    <TD width="90">Date lecture</TD>
+    <TD width="90">Gelesenes Datum</TD>
     <TD width="20">&nbsp;</TD>
     <TD nowrap width="300" colspan="2">
         <ct:FWCalendarTag name="date" doClientValidation="CALENDAR" value="<%=date%>"/>
     </TD>
-    <TD width="90">Statut fichier</TD>
+    <TD width="90">Datei-Status</TD>
     <TD width="20">&nbsp;</TD>
     <TD nowrap>
         <select disabled name="forStatutFichier" tabindex="2">
@@ -101,7 +101,7 @@
     <TD nowrap width="300" colspan="2">
         <input type="text" name="forTransactionID" tabindex="-1" class="libelleLong">
     </TD>
-    <TD width="90">Statut interne</TD>
+    <TD width="90">Interner Status</TD>
     <TD width="20">&nbsp;</TD>
     <TD nowrap>
         <select name="forStatutInterne" tabindex="2">

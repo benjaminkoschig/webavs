@@ -116,7 +116,7 @@
     <TD nowrap width="200">
         <input type="text" name="prenom" tabindex="1" class="libelleLong" value="<%=viewBean.getPrenom()%>">
     </TD>
-    <TD width="110">Statut interne</TD>
+    <TD width="110">Interner Status</TD>
     <TD nowrap width="200">
         <select name="statutInterne" tabindex="2">
             <option value=""></option>
@@ -146,7 +146,7 @@
     <TD nowrap width="200">
         <TEXTAREA cols="40" rows="3" name="texteErreur" class="libelleLong"><%=viewBean.getTexteErreur()%></TEXTAREA>
     </TD>
-    <TD width="110">Erreur Interne</TD>
+    <TD width="110">Interner Fehler</TD>
     <TD nowrap width="200">
         <TEXTAREA cols="40" rows="3" name="texteErreurInterne" class="libelleLong"><%=viewBean.getTexteErreurInterne()%></TEXTAREA>
     </TD>
@@ -162,7 +162,7 @@
     </TD>
 </TR>
 <TR>
-    <TD nowrap width="110">Montant total</TD>
+    <TD nowrap width="110">Gesamtbetrag</TD>
     <TD nowrap width="200">
         <input type="text" name="montantTotal" tabindex="1" class="libelleLong" value="<%=viewBean.getMontantTotal()%>">
     </TD>

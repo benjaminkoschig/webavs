@@ -128,7 +128,7 @@
     <TD nowrap width="200">
         <input type="text" name="adresse2" tabindex="1" class="libelleStandard" value="<%=viewBean.getAdresse2()%>">
     </TD>
-    <TD width="110">Statut interne</TD>
+    <TD width="110">Interner Status</TD>
     <TD nowrap width="200">
         <select name="statutInterne" tabindex="2">
             <option value=""></option>
@@ -150,13 +150,13 @@
     <TD nowrap width="200">
         <input type="text" name="localite" tabindex="1" class="libelleStandard" value="<%=viewBean.getLocalite()%>">
     </TD>
-    <TD width="110">Erreur Interne</TD>
+    <TD width="110">Interner Fehler</TD>
     <TD nowrap width="200">
         <TEXTAREA cols="40" rows="3" name="texteErreurInterne" class="libelleStandard"><%=viewBean.getTexteErreurInterne()%></TEXTAREA>
     </TD>
 </TR>
 <TR>
-    <TD width="110">e-mail</TD>
+    <TD width="110">E-Mail</TD>
     <TD nowrap width="200">
         <input type="text" name="email" tabindex="1" class="libelleStandard" value="<%=viewBean.getEmail()%>">
     </TD>

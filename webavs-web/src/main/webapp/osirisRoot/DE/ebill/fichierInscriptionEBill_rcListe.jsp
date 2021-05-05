@@ -18,9 +18,9 @@
     notationManager.b_stop = true;
 </script>
 <TH colspan="2">Text</TH>
-<TH align="left">Date lecture</TH>
+<TH align="left">Gelesenes Datum</TH>
 <TH nowrap align="left">Anzahl der Positionen</TH>
-<TH align="left">Statut fichier</TH>
+<TH align="left">Datei-Status</TH>
 <%	globaz.osiris.db.ebill.CAFichierInscriptionEBill _fichierInscriptionEBill = null ; %>
 <%-- /tpl:put --%>
 <%@ include file="/theme/list/tableHeader.jspf" %>

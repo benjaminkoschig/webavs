@@ -38,7 +38,7 @@
 <TH align="left">Name</TH>
 <TH nowrap align="left">Teilnehmernummer</TH>
 <TH align="left">Typ</TH>
-<TH align="left">Internen Status</TH>
+<TH align="left">Interner Status</TH>
 <%	globaz.osiris.db.ebill.CAInscriptionEBill _inscriptionEBill = null ; %>
 <%-- /tpl:put --%>
 <%@ include file="/theme/list/tableHeader.jspf" %>
