@@ -13,7 +13,7 @@ import java.io.Serializable;
 
 public class CATraitementEBill extends BEntity implements Serializable {
 
-    public static final String TABLE_TRAITEMENT_EBILL = "EBILL_TRAITEMENT";
+    public static final String TABLE_TRAITEMENT_EBILL = "CAET";
     public static final String FIELD_ID_TRAITEMENT = "ID_TRAITEMENT";
     public static final String FIELD_ID_FICHIER = "ID_FICHIER";
     public static final String FIELD_EBILL_ACCOUNT_ID = "EBILL_ACCOUNT_ID";

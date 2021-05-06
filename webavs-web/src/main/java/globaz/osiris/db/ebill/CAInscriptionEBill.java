@@ -17,7 +17,7 @@ import java.util.Objects;
 
 public class CAInscriptionEBill extends BEntity implements Serializable {
 
-    public static final String TABLE_INSCRIPTION_EBILL = "EBILL_INSCRIPTION";
+    public static final String TABLE_INSCRIPTION_EBILL = "CAEI";
     public static final String FIELD_ID_INSCRIPTION = "ID_INSCRIPTION";
     public static final String FIELD_ID_FICHIER = "ID_FICHIER";
     public static final String FIELD_EBILL_ACCOUNT_ID = "EBILL_ACCOUNT_ID";

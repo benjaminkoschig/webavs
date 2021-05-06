@@ -2,7 +2,7 @@ INSERT INTO SCHEMA.FAMODUP (IDMODFAC,LIBELLEFR,LIBELLEDE,LIBELLEIT,NOMCLASSE,IDT
 VALUES ((SELECT COALESCE(MAX(IDMODFAC),0) FROM SCHEMA.FAMODUP) + 1,'Impression de factures eBill','[de]Impression de factures eBill','[it]Impression de factures eBill','globaz.musca.api.musca.FAImpressionFactureEBill',905027,7,2,'20210212120000ccjuglo');
 
 INSERT INTO SCHEMA.FAMODUP (IDMODFAC,LIBELLEFR,LIBELLEDE,LIBELLEIT,NOMCLASSE,IDTYPEMODULE,NIVEAUAPPEL,MODIFIERAFACT,PSPY)
-VALUES ((SELECT COALESCE(MAX(IDMODFAC),0) FROM SCHEMA.FAMODUP) + 1,'Bulletins de solde eBill','[de]Saldo ESR eBill','[it]Soldes BVR eBill','globaz.musca.api.musca.FASolde_EBill',905019,7,2,'20210312120000ccjuglo');
+VALUES ((SELECT COALESCE(MAX(IDMODFAC),0) FROM SCHEMA.FAMODUP) + 1,'Bulletins de solde eBill','[de]Saldo ESR eBill','[it]Soldes BVR eBill','globaz.musca.api.musca.FASolde_EBill',905014,150,2,'20210312120000ccjuglo');
 
 INSERT INTO SCHEMA.FAMODUP (IDMODFAC,LIBELLEFR,LIBELLEDE,LIBELLEIT,NOMCLASSE,IDTYPEMODULE,NIVEAUAPPEL,MODIFIERAFACT,PSPY)
 VALUES ((SELECT COALESCE(MAX(IDMODFAC),0) FROM SCHEMA.FAMODUP) + 1,'Impression facture Sans LSV / Remb eBill','[de]Impression facture Sans LSV / Remb eBill','[it]Impression facture Sans LSV / Remb eBill','globaz.musca.api.musca.FAImpressionFactureSansLSVRembEBill',905027,7,2,'20210312120000ccjuglo');

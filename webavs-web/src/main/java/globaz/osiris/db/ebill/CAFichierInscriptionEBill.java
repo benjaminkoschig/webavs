@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 public class CAFichierInscriptionEBill extends BEntity implements Serializable {
 
-    public static final String TABLE_FICHIER_INSCRIPTION_EBILL = "EBILL_FICHIER_INSCRIPTION";
+    public static final String TABLE_FICHIER_INSCRIPTION_EBILL = "CAEFI";
     public static final String FIELD_DATE_LECTURE = "DATE_LECTURE";
     public static final String FIELD_STATUT_FICHIER = "STATUT_FICHIER";
     public static final String FIELD_ID_FICHIER = "ID_FICHIER";
