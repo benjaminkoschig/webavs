@@ -1,5 +1,8 @@
 package ch.globaz.common.util;
 
+import ch.globaz.common.exceptions.Exceptions;
+import globaz.globall.util.JADate;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -8,6 +11,7 @@ import java.util.Locale;
 
 public class Dates {
     private static final DateTimeFormatter DATE_TIME_SWISS_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private static final DateTimeFormatter DATE_TIME_DB_FORMATTER = DateTimeFormatter.ofPattern("yyyyddMM");
 
     /**
      * Permet de formater une date au format Suisse.
@@ -47,5 +51,12 @@ public class Dates {
             return null;
         }
         return LocalDate.parse(date, DATE_TIME_SWISS_FORMATTER);
+    }
+
+    public static String toDbDate(String date) {
+        if (date == null || date.trim().isEmpty()) {
+            return "0";
+        }
+        return Exceptions.checkedToUnChecked(() -> new JADate(date).toAMJ().toString(), "Error with this date:" + date);
     }
 }

@@ -152,7 +152,7 @@ public class APPrestationAction extends PRDefaultAction {
             droitProcheAidant.setIdDroit(idDroit);
             droitProcheAidant.retrieve();
             APProcheAidantServiceHelper procheAidantServiceHelper = new APProcheAidantServiceHelper(droitProcheAidant.getSession());
-            procheAidantServiceHelper.changementDateDebutDroitsPourLesDroitsQuiOnUneDateDeDebutPlusRecente(droitProcheAidant);
+            procheAidantServiceHelper.changementDateDebutDroitsPourLesDroitsQuiOnUneDateDebutPasEnAdequation(droitProcheAidant);
         }
         return destination;
     }

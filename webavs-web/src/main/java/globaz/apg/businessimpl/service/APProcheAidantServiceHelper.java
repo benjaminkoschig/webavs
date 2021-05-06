@@ -19,12 +19,12 @@ public class APProcheAidantServiceHelper {
     private final BSession session;
 
     @SuppressWarnings({"Convert2MethodRef", "java:S1612"})
-    public void changementDateDebutDroitsPourLesDroitsQuiOnUneDateDeDebutPlusRecente(APDroitProcheAidant droitProcheAidant) {
+    public void changementDateDebutDroitsPourLesDroitsQuiOnUneDateDebutPasEnAdequation(APDroitProcheAidant droitProcheAidant) {
         droitProcheAidant.resolveDateDebutDelaiCadre().ifPresent(date -> {
             List<IdDroit> idDroits = chercherDroitQuiSonLieeAvecLeMemeEnfant(droitProcheAidant.getIdDroit());
             idDroits.stream()
                     .map(this::findDroitProcheAidant)
-                    .filter(droit -> Dates.toDate(droit.getDateDebutDroit()).isAfter(date))
+                    .filter(droit -> !Dates.toDate(droit.getDateDebutDroit()).isEqual(date))
                     .forEach(droit -> {
                         droit.setDateDebutDroit(Dates.formatSwiss(date));
                         Exceptions.checkedToUnChecked(() -> droit.update());

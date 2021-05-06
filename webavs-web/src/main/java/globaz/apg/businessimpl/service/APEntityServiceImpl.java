@@ -1,11 +1,14 @@
 package globaz.apg.businessimpl.service;
 
 import ch.globaz.al.business.constantes.ALCSTiers;
+import ch.globaz.common.exceptions.Exceptions;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.common.sql.SQLWriter;
+import ch.globaz.common.util.Dates;
+import ch.globaz.queryexec.bridge.jade.SCM;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.prestation.IAPPrestation;
-import globaz.apg.application.APApplication;
 import globaz.apg.business.service.APEntityService;
 import globaz.apg.db.annonces.APBreakRule;
 import globaz.apg.db.annonces.APBreakRuleManager;
@@ -22,28 +25,25 @@ import globaz.apg.properties.APParameter;
 import globaz.apg.utils.APGUtils;
 import globaz.apg.vb.droits.*;
 import globaz.framework.bean.FWViewBeanInterface;
-import globaz.globall.db.*;
-import globaz.globall.parameters.FWParameters;
-import globaz.globall.parameters.FWParametersCodeManager;
-import globaz.globall.parameters.FWParametersManager;
+import globaz.globall.db.BManager;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.db.BStatement;
+import globaz.globall.db.BTransaction;
+import globaz.globall.db.FWFindParameter;
+import globaz.globall.db.FWFindParameterManager;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
-import globaz.jade.admin.JadeAdminServiceLocatorProvider;
-import globaz.jade.client.util.JadeConversionUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
-import globaz.jade.context.JadeContext;
-import globaz.jade.context.JadeContextImplementation;
-import globaz.jade.context.JadeThreadActivator;
 import globaz.jade.patterns.JadeAbstractService;
 import globaz.naos.api.IAFAffiliation;
 import globaz.naos.application.AFApplication;
 import globaz.phenix.api.ICPDecision;
 import globaz.phenix.api.ICPDonneesCalcul;
-import globaz.phenix.toolbox.CPToolBox;
 import globaz.prestation.api.IPRDemande;
 import globaz.prestation.beans.PRPeriode;
 import globaz.prestation.db.demandes.PRDemande;
@@ -58,10 +58,12 @@ import globaz.prestation.utils.PRDateUtils;
 import globaz.prestation.utils.PRDateUtils.DateOrder;
 import globaz.prestation.utils.PRDateUtils.PRDateEquality;
 import globaz.pyxis.constantes.IConstantes;
+import lombok.Data;
 import org.apache.commons.lang.StringUtils;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -2957,15 +2959,55 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                 }
             }
         }
+
+        String messageError = checkPeriodesChevauchantes(viewBean, errors);
+
         errors.addAll(validerNoCompte(session, genreDeService, viewBean.getNoCompte()));
-        if (errors.size() > 0) {
+        if (errors.size() > 0 || !messageError.isEmpty()) {
             final StringBuilder message = new StringBuilder();
             for (final APValidationDroitError error : errors) {
                 message.append(session.getLabel(error.getErrorLabel()));
                 message.append("</br>");
             }
+            message.append(messageError);
             throw new IllegalArgumentException(message.toString());
         }
+
+    }
+
+    private String checkPeriodesChevauchantes(final APDroitPaiPViewBean viewBean, final List<APValidationDroitError> errors) {
+        String idTiers = Exceptions.checkedToUnChecked(() -> viewBean.loadDemande().getIdTiers(), "Impossible to load the demand");
+
+        String date = viewBean.getPeriodes().stream()
+                              .findFirst()
+                              .map(PRPeriode::getDateDeDebut)
+                              .map(Dates::toDbDate)
+                              .orElse("0");
+        //language=sql
+        SQLWriter sqlWriter = SQLWriter.writeWithSchema()
+                                       .append("" +
+                                                       "select schema.APDROIP.VAIDRO as id_droit," +
+                                                       "       schema.APPERIP.VCDDEB," +
+                                                       "       schema.APPERIP.VCDFIN" +
+                                                       "  from schema.PRDEMAP" +
+                                                       "  inner join schema.APDROIP on schema.APDROIP.VAIDEM = schema.PRDEMAP.WAIDEM" +
+                                                       "  inner join schema.APDROITPROCHEAIDANT " +
+                                                       "     on schema.APDROITPROCHEAIDANT.ID_DROIT = schema.APDROIP.VAIDRO" +
+                                                       "  inner join schema.APPERIP ON schema.APPERIP.VCIDRO = schema.APDROIP.VAIDRO" +
+                                                       "  where WAITIE = ? " +
+                                                       "    and ? between VCDDEB and VCDFIN" +
+                                                       "    and 0 = (select count(*) from schema.APDROIP as droitEnfant " +
+                                                       "                           where droitEnfant.VAIPAR = schema.APDROIP.VAIDRO)"
+                                               , idTiers, date);
+
+
+        List<SamePeriode> samePeriodes = SCM.newInstance(SamePeriode.class).session(viewBean.getSession())
+                                            .query(sqlWriter.toSql()).execute();
+        if (!samePeriodes.isEmpty()) {
+            return MessageFormat.format(viewBean.getSession().getLabel(APValidationDroitError.PERIODE_CHEVAUCHANTE_AVEC_AUTRE_DROIT.getErrorLabel())
+                    ,samePeriodes.get(0).getIdDroit());
+        }
+        return "";
     }
 
     /**
@@ -3180,4 +3222,10 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         return listDroit;
     }
 
+    @Data
+    public static class SamePeriode {
+        private String dateDebut;
+        private String dateFin;
+        private String idDroit;
+    }
 }
