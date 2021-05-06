@@ -18,6 +18,8 @@ import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.db.ci.RERassemblementCI;
 import globaz.corvus.db.ci.RERassemblementCIManager;
 import globaz.corvus.db.demandes.REDemandeRente;
+import globaz.corvus.db.demandes.REDemandeRenteInvalidite;
+import globaz.corvus.db.demandes.REPeriodeInvalidite;
 import globaz.corvus.db.historiques.REHistoriqueRentes;
 import globaz.corvus.db.historiques.REHistoriqueRentesJoinTiersManager;
 import globaz.corvus.utils.REPmtMensuel;
@@ -233,6 +235,12 @@ public class REExportationCalculAcor2020 {
         assure.setSexe(PRACORConst.csSexeToAcor2020(membre.getCsSexe()));
         // RENTES
         addRentesAssures(assure, membre);
+
+        // Donnees AI
+        if (StringUtils.equals(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE, demandeRente.getCsTypeDemandeRente())) {
+            assure.setDonneesAI(createAiInformations((REDemandeRenteInvalidite) demandeRente));
+            assure.setReductionFauteGrave(Short.valueOf(((REDemandeRenteInvalidite) demandeRente).getPourcentRedFauteGrave()));
+        }
 
 //        // EURO_FORM
         assure.setDonneesPostales(createDonneesPostales());
@@ -598,6 +606,38 @@ public class REExportationCalculAcor2020 {
             return null;
         }
         return donnesAi;
+    }
+
+    /**
+     * Créations des informations AI.
+     *
+     * @param demandeRenteInvalidite : demande de rente invalidité.
+     * @return les informations AI.
+     */
+    private AiInformations createAiInformations(REDemandeRenteInvalidite demandeRenteInvalidite) {
+        AiInformations aiInformations = new AiInformations();
+        try {
+            for (REPeriodeInvalidite periode : demandeRenteInvalidite.getPeriodesInvalidite()) {
+                AiCurrentType periodeAI = new AiCurrentType();
+                periodeAI.setIVStelle(demandeRenteInvalidite.getCodeOfficeAI());
+                periodeAI.setInvaliditaetsgrad(Short.valueOf(periode.getDegreInvalidite())); // degré invalidité
+                periodeAI.setGebrechensschluessel(Integer.valueOf(getSession().getCode(demandeRenteInvalidite.getCsInfirmite()))); // Genre infirmité
+                periodeAI.setFunktionsausfallcode(Short.valueOf(getSession().getCode(demandeRenteInvalidite.getCsAtteinte()))); // atteinte fonctionnelle
+                periodeAI.setDebutInvalidite(formatDate(periode.getDateDebutInvalidite(), "dd.MM.yyyy"));
+                periodeAI.setFinInvalidite(formatDate(periode.getDateFinInvalidite(), "dd.MM.yyyy"));
+                aiInformations.getPeriodeAI().add(periodeAI);
+            }
+        } catch (Exception e) {
+            LOG.error("Impossible de récupérer les périodes d'invalidité.", e);
+        }
+        if (!JadeStringUtil.isBlankOrZero(demandeRenteInvalidite.getPourcentRedNonCollaboration())) {
+            AiInformations.DonneesNonCollaboration donneesNonCollaboration = new AiInformations.DonneesNonCollaboration();
+            donneesNonCollaboration.setPartReduction(Integer.valueOf(demandeRenteInvalidite.getPourcentRedNonCollaboration()));
+            donneesNonCollaboration.setDebut(formatDate(demandeRenteInvalidite.getDateDebutRedNonCollaboration(), "dd.MM.yyyy"));
+            donneesNonCollaboration.setFin(formatDate(demandeRenteInvalidite.getDateFinRedNonCollaboration(), "dd.MM.yyyy"));
+            aiInformations.getDonneesNonCollaboration().add(donneesNonCollaboration);
+        }
+        return aiInformations;
     }
 
     private Integer getCleInfirmite(String cleInfirmiteAtteinteFct) {
@@ -1287,7 +1327,7 @@ public class REExportationCalculAcor2020 {
                 // trop facile sinon
                 // 13. IBAN
                 // On doit supprimer les espaces pour respecter le xsd ACOR
-                banqueAdresseType.setIban(adressePaiement.getCompte().replace(" ",""));
+                banqueAdresseType.setIban(adressePaiement.getCompte().replace(" ", ""));
                 donneesPostalesType.setBanque(banqueAdresseType);
             }
         } catch (Exception e) {
