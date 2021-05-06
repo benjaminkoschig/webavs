@@ -23,8 +23,4 @@ public class PRTypeDemandeTest {
         Assertions.assertThatThrownBy(() -> PRTypeDemande.toEnumByCs("22222")).hasMessageContaining("22222");
     }
 
-    @Test
-    public void toEnumByCs_withNull_exception() {
-        Assertions.assertThatThrownBy(() -> PRTypeDemande.toEnumByCs(null)).isNull();
-    }
 }
