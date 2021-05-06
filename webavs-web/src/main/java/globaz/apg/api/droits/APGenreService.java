@@ -4,6 +4,8 @@ import ch.globaz.common.util.Enums;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+
 @Getter
 @RequiredArgsConstructor
 public enum APGenreService {
@@ -27,7 +29,7 @@ public enum APGenreService {
      *
      * @return L'enum correspondante aux code système.
      */
-    public static APGenreService toEnumByCs(String codeSystem) {
-        return Enums.toEnum(codeSystem, APGenreService.class, APGenreService::getCsType);
+    public static Optional<APGenreService> toEnumByCs(String codeSystem) {
+        return Enums.toEnumWithoutException(codeSystem, APGenreService.class, APGenreService::getCsType);
     }
 }

@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * <H1>Description</H1>
@@ -64,7 +65,7 @@ public class APPrestationAction extends PRDefaultAction {
         String idDroit = resoudreIdDroit(vb, request);
         String genreService = resoudreGenreService(vb, request);
         String typePrestation = resoudreTypePrestation(vb, request);
-        APGenreService droitGenreService = APGenreService.toEnumByCs(genreService);
+        Optional<APGenreService> droitGenreService = APGenreService.toEnumByCs(genreService);
 
         if (JadeStringUtil.isBlankOrZero(idDroit)) {
             throw new APEmptyIdException(APDroitLAPG.class, idDroit);
@@ -145,7 +146,7 @@ public class APPrestationAction extends PRDefaultAction {
                     + APPrestationHelper.ACTION_DETERMINER_TYPE_CALCUL_PRESTATIONS + viewBean.getMessage());
         }
 
-        if(droitGenreService.isProcheAidant()){
+        if(droitGenreService.isPresent() && droitGenreService.get().isProcheAidant()){
             APDroitProcheAidant droitProcheAidant = new APDroitProcheAidant();
             droitProcheAidant.setISession(mainDispatcher.getSession());
             droitProcheAidant.setIdDroit(idDroit);
