@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:eCH-0044f="http://www.ech.ch/xmlns/eCH-0044/2"
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:eCH-0044f="http://www.ech.ch/xmlns/eCH-0044/2"
            xmlns:eCH-0058="http://www.ech.ch/xmlns/eCH-0058/4"
-           xmlns:eahv-iv-2015-000401="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-000401/5"
+           xmlns:eahv-iv-2015-000101="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-000101/5"
            xmlns:common="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-common/5"
-           targetNamespace="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-000401/5"
-           elementFormDefault="qualified" attributeFormDefault="unqualified" version="5.0">
+           targetNamespace="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-000101/5"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified"
+           version="5.2">
 
     <xs:annotation>
-        <xs:documentation xml:lang="de">Korrekturmeldung für Rückforderung (Konto 214.4609)
-        </xs:documentation>
-        <xs:documentation xml:lang="fr">Annonce rectification pour restitution (compte
-            214.4609)
-        </xs:documentation>
+        <xs:documentation xml:lang="de">Initialmeldung für EO-Leistung (neue Meldung)</xs:documentation>
+        <xs:documentation xml:lang="fr">Annonce initiale de prestation APG (nouvelle annonce)</xs:documentation>
     </xs:annotation>
 
     <xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/2" schemaLocation="eCH-0044-2-0f.xsd"/>
     <xs:import namespace="http://www.ech.ch/xmlns/eCH-0058/4" schemaLocation="eCH-0058-4-0.xsd"/>
     <xs:import namespace="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-common/5"
-               schemaLocation="eahv-iv-2015-common-5-0.xsd"/>
-
+               schemaLocation="eahv-iv-2015-common-5-2.xsd"/>
     <xs:element name="message">
         <xs:annotation>
             <xs:documentation xml:lang="de">Deklaration des Root-Elements für message.xml
@@ -28,8 +27,8 @@
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="header" type="eahv-iv-2015-000401:headerType"/>
-                <xs:element name="content" type="eahv-iv-2015-000401:contentType"/>
+                <xs:element name="header" type="eahv-iv-2015-000101:headerType"/>
+                <xs:element name="content" type="eahv-iv-2015-000101:contentType"/>
             </xs:sequence>
             <xs:attribute name="minorVersion" type="xs:integer" use="required"/>
         </xs:complexType>
@@ -46,7 +45,6 @@
         <xs:complexContent>
             <xs:extension base="common:headerBaseType">
                 <xs:sequence>
-                    <xs:element name="referenceMessageId" type="eCH-0058:messageIdType" minOccurs="0"/>
                     <xs:element name="businessProcessId">
                         <xs:simpleType>
                             <xs:restriction base="eCH-0058:businessProcessIdType">
@@ -57,13 +55,13 @@
                     <xs:element name="subMessageType">
                         <xs:simpleType>
                             <xs:restriction base="eCH-0058:subMessageTypeType">
-                                <xs:enumeration value="000401">
+                                <xs:enumeration value="000101">
                                     <xs:annotation>
-                                        <xs:documentation xml:lang="de">Typ 4: Korrekturmeldung für Rückforderung
-                                            (Konto 214.4609)
+                                        <xs:documentation xml:lang="de">Typ 1: Initialmeldung für EO-Leistung (neue
+                                            Meldung)
                                         </xs:documentation>
-                                        <xs:documentation xml:lang="fr">Type 4 : Annonce de correction pour
-                                            restitution (compte 214.4609)
+                                        <xs:documentation xml:lang="fr">Type 1 : Annonce initiale de prestation APG
+                                            (nouvelle annonce)
                                         </xs:documentation>
                                     </xs:annotation>
                                 </xs:enumeration>
@@ -73,7 +71,7 @@
                     <xs:element name="action">
                         <xs:simpleType>
                             <xs:restriction base="eCH-0058:actionType">
-                                <xs:enumeration value="4"/>
+                                <xs:enumeration value="1"/>
                             </xs:restriction>
                         </xs:simpleType>
                     </xs:element>
@@ -96,24 +94,22 @@
         <xs:complexContent>
             <xs:extension base="common:contentBaseType">
                 <xs:sequence>
-                    <xs:element name="timeStamp" type="xs:dateTime"/>
-                    <xs:element name="insurant" type="eCH-0044f:personIdentificationType" minOccurs="0"/>
-                    <xs:element name="insurantMaritalStatus" type="common:maritalStatusType" minOccurs="0"/>
-                    <xs:element name="insurantDomicile" type="common:insurantDomicileType" minOccurs="0"/>
+                    <xs:element name="insurant" type="eCH-0044f:personIdentificationType"/>
+                    <xs:element name="insurantMaritalStatus" type="common:maritalStatusType"/>
+                    <xs:element name="insurantDomicile" type="common:insurantDomicileType"/>
                     <xs:element name="accountingMonth" type="common:yearMonthRestricted"/>
-                    <xs:element name="serviceType" type="common:serviceTypeType" minOccurs="0"/>
-                    <xs:element name="activityBeforeService" type="common:activityBeforeServiceType"
-                                minOccurs="0"/>
-                    <xs:element name="averageDailyIncome" type="common:decimal10-2" minOccurs="0"/>
-                    <xs:element name="startOfPeriod" type="common:dateRestricted" minOccurs="0"/>
-                    <xs:element name="endOfPeriod" type="common:dateRestricted" minOccurs="0"/>
-                    <xs:element name="numberOfDays" type="xs:short" minOccurs="0"/>
-                    <xs:element name="basicDailyAmount" type="common:decimal10-2" minOccurs="0"/>
-                    <xs:element name="dailyIndemnityGuaranteeAI" type="xs:boolean" minOccurs="0"/>
-                    <xs:element name="allowanceFarm" type="xs:boolean" minOccurs="0"/>
-                    <xs:element name="allowanceCareExpenses" type="common:decimal10-2" minOccurs="0"/>
-                    <xs:element name="totalAPG" type="common:decimal16-2" minOccurs="0"/>
-                    <xs:element name="paymentMethod" type="common:paymentMethodType" minOccurs="0"/>
+                    <xs:element name="serviceType" type="common:serviceTypeType"/>
+                    <xs:element name="activityBeforeService" type="common:activityBeforeServiceType"/>
+                    <xs:element name="averageDailyIncome" type="common:decimal10-2"/>
+                    <xs:element name="startOfPeriod" type="common:dateRestricted"/>
+                    <xs:element name="endOfPeriod" type="common:dateRestricted"/>
+                    <xs:element name="numberOfDays" type="xs:short"/>
+                    <xs:element name="basicDailyAmount" type="common:decimal10-2"/>
+                    <xs:element name="dailyIndemnityGuaranteeAI" type="xs:boolean"/>
+                    <xs:element name="allowanceFarm" type="xs:boolean"/>
+                    <xs:element name="allowanceCareExpenses" type="common:decimal10-2"/>
+                    <xs:element name="totalAPG" type="common:decimal16-2"/>
+                    <xs:element name="paymentMethod" type="common:paymentMethodType"/>
                     <xs:element name="paternityLeaveData" type="common:paternityLeaveDataType" minOccurs="0"/>
                     <xs:element name="careLeaveData" type="common:careLeaveDataType" minOccurs="0"/>
                 </xs:sequence>

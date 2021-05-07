@@ -14,7 +14,7 @@ public enum APTypeDeDecompte {
     NORMAL_ACM_NE(5, "normal_acmne", "AP_DECOMPTE_DETAIL_ACMNE.jasper",
             new APTypeDePrestation[] { APTypeDePrestation.STANDARD, APTypeDePrestation.ACM_NE }),
     COMPCIAB(6, "normal", "AP_DECOMPTE_DETAIL_CIAB.jasper", new APTypeDePrestation[] { APTypeDePrestation.COMPCIAB }),
-    // TODO SCO : MATCIAB1 est regroupé avec le normal et le MATCIAB2 est seul sur un document.
+    // MATCIAB1 est regroupé avec le normal et le MATCIAB2 est seul sur un document.
     MATCIAB1(6, "normal", "AP_DECOMPTE_DETAIL_CIAB.jasper", new APTypeDePrestation[] { APTypeDePrestation.MATCIAB1 }),
     MATCIAB2(6, "matciab2", "AP_DECOMPTE_DETAIL_CIAB.jasper", new APTypeDePrestation[] { APTypeDePrestation.MATCIAB2 }),
     JOUR_ISOLE(7, "normal", "AP_DECOMPTE_DETAIL_CIAB.jasper", new APTypeDePrestation[] { APTypeDePrestation.JOUR_ISOLE });
@@ -61,7 +61,8 @@ public enum APTypeDeDecompte {
                         break;
                     case MATCIAB2:
                         typeDuDecompte = APTypeDeDecompte.MATCIAB2;
-                        break;                    case JOUR_ISOLE:
+                        break;
+                    case JOUR_ISOLE:
                         typeDuDecompte = APTypeDeDecompte.JOUR_ISOLE;
                         break;
                     case LAMAT:

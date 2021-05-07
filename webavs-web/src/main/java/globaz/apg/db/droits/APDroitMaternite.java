@@ -330,7 +330,14 @@ public class APDroitMaternite extends APDroitLAPG implements IPRCloneable {
          * comme propriété de l'application.
          */
         JADate fin = cal.addDays(debut, APDroitMaternite.getDureeDroitMat(getSession()) - 1);
+        if (!JadeStringUtil.isIntegerEmpty(this.getJoursSupplementaires())) {
+            fin = ajouteJoursSupplementaires(cal, fin);
+        }
         setDateFinDroit(fin.toStr("."));
+    }
+
+    private JADate ajouteJoursSupplementaires(JACalendar cal, JADate fin) {
+        return cal.addDays(fin, Integer.parseInt(this.getJoursSupplementaires()));
     }
 
     @Override
@@ -338,6 +345,7 @@ public class APDroitMaternite extends APDroitLAPG implements IPRCloneable {
         APDroitMaternite clone = new APDroitMaternite();
 
         clone.setNpa(getNpa());
+        clone.setJoursSupplementaires(getJoursSupplementaires());
         clone.setDateDebutDroit(getDateDebutDroit());
         clone.setDateDepot(getDateDepot());
         clone.setDateReception(getDateReception());

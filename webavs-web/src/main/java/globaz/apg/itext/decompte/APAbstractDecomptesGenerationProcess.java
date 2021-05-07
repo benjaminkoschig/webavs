@@ -18,8 +18,10 @@ import globaz.babel.api.ICTListeTextes;
 import globaz.framework.util.FWMessageFormat;
 import globaz.globall.db.*;
 import globaz.globall.util.*;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.prestation.api.PRTypeDemande;
 import globaz.prestation.interfaces.tiers.PRTiersAdresseCopyFormater02;
+import globaz.prestation.utils.PRDateUtils;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.tiers.TIAdministrationAdresse;
 import globaz.pyxis.db.tiers.TIAdministrationAdresseManager;
@@ -808,7 +810,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     delaiCadre = PRStringUtils.replaceString(delaiCadre, "{nbJourDispo}", nbJourRestant);
                     buffer.append(delaiCadre).append("\n\n");;
                 }
-
+                // TODO ESVE PAT 4.5.
                 // Pour paternité et proche aidant, si Assuré indépendant, alors il faut ajouter ce texte sur les décisions.
                 if ((IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot()))
                     && !droit.getRemarque().isEmpty()) {
@@ -835,7 +837,22 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     // Si ventilation, ne pas mettre le texte 4.1
                     if (texte.getPosition().equals("1")) {
                         if (!isTraitementDesVentilations()) {
-                            buffer.append(texte.getDescription());
+
+                            // Calcule la durée de la maternité en prenant en compte d'une possible date de reprise de
+                            // l'activité puis place le total obtenu dans le texte du décompte.
+                            if (IPRDemande.CS_TYPE_MATERNITE.equals(getCSTypePrestationsLot())) {
+                                String dateDebutMat = droit.getDateDebutDroit();
+                                String dateFinMat = JadeStringUtil.isEmpty(((APDroitMaternite) droit).getDateRepriseActiv())
+                                        ? JACalendar.format(droit.getDateFinDroit())
+                                        : JadeDateUtil.addDays(JACalendar.format(((APDroitMaternite) droit).getDateRepriseActiv()), -1);
+
+                                int totalDeJours = PRDateUtils.getNbDayBetween(dateDebutMat, dateFinMat) + 1;
+
+                                buffer.append(PRStringUtils.formatMessage(new StringBuffer(texte.getDescription()), String.valueOf(totalDeJours)));
+                            } else {
+                                buffer.append(texte.getDescription());
+                            }
+
                             if (buffer.length() > 0) {
                                 buffer.append("\n");
                             }
@@ -3069,6 +3086,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         || APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
                     texteDetailJournalier = document.getTextes(3).getTexte(50).getDescription();
                 } else {
+                    // TODO ESVE PAT 4.1.3.5.
                     texteDetailJournalier = document.getTextes(3).getTexte(44).getDescription();
                 }
                 // Insertion du nombre de jours dans le texte

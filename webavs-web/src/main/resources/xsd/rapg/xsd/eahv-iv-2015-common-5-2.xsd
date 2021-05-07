@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-common/5"
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:common="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-common/5"
            xmlns:eCH-0044f="http://www.ech.ch/xmlns/eCH-0044/2"
            xmlns:eCH-0058="http://www.ech.ch/xmlns/eCH-0058/4"
            targetNamespace="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-common/5"
-           elementFormDefault="qualified" attributeFormDefault="unqualified" version="5.0">
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified"
+           version="5.2">
 
     <xs:import namespace="http://www.ech.ch/xmlns/eCH-0058/4" schemaLocation="eCH-0058-4-0.xsd"/>
     <xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/2" schemaLocation="eCH-0044-2-0f.xsd"/>
@@ -493,6 +496,12 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:enumeration>
+            <xs:enumeration value="4">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">Aufteilung zwischen mehreren Arbeitgeber sowie mit oder ohne der versicherten Person</xs:documentation>
+                    <xs:documentation xml:lang="fr">Répartition entre plusieurs employeurs ainsi que avec ou sans la personne assurée</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
         </xs:restriction>
     </xs:simpleType>
     <xs:complexType name="breakRuleType">
@@ -502,18 +511,8 @@
     </xs:complexType>
     <xs:simpleType name="breakRuleCodeType">
         <xs:restriction base="xs:integer">
-            <xs:enumeration value="500"/>
-            <xs:enumeration value="501"/>
-            <xs:enumeration value="502"/>
-            <xs:enumeration value="503"/>
-            <xs:enumeration value="504"/>
-            <xs:enumeration value="505"/>
-            <xs:enumeration value="506"/>
-            <xs:enumeration value="507"/>
-            <xs:enumeration value="508"/>
-            <xs:enumeration value="509"/>
-            <xs:enumeration value="510"/>
-            <xs:enumeration value="600"/>
+            <xs:minInclusive value="500"/>
+            <xs:maxInclusive value="600"/>
         </xs:restriction>
     </xs:simpleType>
     <xs:complexType name="breakRuleWeakType">

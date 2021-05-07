@@ -2283,6 +2283,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         if (droit instanceof APDroitMaternite) {
             final String dureeACM = session.getApplication()
                     .getProperty(APApplication.PROPERTY_DROIT_ACM_MAT_DUREE_JOURS);
+            // Les ACM sont toujours calculé sur la durée de maternité de base et non pas sur la durée effective qui pourrait avoir été étendue
             final String dureeMatFederale = session.getApplication()
                     .getProperty(APApplication.PROPERTY_DROIT_MAT_DUREE_JOURS);
             final int diff = Integer.parseInt(dureeACM) - Integer.parseInt(dureeMatFederale);

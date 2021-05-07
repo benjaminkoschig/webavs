@@ -65,10 +65,10 @@ import java.util.List;
 public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
 
     private static final String XSD_FOLDER = "/xsd/rapg/xsd/";
-    private static final String XSD_101 = "eahv-iv-2015-000101-5-0.xsd";
-    private static final String XSD_301 = "eahv-iv-2015-000301-5-0.xsd";
-    private static final String XSD_401 = "eahv-iv-2015-000401-5-0.xsd";
-    private static final String XSD_COMMON = "eahv-iv-2015-common-5-0.xsd";
+    private static final String XSD_101 = "eahv-iv-2015-000101-5-2.xsd";
+    private static final String XSD_301 = "eahv-iv-2015-000301-5-2.xsd";
+    private static final String XSD_401 = "eahv-iv-2015-000401-5-2.xsd";
+    private static final String XSD_COMMON = "eahv-iv-2015-common-5-2.xsd";
     private static final String XSD_44 = "eCH-0044-2-0f.xsd";
     private static final String XSD_58 = "eCH-0058-4-0.xsd";
     private static final String TEMP_FILENAME = "marshalled.xml";
@@ -150,7 +150,7 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
         }
         if (!JadeStringUtil.isEmpty(champsAnnonce.getBreakRules())) {
             for (String br : champsAnnonce.getBreakRules().split(",")) {
-                message.getBreakRules().getBreakRuleCode().add(new BigInteger(br));
+                message.getBreakRules().getBreakRuleCode().add(new Integer(br)); // TODO ESVE MAT MODIF IMPACT NEW XSD
             }
         }
         if (!JadeStringUtil.isEmpty(champsAnnonce.getTimeStamp())) {

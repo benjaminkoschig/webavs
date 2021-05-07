@@ -62,6 +62,7 @@ import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.interfaces.util.nss.PRUtil;
 import globaz.prestation.tools.PRBlankBNumberFormater;
 import globaz.prestation.tools.PRStringUtils;
+import globaz.prestation.utils.PRDateUtils;
 import globaz.pyxis.api.ITIRole;
 import globaz.pyxis.api.ITITiers;
 import globaz.pyxis.db.adressecourrier.TIAvoirAdresse;
@@ -660,19 +661,31 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                     buffer.append("\n\n");
                 }
 
+                String dateFinMat = JadeStringUtil.isEmpty(droit.getDateRepriseActiv())
+                        ? JACalendar.format(droit.getDateFinDroit())
+                        : APDecisionCommunicationAMAT.CALENDAR.addDays(JACalendar.format(droit.getDateRepriseActiv()), -1);
+                String dateDebutMat = droit.getDateDebutDroit();
+                int totalDeJours = PRDateUtils.getNbDayBetween(dateDebutMat, dateFinMat) + 1;
+
                 boolean isPos3ACMEmployeur = Integer.parseInt(texte.getPosition()) == 3;
                 isPos3ACMEmployeur &= "ACM".equals(helper.getNom());
                 isPos3ACMEmployeur &= ICTDocument.CS_EMPLOYEUR.equals(helper.getCsDestinataire());
 
+                boolean isPos3Standard = Integer.parseInt(texte.getPosition()) == 3;
+                isPos3Standard &= "normal".equals(helper.getNom());
+
                 // Cas particulier (Destinataire employeur et lettre ACM), car paragraphe 3 est devenu générique dans le
                 // niveau 4 afin d'afficher le bon nombre de jours.
                 if (isPos3ACMEmployeur) {
-                    buffer.append(traitementLevel4Pos3ACMEmployeur(texte));
+                    buffer.append(traitementLevel4Pos3ACMEmployeur(texte, totalDeJours));
                 } else {
                     // si c'est le texte 4.3 ou 4.2, et qu'il s'agit de MATCIAB2, il faut mettre le texte 4.200 à la place
                     if ((Integer.parseInt(texte.getPosition()) == 3 && hasMATCIAB2() && state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2 && ICTDocument.CS_EMPLOYEUR.equals(helper.getCsDestinataire()))
                         || (Integer.parseInt(texte.getPosition()) == 2 && hasMATCIAB2() && state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2 && ICTDocument.CS_ASSURE.equals(helper.getCsDestinataire()))) {
                         buffer.append(document.getTextes(4).getTexte(200).getDescription());
+                    // si c'est le texte 4.3 et qu'il s'agit de normal il faut remplacer l'argument par le totalDeJours
+                    } else if (isPos3Standard) {
+                        buffer.append(PRStringUtils.formatMessage(new StringBuffer(texte.getDescription()), String.valueOf(totalDeJours)));
                     } else {
                         buffer.append(texte.getDescription());
                     }
@@ -815,7 +828,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
      * @return Le chaine du niveau 4 position 3 avec la nouvelle valeur.
      * @throws Exception Exception due a la recherche de situation professionnelle
      */
-    private String traitementLevel4Pos3ACMEmployeur(ICTTexte texte) throws Exception {
+    private String traitementLevel4Pos3ACMEmployeur(ICTTexte texte, int totalDeJours) throws Exception {
         final StringBuffer bufferLocal = new StringBuffer(texte.getDescription());
 
         // reprendre la situation prof pour savoir si elle a un type ACM 2
@@ -824,16 +837,22 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         sitPro.setIdSituationProf(repartition.getIdSituationProfessionnelle());
         sitPro.retrieve();
 
-        Integer nbJoursTotaux = Integer.valueOf(APProperties.DROIT_ACM_MAT_DUREE_JOURS.getValue());
+        // Calcule la différence entre durée ACM1 et Maternité Federale puis ajoute si besoin la durée ACM2
+        // le montant obtenu est ensuite ajouté à la durée totale de la maternité pour être placé dans le texte de la décision.
+        int dureeMatAvecACM = Integer.parseInt(APProperties.DROIT_ACM_MAT_DUREE_JOURS.getValue());
+        int dureeMatFederale = Integer.parseInt(getSession().getApplication().getProperty(APApplication.PROPERTY_DROIT_MAT_DUREE_JOURS));
+        int dureeACMSeulement = dureeMatAvecACM - dureeMatFederale;
+
+        totalDeJours += dureeACMSeulement;
         if (!sitPro.isNew()) {
             final boolean hasAcm2 = sitPro.getHasAcm2AlphaPrestations();
 
             if (hasAcm2) {
-                nbJoursTotaux += Integer.valueOf(APProperties.PRESTATION_ACM_2_NOMBRE_JOURS.getValue());
+                totalDeJours += Integer.valueOf(APProperties.PRESTATION_ACM_2_NOMBRE_JOURS.getValue());
             }
         }
 
-        return PRStringUtils.formatMessage(bufferLocal, nbJoursTotaux.toString());
+        return PRStringUtils.formatMessage(bufferLocal, String.valueOf(totalDeJours));
     }
 
     private String buildOrderPrintingByKey(final String idAffilie, final String idTiers) throws Exception {

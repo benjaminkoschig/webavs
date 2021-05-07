@@ -1,3 +1,19 @@
+
+-- Ajout colonne extension maternité
+
+ALTER TABLE SCHEMA.APDROIP
+ADD COLUMN VAJSUP DECIMAL(3);
+
+call sysproc.admin_cmd('reorg table APDROIP');
+
+-- Ajout plage valeur extension maternité
+
+ INSERT INTO FWPARP (PPARAP,PPACDI,PPARIA,PPADDE,PPARPD,PCOSID,PPARPF,PPARVA,PPRAVN,PPRADE,CSTYUN,PCOITC,PSPY)
+ VALUES ('APG','MATEXTMIN',0,20210701,0.000000,1,0.000000,'',112,'Mat ext - Durée mininum',0,0,VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
+ INSERT INTO FWPARP (PPARAP,PPACDI,PPARIA,PPADDE,PPARPD,PCOSID,PPARPF,PPARVA,PPRAVN,PPRADE,CSTYUN,PCOITC,PSPY)
+ VALUES ('APG','MATEXTMAX',0,20210701,0.000000,1,0.000000,'',154,'Mat ext - Durée maximum',0,0,VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
+
+
 -- Création de la table droit proche aidant
 CREATE TABLE SCHEMA.APDROITPROCHEAIDANT
 (

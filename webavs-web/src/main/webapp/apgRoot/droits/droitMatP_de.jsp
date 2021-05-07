@@ -486,8 +486,17 @@ var EDITION_MODE = false;
 							</td>
 						</tr>
 						<tr>
-							<td colspan="6">
-								&nbsp;
+							<td>
+								<label for="joursSupplementaires">
+									<ct:FWLabel key="JSP_JOURS_SUPPLEMENTAIRES" />
+								</label>
+							</td>
+							<td>
+								<input	type="text"
+										name="joursSupplementaires"
+										id="joursSupplementaires"
+										value="<%=viewBean.getJoursSupplementaires()%>"
+										class="numero" />
 							</td>
 						</tr>
 						<tr>

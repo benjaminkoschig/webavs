@@ -4,7 +4,9 @@
            xmlns:eahv-iv-2015-000501="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-000501/5"
            xmlns:common="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-common/5"
            targetNamespace="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-000501/5"
-           elementFormDefault="qualified" attributeFormDefault="unqualified" version="5.0">
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified"
+           version="5.2">
 
     <xs:annotation>
         <xs:documentation xml:lang="de">Verarbeitungsprotokoll</xs:documentation>
@@ -13,7 +15,7 @@
 
     <xs:import namespace="http://www.ech.ch/xmlns/eCH-0058/4" schemaLocation="eCH-0058-4-0.xsd"/>
     <xs:import namespace="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-common/5"
-               schemaLocation="eahv-iv-2015-common-5-0.xsd"/>
+               schemaLocation="eahv-iv-2015-common-5-2.xsd"/>
 
     <xs:element name="message">
         <xs:annotation>

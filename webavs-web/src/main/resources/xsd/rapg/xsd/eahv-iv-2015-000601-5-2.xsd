@@ -2,13 +2,15 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:eahv-iv-2015-000601="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-000601/5"
            xmlns:common="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-common/5"
-           xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/2" xmlns:eCH-0058="http://www.ech.ch/xmlns/eCH-0058/4"
+           xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/2"
+           xmlns:eCH-0058="http://www.ech.ch/xmlns/eCH-0058/4"
            targetNamespace="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-000601/5"
-           elementFormDefault="qualified" attributeFormDefault="unqualified"
-           version="5.0">
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified"
+           version="5.2">
 
     <xs:import namespace="http://www.eahv-iv.ch/xmlns/eahv-iv-2015-common/5"
-               schemaLocation="eahv-iv-2015-common-5-0.xsd"/>
+               schemaLocation="eahv-iv-2015-common-5-2.xsd"/>
 
     <xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/2" schemaLocation="eCH-0044-2-0f.xsd"/>
     <xs:import namespace="http://www.ech.ch/xmlns/eCH-0058/4" schemaLocation="eCH-0058-4-0.xsd"/>

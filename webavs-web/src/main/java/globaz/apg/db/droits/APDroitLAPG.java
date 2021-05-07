@@ -43,6 +43,7 @@ public class APDroitLAPG extends BEntity {
     public static final String FIELDNAME_IDGESTIONNAIRE = "VAIGES";
     public static final String FIELDNAME_NODROIT = "VANDRO";
     public static final String FIELDNAME_NPA = "VANPOS";
+    public static final String FIELDNAME_JOURS_SUPPLEMENTAIRES = "VAJSUP";
     public static final String FIELDNAME_PAYS = "VATPAY";
     public static final String FIELDNAME_CANTON = "VACANT";
     public static final String FIELDNAME_REFERENCE = "VALREF";
@@ -76,6 +77,7 @@ public class APDroitLAPG extends BEntity {
     private Boolean isSoumisImpotSource = Boolean.FALSE;
     private String noDroit = ""; // TODO voir a quoi et ou est utilisé ce machin....
     private String npa = "";
+    private String joursSupplementaires = "";
     private String pays = "";
     private String reference = "";
     private String remarque = "";
@@ -174,6 +176,7 @@ public class APDroitLAPG extends BEntity {
         isSoumisImpotSource = statement.dbReadBoolean(APDroitLAPG.FIELDNAME_SOUMIS_IMPOT_SOURCE);
         noDroit = statement.dbReadNumeric(APDroitLAPG.FIELDNAME_NODROIT);
         npa = statement.dbReadNumeric(APDroitLAPG.FIELDNAME_NPA);
+        joursSupplementaires = statement.dbReadNumeric(APDroitLAPG.FIELDNAME_JOURS_SUPPLEMENTAIRES);
         pays = statement.dbReadNumeric(APDroitLAPG.FIELDNAME_PAYS);
         reference = statement.dbReadString(APDroitLAPG.FIELDNAME_REFERENCE);
         remarque = statement.dbReadString(APDroitLAPG.FIELDNAME_REMARQUE);
@@ -224,6 +227,7 @@ public class APDroitLAPG extends BEntity {
         statement.writeField(APDroitLAPG.FIELDNAME_NODROIT,
                 this._dbWriteNumeric(statement.getTransaction(), noDroit, "noDroit"));
         statement.writeField(APDroitLAPG.FIELDNAME_NPA, this._dbWriteNumeric(statement.getTransaction(), npa, "npa"));
+        statement.writeField(APDroitLAPG.FIELDNAME_JOURS_SUPPLEMENTAIRES, this._dbWriteNumeric(statement.getTransaction(), joursSupplementaires, "joursSupplementaires"));
         statement
                 .writeField(APDroitLAPG.FIELDNAME_PAYS, this._dbWriteNumeric(statement.getTransaction(), pays, "pays"));
         statement.writeField(APDroitLAPG.FIELDNAME_REFERENCE,
@@ -304,6 +308,10 @@ public class APDroitLAPG extends BEntity {
 
     public String getNpa() {
         return npa;
+    }
+
+    public String getJoursSupplementaires() {
+        return joursSupplementaires;
     }
 
     public String getPays() {
@@ -464,6 +472,10 @@ public class APDroitLAPG extends BEntity {
 
     public void setNpa(String npa) {
         this.npa = npa;
+    }
+
+    public void setJoursSupplementaires(String joursSupplementaires) {
+        this.joursSupplementaires = joursSupplementaires;
     }
 
     public void setPays(String pays) {

@@ -249,6 +249,10 @@ public abstract class APAbstractDroitProxyViewBean extends PRAbstractViewBeanSup
         return droit.getNpa();
     }
 
+    public String getJoursSupplementaires() {
+        return droit.getJoursSupplementaires();
+    }
+
     @Override
     public String getNss() {
         if (JadeStringUtil.isEmpty(nss)) {
@@ -532,6 +536,10 @@ public abstract class APAbstractDroitProxyViewBean extends PRAbstractViewBeanSup
 
     public void setNpa(String npa) {
         droit.setNpa(npa);
+    }
+
+    public void setJoursSupplementaires(String joursSupplementaires) {
+        droit.setJoursSupplementaires(joursSupplementaires);
     }
 
     @Override
