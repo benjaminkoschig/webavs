@@ -1298,6 +1298,13 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             throw new Exception("Any edition mode was specified for the APDroitAPG edition");
         }
 
+        if(JadeStringUtil.isBlankOrZero(viewBean.getDateDebutDroit())){
+            String dateDebutDroit = viewBean.getPeriodes().stream()
+                                            .map(PRPeriode::getDateDeDebut).map(Dates::toDate)
+                                            .findFirst().map(Dates::formatSwiss).orElse("");
+            viewBean.setDateDebutDroit(dateDebutDroit);
+        }
+
         final List<PRPeriode> periodes = validerNombreJoursSoldesPai(viewBean);
 
         List<String> datesDeDebut = new ArrayList<String>();
@@ -2994,14 +3001,14 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                                                        "    on schema.APDROITPROCHEAIDANT.ID_DROIT = schema.APDROIP.VAIDRO" +
                                                        " inner join schema.APPERIP ON schema.APPERIP.VCIDRO = schema.APDROIP.VAIDRO" +
                                                        " where WAITIE = ? " +
-                                                       "   and schema.APDROIP.VAIDRO != ? "+
                                                        "   and ? between VCDDEB and VCDFIN" +
                                                        "   and 0 = (select count(*) from schema.APDROIP as droitEnfant " +
-                                                       "                           where droitEnfant.VAIPAR = schema.APDROIP.VAIDRO)"
-                                               ,idTiers,viewBean.getIdDroit(), date);
+                                                       "                           where droitEnfant.VAIPAR = schema.APDROIP.VAIDRO)",idTiers, date)
+                                       .append("and schema.APDROIP.VAIDRO != ? ",viewBean.getIdDroit());
 
 
-        List<SamePeriode> samePeriodes = SCM.newInstance(SamePeriode.class).session(viewBean.getSession())
+        List<SamePeriode> samePeriodes = SCM.newInstance(SamePeriode.class)
+                                            .session(viewBean.getSession())
                                             .query(sqlWriter.toSql()).execute();
         if (!samePeriodes.isEmpty()) {
             return MessageFormat.format(viewBean.getSession().getLabel(APValidationDroitError.PERIODE_CHEVAUCHANTE_AVEC_AUTRE_DROIT.getErrorLabel())

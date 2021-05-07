@@ -6,7 +6,6 @@
  */
 package globaz.apg.servlet;
 
-import globaz.apg.application.APApplication;
 import globaz.apg.exceptions.APWrongViewBeanTypeException;
 import globaz.apg.util.APGSeodorServiceCallUtil;
 import globaz.apg.vb.droits.*;
@@ -16,7 +15,6 @@ import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWDefaultServletAction;
 import globaz.framework.controller.FWDispatcher;
 import globaz.framework.servlets.FWServlet;
-import globaz.globall.db.BSession;
 import globaz.globall.http.JSPUtils;
 import globaz.prestation.servlet.PRDefaultAction;
 import globaz.prestation.tools.PRSessionDataContainerHelper;
@@ -83,13 +81,6 @@ public class APDroitPaiPAction extends APAbstractDroitPAction {
     /**
      * On arrive sur cette action depuis l'écran de contrôle des prestation suite à la création d'un droit.
      *
-     * @param session
-     * @param request
-     * @param response
-     * @param mainDispatcher
-     * @param vb
-     * @return
-     * @throws Exception
      */
     public String finaliserCreationDroit(HttpSession session, HttpServletRequest request, HttpServletResponse response,
                                          FWDispatcher mainDispatcher, FWViewBeanInterface vb) throws Exception {
@@ -202,12 +193,6 @@ public class APDroitPaiPAction extends APAbstractDroitPAction {
         try {
             JSPUtils.setBeanProperties(request, viewBean);
             viewBean = (APDroitPaiPViewBean) beforeAjouter(session, request, response, viewBean);
-            BSession mSession = (BSession) mainDispatcher.getSession();
-            final boolean isCheckVerifJour = Boolean.valueOf(mSession.getApplication().getProperty(
-                    APApplication.PROPERTY_PAT_WARN_VERIF_JOUR, "false"));
-            if (viewBean.getCheckWarn() && isCheckVerifJour) {
-                viewBean.checkWarningVerifJour(mSession);
-            }
             if (viewBean.hasMessagePropError() || viewBean.hasMessageWarn()) {
                 newAction = FWAction.newInstance(IAPActions.ACTION_SAISIE_CARTE_PAI + ".afficher");
                 session.removeAttribute("viewBean");

@@ -357,28 +357,4 @@ public class APDroitPaiPViewBean extends APAbstractDroitProxyViewBean {
     }
 
 
-    public int getJourPaternite(BSession session) {
-        try {
-            return Integer.parseInt(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "1", APParameter.PATERNITE_JOUR_MAX.getParameterName(), "0", "", 0));
-        } catch (Exception e) {
-            return 14;
-        }
-    }
-
-    public void checkWarningVerifJour(BSession session){
-        int nbJourSolde = 0;
-        int nbJourMax = getJourPaternite(session);
-        for(PRPeriode p: periodes) {
-            nbJourSolde += Integer.valueOf(p.getNbJour());
-        }
-        hasMessageWarn = nbJourSolde < nbJourMax;
-        if(hasMessageWarn) {
-            messagesWarn = session.getLabel("JSP_WARN_PATERNITE_NB_JOUR");
-            messagesWarn = messagesWarn.replace("{0}", Integer.toString(nbJourMax));
-        } else {
-            messagesWarn = "";
-        }
-    }
-
-
 }
