@@ -74,6 +74,11 @@
         document.forms[0].submit();
     }
 
+    function checkACORWeb() {
+        document.forms[0].elements('userAction').value = "<%=IREActions.ACTION_CALCUL_DEMANDE_RENTE%>.actionCheckACORWeb";
+        document.forms[0].submit();
+    }
+
     function importerResultatACOR() {
     }
 
@@ -259,16 +264,17 @@
 	Set objShell = CreateObject("WScript.shell")
 	objShell.Exec("<%=startAcorCmd%>")
 
-<%}else if(viewBean.isAcorV4Web()) {
+<%
+} else if (viewBean.isAcorV4Web()) {
 
-        String startNavigateurAcorCmd = viewBean.getStartNavigateurAcor(bSession);
-        Date actualDate = new Date();
-        String day = JadeDateUtil.getDMYDate(actualDate);
-        String token = Acor2020TokenService.createToken(viewBean, day, JadeDateUtil.getHMTime(actualDate), day, bSession);
-        String adresseWebAcor = viewBean.getAdresseWebACOR(bSession,"import",token);
+    String startNavigateurAcorCmd = viewBean.getStartNavigateurAcor(bSession);
+    Date actualDate = new Date();
+    String day = JadeDateUtil.getDMYDate(actualDate);
+    String token = Acor2020TokenService.createToken(viewBean, day, JadeDateUtil.getHMTime(actualDate), day, bSession);
+    String adresseWebAcor = viewBean.getAdresseWebACOR(bSession, "import", token);
 %>
         Set shell = CreateObject ("Shell.Application")
-<%if (startNavigateurAcorCmd == null || startNavigateurAcorCmd.isEmpty()){%>
+<%if (startNavigateurAcorCmd == null || startNavigateurAcorCmd.isEmpty()) {%>
 
         shell.Open "<%=adresseWebAcor%>"
 
@@ -278,6 +284,9 @@
 
 <%}%>
 <%}%>
+
+
+
 
 
 
@@ -359,6 +368,10 @@ else { %>
         <p>
             <a href="#" onclick="callACORWeb()">
                 <ct:FWLabel key="JSP_OUVRIR_ACOR_WEB"/>
+            </a>
+            <a style="width: 50%"></a>
+            <a href="#" onclick="checkACORWeb()">
+                <ct:FWLabel key="JSP_CHECK_ACOR_WEB"/>
             </a>
         </p>
         <h6>

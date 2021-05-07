@@ -189,6 +189,8 @@ public class REApplication extends PRAbstractApplication {
 
         FWAction.registerActionCustom(IREActions.ACTION_CALCUL_DEMANDE_RENTE + ".actionCallACORWeb",
                 FWSecureConstants.ADD);
+        FWAction.registerActionCustom(IREActions.ACTION_CALCUL_DEMANDE_RENTE + ".actionCheckACORWeb",
+                FWSecureConstants.ADD);
 
         FWAction.registerActionCustom(IREActions.ACTION_CALCUL_DEMANDE_RENTE + ".actionImporterScriptACOR",
                 FWSecureConstants.ADD);

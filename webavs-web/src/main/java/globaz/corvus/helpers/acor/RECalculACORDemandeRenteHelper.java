@@ -2,6 +2,7 @@ package globaz.corvus.helpers.acor;
 
 import acor.xsd.fcalcul.FCalcul;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.InHostType;
+
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.*;
@@ -10,7 +11,9 @@ import javax.servlet.ServletException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+
 import ch.globaz.common.domaine.Checkers;
+import ch.globaz.common.exceptions.ValidationException;
 import ch.globaz.corvus.business.services.CorvusCrudServiceLocator;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.corvus.domaine.BaseCalcul;
@@ -1350,12 +1353,40 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * @throws Exception
      */
     public FWViewBeanInterface actionCallACORWeb(final FWViewBeanInterface viewBean, final FWAction action,
-                                                        final BSession session) throws Exception {
+                                                 final BSession session) throws Exception {
 
         RECalculACORDemandeRenteViewBean caViewBean = (RECalculACORDemandeRenteViewBean) viewBean;
 
         if (!viewBean.getMsgType().equals(FWViewBeanInterface.ERROR)) {
             caViewBean.setIsAcorV4Web(true);
+        }
+
+        return viewBean;
+    }
+
+    /**
+     * Contrôle l'envoi au webservice ACOR
+     *
+     * @param viewBean
+     * @param action
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    public FWViewBeanInterface actionCheckACORWeb(final FWViewBeanInterface viewBean, final FWAction action,
+                                                  final BSession session) throws Exception {
+
+        RECalculACORDemandeRenteViewBean caViewBean = (RECalculACORDemandeRenteViewBean) viewBean;
+
+        if (!viewBean.getMsgType().equals(FWViewBeanInterface.ERROR)) {
+            try {
+                REExportationCalculAcor2020 inHostService = new REExportationCalculAcor2020(session, caViewBean.getIdDemandeRente());
+                InHostType inHost = inHostService.createInHost();
+                inHost.setVersionSchema("5.0");
+                inHostService.validateUnitMessage(inHost);
+            } catch (ValidationException e) {
+                throw new Exception(e.getMessageACOR());
+            }
         }
 
         return viewBean;
@@ -2134,7 +2165,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      *
      * @param session
      * @param transaction
-     * @param eachRA : la rente calculée
+     * @param eachRA      : la rente calculée
      * @return la base de calcul similaire à celle de la rente calculée.
      * @throws Exception
      */

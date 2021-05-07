@@ -42,4 +42,24 @@ public class ValidationException extends Exception {
         }
         return sb.toString();
     }
+
+    /**
+     * Retourne un message formaté avec les erreurs de validation JAXB
+     *
+     * @return un message formaté avec les erreurs de validation JAXB
+     */
+    public String getMessageACOR() {
+        StringBuilder sb = new StringBuilder();
+        if (messageErreurDeValidation != null && messageErreurDeValidation.size() > 0) {
+            for (Iterator<String> iterator = messageErreurDeValidation.iterator(); iterator.hasNext();) {
+                sb.append(iterator.next());
+                if (iterator.hasNext()) {
+                    sb.append("\n");
+                }
+            }
+        } else {
+            sb.append("Aucune information sur l'erreur...");
+        }
+        return sb.toString();
+    }
 }
