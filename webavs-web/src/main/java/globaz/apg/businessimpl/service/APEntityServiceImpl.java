@@ -2972,7 +2972,6 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             message.append(messageError);
             throw new IllegalArgumentException(message.toString());
         }
-
     }
 
     private String checkPeriodesChevauchantes(final APDroitPaiPViewBean viewBean, final List<APValidationDroitError> errors) {
@@ -2990,15 +2989,16 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                                                        "       schema.APPERIP.VCDDEB," +
                                                        "       schema.APPERIP.VCDFIN" +
                                                        "  from schema.PRDEMAP" +
-                                                       "  inner join schema.APDROIP on schema.APDROIP.VAIDEM = schema.PRDEMAP.WAIDEM" +
-                                                       "  inner join schema.APDROITPROCHEAIDANT " +
-                                                       "     on schema.APDROITPROCHEAIDANT.ID_DROIT = schema.APDROIP.VAIDRO" +
-                                                       "  inner join schema.APPERIP ON schema.APPERIP.VCIDRO = schema.APDROIP.VAIDRO" +
-                                                       "  where WAITIE = ? " +
-                                                       "    and ? between VCDDEB and VCDFIN" +
-                                                       "    and 0 = (select count(*) from schema.APDROIP as droitEnfant " +
+                                                       " inner join schema.APDROIP on schema.APDROIP.VAIDEM = schema.PRDEMAP.WAIDEM" +
+                                                       " inner join schema.APDROITPROCHEAIDANT " +
+                                                       "    on schema.APDROITPROCHEAIDANT.ID_DROIT = schema.APDROIP.VAIDRO" +
+                                                       " inner join schema.APPERIP ON schema.APPERIP.VCIDRO = schema.APDROIP.VAIDRO" +
+                                                       " where WAITIE = ? " +
+                                                       "   and schema.APDROIP.VAIDRO != ? "+
+                                                       "   and ? between VCDDEB and VCDFIN" +
+                                                       "   and 0 = (select count(*) from schema.APDROIP as droitEnfant " +
                                                        "                           where droitEnfant.VAIPAR = schema.APDROIP.VAIDRO)"
-                                               , idTiers, date);
+                                               ,idTiers,viewBean.getIdDroit(), date);
 
 
         List<SamePeriode> samePeriodes = SCM.newInstance(SamePeriode.class).session(viewBean.getSession())
