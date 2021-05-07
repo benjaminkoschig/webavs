@@ -31,6 +31,14 @@ public final class PCApplicationUtil {
             throw new CalculException(e.getMessage());
         }
     }
+
+    public static boolean isCantonJU() throws CalculException {
+        try {
+            return EPCLoiCantonaleProperty.JURA.isLoiCantonPC();
+        } catch (PropertiesException e) {
+            throw new CalculException(e.getMessage());
+        }
+    }
     
     public static boolean isCantonVD() throws CalculException {
         try {

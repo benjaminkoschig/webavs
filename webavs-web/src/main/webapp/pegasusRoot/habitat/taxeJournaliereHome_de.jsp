@@ -88,6 +88,8 @@ var dialogPeriodeLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOM
 var dialogPrixJourLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOME_D_JS_DIALOG_PRIX_JOURNALIER_TEXT") %>';
 var dialogMontantLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOME_D_JS_DIALOG_MONTANT_TEXT") %>';
 
+//Variable
+var isCaisseCCJU = <%=viewBean.isCaisseCCJU(objSession)%>;
 </script>
 <script type="text/javascript" src="<%=rootPath%>/scripts/habitat/TaxeJournaliereHome_MembrePart.js"/></script>
 <script type="text/javascript" src="<%=rootPath%>/scripts/habitat/TaxeJournaliereHome_de.js"/></script>

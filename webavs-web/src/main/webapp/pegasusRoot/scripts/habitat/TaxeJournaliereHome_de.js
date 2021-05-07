@@ -96,6 +96,7 @@ $(function(){
 		globazNotation.readwidget.options = options;
 		globazNotation.readwidget.read();
 	}
+
 	
 	var fillPopUp = function (data) {
 		

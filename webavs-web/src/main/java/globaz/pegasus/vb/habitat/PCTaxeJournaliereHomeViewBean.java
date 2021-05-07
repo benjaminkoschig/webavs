@@ -1,5 +1,7 @@
 package globaz.pegasus.vb.habitat;
 
+import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
+import ch.globaz.pegasus.utils.PCApplicationUtil;
 import globaz.globall.db.BSession;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
@@ -28,6 +30,9 @@ public class PCTaxeJournaliereHomeViewBean extends PCAbstractRequerantDonneeFina
             HomeException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
         return PCTaxeJournaliereHomeHandler.getPrix(taxeJournaliereHome, objSession);
 
+    }
+    public boolean isCaisseCCJU(BSession session) throws CalculException {
+        return PCApplicationUtil.isCantonJU();
     }
 
     @Override

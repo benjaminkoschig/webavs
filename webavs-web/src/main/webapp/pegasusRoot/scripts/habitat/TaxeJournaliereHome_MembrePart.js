@@ -218,7 +218,7 @@ function TaxeJournaliereHome (container) {
 
 	this.checkEntreeHome = function (data) {
 		var jourAppoint = that.detail.find('[name=dateEntreeHome]');
-		if (jourAppoint && jourAppoint.val() != '') {
+		if (!isCaisseCCJU &&jourAppoint && jourAppoint.val() != '') {
 
 			that.$dialogueEntreeHome.dialog({
 				resizable: false,
