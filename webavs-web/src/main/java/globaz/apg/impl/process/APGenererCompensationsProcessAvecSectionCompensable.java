@@ -360,7 +360,8 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
                         genre = APTypeDePrestation.ACM_ALFA.getCodesystemString();
                     }
                     Key key;
-                    if(repartitionPaiementsJointEmployeur.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE)) {
+                    if(repartitionPaiementsJointEmployeur.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE)
+                        || repartitionPaiementsJointEmployeur.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT)) {
                          key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                                 repartitionPaiementsJointEmployeur.getIdAffilie(), repartitionPaiementsJointEmployeur.getIdDroit(),
                                 repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", false);
@@ -611,7 +612,8 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
 
                     while ((repartitionPaiements = (APRepartitionPaiementsJointEmployeur) repartitionPaiementsJointEmployeurManager
                             .cursorReadNext(statement)) != null) {
-                        if( repartitionPaiements.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE) ){
+                        if(repartitionPaiements.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE)
+                            || repartitionPaiements.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT)){
                             if(repartitionPaiements.getIdDroit().equals(compensation.getIdDroit())){
                                 repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
                                 repartitionPaiements.wantMiseAJourLot(false);

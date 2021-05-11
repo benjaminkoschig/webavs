@@ -227,7 +227,8 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
                     /**
                      * Paternité : On vérie si le même droit pour prendre le bon ID de compensation.
                      */
-                    if(repartitionPaiements.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE) ){
+                    if(repartitionPaiements.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE)
+                        || repartitionPaiements.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT)){
                         if(repartitionPaiements.getIdDroit().equals(compensation.getIdDroit())){
                             repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
                             repartitionPaiements.wantMiseAJourLot(false);
@@ -244,7 +245,8 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
                     }
                 }
             } else {
-                if(repartitionPaiements.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE) ){
+                if(repartitionPaiements.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE)
+                        || repartitionPaiements.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT)){
                     if(repartitionPaiements.getIdDroit().equals(compensation.getIdDroit())){
                         repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
                         repartitionPaiements.wantMiseAJourLot(false);
@@ -411,7 +413,8 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
 
             final Key key;
             // Cas ou le bénéficiaire est l'assuré de base
-            if(repartition.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE)){
+            if(repartition.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE)
+                || repartition.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT)){
                 if (idAssureDeBase.equals(repartition.getIdTiers())) {
                     key = new Key(repartition.getIdTiers(), repartition.getIdAffilie(),  repartition.getIdDroit(),
                             repartition.getIdParticularite(), repartition.getGenrePrestationPrestation(), false, false, "",

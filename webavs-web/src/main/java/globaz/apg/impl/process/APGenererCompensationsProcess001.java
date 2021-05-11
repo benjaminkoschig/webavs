@@ -353,7 +353,8 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                     Key key = null;
                     // Cas ou le bénéficiaire est l'assuré de base
 
-                    if(repartitionPaiementsJointEmployeur.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE)){
+                    if(repartitionPaiementsJointEmployeur.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE)
+                        || repartitionPaiementsJointEmployeur.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT)){
                         if (idAssureDeBase.equals(repartitionPaiementsJointEmployeur.getIdTiers())) {
 
                             key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
@@ -660,7 +661,8 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
 
                     while ((repartitionPaiementsJointEmployeur = (APRepartitionPaiementsJointEmployeur) repartitionPaiementsJointEmployeurManager
                             .cursorReadNext(statement)) != null) {
-                        if( repartitionPaiementsJointEmployeur.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE) ){
+                        if( repartitionPaiementsJointEmployeur.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE)
+                            || repartitionPaiementsJointEmployeur.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT)){
                             /**
                              * Paternité : On vérie si le même droit pour prendre le bon ID de compensation.
                              */

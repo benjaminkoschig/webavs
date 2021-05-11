@@ -977,10 +977,10 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
     private String getAdresseFiscFormatteLine(String langue, String idCanton) {
 
-        try {
+        try { ;
             String idAdmFisc = getAdresseAdministrationFiscale(langue, idCanton);
             String tiersAdresseFiscFormatteLine = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
-                    idAdmFisc, APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue(), "", "",
+                    idAdmFisc, getDomaineByTypePrest(getCSTypePrestationsLot()), "", "",
                     new PRTiersAdresseCopyFormater02(), this.getDateDocument().toString());
             return tiersAdresseFiscFormatteLine;
         } catch (Exception e) {
@@ -993,7 +993,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         try {
             String idAdmFisc = getAdresseAdministrationFiscale(idTiers, idCanton);
             String tiersAdresseFiscFormatte = PRTiersHelper.getAdresseCourrierFormatee(getISession(), idAdmFisc, "",
-                    APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue());
+                    getDomaineByTypePrest(getCSTypePrestationsLot()));
             return tiersAdresseFiscFormatte;
         } catch (Exception e) {
             LOG.error("APAbstractDecomptesGenerationProcess#getAdresseFiscFormatte - Erreur à la récupération de l'adresse du Fisc");
