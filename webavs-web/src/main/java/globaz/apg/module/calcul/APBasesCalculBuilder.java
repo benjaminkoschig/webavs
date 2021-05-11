@@ -1440,7 +1440,13 @@ public class APBasesCalculBuilder {
     }
 
     private void calculNbJourSoldesMax(int nbJourSoldes) throws Exception {
-        int jourMax = jourMax = APParameter.PROCHE_AIDANT_JOUR_MAX.findValue(this.droit.getDateDebutDroit(), this.session);
+        int jourMax;
+
+        try {
+             jourMax = APParameter.PROCHE_AIDANT_JOUR_MAX.findValue(this.droit.getDateDebutDroit(), this.session);
+        } catch (Exception e) {
+            jourMax = 0;
+        }
 
         if(nbJourSoldes > jourMax) {
             nbJourSoldes = jourMax;
