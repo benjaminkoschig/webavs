@@ -96,6 +96,7 @@ function addPeriode() {
         $('#csCantonDomicileAffiche').val("");
         $('#isSoumisCotisation').prop("disabled", true);
         $('#tauxImpotSource').prop("disabled", true);
+        $('#nbJourSolde').val("")
     }
 }
 
@@ -111,7 +112,9 @@ function editPeriode(index) {
     $('#dateDebutPeriode').val(periode.getDateDeDebut());
     $('#dateFinPeriode').val(periode.getDateDeFin());
     $('#nbJour').val(periode.getNbJour());
+    $('#nbJourSolde').val(periode.getNbJour())
     $('#tauxImpotSource').val(periode.getTauxImposition());
+
     $('#csCantonDomicileAffiche').val(periode.getCantonImposition());
     if (periode.jourSupplementaire) {
         $('#jourSupplementaire').val(periode.jourSupplementaire);

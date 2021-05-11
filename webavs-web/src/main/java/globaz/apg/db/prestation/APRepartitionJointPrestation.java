@@ -6,6 +6,7 @@
  */
 package globaz.apg.db.prestation;
 
+import ch.globaz.common.util.Dates;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.db.droits.APDroitLAPG;
@@ -15,6 +16,8 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+
+import java.util.Comparator;
 
 /**
  * <H1>Description</H1>
@@ -464,6 +467,10 @@ public class APRepartitionJointPrestation extends APRepartitionPaiements impleme
      */
     public final String getContenuAnnonce() {
         return contenuAnnonce;
+    }
+
+    public static Comparator<APRepartitionJointPrestation> comparatorByDateDebut() {
+        return Comparator.comparing(o1 -> Dates.toDate(o1.getDateDebut()));
     }
 
 }

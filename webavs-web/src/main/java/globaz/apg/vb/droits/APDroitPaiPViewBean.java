@@ -1,5 +1,6 @@
 package globaz.apg.vb.droits;
 
+import ch.globaz.common.domaine.Date;
 import ch.globaz.common.util.Dates;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.droits.APDroitProcheAidant;
@@ -7,21 +8,15 @@ import globaz.apg.enums.APModeEditionDroit;
 import globaz.apg.properties.APParameter;
 import globaz.apg.util.APGSeodorErreurListEntities;
 import globaz.commons.nss.NSUtil;
-import globaz.globall.db.BManager;
-import globaz.globall.db.BSession;
-import globaz.globall.db.FWFindParameter;
-import globaz.globall.db.FWFindParameterManager;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.beans.PRPeriode;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.utils.PRDateUtils;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -356,5 +351,8 @@ public class APDroitPaiPViewBean extends APAbstractDroitProxyViewBean {
         return APDroitPaiPViewBean.class.getName();
     }
 
-
+    public String findDateDebutValidityProcheAidant(){
+        LocalDate date = APParameter.PROCHE_AIDANT_DATE_DE_DEBUT.findDateDebutValidite(Date.now().getSwissValue(),this.getSession());
+        return Dates.formatSwiss(date);
+    }
 }

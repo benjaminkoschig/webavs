@@ -53,6 +53,13 @@ public class Dates {
         return LocalDate.parse(date, DATE_TIME_SWISS_FORMATTER);
     }
 
+    public static LocalDate toDateFromDb(String date) {
+        if (date == null || date.trim().isEmpty()) {
+            return null;
+        }
+        return LocalDate.parse(date, DATE_TIME_DB_FORMATTER);
+    }
+
     public static String toDbDate(String date) {
         if (date == null || date.trim().isEmpty()) {
             return "0";

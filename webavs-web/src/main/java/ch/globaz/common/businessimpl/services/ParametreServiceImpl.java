@@ -4,6 +4,7 @@ import ch.globaz.common.business.interfaces.ParametrePlageValeurInterface;
 import ch.globaz.common.business.services.ParametreService;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.exceptions.Exceptions;
+import ch.globaz.common.util.Dates;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
@@ -14,6 +15,7 @@ import globaz.jade.client.util.JadeDateUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Slf4j
 public class ParametreServiceImpl implements ParametreService {
@@ -86,8 +88,7 @@ public class ParametreServiceImpl implements ParametreService {
     }
 
     @Override
-    public String getValeurAlpha(ParametrePlageValeurInterface parametrePlageValeur, String date, String applicationId)
-            throws Exception {
+    public String getValeurAlpha(ParametrePlageValeurInterface parametrePlageValeur, String date, String applicationId) {
         FWFindParameter parametre = this.getParameter(parametrePlageValeur, date, applicationId);
         return parametre.getValeurAlphaParametre();
     }
@@ -119,8 +120,7 @@ public class ParametreServiceImpl implements ParametreService {
      * {@inheritDoc}
      */
     @Override
-    public FWCurrency getValeurNumeriqueFWCurrency(ParametrePlageValeurInterface parametrePlageValeur, String date)
-            throws Exception {
+    public FWCurrency getValeurNumeriqueFWCurrency(ParametrePlageValeurInterface parametrePlageValeur, String date) {
         FWFindParameter parametre = this.getParameter(parametrePlageValeur, date);
         return new FWCurrency(parametre.getValeurNumParametre());
     }
@@ -130,5 +130,17 @@ public class ParametreServiceImpl implements ParametreService {
             String applicationId) throws Exception {
         FWFindParameter parametre = this.getParameter(parametrePlageValeur, date, applicationId);
         return new FWCurrency(parametre.getValeurNumParametre());
+    }
+
+    @Override
+    public LocalDate getValeurDate(final ParametrePlageValeurInterface parametrePlageValeur, final String date, final BSession session) {
+        FWFindParameter parameter = this.getParameter(parametrePlageValeur, date, session, session.getApplicationId());
+        return Dates.toDate(parameter.getValeurNumParametre());
+    }
+
+    @Override
+    public LocalDate getDateDebutValidite(final ParametrePlageValeurInterface parametrePlageValeur, final String date, final BSession session) {
+        FWFindParameter parameter = this.getParameter(parametrePlageValeur, date, session, session.getApplicationId());
+        return Dates.toDateFromDb(parameter.getDateDebutValidite());
     }
 }

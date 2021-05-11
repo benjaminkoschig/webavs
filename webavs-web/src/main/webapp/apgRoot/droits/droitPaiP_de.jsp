@@ -447,6 +447,10 @@
 
         var dateDebut = Date.toDate($('#dateDebutPeriode').val());
         var dateFin = Date.toDate($('#dateFinPeriode').val());
+        var datDebutValidityProcheAidant = Date.toDate('<%=viewBean.findDateDebutValidityProcheAidant()%>');
+        if(datDebutValidityProcheAidant>dateDebut){
+            globazNotation.utils.consoleError("<ct:FWLabel key="JSP_PERIODE_TROP_VEILLE"/>".replace("{1}",datDebutValidityProcheAidant.swissFormat()));
+        }
 
         if(dateDebut.getMonth() !== dateFin.getMonth()){
             globazNotation.utils.consoleError("<ct:FWLabel key="JSP_PERIODE_PAS_SUR_MEME_MOIS"/>");
@@ -729,16 +733,12 @@
     </td>
 </tr>
 <tr>
-    <td colspan="6">
-        <table width="100%">
-            <tr>
-
                 <td>
                     <label for="dateDebutPeriode">
                         <ct:FWLabel key="JSP_PERIODE_DU"/>
                     </label>
                 </td>
-                <td colspan="3">
+                <td colspan="2">
                     <input type="text"
                            id="dateDebutPeriode"
                            name="dateDebutPeriode"
@@ -764,7 +764,7 @@
                            value="<ct:FWLabel key="JSP_AJOUTER" />"
                            onclick="addPeriodePai()"/>
                 </td>
-                <td colspan="2" rowspan="4" width="50%">
+                <td colspan="3" rowspan="4" width="50%">
                     <table class="areaTable" width="100%">
                         <thead>
                         <tr>
@@ -810,7 +810,6 @@
                         </table>
                     </div>
                 </td>
-            </tr>
             <tr>
                 <td>
                     <label for="nbJourSolde">
@@ -881,8 +880,6 @@
                     <INPUT type="hidden" name="csCantonDomicile" value="<%=viewBean.getCsCantonDomicile()%>"/>
                 </TD>
             </tr>
-        </table>
-    </td>
 </tr>
 <tr>
     <td colspan="6">

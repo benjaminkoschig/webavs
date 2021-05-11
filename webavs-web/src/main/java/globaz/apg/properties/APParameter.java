@@ -7,6 +7,11 @@ import ch.globaz.common.util.Dates;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
+
 /**
  * Type énuméré utilisé pour définir les paramètres FWPARP liés au module APG et MATERNITE
  *
@@ -46,7 +51,7 @@ public enum APParameter {
     PATERNITE_MOIS_MAX("PATMOISMAX"),
     MATERNITE_EXT_JOUR_MIN("MATEXTMIN"),
     MATERNITE_EXT_JOUR_MAX("MATEXTMAX"),
-    PROCHE_AIDANT_DATE_DE_DEBUT("PROAIDDATE"),
+    PROCHE_AIDANT_DATE_DE_DEBUT("PROAIDDATE", LocalDate.class),
     PROCHE_AIDANT_JOUR_MAX("PAIJOURMAX", Integer.class),
     PROCHE_AIDANT_MOIS_MAX("PAIMOISMAX", Integer.class);
 
@@ -74,10 +79,16 @@ public enum APParameter {
 
     @SuppressWarnings("unchecked")
     public <T> T findValue(String date, BSession session) {
-        if (Integer.class.equals(this.type)) {
-            return (T) parametreService.getInteger(() -> this.parameterName, date, session);
-        }
-        throw new CommonTechnicalException("The type is not yet implemented");
+        Map<Class<?>, Supplier<?>> map= new HashMap<>();
+        map.put(Integer.class,()-> parametreService.getInteger(() -> this.parameterName, date, session));
+        map.put(LocalDate.class,()-> parametreService.getValeurDate(() -> this.parameterName, date, session));
+        return (T)map.getOrDefault(this.type,()->{
+            throw new CommonTechnicalException("The type is not yet implemented");
+        }).get();
+    }
+
+    public LocalDate findDateDebutValidite(String date, BSession session) {
+        return this.parametreService.getDateDebutValidite(() -> this.parameterName,date, session);
     }
 
     public <T> T findValueOrWithDateNow(String date, BSession session) {

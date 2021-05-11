@@ -1,5 +1,6 @@
 package globaz.apg.itext.decompte;
 
+import ch.globaz.common.util.Dates;
 import globaz.apg.ApgServiceLocator;
 import globaz.apg.api.codesystem.IAPCatalogueTexte;
 import globaz.apg.api.process.IAPGenererCompensationProcess;
@@ -39,7 +40,9 @@ import globaz.prestation.interfaces.util.nss.PRUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Le rôle de cette classe est de préparer les données (récupération. regroupement, catalogue de textes, etc)
@@ -226,10 +229,30 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
         // MAJ de l'étape du processus
         traitementCourant = TraitementCourant.RECUPERATION_AGREGATION_DONNEES;
 
+        //Se teste à pour but d'éviter des effets de board potentiel car cela demanderai
+        // beaucoup tester manuellement l'application.
+        if(IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(csTypePrestationsLot)) {
+            ventilations = sortByIdTiersPresationDateDebut(ventilations);
+            repartitions = sortByIdTiersPresationDateDebut(repartitions);
+        }
+
         /*
          * Fin de traitement des données, la prochaine étape est la génération de chaque document via les appels réalisé
          * sur la méthode next()
          */
+    }
+
+    private LinkedHashMap<String, APDecompte> sortByIdTiersPresationDateDebut(Map<String, APDecompte> map) {
+        Comparator<Map.Entry<String, APDecompte>> comparing = Comparator.comparing(o -> o.getValue().getIdTiers());
+        comparing = comparing.thenComparing(o -> o.getValue()
+                                                  .getRepartitionsPeres()
+                                                  .stream()
+                                                  .map(o1 -> Dates.toDate(o1.getDateDebut()))
+                                                  .min(LocalDate::compareTo).get());
+        return map.entrySet()
+                  .stream()
+                  .sorted(comparing)
+                  .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
     }
 
     /**

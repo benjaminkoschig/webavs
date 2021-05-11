@@ -6,9 +6,7 @@ import globaz.globall.db.BSession;
 import globaz.jade.service.provider.application.JadeApplicationService;
 
 import java.math.BigDecimal;
-
-// TODO la place de ce service serait plutôt dans l'impl car c'est un service
-// technique qu'on ne va pas publier
+import java.time.LocalDate;
 
 public interface ParametreService extends JadeApplicationService {
 
@@ -24,11 +22,9 @@ public interface ParametreService extends JadeApplicationService {
      * @throws Exception
      *             si un problème survient durant l'accès aux données
      */
-    public FWCurrency[] getPlageValeurNumeriqueFWCurrency(ParametrePlageValeurInterface parametrePlageValeur,
-            String date) throws Exception;
+     FWCurrency[] getPlageValeurNumeriqueFWCurrency(ParametrePlageValeurInterface parametrePlageValeur, String date);
 
-    public String getValeurAlpha(ParametrePlageValeurInterface parametrePlageValeur, String date, String applicationId)
-            throws Exception;
+     String getValeurAlpha(ParametrePlageValeurInterface parametrePlageValeur, String date, String applicationId);
 
     /**
      * Retourne la valeur numérique d'un paramètre sous forme de BigDecimal
@@ -41,8 +37,7 @@ public interface ParametreService extends JadeApplicationService {
      * @throws Exception
      *             si un problème survient durant l'accès aux données
      */
-    public BigDecimal getValeurNumeriqueBigDecimal(ParametrePlageValeurInterface parametrePlageValeur, String date)
-            throws Exception;
+    BigDecimal getValeurNumeriqueBigDecimal(ParametrePlageValeurInterface parametrePlageValeur, String date);
 
     /**
      * Retourne la valeur numérique d'un paramètre sous forme de FWCurrency
@@ -75,4 +70,8 @@ public interface ParametreService extends JadeApplicationService {
             String applicationId) throws Exception;
 
     Integer getInteger(ParametrePlageValeurInterface parametrePlageValeur, String date, BSession session);
+
+    LocalDate getDateDebutValidite(ParametrePlageValeurInterface parametrePlageValeur, String date, BSession session);
+
+    LocalDate getValeurDate(ParametrePlageValeurInterface parametrePlageValeur, String date, BSession session);
 }
