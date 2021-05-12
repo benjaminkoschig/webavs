@@ -227,8 +227,8 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
                     /**
                      * Paternité : On vérie si le même droit pour prendre le bon ID de compensation.
                      */
-                    if(repartitionPaiements.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE)
-                        || repartitionPaiements.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT)){
+                    if(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(repartitionPaiements.getGenreService())
+                        || IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(repartitionPaiements.getGenreService())){
                         if(repartitionPaiements.getIdDroit().equals(compensation.getIdDroit())){
                             repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
                             repartitionPaiements.wantMiseAJourLot(false);
@@ -245,8 +245,8 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
                     }
                 }
             } else {
-                if(repartitionPaiements.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE)
-                        || repartitionPaiements.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT)){
+                if(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(repartitionPaiements.getGenreService())
+                        || IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(repartitionPaiements.getGenreService())){
                     if(repartitionPaiements.getIdDroit().equals(compensation.getIdDroit())){
                         repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
                         repartitionPaiements.wantMiseAJourLot(false);

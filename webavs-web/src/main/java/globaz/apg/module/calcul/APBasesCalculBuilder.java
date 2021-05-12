@@ -6,6 +6,7 @@
  */
 package globaz.apg.module.calcul;
 
+import ch.globaz.common.util.Dates;
 import globaz.apg.ApgServiceLocator;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.application.APApplication;
@@ -28,6 +29,7 @@ import globaz.prestation.utils.PRDateUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -1207,11 +1209,11 @@ public class APBasesCalculBuilder {
             default:return dateDebut;
         }
 
-        dateDebut = getDateMinDebutParam(valeur, dateDebut);
+        dateDebut = ajouterDateMinDebutParam(valeur, dateDebut);
         return dateDebut;
     }
 
-    private String getDateMinDebutParam(String valeur, String dateDebut) throws Exception {
+    private String ajouterDateMinDebutParam(String valeur, String dateDebut) throws Exception {
         FWFindParameterManager manager = new FWFindParameterManager();
         manager.setSession(session);
         manager.setIdCodeSysteme("1");
@@ -1219,18 +1221,22 @@ public class APBasesCalculBuilder {
         manager.find(BManager.SIZE_NOLIMIT);
         if (manager.size() > 0){
             FWFindParameter param = (FWFindParameter) manager.get(0);
-            Date dateDebutValide = DF.parse(new ch.globaz.common.domaine.Date(param.getDateDebutValidite()).getSwissValue());
-            Date debut = DF.parse(droit.getDateDebutDroit());
-            if (debut.before(dateDebutValide)) {
-                Calendar c = Calendar.getInstance();
-                c.setTime(dateDebutValide);
-                c.add(Calendar.DATE, -1);
-                commands.add(new VersementInterditCommand(null, true));
-                commands.add(new VersementInterditCommand(c.getTime(), false));
-            }
-            dateDebut = JadeDateUtil.getGlobazFormattedDate(dateDebutValide);
+            dateDebut = ajouterDateMinDebutParam(new ch.globaz.common.domaine.Date(param.getDateDebutValidite()).getSwissValue());
         }
         return dateDebut;
+    }
+
+    private String ajouterDateMinDebutParam(String dateDebutValiditeParam) throws Exception {
+        Date dateDebutValide = DF.parse(dateDebutValiditeParam);
+        Date debut = DF.parse(droit.getDateDebutDroit());
+        if (debut.before(dateDebutValide)) {
+            Calendar c = Calendar.getInstance();
+            c.setTime(dateDebutValide);
+            c.add(Calendar.DATE, -1);
+            commands.add(new VersementInterditCommand(null, true));
+            commands.add(new VersementInterditCommand(c.getTime(), false));
+        }
+        return JadeDateUtil.getGlobazFormattedDate(dateDebutValide);
     }
 
     /**
@@ -1440,13 +1446,7 @@ public class APBasesCalculBuilder {
     }
 
     private void calculNbJourSoldesMax(int nbJourSoldes) throws Exception {
-        int jourMax;
-
-        try {
-             jourMax = APParameter.PROCHE_AIDANT_JOUR_MAX.findValue(this.droit.getDateDebutDroit(), this.session);
-        } catch (Exception e) {
-            jourMax = 0;
-        }
+        int jourMax = APParameter.PROCHE_AIDANT_JOUR_MAX.findValue(this.droit.getDateDebutDroit(), this.session);
 
         if(nbJourSoldes > jourMax) {
             nbJourSoldes = jourMax;
@@ -1779,10 +1779,10 @@ public class APBasesCalculBuilder {
             nbJoursSoldes = ajouterPeriodesPan(dateDebut, jourAutrePresta, isIndependant);
             ((APDroitPandemie) droit).setNbrJourSoldes(String.valueOf(nbJoursSoldes));
         } else if(droit instanceof APDroitPaternite) {
-            getDateMinDebutParam(APParameter.PATERNITE.getParameterName(), "");
+            ajouterDateMinDebutParam(APParameter.PATERNITE.getParameterName(), "");
             nbJoursSoldes = ajouterSituationFamilialePat();
         } else if(droit instanceof APDroitProcheAidant) {
-            getDateMinDebutParam(APParameter.PROCHE_AIDANT_DATE_DE_DEBUT.getParameterName(), "");
+            ajouterDateMinDebutParam(findDateDebutValidityProcheAidant());
             ajouterPeriodesPai();
         } else {
             /*
@@ -1836,4 +1836,10 @@ public class APBasesCalculBuilder {
         calendar.set(Calendar.MONTH, date.getMonth() - 1);
         calendar.set(Calendar.DAY_OF_MONTH, date.getDay());
     }
+
+    public String findDateDebutValidityProcheAidant(){
+        LocalDate date = APParameter.PROCHE_AIDANT_DATE_DE_DEBUT.findDateDebutValidite(ch.globaz.common.domaine.Date.now().getSwissValue(),session);
+        return Dates.formatSwiss(date);
+    }
+
 }

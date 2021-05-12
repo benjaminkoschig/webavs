@@ -339,8 +339,8 @@ public class APGenererCompensationsProcess003 extends BProcess implements IAPGen
                     Key key;
                     // Cas ou le bénéficiaire est l'assuré de base
 
-                    if(repartitionPaiementsJointEmployeur.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE)
-                        || repartitionPaiementsJointEmployeur.getGenreService().equals(IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT)){
+                    if(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(repartitionPaiementsJointEmployeur.getGenreService())
+                        || IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(repartitionPaiementsJointEmployeur.getGenreService())){
                         if (idAssureDeBase.equals(repartitionPaiementsJointEmployeur.getIdTiers())) {
 
                             key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
