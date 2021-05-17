@@ -1250,12 +1250,12 @@
 							<parameter name="userAction" value="apg.process.genererAttestations.afficher" />
 						</action>
 					</node>
-<!--					<node>-->
-<!--						<label refId="MENU_OPTION_LISTE_PRESTATION_VERSEE" />-->
-<!--						<action command="/apg" responseTarget="fr_main">-->
-<!--							<parameter name="userAction" value="apg.process.listePrestationVersee.afficher" />-->
-<!--						</action>-->
-<!--					</node>-->
+					<node>
+						<label refId="MENU_OPTION_LISTE_PRESTATION_VERSEE" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.listePrestationVersee.afficher" />
+						</action>
+					</node>
 <!--					<node>-->
 <!--						<label refId="MENU_OPTION_LISTE_PRESTATION_CIAB" />-->
 <!--						<action command="/apg" responseTarget="fr_main">-->
@@ -1274,12 +1274,6 @@
 			<node>
 				<label refId="MENU_TRAITEMENTS_TITRE" />
 				<nodes>
-					<!--					<node>-->
-					<!--						<label refId="MENU_OPTION_GENERER_COMPENSATIONS" />-->
-					<!--						<action command="/apg" responseTarget="fr_main">-->
-					<!--							<parameter name="userAction" value="apg.process.genererCompensations.afficher" />-->
-					<!--						</action>-->
-					<!--					</node>-->
 					<node>
 						<label refId="MENU_OPTION_ENVOYER_ANNONCES" />
 						<action command="/apg" responseTarget="fr_main">
