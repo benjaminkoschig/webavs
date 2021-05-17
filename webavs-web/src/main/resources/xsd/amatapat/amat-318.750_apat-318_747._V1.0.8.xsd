@@ -1,0 +1,749 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="version" type="xs:string"/>
+	<xs:element name="usage" type="xs:string"/>
+	<xs:element name="pathFileName" type="xs:string"/>
+	<xs:element name="internalSortOrder" type="xs:int"/>
+	<xs:element name="title" type="xs:string"/>
+	<xs:element name="documentDate" type="xs:date"/>
+	<xs:element name="leadingDocument" type="xs:boolean"/>
+	<xs:element name="sortOrder" type="xs:int"/>
+	<xs:element name="documentFormat" type="xs:string"/>
+	<xs:element name="documentType" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>pas d'énumerations pour limiter les contraintes. 
+			Cas à ce jour :
+				FORMULAIRE_318750, 
+				PHOTOCOPIE_RELEVES_SALAIRES, 
+				JOURNAL_SALAIRES_EMPLOYE, 
+				PHOTOCOPIE_JUSTIFICATIF_FIN_RAPPORT_TRAVAIL, 
+				DECOMPTE_ASSURANCE_PERTE_DE_GAIN, 
+				DECOMPTE_IJ_AC, 
+				FORMULAIRE_318752, 
+				FORMULAIRE_318751, 
+				COPIE_DECOMPTES_INCAPACITE_TRAVAIL, 
+				COPIE_DECOMPTES_ASSURANCE_CHOMAGE, 
+				ATTESTATION_TOTALISATION_PERIODES_ASSURANCE_EMPLOI_OU_RESIDENCE_UE_AELE_FORM_E104, 
+				PHOTOCOPIE_PERMIS_SEJOUR_PERMISG_PIECE_IDENTITE_MERE, 
+				PHOTOCOPIE_PERMIS_SEJOUR_PERMISG_PIECE_IDENTITE_PERE, 
+				COPIE_ACTE_NAISSANCE_ENFANTS_OU_LIVRET_FAMILLE, 
+				COPIE_CERTIFICAT_MEDICAL_GROSSESSE, 
+				COPIE_ACTE_NOMINATION_CURATEUR, 
+				FORMULAIRE_318182, 
+				DECISION_COTISATION_CAISSE_COMPENSATION, 
+				BILAN_COMPTABLE_INDEP_ANNEE_PREC_ACCOUCHEMENT 
+				FORM_318747
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>		
+	<xs:element name="file">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="pathFileName"/>
+				<xs:element ref="internalSortOrder"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="email" type="xs:string"/>
+	<xs:element name="contactInformation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="email"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="transactionInfo">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="version"/>
+				<xs:element ref="usage"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="senderId" type="xs:string"/>
+	<xs:element name="recipientId" type="xs:string"/>
+	<xs:element name="messageId" type="xs:long"/>
+	<xs:element name="businessProcessId" type="xs:long"/>
+	<xs:element name="messageType" type="xs:int"/>
+	<xs:element name="subMessageType" type="xs:int"/>
+	<xs:element name="subject" type="xs:string"/>
+	<xs:element name="messageDate" type="xs:dateTime"/>
+	<xs:element name="action" type="xs:int"/>
+	<xs:element name="attachment">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="title"/>
+				<xs:element ref="documentDate"/>
+				<xs:element ref="leadingDocument"/>
+				<xs:element ref="sortOrder"/>
+				<xs:element ref="documentFormat"/>
+				<xs:element ref="documentType"/>
+				<xs:element ref="file"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="extension">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="contactInformation"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="amatApatType" >
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="AMAT"/> 
+				<xs:enumeration value="APAT"/> 
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>	
+	<xs:element name="formType" >
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="FORM_INDEPENDANT"/> 
+				<xs:enumeration value="FORM_SALARIE"/> 
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>	
+	<xs:simpleType name="vnType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[7][5][6][.]\d{4}[.]\d{4}[.]\d{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="vn" type="vnType"/>
+	<xs:element name="officialName" type="xs:string"/>
+	<xs:element name="firstName" type="xs:string"/>
+	<xs:element name="dateOfBirth" type="xs:date"/>
+	<xs:element name="maritalStatus" >
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="SINGLE"/> 
+				<xs:enumeration value="MARRIED"/> 
+				<xs:enumeration value="DIVORCED"/> 
+				<xs:enumeration value="WIDOW"/>  
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>	
+	<xs:element name="streetWithNr" type="xs:string"/>
+	<xs:element name="zipCodeTown" type="xs:string"/>
+	<xs:element name="country" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Pays dans la langue du rapport</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="countryIso2Code" type="iso2CodeType"/>
+	<xs:element name="employeeWorkCantonCode" type="iso2CodeType"/>
+	<xs:element name="employeeWorkCanton" type="xs:string"/>
+	<xs:simpleType name="iso2CodeType">
+		<xs:annotation>
+			<xs:documentation>2-character country code according to ISO 3166</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z]{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:element name="phone" type="xs:string"/>
+	<xs:element name="hasCuratorship" type="xs:boolean"/>
+	<xs:element name="curatorshipName" type="xs:string"/>
+	<xs:element name="curatorshipOrganisationName" type="xs:string"/>
+	<xs:element name="child">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="officialName"/>
+				<xs:element ref="firstName"/>
+				<xs:element ref="dateOfBirth"/>
+				<xs:element ref="country" minOccurs="0" >
+					<xs:annotation>
+						<xs:documentation>uniquement pour le congé paternité</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="countryIso2Code" minOccurs="0" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="children">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="child" maxOccurs="unbounded" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="from" type="xs:date"/>
+	<xs:element name="to" type="xs:date"/>
+	<xs:element name="foreignResidencePeriod">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="from"/>
+				<xs:element ref="to"/>
+				<xs:element ref="country"/>
+				<xs:element ref="countryIso2Code"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="hasForeignResidence" type="xs:boolean"/>
+	<xs:element name="foreignResidencePeriods">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="foreignResidencePeriod" maxOccurs="unbounded" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="foreignActivityPeriod">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="from"/>
+				<xs:element ref="to"/>
+				<xs:element ref="country"/>
+				<xs:element ref="countryIso2Code"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="organisationName" type="xs:string"/>
+	<xs:complexType name="addressType">
+		<xs:sequence>
+			<xs:element ref="streetWithNr"/>
+			<xs:element ref="zipCodeTown"/>
+			<xs:element ref="country" minOccurs="0"/>
+			<xs:element ref="countryIso2Code" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="companyAddress" type="addressType"/>
+	<xs:element name="foreignCompany">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="organisationName"/>
+				<xs:element ref="phone" minOccurs="0" />
+				<xs:element ref="email" minOccurs="0"/>
+				<xs:element ref="companyAddress"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="hasForeignActivity" type="xs:boolean"/>
+	<xs:element name="foreignActivityPeriods">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="foreignActivityPeriod" maxOccurs="unbounded" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="foreignCompanies">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="foreignCompany"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="foreignResidence">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="hasForeignResidence"/>
+				<xs:element ref="foreignResidencePeriods"  minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="foreignActivity">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="hasForeignActivity"/>
+				<xs:element ref="foreignActivityPeriods"  minOccurs="0"/>
+				<xs:element ref="foreignCompanies"  minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="affiliateID" type="xs:string"/>
+	<xs:element name="company">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="affiliateID"  minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>pour independant uniquement</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="organisationName" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>pas necessaire pour  independant </xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="phone" minOccurs="0" />
+				<xs:element ref="email" minOccurs="0"/>
+				<xs:element ref="companyAddress" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="compensationFundId" type="xs:string"/>
+	<xs:element name="name" type="xs:string"/>
+	<xs:simpleType name="amountType">
+		<xs:annotation>
+			<xs:documentation>Monetary amounts, may be zero.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:maxInclusive value="9999999999.99"/>
+			<xs:fractionDigits value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="amount" type="amountType"/>
+	<xs:element name="hasThirteenthMonth" type="xs:boolean"/>
+	<xs:element name="hoursOfWorkPerWeek" type="xs:int"/>
+	<xs:element name="incomeUnit" >
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="HEURE"/>
+				<xs:enumeration value="MOIS"/>
+				<xs:enumeration value="QUATRE_SEMAINE"/>
+				<xs:enumeration value="ANNEE"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="hasPaySalaryDuringLeave" type="xs:boolean"/>
+	<xs:element name="percentPaid" type="xs:int"/>
+	<xs:element name="until" type="xs:date"/>
+	<xs:element name="isLessTheDeduction" type="xs:boolean"/>
+	<xs:element name="hasBeenPaid" type="xs:boolean"/>
+	<xs:element name="insurerName" type="xs:string"/>
+	<xs:element name="lastIncome">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="amount"/>
+				<xs:element ref="hasThirteenthMonth"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="hourlyIncome">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="amount"/>
+				<xs:element ref="hoursOfWorkPerWeek"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="fourWeekIncome">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="amount"/>
+				<xs:element ref="incomeUnit">
+					<xs:annotation>
+						<xs:documentation>HEURE,MOIS,QUATRE_SEMAINE, ANNEE</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="inKindOrGlobalIncome">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="amount"/>
+				<xs:element ref="incomeUnit"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="otherIncome">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="amount"/>
+				<xs:element ref="incomeUnit"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="isIntermediariesGains" type="xs:boolean"/>
+	<xs:element name="leave">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="hasPaySalaryDuringLeave"/>
+				<xs:element ref="percentPaid" minOccurs="0" />
+				<xs:element ref="until" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>jusqu'à uniquement pour maternité </xs:documentation>
+				</xs:annotation>
+				</xs:element>
+				<xs:element ref="isLessTheDeduction" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="withholdingTax" type="xs:boolean"/>
+	<xs:element name="dailyAllowanceBeforeChildBirth">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="hasBeenPaid"/>
+				<xs:element ref="insurerName"  minOccurs="0"/>
+				<xs:element ref="isLamal" minOccurs="0"/>
+				<xs:element ref="isLCA" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="activityPeriod">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="from"/>
+				<xs:element ref="to"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="salary">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="lastIncome"  minOccurs="0"/>
+				<xs:element ref="hourlyIncome"  minOccurs="0"/>
+				<xs:element ref="fourWeekIncome"  minOccurs="0"/>
+				<xs:element ref="inKindOrGlobalIncome"  minOccurs="0"/>
+				<xs:element ref="otherIncome"  minOccurs="0"/>
+				<xs:element ref="isIntermediariesGains"/>
+				<xs:element ref="leave"/>
+				<xs:element ref="withholdingTax"/>
+				<xs:element ref="dailyAllowanceBeforeChildBirth"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="activityPeriods">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="activityPeriod" maxOccurs="unbounded" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="employmentType">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="EMPLOYE"/> 
+				<xs:enumeration value="INDEPENDANT"/> 
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>	
+	<xs:element name="activityType">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="PRINCIPALE"/> 
+				<xs:enumeration value="ACCESSOIRE"/> 
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="companies">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="company" maxOccurs="unbounded" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="compensationFund">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="compensationFundId">
+					<xs:annotation>
+						<xs:documentation>pour independant</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="name"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="providedByEmployer">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:annotation>
+					<xs:documentation>pour employeur et independant salarié</xs:documentation>
+				</xs:annotation>
+				<xs:element ref="isRegularIncome"/>
+				<xs:element ref="salary"/>
+				<xs:element ref="activityPeriods"/>
+				<xs:element ref="parternityLeave" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="isRegularIncome" type="xs:boolean"/>
+	<xs:element name="isSelected" type="xs:boolean"/>
+	<xs:element name="isIllnessCause" type="xs:boolean"/>
+	<xs:element name="isAccidentCause" type="xs:boolean"/>
+	<xs:element name="isDailyAllowance" type="xs:boolean"/>
+	<xs:element name="unemploymentPeriod">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="from"/>
+				<xs:element ref="to"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="unemploymentPeriods">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="unemploymentPeriod" maxOccurs="unbounded" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="activityCause" >
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="ARRET_MALADIE_OR_ACCIDENT"/>
+				<xs:enumeration value="CHOMAGE"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="isLamal" type="xs:boolean"/>
+	<xs:element name="isLCA" type="xs:boolean"/>
+	<xs:element name="illnessOrAccidentCessation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="isSelected"/>
+				<xs:element ref="isIllnessCause" minOccurs="0"/>
+				<xs:element ref="isAccidentCause" minOccurs="0"/>
+				<xs:element ref="isDailyAllowance" minOccurs="0"/>
+				<xs:element ref="isLamal" minOccurs="0"/>
+				<xs:element ref="isLCA" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="parternityUnit" >
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="BLOC"/>
+				<xs:enumeration value="WEEKS"/>
+				<xs:enumeration value="DAYS"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="paternityLeavePeriod">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="from"/>
+				<xs:element ref="to"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="paternityLeavePeriods">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="paternityLeavePeriod" maxOccurs="unbounded" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="isfullParternityLeave" type="xs:boolean"/>
+	<xs:element name="isWithTheDeduction" type="xs:boolean"/>
+	<xs:element name="parternityLeave">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="isSelected"/>
+				<xs:element ref="parternityUnit" minOccurs="0"/>
+				<xs:element ref="paternityLeavePeriods" minOccurs="0"/>
+				<xs:element ref="isfullParternityLeave" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>pour employeur, le congé de paternité a-t-il été pris intégralement (début rapport) </xs:documentation>
+				</xs:annotation>
+			   </xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+    <xs:element name="unemploymentCessation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="isSelected"/>
+				<xs:element ref="unemploymentPeriods" minOccurs="0"/>
+				<xs:element ref="isDailyAllowance" minOccurs="0" />
+				<xs:element ref="parternityLeave" minOccurs="0" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="bankName" type="xs:string"/>
+	<xs:element name="iban" type="xs:string"/>
+	<xs:element name="beneficiaryType" >
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+			    <xs:enumeration value="EMPLOYEUR"/>
+				<xs:enumeration value="MERE"/>
+				<xs:enumeration value="PERE"/>
+       		</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="directPayment" >
+	    <xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="BONIFICATION"/>
+				<xs:enumeration value="VERSEMENT"/>
+			    <xs:enumeration value="NON_APPLICABLE"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="endBeneficiary" type="xs:string"/>
+	<xs:element name="bankAccount">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="bankName"/>
+				<xs:element ref="iban"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="remarks" type="xs:string"/>
+	<xs:element name="insuredConfirmationPlace" type="xs:string"/>
+	<xs:element name="insuredConfirmationDate" type="xs:date"/>
+	<xs:element name="insuredDone" type="xs:boolean"/>
+	<xs:element name="employeeConfirmationPlace" type="xs:string"/>
+	<xs:element name="employeeConfirmationDate" type="xs:date"/>
+	<xs:element name="employeeDone" type="xs:boolean"/>
+	<xs:element name="signatureCaisse" type="xs:string"/>
+	<xs:element name="referenceData" type="xs:string"/>
+	<xs:element name="insuredPerson">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="vn"/>
+				<xs:element ref="officialName"/>
+				<xs:element ref="firstName"/>
+				<xs:element ref="dateOfBirth"/>
+				<xs:element ref="maritalStatus">
+					<xs:annotation>
+						<xs:documentation>SINGLE – MARRIED – DIVORCED - WIDOW</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="phone" minOccurs="0" />
+				<xs:element ref="email" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="insuredAddress" type="addressType"/>
+	<xs:element name="curatorshipAdress" type="addressType"/>
+	<xs:element name="curatorship">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="hasCuratorship"/>
+				<xs:element ref="curatorshipName" minOccurs="0"/>
+				<xs:element ref="curatorshipAdress" minOccurs="0"/>
+				<xs:element ref="curatorshipOrganisationName" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="familyMembers">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="children"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="insuranceInformations">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="foreignResidence"/>
+				<xs:element ref="foreignActivity"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="employerName"  type="xs:string"/>
+	<xs:element name="referencePerson"  type="xs:string"/>
+	<xs:element name="mainEmployer" >
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="affiliateID"/>
+				<xs:element ref="employerName"/>
+				<xs:element ref="referencePerson" minOccurs="0"/>
+				<xs:element ref="phone" minOccurs="0"/>
+				<xs:element ref="email" minOccurs="0"/>
+				<xs:element ref="employeeWorkCantonCode"/>
+				<xs:element ref="employeeWorkCanton"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="activity">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="employmentType">
+					<xs:annotation>
+						<xs:documentation>EMPLOYE,INDEPENDANT</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="activityType"  minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>pour independant  PRINCIPALE, ACCESSOIRE</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="companies"/>
+				<xs:element ref="compensationFund"  minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="activities">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="activity" maxOccurs="unbounded" minOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="activityCessation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="activityCause">
+					<xs:annotation>
+						<xs:documentation>ARRET_MALADIE_OR_ACCIDENT,CHOMAGE</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="illnessOrAccidentCessation"  />
+				<xs:element ref="unemploymentCessation"  />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="paymentContact">
+		<xs:complexType>
+			<xs:sequence>
+			    <xs:element ref="beneficiaryType"/>
+				<xs:element ref="directPayment"/>
+				<xs:element ref="endBeneficiary" minOccurs="0"/>
+				<xs:element ref="bankAccount" minOccurs="0"/>
+    		</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="confirmation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="insuredConfirmationPlace"/>
+				<xs:element ref="insuredConfirmationDate"/>
+				<xs:element ref="insuredDone"/>
+				<xs:element ref="employeeConfirmationPlace"/>
+				<xs:element ref="employeeConfirmationDate"/>
+				<xs:element ref="employeeDone"/>
+				<xs:element ref="signatureCaisse"/>
+			</xs:sequence>
+		</xs:complexType> 
+	</xs:element>
+	<xs:element name="header">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="transactionInfo"/>
+				<xs:element ref="senderId"/>
+				<xs:element ref="recipientId"/>
+				<xs:element ref="messageId"/>
+				<xs:element ref="businessProcessId"/>
+				<xs:element ref="messageType"/>
+				<xs:element ref="subMessageType"/>
+				<xs:element ref="subject"/>
+				<xs:element ref="messageDate"/>
+				<xs:element ref="action" minOccurs="0"/>
+				<xs:element ref="attachment" maxOccurs="unbounded" minOccurs="0"/>
+				<xs:element ref="extension"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="content">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="referenceData"/>
+				<xs:element ref="amatApatType"/>
+				<xs:element ref="formType"/>
+				<xs:element ref="insuredPerson"/>
+				<xs:element ref="insuredAddress"/>
+				<xs:element ref="curatorship"/>
+				<xs:element ref="familyMembers"/>
+				<xs:element ref="insuranceInformations"/>
+				<xs:element ref="activities"/>
+				<xs:element ref="activityCessation"/>
+				<xs:element ref="mainEmployer"/>
+				<xs:element ref="providedByEmployer" minOccurs="0"/>
+				<xs:element ref="paymentContact"/>
+				<xs:element ref="remarks" minOccurs="0"/>
+				<xs:element ref="confirmation"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="message">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="header"/>
+				<xs:element ref="content"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

@@ -1517,8 +1517,8 @@ public class APImportationAPGPandemie extends BProcess {
                 conjoint.add(transaction);
             }
         } catch (Exception e) {
-            errors.add("Impossible de créer la situation professionnelle ");
-            LOG.error("APImportationAPGPandemie#creationSituationProfessionnelle : erreur lors de la création de la situation professionnelle ", e);
+            errors.add("Impossible de créer la situation familiale ");
+            LOG.error("APImportationAPGPandemie#creationSituationProfessionnelle : erreur lors de la création de la situation familiale ", e);
         };
     }
 

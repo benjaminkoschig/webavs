@@ -145,6 +145,13 @@ public enum APProperties implements IProperties {
         }
     },
 
+    DEMANDES_AMAT_APAT_FOLDER("path.demande.amat.apat", "Chemin des demandes pour AMAT et APAT") {
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
+        }
+    },
+
     DOMAINE_ADRESSE_APG_PANDEMIE("domaine.adresse.covid19", "Code système du domaine covid19 des adresses") {
         @Override
         public boolean isValidValue(final String propertyValue) {
@@ -172,7 +179,21 @@ public enum APProperties implements IProperties {
         }
     },
 
+    STORAGE_AMAT_APAT_FOLDER("path.stockage.amat.apat", "Chemin du stockage des zip pour AMAT et APAT") {
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
+        }
+    },
+
     EMAIL_APG_PANDEMIE("email.pandemie", "Email pour l'envoi des dossiers pandémie") {
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
+        }
+    },
+
+    EMAIL_AMAT_APAT("email.amat.apat", "Email pour l'envoi des dossiers AMAT et APAT") {
         @Override
         public boolean isValidValue(final String propertyValue) {
             return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
