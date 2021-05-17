@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import globaz.corvus.acor.parser.REFeuilleCalculVO;
 import globaz.corvus.acor.parser.rev09.REACORParser;
 import globaz.corvus.acor2020.parser.REAcor2020Parser;
+import globaz.corvus.acor2020.parser.ReturnedValue;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.dao.REDeleteCascadeDemandeAPrestationsDues;
@@ -79,6 +80,7 @@ public class REImportationCalculAcor2020 {
     private static final Logger LOG = Logger.getLogger(REImportationCalculAcor2020.class);
 
     private Set<String> rentesWithoutBte = new HashSet<>();
+    private List<String> remarquesParticulieres;
 
     public void actionImporterScriptACOR(String idDemande, String idTiers, String json,
                                          final BSession session) throws Exception {
@@ -260,9 +262,8 @@ public class REImportationCalculAcor2020 {
             if (idCopieDemande != null && !idCopieDemande.equals(0)) {
                 idDemande = (String.valueOf(idCopieDemande));
             }
-
             // Inforom D0112 : recherche si des remarques particulières sont présentes dans la feuille de calcul
-            traiterLesRemarquesParticulieresDeLaFeuilleDeCalculAcor(session, transaction, idDemande, fCalcul.getRemarque());
+            traiterLesRemarquesParticulieresDeLaFeuilleDeCalculAcor(session, transaction, idDemande);
 
             /*
              * On ne lance le calcul des rentes versées à tort que si des rentes accordées ont été créées lors de
@@ -527,7 +528,7 @@ public class REImportationCalculAcor2020 {
             // Inforom D0112 : recherche si des remarques particulières sont présentes dans la feuille de calcul
             // TODO : trouver les remarques dans resultat9
             String fCalcul = resultat9.getAnnexes().getFCalcul();
-            traiterLesRemarquesParticulieresDeLaFeuilleDeCalculAcor(session, transaction, idDemande, Arrays.asList(fCalcul));
+            traiterLesRemarquesParticulieresDeLaFeuilleDeCalculAcor(session, transaction, idDemande);
 
             /*
              * On ne lance le calcul des rentes versées à tort que si des rentes accordées ont été créées lors de
@@ -1162,11 +1163,11 @@ public class REImportationCalculAcor2020 {
 //        REACORParser.ReturnedValue returnedValue = globaz.corvus.acor.parser.rev09.REACORParser.parse(session, transaction, demande,
 //                annoncePayReader, noCasATraiter);
 
-        REACORParser.ReturnedValue returnedValue = REAcor2020Parser.doMAJPrestations(session, transaction, demande, fCalcul, noCasATraiter);
+        ReturnedValue returnedValue = REAcor2020Parser.doMAJPrestations(session, transaction, demande, fCalcul, noCasATraiter);
 
         // TODO : mettre à jour rentes accordées avec le nouveau mapping.
         rentesAccordees.addAll(returnedValue.getIdRenteAccordees());
-
+        remarquesParticulieres = returnedValue.getRemarquesParticulieres();
         /*
          * Maj de qqes données supplémentaire récupérée depuis la
          * feuille de calcul acor taux de reduction, BTE entière, demi, quart...
@@ -1253,10 +1254,7 @@ public class REImportationCalculAcor2020 {
      * @param transaction
      * @throws Exception
      */
-    private void traiterLesRemarquesParticulieresDeLaFeuilleDeCalculAcor(final BSession session, final BITransaction transaction, String idDemande, List<String> remarques) throws Exception {
-
-        // TODO : valider que les remarques particulières sont bien contenues dans la balises remarque
-//        List<String> remarques = fCalcul.getRemarque();
+    private void traiterLesRemarquesParticulieresDeLaFeuilleDeCalculAcor(final BSession session, final BITransaction transaction, String idDemande) throws Exception {
 
         boolean isRenteLimitee = false;
         boolean isRenteAvecSupplementPourPersonneVeuve = false;
@@ -1265,21 +1263,21 @@ public class REImportationCalculAcor2020 {
         boolean isRenteReduitePourSurassurance = false;
 
         // Si la feuille de calcul existe, on va rechercher si des remarques particulière sont présentes
-        if (!remarques.isEmpty()) {
-            String contenuARechercher = session.getLabel("CALCULER_DECISION_CLE_ACOR_RENTE_LIMITEE_18ANS_PLUS_JEUNE_ENFANT");
-            isRenteLimitee = remarques.contains(contenuARechercher);
+        if (!remarquesParticulieres.isEmpty()) {
+            final String renteLimitee18ANSPlusJeuneEnfant = session.getLabel("CALCULER_DECISION_CLE_ACOR_RENTE_LIMITEE_18ANS_PLUS_JEUNE_ENFANT");
+            isRenteLimitee = remarquesParticulieres.stream().anyMatch(each -> each.contains(renteLimitee18ANSPlusJeuneEnfant));
 
-            contenuARechercher = session.getLabel("CALCULER_DECISION_CLE_ACOR_MONTANT_AVEC_SUPPLEMENT_PERSONNE_VEUVE");
-            isRenteAvecSupplementPourPersonneVeuve = remarques.contains(contenuARechercher);
+            final String montantAvecSupplementPersonneVeuve  = session.getLabel("CALCULER_DECISION_CLE_ACOR_MONTANT_AVEC_SUPPLEMENT_PERSONNE_VEUVE");
+            isRenteAvecSupplementPourPersonneVeuve =  remarquesParticulieres.stream().anyMatch(each -> each.contains(montantAvecSupplementPersonneVeuve));
 
-            contenuARechercher = session.getLabel("CALCULER_DECISION_CLE_ACOR_DEBUT_DROIT_5ANS_AVANT_DEPOT_DEMANDE");
-            isRenteAvecDebutDroit5AnsAvantDepotDemande = remarques.contains(contenuARechercher);
+            final String debutDroit5AnsAvantDepotDemande = session.getLabel("CALCULER_DECISION_CLE_ACOR_DEBUT_DROIT_5ANS_AVANT_DEPOT_DEMANDE");
+            isRenteAvecDebutDroit5AnsAvantDepotDemande = remarquesParticulieres.stream().anyMatch(each -> each.contains(debutDroit5AnsAvantDepotDemande));
 
-            contenuARechercher = session.getLabel("CALCULER_DECISION_CLE_ACOR_MONTANT_MINIMUM_MAJORE_INVALIDITE");
-            isRenteAvecMontantMinimumMajoreInvalidite = remarques.contains(contenuARechercher);
+            final String montantMinimumMajoreInvalidite = session.getLabel("CALCULER_DECISION_CLE_ACOR_MONTANT_MINIMUM_MAJORE_INVALIDITE");
+            isRenteAvecMontantMinimumMajoreInvalidite = remarquesParticulieres.stream().anyMatch(each -> each.contains(montantMinimumMajoreInvalidite));
 
-            contenuARechercher = session.getLabel("CALCULER_DECISION_CLE_ACOR_RENTE_REDUITE_POUR_SURASSURANCE");
-            isRenteReduitePourSurassurance = remarques.contains(contenuARechercher);
+            final String renteReduitePourSurassurance = session.getLabel("CALCULER_DECISION_CLE_ACOR_RENTE_REDUITE_POUR_SURASSURANCE");
+            isRenteReduitePourSurassurance = remarquesParticulieres.stream().anyMatch(each -> each.contains(renteReduitePourSurassurance));
 
         }
         // Dans tous les cas on met à jour les champs des infos complémentaires

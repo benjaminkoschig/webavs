@@ -50,8 +50,8 @@ import java.util.*;
 public class REAcor2020Parser {
 
 
-    public static REACORParser.ReturnedValue doMAJPrestations(BSession session, BITransaction transaction, REDemandeRente demandeSource, FCalcul fCalcul, int noCasATraiter) throws PRACORException {
-        REACORParser.ReturnedValue returnedValue = new REACORParser.ReturnedValue();
+    public static ReturnedValue doMAJPrestations(BSession session, BITransaction transaction, REDemandeRente demandeSource, FCalcul fCalcul, int noCasATraiter) throws PRACORException {
+        ReturnedValue returnedValue = new ReturnedValue();
         Map<String, PRTextField> fields;
 
         try {
@@ -260,6 +260,7 @@ public class REAcor2020Parser {
                                     // Traitement des prestations dues...
                                     Rente rente = eachPrestation.getRente();
                                     if (Objects.nonNull(rente)) {
+                                        returnedValue.getRemarquesParticulieres().addAll(rente.getRemarque());
                                         Rente.Versement versement = rente.getVersement();
                                         // Si versement est non null, on est sur un $t (total)
                                         if (Objects.nonNull(versement)) {
@@ -842,7 +843,10 @@ public class REAcor2020Parser {
         }
 
 //        String fractionRente = REACORAbstractFlatFileParser.getField(line, fields, "FRACTION_RENTE_AI"); $r7
-        String fractionRente = Objects.toString(rente.getFraction(), StringUtils.EMPTY);
+        String fractionRente = StringUtils.EMPTY;
+        if (Objects.nonNull(rente.getFraction()) && rente.getFraction() != 0.0f) {
+            fractionRente = String.valueOf(Math.round(1 / rente.getFraction()));
+        }
 
         // ra.setFractionRente(PRACORConst.caFractionRenteToCS(session, fractionRente));
         ra.setFractionRente(fractionRente);
