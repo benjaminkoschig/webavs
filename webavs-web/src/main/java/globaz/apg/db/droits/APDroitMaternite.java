@@ -329,8 +329,11 @@ public class APDroitMaternite extends APDroitLAPG implements IPRCloneable {
          * la création de cette classe, cette durée est de 98 jours. Comme cette valeur peut changer, elle est stockée
          * comme propriété de l'application.
          */
+        // Si date de fin renseigner, ne pas prendre en compte jours supplémentaires
         JADate fin = cal.addDays(debut, APDroitMaternite.getDureeDroitMat(getSession()) - 1);
-        if (!JadeStringUtil.isIntegerEmpty(this.getJoursSupplementaires())) {
+        if (!getDateRepriseActiv().isEmpty()) {
+            fin = new JADate(getDateRepriseActiv());
+        } else if (!JadeStringUtil.isIntegerEmpty(this.getJoursSupplementaires())) {
             fin = ajouteJoursSupplementaires(cal, fin);
         }
         setDateFinDroit(fin.toStr("."));
