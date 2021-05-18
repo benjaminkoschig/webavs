@@ -185,14 +185,17 @@ public class APAnnoncesRapgServiceV5Impl implements APAnnoncesRapgService {
         }
 
 
-        CareLeaveDataType careLeaveDataType = new CareLeaveDataType();
-        if (!JadeStringUtil.isEmpty(champsAnnonce.getChildInsurantVn())) {
-            careLeaveDataType.setChildInsurantVn(Long.parseLong(champsAnnonce.getChildInsurantVn().replace(".", "")));
+        if(!JadeStringUtil.isEmpty(champsAnnonce.getChildInsurantVn())
+                && !JadeStringUtil.isEmpty(champsAnnonce.getCareLeaveEventID())) {
+            CareLeaveDataType careLeaveDataType = new CareLeaveDataType();
+            if (!JadeStringUtil.isEmpty(champsAnnonce.getChildInsurantVn())) {
+                careLeaveDataType.setChildInsurantVn(Long.parseLong(champsAnnonce.getChildInsurantVn().replace(".", "")));
+            }
+            if (!JadeStringUtil.isEmpty(champsAnnonce.getCareLeaveEventID())) {
+                careLeaveDataType.setCareLeaveEventID(Integer.parseInt(champsAnnonce.getCareLeaveEventID()));
+            }
+            message.setCareLeaveDataType(careLeaveDataType);
         }
-        if (!JadeStringUtil.isEmpty(champsAnnonce.getCareLeaveEventID())) {
-            careLeaveDataType.setCareLeaveEventID(Integer.parseInt(champsAnnonce.getCareLeaveEventID()));
-        }
-        message.setCareLeaveDataType(careLeaveDataType);
         return message;
     }
 
