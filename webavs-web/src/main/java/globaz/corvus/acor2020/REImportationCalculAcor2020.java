@@ -80,7 +80,7 @@ public class REImportationCalculAcor2020 {
     private static final Logger LOG = Logger.getLogger(REImportationCalculAcor2020.class);
 
     private Set<String> rentesWithoutBte = new HashSet<>();
-    private List<String> remarquesParticulieres;
+    private List<String> remarquesParticulieres = new ArrayList<>();
 
     public void actionImporterScriptACOR(String idDemande, String idTiers, String json,
                                          final BSession session) throws Exception {

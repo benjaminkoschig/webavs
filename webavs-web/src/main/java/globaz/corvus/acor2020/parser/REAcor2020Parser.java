@@ -7,6 +7,7 @@ import globaz.commons.nss.NSUtil;
 import globaz.corvus.acor.parser.REFeuilleCalculVO;
 import globaz.corvus.acor.parser.rev09.REACORParser;
 import globaz.corvus.acor2020.REImportationCalculAcor2020;
+import globaz.corvus.acor2020.business.FractionRente;
 import globaz.corvus.api.basescalcul.IREBasesCalcul;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.corvus.api.basescalcul.IREPrestationDue;
@@ -214,6 +215,7 @@ public class REAcor2020Parser {
                             isDemandeCloneCreated = true;
                         }
 
+                        // TODO : le booléen isAjournement est true lorsque la ligne commence par $a sur ancien ACOR ...
                         boolean isAjournement = Objects.nonNull(eachBaseCalcul.getAjournement());
                         for (FCalcul.Evenement.BasesCalcul.Decision eachDecision : eachBaseCalcul.getDecision()) {
                             for (FCalcul.Evenement.BasesCalcul.Decision.Prestation eachPrestation : eachDecision.getPrestation()) {
@@ -529,7 +531,7 @@ public class REAcor2020Parser {
             }
             if (Objects.nonNull(baseCalcul.getBaseRam().getBte())) {
                 //      bc.setAnneeBonifTacheEduc(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_BONIF_TACHE_EDUC"));
-                bc.setAnneeBonifTacheEduc(Objects.toString(baseCalcul.getBaseRam().getBte().getAnDecimal(), StringUtils.EMPTY));
+                bc.setAnneeBonifTacheEduc(ParserUtils.formatFloatToStringWithTwoDecimal(baseCalcul.getBaseRam().getBte().getAnDecimal()));
             }
             if (Objects.nonNull(baseCalcul.getBaseRam().getBtrans())) {
                 //        bc.setAnneeBonifTransitoire(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_BONIF_TRANSITOIRE"));
@@ -843,13 +845,8 @@ public class REAcor2020Parser {
         }
 
 //        String fractionRente = REACORAbstractFlatFileParser.getField(line, fields, "FRACTION_RENTE_AI"); $r7
-        String fractionRente = StringUtils.EMPTY;
-        if (Objects.nonNull(rente.getFraction()) && rente.getFraction() != 0.0f) {
-            fractionRente = String.valueOf(Math.round(1 / rente.getFraction()));
-        }
-
-        // ra.setFractionRente(PRACORConst.caFractionRenteToCS(session, fractionRente));
-        ra.setFractionRente(fractionRente);
+//         ra.setFractionRente(PRACORConst.caFractionRenteToCS(session, fractionRente));
+        ra.setFractionRente(FractionRente.getConstFromValue(rente.getFraction()));
 
 //        ra.setCodePrestation(REACORAbstractFlatFileParser.getField(line, fields, "CODE_PRESTATION")); $r5
         ra.setCodePrestation(Objects.toString(rente.getGenre(), StringUtils.EMPTY));
@@ -964,6 +961,7 @@ public class REAcor2020Parser {
         for (FCalcul.Evenement.BasesCalcul.Ajournement.Tranche eachTranche : baseCalcul.getAjournement().getTranche()) {
             for (FCalcul.Evenement.BasesCalcul.Ajournement.Tranche.Rente eachRente : eachTranche.getRente()) {
                 if (StringUtils.equals(Objects.toString(eachRente.getGenre()), Objects.toString(rente.getGenre()))) {
+                    // TODO : formatter date
 //                        ra.setDateRevocationAjournement(PRDateFormater.convertDate_MMAA_to_MMxAAAA(REACORAbstractFlatFileParser.getField(line, fields, "DATE_REVOCATION_AJOURNEMENT"))); $r22
                     ra.setDateRevocationAjournement((Objects.toString(eachTranche.getDateRevocation(), StringUtils.EMPTY)));
                     //        ra.setDureeAjournement(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_AJOURNEMENT")); $r20
@@ -989,10 +987,10 @@ public class REAcor2020Parser {
         for (FCalcul.Evenement.BasesCalcul.Anticipation.Tranche eachTranche : baseCalcul.getAnticipation().getTranche()) {
             for (FCalcul.Evenement.BasesCalcul.Anticipation.Tranche.Rente eachRente : eachTranche.getRente()) {
                 if (StringUtils.equals(Objects.toString(eachRente.getGenre()), Objects.toString(rente.getGenre()))) {
-//                        ra.setAnneeAnticipation(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_ANTICIPATION")); $r23
+                    //                        ra.setAnneeAnticipation(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_ANTICIPATION")); $r23
                     ra.setAnneeAnticipation(Objects.toString(eachTranche.getDureeAnticipation(), StringUtils.EMPTY));
 //                        ra.setDateDebutAnticipation(PRDateFormater.convertDate_AAAAMM_to_MMAAAA(PRDateFormater.convertDate_MMAA_to_AAAAMM(REACORAbstractFlatFileParser.getField(line, fields, "DATE_DEBUT_ANTICIPATION"))));
-                    ra.setDateDebutAnticipation(Objects.toString(eachTranche.getDateAnticipation(), StringUtils.EMPTY));
+                    ra.setDateDebutAnticipation(PRDateFormater.convertDate_AAAAMM_to_MMAAAA(PRDateFormater.convertDate_AAAAMMJJ_to_AAAAMM(Objects.toString(eachTranche.getDateAnticipation(), StringUtils.EMPTY))));
 //                        ra.setMontantReducationAnticipation(REACORAbstractFlatFileParser.getField(line, fields, "MONTANT_REDUCT_ANTICIPATION"));
                     ra.setMontantReducationAnticipation(Objects.toString(Math.round(eachRente.getMontantReduction()), StringUtils.EMPTY));
                     return ra;
