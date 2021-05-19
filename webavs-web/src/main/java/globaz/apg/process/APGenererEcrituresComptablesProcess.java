@@ -1319,7 +1319,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             motif = FWMessageFormat.format(getSession().getLabel("MOTIF_PATERNITE"), getDateSurDocument());
         }else if ("NATURE_VERSEMENT_PROCHEAIDANT".equals(nature)) {
             ordreVersement.setNatureOrdre(CAOrdreGroupe.NATURE_VERSEMENT_PROCHEAIDANT);
-            motif = FWMessageFormat.format(getSession().getLabel("MOTIF_PPROCHEAIDANT"), getDateSurDocument());
+            motif = FWMessageFormat.format(getSession().getLabel("MOTIF_PROCHEAIDANT"), getDateSurDocument());
         } else {
             throw new Exception("Nature du versement non reconnue, contrôler les properties !!! (" + nature + ")");
         }
@@ -2684,7 +2684,20 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                         iNature = 100;
                         break;
                 }
+            } else if (typeLot.equals(IPRDemande.CS_TYPE_PROCHE_AIDANT)) {
+                switch (iNature) {
+                    // AMAT et LAMAT ne doivent produire qu'un seul versement avec les montants cumulés
+                    // On va donc mettre seulement un des deux types dans le typeMontant
+                    case 0:
+                        nature = getSession().getApplication().getProperty(
+                                APGenererEcrituresComptablesProcess.PROP_NATURE_VERSEMENT_PROCHEAIDANT);
+                        typeMontant = Montants.TYPE_APG;
 
+                        break;
+                    default:
+                        iNature = 100;
+                        break;
+                }
             } else if (StringUtils.equals(IPRDemande.CS_TYPE_PANDEMIE, typeLot)) {
                 switch (iNature) {
                     case 0:
