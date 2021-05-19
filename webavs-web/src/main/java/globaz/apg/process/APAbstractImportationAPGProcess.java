@@ -1,5 +1,6 @@
 package globaz.apg.process;
 
+import apg.amatapat.*;
 import ch.globaz.common.mail.CommonFilesUtils;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
@@ -35,9 +36,9 @@ import java.util.Objects;
 /**
  * Classe abstraite d'importation et de création des droits APG depuis des eFormulaire.
  */
-public abstract class APAbstractImportationAPG extends BProcess  {
+public abstract class APAbstractImportationAPGProcess extends BProcess  {
 
-    private static final Logger LOG = LoggerFactory.getLogger(APAbstractImportationAPG.class);
+    private static final Logger LOG = LoggerFactory.getLogger(APAbstractImportationAPGProcess.class);
 
     protected static final String BACKUP_FOLDER = "/backup/";
     protected static final String ERRORS_FOLDER = "/errors/";
@@ -81,9 +82,13 @@ public abstract class APAbstractImportationAPG extends BProcess  {
     protected final List<String> getListEMailAddressTechnique(APProperties property) {
         List<String> listEmailAddress = new ArrayList<>();
         try {
-            listEmailAddress.add(property.getValue());
+            String[] addresses = APProperties.EMAIL_AMAT_APAT.getValue().split(";");
+            for (String address : addresses) {
+                listEmailAddress.add(address);
+            }
+            //listEmailAddress.add(property.getValue());
         } catch (PropertiesException e) {
-            LOG.error("ImportAPGPandemie - Erreur à la récupération de la propriété Adresse E-mail !! ", e);
+            LOG.error("ImportAPG-AMAT-APAT - Erreur à la récupération de la propriété Adresse E-mail !! ", e);
         }
         return listEmailAddress;
     }
@@ -328,6 +333,14 @@ public abstract class APAbstractImportationAPG extends BProcess  {
             LOG.error("Erreur lors du déplacement du fichier " + nameOriginalFile, e);
         }
         return fileToSend;
+    }
+
+    protected boolean isSoumisImpotSource(Content content){
+
+        if (Objects.nonNull(content.getProvidedByEmployer()) && Objects.nonNull(content.getProvidedByEmployer().getSalary())) {
+            return content.getProvidedByEmployer().getSalary().isWithholdingTax();
+        }
+        return false;
     }
 
 }

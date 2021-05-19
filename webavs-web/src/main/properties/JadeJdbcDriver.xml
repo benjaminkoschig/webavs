@@ -30,7 +30,17 @@
 			<urlParameter name="prompt" value="false"/>
 		</datasource>
 
-	<!--  Copie de la base d'integration de la CCVD chez Globaz pour test -->
+		<datasource name="FERCIAM_QUA" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
+			<driver>com.ibm.db2.jcc.DB2Driver</driver>
+			<url>jdbc:db2://sferqa1.ju.globaz.ch:50005/ferqua</url>
+			<user>db2inst1</user>
+			<password>db2inst1</password>
+			<maxConnections>100</maxConnections>
+			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
+			<urlParameter name="prompt" value="false"/>
+		</datasource>
+
+		<!--  Copie de la base d'integration de la CCVD chez Globaz pour test -->
 	<datasource name="CCVD_INT_TEST_GLOBAZ" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
 			<driver>com.ibm.as400.access.AS400JDBCDriver</driver>
 			<url>jdbc:as400://ASAVS1.intranet-heb.ch/CCVDINT </url>
