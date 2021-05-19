@@ -280,8 +280,10 @@ public class APImportationAPGAmatApatProcess extends APAbstractImportationAPGPro
         String npaFormat = formatNPA(getZipCode(adresseAssure));
 
         IAPImportationAmatApat handler;
+        boolean isWomen = false;
         if (StringUtils.equals(AMAT_TYPE, content.getAmatApatType())) {
             handler = new APImportationAmat(errors, infos, LOG);
+            isWomen = true;
         } else if(StringUtils.equals(APAT_TYPE, content.getAmatApatType())) {
             handler = new APImportationApat(errors, infos, LOG);
         } else {
@@ -292,7 +294,7 @@ public class APImportationAPGAmatApatProcess extends APAbstractImportationAPGPro
             PRTiersWrapper tiers = getTiersByNss(assure.getVn());
             // TODO : identifier quand il faut créer un tiers.
             if (Objects.isNull(tiers)) {
-                tiers = handler.createTiers(assure, npaFormat, bsession);
+                tiers = handler.createTiers(assure, npaFormat, bsession, isWomen);
             }
             handler.createRoleApgTiers(tiers.getIdTiers(), bsession);
             handler.createContact(tiers, assure.getEmail(), bsession);

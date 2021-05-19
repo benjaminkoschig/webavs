@@ -169,7 +169,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
     }
 
     @Override
-    public PRTiersWrapper createTiers(InsuredPerson assure, String codeNpa, BSession bsession) throws Exception {
+    public PRTiersWrapper createTiers(InsuredPerson assure, String codeNpa, BSession bsession, boolean isWomen) throws Exception {
 
         // les noms et prenoms doivent être renseignés pour insérer un nouveau tiers
         if (JadeStringUtil.isEmpty(assure.getOfficialName()) || JadeStringUtil.isEmpty(assure.getFirstName())) {
@@ -206,12 +206,26 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
         PRAVSUtils avsUtils = PRAVSUtils.getInstance(assure.getVn());
 
         String idTiers = PRTiersHelper.addTiers(bsession, assure.getVn(), assure.getOfficialName(),
-                assure.getFirstName(), ITIPersonne.CS_FEMME, tranformGregDateToGlobDate(assure.getDateOfBirth()),
+                assure.getFirstName(), isWomen ? ITIPersonne.CS_FEMME : ITIPersonne.CS_HOMME, tranformGregDateToGlobDate(assure.getDateOfBirth()),
                 "",
                 avsUtils.isSuisse(assure.getVn()) ? TIPays.CS_SUISSE : PRTiersHelper.ID_PAYS_BIDON, canton, "",
-                String.valueOf(EtatCivil.CELIBATAIRE.getCodeSysteme()));
+                getSituationMarital(assure));
 
         return PRTiersHelper.getTiersParId(bsession, idTiers);
+    }
+
+    private String getSituationMarital(InsuredPerson assure){
+        switch(assure.getMaritalStatus())
+        {
+            case "MARRIED":
+                return String.valueOf(EtatCivil.MARIE.getCodeSysteme());
+            case "DIVORCED":
+                return String.valueOf(EtatCivil.DIVORCE.getCodeSysteme());
+            case "WIDOW":
+                return String.valueOf(EtatCivil.VEUF.getCodeSysteme());
+            default:
+                return String.valueOf(EtatCivil.CELIBATAIRE.getCodeSysteme());
+        }
     }
 
     @Override

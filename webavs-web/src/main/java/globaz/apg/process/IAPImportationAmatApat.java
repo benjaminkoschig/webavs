@@ -26,7 +26,7 @@ public interface IAPImportationAmatApat {
      * @param bsession : Session active
      * @throws Exception
      */
-    PRTiersWrapper createTiers(InsuredPerson assure, String codeNpa, BSession bsession) throws Exception;
+    PRTiersWrapper createTiers(InsuredPerson assure, String codeNpa, BSession bsession, boolean isWomen) throws Exception;
     PRDemande createDemande(String idTiers, BSession bsession) throws Exception;
     APDroitLAPG createDroit(Content content, String npaFormat, PRDemande demande, BTransaction transaction, BSession bsession);
     void createSituationFamiliale(FamilyMembers membresFamille, String idDroit, BTransaction transaction, BSession bsession);
