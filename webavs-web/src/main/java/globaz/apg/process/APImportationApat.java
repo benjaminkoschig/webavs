@@ -103,9 +103,4 @@ public class APImportationApat extends APAbstractImportationAmatApat {
             LOG.error("Erreur lors de la création de la situation familiale ", e);
         }
     }
-
-    @Override
-    public void createSituationProfessionnel(Content content, String idDroit, BTransaction transaction, BSession bsession) {
-
-    }
 }

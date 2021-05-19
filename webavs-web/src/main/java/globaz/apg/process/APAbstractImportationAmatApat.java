@@ -2,9 +2,13 @@ package globaz.apg.process;
 
 import apg.amatapat.Content;
 import apg.amatapat.InsuredPerson;
+import apg.amatapat.MainEmployer;
+import apg.amatapat.Salary;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.pyxis.domaine.EtatCivil;
+import globaz.apg.db.droits.APEmployeur;
+import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.properties.APProperties;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
@@ -18,7 +22,11 @@ import globaz.jade.log.business.JadeBusinessMessage;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.osiris.external.IntRole;
+import globaz.phenix.api.ICPDonneesCalcul;
+import globaz.phenix.db.principale.CPDecision;
+import globaz.phenix.db.principale.CPDecisionManager;
 import globaz.prestation.api.IPRDemande;
+import globaz.prestation.api.IPRSituationProfessionnelle;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.db.demandes.PRDemandeManager;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
@@ -33,6 +41,7 @@ import globaz.pyxis.db.tiers.*;
 import org.slf4j.Logger;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Objects;
 
@@ -44,6 +53,9 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
     protected String typeDemande;
     protected static final String FORM_INDEPENDANT = "FORM_INDEPENDANT";
     protected static final String FORM_SALARIE = "FORM_SALARIE";
+    private static final String BENEFICIAIRE_MERE = "MERE";
+    private static final String BENEFICIAIRE_PERE = "PERE";
+    private static final String BENEFICIAIRE_EMPLOYEUR = "EMPLOYEUR";
 
     public APAbstractImportationAmatApat(LinkedList<String> err, LinkedList<String> inf, Logger log){
         LOG = log;
@@ -276,6 +288,153 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
             LOG.error("APImportationAPGPandemie#creationIdCaisse : A fatal exception was thrown when accessing to the CommonProperties " + exception);
         }
         return null;
+    }
+
+    @Override
+    public void createSituationProfessionnel(Content content, String idDroit, BTransaction transaction, BSession bsession) {
+        switch (content.getFormType()) {
+            case FORM_INDEPENDANT:
+                creationSituationProIndependant(content, idDroit, transaction, bsession);
+                break;
+            case FORM_SALARIE:
+                creationSituationProEmploye(content, idDroit, transaction, bsession);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void creationSituationProEmploye(Content content, String idDroit, BTransaction transaction, BSession bsession) {
+        Salary salaire = content.getProvidedByEmployer().getSalary();
+        String salaireMensuel = String.valueOf(salaire.getLastIncome().getAmount());
+        MainEmployer mainEmployeur = content.getMainEmployer();
+        boolean isVersementEmployeur;
+        switch (content.getPaymentContact().getBeneficiaryType()) {
+            case BENEFICIAIRE_EMPLOYEUR:
+                isVersementEmployeur = true;
+                break;
+            case BENEFICIAIRE_MERE:
+            case BENEFICIAIRE_PERE:
+            default:
+                isVersementEmployeur = false;
+                break;
+        }
+
+        try {
+            AFAffiliation affiliation = findAffiliationByNumero(mainEmployeur.getAffiliateID(), bsession);
+            if (affiliation != null) {
+                APEmployeur emp = new APEmployeur();
+                emp.setSession(bsession);
+                emp.setIdTiers(affiliation.getIdTiers());
+                emp.setIdAffilie(affiliation.getAffiliationId());
+                emp.add(transaction);
+
+                APSituationProfessionnelle situationProfessionnelle = new APSituationProfessionnelle();
+                situationProfessionnelle.setSession(bsession);
+                situationProfessionnelle.setIdDroit(idDroit);
+                situationProfessionnelle.setIdEmployeur(emp.getIdEmployeur());
+                situationProfessionnelle.setIsIndependant(false);
+                situationProfessionnelle.setIsVersementEmployeur(isVersementEmployeur);
+                situationProfessionnelle.setSalaireMensuel(salaireMensuel);
+
+                // Vague 2 - Si le salarié est payé sur 13 mois
+                // On ajoute son 13eme mois sans une autre rémunération annuelle
+                if (salaire.getLastIncome().isHasThirteenthMonth()) {
+                    situationProfessionnelle.setAutreRemuneration(salaireMensuel);
+                    situationProfessionnelle.setPeriodiciteAutreRemun(IPRSituationProfessionnelle.CS_PERIODICITE_ANNEE);
+                }
+
+                situationProfessionnelle.wantCallValidate(false);
+                situationProfessionnelle.add(transaction);
+            }
+        } catch (Exception e) {
+            errors.add("Erreur rencontré lors de la création de la situation professionnelle pour l'assuré ");
+            LOG.error("APImportationAPGPandemie#creerSituationProf : Erreur rencontré lors de la création de la situation professionnelle pour l'assuré ", e);
+            if (isJadeThreadError()) {
+                addJadeThreadErrorToListError("Situation Professionnelle Employé");
+                // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans l'ajout de la situation prof
+//                JadeThread.logClear();
+            }
+        }
+    }
+
+    private void creationSituationProIndependant(Content content, String idDroit, BTransaction transaction, BSession bsession) {
+        String masseAnnuel = "0";
+        MainEmployer mainEmployeur = content.getMainEmployer();
+        boolean isVersementEmployeur;
+        switch (content.getPaymentContact().getBeneficiaryType()) {
+            case BENEFICIAIRE_EMPLOYEUR:
+                isVersementEmployeur = true;
+                break;
+            case BENEFICIAIRE_MERE:
+            default:
+                isVersementEmployeur = false;
+                break;
+        }
+
+        try {
+            AFAffiliation affiliation = findAffiliationByNumero(mainEmployeur.getAffiliateID(), bsession);
+            if (affiliation != null) {
+                APEmployeur emp = new APEmployeur();
+                emp.setSession(bsession);
+                emp.setIdTiers(affiliation.getIdTiers());
+                emp.setIdAffilie(affiliation.getAffiliationId());
+                emp.add(transaction);
+
+                // on cherche la decision
+                final CPDecisionManager decision = new CPDecisionManager(); //(CPDecision) bsession.getAPIFor(CPDecision.class);
+                BSession sessionPhenix = new BSession("PHENIX");
+                bsession.connectSession(sessionPhenix);
+
+                decision.setSession(sessionPhenix);
+                decision.setForIdAffiliation(affiliation.getAffiliationId());
+                decision.setForIsActive(true);
+                // TODO : année prise en compte.
+//                decision.setForAnneeDecision(ANNEE_PRISE_COMPTE_SALAIRE);
+                decision.find(BManager.SIZE_NOLIMIT);
+
+                // on cherche les données calculées en fonction de la
+                // decision
+                if ((decision != null) && (decision.size() > 0)) {
+
+                    final ICPDonneesCalcul donneesCalcul = (ICPDonneesCalcul) bsession
+                            .getAPIFor(ICPDonneesCalcul.class);
+                    donneesCalcul.setISession(PRSession.connectSession(bsession, "PHENIX"));
+
+                    final Hashtable<Object, Object> parms = new Hashtable<Object, Object>();
+                    parms.put(ICPDonneesCalcul.FIND_FOR_ID_DECISION, ((CPDecision) decision.getEntity(0)).getIdDecision());
+                    parms.put(ICPDonneesCalcul.FIND_FOR_ID_DONNEES_CALCUL, ICPDonneesCalcul.CS_REV_NET);
+
+                    final ICPDonneesCalcul[] donneesCalculs = donneesCalcul.findDonneesCalcul(parms);
+
+                    if ((donneesCalculs != null) && (donneesCalculs.length > 0)) {
+                        masseAnnuel = donneesCalculs[0].getMontant();
+                    }
+                }
+
+
+                APSituationProfessionnelle situationProfessionnelle = new APSituationProfessionnelle();
+                situationProfessionnelle.setSession(bsession);
+                situationProfessionnelle.setIdDroit(idDroit);
+                situationProfessionnelle.setIdEmployeur(emp.getIdEmployeur());
+                situationProfessionnelle.setIsIndependant(true);
+                situationProfessionnelle.setIsVersementEmployeur(isVersementEmployeur);
+                // TODO : comment obtenir le salaire
+                situationProfessionnelle.setRevenuIndependant(masseAnnuel);
+
+                situationProfessionnelle.wantCallValidate(false);
+                situationProfessionnelle.add(transaction);
+            }
+        } catch (Exception e) {
+            errors.add("Erreur rencontré lors de la création de la situation professionnelle pour l'assuré ");
+            LOG.error("APImportationAPGPandemie#creerSituationProf : Erreur rencontré lors de la création de la situation professionnelle pour l'assuré ", e);
+            if (isJadeThreadError()) {
+                addJadeThreadErrorToListError("Situation Professionnelle Employé");
+                // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans l'ajout de la situation prof
+//                JadeThread.logClear();
+            }
+        }
+
     }
 
     /**
