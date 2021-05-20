@@ -39,6 +39,7 @@ import globaz.pyxis.application.TIApplication;
 import globaz.pyxis.db.adressecourrier.TIPays;
 import globaz.pyxis.db.tiers.*;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Hashtable;
@@ -49,7 +50,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
 
     protected LinkedList<String> errors;
     protected LinkedList<String> infos;
-    protected Logger LOG;
+    private static final Logger LOG = LoggerFactory.getLogger(APAbstractImportationAmatApat.class);
     protected String typeDemande;
     protected static final String FORM_INDEPENDANT = "FORM_INDEPENDANT";
     protected static final String FORM_SALARIE = "FORM_SALARIE";
@@ -57,8 +58,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
     private static final String BENEFICIAIRE_PERE = "PERE";
     private static final String BENEFICIAIRE_EMPLOYEUR = "EMPLOYEUR";
 
-    public APAbstractImportationAmatApat(LinkedList<String> err, LinkedList<String> inf, Logger log){
-        LOG = log;
+    public APAbstractImportationAmatApat(LinkedList<String> err, LinkedList<String> inf){
         errors = err;
         infos = inf;
     }

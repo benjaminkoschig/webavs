@@ -282,10 +282,10 @@ public class APImportationAPGAmatApatProcess extends APAbstractImportationAPGPro
         IAPImportationAmatApat handler;
         boolean isWomen = false;
         if (StringUtils.equals(AMAT_TYPE, content.getAmatApatType())) {
-            handler = new APImportationAmat(errors, infos, LOG);
+            handler = new APImportationAmat(errors, infos);
             isWomen = true;
         } else if(StringUtils.equals(APAT_TYPE, content.getAmatApatType())) {
-            handler = new APImportationApat(errors, infos, LOG);
+            handler = new APImportationApat(errors, infos);
         } else {
             handler = null;
         }

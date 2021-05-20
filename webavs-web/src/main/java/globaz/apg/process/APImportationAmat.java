@@ -18,6 +18,7 @@ import globaz.prestation.api.IPRSituationProfessionnelle;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.tools.PRSession;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Hashtable;
 import java.util.LinkedList;
@@ -25,8 +26,10 @@ import java.util.Objects;
 
 public class APImportationAmat extends APAbstractImportationAmatApat {
 
-    public APImportationAmat(LinkedList<String> err, LinkedList<String> inf, Logger log) {
-        super(err, inf, log);
+    private static final Logger LOG = LoggerFactory.getLogger(APImportationAmat.class);
+
+    public APImportationAmat(LinkedList<String> err, LinkedList<String> inf) {
+        super(err, inf);
         typeDemande = IPRDemande.CS_TYPE_MATERNITE;
     }
 

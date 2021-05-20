@@ -10,13 +10,16 @@ import globaz.jade.client.util.JadeDateUtil;
 import globaz.prestation.api.IPRDemande;
 import globaz.prestation.db.demandes.PRDemande;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class APImportationApat extends APAbstractImportationAmatApat {
 
-    public APImportationApat(LinkedList<String> err, LinkedList<String> inf, Logger log) {
-        super(err, inf, log);
+    private static final Logger LOG = LoggerFactory.getLogger(APImportationApat.class);
+
+    public APImportationApat(LinkedList<String> err, LinkedList<String> inf) {
+        super(err, inf);
         typeDemande = IPRDemande.CS_TYPE_PATERNITE;
     }
 

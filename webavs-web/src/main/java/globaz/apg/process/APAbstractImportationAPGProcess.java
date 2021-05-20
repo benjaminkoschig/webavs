@@ -6,28 +6,16 @@ import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
 import globaz.apg.properties.APProperties;
 import globaz.globall.db.*;
-import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.common.JadeClassCastException;
-import globaz.jade.context.JadeThread;
 import globaz.jade.fs.JadeFsFacade;
-import globaz.jade.log.business.JadeBusinessMessage;
 import globaz.jade.service.exception.JadeServiceActivatorException;
 import globaz.jade.service.exception.JadeServiceLocatorException;
-import globaz.naos.db.affiliation.AFAffiliation;
-import globaz.naos.db.affiliation.AFAffiliationManager;
-import globaz.osiris.external.IntRole;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
-import globaz.prestation.tools.PRSession;
-import globaz.pyxis.api.ITIRole;
-import globaz.pyxis.application.TIApplication;
-import globaz.pyxis.db.tiers.TIRole;
-import globaz.pyxis.db.tiers.TIRoleManager;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -111,30 +99,6 @@ public abstract class APAbstractImportationAPGProcess extends BProcess  {
         }
     }
 
-
-
-    protected boolean isJadeThreadError(){
-        if(JadeThread.logMessages() != null) {
-            return JadeThread.logMessages().length > 0;
-        }
-        return false;
-    }
-
-    /**
-     * Ajout des erreurs blocantes
-     * @param methodeSource
-     */
-    protected void addJadeThreadErrorToListError(String methodeSource) {
-        JadeBusinessMessage[] messages = JadeThread.logMessages();
-        LOG.error(methodeSource+": ");
-        errors.add("Concerne: "+methodeSource+"\n");
-        for (int i = 0; (messages != null) && (i < messages.length); i++) {
-            LOG.error("-->Erreur: "+messages[i].getContents(null));
-            errors.add("-->Erreur: "+messages[i].getContents(null));
-        }
-        errors.add("\n");
-    }
-
     /**
      * Création de l'ID de la caisse lié au droit.
      *
@@ -169,99 +133,6 @@ public abstract class APAbstractImportationAPGProcess extends BProcess  {
             }
         }
         return "";
-    }
-
-    /**
-     * Formattage de la date XMLGregorianCalendar en String.
-     *
-     * @param date la date au format XMLGregorianCalendar
-     * @return la date formatté en String
-     */
-    protected String tranformGregDateToGlobDate(XMLGregorianCalendar date){
-        if (Objects.nonNull(date)){
-            return JadeDateUtil.getGlobazFormattedDate(date.toGregorianCalendar().getTime());
-        } else {
-            return "";
-        }
-
-    }
-
-    /**
-     * Création du Rôle APG tiers si il n'existe pas pour ce tiers.
-     *
-     * @param idTiers : l'id Tiers pour lequel on souhaite créer un rôle APG.
-     * @throws Exception
-     */
-    protected void creationRoleApgTiers(String idTiers) throws Exception {
-        TIRoleManager roleManager = new TIRoleManager();
-        roleManager.setSession(bsession);
-        roleManager.setForIdTiers(idTiers);
-        BStatement statement = null;
-        BTransaction trans = (BTransaction) bsession.newTransaction();
-        trans.openTransaction();
-        try {
-            statement = roleManager.cursorOpen(bsession.getCurrentThreadTransaction());
-            TIRole role = null;
-            boolean isRolePresent = false;
-
-            while ((role = (TIRole) roleManager.cursorReadNext(statement)) != null) {
-                if (IntRole.ROLE_APG.equals(role.getRole())) {
-                    isRolePresent = true;
-                }
-            }
-
-            if (!isRolePresent) {
-                // on ajoute le rôle APG au Tier si il ne l'a pas deja
-                ITIRole newRole = (ITIRole) bsession.getAPIFor(ITIRole.class);
-                newRole.setIdTiers(idTiers);
-                newRole.setISession(PRSession.connectSession(bsession, TIApplication.DEFAULT_APPLICATION_PYXIS));
-                newRole.setRole(IntRole.ROLE_APG);
-                newRole.add(bsession.getCurrentThreadTransaction());
-            }
-            trans.commit();
-        } catch (Exception e) {
-            errors.add("Une erreur s'est produite dans la création du rôle du tiers : "+idTiers);
-            LOG.error("ImportAPGPandemie#creationRoleApgTiers - Une erreur s'est produite dans la création du rôle du tiers : "+idTiers);
-            if (trans != null) {
-                trans.rollback();
-            }
-            if(isJadeThreadError()){
-//                addJadeThreadErrorToListInfos("Rôle");
-                // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans l'ajout du rôle
-                JadeThread.logClear();
-            }
-            throw new Exception("ImportAPGPandemie#creationRoleApgTiers - Une erreur s'est produite dans la création du rôle du tiers : "+idTiers);
-        } finally {
-            try {
-                if (statement != null) {
-                    try {
-                        roleManager.cursorClose(statement);
-                    } finally {
-                        statement.closeStatement();
-                    }
-                }
-            } finally {
-                trans.closeTransaction();
-            }
-        }
-    }
-
-    /**
-     * Récupération de l'affiliation par son numéro.
-     *
-     * @param numeroAffiliate : le numéro d'affilié.
-     * @return l'affiliation si elle a été trouvée.
-     * @throws Exception
-     */
-    protected AFAffiliation findAffiliationByNumero(String numeroAffiliate) throws Exception {
-        AFAffiliationManager manager = new AFAffiliationManager();
-        manager.setSession(bsession);
-        manager.setForAffilieNumero(numeroAffiliate);
-        manager.find(BManager.SIZE_NOLIMIT);
-        if (manager.size() > 0) {
-            return (AFAffiliation) manager.getFirstEntity();
-        }
-        return null;
     }
 
     /**
@@ -334,13 +205,4 @@ public abstract class APAbstractImportationAPGProcess extends BProcess  {
         }
         return fileToSend;
     }
-
-    protected boolean isSoumisImpotSource(Content content){
-
-        if (Objects.nonNull(content.getProvidedByEmployer()) && Objects.nonNull(content.getProvidedByEmployer().getSalary())) {
-            return content.getProvidedByEmployer().getSalary().isWithholdingTax();
-        }
-        return false;
-    }
-
 }
