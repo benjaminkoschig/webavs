@@ -188,7 +188,7 @@ public class REAcor2020Parser {
                         }
                     }
                     if (Objects.nonNull(premierePrestation)) {
-                        bc = importBaseCalcul(session, eachBaseCalcul, premierePrestation);
+                        bc = importBaseCalcul(session, eachBaseCalcul, premierePrestation, fCalcul);
 
 
                         // Si la demande à déjà été clonée et que l'on passe une
@@ -216,7 +216,8 @@ public class REAcor2020Parser {
                         }
 
                         // TODO : le booléen isAjournement est true lorsque la ligne commence par $a sur ancien ACOR ...
-                        boolean isAjournement = Objects.nonNull(eachBaseCalcul.getAjournement());
+//                        boolean isAjournement = Objects.nonNull(eachBaseCalcul.getAjournement());
+                        boolean isAjournement = false;
                         for (FCalcul.Evenement.BasesCalcul.Decision eachDecision : eachBaseCalcul.getDecision()) {
                             for (FCalcul.Evenement.BasesCalcul.Decision.Prestation eachPrestation : eachDecision.getPrestation()) {
                                 if (Objects.nonNull(eachPrestation.getRente())) {
@@ -282,7 +283,7 @@ public class REAcor2020Parser {
                                                 throw new Exception("Le calcul dans ACOR doit se faire avec une date de traitement du mois courant.");
                                             }
                                             pd.setDateDebutPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getDebut(), StringUtils.EMPTY)));
-                                            pd.setDateDebutPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getFin(), StringUtils.EMPTY)));
+                                            pd.setDateFinPaiement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getFin(), StringUtils.EMPTY)));
                                             pd.setMontant(Objects.toString(versement.getMontant(), StringUtils.EMPTY));
                                             pd.setCsTypePaiement(null);
                                             pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
@@ -291,6 +292,7 @@ public class REAcor2020Parser {
 
                                         for (Rente.Etat eachEtat : rente.getEtat()) {
                                             REPrestationDue pd = importPrestationsDues(session, eachEtat);
+
                                             pd.setIdRenteAccordee(ra.getIdPrestationAccordee());
                                             pd.add(transaction);
                                         }
@@ -493,9 +495,12 @@ public class REAcor2020Parser {
     /**
      * Importe les données de ACOR dans une base de calcul.
      *
+     * @param session
+     * @param baseCalcul
+     * @param premierePrestation
      * @return
      */
-    private static REBasesCalcul importBaseCalcul(final BSession session, FCalcul.Evenement.BasesCalcul baseCalcul, FCalcul.Evenement.BasesCalcul.Decision.Prestation premierePrestation) {
+    private static REBasesCalcul importBaseCalcul(final BSession session, FCalcul.Evenement.BasesCalcul baseCalcul, FCalcul.Evenement.BasesCalcul.Decision.Prestation premierePrestation, FCalcul fCalcul) {
         // TODO : affiner la récupération des champs --> il s'agit là d'un premier mapping.
 //        String droitApplique = REACORAbstractFlatFileParser.getField(line, fields, "DROIT_APPLIQUE");
         String droitApplique = Objects.toString(premierePrestation.getRente().getGenre(), StringUtils.EMPTY);
@@ -544,9 +549,8 @@ public class REAcor2020Parser {
                 bc.setFacteurRevalorisation(Objects.toString(baseCalcul.getBaseRam().getRevLucr().getFacRev(), StringUtils.EMPTY));
             }
         }
-
         //        bc.setAnneeDeNiveau(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_NIVEAU")); $b10
-        bc.setAnneeDeNiveau(Objects.toString(baseCalcul.getAnNiveau(), StringUtils.EMPTY));
+        bc.setAnneeDeNiveau(ParserUtils.formatAAAAtoAA(Objects.toString(baseCalcul.getAnNiveau(), StringUtils.EMPTY)));
         //        bc.setAnneeTraitement(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_TRAITEMENT")); $b48
         bc.setAnneeTraitement(Objects.toString(baseCalcul.getAnRam(), StringUtils.EMPTY));
 
@@ -568,12 +572,12 @@ public class REAcor2020Parser {
         bc.setRevenuAnnuelMoyen(Objects.toString(baseCalcul.getRam(), StringUtils.EMPTY));
         //        bc.setSupplementCarriere(REACORAbstractFlatFileParser.getField(line, fields, "POURCENT_SUPP_CARRIERE")); $b43
         bc.setSupplementCarriere(Objects.toString(baseCalcul.getSupCar(), StringUtils.EMPTY));
-
         // Récupération des durées de cotisation
         if (Objects.nonNull(baseCalcul.getBaseEchelle())) {
             //        bc.setAnneeCotiClasseAge(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_COTI_CLASSE_AGE")); $b9
             bc.setAnneeCotiClasseAge(Objects.toString(baseCalcul.getBaseEchelle().getAnCotClss(), StringUtils.EMPTY));
-
+// TODO : si on a une base échelle, on va chercher l'année de niveau dedans.
+            bc.setAnneeDeNiveau(ParserUtils.formatAAAAtoAA(Objects.toString(baseCalcul.getBaseEchelle().getAnNiveau(), StringUtils.EMPTY)));
             for (BaseEchelle.DCot eachDCot : baseCalcul.getBaseEchelle().getDCot()) {
                 switch (eachDCot.getType()) {
                     case 6:
@@ -584,27 +588,29 @@ public class REAcor2020Parser {
                         break;
                     case 8:
 //        bc.setPeriodeAssEtrangerAv73(REACORAbstractFlatFileParser.getField(line, fields, "PERIODE_ASS_ETR_AV_73")); $b35
-                        StringBuilder periodeAssEtrAv73 = new StringBuilder(eachDCot.getAv73().getAnnees());
-                        periodeAssEtrAv73.append(eachDCot.getAv73().getMois());
+                        StringBuilder periodeAssEtrAv73 = new StringBuilder(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getAv73().getAnnees()));
+                        periodeAssEtrAv73.append(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getAv73().getMois()));
                         bc.setPeriodeAssEtrangerAv73(periodeAssEtrAv73.toString());
 //        bc.setPeriodeAssEtrangerDes73(REACORAbstractFlatFileParser.getField(line, fields, "PERIODE_ASS_ETR_DES73")); $b49
-                        StringBuilder periodeAssEtrAp73 = new StringBuilder(eachDCot.getAp73().getAnnees());
-                        periodeAssEtrAp73.append(eachDCot.getAp73().getMois());
+                        StringBuilder periodeAssEtrAp73 = new StringBuilder(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getAp73().getAnnees()));
+                        periodeAssEtrAp73.append(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getAp73().getMois()));
                         bc.setPeriodeAssEtrangerDes73(periodeAssEtrAp73.toString());
                         break;
                     case 9:
-//        bc.setDureeCotiAvant73(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COTI_AV_73")); $b6
-                        StringBuilder dureeCotiAv37 = new StringBuilder(eachDCot.getAv73().getAnnees());
-                        dureeCotiAv37.append(eachDCot.getAv73().getMois());
-                        bc.setDureeCotiAvant73(dureeCotiAv37.toString());
-//        bc.setDureeCotiDes73(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COTI_DES_73")); $b7
-                        StringBuilder dureeCotiAp37 = new StringBuilder(eachDCot.getAp73().getAnnees());
-                        dureeCotiAp37.append(eachDCot.getAp73().getMois());
-                        bc.setDureeCotiDes73(dureeCotiAp37.toString());
+//        bc.setDureeRevenuAnnuelMoyen(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COTI_RAM")); $b8
+                        StringBuilder dureeRAM = new StringBuilder(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getTotal().getAnnees()));
+                        dureeRAM.append(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getTotal().getMois()));
+                        bc.setDureeRevenuAnnuelMoyen(dureeRAM.toString());
                         break;
                     case 10:
-//        bc.setDureeRevenuAnnuelMoyen(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COTI_RAM")); $b8
-                        bc.setDureeRevenuAnnuelMoyen(Objects.toString(eachDCot.getTotal(), StringUtils.EMPTY));
+//        bc.setDureeCotiAvant73(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COTI_AV_73")); $b6
+                        StringBuilder dureeCotiAv37 = new StringBuilder(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getAv73().getAnnees()));
+                        dureeCotiAv37.append(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getAv73().getMois()));
+                        bc.setDureeCotiAvant73(dureeCotiAv37.toString());
+//        bc.setDureeCotiDes73(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COTI_DES_73")); $b7
+                        StringBuilder dureeCotiAp37 = new StringBuilder(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getAp73().getAnnees()));
+                        dureeCotiAp37.append(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getAp73().getMois()));
+                        bc.setDureeCotiDes73(dureeCotiAp37.toString());
                         break;
                     default:
                         break;
@@ -614,6 +620,14 @@ public class REAcor2020Parser {
 
         bc.setReferenceDecision("0");
 
+        if (Objects.nonNull(fCalcul.getAnalysePeriodes())) {
+//        bc.setRevenuJeunesse(REACORAbstractFlatFileParser.getField(line, fields, "REVENU_JEUNESSE")); $b33
+            bc.setRevenuJeunesse(Objects.toString(fCalcul.getAnalysePeriodes().get(0).getRevJTot(), StringUtils.EMPTY));
+//        bc.setPeriodeJeunesse(REACORAbstractFlatFileParser.getField(line, fields, "PERIODE_JEUNESSE")); $b32
+            StringBuilder dureeJeunesse = new StringBuilder("00");
+            dureeJeunesse.append(ParserUtils.formatIntToStringWithTwoChar(fCalcul.getAnalysePeriodes().get(0).getJeunesseTot()));
+            bc.setPeriodeJeunesse(dureeJeunesse.toString());
+        }
 
         // TODO : valeur à 2390 dans le fichier plat --> valeur non retrouvée dans le json
 //        bc.setMontantMaxR10Ech44(REACORAbstractFlatFileParser.getField(line, fields, "MONTANT_MAX_R10_E44")); $b47
@@ -625,8 +639,6 @@ public class REAcor2020Parser {
 //        bc.setTypeCalculComparatif(REACORAbstractFlatFileParser.getField(line, fields, "TYPE_CALCUL_COMPARATIF")); $b45
 //        bc.setMoisCotiAnneeOuvertDroit(REACORAbstractFlatFileParser.getField(line, fields, "MOIS_COTI_ANNEE_OUVERTURE")); $b36
 //        bc.setIsPartageRevenuActuel(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields, "PARTAGE_REVENU"))); $b44
-//        bc.setPeriodeJeunesse(REACORAbstractFlatFileParser.getField(line, fields, "PERIODE_JEUNESSE")); $b32
-//        bc.setRevenuJeunesse(REACORAbstractFlatFileParser.getField(line, fields, "REVENU_JEUNESSE")); $b33
 
         // TODO : $b4 - Revenu pris en compte non trouvé dans FCalcul --> en attente (égale à 0 dans l'exemple)
 //        bc.setRevenuPrisEnCompte(REACORAbstractFlatFileParser.getField(line, fields, "REVENU_PRIS_COMPTE")); $b4
@@ -901,7 +913,6 @@ public class REAcor2020Parser {
             ra.setDateEcheance(d);
         }
 
-        // TODO : ajournement : aller chercher dans le dernier état de la rente
         if (Objects.nonNull(baseCalcul.getAjournement())) {
             ra = setAjournementToRA(baseCalcul, ra, rente);
         }
@@ -938,9 +949,12 @@ public class REAcor2020Parser {
         ra.setCsEtat(IREPrestationAccordee.CS_ETAT_CALCULE);
         ra.setAnneeMontantRAM(REACORParser.computeAnneeMontantRAM(ra, session));
 
+        // TODO : supplément de veuvage non trouvé dans le xml -> on set la valeur à 0
+        // ra.setSupplementVeuvage(REACORAbstractFlatFileParser.getField(line, fields, "SUPPL_VEUVAGE")); $r29
+         ra.setSupplementVeuvage("0");
+
         // TODO : champ à analyser -> tous égaux à 0 dans le fichier plat.
         // ra.setPrescriptionAppliquee(REACORAbstractFlatFileParser.getField(line, fields, "PRESCRIPTION_APPLIQUEE")); $r30
-        // ra.setSupplementVeuvage(REACORAbstractFlatFileParser.getField(line, fields, "SUPPL_VEUVAGE")); $r29
         // ra.setMontantRenteOrdiRemplacee(REACORAbstractFlatFileParser.getField(line, fields, "MONTANT_RENTE_ORDINAIRE_REMPL")); $r13
         // ra.setCodeRefugie(REACORAbstractFlatFileParser.getField(line, fields, "CODE_REFUGIE")); $r9 ou $r19 ??
         // TODO : champ non mappé -> égale à 0 dans le fichier plat.
@@ -1288,7 +1302,7 @@ public class REAcor2020Parser {
                         }
                     }
                     if (Objects.nonNull(premierePrestation)) {
-                        bc = importBaseCalcul(session, eachBaseCalcul, premierePrestation);
+                        bc = importBaseCalcul(session, eachBaseCalcul, premierePrestation, fCalcul);
 
                         if (fcParBaseCalculVO != null) {
                             retValue.add(fcParBaseCalculVO);

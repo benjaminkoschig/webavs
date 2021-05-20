@@ -30,7 +30,7 @@ public class PRDateFormater {
     /**
      * Date format converter
      * 
-     * @param AAAAMM
+     * @param date
      * @return MMAA
      */
     public static String convertDate_AAAAMM_to_MMAA(String date) {
@@ -51,7 +51,7 @@ public class PRDateFormater {
     /**
      * Date format converter
      * 
-     * @param AAAAMM
+     * @param date
      * @return MMAAAA
      */
     public static String convertDate_AAAAMM_to_MMAAAA(String date) {
@@ -71,7 +71,7 @@ public class PRDateFormater {
     /**
      * Date format converter
      * 
-     * @param AAAAMM
+     * @param date
      * @return MM.AAAA
      */
     public static String convertDate_AAAAMM_to_MMxAAAA(String date) {
@@ -128,9 +128,7 @@ public class PRDateFormater {
     /**
      * Converti une date au formant jj.mm.aaaa en AAAAMM
      * 
-     * @param jj
-     *            .mm.aaaa La date a formater
-     * 
+     * @param AAAAMMJJ la date à formater
      * @return la date formatée au format AAAAMM Aucun changement si Exception
      */
     public static String convertDate_AAAAMMJJ_to_JJxMMxAAAA(String AAAAMMJJ) {
@@ -150,9 +148,7 @@ public class PRDateFormater {
     /**
      * Converti une date au formant jj.mm.aaaa en AAAAMM
      * 
-     * @param jj
-     *            .mm.aaaa La date a formater
-     * 
+     * @param AAAAMMJJ la date à formater
      * @return la date formatée au format AAAAMM Aucun changement si Exception
      */
     public static String convertDate_AAAAMMJJ_to_MMxAAAA(String AAAAMMJJ) {
@@ -195,7 +191,7 @@ public class PRDateFormater {
     /**
      * Date format converter
      * 
-     * @param AAMM
+     * @param date
      * @return AAAAMM
      */
     public static String convertDate_AAMM_to_AAAAMM(String date) {
@@ -223,7 +219,7 @@ public class PRDateFormater {
     /**
      * Date format converter
      * 
-     * @param AAMM
+     * @param date
      * @return AAxMM
      */
     public static String convertDate_AAMM_to_AAxMM(String date) {
@@ -292,7 +288,7 @@ public class PRDateFormater {
     /**
      * Date format converter
      * 
-     * @param AM
+     * @param date
      * @return AxM
      */
     public static String convertDate_AM_to_AxM(String date) {
@@ -316,7 +312,7 @@ public class PRDateFormater {
     /**
      * Date format converter
      * 
-     * @param AMM
+     * @param date
      * @return AxMM
      */
     public static String convertDate_AMM_to_AxMM(String date) {
@@ -340,10 +336,9 @@ public class PRDateFormater {
     /**
      * Formate une date à partir d'une String au format JJ.MM.AAAA.
      * 
-     * @param JJ
-     *            .MM.AAAA La date a formater
-     * 
+     * @param JJMMAAAA
      * @return la date formatée au format MMMM AAAA
+     * @throws JAException
      */
 
     public static String convertDate_JJMMAAAA_to_MMMMAAAA(String JJMMAAAA) throws JAException {
@@ -367,9 +362,7 @@ public class PRDateFormater {
     /**
      * Formate une date à partir d'une String au format JJ.MM.AAAA.
      * 
-     * @param JJ
-     *            .MM.AAAA La date a formater
-     * 
+     * @param JJxMMxAAAA
      * @return la date formatée au format JJ MMMM AAAA
      */
 
@@ -391,10 +384,9 @@ public class PRDateFormater {
     /**
      * Formate une date à partir d'une String au format AAAAMM.
      * 
-     * @param JJ
-     *            .MM.AAAA La date a formater
-     * 
+     * @param JJxMMxAAAA
      * @return la date formatée au format AAAAMM Aucun changement si Exception
+     * @throws JAException
      */
 
     public static String convertDate_JJxMMxAAAA_to_AAAAMM(String JJxMMxAAAA) throws JAException {
@@ -409,10 +401,9 @@ public class PRDateFormater {
     /**
      * Formate une date à partir d'une String au format AAAAMMJJ.
      * 
-     * @param JJ
-     *            .MM.AAAA La date a formater
-     * 
+     * @param JJxMMxAAAA
      * @return la date formatée au format AAAAMMJJ Aucun changement si Exception
+     * @throws JAException
      */
     public static String convertDate_JJxMMxAAAA_to_AAAAMMJJ(String JJxMMxAAAA) throws JAException {
         if (JadeStringUtil.isBlankOrZero(JJxMMxAAAA)) {
@@ -426,10 +417,9 @@ public class PRDateFormater {
     /**
      * Formate une date à partir d'une String au format JJ.MM.AAAA.
      * 
-     * @param JJ
-     *            .MM.AAAA La date a formater
-     * 
+     * @param JJxMMxAAAA
      * @return la date formatée au format JJ MMMM AAAA
+     * @throws JAException
      */
 
     public static String convertDate_JJxMMxAAAA_to_JJMMMMAAAA(String JJxMMxAAAA) throws JAException {
@@ -469,10 +459,9 @@ public class PRDateFormater {
     /**
      * Formate une date à partir d'une String au format JJ.MM.AAAA.
      * 
-     * @param JJ
-     *            .MM.AAAA La date a formater
-     * 
+     * @param JJxMMxAAAA
      * @return la date formatée au format AAAAMM Aucun changement si Exception
+     * @throws JAException
      */
 
     public static String convertDate_JJxMMxAAAA_to_MMxAAAA(String JJxMMxAAAA) throws JAException {
@@ -487,7 +476,7 @@ public class PRDateFormater {
     /**
      * Date format converter
      * 
-     * @param MMAA
+     * @param date
      * @return AAAA.MM
      */
     public static String convertDate_MMAA_to_AAAAMM(String date) {
@@ -514,7 +503,7 @@ public class PRDateFormater {
     /**
      * Date format converter
      * 
-     * @param MMAA
+     * @param date
      * @return AAAA.MM
      */
     public static String convertDate_MMAA_to_AAAAxMM(String date) {
@@ -541,7 +530,7 @@ public class PRDateFormater {
     /**
      * Date format converter
      * 
-     * @param MMAA
+     * @param date
      * @return AAAA.MM
      */
     public static String convertDate_MMAA_to_MMxAAAA(String date) {
@@ -596,9 +585,7 @@ public class PRDateFormater {
     /**
      * Formate une date à partir d'une String au format MM.AAAA.
      * 
-     * @param MM
-     *            .AAAA La date a formater
-     * 
+     * @param MMxAAAA
      * @return la date formatée au format AAAA
      */
 
@@ -620,8 +607,7 @@ public class PRDateFormater {
     /**
      * Date Format converter
      * 
-     * @param MM
-     *            .AAAA
+     * @param date
      * @return AAAAMM
      */
     public static String convertDate_MMxAAAA_to_AAAAMM(String date) {
@@ -643,9 +629,7 @@ public class PRDateFormater {
     /**
      * Date Format converter
      * 
-     * @param MM
-     *            .AAAA
-     * 
+     * @param date
      * @return MMAA
      */
     public static String convertDate_MMxAAAA_to_MMAA(String date) {
@@ -665,8 +649,7 @@ public class PRDateFormater {
     /**
      * Date Format converter
      * 
-     * @param MM
-     *            .AAAA
+     * @param date
      * @return MMAAA
      */
     public static String convertDate_MMxAAAA_to_MMAAAA(String date) {
@@ -687,9 +670,7 @@ public class PRDateFormater {
     /**
      * Converti une date au formant jj.mm.aaaa en AAAAMM
      * 
-     * @param jj
-     *            .mm.aaaa La date a formater
-     * 
+     * @param AAAAMMJJ
      * @return la date formatée au format AAAAMM Aucun changement si Exception
      */
     public static String convertDateToAAAAMM(String AAAAMMJJ) {

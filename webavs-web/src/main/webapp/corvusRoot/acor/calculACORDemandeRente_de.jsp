@@ -209,8 +209,7 @@
         });
         $('#lienAcorWeb').one('click', function () {
             ajaxUtils.addOverlay($('html'));
-            document.forms("mainForm").userAction.value = "corvus.rentesaccordees.renteAccordeeJointDemandeRente.chercher";
-            document.forms[0].submit();
+            window.location.href = "corvus?userAction=corvus.rentesaccordees.renteAccordeeJointDemandeRente.chercher&noDemandeRente=" + <%=viewBean.getIdDemandeRente()%>;
         });
     });
 </script>

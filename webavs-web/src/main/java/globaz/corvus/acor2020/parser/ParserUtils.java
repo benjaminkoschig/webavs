@@ -22,6 +22,14 @@ public final class ParserUtils {
 
     private static final Logger LOG = Logger.getLogger(ParserUtils.class);
 
+    public static String formatIntToStringWithTwoChar(int value) {
+        if (Objects.nonNull(value)) {
+            DecimalFormat df = new DecimalFormat("00");
+            return df.format(value);
+        }
+        return StringUtils.EMPTY;
+    }
+
     public static String formatFloatToStringWithTwoDecimal(Float value) {
         if (Objects.nonNull(value)) {
             DecimalFormat df = new DecimalFormat("00.00");
@@ -138,6 +146,13 @@ public final class ParserUtils {
             nss = Long.valueOf(NSUtil.unFormatAVS(strNss));
         }
         return nss;
+    }
+
+    public static String formatAAAAtoAA(String annee) {
+        if (annee.length() == 4) {
+            return annee.substring(2,4);
+        }
+        return StringUtils.EMPTY;
     }
 
 }
