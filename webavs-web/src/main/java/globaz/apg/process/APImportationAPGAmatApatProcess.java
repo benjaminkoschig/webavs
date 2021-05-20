@@ -153,6 +153,9 @@ public class APImportationAPGAmatApatProcess extends APAbstractImportationAPGPro
             LOG.error("Erreur lors de l'importation des fichiers", e);
             throw new Exception("Erreur lors de l'importation des fichiers", e);
         }
+        finally {
+            closeBsession();
+        }
     }
 
     /**
@@ -200,7 +203,6 @@ public class APImportationAPGAmatApatProcess extends APAbstractImportationAPGPro
                 throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, e);
             } finally {
                 nbTraites++;
-                closeBsession();
             }
         }
 
@@ -277,8 +279,8 @@ public class APImportationAPGAmatApatProcess extends APAbstractImportationAPGPro
         }
         InsuredPerson assure = content.getInsuredPerson();
         AddressType adresseAssure = content.getInsuredAddress();
-        String npaFormat = formatNPA(getZipCode(adresseAssure));
 
+        String npaFormat = formatNPA(getZipCode(adresseAssure));
         IAPImportationAmatApat handler;
         boolean isWomen = false;
         if (StringUtils.equals(AMAT_TYPE, content.getAmatApatType())) {
@@ -290,19 +292,25 @@ public class APImportationAPGAmatApatProcess extends APAbstractImportationAPGPro
             handler = null;
         }
 
-        if(handler != null){
-            PRTiersWrapper tiers = getTiersByNss(assure.getVn());
+        String nssTiers = assure.getVn();
+        if(handler != null) {
+            PRTiersWrapper tiers = getTiersByNss(nssTiers);
             // TODO : identifier quand il faut créer un tiers.
             if (Objects.isNull(tiers)) {
                 tiers = handler.createTiers(assure, npaFormat, bsession, isWomen);
             }
-            handler.createRoleApgTiers(tiers.getIdTiers(), bsession);
-            handler.createContact(tiers, assure.getEmail(), bsession);
-            PRDemande demande = handler.createDemande(tiers.getIdTiers(), bsession);
-            APDroitLAPG droit = handler.createDroit(content, npaFormat, demande, transaction, bsession);
-            handler.createSituationFamiliale(content.getFamilyMembers(), droit.getIdDroit(), transaction, bsession);
-            handler.createSituationProfessionnel(content, droit.getIdDroit(), transaction, bsession);
-            nssTraites.add(tiers.getNSS());
+            if (tiers != null) {
+                handler.createRoleApgTiers(tiers.getIdTiers(), bsession);
+                handler.createContact(tiers, assure.getEmail(), bsession);
+                PRDemande demande = handler.createDemande(tiers.getIdTiers(), bsession);
+                APDroitLAPG droit = handler.createDroit(content, npaFormat, demande, transaction, bsession);
+                handler.createSituationFamiliale(content.getFamilyMembers(), droit.getIdDroit(), transaction, bsession);
+                handler.createSituationProfessionnel(content, droit.getIdDroit(), transaction, bsession);
+                nssTraites.add(tiers.getNSS());
+            } else {
+                errors.add("Une erreur s'est produite lors de la création du tiers : " + nssTiers);
+                LOG.error("ImportAPGPandemie#creationRoleApgTiers - Une erreur s'est produite dans la création du tiers : " + nssTiers);
+            }
         }
 
         if (!hasError(bsession, transaction) && handler != null) {
