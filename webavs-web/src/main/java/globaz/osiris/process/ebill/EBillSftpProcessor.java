@@ -3,11 +3,8 @@ package globaz.osiris.process.ebill;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.osiris.business.constantes.CAProperties;
 import com.jcraft.jsch.SftpException;
-import globaz.jade.client.util.JadeListUtil;
 import globaz.jade.common.Jade;
 import globaz.osiris.db.ordres.sepa.AbstractSepa;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.InputStream;
@@ -15,9 +12,9 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class EBillSftpProcessor extends AbstractSepa {
-    private static final Logger LOG = LoggerFactory.getLogger(EBillSftpProcessor.class);
 
     public EBillSftpProcessor() throws PropertiesException {
         String localInDirPath = Jade.getInstance().getPersistenceDir() + getFolderInName();
@@ -75,32 +72,19 @@ public class EBillSftpProcessor extends AbstractSepa {
     }
 
     public List<String> getListFiles(String extension) throws PropertiesException {
-
         List<String> listOriginal = Arrays.asList(listFiles(getClient(), getInFolderNameFtp()));
-
-        // Ne prendre en compte que les fichiers ayant l'extension passé en paramètre
-        listOriginal = JadeListUtil.filter(listOriginal, new JadeListUtil.Each<String>() {
-            @Override
-            public boolean eval(final String fichier) {
-                return fichier.toLowerCase(Locale.ROOT).endsWith(extension.toLowerCase(Locale.ROOT));
-            }
-        });
-
-        return listOriginal;
+        return listOriginal.stream().filter(e -> e.toLowerCase(Locale.ROOT).endsWith(extension.toLowerCase(Locale.ROOT))).collect(Collectors.toList());
     }
 
     public void sendFile(InputStream is, String filename) throws PropertiesException, SftpException {
-        //sendData(is, getClient(), getOutFolderNameFtp() + filename);
         getClient().put(is, getOutFolderNameFtp() + filename);
     }
 
     public void retrieveFile(final String fileName, final OutputStream stream) throws PropertiesException, SftpException {
-        //retrieveData(getClient(),getInFolderNameFtp() + fileName, stream);
         getClient().get(getInFolderNameFtp() + fileName, stream);
     }
 
     public void deleteFile(final String fileName) throws PropertiesException, SftpException {
-        //deleteFile(getClient(), getInFolderNameFtp() + fileName);
         getClient().rm(getInFolderNameFtp() + fileName);
     }
 

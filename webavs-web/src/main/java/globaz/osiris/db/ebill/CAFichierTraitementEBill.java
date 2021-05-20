@@ -47,7 +47,7 @@ public class CAFichierTraitementEBill extends BEntity implements Serializable {
 
     @Override
     protected void _validate(BStatement bStatement) throws Exception {
-
+        // no implementation needed : pas de contrôle avant mise en bdd.
     }
 
     @Override

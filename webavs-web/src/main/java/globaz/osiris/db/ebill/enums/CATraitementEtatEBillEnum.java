@@ -27,7 +27,6 @@ public enum CATraitementEtatEBillEnum {
                 return REJECTED_OR_PENDING;
             default:
                 return null;
-//                throw new Exception("etatEBill.inexistant");
         }
     }
 

@@ -27,7 +27,6 @@ public enum CAStatutEBillEnum {
                 return A_TRAITER;
             default:
                 return null;
-//                throw new Exception("statutEBill.inexistant");
         }
     }
 

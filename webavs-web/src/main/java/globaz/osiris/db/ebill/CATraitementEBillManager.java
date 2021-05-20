@@ -7,6 +7,7 @@ import globaz.jade.client.util.JadeStringUtil;
 
 public class CATraitementEBillManager extends BManager {
 
+    private static final String AND = " AND ";
     private String forIdFichier;
     private String forTransactionID;
     private String forEBillAccountID;
@@ -42,49 +43,49 @@ public class CATraitementEBillManager extends BManager {
         // Id Fichier
         if (!JadeStringUtil.isEmpty(getForIdFichier())) {
             if (sqlWhere.length() != 0) {
-                sqlWhere.append(" AND ");
+                sqlWhere.append(AND);
             }
             sqlWhere.append(CATraitementEBill.FIELD_ID_FICHIER).append("=").append(this._dbWriteNumeric(statement.getTransaction(), getForIdFichier()));
         }
         // TransactionID
         if (!JadeStringUtil.isEmpty(getForTransactionID())) {
             if (sqlWhere.length() != 0) {
-                sqlWhere.append(" AND ");
+                sqlWhere.append(AND);
             }
             sqlWhere.append(CATraitementEBill.FIELD_TRANSACTION_ID).append("=").append(this._dbWriteString(statement.getTransaction(), getForTransactionID()));
         }
         // eBillAccountID
         if (!JadeStringUtil.isIntegerEmpty(getForEBillAccountID())) {
             if (sqlWhere.length() != 0) {
-                sqlWhere.append(" AND ");
+                sqlWhere.append(AND);
             }
             sqlWhere.append(CATraitementEBill.FIELD_EBILL_ACCOUNT_ID).append("=").append(this._dbWriteString(statement.getTransaction(), getForEBillAccountID()));
         }
         // Numéro affilié
         if (!JadeStringUtil.isEmpty(getForNumAffilie())) {
             if (sqlWhere.length() != 0) {
-                sqlWhere.append(" AND ");
+                sqlWhere.append(AND);
             }
             sqlWhere.append(CATraitementEBill.FIELD_NUMERO_AFFILIE).append(" like ").append(this._dbWriteString(statement.getTransaction(), "%" + getForNumAffilie() + "%"));
         }
         // Statut interne
         if (!JadeStringUtil.isIntegerEmpty(getForStatutInterne())) {
             if (sqlWhere.length() != 0) {
-                sqlWhere.append(" AND ");
+                sqlWhere.append(AND);
             }
             sqlWhere.append(CATraitementEBill.FIELD_STATUT).append("=").append(this._dbWriteNumeric(statement.getTransaction(), getForStatutInterne()));
         }
         // Etat eBill
         if (!JadeStringUtil.isIntegerEmpty(getForEtat())) {
             if (sqlWhere.length() != 0) {
-                sqlWhere.append(" AND ");
+                sqlWhere.append(AND);
             }
             sqlWhere.append(CATraitementEBill.FIELD_ETAT).append("=").append(this._dbWriteNumeric(statement.getTransaction(), getForEtat()));
         }
         // Code Erreur
         if (!JadeStringUtil.isIntegerEmpty(getForCodeErreur())) {
             if (sqlWhere.length() != 0) {
-                sqlWhere.append(" AND ");
+                sqlWhere.append(AND);
             }
             sqlWhere.append(CATraitementEBill.FIELD_CODE_ERREUR).append("=").append(this._dbWriteString(statement.getTransaction(), getForCodeErreur()));
         }

@@ -8,10 +8,7 @@ import com.google.common.base.Throwables;
 import com.jcraft.jsch.SftpException;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.framework.util.FWMessageFormat;
-import globaz.globall.db.BProcess;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.db.GlobazJobQueue;
-import globaz.globall.db.GlobazServer;
+import globaz.globall.db.*;
 import globaz.globall.format.IFormatData;
 import globaz.globall.util.JACalendar;
 import globaz.jade.common.Jade;
@@ -32,10 +29,9 @@ import globaz.osiris.exceptions.CATechnicalException;
 import globaz.osiris.external.IntRole;
 import globaz.osiris.process.ebill.CAInscriptionEBillEnum;
 import globaz.osiris.process.ebill.EBillSftpProcessor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -45,9 +41,9 @@ import java.util.Objects;
 /**
  * CRON permettant le traitement des fichiers d'inscription eBill.
  */
+@Slf4j
 public class CAProcessImportInscriptionEBill extends BProcess {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CAProcessImportInscriptionEBill.class);
     private static final String MAIL_CONTENT = "EBILL_MAIL_INSCRIPTION_CONTENT";
     private static final String MAIL_ERROR_CONTENT = "EBILL_MAIL_INSCRIPTION_ERROR_CONTENT";
     private static final String MAIL_SUBJECT = "EBILL_MAIL_INSCRIPTION_SUBJECT";
@@ -55,7 +51,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     private static final char SEPARATOR = ';';
     private static final String BOOLEAN_TRUE = "on";
     private final StringBuilder error = new StringBuilder();
-    List<String> filesToSend = new ArrayList<>();
+    private List<String> filesToSend = new ArrayList<>();
     private boolean isPlusieursTypeAffilie;
     private EBillSftpProcessor serviceFtp;
     private int inscriptionOK = 0;
@@ -92,7 +88,6 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             }
 
         } catch (Exception e) {
-            LOG.error("Erreur lors de l'execution du processus d'importation des inscriptions : ", e);
             error.append("Impossible d'exécuter le processus d'importation des inscriptions : ").append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             sendResultMail(error.toString());
             throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, e);
@@ -463,7 +458,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
         manager.setSession(getSession());
         manager.setForEBillAccountID(numeroAdherent);
         try {
-            manager.find(CACompteAnnexeManager.SIZE_NOLIMIT);
+            manager.find(BManager.SIZE_NOLIMIT);
         } catch (Exception e) {
             LOG.error("Erreur lors de la récupération du compte annexe par le numéro d'adhérent : " + numeroAdherent , e);
             eachInscription.setTexteErreurInterne("Erreur lors de la récupération du compte annexe par le numéro d'adhérent : " + numeroAdherent);
@@ -503,7 +498,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                 try {
                     final String idCompteAnnexe = formatterNumeroDepuisRefBVR(inscriptionEBill);
                     manager.setForIdCompteAnnexeIn(idCompteAnnexe);
-                    manager.find(CACompteAnnexeManager.SIZE_NOLIMIT);
+                    manager.find(BManager.SIZE_NOLIMIT);
                 } catch (Exception e) {
                     LOG.error("Erreur lors de la récupération du compte annexe par l'id du compte annexe depuis la référence de BVR : " + inscriptionEBill.getNumRefBVR(), e);
                     inscriptionEBill.setTexteErreurInterne("Erreur lors de la récupération du compte annexe par l'id du compte annexe depuis la référence de BVR : " + inscriptionEBill.getNumRefBVR());
@@ -537,10 +532,11 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                     manager.setForIdRole(IntRole.ROLE_AFFILIE);
                 }
                 try {
-                    manager.find(CACompteAnnexeManager.SIZE_NOLIMIT);
+                    manager.find(BManager.SIZE_NOLIMIT);
                 } catch (Exception e) {
-                    LOG.error("Erreur lors de la récupération du compte annexe par le numéro d'affilié : " + numeroAffilieFormate, e);
-                    inscriptionEBill.setTexteErreurInterne("Erreur lors de la récupération du compte annexe par le numéro d'affilié : " + numeroAffilieFormate);
+                    String erreurInterne = String.format("Erreur lors de la récupération du compte annexe par le numéro d'affilié : %s", numeroAffilieFormate);
+                    LOG.error(erreurInterne, e);
+                    inscriptionEBill.setTexteErreurInterne(erreurInterne);
                     error.append("Impossible de récupérer le compte annexe par le numéro d'affilié : ").append(numeroAffilieFormate).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
                     return false;
                 }
@@ -551,8 +547,9 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                 return majCompteAnnexe(inscriptionEBill, numeroAdherent, inscriptionEBill.getEmail(), compteAnnexe);
             }
         }
-        LOG.warn("Erreur lors de la récupération du compte annexe lié au numéro de référence BVR : " + inscriptionEBill.getNumRefBVR());
-        inscriptionEBill.setTexteErreurInterne("Erreur lors de la récupération du compte annexe lié au numéro de référence BVR : " + inscriptionEBill.getNumRefBVR());
+        String erreurInterne = String.format("Erreur lors de la récupération du compte annexe lié au numéro de référence BVR : %s", inscriptionEBill.getNumRefBVR());
+        LOG.warn(erreurInterne);
+        inscriptionEBill.setTexteErreurInterne(erreurInterne);
         error.append("Impossible de récupérer le compte annexe lié au numéro de référence BVR : " + inscriptionEBill.getNumRefBVR()).append("\n");
         return false;
     }
@@ -568,7 +565,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
     private String formatterNumeroDepuisRefBVR(CAInscriptionEBill inscriptionEBill) throws CATechnicalException {
         String numero;
         try {
-            numero = new Long(inscriptionEBill.getNumRefBVR().substring(3, 15)).toString();
+            numero = Long.toString(new Long(inscriptionEBill.getNumRefBVR().substring(3, 15)));
         } catch (Exception e) {
             throw new CATechnicalException("Une erreur est intervenue lors de la récupération de l'id depuis la référence BVR.", e);
         }
@@ -603,7 +600,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             }
 
             try {
-                manager.find(CACompteAnnexeManager.SIZE_NOLIMIT);
+                manager.find(BManager.SIZE_NOLIMIT);
             } catch (Exception e) {
                 LOG.error("Erreur lors de la récupération du compte annexe par le numéro d'affilié : " + numeroAffilie , e);
                 inscriptionEBill.setTexteErreurInterne("Erreur lors de la récupération du compte annexe par le numéro d'affilié : " + numeroAffilie);
@@ -641,8 +638,9 @@ public class CAProcessImportInscriptionEBill extends BProcess {
         try {
             compteAnnexe.update();
         } catch (Exception e) {
-            LOG.error("Erreur lors de la mise à jour du compte annexe avec l'id : " + compteAnnexe.getIdCompteAnnexe() + " avec le numéro d'adhérent : " + numeroAdherent, e);
-            inscriptionEBill.setTexteErreurInterne("Erreur lors de la mise à jour du compte annexe avec l'id : " + compteAnnexe.getIdCompteAnnexe() + " avec le numéro d'adhérent : " + numeroAdherent);
+            String erreurInterne = String.format("Erreur lors de la mise à jour du compte annexe d'id '%s' avec le numéro d'adhérent '%s'. ", compteAnnexe.getIdCompteAnnexe(), numeroAdherent);
+            LOG.error(erreurInterne, e);
+            inscriptionEBill.setTexteErreurInterne(erreurInterne);
             error.append("Impossible de mettre à jour le compte annexe avec l'id : ").append(compteAnnexe.getIdCompteAnnexe()).append(" avec le numéro d'adhérent : ").append(numeroAdherent).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             return false;
         }

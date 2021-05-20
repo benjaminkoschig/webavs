@@ -261,7 +261,7 @@ public class CAProcessImportTraitementEBill extends BProcess {
      * @return vrai si la sauvegarde est en succès.
      */
     private boolean saveTraitement(CAFichierTraitementEBill fichier, CATraitementEBill eachTraitement, boolean updatedSection) {
-         try {
+        try {
             eachTraitement.setSession(getSession());
             eachTraitement.setIdFichier(fichier.getIdFichier());
             if (updatedSection) {
@@ -321,11 +321,13 @@ public class CAProcessImportTraitementEBill extends BProcess {
         ProtocolEnvelope protocolEnvelope = (ProtocolEnvelope) unmarshaller.unmarshal(bufferedReader);
 
         //Map les traitements rejetés
-        for (ProtocolBillType protocolBillType : protocolEnvelope.getBody().getRejectedBills().getBill()){
-            CATraitementEBill traitementEBill = new CATraitementEBill();
-            traitementEBill.setEtat(CATraitementEtatEBillEnum.REJECTED_OR_PENDING.getNumeroEtat());
-            allTraitements.add(mappingTraitement(traitementEBill, protocolBillType));
-            nbElementsRejetes++;
+        if (Objects.nonNull(protocolEnvelope.getBody().getRejectedBills())) {
+            for (ProtocolBillType protocolBillType : protocolEnvelope.getBody().getRejectedBills().getBill()) {
+                CATraitementEBill traitementEBill = new CATraitementEBill();
+                traitementEBill.setEtat(CATraitementEtatEBillEnum.REJECTED_OR_PENDING.getNumeroEtat());
+                allTraitements.add(mappingTraitement(traitementEBill, protocolBillType));
+                nbElementsRejetes++;
+            }
         }
 
         for (ProtocolEnvelope.Body.DeliveryDate deliveryDate : protocolEnvelope.getBody().getDeliveryDate()) {
@@ -337,12 +339,14 @@ public class CAProcessImportTraitementEBill extends BProcess {
                 nbElementsEnErreurs++;
             }
             //Map les traitements en succès
-            for (ProtocolEnvelope.Body.DeliveryDate.OKResult.Bill protocolBillType : deliveryDate.getOKResult().getBill()) {
-                CATraitementEBill traitementEBill = new CATraitementEBill();
-                traitementEBill.setEtat(CATraitementEtatEBillEnum.TRAITE.getNumeroEtat());
-                traitementEBill.setTransactionID(protocolBillType.getTransactionID());
-                allTraitements.add(traitementEBill);
-                nbElementsTraites++;
+            if (Objects.nonNull(deliveryDate.getOKResult())) {
+                for (ProtocolEnvelope.Body.DeliveryDate.OKResult.Bill protocolBillType : deliveryDate.getOKResult().getBill()) {
+                    CATraitementEBill traitementEBill = new CATraitementEBill();
+                    traitementEBill.setEtat(CATraitementEtatEBillEnum.TRAITE.getNumeroEtat());
+                    traitementEBill.setTransactionID(protocolBillType.getTransactionID());
+                    allTraitements.add(traitementEBill);
+                    nbElementsTraites++;
+                }
             }
         }
 
@@ -355,7 +359,7 @@ public class CAProcessImportTraitementEBill extends BProcess {
         traitementEBill.seteBillAccountID(protocolBillType.getEBillAccountID());
         traitementEBill.setNumRefBVR(protocolBillType.getESRReference());
         traitementEBill.setMontantTotal(protocolBillType.getTotalAmount());
-        String codeErreurSansPrefixe = StringUtils.stripStart(protocolBillType.getReasonCode(),"0");
+        String codeErreurSansPrefixe = StringUtils.stripStart(protocolBillType.getReasonCode(), "0");
         CATraitementCodeErreurEBillEnum codeErreurEBill = CATraitementCodeErreurEBillEnum.parValeur(codeErreurSansPrefixe);
         traitementEBill.setCodeErreur(codeErreurEBill != null ? codeErreurEBill.getNumeroCodeErreur() : codeErreurSansPrefixe);
         traitementEBill.setTexteErreur(protocolBillType.getReasonText());
@@ -367,7 +371,7 @@ public class CAProcessImportTraitementEBill extends BProcess {
      * Sauvegardes des traitements eBill.
      *
      * @param allTraitements tous les traitements du fichier.
-     * @param fichier         le fichier en cours de traitement.
+     * @param fichier        le fichier en cours de traitement.
      * @return vrai si tous les traitements du fichier ont été traités avec succès, faux sinon.
      */
     private boolean saveTraitements(List<CATraitementEBill> allTraitements, CAFichierTraitementEBill fichier) {
@@ -418,14 +422,14 @@ public class CAProcessImportTraitementEBill extends BProcess {
             if (manager.getSize() == 1) {
                 return (CACompteAnnexe) manager.get(0);
             } else {
-                LOG.warn("Un compte annexe unique n'a pas pu être trouvé avec l'id de compte annexe : " + idCompteAnnexe );
-                traitementEBill.setTexteErreurInterne("Un compte annexe unique n'a pas pu être trouvé avec l'id de compte annexe : " + idCompteAnnexe );
+                LOG.warn("Un compte annexe unique n'a pas pu être trouvé avec l'id de compte annexe : " + idCompteAnnexe);
+                traitementEBill.setTexteErreurInterne("Un compte annexe unique n'a pas pu être trouvé avec l'id de compte annexe : " + idCompteAnnexe);
                 error.append("Impossible de récupérer un compte annexe unique avec l'id de compte annexe : ").append(idCompteAnnexe).append("\n");
                 return null;
             }
         } catch (Exception e) {
-            LOG.error("Erreur lors de la récupération du compte annexe avec l'id : "+ idCompteAnnexe, e);
-            traitementEBill.setTexteErreurInterne("Erreur lors de la récupération du compte annexe avec l'id : "+ idCompteAnnexe);
+            LOG.error("Erreur lors de la récupération du compte annexe avec l'id : " + idCompteAnnexe, e);
+            traitementEBill.setTexteErreurInterne("Erreur lors de la récupération du compte annexe avec l'id : " + idCompteAnnexe);
             error.append("Impossible de récupérer le compte annexe avec l'id : ").append(idCompteAnnexe).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             return null;
         }
@@ -462,7 +466,7 @@ public class CAProcessImportTraitementEBill extends BProcess {
                 return null;
             }
 
-         } catch (Exception e) {
+        } catch (Exception e) {
             LOG.error("Erreur lors de la récupération de la section avec l'id de transaction : " + transactionId, e);
             traitementEBill.setTexteErreurInterne("Erreur lors de la récupération de la section avec l'id de transaction : " + transactionId);
             error.append("Impossible de récupérer la section avec l'id de transaction : ").append(transactionId).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
@@ -492,7 +496,6 @@ public class CAProcessImportTraitementEBill extends BProcess {
      * Envoi le résultat du traitement par mail.
      *
      * @param mailContent : le contenu du mail envoyé.
-     *
      */
     private void sendResultMail(String mailContent) {
         try {
@@ -531,7 +534,7 @@ public class CAProcessImportTraitementEBill extends BProcess {
      */
     private String[] getEMailAddressesEBill() {
         String eMailAddress = JadePropertiesService.getInstance().getProperty(CAApplication.PROPERTY_OSIRIS_EBILL_EMAILS);
-        eMailAddress = eMailAddress.replaceAll("\\s+","");
+        eMailAddress = eMailAddress.replaceAll("\\s+", "");
         String[] eMailAddresses = new String[1];
         if (((eMailAddress == null) || (eMailAddress.length() == 0)) && getSession() != null) {
             eMailAddresses[0] = getSession().getUserEMail();

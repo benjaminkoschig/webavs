@@ -7,6 +7,7 @@ import globaz.jade.client.util.JadeStringUtil;
 
 public class CAInscriptionEBillManager extends BManager {
 
+    private static final String AND = " AND ";
     private String forIdFichier;
     private String forEBillAccountID;
     private String forType;
@@ -39,35 +40,35 @@ public class CAInscriptionEBillManager extends BManager {
         // Id Fichier
         if (!JadeStringUtil.isEmpty(getForIdFichier())) {
             if (sqlWhere.length() != 0) {
-                sqlWhere.append(" AND ");
+                sqlWhere.append(AND);
             }
             sqlWhere.append(CAInscriptionEBill.FIELD_ID_FICHIER).append("=").append(this._dbWriteNumeric(statement.getTransaction(), getForIdFichier()));
         }
         // eBillAccountID
         if (!JadeStringUtil.isIntegerEmpty(getForEBillAccountID())) {
             if (sqlWhere.length() != 0) {
-                sqlWhere.append(" AND ");
+                sqlWhere.append(AND);
             }
             sqlWhere.append(CAInscriptionEBill.FIELD_EBILL_ACCOUNT_ID).append("=").append(this._dbWriteString(statement.getTransaction(), getForEBillAccountID()));
         }
         // Type
         if (!JadeStringUtil.isIntegerEmpty(getForType())) {
             if (sqlWhere.length() != 0) {
-                sqlWhere.append(" AND ");
+                sqlWhere.append(AND);
             }
             sqlWhere.append(CAInscriptionEBill.FIELD_TYPE).append("=").append(this._dbWriteNumeric(statement.getTransaction(), getForType()));
         }
         // Numéro affilié
         if (!JadeStringUtil.isEmpty(getForNumAffilie())) {
             if (sqlWhere.length() != 0) {
-                sqlWhere.append(" AND ");
+                sqlWhere.append(AND);
             }
             sqlWhere.append(CAInscriptionEBill.FIELD_NUMERO_AFFILIE).append(" like ").append(this._dbWriteString(statement.getTransaction(), "%" + getForNumAffilie() + "%"));
         }
         // Statut interne
         if (!JadeStringUtil.isIntegerEmpty(getForStatutInterne())) {
             if (sqlWhere.length() != 0) {
-                sqlWhere.append(" AND ");
+                sqlWhere.append(AND);
             }
             sqlWhere.append(CAInscriptionEBill.FIELD_STATUT).append("=").append(this._dbWriteNumeric(statement.getTransaction(), getForStatutInterne()));
         }

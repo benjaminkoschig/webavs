@@ -27,7 +27,6 @@ public enum CAInscriptionTypeEBillEnum {
                 return RESILIATION;
             default:
                 return null;
-//                throw new Exception("statutEBill.inexistant");
         }
     }
 

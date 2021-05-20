@@ -13,6 +13,7 @@ public class CAFichierTraitementEBillManager extends BManager {
 
     private static final String ALIAS_FICHIER = "fichier.";
     private static final String ALIAS_TRAITEMENT = "traitement.";
+    private static final String AND = " AND ";
     private String forIdFichier;
     private String forDateTraitement;
     private String forStatutFichier;
@@ -46,21 +47,21 @@ public class CAFichierTraitementEBillManager extends BManager {
         // Id Fichier
         if (!JadeStringUtil.isEmpty(getForIdFichier())) {
             if (sqlWhere.length() != 0) {
-                sqlWhere.append(" AND ");
+                sqlWhere.append(AND);
             }
             sqlWhere.append(ALIAS_FICHIER).append(CAFichierTraitementEBill.FIELD_ID_FICHIER).append("=").append(this._dbWriteNumeric(statement.getTransaction(), getForIdFichier()));
         }
         // Date de lecture
         if (!JadeStringUtil.isIntegerEmpty(getForDateTraitement())) {
             if (sqlWhere.length() != 0) {
-                sqlWhere.append(" AND ");
+                sqlWhere.append(AND);
             }
             sqlWhere.append(CAFichierTraitementEBill.FIELD_DATE_LECTURE).append("=").append(this._dbWriteDateAMJ(statement.getTransaction(), getForDateTraitement()));
         }
         // Statut fichier
         if (!JadeStringUtil.isIntegerEmpty(getForStatutFichier())) {
             if (sqlWhere.length() != 0) {
-                sqlWhere.append(" AND ");
+                sqlWhere.append(AND);
             }
             sqlWhere.append(CAFichierTraitementEBill.FIELD_STATUT_FICIHER).append("=").append(this._dbWriteString(statement.getTransaction(), getForStatutFichier()));
         }

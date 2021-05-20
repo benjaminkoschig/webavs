@@ -1,8 +1,8 @@
 package globaz.osiris.db.ebill.enums;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public enum CATraitementCodeErreurEBillEnum {
 
     NO_CODE_ERREUR("", ""),
@@ -40,7 +40,6 @@ public enum CATraitementCodeErreurEBillEnum {
     CODE_ERREUR_103("103", "103"),
     CODE_ERREUR_436("436", "436");
 
-    private static final Logger LOG = LoggerFactory.getLogger(CATraitementCodeErreurEBillEnum.class);
     public static final String NUMERO_CODE_ERREUR_01 = "1";
     public static final String NUMERO_CODE_ERREUR_02 = "2";
     public static final String NUMERO_CODE_ERREUR_03 = "3";
@@ -152,7 +151,7 @@ public enum CATraitementCodeErreurEBillEnum {
             case NUMERO_CODE_ERREUR_436:
                 return CODE_ERREUR_436;
             default:
-                LOG.warn("Le code erreur n'a pas été trouvé : " + numeroType);
+                LOG.warn("Le code erreur n'a pas été trouvé : {}", numeroType);
                 return NO_CODE_ERREUR;
         }
     }

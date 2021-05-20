@@ -30,7 +30,7 @@ public class CATraitementEBillViewBean extends CATraitementEBill implements FWVi
                 CAFichierTraitementEBillManager fichierManager = new CAFichierTraitementEBillManager();
                 fichierManager.setSession(getSession());
                 fichierManager.setForIdFichier(idFichier);
-                fichierManager.find(transaction);
+                fichierManager.find(transaction, BManager.SIZE_NOLIMIT);
 
                 if (fichierManager.size() == 1) {
                     CAFichierTraitementEBill fichierTraitementEBill = (CAFichierTraitementEBill) fichierManager.getFirstEntity();

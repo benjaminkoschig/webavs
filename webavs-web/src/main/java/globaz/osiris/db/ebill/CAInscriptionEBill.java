@@ -95,7 +95,7 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
 
     @Override
     protected void _validate(BStatement bStatement) throws Exception {
-
+            // no implementation needed : pas de contrôle avant mise en bdd.
     }
 
     @Override
@@ -185,7 +185,7 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
                 try {
                     CAApplication application = (CAApplication) GlobazServer.getCurrentSystem().getApplication(CAApplication.DEFAULT_APPLICATION_OSIRIS);
                     IFormatData affilieFormater = application.getAffileFormater();
-                    return affilieFormater.format(new Long(numRefBVR.substring(3, 15)).toString());
+                    return affilieFormater.format(Long.toString(new Long(numRefBVR.substring(3, 15))));
                 } catch (Exception e) {
                     return numero;
                 }
