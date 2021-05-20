@@ -746,44 +746,44 @@
                     <parameter name="genreService" />
                 </action>
             </node>
-<!--            <node>-->
-<!--                <label refId="MENU_OPTION_RESTITUER_DROIT" />-->
-<!--                <action command="/apg" responseTarget="fr_main">-->
-<!--                    <parameter name="userAction" value="apg.droits.droitLAPGJointDemande.restituerDroit" />-->
-<!--                    <parameter name="selectedId" />-->
-<!--                    <parameter name="genreService" />-->
-<!--                </action>-->
-<!--            </node>-->
-<!--            <node id="attenteReponse">-->
-<!--                <label refId="MENU_OPTION_ATTENTE_REPONSE" />-->
-<!--                <action command="/apg" responseTarget="fr_main">-->
-<!--                    <parameter name="userAction" value="apg.droits.droitLAPGJointDemande.actionAttenteReponse" />-->
-<!--                    <parameter name="selectedId" />-->
-<!--                </action>-->
-<!--            </node>-->
-<!--            <node id="refuser">-->
-<!--                <label refId="MENU_OPTION_REFUSER" />-->
-<!--                <action command="/apg" responseTarget="fr_main">-->
-<!--                    <parameter name="userAction" value="apg.droits.droitLAPGJointDemande.actionRefuser" />-->
-<!--                    <parameter name="selectedId" />-->
-<!--                </action>-->
-<!--            </node>-->
-<!--            <node id="calculertoutesprestations">-->
-<!--                <label refId="MENU_OPTION_CALCULER_PRESTATIONS" />-->
-<!--                <action command="/apg" responseTarget="fr_main">-->
-<!--                    <parameter name="userAction" value="apg.prestation.prestation.actionCalculerToutesLesPrestations" />-->
-<!--                    <parameter name="selectedId" />-->
-<!--                    <parameter name="genreService" />-->
-<!--                </action>-->
-<!--            </node>-->
-<!--            <node id="initinfocompl">-->
-<!--                <label refId="MENU_OPTION_INFO_COMPL" />-->
-<!--                <action command="/apg" responseTarget="fr_main">-->
-<!--                    <parameter name="userAction" value="apg.droits.infoCompl.actionAfficherInfoCompl" />-->
-<!--                    <parameter name="selectedId" />-->
-<!--                    <parameter name="noAVS" />-->
-<!--                </action>-->
-<!--            </node>-->
+            <node>
+                <label refId="MENU_OPTION_RESTITUER_DROIT" />
+                <action command="/apg" responseTarget="fr_main">
+                    <parameter name="userAction" value="apg.droits.droitLAPGJointDemande.restituerDroit" />
+                    <parameter name="selectedId" />
+                    <parameter name="genreService" />
+                </action>
+            </node>
+            <node id="attenteReponse">
+                <label refId="MENU_OPTION_ATTENTE_REPONSE" />
+                <action command="/apg" responseTarget="fr_main">
+                    <parameter name="userAction" value="apg.droits.droitLAPGJointDemande.actionAttenteReponse" />
+                    <parameter name="selectedId" />
+                </action>
+            </node>
+            <node id="refuser">
+                <label refId="MENU_OPTION_REFUSER" />
+                <action command="/apg" responseTarget="fr_main">
+                    <parameter name="userAction" value="apg.droits.droitLAPGJointDemande.actionRefuser" />
+                    <parameter name="selectedId" />
+                </action>
+            </node>
+            <node id="calculertoutesprestations">
+                <label refId="MENU_OPTION_CALCULER_PRESTATIONS" />
+                <action command="/apg" responseTarget="fr_main">
+                    <parameter name="userAction" value="apg.prestation.prestation.actionCalculerToutesLesPrestations" />
+                    <parameter name="selectedId" />
+                    <parameter name="genreService" />
+                </action>
+            </node>
+            <node id="initinfocompl">
+                <label refId="MENU_OPTION_INFO_COMPL" />
+                <action command="/apg" responseTarget="fr_main">
+                    <parameter name="userAction" value="apg.droits.infoCompl.actionAfficherInfoCompl" />
+                    <parameter name="selectedId" />
+                    <parameter name="noAVS" />
+                </action>
+            </node>
             <node>
                 <label refId="MENU_OPTION_BREAK_RULES" />
                 <action command="/apg" responseTarget="fr_main">
