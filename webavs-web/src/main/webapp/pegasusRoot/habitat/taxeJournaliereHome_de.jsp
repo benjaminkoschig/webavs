@@ -313,7 +313,7 @@ var isCaisseCCJU = <%=viewBean.isCaisseCCJU(objSession)%>;
 									<%if(EPCProperties.GESTION_JOURS_APPOINTS.getBooleanValue()) {%>
 									<tr>
 										<td><ct:FWLabel key="JSP_PC_TAXE_JOURNALIERE_HOME_D_DATE_ENTREE_HOME" /></td>
-										<td><input type="text" name="dateEntreeHome" value="" data-g-calendar="mandatory:false"/></td>
+										<td><input type="text" name="dateEntreeHome" value=""/></td>
 										
 									</tr>
 									<%} %>
