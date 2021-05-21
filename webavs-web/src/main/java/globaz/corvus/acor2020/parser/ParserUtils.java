@@ -50,7 +50,7 @@ public final class ParserUtils {
         return new Long(0);
     }
 
-    public static  Integer formatRequiredInteger(String fieldToParse) {
+    public static Integer formatRequiredInteger(String fieldToParse) {
         try {
             if (JadeStringUtil.isBlankOrZero(fieldToParse)) {
                 return 0;
@@ -62,7 +62,7 @@ public final class ParserUtils {
         return 0;
     }
 
-    public static  BigDecimal formatRequiredBigDecimal(String fieldToParse) {
+    public static BigDecimal formatRequiredBigDecimal(String fieldToParse) {
         try {
             if (JadeStringUtil.isBlankOrZero(fieldToParse)) {
                 return BigDecimal.ZERO;
@@ -74,7 +74,7 @@ public final class ParserUtils {
         return BigDecimal.ZERO;
     }
 
-    public static  BigDecimal formatRequiredBigDecimalDuree(String fieldToParse) {
+    public static BigDecimal formatRequiredBigDecimalDuree(String fieldToParse) {
         try {
             if (JadeStringUtil.isBlankOrZero(fieldToParse)) {
                 return new BigDecimal("00.00");
@@ -86,7 +86,7 @@ public final class ParserUtils {
         return new BigDecimal("00.00");
     }
 
-    public static  BigDecimal formatRequiredBigDecimalNoDecimal(String fieldToParse) {
+    public static BigDecimal formatRequiredBigDecimalNoDecimal(String fieldToParse) {
         try {
             if (JadeStringUtil.isBlankOrZero(fieldToParse)) {
                 return BigDecimal.ZERO;
@@ -98,7 +98,7 @@ public final class ParserUtils {
         return BigDecimal.ZERO;
     }
 
-    public static  Short formatRequiredShort(String fieldToParse) {
+    public static Short formatRequiredShort(String fieldToParse) {
         try {
             if (JadeStringUtil.isBlankOrZero(fieldToParse)) {
                 return 0;
@@ -110,7 +110,7 @@ public final class ParserUtils {
         return 0;
     }
 
-    public static  Short formatOptionalShort(String fieldToParse) {
+    public static Short formatOptionalShort(String fieldToParse) {
         try {
             if (JadeStringUtil.isBlankOrZero(fieldToParse)) {
                 return null;
@@ -150,9 +150,22 @@ public final class ParserUtils {
 
     public static String formatAAAAtoAA(String annee) {
         if (annee.length() == 4) {
-            return annee.substring(2,4);
+            return annee.substring(2, 4);
         }
         return StringUtils.EMPTY;
+    }
+
+    /**
+     * Conversion et formatage d'un nombre de mois MM en années et mois AA.MM
+     *
+     * @param mois les mois à convertir
+     * @return le nb d'années et de mois au format AA.MM
+     */
+    public static String formatMMtoAAxMM(int mois) {
+        int nbMoisDansAnnee = 12;
+        int moisRestant = mois % nbMoisDansAnnee;
+        int annee = (mois - moisRestant) / nbMoisDansAnnee;
+        return String.format("%s.%s", formatIntToStringWithTwoChar(annee), formatIntToStringWithTwoChar(moisRestant));
     }
 
 }

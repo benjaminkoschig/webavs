@@ -4,7 +4,6 @@ import ch.admin.zas.xmlns.acor_rentes_in_host._0.InHostType;
 import ch.admin.zas.xmlns.acor_standard_erreur._0.OriginType;
 import ch.admin.zas.xmlns.acor_standard_erreur._0.StandardError;
 import ch.globaz.common.exceptions.ValidationException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import globaz.corvus.acor.utils.Acor2020Token;
 import globaz.corvus.acor.utils.Acor2020TokenService;
@@ -15,7 +14,7 @@ import globaz.corvus.exceptions.REBusinessException;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.prestation.acor.PRACORException;
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
@@ -25,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.Objects;
 
 @Path("acor2020")
+@Slf4j
 public class WebAvsAcor2020Service {
 
     public static final String ERROR_ACOR_EXTERN_IMPORT_TOKEN = "ERROR.ACOR_EXTERN.IMPORT.TOKEN";
@@ -34,8 +34,6 @@ public class WebAvsAcor2020Service {
     public static final String ERROR_ACOR_EXTERN_EXPORT_TOKEN = "ERROR.ACOR_EXTERN.EXPORT.TOKEN";
     public static final String ERROR_ACOR_EXTERN_EXPORT_IN_HOST_REQUIRED = "ERROR.ACOR_EXTERN.EXPORT.IN_HOST_REQUIRED";
     public static final String ERROR_ACOR_EXTERN_EXPORT_UNKNOWN = "ERROR.ACOR_EXTERN.EXPORT.UNKNOWN";
-
-    private static final Logger LOG = Logger.getLogger(WebAvsAcor2020Service.class);
 
     /**
      * @return

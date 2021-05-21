@@ -34,6 +34,7 @@ import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAUtil;
 import globaz.hera.api.*;
+import globaz.hera.enums.TypeDeDetenteur;
 import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.hera.wrapper.SFPeriodeWrapper;
 import globaz.jade.client.util.JadeDateUtil;
@@ -292,9 +293,8 @@ public class REExportationCalculAcor2020 {
             if (StringUtils.isNotEmpty(dateRevocation)) {
                 flexibilisationType.setDebut(ParserUtils.formatDate(dateRevocation, DD_MM_YYYY_FORMAT));
                 flexibilisationType.setPartPercue(ANTICIPATION_OR_REVOCATION); // Pour un ajournement révoqué
-            }
-            else {
-            // Ajournement
+            } else {
+                // Ajournement
                 flexibilisationType.setDebut(ParserUtils.formatDate(demandeRente.getDateDebut(), DD_MM_YYYY_FORMAT));
                 flexibilisationType.setPartPercue(AJOURNEMENT); // Pour un ajournement demandé
             }
@@ -772,18 +772,33 @@ public class REExportationCalculAcor2020 {
         PeriodeBTEType periode = new PeriodeBTEType();
         periode.setDebut(ParserUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
         periode.setFin(ParserUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
-        //TODO Récupérer nss du détenteur si NSS vide -> mettre tiers à true
-        periode.setTiers(false);
-//        periode.setEducateur();
+        if (StringUtils.isNotEmpty(isfPeriode.getNoAvsDetenteurBTE())) {
+            periode.setEducateur(Long.valueOf(NSUtil.unFormatAVS(isfPeriode.getNoAvsDetenteurBTE())));
+        } else {
+            periode.setTiers(true);
+        }
         return periode;
     }
 
-    //TODO type période CS_TYPE_PERIODE_ENFANT et voir si TUTEUR_LEGAL ou TIERS dans csTypeDetenteur
     private PeriodeRecueilliGType createPeriodeRecueilliG(ISFPeriode isfPeriode) {
         PeriodeRecueilliGType periode = new PeriodeRecueilliGType();
         periode.setDebut(ParserUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
         periode.setFin(ParserUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
-        periode.setTuteur(false);
+        if (StringUtils.equals(String.valueOf(TypeDeDetenteur.TUTEUR_LEGAL.getCodeSystem()), isfPeriode.getCsTypeDeDetenteur())) {
+            periode.setTuteur(true);
+        } else {
+            periode.setTuteur(false);
+        }
+        return periode;
+    }
+
+    private PeriodeRecueilliCType createPeriodeRecueilliC(ISFPeriode isfPeriode) {
+    // TODO : identifier quand on est sur un cas recueilliC
+        PeriodeRecueilliCType periode = new PeriodeRecueilliCType();
+        periode.setDebut(ParserUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
+        periode.setFin(ParserUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
+        //TODO voir quoi mettre
+//        periode.setParentNonBiologique();
         return periode;
     }
 
@@ -829,23 +844,7 @@ public class REExportationCalculAcor2020 {
         return periode;
     }
 
-    private PeriodeRecueilliCType createPeriodeRecueilliCType(ISFPeriode isfPeriode) {
-        PeriodeRecueilliCType periode = new PeriodeRecueilliCType();
-        periode.setDebut(ParserUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
-        periode.setFin(ParserUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
-        //TODO voir quoi mettre
-//        periode.setParentNonBiologique();
-        return periode;
-    }
 
-    private PeriodeRecueilliGType createPeriodeRecueilliGType(ISFPeriode isfPeriode) {
-        PeriodeRecueilliGType periode = new PeriodeRecueilliGType();
-        periode.setDebut(ParserUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
-        periode.setFin(ParserUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
-        //TODO voir quoi mettre
-//        periode.setTuteur(false);
-        return periode;
-    }
 
     private ISFPeriode[] recupererPeriodesMembre(ISFMembreFamilleRequerant membre) {
         ISFPeriode[] periodes;
@@ -1408,9 +1407,11 @@ public class REExportationCalculAcor2020 {
 
     private void addPeriodesEnfant(EnfantType enfant, ISFMembreFamilleRequerant membre) {
         for (ISFPeriode isfPeriode : recupererPeriodesMembre(membre)) {
-            // TODO ajouter les période recueilli C et G
+            // TODO ajouter les période recueilli C et G (G = recueilli gratuitement avec ou sans tuteur)
             if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_GARDE_BTE, isfPeriode.getType())) {
                 enfant.getPeriodeBTE().add(createPeriodeBTE(isfPeriode));
+            } else if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_PERIODE_ENFANT, isfPeriode.getType())) {
+                enfant.getPeriodeRecueilliG().add(createPeriodeRecueilliG(isfPeriode));
             } else if (getEnumPeriodeEnfantType(isfPeriode) != null) {
                 enfant.getPeriode().add(createPeriodeEnfantType(isfPeriode));
             }

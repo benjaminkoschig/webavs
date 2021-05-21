@@ -624,9 +624,7 @@ public class REAcor2020Parser {
 //        bc.setRevenuJeunesse(REACORAbstractFlatFileParser.getField(line, fields, "REVENU_JEUNESSE")); $b33
             bc.setRevenuJeunesse(Objects.toString(fCalcul.getAnalysePeriodes().get(0).getRevJTot(), StringUtils.EMPTY));
 //        bc.setPeriodeJeunesse(REACORAbstractFlatFileParser.getField(line, fields, "PERIODE_JEUNESSE")); $b32
-            StringBuilder dureeJeunesse = new StringBuilder("00");
-            dureeJeunesse.append(ParserUtils.formatIntToStringWithTwoChar(fCalcul.getAnalysePeriodes().get(0).getJeunesseTot()));
-            bc.setPeriodeJeunesse(dureeJeunesse.toString());
+            bc.setPeriodeJeunesse(ParserUtils.formatMMtoAAxMM(fCalcul.getAnalysePeriodes().get(0).getJeunesseTot()));
         }
 
         // TODO : valeur à 2390 dans le fichier plat --> valeur non retrouvée dans le json
