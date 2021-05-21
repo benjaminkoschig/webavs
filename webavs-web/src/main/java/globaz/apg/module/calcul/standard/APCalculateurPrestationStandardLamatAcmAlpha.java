@@ -2,6 +2,8 @@ package globaz.apg.module.calcul.standard;
 
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import ch.globaz.common.properties.CommonPropertiesUtils;
@@ -66,6 +68,8 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.properties.JadePropertiesService;
 import globaz.prestation.application.PRAbstractApplication;
 import globaz.prestation.db.demandes.PRDemande;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <pre>
@@ -126,6 +130,8 @@ import globaz.prestation.db.demandes.PRDemande;
  * @author SCR
  */
 public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestationCalculateur<Object, Object, Object> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(APCalculateurPrestationStandardLamatAcmAlpha.class);
 
     // en cas de service d'avancement le salaire est considéré a 100% pendant ce nombre de jours
     private static final int NB_JOURS_APG_PLEINE_SERVICE_AVANCEMENT = 30;
@@ -969,8 +975,9 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
     private void creerPrestationsACM(final BSession session, final BTransaction transaction,
                                      final APPrestation lastPrestation, final APDroitLAPG droit, final FWCurrency sommeMontantsJournalier,
                                      final FWCurrency revenuMoyenDeterminant, final String genrePrestation, final String dateDebut,
-                                     final String dateFin, final String nombreJoursSoldes, final String noRevision,
-                                     final boolean plusDeTrenteJours) throws Exception {        final APCalculateurAcmAlpha acmCalculateur = new APCalculateurAcmAlpha();
+                                     final String dateFin, final String nombreJoursSoldesReel, final String noRevision,
+                                     final boolean plusDeTrenteJours) throws Exception {
+        final APCalculateurAcmAlpha acmCalculateur = new APCalculateurAcmAlpha();
         final HashMap montants = acmCalculateur.calculerMontantACM(session, transaction, droit.getGenreService(),
                 droit.getIdDroit(), dateDebut, dateFin, plusDeTrenteJours);
 
@@ -983,6 +990,11 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             return;
         } else {
             // Creation de la prestation
+            // Extention Maternité - Pour ACM
+            // Les compléments ACM ne doivent s'appliquer que sur le droit normal des 98 jours, et non pas sur l'extension qui peut aller de 112 à 154 jours.
+            int dureeCongeMaternite = APDroitMaternite.getDureeDroitMat(session);
+            String nombreJoursSoldes = (Integer.parseInt(nombreJoursSoldesReel) > dureeCongeMaternite ? String.valueOf(dureeCongeMaternite) : nombreJoursSoldesReel);
+
             final APPrestation prestation = new APPrestation();
             prestation.setSession(session);
 
@@ -2055,7 +2067,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         final APSituationProfessionnelleManager mgr = new APSituationProfessionnelleManager();
         mgr.setSession(session);
         mgr.setForIdDroit(droit.getIdDroit());
-        mgr.find(transaction);
+        mgr.find(transaction, BManager.SIZE_NOLIMIT);
 
         boolean isAllocationMax = false;
         boolean isIndependant = false;
@@ -2146,7 +2158,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         }
 
         boolean lastCalculerACM = false;
-
+        int nombreJourSupp = Integer.parseInt(droit.getJoursSupplementaires());
+        String dateDeFinAcm = computeDateFinAcmNewVersion(colPGPCParPrestation, nombreJourSupp);
         for (final Iterator iterator = colPGPCParPrestation.iterator(); iterator.hasNext();) {
             final APPeriodeWrapper pgpc = (APPeriodeWrapper) iterator.next();
             nbJoursDepuisDebutDroitAvantPeriode = nbJoursDepuisDebutDroitApresPeriode;
@@ -2270,11 +2283,11 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                 }
                 // pour tous les cas Mat et les APG qui ne sont pas un service d'avancement
                 else {
-                    this.creerPrestationsACM(session, transaction, lastPrestation, droit, sommeMontantJournalier,
-                            lastMJ, genrePrestation, prestations[prestations.length - 1].getDateDebut(),
-                            prestations[prestations.length - 1].getDateFin(),
-                            prestations[prestations.length - 1].getNombreJoursSoldes(),
-                            prestations[prestations.length - 1].getNoRevision());
+                    if (droit instanceof APDroitMaternite && lastCalculerACM && dateDeFinAcm !=null) {
+                        createLastACM(session, transaction, lastPrestation, droit, sommeMontantJournalier, lastMJ, genrePrestation, prestations[prestations.length - 1], dateDeFinAcm);
+                    } else {
+                        createCurrentACM(session, transaction, lastPrestation, droit, sommeMontantJournalier, lastMJ, genrePrestation, prestations[prestations.length - 1]);
+                    }
                 }
             }
         }
@@ -2367,6 +2380,75 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             }
         }
     }
+
+    private String computeDateFinAcmNewVersion(Collection colPGPCParPrestation, int nombreJourSupp) {
+        APPeriodeWrapper lastPrestation = null;
+
+        // On recherche la dernière période de presta
+        for(Object objet : colPGPCParPrestation) {
+            APPeriodeWrapper prestation = (APPeriodeWrapper) objet;
+            if (lastPrestation == null) {
+                lastPrestation = prestation;
+            }
+
+            if (lastPrestation.getDateFin().getYear() < prestation.getDateFin().getYear()) {
+                lastPrestation = prestation;
+            }
+        }
+
+        if (lastPrestation != null) {
+            String dateDeFinPrestationACM;
+
+            DateTimeFormatter format = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+            LocalDate dateDeFinPrestDate = parseStringToDateTime(lastPrestation.getDateFin().toString(), formatter);
+            if (dateDeFinPrestDate != null) {
+                dateDeFinPrestDate = dateDeFinPrestDate.minusDays(nombreJourSupp);
+                dateDeFinPrestationACM = dateDeFinPrestDate.format(format);
+                return dateDeFinPrestationACM;
+
+            }
+        }
+
+        return null;
+    }
+
+    private void createCurrentACM(BSession session, BTransaction transaction, APPrestation lastPrestation, APDroitLAPG droit, FWCurrency sommeMontantJournalier, FWCurrency lastMJ, String genrePrestation, APPrestation prestation) throws Exception {
+        this.creerPrestationsACM(session, transaction, lastPrestation, droit, sommeMontantJournalier,
+                lastMJ, genrePrestation, prestation.getDateDebut(),
+                prestation.getDateFin(),
+                prestation.getNombreJoursSoldes(),
+                prestation.getNoRevision());
+    }
+
+    private void createLastACM(BSession session, BTransaction transaction, APPrestation lastPrestation, APDroitLAPG droit, FWCurrency sommeMontantJournalier, FWCurrency lastMJ, String genrePrestation, APPrestation prestation, String dateDeFinAcm) throws Exception {
+//        int nombreJourSupp = Integer.parseInt(droit.getJoursSupplementaires());
+//        String dateDeFinAcm = computeDateFinAcm(prestation, nombreJourSupp);
+        this.creerPrestationsACM(session, transaction, lastPrestation, droit, sommeMontantJournalier,
+                lastMJ, genrePrestation, prestation.getDateDebut(),
+                dateDeFinAcm,
+                prestation.getNombreJoursSoldes(),
+                prestation.getNoRevision());
+    }
+
+    private String computeDateFinAcm(APPrestation prestation, int nombreJourSupp) {
+        String dateDeFinPrestation = prestation.getDateFin();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDate dateDeFinPrestDate = parseStringToDateTime(prestation.getDateFin(), formatter);
+        dateDeFinPrestDate = dateDeFinPrestDate.minusDays(nombreJourSupp);
+        dateDeFinPrestation = dateDeFinPrestDate.format(formatter);
+
+        return dateDeFinPrestation;
+    }
+
+    private LocalDate parseStringToDateTime(String date, DateTimeFormatter formatter) {
+        if (date != null && !date.isEmpty()) {
+            return LocalDate.parse(date, formatter);
+        }
+        return null;
+    }
+
     //ESVE MATERNITE CALCULATEUR STANDARD
     private void traiterPrestationsCourantes(final BSession session, final BTransaction transaction,
             Collection prestationsCourantes, final APDroitLAPG droit, final FWCurrency fraisGarde) throws Exception {
@@ -2452,7 +2534,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             final APSituationProfessionnelleManager mgr = new APSituationProfessionnelleManager();
             mgr.setSession(session);
             mgr.setForIdDroit(droit.getIdDroit());
-            mgr.find(transaction);
+            mgr.find(transaction, BManager.SIZE_NOLIMIT);
 
             final Iterator iterSP = mgr.iterator();
             while (iterSP.hasNext()) {
@@ -2536,7 +2618,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             // LAMat, supplément de 14 jours du droit fédéral
             if (droit instanceof APDroitMaternite) {
                 final String dureeLAMat = session.getApplication()
-                        .getProperty(APApplication.PROPERTY_DROIT_ACM_MAT_DUREE_JOURS);
+                        .getProperty(APProperties.DROIT_ACM_MAT_DUREE_JOURS.getPropertyName());
                 final String dureeMatFederale = session.getApplication()
                         .getProperty(APApplication.PROPERTY_DROIT_MAT_DUREE_JOURS);
                 final int diff = Integer.parseInt(dureeLAMat) - Integer.parseInt(dureeMatFederale);
@@ -2670,7 +2752,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         prestations.setForGenre(APTypeDePrestation.STANDARD.getCodesystemString());
         prestations.setToDateFin(dateFin);
 
-        prestations.find(transaction);
+        prestations.find(transaction, BManager.SIZE_NOLIMIT);
 
         BStatement statement = null;
         statement = prestations.cursorOpen((BTransaction) transaction);

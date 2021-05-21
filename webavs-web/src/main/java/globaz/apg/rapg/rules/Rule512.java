@@ -8,6 +8,7 @@ import globaz.apg.exceptions.APRuleExecutionException;
 import globaz.apg.interfaces.APDroitAvecParent;
 import globaz.apg.pojo.APChampsAnnonce;
 import globaz.apg.properties.APParameter;
+import globaz.globall.db.BManager;
 import globaz.globall.db.FWFindParameter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.utils.PRDateUtils;
@@ -72,7 +73,7 @@ public class Rule512 extends Rule {
 
             List<APDroitAvecParent> droitsSansParents = null;
             try {
-                mgr.find();
+                mgr.find(BManager.SIZE_NOLIMIT);
                 List<APDroitAvecParent> tousLesDroits = mgr.getContainer();
                 droitsSansParents = skipDroitParent(tousLesDroits);
             } catch (Exception e) {
