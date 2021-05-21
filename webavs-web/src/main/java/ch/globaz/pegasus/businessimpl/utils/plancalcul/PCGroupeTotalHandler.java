@@ -150,8 +150,13 @@ public class PCGroupeTotalHandler extends PCGroupeAbstractHandler {
 
     private void generateLignesProcess(String langueTiers, BSession session) {
         groupList.add(generateMainLigne(langueTiers, session));
+        // S160704_002 : ajout de la ligne pour la part cantonale
+        PCLignePlanCalculHandler partCantonaleLigne = generatePartCantonaleLigne(langueTiers, session);
         if (isReforme()) {
             if (getValeur(PCGroupeTotalHandler.TOTAL_CC) > 0) {
+                if (partCantonaleLigne != null) {
+                    groupList.add(partCantonaleLigne);
+                }
                 groupList.add(generateAssuranceMaladieReformeLigne(langueTiers, session));
                 groupList.add(generateLastLigne(langueTiers, session));
             }
@@ -159,15 +164,12 @@ public class PCGroupeTotalHandler extends PCGroupeAbstractHandler {
             // TODO a voir normalement pas de code métier ici
             // si cc annuel > 0 on traite les assurance maladies
             if (getValeur(PCGroupeTotalHandler.TOTAL_CC) < 0) {
+                if (partCantonaleLigne != null) {
+                    groupList.add(partCantonaleLigne);
+                }
                 groupList.add(generateAssuranceMaladieLigne(langueTiers, session));
             }
             groupList.add(generateLastLigne(langueTiers, session));
-        }
-
-        // S160704_002 : ajout de la ligne pour la part cantonale
-        PCLignePlanCalculHandler partCantonaleLigne = generatePartCantonaleLigne(langueTiers, session);
-        if (partCantonaleLigne != null) {
-            groupList.add(partCantonaleLigne);
         }
     }
 

@@ -1,5 +1,7 @@
 package ch.globaz.pegasus.businessimpl.utils.plancalcul;
 
+import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
+import ch.globaz.pegasus.utils.PCApplicationUtil;
 import globaz.babel.api.ICTDocument;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
@@ -266,33 +268,59 @@ public class PCPlanCalculHandlerOO {
      * @param liste
      * @return data
      */
-    private DocumentData createBlocResume(DocumentData data, ArrayList<PCLignePlanCalculHandler> liste) {
-        int cptLigne = 0;// Compteur de ligne
-        for (PCLignePlanCalculHandler ligne : liste) {
+    private DocumentData createBlocResume(DocumentData data, ArrayList<PCLignePlanCalculHandler> liste) throws Exception {
+
+        if (PCApplicationUtil.isCantonJU()) {
             // premiere ligne excedent revenus ou depenses
-            if (cptLigne == 0) {
-                data.addData("totalL1", ligne.getLibelle());
-                data.addData("CHF1L1", PCPlanCalculHandlerOO.MONNAIE);
-                data.addData("MONTANTL1_C1", new FWCurrency(ligne.getValCol1().getStrValeur()).toStringFormat());
-                data.addData("CHF2L1", PCPlanCalculHandlerOO.MONNAIE);
-                data.addData("MONTANTL1_C2", new FWCurrency(ligne.getValCol2().getStrValeur()).toStringFormat());
-                data.addData("CHF3L1", PCPlanCalculHandlerOO.MONNAIE);
-                data.addData("MONTANTL1_C3", new FWCurrency(ligne.getValCol3().getStrValeur()).toStringFormat());
-            } else {
-                if ((cptLigne == 1) && (liste.size() == 3)) {
-                    // Cas ass maladie
-                    data.addData("totalL2", ligne.getLibelle());
-                    data.addData("CHF3L2", PCPlanCalculHandlerOO.MONNAIE);
-                    data.addData("MONTANTL2_C3", new FWCurrency(ligne.getValCol3().getStrValeur()).toStringFormat());
+            PCLignePlanCalculHandler ligne = liste.get(0);
+
+            data.addData("totalLD", ligne.getLibelle());
+            data.addData("CHF1LD", PCPlanCalculHandlerOO.MONNAIE);
+            data.addData("MONTANTLD_C1", new FWCurrency(ligne.getValCol1().getStrValeur()).toStringFormat());
+            data.addData("CHF2LD", PCPlanCalculHandlerOO.MONNAIE);
+            data.addData("MONTANTLD_C2", new FWCurrency(ligne.getValCol2().getStrValeur()).toStringFormat());
+            data.addData("CHF3LD", PCPlanCalculHandlerOO.MONNAIE);
+            data.addData("MONTANTLD_C3", new FWCurrency(ligne.getValCol3().getStrValeur()).toStringFormat());
+            for (int cptLigne = 1; cptLigne < liste.size() - 1; cptLigne++) {
+                ligne = liste.get(cptLigne);
+                data.addData("totalL" + cptLigne, ligne.getLibelle());
+                data.addData("CHF3L" + cptLigne, PCPlanCalculHandlerOO.MONNAIE);
+                data.addData("MONTANTL" + cptLigne + "_C3", new FWCurrency(ligne.getValCol3().getStrValeur()).toStringFormat());
+            }
+            // cas ligne finale pca mensuelle
+            ligne = liste.get(liste.size() - 1);
+            data.addData("totalLF", ligne.getLibelle());
+            data.addData("CHF3LF", PCPlanCalculHandlerOO.MONNAIE);
+            data.addData("MONTANTLF_C3", new FWCurrency(ligne.getValCol3().getStrValeur()).toStringFormat());
+        }else{
+            int cptLigne = 0;// Compteur de ligne
+            for (PCLignePlanCalculHandler ligne : liste) {
+                // premiere ligne excedent revenus ou depenses
+                if (cptLigne == 0) {
+                    data.addData("totalL1", ligne.getLibelle());
+                    data.addData("CHF1L1", PCPlanCalculHandlerOO.MONNAIE);
+                    data.addData("MONTANTL1_C1", new FWCurrency(ligne.getValCol1().getStrValeur()).toStringFormat());
+                    data.addData("CHF2L1", PCPlanCalculHandlerOO.MONNAIE);
+                    data.addData("MONTANTL1_C2", new FWCurrency(ligne.getValCol2().getStrValeur()).toStringFormat());
+                    data.addData("CHF3L1", PCPlanCalculHandlerOO.MONNAIE);
+                    data.addData("MONTANTL1_C3", new FWCurrency(ligne.getValCol3().getStrValeur()).toStringFormat());
                 } else {
-                    // cas ligne finale pca mensuelle
-                    data.addData("totalL3", ligne.getLibelle());
-                    data.addData("CHF3L3", PCPlanCalculHandlerOO.MONNAIE);
-                    data.addData("MONTANTL3_C3", new FWCurrency(ligne.getValCol3().getStrValeur()).toStringFormat());
+                    if ((cptLigne == 1) && (liste.size() < 3)) {
+                        // Cas ass maladie
+                        data.addData("totalL2", ligne.getLibelle());
+                        data.addData("CHF3L2", PCPlanCalculHandlerOO.MONNAIE);
+                        data.addData("MONTANTL2_C3", new FWCurrency(ligne.getValCol3().getStrValeur()).toStringFormat());
+                    } else {
+                        // cas ligne finale pca mensuelle
+                        data.addData("totalL3", ligne.getLibelle());
+                        data.addData("CHF3L3", PCPlanCalculHandlerOO.MONNAIE);
+                        data.addData("MONTANTL3_C3", new FWCurrency(ligne.getValCol3().getStrValeur()).toStringFormat());
+                    }
                 }
+
+                cptLigne++;
             }
 
-            cptLigne++;
         }
         return data;
     }
