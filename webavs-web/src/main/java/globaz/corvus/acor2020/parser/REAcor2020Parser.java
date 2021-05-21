@@ -620,7 +620,7 @@ public class REAcor2020Parser {
 
         bc.setReferenceDecision("0");
 
-        if (Objects.nonNull(fCalcul.getAnalysePeriodes())) {
+        if (!fCalcul.getAnalysePeriodes().isEmpty()) {
 //        bc.setRevenuJeunesse(REACORAbstractFlatFileParser.getField(line, fields, "REVENU_JEUNESSE")); $b33
             bc.setRevenuJeunesse(Objects.toString(fCalcul.getAnalysePeriodes().get(0).getRevJTot(), StringUtils.EMPTY));
 //        bc.setPeriodeJeunesse(REACORAbstractFlatFileParser.getField(line, fields, "PERIODE_JEUNESSE")); $b32
@@ -975,9 +975,9 @@ public class REAcor2020Parser {
                 if (StringUtils.equals(Objects.toString(eachRente.getGenre()), Objects.toString(rente.getGenre()))) {
                     // TODO : formatter date
 //                        ra.setDateRevocationAjournement(PRDateFormater.convertDate_MMAA_to_MMxAAAA(REACORAbstractFlatFileParser.getField(line, fields, "DATE_REVOCATION_AJOURNEMENT"))); $r22
-                    ra.setDateRevocationAjournement((Objects.toString(eachTranche.getDateRevocation(), StringUtils.EMPTY)));
+                    ra.setDateRevocationAjournement(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(eachTranche.getDateRevocation(), StringUtils.EMPTY)));
                     //        ra.setDureeAjournement(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_AJOURNEMENT")); $r20
-                    ra.setDureeAjournement(Objects.toString(eachTranche.getDureeAjournement(), StringUtils.EMPTY));
+                    ra.setDureeAjournement(ParserUtils.formatMMtoAxMM(eachTranche.getDureeAjournement()));
                     //        ra.setSupplementAjournement(REACORAbstractFlatFileParser.getField(line, fields, "SUPPLEMENT_AJOURNEMENT")); $r21
                     ra.setSupplementAjournement(Objects.toString(eachTranche.getMontantSupplement(), StringUtils.EMPTY));
                     return ra;

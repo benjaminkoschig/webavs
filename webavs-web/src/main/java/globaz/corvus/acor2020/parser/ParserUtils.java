@@ -14,6 +14,8 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Objects;
@@ -162,10 +164,23 @@ public final class ParserUtils {
      * @return le nb d'années et de mois au format AA.MM
      */
     public static String formatMMtoAAxMM(int mois) {
-        int nbMoisDansAnnee = 12;
-        int moisRestant = mois % nbMoisDansAnnee;
-        int annee = (mois - moisRestant) / nbMoisDansAnnee;
-        return String.format("%s.%s", formatIntToStringWithTwoChar(annee), formatIntToStringWithTwoChar(moisRestant));
+        LocalDate now = LocalDate.now();
+        LocalDate delay = now.plusMonths(mois);
+        Period period = Period.between(now, delay);
+        return String.format("%s.%s", formatIntToStringWithTwoChar(period.getYears()), formatIntToStringWithTwoChar(period.getMonths()));
+    }
+
+    /**
+     * Conversion et formatage d'un nombre de mois MM en années et mois A.MM
+     *
+     * @param mois les mois à convertir
+     * @return le nb d'années et de mois au format A.MM
+     */
+    public static String formatMMtoAxMM(int mois) {
+        LocalDate now = LocalDate.now();
+        LocalDate delay = now.plusMonths(mois);
+        Period period = Period.between(now, delay);
+        return String.format("%s.%s", period.getYears(), formatIntToStringWithTwoChar(period.getMonths()));
     }
 
 }

@@ -280,7 +280,7 @@ public class REExportationCalculAcor2020 {
         FlexibilisationType flexibilisationType = null;
         String anticipation = ((REDemandeRenteVieillesse) demandeRente).getCsAnneeAnticipation();
         // Anticipation
-        if (!JadeStringUtil.isBlankOrZero(anticipation)) {
+        if (StringUtils.equals(IREDemandeRente.CS_ANNEE_ANTICIPATION_2ANNEES, anticipation) || StringUtils.equals(IREDemandeRente.CS_ANNEE_ANTICIPATION_1ANNEE, anticipation)) {
             flexibilisationType = new FlexibilisationType();
             flexibilisationType.setDebut(ParserUtils.formatDate(demandeRente.getDateDebut(), DD_MM_YYYY_FORMAT));
             flexibilisationType.setPartPercue(ANTICIPATION_OR_REVOCATION); // Pour une anticipation
@@ -793,7 +793,7 @@ public class REExportationCalculAcor2020 {
     }
 
     private PeriodeRecueilliCType createPeriodeRecueilliC(ISFPeriode isfPeriode) {
-    // TODO : identifier quand on est sur un cas recueilliC
+        // TODO : identifier quand on est sur un cas recueilliC
         PeriodeRecueilliCType periode = new PeriodeRecueilliCType();
         periode.setDebut(ParserUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
         periode.setFin(ParserUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
@@ -843,7 +843,6 @@ public class REExportationCalculAcor2020 {
         periode.setType(getEnumPeriodeEnfantType(isfPeriode));
         return periode;
     }
-
 
 
     private ISFPeriode[] recupererPeriodesMembre(ISFMembreFamilleRequerant membre) {
@@ -1490,41 +1489,16 @@ public class REExportationCalculAcor2020 {
         FamilleType famille = new FamilleType();
         if ((ligne.getConjoint() instanceof REACORDemandeAdapter.ImplMembreFamilleRequerantWrapper)
                 && REACORDemandeAdapter.ImplMembreFamilleRequerantWrapper.NO_CS_RELATION_EX_CONJOINT_DU_CONJOINT
-                .equals(((REACORDemandeAdapter.ImplMembreFamilleRequerantWrapper) ligne.getConjoint()).getRelationAuRequerant())) {
+                .equals(ligne.getConjoint().getRelationAuRequerant())) {
 
             REACORDemandeAdapter.ImplMembreFamilleRequerantWrapper exConjointDuConjoint = (REACORDemandeAdapter.ImplMembreFamilleRequerantWrapper) ligne
                     .getConjoint();
-
+        // TODO : cas d'un ex conjoint de conjoint qui n'a pas de NSS --> générer un NSS bidon ?
             famille.getNavs().add(ParserUtils.formatNssToLong(exConjointDuConjoint.getNssConjoint()));
-            famille.getNavs().add(ParserUtils.formatNssToLong(exConjointDuConjoint.getNss()));
+            famille.getNavs().add(getNssMembre(exConjointDuConjoint));
         } else {
-
-            // 1+2. le no AVS de l'homme suivi de celui de la femme ou celui de l'assure vivant suivi du decede
-            if (ISFSituationFamiliale.CS_TYPE_LIEN_VEUF.equals(ligne.getTypeLien())
-                    || ISFSituationFamiliale.CS_TYPE_LIEN_LPART_DECES.equals(ligne.getTypeLien())) {
-                // La demande de rente survivant doit être faite par la personne décédée...
-                if (JAUtil.isDateEmpty(membreRequerant.getDateDeces())) {
-                    // l'assure vivant
-                    famille.getNavs().add(ParserUtils.formatNssToLong(tiersRequerant.getNSS()));
-
-                    // l'ex-assure mort
-                    famille.getNavs().add(ParserUtils.formatNssToLong(ligne.getConjoint().getNss()));
-                } else {
-                    // l'assure vivant
-                    famille.getNavs().add(ParserUtils.formatNssToLong(ligne.getConjoint().getNss()));
-
-                    // l'ex assure mort
-                    famille.getNavs().add(ParserUtils.formatNssToLong(tiersRequerant.getNSS()));
-                }
-            } else {
-                if (ligne.isConjointHomme()) {
-                    famille.getNavs().add(ParserUtils.formatNssToLong(ligne.getConjoint().getNss()));
-                    famille.getNavs().add(ParserUtils.formatNssToLong(tiersRequerant.getNSS()));
-                } else {
-                    famille.getNavs().add(ParserUtils.formatNssToLong(tiersRequerant.getNSS()));
-                    famille.getNavs().add(ParserUtils.formatNssToLong(ligne.getConjoint().getNss()));
-                }
-            }
+            famille.getNavs().add(ParserUtils.formatNssToLong(tiersRequerant.getNSS()));
+            famille.getNavs().add(getNssMembre(ligne.getConjoint()));
         }
         famille.setDebut(ParserUtils.formatDate(ligne.getDateMariage(), DD_MM_YYYY_FORMAT));
         if (ParserUtils.formatDate(ligne.getDateFin(), DD_MM_YYYY_FORMAT) != null) {
