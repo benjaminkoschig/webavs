@@ -176,7 +176,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
         } catch (Exception e) {
             errors.add("Une erreur est survenue lors de la création du contact pour l'id tiers : " + tiers.getNSS() + " - " + email);
             LOG.error("APImportationAPGPandemie#createContact : Une erreur est survenue lors de la création du contact pour l'id tiers " + tiers.getNSS(), e);
-//            throw new Exception("APImportationAPGPandemie#createContact : Une erreur est survenue lors de la création du contact pour l'id tiers " + tiers.getNSS());
+            throw new Exception("APImportationAPGPandemie#createContact : Une erreur est survenue lors de la création du contact pour l'id tiers " + tiers.getNSS());
         }
     }
 

@@ -27,7 +27,7 @@ import globaz.apg.db.importation.beneficiaires.APBeneficiary;
 import globaz.apg.db.droits.*;
 import globaz.apg.db.importation.turnover.*;
 import globaz.apg.enums.APGenreServiceAPG;
-import globaz.apg.db.droits.APImportationAPGPandemieHistorique;
+import globaz.apg.db.droits.APImportationAPGHistorique;
 import globaz.apg.properties.APProperties;
 import globaz.babel.utils.BabelContainer;
 import globaz.babel.utils.CatalogueText;
@@ -119,7 +119,7 @@ public class APImportationAPGPandemie extends BProcess {
     private static final int MAX_TREATMENT = 40;
     private static final String DATE_RETRO_DROIT_VAGUE_2 = "17.09.2020";
     private static final String ANNEE_PRISE_COMPTE_SALAIRE = "2019";
-
+    private static final String APG_TYPE = "PANDEMIE";
     private static String userGestionnaire = "";
 
     private BSession bsession;
@@ -350,9 +350,10 @@ public class APImportationAPGPandemie extends BProcess {
                 transaction.clearErrorBuffer();
             }
             fileToStore = new FileInputStream(pathFile);
-            APImportationAPGPandemieHistorique importData = new APImportationAPGPandemieHistorique();
+            APImportationAPGHistorique importData = new APImportationAPGHistorique();
             importData.setSession(bsession);
             importData.setEtatDemande(state);
+            importData.setTypeDemande(APG_TYPE);
             importData.setNss(nss);
             importData.setXmlFile(fileToStore);
             importData.add();

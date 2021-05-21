@@ -15,6 +15,7 @@ import globaz.jade.common.JadeClassCastException;
 import globaz.jade.fs.JadeFsFacade;
 import globaz.jade.service.exception.JadeServiceActivatorException;
 import globaz.jade.service.exception.JadeServiceLocatorException;
+import globaz.osiris.api.APIOperation;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import org.apache.commons.io.FilenameUtils;
@@ -153,9 +154,6 @@ public class APImportationAPGAmatApatProcess extends APAbstractImportationAPGPro
             LOG.error("Erreur lors de l'importation des fichiers", e);
             throw new Exception("Erreur lors de l'importation des fichiers", e);
         }
-        finally {
-            closeBsession();
-        }
     }
 
     /**
@@ -171,26 +169,25 @@ public class APImportationAPGAmatApatProcess extends APAbstractImportationAPGPro
                 LOG.info("Démarrage de l'import du fichier : " + nomFichier);
                 String nameOriginalFile = FilenameUtils.getName(nomFichier);
                 String nameOriginalFileWithoutExt = FilenameUtils.removeExtension(nameOriginalFile);
-
                 boolean isTraitementSuccess = false;
                 // Parsing du fichier XML
-                Message message = getMessageFromFile                                                                                                                                                                                                                                                                                                                                                                                                                                                     (nomFichier) ;
+                Message message = getMessageFromFile(nomFichier);
                 if (message != null) {
-                    isTraitementSuccess = creationDroitGlobal(message.getContent());
-
+                    Content content = message.getContent();
+                    isTraitementSuccess = creationDroitGlobal(content);
                     if (isTraitementSuccess) {
                         fichiersTraites.add(nameOriginalFile);
                     } else {
                         fichiersNonTraites.add(nameOriginalFile);
                     }
                     // TODO : si traitement en succès --> sauvegarde du fichier
-//                    if (isTraitementSuccess) {
-//                        for (String nss : nssTraites) {
-//                            savingFileInDb(nss, destTmpXMLPath, state);
-//                            infos.add("Traitement du fichier suivant réussi : " + nameOriginalZipFile);
-//                            infos.add("Assuré(s) concerné(s) : " + nss);
-//                        }
-//                    }
+                    if (isTraitementSuccess) {
+                        for (String nss : nssTraites) {
+                            savingFileInDb(nss, nomFichier, APIOperation.ETAT_TRAITE, content.getAmatApatType());
+                            infos.add("Traitement du fichier suivant réussi : " + nameOriginalFile);
+                            infos.add("Assuré(s) concerné(s) : " + nss);
+                        }
+                    }
                 } else {
                     errors.add("Le fichier XML ne peut pas être traité : " + nameOriginalFileWithoutExt);
                 }
@@ -208,7 +205,7 @@ public class APImportationAPGAmatApatProcess extends APAbstractImportationAPGPro
 
     }
 
-    private void savingFileInDb(String nss, String pathFile, String state) throws Exception {
+    private void savingFileInDb(String nss, String pathFile, String state, String apgType) throws Exception {
         BTransaction transaction = null;
         FileInputStream fileToStore = null;
         try {
@@ -221,12 +218,13 @@ public class APImportationAPGAmatApatProcess extends APAbstractImportationAPGPro
                 transaction.clearErrorBuffer();
             }
             fileToStore = new FileInputStream(pathFile);
-            APImportationAPGPandemieHistorique importData = new APImportationAPGPandemieHistorique();
+            APImportationAPGHistorique importData = new APImportationAPGHistorique();
             importData.setSession(bsession);
             importData.setEtatDemande(state);
+            importData.setTypeDemande(apgType);
             importData.setNss(nss);
             importData.setXmlFile(fileToStore);
-            importData.add();
+            importData.add(transaction);
             if (!hasError(bsession, transaction)) {
                 transaction.commit();
             } else {
@@ -235,8 +233,8 @@ public class APImportationAPGAmatApatProcess extends APAbstractImportationAPGPro
         } catch (FileNotFoundException e) {
             LOG.error("Fichier non trouvé : " + pathFile, e);
         } catch (Exception e) {
-            errors.add("Erreur lors de l'update HistoriqueAPGPandemie " + e.getMessage());
-            LOG.error("Erreur lors de l'update HistoriqueAPGPandemie : ", e);
+            errors.add("Erreur lors de l'update Historique importation APG " + e.getMessage());
+            LOG.error("Erreur lors de l'update Historique importation APG : ", e);
             if (transaction != null) {
                 transaction.rollback();
             }
