@@ -20,6 +20,8 @@ public class ListDecisionsValidees extends JadeComplexModel {
     private String prenom = null;
     private String typeDecision = null;
     private String validePar = null;
+    private boolean decisionProvisoire = false;
+    private String csEtat = null;
 
     public ListDecisionsValidees() {
         super();
@@ -161,5 +163,21 @@ public class ListDecisionsValidees extends JadeComplexModel {
     public void setValidePar(String validePar) {
         this.validePar = validePar;
     }
+    public boolean getDecisionProvisoire() {
+        return decisionProvisoire;
+    }
+
+    public void setDecisionProvisoire(boolean decisionProvisoire) {
+        this.decisionProvisoire = decisionProvisoire;
+    }
+
+    public String getCsEtat() {
+        return csEtat;
+    }
+
+    public void setCsEtat(String csEtat) {
+        this.csEtat = csEtat;
+    }
+
 
 }

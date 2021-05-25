@@ -12,11 +12,11 @@
 			<select-field name="typeDecision" field-ref="decisionHeader.simpleDecisionHeader.csTypeDecision" />
 			<select-field name="validePar" field-ref="decisionHeader.simpleDecisionHeader.validationPar" />
 			<select-field name="dateValidation" field-ref="decisionHeader.simpleDecisionHeader.dateValidation"/>
-		
 			<select-field name="csMotifRefus" field-ref="simpleDecisionRefus.csMotif" />
 			<select-field name="csMotifSuppression" field-ref="simpleDecisionSuppression.csMotif" />
-			
 			<select-field name="csTypePCAccordee" field-ref="simplePCAccordee.csTypePC" />
+			<select-field name="decisionProvisoire" field-ref="decisionHeader.simpleDecisionHeader.decisionProvisoire" />
+			<select-field name="csEtat" field-ref="decisionHeader.simpleDecisionHeader.csEtatDecision" />
 		</select-fields>
 		
 		<!-- model root decsion apres calcul -->

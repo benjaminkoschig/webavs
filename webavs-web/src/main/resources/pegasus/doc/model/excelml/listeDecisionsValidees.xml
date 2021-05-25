@@ -62,10 +62,11 @@
   <NamedRange ss:Name="CHAMP_PRENOM" ss:RefersTo="='Décisions PC'!R2C3"/>
   <NamedRange ss:Name="CHAMP_TYPE" ss:RefersTo="='Décisions PC'!R2C6"/>
   <NamedRange ss:Name="CHAMP_TYPE_PC" ss:RefersTo="='Décisions PC'!R2C4"/>
-  <NamedRange ss:Name="CHAMP_VALIDE_PAR" ss:RefersTo="='Décisions PC'!R2C8"/>
+  <NamedRange ss:Name="CHAMP_VALIDE_PAR" ss:RefersTo="='Décisions PC'!R2C9"/>
   <NamedRange ss:Name="DATE_DECISION" ss:RefersTo="='Décisions PC'!R3C5"/>
-  <NamedRange ss:Name="DATE_VALIDATION" ss:RefersTo="='Décisions PC'!R3C9"/>
-  <NamedRange ss:Name="MOTIF" ss:RefersTo="='Décisions PC'!R3C7"/>
+  <NamedRange ss:Name="DATE_VALIDATION" ss:RefersTo="='Décisions PC'!R3C10"/>
+  <NamedRange ss:Name="ETAT" ss:RefersTo="='Décisions PC'!R3C7"/>
+  <NamedRange ss:Name="MOTIF" ss:RefersTo="='Décisions PC'!R3C8"/>
   <NamedRange ss:Name="NOM" ss:RefersTo="='Décisions PC'!R3C2"/>
   <NamedRange ss:Name="NSS" ss:RefersTo="='Décisions PC'!R3C1"/>
   <NamedRange ss:Name="PRENOM" ss:RefersTo="='Décisions PC'!R3C3"/>
@@ -101,6 +102,8 @@
       ss:Name="CHAMP_DATE_DECISION"/></Cell>
     <Cell ss:StyleID="s64"><Data ss:Type="String">Type</Data><NamedCell
       ss:Name="CHAMP_TYPE"/></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">État</Data><NamedCell
+            ss:Name="CHAMP_ETAT"/></Cell>
     <Cell ss:StyleID="s64"><Data ss:Type="String">Motif</Data><NamedCell
       ss:Name="CHAMP_MOTIF"/></Cell>
     <Cell ss:StyleID="s64"><Data ss:Type="String">Validé par</Data><NamedCell
@@ -121,6 +124,8 @@
       ss:Name="DATE_DECISION"/></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">TYPE</Data><NamedCell
       ss:Name="TYPE"/></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">ETAT</Data><NamedCell
+            ss:Name="ETAT"/></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">MOTIF</Data><NamedCell
       ss:Name="MOTIF"/></Cell>
     <Cell ss:StyleID="s65"><Data ss:Type="String">VALIDE_PAR</Data><NamedCell

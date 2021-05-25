@@ -20,17 +20,6 @@ PCListDecisionsValideesViewBean viewBean = (PCListDecisionsValideesViewBean)sess
 var $buttonMont;
 $(function(){
 	$("#btnCtrlJade").hide();
-	$("#dateMonthDebut,#dateMonthFin").focusout(function () {
-		var isEmpty=false;
-		$("#dateMonthDebut,#dateMonthFin").each(function(){
-			isEmpty=isEmpty||($.trim(this.value).length==0);
-		});
-		if(!isEmpty){
-			$("#monthButton").button("enable");
-		} else {
-			$("#monthButton").button("disable");
-		}
-	});
 });
 
 jsManager.addAfter(function (){
@@ -57,6 +46,17 @@ getIdGest = function () {
 getMyParams=function(){
 	return getDateDebut()+","+getDateFin();
 }
+function checkEmpty(){
+	var isEmpty=false;
+	$("#dateMonthDebut,#dateMonthFin").each(function(){
+		isEmpty=isEmpty||($.trim(this.value).length==0);
+	});
+	if(!isEmpty){
+		$("#monthButton").button("enable");
+	} else {
+		$("#monthButton").button("disable");
+	}
+}
 
 </SCRIPT>
 <%-- /tpl:put --%>
@@ -66,9 +66,9 @@ getMyParams=function(){
 	<tr>
 		<td colspan="2" align="center">
 			<label for="dateMonthDebut"><ct:FWLabel key="JSP_LISTE_DECISIONS_VALIDEES_D_DATE_DEBUT"/> </label>
-			<input type="text" id="dateMonthDebut" data-g-calendar="mandatory:true, type:month"> 
+			<input type="text" id="dateMonthDebut" data-g-calendar="mandatory:true, type:month" onchange="checkEmpty()">
 			<label for="dateMonthFin"><ct:FWLabel key="JSP_LISTE_DECISIONS_VALIDEES_D_DATE_FIN"/> </label>
-			<input type="text" id="dateMonthFin" data-g-calendar="mandatory:true, type:month"> 
+			<input type="text" id="dateMonthFin" data-g-calendar="mandatory:true, type:month" onchange="checkEmpty()">
 		</td>
 	</tr>
 		<tr><td colspan="2" align="center">

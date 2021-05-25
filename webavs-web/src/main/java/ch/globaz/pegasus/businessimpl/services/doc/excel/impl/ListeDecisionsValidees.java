@@ -1,7 +1,9 @@
 package ch.globaz.pegasus.businessimpl.services.doc.excel.impl;
 
+import ch.globaz.pegasus.business.constantes.IPCDecision;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
+import globaz.jade.client.util.JadeCodesSystemsUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.client.util.JadeUUIDGenerator;
@@ -16,13 +18,8 @@ import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.webavs.common.CommonExcelmlContainer;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.pegasus.business.exceptions.doc.DocException;
 import ch.globaz.pegasus.business.models.decision.ListDecisionsValidees;
@@ -85,7 +82,7 @@ public class ListeDecisionsValidees extends PegasusAbstractExcelServiceImpl {
         container.put("USER", session.getUserName());
         // remplacement des entêtes
         String[] champs = new String[] { "CHAMP_USER", "CHAMP_COMMUNE_POLITIQUE", "CHAMP_NSS", "CHAMP_NOM",
-                "CHAMP_PRENOM", "CHAMP_TYPE_PC", "CHAMP_DATE_DECISION", "CHAMP_TYPE", "CHAMP_MOTIF",
+                "CHAMP_PRENOM", "CHAMP_TYPE_PC", "CHAMP_DATE_DECISION", "CHAMP_TYPE","CHAMP_ETAT", "CHAMP_MOTIF",
                 "CHAMP_VALIDE_PAR", "CHAMP_DATE_VALIDATION" };
         for (String champ : champs) {
             container.put(champ, session.getLabel("EXCEL_LISTE_DECISIONS_VALIDEES_" + champ));
@@ -102,6 +99,8 @@ public class ListeDecisionsValidees extends PegasusAbstractExcelServiceImpl {
         // D0118 remplir une liste de POJO avec le resultset
         List<POJO> list = new ArrayList<POJO>();
         Set<String> setIdTiers = new HashSet<String>();
+        Map<String,String> mapCsToLibelle = new HashMap<>();
+        String libelle;
         for (JadeAbstractModel absDonnee : searchModel.getSearchResults()) {
             ListDecisionsValidees donnee = (ListDecisionsValidees) absDonnee;
 
@@ -114,6 +113,28 @@ public class ListeDecisionsValidees extends PegasusAbstractExcelServiceImpl {
             pojo.setType(session.getCodeLibelle(donnee.getTypeDecision()));
             pojo.setValidePar(donnee.getValidePar());
             pojo.setDateValidation(donnee.getDateValidation());
+            if(donnee.getDecisionProvisoire()){
+                pojo.setEtat(session.getLabel("CHAMPS_PROVISOIRE"));
+            }else{
+//                switch (donnee.getCsEtat()){
+//                    case IPCDecision.CS_ETAT_ENREGISTRE :
+//                    case IPCDecision.CS_ETAT_PRE_VALIDE :
+//                        if(mapCsToLibelle.containsKey(donnee.getCsEtat())){
+//                            libelle = mapCsToLibelle.get(donnee.getCsEtat());
+//                        }else{
+//                            libelle = JadeCodesSystemsUtil.getCodeLibelle(donnee.getCsEtat());
+//                            mapCsToLibelle.put(donnee.getCsEtat(),libelle);
+//                        }
+//                        pojo.setEtat(libelle);
+//                        break;
+//                    case IPCDecision.CS_ETAT_DECISION_VALIDE:
+//                        pojo.setEtat(session.getLabel("CHAMPS_DEFINITIF"));
+//                        break;
+//
+//                }
+                pojo.setEtat(session.getLabel("CHAMPS_DEFINITIF"));
+            }
+
 
             String motif = donnee.getCsMotifRefus();
             if (JadeStringUtil.isEmpty(motif)) {
@@ -154,6 +175,7 @@ public class ListeDecisionsValidees extends PegasusAbstractExcelServiceImpl {
             container.put("VALIDE_PAR", pojo.getValidePar());
             container.put("DATE_VALIDATION", pojo.getDateValidation());
             container.put("MOTIF", pojo.getMotif());
+            container.put("ETAT",pojo.getEtat());
         }
 
         return container;
@@ -171,6 +193,7 @@ public class ListeDecisionsValidees extends PegasusAbstractExcelServiceImpl {
         private String dateValidation;
         private String motif;
         private String communePolitique;
+        private String etat;
 
         public final String getIdTiers() {
             return idTiers;
@@ -258,6 +281,13 @@ public class ListeDecisionsValidees extends PegasusAbstractExcelServiceImpl {
 
         public final void setMotif(String motif) {
             this.motif = motif;
+        }
+        public String getEtat() {
+            return etat;
+        }
+
+        public void setEtat(String etat) {
+            this.etat = etat;
         }
 
         @Override
