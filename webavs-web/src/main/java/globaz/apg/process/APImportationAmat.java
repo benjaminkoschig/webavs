@@ -5,22 +5,14 @@ import ch.globaz.common.domaine.Date;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.db.droits.*;
-import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeDateUtil;
-import globaz.naos.db.affiliation.AFAffiliation;
-import globaz.phenix.api.ICPDonneesCalcul;
-import globaz.phenix.db.principale.CPDecision;
-import globaz.phenix.db.principale.CPDecisionManager;
 import globaz.prestation.api.IPRDemande;
-import globaz.prestation.api.IPRSituationProfessionnelle;
 import globaz.prestation.db.demandes.PRDemande;
-import globaz.prestation.tools.PRSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Objects;
 
@@ -36,6 +28,7 @@ public class APImportationAmat extends APAbstractImportationAmatApat {
     @Override
     public APDroitLAPG createDroit(Content content, String npaFormat, PRDemande demande, BTransaction transaction, BSession bsession) {
         APDroitMaternite newDroit = new APDroitMaternite();
+
         try {
             // TODO : Création du droit maternité
             newDroit.setIdDemande(demande.getIdDemande());

@@ -70,7 +70,10 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
         roleManager.setForIdTiers(idTiers);
         BStatement statement = null;
         BTransaction trans = (BTransaction) bsession.newTransaction();
-        trans.openTransaction();
+        if(!trans.isOpened()){
+            trans.openTransaction();
+        }
+
         try {
             statement = roleManager.cursorOpen(bsession.getCurrentThreadTransaction());
             TIRole role = null;
@@ -88,12 +91,12 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 newRole.setIdTiers(idTiers);
                 newRole.setISession(PRSession.connectSession(bsession, TIApplication.DEFAULT_APPLICATION_PYXIS));
                 newRole.setRole(IntRole.ROLE_APG);
-                newRole.add(bsession.getCurrentThreadTransaction());
+                newRole.add(trans);
             }
             trans.commit();
         } catch (Exception e) {
             errors.add("Une erreur s'est produite dans la création du rôle du tiers : "+idTiers);
-            LOG.error("ImportAPGPandemie#creationRoleApgTiers - Une erreur s'est produite dans la création du rôle du tiers : "+idTiers);
+            LOG.error("ImportAPGAmatApat#creationRoleApgTiers - Une erreur s'est produite dans la création du rôle du tiers : "+idTiers);
             if (trans != null) {
                 trans.rollback();
             }
@@ -102,7 +105,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans l'ajout du rôle
                 JadeThread.logClear();
             }
-            throw new Exception("ImportAPGPandemie#creationRoleApgTiers - Une erreur s'est produite dans la création du rôle du tiers : "+idTiers);
+            throw new Exception("ImportAPGAmatApat#creationRoleApgTiers - Une erreur s'est produite dans la création du rôle du tiers : "+idTiers);
         } finally {
             try {
                 if (statement != null) {
@@ -120,7 +123,10 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
 
     @Override
     public void createContact(PRTiersWrapper tiers, String email, BSession bsession) throws Exception {
-
+        BTransaction trans = (BTransaction) bsession.newTransaction();
+        if(!trans.isOpened()){
+            trans.openTransaction();
+        }
         try {
             if (!JadeStringUtil.isBlankOrZero(email)) {
                 TIAvoirContactManager avoirContactManager = new TIAvoirContactManager();
@@ -144,13 +150,12 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 }
 
                 if (!hasEmail) {
-
                     // Création du contact
                     TIContact contact = new TIContact();
                     contact.setSession(bsession);
                     contact.setNom(tiers.getNom());
                     contact.setPrenom(tiers.getPrenom());
-                    contact.add(bsession.getCurrentThreadTransaction());
+                    contact.add(trans);
 
                     // Création du moyen de communication
                     TIMoyenCommunication moyenCommunication = new TIMoyenCommunication();
@@ -159,14 +164,15 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                     moyenCommunication.setTypeCommunication(TIMoyenCommunication.EMAIL);
                     moyenCommunication.setIdContact(contact.getIdContact());
                     moyenCommunication.setIdApplication(APProperties.DOMAINE_ADRESSE_APG_PANDEMIE.getValue());
-                    moyenCommunication.add();
+                    moyenCommunication.add(trans);
 
                     // Lien du contact avec le tiers
                     TIAvoirContact avoirContact = new TIAvoirContact();
                     avoirContact.setSession(bsession);
                     avoirContact.setIdTiers(tiers.getIdTiers());
                     avoirContact.setIdContact(contact.getIdContact());
-                    avoirContact.add();
+                    avoirContact.add(trans);
+                    trans.commit();
                 } else {
                     // TODO : message pour informer que le contact n'a pas été mis à jour
                 }
@@ -174,9 +180,12 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
             }
 
         } catch (Exception e) {
+            trans.rollback();
             errors.add("Une erreur est survenue lors de la création du contact pour l'id tiers : " + tiers.getNSS() + " - " + email);
-            LOG.error("APImportationAPGPandemie#createContact : Une erreur est survenue lors de la création du contact pour l'id tiers " + tiers.getNSS(), e);
-            throw new Exception("APImportationAPGPandemie#createContact : Une erreur est survenue lors de la création du contact pour l'id tiers " + tiers.getNSS());
+            LOG.error("APImportationAPGAmatApat#createContact : Une erreur est survenue lors de la création du contact pour l'id tiers " + tiers.getNSS(), e);
+            throw new Exception("APImportationAPGAmatApat#createContact : Une erreur est survenue lors de la création du contact pour l'id tiers " + tiers.getNSS());
+        }finally {
+            trans.closeTransaction();
         }
     }
 
@@ -284,7 +293,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
             return noCaisse + noAgence;
         } catch (final PropertiesException exception) {
             errors.add("Impossible de récupérer les propriétés n° caisse et n° agence");
-            LOG.error("APImportationAPGPandemie#creationIdCaisse : A fatal exception was thrown when accessing to the CommonProperties " + exception);
+            LOG.error("APImportationAPGAmatApat#creationIdCaisse : A fatal exception was thrown when accessing to the CommonProperties " + exception);
         }
         return null;
     }
@@ -352,7 +361,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
             if (isJadeThreadError()) {
                 addJadeThreadErrorToListError("Situation Professionnelle Employé");
                 // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans l'ajout de la situation prof
-//                JadeThread.logClear();
+                JadeThread.logClear();
             }
         }
     }
@@ -426,11 +435,11 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
             }
         } catch (Exception e) {
             errors.add("Erreur rencontré lors de la création de la situation professionnelle pour l'assuré ");
-            LOG.error("APImportationAPGPandemie#creerSituationProf : Erreur rencontré lors de la création de la situation professionnelle pour l'assuré ", e);
+            LOG.error("APImportationAPGAmatApat#creerSituationProf : Erreur rencontré lors de la création de la situation professionnelle pour l'assuré ", e);
             if (isJadeThreadError()) {
                 addJadeThreadErrorToListError("Situation Professionnelle Employé");
                 // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans l'ajout de la situation prof
-//                JadeThread.logClear();
+                JadeThread.logClear();
             }
         }
 

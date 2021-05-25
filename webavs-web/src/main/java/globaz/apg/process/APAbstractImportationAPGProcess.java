@@ -1,6 +1,5 @@
 package globaz.apg.process;
 
-import apg.amatapat.*;
 import ch.globaz.common.mail.CommonFilesUtils;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
@@ -43,23 +42,6 @@ public abstract class APAbstractImportationAPGProcess extends BProcess  {
     protected String demandeFolder;
     protected List<String> nssTraites = new ArrayList<>();
     protected int nbTraites = 0;
-
-    /**
-     * Initialisation de la session
-     *
-     * @throws Exception : lance une exception si un problème intervient lors de l'initialisation du contexte
-     */
-    protected void initBsession() throws Exception {
-        bsession = getSession();
-        BSessionUtil.initContext(bsession, this);
-    }
-
-    /**
-     *  Fermeture de la session
-     */
-    protected void closeBsession() {
-        BSessionUtil.stopUsingContext(this);
-    }
 
 
     /**

@@ -8,6 +8,7 @@ import ch.globaz.simpleoutputlist.exception.TechnicalException;
 import com.google.common.base.Throwables;
 import globaz.apg.db.droits.*;
 import globaz.apg.properties.APProperties;
+import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BTransaction;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeStringUtil;
@@ -73,6 +74,22 @@ public class APImportationAPGAmatApatProcess extends APAbstractImportationAPGPro
         return true;
     }
 
+    /**
+     * Initialisation de la session
+     *
+     * @throws Exception : lance une exception si un problème intervient lors de l'initialisation du contexte
+     */
+    protected void initBsession() throws Exception {
+        bsession = getSession();
+        BSessionUtil.initContext(bsession, this);
+    }
+
+    /**
+     *  Fermeture de la session
+     */
+    protected void closeBsession() {
+        BSessionUtil.stopUsingContext(this);
+    }
 
     /**
      * Méthode permettant de générer le bilan du traitement et l'envoi du mail récapitulatif.
@@ -174,7 +191,7 @@ public class APImportationAPGAmatApatProcess extends APAbstractImportationAPGPro
                 Message message = getMessageFromFile(nomFichier);
                 if (message != null) {
                     Content content = message.getContent();
-                    isTraitementSuccess = creationDroitGlobal(content);
+                    isTraitementSuccess = createDroitGlobal(content);
                     if (isTraitementSuccess) {
                         fichiersTraites.add(nameOriginalFile);
                     } else {
@@ -187,6 +204,7 @@ public class APImportationAPGAmatApatProcess extends APAbstractImportationAPGPro
                             infos.add("Traitement du fichier suivant réussi : " + nameOriginalFile);
                             infos.add("Assuré(s) concerné(s) : " + nss);
                         }
+
                     }
                 } else {
                     errors.add("Le fichier XML ne peut pas être traité : " + nameOriginalFileWithoutExt);
@@ -199,10 +217,12 @@ public class APImportationAPGAmatApatProcess extends APAbstractImportationAPGPro
                 LOG.error("Erreur lors du traitement du fichier. ", e);
                 throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, e);
             } finally {
+                // TODO: controler si il y a la possibilité d'avoir plus de 1 cas (donc plus de 1 nss) dans un fichier
+                // sinon il faudra modifier la gestion des nssTraités.
                 nbTraites++;
+                nssTraites.clear();
             }
         }
-
     }
 
     private void savingFileInDb(String nss, String pathFile, String state, String apgType) throws Exception {
@@ -224,7 +244,7 @@ public class APImportationAPGAmatApatProcess extends APAbstractImportationAPGPro
             importData.setTypeDemande(apgType);
             importData.setNss(nss);
             importData.setXmlFile(fileToStore);
-            importData.add(transaction);
+            importData.add();
             if (!hasError(bsession, transaction)) {
                 transaction.commit();
             } else {
@@ -270,7 +290,7 @@ public class APImportationAPGAmatApatProcess extends APAbstractImportationAPGPro
         return null;
     }
 
-    private boolean creationDroitGlobal(Content content) throws Exception {
+    private boolean createDroitGlobal(Content content) throws Exception {
         BTransaction transaction = (BTransaction) bsession.newTransaction();
         if (!transaction.isOpened()) {
             transaction.openTransaction();
@@ -307,22 +327,23 @@ public class APImportationAPGAmatApatProcess extends APAbstractImportationAPGPro
                 nssTraites.add(tiers.getNSS());
             } else {
                 errors.add("Une erreur s'est produite lors de la création du tiers : " + nssTiers);
-                LOG.error("ImportAPGPandemie#creationRoleApgTiers - Une erreur s'est produite dans la création du tiers : " + nssTiers);
+                LOG.error("ImportAPGAmatApat#creationRoleApgTiers - Une erreur s'est produite dans la création du tiers : " + nssTiers);
             }
         }
 
         if (!hasError(bsession, transaction) && handler != null) {
             transaction.commit();
             LOG.info("Traitement en succès...");
+            transaction.closeTransaction();
             return true;
-        }else{
+        }else {
             transaction.rollback();
-            errors.add("Un problème est survenu lors de la création du droit pour cet assuré : "+ assure.getVn());
+            errors.add("Un problème est survenu lors de la création du droit pour cet assuré : " + assure.getVn());
             LOG.error("Erreur lors de la création du droit\nSession errors : "
-                    +bsession.getErrors()+"\nTransactions errors : "+transaction.getErrors());
+                    + bsession.getErrors() + "\nTransactions errors : " + transaction.getErrors());
+            transaction.closeTransaction();
             return false;
         }
-
     }
 
     /**
