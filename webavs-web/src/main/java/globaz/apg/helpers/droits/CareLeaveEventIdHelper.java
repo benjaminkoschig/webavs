@@ -2,6 +2,7 @@ package globaz.apg.helpers.droits;
 
 import ch.globaz.common.exceptions.Exceptions;
 import ch.globaz.common.exceptions.ThrowingRunnable;
+import ch.globaz.common.util.Dates;
 import ch.globaz.common.util.Instances;
 import globaz.apg.db.droits.APDroitProcheAidant;
 import globaz.apg.vb.droits.APEnfantPatViewBean;
@@ -40,8 +41,9 @@ class CareLeaveEventIdHelper {
                          int careLeaveEventId = 1;
                          if (!sorted.isEmpty()) {
                              careLeaveEventId = sorted.get(sorted.size() - 1).getCareLeaveEventId() + 1;
+                             return APDroitProcheAidant.CareLeaveEventId.ofCreated(dateMinPeriodeDroit, careLeaveEventId);
                          }
-                         return APDroitProcheAidant.CareLeaveEventId.ofCreated(dateMinPeriodeDroit, careLeaveEventId);
+                         return APDroitProcheAidant.CareLeaveEventId.of(dateMinPeriodeDroit, careLeaveEventId);
                      });
     }
 
@@ -54,14 +56,18 @@ class CareLeaveEventIdHelper {
         });
     }
 
-    public Optional<APDroitProcheAidant.CareLeaveEventId> updateCareLeveEventId(final FWViewBeanInterface viewBean, final BISession session)  {
+    public Optional<APDroitProcheAidant.CareLeaveEventId> updateCareLeveEventId(final FWViewBeanInterface viewBean, final BISession session) {
         if (viewBean instanceof APEnfantPatViewBean) {
             APEnfantPatViewBean vb = (APEnfantPatViewBean) viewBean;
             if (vb.getTypeDemande().isProcheAidant()) {
                 APDroitProcheAidant apDroitProcheAidant = APDroitProcheAidant.retrieve(vb.getDroitDTO().getIdDroit(), session);
                 if (apDroitProcheAidant.hasSpy()) {
+                    APDroitProcheAidant.CareLeaveEventId careLeaveEventId;
                     if (!JadeStringUtil.isBlankOrZero(vb.getNumeroDelaiCadre())) {
                         apDroitProcheAidant.setCareLeaveEventID(vb.getNumeroDelaiCadre());
+                        careLeaveEventId = APDroitProcheAidant.CareLeaveEventId.of(
+                                Dates.toDate(apDroitProcheAidant.getDateDebutDroit()),
+                                Integer.valueOf(apDroitProcheAidant.getCareLeaveEventID()));
                     } else {
                         LocalDate dateMinDuDroit =
                                 apDroitProcheAidant.rechercherNbJourDateMinPourLeDroit()
@@ -69,18 +75,16 @@ class CareLeaveEventIdHelper {
                                                    .orElse(LocalDate.now());
 
                         List<APDroitProcheAidant.NbJourDateMin> nbJourDateMins = apDroitProcheAidant.loadNbJourDateMinByEventId();
+                        careLeaveEventId = resolveCareLeaveEventId(dateMinDuDroit, apDroitProcheAidant.trouverNombreMoisMax(), nbJourDateMins);
 
-                        APDroitProcheAidant.CareLeaveEventId careLeaveEventId = resolveCareLeaveEventId(
-                                dateMinDuDroit,
-                                apDroitProcheAidant.trouverNombreMoisMax(),
-                                nbJourDateMins);
                         apDroitProcheAidant.setCareLeaveEventID(careLeaveEventId.getId().toString());
-                        return Optional.of(careLeaveEventId);
                     }
                     Exceptions.checkedToUnChecked((ThrowingRunnable<Exception>) apDroitProcheAidant::update);
+
+                    return Optional.of(careLeaveEventId);
                 }
             }
         }
-        return  Optional.empty();
+        return Optional.empty();
     }
 }
