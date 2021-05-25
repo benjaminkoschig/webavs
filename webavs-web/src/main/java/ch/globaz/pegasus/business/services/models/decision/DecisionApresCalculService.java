@@ -36,7 +36,7 @@ public interface DecisionApresCalculService extends JadeApplicationService {
      * @throws JadeApplicationServiceNotAvailableException
      * @throws Exception
      */
-    DocumentData buildPlanCalculDocumentData(String idDecisionApresCalcul, boolean isWithMemmbreFamilles, boolean isRetenu)
+    DocumentData buildPlanCalculDocumentData(String idDecisionApresCalcul, boolean isWithMemmbreFamilles, boolean isRetenu, String dateAdaptation)
             throws CatalogueTexteException, JadeApplicationServiceNotAvailableException, Exception;
 
     /**

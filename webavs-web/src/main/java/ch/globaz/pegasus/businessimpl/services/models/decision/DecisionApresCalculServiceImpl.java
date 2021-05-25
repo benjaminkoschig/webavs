@@ -57,7 +57,7 @@ public class DecisionApresCalculServiceImpl extends PegasusAbstractServiceImpl i
     public final static String DEMANDE_DU = "{date_demande}";
 
     @Override
-    public DocumentData buildPlanCalculDocumentData(String idDecisionApresCalcul, boolean isWithMemmbreFamilles, boolean isRetenu)
+    public DocumentData buildPlanCalculDocumentData(String idDecisionApresCalcul, boolean isWithMemmbreFamilles, boolean isRetenu,String dateAdaptation)
             throws Exception {
         if (idDecisionApresCalcul == null) {
             throw new DecisionException("Unable to buil plan de calcul, the id Decision passed is null!");
@@ -66,6 +66,7 @@ public class DecisionApresCalculServiceImpl extends PegasusAbstractServiceImpl i
         // DAC oo
         DecisionApresCalculOO dacOO;
         dacOO = readForOO(idDecisionApresCalcul);
+        dacOO.setDateAdaptation(dateAdaptation);
         if (dacOO == null) {
             throw new DecisionException(
                     "Unable to retrieve DecisionOO, the decision is null! Check the id Passed for decision is right!");
