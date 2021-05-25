@@ -1,11 +1,16 @@
 package ch.globaz.pegasus.businessimpl.utils.decision;
 
-import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
+import ch.globaz.pegasus.business.constantes.*;
+import ch.globaz.pegasus.business.models.decision.DecisionApresCalculSearch;
+import ch.globaz.pegasus.business.models.decision.SimpleDecisionApresCalcul;
 import ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul;
 import ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalculSearch;
+import ch.globaz.pegasus.business.services.models.decision.DecisionApresCalculService;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
+import ch.globaz.pegasus.businessimpl.services.models.decision.DecisionApresCalculServiceImpl;
 import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 import globaz.externe.IPRConstantesExternes;
+import globaz.globall.api.BISession;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.util.JACalendar;
@@ -14,6 +19,7 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.pegasus.utils.AutoCopiesFactory;
 
@@ -22,9 +28,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.globaz.pegasus.business.constantes.EPCProperties;
-import ch.globaz.pegasus.business.constantes.IPCDroits;
-import ch.globaz.pegasus.business.constantes.IPCPCAccordee;
 import ch.globaz.pegasus.business.constantes.decision.IPCAutoCopies;
 import ch.globaz.pegasus.business.exceptions.models.crancier.CreancierException;
 import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
@@ -40,11 +43,11 @@ import ch.globaz.pegasus.businessimpl.utils.home.HomeUtil;
 import ch.globaz.pyxis.business.model.AdresseTiersDetail;
 import ch.globaz.pyxis.business.service.AdresseService;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
+import globaz.prestation.tools.PRSession;
 
 public class CopiesDecisionHandler {
 
     private static Map<IPCAutoCopies.TYPE_COPIE, CopiesDecision> copiesAuto = null;
-    // private static CreanceAccordeeSearch creancesAccordeesSearch = null;
     private static DecisionApresCalcul decision = null;
 
     /**
@@ -138,11 +141,11 @@ public class CopiesDecisionHandler {
                 copie = null;
                 break;
         }
-
-        copie.getSimpleCopiesDecision().setIdTiersCopie(idTiers);
-        copie.setDesignation1(CopiesDecisionHandler.getDesignation1Et2ForAdresse(adresse)[0]);
-        copie.setDesignation2(CopiesDecisionHandler.getDesignation1Et2ForAdresse(adresse)[1]);
-
+        if(copie != null){
+            copie.getSimpleCopiesDecision().setIdTiersCopie(idTiers);
+            copie.setDesignation1(CopiesDecisionHandler.getDesignation1Et2ForAdresse(adresse)[0]);
+            copie.setDesignation2(CopiesDecisionHandler.getDesignation1Et2ForAdresse(adresse)[1]);
+        }
         return copie;
 
     }
@@ -196,25 +199,28 @@ public class CopiesDecisionHandler {
      * @throws Exception
      * @throws DecisionException
      */
-    private static CopiesDecision dealServicesSociauxCopie() throws DecisionException, Exception {
+    private static CopiesDecision dealServicesSociauxCopie() throws DecisionException {
+        try{
+            CopiesDecision copie = null;
 
-        CopiesDecision copie = null;
+            // Soit copie Page de garde soit sans
+            if (CopiesDecisionHandler.copiesAuto.get(IPCAutoCopies.TYPE_COPIE.SERVICE_SOCIAL_PG) != null) {
+                copie = CopiesDecisionHandler.copiesAuto.get(IPCAutoCopies.TYPE_COPIE.SERVICE_SOCIAL_PG);
+            } else {
+                copie = CopiesDecisionHandler.copiesAuto.get(IPCAutoCopies.TYPE_COPIE.SERVICE_SOCIAL_SANS_PG);
+            }
 
-        // Soit copie Page de garde soit sans
-        if (CopiesDecisionHandler.copiesAuto.get(IPCAutoCopies.TYPE_COPIE.SERVICE_SOCIAL_PG) != null) {
-            copie = CopiesDecisionHandler.copiesAuto.get(IPCAutoCopies.TYPE_COPIE.SERVICE_SOCIAL_PG);
-        } else {
-            copie = CopiesDecisionHandler.copiesAuto.get(IPCAutoCopies.TYPE_COPIE.SERVICE_SOCIAL_SANS_PG);
+            AdresseTiersDetail adresse = TIBusinessServiceLocator.getAdresseService().getAdresseTiers(
+                    copie.getSimpleCopiesDecision().getIdTiersCopie(), true, JACalendar.todayJJsMMsAAAA(),
+                    IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, AdresseService.CS_TYPE_COURRIER, null);
+
+            copie.setDesignation1(CopiesDecisionHandler.getDesignation1Et2ForAdresse(adresse)[0]);
+            copie.setDesignation2(CopiesDecisionHandler.getDesignation1Et2ForAdresse(adresse)[1]);
+
+            return copie;
+        }catch (Exception e){
+            throw new DecisionException(e.getMessage());
         }
-
-        AdresseTiersDetail adresse = TIBusinessServiceLocator.getAdresseService().getAdresseTiers(
-                copie.getSimpleCopiesDecision().getIdTiersCopie(), true, JACalendar.todayJJsMMsAAAA(),
-                IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, AdresseService.CS_TYPE_COURRIER, null);
-
-        copie.setDesignation1(CopiesDecisionHandler.getDesignation1Et2ForAdresse(adresse)[0]);
-        copie.setDesignation2(CopiesDecisionHandler.getDesignation1Et2ForAdresse(adresse)[1]);
-
-        return copie;
     }
 
     public static ArrayList<CopiesDecision> getCopiesList(DecisionApresCalcul decision) throws Exception {
@@ -253,6 +259,15 @@ public class CopiesDecisionHandler {
 
         }
         return listeCopies;
+    }
+
+    public static ArrayList<CopiesDecision> getCopiesList(SimpleDecisionApresCalcul decision) throws Exception {
+        DecisionApresCalculSearch currentDecisionSearch = new DecisionApresCalculSearch();
+        currentDecisionSearch
+                .setForIdDecisionApresCalcul(decision.getIdDecisionApresCalcul());
+        currentDecisionSearch = PegasusServiceLocator.getDecisionApresCalculService().search(currentDecisionSearch);
+        DecisionApresCalcul current = (DecisionApresCalcul) currentDecisionSearch.getSearchResults()[0];
+        return getCopiesList(current);
     }
 
     /**
@@ -360,9 +375,13 @@ public class CopiesDecisionHandler {
         BSession session = CopiesDecisionHandler.getSession();
 
         try {
+            if(!session.getApplicationId().equals("PEGASUS")){
+                session =  (BSession)PRSession.connectSession(getSession(), "PEGASUS");
+            }
             // ***************** PRO SENECTUTE *****************
+            JadePropertiesService.getInstance().getProperty(EPCProperties.DECISION_COPIE_PROSENECTUTE_DEFAUT.getPropertyName());
             if (Boolean
-                    .parseBoolean(session.getApplication().getProperty("pegasus.decision.copie.prosenectute.defaut"))) {
+                    .parseBoolean(session.getApplication().getProperty(EPCProperties.DECISION_COPIE_PROSENECTUTE_DEFAUT.getPropertyName()))) {
 
                 CopiesDecision copie = new CopiesDecision();
                 copie.setSimpleCopiesDecision(AutoCopiesFactory
@@ -371,12 +390,12 @@ public class CopiesDecisionHandler {
             }
 
             // ***************** HOMES *****************
-            if (Boolean.parseBoolean(session.getApplication().getProperty("pegasus.decision.copie.home.defaut"))
+            if (Boolean.parseBoolean(session.getApplication().getProperty(EPCProperties.DECISION_COPIE_HOME_DEFAUT.getPropertyName()))
                     && (CopiesDecisionHandler.getHomeForDecision(CopiesDecisionHandler.decision) != null)) {
                 // type de copies avec ou sans plandecalcul
                 CopiesDecision copie = new CopiesDecision();
                 if (Boolean
-                        .parseBoolean(session.getApplication().getProperty("pegasus.decision.copie.home.plancalcul"))) {
+                        .parseBoolean(session.getApplication().getProperty(EPCProperties.DECISION_COPIE_HOME_PLANCALCUL.getPropertyName()))) {
                     copie.setSimpleCopiesDecision(AutoCopiesFactory.getAutoCopies(IPCAutoCopies.TYPE_COPIE.HOME_PCAL));
                     returnMap.put(IPCAutoCopies.TYPE_COPIE.HOME_PCAL, copie);
                 } else {
@@ -386,11 +405,14 @@ public class CopiesDecisionHandler {
                 }
             }
 
+
             // ***************** HOMES PARTIELS *****************
-            if (Boolean.parseBoolean(session.getApplication().getProperty("pegasus.decision.copie.home.defaut"))
+
+
+            if (Boolean.parseBoolean(session.getApplication().getProperty(EPCProperties.DECISION_COPIE_HOME_DEFAUT.getPropertyName()))
                     && isHomePartiel(CopiesDecisionHandler.decision)) {
                 CopiesDecision copie = new CopiesDecision();
-                if (Boolean.parseBoolean(session.getApplication().getProperty("pegasus.decision.copie.home.plancalcul"))) {
+                if (Boolean.parseBoolean(session.getApplication().getProperty(EPCProperties.DECISION_COPIE_HOME_PLANCALCUL.getPropertyName()))) {
                     copie.setSimpleCopiesDecision(AutoCopiesFactory.getAutoCopies(IPCAutoCopies.TYPE_COPIE.HOME_PARTIEL));
                     returnMap.put(IPCAutoCopies.TYPE_COPIE.HOME_PARTIEL, copie);
                 } else {
@@ -403,8 +425,8 @@ public class CopiesDecisionHandler {
             if (Boolean.parseBoolean(session.getApplication().getProperty(
                     EPCProperties.DECISION_COPIE_SERVICES_SOCIAUX_DEFAUT.getPropertyName()))) {
 
-                String idTiersServiceSociaux = CopiesDecisionHandler.getSession().getApplication()
-                        .getProperty("pegasus.decision.copie.servicesociaux.idtiers");
+                String idTiersServiceSociaux = session.getApplication()
+                        .getProperty(EPCProperties.DECISION_COPIE_SERVICES_SOCIAUX_IDTIERS.getPropertyName());
 
                 if (idTiersServiceSociaux == null) {
                     throw new DecisionException(BSessionUtil.getSessionFromThreadContext().getLabel(
@@ -431,7 +453,7 @@ public class CopiesDecisionHandler {
             }
 
             // ***************** AGENCE COMMUNALE AVS *****************
-            if (Boolean.parseBoolean(session.getApplication().getProperty("pegasus.decision.copie.agenceavs"))) {
+            if (Boolean.parseBoolean(session.getApplication().getProperty(EPCProperties.DECISION_COPIE_AGENCE_AVS.getValue()))) {
 
                 CopiesDecision copie = new CopiesDecision();
                 copie.setSimpleCopiesDecision(AutoCopiesFactory
