@@ -7,7 +7,7 @@ import globaz.prestation.vb.PRAbstractViewBeanSupport;
 
 /**
  * <H1>Description</H1>
- * 
+ *
  * @author dvh
  */
 public class APEnvoyerAnnoncesViewBean extends PRAbstractViewBeanSupport {
@@ -17,10 +17,11 @@ public class APEnvoyerAnnoncesViewBean extends PRAbstractViewBeanSupport {
     private String forDateEnvoi = "";
     private String forMoisAnneeComptable = "";
     private boolean okPourReenvoi = false;
+    private String forGenreServices = "";
 
     /**
      * getter pour l'attribut EMail address
-     * 
+     *
      * @return la valeur courante de l'attribut EMail address
      */
     public String getEMailAddress() {
@@ -29,7 +30,7 @@ public class APEnvoyerAnnoncesViewBean extends PRAbstractViewBeanSupport {
 
     /**
      * getter pour l'attribut for date envoi
-     * 
+     *
      * @return la valeur courante de l'attribut for date envoi
      */
     public String getForDateEnvoi() {
@@ -38,7 +39,7 @@ public class APEnvoyerAnnoncesViewBean extends PRAbstractViewBeanSupport {
 
     /**
      * getter pour l'attribut for mois annee comptable
-     * 
+     *
      * @return la valeur courante de l'attribut for mois annee comptable
      */
     public String getForMoisAnneeComptable() {
@@ -47,7 +48,7 @@ public class APEnvoyerAnnoncesViewBean extends PRAbstractViewBeanSupport {
 
     /**
      * getter pour l'attribut deja envoye
-     * 
+     *
      * @return la valeur courante de l'attribut deja envoye
      */
     public boolean isDejaEnvoye() {
@@ -56,7 +57,7 @@ public class APEnvoyerAnnoncesViewBean extends PRAbstractViewBeanSupport {
 
     /**
      * getter pour l'attribut ok pour reenvoi
-     * 
+     *
      * @return la valeur courante de l'attribut ok pour reenvoi
      */
     public boolean isOkPourReenvoi() {
@@ -65,7 +66,7 @@ public class APEnvoyerAnnoncesViewBean extends PRAbstractViewBeanSupport {
 
     /**
      * setter pour l'attribut deja envoye
-     * 
+     *
      * @param b
      *            une nouvelle valeur pour cet attribut
      */
@@ -75,7 +76,7 @@ public class APEnvoyerAnnoncesViewBean extends PRAbstractViewBeanSupport {
 
     /**
      * setter pour l'attribut EMail address
-     * 
+     *
      * @param string
      *            une nouvelle valeur pour cet attribut
      */
@@ -85,7 +86,7 @@ public class APEnvoyerAnnoncesViewBean extends PRAbstractViewBeanSupport {
 
     /**
      * setter pour l'attribut for date envoi
-     * 
+     *
      * @param string
      *            une nouvelle valeur pour cet attribut
      */
@@ -95,7 +96,7 @@ public class APEnvoyerAnnoncesViewBean extends PRAbstractViewBeanSupport {
 
     /**
      * setter pour l'attribut for mois annee comptable
-     * 
+     *
      * @param string
      *            une nouvelle valeur pour cet attribut
      */
@@ -105,7 +106,7 @@ public class APEnvoyerAnnoncesViewBean extends PRAbstractViewBeanSupport {
 
     /**
      * setter pour l'attribut ok pour reenvoi
-     * 
+     *
      * @param b
      *            une nouvelle valeur pour cet attribut
      */
@@ -115,7 +116,7 @@ public class APEnvoyerAnnoncesViewBean extends PRAbstractViewBeanSupport {
 
     /**
      * (non-Javadoc)
-     * 
+     *
      * @return DOCUMENT ME!
      * @see globaz.apg.vb.PRAbstractViewBeanSupport#validate()
      */
@@ -123,5 +124,13 @@ public class APEnvoyerAnnoncesViewBean extends PRAbstractViewBeanSupport {
     public boolean validate() {
         // TODO
         return true;
+    }
+
+    public String getForGenreServices() {
+        return forGenreServices;
+    }
+
+    public void setForGenreServices(final String genreServices) {
+        this.forGenreServices = genreServices;
     }
 }

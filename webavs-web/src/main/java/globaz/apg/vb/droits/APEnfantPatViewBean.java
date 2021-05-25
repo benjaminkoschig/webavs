@@ -17,6 +17,8 @@ import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.interfaces.util.nss.canton.PRCanton;
 import globaz.prestation.interfaces.util.nss.canton.PRCantonManager;
 import globaz.prestation.tools.nnss.PRNSSUtil;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Vector;
 
@@ -34,7 +36,19 @@ public class APEnfantPatViewBean extends APEnfantPat implements FWViewBeanInterf
      *
      */
     private static final long serialVersionUID = 1L;
+    @Getter
     private APDroitDTO droitDTO = null;
+    @Getter
+    @Setter
+    private String numeroDelaiCadre="";
+
+    @Getter
+    @Setter
+    private Boolean delaiCadreModifie=Boolean.FALSE;
+
+    @Getter
+    @Setter
+    private boolean copyDroit=false;
 
 
     // ~ Methods

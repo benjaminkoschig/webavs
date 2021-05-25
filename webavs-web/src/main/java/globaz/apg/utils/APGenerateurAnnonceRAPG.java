@@ -366,15 +366,19 @@ public class APGenerateurAnnonceRAPG {
         }
 
         if(droit instanceof APDroitProcheAidant){
+            APDroitProcheAidant droitProcheAidant =(APDroitProcheAidant)droit;
             APSituationFamilialePatManager manager = new APSituationFamilialePatManager();
             manager.setSession(session);
             manager.setForIdDroitPaternite(idDroit);
             manager.find(BManager.SIZE_NOLIMIT);
             manager.<APSituationFamilialePat>getContainerAsList().stream().findFirst()
-                   .ifPresent(enfant-> annonceACreer.setNssEnfantOldestDroit(enfant.getNoAVS()));
-
-            // TODO DMA 29.04.2021 : ajouter un identifiant à la place du "0"
-            annonceACreer.setCareLeaveEventID(CaisseInfoPropertiesWrapper.noCaisseNoAgence()+"0");
+                   .ifPresent(enfant->{
+                       annonceACreer.setNssEnfantOldestDroit(enfant.getNoAVS());
+                       annonceACreer.setPaysNaissanceEnfant(enfant.getNationalite());
+                       annonceACreer.setCantonNaissanceEnfant(PRACORConst.csCantonToAcor(enfant.getCanton()));
+                       annonceACreer.setDateNaissanceEnfant(enfant.getDateNaissance());
+                   });
+            annonceACreer.setCareLeaveEventID(CaisseInfoPropertiesWrapper.noCaisseNoAgence()+droitProcheAidant.getCareLeaveEventID());
         }
 
         return annonceACreer;

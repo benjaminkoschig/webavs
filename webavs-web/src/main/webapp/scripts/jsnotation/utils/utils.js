@@ -155,8 +155,12 @@ globazNotation.utils = {
 		this.console1(s_html, titre, 'ui-state-highlight', overflow);
 	},
 
-    dialogWarn: function (s_html, o_buttons) {
-        var $html = $('<div class="globaz_utils_console">' + s_html + '</div>');
+    dialogWarn: function (s_html, o_buttons, parent) {
+	    var frame= window
+	    if(parent){
+            frame = parent
+        }
+        var $html = frame.$('<div class="globaz_utils_console">' + s_html + '</div>');
         $html.dialog({
             minHeight:300,
             position: 'center',

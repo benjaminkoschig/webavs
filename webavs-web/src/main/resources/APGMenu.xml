@@ -1278,7 +1278,7 @@
 						<label refId="MENU_OPTION_ENVOYER_ANNONCES" />
 						<action command="/apg" responseTarget="fr_main">
 							<parameter name="userAction" value="apg.process.envoyerAnnonces.afficher" />
-							<parameter name="forTypeAPG" value="52012005" />
+						<!--	<parameter name="forGenreServices" value="92" /> -->
 						</action>
 					</node>
 				</nodes>

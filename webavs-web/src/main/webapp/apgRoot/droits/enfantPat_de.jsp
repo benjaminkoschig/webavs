@@ -19,9 +19,17 @@ bButtonCancel = false;
 // on affiche la gestion des adoptions que pour les caisses ayant droit a la paternite cantonale
 boolean isDroitPaterniteCantonale = "true".equals(globaz.prestation.application.PRAbstractApplication.getApplication(globaz.apg.application.APApplication.DEFAULT_APPLICATION_APG).getProperty("isDroitPaterniteCantonale"));
 
+
+if(viewBean.getTypeDemande().isProcheAidant()){
+    isDroitPaterniteCantonale = false;
+    selectedIdValue = viewBean.getIdSitFamPaternite();
+} else {
 // les boutons suivants ne s'affichent dans leur contexte habituel QUE lorsque le droit est modifiable.
-bButtonUpdate = viewBean.isModifiable() && bButtonUpdate &&  viewBean.getSession().hasRight(IAPActions.ACTION_ENFANT_PAT, FWSecureConstants.UPDATE);
-bButtonDelete = viewBean.isModifiable() && bButtonDelete &&  viewBean.getSession().hasRight(IAPActions.ACTION_ENFANT_PAT, FWSecureConstants.UPDATE);
+    bButtonUpdate = viewBean.isModifiable() && bButtonUpdate &&  viewBean.getSession().hasRight(IAPActions.ACTION_ENFANT_PAT, FWSecureConstants.UPDATE);
+    bButtonDelete = viewBean.isModifiable() && bButtonDelete &&  viewBean.getSession().hasRight(IAPActions.ACTION_ENFANT_PAT, FWSecureConstants.UPDATE);
+}
+
+
 %>
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%>
@@ -123,16 +131,38 @@ bButtonDelete = viewBean.isModifiable() && bButtonDelete &&  viewBean.getSession
   }
 
   var isProcheAidant=<%=viewBean.getTypeDemande().isProcheAidant()%>;
+  var delaiCadreModifie = <%=viewBean.getDelaiCadreModifie()%>;
+  var isCopyDroit = <%=viewBean.isCopyDroit()%>;
+
   $(document).ready(function() {
-      var frList = window.parent.fr_list;
-      if(frList && isProcheAidant && parent.isNouveau) {
-          $(frList.document).ready(function () {
-              setTimeout(function (){
-                  if ($("#tableListContainer tr", frList.document).length > 1) {
-                      $("#btnVal").prop("disabled",true);
+      if(isProcheAidant) {
+          if (isCopyDroit) {
+              setTimeout(function () {
+                  $('[name="partialnoAVS"]').prop("disabled", true);
+                  $('[name="nom"]').prop("disabled", true);
+                  $('[name="prenom"]').prop("disabled", true);
+                  $('[name="dateNaissance"]').prop("disabled", true);
+              },100)
+          }
+          if (delaiCadreModifie) {
+              globazNotation.utils.dialogWarn("<ct:FWLabel key='JSP_NUMERO_DELAI_CADRE_MODIFIE_AUTOMATIQUEMENT'/>", {
+                  "OK": function () {
+                      $(this).dialog("close");
                   }
-              },600)
-          });
+              }, window.parent);
+          }
+
+          var frList = parent.fr_list
+          if (frList && parent.isNouveau) {
+              $(frList.document).ready(function () {
+                  setTimeout(function () {
+                      if ($("#tableListContainer tr", frList.document).length > 1) {
+                         // $("#btnVal").prop("disabled", true);
+                          parent.$("#btnNew").prop("disabled", true);
+                      }
+                  }, 600)
+              });
+          }
       }
 
 	  onChangeNationalite();
@@ -158,7 +188,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonDelete &&  viewBean.getSession
 						<TR><TD colspan="4">&nbsp;</TD></TR>
 						<TR>
 							<TD><LABEL for="nom"><ct:FWLabel key="JSP_NOM"/>&nbsp;</LABEL></TD>
-							<TD><INPUT type="text" name="nom" value="<%=viewBean.getNom()%>" onblur="javascript:document.all('prenom').focus()"></TD>
+							<TD><INPUT type="text" name="nom" value="<%=viewBean.getNom()%>"></TD>
 							<TD><LABEL for="prenom"><ct:FWLabel key="JSP_PRENOM"/>&nbsp;</LABEL></TD>
 							<TD><INPUT type="text" name="prenom" value="<%=viewBean.getPrenom()%>"></TD>
 						</TR>
@@ -199,6 +229,13 @@ bButtonDelete = viewBean.isModifiable() && bButtonDelete &&  viewBean.getSession
 							<TD colspan="2">&nbsp;</TD>
 						</TR>
 						<%}%>
+                        <%if(viewBean.getTypeDemande().isProcheAidant()){%>
+                        <TR>
+                            <TD><LABEL for="numeroDelaiCadre"><ct:FWLabel key="JSP_NUMERO_DELAI_CADRE"/>&nbsp;</LABEL></TD>
+                            <TD><INPUT type="input" data-g-integer=" " id="numeroDelaiCadre" size="2" name="numeroDelaiCadre" value="<%=viewBean.getNumeroDelaiCadre()%>"></TD>
+                            <TD colspan="2">&nbsp;</TD>
+                        </TR>
+                        <%}%>
 						<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
 				<%-- tpl:put name="zoneButtons" --%>
@@ -206,4 +243,5 @@ bButtonDelete = viewBean.isModifiable() && bButtonDelete &&  viewBean.getSession
 <%@ include file="/theme/detail/bodyErrors.jspf" %>
 <%-- tpl:put name="zoneEndPage" --%><%-- /tpl:put --%>
 <%@ include file="/theme/detail/footer.jspf" %>
+
 <%-- /tpl:insert --%>

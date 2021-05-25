@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  *
  * @author lga
  */
-public enum APParameter {
+public enum APParameter implements Parameter {
 
     TAUX_JOURNALIER_MAX_DROIT_ACQUIS_0_ENFANT("MAXTXJO_0"),
     TAUX_JOURNALIER_MAX_DROIT_ACQUIS_1_ENFANT("MAXTXJO_1"),
@@ -79,16 +79,16 @@ public enum APParameter {
 
     @SuppressWarnings("unchecked")
     public <T> T findValue(String date, BSession session) {
-        Map<Class<?>, Supplier<?>> map= new HashMap<>();
-        map.put(Integer.class,()-> parametreService.getInteger(() -> this.parameterName, date, session));
-        map.put(LocalDate.class,()-> parametreService.getValeurDate(() -> this.parameterName, date, session));
-        return (T)map.getOrDefault(this.type,()->{
+        Map<Class<?>, Supplier<?>> map = new HashMap<>();
+        map.put(Integer.class, () -> parametreService.getInteger(() -> this.parameterName, date, session));
+        map.put(LocalDate.class, () -> parametreService.getValeurDate(() -> this.parameterName, date, session));
+        return (T) map.getOrDefault(this.type, () -> {
             throw new CommonTechnicalException("The type is not yet implemented");
         }).get();
     }
 
     public LocalDate findDateDebutValidite(String date, BSession session) {
-        return this.parametreService.getDateDebutValidite(() -> this.parameterName,date, session);
+        return this.parametreService.getDateDebutValidite(() -> this.parameterName, date, session);
     }
 
     public <T> T findValueOrWithDateNow(String date, BSession session) {

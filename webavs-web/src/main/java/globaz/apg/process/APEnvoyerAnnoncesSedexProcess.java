@@ -31,6 +31,8 @@ public class APEnvoyerAnnoncesSedexProcess extends BProcess {
 
     private static final long serialVersionUID = 1L;
     private String forMoisAnneeComptable = "";
+    private List<String> forGenreServiceIn = new ArrayList<>();
+
 
     /**
      * Crée une nouvelle instance de la classe APEnvoyerAnnoncesProcess.
@@ -163,4 +165,12 @@ public class APEnvoyerAnnoncesSedexProcess extends BProcess {
         this.forMoisAnneeComptable = forMoisAnneeComptable;
     }
 
+
+    public List<String> getForGenreServiceIn() {
+        return forGenreServiceIn;
+    }
+
+    public void setForGenreServiceIn(final List<String> forGenreServiceIn) {
+        this.forGenreServiceIn = forGenreServiceIn;
+    }
 }

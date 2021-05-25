@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -42,6 +43,17 @@ public class APProcheAidantServiceHelper {
         return droitProcheAidant;
     }
 
+
+    public Optional<Integer> chercherEnfant(String idDroitProcheAidant) {
+        SQLWriter sqlWriter = SQLWriter.writeWithSchema()
+                                       .append("select distinct schema.APSIFMP.VQISIF as id")
+                                       .append("from schema.APDROIP")
+                                       .append("inner join schema.APDROITPROCHEAIDANT ON schema.APDROITPROCHEAIDANT.ID_DROIT = schema.APDROIP.VAIDRO")
+                                       .append("inner join schema.APSIFMP ON schema.APSIFMP.VQIDRM = schema.APDROIP.VAIDRO")
+                                       .append("where schema.APDROIP.VAIDRO = ?", idDroitProcheAidant);
+        return SCM.newInstance(ID.class).query(sqlWriter.toSql()).session(session).execute().stream().map(ID::getId).findFirst();
+    }
+
     private List<IdDroit> chercherDroitQuiSonLieeAvecLeMemeEnfant(String idDroitProcheAidant) {
         SQLWriter sqlWriter = SQLWriter.writeWithSchema()
                                        .append("select distinct schema.APDROIP.VAIDRO as id")
@@ -60,6 +72,11 @@ public class APProcheAidantServiceHelper {
 
     @Data
     public static class IdDroit {
+        private Integer id;
+    }
+
+    @Data
+    public static class ID {
         private Integer id;
     }
 }

@@ -1,16 +1,16 @@
 package globaz.apg.db.droits;
 
+import ch.globaz.common.exceptions.Exceptions;
 import ch.globaz.common.sql.SQLWriter;
 import ch.globaz.common.sql.converters.LocalDateConverter;
 import ch.globaz.common.util.Dates;
 import ch.globaz.queryexec.bridge.jade.SCM;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.prestation.IAPPrestation;
-import globaz.apg.application.APApplication;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
 import globaz.apg.properties.APParameter;
-import globaz.globall.api.GlobazSystem;
+import globaz.globall.api.BISession;
 import globaz.globall.db.BConstants;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
@@ -29,6 +29,9 @@ import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.constantes.IConstantes;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -42,15 +45,16 @@ import java.util.Optional;
  */
 public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
 
-    /**
-     *
-     */
+
     private static final long serialVersionUID = 1L;
     public static final String TABLE_NAME_PAT = "APDROITPROCHEAIDANT";
     public static final String FIELDNAME_DUPLICATA = "VBBDUP";
     public static final String FIELDNAME_IDDROIT_PAI = "ID_DROIT";
     public static final String FIELDNAME_IDSITUATIONFAM = "VBISIF";
     public static final String FIELDNAME_REMARQUE = "REMARQUE";
+    public static final String FIELDNAME_CARE_LEAVE_EVENT_ID = "CAREEVENTID";
+    public static final String FIELDNAME_ID_DROIT_COPIE = "ID_DROIT_COPIE";
+
     private String nbrJourSoldes = "";
     private String idSituationFam = "";
     private Boolean duplicata = Boolean.FALSE;
@@ -58,25 +62,9 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
     private String noControlePers = "";
     private String noRevision = "";
     private String remarque = "";
+    private String careLeaveEventID = "";
+    private String idDroitCopie = "";
 
-
-    /**
-     * retourne la durée en jours d'un droit paternité.
-     *
-     * @param session
-     * @return la valeur courante de l'attribut duree droit pat
-     * @throws Exception
-     *             Si la durée du droit paternité n'est pas configurée ou est invalide
-     */
-    public static final int getDureeDroitPat(BSession session) throws Exception {
-        APApplication app = (APApplication) GlobazSystem.getApplication(APApplication.DEFAULT_APPLICATION_APG);
-
-        try {
-            return Integer.parseInt(app.getProperty(APApplication.PROPERTY_DROIT_PAT_DUREE_JOURS));
-        } catch (NumberFormatException e) {
-            throw new Exception(session.getLabel("DUREE_DROIPPAT_INVALIDE"));
-        }
-    }
 
     public APDroitProcheAidant() { }
 
@@ -101,13 +89,24 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
     }
 
     public Optional<LocalDate> calculerDelai() {
-        Integer nbMois = APParameter.PROCHE_AIDANT_MOIS_MAX.findValueOrWithDateNow(this.getDateDebutDroit(), this.getSession());
         return loadNbJourDateMin(false).map(value -> {
             if (value.getDateDebutMin() == null) {
                 return Dates.toDate(this.getDateDebutDroit());
             }
             return value.getDateDebutMin();
-        }).map(localDate -> localDate.plusMonths(nbMois).minusDays(1));
+        }).map(this::calculerDelai);
+    }
+
+    public LocalDate calculerDelai(LocalDate date) {
+        return this.calculerDelai(date, trouverNombreMoisMax());
+    }
+
+    public Integer trouverNombreMoisMax() {
+        return APParameter.PROCHE_AIDANT_MOIS_MAX.findValueOrWithDateNow(this.getDateDebutDroit(), this.getSession());
+    }
+
+    public static LocalDate calculerDelai(LocalDate date, Integer nbMois) {
+        return date.plusMonths(nbMois).minusDays(1);
     }
 
     public Optional<LocalDate> resolveDateDebutDelaiCadre() {
@@ -124,6 +123,19 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
         if (this.getIdDroit() == null || JadeStringUtil.isBlankOrZero(this.getIdDroit())) {
             return Optional.empty();
         }
+        List<NbJourDateMin> list = loadNbJourDateMinGroupedByEventId(filtrerPeriodePlusAnciennne, this.careLeaveEventID);
+        if (list.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(list.get(0));
+    }
+
+    public List<NbJourDateMin> loadNbJourDateMinByEventId() {
+        return loadNbJourDateMinGroupedByEventId(false, null);
+    }
+
+    private List<NbJourDateMin> loadNbJourDateMinGroupedByEventId(final boolean filtrerPeriodePlusAnciennne,
+                                                                  final String careLeaveEventID) {
         String etatsDroit = String.join(
                 ",",
                 IAPDroitLAPG.CS_ETAT_DROIT_VALIDE,
@@ -131,43 +143,44 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
 
         SQLWriter sqlWriter = SQLWriter.writeWithSchema()
                                        .append("select sum(VCNNBJ + VCNNBJOURSUP) as nb_jours, min(schema.APPERIP.VCDDEB) as date_debut_min")
+                                       .append(", schema.APDROITPROCHEAIDANT.CAREEVENTID as care_leave_event_id")
                                        .append("from schema." + APDroitLAPG.TABLE_NAME_LAPG)
                                        .join("schema.APDROITPROCHEAIDANT ON schema.APDROITPROCHEAIDANT.ID_DROIT = schema.APDROIP.VAIDRO")
                                        .join("schema.APPERIP ON schema.APPERIP.VCIDRO = schema.APDROIP.VAIDRO")
                                        .join("schema.APSIFMP ON schema.APSIFMP.VQIDRM = schema.APDROIP.VAIDRO")
                                        .append("where schema.APSIFMP.VQLAVS = (")
-                                       .append("select schema.APSIFMP.VQLAVS as nss_enfant")
+                                       .append("select distinct schema.APSIFMP.VQLAVS as nss_enfant")
                                        .from(APDroitLAPG.TABLE_NAME_LAPG)
                                        .join("schema.APDROITPROCHEAIDANT ON schema.APDROITPROCHEAIDANT.ID_DROIT = schema.APDROIP.VAIDRO")
                                        .join("schema.APSIFMP ON schema.APSIFMP.VQIDRM = schema.APDROIP.VAIDRO")
                                        .append(" where schema.APDROIP.VAIDRO = ?)", this.getIdDroit())
                                        .append(" and schema.APDROIP.VATETA in(?)", etatsDroit)
+                                       .append(" and schema.APDROITPROCHEAIDANT.CAREEVENTID = ?", careLeaveEventID)
                                        .append(" and (schema.APDROIP.VAIPAR is null or schema.APDROIP.VAIPAR = 0")
                                        .append(" and 0 = (select count(child.VAIDRO) as nb")
                                        .append(" from schema.APDROIP as child")
                                        .append(" where child.VAIPAR = schema.APDROIP.VAIDRO")
                                        .append(" and child.VATETA in (?))", etatsDroit)
                                        .append(" or ((schema.APDROIP.VAIPAR is not null or schema.APDROIP.VAIPAR != 0)")
-                                       .append(" and schema.APDROIP.VAIDRO = (select max(child.VAIDRO)")
+                                       .append(" and schema.APDROIP.VAIDRO = (select max(child.VAIPAR)")
                                        .append(" from schema.APDROIP as child")
                                        .append(" where child.VAIPAR = schema.APDROIP.VAIDRO")
                                        .append(" and child.VATETA in (?))))", etatsDroit);
-                                       if(filtrerPeriodePlusAnciennne) {
-                                           sqlWriter .append("and schema.APPERIP.VCDFIN <= (select max(periodeMax.VCDFIN)")
-                                                   .append("                                 from schema.APDROIP as currentDroit")
-                                                   .append("                                inner join schema.APPERIP as periodeMax  ")
-                                                   .append("                                   ON periodeMax.VCIDRO = currentDroit.VAIDRO")
-                                                   .append("                      where VAIDRO = ?)", this.getIdDroit());
-                                       }
+        if (filtrerPeriodePlusAnciennne) {
+            sqlWriter.append("and schema.APPERIP.VCDFIN <= (select max(periodeMax.VCDFIN)")
+                     .append("                                 from schema.APDROIP as currentDroit")
+                     .append("                                inner join schema.APPERIP as periodeMax  ")
+                     .append("                                   ON periodeMax.VCIDRO = currentDroit.VAIDRO")
+                     .append("                      where VAIDRO = ?)", this.getIdDroit());
+        }
+        sqlWriter.append("group by schema.APDROITPROCHEAIDANT.CAREEVENTID");
+        sqlWriter.append("order by schema.APDROITPROCHEAIDANT.CAREEVENTID desc");
 
         List<NbJourDateMin> list = SCM.newInstance(NbJourDateMin.class)
                                       .session(this.getSession()).query(sqlWriter.toSql())
                                       .converters(new LocalDateConverter())
                                       .execute();
-        if (list.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(list.get(0));
+        return list;
     }
 
     public int calculerNbJourIndemnise() {
@@ -391,6 +404,8 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
         duplicata = statement.dbReadBoolean(APDroitProcheAidant.FIELDNAME_DUPLICATA);
         noRevision = statement.dbReadNumeric(APDroitAPG.FIELDNAME_REVISION);
         remarque = statement.dbReadString(APDroitProcheAidant.FIELDNAME_REMARQUE);
+        careLeaveEventID = statement.dbReadString(APDroitProcheAidant.FIELDNAME_CARE_LEAVE_EVENT_ID);
+        idDroitCopie= statement.dbReadString(APDroitProcheAidant.FIELDNAME_ID_DROIT_COPIE);
     }
 
     /**
@@ -449,7 +464,13 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
         statement.writeField(
                 APDroitProcheAidant.FIELDNAME_REMARQUE,
                 this._dbWriteString(statement.getTransaction(), remarque, "remarque"));
+        statement.writeField(
+                APDroitProcheAidant.FIELDNAME_CARE_LEAVE_EVENT_ID,
+                this._dbWriteNumeric(statement.getTransaction(), careLeaveEventID, "careLeaveEventId"));
 
+        statement.writeField(
+                APDroitProcheAidant.FIELDNAME_ID_DROIT_COPIE,
+                this._dbWriteNumeric(statement.getTransaction(), idDroitCopie, "idDroitCopie"));
     }
 
     @Override
@@ -462,6 +483,7 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
         clone.setGenreService(getGenreService());
         clone.setIdCaisse(getIdCaisse());
         clone.setIdDemande(getIdDemande());
+        clone.setIdDroitCopie(this.getIdDroit());
 
         if (null != getSession().getUserId()) {
             clone.setIdGestionnaire(getSession().getUserId());
@@ -489,6 +511,7 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
         clone.setDroitAcquis(getDroitAcquis());
         clone.setIsSoumisImpotSource(getIsSoumisImpotSource());
         clone.setTauxImpotSource(getTauxImpotSource());
+        clone.setCareLeaveEventID(this.careLeaveEventID);
 
         // S'il s'agit d'une simple copie, la date de début du droit et de fin
         // ne doit pas être copiée
@@ -708,9 +731,65 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
         this.remarque = remarque;
     }
 
+    public String getCareLeaveEventID() {
+        return careLeaveEventID;
+    }
+
+    public void setCareLeaveEventID(final String careLeaveEventID) {
+        this.careLeaveEventID = careLeaveEventID;
+    }
+
     @Data
     public static class NbJourDateMin {
         private Integer nbJours;
         private LocalDate dateDebutMin;
+        private Integer careLeaveEventId;
     }
+
+    public boolean isACopy(){
+        return !JadeStringUtil.isBlankOrZero(this.idDroitCopie);
+    }
+
+    public String getIdDroitCopie() {
+        return idDroitCopie;
+    }
+
+    public void setIdDroitCopie(final String idDroitCopie) {
+        this.idDroitCopie = idDroitCopie;
+    }
+
+    public static APDroitProcheAidant retrieve(String id, BISession session) {
+        return Exceptions.checkedToUnChecked(() -> {
+            APDroitProcheAidant apDroitProcheAidant = new APDroitProcheAidant();
+            apDroitProcheAidant.setISession(session);
+            apDroitProcheAidant.setId(id);
+            apDroitProcheAidant.retrieve();
+            return apDroitProcheAidant;
+        }, "Error with this id:" + id);
+    }
+
+
+    @Getter
+    @ToString
+    @EqualsAndHashCode
+    public static final class CareLeaveEventId {
+        private final LocalDate delaiValidite;
+        private final Integer id;
+        private final boolean created;
+
+        private CareLeaveEventId(LocalDate delaiValidite, Integer careLeaveEventId, boolean created) {
+            this.delaiValidite = delaiValidite;
+            this.id = careLeaveEventId;
+            this.created = created;
+        }
+
+        public static CareLeaveEventId of(LocalDate delaiValidite, Integer careLeaveEventId) {
+            return new CareLeaveEventId(delaiValidite, careLeaveEventId, false);
+        }
+
+        public static CareLeaveEventId ofCreated(LocalDate delaiValidite, Integer careLeaveEventId) {
+            return new CareLeaveEventId(delaiValidite, careLeaveEventId, true);
+        }
+    }
+
 }

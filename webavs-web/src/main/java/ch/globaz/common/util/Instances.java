@@ -1,5 +1,6 @@
 package ch.globaz.common.util;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -41,6 +42,26 @@ public class Instances {
             T castInstanceTyped = clazz.cast(this.instanceToTest);
             this.instanceCasted = castInstanceTyped;
             this.result = function.apply(castInstanceTyped);
+        }
+        return this;
+    }
+
+    /**
+     * Test de l'instance et qui va exécuter une fonction si il s'agit de la bonne instance.
+     * Une seule fonction peut être exécuté, c'est le premier "is" qui contera.
+     *
+     * @param clazz    Class qui permet est utilié pour tester l'instance.
+     * @param consumer Fonction que l'on veut exécuter si il s'agit de la bonne instance et qui ne renvoie rien.
+     * @param <T>      Le type de la class que l'on veut tester.
+     * @param <R>      Le retour de la fonction
+     *
+     * @return Soit même.
+     */
+    public <T> Instances when(Class<T> clazz, Consumer<T> consumer) {
+        if (clazz.isInstance(this.instanceToTest) && this.instanceCasted == null) {
+            T castInstanceTyped = clazz.cast(this.instanceToTest);
+            this.instanceCasted = castInstanceTyped;
+            consumer.accept(castInstanceTyped);
         }
         return this;
     }
