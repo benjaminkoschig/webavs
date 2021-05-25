@@ -3,6 +3,7 @@
  */
 package ch.globaz.pegasus.business.models.decision;
 
+import ch.globaz.corvus.business.models.pcaccordee.SimpleRetenuePayement;
 import globaz.jade.persistence.model.JadeComplexModel;
 import ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees;
 import ch.globaz.pegasus.business.constantes.IPCDecision;
@@ -12,6 +13,9 @@ import ch.globaz.pegasus.business.models.droit.VersionDroit;
 import ch.globaz.pegasus.business.models.pcaccordee.PCAccordee;
 import ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul;
 import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author SCE
@@ -35,9 +39,11 @@ public class DecisionApresCalculOO extends JadeComplexModel {
     private SimpleDecisionApresCalcul simpleDecisionApresCalcul = null;
     private SimplePrestationsAccordees simplePrestation = null;
     private SimpleValidationDecision simpleValidationDecision = null;
+    private Map<String,Float> mapMontantHomeVerserDirect = null;
 
     private VersionDroit versionDroit = null;
-
+    //LOCAL
+    private String dateAdaptation = "";
     public DecisionApresCalculOO() {
         super();
         versionDroit = new VersionDroit();
@@ -50,7 +56,6 @@ public class DecisionApresCalculOO extends JadeComplexModel {
         planCalcul = new SimplePlanDeCalcul();
         planCalculNonRetenu = new SimplePlanDeCalcul();
         simplePrestation = new SimplePrestationsAccordees();
-
     }
 
     public PersonneEtendueComplexModel getPersonneForDossier() {
@@ -211,11 +216,25 @@ public class DecisionApresCalculOO extends JadeComplexModel {
     }
 
     /**
-     * @param simpleVersionDroit
-     *            the simpleVersionDroit to set
+     * @param versionDroit
      */
     public void setVersionDroit(VersionDroit versionDroit) {
         this.versionDroit = versionDroit;
+    }
+
+    public Map<String,Float> getMapMontantVerserHome() {
+        return mapMontantHomeVerserDirect;
+    }
+
+    public void setMapMontantVerserHome(Map<String,Float> mapMontantHomeVerserDirect) {
+        this.mapMontantHomeVerserDirect = mapMontantHomeVerserDirect;
+    }
+    public String getDateAdaptation() {
+        return dateAdaptation;
+    }
+
+    public void setDateAdaptation(String dateAdaptation) {
+        this.dateAdaptation = dateAdaptation;
     }
 
 }

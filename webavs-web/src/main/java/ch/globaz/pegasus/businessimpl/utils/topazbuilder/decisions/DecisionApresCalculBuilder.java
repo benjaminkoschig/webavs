@@ -1,12 +1,18 @@
 package ch.globaz.pegasus.businessimpl.utils.topazbuilder.decisions;
 
 import ch.globaz.common.business.language.LanguageResolver;
+import ch.globaz.pegasus.business.exceptions.models.home.HomeException;
+import ch.globaz.pegasus.business.models.home.SimpleHomeSearch;
+import ch.globaz.pegasus.business.models.pcaccordee.PcaRetenue;
+import ch.globaz.pegasus.business.models.pcaccordee.PcaRetenueSearch;
+import ch.globaz.pegasus.businessimpl.utils.decision.CopiesDecisionHandler;
 import ch.globaz.pegasus.utils.PCApplicationUtil;
 import ch.globaz.pyxis.business.model.TiersSimpleModel;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.externe.IPRConstantesExternes;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.print.server.JadePrintDocumentContainer;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
@@ -420,7 +426,6 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
     /**
      * Chargement des entités de bases de données. Decision, Babel, et TupleDonneesRapport
      * 
-     * @param idDecision
      * @throws CatalogueTexteException
      * @throws Exception
      */
@@ -431,6 +436,13 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
             // liste dac
             DecisionApresCalculOO decisionApresCalculOO = PegasusServiceLocator.getDecisionApresCalculService()
                     .readForOO(decision);
+            decisionApresCalculOO = loadRetenuesAndCalcul(decisionApresCalculOO);
+            decisionApresCalculOO.getDecisionHeader().setListeCopies(CopiesDecisionHandler.getCopiesList(decisionApresCalculOO.getSimpleDecisionApresCalcul()));
+            if(handlerGlobal.getFromAdaptation()){
+                decisionApresCalculOO.setDateAdaptation(handlerGlobal.getDateDoc());
+            }
+
+
             listeDAC.put(decision, decisionApresCalculOO);
             // liste pcal
             byte[] tupleRoot = listeDAC.get(decision).getPlanCalcul().getResultatCalcul();
@@ -447,6 +459,38 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
         // Chargement BAbel
         documentsBabel = BabelServiceLocator.getPCCatalogueTexteService().searchForTypeDecision(
                 IPCCatalogueTextes.BABEL_DOC_NAME_APRES_CALCUL);
+    }
+
+    private DecisionApresCalculOO loadRetenuesAndCalcul(DecisionApresCalculOO decision) throws JadeApplicationServiceNotAvailableException, JadePersistenceException, HomeException {
+
+        PcaRetenueSearch search = new PcaRetenueSearch();
+        search.setForIdPca(decision.getPcAccordee().getSimplePCAccordee().getIdPCAccordee());
+        search = PegasusServiceLocator.getRetenueService().search(search);
+        Map<String,Float> mapMontantVersementDirectHome = new HashMap<>();
+        Float montantHomeVerserDirect = 0.0f;
+        for (JadeAbstractModel model : search.getSearchResults()) {
+            PcaRetenue retenue = (PcaRetenue) model;
+            //Si c'est un home, on le map dans la liste des home.
+            if(isHome(retenue.getSimpleRetenue().getIdTiersAdressePmt())){
+                if(mapMontantVersementDirectHome.containsKey(retenue.getCsRoleFamillePC())){
+                    montantHomeVerserDirect = mapMontantVersementDirectHome.get(retenue.getCsRoleFamillePC());
+                }else{
+                    montantHomeVerserDirect = 0.0f;
+                }
+                montantHomeVerserDirect = montantHomeVerserDirect + new Float(retenue.getSimpleRetenue().getMontantRetenuMensuel());
+                mapMontantVersementDirectHome.put(retenue.getCsRoleFamillePC(),montantHomeVerserDirect);
+            }
+        }
+        decision.setMapMontantVerserHome(mapMontantVersementDirectHome);
+        return decision;
+    }
+    private boolean isHome(String idTiersAdressePmt) throws JadeApplicationServiceNotAvailableException, HomeException, JadePersistenceException {
+        SimpleHomeSearch search = new SimpleHomeSearch();
+        search.setForIdTiersHome(idTiersAdressePmt);
+        if (PegasusImplServiceLocator.getSimpleHomeService().count(search) > 0) {
+            return true;
+        }
+        return false;
     }
 
     /**

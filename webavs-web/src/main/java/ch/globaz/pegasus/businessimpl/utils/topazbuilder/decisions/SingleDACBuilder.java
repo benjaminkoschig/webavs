@@ -306,7 +306,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
     private DocumentData addPlanCalcul(DecisionApresCalculOO dacOO, JadePrintDocumentContainer allDoc, JadePrintDocumentContainer containerGed, boolean isRetenu) throws Exception {
         DocumentData dataPCAL;
         dataPCAL = PegasusImplServiceLocator.getDecisionApresCalculService().buildPlanCalculDocumentData(
-                dacOO.getSimpleDecisionApresCalcul().getIdDecisionApresCalcul(), true, isRetenu);
+                dacOO.getSimpleDecisionApresCalcul().getIdDecisionApresCalcul(), true, isRetenu,dacOO.getDateAdaptation());
 
         mergeDataAndPubInfosWithPixisFill(allDoc, dataPCAL, new PegasusPubInfoBuilder().ged().rectoVersoLast()
                         .getPubInfo(), pubInfosPixisProperties, dacOO.getPersonneForDossier(), TYPE_DOCUMENT.ORIGINAL,
@@ -355,7 +355,6 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
      * Création du bloc annexes
      *
      * @param data
-     * @param document
      * @return data, instance de DocumentData mis à jour
      */
     private DocumentData buildBlocAnnexes(DocumentData data) {
@@ -379,7 +378,6 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
      * Création du bloc copies
      *
      * @param data
-     * @param document
      * @return data, instance de DocumentData mis à jour
      * @throws JadeApplicationException
      * @throws JadePersistenceException
@@ -495,7 +493,6 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
      * Creation du bloc MOyens de droits
      *
      * @param data
-     * @param document
      * @return data, instance de DocumentData mis à jour
      */
     private DocumentData buildBlocMoyensDroits(DocumentData data) {
@@ -522,7 +519,6 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
      * Création du bloc remarques
      *
      * @param data
-     * @param document
      * @return data, instance de DocumentData mis à jour
      */
     private DocumentData buildBlocRemarques(DocumentData data) {
@@ -619,7 +615,8 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
      * Création des copies de documents en fonction des paramètres de copies
      *
      * @param data
-     * @param document
+     * @param copie
+     * @param tiersBeneficiaire
      * @return
      * @throws JadePersistenceException
      * @throws JadeApplicationServiceNotAvailableException
@@ -679,6 +676,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         }
         if (copie.getCopies()) {
             buildBlocCopies(data);
+            buildFooter(data);
         }
 
         return data;
@@ -834,9 +832,12 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
                 SingleDACBuilder.AYANT_DROIT, dacOO.getDecisionHeader().getPersonneEtendue().getTiers()
                         .getDesignation2()
                         + " " + dacOO.getDecisionHeader().getPersonneEtendue().getTiers().getDesignation1()));
-
         String dateDecision = PegasusDateUtil.getLitteralDateByTiersLanguage(dacOO.getDecisionHeader()
                 .getSimpleDecisionHeader().getDateDecision(), tiersBeneficiaire.getLangue());
+        if(!JadeStringUtil.isBlankOrZero(dacOO.getDateAdaptation())){
+             dateDecision = PegasusDateUtil.getLitteralDateByTiersLanguage(dacOO.getDateAdaptation(), tiersBeneficiaire.getLangue());
+        }
+
 
         // Decision du
         if (isProforma()) {
@@ -903,24 +904,29 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
             data.addData("B_MONTANT_VERSEE_ASS", babelDoc.getTextes(3).getTexte(32).getDescription());
             data.addData("B_MONTANT_VERSEE_ASS2", babelDoc.getTextes(3).getTexte(35).getDescription());
             data.addData("MONTANT_VERSEE_ASS", SingleDACBuilder.MONNAIE + " " + new FWCurrency(dacOO.getPlanCalcul().getPrimeVerseeAssMaladie()).toStringFormat());
-
-
-
-            String montantHomeString = dacOO.getPlanCalcul().getMontantPrixHome();
-            Float montantHome = 0.0f;
-            if (!montantHomeString.isEmpty()) {
-                montantHome = Float.valueOf(dacOO.getPlanCalcul().getMontantPrixHome())/12;
-            }
-            FWCurrency montantHomeCurrency = new FWCurrency(montantHome);
-            if (montantHomeCurrency.isZero() || !dacOO.getPlanCalcul().getIsVersementDirect()) {
-                data.addData("B_MONTANT_HOME","");
-                data.addData("MONTANT_HOME","");
-            } else {
-                data.addData("B_MONTANT_HOME", babelDoc.getTextes(3).getTexte(33).getDescription());
-                data.addData("MONTANT_HOME", SingleDACBuilder.MONNAIE + " " + new FWCurrency(montantHomeCurrency.toString()).toStringFormat());
-            }
+            //        String montantHomeString = dacOO.getPlanCalcul().getMontantPrixHome();
+//        Float montantHome = 0.0f;
+//        if (!montantHomeString.isEmpty()) {
+//            montantHome = Float.valueOf(dacOO.getPlanCalcul().getMontantPrixHome())/12;
+//        }
+//        FWCurrency montantHomeCurrency = new FWCurrency(montantHome);
+//        if (montantHomeCurrency.isZero() || !dacOO.getPlanCalcul().getIsVersementDirect()) {
+//            data.addData("B_MONTANT_HOME","");
+//            data.addData("MONTANT_HOME","");
+//        } else {
+//            data.addData("B_MONTANT_HOME", babelDoc.getTextes(3).getTexte(33).getDescription());
+//            data.addData("MONTANT_HOME", SingleDACBuilder.MONNAIE + " " + new FWCurrency(montantHomeCurrency.toString()).toStringFormat());
+//        }
         }
 
+
+        if (dacOO.getMapMontantVerserHome().size() == 0 || !dacOO.getPlanCalcul().getIsVersementDirect()) {
+            data.addData("B_MONTANT_HOME","");
+            data.addData("MONTANT_HOME","");
+        } else {
+            data.addData("B_MONTANT_HOME", babelDoc.getTextes(3).getTexte(33).getDescription());
+            data.addData("MONTANT_HOME", SingleDACBuilder.MONNAIE + " " + new FWCurrency(getMontantHome("ALL")).toStringFormat());
+        }
         // gestion prestation
 
         data.addData("B_PRESTATION_MENS", babelDoc.getTextes(3).getTexte(30).getDescription());
@@ -1150,7 +1156,6 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
      * Création du bloc récapitulatif
      *
      * @param data
-     * @param document
      * @return
      * @throws JadeApplicationServiceNotAvailableException
      * @throws PmtMensuelException
@@ -1453,11 +1458,12 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         // Si tiers egal, c'est le requérant, on retourne le montant de la pc
         if (dacOO.getSimplePrestation().getIdTiersBeneficiaire()
                 .equals(dacOO.getDecisionHeader().getSimpleDecisionHeader().getIdTiersBeneficiaire())) {
-            return dacOO.getSimplePrestation().getMontantPrestation();
+            Float montantRequerant = Float.parseFloat( dacOO.getSimplePrestation().getMontantPrestation());
+            return new FWCurrency(montantRequerant).toStringFormat();
         } else {
             Float montantConjoint = Float.parseFloat(dacOO.getPlanCalcul().getMontantPCMensuelle())
                     - Float.parseFloat(dacOO.getSimplePrestation().getMontantPrestation());
-            return new FWCurrency(montantConjoint.toString()).toStringFormat();
+            return new FWCurrency((montantConjoint).toString()).toStringFormat();
         }
     }
 
@@ -1465,8 +1471,23 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         String primeVersee = dacOO.getPlanCalcul().getPrimeVerseeAssMaladie();
         String montantPrestation = dacOO.getSimplePrestation().getMontantPrestation();
         Float montantPCTotal = Float.parseFloat(montantPrestation.isEmpty() ? "0" : montantPrestation)
-                + (Float.parseFloat(primeVersee.isEmpty()? "0" : primeVersee)/12);
+                + (Float.parseFloat(primeVersee.isEmpty()? "0" : primeVersee)/12)-(getMontantHome("ALL"));
         return new FWCurrency(montantPCTotal.toString()).toStringFormat();
+    }
+
+    private Float getMontantHome(String key){
+        if(dacOO.getMapMontantVerserHome().size() > 0){
+            if(key.equals("ALL")){
+                return dacOO.getMapMontantVerserHome().values().stream().reduce(0.0f,Float::sum);
+            }
+            // Cas Conjoint en Home (Conjoint est devenu Requérant mais donnée dans ROLE_CONJOINT)
+            if(key.equals(IPCDroits.CS_ROLE_FAMILLE_REQUERANT) && !dacOO.getMapMontantVerserHome().containsKey(key)){
+                return dacOO.getMapMontantVerserHome().get(IPCDroits.CS_ROLE_FAMILLE_CONJOINT);
+            }
+            return dacOO.getMapMontantVerserHome().get(key);
+        }else{
+            return 0.f;
+        }
     }
 
     /**
