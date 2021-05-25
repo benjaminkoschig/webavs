@@ -176,6 +176,7 @@ globazNotation.utils = {
             $html.dialog("widget").find(".ui-dialog-buttonpane").css("background-color", "#fff0");
             $html.dialog("widget").find(".ui-dialog-buttonpane").css("background-image", "none");
         }
+	    return $html;
     },
 
 	// fonction pour afficher les attribut de l'objet utils pour les tests

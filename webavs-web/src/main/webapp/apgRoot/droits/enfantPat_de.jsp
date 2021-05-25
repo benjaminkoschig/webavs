@@ -144,13 +144,13 @@ if(viewBean.getTypeDemande().isProcheAidant()){
                   $('[name="dateNaissance"]').prop("disabled", true);
               },100)
           }
-          if (delaiCadreModifie) {
-              globazNotation.utils.dialogWarn("<ct:FWLabel key='JSP_NUMERO_DELAI_CADRE_MODIFIE_AUTOMATIQUEMENT'/>", {
+         if (delaiCadreModifie) {
+             var $html = globazNotation.utils.dialogWarn("<ct:FWLabel key='JSP_NUMERO_DELAI_CADRE_MODIFIE_AUTOMATIQUEMENT'/>", {
                   "OK": function () {
-                      $(this).dialog("close");
+                      $html.dialog("close");
                   }
               }, window.parent);
-          }
+         }
 
           var frList = parent.fr_list
           if (frList && parent.isNouveau) {
