@@ -2426,7 +2426,6 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             dateDeFinPrestationACM = dateDeFinPrestDate.format(format);
             return dateDeFinPrestationACM;
         }
-
         return null;
     }
 
@@ -2488,7 +2487,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
      * @return
      */
     private LocalDate parseStringToDateTime(String date, DateTimeFormatter formatter) {
-        if (date != null && !date.isEmpty()) {
+        if (!JadeStringUtil.isBlankOrZero(date)) {
             return LocalDate.parse(date, formatter);
         }
         return null;
