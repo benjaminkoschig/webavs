@@ -1,15 +1,16 @@
 package globaz.apg.process;
 
-import apg.amatapat.Content;
-import apg.amatapat.InsuredPerson;
-import apg.amatapat.MainEmployer;
-import apg.amatapat.Salary;
+import apg.amatapat.*;
+import ch.globaz.common.domaine.Date;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.pyxis.business.model.PaysSearchSimpleModel;
+import ch.globaz.pyxis.business.model.PaysSimpleModel;
 import ch.globaz.pyxis.domaine.EtatCivil;
 import globaz.apg.db.droits.APEmployeur;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.properties.APProperties;
+import globaz.externe.IPRConstantesExternes;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BStatement;
@@ -18,7 +19,10 @@ import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.business.JadeBusinessMessage;
+import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.osiris.external.IntRole;
@@ -36,7 +40,6 @@ import globaz.prestation.tools.PRSession;
 import globaz.pyxis.api.ITIPersonne;
 import globaz.pyxis.api.ITIRole;
 import globaz.pyxis.application.TIApplication;
-import globaz.pyxis.db.adressecourrier.TIPays;
 import globaz.pyxis.db.tiers.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +61,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
     private static final String BENEFICIAIRE_PERE = "PERE";
     private static final String BENEFICIAIRE_EMPLOYEUR = "EMPLOYEUR";
 
-    public APAbstractImportationAmatApat(LinkedList<String> err, LinkedList<String> inf){
+    protected APAbstractImportationAmatApat(LinkedList<String> err, LinkedList<String> inf){
         errors = err;
         infos = inf;
     }
@@ -69,14 +72,14 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
         roleManager.setSession(bsession);
         roleManager.setForIdTiers(idTiers);
         BStatement statement = null;
-        BTransaction trans = (BTransaction) bsession.newTransaction();
-        if(!trans.isOpened()){
-            trans.openTransaction();
-        }
-
+        BTransaction trans = null;
         try {
+            trans = (BTransaction) bsession.newTransaction();
+            if(!trans.isOpened()){
+                trans.openTransaction();
+            }
             statement = roleManager.cursorOpen(bsession.getCurrentThreadTransaction());
-            TIRole role = null;
+            TIRole role;
             boolean isRolePresent = false;
 
             while ((role = (TIRole) roleManager.cursorReadNext(statement)) != null) {
@@ -96,16 +99,14 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
             trans.commit();
         } catch (Exception e) {
             errors.add("Une erreur s'est produite dans la création du rôle du tiers : "+idTiers);
-            LOG.error("ImportAPGAmatApat#creationRoleApgTiers - Une erreur s'est produite dans la création du rôle du tiers : "+idTiers);
+            LOG.error("ImportAPGAmatApat#creationRoleApgTiers - Une erreur s'est produite dans la création du rôle du tiers : {}", idTiers);
             if (trans != null) {
                 trans.rollback();
             }
             if(isJadeThreadError()){
-//                addJadeThreadErrorToListInfos("Rôle");
-                // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans l'ajout du rôle
+                addJadeThreadErrorToListError("Rôle");
                 JadeThread.logClear();
             }
-            throw new Exception("ImportAPGAmatApat#creationRoleApgTiers - Une erreur s'est produite dans la création du rôle du tiers : "+idTiers);
         } finally {
             try {
                 if (statement != null) {
@@ -116,77 +117,87 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                     }
                 }
             } finally {
-                trans.closeTransaction();
+                if (trans != null) {
+                    trans.closeTransaction();
+                }
             }
         }
     }
 
     @Override
     public void createContact(PRTiersWrapper tiers, String email, BSession bsession) throws Exception {
-        BTransaction trans = (BTransaction) bsession.newTransaction();
-        if(!trans.isOpened()){
-            trans.openTransaction();
-        }
+        BTransaction trans = null;
         try {
-            if (!JadeStringUtil.isBlankOrZero(email)) {
-                TIAvoirContactManager avoirContactManager = new TIAvoirContactManager();
-                avoirContactManager.setForIdTiers(tiers.getIdTiers());
-                avoirContactManager.find(BManager.SIZE_NOLIMIT);
-
-                boolean hasEmail = false;
-                if (!avoirContactManager.getContainer().isEmpty()) {
-                    for (int i = 0; i < avoirContactManager.getContainer().size(); i++) {
-                        TIAvoirContact avoirContact = (TIAvoirContact) avoirContactManager.get(i);
-
-                        TIMoyenCommunicationManager moyenCommunicationManager = new TIMoyenCommunicationManager();
-                        moyenCommunicationManager.setForIdContact(avoirContact.getIdContact());
-                        moyenCommunicationManager.setForMoyenLike(TIMoyenCommunication.EMAIL);
-
-                        if (!moyenCommunicationManager.isEmpty()) {
-                            hasEmail = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (!hasEmail) {
-                    // Création du contact
-                    TIContact contact = new TIContact();
-                    contact.setSession(bsession);
-                    contact.setNom(tiers.getNom());
-                    contact.setPrenom(tiers.getPrenom());
-                    contact.add(trans);
-
-                    // Création du moyen de communication
-                    TIMoyenCommunication moyenCommunication = new TIMoyenCommunication();
-                    moyenCommunication.setSession(bsession);
-                    moyenCommunication.setMoyen(email);
-                    moyenCommunication.setTypeCommunication(TIMoyenCommunication.EMAIL);
-                    moyenCommunication.setIdContact(contact.getIdContact());
-                    moyenCommunication.setIdApplication(APProperties.DOMAINE_ADRESSE_APG_PANDEMIE.getValue());
-                    moyenCommunication.add(trans);
-
-                    // Lien du contact avec le tiers
-                    TIAvoirContact avoirContact = new TIAvoirContact();
-                    avoirContact.setSession(bsession);
-                    avoirContact.setIdTiers(tiers.getIdTiers());
-                    avoirContact.setIdContact(contact.getIdContact());
-                    avoirContact.add(trans);
-                    trans.commit();
-                } else {
-                    // TODO : message pour informer que le contact n'a pas été mis à jour
-                }
-
+            trans = (BTransaction) bsession.newTransaction();
+            if (!trans.isOpened()) {
+                trans.openTransaction();
             }
 
+
+            if (!hasEmail(email, tiers)) {
+                // Création du contact
+                TIContact contact = new TIContact();
+                contact.setSession(bsession);
+                contact.setNom(tiers.getNom());
+                contact.setPrenom(tiers.getPrenom());
+                contact.add(trans);
+
+                // Création du moyen de communication
+                TIMoyenCommunication moyenCommunication = new TIMoyenCommunication();
+                moyenCommunication.setSession(bsession);
+                moyenCommunication.setMoyen(email);
+                moyenCommunication.setTypeCommunication(TIMoyenCommunication.EMAIL);
+                moyenCommunication.setIdContact(contact.getIdContact());
+                moyenCommunication.setIdApplication(typeDemande.equals(IPRDemande.CS_TYPE_PATERNITE)
+                                                        ? APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue()
+                                                        : IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE);
+                moyenCommunication.add(trans);
+
+                // Lien du contact avec le tiers
+                TIAvoirContact avoirContact = new TIAvoirContact();
+                avoirContact.setSession(bsession);
+                avoirContact.setIdTiers(tiers.getIdTiers());
+                avoirContact.setIdContact(contact.getIdContact());
+                avoirContact.add(trans);
+                trans.commit();
+            } else {
+                errors.add("Une erreur est survenue lors de la création du contact pour l'id tiers : " + tiers.getNSS() + " - " + email);
+                LOG.error("APImportationAPGAmatApat#createContact : Une erreur est survenue lors de la création du contact pour l'id tiers {}", tiers.getNSS());
+            }
         } catch (Exception e) {
-            trans.rollback();
+            if(trans != null) {
+                trans.rollback();
+            }
             errors.add("Une erreur est survenue lors de la création du contact pour l'id tiers : " + tiers.getNSS() + " - " + email);
-            LOG.error("APImportationAPGAmatApat#createContact : Une erreur est survenue lors de la création du contact pour l'id tiers " + tiers.getNSS(), e);
-            throw new Exception("APImportationAPGAmatApat#createContact : Une erreur est survenue lors de la création du contact pour l'id tiers " + tiers.getNSS());
+            LOG.error("APImportationAPGAmatApat#createContact : Une erreur est survenue lors de la création du contact pour l'id tiers {}", tiers.getNSS(), e);
         }finally {
-            trans.closeTransaction();
+            if(trans != null) {
+                trans.closeTransaction();
+            }
         }
+    }
+
+    protected boolean hasEmail(String email, PRTiersWrapper tiers ) throws Exception {
+        if (!JadeStringUtil.isBlankOrZero(email)) {
+            TIAvoirContactManager avoirContactManager = new TIAvoirContactManager();
+            avoirContactManager.setForIdTiers(tiers.getIdTiers());
+            avoirContactManager.find(BManager.SIZE_NOLIMIT);
+
+            if (!avoirContactManager.getContainer().isEmpty()) {
+                for (int i = 0; i < avoirContactManager.getContainer().size(); i++) {
+                    TIAvoirContact avoirContact = (TIAvoirContact) avoirContactManager.get(i);
+
+                    TIMoyenCommunicationManager moyenCommunicationManager = new TIMoyenCommunicationManager();
+                    moyenCommunicationManager.setForIdContact(avoirContact.getIdContact());
+                    moyenCommunicationManager.setForMoyenLike(TIMoyenCommunication.EMAIL);
+
+                    if (!moyenCommunicationManager.isEmpty()) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     @Override
@@ -216,7 +227,6 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 }
             } catch (Exception e1) {
                 bsession.addError(bsession.getLabel("CANTON_INTROUVABLE"));
-
             }
         }
 
@@ -229,7 +239,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
         String idTiers = PRTiersHelper.addTiers(bsession, assure.getVn(), assure.getOfficialName(),
                 assure.getFirstName(), isWomen ? ITIPersonne.CS_FEMME : ITIPersonne.CS_HOMME, tranformGregDateToGlobDate(assure.getDateOfBirth()),
                 "",
-                avsUtils.isSuisse(assure.getVn()) ? TIPays.CS_SUISSE : PRTiersHelper.ID_PAYS_BIDON, canton, "",
+                avsUtils.isSuisse(assure.getVn()) ? PRTiersHelper.ID_PAYS_SUISSE : PRTiersHelper.ID_PAYS_BIDON, canton, "",
                 getSituationMarital(assure));
 
         return PRTiersHelper.getTiersParId(bsession, idTiers);
@@ -250,7 +260,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
     }
 
     @Override
-    public PRDemande createDemande(String idTiers, BSession bsession) throws Exception {
+    public PRDemande createDemande(String idTiers, BSession bsession) {
         PRDemande retValue = null;
         try {
             PRDemandeManager mgr = new PRDemandeManager();
@@ -272,11 +282,10 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
         } catch (Exception e) {
             errors.add("Erreur dans la création de la demande du droit (idTiers : " + idTiers + ")");
             LOG.error("Erreur lors de la création de la demande du droit ", e.getStackTrace());
-            // TODO : refacto
             if (isJadeThreadError()) {
                 addJadeThreadErrorToListError("Demande");
+                JadeThread.logClear();
             }
-            throw new Exception("Erreur lors de la création de la demande du droit ", e);
         }
         return retValue;
     }
@@ -293,7 +302,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
             return noCaisse + noAgence;
         } catch (final PropertiesException exception) {
             errors.add("Impossible de récupérer les propriétés n° caisse et n° agence");
-            LOG.error("APImportationAPGAmatApat#creationIdCaisse : A fatal exception was thrown when accessing to the CommonProperties " + exception);
+            LOG.error("APImportationAPGAmatApat#creationIdCaisse : A fatal exception was thrown when accessing to the CommonProperties", exception);
         }
         return null;
     }
@@ -314,20 +323,12 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
 
     private void creationSituationProEmploye(Content content, String idDroit, BTransaction transaction, BSession bsession) {
         Salary salaire = content.getProvidedByEmployer().getSalary();
-        String salaireMensuel = String.valueOf(salaire.getLastIncome().getAmount());
+        LastIncome inCome = salaire.getLastIncome();
+        String salaireMensuel = null;
         MainEmployer mainEmployeur = content.getMainEmployer();
-        boolean isVersementEmployeur;
-        switch (content.getPaymentContact().getBeneficiaryType()) {
-            case BENEFICIAIRE_EMPLOYEUR:
-                isVersementEmployeur = true;
-                break;
-            case BENEFICIAIRE_MERE:
-            case BENEFICIAIRE_PERE:
-            default:
-                isVersementEmployeur = false;
-                break;
+        if(inCome != null) {
+            salaireMensuel = String.valueOf(salaire.getLastIncome().getAmount());
         }
-
         try {
             AFAffiliation affiliation = findAffiliationByNumero(mainEmployeur.getAffiliateID(), bsession);
             if (affiliation != null) {
@@ -342,12 +343,14 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 situationProfessionnelle.setIdDroit(idDroit);
                 situationProfessionnelle.setIdEmployeur(emp.getIdEmployeur());
                 situationProfessionnelle.setIsIndependant(false);
-                situationProfessionnelle.setIsVersementEmployeur(isVersementEmployeur);
-                situationProfessionnelle.setSalaireMensuel(salaireMensuel);
+                situationProfessionnelle.setIsVersementEmployeur(isVersementEmployeur(content));
+                if(salaireMensuel != null) {
+                    situationProfessionnelle.setSalaireMensuel(salaireMensuel);
+                }
 
                 // Vague 2 - Si le salarié est payé sur 13 mois
                 // On ajoute son 13eme mois sans une autre rémunération annuelle
-                if (salaire.getLastIncome().isHasThirteenthMonth()) {
+                if (inCome != null && inCome.isHasThirteenthMonth()) {
                     situationProfessionnelle.setAutreRemuneration(salaireMensuel);
                     situationProfessionnelle.setPeriodiciteAutreRemun(IPRSituationProfessionnelle.CS_PERIODICITE_ANNEE);
                 }
@@ -369,18 +372,10 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
     private void creationSituationProIndependant(Content content, String idDroit, BTransaction transaction, BSession bsession) {
         String masseAnnuel = "0";
         MainEmployer mainEmployeur = content.getMainEmployer();
-        boolean isVersementEmployeur;
-        switch (content.getPaymentContact().getBeneficiaryType()) {
-            case BENEFICIAIRE_EMPLOYEUR:
-                isVersementEmployeur = true;
-                break;
-            case BENEFICIAIRE_MERE:
-            default:
-                isVersementEmployeur = false;
-                break;
-        }
 
         try {
+            // TODO: Controler dans pandémie la gestion des indépendants
+            // TODO: Controler si l'affiliation est à récupérer via l'employeur ou le tiers.
             AFAffiliation affiliation = findAffiliationByNumero(mainEmployeur.getAffiliateID(), bsession);
             if (affiliation != null) {
                 APEmployeur emp = new APEmployeur();
@@ -390,26 +385,25 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 emp.add(transaction);
 
                 // on cherche la decision
-                final CPDecisionManager decision = new CPDecisionManager(); //(CPDecision) bsession.getAPIFor(CPDecision.class);
+                final CPDecisionManager decision = new CPDecisionManager();
                 BSession sessionPhenix = new BSession("PHENIX");
                 bsession.connectSession(sessionPhenix);
 
                 decision.setSession(sessionPhenix);
                 decision.setForIdAffiliation(affiliation.getAffiliationId());
                 decision.setForIsActive(true);
-                // TODO : année prise en compte.
-//                decision.setForAnneeDecision(ANNEE_PRISE_COMPTE_SALAIRE);
+                decision.setForAnneeDecision(String.valueOf(Date.getCurrentYear() - 1));
                 decision.find(BManager.SIZE_NOLIMIT);
 
                 // on cherche les données calculées en fonction de la
                 // decision
-                if ((decision != null) && (decision.size() > 0)) {
+                if (decision.size() > 0) {
 
                     final ICPDonneesCalcul donneesCalcul = (ICPDonneesCalcul) bsession
                             .getAPIFor(ICPDonneesCalcul.class);
                     donneesCalcul.setISession(PRSession.connectSession(bsession, "PHENIX"));
 
-                    final Hashtable<Object, Object> parms = new Hashtable<Object, Object>();
+                    final Hashtable<Object, Object> parms = new Hashtable<>();
                     parms.put(ICPDonneesCalcul.FIND_FOR_ID_DECISION, ((CPDecision) decision.getEntity(0)).getIdDecision());
                     parms.put(ICPDonneesCalcul.FIND_FOR_ID_DONNEES_CALCUL, ICPDonneesCalcul.CS_REV_NET);
 
@@ -420,14 +414,12 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                     }
                 }
 
-
                 APSituationProfessionnelle situationProfessionnelle = new APSituationProfessionnelle();
                 situationProfessionnelle.setSession(bsession);
                 situationProfessionnelle.setIdDroit(idDroit);
                 situationProfessionnelle.setIdEmployeur(emp.getIdEmployeur());
                 situationProfessionnelle.setIsIndependant(true);
-                situationProfessionnelle.setIsVersementEmployeur(isVersementEmployeur);
-                // TODO : comment obtenir le salaire
+                situationProfessionnelle.setIsVersementEmployeur(isVersementEmployeur(content));
                 situationProfessionnelle.setRevenuIndependant(masseAnnuel);
 
                 situationProfessionnelle.wantCallValidate(false);
@@ -443,6 +435,17 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
             }
         }
 
+    }
+
+    private boolean isVersementEmployeur(Content content){
+        switch (content.getPaymentContact().getBeneficiaryType()) {
+            case BENEFICIAIRE_EMPLOYEUR:
+                return true;
+            case BENEFICIAIRE_MERE:
+            case BENEFICIAIRE_PERE:
+            default:
+                return false;
+        }
     }
 
     /**
@@ -466,10 +469,10 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
      */
     protected void addJadeThreadErrorToListError(String methodeSource) {
         JadeBusinessMessage[] messages = JadeThread.logMessages();
-        LOG.error(methodeSource+": ");
+        LOG.error("{}: ", methodeSource);
         errors.add("Concerne: "+methodeSource+"\n");
         for (int i = 0; (messages != null) && (i < messages.length); i++) {
-            LOG.error("-->Erreur: "+messages[i].getContents(null));
+            LOG.error("-->Erreur: {}", messages[i].getContents(null));
             errors.add("-->Erreur: "+messages[i].getContents(null));
         }
         errors.add("\n");
@@ -501,10 +504,37 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
     }
 
     protected boolean isSoumisImpotSource(Content content){
-        boolean isSoumisImpotSource = false;
         if (Objects.nonNull(content.getProvidedByEmployer()) && Objects.nonNull(content.getProvidedByEmployer().getSalary())) {
             return content.getProvidedByEmployer().getSalary().isWithholdingTax();
         }
-        return isSoumisImpotSource;
+        return false;
+    }
+
+    protected java.util.Date getDateNaissanceDernierNee(Content content){
+        Children children = content.getFamilyMembers().getChildren();
+        java.util.Date dateNaissance = null;
+        for (Child child : children.getChild()) {
+            java.util.Date newDateNaissance = child.getDateOfBirth().toGregorianCalendar().getTime();
+            if (Objects.isNull(dateNaissance)) {
+                dateNaissance = newDateNaissance;
+            } else {
+                if (newDateNaissance.after(dateNaissance)) {
+                    dateNaissance = newDateNaissance;
+                }
+            }
+        }
+        return dateNaissance;
+    }
+
+    protected String getIdPays(String codeIso) throws JadePersistenceException {
+        PaysSearchSimpleModel searchModel = new PaysSearchSimpleModel();
+        searchModel.setForCodeIso(codeIso);
+        JadePersistenceManager.search(searchModel);
+        String id = null;
+        for (JadeAbstractModel monModel : searchModel.getSearchResults()) {
+            PaysSimpleModel simpleModel = (PaysSimpleModel) monModel;
+            id = simpleModel.getId();
+        }
+        return id;
     }
 }

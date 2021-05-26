@@ -28,39 +28,22 @@ public class APImportationApat extends APAbstractImportationAmatApat {
         APDroitPaternite newDroit = new APDroitPaternite();
 
         try{
-            // Creation du droit
             newDroit.setIdDemande(demande.getIdDemande());
             newDroit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ENREGISTRE);
             newDroit.setGenreService(IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE);
             newDroit.setReference(content.getReferenceData());
             newDroit.setIdCaisse(creationIdCaisse());
             newDroit.setNpa(npaFormat);
-
-            // TODO : récupérer code du pays
-            newDroit.setPays("100");
-
-            // récupéreration Date réception et dépôt
-            newDroit.setDateReception(JadeDateUtil.getGlobazFormattedDate(content.getConfirmation().getEmployeeConfirmationDate().toGregorianCalendar().getTime()));
-            newDroit.setDateDepot(JadeDateUtil.getGlobazFormattedDate(content.getConfirmation().getInsuredConfirmationDate().toGregorianCalendar().getTime()));
-
-            // Récupération de la date de naissance du dernier enfant -> date de début du droit
-            Children children = content.getFamilyMembers().getChildren();
-            java.util.Date dateNaissance = null;
-            for (Child child : children.getChild()) {
-                java.util.Date newDateNaissance = child.getDateOfBirth().toGregorianCalendar().getTime();
-                if (Objects.isNull(dateNaissance)) {
-                    dateNaissance = newDateNaissance;
-                } else {
-                    if (newDateNaissance.after(dateNaissance)) {
-                        dateNaissance = newDateNaissance;
-                    }
-                }
+            newDroit.setPays(getIdPays(content.getInsuredAddress().getCountryIso2Code()));
+            java.util.Date dateDernierNee = getDateNaissanceDernierNee(content);
+            if(dateDernierNee != null) {
+                newDroit.setDateDebutDroit(JadeDateUtil.getGlobazFormattedDate(dateDernierNee));
             }
-            newDroit.setDateDebutDroit(JadeDateUtil.getGlobazFormattedDate(dateNaissance));
-            // TODO : set date fin de droit
-
-            // récupéreration information impôt
+            ch.globaz.common.domaine.Date date = new ch.globaz.common.domaine.Date();
+            newDroit.setDateDepot(date.getSwissValue());
+            newDroit.setDateReception(date.getSwissValue());
             newDroit.setIsSoumisImpotSource(isSoumisImpotSource(content));
+            // TODO : set date fin de droit
 
             newDroit.setSession(bsession);
             newDroit.add(transaction);

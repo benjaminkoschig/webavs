@@ -1,7 +1,5 @@
 package globaz.apg.db.droits;
 
-import ch.globaz.al.web.servlet.ALMainServlet;
-import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
@@ -9,16 +7,15 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.context.JadeThread;
 import globaz.jade.persistence.util.JadePersistenceUtil;
-import globaz.jade.persistence.util.JadeSqlBlobProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.Objects;
 
 public class APImportationAPGHistorique extends BEntity {
