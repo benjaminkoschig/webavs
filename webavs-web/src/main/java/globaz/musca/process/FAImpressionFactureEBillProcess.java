@@ -1028,9 +1028,9 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
             bvrFacture = ((FAImpressionFacture_BVR_Doc) document).getBvr();
         }
         if (Objects.nonNull(qrFacture)) {
-            reference = qrFacture.getReference();
+            reference = qrFacture.getReferenceWithoutSpace();
         } else {
-            reference = bvrFacture.getLigneReference();
+            reference = bvrFacture.getRefNoSpace();
         }
         return reference;
     }
