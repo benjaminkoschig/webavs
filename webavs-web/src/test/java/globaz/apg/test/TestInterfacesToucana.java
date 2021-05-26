@@ -263,7 +263,7 @@ public class TestInterfacesToucana {
 
     private void genererPrestations(APDroitLAPG droit, BITransaction transaction) throws Exception {
         APCalculateurPrestationStandardLamatAcmAlpha calculateur = new APCalculateurPrestationStandardLamatAcmAlpha();
-        List baseCalculs = new APBasesCalculBuilder(session, droit).createBasesCalcul();
+        List baseCalculs =APBasesCalculBuilder.of(session, droit).createBasesCalcul();
 
         calculateur.genererPrestations(session, droit, new FWCurrency(0), baseCalculs);
 

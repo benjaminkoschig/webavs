@@ -1631,7 +1631,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @throws Exception
      */
     private List getBasesCalcul(final BSession session, final APDroitLAPG droit) throws Exception {
-        return new APBasesCalculBuilder(session, droit).createBasesCalcul();
+        return APBasesCalculBuilder.of(session, droit).createBasesCalcul();
     }
 
     private String getDetailRequerant(final BSession session, final String idTiers) throws Exception {

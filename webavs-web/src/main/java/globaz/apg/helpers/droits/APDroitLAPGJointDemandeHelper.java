@@ -84,7 +84,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
                 APDroitLAPG droit = APGUtils.loadDroit(session, vbDroit.getIdDroit(), vbDroit.getGenreService());
 
                 APCalculateurPrestationStandardLamatAcmAlpha calculateur = new APCalculateurPrestationStandardLamatAcmAlpha();
-                List basesCalcul = new APBasesCalculBuilder(session, droit).createBasesCalcul();
+                List basesCalcul = APBasesCalculBuilder.of(session, droit).createBasesCalcul();
 
                 // Ce test se fait lors du calcul de montant de la prestation
                 //
@@ -157,7 +157,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
 
                 // calculer le droit maternité cantonale
                 APCalculateurPrestationStandardLamatAcmAlpha calculateur = new APCalculateurPrestationStandardLamatAcmAlpha();
-                List basesCalcul = new APBasesCalculBuilder(session, droit).createBasesCalcul();
+                List basesCalcul = APBasesCalculBuilder.of(session, droit).createBasesCalcul();
 
                 calculateur.calculerDroitMatCantonale(session, droit, basesCalcul);
 

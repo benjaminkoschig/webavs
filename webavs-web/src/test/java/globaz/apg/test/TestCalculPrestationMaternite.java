@@ -113,7 +113,7 @@ public class TestCalculPrestationMaternite {
             situationProfessionnelle.add(transaction);
 
             APCalculateurPrestationStandardLamatAcmAlpha calculateur = new APCalculateurPrestationStandardLamatAcmAlpha();
-            List baseCalculs = new APBasesCalculBuilder(session, droitMaternite).createBasesCalcul();
+            List baseCalculs =APBasesCalculBuilder.of(session, droitMaternite).createBasesCalcul();
             calculateur.genererPrestations(session, droitMaternite, new FWCurrency(0), baseCalculs);
 
             APPrestationManager prestationManager = new APPrestationManager();
@@ -210,7 +210,7 @@ public class TestCalculPrestationMaternite {
                 situationProfessionnelle.update(transaction);
 
                 APCalculateurPrestationStandardLamatAcmAlpha calculateur = new APCalculateurPrestationStandardLamatAcmAlpha();
-                List baseCalculs = new APBasesCalculBuilder(session, droitMaternite).createBasesCalcul();
+                List baseCalculs =APBasesCalculBuilder.of(session, droitMaternite).createBasesCalcul();
                 calculateur.genererPrestations(session, droitMaternite, new FWCurrency(0), baseCalculs);
 
                 APPrestationManager prestationManager = new APPrestationManager();

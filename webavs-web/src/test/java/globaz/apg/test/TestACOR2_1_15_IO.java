@@ -814,7 +814,7 @@ public class TestACOR2_1_15_IO {
             droit = creerDroitAPGComplexe(transaction);
 
             // génération
-            List bc = new APBasesCalculBuilder(TestACOR2_1_15_IO.SESSION, droit).createBasesCalcul();
+            List bc = APBasesCalculBuilder.of(TestACOR2_1_15_IO.SESSION, droit).createBasesCalcul();
             Collection pw = APACORPrestationsParser.parse(droit, bc, TestACOR2_1_15_IO.SESSION, new StringReader(
                     TestACOR2_1_15_IO.SORTIE_ACOR_APG_COMPLEXE));
 
@@ -996,7 +996,7 @@ public class TestACOR2_1_15_IO {
             droit = creerDroitAPGSimple(transaction);
 
             // génération
-            List bc = new APBasesCalculBuilder(TestACOR2_1_15_IO.SESSION, droit).createBasesCalcul();
+            List bc = APBasesCalculBuilder.of(TestACOR2_1_15_IO.SESSION, droit).createBasesCalcul();
             Collection pw = APACORPrestationsParser.parse(droit, bc, TestACOR2_1_15_IO.SESSION, new StringReader(
                     TestACOR2_1_15_IO.SORTIE_ACOR_APG_SIMPLE));
 
@@ -1064,7 +1064,7 @@ public class TestACOR2_1_15_IO {
             droit = creerDroitMaterniteComplexe(transaction);
 
             // génération
-            List bc = new APBasesCalculBuilder(TestACOR2_1_15_IO.SESSION, droit).createBasesCalcul();
+            List bc = APBasesCalculBuilder.of(TestACOR2_1_15_IO.SESSION, droit).createBasesCalcul();
             Collection pw = APACORPrestationsParser.parse(droit, bc, TestACOR2_1_15_IO.SESSION, new StringReader(
                     TestACOR2_1_15_IO.SORTIE_ACOR_MAT_COMPLEXE));
 
@@ -1269,7 +1269,7 @@ public class TestACOR2_1_15_IO {
             droit = creerDroitMaterniteComplexe(transaction);
 
             // génération
-            List bc = new APBasesCalculBuilder(TestACOR2_1_15_IO.SESSION, droit).createBasesCalcul();
+            List bc = APBasesCalculBuilder.of(TestACOR2_1_15_IO.SESSION, droit).createBasesCalcul();
             Collection pw = APACORPrestationsParser.parse(droit, bc, TestACOR2_1_15_IO.SESSION, new StringReader(
                     TestACOR2_1_15_IO.SORTIE_ACOR_MAT_SIMPLE));
 

@@ -135,7 +135,7 @@ public class TestCalculPrestationAPGRevision2005CadreServiceLong {
             situationProfessionnelle.add(transaction);
 
             APCalculateurPrestationStandardLamatAcmAlpha calculateur = new APCalculateurPrestationStandardLamatAcmAlpha();
-            List baseCalculs = new APBasesCalculBuilder(session, droitAPG).createBasesCalcul();
+            List baseCalculs =APBasesCalculBuilder.of(session, droitAPG).createBasesCalcul();
             calculateur.genererPrestations(session, droitAPG, new FWCurrency(situationFamilialeAPG.getFraisGarde()),
                     baseCalculs);
 
@@ -238,7 +238,7 @@ public class TestCalculPrestationAPGRevision2005CadreServiceLong {
                 situationProfessionnelle.update(transaction);
 
                 APCalculateurPrestationStandardLamatAcmAlpha calculateur = new APCalculateurPrestationStandardLamatAcmAlpha();
-                List baseCalculs = new APBasesCalculBuilder(session, droitAPG).createBasesCalcul();
+                List baseCalculs =APBasesCalculBuilder.of(session, droitAPG).createBasesCalcul();
                 calculateur.genererPrestations(session, droitAPG,
                         new FWCurrency(situationFamilialeAPG.getFraisGarde()), baseCalculs);
 
@@ -348,7 +348,7 @@ public class TestCalculPrestationAPGRevision2005CadreServiceLong {
                 situationProfessionnelle.update(transaction);
 
                 APCalculateurPrestationStandardLamatAcmAlpha calculateur = new APCalculateurPrestationStandardLamatAcmAlpha();
-                List baseCalculs = new APBasesCalculBuilder(session, droitAPG).createBasesCalcul();
+                List baseCalculs =APBasesCalculBuilder.of(session, droitAPG).createBasesCalcul();
                 calculateur.genererPrestations(session, droitAPG,
                         new FWCurrency(situationFamilialeAPG.getFraisGarde()), baseCalculs);
 
@@ -456,7 +456,7 @@ public class TestCalculPrestationAPGRevision2005CadreServiceLong {
                 situationProfessionnelle.update(transaction);
 
                 APCalculateurPrestationStandardLamatAcmAlpha calculateur = new APCalculateurPrestationStandardLamatAcmAlpha();
-                List baseCalculs = new APBasesCalculBuilder(session, droitAPG).createBasesCalcul();
+                List baseCalculs =APBasesCalculBuilder.of(session, droitAPG).createBasesCalcul();
                 calculateur.genererPrestations(session, droitAPG,
                         new FWCurrency(situationFamilialeAPG.getFraisGarde()), baseCalculs);
 
@@ -566,7 +566,7 @@ public class TestCalculPrestationAPGRevision2005CadreServiceLong {
                 situationProfessionnelle.update(transaction);
 
                 APCalculateurPrestationStandardLamatAcmAlpha calculateur = new APCalculateurPrestationStandardLamatAcmAlpha();
-                List baseCalculs = new APBasesCalculBuilder(session, droitAPG).createBasesCalcul();
+                List baseCalculs =APBasesCalculBuilder.of(session, droitAPG).createBasesCalcul();
                 calculateur.genererPrestations(session, droitAPG,
                         new FWCurrency(situationFamilialeAPG.getFraisGarde()), baseCalculs);
 
@@ -675,7 +675,7 @@ public class TestCalculPrestationAPGRevision2005CadreServiceLong {
                 situationProfessionnelle.update(transaction);
 
                 APCalculateurPrestationStandardLamatAcmAlpha calculateur = new APCalculateurPrestationStandardLamatAcmAlpha();
-                List baseCalculs = new APBasesCalculBuilder(session, droitAPG).createBasesCalcul();
+                List baseCalculs =APBasesCalculBuilder.of(session, droitAPG).createBasesCalcul();
                 calculateur.genererPrestations(session, droitAPG,
                         new FWCurrency(situationFamilialeAPG.getFraisGarde()), baseCalculs);
 
@@ -774,7 +774,7 @@ public class TestCalculPrestationAPGRevision2005CadreServiceLong {
             situationProfessionnelle.add(transaction);
 
             APCalculateurPrestationStandardLamatAcmAlpha calculateur = new APCalculateurPrestationStandardLamatAcmAlpha();
-            List baseCalculs = new APBasesCalculBuilder(session, droitAPG).createBasesCalcul();
+            List baseCalculs =APBasesCalculBuilder.of(session, droitAPG).createBasesCalcul();
             calculateur.genererPrestations(session, droitAPG, new FWCurrency(situationFamilialeAPG.getFraisGarde()),
                     baseCalculs);
 
