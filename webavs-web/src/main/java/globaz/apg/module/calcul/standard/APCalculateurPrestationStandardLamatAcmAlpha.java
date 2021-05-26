@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import ch.globaz.common.properties.CommonPropertiesUtils;
@@ -142,6 +143,9 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
     public static final String PRESTATION_PANDEMIE = "PANDEMIE";
     public static final String PRESTATION_PROCHE_AIDANT = "PROCHE_AIDANT";
     private static final String REFERENCE_FILE_APG = "calculAPGReferenceData.xml";
+
+    private static final DateTimeFormatter format = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
 
     private APPrestationViewBean viewBean;
 
@@ -975,7 +979,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
     private void creerPrestationsACM(final BSession session, final BTransaction transaction,
                                      final APPrestation lastPrestation, final APDroitLAPG droit, final FWCurrency sommeMontantsJournalier,
                                      final FWCurrency revenuMoyenDeterminant, final String genrePrestation, final String dateDebut,
-                                     final String dateFin, final String nombreJoursSoldesReel, final String noRevision,
+                                     final String dateFin, final String nombreJoursSoldes, final String noRevision,
                                      final boolean plusDeTrenteJours) throws Exception {
         final APCalculateurAcmAlpha acmCalculateur = new APCalculateurAcmAlpha();
         final HashMap montants = acmCalculateur.calculerMontantACM(session, transaction, droit.getGenreService(),
@@ -990,11 +994,6 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             return;
         } else {
             // Creation de la prestation
-            // Extention Maternité - Pour ACM
-            // Les compléments ACM ne doivent s'appliquer que sur le droit normal des 98 jours, et non pas sur l'extension qui peut aller de 112 à 154 jours.
-            int dureeCongeMaternite = APDroitMaternite.getDureeDroitMat(session);
-            String nombreJoursSoldes = (Integer.parseInt(nombreJoursSoldesReel) > dureeCongeMaternite ? String.valueOf(dureeCongeMaternite) : nombreJoursSoldesReel);
-
             final APPrestation prestation = new APPrestation();
             prestation.setSession(session);
 
@@ -2159,7 +2158,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
         boolean lastCalculerACM = false;
         int nombreJourSupp = Integer.parseInt(droit.getJoursSupplementaires());
-        String dateDeFinAcm = computeDateFinAcmNewVersion(colPGPCParPrestation, nombreJourSupp);
+        String dateDeFinAcm = computeDateFinAcm((TreeSet<APPeriodeWrapper>) colPGPCParPrestation, nombreJourSupp);
         for (final Iterator iterator = colPGPCParPrestation.iterator(); iterator.hasNext();) {
             final APPeriodeWrapper pgpc = (APPeriodeWrapper) iterator.next();
             nbJoursDepuisDebutDroitAvantPeriode = nbJoursDepuisDebutDroitApresPeriode;
@@ -2283,8 +2282,12 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                 }
                 // pour tous les cas Mat et les APG qui ne sont pas un service d'avancement
                 else {
-                    if (droit instanceof APDroitMaternite && lastCalculerACM && dateDeFinAcm !=null) {
-                        createLastACM(session, transaction, lastPrestation, droit, sommeMontantJournalier, lastMJ, genrePrestation, prestations[prestations.length - 1], dateDeFinAcm);
+                    if (droit instanceof APDroitMaternite) {
+                        if (isLastACM(pgpc, dateDeFinAcm)) {
+                            createLastACM(session, transaction, lastPrestation, droit, sommeMontantJournalier, lastMJ, genrePrestation, prestations[prestations.length - 1], dateDeFinAcm);
+                        } else if (isACMToCreate(pgpc, dateDeFinAcm)) {
+                            createCurrentACM(session, transaction, lastPrestation, droit, sommeMontantJournalier, lastMJ, genrePrestation, prestations[prestations.length - 1]);
+                        }
                     } else {
                         createCurrentACM(session, transaction, lastPrestation, droit, sommeMontantJournalier, lastMJ, genrePrestation, prestations[prestations.length - 1]);
                     }
@@ -2381,38 +2384,64 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         }
     }
 
-    private String computeDateFinAcmNewVersion(Collection colPGPCParPrestation, int nombreJourSupp) {
-        APPeriodeWrapper lastPrestation = null;
+    private boolean isACMToCreate(APPeriodeWrapper periode, String dateDeFinAcm) {
+        if (dateDeFinAcm == null) {
+            return true;
+        } else {
+            LocalDate dateDeFinACMDate = parseStringToDateTime(dateDeFinAcm, format);
+            LocalDate dateDebutPrestation = parseStringToDateTime(periode.getDateDebut().toString(), formatter);
+            LocalDate dateFinPrestation = parseStringToDateTime(periode.getDateFin().toString(), formatter);
 
-        // On recherche la dernière période de presta
-        for(Object objet : colPGPCParPrestation) {
-            APPeriodeWrapper prestation = (APPeriodeWrapper) objet;
-            if (lastPrestation == null) {
-                lastPrestation = prestation;
+            if (dateDeFinACMDate != null && dateDeFinACMDate.isAfter(dateDebutPrestation) && (dateDeFinACMDate.isAfter(dateFinPrestation) || dateDeFinACMDate.equals(dateFinPrestation))) {
+                return true;
             }
-
-            if (lastPrestation.getDateFin().getYear() < prestation.getDateFin().getYear()) {
-                lastPrestation = prestation;
-            }
+            return false;
         }
 
-        if (lastPrestation != null) {
-            String dateDeFinPrestationACM;
+    }
 
-            DateTimeFormatter format = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
-            LocalDate dateDeFinPrestDate = parseStringToDateTime(lastPrestation.getDateFin().toString(), formatter);
-            if (dateDeFinPrestDate != null) {
-                dateDeFinPrestDate = dateDeFinPrestDate.minusDays(nombreJourSupp);
-                dateDeFinPrestationACM = dateDeFinPrestDate.format(format);
-                return dateDeFinPrestationACM;
+    private boolean isLastACM(APPeriodeWrapper periode, String dateDeFinAcm) {
+        if (dateDeFinAcm == null) {
+            return false;
+        } else {
+            LocalDate dateDeFinACMDate = parseStringToDateTime(dateDeFinAcm, format);
+            LocalDate dateDebutPrestation = parseStringToDateTime(periode.getDateDebut().toString(), formatter);
+            LocalDate dateFinPrestation = parseStringToDateTime(periode.getDateFin().toString(), formatter);
 
+            if (dateDeFinACMDate != null && dateDeFinACMDate.isAfter(dateDebutPrestation) && (dateDeFinACMDate.isBefore(dateFinPrestation) || dateDeFinACMDate.equals(dateFinPrestation))) {
+                return true;
             }
+            return false;
+        }
+    }
+
+    private String computeDateFinAcm(TreeSet<APPeriodeWrapper> colPGPCParPrestation, int nombreJourSupp) {
+        // On recherche la dernière période de presta
+        APPeriodeWrapper lastPrestation = colPGPCParPrestation.last();
+        String dateDeFinPrestationACM;
+
+        LocalDate dateDeFinPrestDate = parseStringToDateTime(lastPrestation.getDateFin().toString(), formatter);
+        if (dateDeFinPrestDate != null) {
+            dateDeFinPrestDate = dateDeFinPrestDate.minusDays(nombreJourSupp);
+            dateDeFinPrestationACM = dateDeFinPrestDate.format(format);
+            return dateDeFinPrestationACM;
         }
 
         return null;
     }
 
+    /**
+     *
+     * @param session
+     * @param transaction
+     * @param lastPrestation
+     * @param droit
+     * @param sommeMontantJournalier
+     * @param lastMJ
+     * @param genrePrestation
+     * @param prestation
+     * @throws Exception
+     */
     private void createCurrentACM(BSession session, BTransaction transaction, APPrestation lastPrestation, APDroitLAPG droit, FWCurrency sommeMontantJournalier, FWCurrency lastMJ, String genrePrestation, APPrestation prestation) throws Exception {
         this.creerPrestationsACM(session, transaction, lastPrestation, droit, sommeMontantJournalier,
                 lastMJ, genrePrestation, prestation.getDateDebut(),
@@ -2421,27 +2450,43 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                 prestation.getNoRevision());
     }
 
+    /**
+     *
+     *
+     *
+     * @param session
+     * @param transaction
+     * @param lastPrestation
+     * @param droit
+     * @param sommeMontantJournalier
+     * @param lastMJ
+     * @param genrePrestation
+     * @param prestation
+     * @param dateDeFinAcm
+     * @throws Exception
+     */
     private void createLastACM(BSession session, BTransaction transaction, APPrestation lastPrestation, APDroitLAPG droit, FWCurrency sommeMontantJournalier, FWCurrency lastMJ, String genrePrestation, APPrestation prestation, String dateDeFinAcm) throws Exception {
-//        int nombreJourSupp = Integer.parseInt(droit.getJoursSupplementaires());
-//        String dateDeFinAcm = computeDateFinAcm(prestation, nombreJourSupp);
+
+        LocalDate dateDeFinACMDate = parseStringToDateTime(dateDeFinAcm, format);
+        LocalDate dateDeDebutPrestDate = parseStringToDateTime(prestation.getDateDebut(), format);
+        if (dateDeFinACMDate != null && dateDeDebutPrestDate != null) {
+
+        }
+        String nombreJourSoldes = String.valueOf(ChronoUnit.DAYS.between(dateDeDebutPrestDate, dateDeFinACMDate));
         this.creerPrestationsACM(session, transaction, lastPrestation, droit, sommeMontantJournalier,
                 lastMJ, genrePrestation, prestation.getDateDebut(),
-                dateDeFinAcm,
-                prestation.getNombreJoursSoldes(),
+                prestation.getDateFin(),
+                nombreJourSoldes,
                 prestation.getNoRevision());
     }
 
-    private String computeDateFinAcm(APPrestation prestation, int nombreJourSupp) {
-        String dateDeFinPrestation = prestation.getDateFin();
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        LocalDate dateDeFinPrestDate = parseStringToDateTime(prestation.getDateFin(), formatter);
-        dateDeFinPrestDate = dateDeFinPrestDate.minusDays(nombreJourSupp);
-        dateDeFinPrestation = dateDeFinPrestDate.format(formatter);
-
-        return dateDeFinPrestation;
-    }
-
+    /**
+     *
+     *
+     * @param date
+     * @param formatter
+     * @return
+     */
     private LocalDate parseStringToDateTime(String date, DateTimeFormatter formatter) {
         if (date != null && !date.isEmpty()) {
             return LocalDate.parse(date, formatter);
