@@ -100,7 +100,7 @@ public abstract class APAbstractACORDroitAdapter extends PRAbstractPlatAdapter {
     public List basesCalcul() throws PRACORException {
         if (basesCalcul == null) {
             try {
-                basesCalcul = new APBasesCalculBuilder(session, droit).createBasesCalcul();
+                basesCalcul = APBasesCalculBuilder.of(session, droit).createBasesCalcul();
             } catch (Exception e) {
                 throw new PRACORException(session.getLabel("ERREUR_CREATION_BASES_CALCUL"), e);
             }
