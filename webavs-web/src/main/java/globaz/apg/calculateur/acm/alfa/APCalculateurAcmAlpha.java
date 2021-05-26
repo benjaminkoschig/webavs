@@ -182,7 +182,7 @@ public class APCalculateurAcmAlpha {
                 }
 
                 // Calculer montant ACM pour droit APG
-                else {
+                else if(droit instanceof APDroitAPG){
                     // Pas d'ACM pour les genres de service 30 ou 50
                     if (IAPDroitLAPG.CS_FORMATION_DE_CADRE_JEUNESSE_SPORTS.equals(genreService)
                             || IAPDroitLAPG.CS_COURS_MONITEURS_JEUNES_TIREURS.equals(genreService)) {
