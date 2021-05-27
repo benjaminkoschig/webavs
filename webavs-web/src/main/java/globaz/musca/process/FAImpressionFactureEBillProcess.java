@@ -417,7 +417,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
         InvoiceEnvelope content = factureEBill.createFileContent();
 
         // Creation du fichier XML
-        String filename = billerId + "_" + JACalendar.format(JACalendar.today(), JACalendar.FORMAT_DDMMYYYY) + "_" + entete.geteBillTransactionID() + ".xml";
+        String filename = billerId + "_" + entete.geteBillTransactionID() + ".xml";
         String localPath = Jade.getInstance().getPersistenceDir() + serviceFtp.getFolderOutName() + filename;
         File localFile = new File(localPath);
         LOGGER.info("Création du fichier xml eBill : " + localFile.getAbsoluteFile() + "...");

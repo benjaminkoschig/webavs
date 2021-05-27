@@ -50,7 +50,7 @@ public class FAImpressionFactureEBillXml {
     private static final Short STATUS = 0;
     private static final String TYPE = "string";
     private static final String BILL_DETAILS_TYPE = "PDFAppendix";
-    public static final String APPLICATION_PDF = "application/pdf";
+    public static final String APPLICATION_PDF = "x-application/pdfappendix";
 
     private JadePublishDocument attachedDocument;
     private String montantBulletinSoldes;
@@ -200,7 +200,6 @@ public class FAImpressionFactureEBillXml {
             String encoded = Base64.getEncoder().encodeToString(inFileBytes);
             AppendixType appendixType = of.createAppendixType();
             AppendixType.Document appendixTypeDocument = of.createAppendixTypeDocument();
-            appendixTypeDocument.setFileName(pathFile);
             appendixTypeDocument.setMimeType(APPLICATION_PDF);
             appendixTypeDocument.setValue(encoded);
             appendixType.getDocument().add(appendixTypeDocument);
@@ -515,7 +514,7 @@ public class FAImpressionFactureEBillXml {
 
         String taux = ((String) lignes.get("COL_5"));
         lineItem.setQuantity(new BigDecimal(StringUtils.isEmpty(taux) ? "0.00" : taux));
-        lineItem.setQuantityDescription("Taux");
+        lineItem.setQuantityDescription("1I");
 
         Double masse = ((Double) lignes.get("COL_4"));
         lineItem.setPriceUnit(new BigDecimal(masse == null ? 0.00 : masse));
@@ -549,7 +548,7 @@ public class FAImpressionFactureEBillXml {
         lineItem.setProductDescription((String) lignes.get("COL_3"));
 
         lineItem.setQuantity(new BigDecimal(0));
-        lineItem.setQuantityDescription("Taux");
+        lineItem.setQuantityDescription("1I");
         lineItem.setPriceUnit(new BigDecimal(1));
 
         // lineItem.setTax(createTaxLineItem());
@@ -572,17 +571,60 @@ public class FAImpressionFactureEBillXml {
         ObjectFactory of = new ObjectFactory();
         SummaryType summaryType = of.createSummaryType();
 
+        summaryType.setTax(createTaxType());
+
         // TODO : mettre en place montant déjà payé (bulletin de solde ??)
-        // summaryType.setTotalAmountPaid(new BigDecimal(0.0));
+        summaryType.setTotalAmountPaid(new BigDecimal(0.0));
+
         if (eBillFacture.isBulletinsDeSoldes()) {
             summaryType.setTotalAmountExclusiveTax(new FWCurrency(montantBulletinSoldes).getBigDecimalValue());
             summaryType.setTotalAmountInclusiveTax(new FWCurrency(montantBulletinSoldes).getBigDecimalValue());
+            summaryType.setTotalAmountDue(new FWCurrency(montantBulletinSoldes).getBigDecimalValue());
         } else {
             summaryType.setTotalAmountExclusiveTax(entete.getTotalFactureCurrency().getBigDecimalValue());
             summaryType.setTotalAmountInclusiveTax(entete.getTotalFactureCurrency().getBigDecimalValue());
+            summaryType.setTotalAmountDue(entete.getTotalFactureCurrency().getBigDecimalValue());
         }
 
         return summaryType;
+    }
+
+    /**
+     * Création du TaxType de la facture eBill
+     *
+     * @return le TaxType de la facture eBill
+     */
+    private TaxType createTaxType() {
+        ObjectFactory of = new ObjectFactory();
+
+        TaxType taxType = of.createTaxType();
+        taxType.getTaxDetail().add(createTaxDetailType());
+        taxType.setTotalTax(new BigDecimal(0.0));
+
+        return taxType;
+    }
+
+    /**
+     * Création du TaxDetailType de la facture eBill
+     *
+     * @return le TaxDetailType de la facture eBill
+     */
+    private TaxDetailType createTaxDetailType() {
+        ObjectFactory of = new ObjectFactory();
+
+        TaxDetailType taxDetailType = of.createTaxDetailType();
+        taxDetailType.setRate(new BigDecimal(0.0));
+        taxDetailType.setAmount(new BigDecimal(0.0));
+
+        if (eBillFacture.isBulletinsDeSoldes()) {
+            taxDetailType.setBaseAmountInclusiveTax(new FWCurrency(montantBulletinSoldes).getBigDecimalValue());
+            taxDetailType.setBaseAmountExclusiveTax(new FWCurrency(montantBulletinSoldes).getBigDecimalValue());
+        } else {
+            taxDetailType.setBaseAmountInclusiveTax(entete.getTotalFactureCurrency().getBigDecimalValue());
+            taxDetailType.setBaseAmountExclusiveTax(entete.getTotalFactureCurrency().getBigDecimalValue());
+        }
+
+        return taxDetailType;
     }
 
     public FAEnteteFacture getEntete() {
