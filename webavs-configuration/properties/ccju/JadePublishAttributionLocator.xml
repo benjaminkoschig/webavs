@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--globaz.jade.publish.provider.JadePublishAttributionLocator: liste des attributions de ressources-->
+<globaz.jade.publish.provider.JadePublishAttributionLocator>
+	<!--attributions: liste des attributions-->
+	<attributions>
+		<!--attribution: declaration d'une attribution de ressources a un composant du systeme-->
+		<!--  name [REQUIRED]: nom du composant (selon convention de nom)-->
+		<attribution name="system">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!--  name [REQUIRED]: nom de la ressource -->
+				<resource name="MailWithWatermarkDev"/>
+				<resource name="therefore"/>
+			</resources>
+		</attribution>
+		<attribution name="document.globaz.phenix.process.communications.CPProcessAsciiWritter">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!--  name [REQUIRED]: nom de la ressource -->
+				<resource name="MailWithoutUID"/>
+			</resources>
+		</attribution>
+		<attribution name="document.CATransmettreOrdreGroupeViewBean">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!--  name [REQUIRED]: nom de la ressource -->
+				<resource name="Zip"/>
+			</resources>
+		</attribution>
+
+		<!--  inforom 547, liste des avances excel -->
+		<attribution name="document.REListeAvanceExcel">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!--  name [REQUIRED]: nom de la ressource -->
+				<resource name="MailWithWatermarkDev"/>
+			</resources>
+		</attribution>
+
+		<attribution name="document.6501PPC">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!--  name [REQUIRED]: nom de la ressource -->
+				<resource name="Sort"/>
+			</resources>
+		</attribution>
+
+		<!--  décision Aprs calcul pc -->
+		<attribution name="document.6500PPC">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!--  name [REQUIRED]: nom de la ressource -->
+				<!-- <resource name="MailPageNumerotationsText"/>  -->
+				<!--  <resource name="SwitchWatermarkDecisionNonValidee"/> -->
+				<!-- <resource name="SwitchFtpAuto"/>  -->
+				<resource name="SwitchDAC"/>
+				<resource name="SwitchAirs"/>
+			</resources>
+		</attribution>
+
+		<attribution name="document.6508PPC">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!--  name [REQUIRED]: nom de la ressource -->
+				<resource name="FileDecisionAdaptation"/>
+			</resources>
+		</attribution>
+
+		<!-- DOCUMENTS RFM .......................... -->
+		<attribution name="document.simulationRFM">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!--  name [REQUIRED]: nom de la ressource -->
+				<!-- <resource name="MailPageNumerotationsText"/>  -->
+				<!--  <resource name="SwitchWatermarkDecisionNonValidee"/> -->
+				<!-- <resource name="SwitchFtpAuto"/>  -->
+				<resource name="SwitchWatermarkDecisionNonValideeRFM"/>
+			</resources>
+		</attribution>
+
+		<!--Attestation LTN -->
+		<attribution name="document.0198CDS">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!--  name [REQUIRED]: nom de la ressource -->
+				<resource name="SwitchWatermarkSimulation"/>
+			</resources>
+		</attribution>
+
+		<!--Decompte LTN -->
+		<attribution name="document.0199CDS">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!--  name [REQUIRED]: nom de la ressource -->
+				<resource name="SwitchWatermarkSimulation"/>
+			</resources>
+		</attribution>
+
+		<attribution name="document.0022PPT">
+			<resources>
+				<resource name="BarCodePublishing" />
+				<resource name="BarCodeArchive" />
+			</resources>
+		</attribution>
+	</attributions>
+</globaz.jade.publish.provider.JadePublishAttributionLocator>
