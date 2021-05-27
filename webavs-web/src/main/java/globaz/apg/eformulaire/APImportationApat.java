@@ -1,4 +1,4 @@
-package globaz.apg.process;
+package globaz.apg.eformulaire;
 
 import apg.amatapat.*;
 import globaz.apg.api.droits.IAPDroitLAPG;
@@ -18,13 +18,12 @@ public class APImportationApat extends APAbstractImportationAmatApat {
 
     private static final Logger LOG = LoggerFactory.getLogger(APImportationApat.class);
 
-    public APImportationApat(LinkedList<String> err, LinkedList<String> inf) {
-        super(err, inf);
-        typeDemande = IPRDemande.CS_TYPE_PATERNITE;
+    public APImportationApat(LinkedList<String> err, LinkedList<String> inf, BSession bsession) {
+        super(IPRDemande.CS_TYPE_PATERNITE, err, inf, bsession);
     }
 
     @Override
-    public APDroitLAPG createDroit(Content content, String npaFormat, PRDemande demande, BTransaction transaction, BSession bsession) {
+    public APDroitLAPG createDroit(Content content, String npaFormat, PRDemande demande, BTransaction transaction) {
         APDroitPaternite newDroit = new APDroitPaternite();
 
         try{
@@ -45,11 +44,11 @@ public class APImportationApat extends APAbstractImportationAmatApat {
             newDroit.setIsSoumisImpotSource(isSoumisImpotSource(content));
             // TODO : set date fin de droit
 
-            newDroit.setSession(bsession);
+            newDroit.setSession(bSession);
             newDroit.add(transaction);
 
             // récupéreration période du droit
-            List<PaternityLeavePeriod> periods = content.getProvidedByEmployer().getParternityLeave().getPaternityLeavePeriods().getPaternityLeavePeriod();
+            List<PaternityLeavePeriod> periods = content.getActivityCessation().getUnemploymentCessation().getParternityLeave().getPaternityLeavePeriods().getPaternityLeavePeriod();
             long days = 0;
             for (PaternityLeavePeriod period:periods) {
                 Date debutPeriod = period.getFrom().toGregorianCalendar().getTime();
@@ -60,7 +59,7 @@ public class APImportationApat extends APAbstractImportationAmatApat {
                 days = JadeDateUtil.getNbDaysBetween(JadeDateUtil.getGlobazFormattedDate(finPeriod), JadeDateUtil.getGlobazFormattedDate(debutPeriod));
                 periodeAPG.setIdDroit(newDroit.getIdDroit());
                 periodeAPG.setNbrJours(String.format("%d", days));
-                periodeAPG.setSession(bsession);
+                periodeAPG.setSession(bSession);
                 periodeAPG.add(transaction);
             }
         } catch (Exception e){
@@ -72,7 +71,7 @@ public class APImportationApat extends APAbstractImportationAmatApat {
     }
 
     @Override
-    public void createSituationFamiliale(FamilyMembers membresFamille, String idDroit, BTransaction transaction, BSession bsession) {
+    public void createSituationFamiliale(FamilyMembers membresFamille, String idDroit, BTransaction transaction) {
         try {
             for (Child child : membresFamille.getChildren().getChild()) {
                 APSituationFamilialePat enfant = new APSituationFamilialePat();
@@ -81,7 +80,7 @@ public class APImportationApat extends APAbstractImportationAmatApat {
                 enfant.setDateNaissance(tranformGregDateToGlobDate(child.getDateOfBirth()));
                 enfant.setIdDroitPaternite(idDroit);
                 enfant.setType(IAPDroitMaternite.CS_TYPE_ENFANT);
-                enfant.setSession(bsession);
+                enfant.setSession(bSession);
                 enfant.add(transaction);
             }
         } catch (Exception e) {

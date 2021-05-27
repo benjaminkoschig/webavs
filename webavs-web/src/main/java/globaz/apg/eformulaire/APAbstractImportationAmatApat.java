@@ -1,4 +1,4 @@
-package globaz.apg.process;
+package globaz.apg.eformulaire;
 
 import apg.amatapat.*;
 import ch.globaz.common.domaine.Date;
@@ -50,35 +50,44 @@ import java.util.LinkedList;
 import java.util.Objects;
 
 public abstract class APAbstractImportationAmatApat implements IAPImportationAmatApat {
-
-    protected LinkedList<String> errors;
-    protected LinkedList<String> infos;
-    private static final Logger LOG = LoggerFactory.getLogger(APAbstractImportationAmatApat.class);
-    protected String typeDemande;
+    protected final LinkedList<String> errors;
+    protected final LinkedList<String> infos;
+    protected final BSession bSession;
     protected static final String FORM_INDEPENDANT = "FORM_INDEPENDANT";
     protected static final String FORM_SALARIE = "FORM_SALARIE";
+    private final String typeDemande;
+    private static final Logger LOG = LoggerFactory.getLogger(APAbstractImportationAmatApat.class);
     private static final String BENEFICIAIRE_MERE = "MERE";
     private static final String BENEFICIAIRE_PERE = "PERE";
     private static final String BENEFICIAIRE_EMPLOYEUR = "EMPLOYEUR";
 
-    protected APAbstractImportationAmatApat(LinkedList<String> err, LinkedList<String> inf){
+    /**
+     * Contructeur
+     * @param type: Type de demande (Maternité ou Paternité)
+     * @param err: liste des erreurs lors de l'importation des données
+     * @param inf: liste des informations lors de l'importation des données
+     * @param bsession: Session courante.
+     */
+    protected APAbstractImportationAmatApat(String type, LinkedList<String> err, LinkedList<String> inf, BSession bsession){
+        typeDemande = type;
         errors = err;
         infos = inf;
+        bSession = bsession;
     }
 
     @Override
-    public void createRoleApgTiers(String idTiers, BSession bsession) throws Exception {
+    public void createRoleApgTiers(String idTiers) throws Exception {
         TIRoleManager roleManager = new TIRoleManager();
-        roleManager.setSession(bsession);
+        roleManager.setSession(bSession);
         roleManager.setForIdTiers(idTiers);
         BStatement statement = null;
         BTransaction trans = null;
         try {
-            trans = (BTransaction) bsession.newTransaction();
+            trans = (BTransaction) bSession.newTransaction();
             if(!trans.isOpened()){
                 trans.openTransaction();
             }
-            statement = roleManager.cursorOpen(bsession.getCurrentThreadTransaction());
+            statement = roleManager.cursorOpen(bSession.getCurrentThreadTransaction());
             TIRole role;
             boolean isRolePresent = false;
 
@@ -90,9 +99,9 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
 
             if (!isRolePresent) {
                 // on ajoute le rôle APG au Tier si il ne l'a pas deja
-                ITIRole newRole = (ITIRole) bsession.getAPIFor(ITIRole.class);
+                ITIRole newRole = (ITIRole) bSession.getAPIFor(ITIRole.class);
                 newRole.setIdTiers(idTiers);
-                newRole.setISession(PRSession.connectSession(bsession, TIApplication.DEFAULT_APPLICATION_PYXIS));
+                newRole.setISession(PRSession.connectSession(bSession, TIApplication.DEFAULT_APPLICATION_PYXIS));
                 newRole.setRole(IntRole.ROLE_APG);
                 newRole.add(trans);
             }
@@ -125,10 +134,10 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
     }
 
     @Override
-    public void createContact(PRTiersWrapper tiers, String email, BSession bsession) throws Exception {
+    public void createContact(PRTiersWrapper tiers, String email) throws Exception {
         BTransaction trans = null;
         try {
-            trans = (BTransaction) bsession.newTransaction();
+            trans = (BTransaction) bSession.newTransaction();
             if (!trans.isOpened()) {
                 trans.openTransaction();
             }
@@ -137,14 +146,14 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
             if (!hasEmail(email, tiers)) {
                 // Création du contact
                 TIContact contact = new TIContact();
-                contact.setSession(bsession);
+                contact.setSession(bSession);
                 contact.setNom(tiers.getNom());
                 contact.setPrenom(tiers.getPrenom());
                 contact.add(trans);
 
                 // Création du moyen de communication
                 TIMoyenCommunication moyenCommunication = new TIMoyenCommunication();
-                moyenCommunication.setSession(bsession);
+                moyenCommunication.setSession(bSession);
                 moyenCommunication.setMoyen(email);
                 moyenCommunication.setTypeCommunication(TIMoyenCommunication.EMAIL);
                 moyenCommunication.setIdContact(contact.getIdContact());
@@ -155,7 +164,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
 
                 // Lien du contact avec le tiers
                 TIAvoirContact avoirContact = new TIAvoirContact();
-                avoirContact.setSession(bsession);
+                avoirContact.setSession(bSession);
                 avoirContact.setIdTiers(tiers.getIdTiers());
                 avoirContact.setIdContact(contact.getIdContact());
                 avoirContact.add(trans);
@@ -174,6 +183,110 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
             if(trans != null) {
                 trans.closeTransaction();
             }
+        }
+    }
+
+    @Override
+    public PRTiersWrapper createTiers(InsuredPerson assure, String codeNpa, boolean isWomen) throws Exception {
+
+        // les noms et prenoms doivent être renseignés pour insérer un nouveau tiers
+        if (JadeStringUtil.isEmpty(assure.getOfficialName()) || JadeStringUtil.isEmpty(assure.getFirstName())) {
+            bSession.addError(bSession.getLabel("APAbstractDroitPHelper.ERREUR_NOM_OU_PRENOM_INVALIDE"));
+            return null;
+        }
+
+        // date naissance obligatoire pour inserer
+        if (JAUtil.isDateEmpty(tranformGregDateToGlobDate(assure.getDateOfBirth()))) {
+            bSession.addError(bSession.getLabel("DATE_NAISSANCE_INCORRECTE"));
+            return null;
+        }
+
+        // recherche du canton si le npa est renseigné
+        String canton = "";
+        if (!JadeStringUtil.isIntegerEmpty(codeNpa)) {
+            try {
+                canton = PRTiersHelper.getCanton(bSession, codeNpa);
+
+                if (canton == null) {
+                    // canton non trouvé
+                    canton = "";
+                }
+            } catch (Exception e1) {
+                bSession.addError(bSession.getLabel("CANTON_INTROUVABLE"));
+            }
+        }
+
+        // insertion du tiers
+        // si son numero AVS est suisse on lui met suisse comme pays, sinon on
+        // lui met un pays bidon qu'on pourrait
+        // interpreter comme "etranger"
+        PRAVSUtils avsUtils = PRAVSUtils.getInstance(assure.getVn());
+
+        String idTiers = PRTiersHelper.addTiers(bSession, assure.getVn(), assure.getOfficialName(),
+                assure.getFirstName(), isWomen ? ITIPersonne.CS_FEMME : ITIPersonne.CS_HOMME, tranformGregDateToGlobDate(assure.getDateOfBirth()),
+                "",
+                avsUtils.isSuisse(assure.getVn()) ? PRTiersHelper.ID_PAYS_SUISSE : PRTiersHelper.ID_PAYS_BIDON, canton, "",
+                getSituationMarital(assure));
+
+        return PRTiersHelper.getTiersParId(bSession, idTiers);
+    }
+
+    @Override
+    public PRDemande createDemande(String idTiers) {
+        PRDemande retValue = null;
+        try {
+            PRDemandeManager mgr = new PRDemandeManager();
+            mgr.setSession(bSession);
+            mgr.setForIdTiers(JadeStringUtil.isEmpty(idTiers) ? PRDemande.ID_TIERS_DEMANDE_BIDON : idTiers);
+            mgr.setForTypeDemande(typeDemande);
+            mgr.find(BManager.SIZE_NOLIMIT);
+
+            if (mgr.isEmpty()) {
+                retValue = new PRDemande();
+                retValue.setIdTiers(idTiers);
+                retValue.setEtat(IPRDemande.CS_ETAT_OUVERT);
+                retValue.setTypeDemande(typeDemande);
+                retValue.setSession(bSession);
+                retValue.add();
+            } else if (!mgr.isEmpty()) {
+                retValue = (PRDemande) mgr.get(0);
+            }
+        } catch (Exception e) {
+            errors.add("Erreur dans la création de la demande du droit (idTiers : " + idTiers + ")");
+            LOG.error("Erreur lors de la création de la demande du droit ", e.getStackTrace());
+            if (isJadeThreadError()) {
+                addJadeThreadErrorToListError("Demande");
+                JadeThread.logClear();
+            }
+        }
+        return retValue;
+    }
+
+    @Override
+    public void createSituationProfessionnel(Content content, String idDroit, BTransaction transaction) {
+        switch (content.getFormType()) {
+            case FORM_INDEPENDANT:
+                creationSituationProIndependant(content, idDroit, transaction);
+                break;
+            case FORM_SALARIE:
+                creationSituationProEmploye(content, idDroit, transaction);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private String getSituationMarital(InsuredPerson assure){
+        switch(assure.getMaritalStatus())
+        {
+            case "MARRIED":
+                return String.valueOf(EtatCivil.MARIE.getCodeSysteme());
+            case "DIVORCED":
+                return String.valueOf(EtatCivil.DIVORCE.getCodeSysteme());
+            case "WIDOW":
+                return String.valueOf(EtatCivil.VEUF.getCodeSysteme());
+            default:
+                return String.valueOf(EtatCivil.CELIBATAIRE.getCodeSysteme());
         }
     }
 
@@ -200,96 +313,6 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
         return false;
     }
 
-    @Override
-    public PRTiersWrapper createTiers(InsuredPerson assure, String codeNpa, BSession bsession, boolean isWomen) throws Exception {
-
-        // les noms et prenoms doivent être renseignés pour insérer un nouveau tiers
-        if (JadeStringUtil.isEmpty(assure.getOfficialName()) || JadeStringUtil.isEmpty(assure.getFirstName())) {
-            bsession.addError(bsession.getLabel("APAbstractDroitPHelper.ERREUR_NOM_OU_PRENOM_INVALIDE"));
-            return null;
-        }
-
-        // date naissance obligatoire pour inserer
-        if (JAUtil.isDateEmpty(tranformGregDateToGlobDate(assure.getDateOfBirth()))) {
-            bsession.addError(bsession.getLabel("DATE_NAISSANCE_INCORRECTE"));
-            return null;
-        }
-
-        // recherche du canton si le npa est renseigné
-        String canton = "";
-        if (!JadeStringUtil.isIntegerEmpty(codeNpa)) {
-            try {
-                canton = PRTiersHelper.getCanton(bsession, codeNpa);
-
-                if (canton == null) {
-                    // canton non trouvé
-                    canton = "";
-                }
-            } catch (Exception e1) {
-                bsession.addError(bsession.getLabel("CANTON_INTROUVABLE"));
-            }
-        }
-
-        // insertion du tiers
-        // si son numero AVS est suisse on lui met suisse comme pays, sinon on
-        // lui met un pays bidon qu'on pourrait
-        // interpreter comme "etranger"
-        PRAVSUtils avsUtils = PRAVSUtils.getInstance(assure.getVn());
-
-        String idTiers = PRTiersHelper.addTiers(bsession, assure.getVn(), assure.getOfficialName(),
-                assure.getFirstName(), isWomen ? ITIPersonne.CS_FEMME : ITIPersonne.CS_HOMME, tranformGregDateToGlobDate(assure.getDateOfBirth()),
-                "",
-                avsUtils.isSuisse(assure.getVn()) ? PRTiersHelper.ID_PAYS_SUISSE : PRTiersHelper.ID_PAYS_BIDON, canton, "",
-                getSituationMarital(assure));
-
-        return PRTiersHelper.getTiersParId(bsession, idTiers);
-    }
-
-    private String getSituationMarital(InsuredPerson assure){
-        switch(assure.getMaritalStatus())
-        {
-            case "MARRIED":
-                return String.valueOf(EtatCivil.MARIE.getCodeSysteme());
-            case "DIVORCED":
-                return String.valueOf(EtatCivil.DIVORCE.getCodeSysteme());
-            case "WIDOW":
-                return String.valueOf(EtatCivil.VEUF.getCodeSysteme());
-            default:
-                return String.valueOf(EtatCivil.CELIBATAIRE.getCodeSysteme());
-        }
-    }
-
-    @Override
-    public PRDemande createDemande(String idTiers, BSession bsession) {
-        PRDemande retValue = null;
-        try {
-            PRDemandeManager mgr = new PRDemandeManager();
-            mgr.setSession(bsession);
-            mgr.setForIdTiers(JadeStringUtil.isEmpty(idTiers) ? PRDemande.ID_TIERS_DEMANDE_BIDON : idTiers);
-            mgr.setForTypeDemande(typeDemande);
-            mgr.find(BManager.SIZE_NOLIMIT);
-
-            if (mgr.isEmpty()) {
-                retValue = new PRDemande();
-                retValue.setIdTiers(idTiers);
-                retValue.setEtat(IPRDemande.CS_ETAT_OUVERT);
-                retValue.setTypeDemande(typeDemande);
-                retValue.setSession(bsession);
-                retValue.add();
-            } else if (!mgr.isEmpty()) {
-                retValue = (PRDemande) mgr.get(0);
-            }
-        } catch (Exception e) {
-            errors.add("Erreur dans la création de la demande du droit (idTiers : " + idTiers + ")");
-            LOG.error("Erreur lors de la création de la demande du droit ", e.getStackTrace());
-            if (isJadeThreadError()) {
-                addJadeThreadErrorToListError("Demande");
-                JadeThread.logClear();
-            }
-        }
-        return retValue;
-    }
-
     /**
      * Création de l'ID de la caisse lié au droit.
      *
@@ -307,53 +330,41 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
         return null;
     }
 
-    @Override
-    public void createSituationProfessionnel(Content content, String idDroit, BTransaction transaction, BSession bsession) {
-        switch (content.getFormType()) {
-            case FORM_INDEPENDANT:
-                creationSituationProIndependant(content, idDroit, transaction, bsession);
-                break;
-            case FORM_SALARIE:
-                creationSituationProEmploye(content, idDroit, transaction, bsession);
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void creationSituationProEmploye(Content content, String idDroit, BTransaction transaction, BSession bsession) {
+    private void creationSituationProEmploye(Content content, String idDroit, BTransaction transaction) {
         Salary salaire = content.getProvidedByEmployer().getSalary();
-        LastIncome inCome = salaire.getLastIncome();
-        String salaireMensuel = null;
+
+        String salaireMensuel;
         MainEmployer mainEmployeur = content.getMainEmployer();
-        if(inCome != null) {
-            salaireMensuel = String.valueOf(salaire.getLastIncome().getAmount());
-        }
+
         try {
-            AFAffiliation affiliation = findAffiliationByNumero(mainEmployeur.getAffiliateID(), bsession);
+            AFAffiliation affiliation = findAffiliationByNumero(mainEmployeur.getAffiliateID(), bSession);
             if (affiliation != null) {
                 APEmployeur emp = new APEmployeur();
-                emp.setSession(bsession);
+                emp.setSession(bSession);
                 emp.setIdTiers(affiliation.getIdTiers());
                 emp.setIdAffilie(affiliation.getAffiliationId());
                 emp.add(transaction);
 
                 APSituationProfessionnelle situationProfessionnelle = new APSituationProfessionnelle();
-                situationProfessionnelle.setSession(bsession);
+                situationProfessionnelle.setSession(bSession);
                 situationProfessionnelle.setIdDroit(idDroit);
                 situationProfessionnelle.setIdEmployeur(emp.getIdEmployeur());
                 situationProfessionnelle.setIsIndependant(false);
                 situationProfessionnelle.setIsVersementEmployeur(isVersementEmployeur(content));
-                if(salaireMensuel != null) {
-                    situationProfessionnelle.setSalaireMensuel(salaireMensuel);
+                LastIncome lastInCome = salaire.getLastIncome();
+                if(lastInCome != null) {
+                    salaireMensuel = String.valueOf(lastInCome.getAmount());
+                    if (salaireMensuel != null) {
+                        situationProfessionnelle.setSalaireMensuel(salaireMensuel);
+                        // Vague 2 - Si le salarié est payé sur 13 mois
+                        // On ajoute son 13eme mois sans une autre rémunération annuelle
+                        if (lastInCome.isHasThirteenthMonth()) {
+                            situationProfessionnelle.setAutreRemuneration(salaireMensuel);
+                            situationProfessionnelle.setPeriodiciteAutreRemun(IPRSituationProfessionnelle.CS_PERIODICITE_ANNEE);
+                        }
+                    }
                 }
 
-                // Vague 2 - Si le salarié est payé sur 13 mois
-                // On ajoute son 13eme mois sans une autre rémunération annuelle
-                if (inCome != null && inCome.isHasThirteenthMonth()) {
-                    situationProfessionnelle.setAutreRemuneration(salaireMensuel);
-                    situationProfessionnelle.setPeriodiciteAutreRemun(IPRSituationProfessionnelle.CS_PERIODICITE_ANNEE);
-                }
 
                 situationProfessionnelle.wantCallValidate(false);
                 situationProfessionnelle.add(transaction);
@@ -369,17 +380,17 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
         }
     }
 
-    private void creationSituationProIndependant(Content content, String idDroit, BTransaction transaction, BSession bsession) {
+    private void creationSituationProIndependant(Content content, String idDroit, BTransaction transaction) {
         String masseAnnuel = "0";
         MainEmployer mainEmployeur = content.getMainEmployer();
 
         try {
             // TODO: Controler dans pandémie la gestion des indépendants
             // TODO: Controler si l'affiliation est à récupérer via l'employeur ou le tiers.
-            AFAffiliation affiliation = findAffiliationByNumero(mainEmployeur.getAffiliateID(), bsession);
+            AFAffiliation affiliation = findAffiliationByNumero(mainEmployeur.getAffiliateID(), bSession);
             if (affiliation != null) {
                 APEmployeur emp = new APEmployeur();
-                emp.setSession(bsession);
+                emp.setSession(bSession);
                 emp.setIdTiers(affiliation.getIdTiers());
                 emp.setIdAffilie(affiliation.getAffiliationId());
                 emp.add(transaction);
@@ -387,7 +398,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 // on cherche la decision
                 final CPDecisionManager decision = new CPDecisionManager();
                 BSession sessionPhenix = new BSession("PHENIX");
-                bsession.connectSession(sessionPhenix);
+                bSession.connectSession(sessionPhenix);
 
                 decision.setSession(sessionPhenix);
                 decision.setForIdAffiliation(affiliation.getAffiliationId());
@@ -399,9 +410,9 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 // decision
                 if (decision.size() > 0) {
 
-                    final ICPDonneesCalcul donneesCalcul = (ICPDonneesCalcul) bsession
+                    final ICPDonneesCalcul donneesCalcul = (ICPDonneesCalcul) bSession
                             .getAPIFor(ICPDonneesCalcul.class);
-                    donneesCalcul.setISession(PRSession.connectSession(bsession, "PHENIX"));
+                    donneesCalcul.setISession(PRSession.connectSession(bSession, "PHENIX"));
 
                     final Hashtable<Object, Object> parms = new Hashtable<>();
                     parms.put(ICPDonneesCalcul.FIND_FOR_ID_DECISION, ((CPDecision) decision.getEntity(0)).getIdDecision());
@@ -415,7 +426,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 }
 
                 APSituationProfessionnelle situationProfessionnelle = new APSituationProfessionnelle();
-                situationProfessionnelle.setSession(bsession);
+                situationProfessionnelle.setSession(bSession);
                 situationProfessionnelle.setIdDroit(idDroit);
                 situationProfessionnelle.setIdEmployeur(emp.getIdEmployeur());
                 situationProfessionnelle.setIsIndependant(true);
@@ -465,7 +476,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
 
     /**
      * Ajout des erreurs blocantes
-     * @param methodeSource
+     * @param methodeSource: method that calls it.
      */
     protected void addJadeThreadErrorToListError(String methodeSource) {
         JadeBusinessMessage[] messages = JadeThread.logMessages();
@@ -490,7 +501,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
      *
      * @param numeroAffiliate : le numéro d'affilié.
      * @return l'affiliation si elle a été trouvée.
-     * @throws Exception
+     * @throws Exception: Exception pouvant être levée lors de la recherche par l' affiliation manager
      */
     protected AFAffiliation findAffiliationByNumero(String numeroAffiliate, BSession bsession) throws Exception {
         AFAffiliationManager manager = new AFAffiliationManager();

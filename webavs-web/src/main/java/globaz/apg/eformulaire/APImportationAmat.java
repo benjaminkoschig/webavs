@@ -1,4 +1,4 @@
-package globaz.apg.process;
+package globaz.apg.eformulaire;
 
 import apg.amatapat.*;
 import ch.globaz.common.domaine.Date;
@@ -14,17 +14,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
+
 public class APImportationAmat extends APAbstractImportationAmatApat {
 
     private static final Logger LOG = LoggerFactory.getLogger(APImportationAmat.class);
 
-    public APImportationAmat(LinkedList<String> err, LinkedList<String> inf) {
-        super(err, inf);
-        typeDemande = IPRDemande.CS_TYPE_MATERNITE;
+    public APImportationAmat(LinkedList<String> err, LinkedList<String> inf, BSession bsession) {
+        super(IPRDemande.CS_TYPE_MATERNITE, err, inf, bsession);
     }
 
     @Override
-    public APDroitLAPG createDroit(Content content, String npaFormat, PRDemande demande, BTransaction transaction, BSession bsession) {
+    public APDroitLAPG createDroit(Content content, String npaFormat, PRDemande demande, BTransaction transaction) {
         APDroitMaternite newDroit = new APDroitMaternite();
 
         try {
@@ -45,7 +45,7 @@ public class APImportationAmat extends APAbstractImportationAmatApat {
             newDroit.setIsSoumisImpotSource(isSoumisImpotSource(content));
             // TODO : set date fin de droit
 
-            newDroit.setSession(bsession);
+            newDroit.setSession(bSession);
             newDroit.add(transaction);
 
         } catch (Exception e) {
@@ -57,7 +57,7 @@ public class APImportationAmat extends APAbstractImportationAmatApat {
     }
 
     @Override
-    public void createSituationFamiliale(FamilyMembers membresFamille, String idDroit, BTransaction transaction, BSession bsession) {
+    public void createSituationFamiliale(FamilyMembers membresFamille, String idDroit, BTransaction transaction) {
         try {
             for (Child child : membresFamille.getChildren().getChild()) {
                 APSituationFamilialeMat enfant = new APSituationFamilialeMat();
@@ -66,7 +66,7 @@ public class APImportationAmat extends APAbstractImportationAmatApat {
                 enfant.setDateNaissance(tranformGregDateToGlobDate(child.getDateOfBirth()));
                 enfant.setIdDroitMaternite(idDroit);
                 enfant.setType(IAPDroitMaternite.CS_TYPE_ENFANT);
-                enfant.setSession(bsession);
+                enfant.setSession(bSession);
                 enfant.add(transaction);
             }
         } catch (Exception e) {

@@ -12,6 +12,9 @@ import ch.globaz.simpleoutputlist.exception.TechnicalException;
 import com.google.common.base.Throwables;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APImportationAPGHistorique;
+import globaz.apg.eformulaire.APImportationAmat;
+import globaz.apg.eformulaire.APImportationApat;
+import globaz.apg.eformulaire.IAPImportationAmatApat;
 import globaz.apg.properties.APProperties;
 import globaz.globall.db.*;
 import globaz.jade.client.util.JadeStringUtil;
@@ -52,15 +55,14 @@ public class APImportationAPGAmatApatProcess extends BProcess {
     protected String errorsFolder;
     protected String storageFolder;
     protected String demandeFolder;
-    protected int nbTraites = 0;
 
     private static final Logger LOG = LoggerFactory.getLogger(APImportationAPGAmatApatProcess.class);
 
     private static final String AMAT_TYPE = "AMAT";
     private static final String APAT_TYPE = "APAT";
 
-    private final TreeMap <String, String> fichiersTraites = new TreeMap <>();
-    private final TreeMap <String, String> fichiersNonTraites = new TreeMap <>();
+    private final List<String> fichiersTraites = new ArrayList<>();
+    private final List<String> fichiersNonTraites = new ArrayList<>();
 
     @Override
     protected void _executeCleanUp() {
@@ -98,7 +100,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
      *
      * @throws Exception : lance une exception si un problème intervient lors de l'initialisation du contexte
      */
-    protected void initBsession() throws Exception {
+    private void initBsession() throws Exception {
         bsession = getSession();
         BSessionUtil.initContext(bsession, this);
     }
@@ -106,7 +108,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
     /**
      *  Fermeture de la session
      */
-    protected void closeBsession() {
+    private void closeBsession() {
         BSessionUtil.stopUsingContext(this);
     }
 
@@ -123,11 +125,11 @@ public class APImportationAPGAmatApatProcess extends BProcess {
                 backupFolder = new File(storageFolder).getAbsolutePath() + BACKUP_FOLDER;
                 errorsFolder = new File(storageFolder).getAbsolutePath() + ERRORS_FOLDER;
                 for (String nomFichierDistant : repositoryDemandesAmatApat) {
-                    if (MAX_TREATMENT > nbTraites) {
+                    if (MAX_TREATMENT > fichiersTraites.size()) {
                         importFile(nomFichierDistant);
                     }
                 }
-                LOG.info("Nombre de dossiers traités : {}", nbTraites);
+                LOG.info("Nombre de dossiers traités : {}", fichiersTraites.size());
             } else {
                 LOG.warn("Les propriétés AMAT APAT ne sont pas définis.");
                 errors.add("Import impossible : les propriétés AMAT-APAT ne sont pas définis.");
@@ -142,8 +144,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
      * Copie le fichier XML en local, effectue le traitement d'importion, sauvegarde le fichier
      * dans le dossier backup, supprime le fichier de base
      *
-     * @param nomFichier
-     * @throws IOException
+     * @param nomFichier: nopm du fichier à importer
      */
     private void importFile(String nomFichier)  {
         if (nomFichier.endsWith(XML_EXTENSION)) {
@@ -160,12 +161,12 @@ public class APImportationAPGAmatApatProcess extends BProcess {
                     nss = content.getInsuredPerson().getVn();
                     isTraitementSuccess = createDroitGlobal(content, nss);
                     if (isTraitementSuccess) {
-                        fichiersTraites.put(nss, nameOriginalFile);
-                        savingFileInDb(nss, nomFichier, APIOperation.ETAT_TRAITE, content.getAmatApatType());
+                        fichiersTraites.add(nameOriginalFile);
+                        savingFileInDb(nss, nomFichier, content.getAmatApatType());
                         infos.add("Traitement du fichier suivant réussi : " + nameOriginalFile);
                         infos.add("Assuré(s) concerné(s) : " + nss);
                     } else {
-                        fichiersNonTraites.put(nss, nameOriginalFile);
+                        fichiersNonTraites.add(nameOriginalFile);
                     }
                 } else {
                     errors.add("Le fichier XML ne peut pas être traité : " + nameOriginalFileWithoutExt);
@@ -178,8 +179,6 @@ public class APImportationAPGAmatApatProcess extends BProcess {
                 // TODO: ajuster message dans l'erreur
                 errors.add("Erreur lors du traitement du fichier.");
                 LOG.error("Erreur lors du traitement du fichier. ", e);
-            } finally {
-                nbTraites++;
             }
         }
     }
@@ -196,30 +195,29 @@ public class APImportationAPGAmatApatProcess extends BProcess {
         IAPImportationAmatApat handler;
         boolean isWomen = false;
         if (StringUtils.equals(AMAT_TYPE, content.getAmatApatType())) {
-            handler = new APImportationAmat(errors, infos);
+            handler = new APImportationAmat(errors, infos, bsession);
             isWomen = true;
         } else if(StringUtils.equals(APAT_TYPE, content.getAmatApatType())) {
-            handler = new APImportationApat(errors, infos);
+            handler = new APImportationApat(errors, infos, bsession);
         } else {
             handler = null;
         }
 
         if(handler != null) {
             PRTiersWrapper tiers = getTiersByNss(nssTiers);
-            // TODO : identifier quand il faut créer un tiers.
             if (Objects.isNull(tiers)) {
-                tiers = handler.createTiers(assure, npaFormat, bsession, isWomen);
+                tiers = handler.createTiers(assure, npaFormat, isWomen);
             }
             if (tiers != null) {
-                handler.createRoleApgTiers(tiers.getIdTiers(), bsession);
-                handler.createContact(tiers, assure.getEmail(), bsession);
-                PRDemande demande = handler.createDemande(tiers.getIdTiers(), bsession);
-                APDroitLAPG droit = handler.createDroit(content, npaFormat, demande, transaction, bsession);
-                handler.createSituationFamiliale(content.getFamilyMembers(), droit.getIdDroit(), transaction, bsession);
-                handler.createSituationProfessionnel(content, droit.getIdDroit(), transaction, bsession);
+                handler.createRoleApgTiers(tiers.getIdTiers());
+                handler.createContact(tiers, assure.getEmail());
+                PRDemande demande = handler.createDemande(tiers.getIdTiers());
+                APDroitLAPG droit = handler.createDroit(content, npaFormat, demande, transaction);
+                handler.createSituationFamiliale(content.getFamilyMembers(), droit.getIdDroit(), transaction);
+                handler.createSituationProfessionnel(content, droit.getIdDroit(), transaction);
             } else {
                 errors.add("Une erreur s'est produite lors de la création du tiers : " + nssTiers);
-                LOG.error("ImportAPGAmatApat#creationRoleApgTiers - Une erreur s'est produite dans la création du tiers : {}", nssTiers);
+                LOG.error("ImportAPGAmatApat#createTiers - Une erreur s'est produite dans la création du tiers : {}", nssTiers);
             }
         }
 
@@ -237,7 +235,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
         }
     }
 
-    private void savingFileInDb(String nss, String pathFile, String state, String apgType) throws Exception {
+    private void savingFileInDb(String nss, String pathFile, String apgType) throws Exception {
         BTransaction transaction = null;
 
         try (FileInputStream fileToStore = new FileInputStream(pathFile)) {
@@ -251,7 +249,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
             }
             APImportationAPGHistorique importData = new APImportationAPGHistorique();
             importData.setSession(bsession);
-            importData.setEtatDemande(state);
+            importData.setEtatDemande(APIOperation.ETAT_TRAITE);
             importData.setTypeDemande(apgType);
             importData.setNss(nss);
             importData.setXmlFile(fileToStore);
@@ -283,22 +281,17 @@ public class APImportationAPGAmatApatProcess extends BProcess {
     /**
      * Permet de déplacer le fichier suite au traitement.
      *
-     * @param nomFichierDistant
-     * @param nameOriginalFile
-     * @param nss
-     * @param processSuccess
-     * @throws JadeServiceLocatorException
-     * @throws JadeServiceActivatorException
-     * @throws JadeClassCastException
+     * @param nomFichierDistant: Nom du fichier distant à déplacer
+     * @param nameOriginalFile: nom du fichier original
+     * @param nss: nss du cas traité dans le fichier
+     * @param processSuccess: définit si le processus d'importation à réussi avec succes
      */
-    protected String movingFile(String nomFichierDistant, String nameOriginalFile, String nss, boolean processSuccess) {
-        String storageFolderTemp = "";
+    private void movingFile(String nomFichierDistant, String nameOriginalFile, String nss, boolean processSuccess) {
+        String storageFolderTemp;
         String storageFileTempTrace = "";
         String storageFileTempStorage = "";
-        String fileToSend = "";
 
-        // TODO: Check sonar warning
-        try{
+         try{
             if (!JadeFsFacade.exists(backupFolder)) {
                 JadeFsFacade.createFolder(backupFolder);
             }
@@ -329,10 +322,8 @@ public class APImportationAPGAmatApatProcess extends BProcess {
             // Et on retourne un des deux emplacements du fichier copiés
             if(JadeFsFacade.exists(storageFileTempTrace)){
                 JadeFsFacade.delete(nomFichierDistant);
-                fileToSend = storageFileTempTrace;
             } else if(JadeFsFacade.exists(storageFileTempStorage)){
                 JadeFsFacade.delete(nomFichierDistant);
-                fileToSend = storageFileTempStorage;
             }else{
                 LOG.warn("Fichier non supprimé car celui-ci n'a pas pu être copié dans un des deux emplacements suivants :\n-{}\n-{}",
                         storageFileTempTrace, storageFileTempTrace);
@@ -341,22 +332,20 @@ public class APImportationAPGAmatApatProcess extends BProcess {
         } catch (JadeServiceLocatorException | JadeClassCastException | JadeServiceActivatorException e) {
             LOG.error("Erreur lors du déplacement du fichier {}", nameOriginalFile, e);
         }
-        return fileToSend;
     }
 
 
     /**
      * Méthode permettant de générer le bilan du traitement et l'envoi du mail récapitulatif.
      *
-     * @throws Exception : exception envoyée si un problème intervient lors de l'envoi du mail.
      */
     private void generationProtocol() {
 
         StringBuilder corpsCaisse = new StringBuilder();
 
-        corpsCaisse.append(buildBlocMessage(fichiersTraites.values(), "Fichiers traités : ", "; "));
+        corpsCaisse.append(buildBlocMessage(fichiersTraites, "Fichiers traités : ", "; "));
 
-        corpsCaisse.append(buildBlocMessage(fichiersNonTraites.values(), "Fichiers non traités :", "; "));
+        corpsCaisse.append(buildBlocMessage(fichiersNonTraites, "Fichiers non traités :", "; "));
 
         corpsCaisse.append(buildBlocMessage(infos, "Infos :", "\n"));
 
@@ -394,7 +383,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
      * @return l'objet du mail
      */
     private String getEMailObjectCaisse() {
-        return "Importation AMAT-APAT : " + nbTraites + " fichier(s) traité(s)";
+        return "Importation AMAT-APAT : " + fichiersTraites.size() + " fichier(s) traité(s)";
     }
 
 
@@ -465,7 +454,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
      *
      * @return l'id de la caisse.
      */
-    protected String creationIdCaisse() {
+    private String createIdCaisse() {
         try {
             StringBuilder builder = new StringBuilder();
             builder.append(CommonProperties.KEY_NO_CAISSE.getValue());
@@ -473,7 +462,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
             return builder.toString();
         } catch (final PropertiesException exception) {
             errors.add("Impossible de récupérer les propriétés n° caisse et n° agence");
-            LOG.error("APImportationAPGPandemie#creationIdCaisse : A fatal exception was thrown when accessing to the CommonProperties", exception);
+            LOG.error("APImportationAPGPandemie#createIdCaisse : A fatal exception was thrown when accessing to the CommonProperties", exception);
         }
         return null;
     }
@@ -485,7 +474,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
      * @param npa le npa à formatter
      * @return le npa formatté.
      */
-    protected String formatNPA(String npa) {
+    private String formatNPA(String npa) {
         if(StringUtils.isNotEmpty(npa)){
             String npaTrim = StringUtils.trim(npa);
             if(StringUtils.isNumeric(npaTrim)){
@@ -502,7 +491,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
      * @param transaction
      * @return
      */
-    protected boolean hasError(BSession session, BTransaction transaction) {
+    private boolean hasError(BSession session, BTransaction transaction) {
         return session.hasErrors() || (transaction == null) || transaction.hasErrors() || transaction.isRollbackOnly() || !errors.isEmpty();
     }
 
