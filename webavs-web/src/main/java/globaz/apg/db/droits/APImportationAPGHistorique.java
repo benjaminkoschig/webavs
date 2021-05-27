@@ -7,8 +7,9 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.context.JadeThread;
 import globaz.jade.persistence.util.JadePersistenceUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,9 +19,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Objects;
 
+@Slf4j
 public class APImportationAPGHistorique extends BEntity {
-
-    private static final Logger LOG = LoggerFactory.getLogger(APImportationAPGHistorique.class);
 
     private static final long serialVersionUID = 1L;
     public static final String FIELDNAME_ID = "ID";
@@ -30,16 +30,25 @@ public class APImportationAPGHistorique extends BEntity {
     public static final String FIELDNAME_TYPE_APG = "TYPE_APG";
     public static final String FIELDNAME_PSPY = "PSPY";
 
-    private static final String[] tupples = {FIELDNAME_ID, FIELDNAME_NSS, FIELDNAME_FICHIER_XML, FIELDNAME_ETAT, FIELDNAME_TYPE_APG, FIELDNAME_PSPY};
-
     public static final String TABLE_NAME = "HISTORIQUE_IMPORTATION_APG";
 
-
+    @Getter
+    @Setter
     private String idHistoriqueAPG;
+    @Getter
+    @Setter
     private String nss;
+    @Getter
+    @Setter
     private InputStream xmlFile;
+    @Getter
+    @Setter
     private String etatDemande;
+    @Getter
+    @Setter
     private String typeDemande;
+    @Getter
+    @Setter
     private String pspy;
 
     @Override
@@ -60,7 +69,7 @@ public class APImportationAPGHistorique extends BEntity {
     }
 
     private void getXmlFileFromDb(){
-        String sql = getSqlSelect(FIELDNAME_FICHIER_XML);
+        String sql = getSqlSelect();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
@@ -82,8 +91,6 @@ public class APImportationAPGHistorique extends BEntity {
                 LOG.debug("Erreur lors de la fermeture du resultSet : " + sql, e);
             }
         }
-
-
     }
 
     @Override
@@ -122,7 +129,7 @@ public class APImportationAPGHistorique extends BEntity {
     }
 
     private static String getSqlUpdate() {
-        StringBuffer sql = new StringBuffer("UPDATE ");
+        StringBuilder sql = new StringBuilder("UPDATE ");
         sql.append(JadePersistenceUtil.getDbSchema());
         sql.append('.');
         if (!JadeStringUtil.isEmpty(Jade.getInstance().getDefaultJdbcTablePrefix())) {
@@ -133,9 +140,8 @@ public class APImportationAPGHistorique extends BEntity {
         return sql.toString();
     }
 
-    private static String getSqlSelect(String fieldName) {
-//        StringBuffer sql = new StringBuffer("SELECT " + fieldName + " FROM ");
-        StringBuffer sql = new StringBuffer("SELECT * FROM ");
+    private static String getSqlSelect() {
+        StringBuilder sql = new StringBuilder("SELECT * FROM ");
         sql.append(JadePersistenceUtil.getDbSchema());
         sql.append('.');
         if (!JadeStringUtil.isEmpty(Jade.getInstance().getDefaultJdbcTablePrefix())) {
@@ -149,6 +155,7 @@ public class APImportationAPGHistorique extends BEntity {
     @Override
     protected void _validate(BStatement statement) throws Exception {
 
+        // Pas de validation requises.
     }
 
     @Override
@@ -167,53 +174,5 @@ public class APImportationAPGHistorique extends BEntity {
                 this._dbWriteString(statement.getTransaction(), etatDemande, ""));
         statement.writeField(FIELDNAME_TYPE_APG,
                 this._dbWriteString(statement.getTransaction(), typeDemande, ""));
-    }
-
-    public String getIdHistoriqueAPG() {
-        return idHistoriqueAPG;
-    }
-
-    public void setIdHistoriqueAPG(String idHistoriqueAPG) {
-        this.idHistoriqueAPG = idHistoriqueAPG;
-    }
-
-    public String getNss() {
-        return nss;
-    }
-
-    public void setNss(String nss) {
-        this.nss = nss;
-    }
-
-    public String getEtatDemande() {
-        return etatDemande;
-    }
-
-    public String gettypeDemande() {
-        return typeDemande;
-    }
-
-    public void setEtatDemande(String etatDemande) {
-        this.etatDemande = etatDemande;
-    }
-
-    public void setTypeDemande(String typeDemande) {
-        this.typeDemande = typeDemande;
-    }
-
-    public String getPspy() {
-        return pspy;
-    }
-
-    public void setPspy(String pspy) {
-        this.pspy = pspy;
-    }
-
-    public InputStream getXmlFile() {
-        return xmlFile;
-    }
-
-    public void setXmlFile(InputStream xmlFile) {
-        this.xmlFile = xmlFile;
     }
 }

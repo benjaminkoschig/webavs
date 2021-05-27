@@ -2,8 +2,6 @@ package globaz.apg.eformulaire;
 
 import apg.amatapat.*;
 import ch.globaz.common.domaine.Date;
-import ch.globaz.common.properties.CommonProperties;
-import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.pyxis.business.model.PaysSearchSimpleModel;
 import ch.globaz.pyxis.business.model.PaysSimpleModel;
 import ch.globaz.pyxis.domaine.EtatCivil;
@@ -41,39 +39,27 @@ import globaz.pyxis.api.ITIPersonne;
 import globaz.pyxis.api.ITIRole;
 import globaz.pyxis.application.TIApplication;
 import globaz.pyxis.db.tiers.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Hashtable;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
+@Slf4j
+@RequiredArgsConstructor
 public abstract class APAbstractImportationAmatApat implements IAPImportationAmatApat {
-    protected final LinkedList<String> errors;
-    protected final LinkedList<String> infos;
-    protected final BSession bSession;
     protected static final String FORM_INDEPENDANT = "FORM_INDEPENDANT";
     protected static final String FORM_SALARIE = "FORM_SALARIE";
-    private final String typeDemande;
-    private static final Logger LOG = LoggerFactory.getLogger(APAbstractImportationAmatApat.class);
     private static final String BENEFICIAIRE_MERE = "MERE";
     private static final String BENEFICIAIRE_PERE = "PERE";
     private static final String BENEFICIAIRE_EMPLOYEUR = "EMPLOYEUR";
 
-    /**
-     * Contructeur
-     * @param type: Type de demande (Maternité ou Paternité)
-     * @param err: liste des erreurs lors de l'importation des données
-     * @param inf: liste des informations lors de l'importation des données
-     * @param bsession: Session courante.
-     */
-    protected APAbstractImportationAmatApat(String type, LinkedList<String> err, LinkedList<String> inf, BSession bsession){
-        typeDemande = type;
-        errors = err;
-        infos = inf;
-        bSession = bsession;
-    }
+    protected final List<String> errors;
+    protected final List<String> infos;
+    protected final BSession bSession;
+    private final String typeDemande;
 
     @Override
     public void createRoleApgTiers(String idTiers) throws Exception {
@@ -313,23 +299,6 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
         return false;
     }
 
-    /**
-     * Création de l'ID de la caisse lié au droit.
-     *
-     * @return l'id de la caisse.
-     */
-    protected String creationIdCaisse() {
-        try {
-            final String noCaisse = CommonProperties.KEY_NO_CAISSE.getValue();
-            final String noAgence = CommonProperties.NUMERO_AGENCE.getValue();
-            return noCaisse + noAgence;
-        } catch (final PropertiesException exception) {
-            errors.add("Impossible de récupérer les propriétés n° caisse et n° agence");
-            LOG.error("APImportationAPGAmatApat#creationIdCaisse : A fatal exception was thrown when accessing to the CommonProperties", exception);
-        }
-        return null;
-    }
-
     private void creationSituationProEmploye(Content content, String idDroit, BTransaction transaction) {
         Salary salaire = content.getProvidedByEmployer().getSalary();
 
@@ -385,8 +354,8 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
         MainEmployer mainEmployeur = content.getMainEmployer();
 
         try {
-            // TODO: Controler dans pandémie la gestion des indépendants
-            // TODO: Controler si l'affiliation est à récupérer via l'employeur ou le tiers.
+            // TODO JJO 27.05.2021:  Controler dans pandémie la gestion des indépendants
+            // TODO JJO 27.05.2021: Controler si l'affiliation est à récupérer via l'employeur ou le tiers.
             AFAffiliation affiliation = findAffiliationByNumero(mainEmployeur.getAffiliateID(), bSession);
             if (affiliation != null) {
                 APEmployeur emp = new APEmployeur();
@@ -445,7 +414,6 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 JadeThread.logClear();
             }
         }
-
     }
 
     private boolean isVersementEmployeur(Content content){

@@ -1,26 +1,30 @@
 package globaz.apg.eformulaire;
 
-import apg.amatapat.*;
+import apg.amatapat.Child;
+import apg.amatapat.Content;
+import apg.amatapat.FamilyMembers;
 import ch.globaz.common.domaine.Date;
+import ch.globaz.common.util.CaisseInfoPropertiesWrapper;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.droits.IAPDroitMaternite;
-import globaz.apg.db.droits.*;
+import globaz.apg.db.droits.APDroitLAPG;
+import globaz.apg.db.droits.APDroitMaternite;
+import globaz.apg.db.droits.APSituationFamilialeMat;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.prestation.api.IPRDemande;
 import globaz.prestation.db.demandes.PRDemande;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.LinkedList;
+import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class APImportationAmat extends APAbstractImportationAmatApat {
 
-    private static final Logger LOG = LoggerFactory.getLogger(APImportationAmat.class);
-
-    public APImportationAmat(LinkedList<String> err, LinkedList<String> inf, BSession bsession) {
-        super(IPRDemande.CS_TYPE_MATERNITE, err, inf, bsession);
+    public APImportationAmat(List<String> err, List<String> inf, BSession bsession) {
+        super(err, inf, bsession, IPRDemande.CS_TYPE_MATERNITE);
     }
 
     @Override
@@ -32,7 +36,7 @@ public class APImportationAmat extends APAbstractImportationAmatApat {
             newDroit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ENREGISTRE);
             newDroit.setGenreService(IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE);
             newDroit.setReference(content.getReferenceData());
-            newDroit.setIdCaisse(creationIdCaisse());
+            newDroit.setIdCaisse(CaisseInfoPropertiesWrapper.noCaisseNoAgence());
             newDroit.setNpa(npaFormat);
             newDroit.setPays(getIdPays(content.getInsuredAddress().getCountryIso2Code()));
             java.util.Date dateDernierNee = getDateNaissanceDernierNee(content);

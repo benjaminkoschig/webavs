@@ -1,10 +1,11 @@
 package globaz.apg.db.droits;
 
-import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.db.PRAbstractManager;
+import lombok.Getter;
+import lombok.Setter;
 
 public class APImportationAPGHistoriqueManager extends PRAbstractManager {
 
@@ -13,6 +14,8 @@ public class APImportationAPGHistoriqueManager extends PRAbstractManager {
      */
     private static final long serialVersionUID = 1L;
 
+    @Getter
+    @Setter
     private String forId = "";
 
     @Override
@@ -42,13 +45,5 @@ public class APImportationAPGHistoriqueManager extends PRAbstractManager {
         }
 
         return sqlWhere;
-    }
-
-    public String getForId() {
-        return forId;
-    }
-
-    public void setForId(String forId) {
-        this.forId = forId;
     }
 }

@@ -6,7 +6,6 @@ import apg.amatapat.InsuredPerson;
 import apg.amatapat.Message;
 import ch.globaz.common.mail.CommonFilesUtils;
 import ch.globaz.common.process.ProcessMailUtils;
-import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.simpleoutputlist.exception.TechnicalException;
 import com.google.common.base.Throwables;
@@ -26,10 +25,9 @@ import globaz.osiris.api.APIOperation;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -40,27 +38,24 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 
+@Slf4j
 public class APImportationAPGAmatApatProcess extends BProcess {
 
     protected static final String BACKUP_FOLDER = "/backup/";
     protected static final String ERRORS_FOLDER = "/errors/";
     protected static final String XML_EXTENSION = ".xml";
     protected static final int MAX_TREATMENT = 40;
+    private static final String AMAT_TYPE = "AMAT";
+    private static final String APAT_TYPE = "APAT";
+
     protected BSession bsession;
     protected LinkedList<String> errors = new LinkedList<>();
     protected LinkedList<String> infos = new LinkedList<>();
     protected LinkedList<String> errorsCreateBeneficiaries = new LinkedList<>();
-
     protected String backupFolder;
     protected String errorsFolder;
     protected String storageFolder;
     protected String demandeFolder;
-
-    private static final Logger LOG = LoggerFactory.getLogger(APImportationAPGAmatApatProcess.class);
-
-    private static final String AMAT_TYPE = "AMAT";
-    private static final String APAT_TYPE = "APAT";
-
     private final List<String> fichiersTraites = new ArrayList<>();
     private final List<String> fichiersNonTraites = new ArrayList<>();
 
@@ -448,25 +443,6 @@ public class APImportationAPGAmatApatProcess extends BProcess {
             return null;
         }
     }
-
-    /**
-     * Création de l'ID de la caisse lié au droit.
-     *
-     * @return l'id de la caisse.
-     */
-    private String createIdCaisse() {
-        try {
-            StringBuilder builder = new StringBuilder();
-            builder.append(CommonProperties.KEY_NO_CAISSE.getValue());
-            builder.append(CommonProperties.NUMERO_AGENCE.getValue());
-            return builder.toString();
-        } catch (final PropertiesException exception) {
-            errors.add("Impossible de récupérer les propriétés n° caisse et n° agence");
-            LOG.error("APImportationAPGPandemie#createIdCaisse : A fatal exception was thrown when accessing to the CommonProperties", exception);
-        }
-        return null;
-    }
-
 
     /**
      * Formattage du NPA
