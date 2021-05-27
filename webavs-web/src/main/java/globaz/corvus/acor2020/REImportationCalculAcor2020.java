@@ -54,7 +54,6 @@ import globaz.hera.api.ISFMembreFamilleRequerant;
 import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.log.JadeLogger;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.PRACORException;
 import globaz.prestation.db.infos.PRInfoCompl;

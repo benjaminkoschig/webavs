@@ -32,7 +32,6 @@ import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
-import globaz.globall.util.JAUtil;
 import globaz.hera.api.*;
 import globaz.hera.enums.TypeDeDetenteur;
 import globaz.hera.external.SFSituationFamilialeFactory;
@@ -563,7 +562,8 @@ public class REExportationCalculAcor2020 {
     private Gutschriften9Type createDonneesBonification9(REHistoriqueRentes rente, BigDecimal durchschnittlichesJahreseinkommen) {
         Gutschriften9Type donneesBonification = new Gutschriften9Type();
         // 27. montant bonus éducatif
-        donneesBonification.setAngerechneteErziehungsgutschrift(ParserUtils.formatRequiredBigDecimal(rente.getMontantBTE()));
+        BigDecimal montantBTE = ParserUtils.formatRequiredBigDecimal(rente.getMontantBTE());
+        donneesBonification.setAngerechneteErziehungsgutschrift(montantBTE.setScale(0, BigDecimal.ROUND_DOWN));
         // 28. nbr. année bonif. bte
         if (!JadeStringUtil.isBlankOrZero(rente.getNbrAnneeBTE())) {
             donneesBonification.setAnzahlErziehungsgutschrift(ParserUtils.formatRequiredShort(rente.getNbrAnneeBTE().substring(0, 2)));
@@ -572,7 +572,7 @@ public class REExportationCalculAcor2020 {
         }
         // Numéro 7 - Numéro 27
         BigDecimal montant = durchschnittlichesJahreseinkommen.subtract(donneesBonification.getAngerechneteErziehungsgutschrift());
-        donneesBonification.setDJEohneErziehungsgutschrift(montant);
+        donneesBonification.setDJEohneErziehungsgutschrift(montant.setScale(0,BigDecimal.ROUND_DOWN));
         return donneesBonification;
     }
 
@@ -1606,6 +1606,7 @@ public class REExportationCalculAcor2020 {
 
                 // TODO : la gestion des dates de fin de relation reste un mystère.
                 if (!ISFSituationFamiliale.CS_TYPE_LIEN_MARIE.equals(relation.getTypeLien())
+                        && !ISFSituationFamiliale.CS_TYPE_LIEN_VEUF.equals(relation.getTypeLien())
                         && !ISFSituationFamiliale.CS_TYPE_LIEN_LPART_ENREGISTRE.equals(relation
                         .getTypeLien()) && !ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(relation
                         .getTypeRelation())) {
@@ -1665,7 +1666,7 @@ public class REExportationCalculAcor2020 {
     }
 
     private String getNumAvsFromDemandeSurvivant(PRTiersWrapper tiers, BSession session) {
-        String nssDemande = "";
+        String nssDemande =  tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
         try {
             String idTiersRequerant = tiers.getIdTiers();
             // Gestion de cas spéciaux pour ACOR

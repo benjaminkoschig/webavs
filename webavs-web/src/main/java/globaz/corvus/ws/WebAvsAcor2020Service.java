@@ -93,7 +93,7 @@ public class WebAvsAcor2020Service {
             String idTiers = acor2020Token.getIdTiers();
             String userId = acor2020Token.getUserId();
 
-            BSession session = null;
+            BSession session;
             try {
                 session = BSessionUtil.createSession(REApplication.DEFAULT_APPLICATION_CORVUS, userId);
 
