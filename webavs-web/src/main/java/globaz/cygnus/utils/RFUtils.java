@@ -210,7 +210,7 @@ public class RFUtils {
                 if (membreCourant[1].equals(IPCDroits.CS_ROLE_FAMILLE_ENFANT) && !JadeDateUtil.isDateBefore(dateDebutPCA, dateReforme) && membreCourant[8].equals(Boolean.FALSE.toString())) {
                     rfAssQdDossier.setIsComprisDansCalcul(membreCourant[9].equals(Boolean.TRUE.toString()));
                 } else {
-                rfAssQdDossier.setIsComprisDansCalcul(membreCourant[8].equals(Boolean.TRUE.toString()));
+                    rfAssQdDossier.setIsComprisDansCalcul(membreCourant[8].equals(Boolean.TRUE.toString()));
                 }
 
                 rfAssQdDossier.add(transaction);
@@ -1318,9 +1318,9 @@ public class RFUtils {
     }
 
     public static boolean isQdArrondi(String codeTypeDeSoin, String codeSousTypeDeSoin) {
-        return !(IRFCodeTypesDeSoins.TYPE_20_FINANCEMENT_DES_SOINS.equals(codeTypeDeSoin)
+        return !((IRFCodeTypesDeSoins.TYPE_20_FINANCEMENT_DES_SOINS.equals(codeTypeDeSoin)
                 && IRFCodeTypesDeSoins.SOUS_TYPE_20_1_FINANCEMENT_DES_SOINS.equals(codeSousTypeDeSoin))
-                || !(IRFCodeTypesDeSoins.TYPE_25_SOIN_A_DOMICILE.equals(codeTypeDeSoin)
-                        && IRFCodeTypesDeSoins.SOUS_TYPE_25_1_SOIN_A_DOMICILE.equals(codeSousTypeDeSoin));
+                || (IRFCodeTypesDeSoins.TYPE_25_SOIN_A_DOMICILE.equals(codeTypeDeSoin)
+                        && IRFCodeTypesDeSoins.SOUS_TYPE_25_1_SOIN_A_DOMICILE.equals(codeSousTypeDeSoin)));
     }
 }
