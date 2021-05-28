@@ -55,7 +55,7 @@ public class APImportationApat extends APAbstractImportationAmatApat {
                 APPeriodeAPG periodeAPG = new APPeriodeAPG();
                 periodeAPG.setDateDebutPeriode(JadeDateUtil.getGlobazFormattedDate(debutPeriod));
                 periodeAPG.setDateFinPeriode(JadeDateUtil.getGlobazFormattedDate(finPeriod));
-                days = JadeDateUtil.getNbDaysBetween(JadeDateUtil.getGlobazFormattedDate(finPeriod), JadeDateUtil.getGlobazFormattedDate(debutPeriod));
+                days = JadeDateUtil.getNbDaysBetween(JadeDateUtil.getGlobazFormattedDate(debutPeriod), JadeDateUtil.getGlobazFormattedDate(finPeriod));
                 periodeAPG.setIdDroit(newDroit.getIdDroit());
                 periodeAPG.setNbrJours(String.format("%d", days));
                 periodeAPG.setSession(bSession);
