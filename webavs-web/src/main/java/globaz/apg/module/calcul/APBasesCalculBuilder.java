@@ -251,6 +251,43 @@ public abstract class APBasesCalculBuilder {
          */
     protected void couperParMois(Date debut, Calendar fin) {
         Calendar moisDernier = getCalendarInstance();
+        // instancié à la date du
+        // jour
+
+        moisDernier.set(Calendar.DAY_OF_MONTH, 5); // on prend une date neutre
+        moisDernier.add(Calendar.MONTH, -1); // du mois précédent
+
+        // on commence l'itération au début du droit et on se positionne
+        // toujours sur le dernier jour dudit mois
+        calendar.setTime(debut);
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        while (calendar.before(fin)) {
+            if (calendar.after(moisDernier) || (calendar.get(Calendar.MONTH) == Calendar.DECEMBER)) {
+                // si ce n'est pas un paiement rétroactif ou si on est en fin
+                // d'année, ajouter la commande
+                commands.add(new NouvelleBaseCommand(calendar.getTime(), false));
+            }
+
+            // passer au mois suivant et prendre le dernier jour de ce mois.
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+            calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        }
+    }
+
+    /**
+     * couper par mois:
+     *
+     * allocations par mois, on ajoute donc des com
+     *mandes qui vont découper la période de
+     * prestation en unités mensuelles.
+     *
+     * Pour les versements rétro-actifs (c'est-à-dire avant la date du jour), la coupure n'est pas effectuée.
+     *
+     * @param debut
+     * @param fin
+     */
+    protected void couperParMoisMaternite(Date debut, Calendar fin) {
+        Calendar moisDernier = getCalendarInstance();
         Calendar finMaternite = new GregorianCalendar();// instancié à la date du
         // jour
 
@@ -286,7 +323,6 @@ public abstract class APBasesCalculBuilder {
             calendar.add(Calendar.DAY_OF_MONTH, 1);
             calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
         }
-
     }
 
     // ajouter les événements relatifs à la situation professionnelle à la liste

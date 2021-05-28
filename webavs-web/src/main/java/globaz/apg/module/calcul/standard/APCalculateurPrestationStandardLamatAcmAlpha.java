@@ -2391,11 +2391,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             LocalDate dateDeFinACMDate = parseStringToDateTime(dateDeFinAcm, format);
             LocalDate dateDebutPrestation = parseStringToDateTime(periode.getDateDebut().toString(), formatter);
             LocalDate dateFinPrestation = parseStringToDateTime(periode.getDateFin().toString(), formatter);
-
-            if (dateDeFinACMDate != null && dateDeFinACMDate.isAfter(dateDebutPrestation) && (dateDeFinACMDate.isAfter(dateFinPrestation) || dateDeFinACMDate.equals(dateFinPrestation))) {
-                return true;
-            }
-            return false;
+            return (dateDeFinACMDate != null && dateDeFinACMDate.isAfter(dateDebutPrestation) && (dateDeFinACMDate.isAfter(dateFinPrestation) || dateDeFinACMDate.equals(dateFinPrestation)));
         }
 
     }
@@ -2408,10 +2404,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             LocalDate dateDebutPrestation = parseStringToDateTime(periode.getDateDebut().toString(), formatter);
             LocalDate dateFinPrestation = parseStringToDateTime(periode.getDateFin().toString(), formatter);
 
-            if (dateDeFinACMDate != null && dateDeFinACMDate.isAfter(dateDebutPrestation) && (dateDeFinACMDate.isBefore(dateFinPrestation) || dateDeFinACMDate.equals(dateFinPrestation))) {
-                return true;
-            }
-            return false;
+            return (dateDeFinACMDate != null && dateDeFinACMDate.isAfter(dateDebutPrestation) && (dateDeFinACMDate.isBefore(dateFinPrestation) || dateDeFinACMDate.equals(dateFinPrestation)));
         }
     }
 

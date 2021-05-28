@@ -104,7 +104,7 @@ public class APBasesCalculMaterniteBuilder extends APBasesCalculBuilder{
         }
 
         // couper par mois
-        couperParMois(debut, fin);
+        couperParMoisMaternite(debut, fin);
     }
 
 }
