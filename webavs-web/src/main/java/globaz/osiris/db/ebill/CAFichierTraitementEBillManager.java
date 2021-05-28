@@ -15,7 +15,7 @@ public class CAFichierTraitementEBillManager extends BManager {
     private static final String ALIAS_TRAITEMENT = "traitement.";
     private static final String AND = " AND ";
     private String forIdFichier;
-    private String forDateTraitement;
+    private String forDateLecture;
     private String forStatutFichier;
 
     @Override
@@ -52,11 +52,11 @@ public class CAFichierTraitementEBillManager extends BManager {
             sqlWhere.append(ALIAS_FICHIER).append(CAFichierTraitementEBill.FIELD_ID_FICHIER).append("=").append(this._dbWriteNumeric(statement.getTransaction(), getForIdFichier()));
         }
         // Date de lecture
-        if (!JadeStringUtil.isIntegerEmpty(getForDateTraitement())) {
+        if (!JadeStringUtil.isIntegerEmpty(getForDateLecture())) {
             if (sqlWhere.length() != 0) {
                 sqlWhere.append(AND);
             }
-            sqlWhere.append(CAFichierTraitementEBill.FIELD_DATE_LECTURE).append("=").append(this._dbWriteDateAMJ(statement.getTransaction(), getForDateTraitement()));
+            sqlWhere.append(CAFichierTraitementEBill.FIELD_DATE_LECTURE).append("=").append(this._dbWriteDateAMJ(statement.getTransaction(), getForDateLecture()));
         }
         // Statut fichier
         if (!JadeStringUtil.isIntegerEmpty(getForStatutFichier())) {
@@ -111,12 +111,12 @@ public class CAFichierTraitementEBillManager extends BManager {
         this.forIdFichier = forIdFichier;
     }
 
-    public String getForDateTraitement() {
-        return forDateTraitement;
+    public String getForDateLecture() {
+        return forDateLecture;
     }
 
-    public void setForDateTraitement(String forDateTraitement) {
-        this.forDateTraitement = forDateTraitement;
+    public void setForDateLecture(String forDateLecture) {
+        this.forDateLecture = forDateLecture;
     }
 
     public String getForStatutFichier() {
