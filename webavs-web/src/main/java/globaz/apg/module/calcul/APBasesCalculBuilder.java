@@ -250,7 +250,8 @@ public abstract class APBasesCalculBuilder {
      * @param fin
          */
     protected void couperParMois(Date debut, Calendar fin) {
-        Calendar moisDernier = getCalendarInstance(); // instancié à la date du
+        Calendar moisDernier = getCalendarInstance();
+        Calendar finMaternite = new GregorianCalendar();// instancié à la date du
         // jour
 
         moisDernier.set(Calendar.DAY_OF_MONTH, 5); // on prend une date neutre
@@ -261,9 +262,21 @@ public abstract class APBasesCalculBuilder {
         calendar.setTime(debut);
         calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
 
+        if (!JadeStringUtil.isBlankOrZero(droit.getJoursSupplementaires())) {
+            // Extension maternité, on calcul une date de fin sans l'extension
+            finMaternite.setTime(fin.getTime());
+            finMaternite.add(Calendar.DATE, -Integer.parseInt(droit.getJoursSupplementaires()));
+        }
+
+
         while (calendar.before(fin)) {
             // si on est avant la fin de la prestation
-            if (calendar.after(moisDernier) || (calendar.get(Calendar.MONTH) == Calendar.DECEMBER)) {
+            if (finMaternite!= null && !JadeStringUtil.isBlankOrZero(droit.getJoursSupplementaires()) && calendar.after(finMaternite)) {
+                commands.add(new NouvelleBaseCommand(finMaternite.getTime(), false));
+                calendar.setTime(finMaternite.getTime());
+                calendar.add(Calendar.DATE, 1);
+                finMaternite = null;
+            } else if (calendar.after(moisDernier) || (calendar.get(Calendar.MONTH) == Calendar.DECEMBER)) {
                 // si ce n'est pas un paiement rétroactif ou si on est en fin
                 // d'année, ajouter la commande
                 commands.add(new NouvelleBaseCommand(calendar.getTime(), false));
@@ -273,6 +286,7 @@ public abstract class APBasesCalculBuilder {
             calendar.add(Calendar.DAY_OF_MONTH, 1);
             calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
         }
+
     }
 
     // ajouter les événements relatifs à la situation professionnelle à la liste

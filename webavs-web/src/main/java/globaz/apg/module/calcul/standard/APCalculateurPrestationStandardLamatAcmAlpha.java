@@ -2469,14 +2469,14 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         LocalDate dateDeFinACMDate = parseStringToDateTime(dateDeFinAcm, format);
         LocalDate dateDeDebutPrestDate = parseStringToDateTime(prestation.getDateDebut(), format);
         if (dateDeFinACMDate != null && dateDeDebutPrestDate != null) {
-
+            String nombreJourSoldes = String.valueOf(ChronoUnit.DAYS.between(dateDeDebutPrestDate, dateDeFinACMDate));
+            this.creerPrestationsACM(session, transaction, lastPrestation, droit, sommeMontantJournalier,
+                    lastMJ, genrePrestation, prestation.getDateDebut(),
+                    prestation.getDateFin(),
+                    nombreJourSoldes,
+                    prestation.getNoRevision());
         }
-        String nombreJourSoldes = String.valueOf(ChronoUnit.DAYS.between(dateDeDebutPrestDate, dateDeFinACMDate));
-        this.creerPrestationsACM(session, transaction, lastPrestation, droit, sommeMontantJournalier,
-                lastMJ, genrePrestation, prestation.getDateDebut(),
-                prestation.getDateFin(),
-                nombreJourSoldes,
-                prestation.getNoRevision());
+
     }
 
     /**
