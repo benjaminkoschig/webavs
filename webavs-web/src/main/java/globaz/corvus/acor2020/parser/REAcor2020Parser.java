@@ -273,7 +273,8 @@ public class REAcor2020Parser {
                                             pd.setCsType(IREPrestationDue.CS_TYPE_MNT_TOT);
                                             String dateDernierPmt = REPmtMensuel.getDateDernierPmt(session);
                                             // TODO : en comparant les valeurs du json avec le fichier plat, il semblerait qu'il faille récupérer la date de fin --> A confirmer !!!!!
-                                            String dateDebutPmt = PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getFin(), StringUtils.EMPTY));
+//                                            String dateDebutPmt = PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getFin(), StringUtils.EMPTY));
+                                            String dateDebutPmt = PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(rente.getMoisRapport(), StringUtils.EMPTY));
                                             JADate jDateDateDernierPmt = new JADate(dateDernierPmt);
                                             JADate jDateDateDebutPmt = new JADate(dateDebutPmt);
 
@@ -951,14 +952,28 @@ public class REAcor2020Parser {
         // ra.setSupplementVeuvage(REACORAbstractFlatFileParser.getField(line, fields, "SUPPL_VEUVAGE")); $r29
          ra.setSupplementVeuvage("0");
 
+         ra.setPrescriptionAppliquee(getNombreAnneePrescriptionAppliquee(rente));
+//         ra.setPrescriptionAppliquee(REACORAbstractFlatFileParser.getField(line, fields, "PRESCRIPTION_APPLIQUEE")); $r30
+
         // TODO : champ à analyser -> tous égaux à 0 dans le fichier plat.
-        // ra.setPrescriptionAppliquee(REACORAbstractFlatFileParser.getField(line, fields, "PRESCRIPTION_APPLIQUEE")); $r30
         // ra.setMontantRenteOrdiRemplacee(REACORAbstractFlatFileParser.getField(line, fields, "MONTANT_RENTE_ORDINAIRE_REMPL")); $r13
         // ra.setCodeRefugie(REACORAbstractFlatFileParser.getField(line, fields, "CODE_REFUGIE")); $r9 ou $r19 ??
         // TODO : champ non mappé -> égale à 0 dans le fichier plat.
         // ra.setCodeAuxilliaire(REACORAbstractFlatFileParser.getField(line, fields, "CODE_AUXILIAIRE")); $r6
 
         return ra;
+    }
+
+    private static String getNombreAnneePrescriptionAppliquee(Rente rente) {
+        String nbAnnee = StringUtils.EMPTY;
+        if (Objects.nonNull(rente.getArt25LPGA())) {
+            nbAnnee = "1";
+        } else if (Objects.nonNull(rente.getArt24LPGA())) {
+            nbAnnee = "5";
+        } else if (Objects.nonNull(rente.getArt97CP())) {
+            nbAnnee = "7";
+        }
+        return nbAnnee;
     }
 
     /**
