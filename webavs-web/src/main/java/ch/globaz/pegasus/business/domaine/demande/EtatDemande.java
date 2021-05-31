@@ -12,6 +12,7 @@ public enum EtatDemande implements CodeSystemEnum<EtatDemande> {
     RENONCE("64001006"),
     REVISION("64001008"),
     SUPPRIME("64001004"),
+    ANNULE("64001010"),
     TRANSFERE("64001005");
 
     private String value;
