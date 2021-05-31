@@ -127,28 +127,24 @@ public class PCProcessImportationPrimeAssuranceMaladieHandler extends PCProcessD
             // Création de la prime pour le requerant
             createPrimeForMembreFamille(requerant, modificateurDroitDonneeFinanciere);
 
-            if (Boolean.FALSE.equals(currentDroit.getDemande().getSimpleDemande().getIsFratrie())) {
-                MembreFamilleEtenduSearch membreSearch = new MembreFamilleEtenduSearch();
-                membreSearch.setForIdDroit(currentDroit.getId());
-                membreSearch.setOrderKey("orderByRole");
-                membreSearch = PegasusServiceLocator.getDroitService().searchMembreFamilleEtendu(membreSearch);
+            MembreFamilleEtenduSearch membreSearch = new MembreFamilleEtenduSearch();
+            membreSearch.setForIdDroit(currentDroit.getId());
+            membreSearch.setOrderKey("orderByRole");
+            membreSearch = PegasusServiceLocator.getDroitService().searchMembreFamilleEtendu(membreSearch);
 
-                String numAvsRequerant = requerant.getMembreFamille().getPersonneEtendue().getPersonneEtendue().getNumAvsActuel().trim();
+            String numAvsRequerant = requerant.getMembreFamille().getPersonneEtendue().getPersonneEtendue().getNumAvsActuel().trim();
 
-                // Il faut maintenant ajouter la prime à l'ensemble de sa famille
-                for (JadeAbstractModel object : membreSearch.getSearchResults()) {
-                    MembreFamilleEtendu membreFamille = (MembreFamilleEtendu) object;
-                    String numAvs = membreFamille.getDroitMembreFamille().getMembreFamille().getPersonneEtendue().getPersonneEtendue().getNumAvsActuel().trim();
+            // Il faut maintenant ajouter la prime à l'ensemble de sa famille
+            for (JadeAbstractModel object : membreSearch.getSearchResults()) {
+                MembreFamilleEtendu membreFamille = (MembreFamilleEtendu) object;
+                String numAvs = membreFamille.getDroitMembreFamille().getMembreFamille().getPersonneEtendue().getPersonneEtendue().getNumAvsActuel().trim();
 
-                    boolean isEnfant = (membreFamille.getSimpleDonneesPersonnelles().getIsEnfant() || membreFamille.getSimpleDonneesPersonnelles().getIsRepresentantLegal());
+                boolean isEnfant = (membreFamille.getSimpleDonneesPersonnelles().getIsEnfant() || membreFamille.getSimpleDonneesPersonnelles().getIsRepresentantLegal());
 
-                    if (!Objects.equals(numAvs, numAvsRequerant)
-                            && ((isEnfant && isRenteOuverteForNSS(membreFamille)) || !(isEnfant))){
-                            createPrimeForMembreFamille(membreFamille.getDroitMembreFamille(), modificateurDroitDonneeFinanciere);
-                    }
+                if (!Objects.equals(numAvs, numAvsRequerant)
+                        && ((isEnfant && isRenteOuverteForNSS(membreFamille)) || !(isEnfant))){
+                        createPrimeForMembreFamille(membreFamille.getDroitMembreFamille(), modificateurDroitDonneeFinanciere);
                 }
-            } else {
-                listeWarn.add("Il s'agit d'une fratrie, les autres membres de la famille ne seront pas traités : " + requerant.getMembreFamille().getPersonneEtendue().getPersonneEtendue().getNumAvsActuel().trim());
             }
 
             if (!listeWarn.isEmpty()) {
