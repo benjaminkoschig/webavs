@@ -60,7 +60,7 @@
 		<globaz-external-xsd.version>1.2.7</globaz-external-xsd.version>
 		<ebback-api.version>9.2.0</ebback-api.version>
 		<cxf.version>3.2.1</cxf.version>
-		<list-adapt-rentes.version>1.0.0</list-adapt-rentes.version>
+		<list-adapt-rentes.version>1.0.1</list-adapt-rentes.version>
 		<lombok.version>1.18.20</lombok.version>
 		<assertj-core.version>3.19.0</assertj-core.version>
 		<mockito-core.version>3.8.0</mockito-core.version>
