@@ -1,6 +1,6 @@
 package ch.globaz.pegasus.business.domaine.pca;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import org.junit.Test;
 
 public class PcaTypeTest {

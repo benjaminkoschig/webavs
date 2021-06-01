@@ -1,6 +1,6 @@
 package ch.globaz.pegasus.businessimpl.utils.calcul.condition;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import java.util.Collection;
 import org.junit.Test;
 import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.DonneesHorsDroitsProvider;

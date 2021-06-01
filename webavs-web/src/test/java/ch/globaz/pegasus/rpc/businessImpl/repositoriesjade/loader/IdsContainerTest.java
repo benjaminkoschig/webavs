@@ -1,6 +1,6 @@
 package ch.globaz.pegasus.rpc.businessImpl.repositoriesjade.loader;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;

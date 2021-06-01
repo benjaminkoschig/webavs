@@ -1,6 +1,6 @@
 package ch.globaz.pegasus.rpc.businessImpl.repositoriesjade.decision;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import org.junit.Test;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.pegasus.business.constantes.IPCDecision;
@@ -40,7 +40,7 @@ public class DecisionConverterTest {
         decsion2.setEtat(EtatDecision.VALIDE);
         decsion2.setType(TypeDecision.OCTROI_APRES_CALCUL);
         decsion2.setMotif(MotifDecision.INDEFINIT);
-        assertThat(decsion).isEqualsToByComparingFields(decsion2);
+        assertThat(decsion).usingRecursiveComparison().isEqualTo(decsion2);
     }
 
     @Test
@@ -72,6 +72,6 @@ public class DecisionConverterTest {
         decsion2.setEtat(EtatDecision.VALIDE);
         decsion2.setType(TypeDecision.OCTROI_APRES_CALCUL);
         decsion2.setMotif(MotifDecision.INDEFINIT);
-        assertThat(decsion).isEqualsToByComparingFields(decsion2);
+        assertThat(decsion).usingRecursiveComparison().isEqualTo(decsion2);
     }
 }

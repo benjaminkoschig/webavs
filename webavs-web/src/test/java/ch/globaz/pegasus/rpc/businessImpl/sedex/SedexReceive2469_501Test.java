@@ -1,6 +1,6 @@
 package ch.globaz.pegasus.rpc.businessImpl.sedex;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;

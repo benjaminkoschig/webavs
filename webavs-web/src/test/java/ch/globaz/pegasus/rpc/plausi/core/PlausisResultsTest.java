@@ -1,6 +1,6 @@
 package ch.globaz.pegasus.rpc.plausi.core;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import java.util.List;
 import org.junit.Test;
 

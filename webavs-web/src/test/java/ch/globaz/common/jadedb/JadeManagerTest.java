@@ -1,6 +1,6 @@
 package ch.globaz.common.jadedb;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import org.junit.Test;
 import org.mockito.Mockito;
 

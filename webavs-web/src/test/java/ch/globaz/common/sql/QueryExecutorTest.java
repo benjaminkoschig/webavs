@@ -1,6 +1,6 @@
 package ch.globaz.common.sql;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.Assert.*;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;

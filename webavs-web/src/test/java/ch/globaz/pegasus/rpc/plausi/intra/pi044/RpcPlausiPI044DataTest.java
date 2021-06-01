@@ -1,6 +1,6 @@
 package ch.globaz.pegasus.rpc.plausi.intra.pi044;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import org.junit.Test;
 import ch.globaz.common.domaine.Montant;
 

@@ -1,6 +1,6 @@
 package ch.globaz.pegasus.businessimpl.services.models.home;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;

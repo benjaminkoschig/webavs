@@ -1,6 +1,6 @@
 package ch.globaz.pegasus.rpc.domaine;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import org.junit.Test;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.pegasus.business.domaine.exception.PegasusBusinessDomainException;

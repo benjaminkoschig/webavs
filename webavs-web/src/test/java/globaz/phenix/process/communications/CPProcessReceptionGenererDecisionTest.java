@@ -1,6 +1,6 @@
 package globaz.phenix.process.communications;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.Assert.*;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;

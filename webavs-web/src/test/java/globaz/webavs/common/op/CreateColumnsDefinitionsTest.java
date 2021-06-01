@@ -1,6 +1,6 @@
 package globaz.webavs.common.op;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import globaz.hercule.utils.CEExcelmlUtils;
 import java.util.Map;
 import org.junit.Test;

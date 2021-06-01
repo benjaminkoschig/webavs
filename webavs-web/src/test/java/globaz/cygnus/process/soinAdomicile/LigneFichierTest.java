@@ -1,6 +1,6 @@
 package globaz.cygnus.process.soinAdomicile;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import globaz.cygnus.process.financementSoin.NSS;
 import org.junit.Test;
 import ch.globaz.common.domaine.Date;

@@ -1,6 +1,6 @@
 package ch.globaz.pegasus.rpc.businessImpl.converter;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import java.math.BigInteger;
 import org.junit.Test;
 import ch.globaz.pegasus.business.domaine.decision.MotifDecision;

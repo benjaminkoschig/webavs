@@ -1,6 +1,6 @@
 package ch.globaz.pegasus.rpc.businessImpl.converter;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import java.util.Arrays;
 import java.util.Collection;
 import org.junit.Test;
@@ -16,9 +16,9 @@ public class ConverterPensionKindTestBis {
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] { { IPCRenteAvsAi.CS_TYPE_RENTE_51, 51 },
                 { IPCRenteAvsAi.CS_TYPE_RENTE_52, 52 }, { IPCRenteAvsAi.CS_TYPE_RENTE_53, 53 },
-                { IPCRenteAvsAi.CS_TYPE_RENTE_56, 56 }, { IPCRenteAvsAi.CS_TYPE_RENTE_71, 71 },
-                { IPCRenteAvsAi.CS_TYPE_RENTE_72, 72 }, { IPCRenteAvsAi.CS_TYPE_RENTE_73, 73 },
-                { IPCRenteAvsAi.CS_TYPE_RENTE_76, 76 }, { IPCRenteAvsAi.CS_TYPE_RENTE_11, 11 },
+                { IPCRenteAvsAi.CS_TYPE_RENTE_56, 54 }, { IPCRenteAvsAi.CS_TYPE_RENTE_71, 70 },
+                { IPCRenteAvsAi.CS_TYPE_RENTE_72, 70 }, { IPCRenteAvsAi.CS_TYPE_RENTE_73, 73 },
+                { IPCRenteAvsAi.CS_TYPE_RENTE_76, 74 }, { IPCRenteAvsAi.CS_TYPE_RENTE_11, 11 },
                 { IPCRenteAvsAi.CS_TYPE_RENTE_12, 12 }, { IPCRenteAvsAi.CS_TYPE_RENTE_21, 21 },
                 { IPCRenteAvsAi.CS_TYPE_RENTE_22, 22 }, { IPCRenteAvsAi.CS_TYPE_RENTE_36, 36 },
                 { IPCRenteAvsAi.CS_TYPE_RENTE_43, 43 }, { IPCRenteAvsAi.CS_TYPE_RENTE_44, 44 },

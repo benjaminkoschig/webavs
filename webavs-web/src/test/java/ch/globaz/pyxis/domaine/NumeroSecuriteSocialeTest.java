@@ -1,6 +1,6 @@
 package ch.globaz.pyxis.domaine;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import org.junit.Assert;
 import org.junit.Test;
 

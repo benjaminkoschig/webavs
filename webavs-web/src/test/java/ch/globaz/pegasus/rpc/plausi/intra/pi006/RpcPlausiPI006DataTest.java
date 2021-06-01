@@ -1,6 +1,6 @@
 package ch.globaz.pegasus.rpc.plausi.intra.pi006;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;

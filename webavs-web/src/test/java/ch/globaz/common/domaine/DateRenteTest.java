@@ -1,6 +1,6 @@
 package ch.globaz.common.domaine;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import org.junit.Test;
 
 public class DateRenteTest {

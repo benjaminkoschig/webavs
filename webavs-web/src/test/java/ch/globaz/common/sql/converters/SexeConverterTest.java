@@ -1,6 +1,6 @@
 package ch.globaz.common.sql.converters;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import java.math.BigDecimal;
 import org.junit.Test;
 import ch.globaz.pyxis.domaine.Sexe;

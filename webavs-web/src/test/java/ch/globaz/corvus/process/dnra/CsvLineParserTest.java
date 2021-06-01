@@ -1,6 +1,6 @@
 package ch.globaz.corvus.process.dnra;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import org.junit.Test;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.DateRente;
