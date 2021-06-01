@@ -51,6 +51,9 @@ public class APEnfantPatHelper extends PRAbstractHelper {
         Instances.of(viewBean).when(APEnfantPatViewBean.class, vb -> {
             if (vb.getTypeDemande().isProcheAidant()) {
                 APDroitProcheAidant apDroitProcheAidant = APDroitProcheAidant.retrieve(vb.getDroitDTO().getIdDroit(), session);
+                if(action.getActionPart().equals("afficher")) {
+                    vb.setNumeroDelaiCadre(apDroitProcheAidant.getCareLeaveEventID());
+                }
                 CareLeaveEventIdHelper careLeaveEventIdHelper = new CareLeaveEventIdHelper();
                 Optional<APDroitProcheAidant.CareLeaveEventId> careLeaveEventId = careLeaveEventIdHelper.updateCareLeveEventId(viewBean, session);
                 vb.setDelaiCadreModifie(careLeaveEventId.map(APDroitProcheAidant.CareLeaveEventId::isCreated).orElse(false));

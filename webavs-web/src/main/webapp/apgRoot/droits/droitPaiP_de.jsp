@@ -58,8 +58,6 @@
         document.getElementById("dateNaissanceAffiche").disabled = true;
         document.getElementById("csEtatCivilAffiche").disabled = true;
         document.getElementById("csSexeAffiche").disabled = true;
-        $('#isSoumisCotisation').prop("disabled", true);
-        $('#tauxImpotSource').prop("disabled", true);
     }
 
     function validate() {
@@ -136,13 +134,6 @@
         var dateDebut = $('#dateDebutPeriode').val();
         var dateFin = $('#dateFinPeriode').val();
         var nbrJours = $('#nbrJour').val();
-        var tauxImposition = "";
-        var cantonImposition = "";
-
-        if (document.getElementById("isSoumisCotisation").checked) {
-            tauxImposition = $('#tauxImpotSource').val();
-            cantonImposition = $('#csCantonDomicileAffiche').val();
-        }
 
         // Si au moins un des 3 champs n'est pas vide
         if (dateDebut || dateFin) {
@@ -306,25 +297,19 @@
         } else {
             document.getElementById("linkTiers").style.visibility = "hidden";
         }
-        $('#isSoumisCotisation').prop("disabled", true);
-        $('#tauxImpotSource').prop("disabled", true);
     }
 
     function periodeChange() {
         var dateDebut = $('#dateDebutPeriode').val();
         var dateFin = $('#dateFinPeriode').val();
-        var impot = $('#isSoumisCotisation');
-        var taux = $('#tauxImpotSource');
+
 
         if (impot.is(':disabled')
             && dateDebut != ''
             && dateFin != '') {
-            impot.prop("disabled", false);
-            taux.prop("disabled", false);
+
         } else if (!impot.is(':disabled')
             && (dateDebut == '' || dateFin == '')) {
-            impot.prop("disabled", true);
-            taux.prop("disabled", true);
         }
     }
 
@@ -497,8 +482,6 @@
             EDITION_MODE = true;
             $('#modeEditionDroit').val('<%=APModeEditionDroit.EDITION%>');
             repaintTablePeriodes();
-            $('#isSoumisCotisation').prop("disabled", true);
-            $('#tauxImpotSource').prop("disabled", true);
         });
 
         <%
@@ -774,17 +757,11 @@
                             <th width="25%">
                                 <ct:FWLabel key="DATE_DE_FIN"/>
                             </th>
-                            <th width="10%">
+                            <th width="20%">
                                 <ct:FWLabel key="JSP_NB_JOURS_SOLDES"/>
                             </th>
-                            <th width="10%">
+                            <th width="20%">
                                 <ct:FWLabel key="JSP_JOURS_SUPPL"/>
-                            </th>
-                            <th width="10%">
-                                <ct:FWLabel key="MENU_OPTION_TAUX_IMPOSITIONS_RACC"/>
-                            </th>
-                            <th width="10%">
-                                <ct:FWLabel key="JSP_CANTON_IMPOT_SOURCE_RACC"/>
                             </th>
                             <th width="10%"></th>
                         </tr>
@@ -836,50 +813,7 @@
                     />
                 </td>
             </tr>
-            <tr>
-                <td>
-                    <label for=isSoumisCotisation">
-                        <ct:FWLabel key="JSP_SOUMIS_IMPOT_SOURCE"/>
-                    </label>
-                </td>
-                <td colspan="3">
-                    <input type="checkbox"
-                           id="isSoumisCotisation"
-                           name="isSoumisCotisation"
-                            <%=viewBean.getIsSoumisCotisation().booleanValue() ? "checked" : ""%>
-                           onclick="showCantonImpotSource();"
-                           onload="showCantonImpotSource()"/>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label for=tauxImpotSource">
-                        <ct:FWLabel key="JSP_TAUX_IMPOT_SOURCE_CARTE"/>
-                    </label>
-                </td>
-                <td colspan="3">
-                    <input type="text"
-                           id="tauxImpotSource"
-                           name="tauxImpotSource"
-                           value="<%=viewBean.getTauxImpotSource()%>"
-                           class="numero"
-                           onchange="validateFloatNumber(this);"
-                           onkeypress="return filterCharForFloat(window.event);"
-                           style="text-align: right"/>
-                </td>
-            </tr>
-            <tr id="availableIfSoumisCotisation">
-                <TD>
-                </TD>
-                <TD><LABEL for="csCantonImpoAffiche"><ct:FWLabel key="JSP_CANTON_IMPOT_SOURCE"/></LABEL></TD>
-                <TD>
-                    <ct:FWCodeSelectTag name="csCantonDomicileAffiche"
-                                        wantBlank="<%=false%>"
-                                        codeType="PYCANTON"
-                                        defaut="<%=viewBean.getCsCantonDomicile()%>"/>
-                    <INPUT type="hidden" name="csCantonDomicile" value="<%=viewBean.getCsCantonDomicile()%>"/>
-                </TD>
-            </tr>
+
 </tr>
 <tr>
     <td colspan="6">
@@ -962,6 +896,48 @@
                value="<%=viewBean.getDateReception()%>"/>
     </td>
     <td></td>
+</tr>
+
+<tr>
+    <td>
+        <label for=isSoumisCotisation">
+            <ct:FWLabel key="JSP_SOUMIS_IMPOT_SOURCE"/>
+        </label>
+    </td>
+    <td>
+        <input type="checkbox"
+               id="isSoumisCotisation"
+               name="isSoumisCotisation"
+                <%=viewBean.getIsSoumisCotisation().booleanValue() ? "checked" : ""%>
+               onclick="showCantonImpotSource();"
+               onload="showCantonImpotSource()"/>
+    </td>
+    <td>
+        <label for=tauxImpotSource">
+            <ct:FWLabel key="JSP_TAUX_IMPOT_SOURCE_CARTE"/>
+        </label>
+    </td>
+    <td>
+        <input type="text"
+               id="tauxImpotSource"
+               name="tauxImpotSource"
+               value="<%=viewBean.getTauxImpotSource()%>"
+               class="numero"
+               onchange="validateFloatNumber(this);"
+               onkeypress="return filterCharForFloat(window.event);"
+               style="text-align: right"/>
+    </td>
+    <td colspan="2">
+</tr>
+<tr id="availableIfSoumisCotisation">
+    <TD><LABEL for="csCantonImpoAffiche"><ct:FWLabel key="JSP_CANTON_IMPOT_SOURCE"/></LABEL></TD>
+    <TD>
+        <ct:FWCodeSelectTag name="csCantonDomicileAffiche"
+                            wantBlank="<%=false%>"
+                            codeType="PYCANTON"
+                            defaut="<%=viewBean.getCsCantonDomicile()%>"/>
+        <INPUT type="hidden" name="csCantonDomicile" value="<%=viewBean.getCsCantonDomicile()%>"/>
+    </TD>
 </tr>
 <tr>
     <td colspan="6">

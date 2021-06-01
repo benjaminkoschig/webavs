@@ -22,7 +22,8 @@ public class APProcheAidantServiceHelper {
     @SuppressWarnings({"Convert2MethodRef", "java:S1612"})
     public void changementDateDebutDroitsPourLesDroitsQuiOnUneDateDebutPasEnAdequation(APDroitProcheAidant droitProcheAidant) {
         droitProcheAidant.resolveDateDebutDelaiCadre().ifPresent(date -> {
-            List<IdDroit> idDroits = chercherDroitQuiSonLieeAvecLeMemeEnfant(droitProcheAidant.getIdDroit());
+            List<IdDroit> idDroits = chercherDroitQuiSonLieeAvecLeMemeEnfant(droitProcheAidant.getIdDroit(),droitProcheAidant.getCareLeaveEventID());
+
             idDroits.stream()
                     .map(this::findDroitProcheAidant)
                     .filter(droit -> !Dates.toDate(droit.getDateDebutDroit()).isEqual(date))
@@ -54,13 +55,14 @@ public class APProcheAidantServiceHelper {
         return SCM.newInstance(ID.class).query(sqlWriter.toSql()).session(session).execute().stream().map(ID::getId).findFirst();
     }
 
-    private List<IdDroit> chercherDroitQuiSonLieeAvecLeMemeEnfant(String idDroitProcheAidant) {
+    private List<IdDroit> chercherDroitQuiSonLieeAvecLeMemeEnfant(String idDroitProcheAidant, String careLeaveEventID) {
         SQLWriter sqlWriter = SQLWriter.writeWithSchema()
                                        .append("select distinct schema.APDROIP.VAIDRO as id")
                                        .append("from schema.APDROIP")
                                        .append("inner join schema.APDROITPROCHEAIDANT ON schema.APDROITPROCHEAIDANT.ID_DROIT = schema.APDROIP.VAIDRO")
                                        .append("inner join schema.APSIFMP ON schema.APSIFMP.VQIDRM = schema.APDROIP.VAIDRO")
-                                       .append("where schema.APSIFMP.VQLAVS = (select schema.APSIFMP.VQLAVS as nss_enfant")
+                                       .append("where schema.APDROITPROCHEAIDANT.CAREEVENTID = ?", careLeaveEventID)
+                                       .append("and schema.APSIFMP.VQLAVS = (select schema.APSIFMP.VQLAVS as nss_enfant")
                                        .append("from schema.APDROIP")
                                        .append("inner join schema.APDROITPROCHEAIDANT")
                                        .append("ON schema.APDROITPROCHEAIDANT.ID_DROIT = schema.APDROIP.VAIDRO")
