@@ -97,6 +97,7 @@ public class CPApplication extends globaz.globall.db.BApplication {
     public final static String VALIDATION_DECISION = "validationDecision";
     public static final String MISE_EN_GED_COM_FISC_RETOUR = "phenix.com.fiscale.retour.mettreGed";
     public static final String NOM_USER_PORTAIL = "phenix.nomUserPortail";
+    public static final String ID_ASSURANCE_AVS = "phenix.idAssuranceAVS";
 
     /**
      * Renvoie une instance de l'application enregistrée dans le système
@@ -1119,5 +1120,19 @@ public class CPApplication extends globaz.globall.db.BApplication {
         } else {
             return false;
         }
+    }
+
+
+    /**
+     * récupère l'id assurance AVS pour le calcul des cotisations
+     * @return id Assurance
+     */
+    public static String loadIdAssuranceProperties() throws PropertiesException {
+        String value = JadePropertiesService.getInstance().getProperty(ID_ASSURANCE_AVS);
+        // on s'assure que la propriété ne soit pas null
+        if (null == value) {
+            throw new PropertiesException("The properties [" + ID_ASSURANCE_AVS + "] doesn't exist.");
+        }
+        return value;
     }
 }

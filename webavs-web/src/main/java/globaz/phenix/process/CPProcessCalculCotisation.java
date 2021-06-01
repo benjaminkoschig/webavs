@@ -1,19 +1,17 @@
 package globaz.phenix.process;
 
+import ch.globaz.common.properties.PropertiesException;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
-import globaz.globall.db.BManager;
-import globaz.globall.db.BProcess;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.db.BTransaction;
-import globaz.globall.db.FWFindParameter;
-import globaz.globall.db.GlobazJobQueue;
+import globaz.globall.api.GlobazSystem;
+import globaz.globall.db.*;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JAException;
 import globaz.globall.util.JANumberFormatter;
 import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.musca.application.FAApplication;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.naos.db.assurance.AFAssurance;
@@ -21,6 +19,8 @@ import globaz.naos.db.cotisation.AFCotisation;
 import globaz.naos.db.cotisation.AFCotisationManager;
 import globaz.naos.db.particulariteAffiliation.AFParticulariteAffiliation;
 import globaz.naos.db.tauxAssurance.AFTauxAssurance;
+import globaz.naos.db.tauxAssurance.AFTauxAssuranceManager;
+import globaz.naos.db.tauxAssurance.AFTauxVariableUtil;
 import globaz.naos.translation.CodeSystem;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.phenix.application.CPApplication;
@@ -51,6 +51,7 @@ import globaz.phenix.db.principale.CPRemarqueDecision;
 import globaz.phenix.db.principale.CPRemarqueDecisionManager;
 import globaz.phenix.toolbox.CPToolBox;
 import globaz.phenix.util.CPUtil;
+import globaz.prestation.db.tauxImposition.PRTauxImposition;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.adressecourrier.TIAdresse;
 import globaz.pyxis.db.adressecourrier.TIAvoirAdresse;
@@ -1193,69 +1194,24 @@ public final class CPProcessCalculCotisation extends BProcess {
                     donneeCalcul.setSession(getSession());
                     String varCi = donneeCalcul.getMontant(coti.getIdDecision(), CPDonneesCalcul.CS_REV_CI);
                     if (JadeStringUtil.isEmpty(varCi)) {
-                        if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2021) {
-                            revenuCi = cotiEncode * (float) 9.4339;
-                        } else if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2020) {
-                            revenuCi = cotiEncode * (float) 9.4786;
-                        } else if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2016) {
-                            revenuCi = cotiEncode * (float) 9.7560;
-                        } else if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2011) {
-                            revenuCi = cotiEncode * (float) 9.71;
-                        } else {
-                            revenuCi = cotiEncode * (float) 9.9;
-                        }
+                        revenuCi = calculRevenuCi(cotiEncode, getDecision().getAnneeDecision());
                     } else {
                         float ancienCi = Float.parseFloat(JANumberFormatter
                                 .deQuote(donneeCalcul.getMontant(coti.getIdDecision(), CPDonneesCalcul.CS_REV_CI)));
                         // Calcul du CI
-                        if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2021) {
-                            revenuCi = (Float.parseFloat(JANumberFormatter.deQuote(coti.getMontantAnnuel()))
-                                    - cotiEncode) * (float) 9.4339;
-                        } else if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2020) {
-                            revenuCi = (Float.parseFloat(JANumberFormatter.deQuote(coti.getMontantAnnuel()))
-                                    - cotiEncode) * (float) 9.4786;
-                        } else if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2016) {
-                            revenuCi = (Float.parseFloat(JANumberFormatter.deQuote(coti.getMontantAnnuel()))
-                                    - cotiEncode) * (float) 9.7560;
-                        } else if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2011) {
-                            revenuCi = (Float.parseFloat(JANumberFormatter.deQuote(coti.getMontantAnnuel()))
-                                    - cotiEncode) * (float) 9.71;
-                        } else {
-                            revenuCi = (Float.parseFloat(JANumberFormatter.deQuote(coti.getMontantAnnuel()))
-                                    - cotiEncode) * (float) 9.9;
-                        }
+                        revenuCi = calculRevenuCi(Float.parseFloat(JANumberFormatter.deQuote(coti.getMontantAnnuel())) - cotiEncode, getDecision().getAnneeDecision());
                         revenuCi = JANumberFormatter.round(revenuCi, 1, 2, JANumberFormatter.NEAR);
 
                         // Calcul
                         revenuCi = ancienCi - revenuCi;
                     }
                 } else {
-                    if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2021) {
-                        revenuCi = cotiEncode * (float) 9.4339;
-                    } else if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2020) {
-                        revenuCi = cotiEncode * (float) 9.4786;
-                    } else if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2016) {
-                        revenuCi = cotiEncode * (float) 9.7560;
-                    } else if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2011) {
-                        revenuCi = cotiEncode * (float) 9.71;
-                    } else {
-                        revenuCi = cotiEncode * (float) 9.9;
-                    }
+                    revenuCi = calculRevenuCi(cotiEncode, getDecision().getAnneeDecision());
                 }
             } else if ((revenuCi != 0) && (cotiEncode == 0)) {
                 // On a saisi le montant du revenu CI, il faut calculer la
                 // cotisation
-                if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2021) {
-                    cotiCalcule = revenuCi * (float) 0.1060;
-                } else if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2020) {
-                    cotiCalcule = revenuCi * (float) 0.1055;
-                } else if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2016) {
-                    cotiCalcule = revenuCi * (float) 0.1025;
-                } else if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2011) {
-                    cotiCalcule = revenuCi * (float) 0.103;
-                } else {
-                    cotiCalcule = revenuCi * (float) 0.101;
-                }
+                cotiCalcule = calculCotiCi(revenuCi, getDecision().getAnneeDecision());
                 cotiCalcule = JANumberFormatter.round(cotiCalcule, 0.05, 2, JANumberFormatter.NEAR);
                 donneeBase.setCotisation1(Float.toString(cotiCalcule));
                 donneeBase.update(process.getTransaction());
@@ -1269,6 +1225,37 @@ public final class CPProcessCalculCotisation extends BProcess {
             return;
         }
     }
+
+    private float calculRevenuCi(float cotiEncode, String annee) throws Exception {
+        return (float) (cotiEncode / tauxAssurance(annee));
+    }
+
+    private float calculCotiCi(float cotiEncode, String annee) throws Exception {
+        return (float) (cotiEncode * tauxAssurance(annee));
+    }
+
+    private double tauxAssurance(String annee) throws Exception {
+        String idAssurance = CPApplication.loadIdAssuranceProperties();
+        if(JadeStringUtil.isEmpty(idAssurance)) {
+            throw new PropertiesException("L'id assurance n'est pas renseignée dans la propriété "+ CPApplication.ID_ASSURANCE_AVS +"\n");
+        }
+        AFTauxAssuranceManager tauxManager = new AFTauxAssuranceManager();
+        tauxManager.setSession(getSession());
+        tauxManager.setForIdAssurance(idAssurance);
+        tauxManager.setForDate("01.01."+annee);
+        tauxManager.find(BManager.SIZE_USEDEFAULT);
+
+
+
+
+        if(tauxManager.isEmpty()) {
+            throw new Exception(
+                    "Le taux des cotisations personnelles AVS/AI/APG de l'écran Taux par genre d'assurance CAF0019 n'est pas renseigné.\n" +
+                    "Impossible de trouver un taux pour l'assurance " + idAssurance + " et pour l'année : "+annee+"\n");
+        }
+        return ((AFTauxAssurance) tauxManager.getFirstEntity()).getTauxDouble();
+    }
+
 
     /**
      * Les exceptions avec un message à l'attention de l'utilisateur n'ont pas été labellisées Ceci car avec le
