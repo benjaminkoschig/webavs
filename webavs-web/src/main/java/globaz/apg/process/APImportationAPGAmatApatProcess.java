@@ -15,6 +15,7 @@ import globaz.apg.eformulaire.APImportationAmat;
 import globaz.apg.eformulaire.APImportationApat;
 import globaz.apg.eformulaire.IAPImportationAmatApat;
 import globaz.apg.properties.APProperties;
+import globaz.externe.IPRConstantesExternes;
 import globaz.globall.db.*;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.JadeClassCastException;
@@ -25,6 +26,8 @@ import globaz.osiris.api.APIOperation;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import globaz.pyxis.db.tiers.TIPersonne;
+import globaz.pyxis.db.tiers.TITiersViewBean;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -203,16 +206,34 @@ public class APImportationAPGAmatApatProcess extends BProcess {
             if (Objects.isNull(tiers)) {
                 tiers = handler.createTiers(assure, npaFormat, isWomen);
             }
-            if (tiers != null) {
-                handler.createRoleApgTiers(tiers.getIdTiers());
-                handler.createContact(tiers, assure.getEmail());
-                PRDemande demande = handler.createDemande(tiers.getIdTiers());
-                APDroitLAPG droit = handler.createDroit(content, npaFormat, demande, transaction);
-                handler.createSituationFamiliale(content.getFamilyMembers(), droit.getIdDroit(), transaction);
-                handler.createSituationProfessionnel(content, droit.getIdDroit(), transaction);
-            } else {
-                errors.add("Une erreur s'est produite lors de la création du tiers : " + nssTiers);
-                LOG.error("ImportAPGAmatApat#createTiers - Une erreur s'est produite dans la création du tiers : {}", nssTiers);
+            if(tiers.getSexe().equals(TITiersViewBean.CS_FEMME) && !isWomen){
+                errors.add("Demande de droit paternité pour une personne de sexe féminin : " + nssTiers);
+                LOG.error("ImportAPGAmatApat#CreateDroitGlobal - Une erreur s'est produite dans la création du droit : demande de droit paternité pour une personne de sexe féminin");
+            }
+            else if(tiers.getSexe().equals(TITiersViewBean.CS_HOMME) && isWomen){
+                errors.add("Demande de droit maternité pour une personne de sexe masculin : " + nssTiers);
+                LOG.error("ImportAPGAmatApat#CreateDroitGlobal - Une erreur s'est produite dans la création du droit : demande de droit maternité pour une personne de sexe masculin");
+            }
+            else {
+                if (tiers != null) {
+                    String idTiers = tiers.getIdTiers();
+                    String domaine = isWomen ? IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE : IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE;
+                    if(StringUtils.isEmpty(PRTiersHelper.getAdresseGeneriqueFormatee(bsession, idTiers,"", "", domaine))) {
+                        handler.createAdresses(tiers,  content.getInsuredAddress(),content.getPaymentContact(),npaFormat);
+                    }
+                    else{
+                        infos.add("Une adresse a déjà été trouvée pour le tiers: " + nssTiers);
+                    }
+                    handler.createRoleApgTiers(tiers.getIdTiers());
+                    handler.createContact(tiers, assure.getEmail());
+                    PRDemande demande = handler.createDemande(tiers.getIdTiers());
+                    APDroitLAPG droit = handler.createDroit(content, npaFormat, demande, transaction);
+                    handler.createSituationFamiliale(content.getFamilyMembers(), droit.getIdDroit(), transaction);
+                    handler.createSituationProfessionnel(content, droit.getIdDroit(), transaction);
+                } else {
+                    errors.add("Une erreur s'est produite lors de la création du tiers : " + nssTiers);
+                    LOG.error("ImportAPGAmatApat#createTiers - Une erreur s'est produite dans la création du tiers : {}", nssTiers);
+                }
             }
         }
 

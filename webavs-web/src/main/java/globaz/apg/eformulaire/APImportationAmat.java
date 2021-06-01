@@ -74,7 +74,7 @@ public class APImportationAmat extends APAbstractImportationAmatApat {
                 enfant.add(transaction);
             }
         } catch (Exception e) {
-            errors.add("Impossible de créer la situation familiale ");
+            infos.add("Impossible de créer la situation familiale.");
             LOG.error("Erreur lors de la création de la situation familiale ", e);
         }
     }

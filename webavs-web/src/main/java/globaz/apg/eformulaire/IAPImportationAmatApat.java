@@ -1,8 +1,6 @@
 package globaz.apg.eformulaire;
 
-import apg.amatapat.Content;
-import apg.amatapat.FamilyMembers;
-import apg.amatapat.InsuredPerson;
+import apg.amatapat.*;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.globall.db.BTransaction;
 import globaz.prestation.db.demandes.PRDemande;
@@ -16,4 +14,5 @@ public interface IAPImportationAmatApat {
     APDroitLAPG createDroit(Content content, String npaFormat, PRDemande demande, BTransaction transaction);
     void createSituationFamiliale(FamilyMembers membresFamille, String idDroit, BTransaction transaction);
     void createSituationProfessionnel(Content content, String idDroit, BTransaction transaction);
+    void createAdresses(PRTiersWrapper tiers, AddressType adresseAssure, PaymentContact adressePaiement, String npa);
 }

@@ -1,22 +1,23 @@
 package globaz.apg.eformulaire;
 
 import apg.amatapat.*;
+import apg.pandemie.InsuredAddress;
 import ch.globaz.common.domaine.Date;
-import ch.globaz.pyxis.business.model.PaysSearchSimpleModel;
-import ch.globaz.pyxis.business.model.PaysSimpleModel;
+import ch.globaz.pegasus.business.vo.donneeFinanciere.IbanCheckResultVO;
+import ch.globaz.pegasus.businessimpl.services.process.allocationsNoel.AdressePaiementPrimeNoelService;
+import ch.globaz.pyxis.business.model.*;
+import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import ch.globaz.pyxis.domaine.EtatCivil;
 import globaz.apg.db.droits.APEmployeur;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.properties.APProperties;
 import globaz.externe.IPRConstantesExternes;
-import globaz.globall.db.BManager;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BStatement;
-import globaz.globall.db.BTransaction;
+import globaz.globall.db.*;
 import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.business.JadeBusinessMessage;
 import globaz.jade.persistence.JadePersistenceManager;
@@ -38,7 +39,11 @@ import globaz.prestation.tools.PRSession;
 import globaz.pyxis.api.ITIPersonne;
 import globaz.pyxis.api.ITIRole;
 import globaz.pyxis.application.TIApplication;
+import globaz.pyxis.constantes.IConstantes;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiement;
+import globaz.pyxis.db.adressepaiement.TIAvoirPaiement;
 import globaz.pyxis.db.tiers.*;
+import globaz.pyxis.util.TIIbanFormater;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,6 +51,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Objects;
+
+import static ch.globaz.pyxis.business.services.AdresseService.CS_TYPE_COURRIER;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -339,7 +346,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 situationProfessionnelle.add(transaction);
             }
         } catch (Exception e) {
-            errors.add("Erreur rencontré lors de la création de la situation professionnelle pour l'assuré ");
+            infos.add("Erreur rencontré lors de la création de la situation professionnelle pour l'assuré. Aucune situation professionnelle ne sera créée pour ce droit.");
             LOG.error("APImportationAPGPandemie#creerSituationProf : Erreur rencontré lors de la création de la situation professionnelle pour l'assuré ", e);
             if (isJadeThreadError()) {
                 addJadeThreadErrorToListError("Situation Professionnelle Employé");
@@ -406,7 +413,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 situationProfessionnelle.add(transaction);
             }
         } catch (Exception e) {
-            errors.add("Erreur rencontré lors de la création de la situation professionnelle pour l'assuré ");
+            infos.add("Erreur rencontré lors de la création de la situation professionnelle pour l'assuré. Aucune situation professionnelle ne sera créée pour ce droit.");
             LOG.error("APImportationAPGAmatApat#creerSituationProf : Erreur rencontré lors de la création de la situation professionnelle pour l'assuré ", e);
             if (isJadeThreadError()) {
                 addJadeThreadErrorToListError("Situation Professionnelle Employé");
@@ -414,6 +421,143 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 JadeThread.logClear();
             }
         }
+    }
+
+    @Override
+    public void createAdresses(PRTiersWrapper tiers, AddressType adresseAssure, PaymentContact adressePaiement, String npa) {
+        try {
+            String domaine = typeDemande.equals(IPRDemande.CS_TYPE_PATERNITE)
+                    ? APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue()
+                    : IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
+
+            AdresseTiersDetail adresseCourrier = TIBusinessServiceLocator.getAdresseService().getAdresseTiers(tiers.getIdTiers(), false, new Date().getSwissValue(), domaine,
+                        CS_TYPE_COURRIER, "");
+            AdresseComplexModel adresseDomicile = null;
+            PersonneEtendueSearchComplexModel searchTiers = new PersonneEtendueSearchComplexModel();
+            searchTiers.setForIdTiers(tiers.getIdTiers());
+            PersonneEtendueSearchComplexModel personneEtendueSearch = TIBusinessServiceLocator.getPersonneEtendueService().find(searchTiers);
+
+            if (personneEtendueSearch.getNbOfResultMatchingQuery() == 1) {
+                if(adresseCourrier.getFields() == null) {
+                    PersonneEtendueComplexModel personneEtendueComplexModel = (PersonneEtendueComplexModel) personneEtendueSearch.getSearchResults()[0];
+                    adresseDomicile = createAdresseCourrier(personneEtendueComplexModel, adresseAssure, domaine, npa);
+                    if (adresseDomicile != null && !adresseDomicile.isNew()) {
+                        createAdressePaiement(adresseDomicile, tiers.getIdTiers(), adressePaiement, domaine);
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            infos.add("Un problème a été rencontré lors de la création des adresses pour l'assuré suivant"+tiers.getNSS());
+            LOG.error("APImportationAMAT-APAT#createAdresseAMAT-APAT : Erreur rencontré lors de la création adresses pour l'assuré", e);
+        }
+    }
+
+    private AdresseComplexModel createAdresseCourrier(PersonneEtendueComplexModel personneEtendueComplexModel, AddressType adresseAssure, String domainePandemie, String npa) throws JadeApplicationException, JadePersistenceException {
+        personneEtendueComplexModel.getTiers();
+        AdresseComplexModel adresseComplexModel = new AdresseComplexModel();
+        adresseComplexModel.setTiers(personneEtendueComplexModel);
+        adresseComplexModel.getAvoirAdresse().setDateDebutRelation(Date.now().getSwissValue());
+        adresseComplexModel.getTiers().setId(personneEtendueComplexModel.getTiers().getId());
+        adresseComplexModel.getLocalite().setNumPostal(npa);
+        adresseComplexModel.getAdresse().setRue(adresseAssure.getStreetWithNr());
+
+        // Bug Fix - Cette correction permet de corriger un bug lorsque la LigneAdresse est laissé à null
+        // Le risque de réutiliser une adresse identique avec un complément d'adresse qui n'a rien à voir
+        // une correction sera effectuée sur Pyxis par la suite.
+        // Mise à chaine vide des champs ligneAdresse
+        adresseComplexModel.getAdresse().setLigneAdresse1("");
+        adresseComplexModel.getAdresse().setLigneAdresse2("");
+        adresseComplexModel.getAdresse().setLigneAdresse3("");
+        adresseComplexModel.getAdresse().setLigneAdresse4("");
+        AdresseComplexModel adresse =  TIBusinessServiceLocator.getAdresseService().addAdresse(adresseComplexModel, domainePandemie,
+                CS_TYPE_COURRIER, false);
+        if(!isJadeThreadError()){
+            return adresse;
+        }else{
+            addJadeThreadErrorToListError("Adresse Courrier");
+            // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans l'adresse
+            JadeThread.logClear();
+            return null;
+        }
+    }
+
+    private void createAdressePaiement(AdresseComplexModel adresseComplexModel, String idTiers, PaymentContact adressePaiementXml, String domaine) throws Exception {
+        TIAdressePaiement adressePaiement = new TIAdressePaiement();
+        adressePaiement.setIdTiersAdresse(idTiers);
+        adressePaiement.setIdAdresse(adresseComplexModel.getAdresse().getId());
+
+        if (!Objects.isNull(adressePaiementXml.getBankAccount().getIban())) {
+            String iban = unformatIban(adressePaiementXml.getBankAccount().getIban());
+            if(checkChIban(iban).getIsValidChIban()) {
+                adressePaiement.setIdTiersBanque(retrieveBanque(iban).getTiersBanque().getId());
+                adressePaiement.setCode(IConstantes.CS_ADRESSE_PAIEMENT_IBAN_OK);
+                adressePaiement.setNumCompteBancaire(adressePaiementXml.getBankAccount().getIban());
+
+                adressePaiement.setIdMonnaie(AdressePaiementPrimeNoelService.CS_CODE_MONNAIE_FRANC_SUISSE);
+                adressePaiement.setIdPays(AdressePaiementPrimeNoelService.CS_CODE_PAYS_SUISSE);
+                adressePaiement.setSession(bSession);
+                adressePaiement.add();
+
+                TIAvoirPaiement avoirPaiement = new TIAvoirPaiement();
+                avoirPaiement.setIdApplication(domaine);
+                avoirPaiement.setIdAdressePaiement(adressePaiement.getIdAdressePaiement());
+                avoirPaiement.setDateDebutRelation(Date.now().getSwissValue());
+                avoirPaiement.setIdTiers(idTiers);
+                avoirPaiement.setSession(bSession);
+                avoirPaiement.add();
+            }else {
+                infos.add("Paiement adresse non créée : IBAN non valide : " + iban);
+            }
+        }
+        if(isJadeThreadError()){
+            addJadeThreadErrorToListError("Adresse Paiement");
+            // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans l'adresse
+            JadeThread.logClear();
+        }
+    }
+
+    private String unformatIban(String iban) {
+        TIIbanFormater ibanFormatter = new TIIbanFormater();
+        return  ibanFormatter.unformat(iban);
+    }
+
+    private BanqueComplexModel retrieveBanque(String iban) throws JadeApplicationException, JadePersistenceException {
+        BanqueComplexModel banque = new BanqueComplexModel();
+        String noClearing = iban.substring(4, 9);
+
+        BanqueSearchComplexModel banqueSearchModel = new BanqueSearchComplexModel();
+        banqueSearchModel.setForClearing(noClearing);
+        banqueSearchModel.setDefinedSearchSize(1);
+        banqueSearchModel = TIBusinessServiceLocator.getBanqueService().find(banqueSearchModel);
+
+        if (banqueSearchModel.getSize() == 1) {
+            banque = (BanqueComplexModel) banqueSearchModel.getSearchResults()[0];
+        }
+        return banque;
+    }
+
+    public IbanCheckResultVO checkChIban(String chIban) throws JadeApplicationException {
+
+        IbanCheckResultVO result = new IbanCheckResultVO();
+
+        TIIbanFormater ibanFormatter = new TIIbanFormater();
+
+        chIban = ibanFormatter.unformat(chIban);
+
+        if ((!JadeStringUtil.isEmpty(chIban)) && chIban.startsWith("CH")) {
+
+            result.setIsCheckable(Boolean.TRUE);
+
+            // si l'iban est checkable, on le format meme si il n'est pas valide. ceci pour faciliter la correction
+            result.setFormattedIban(ibanFormatter.format(chIban));
+
+            if (TIBusinessServiceLocator.getIBANService().checkIBANforCH(chIban)) {
+                result.setIsValidChIban(Boolean.TRUE);
+            }
+        }
+
+        return result;
     }
 
     private boolean isVersementEmployeur(Content content){
