@@ -94,5 +94,7 @@ public class PCApplication extends PRAbstractApplication {
         FWAction.registerActionCustom(IPCActions.ACTION_DECISION_SUPPRESSION_DETAIL, FWSecureConstants.READ);
         // Dévalidation après calcul
         FWAction.registerActionCustom(IPCActions.ACTION_DECISION_DEVALIDER, FWSecureConstants.UPDATE);
+
+        FWAction.registerActionCustom(IPCActions.ACTION_RESTITUTION_PC+".comptabiliser", FWSecureConstants.UPDATE);
     }
 }

@@ -6,19 +6,31 @@
         <fields>
             <primary-key name="idResitution" column="RESPC_ID_RESTIT" comment=""/>
             <field name="idDossier" column="RESPC_ID_DOS" type="NUMERIC" mandatory="true" comment=""/>
-            <field name="montantRestitutionPCAvsFederal" column="RESPC_MONTANT_AVS_FED" type="STRING" mandatory="false" comment=""/>
-            <field name="montantRestitutionPCAIFederal" column="RESPC_MONTANT_AI_FED" type="STRING" mandatory="false" comment=""/>
-            <field name="montantRestitutionPCAvsSubside" column="RESPC_MONTANT_AVS_SUB" type="STRING" mandatory="false" comment=""/>
-            <field name="montantRestitutionPCAISubside" column="RESPC_MONTANT_AI_SUB" type="STRING" mandatory="false" comment=""/>
-            <field name="montantRestitutionPCAvsCantonal" column="RESPC_MONTANT_AVS_CAN" type="STRING" mandatory="false" comment=""/>
-            <field name="montantRestitutionPCAICantonal" column="RESPC_MONTANT_AI_CAN" type="STRING" mandatory="false" comment=""/>
-            <field name="montantRestitutionPCRfmAvs" column="RESPC_MONTANT_RFM_AVS" type="STRING" mandatory="false" comment=""/>
-            <field name="montantRestitutionPCRfmAI" column="RESPC_MONTANT_RFM_AI" type="STRING" mandatory="false" comment=""/>
+            <field name="montantRestitutionPCAvsFederal" column="RESPC_MONTANT_AVS_FED"  dataType="NUMERIC(15,2)" type="NUMERIC" mandatory="false" comment=""/>
+            <field name="typeRestPCAVSFed" column="RESPC_TYPE_AVS_FED" type="NUMERIC" mandatory="false" comment=""/>
+            <field name="montantRestitutionPCAIFederal" column="RESPC_MONTANT_AI_FED" dataType="NUMERIC(15,2)" type="NUMERIC" mandatory="false" comment=""/>
+            <field name="typeRestPCAIFed" column="RESPC_TYPE_AI_FED" type="NUMERIC" mandatory="false" comment=""/>
+            <field name="montantRestitutionPCAvsSubside" column="RESPC_MONTANT_AVS_SUB" dataType="NUMERIC(15,2)" type="NUMERIC" mandatory="false" comment=""/>
+            <field name="typeRestPCAvsSubside" column="RESPC_TYPE_AVS_SUB" type="NUMERIC" mandatory="false" comment=""/>
+            <field name="montantRestitutionPCAISubside" column="RESPC_MONTANT_AI_SUB" dataType="NUMERIC(15,2)" type="NUMERIC" mandatory="false" comment=""/>
+            <field name="typeRestPCAISubside" column="RESPC_TYPE_AI_SUB" type="NUMERIC" mandatory="false" comment=""/>
+            <field name="montantRestitutionPCAvsCantonal" column="RESPC_MONTANT_AVS_CAN" dataType="NUMERIC(15,2)" type="NUMERIC" mandatory="false" comment=""/>
+            <field name="typeRestPCAvsCantonal" column="RESPC_TYPE_AVS_CAN" type="NUMERIC" mandatory="false" comment=""/>
+            <field name="montantRestitutionPCAICantonal" column="RESPC_MONTANT_AI_CAN" dataType="NUMERIC(15,2)" type="NUMERIC" mandatory="false" comment=""/>
+            <field name="typeRestPCAICantonal" column="RESPC_TYPE_AI_CAN" type="NUMERIC" mandatory="false" comment=""/>
+            <field name="montantRestitutionPCRfmAvs" column="RESPC_MONTANT_RFM_AVS" dataType="NUMERIC(15,2)" type="NUMERIC" mandatory="false" comment=""/>
+            <field name="typeRestPCRfmAvs" column="RESPC_TYPE_RFM_AVS" type="NUMERIC" mandatory="false" comment=""/>
+            <field name="montantRestitutionPCRfmAI" column="RESPC_MONTANT_RFM_AI" dataType="NUMERIC(15,2)" type="NUMERIC" mandatory="false" comment=""/>
+            <field name="typeRestPCRfmAI" column="RESPC_TYPE_RFM_AI" type="NUMERIC" mandatory="false" comment=""/>
+            <field name="idJournal" column="IDJOURNAL" type="NUMERIC" mandatory="false" comment=""/>
         </fields>
         <search-definition>
             <search-group operator="AND">
                 <search-field name="forIdDossier" field-ref="idDossier" operation="EQUALS"/>
             </search-group>
         </search-definition>
+        <order-by>
+            <order-field order="DESC" field-ref="idResitution" />
+        </order-by>
     </simple-model>
 </model-mapping>

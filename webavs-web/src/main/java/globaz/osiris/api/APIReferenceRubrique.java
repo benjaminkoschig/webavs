@@ -379,6 +379,47 @@ public interface APIReferenceRubrique {
     String PC_AVS_RESTITUTION_EN_HOME = "237305";
     String PC_AVS_PART_CANTONALE = "237592";
 
+    //Rubriques de resti PC legalement perçu
+    String PC_REST_AVS_FED_DOMICILE = "237602";
+    String PC_REST_AVS_FED_HOME_EMS = "237603";
+    String PC_REST_AVS_FED_HOME_ESE = "237604";
+    String PC_REST_AVS_FED_HOME_EPSM = "237605";
+
+    String PC_REST_AI_FED_DOMICILE = "237606";
+    String PC_REST_AI_FED_HOME_EMS = "237607";
+    String PC_REST_AI_FED_HOME_ESE = "237608";
+    String PC_REST_AI_FED_HOME_EPSM = "237609";
+
+    String  PC_REST_AVS_SUB_DOMICILE = "237610";
+    String  PC_REST_AVS_SUB_HOME_EMS = "237611";
+    String  PC_REST_AVS_SUB_HOME_ESE = "237612";
+    String  PC_REST_AVS_SUB_HOME_EPSM  = "237613";
+
+    String  PC_REST_AI_SUB_DOMICILE = "237614";
+    String  PC_REST_AI_SUB_HOME_EMS = "237615";
+    String  PC_REST_AI_SUB_HOME_ESE = "237616";
+    String  PC_REST_AI_SUB_HOME_EPSM  = "237617";
+
+    String  PC_REST_AVS_CANT_DOMICILE = "237618";
+    String  PC_REST_AVS_CANT_HOME_EMS = "237619";
+    String  PC_REST_AVS_CANT_HOME_ESE = "237620";
+    String  PC_REST_AVS_CANT_HOME_EPSM  = "237621";
+
+    String  PC_REST_AI_CANT_DOMICILE = "237622";
+    String  PC_REST_AI_CANT_HOME_EMS = "237623";
+    String  PC_REST_AI_CANT_HOME_ESE = "237624";
+    String  PC_REST_AI_CANT_HOME_EPSM  = "237625";
+
+    String  PC_REST_AVS_RFM_DOMICILE = "237626";
+    String  PC_REST_AVS_RFM_HOME_EMS = "237627";
+    String  PC_REST_AVS_RFM_HOME_ESE = "237628";
+    String  PC_REST_AVS_RFM_HOME_EPSM  = "237629";
+
+    String  PC_REST_AI_RFM_DOMICILE = "237630";
+    String  PC_REST_AI_RFM_HOME_EMS = "237631";
+    String  PC_REST_AI_RFM_HOME_ESE = "237632";
+    String  PC_REST_AI_RFM_HOME_EPSM  = "237633";
+
     // Clé alternée
     String PC_COMPTE_COURANT_BLOCAGE = "237233";
     String PCF_A_RESTITUER = "237142";

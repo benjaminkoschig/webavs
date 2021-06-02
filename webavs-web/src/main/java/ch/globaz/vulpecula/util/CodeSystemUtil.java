@@ -102,4 +102,6 @@ public class CodeSystemUtil {
         tiers.retrieve();
         return tiers.getFormulePolitesse(null);
     }
+
+
 }

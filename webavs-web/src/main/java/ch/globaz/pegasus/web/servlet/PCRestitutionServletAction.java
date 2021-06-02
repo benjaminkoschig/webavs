@@ -1,16 +1,27 @@
 package ch.globaz.pegasus.web.servlet;
 
 import ch.globaz.pegasus.business.constantes.IPCDroits;
+import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
+import ch.globaz.pyxis.domaine.Personne;
 import globaz.framework.bean.FWViewBeanInterface;
+import globaz.framework.controller.FWDispatcher;
 import globaz.framework.servlets.FWServlet;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.http.JSPUtils;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.pegasus.process.comptabilisation.PCRestiPCLegalComptaProcess;
 import globaz.pegasus.vb.droit.PCCorrigerDroitViewBean;
 import globaz.pegasus.vb.droit.PCDroitViewBean;
 import globaz.pegasus.vb.restitution.PCRestitutionViewBean;
 import org.apache.log4j.Logger;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.Date;
 
 public class PCRestitutionServletAction extends PCAbstractServletAction {
 
@@ -64,5 +75,44 @@ public class PCRestitutionServletAction extends PCAbstractServletAction {
             return super._getDestAjouterSucces(session, request, response, viewBean);
         }
     }
+
+
+    @Override
+    protected void actionExecuter(HttpSession session, HttpServletRequest request, HttpServletResponse response,
+                                  FWDispatcher mainDispatcher) throws ServletException, IOException {
+        FWViewBeanInterface viewBean = (FWViewBeanInterface) session.getAttribute("viewBean");
+        String destination = "";
+        if (viewBean instanceof PCRestitutionViewBean) {
+            PCRestitutionViewBean vb = (PCRestitutionViewBean) viewBean;
+            try {
+                JSPUtils.setBeanProperties(request, vb);
+                PersonneEtendueComplexModel personne = vb.getPersonne();
+                BSession sessionPC = BSessionUtil.getSessionFromThreadContext();
+                String dateComptable = JadeDateUtil.getGlobazFormattedDate(new Date());
+                PCRestiPCLegalComptaProcess process = new PCRestiPCLegalComptaProcess();
+                process.setSession(sessionPC);
+                process.setNss(personne.getPersonneEtendue().getNumAvsActuel());
+                process.setIdTiers(personne.getTiers().getIdTiers());
+                process.setSimpleRestitution(vb.getSimpleRestitution());
+                process.setDateComptable(dateComptable);
+                process.setEMailAddress(vb.getMailGest());
+                process.setSendCompletionMail(false);
+                process.setSendMailOnError(true);
+                process.executeProcess();
+                if(!process.getMemoryLog().hasErrors()){
+                    destination = _getDestExecuterSucces(session, request, response, vb);
+                }else{
+                    vb.setMsgType(FWViewBeanInterface.ERROR);
+                    vb.setMessage(process.getMemoryLog().getMessagesInString());
+
+                    destination = _getDestExecuterEchec(session, request, response, vb);
+                }
+            } catch (Exception e) {
+                throw new ServletException(e);
+            }
+        }
+        goSendRedirect(destination, request, response);
+    }
+
 
 }

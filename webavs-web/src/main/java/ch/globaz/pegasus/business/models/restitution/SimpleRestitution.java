@@ -14,6 +14,15 @@ public class SimpleRestitution extends JadeSimpleModel {
     private String montantRestitutionPCAICantonal;
     private String montantRestitutionPCRfmAvs;
     private String montantRestitutionPCRfmAI;
+    private String typeRestPCAVSFed;
+    private String typeRestPCAIFed;
+    private String typeRestPCAvsSubside;
+    private String typeRestPCAISubside;
+    private String typeRestPCAvsCantonal;
+    private String typeRestPCAICantonal;
+    private String typeRestPCRfmAvs;
+    private String typeRestPCRfmAI;
+    private String idJournal;
 
 
     @Override
@@ -104,5 +113,76 @@ public class SimpleRestitution extends JadeSimpleModel {
 
     public void setMontantRestitutionPCRfmAI(String montantRestitutionPCRfmAI) {
         this.montantRestitutionPCRfmAI = montantRestitutionPCRfmAI;
+    }
+    public String getTypeRestPCAVSFed() {
+        return typeRestPCAVSFed;
+    }
+
+    public void setTypeRestPCAVSFed(String typeRestPCAVSFed) {
+        this.typeRestPCAVSFed = typeRestPCAVSFed;
+    }
+
+    public String getTypeRestPCAIFed() {
+        return typeRestPCAIFed;
+    }
+
+    public void setTypeRestPCAIFed(String typeRestPCAIFed) {
+        this.typeRestPCAIFed = typeRestPCAIFed;
+    }
+
+    public String getTypeRestPCAvsSubside() {
+        return typeRestPCAvsSubside;
+    }
+
+    public void setTypeRestPCAvsSubside(String typeRestPCAvsSubside) {
+        this.typeRestPCAvsSubside = typeRestPCAvsSubside;
+    }
+
+    public String getTypeRestPCAISubside() {
+        return typeRestPCAISubside;
+    }
+
+    public void setTypeRestPCAISubside(String typeRestPCAISubside) {
+        this.typeRestPCAISubside = typeRestPCAISubside;
+    }
+
+    public String getTypeRestPCAvsCantonal() {
+        return typeRestPCAvsCantonal;
+    }
+
+    public void setTypeRestPCAvsCantonal(String typeRestPCAvsCantonal) {
+        this.typeRestPCAvsCantonal = typeRestPCAvsCantonal;
+    }
+
+    public String getTypeRestPCAICantonal() {
+        return typeRestPCAICantonal;
+    }
+
+    public void setTypeRestPCAICantonal(String typeRestPCAICantonal) {
+        this.typeRestPCAICantonal = typeRestPCAICantonal;
+    }
+
+    public String getTypeRestPCRfmAvs() {
+        return typeRestPCRfmAvs;
+    }
+
+    public void setTypeRestPCRfmAvs(String typeRestPCRfmAvs) {
+        this.typeRestPCRfmAvs = typeRestPCRfmAvs;
+    }
+
+    public String getTypeRestPCRfmAI() {
+        return typeRestPCRfmAI;
+    }
+
+    public void setTypeRestPCRfmAI(String typeRestPCRfmAI) {
+        this.typeRestPCRfmAI = typeRestPCRfmAI;
+    }
+
+    public String getIdJournal() {
+        return idJournal;
+    }
+
+    public void setIdJournal(String idJournal) {
+        this.idJournal = idJournal;
     }
 }
