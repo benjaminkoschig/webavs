@@ -351,6 +351,11 @@ public class CAApplication extends globaz.globall.db.BApplication implements Ser
         FWAction.registerActionCustom("osiris.lettrage.main.reportSection", FWSecureConstants.UPDATE);
 
         FWAction.registerActionCustom("osiris.ordres.ordresGroupes.valider", FWSecureConstants.UPDATE);
+
+        // eBill
+        FWAction.registerActionCustom("osiris.ebill.inscriptionEBill.aValider", FWSecureConstants.READ);
+        FWAction.registerActionCustom("osiris.ebill.inscriptionEBill.aTraiter", FWSecureConstants.READ);
+
     }
 
     @Override

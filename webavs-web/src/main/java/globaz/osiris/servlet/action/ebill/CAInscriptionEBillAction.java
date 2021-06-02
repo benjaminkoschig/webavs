@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 public class CAInscriptionEBillAction extends CADefaultServletAction {
     /**
@@ -65,8 +66,12 @@ public class CAInscriptionEBillAction extends CADefaultServletAction {
         String action = request.getParameter("userAction");
         if (action.contains("atraiter")) {
             atraiter(session, request, response, dispatcher);
+        }  else if (action.contains("aTraiter")) {
+            aTraiter(session, request, response, dispatcher);
         } else if (action.contains("avalider")) {
             avalider(session, request, response, dispatcher);
+        } else if (action.contains("aValider")) {
+            aValider(session, request, response, dispatcher);
         } else {
             super.actionCustom(session, request, response, dispatcher);
         }
@@ -106,6 +111,43 @@ public class CAInscriptionEBillAction extends CADefaultServletAction {
 
     }
 
+    private void aTraiter(HttpSession session, HttpServletRequest request, HttpServletResponse response,
+                          FWDispatcher mainDispatcher) throws ServletException, IOException {
+        String destination = getRelativeURL(request, session) + "_rc.jsp";
+
+        try {
+            CAInscriptionEBillViewBean viewBean;
+
+            if ((session.getAttribute(CADefaultServletAction.VB_ELEMENT) != null)
+                    && (session.getAttribute(CADefaultServletAction.VB_ELEMENT) instanceof CAInscriptionEBillViewBean)) {
+                viewBean = (CAInscriptionEBillViewBean) session.getAttribute(CADefaultServletAction.VB_ELEMENT);
+            } else {
+                viewBean = new CAInscriptionEBillViewBean();
+            }
+
+            String selectedId = request.getParameter("selectedId");
+            Class b = Class.forName("globaz.globall.db.BIPersistentObject");
+            Method mSetId = b.getDeclaredMethod("setId", String.class);
+            mSetId.invoke(viewBean, selectedId);
+            viewBean = (CAInscriptionEBillViewBean) mainDispatcher.dispatch(viewBean, FWAction.newInstance("osiris.ebill.inscriptionEBill.afficher"));
+
+            viewBean.setStatut(CAStatutEBillEnum.NUMERO_STATUT_A_TRAITER);
+            viewBean = (CAInscriptionEBillViewBean) mainDispatcher.dispatch(viewBean, FWAction.newInstance("osiris.ebill.inscriptionEBill.modifier"));
+
+
+            if (viewBean.hasErrors()) {
+                viewBean.setMsgType(FWViewBeanInterface.ERROR);
+            }
+            setSessionAttribute(session, CADefaultServletAction.VB_ELEMENT, viewBean);
+        } catch (Exception e) {
+            JadeLogger.error(this, e);
+            destination = FWDefaultServletAction.ERROR_PAGE;
+        }
+
+        servlet.getServletContext().getRequestDispatcher(destination).forward(request, response);
+
+    }
+
     private void avalider(HttpSession session, HttpServletRequest request, HttpServletResponse response,
                           FWDispatcher mainDispatcher) throws ServletException, IOException {
         String destination = getRelativeURL(request, session) + "_de.jsp";
@@ -121,6 +163,53 @@ public class CAInscriptionEBillAction extends CADefaultServletAction {
             }
 
             JSPUtils.setBeanProperties(request, viewBean);
+
+            viewBean.setStatut(CAStatutEBillEnum.NUMERO_STATUT_TRAITE_MANUELLEMENT);
+            viewBean = (CAInscriptionEBillViewBean) mainDispatcher.dispatch(viewBean, FWAction.newInstance("osiris.ebill.inscriptionEBill.modifier"));
+
+
+            if (viewBean.hasErrors()) {
+                viewBean.setMsgType(FWViewBeanInterface.ERROR);
+            }
+            setSessionAttribute(session, CADefaultServletAction.VB_ELEMENT, viewBean);
+        } catch (Exception e) {
+            JadeLogger.error(this, e);
+            destination = FWDefaultServletAction.ERROR_PAGE;
+        }
+
+        servlet.getServletContext().getRequestDispatcher(destination).forward(request, response);
+
+    }
+
+    /**
+     * On arrive sur cette action depuis l'écran de contrôle des prestation suite à la création d'un droit.
+     *
+     * @param session
+     * @param request
+     * @param response
+     * @param mainDispatcher
+     * @return
+     * @throws Exception
+     */
+    public void aValider(HttpSession session, HttpServletRequest request, HttpServletResponse response,
+                         FWDispatcher mainDispatcher) throws ServletException, IOException {
+
+        String destination = getRelativeURL(request, session) + "_rc.jsp";
+
+        try {
+            CAInscriptionEBillViewBean viewBean;
+
+            if ((session.getAttribute(CADefaultServletAction.VB_ELEMENT) != null)
+                    && (session.getAttribute(CADefaultServletAction.VB_ELEMENT) instanceof CAInscriptionEBillViewBean)) {
+                viewBean = (CAInscriptionEBillViewBean) session.getAttribute(CADefaultServletAction.VB_ELEMENT);
+            } else {
+                viewBean = new CAInscriptionEBillViewBean();
+            }
+            String selectedId = request.getParameter("selectedId");
+            Class b = Class.forName("globaz.globall.db.BIPersistentObject");
+            Method mSetId = b.getDeclaredMethod("setId", String.class);
+            mSetId.invoke(viewBean, selectedId);
+            viewBean = (CAInscriptionEBillViewBean) mainDispatcher.dispatch(viewBean, FWAction.newInstance("osiris.ebill.inscriptionEBill.afficher"));
 
             viewBean.setStatut(CAStatutEBillEnum.NUMERO_STATUT_TRAITE_MANUELLEMENT);
             viewBean = (CAInscriptionEBillViewBean) mainDispatcher.dispatch(viewBean, FWAction.newInstance("osiris.ebill.inscriptionEBill.modifier"));

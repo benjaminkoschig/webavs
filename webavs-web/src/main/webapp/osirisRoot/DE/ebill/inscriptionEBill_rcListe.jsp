@@ -1,3 +1,4 @@
+<%@ page import="globaz.osiris.db.ebill.enums.CAStatutEBillEnum" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <%-- tpl:insert page="/theme/list.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
@@ -10,8 +11,8 @@
     wantPagination=false;
 
     String nom = request.getParameter("nom");
-    String date = request.getParameter("date");
-    String etat = request.getParameter("etat");
+    String date = request.getParameter("dateLecture");
+    String etat = request.getParameter("statutFichier");
 
     if (globaz.jade.client.util.JadeStringUtil.isNull(nom)) {
         nom = "";
@@ -54,6 +55,16 @@
 <TD class="mtd" width="16" >
     <ct:menuPopup menu="CA-inscription-eBill" label="<%=optionsPopupLabel%>" target="top.fr_main">
         <ct:menuParam key="selectedId" value="<%=_inscriptionEBill.getId()%>"/>
+        <ct:menuParam key="idFichier" value="<%=viewBean.getForIdFichier()%>"/>
+        <ct:menuParam key="nom" value="<%=nom%>"/>
+        <ct:menuParam key="date" value="<%=date%>"/>
+        <ct:menuParam key="statutFichier" value="<%=etat%>"/>
+        <% if (!CAStatutEBillEnum.A_TRAITER.equals(_inscriptionEBill.getStatut())) { %>
+        <ct:menuExcludeNode nodeId="aValider"/>
+        <% }
+            if (!CAStatutEBillEnum.TRAITE_MANUELLEMENT.equals(_inscriptionEBill.getStatut())) { %>
+        <ct:menuExcludeNode nodeId="aTraiter"/>
+        <% } %>
     </ct:menuPopup>
 </TD>
 <TD class="mtd" onClick="<%=actionDetail%>"><%=_inscriptionEBill.geteBillAccountID()%></TD>

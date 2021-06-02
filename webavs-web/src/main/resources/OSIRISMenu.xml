@@ -1672,6 +1672,28 @@
                     <parameter name="selectedId"></parameter>
                 </action>
             </node>
+			<node id="aValider">
+				<label refId="EBILL_ENUM_TRAITE_MANUELLEMENT"/>
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.ebill.inscriptionEBill.aValider"/>
+					<parameter name="selectedId"></parameter>
+					<parameter name="idFichier"></parameter>
+					<parameter name="nom"></parameter>
+					<parameter name="date"></parameter>
+					<parameter name="statutFichier"></parameter>
+				</action>
+			</node>
+			<node id="aTraiter">
+				<label refId="EBILL_ENUM_A_TRAITER"/>
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.ebill.inscriptionEBill.aTraiter"/>
+					<parameter name="selectedId"></parameter>
+					<parameter name="idFichier"></parameter>
+					<parameter name="nom"></parameter>
+					<parameter name="date"></parameter>
+					<parameter name="statutFichier"></parameter>
+				</action>
+			</node>
         </nodes>
     </menu>
 
