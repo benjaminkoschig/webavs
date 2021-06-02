@@ -1675,7 +1675,7 @@
 			<node id="aValider">
 				<label refId="EBILL_ENUM_TRAITE_MANUELLEMENT"/>
 				<action command="/osiris" responseTarget="fr_main">
-					<parameter name="userAction" value="osiris.ebill.inscriptionEBill.aValider"/>
+					<parameter name="userAction" value="osiris.ebill.inscriptionEBill.optionAValider"/>
 					<parameter name="selectedId"></parameter>
 					<parameter name="idFichier"></parameter>
 					<parameter name="nom"></parameter>
@@ -1686,7 +1686,7 @@
 			<node id="aTraiter">
 				<label refId="EBILL_ENUM_A_TRAITER"/>
 				<action command="/osiris" responseTarget="fr_main">
-					<parameter name="userAction" value="osiris.ebill.inscriptionEBill.aTraiter"/>
+					<parameter name="userAction" value="osiris.ebill.inscriptionEBill.optionATraiter"/>
 					<parameter name="selectedId"></parameter>
 					<parameter name="idFichier"></parameter>
 					<parameter name="nom"></parameter>

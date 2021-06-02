@@ -66,18 +66,26 @@ public class CAInscriptionEBillAction extends CADefaultServletAction {
         String action = request.getParameter("userAction");
         if (action.contains("atraiter")) {
             atraiter(session, request, response, dispatcher);
-        }  else if (action.contains("aTraiter")) {
-            aTraiter(session, request, response, dispatcher);
+        }  else if (action.contains("optionATraiter")) {
+            optionATraiter(session, request, response, dispatcher);
         } else if (action.contains("avalider")) {
             avalider(session, request, response, dispatcher);
-        } else if (action.contains("aValider")) {
-            aValider(session, request, response, dispatcher);
+        } else if (action.contains("optionAValider")) {
+            optionAValider(session, request, response, dispatcher);
         } else {
             super.actionCustom(session, request, response, dispatcher);
         }
 
     }
 
+    /**
+     * @param session
+     * @param request
+     * @param response
+     * @param mainDispatcher
+     * @throws ServletException
+     * @throws IOException
+     */
     private void atraiter(HttpSession session, HttpServletRequest request, HttpServletResponse response,
                           FWDispatcher mainDispatcher) throws ServletException, IOException {
         String destination = getRelativeURL(request, session) + "_de.jsp";
@@ -111,7 +119,15 @@ public class CAInscriptionEBillAction extends CADefaultServletAction {
 
     }
 
-    private void aTraiter(HttpSession session, HttpServletRequest request, HttpServletResponse response,
+    /**
+     * @param session
+     * @param request
+     * @param response
+     * @param mainDispatcher
+     * @throws ServletException
+     * @throws IOException
+     */
+    private void optionATraiter(HttpSession session, HttpServletRequest request, HttpServletResponse response,
                           FWDispatcher mainDispatcher) throws ServletException, IOException {
         String destination = getRelativeURL(request, session) + "_rc.jsp";
 
@@ -148,6 +164,14 @@ public class CAInscriptionEBillAction extends CADefaultServletAction {
 
     }
 
+    /**
+     * @param session
+     * @param request
+     * @param response
+     * @param mainDispatcher
+     * @throws ServletException
+     * @throws IOException
+     */
     private void avalider(HttpSession session, HttpServletRequest request, HttpServletResponse response,
                           FWDispatcher mainDispatcher) throws ServletException, IOException {
         String destination = getRelativeURL(request, session) + "_de.jsp";
@@ -191,7 +215,7 @@ public class CAInscriptionEBillAction extends CADefaultServletAction {
      * @return
      * @throws Exception
      */
-    public void aValider(HttpSession session, HttpServletRequest request, HttpServletResponse response,
+    public void optionAValider(HttpSession session, HttpServletRequest request, HttpServletResponse response,
                          FWDispatcher mainDispatcher) throws ServletException, IOException {
 
         String destination = getRelativeURL(request, session) + "_rc.jsp";
