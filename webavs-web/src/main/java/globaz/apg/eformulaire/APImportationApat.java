@@ -5,6 +5,7 @@ import ch.globaz.common.util.CaisseInfoPropertiesWrapper;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.db.droits.*;
+import globaz.apg.process.APImportationAPGAmatApatProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeDateUtil;
@@ -17,8 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class APImportationApat extends APAbstractImportationAmatApat {
 
-    public APImportationApat(List<String> err, List<String> inf, BSession bsession) {
-        super(err, inf, bsession, IPRDemande.CS_TYPE_PATERNITE);
+    public APImportationApat(APImportationStatusFile fileStatus, BSession bsession, String nss) {
+        super(fileStatus, bsession, IPRDemande.CS_TYPE_PATERNITE, nss);
     }
 
     @Override
@@ -62,7 +63,7 @@ public class APImportationApat extends APAbstractImportationAmatApat {
                 periodeAPG.add(transaction);
             }
         } catch (Exception e){
-            errors.add("Une erreur s'est produite lors de la création du droit maternité " + e.getMessage());
+            fileStatus.getErrors().add("Une erreur s'est produite lors de la création du droit maternité " + e.getMessage());
             LOG.error("Une erreur s'est produite lors de la création du droit : ", e);
         }
 
@@ -83,7 +84,7 @@ public class APImportationApat extends APAbstractImportationAmatApat {
                 enfant.add(transaction);
             }
         } catch (Exception e) {
-            infos.add("Impossible de créer la situation familiale ");
+            fileStatus.getInformations().add("Impossible de créer la situation familiale ");
             LOG.error("Erreur lors de la création de la situation familiale ", e);
         }
     }

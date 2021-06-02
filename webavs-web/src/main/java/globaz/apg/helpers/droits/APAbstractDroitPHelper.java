@@ -41,6 +41,7 @@ import globaz.pyxis.application.TIApplication;
 import globaz.pyxis.db.adressecourrier.TIPays;
 import globaz.pyxis.db.tiers.TIRole;
 import globaz.pyxis.db.tiers.TIRoleManager;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * <H1>Description</H1> Créé le 6 juil. 05
@@ -155,7 +156,7 @@ public class APAbstractDroitPHelper extends PRAbstractHelper {
         }
 
         if((droitVB instanceof APDroitMatPViewBean || droitVB instanceof APDroitPatPViewBean) &&
-            droitVB.getDroit().getEtat().equals(IAPDroitLAPG.CS_ETAT_DROIT_ENREGISTRE)) {
+                StringUtils.equals(droitVB.getDroit().getEtat(), IAPDroitLAPG.CS_ETAT_DROIT_ENREGISTRE)) {
             droitVB.getDroit().setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE);
         }
 

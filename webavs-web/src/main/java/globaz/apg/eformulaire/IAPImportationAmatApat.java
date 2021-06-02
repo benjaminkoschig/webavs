@@ -13,6 +13,6 @@ public interface IAPImportationAmatApat {
     PRDemande createDemande(String idTiers) throws Exception;
     APDroitLAPG createDroit(Content content, String npaFormat, PRDemande demande, BTransaction transaction);
     void createSituationFamiliale(FamilyMembers membresFamille, String idDroit, BTransaction transaction);
-    void createSituationProfessionnel(Content content, String idDroit, BTransaction transaction);
+    void createSituationProfessionnel(Content content, APDroitLAPG droit, BTransaction transaction);
     void createAdresses(PRTiersWrapper tiers, AddressType adresseAssure, PaymentContact adressePaiement, String npa);
 }
