@@ -53,11 +53,13 @@ public class COImportMessageELP extends BProcess {
     private static final String ELP_SCHEMA = "aquila.ch.eschkg";
     private static final String MAIL_SUBJECT = "ELP_MAIL_SUBJECT";
     private static final String BACKUP_FOLDER = "/backup/";
+    private static final String ERROR_FOLDER = "/error/";
     private static final String XML_EXTENSION = ".xml";
 
     private COProtocoleELP protocole;
     private String error = "";
     private String backupFolder;
+    private String errorFolder;
 
     @Override
     protected boolean _executeProcess() throws Exception {
@@ -120,6 +122,7 @@ public class COImportMessageELP extends BProcess {
             String urlFichiersELP = JadePropertiesService.getInstance().getProperty(COProperties.REPERTOIRE_GESTION_MESSAGES_ELP.getProperty());
             List<String> repositoryELP = JadeFsFacade.getFolderChildren(urlFichiersELP);
             backupFolder = new File(urlFichiersELP).getAbsolutePath() + BACKUP_FOLDER;
+            errorFolder = new File(urlFichiersELP).getAbsolutePath() + ERROR_FOLDER;
             for (String nomFichierDistant : repositoryELP) {
                 importFile(nomFichierDistant);
             }
@@ -148,16 +151,14 @@ public class COImportMessageELP extends BProcess {
                     File eLPFile = new File(tmpLocalWorkFile);
                     if (eLPFile.isFile()) {
                         boolean traitementInSucces = traitementFichier(getDocument(eLPFile), infos);
-                        if (traitementInSucces) {
-                            movingFile(nomFichierDistant, tmpLocalWorkFile, nameOriginalFile);
-                        }
+                        movingFile(nomFichierDistant, tmpLocalWorkFile, nameOriginalFile, traitementInSucces);
                         if (getSession().hasErrors()) {
-                            LOG.error("Une erreur est intervenue durant le traitement du fichier " + nomFichierDistant + " : " + getSession().getErrors());
+                            LOG.error("Une erreur est intervenue durant le traitement du fichier {} : {} ", nomFichierDistant, getSession().getErrors());
                             clearErrorsWarning();
                         }
                     }
                 } catch (JadeServiceLocatorException | JadeClassCastException | JadeServiceActivatorException e) {
-                    LOG.error("COImportMessageELP#importFile : erreur lors de l'importation du fichier " + nameOriginalFile, e);
+                    LOG.error("COImportMessageELP#importFile : erreur lors de l'importation du fichier {}", nameOriginalFile, e);
                     protocole.addMsgIncoherentInattendue(infos, e.getMessage());
                 }
             } else {
@@ -215,12 +216,13 @@ public class COImportMessageELP extends BProcess {
      * @throws JadeServiceActivatorException
      * @throws JadeClassCastException
      */
-    private void movingFile(String nomFichierDistant, String tmpLocalWorkFile, String nameOriginalFile) throws JadeServiceLocatorException, JadeServiceActivatorException, JadeClassCastException {
+    private void movingFile(String nomFichierDistant, String tmpLocalWorkFile, String nameOriginalFile, boolean traitementInSucces) throws JadeServiceLocatorException, JadeServiceActivatorException, JadeClassCastException {
         LOG.info("Déplacement du fichier après traitement.");
-        if (!JadeFsFacade.exists(backupFolder)) {
-            JadeFsFacade.createFolder(backupFolder);
+        String folder = traitementInSucces ? backupFolder : errorFolder;
+        if (!JadeFsFacade.exists(folder)) {
+            JadeFsFacade.createFolder(folder);
         }
-        JadeFsFacade.copyFile(tmpLocalWorkFile, backupFolder + nameOriginalFile);
+        JadeFsFacade.copyFile(tmpLocalWorkFile, folder + nameOriginalFile);
         JadeFsFacade.delete(nomFichierDistant);
         JadeFsFacade.delete(tmpLocalWorkFile);
     }
