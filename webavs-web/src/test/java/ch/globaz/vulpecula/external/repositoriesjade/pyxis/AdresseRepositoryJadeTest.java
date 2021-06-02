@@ -2,7 +2,7 @@ package ch.globaz.vulpecula.external.repositoriesjade.pyxis;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,6 +1,6 @@
 package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ecriture;
 
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.osiris.api.APIEcriture;

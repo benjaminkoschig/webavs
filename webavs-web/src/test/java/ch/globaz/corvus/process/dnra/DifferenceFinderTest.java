@@ -1,7 +1,7 @@
 package ch.globaz.corvus.process.dnra;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +12,6 @@ import java.util.Set;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 import ch.globaz.common.codesystem.CodeSystemeResolver;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.DateRente;
@@ -20,6 +19,7 @@ import ch.globaz.jade.business.models.Langues;
 import ch.globaz.pyxis.domaine.EtatCivil;
 import ch.globaz.pyxis.domaine.Pays;
 import ch.globaz.pyxis.domaine.Sexe;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DifferenceFinderTest {

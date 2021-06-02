@@ -1,12 +1,12 @@
 package ch.globaz.corvus.process.dnra;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import ch.globaz.pyxis.domaine.Pays;
 import ch.globaz.pyxis.loader.PaysLoader;
 
@@ -17,7 +17,7 @@ public class MutationsContainerTest {
 
     @Test
     public void testExtractNss() throws Exception {
-        when(paysLoader.resolveByCodeCentrale(any(String.class))).thenReturn(new Pays());
+       // when(paysLoader.resolveByCodeCentrale(any(String.class))).thenReturn(new Pays());
 
         MutationsContainer container = new MutationsContainer(paysLoader);
         Mutation mutation = new Mutation();

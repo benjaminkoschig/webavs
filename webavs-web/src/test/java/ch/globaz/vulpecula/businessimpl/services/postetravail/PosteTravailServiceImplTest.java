@@ -2,7 +2,7 @@ package ch.globaz.vulpecula.businessimpl.services.postetravail;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import globaz.naos.db.tauxAssurance.AFTauxAssurance;
 import java.util.ArrayList;

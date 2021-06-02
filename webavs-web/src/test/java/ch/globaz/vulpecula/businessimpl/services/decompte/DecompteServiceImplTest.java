@@ -1,6 +1,6 @@
 package ch.globaz.vulpecula.businessimpl.services.decompte;
 
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import org.junit.Before;
 import org.junit.Test;

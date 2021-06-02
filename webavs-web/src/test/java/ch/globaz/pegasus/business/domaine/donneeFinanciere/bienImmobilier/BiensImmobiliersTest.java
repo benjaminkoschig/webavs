@@ -1,7 +1,7 @@
 package ch.globaz.pegasus.business.domaine.donneeFinanciere.bienImmobilier;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import org.junit.Test;
 import ch.globaz.common.domaine.Montant;

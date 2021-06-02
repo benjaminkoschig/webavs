@@ -1,12 +1,12 @@
 package ch.globaz.pyxis.loader;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import ch.globaz.jade.business.models.Langues;
 import ch.globaz.pyxis.business.model.PaysSearchSimpleModel;
 import ch.globaz.pyxis.business.model.PaysSimpleModel;

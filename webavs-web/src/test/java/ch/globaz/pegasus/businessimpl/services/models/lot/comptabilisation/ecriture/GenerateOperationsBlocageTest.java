@@ -3,7 +3,7 @@
  */
 package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ecriture;
 
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import globaz.jade.client.util.JadeListUtil;
 import globaz.jade.exception.JadeApplicationException;
@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import ch.globaz.osiris.business.model.SectionSimpleModel;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.models.lot.OrdreVersementForList;
@@ -128,8 +128,8 @@ public class GenerateOperationsBlocageTest {
     private GenerateEcrituresResitutionBeneficiareForDecisionAc newGenerateEcritures() throws JadeApplicationException {
         GenerateEcrituresResitutionBeneficiareForDecisionAc generate = new GenerateEcrituresResitutionBeneficiareForDecisionAc();
         GenerateEcrituresResitutionBeneficiareForDecisionAc spy = Mockito.spy(generate);
-        Mockito.doReturn(ComptabilisationTreatTestCase.ID_REF_RUBRIQUE).when(spy)
-                .resolveIdRefRubrique(Matchers.any(OrdreVersement.class));
+       // Mockito.doReturn(ComptabilisationTreatTestCase.ID_REF_RUBRIQUE).when(spy)
+        //        .resolveIdRefRubrique(Matchers.any(OrdreVersement.class));
         return spy;
     }
 
@@ -137,7 +137,7 @@ public class GenerateOperationsBlocageTest {
         GenerateOperationsBlocage generate = new GenerateOperationsBlocage();
         GenerateOperationsBlocage spy = Mockito.spy(generate);
         doReturn("Mock RefPaiement").when(spy).formatDeblocage(any(OrdreVersementForList.class), any(String.class));
-        Mockito.doReturn(newGenerateEcritures()).when(spy).newEcritureBasic();
+       // Mockito.doReturn(newGenerateEcritures()).when(spy).newEcritureBasic();
         return spy;
     }
 

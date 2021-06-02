@@ -1,18 +1,18 @@
 package ch.globaz.corvus.process.dnra;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import java.io.File;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.DateRente;
 import ch.globaz.pyxis.domaine.Pays;
 import ch.globaz.pyxis.domaine.Sexe;
 import ch.globaz.pyxis.loader.PaysLoader;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MutationParserTest {
@@ -64,7 +64,7 @@ public class MutationParserTest {
 
     @Test
     public void testParsFile() throws Exception {
-        when(paysLoader.resolveById(any(String.class))).thenReturn(new Pays());
+       // when(paysLoader.resolveById(any(String.class))).thenReturn(new Pays());
         // List<String> files = Arrays
         // .asList(new String[] { "pucs1", "swissDec1", "swissDec2", "swissDecMix", "swissDec3" });
         final File folder = new File("src/test/resources/ch/globaz/corvus/dnra");
