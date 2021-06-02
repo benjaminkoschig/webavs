@@ -1,3 +1,4 @@
+<%@ page import="globaz.osiris.db.ebill.enums.CAStatutEBillEnum" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <%-- tpl:insert page="/theme/list.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
@@ -10,8 +11,8 @@
     wantPagination=false;
 
     String nom = request.getParameter("nom");
-    String date = request.getParameter("date");
-    String etat = request.getParameter("statutFichier");
+    String date = request.getParameter("dateLecture");
+    String statutFichier = request.getParameter("statutFichier");
 
     if (globaz.jade.client.util.JadeStringUtil.isNull(nom)) {
         nom = "";
@@ -21,8 +22,8 @@
         date = "";
     }
 
-    if (globaz.jade.client.util.JadeStringUtil.isNull(etat)) {
-        etat = "";
+    if (globaz.jade.client.util.JadeStringUtil.isNull(statutFichier)) {
+        statutFichier = "";
     }
 
     String directLink = "osiris?userAction=osiris.ebill.traitementEBill.afficher&selectedId=";
@@ -50,12 +51,22 @@
 <%_traitementEBill = (globaz.osiris.db.ebill.CATraitementEBill) viewBean.getEntity(i);
     actionDetail = "parent.location.href='" + directLink + _traitementEBill.getIdTraitement() + "'";
 
-    actionDetail = "parent.location.href='" + directLink + _traitementEBill.getIdTraitement() + "&nom=" + nom + "&date=" + date + "&etat=" + etat + "'";
+    actionDetail = "parent.location.href='" + directLink + _traitementEBill.getIdTraitement() + "&nom=" + nom + "&date=" + date + "&statutFichier=" + statutFichier + "'";
 %>
 
 <TD class="mtd" width="16" >
     <ct:menuPopup menu="CA-traitement-eBill" label="<%=optionsPopupLabel%>" target="top.fr_main">
         <ct:menuParam key="selectedId" value="<%=_traitementEBill.getId()%>"/>
+        <ct:menuParam key="idFichier" value="<%=viewBean.getForIdFichier()%>"/>
+        <ct:menuParam key="nom" value="<%=nom%>"/>
+        <ct:menuParam key="date" value="<%=date%>"/>
+        <ct:menuParam key="statutFichier" value="<%=statutFichier%>"/>
+        <% if (!CAStatutEBillEnum.A_TRAITER.equals(_traitementEBill.getStatut())) { %>
+        <ct:menuExcludeNode nodeId="traitementEBill.optionAValider"/>
+        <% }
+        if (!CAStatutEBillEnum.TRAITE_MANUELLEMENT.equals(_traitementEBill.getStatut())) { %>
+        <ct:menuExcludeNode nodeId="traitementEBill.optionATraiter"/>
+        <% } %>
     </ct:menuPopup>
 </TD>
 <TD class="mtd" onClick="<%=actionDetail%>"><%=_traitementEBill.geteBillAccountID()%></TD>

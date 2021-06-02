@@ -12,7 +12,7 @@
 
     String nom = request.getParameter("nom");
     String date = request.getParameter("dateLecture");
-    String etat = request.getParameter("statutFichier");
+    String statutFichier = request.getParameter("statutFichier");
 
     if (globaz.jade.client.util.JadeStringUtil.isNull(nom)) {
         nom = "";
@@ -22,8 +22,8 @@
         date = "";
     }
 
-    if (globaz.jade.client.util.JadeStringUtil.isNull(etat)) {
-        etat = "";
+    if (globaz.jade.client.util.JadeStringUtil.isNull(statutFichier)) {
+        statutFichier = "";
     }
 
     String directLink = "osiris?userAction=osiris.ebill.inscriptionEBill.afficher&selectedId=";
@@ -49,7 +49,7 @@
 <%_inscriptionEBill = (globaz.osiris.db.ebill.CAInscriptionEBill) viewBean.getEntity(i);
     actionDetail = "parent.location.href='" + directLink + _inscriptionEBill.getIdInscription() + "'";
 
-    actionDetail = "parent.location.href='" + directLink + _inscriptionEBill.getIdInscription() + "&nom=" + nom + "&date=" + date + "&etat=" + etat + "'";
+    actionDetail = "parent.location.href='" + directLink + _inscriptionEBill.getIdInscription() + "&nom=" + nom + "&date=" + date + "&statutFichier=" + statutFichier + "'";
 %>
 
 <TD class="mtd" width="16" >
@@ -58,12 +58,12 @@
         <ct:menuParam key="idFichier" value="<%=viewBean.getForIdFichier()%>"/>
         <ct:menuParam key="nom" value="<%=nom%>"/>
         <ct:menuParam key="date" value="<%=date%>"/>
-        <ct:menuParam key="statutFichier" value="<%=etat%>"/>
+        <ct:menuParam key="statutFichier" value="<%=statutFichier%>"/>
         <% if (!CAStatutEBillEnum.A_TRAITER.equals(_inscriptionEBill.getStatut())) { %>
-        <ct:menuExcludeNode nodeId="aValider"/>
+        <ct:menuExcludeNode nodeId="inscriptionEBill.optionAValider"/>
         <% }
         if (!CAStatutEBillEnum.TRAITE_MANUELLEMENT.equals(_inscriptionEBill.getStatut())) { %>
-        <ct:menuExcludeNode nodeId="aTraiter"/>
+        <ct:menuExcludeNode nodeId="inscriptionEBill.optionATraiter"/>
         <% } %>
     </ct:menuPopup>
 </TD>

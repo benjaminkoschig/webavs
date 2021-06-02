@@ -1672,7 +1672,7 @@
                     <parameter name="selectedId"></parameter>
                 </action>
             </node>
-			<node id="aValider">
+			<node id="inscriptionEBill.optionAValider">
 				<label refId="EBILL_ENUM_TRAITE_MANUELLEMENT"/>
 				<action command="/osiris" responseTarget="fr_main">
 					<parameter name="userAction" value="osiris.ebill.inscriptionEBill.optionAValider"/>
@@ -1683,7 +1683,7 @@
 					<parameter name="statutFichier"></parameter>
 				</action>
 			</node>
-			<node id="aTraiter">
+			<node id="inscriptionEBill.optionATraiter">
 				<label refId="EBILL_ENUM_A_TRAITER"/>
 				<action command="/osiris" responseTarget="fr_main">
 					<parameter name="userAction" value="osiris.ebill.inscriptionEBill.optionATraiter"/>
@@ -1724,6 +1724,28 @@
 				<action command="/osiris" responseTarget="fr_main">
 					<parameter name="userAction" value="osiris.ebill.traitementEBill.afficher" />
 					<parameter name="selectedId"></parameter>
+				</action>
+			</node>
+			<node id="traitementEBill.optionAValider">
+				<label refId="EBILL_ENUM_TRAITE_MANUELLEMENT"/>
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.ebill.traitementEBill.optionAValider"/>
+					<parameter name="selectedId"></parameter>
+					<parameter name="idFichier"></parameter>
+					<parameter name="nom"></parameter>
+					<parameter name="date"></parameter>
+					<parameter name="statutFichier"></parameter>
+				</action>
+			</node>
+			<node id="traitementEBill.optionATraiter">
+				<label refId="EBILL_ENUM_A_TRAITER"/>
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.ebill.traitementEBill.optionATraiter"/>
+					<parameter name="selectedId"></parameter>
+					<parameter name="idFichier"></parameter>
+					<parameter name="nom"></parameter>
+					<parameter name="date"></parameter>
+					<parameter name="statutFichier"></parameter>
 				</action>
 			</node>
 		</nodes>

@@ -71,6 +71,9 @@
     <TD width="20">&nbsp;</TD>
     <TD width="300">
         <INPUT type="hidden" name="forIdFichier" value="<%=viewBean.getIdFichier()%>">
+        <INPUT type="hidden" name="nom" value="<%=nom%>">
+        <INPUT type="hidden" name="dateLecture" value="<%=date%>">
+        <INPUT type="hidden" name="statutFichier" value="<%=statutFichier%>">
         <input disabled name="name" value="<%=nom%>" class="libelleLong">
     </TD>
     <TD width="90">Date lecture</TD>

@@ -66,7 +66,7 @@ public class CAInscriptionEBillAction extends CADefaultServletAction {
         String action = request.getParameter("userAction");
         if (action.contains("atraiter")) {
             atraiter(session, request, response, dispatcher);
-        }  else if (action.contains("optionATraiter")) {
+        } else if (action.contains("optionATraiter")) {
             optionATraiter(session, request, response, dispatcher);
         } else if (action.contains("avalider")) {
             avalider(session, request, response, dispatcher);
@@ -104,7 +104,6 @@ public class CAInscriptionEBillAction extends CADefaultServletAction {
 
             viewBean.setStatut(CAStatutEBillEnum.NUMERO_STATUT_A_TRAITER);
             viewBean = (CAInscriptionEBillViewBean) mainDispatcher.dispatch(viewBean, FWAction.newInstance("osiris.ebill.inscriptionEBill.modifier"));
-
 
             if (viewBean.hasErrors()) {
                 viewBean.setMsgType(FWViewBeanInterface.ERROR);
@@ -150,7 +149,6 @@ public class CAInscriptionEBillAction extends CADefaultServletAction {
             viewBean.setStatut(CAStatutEBillEnum.NUMERO_STATUT_A_TRAITER);
             viewBean = (CAInscriptionEBillViewBean) mainDispatcher.dispatch(viewBean, FWAction.newInstance("osiris.ebill.inscriptionEBill.modifier"));
 
-
             if (viewBean.hasErrors()) {
                 viewBean.setMsgType(FWViewBeanInterface.ERROR);
             }
@@ -190,7 +188,6 @@ public class CAInscriptionEBillAction extends CADefaultServletAction {
 
             viewBean.setStatut(CAStatutEBillEnum.NUMERO_STATUT_TRAITE_MANUELLEMENT);
             viewBean = (CAInscriptionEBillViewBean) mainDispatcher.dispatch(viewBean, FWAction.newInstance("osiris.ebill.inscriptionEBill.modifier"));
-
 
             if (viewBean.hasErrors()) {
                 viewBean.setMsgType(FWViewBeanInterface.ERROR);
@@ -237,7 +234,6 @@ public class CAInscriptionEBillAction extends CADefaultServletAction {
 
             viewBean.setStatut(CAStatutEBillEnum.NUMERO_STATUT_TRAITE_MANUELLEMENT);
             viewBean = (CAInscriptionEBillViewBean) mainDispatcher.dispatch(viewBean, FWAction.newInstance("osiris.ebill.inscriptionEBill.modifier"));
-
 
             if (viewBean.hasErrors()) {
                 viewBean.setMsgType(FWViewBeanInterface.ERROR);

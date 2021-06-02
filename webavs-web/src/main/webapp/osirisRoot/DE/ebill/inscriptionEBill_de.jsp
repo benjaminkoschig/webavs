@@ -19,7 +19,7 @@
 
     String nom = request.getParameter("nom");
     String date = request.getParameter("date");
-    String etat = request.getParameter("etat");
+    String statutFichier = request.getParameter("statutFichier");
 
     if (globaz.jade.client.util.JadeStringUtil.isNull(nom)) {
         nom = "";
@@ -29,8 +29,8 @@
         date = "";
     }
 
-    if (globaz.jade.client.util.JadeStringUtil.isNull(etat)) {
-        etat = "";
+    if (globaz.jade.client.util.JadeStringUtil.isNull(statutFichier)) {
+        statutFichier = "";
     }
 
     String directLink = "osiris?userAction=osiris.ebill.inscriptionEBill.afficher&selectedId=";

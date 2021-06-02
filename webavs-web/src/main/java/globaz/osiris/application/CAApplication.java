@@ -355,7 +355,8 @@ public class CAApplication extends globaz.globall.db.BApplication implements Ser
         // eBill
         FWAction.registerActionCustom("osiris.ebill.inscriptionEBill.optionAValider", FWSecureConstants.READ);
         FWAction.registerActionCustom("osiris.ebill.inscriptionEBill.optionATraiter", FWSecureConstants.READ);
-
+        FWAction.registerActionCustom("osiris.ebill.traitementEBill.optionATraiter", FWSecureConstants.READ);
+        FWAction.registerActionCustom("osiris.ebill.traitementEBill.optionAValider", FWSecureConstants.READ);
     }
 
     @Override
