@@ -188,6 +188,7 @@ public class PucsServiceImpl implements PucsService {
         BSession session = BSessionUtil.getSessionFromThreadContext();
         Locale locale = buildLocale(session);
 
+        @SuppressWarnings("squid:S2095" /*Dans ce cas le close est fait par la fonction build, il n'y a pas besoin de faire le close*/)
         SimpleOutputListBuilder builder = SimpleOutputListBuilder.newInstance().local(locale).asXls();
         ElementsDomParser parser = new ElementsDomParser(EBPucsFileService.retriveFileAsInputStream(id, session));
         PucsFile pucsfile = EBPucsFileService.read(id, session);
@@ -197,6 +198,8 @@ public class PucsServiceImpl implements PucsService {
 
     public static String pucFileLisiblePdfByXml(File fileXml, DeclarationSalaireProvenance provenance, BSession session) {
         Locale locale = buildLocale(session);
+        @SuppressWarnings("squid:S2095" /*Dans ce cas le close est fait par la fonction build, il n'y a pas besoin de faire le close*/)
+
         SimpleOutputListBuilder builder = SimpleOutputListBuilder.newInstance().asPdf().local(locale);
         ElementsDomParser parser = new ElementsDomParser(fileXml);
         File file = out(provenance, builder, parser, session);
@@ -205,6 +208,7 @@ public class PucsServiceImpl implements PucsService {
 
     public static String pucFileLisiblePdf(String id, DeclarationSalaireProvenance provenance, BSession session) {
         Locale locale = buildLocale(session);
+        @SuppressWarnings("squid:S2095" /*Dans ce cas le close est fait par la fonction build, il n'y a pas besoin de faire le close*/)
         SimpleOutputListBuilder builder = SimpleOutputListBuilder.newInstance().asPdf().local(locale);
         ElementsDomParser parser = new ElementsDomParser(EBPucsFileService.retriveFileAsInputStream(id, session));
         PucsFile pucsfile = EBPucsFileService.read(id, session);
@@ -216,6 +220,8 @@ public class PucsServiceImpl implements PucsService {
     public String pucsFileLisibleForEbusiness(String id, DeclarationSalaireProvenance provenance, String format,
             String loginName, String userEmail, String langue) throws OrionPucsException {
         Locale locale = new Locale(langue);
+        @SuppressWarnings("squid:S2095" /*Dans ce cas le close est fait par la fonction build, il n'y a pas besoin de faire le close*/)
+
         SimpleOutputListBuilder builder = SimpleOutputListBuilder.newInstance();
         BSession session = UtilsService.initSession();
 
@@ -246,6 +252,8 @@ public class PucsServiceImpl implements PucsService {
             String format, String langue) throws OrionPucsException {
         try {
             Locale locale = new Locale(langue);
+
+            @SuppressWarnings("squid:S2095" /*Dans ce cas le close est par la fonction build, il n'y a pas besoin de faire le close*/)
             SimpleOutputListBuilder simpleOutputListbuilder = SimpleOutputListBuilder.newInstance();
             BSession session = UtilsService.initSession();
             if ("pdf".equals(format)) {
@@ -270,6 +278,8 @@ public class PucsServiceImpl implements PucsService {
     public static String pucFileLisiblePdf(DeclarationSalaireProvenance provenance, ElementsDomParser parser,
             PucsFile pucsFile, BSession session) {
         Locale locale = buildLocale(session);
+        @SuppressWarnings("squid:S2095" /*Dans ce cas le close est fait par la fonction build, il n'y a pas besoin de faire le close*/)
+
         SimpleOutputListBuilder builder = SimpleOutputListBuilder.newInstance().asPdf().local(locale);
         File file = out(provenance, builder, parser, pucsFile, session);
 

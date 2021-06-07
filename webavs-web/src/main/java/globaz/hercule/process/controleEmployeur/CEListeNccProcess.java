@@ -77,6 +77,7 @@ public class CEListeNccProcess extends BProcess {
         details.add(getSession().getLabel("LIST_NCC_UTILISATEUR"), getSession().getUserFullName());
         details.newLigne();
 
+        @SuppressWarnings("squid:S2095" /*Dans ce cas le close est fait par la fonction build, il n'y a pas besoin de faire le close*/)
         File file = SimpleOutputListBuilderJade.newInstance().session(getSession()).addTranslater("LIST_NCC")
                 .addList(list).classElementList(AffilieSuiviForListe.class).addHeaderDetails(details).asXls()
                 .outputName(nomDoc).build();

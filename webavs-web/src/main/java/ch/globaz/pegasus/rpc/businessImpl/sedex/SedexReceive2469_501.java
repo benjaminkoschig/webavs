@@ -151,6 +151,7 @@ public class SedexReceive2469_501 {
             beanSummaries.add(new PlausiBeanSummary(mapPlausi.get(entry.getKey()), entry.getValue()));
         }
 
+        @SuppressWarnings("squid:S2095" /*Dans ce cas le close est fait par la fonction build, il n'y a pas besoin de faire le close*/)
         File file = SimpleOutputListBuilderJade.newInstance().session(getSession()).addTranslater()
                 .addList(beanSummaries).classElementList(PlausiBeanSummary.class).addSubTitle("Summary").jump()
                 .addList(beans).classElementList(PlausiBeanRetour.class).addSubTitle("Plausis")

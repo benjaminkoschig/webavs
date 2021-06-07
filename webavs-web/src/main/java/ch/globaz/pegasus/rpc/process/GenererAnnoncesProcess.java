@@ -293,6 +293,7 @@ public class GenererAnnoncesProcess extends ProcessItemsHandlerJadeJob<AnnonceIt
     }
 
     private String generateXlsForPlausi(List<RpcPlausiResutForXls> plausis) {
+        @SuppressWarnings("squid:S2095" /*Dans ce cas le close est fait par la fonction build, il n'y a pas besoin de faire le close*/)
         File file = SimpleOutputListBuilderJade.newInstance().addList(plausis)
                 .classElementList(RpcPlausiResutForXls.class).outputName("RPC_PLAUSI").asXls().build();
         return file.getAbsolutePath();

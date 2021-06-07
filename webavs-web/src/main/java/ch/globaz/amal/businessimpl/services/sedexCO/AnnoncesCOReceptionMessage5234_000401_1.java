@@ -349,6 +349,7 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
             nomCaisseMaladieEmetteur = "Caisse maladie non trouvée ou non spécifiée";
         }
 
+        @SuppressWarnings("squid:S2095" /*Dans ce cas le close est fait par la fonction build, il n'y a pas besoin de faire le close*/)
         SimpleOutputListBuilder builder = SimpleOutputListBuilderJade.newInstance()
                 .outputNameAndAddPath("décompteTrimestriel").addList(listLigneDecompteTrimestriel)
                 .classElementList(SimpleOutputList_Decompte_5234_401_1.class);

@@ -309,6 +309,8 @@ public class FAListDecompteNew_Doc extends FWIDocumentManager {
         }
     }
 
+    @SuppressWarnings("squid:S2095" /*Dans ce cas le close est fait par la fonction build du simpleOutputList, il n'y a pas besoin de faire le
+    close*/)
     private File generateXsl(List<FaDecompteBeanXls> list, DecompteRecap decompteRecap) {
         String nomCaise = FWIImportProperties.getInstance().getProperty(getDocumentInfo(),
                 ACaisseReportHelper.JASP_PROP_NOM_CAISSE + getSession().getIdLangueISO().toUpperCase());
@@ -339,8 +341,9 @@ public class FAListDecompteNew_Doc extends FWIDocumentManager {
         SimpleOutputListBuilderJade builder = null;
         File file = null;
         try {
+
             new Date();
-            builder = SimpleOutputListBuilderJade.newInstance().session(getSession()).globazTheme().addTranslater()
+                    builder = SimpleOutputListBuilderJade.newInstance().session(getSession()).globazTheme().addTranslater()
                     .headerLeftTop(NUM_REF_INFOROM_LISTE_DECOMPTE)
                     .headerLeftBottom(getSession().getUserName() + " (" + Date.toDayformatteSwissValueWithTime() + ")")
                     .outputNameAndAddPath(NUM_REF_INFOROM_LISTE_DECOMPTE + "_" + toLabel("DECOMPTE"));

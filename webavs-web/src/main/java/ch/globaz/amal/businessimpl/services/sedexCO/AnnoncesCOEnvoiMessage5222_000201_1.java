@@ -244,6 +244,7 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
         details.add("Année", ANNEE_A_TRAITER);
         details.newLigne();
         Configuration config = Configurations.buildeDefault();
+        @SuppressWarnings("squid:S2095" /*Dans ce cas le close est fait par la fonction build, il n'y a pas besoin de faire le close*/)
         SimpleOutputListBuilder builder = SimpleOutputListBuilderJade.newInstance()
                 .outputNameAndAddPath("SimulationEnvoi").addList(listSimulationsFiles)
                 .addTitle("Simulation", Align.LEFT).addSubTitle("Simulation").configure(config)

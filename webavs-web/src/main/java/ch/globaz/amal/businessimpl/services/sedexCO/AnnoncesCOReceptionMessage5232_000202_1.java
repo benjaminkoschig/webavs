@@ -441,6 +441,7 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
         details.add("Reçu le", Date.now().getSwissValue());
         details.newLigne();
 
+        @SuppressWarnings("squid:S2095" /*Dans ce cas le close est fait par la fonction build, il n'y a pas besoin de faire le close*/)
         SimpleOutputListBuilder listeComparaisonBuilder = SimpleOutputListBuilderJade.newInstance()
                 .outputNameAndAddPath("Comparaisons").addList(listeComparaisons)
                 .classElementList(ComparaisonAnnonceCreancePriseEnCharge.class)
