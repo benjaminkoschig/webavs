@@ -51,8 +51,6 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import static ch.globaz.pyxis.business.services.AdresseService.CS_TYPE_COURRIER;
@@ -496,7 +494,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
 
         if (!Objects.isNull(adressePaiementXml.getBankAccount().getIban())) {
             String iban = unformatIban(adressePaiementXml.getBankAccount().getIban());
-            if(checkChIban(iban).getIsValidChIban()) {
+            if(checkChIban(iban).getIsValidChIban().booleanValue()) {
                 adressePaiement.setIdTiersBanque(retrieveBanque(iban).getTiersBanque().getId());
                 adressePaiement.setCode(IConstantes.CS_ADRESSE_PAIEMENT_IBAN_OK);
                 adressePaiement.setNumCompteBancaire(adressePaiementXml.getBankAccount().getIban());

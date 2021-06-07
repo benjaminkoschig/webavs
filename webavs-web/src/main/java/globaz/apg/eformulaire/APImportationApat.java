@@ -1,19 +1,25 @@
 package globaz.apg.eformulaire;
 
-import apg.amatapat.*;
+import apg.amatapat.Child;
+import apg.amatapat.Content;
+import apg.amatapat.FamilyMembers;
+import apg.amatapat.PaternityLeavePeriod;
 import ch.globaz.common.util.CaisseInfoPropertiesWrapper;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.droits.IAPDroitMaternite;
-import globaz.apg.db.droits.*;
-import globaz.apg.process.APImportationAPGAmatApatProcess;
+import globaz.apg.db.droits.APDroitLAPG;
+import globaz.apg.db.droits.APDroitPaternite;
+import globaz.apg.db.droits.APPeriodeAPG;
+import globaz.apg.db.droits.APSituationFamilialePat;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.prestation.api.IPRDemande;
 import globaz.prestation.db.demandes.PRDemande;
-
-import java.util.*;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Date;
+import java.util.List;
 
 @Slf4j
 public class APImportationApat extends APAbstractImportationAmatApat {

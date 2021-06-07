@@ -10,16 +10,11 @@ import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APDroitMaternite;
 import globaz.apg.db.droits.APSituationFamilialeMat;
-import globaz.apg.process.APImportationAPGAmatApatProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.prestation.api.IPRDemande;
 import globaz.prestation.db.demandes.PRDemande;
-
-import java.util.List;
-import java.util.Map;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
