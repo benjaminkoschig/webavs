@@ -316,7 +316,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
         MainEmployer mainEmployeur = content.getMainEmployer();
 
         try {
-            AFAffiliation affiliation = findAffiliationByNumero(mainEmployeur.getAffiliateID(), droit, bSession);
+            AFAffiliation affiliation = findAffiliationByNumero(mainEmployeur.getAffiliateID(), droit,false, bSession);
             if (affiliation != null) {
                 APEmployeur emp = getEmployeur(affiliation, transaction);
                 APSituationProfessionnelle situationProfessionnelle = getApSituationProfessionnelle(droit.getIdDroit(), emp.getIdEmployeur(), content);
@@ -352,9 +352,9 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
         MainEmployer mainEmployeur = content.getMainEmployer();
 
         try {
-            // TODO JJO 27.05.2021:  Controler dans pandémie la gestion des indépendants
+            // TODO JJO 27.05.2021: Controler dans pandémie la gestion des indépendants
             // TODO JJO 27.05.2021: Controler si l'affiliation est à récupérer via l'employeur ou le tiers.
-            AFAffiliation affiliation = findAffiliationByNumero(mainEmployeur.getAffiliateID(), droit, bSession);
+            AFAffiliation affiliation = findAffiliationByNumero(mainEmployeur.getAffiliateID(), droit, true, bSession);
             if (affiliation != null) {
                 APEmployeur emp = getEmployeur(affiliation, transaction);
 
@@ -454,74 +454,85 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
         } catch (Exception e) {
             fileStatus.getInformations().add("Un problème a été rencontré lors de la création des adresses pour cet assuré.");
             LOG.error("APImportationAMAT-APAT#createAdresseAMAT-APAT : Erreur rencontré lors de la création adresses pour l'assuré", e);
+            if(isJadeThreadError()){
+                addJadeThreadErrorToListError("Rôle");
+                JadeThread.logClear();
+            }
         }
     }
 
     private AdresseComplexModel createAdresseCourrier(PersonneEtendueComplexModel personneEtendueComplexModel, AddressType adresseAssure, String domainePandemie, String npa) throws JadeApplicationException, JadePersistenceException {
-        personneEtendueComplexModel.getTiers();
-        AdresseComplexModel adresseComplexModel = new AdresseComplexModel();
-        adresseComplexModel.setTiers(personneEtendueComplexModel);
-        adresseComplexModel.getAvoirAdresse().setDateDebutRelation(Date.now().getSwissValue());
-        adresseComplexModel.getTiers().setId(personneEtendueComplexModel.getTiers().getId());
-        adresseComplexModel.getLocalite().setNumPostal(npa);
-        adresseComplexModel.getAdresse().setRue(adresseAssure.getStreetWithNr());
+        try {
+            personneEtendueComplexModel.getTiers();
+            AdresseComplexModel adresseComplexModel = new AdresseComplexModel();
+            adresseComplexModel.setTiers(personneEtendueComplexModel);
+            adresseComplexModel.getAvoirAdresse().setDateDebutRelation(Date.now().getSwissValue());
+            adresseComplexModel.getTiers().setId(personneEtendueComplexModel.getTiers().getId());
+            adresseComplexModel.getLocalite().setNumPostal(npa);
+            adresseComplexModel.getAdresse().setRue(adresseAssure.getStreetWithNr());
 
-        // Bug Fix - Cette correction permet de corriger un bug lorsque la LigneAdresse est laissé à null
-        // Le risque de réutiliser une adresse identique avec un complément d'adresse qui n'a rien à voir
-        // une correction sera effectuée sur Pyxis par la suite.
-        // Mise à chaine vide des champs ligneAdresse
-        adresseComplexModel.getAdresse().setLigneAdresse1("");
-        adresseComplexModel.getAdresse().setLigneAdresse2("");
-        adresseComplexModel.getAdresse().setLigneAdresse3("");
-        adresseComplexModel.getAdresse().setLigneAdresse4("");
-        AdresseComplexModel adresse =  TIBusinessServiceLocator.getAdresseService().addAdresse(adresseComplexModel, domainePandemie,
-                CS_TYPE_COURRIER, false);
-        if(!isJadeThreadError()){
+            // Bug Fix - Cette correction permet de corriger un bug lorsque la LigneAdresse est laissé à null
+            // Le risque de réutiliser une adresse identique avec un complément d'adresse qui n'a rien à voir
+            // une correction sera effectuée sur Pyxis par la suite.
+            // Mise à chaine vide des champs ligneAdresse
+            adresseComplexModel.getAdresse().setLigneAdresse1("");
+            adresseComplexModel.getAdresse().setLigneAdresse2("");
+            adresseComplexModel.getAdresse().setLigneAdresse3("");
+            adresseComplexModel.getAdresse().setLigneAdresse4("");
+            AdresseComplexModel adresse = TIBusinessServiceLocator.getAdresseService().addAdresse(adresseComplexModel, domainePandemie,
+                    CS_TYPE_COURRIER, false);
             fileStatus.getInformations().add("Nouvelle adresse de courrier ajouté pour ce tiers.");
             return adresse;
-        }else{
-            addJadeThreadErrorToListError("Adresse Courrier");
-            // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans l'adresse
-            JadeThread.logClear();
+        } catch (Exception e) {
+            fileStatus.getInformations().add("Un problème a été rencontré lors de la création de l'adresse de courrier pour cet assuré.");
+            LOG.error("APImportationAMAT-APAT#createAdresseAMAT-APAT : Erreur rencontré lors de la création de l'adresse de courrier pour l'assuré", e);
+            if (isJadeThreadError()) {
+                addJadeThreadErrorToListError("Adresse Courrier");
+                // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans l'adresse
+                JadeThread.logClear();
+            }
             return null;
         }
     }
 
-    private void createAdressePaiement(AdresseComplexModel adresseComplexModel, String idTiers, PaymentContact adressePaiementXml, String domaine) throws Exception {
-        TIAdressePaiement adressePaiement = new TIAdressePaiement();
-        adressePaiement.setIdTiersAdresse(idTiers);
-        adressePaiement.setIdAdresse(adresseComplexModel.getAdresse().getId());
+    private void createAdressePaiement(AdresseComplexModel adresseComplexModel, String idTiers, PaymentContact adressePaiementXml, String domaine) {
+        try {
+            TIAdressePaiement adressePaiement = new TIAdressePaiement();
+            adressePaiement.setIdTiersAdresse(idTiers);
+            adressePaiement.setIdAdresse(adresseComplexModel.getAdresse().getId());
 
-        if (!Objects.isNull(adressePaiementXml.getBankAccount().getIban())) {
-            String iban = unformatIban(adressePaiementXml.getBankAccount().getIban());
-            if(checkChIban(iban).getIsValidChIban().booleanValue()) {
-                adressePaiement.setIdTiersBanque(retrieveBanque(iban).getTiersBanque().getId());
-                adressePaiement.setCode(IConstantes.CS_ADRESSE_PAIEMENT_IBAN_OK);
-                adressePaiement.setNumCompteBancaire(adressePaiementXml.getBankAccount().getIban());
+            if (!Objects.isNull(adressePaiementXml.getBankAccount().getIban())) {
+                String iban = unformatIban(adressePaiementXml.getBankAccount().getIban());
+                if (checkChIban(iban).getIsValidChIban().booleanValue()) {
+                    adressePaiement.setIdTiersBanque(retrieveBanque(iban).getTiersBanque().getId());
+                    adressePaiement.setCode(IConstantes.CS_ADRESSE_PAIEMENT_IBAN_OK);
+                    adressePaiement.setNumCompteBancaire(adressePaiementXml.getBankAccount().getIban());
 
-                adressePaiement.setIdMonnaie(AdressePaiementPrimeNoelService.CS_CODE_MONNAIE_FRANC_SUISSE);
-                adressePaiement.setIdPays(AdressePaiementPrimeNoelService.CS_CODE_PAYS_SUISSE);
-                adressePaiement.setSession(bSession);
-                adressePaiement.add();
+                    adressePaiement.setIdMonnaie(AdressePaiementPrimeNoelService.CS_CODE_MONNAIE_FRANC_SUISSE);
+                    adressePaiement.setIdPays(AdressePaiementPrimeNoelService.CS_CODE_PAYS_SUISSE);
+                    adressePaiement.setSession(bSession);
+                    adressePaiement.add();
 
-                TIAvoirPaiement avoirPaiement = new TIAvoirPaiement();
-                avoirPaiement.setIdApplication(domaine);
-                avoirPaiement.setIdAdressePaiement(adressePaiement.getIdAdressePaiement());
-                avoirPaiement.setDateDebutRelation(Date.now().getSwissValue());
-                avoirPaiement.setIdTiers(idTiers);
-                avoirPaiement.setSession(bSession);
-                avoirPaiement.add();
-            }else {
-                fileStatus.getInformations().add("Paiement adresse non créée : IBAN non valide : " + iban);
+                    TIAvoirPaiement avoirPaiement = new TIAvoirPaiement();
+                    avoirPaiement.setIdApplication(domaine);
+                    avoirPaiement.setIdAdressePaiement(adressePaiement.getIdAdressePaiement());
+                    avoirPaiement.setDateDebutRelation(Date.now().getSwissValue());
+                    avoirPaiement.setIdTiers(idTiers);
+                    avoirPaiement.setSession(bSession);
+                    avoirPaiement.add();
+                    fileStatus.getInformations().add("Nouvelle adresse de paiement ajouté pour ce tiers.");
+                } else {
+                    fileStatus.getInformations().add("Paiement adresse non créée : IBAN non valide : " + iban);
+                }
             }
-        }
-        if(isJadeThreadError()){
-            addJadeThreadErrorToListError("Adresse Paiement");
-            // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans l'adresse
-            JadeThread.logClear();
-        }
-        else{
-            fileStatus.getInformations().add("Nouvelle adresse de paiement ajouté pour ce tiers.");
+        } catch (Exception e) {
+            fileStatus.getInformations().add("Un problème a été rencontré lors de la création de l'adresse de paiement pour cet assuré.");
+            LOG.error("APImportationAMAT-APAT#createAdresseAMAT-APAT : Erreur rencontré lors de la création de l'adresse de paiement pour l'assuré", e);
+            if (isJadeThreadError()) {
+                addJadeThreadErrorToListError("Adresse Paiement");
+                // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans l'adresse
+                JadeThread.logClear();
+            }
         }
     }
 
@@ -622,11 +633,13 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
      * @return l'affiliation si elle a été trouvée.
      * @throws Exception: Exception pouvant être levée lors de la recherche par l' affiliation manager
      */
-    protected AFAffiliation findAffiliationByNumero(String numeroAffiliate, APDroitLAPG droit, BSession bsession) throws Exception {
+    protected AFAffiliation findAffiliationByNumero(String numeroAffiliate, APDroitLAPG droit, boolean isIndependant, BSession bsession) throws Exception {
         AFAffiliationManager manager = new AFAffiliationManager();
         manager.setSession(bsession);
         manager.setForAffilieNumero(numeroAffiliate);
-        manager.setForTypeAffiliation(new String[]{IAFAffiliation.TYPE_AFFILI_INDEP, IAFAffiliation.TYPE_AFFILI_INDEP_EMPLOY});
+        manager.setForTypeAffiliation(new String[]{isIndependant ?  IAFAffiliation.TYPE_AFFILI_INDEP :
+                                                                    IAFAffiliation.TYPE_AFFILI_EMPLOY,
+                                                   IAFAffiliation.TYPE_AFFILI_INDEP_EMPLOY});
         manager.setForDateFin(StringUtils.EMPTY);
         manager.find(BManager.SIZE_NOLIMIT);
         if (manager.size() > 0) {
