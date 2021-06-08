@@ -18,6 +18,7 @@ import globaz.prestation.api.IPRDemande;
 import globaz.prestation.db.demandes.PRDemande;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -59,14 +60,24 @@ public class APImportationApat extends APAbstractImportationAmatApat {
             for (PaternityLeavePeriod period:periods) {
                 Date debutPeriod = period.getFrom().toGregorianCalendar().getTime();
                 Date finPeriod = period.getTo().toGregorianCalendar().getTime();
-                APPeriodeAPG periodeAPG = new APPeriodeAPG();
-                periodeAPG.setDateDebutPeriode(JadeDateUtil.getGlobazFormattedDate(debutPeriod));
-                periodeAPG.setDateFinPeriode(JadeDateUtil.getGlobazFormattedDate(finPeriod));
-                days = JadeDateUtil.getNbDaysBetween(JadeDateUtil.getGlobazFormattedDate(debutPeriod), JadeDateUtil.getGlobazFormattedDate(finPeriod));
-                periodeAPG.setIdDroit(newDroit.getIdDroit());
-                periodeAPG.setNbrJours(String.format("%d", days));
-                periodeAPG.setSession(bSession);
-                periodeAPG.add(transaction);
+                Date currentDate = new Date();
+                if(currentDate.after(debutPeriod)) {
+                    if(finPeriod.after(debutPeriod)) {
+                        APPeriodeAPG periodeAPG = new APPeriodeAPG();
+                        periodeAPG.setDateDebutPeriode(JadeDateUtil.getGlobazFormattedDate(debutPeriod));
+                        periodeAPG.setDateFinPeriode(JadeDateUtil.getGlobazFormattedDate(finPeriod));
+                        days = JadeDateUtil.getNbDaysBetween(JadeDateUtil.getGlobazFormattedDate(debutPeriod), JadeDateUtil.getGlobazFormattedDate(finPeriod));
+                        periodeAPG.setIdDroit(newDroit.getIdDroit());
+                        periodeAPG.setNbrJours(String.format("%d", days));
+                        periodeAPG.setSession(bSession);
+                        periodeAPG.add(transaction);
+                    }
+                    else{
+                        fileStatus.getInformations().add("Incohérence dans les dates de la période et la période n'a pas été ajouté dans WebAVS.");
+                    }
+                }else{
+                    fileStatus.getInformations().add("La période est définie dans le futur et n'a pas été ajouté dans WebAVS.");
+                }
             }
         } catch (Exception e){
             fileStatus.getErrors().add("Une erreur s'est produite lors de la création du droit maternité " + e.getMessage());
@@ -89,6 +100,8 @@ public class APImportationApat extends APAbstractImportationAmatApat {
                 enfant.setSession(bSession);
                 enfant.add(transaction);
             }
+            fileStatus.getInformations().add("La situation familiale du droit a été ajouté dans WebAVS.");
+            LOG.info("La situation familiale du droit a été ajouté dans WebAVS.");
         } catch (Exception e) {
             fileStatus.getInformations().add("Impossible de créer la situation familiale ");
             LOG.error("Erreur lors de la création de la situation familiale ", e);

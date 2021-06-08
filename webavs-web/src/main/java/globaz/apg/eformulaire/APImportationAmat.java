@@ -70,6 +70,8 @@ public class APImportationAmat extends APAbstractImportationAmatApat {
                 enfant.setSession(bSession);
                 enfant.add(transaction);
             }
+            fileStatus.getInformations().add("La situation familiale du droit a été ajouté dans WebAVS.");
+            LOG.info("La situation familiale du droit a été ajouté dans WebAVS.");
         } catch (Exception e) {
             fileStatus.getInformations().add("Impossible de créer la situation familiale.");
             LOG.error("Erreur lors de la création de la situation familiale ", e);

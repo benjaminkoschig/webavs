@@ -174,7 +174,8 @@ public class APImportationAPGAmatApatProcess extends BProcess {
 
                 // on déplace les fichiers traités.
                 LOG.info("Déplacer le fichier : {}", nameOriginalFileWithoutExt);
-                fileStatus.setFileFullPath(movingFile(nomFichier, nameOriginalFile, nss, isTraitementSuccess));
+                String fullPath = movingFile(nomFichier, nameOriginalFile, nss, isTraitementSuccess);
+                fileStatus.setFileFullPath(fullPath);
             } catch (Exception e) {
                 APImportationStatusFile fileStatus = report.addFile(nomFichier, StringUtils.EMPTY, StringUtils.EMPTY);
                 fileStatus.getErrors().add("Erreur lors du traitement du fichier : " + nomFichier);
@@ -212,7 +213,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
             if (StringUtils.isEmpty(PRTiersHelper.getAdresseGeneriqueFormatee(bsession, idTiers, "", "", domaine))) {
                 handler.createAdresses(tiers, content.getInsuredAddress(), content.getPaymentContact(), npaFormat);
             } else {
-                fileStatus.getInformations().add("Une adresse a déjà été trouvée pour le tiers.");
+                fileStatus.getInformations().add("Une adresse a été trouvée pour le tiers dans WebAVS.");
             }
             handler.createRoleApgTiers(tiers.getIdTiers());
             handler.createContact(tiers, assure.getEmail());
@@ -238,7 +239,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
 
     private String getNumeroAffilie(PRTiersWrapper tiers) throws Exception {
         AFAffiliationManager manager = new AFAffiliationManager();
-        String numeroAffilie = StringUtils.EMPTY;
+        String numeroAffilie = "N° d'affiliation non reconnu ou non défini";
         manager.setSession(bsession);
         manager.setForIdTiers(tiers.getIdTiers());
         manager.find(BManager.SIZE_NOLIMIT);

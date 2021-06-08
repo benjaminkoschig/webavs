@@ -165,7 +165,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 avoirContact.add(trans);
                 trans.commit();
             } else {
-                fileStatus.getInformations().add("Une adresse email existe déjà pour ce tiers.");
+                fileStatus.getInformations().add("Une adresse mail a été trouvée pour le tiers dans WebAVS.");
             }
         } catch (Exception e) {
             if(trans != null) {
@@ -221,6 +221,8 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 "",
                 avsUtils.isSuisse(assure.getVn()) ? PRTiersHelper.ID_PAYS_SUISSE : PRTiersHelper.ID_PAYS_BIDON, canton, "",
                 getSituationMarital(assure));
+
+        fileStatus.getInformations().add("Le tiers étant inexistant dans WebAVS, il a été ajouté.");
 
         return PRTiersHelper.getTiersParId(bSession, idTiers);
     }
@@ -336,6 +338,11 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 }
                 situationProfessionnelle.wantCallValidate(false);
                 situationProfessionnelle.add(transaction);
+                fileStatus.getInformations().add("La situation professionelle a été ajouté pour le tiers dans WebAVS.");
+                LOG.info("La situation professionelle a été ajouté pour le tiers dans WebAVS.");
+            } else{
+                fileStatus.getInformations().add("Le N° d'affilié de l'assuré n'a pas été trouvé. La situation professionelle n'a pas été ajouté pour le tiers dans WebAVS.");
+                LOG.info("Le N° d'affilié dde l'assuré n'a pas été trouvé. La situation professionelle n'a pas été ajouté pour le tiers dans WebAVS.");
             }
         } catch (Exception e) {
             fileStatus.getInformations().add("Les données relatives à la situation professionnelle pour cette assuré ne sont pas valides. Aucune situation professionnelle ne sera créée pour ce droit.");
@@ -363,6 +370,11 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 situationProfessionnelle.setRevenuIndependant(getMasseAnnuelle(affiliation));
                 situationProfessionnelle.wantCallValidate(false);
                 situationProfessionnelle.add(transaction);
+                fileStatus.getInformations().add("La situation professionelle a été ajouté pour le tiers dans WebAVS.");
+                LOG.info("La situation professionelle a été ajouté pour le tiers dans WebAVS.");
+            } else{
+                fileStatus.getInformations().add("Le N° d'affilié de l'employeur n'a pas été trouvé. La situation professionelle n'a pas été ajouté pour le tiers dans WebAVS.");
+                LOG.info("Le N° d'affilié de l'employeur n'a pas été trouvé. La situation professionelle n'a pas été ajouté pour le tiers dans WebAVS.");
             }
         } catch (Exception e) {
             fileStatus.getInformations().add("Les données relatives à la situation professionnelle pour cet assuré ne sont pas valides. Aucune situation professionnelle ne sera créée pour ce droit.");
@@ -481,7 +493,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
             adresseComplexModel.getAdresse().setLigneAdresse4("");
             AdresseComplexModel adresse = TIBusinessServiceLocator.getAdresseService().addAdresse(adresseComplexModel, domainePandemie,
                     CS_TYPE_COURRIER, false);
-            fileStatus.getInformations().add("Nouvelle adresse de courrier ajouté pour ce tiers.");
+            fileStatus.getInformations().add("Une nouvelle adresse de courrier a été ajoutée pour ce tiers dans WebAVS.");
             return adresse;
         } catch (Exception e) {
             fileStatus.getInformations().add("Un problème a été rencontré lors de la création de l'adresse de courrier pour cet assuré.");
@@ -520,7 +532,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                     avoirPaiement.setIdTiers(idTiers);
                     avoirPaiement.setSession(bSession);
                     avoirPaiement.add();
-                    fileStatus.getInformations().add("Nouvelle adresse de paiement ajouté pour ce tiers.");
+                    fileStatus.getInformations().add("Une nouvelle adresse de paiement a été ajoutée pour ce tiers dans WebAVS.");
                 } else {
                     fileStatus.getInformations().add("Paiement adresse non créée : IBAN non valide : " + iban);
                 }

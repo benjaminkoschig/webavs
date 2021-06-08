@@ -14,8 +14,8 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class APImportationStatusFile {
-    private static final String FORMAT_TITLE_INFO  = "- Informations : ";
-    private static final String FORMAT_TITLE_ERROR = "-  Erreurs : ";
+    private static final String FORMAT_TITLE_INFO  = "- Les informations suivantes sont à noter lors de la création du droit : ";
+    private static final String FORMAT_TITLE_ERROR = "- Les informations suivantes sont à vérifier ET sont bloquantes ! (droit non créé dans WebAVS) : ";
     private static final String INCONNU = "Inconnu";
     public static final String LINE_SEP = "\n";
 
