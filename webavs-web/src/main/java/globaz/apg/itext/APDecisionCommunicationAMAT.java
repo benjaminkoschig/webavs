@@ -674,17 +674,30 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 boolean isPos3Standard = Integer.parseInt(texte.getPosition()) == 3;
                 isPos3Standard &= "normal".equals(helper.getNom());
 
+                boolean isPos2Standard = Integer.parseInt(texte.getPosition()) == 2;
+                isPos2Standard &= "normal".equals(helper.getNom());
+                isPos2Standard &= ICTDocument.CS_ASSURE.equals(helper.getCsDestinataire());
+
+                boolean isPos3Lamat = Integer.parseInt(texte.getPosition()) == 3;
+                isPos3Lamat &= "Lamat".equals(helper.getNom());
+                isPos3Lamat &= ICTDocument.CS_EMPLOYEUR.equals(helper.getCsDestinataire());
+
                 // Cas particulier (Destinataire employeur et lettre ACM), car paragraphe 3 est devenu générique dans le
                 // niveau 4 afin d'afficher le bon nombre de jours.
                 if (isPos3ACMEmployeur) {
+                    totalDeJours = limiteTotalDeJoursAvecMaxLamatEtACM(totalDeJours);
                     buffer.append(traitementLevel4Pos3ACMEmployeur(texte, totalDeJours));
                 } else {
                     // si c'est le texte 4.3 ou 4.2, et qu'il s'agit de MATCIAB2, il faut mettre le texte 4.200 à la place
                     if ((Integer.parseInt(texte.getPosition()) == 3 && hasMATCIAB2() && state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2 && ICTDocument.CS_EMPLOYEUR.equals(helper.getCsDestinataire()))
                         || (Integer.parseInt(texte.getPosition()) == 2 && hasMATCIAB2() && state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2 && ICTDocument.CS_ASSURE.equals(helper.getCsDestinataire()))) {
                         buffer.append(document.getTextes(4).getTexte(200).getDescription());
-                    // si c'est le texte 4.3 et qu'il s'agit de normal il faut remplacer l'argument par le totalDeJours
-                    } else if (isPos3Standard) {
+                    // si c'est le texte 4.3 et qu'il s'agit de Lamat il faut remplacer l'argument par le totalDeJours
+                    } else if (isPos3Lamat) {
+                        totalDeJours = limiteTotalDeJoursAvecMaxLamatEtACM(totalDeJours);
+                        buffer.append(PRStringUtils.formatMessage(new StringBuffer(texte.getDescription()), String.valueOf(totalDeJours)));
+                    // si c'est le texte 4.3 ou 4.2 et qu'il s'agit de normal il faut remplacer l'argument par le totalDeJours
+                    } else if (isPos3Standard || isPos2Standard) {
                         buffer.append(PRStringUtils.formatMessage(new StringBuffer(texte.getDescription()), String.valueOf(totalDeJours)));
                     } else {
                         buffer.append(texte.getDescription());
@@ -837,13 +850,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         sitPro.setIdSituationProf(repartition.getIdSituationProfessionnelle());
         sitPro.retrieve();
 
-        // Calcule la différence entre durée ACM1 et Maternité Federale puis ajoute si besoin la durée ACM2
-        // le montant obtenu est ensuite ajouté à la durée totale de la maternité pour être placé dans le texte de la décision.
-        int dureeMatAvecACM = Integer.parseInt(APProperties.DROIT_ACM_MAT_DUREE_JOURS.getValue());
-        int dureeMatFederale = Integer.parseInt(getSession().getApplication().getProperty(APApplication.PROPERTY_DROIT_MAT_DUREE_JOURS));
-        int dureeACMSeulement = dureeMatAvecACM - dureeMatFederale;
-
-        totalDeJours += dureeACMSeulement;
         if (!sitPro.isNew()) {
             final boolean hasAcm2 = sitPro.getHasAcm2AlphaPrestations();
 
@@ -853,6 +859,21 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         }
 
         return PRStringUtils.formatMessage(bufferLocal, String.valueOf(totalDeJours));
+    }
+
+    private int limiteTotalDeJoursAvecMaxLamatEtACM(int totalDeJours) throws Exception {
+        // Calcule la différence entre durée ACM1 et Maternité Federale puis ajoute si besoin la durée ACM2
+        // le montant obtenu est ensuite ajouté à la durée totale de la maternité pour être placé dans le texte de la décision.
+        int dureeMatAvecACM = Integer.parseInt(APProperties.DROIT_ACM_MAT_DUREE_JOURS.getValue());
+        int dureeMatFederale = Integer.parseInt(getSession().getApplication().getProperty(APApplication.PROPERTY_DROIT_MAT_DUREE_JOURS));
+        int dureeACMSeulement = dureeMatAvecACM - dureeMatFederale;
+
+        if (totalDeJours <= dureeMatFederale) {
+            totalDeJours += dureeACMSeulement;
+        } else {
+            totalDeJours = dureeMatAvecACM;
+        }
+        return totalDeJours;
     }
 
     private String buildOrderPrintingByKey(final String idAffilie, final String idTiers) throws Exception {

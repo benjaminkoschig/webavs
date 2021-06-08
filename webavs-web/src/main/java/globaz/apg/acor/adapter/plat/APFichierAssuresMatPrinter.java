@@ -171,7 +171,16 @@ public class APFichierAssuresMatPrinter extends PRAbstractFichierAssuresPrinter 
                 }
 
                 // 21. numéro de référence
-                this.writeChaineSansFinDeChamp(writer, droit().getReference());
+                this.writeChaine(writer, droit().getReference());
+
+                // 22. assurance maternité genevoise: T ou F
+                this.writeChampVide(writer);
+
+                // 23. adoption : T ou F
+                this.writeChampVide(writer);
+
+                // 24. nombre de jours d'hospitalisation du nouveau-né : INTEGER (jours supplémentaires)
+                this.writeEntierSansFinDeChamp(writer, droit().getJoursSupplementaires());
 
                 state = APFichierAssuresMatPrinter.STATE_PERE;
 

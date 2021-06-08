@@ -36,6 +36,7 @@ public class APResultatCalcul {
     private FWCurrency montantJournalier = null;
 
     private int nombreJoursSoldes = 0;
+    private int nombreJoursSupplementaires = 0;
     private List resultatsCalculsSitProfessionnelle = null;
     public FWCurrency revenuDeterminantMoyen = null;
     private FWCurrency revenuJournalierIndependantTotal = new FWCurrency(0);
@@ -148,6 +149,10 @@ public class APResultatCalcul {
      */
     public int getNombreJoursSoldes() {
         return nombreJoursSoldes;
+    }
+
+    public int getNombreJoursSupplementaires() {
+        return nombreJoursSupplementaires;
     }
 
     /**
@@ -328,6 +333,10 @@ public class APResultatCalcul {
      */
     public void setNombreJoursSoldes(int i) {
         nombreJoursSoldes = i;
+    }
+
+    public void setNombreJoursSupplementaires(int nombreJoursSupplementaires) {
+        this.nombreJoursSupplementaires = nombreJoursSupplementaires;
     }
 
     /**
