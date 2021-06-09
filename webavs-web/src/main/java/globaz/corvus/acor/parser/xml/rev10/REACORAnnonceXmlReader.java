@@ -47,7 +47,7 @@ public class REACORAnnonceXmlReader {
         JAXBContext jaxbContext;
 
         // Création du context JaxB sur la base du package contenant les classes générées par JaxB
-        jaxbContext = JAXBContext.newInstance("ch.admin.zas.pool");
+        jaxbContext = JAXBContext.newInstance("acor.ch.admin.zas.rc.annonces.rente.pool");
         final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         Object root = unmarshaller.unmarshal(new StringReader(annonceXMLFileContent));
         return (PoolMeldungZurZAS) root;
