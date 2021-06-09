@@ -70,7 +70,8 @@ function addPeriode() {
     var isError = checkDateDebutAPG(dateDebut);
     var $jourSupplementaire = $('#jourSupplementaire');
 
-    if (document.getElementById("isSoumisCotisation").checked) {
+    if (document.getElementById("isSoumisCotisation").checked
+        && $('#isSoumisCotisationPeriode').val() == 'true') {
         tauxImposition = $('#tauxImpotSource').val();
         cantonImposition = $('#csCantonDomicileAffiche').val();
         cantonImpositionLibelle = $('#csCantonDomicileAffiche').children("option:selected").text();
@@ -92,10 +93,12 @@ function addPeriode() {
         $('#dateFinPeriode').val("");
         $('#nbJour').val("");
         $jourSupplementaire.val("");
-        $('#tauxImpotSource').val(0.00);
         $('#csCantonDomicileAffiche').val("");
-        $('#isSoumisCotisation').prop("disabled", true);
-        $('#tauxImpotSource').prop("disabled", true);
+        if($('#isSoumisCotisationPeriode').val() == 'true') {
+            $('#isSoumisCotisation').prop("disabled", true);
+            $('#tauxImpotSource').prop("disabled", true);
+            $('#tauxImpotSource').val(0.00);
+        }
         $('#nbJourSolde').val("")
     }
 }
@@ -113,18 +116,19 @@ function editPeriode(index) {
     $('#dateFinPeriode').val(periode.getDateDeFin());
     $('#nbJour').val(periode.getNbJour());
     $('#nbJourSolde').val(periode.getNbJour())
-    $('#tauxImpotSource').val(periode.getTauxImposition());
-
     $('#csCantonDomicileAffiche').val(periode.getCantonImposition());
     if (periode.jourSupplementaire) {
         $('#jourSupplementaire').val(periode.jourSupplementaire);
     }
-    if (periode.getCantonImposition() != '' && periode.getCantonImposition() != '0') {
-        document.getElementById("isSoumisCotisation").checked = true;
+    if($('#isSoumisCotisationPeriode').val() == 'true') {
+        $('#tauxImpotSource').val(periode.getTauxImposition());
+        if (periode.getCantonImposition() != '' && periode.getCantonImposition() != '0') {
+            document.getElementById("isSoumisCotisation").checked = true;
+        }
+        $('#isSoumisCotisation').prop("disabled", false);
+        $('#tauxImpotSource').prop("disabled", false);
+        showCantonImpotSource();
     }
-    $('#isSoumisCotisation').prop("disabled", false);
-    $('#tauxImpotSource').prop("disabled", false);
-    showCantonImpotSource();
 }
 
 
@@ -156,7 +160,8 @@ function repaintTablePeriodes() {
         if (JOUR_SUPPLEMENTAIRE) {
             jsp = '<td width="10%" align="center">' + periode.jourSupplementaire + '</td>';
         }
-        if (periode.getCantonImposition() == 0) {
+        if (periode.getCantonImposition() == 0
+            || $('#isSoumisCotisationPeriode').val() != 'true') {
             var tis = '<td width="10%" align="center"></td>';
             var cis = '<td width="10%" align="center"></td>';
         } else {

@@ -911,6 +911,9 @@
                 <%=viewBean.getIsSoumisCotisation().booleanValue() ? "checked" : ""%>
                onclick="showCantonImpotSource();"
                onload="showCantonImpotSource()"/>
+        <input type="hidden"
+               id="isSoumisCotisationPeriode"
+               value="false"/>
     </td>
     <td>
         <label for=tauxImpotSource">

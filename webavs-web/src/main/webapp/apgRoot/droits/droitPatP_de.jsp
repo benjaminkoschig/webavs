@@ -815,7 +815,11 @@
                            name="isSoumisCotisation"
                             <%=viewBean.getIsSoumisCotisation().booleanValue() ? "checked" : ""%>
                            onclick="showCantonImpotSource();"
-                           onload="showCantonImpotSource()"/>
+                           onload="showCantonImpotSource()"
+                    periode="true"/>
+                    <input type="hidden"
+                           id="isSoumisCotisationPeriode"
+                           value="true"/>
                 </td>
             </tr>
             <tr>
