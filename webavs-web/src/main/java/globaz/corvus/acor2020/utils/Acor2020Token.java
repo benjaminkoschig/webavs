@@ -1,4 +1,4 @@
-package globaz.corvus.acor.utils;
+package globaz.corvus.acor2020.utils;
 
 public class Acor2020Token {
 

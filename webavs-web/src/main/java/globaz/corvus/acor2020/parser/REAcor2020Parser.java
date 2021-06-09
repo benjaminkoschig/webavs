@@ -272,11 +272,10 @@ public class REAcor2020Parser {
                                             // si versement non null, on est sur $t
                                             pd.setCsType(IREPrestationDue.CS_TYPE_MNT_TOT);
                                             String dateDernierPmt = REPmtMensuel.getDateDernierPmt(session);
-                                            // TODO : en comparant les valeurs du json avec le fichier plat, il semblerait qu'il faille récupérer la date de fin --> A confirmer !!!!!
-//                                            String dateDebutPmt = PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(versement.getFin(), StringUtils.EMPTY));
-                                            String dateDebutPmt = PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(rente.getMoisRapport(), StringUtils.EMPTY));
+
+                                            String dateDeTraitement = PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(Objects.toString(rente.getMoisRapport(), StringUtils.EMPTY));
                                             JADate jDateDateDernierPmt = new JADate(dateDernierPmt);
-                                            JADate jDateDateDebutPmt = new JADate(dateDebutPmt);
+                                            JADate jDateDateDebutPmt = new JADate(dateDeTraitement);
 
                                             JACalendar cal = new JACalendarGregorian();
                                             if (cal.compare(jDateDateDebutPmt, jDateDateDernierPmt) != JACalendar.COMPARE_EQUALS) {
@@ -1015,7 +1014,7 @@ public class REAcor2020Parser {
             for (FCalcul.Evenement.BasesCalcul.Anticipation.Tranche.Rente eachRente : eachTranche.getRente()) {
                 if (StringUtils.equals(Objects.toString(eachRente.getGenre()), Objects.toString(rente.getGenre()))) {
                     //                        ra.setAnneeAnticipation(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_ANTICIPATION")); $r23
-                    ra.setAnneeAnticipation(Objects.toString(eachTranche.getDureeAnticipation(), StringUtils.EMPTY));
+                    ra.setAnneeAnticipation(ParserUtils.convertMMtoA(eachTranche.getDureeAnticipation()));
 //                        ra.setDateDebutAnticipation(PRDateFormater.convertDate_AAAAMM_to_MMAAAA(PRDateFormater.convertDate_MMAA_to_AAAAMM(REACORAbstractFlatFileParser.getField(line, fields, "DATE_DEBUT_ANTICIPATION"))));
                     ra.setDateDebutAnticipation(PRDateFormater.convertDate_AAAAMM_to_MMAAAA(PRDateFormater.convertDate_AAAAMMJJ_to_AAAAMM(Objects.toString(eachTranche.getDateAnticipation(), StringUtils.EMPTY))));
 //                        ra.setMontantReducationAnticipation(REACORAbstractFlatFileParser.getField(line, fields, "MONTANT_REDUCT_ANTICIPATION"));

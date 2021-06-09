@@ -1,5 +1,6 @@
 package globaz.corvus.acor2020;
 
+import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
 import acor.xsd.fcalcul.FCalcul;
 import ch.admin.zas.xmlns.acor_rentes9_out_resultat._0.Resultat9;
 import ch.globaz.corvus.business.services.CorvusCrudServiceLocator;
@@ -18,6 +19,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import globaz.corvus.acor.parser.REFeuilleCalculVO;
 import globaz.corvus.acor.parser.rev09.REACORParser;
+import globaz.corvus.acor2020.business.REImportAnnoncesAcor;
 import globaz.corvus.acor2020.parser.REAcor2020Parser;
 import globaz.corvus.acor2020.parser.ReturnedValue;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
@@ -41,6 +43,7 @@ import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.utils.acor.BaseCalculWrapper;
 import globaz.corvus.utils.acor.DemandeRenteWrapper;
 import globaz.corvus.vb.annonces.REAnnoncePonctuelleViewBean;
+import globaz.corvus.ws.Acor2020AnnoncesService;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
@@ -89,7 +92,6 @@ public class REImportationCalculAcor2020 {
         LinkedList<Long> idsRentesAccordeesNouveauDroit = new LinkedList<>();
 
         try {
-            // TODO load deamande à partir de l'id --> voir pour le type loadDemandeRente()
             REDemandeRente demandeRente = loadDemandeRente(session, null, idDemande);
 
             if (IREDemandeRente.CS_TYPE_CALCUL_PREVISIONNEL.equals(demandeRente.getCsTypeCalcul())) {
@@ -109,7 +111,6 @@ public class REImportationCalculAcor2020 {
             }
 
             demandeRente = loadDemandeRente(session, transaction, idDemande);
-            // TODO : identifier comment récupérer l'id tiers --> paramètre ou depuis la demandeRente ??
             reinitialiserToutesDemandesNonValideesFamille(session, idTiers);
 
             // Identification du cas à traiter :
@@ -238,18 +239,18 @@ public class REImportationCalculAcor2020 {
                 }
 
                 if (isCIAdditionnel) {
-                    // TODO modifier cette méthode pour ne plus utiliser le fichier annonces.pay
                     int ret = importationCIAdditionnelsDepuisCalculACOR(session, transaction, mapAP, demandeRente, fCalcul);
                     // Traitement standard....
                     if (ret == 1) {
+                        // TODO : refacto méthode pour diminuer les paramètres.
                         idCopieDemande = importationDesAnnoncesDuCalculACOR(session, transaction,
-                                idsRentesAccordeesNouveauDroit, noCasATraiter, demandeRente, fCalcul);
+                                idsRentesAccordeesNouveauDroit, noCasATraiter, demandeRente, fCalcul, json);
                     }
                 }
                 // Pas de ci additionnel, traitement standard.
                 else {
                     idCopieDemande = importationDesAnnoncesDuCalculACOR(session, transaction,
-                            idsRentesAccordeesNouveauDroit, noCasATraiter, demandeRente, fCalcul);
+                            idsRentesAccordeesNouveauDroit, noCasATraiter, demandeRente, fCalcul, json);
                 }
             }
 
@@ -921,7 +922,6 @@ public class REImportationCalculAcor2020 {
     private int importationCIAdditionnelsDepuisCalculACOR(final BSession session, final BITransaction transaction,
                                                           final Map<KeyAP, ValueAP> mapAP, final REDemandeRente demandeRente, final FCalcul fCalcul) throws PRACORException, Exception {
 
-        // TODO : modifier le mapping pour utiliser fCalcul et plus annonce.pay
         List<REFeuilleCalculVO> fcs = REAcor2020Parser.parseCIAdd(session, transaction, demandeRente, fCalcul);
 
         // Contrôle des cas à traiter en faisant les différences entre
@@ -1152,15 +1152,9 @@ public class REImportationCalculAcor2020 {
      * @throws Exception
      */
     private Long importationDesAnnoncesDuCalculACOR(final BSession session, final BITransaction transaction,
-                                                    final LinkedList<Long> rentesAccordees, final int noCasATraiter, final REDemandeRente demande, final FCalcul fCalcul)
+                                                    final LinkedList<Long> rentesAccordees, final int noCasATraiter, final REDemandeRente demande, final FCalcul fCalcul, final String json)
             throws PRACORException, Exception {
 
-        // TODO : utiliser le REAcor2020Parser pour mapper à partir de fcalcul et non plus annonce.pay
-        // On récupère l'ancien fichier .pay pour conserver le mapping
-//        StringReader annoncePayReader = new StringReader(fCalcul.getAnnexes().getPay());
-//        // Ancien parsing du fichier annonce.pay
-//        REACORParser.ReturnedValue returnedValue = globaz.corvus.acor.parser.rev09.REACORParser.parse(session, transaction, demande,
-//                annoncePayReader, noCasATraiter);
 
         ReturnedValue returnedValue = REAcor2020Parser.doMAJPrestations(session, transaction, demande, fCalcul, noCasATraiter);
 
@@ -1175,23 +1169,11 @@ public class REImportationCalculAcor2020 {
             rentesWithoutBte = REAcor2020Parser.doMAJExtraData(session, (BTransaction) transaction, fCalcul, rentesAccordees);
         }
 
-        // TODO : voir comment récupérer annonces.xml avec la nouvelle version ACOR.
-//        /* Lecture du fichier annonce.rr en priorité */
-//        /*
-//         * Mis en commentaire car le fichier ne sera plus généré par ACOR
-//         * if (!JadeStringUtil.isEmpty(caViewbean.getContenuAnnonceRR())) {
-//         * globaz.corvus.acor.parser.rev09.REACORParser.parseAnnonceRR(session, transaction, new StringReader(
-//         * caViewbean.getContenuAnnonceRR()), rentesAccordees);
-//         * } /*
-//         * /* Lecture du fichier annonce.xml si annonce.rr n'existe pas
-//         */
-//        if (!JadeStringUtil.isEmpty(caViewbean.getContenuAnnonceXML())) {
-//            REACORAnnonceXmlReader annonceXmlReader = new REACORAnnonceXmlReader();
-//            annonceXmlReader.readAnnonceXmlContent(session, (BTransaction) transaction,
-//                    caViewbean.getContenuAnnonceXML(), rentesAccordees);
-//        } else {
-//            // Si aucun fichier d'annonce à lire, on ne lit rien
-//        }
+        // Connexion au WebService ACOR pour récupérer les annonces.
+        PoolMeldungZurZAS annonces = Acor2020AnnoncesService.getInstance().getAnnonces(json);
+        if (Objects.nonNull(annonces)) {
+            REImportAnnoncesAcor.getInstance().importAnnonces(session, (BTransaction) transaction,annonces,rentesAccordees);
+        }
 
         return returnedValue.getIdCopieDemande();
     }

@@ -1,6 +1,6 @@
 package globaz.corvus.acor2020;
 
-import acor.ch.admin.zas.rc.annoncesRente.types.*;
+import acor.ch.admin.zas.rc.annonces.rente.rc.*;
 import ch.admin.zas.pool.PoolMeldungZurZAS;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.ObjectFactory;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.*;

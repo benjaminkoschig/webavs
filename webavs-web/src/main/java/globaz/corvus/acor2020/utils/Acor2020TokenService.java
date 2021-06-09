@@ -1,4 +1,4 @@
-package globaz.corvus.acor.utils;
+package globaz.corvus.acor2020.utils;
 
 import ch.globaz.common.properties.PropertiesException;
 import globaz.corvus.properties.REProperties;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.net.UnknownHostException;
 import java.security.Key;
-import java.security.SignatureException;
 import java.util.*;
 
 @Service

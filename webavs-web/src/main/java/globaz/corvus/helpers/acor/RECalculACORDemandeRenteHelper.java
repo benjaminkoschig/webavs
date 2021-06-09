@@ -1,5 +1,6 @@
 package globaz.corvus.helpers.acor;
 
+import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
 import acor.xsd.fcalcul.FCalcul;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.InHostType;
 
@@ -33,6 +34,7 @@ import globaz.corvus.acor.parser.rev09.REACORParser;
 import globaz.corvus.acor.parser.rev09.REACORParser.ReturnedValue;
 import globaz.corvus.acor.parser.xml.rev10.REACORAnnonceXmlReader;
 import globaz.corvus.acor2020.REExportationCalculAcor2020;
+import globaz.corvus.acor2020.business.REImportAnnoncesAcor;
 import globaz.corvus.api.annonces.IREAnnonces;
 import globaz.corvus.api.basescalcul.IREBasesCalcul;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
@@ -2769,10 +2771,10 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
          */
         if (!JadeStringUtil.isEmpty(caViewbean.getContenuAnnonceXML())) {
             REACORAnnonceXmlReader annonceXmlReader = new REACORAnnonceXmlReader();
-            annonceXmlReader.readAnnonceXmlContent(session, (BTransaction) transaction,
-                    caViewbean.getContenuAnnonceXML(), rentesAccordees);
-        } else {
-            // Si aucun fichier d'annonce à lire, on ne lit rien
+            PoolMeldungZurZAS annonces = annonceXmlReader.readAnnonceXmlContent(session, caViewbean.getContenuAnnonceXML());
+            if (Objects.nonNull(annonces)) {
+                REImportAnnoncesAcor.getInstance().importAnnonces(session, (BTransaction) transaction,annonces,rentesAccordees);
+            }
         }
         return returnedValue.getIdCopieDemande();
     }
