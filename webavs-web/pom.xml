@@ -220,15 +220,15 @@
                             <schemaIncludes>
                                 <include>acor/swap/xsd/*.xsd</include>
                                 <include>acor/xsd/*.xsd</include>
-                                <include>acor/xsd/annoncesRc/*.xsd</include>
-                                <include>acor/xsd/annoncesRc/annoncesAI/*.xsd</include>
-                                <include>acor/xsd/annoncesRc/annoncesApglj/*.xsd</include>
-                                <include>acor/xsd/annoncesRc/annoncesCompta/*.xsd</include>
-                                <include>acor/xsd/annoncesRc/annoncesPC/*.xsd</include>
-                                <include>acor/xsd/annoncesRc/assuranceMilitaire/*.xsd</include>
-                                <include>acor/xsd/annoncesRc/CACI/*.xsd</include>
-                                <include>acor/xsd/annoncesRc/Prestations/*.xsd</include>
-                                <include>acor/xsd/annoncesRc/testAnnonce/*.xsd</include>
+                                <include>acor/xsd/annoncesRC/*.xsd</include>
+                                <include>acor/xsd/annoncesRC/annoncesAI/*.xsd</include>
+                                <include>acor/xsd/annoncesRC/annoncesApgIj/*.xsd</include>
+                                <include>acor/xsd/annoncesRC/annoncesCompta/*.xsd</include>
+                                <include>acor/xsd/annoncesRC/annoncesPC/*.xsd</include>
+                                <include>acor/xsd/annoncesRC/assuranceMilitaire/*.xsd</include>
+                                <include>acor/xsd/annoncesRC/CACI/*.xsd</include>
+                                <include>acor/xsd/annoncesRC/Prestations/*.xsd</include>
+                                <include>acor/xsd/annoncesRC/testAnnonce/*.xsd</include>
                                 <include>acor/xsd/euro/*.xsd</include>
                                 <include>acor/xsd/Typebase/AI/*.xsd</include>
                                 <include>acor/xsd/Typebase/ARC/*.xsd</include>
