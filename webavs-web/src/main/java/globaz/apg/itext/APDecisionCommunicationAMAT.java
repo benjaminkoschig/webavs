@@ -682,6 +682,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                 isPos3Lamat &= "Lamat".equals(helper.getNom());
                 isPos3Lamat &= ICTDocument.CS_EMPLOYEUR.equals(helper.getCsDestinataire());
 
+                boolean isPos2MATCIAB2 = Integer.parseInt(texte.getPosition()) == 2;
+                isPos2MATCIAB2 &= "MATCIAB2".equals(helper.getNom());
+
                 // Cas particulier (Destinataire employeur et lettre ACM), car paragraphe 3 est devenu générique dans le
                 // niveau 4 afin d'afficher le bon nombre de jours.
                 if (isPos3ACMEmployeur) {
@@ -697,7 +700,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                         totalDeJours = limiteTotalDeJoursAvecMaxLamatEtACM(totalDeJours);
                         buffer.append(PRStringUtils.formatMessage(new StringBuffer(texte.getDescription()), String.valueOf(totalDeJours)));
                     // si c'est le texte 4.3 ou 4.2 et qu'il s'agit de normal il faut remplacer l'argument par le totalDeJours
-                    } else if (isPos3Standard || isPos2Standard) {
+                    } else if (isPos3Standard || isPos2Standard || isPos2MATCIAB2) {
                         buffer.append(PRStringUtils.formatMessage(new StringBuffer(texte.getDescription()), String.valueOf(totalDeJours)));
                     } else {
                         buffer.append(texte.getDescription());
