@@ -454,7 +454,7 @@ public class FAImpressionFactureEBillXml {
             paymentInformation.setESR(esr);
         } else if (eBillFacture.isQR()) {
             BillHeaderType.PaymentInformation.IBAN iban = of.createBillHeaderTypePaymentInformationIBAN();
-            iban.setIBAN(eBillFacture.getNumeroCC());
+            iban.setIBAN(eBillFacture.getNumeroCC().replaceAll("\\s", ""));
             iban.setCreditorReference(reference);
             paymentInformation.setIBAN(iban);
         }
