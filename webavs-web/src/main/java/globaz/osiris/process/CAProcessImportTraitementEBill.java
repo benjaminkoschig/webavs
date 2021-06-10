@@ -42,6 +42,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * CRON permettant le traitement des fichiers de traitement eBill.
@@ -53,6 +54,7 @@ public class CAProcessImportTraitementEBill extends BProcess {
     private static final String MAIL_ERROR_CONTENT = "EBILL_MAIL_TRAITEMENT_ERROR_CONTENT";
     private static final String MAIL_SUBJECT = "EBILL_MAIL_TRAITEMENT_SUBJECT";
     private static final String XML_EXTENSION = ".xml";
+    private static final String SIG_EXTENSION = "_sig.xml";
     private final StringBuilder error = new StringBuilder();
     List<String> filesToSend = new ArrayList<>();
     private EBillSftpProcessor serviceFtp;
@@ -164,7 +166,9 @@ public class CAProcessImportTraitementEBill extends BProcess {
             LOG.info("Importation des fichiers de traitement...");
 
             // Nous recherchons tous les fichiers de traitements déposés sur le serveur FTP PostFinance
-            List<String> files = serviceFtp.getListFiles(CAProcessImportTraitementEBill.XML_EXTENSION);
+            List<String> files = serviceFtp.getListFiles(CAProcessImportTraitementEBill.XML_EXTENSION)
+                    .stream().filter(fileName -> !fileName.endsWith(SIG_EXTENSION))
+                    .collect(Collectors.toList());
 
             for (final String nomFichierDistant : files) {
                 importFile(nomFichierDistant);
