@@ -302,15 +302,6 @@
     function periodeChange() {
         var dateDebut = $('#dateDebutPeriode').val();
         var dateFin = $('#dateFinPeriode').val();
-
-
-        if (impot.is(':disabled')
-            && dateDebut != ''
-            && dateFin != '') {
-
-        } else if (!impot.is(':disabled')
-            && (dateDebut == '' || dateFin == '')) {
-        }
     }
 
     function nssFailure() {
