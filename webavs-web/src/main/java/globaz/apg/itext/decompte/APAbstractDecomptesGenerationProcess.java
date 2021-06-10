@@ -2823,7 +2823,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_APG_VENTILATION);
                     } else {
                         switch (decompteCourant.getTypeDeDecompte()) {
-
+                            case MATCIAB2:
+                                docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_MAT_MATCIAB2);
+                                break;
                             case NORMAL:
                                 docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_MAT_NORMAL);
                                 break;
