@@ -368,6 +368,9 @@ public class PersonneElementsCalculConverter {
                 }
             } else if (typeRenteCSSansRente.isEmpty() && IPCRenteAvsAi.CS_TYPE_SANS_RENTE.equals(rente.getTypeRente().getValue()) && rente.getTypeSansRente() != null && !TypeSansRente.INDEFINIT.equals(rente.getTypeSansRente())) {
                 typeRenteCSSansRente = rente.getTypeSansRente().getValue();
+                if(IPCRenteAvsAi.CS_TYPE_SANS_RENTE_INVALIDITE.equals(typeRenteCSSansRente)) {
+                    degreInvalidite = rente.getDegreInvalidite();
+                }
             }
         }
         
