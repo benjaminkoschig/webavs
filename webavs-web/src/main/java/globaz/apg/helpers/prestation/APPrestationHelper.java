@@ -2544,7 +2544,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         // calculer
         final APCalculateurPrestationStandardLamatAcmAlpha calculateur = new APCalculateurPrestationStandardLamatAcmAlpha();
 
-        calculateur.reprendreDepuisACOR(bSession, pw, droit, getFraisDeGarde(bSession, droit));
+        calculateur.reprendreDepuisACOR(bSession, pw, droit, getFraisDeGarde(bSession, droit),basesCalcul);
         return droit;
     }
 

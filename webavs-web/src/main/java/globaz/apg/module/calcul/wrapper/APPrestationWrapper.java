@@ -57,7 +57,10 @@ public class APPrestationWrapper {
      * @return la valeur courante de l'attribut frais garde
      */
     public FWCurrency getFraisGarde() {
-        return new FWCurrency(fraisGarde.toString());
+        if(fraisGarde!=null) {
+            return new FWCurrency(fraisGarde.toString());
+        }
+        return null;
     }
 
     /**

@@ -19,19 +19,21 @@ import globaz.apg.db.prestation.APRepartitionPaiements;
 import globaz.apg.db.prestation.APRepartitionPaiementsManager;
 import globaz.apg.module.calcul.APBasesCalculBuilder;
 import globaz.apg.module.calcul.standard.APCalculateurPrestationStandardLamatAcmAlpha;
+import globaz.apg.module.calcul.wrapper.APPrestationWrapper;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.prestation.api.IPRSituationProfessionnelle;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
 import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.HashSet;
+import java.util.List;
+import java.util.SortedSet;
 
 /**
  * <H1>Description</H1>
@@ -815,11 +817,11 @@ public class TestACOR2_1_15_IO {
 
             // génération
             List bc = APBasesCalculBuilder.of(TestACOR2_1_15_IO.SESSION, droit).createBasesCalcul();
-            Collection pw = APACORPrestationsParser.parse(droit, bc, TestACOR2_1_15_IO.SESSION, new StringReader(
+            SortedSet<APPrestationWrapper> pw = APACORPrestationsParser.parse(droit, bc, TestACOR2_1_15_IO.SESSION, new StringReader(
                     TestACOR2_1_15_IO.SORTIE_ACOR_APG_COMPLEXE));
 
             new APCalculateurPrestationStandardLamatAcmAlpha().reprendreDepuisACOR(TestACOR2_1_15_IO.SESSION, pw,
-                    droit, new FWCurrency(300));
+                                                                                   droit, new FWCurrency(300), null);
 
             // test
             APPrestationManager mgr = new APPrestationManager();
@@ -997,11 +999,11 @@ public class TestACOR2_1_15_IO {
 
             // génération
             List bc = APBasesCalculBuilder.of(TestACOR2_1_15_IO.SESSION, droit).createBasesCalcul();
-            Collection pw = APACORPrestationsParser.parse(droit, bc, TestACOR2_1_15_IO.SESSION, new StringReader(
+            SortedSet<APPrestationWrapper>  pw = APACORPrestationsParser.parse(droit, bc, TestACOR2_1_15_IO.SESSION, new StringReader(
                     TestACOR2_1_15_IO.SORTIE_ACOR_APG_SIMPLE));
 
             new APCalculateurPrestationStandardLamatAcmAlpha().reprendreDepuisACOR(TestACOR2_1_15_IO.SESSION, pw,
-                    droit, new FWCurrency(300));
+                                                                                   droit, new FWCurrency(300), null);
 
             // test
             APPrestationManager mgr = new APPrestationManager();
@@ -1065,11 +1067,11 @@ public class TestACOR2_1_15_IO {
 
             // génération
             List bc = APBasesCalculBuilder.of(TestACOR2_1_15_IO.SESSION, droit).createBasesCalcul();
-            Collection pw = APACORPrestationsParser.parse(droit, bc, TestACOR2_1_15_IO.SESSION, new StringReader(
+            SortedSet<APPrestationWrapper>  pw = APACORPrestationsParser.parse(droit, bc, TestACOR2_1_15_IO.SESSION, new StringReader(
                     TestACOR2_1_15_IO.SORTIE_ACOR_MAT_COMPLEXE));
 
             new APCalculateurPrestationStandardLamatAcmAlpha().reprendreDepuisACOR(TestACOR2_1_15_IO.SESSION, pw,
-                    droit, new FWCurrency(300));
+                                                                                   droit, new FWCurrency(300), null);
 
             // test
             APPrestationManager mgr = new APPrestationManager();
@@ -1270,11 +1272,11 @@ public class TestACOR2_1_15_IO {
 
             // génération
             List bc = APBasesCalculBuilder.of(TestACOR2_1_15_IO.SESSION, droit).createBasesCalcul();
-            Collection pw = APACORPrestationsParser.parse(droit, bc, TestACOR2_1_15_IO.SESSION, new StringReader(
+            SortedSet<APPrestationWrapper>  pw = APACORPrestationsParser.parse(droit, bc, TestACOR2_1_15_IO.SESSION, new StringReader(
                     TestACOR2_1_15_IO.SORTIE_ACOR_MAT_SIMPLE));
 
             new APCalculateurPrestationStandardLamatAcmAlpha().reprendreDepuisACOR(TestACOR2_1_15_IO.SESSION, pw,
-                    droit, new FWCurrency(300));
+                                                                                   droit, new FWCurrency(300), null);
 
             // test
             APPrestationManager mgr = new APPrestationManager();

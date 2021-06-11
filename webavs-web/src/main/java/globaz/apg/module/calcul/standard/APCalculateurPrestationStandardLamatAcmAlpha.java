@@ -25,6 +25,7 @@ import globaz.apg.db.prestation.APRepartitionPaiements;
 import globaz.apg.db.prestation.APRepartitionPaiementsManager;
 import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.helpers.droits.APDroitLAPGJointDemandeHelper;
+import globaz.apg.helpers.prestation.APPrestationExtensionSplitter;
 import globaz.apg.helpers.prestation.APPrestationHelper;
 import globaz.apg.module.calcul.APBaseCalcul;
 import globaz.apg.module.calcul.APCalculACORException;
@@ -1399,17 +1400,25 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             while (iter.hasNext()) {
                 final APPrestationCalculee element = (APPrestationCalculee) iter.next();
 
-                // Fusion possible uniquement si la base de calcul est la même.
-                // Survient lorsque les PGPC sont des sous-ensembles de la période de base et ont été splitté en deux
-                // suite au calcul d'une restitution.
-                if (elementPrecedent.getResultatCalcul().equals(element.getResultatCalcul())) {
-                    elementPrecedent.setDateFin(element.getDateFin());
-                } else {
-                    if (!isMontantPrestationEmpty(elementPrecedent)) {
-                        result.add(elementPrecedent);
-                    }
+                String typeAllocation = element.getResultatCalcul().getTypeAllocation();
 
+                if(session.getCode(IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE).equals(typeAllocation) || IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(typeAllocation)){
+                    result.add(elementPrecedent);
                     elementPrecedent = element;
+                } else {
+
+                    // Fusion possible uniquement si la base de calcul est la même.
+                    // Survient lorsque les PGPC sont des sous-ensembles de la période de base et ont été splitté en deux
+                    // suite au calcul d'une restitution.
+                    if (elementPrecedent.getResultatCalcul().equals(element.getResultatCalcul())) {
+                        elementPrecedent.setDateFin(element.getDateFin());
+                    } else {
+                        if (!isMontantPrestationEmpty(elementPrecedent)) {
+                            result.add(elementPrecedent);
+                        }
+
+                        elementPrecedent = element;
+                    }
                 }
             }
 
@@ -1499,7 +1508,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                 // Calcul des prestations courantes, pour chaque base de calculs données.
                 // Toutes les prestations sont ajoutées dans la liste prestationCourantes
                 traiterPrestationsCourantes(session, transaction,
-                        this.calculerPrestationsCourantes(session, basesCalcul, apgOuMaternite), droit, fraisGarde);
+                                            this.calculerPrestationsCourantes(session, basesCalcul, apgOuMaternite), droit, fraisGarde,null);
 
                 }
             }
@@ -1804,7 +1813,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
 
     public void reprendreDepuisACOR(final BSession session, final Collection prestationsCourantes,
-                                    final APDroitLAPG droit, final FWCurrency fraisGarde) throws Exception {
+                                    final APDroitLAPG droit, final FWCurrency fraisGarde, final List<APBaseCalcul> basesCalcul) throws Exception {
         BTransaction transaction = null;
 
         try {
@@ -1818,7 +1827,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
             // Calcul des prestations courantes, pour chaque base de calculs données.
             // Toutes les prestations sont ajoutées dans la liste prestationCourantes
-            traiterPrestationsCourantes(session, transaction, prestationsCourantes, droit, fraisGarde);
+            traiterPrestationsCourantes(session, transaction, prestationsCourantes, droit, fraisGarde,basesCalcul);
         } catch (final Exception e) {
             if (transaction != null) {
                 transaction.addErrors(e.getMessage());
@@ -2488,7 +2497,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
     //ESVE MATERNITE CALCULATEUR STANDARD
     private void traiterPrestationsCourantes(final BSession session, final BTransaction transaction,
-            Collection prestationsCourantes, final APDroitLAPG droit, final FWCurrency fraisGarde) throws Exception {
+                                             Collection prestationsCourantes, final APDroitLAPG droit, final FWCurrency fraisGarde, final List<APBaseCalcul> basesCalcul) throws Exception {
 
         // Màj des frais de garde au prorata en fonction du nombre de prestation à créer
         prestationsCourantes = initPrestationFraisGarde(prestationsCourantes, fraisGarde);
@@ -2500,6 +2509,10 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         // Restitution des prestations
         // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         this.restituerPrestations(session, transaction, droit);
+
+        if(droit instanceof APDroitMaternite && basesCalcul!=null) {
+            prestationsCourantes = APPrestationExtensionSplitter.periodeExtentionSpliter(basesCalcul, (SortedSet<APPrestationWrapper>)prestationsCourantes, droit);
+        }
 
         // List des prestations à créer.
         List listDesPrestationsACreer = new ArrayList();

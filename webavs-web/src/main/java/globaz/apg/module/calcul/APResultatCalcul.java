@@ -11,6 +11,7 @@ import java.util.List;
 import globaz.apg.enums.APTypeDePrestation;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.util.JADate;
+import lombok.Setter;
 
 /**
  * <H1>Description</H1>
@@ -37,7 +38,8 @@ public class APResultatCalcul {
 
     private int nombreJoursSoldes = 0;
     private int nombreJoursSupplementaires = 0;
-    private List resultatsCalculsSitProfessionnelle = null;
+    @Setter
+    private List<APResultatCalculSituationProfessionnel> resultatsCalculsSitProfessionnelle = null;
     public FWCurrency revenuDeterminantMoyen = null;
     private FWCurrency revenuJournalierIndependantTotal = new FWCurrency(0);
     private String revision = null;
@@ -160,7 +162,7 @@ public class APResultatCalcul {
      *
      * @return la valeur courante de l'attribut resultats calculs sit professionnelle
      */
-    public List getResultatsCalculsSitProfessionnelle() {
+    public List<APResultatCalculSituationProfessionnel> getResultatsCalculsSitProfessionnelle() {
         return resultatsCalculsSitProfessionnelle;
     }
 

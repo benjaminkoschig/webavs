@@ -308,6 +308,25 @@ public class APACORPrestationsParser {
             // pas la derniere base de calcul
         }
 
+        if(retValue==null){
+            for (Iterator iter = basesCalcul.iterator(); iter.hasNext();) {
+                retValue = (APBaseCalcul) iter.next();
+
+                try {
+                    if(BSessionUtil.compareDateFirstLowerOrEqual(session, dateDebut.toString(), retValue.getDateDebut().toString())
+                            && (BSessionUtil.compareDateFirstGreaterOrEqual(session, dateFin.toString(),  retValue.getDateFin().toString()))){
+                        break; // sortir de la boucle
+                    }
+                } catch (Exception e) {
+                    throw new PRACORException("comparaison de dates impossibles", e);
+                }
+
+                retValue = null; // on a pas trouve donc on va retourner null et non
+                // pas la derniere base de calcul
+
+            }
+        }
+
         return retValue;
     }
 
@@ -973,6 +992,7 @@ public class APACORPrestationsParser {
         } catch (PRACORException e) {
             throw e;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new PRACORException("impossible de parser", e);
         } finally {
             try {
