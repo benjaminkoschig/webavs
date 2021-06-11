@@ -66,4 +66,8 @@ public class Dates {
         }
         return Exceptions.checkedToUnChecked(() -> new JADate(date).toAMJ().toString(), "Error with this date:" + date);
     }
+
+    public static boolean isEqual(LocalDate date1, LocalDate date2) {
+        return date1 != null && date2 != null ? date1.isEqual(date2) : false;
+    }
 }

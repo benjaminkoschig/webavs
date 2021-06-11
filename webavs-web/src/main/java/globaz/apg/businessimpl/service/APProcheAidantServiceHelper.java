@@ -26,7 +26,7 @@ public class APProcheAidantServiceHelper {
 
             idDroits.stream()
                     .map(this::findDroitProcheAidant)
-                    .filter(droit -> !Dates.toDate(droit.getDateDebutDroit()).isEqual(date))
+                    .filter(droit -> !Dates.isEqual(Dates.toDate(droit.getDateDebutDroit()), date))
                     .forEach(droit -> {
                         droit.setDateDebutDroit(Dates.formatSwiss(date));
                         Exceptions.checkedToUnChecked(() -> droit.update());
