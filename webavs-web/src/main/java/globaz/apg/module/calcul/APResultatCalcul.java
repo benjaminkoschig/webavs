@@ -8,9 +8,13 @@ package globaz.apg.module.calcul;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import globaz.apg.enums.APTypeDePrestation;
+import globaz.apg.module.calcul.wrapper.APMontantJour;
+import globaz.apg.module.calcul.wrapper.APMontantJourCurrency;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.util.JADate;
+import lombok.Getter;
 import lombok.Setter;
 
 /**
@@ -54,6 +58,16 @@ public class APResultatCalcul {
     private FWCurrency versementAssure = null;
 
     private String csGenrePrestion = APTypeDePrestation.STANDARD.getCodesystemString();
+
+    @Getter
+    @Setter
+    private boolean jourIndemnise;
+    @Getter
+    @Setter
+    private List<APMontantJourCurrency> employeursTL = null;
+    @Getter
+    @Setter
+    private List<APMontantJour> montantJournalierList = null;
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -138,7 +152,7 @@ public class APResultatCalcul {
      * @return
      */
     public FWCurrency getMontantJournalier() {
-        return new FWCurrency(montantJournalier.toString());
+        return new FWCurrency(montantJournalier.toString(), montantJournalier.getBigDecimalValue().scale());
     }
 
     // ~ Methods

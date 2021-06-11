@@ -1,7 +1,6 @@
 package globaz.apg.module.calcul;
 
 import globaz.apg.acor.parser.APACORPrestationsParser;
-import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.application.APApplication;
@@ -14,7 +13,7 @@ import globaz.apg.db.prestation.APRepartitionPaiements;
 import globaz.apg.db.prestation.APRepartitionPaiementsManager;
 import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.helpers.droits.APSituationProfessionnelleHelper;
-import globaz.apg.module.calcul.rev2005.APModuleCalculAPG;
+import globaz.apg.module.calcul.wrapper.APMontantJour;
 import globaz.apg.services.APRechercherAssuranceFromDroitCotisationService;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.util.FWCurrency;
@@ -42,11 +41,8 @@ import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tauxImposition.api.IPRTauxImposition;
 import globaz.prestation.tools.PRCalcul;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.math.RoundingMode;
+import java.util.*;
 
 /**
  * Descpription.
@@ -1627,6 +1623,8 @@ public class APModuleRepartitionPaiements {
         BigDecimal montantBrutTotalPrestation = null;
         BigDecimal montantJournalierPrestation = null;
 
+        Integer nbJoursAssure = 0;
+
         if (prestationCalculee.getMontantJournalier().getBigDecimalValue()
                 .compareTo(prestationCalculee.getDroitAcquis().getBigDecimalValue()) < 0) {
             montantBrutTotalPrestation = prestationCalculee.getDroitAcquis().getBigDecimalValue();
@@ -1649,6 +1647,17 @@ public class APModuleRepartitionPaiements {
 
             // Montant brut de la prestation calculée à versé à l'employeur
             BigDecimal montantBrutPrestation = benefPotentiel.getMontant(montantBrutTotalPrestation);
+
+            // plusieurs employeurs et différentes périodes
+            Optional<APMontantJour> opMontantJour = Optional.empty();
+            if(prestationCalculee.hasMontantJournalierList()) {
+                opMontantJour = prestationCalculee.getMontantJournalierList().stream()
+                        .filter(mj -> mj.getSituationProfessionelle().equals(benefPotentiel.getIdSituationProfessionnelle()))
+                        .findFirst();
+            }
+            if(opMontantJour.isPresent()) {
+                montantBrutPrestation = opMontantJour.get().calculMontantPrestation();
+            }
 
             if (benefPotentiel.isVersementEmployeur()) {
                 APRepartitionPaiements repartitionBenefPaiement = new APRepartitionPaiements();
@@ -1682,8 +1691,15 @@ public class APModuleRepartitionPaiements {
                     repartitionBenefPaiement.setNom(benefPotentiel.getNom());
                 }
 
-                repartitionBenefPaiement.setTauxRJM(JANumberFormatter.format(benefPotentiel.getTauxProRata()
-                        .doubleValue() * 100d, 0.01, 2, JANumberFormatter.NEAR));
+                if(opMontantJour.isPresent()) {
+                    BigDecimal tauxRJM = opMontantJour.get().calculMontantPrestation().divide(prestationCalculee.getMontantJournalier().getBigDecimalValue().multiply(new BigDecimal(prestationCalculee.getNombreJoursSoldes())), 4, RoundingMode.HALF_UP);
+                    repartitionBenefPaiement.setTauxRJM(JANumberFormatter.format(tauxRJM
+                            .doubleValue() * 100d, 0.01, 2, JANumberFormatter.NEAR));
+                    repartitionBenefPaiement.setNombreJoursSoldes(opMontantJour.get().getJours().toString());
+                } else {
+                    repartitionBenefPaiement.setTauxRJM(JANumberFormatter.format(benefPotentiel.getTauxProRata()
+                    .doubleValue() * 100d, 0.01, 2, JANumberFormatter.NEAR));
+                }
 
                 // Correspond à l'allocation journalière de la prestation sans
                 // prendre les
@@ -1694,8 +1710,13 @@ public class APModuleRepartitionPaiements {
                 // par l'employeur.
                 BigDecimal allocBrutPrestationCumulee = new BigDecimal(montantJournalierPrestation.toString());
 
-                allocBrutPrestationCumulee = allocBrutPrestationCumulee.multiply(nbJours);
-                allocBrutPrestationCumulee = benefPotentiel.getMontant(allocBrutPrestationCumulee);
+                if(opMontantJour.isPresent()) {
+                    allocBrutPrestationCumulee = opMontantJour.get().calculMontantPrestation();
+                } else {
+                    allocBrutPrestationCumulee = allocBrutPrestationCumulee.multiply(nbJours);
+                    allocBrutPrestationCumulee = benefPotentiel.getMontant(allocBrutPrestationCumulee);
+                }
+
 
                 // Montant brut correspondant au salaire versé par l'employeur
                 if (prestationCalculee.getResultatCalcul().getVersementAssure() != null) {
@@ -1734,7 +1755,11 @@ public class APModuleRepartitionPaiements {
                         montantBrutEmployeur = benefPotentiel.getSalaireJournalierNonArrondi().getBigDecimalValue();
                     }
 
-                    montantBrutEmployeur = montantBrutEmployeur.multiply(nbJours);
+                    if(opMontantJour.isPresent()) {
+                        montantBrutEmployeur = montantBrutEmployeur.multiply(BigDecimal.valueOf(opMontantJour.get().getJours()));
+                    } else {
+                        montantBrutEmployeur = montantBrutEmployeur.multiply(nbJours);
+                    }
 
                     // Si le montant à verser est > que le montant versé par
                     // l'employeur et que la différence est plus
@@ -1835,6 +1860,9 @@ public class APModuleRepartitionPaiements {
             // On verse le tout à l'assuré
             else {
                 isVersementAssure = true;
+                if(opMontantJour.isPresent()) {
+                    nbJoursAssure+= opMontantJour.get().getJours();
+                }
             }
         }
 
@@ -1875,6 +1903,7 @@ public class APModuleRepartitionPaiements {
 
             repartitionBenefPaiement.setTypePaiement(IAPRepartitionPaiements.CS_PAIEMENT_DIRECT);
             repartitionBenefPaiement.setTypePrestation(IAPRepartitionPaiements.CS_NORMAL);
+            repartitionBenefPaiement.setNombreJoursSoldes(nbJoursAssure.toString());
             repartitionBenefPaiement.add(transaction);
 
             genererCotisationsAssure(session, prestationCalculee, repartitionBenefPaiement, casCotisations);
@@ -2479,6 +2508,7 @@ public class APModuleRepartitionPaiements {
                 repartBenefPmt.setNom(repartARestituer.getNom());
                 repartBenefPmt.setTypePaiement(repartARestituer.getTypePaiement());
                 repartBenefPmt.setTypePrestation(repartARestituer.getTypePrestation());
+                repartBenefPmt.setNombreJoursSoldes(repartARestituer.getNombreJoursSoldes());
                 repartBenefPmt.add(transaction);
                 montantCotisationDesRestitutions(session, transaction,
                         repartBenefPmt.getIdRepartitionBeneficiairePaiement(), repartARestituer);

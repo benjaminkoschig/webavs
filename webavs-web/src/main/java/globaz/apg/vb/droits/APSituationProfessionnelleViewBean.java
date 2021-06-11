@@ -3,14 +3,21 @@
  */
 package globaz.apg.vb.droits;
 
+import ch.globaz.common.exceptions.Exceptions;
 import ch.globaz.common.properties.CommonPropertiesUtils;
 import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.common.sql.SQLWriter;
+import ch.globaz.common.sql.converters.LocalDateConverter;
+import ch.globaz.queryexec.bridge.jade.SCM;
 import globaz.apg.api.assurance.IAPAssurance;
 import globaz.apg.api.process.IAPGenererCompensationProcess;
 import globaz.apg.application.APApplication;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APDroitProcheAidant;
 import globaz.apg.db.droits.APSituationProfessionnelle;
+import globaz.apg.db.droits.APSituationProfessionnelleManager;
+import globaz.apg.db.prestation.APPrestation;
+import globaz.apg.db.prestation.APPrestationManager;
 import globaz.apg.menu.MenuPrestation;
 import globaz.apg.properties.APProperties;
 import globaz.apg.properties.APPropertyTypeDePrestationAcmValues;
@@ -23,9 +30,7 @@ import globaz.commons.nss.NSUtil;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWMessageFormat;
 import globaz.globall.api.GlobazSystem;
-import globaz.globall.db.BManager;
-import globaz.globall.db.BProcess;
-import globaz.globall.db.BSessionUtil;
+import globaz.globall.db.*;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeCodesSystemsUtil;
@@ -65,6 +70,7 @@ import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.PreparedStatement;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1808,4 +1814,49 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     public String translate(String label, Object... arguments) {
         return MessageFormat.format(FWMessageFormat.prepareQuotes(getSession().getLabel(label), false), arguments);
     }
+
+    public void updateJourEmployeurIdentique(BTransaction transaction, boolean joursIdentiques)throws Exception {
+        if(typeDemande.isProcheAidant()) {
+            APSituationProfessionnelleManager managerSitu = new APSituationProfessionnelleManager();
+            managerSitu.setSession(this.getSession());
+            managerSitu.setForIdDroit(idDroit);
+            managerSitu.setNotForIdSituationProfessionnelle(idSituationProf);
+            managerSitu.find(transaction, BManager.SIZE_NOLIMIT);
+            managerSitu.<APSituationProfessionnelle>getContainerAsList()
+                    .forEach(situationProfessionnelle -> Exceptions.checkedToUnChecked(() -> {
+                                situationProfessionnelle.wantCallValidate(false);
+                                situationProfessionnelle.setSession(this.getSession());
+                                situationProfessionnelle.setIsJoursIdentiques(joursIdentiques);
+                                situationProfessionnelle.update(transaction);
+                            })
+                    );
+        }
+    }
+
+    public boolean hasJourEmployeurIdentique()throws Exception {
+        if(typeDemande.isProcheAidant()) {
+            APSituationProfessionnelleManager managerSitu = new APSituationProfessionnelleManager();
+            managerSitu.setSession(this.getSession());
+            managerSitu.setForIdDroit(idDroit);
+            managerSitu.find(BManager.SIZE_NOLIMIT);
+            return managerSitu.<APSituationProfessionnelle>getContainerAsList().stream()
+                    .anyMatch(s -> s.getIsJoursIdentiques());
+        }
+        return true;
+    }
+
+    @Override
+    protected void _afterAdd(BTransaction transaction) throws Exception {
+        super._afterAdd(transaction);
+        updateJourEmployeurIdentique(transaction, this.isJoursIdentiques);
+    }
+
+    @Override
+    protected void _afterUpdate(BTransaction transaction) throws Exception {
+        super._afterUpdate(transaction);
+        updateJourEmployeurIdentique(transaction, this.isJoursIdentiques);
+    }
+
+
+
 }

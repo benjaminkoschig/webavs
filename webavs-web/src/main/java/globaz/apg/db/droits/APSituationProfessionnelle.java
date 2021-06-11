@@ -22,8 +22,10 @@ import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.api.IPRSituationProfessionnelle;
 import globaz.prestation.clone.factory.IPRCloneable;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.With;
 
 /**
  * <H1>Bentity de la situation professionnelle</H1>
@@ -35,6 +37,7 @@ import lombok.Setter;
  * @see globaz.apg.db.droits.APEmployeur
  * @author dvh
  */
+
 public class APSituationProfessionnelle extends BEntity implements IPRCloneable, SituationProfessionnelle {
 
     private static final long serialVersionUID = 1L;
@@ -124,6 +127,8 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
     public static final String FIELDNAME_SALAIRENATURE = "VFMSAN";
 
     public static final String FIELDNAME_NB_JOUR_INDEMNISE= "VFNJIN";
+
+    public static final String FIELDNAME_JOURS_IDENTIQUES= "VFJIDE";
 
     public static final String TABLE_NAME_SITUATION_PROFESSIONNELLE = "APSIPRP";
 
@@ -215,6 +220,9 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
     @Getter
     @Setter
     protected Integer nbJourIndemnise = 0;
+    @Getter
+    @Setter
+    protected Boolean isJoursIdentiques = true;
 
     @Override
     protected void _afterAdd(BTransaction transaction) throws Exception {
@@ -371,6 +379,7 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         isAMATFExcluded = statement.dbReadBoolean(APSituationProfessionnelle.FIELDNAME_ISAMATFEEXCLUDED);
 
         this.nbJourIndemnise = JadePropertyReader.readInteger(APSituationProfessionnelle.FIELDNAME_NB_JOUR_INDEMNISE, statement);
+        this.isJoursIdentiques = statement.dbReadBoolean(APSituationProfessionnelle.FIELDNAME_JOURS_IDENTIQUES);
     }
 
     @Override
@@ -671,6 +680,10 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
                 statement.getTransaction(), isAMATFExcluded, BConstants.DB_TYPE_BOOLEAN_CHAR, "isAMATFExcluded"));
 
         JadePropertyWriter.writeNumeric(APSituationProfessionnelle.FIELDNAME_NB_JOUR_INDEMNISE,nbJourIndemnise,statement);
+
+        statement.writeField(APSituationProfessionnelle.FIELDNAME_JOURS_IDENTIQUES, this._dbWriteBoolean(
+                statement.getTransaction(), isJoursIdentiques, BConstants.DB_TYPE_BOOLEAN_CHAR,
+                "isJoursIdentiques"));
     }
 
     @Override
@@ -726,6 +739,7 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         // Par contre, il faut mettre a jours l'incrément.
         clone.setIdSituationProf(this._incCounter(getSession().getCurrentThreadTransaction(), "0"));
         clone.setNbJourIndemnise(this.nbJourIndemnise);
+        clone.setIsJoursIdentiques(this.isJoursIdentiques);
 
         return clone;
     }

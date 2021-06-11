@@ -7,6 +7,7 @@ package globaz.apg.module.calcul.rev2005;
 
 import globaz.apg.module.calcul.APBaseCalcul;
 import globaz.apg.module.calcul.APCalculException;
+import globaz.apg.module.calcul.wrapper.APMontantJour;
 import globaz.apg.module.calcul.APResultatCalcul;
 import globaz.apg.module.calcul.interfaces.IAPModuleCalcul;
 import globaz.apg.module.calcul.interfaces.IAPReferenceDataPrestation;
@@ -14,6 +15,9 @@ import globaz.framework.util.FWCurrency;
 import globaz.globall.util.JANumberFormatter;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author scr
@@ -38,14 +42,32 @@ public class APModuleCalculAllocProcheAidant extends AAPModuleCalculSalaireJourn
 
         APResultatCalcul result = super.calculerMontantAllocation(baseCalcul, refData);
         // Salaire journalier
-        FWCurrency TL = result.getTL();
+        BigDecimal bTE;
+        if(result.getEmployeursTL() == null || result.getEmployeursTL().isEmpty()) {
+            bTE = getBigDecimal((APReferenceDataAPG) refData, result.getTL());
+            result.setMontantJournalier(new FWCurrency(bTE.toString()));
+        } else {
+            // plusieurs employeurs / plusieurs périodes séparées
+            bTE = BigDecimal.ZERO;
+            List<APMontantJour> list = result.getEmployeursTL().stream()
+                    .map(mj -> APMontantJour.of(getBigDecimal((APReferenceDataAPG) refData, mj.getMontant()), mj.getJours(), mj.getSituationProfessionelle())).collect(Collectors.toList());
+            result.setMontantJournalierList(list);
+            result.setMontantJournalier(new FWCurrency(list.stream()
+                    .map(mj -> mj.calculMontantJournalierParRapportAuTotal(baseCalcul.getNombreJoursSoldes()))
+                            .reduce(BigDecimal.ZERO, BigDecimal::add).toString(), 3));
 
+        }
+        return result;
+
+    }
+
+    private BigDecimal getBigDecimal(APReferenceDataAPG refData, FWCurrency TL) {
         BigDecimal bTE = new BigDecimal(TL.toString());
 
         // TL = GE
-        if (TL.compareTo(((APReferenceDataAPG) refData).getGE()) >= 0) {
+        if (TL.compareTo(refData.getGE()) >= 0) {
             // TE = Amax
-            bTE = ((APReferenceDataAPG) refData).getAmax().getBigDecimalValue();
+            bTE = refData.getAmax().getBigDecimalValue();
         }
         // TL!=GE
         else {
@@ -54,11 +76,9 @@ public class APModuleCalculAllocProcheAidant extends AAPModuleCalculSalaireJourn
             bTE = bTE.add(new BigDecimal(0.9));
             bTE = bTE.divide(new BigDecimal(10), BigDecimal.ROUND_HALF_DOWN);
             bTE = JANumberFormatter.round(bTE, 0.1, 1, JANumberFormatter.INF);
+
         }
-
-        result.setMontantJournalier(new FWCurrency(bTE.toString()));
-        return result;
-
+        return bTE;
     }
 
 }

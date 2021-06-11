@@ -6,6 +6,9 @@ import globaz.apg.module.calcul.salaire.APSalaireAdapter;
 import globaz.framework.util.FWCurrency;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.tools.PRStringUtils;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +38,12 @@ public class APBaseCalculSituationProfessionnel {
     private String noAffilie = "";
     private String nom = null;
     private APBaseCalculSalaireJournalier versementEmployeur = null;
+    @Getter
+    @Setter
+    private Integer nbJourIndemnise;
+    @Getter
+    @Setter
+    private Boolean isJoursIdentiques;
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -81,6 +90,8 @@ public class APBaseCalculSituationProfessionnel {
         isIndependant = sitPro.getIsIndependant().booleanValue();
         nom = sitPro.loadEmployeur().loadNom();
         noAffilie = sitPro.loadEmployeur().loadNumero();
+        nbJourIndemnise = sitPro.getNbJourIndemnise();
+        isJoursIdentiques = sitPro.getIsJoursIdentiques();
 
         // indicer le nom s'il y a plus d'un contrat avec cet employeur
         if (nbContrats > 1) {

@@ -38,7 +38,11 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 
 
   function add() {
-    document.forms[0].elements('userAction').value="<%=globaz.apg.servlet.IAPActions.ACTION_SITUATION_PROFESSIONNELLE%>.ajouter"
+    document.forms[0].elements('userAction').value="<%=globaz.apg.servlet.IAPActions.ACTION_SITUATION_PROFESSIONNELLE%>.ajouter";
+	if (<%=viewBean.displayJourIndemnise()%>) {
+		$('#isJoursIdentiques').prop( "checked", <%=viewBean.hasJourEmployeurIdentique()%> );
+		updateJoursIdentiques();
+	}
   }
   function upd() {
     pourcentClick(document.forms[0].elements('isPourcentAutreRemun'), document.forms[0].elements('periodiciteAutreRemun'));
@@ -50,6 +54,7 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 	  	document.forms[0].elements('isVersementEmployeur')[1].disabled = true;
 	}
   	disableIsAllocExpl();
+  	updateJoursIdentiques();
   }
 
   function disableIsAllocExpl(){
@@ -526,6 +531,19 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
       }
       return true;
   }
+
+  function updateJoursIdentiques() {
+	  if (<%=viewBean.displayJourIndemnise()%>) {
+		  var $nbJourIndemnise = $("#nbJourIndemnise");
+		  if( $('#isJoursIdentiques').is(':checked')){
+			  $nbJourIndemnise.attr('disabled','disabled');
+		  } else {
+			  $nbJourIndemnise.removeAttr('disabled');
+		  }
+	  }
+  }
+
+
 </script>
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
@@ -646,6 +664,13 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 							<INPUT type="hidden" id="csAssuranceAssociation" name="csAssuranceAssociation"  value="<%=viewBean.getCsAssuranceAssociation()%>">
 
 						<!-- ************************* D0063 ************************** -->
+						<%if (viewBean.getTypeDemande().isProcheAidant()) {%>
+						<TR>
+							<TD colspan="4"/>
+							<TD><LABEL for="isJoursIdentiques"><ct:FWLabel key="JSP_JOURS_IDENTIQUES"/></LABEL></TD>
+							<TD><INPUT type="checkbox" id="isJoursIdentiques" name="isJoursIdentiques" value="on" onclick="updateJoursIdentiques();" <%=viewBean.getIsJoursIdentiques().booleanValue()?"CHECKED":""%>></TD>
+						</TR>
+						<%}%>
 						<TR>
 							<TD><LABEL for="heuresSemaine"><ct:FWLabel key="JSP_HEURES"/></LABEL></TD>
 							<TD><INPUT type="text" name="heuresSemaine" value="<%=viewBean.getHeuresSemaine()%>" class="numeroCourt" style="text-align:right" onchange="validateFloatNumber(this);" onkeypress="montantHoraireChange(); return filterCharForFloat(window.event);"><ct:FWLabel key="JSP_PAR_SEMAINE"/></TD>

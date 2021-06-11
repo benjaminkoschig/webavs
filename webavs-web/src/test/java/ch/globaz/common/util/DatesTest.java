@@ -38,4 +38,10 @@ public class DatesTest {
         Assertions.assertThat(Dates.toDate("01.02.2021")).isEqualTo(LocalDate.of(2021, 2, 1));
     }
 
+    @Test
+    public void isEqual_dates_null() {
+        Assertions.assertThat(Dates.isEqual(null, Dates.toDate("01.02.2021"))).isFalse();
+        Assertions.assertThat(Dates.isEqual(Dates.toDate("01.02.2021"), null)).isFalse();
+    }
+
 }

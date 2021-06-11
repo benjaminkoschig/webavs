@@ -386,7 +386,6 @@ public abstract class APBasesCalculBuilder {
 
     protected void ajouterTauxImposition() throws Exception {
         if (!(droit instanceof APDroitPaternite)
-                && !(droit instanceof APDroitProcheAidant)
                 && droit.getIsSoumisImpotSource().booleanValue()) {
 
             // si pas de date fin mettre la fin du mois en cours pour le calcul

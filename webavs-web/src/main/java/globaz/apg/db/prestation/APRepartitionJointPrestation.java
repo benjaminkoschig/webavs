@@ -16,6 +16,8 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Comparator;
 
@@ -299,11 +301,12 @@ public class APRepartitionJointPrestation extends APRepartitionPaiements impleme
 
     /**
      * getter pour l'attribut nb jours soldes
+     * retourne le nb jour soldé de la répartition sinon celui de la prestation
      * 
      * @return la valeur courante de l'attribut nb jours soldes
      */
     public String getNbJoursSoldes() {
-        return nbJoursSoldes;
+        return !JadeStringUtil.isBlankOrZero(getNombreJoursSoldes()) ? getNombreJoursSoldes() : nbJoursSoldes;
     }
 
     public String getPaiementPourLibelle() {

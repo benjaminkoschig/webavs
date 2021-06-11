@@ -1,12 +1,15 @@
 package globaz.apg.module.calcul;
 
 import globaz.framework.util.FWCurrency;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Descpription
  * 
  * @author scr Date de création 31 mai 05
  */
+
 public class APSituationProfessionnelleHelper {
 
     // ~ Instance fields
@@ -29,6 +32,16 @@ public class APSituationProfessionnelleHelper {
     private FWCurrency salaireJournalier = null;
     private FWCurrency salaireJournalierVerse = null;
     private FWCurrency TL = null;
+    @Getter
+    @Setter
+    private Integer nbJourTotal = null;
+    @Getter
+    @Setter
+    private Integer nbJourIndemnise = null;
+    @Getter
+    @Setter
+    private Boolean isJoursIdentiques = null;
+
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -287,6 +300,10 @@ public class APSituationProfessionnelleHelper {
      */
     public void setVersementEmployeur(boolean b) {
         isVersementEmployeur = b;
+    }
+
+    public boolean hasNbJourIndemnise() {
+        return this.nbJourIndemnise != null && this.nbJourIndemnise > 0;
     }
 
 }

@@ -1,6 +1,7 @@
 package globaz.apg.module.calcul.standard;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -27,19 +28,11 @@ import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.helpers.droits.APDroitLAPGJointDemandeHelper;
 import globaz.apg.helpers.prestation.APPrestationExtensionSplitter;
 import globaz.apg.helpers.prestation.APPrestationHelper;
-import globaz.apg.module.calcul.APBaseCalcul;
-import globaz.apg.module.calcul.APCalculACORException;
-import globaz.apg.module.calcul.APCalculException;
-import globaz.apg.module.calcul.APCalculateurFactory;
-import globaz.apg.module.calcul.APModuleRepartitionPaiements;
-import globaz.apg.module.calcul.APPrestationCalculee;
-import globaz.apg.module.calcul.APPrestationStandardLamatAcmAlphaData;
-import globaz.apg.module.calcul.APReferenceDataParser;
-import globaz.apg.module.calcul.APResultatCalcul;
-import globaz.apg.module.calcul.APResultatCalculSituationProfessionnel;
+import globaz.apg.module.calcul.*;
 import globaz.apg.module.calcul.interfaces.IAPCalculateur;
 import globaz.apg.module.calcul.interfaces.IAPReferenceDataPrestation;
 import globaz.apg.module.calcul.lamat.LAMatCalculateur;
+import globaz.apg.module.calcul.wrapper.APMontantJour;
 import globaz.apg.module.calcul.wrapper.APPeriodeWrapper;
 import globaz.apg.module.calcul.wrapper.APPrestationWrapper;
 import globaz.apg.module.calcul.wrapper.APPrestationWrapperComparator;
@@ -225,6 +218,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         }
 
         prestCalculee.setMontantJournalier(prestationWrapper.getPrestationBase().getMontantJournalier());
+        prestCalculee.setMontantJournalierList(prestationWrapper.getPrestationBase().getMontantJournalierList());
         prestCalculee.setBasicDailyAmount(prestationWrapper.getPrestationBase().getBasicDailyAmount());
         prestCalculee.setTypePrestation(IAPPrestation.CS_TYPE_NORMAL);
         prestCalculee.setRevenuDeterminantMoyen(new FWCurrency(
@@ -908,7 +902,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
             // on met a jour le montant journalier de la prestation à créer pour calculer juste les repartition
             // on fait cela avant l'ajout des frais de garde car ils sont payés dans une repartition séparée
-            prestationACreer.setMontantJournalier(new FWCurrency(mb.toString()));
+            prestationACreer.setMontantJournalier(new FWCurrency(mb.toString(), mb.scale()));
 
             // Cumul du montant journalier avec le montant journalier de l'allocation d'exploitation
             if ((prestationACreer.getResultatCalcul().getAllocationJournaliereExploitation() != null)
@@ -921,7 +915,17 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             }
 
             entity.setMontantJournalier(mb.toString());
-            mb = mb.multiply(new BigDecimal(prestationACreer.getNombreJoursSoldes()));
+
+            if(prestationACreer.hasMontantJournalierList()) {
+                mb = BigDecimal.ZERO;
+                for(APMontantJour montantJour: prestationACreer.getMontantJournalierList()) {
+                    mb = mb.add(montantJour.getMontant()
+                            .multiply(BigDecimal.valueOf(montantJour.getJours())));
+                }
+                entity.setMontantJournalier(mb.divide(new BigDecimal(prestationACreer.getNombreJoursSoldes()),4, RoundingMode.HALF_UP).toString());
+            } else{
+                mb = mb.multiply(new BigDecimal(prestationACreer.getNombreJoursSoldes()));
+            }
             entity.setMontantBrut(mb.toString());
 
             // Bz 7642 : Correction pour la plausibilté 307 lorsque le résultat du calcul vient de ACOR et le montant

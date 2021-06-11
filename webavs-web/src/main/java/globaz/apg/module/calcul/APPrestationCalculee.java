@@ -1,7 +1,12 @@
 package globaz.apg.module.calcul;
 
+import globaz.apg.module.calcul.wrapper.APMontantJour;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.util.JADate;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
 
 /**
  * Descpription
@@ -30,6 +35,10 @@ public class APPrestationCalculee {
     private String typePrestation = null;
     private String csGenrePrestation = null;
     private String idPrestationApg = null;
+
+    @Getter
+    @Setter
+    private List<APMontantJour> montantJournalierList;
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -301,5 +310,9 @@ public class APPrestationCalculee {
 
     public void setIdPrestationApg(String idPrestationApg) {
         this.idPrestationApg = idPrestationApg;
+    }
+
+    public boolean hasMontantJournalierList() {
+        return montantJournalierList != null && !montantJournalierList.isEmpty();
     }
 }

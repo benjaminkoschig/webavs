@@ -23,6 +23,8 @@ import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.tools.PRHierarchique;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 
 import java.math.BigDecimal;
@@ -60,6 +62,8 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
     public static final String FIELDNAME_TYPE_ASSOCIATION_ASSURANCE = "VITAAS";
     public static final String FIELDNAME_TYPEPAIEMENT = "VITTPM";
     public static final String FIELDNAME_TYPEPRESTATION = "VITTPR";
+    public static final String FIELDNAME_NOMBREJOURSSOLDES = "VINBJS";
+
     public static final String TABLE_NAME = "APREPAP";
 
     private String dateValeur = "";
@@ -85,6 +89,9 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
     private String typeAssociationAssurance = "";
     private String typePaiement = "";
     private String typePrestation = "";
+    @Getter
+    @Setter
+    private String nombreJoursSoldes = "";
 
     /**
      * (non-Javadoc).
@@ -187,6 +194,7 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
         idAffilieAdrPmt = statement.dbReadNumeric(APRepartitionPaiements.FIELDNAME_IDAFFILIEADRESSEPAIEMENT);
 
         typeAssociationAssurance = statement.dbReadNumeric(APRepartitionPaiements.FIELDNAME_TYPE_ASSOCIATION_ASSURANCE);
+        nombreJoursSoldes = statement.dbReadNumeric(APRepartitionPaiements.FIELDNAME_NOMBREJOURSSOLDES);
     }
 
     /**
@@ -376,6 +384,8 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
 
         statement.writeField(APRepartitionPaiements.FIELDNAME_TYPE_ASSOCIATION_ASSURANCE,
                 this._dbWriteNumeric(statement.getTransaction(), typeAssociationAssurance, "typeAssociationAssurance"));
+        statement.writeField(APRepartitionPaiements.FIELDNAME_NOMBREJOURSSOLDES,
+                this._dbWriteNumeric(statement.getTransaction(), nombreJoursSoldes, "nombreJoursSoldes"));
     }
 
     public void chercherAdressePaiement(BTransaction transaction, String idSituationProf) throws Exception {

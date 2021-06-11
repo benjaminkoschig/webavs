@@ -1,10 +1,17 @@
 package globaz.apg.db.droits;
 
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.utils.PRDateUtils;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 public class APPeriodeComparable extends APPeriodeAPG implements Comparable<APPeriodeAPG> {
 
     APPeriodeAPG ori;
+
+    private static final DateTimeFormatter format = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     public APPeriodeComparable(APPeriodeAPG clone) {
         setIdPeriode(clone.getIdPeriode());
@@ -75,4 +82,25 @@ public class APPeriodeComparable extends APPeriodeAPG implements Comparable<APPe
     public void setOri(APPeriodeAPG ori) {
         this.ori = ori;
     }
+
+    public long nbJourPeriode() {
+        LocalDate dateDeDebutPrestDate = parseStringToDateTime(getDateDebutPeriode(), format);
+        LocalDate dateDeFinACMDate = parseStringToDateTime(getDateFinPeriode(), format);
+        return ChronoUnit.DAYS.between(dateDeDebutPrestDate, dateDeFinACMDate);
+    }
+
+    /**
+     *
+     *
+     * @param date
+     * @param formatter
+     * @return
+     */
+    private LocalDate parseStringToDateTime(String date, DateTimeFormatter formatter) {
+        if (!JadeStringUtil.isBlankOrZero(date)) {
+            return LocalDate.parse(date, formatter);
+        }
+        return null;
+    }
+
 }

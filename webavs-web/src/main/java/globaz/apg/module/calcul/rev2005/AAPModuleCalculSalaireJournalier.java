@@ -5,18 +5,17 @@
  */
 package globaz.apg.module.calcul.rev2005;
 
+import ch.globaz.common.domaine.Montant;
 import globaz.apg.exceptions.APRulesException;
-import globaz.apg.module.calcul.APBaseCalcul;
-import globaz.apg.module.calcul.APBaseCalculSalaireJournalier;
-import globaz.apg.module.calcul.APBaseCalculSituationProfessionnel;
-import globaz.apg.module.calcul.APResultatCalcul;
-import globaz.apg.module.calcul.APResultatCalculSituationProfessionnel;
-import globaz.apg.module.calcul.APSituationProfessionnelleHelper;
+import globaz.apg.module.calcul.*;
 import globaz.apg.module.calcul.exceptions.APBaseCalculDataMissingException;
 import globaz.apg.module.calcul.interfaces.IAPReferenceDataPrestation;
+import globaz.apg.module.calcul.wrapper.APMontantJourCurrency;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
+import lombok.Value;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -55,7 +54,7 @@ public abstract class AAPModuleCalculSalaireJournalier {
             result.setAllocationJournaliereExploitation(((APReferenceDataAPG) refData).getBZ());
         }
 
-        List listSitProfHelper = loadSituationProfessionnelleDataHelper(baseCalcul, refData);
+        List<APSituationProfessionnelleHelper> listSitProfHelper = loadSituationProfessionnelleDataHelper(baseCalcul, refData);
         if (listSitProfHelper == null) {
             result.setRevenuDeterminantMoyen(new FWCurrency(0));
             result.setTL(new FWCurrency(0));
@@ -64,24 +63,36 @@ public abstract class AAPModuleCalculSalaireJournalier {
 
         // Salaire journalier
         FWCurrency TL = new FWCurrency(0);
-        FWCurrency rmd = new FWCurrency(0);
-
-        for (Iterator iter = listSitProfHelper.iterator(); iter.hasNext();) {
-            APSituationProfessionnelleHelper element = (APSituationProfessionnelleHelper) iter.next();
-
-            TL.add(element.getTL());
-            rmd.add(element.getRevenuMoyenDeterminantSansArrondi());
-        }
-
+        BigDecimal bTL = new BigDecimal(0);
         // Initialisation des salaires par employeurs, et maj des taux calculé
         // au prorata par rapport à l'alloc.
         // journalière totale (TL)
-        result = loadResultatSituationProfessionnelle(result, listSitProfHelper, rmd);
+        result = loadResultatSituationProfessionnelle(result, listSitProfHelper);
 
-        // Arrondi au francs
-        TL = new FWCurrency(JANumberFormatter.round(TL.getBigDecimalValue(), 1, 0, JANumberFormatter.INF).toString());
+        if(result.isJourIndemnise()) {
+            result.setEmployeursTL(new ArrayList<>());
+            for(APSituationProfessionnelleHelper sit : listSitProfHelper) {
+                FWCurrency cTL = new FWCurrency(JANumberFormatter.round(sit.getTL().doubleValue(), 1, 0, JANumberFormatter.INF));
+                bTL = BigDecimal.valueOf(cTL.doubleValue() * sit.getNbJourIndemnise() / sit.getNbJourTotal());
+                FWCurrency cTL2 = new FWCurrency(JANumberFormatter.round(bTL.doubleValue(), 0.0005, 4, JANumberFormatter.NEAR), 4);
+                result.getEmployeursTL().add(APMontantJourCurrency.of(cTL, sit.getNbJourIndemnise(), sit.getIdSituationProfessionnelle()));
+                TL.add(cTL2);
+            }
 
-        result.setTL(TL);
+            result.setTL(TL);
+        } else {
+            for (Iterator<APSituationProfessionnelleHelper> iter = listSitProfHelper.iterator(); iter.hasNext();) {
+                APSituationProfessionnelleHelper element = iter.next();
+                bTL = bTL.add(element.getTL().getBigDecimalValue());
+                TL.add(element.getTL());
+            }
+            // Arrondi au francs
+            TL = new FWCurrency(JANumberFormatter.round(bTL, 1, 0, JANumberFormatter.INF).toString());
+
+            result.setTL(TL);
+        }
+
+
 
         FWCurrency revDetMoy = result.getSalaireJournalierTotal();
         if (revDetMoy == null) {
@@ -187,23 +198,34 @@ public abstract class AAPModuleCalculSalaireJournalier {
      * 
      * @return DOCUMENT ME!
      */
-    protected APResultatCalcul loadResultatSituationProfessionnelle(APResultatCalcul result, List salairesParEmployeur,
-            FWCurrency salaireJournalierTotal) {
+    protected APResultatCalcul loadResultatSituationProfessionnelle(APResultatCalcul result, List<APSituationProfessionnelleHelper> salairesParEmployeur) {
         BigDecimal cumulDesTaux = new BigDecimal(0);
+
+        TauxCalculateur tauxCalculateur = TauxCalculateur.of(salairesParEmployeur);
+        Integer nbJoursIndemnisesTotal = salairesParEmployeur.stream()
+                .filter(APSituationProfessionnelleHelper::hasNbJourIndemnise)
+                .map(APSituationProfessionnelleHelper::getNbJourIndemnise)
+                .reduce(0, Integer::sum);
+
+        boolean hasJourIndemnise = salairesParEmployeur.stream().anyMatch(sit -> sit.hasNbJourIndemnise() && (sit.getNbJourIndemnise() != sit.getNbJourTotal()
+                || salairesParEmployeur.size() > 1));
+        hasJourIndemnise = salairesParEmployeur.stream().allMatch(sit -> !sit.getIsJoursIdentiques()) && hasJourIndemnise;
+
+        result.setJourIndemnise(hasJourIndemnise);
 
         for (Iterator iter = salairesParEmployeur.iterator(); iter.hasNext();) {
             APSituationProfessionnelleHelper element = (APSituationProfessionnelleHelper) iter.next();
 
             BigDecimal tauxProRata = null;
-
             // Dernier element
-            if (!iter.hasNext()) {
+            if (!iter.hasNext()
+                    // Seulement si le nombre de jour saisie dans les situation professionnelle = nb jour total
+                    && (nbJoursIndemnisesTotal == element.getNbJourTotal()
+                        || nbJoursIndemnisesTotal == 0)) {
                 tauxProRata = new BigDecimal(1);
                 tauxProRata = tauxProRata.subtract(cumulDesTaux);
             } else {
-                tauxProRata = element.getRevenuMoyenDeterminantSansArrondi().getBigDecimalValue();
-                tauxProRata = tauxProRata.divide(salaireJournalierTotal.getBigDecimalValue(), 5,
-                        BigDecimal.ROUND_HALF_DOWN);
+                tauxProRata = tauxCalculateur.calculTaux(element, hasJourIndemnise);
             }
 
             cumulDesTaux = cumulDesTaux.add(tauxProRata);
@@ -242,9 +264,9 @@ public abstract class AAPModuleCalculSalaireJournalier {
      * @throws APRulesException
      *             DOCUMENT ME!
      */
-    protected List loadSituationProfessionnelleDataHelper(APBaseCalcul baseCalcul, IAPReferenceDataPrestation refData)
+    protected List<APSituationProfessionnelleHelper> loadSituationProfessionnelleDataHelper(APBaseCalcul baseCalcul, IAPReferenceDataPrestation refData)
             throws APBaseCalculDataMissingException {
-        List result = new ArrayList();
+        List<APSituationProfessionnelleHelper> result = new ArrayList();
 
         if (baseCalcul.isSansActiviteLucrative()) {
             return null;
@@ -278,6 +300,9 @@ public abstract class AAPModuleCalculSalaireJournalier {
             helper.setCollaborateurAgricole(bcSitProf.isCollaborateurAgricole());
             helper.setTravailleurAgricole(bcSitProf.isTravailleurAgricole());
             helper.setTravailleurSansEmployeur(bcSitProf.isTravailleurSansEmployeur());
+            helper.setNbJourIndemnise(bcSitProf.getNbJourIndemnise());
+            helper.setNbJourTotal(baseCalcul.getNombreJoursSoldes());
+            helper.setIsJoursIdentiques(bcSitProf.getIsJoursIdentiques());
 
             // Si allocation maximum, on ne calcul rien, on alloue l'allocation
             // maximum.
@@ -377,9 +402,61 @@ public abstract class AAPModuleCalculSalaireJournalier {
 
             helper.setSalaireJournalier(salaireJournalier);
             helper.setTL(salaireJournalierPourCalculRMD);
+
             result.add(helper);
         }
 
         return result;
+    }
+
+    @Value(staticConstructor = "of")
+    static class TauxCalculateur {
+        private Montant montantJournalierTotal;
+        private Montant montantTotal;
+
+        public static TauxCalculateur of(List<APSituationProfessionnelleHelper> situationProfessionnelle) {
+
+            Montant salaireJournalierTotal = situationProfessionnelle.stream()
+                    .map(APSituationProfessionnelleHelper::getSalaireJournalier)
+                    .map(FWCurrency::getBigDecimalValue)
+                    .map(Montant::new)
+                    .reduce(Montant.ZERO, Montant::add);
+
+            Montant montantTotal = situationProfessionnelle.stream()
+                    .filter(APSituationProfessionnelleHelper::hasNbJourIndemnise)
+                    .map(sit -> sit.getSalaireJournalier().getBigDecimalValue().multiply(new BigDecimal(sit.getNbJourIndemnise())))
+                    .map(Montant::new)
+                    .reduce(Montant.ZERO, Montant::add);
+
+            return new TauxCalculateur(salaireJournalierTotal, montantTotal);
+
+        }
+
+        public BigDecimal calculTaux(APSituationProfessionnelleHelper situationProfessionnelle, boolean plusiseursSituationsProfessionnelles){
+            if(plusiseursSituationsProfessionnelles) {
+                return this.calculTauxAvecNbJourIndemnise(situationProfessionnelle);
+            }
+
+            return this.calculTauxStandard(situationProfessionnelle);
+        }
+
+
+        private BigDecimal calculTauxAvecNbJourIndemnise(APSituationProfessionnelleHelper situationProfessionnelle) {
+            TauxCalculateur calculSituationUnique = TauxCalculateur.of(new Montant(situationProfessionnelle.getSalaireJournalier().getBigDecimalValue()),
+                    new Montant(situationProfessionnelle.getNbJourIndemnise()).multiply(situationProfessionnelle.getSalaireJournalier().getBigDecimalValue()));
+
+            return calculTaux(calculSituationUnique.montantTotal.getBigDecimalValue(), this.montantTotal);
+        }
+
+        private BigDecimal calculTauxStandard(APSituationProfessionnelleHelper situationProfessionnelle) {
+            return calculTaux(situationProfessionnelle.getRevenuMoyenDeterminantSansArrondi().getBigDecimalValue(), this.getMontantJournalierTotal());
+        }
+
+        private BigDecimal calculTaux(BigDecimal bigDecimalValue, Montant calculSalaireNbjourTotal) {
+            return bigDecimalValue.divide(calculSalaireNbjourTotal.getBigDecimalValue(), 10,
+                    BigDecimal.ROUND_HALF_DOWN);
+        }
+
+
     }
 }
