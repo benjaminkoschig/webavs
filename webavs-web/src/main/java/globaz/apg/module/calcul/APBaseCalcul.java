@@ -4,6 +4,9 @@
 package globaz.apg.module.calcul;
 
 import globaz.globall.util.JADate;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +41,11 @@ public class APBaseCalcul implements Cloneable {
     private boolean soumisImpotSource;
     private String tauxImposition = "";
     private String typeAllocation = null;
+
+    // Ajout boolean uniquement pour extension Maternité
+    @Setter
+    @Getter
+    private boolean isExtension = false;
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
