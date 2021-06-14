@@ -4,6 +4,7 @@ import aquila.ch.eschkg.*;
 import ch.globaz.exceptions.ExceptionMessage;
 import ch.globaz.exceptions.GlobazTechnicalException;
 import com.google.common.base.Throwables;
+import globaz.af.gui.JJ14ActeurListeNumeroAvs;
 import globaz.aquila.api.ICOEtape;
 import globaz.aquila.application.COProperties;
 import globaz.aquila.db.access.batch.*;
@@ -38,12 +39,23 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.ls.LSResourceResolver;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.*;
 
 public class COImportMessageELP extends BProcess {
@@ -55,11 +67,14 @@ public class COImportMessageELP extends BProcess {
     private static final String BACKUP_FOLDER = "/backup/";
     private static final String ERROR_FOLDER = "/error/";
     private static final String XML_EXTENSION = ".xml";
+    private static final String XSD_FOLDER = "/xsd/aquila/";
+    private static final String XSD_FILE_NAME = "eSchKG_2.2.01.xsd";
 
     private COProtocoleELP protocole;
     private String error = "";
     private String backupFolder;
     private String errorFolder;
+    private Schema xsdSchema;
 
     @Override
     protected boolean _executeProcess() throws Exception {
@@ -149,8 +164,11 @@ public class COImportMessageELP extends BProcess {
                 try {
                     tmpLocalWorkFile = JadeFsFacade.readFile(nomFichierDistant);
                     File eLPFile = new File(tmpLocalWorkFile);
+                    boolean traitementInSucces = false;
                     if (eLPFile.isFile()) {
-                        boolean traitementInSucces = traitementFichier(getDocument(eLPFile), infos);
+                        if(validateXml(eLPFile, infos)) {
+                            traitementInSucces = traitementFichier(getDocument(eLPFile), infos);
+                        }
                         movingFile(nomFichierDistant, tmpLocalWorkFile, nameOriginalFile, traitementInSucces);
                         if (getSession().hasErrors()) {
                             LOG.error("Une erreur est intervenue durant le traitement du fichier {} : {} ", nomFichierDistant, getSession().getErrors());
@@ -187,7 +205,7 @@ public class COImportMessageELP extends BProcess {
      * @param infos
      */
     private boolean traitementFichier(Document doc, COInfoFileELP infos) {
-        LOG.info("Traitement du fichier " + infos.getFichier());
+        LOG.info("Traitement du fichier {}", infos.getFichier());
         boolean resultTraitement = Boolean.FALSE;
         try {
             if (doc.getSC() != null) {
@@ -234,7 +252,7 @@ public class COImportMessageELP extends BProcess {
      * @param infos  : les infos sur le fichier xml
      */
     private boolean traitement(ScType scType, COInfoFileELP infos) throws ElpProcessException {
-        LOG.info("Traitement SC du fichier " + infos.getFichier());
+        LOG.info("Traitement SC du fichier {}", infos.getFichier());
         boolean traitementInSuccess = false;
         // Création de l'objet scElp
         COScElpDto scElpDto = getScElp(scType, infos);
@@ -269,7 +287,7 @@ public class COImportMessageELP extends BProcess {
      * @throws ElpProcessException
      */
     private boolean createEtapeCDP(COInfoFileELP infos, COScElpDto scElpDto) throws ElpProcessException {
-        LOG.info("Création de l'étape Commandement de payer pour le fichier " + infos.getFichier());
+        LOG.info("Création de l'étape Commandement de payer pour le fichier {}", infos.getFichier());
         boolean traitementInSuccess = false;
         if (StringUtils.isNotEmpty(scElpDto.getDateNotification())) {
             // Récupération du contentieux
@@ -284,7 +302,7 @@ public class COImportMessageELP extends BProcess {
                     // Ajout des étapes infos
                     addCDPEtapeInfos(action, scElpDto);
                     // Création du process
-                    traitementInSuccess = executeCOTransitionProcess(contentieux, action, new ArrayList());
+                    traitementInSuccess = executeCOTransitionProcess(contentieux, action, new ArrayList<>());
                     if (traitementInSuccess) {
                         protocole.addMsgTraite(scElpDto);
                     } else {
@@ -485,7 +503,7 @@ public class COImportMessageELP extends BProcess {
      * @throws COELPException      Exception lancée si un incident intervient lors de la récupération du type de saisie.
      */
     private Boolean traitement(SpType spType, COInfoFileELP infos) throws ElpProcessException, COELPException {
-        LOG.info("Traitement SP du fichier " + infos.getFichier());
+        LOG.info("Traitement SP du fichier {}", infos.getFichier());
         boolean traitementInSuccess = false;
         // Création de l'objet spElp
         List<COSpElpDto> spElpDtoList = getSpElp(spType, infos);
@@ -531,7 +549,7 @@ public class COImportMessageELP extends BProcess {
      * @throws ElpProcessException
      */
     private boolean createEtapePVSaisie(COInfoFileELP infos, COSpElpDto spElpDto) throws ElpProcessException {
-        LOG.info("Création de l'étape PV de saisie du fichier " + infos.getFichier());
+        LOG.info("Création de l'étape PV de saisie du fichier {}", infos.getFichier());
         boolean traitementInSuccess = false;
         // Récupération du contentieux
         COContentieux contentieux = getContentieux(infos);
@@ -657,15 +675,17 @@ public class COImportMessageELP extends BProcess {
      */
     private Set<String> getTypeSaisie(SpType spType) {
         Set<String> result = new HashSet<>();
-        SpType.Outcome.Seizure seizure = spType.getOutcome().getSeizure();
-        if (Objects.nonNull(seizure)) {
-            SpType.Outcome.Seizure.Deed deed = seizure.getDeed();
-            if (Objects.nonNull(deed)) {
-                SpType.Outcome.Seizure.Deed.Seized seized = deed.getSeized();
-                for (JAXBElement eachPart : seized.getContent()) {
-                    String localpart = eachPart.getName().getLocalPart();
-                    String codeSytem = CODeedTypeSaisie.getCodeSystemFromCodeXml(localpart.substring(0, 2));
-                    result.add(codeSytem);
+        if(Objects.nonNull(spType.getOutcome())) {
+            SpType.Outcome.Seizure seizure = spType.getOutcome().getSeizure();
+            if (Objects.nonNull(seizure)) {
+                SpType.Outcome.Seizure.Deed deed = seizure.getDeed();
+                if (Objects.nonNull(deed)) {
+                    SpType.Outcome.Seizure.Deed.Seized seized = deed.getSeized();
+                    for (JAXBElement eachPart : seized.getContent()) {
+                        String localpart = eachPart.getName().getLocalPart();
+                        String codeSytem = CODeedTypeSaisie.getCodeSystemFromCodeXml(localpart.substring(0, 2));
+                        result.add(codeSytem);
+                    }
                 }
             }
         }
@@ -709,7 +729,7 @@ public class COImportMessageELP extends BProcess {
      * @param infos
      */
     private Boolean traitement(RcType rcType, COInfoFileELP infos) throws ElpProcessException {
-        LOG.info("Traitement RC du fichier " + infos.getFichier());
+        LOG.info("Traitement RC du fichier {}", infos.getFichier());
         boolean traitementInSuccess = false;
         // Création de l'objet rcElp
         CORcElpDto rcElpDto = getRcElp(rcType, infos);
@@ -747,7 +767,7 @@ public class COImportMessageELP extends BProcess {
      * @throws ElpProcessException
      */
     private boolean createEtapeADB(COInfoFileELP infos, CORcElpDto rcElpDto) throws ElpProcessException {
-        LOG.info("Création de l'étape Acte de défaut de bien du fichier " + infos.getFichier());
+        LOG.info("Création de l'étape Acte de défaut de bien du fichier {}", infos.getFichier());
         boolean traitementInSuccess = false;
         // Récupération du contentieux
         COContentieux contentieux = getContentieux(infos);
@@ -926,4 +946,35 @@ public class COImportMessageELP extends BProcess {
         return eMailAddress;
     }
 
+    private boolean validateXml(File xmlFile, COInfoFileELP infos) {
+        try {
+            loadXsdSchema();
+            if(Objects.nonNull(xsdSchema)) {
+                Validator validator = xsdSchema.newValidator();
+                validator.validate(new StreamSource(xmlFile));
+            }else{
+                LOG.info("Schema XSD introuvable, validation impossible.");
+            }
+            return true;
+        } catch (SAXException | IOException e) {
+            protocole.addMsgIncoherentInattendue(infos, "le fichier xml fourni n'est pas valide.");
+            LOG.info("e fichier xml fourni n'est pas valide: \n {}", e.getMessage());
+            return false;
+        }
+    }
+
+    private void loadXsdSchema(){
+        if(Objects.isNull(xsdSchema)) {
+            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            URL url = getClass().getResource(XSD_FOLDER + XSD_FILE_NAME);
+            if (Objects.nonNull(url)) {
+                File xsdFile = new File(url.getFile());
+                try {
+                    xsdSchema = factory.newSchema(xsdFile);
+                } catch (SAXException e) {
+                    LOG.info("Impossible de charger le schema xsd: {}", XSD_FILE_NAME);
+                }
+            }
+        }
+    }
 }

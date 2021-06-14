@@ -3,6 +3,7 @@ package globaz.aquila.process.elp;
 import aquila.ch.eschkg.LossType;
 import aquila.ch.eschkg.SpType;
 import aquila.ch.eschkg.SpType.Outcome.Seizure;
+import aquila.ch.eschkg.StatusInfoType;
 import globaz.aquila.print.list.elp.COELPException;
 import globaz.aquila.print.list.elp.COTypeMessageELP;
 import globaz.globall.db.BSession;
@@ -25,14 +26,21 @@ public class COSpElpDto extends COAbstractELP {
 
     public COSpElpDto(SpType spType, BSession session) throws COELPException {
         this.spType = spType;
-        this.numeroStatut = spType.getStatusInfo().getStatus();
+        this.numeroStatut = getStatusFromSp(spType);
         initializeADBParam(session);
     }
 
     public COSpElpDto(SpType spType, String typeSaisie, BSession session) throws COELPException {
         this.spType = spType;
-        this.numeroStatut = spType.getStatusInfo().getStatus();
+        this.numeroStatut = getStatusFromSp(spType);
         initializePVSaisieParam(typeSaisie, session);
+    }
+
+    private String getStatusFromSp(SpType spType){
+        StatusInfoType statusInfoType = spType.getStatusInfo();
+        return Objects.nonNull(spType.getStatusInfo()) && Objects.nonNull(statusInfoType.getStatus()) ?
+                    statusInfoType.getStatus() :
+                    StringUtils.EMPTY;
     }
 
     /**
@@ -42,21 +50,28 @@ public class COSpElpDto extends COAbstractELP {
      * @throws COELPException
      */
     private void initializeADBParam(BSession session) throws COELPException {
-        Seizure seizure = spType.getOutcome().getSeizure();
-        if (Objects.nonNull(seizure)) {
-            LossType loss = seizure.getLoss();
-            if (Objects.nonNull(loss)) {
-                typeSaisieLabel = session.getLabel(ADB_LABEL);
-                dateExecution = getDate(loss.getDate());
-                delaiVente = StringUtils.EMPTY;
-                if (Objects.nonNull(loss.getInterest())) {
-                    interest = loss.getInterest().toString();
+        SpType.Outcome outCome = spType.getOutcome();
+        if(Objects.nonNull(outCome)) {
+            Seizure seizure = spType.getOutcome().getSeizure();
+            if (Objects.nonNull(seizure)) {
+                LossType loss = seizure.getLoss();
+                if (Objects.nonNull(loss)) {
+                    typeSaisieLabel = session.getLabel(ADB_LABEL);
+                    if(Objects.nonNull(loss.getDate())) {
+                        dateExecution = getDate(loss.getDate());
+                    }
+                    delaiVente = StringUtils.EMPTY;
+                    if (Objects.nonNull(loss.getInterest())) {
+                        interest = loss.getInterest().toString();
+                    }
+                } else {
+                    throw new COELPException("Erreur de cast du fichier xml : impossible de récupérer la balise Loss dans le cadre d'un PV de saisie valant ADB.");
                 }
             } else {
-                throw new COELPException("Erreur de cast du fichier xml : impossible de récupérer la balise Loss dans le cadre d'un PV de saisie valant ADB.");
+                throw new COELPException("Erreur de cast du fichier xml : impossible de récupérer la balise Seizure dans le cadre d'un PV de saisie valant ADB.");
             }
         } else {
-            throw new COELPException("Erreur de cast du fichier xml : impossible de récupérer la balise Seizure dans le cadre d'un PV de saisie valant ADB.");
+            throw new COELPException("Erreur de cast du fichier xml : impossible de récupérer la balise Outcome dans le cadre d'un PV de saisie valant ADB.");
         }
 
     }
@@ -69,19 +84,30 @@ public class COSpElpDto extends COAbstractELP {
      * @throws COELPException
      */
     private void initializePVSaisieParam(String typeSaisie, BSession session) throws COELPException {
-        Seizure seizure = spType.getOutcome().getSeizure();
-        if (Objects.nonNull(seizure)) {
-            Seizure.Deed deed = seizure.getDeed();
-            if (Objects.nonNull(deed)) {
-                Seizure.Deed.Seized seized = deed.getSeized();
-                initialiseTypeSaisie(session, typeSaisie);
-                initialiseDelaiVente(seized, typeSaisie);
-                dateExecution = getDate(deed.getSeizureDate());
+        SpType.Outcome outCome = spType.getOutcome();
+        if(Objects.nonNull(outCome)) {
+            Seizure seizure = spType.getOutcome().getSeizure();
+            if (Objects.nonNull(seizure)) {
+                Seizure.Deed deed = seizure.getDeed();
+                if (Objects.nonNull(deed)) {
+                    initialiseTypeSaisie(session, typeSaisie);
+                    Seizure.Deed.Seized seized = deed.getSeized();
+                    if(Objects.nonNull(seized)) {
+                        initialiseDelaiVente(seized, typeSaisie);
+                        if(Objects.nonNull(deed.getSeizureDate())) {
+                            dateExecution = getDate(deed.getSeizureDate());
+                        }
+                    }else{
+                        throw new COELPException("Erreur de cast du fichier xml : impossible de récupérer la balise Seized dans le cadre d'un PV de saisie.");
+                    }
+                } else {
+                    throw new COELPException("Erreur de cast du fichier xml : impossible de récupérer la balise Deed dans le cadre d'un PV de saisie.");
+                }
             } else {
-                throw new COELPException("Erreur de cast du fichier xml : impossible de récupérer la balise Deed dans le cadre d'un PV de saisie.");
+                throw new COELPException("Erreur de cast du fichier xml : impossible de récupérer la balise Seizure dans le cadre d'un PV de saisie.");
             }
         } else {
-            throw new COELPException("Erreur de cast du fichier xml : impossible de récupérer la balise Seizure dans le cadre d'un PV de saisie.");
+            throw new COELPException("Erreur de cast du fichier xml : impossible de récupérer la balise Outcome dans le cadre d'un PV de saisie.");
         }
     }
 
@@ -127,7 +153,9 @@ public class COSpElpDto extends COAbstractELP {
 
     @Override
     public String getRemarque() {
-        return Optional.ofNullable(spType.getStatusInfo().getDetails()).orElse("");
+        return Objects.nonNull(spType.getStatusInfo()) ?
+                Optional.ofNullable(spType.getStatusInfo().getDetails()).orElse("") :
+                StringUtils.EMPTY;
     }
 
     /**

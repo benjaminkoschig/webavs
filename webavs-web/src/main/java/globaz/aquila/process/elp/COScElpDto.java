@@ -2,6 +2,7 @@ package globaz.aquila.process.elp;
 
 import aquila.ch.eschkg.ScType;
 import aquila.ch.eschkg.ScType.Outcome.Summon;
+import aquila.ch.eschkg.StatusInfoType;
 import globaz.aquila.api.ICOEtape;
 import globaz.aquila.db.access.batch.COEtape;
 import globaz.aquila.db.access.batch.COEtapeManager;
@@ -24,16 +25,14 @@ public class COScElpDto extends COAbstractELP {
 
     public COScElpDto(ScType scType) {
         this.scType = scType;
-        this.numeroStatut = scType.getStatusInfo().getStatus();
+        this.numeroStatut = Objects.nonNull(scType.getStatusInfo()) && Objects.nonNull(scType.getStatusInfo().getStatus()) ?
+                                    scType.getStatusInfo().getStatus() :
+                                    StringUtils.EMPTY;
         initialiseParam();
     }
 
     private void initialiseParam() {
-        if (StringUtils.equals(ElpStatut.CDP_AVEC_OPPOSITION, numeroStatut)) {
-            opposition = "on";
-        } else {
-            opposition = StringUtils.EMPTY;
-        }
+        opposition = StringUtils.equals(ElpStatut.CDP_AVEC_OPPOSITION, numeroStatut) ? "on" : StringUtils.EMPTY;
     }
 
     @Override
@@ -43,18 +42,22 @@ public class COScElpDto extends COAbstractELP {
 
     @Override
     public String getRemarque() {
-        return Optional.ofNullable(scType.getStatusInfo().getDetails()).orElse("");
+            return Objects.nonNull(scType.getStatusInfo()) ?
+                        Optional.ofNullable(scType.getStatusInfo().getDetails()).orElse("") :
+                        StringUtils.EMPTY;
     }
 
     public String getDateNotification() {
-        return getDate(Optional.ofNullable(scType.getOutcome().getSummon())
-                .map(summon -> summon.getDelivery())
-                .map(delivery -> delivery.getDeliveryDate())
-                .orElse(null));
+            return Objects.nonNull(scType.getOutcome()) ?
+                    getDate(Optional.ofNullable(scType.getOutcome().getSummon())
+                                    .map(Summon::getDelivery)
+                                    .map(Summon.Delivery::getDeliveryDate)
+                                    .orElse(null)) :
+                    StringUtils.EMPTY;
     }
 
     public String getNoPoursuite() {
-        return scType.getCaseNumber();
+        return Objects.nonNull(scType.getCaseNumber()) ? scType.getCaseNumber() : StringUtils.EMPTY;
     }
 
     public String getOpposition() {
