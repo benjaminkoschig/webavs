@@ -286,7 +286,7 @@ public class APACORPrestationsParser {
         return retValue;
     }
 
-    private static APBaseCalcul findBaseCalcul(BSession session, List basesCalcul, JADate dateDebut, JADate dateFin)
+    private static APBaseCalcul findBaseCalcul(BSession session, List<APBaseCalcul> basesCalcul, JADate dateDebut, JADate dateFin)
             throws PRACORException {
         APBaseCalcul retValue = null;
 
@@ -308,7 +308,7 @@ public class APACORPrestationsParser {
             // pas la derniere base de calcul
         }
 
-        if(retValue==null){
+        if(retValue==null && basesCalcul.stream().anyMatch(APBaseCalcul::isExtension)){
             for (Iterator iter = basesCalcul.iterator(); iter.hasNext();) {
                 retValue = (APBaseCalcul) iter.next();
 

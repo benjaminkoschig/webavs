@@ -27,10 +27,7 @@ public class APPrestationExtensionSplitter {
     public static SortedSet<APPrestationWrapper> periodeExtentionSpliter(final List<APBaseCalcul> basesCalculs,
                                                                          final SortedSet<APPrestationWrapper> pwSet) {
 
-
-        List<APBaseCalcul> baseCalculsWithExtension = basesCalculs.stream().filter(APBaseCalcul::isExtension)
-                                                                  .sorted(Comparator.comparing(o -> Dates.toDate(o.getDateDebut())))
-                                                                  .collect(Collectors.toList());
+        List<APBaseCalcul> baseCalculsWithExtension = findBaseCalculeWithExtension(basesCalculs);
 
         if (!baseCalculsWithExtension.isEmpty()) {
             SortedSet<APPrestationWrapper> pwNew = new TreeSet<>(pwSet);
@@ -40,8 +37,6 @@ public class APPrestationExtensionSplitter {
 
                 pwSet.forEach(prestationWrapper -> {
                     LocalDate dateDebutPrestation = Dates.toDate(prestationWrapper.getPeriodeBaseCalcul().getDateDebut());
-                    LocalDate dateFinPrestation = Dates.toDate(prestationWrapper.getPeriodeBaseCalcul().getDateFin());
-
                     if (dateDebutExtension.getMonth().equals(dateDebutPrestation.getMonth()) && dateDebutExtension
                             .getDayOfMonth() != dateDebutPrestation.getDayOfMonth()) {
                         pwNew.remove(prestationWrapper);
@@ -50,23 +45,23 @@ public class APPrestationExtensionSplitter {
                         int nbJourSolde;
 
                         LocalDate dateFin = dateDebutExtension.minusDays(1);
-                        JADate dateFin1 = baseCalcul.getDateFin();
+                        JADate dateFinBase = baseCalcul.getDateFin();
 
                         if (dateDebutExtension.getMonth() != dateFinExtension.getMonth()) {
                             nbJourSolde = (int) Dates.daysBetween(Dates.toDate(prestationWrapper.getPeriodeBaseCalcul().getDateDebut()), dateFin);
-                            dateFin1 = Dates.toJADate(YearMonth.from(dateDebutExtension).atEndOfMonth());
+                            dateFinBase = Dates.toJADate(YearMonth.from(dateDebutExtension).atEndOfMonth());
                             nbJourSoldeBase = prestationWrapper.getPrestationBase().getNombreJoursSoldes() - nbJourSolde;
                         } else {
                             nbJourSolde = prestationWrapper.getPrestationBase().getNombreJoursSoldes() - nbJourSoldeBase;
                         }
 
-                        APPrestationWrapper prestationWrapper1 = copyPrestation(
+                        pwNew.add(copyPrestation(
                                 prestationWrapper,
                                 prestationWrapper.getPeriodeBaseCalcul().getDateDebut(),
-                                Dates.toJADate(dateFin), nbJourSolde);
-                        pwNew.add(prestationWrapper1);
+                                Dates.toJADate(dateFin), nbJourSolde)
+                        );
 
-                        pwNew.add(copyPrestation(prestationWrapper, baseCalcul.getDateDebut(), dateFin1, nbJourSoldeBase));
+                        pwNew.add(copyPrestation(prestationWrapper, baseCalcul.getDateDebut(), dateFinBase, nbJourSoldeBase));
                     }
                 });
             });
@@ -76,24 +71,11 @@ public class APPrestationExtensionSplitter {
         return pwSet;
     }
 
-    private static Map<APPrestationWrapper, List<APBaseCalcul>> mapByPeriodeDate(final SortedSet<APPrestationWrapper> pwSet, final List<APBaseCalcul> basesCalculs) {
-        Map<APPrestationWrapper, List<APBaseCalcul>> map = new HashMap<>();
-        pwSet.forEach(apPrestationWrapper -> {
-            ArrayList<APBaseCalcul> baseCalculs = new ArrayList<>();
-            map.put(apPrestationWrapper, baseCalculs);
-            basesCalculs.forEach(apBaseCalcul -> {
-                LocalDate dateDebut = Dates.toDate(apBaseCalcul.getDateDebut());
-                LocalDate dateFin = Dates.toDate(apBaseCalcul.getDateFin());
-                LocalDate dateDebutPrestation = Dates.toDate(apPrestationWrapper.getPeriodeBaseCalcul().getDateDebut());
-                LocalDate dateFinPrestation = Dates.toDate(apPrestationWrapper.getPeriodeBaseCalcul().getDateFin());
-
-                if ((dateDebutPrestation.isBefore(dateDebut) || dateDebutPrestation.isEqual(dateDebut))
-                        && (dateFinPrestation.isAfter(dateFin) || dateFinPrestation.isEqual(dateFin))) {
-                    baseCalculs.add(apBaseCalcul);
-                }
-            });
-        });
-        return map;
+    private static List<APBaseCalcul> findBaseCalculeWithExtension(final List<APBaseCalcul> basesCalculs) {
+        return basesCalculs.stream()
+                           .filter(APBaseCalcul::isExtension)
+                           .sorted(Comparator.comparing(o -> Dates.toDate(o.getDateDebut())))
+                           .collect(Collectors.toList());
     }
 
     private static APPrestationWrapper copyPrestation(final APPrestationWrapper prestationWrapper,
