@@ -2,6 +2,8 @@ package globaz.apg.rapg.rules;
 
 import ch.globaz.common.domaine.Periode;
 import ch.globaz.common.exceptions.Exceptions;
+import ch.globaz.common.util.Dates;
+import com.google.common.annotations.VisibleForTesting;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.droits.APDroitAPGJointTiers;
 import globaz.apg.db.droits.APDroitAPGJointTiersManager;
@@ -20,7 +22,11 @@ import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadePeriodWrapper;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.api.IPRDemande;
+import org.joda.time.Days;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -136,7 +142,7 @@ public class Rule418 extends Rule {
 
                 for(APPeriodeAPG periodePat : droit.getPeriodes()){
                     if (!JadeStringUtil.isBlank(periodePat.getNbrJours()) && !droit.getIdDroit().equals(champsAnnonce.getIdDroit())) {
-                        int nbreJoursAAjouter = getNombreJoursAAjouter(periodeAPGCalculed, periodePat.getDateDebutPeriode(),periodePat.getDateDebutPeriode());
+                        int nbreJoursAAjouter = getNombreJoursAAjouter(periodeAPGCalculed, periodePat.getDateDebutPeriode(),periodePat.getDateFinPeriode());
                         nombreJoursPat += nbreJoursAAjouter;
                     }
                 }
@@ -181,38 +187,36 @@ public class Rule418 extends Rule {
                      .reduce(0, Integer::sum);
     }
 
-    private int getNombreJoursAAjouter(APPeriodeAPG periodeAPGCalculed, String dateDebutACompparer, String dateFinAComparer) {
+    @VisibleForTesting
+    int getNombreJoursAAjouter(APPeriodeAPG periodeAPGCalculed, String dateDebutACompparer, String dateFinAComparer) {
         Periode periode1 = new Periode(periodeAPGCalculed.getDateDebutPeriode(),periodeAPGCalculed.getDateFinPeriode());
         if(JadeStringUtil.isBlankOrZero(dateFinAComparer)){
             dateFinAComparer = JadeDateUtil.getGlobazFormattedDate(new Date(JadeDateUtil.now()));
         }
         Periode periode2 = new Periode(dateDebutACompparer,dateFinAComparer);
-        String dateDebutDroitAAjouter = "";
-        String dateDebutFinAAjouter = "";
-
 
         if(periode1.comparerChevauchement(periode2) == Periode.ComparaisonDePeriode.LES_PERIODES_SE_CHEVAUCHENT){
-            if(JadeDateUtil.areDatesEquals(periode1.getDateDebut(), periode2.getDateDebut())){
-                dateDebutDroitAAjouter = periode1.getDateDebut();
-            }else{
-                if(JadeDateUtil.isDateBefore(periode1.getDateDebut(), periode2.getDateDebut())){
-                    dateDebutDroitAAjouter = periode2.getDateDebut();
-                }else{
-                    dateDebutDroitAAjouter = periode1.getDateDebut();
-                }
+            LocalDate periode1Debut = Dates.toDate(periode1.getDateDebut());
+            LocalDate periode1Fin = Dates.toDate(periode1.getDateFin());
+            LocalDate periode2Debut = Dates.toDate(periode2.getDateDebut());
+            LocalDate periode2Fin = Dates.toDate(periode2.getDateFin());
+            LocalDate dateDebutDroit;
+            LocalDate dateFinDroit;
+            if(periode1Debut.equals(periode2Debut) ||
+               periode1Debut.isAfter(periode2Debut)) {
+                dateDebutDroit = periode1Debut;
+            } else {
+                dateDebutDroit = periode2Debut;
             }
-            if(JadeDateUtil.areDatesEquals(periode1.getDateFin(), periode2.getDateFin())){
-                dateDebutFinAAjouter = periode1.getDateFin();
-            }else{
-                if(JadeDateUtil.isDateBefore(periode1.getDateFin(), periode2.getDateFin())){
-                    dateDebutFinAAjouter = periode1.getDateFin();
-                }else{
-                    dateDebutFinAAjouter = periode2.getDateFin();
-                }
+
+            if(periode1Fin.equals(periode2Fin) ||
+               periode1Fin.isBefore(periode2Fin)){
+                dateFinDroit = periode1Fin;
+            } else {
+                dateFinDroit = periode2Fin;
             }
-            return JadeDateUtil.getNbDayBetween(dateDebutDroitAAjouter, dateDebutFinAAjouter)+1;
+            return (int) Dates.daysBetween(dateDebutDroit, dateFinDroit);
         }
         return 0;
     }
-
 }

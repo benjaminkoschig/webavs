@@ -6,6 +6,7 @@ import globaz.globall.util.JADate;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
 import java.util.Locale;
 
@@ -73,5 +74,10 @@ public class Dates {
 
     public static boolean isEqual(LocalDate date1, LocalDate date2) {
         return date1 != null && date2 != null ? date1.isEqual(date2) : false;
+    }
+
+    public static long daysBetween(LocalDate fromDate, LocalDate toDate){
+        long between = ChronoUnit.DAYS.between(fromDate, toDate);
+        return between >= 0 ? between + 1 : between  - 1;
     }
 }
