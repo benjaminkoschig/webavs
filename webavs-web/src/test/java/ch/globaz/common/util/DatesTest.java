@@ -61,4 +61,9 @@ public class DatesTest {
     public void daysBetween_toBeforeFrom_minus2(){
         assertThat(Dates.daysBetween(LocalDate.now(), LocalDate.now().minusDays(1))).isEqualTo(-2);
     }
+
+    @Test
+    public void daysBetween_withStringSuisseFormat_ok(){
+        assertThat(Dates.daysBetween("01.02.2021","02.02.2021")).isEqualTo(2);
+    }
 }

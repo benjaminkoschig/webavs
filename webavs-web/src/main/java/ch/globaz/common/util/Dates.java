@@ -69,15 +69,32 @@ public class Dates {
     }
 
     public static LocalDate toDate(final JADate dateDebut) {
-        return LocalDate.of(dateDebut.getYear(),dateDebut.getMonth(),dateDebut.getDay());
+        return LocalDate.of(dateDebut.getYear(), dateDebut.getMonth(), dateDebut.getDay());
     }
 
     public static boolean isEqual(LocalDate date1, LocalDate date2) {
         return date1 != null && date2 != null ? date1.isEqual(date2) : false;
     }
 
-    public static long daysBetween(LocalDate fromDate, LocalDate toDate){
+    /**
+     * Permet de calculer le nombre de jour entre deux dates.
+     * 01.02.2021 et 01.02.2021 => 1 jours.
+     *
+     * @param fromDate La date de début au format suisse (01.02.2021)
+     * @param toDate   La date de fin au format suisse (01.02.2021)
+     *
+     * @return Le nombre de jours.
+     */
+    public static long daysBetween(String fromDate, String toDate) {
+        return daysBetween(Dates.toDate(fromDate), Dates.toDate(toDate));
+    }
+
+    public static long daysBetween(LocalDate fromDate, LocalDate toDate) {
         long between = ChronoUnit.DAYS.between(fromDate, toDate);
-        return between >= 0 ? between + 1 : between  - 1;
+        return between >= 0 ? between + 1 : between - 1;
+    }
+
+    public static JADate toJADate(final LocalDate date) {
+        return new JADate(date.getDayOfMonth(), date.getMonthValue(), date.getYear());
     }
 }

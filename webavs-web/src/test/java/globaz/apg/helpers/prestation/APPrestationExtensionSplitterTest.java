@@ -1,5 +1,6 @@
 package globaz.apg.helpers.prestation;
 
+import ch.globaz.common.util.Dates;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.module.calcul.APBaseCalcul;
 import globaz.apg.module.calcul.APBaseCalculSituationProfessionnel;
@@ -44,7 +45,6 @@ public class APPrestationExtensionSplitterTest {
         basesCalculList.add(createBaseCalcul("01.01.2021", "31.01.2021"));
 
         SortedSet<APPrestationWrapper> pwSet = new TreeSet<>(new APPrestationWrapperComparator());
-        List<APPrestationWrapper> pw = new ArrayList<>();
         pwSet.add(createApPrestationWrapper("01.01.2021", "31.01.2021"));
 
         APDroitLAPG droit = new APDroitLAPG();
@@ -55,13 +55,13 @@ public class APPrestationExtensionSplitterTest {
         droit.setJoursSupplementaires("0");
     }
 
-   // @Test
+    @Test
     public void periodeExtensionSpliter_avecPeriodeEnPlus_ajoutUnePeriodePresationWrapper() throws JAException {
         APPrestationHelper apPrestationHelper = new APPrestationHelper();
         List<APBaseCalcul> basesCalculList = new ArrayList<>();
         basesCalculList.add(createBaseCalcul("01.01.2021", "31.01.2021"));
         basesCalculList.add(createBaseCalcul("01.02.2021", "23.02.2021"));
-        basesCalculList.add(createBaseCalcul("24.02.2021", "28.02.2021"));
+        basesCalculList.add(createBaseCalcul("24.02.2021", "28.02.2021").setExtension(true));
 
         SortedSet<APPrestationWrapper> pwSet = new TreeSet<>(new APPrestationWrapperComparator());
         pwSet.add(createApPrestationWrapper("01.01.2021", "31.01.2021"));
@@ -76,72 +76,12 @@ public class APPrestationExtensionSplitterTest {
     }
 
 
-    //@Test
-    public void periodeExtensionSpliter_avecPeriodeEnPlus_ajoutUnePeriodePresationWdrapper() throws JAException {
-        List<APBaseCalcul> basesCalculList = new ArrayList<>();
-        basesCalculList.add(createBaseCalcul("01.01.2021", "28.02.2021"));
-        basesCalculList.add(createBaseCalcul("01.03.2021", "03.04.2021"));
-        basesCalculList.add(createBaseCalcul("04.04.2021", "25.04.2021").setExtension(true));
-        SortedSet<APPrestationWrapper> pwSet = new TreeSet<>(new APPrestationWrapperComparator());
-        pwSet.add(createApPrestationWrapper("01.01.2021", "31.01.2021"));
-        pwSet.add(createApPrestationWrapper("01.02.2021", "28.02.2021"));
-        pwSet.add(createApPrestationWrapper("01.03.2021", "31.03.2021"));
-        pwSet.add(createApPrestationWrapper("01.04.2021", "25.04.2021"));
-
-
-        APDroitLAPG droit = new APDroitLAPG();
-        droit.setJoursSupplementaires("2");
-        Collection<APPrestationWrapper> apPrestationWrappers = APPrestationExtensionSplitter.periodeExtentionSpliter(basesCalculList, pwSet, droit);
-        assertThat(apPrestationWrappers).hasSize(5);
-
-    }
-
-
-   // @Test
-    public void periodeExtensionSpliter_avecPeriodeEnPlus_ajoutUnePeriodePresationWdrapper2() throws JAException {
-        List<APBaseCalcul> basesCalculList = new ArrayList<>();
-        basesCalculList.add(createBaseCalcul("01.01.2021", "28.02.2021"));
-        basesCalculList.add(createBaseCalcul("01.03.2021", "03.04.2021"));
-        basesCalculList.add(createBaseCalcul("04.04.2021", "25.05.2021"));
-        SortedSet<APPrestationWrapper> pwSet = new TreeSet<>(new APPrestationWrapperComparator());
-        pwSet.add(createApPrestationWrapper("01.01.2021", "31.01.2021"));
-        pwSet.add(createApPrestationWrapper("01.02.2021", "28.02.2021"));
-        pwSet.add(createApPrestationWrapper("01.03.2021", "31.03.2021"));
-        pwSet.add(createApPrestationWrapper("01.04.2021", "30.04.2021"));
-        pwSet.add(createApPrestationWrapper("01.05.2021", "25.05.2021"));
-
-
-        pwSet.add(createApPrestationWrapper("01.04.2021", "03.04.2021")); // standard
-        pwSet.add(createApPrestationWrapper("04.04.2021", "30.04.2021")); // extension
-        pwSet.add(createApPrestationWrapper("01.05.2021", "25.05.2021"));
-
-        APDroitLAPG droit = new APDroitLAPG();
-        droit.setJoursSupplementaires("2");
-        Collection<APPrestationWrapper> apPrestationWrappers = APPrestationExtensionSplitter.periodeExtentionSpliter(basesCalculList, pwSet, droit);
-        assertThat(apPrestationWrappers).hasSize(5);
-
-        droit.setJoursSupplementaires("0");
-    }
-
-   // @Test
-    public void copyResultatCalcul_avecBonneValeur_ok() throws JAException {
-        APPrestationWrapper prestationWrapper = createApPrestationWrapper("01.01.2021", "12.01.2021");
-        APBaseCalcul apBaseCalcul = createBaseCalcul("01.01.2021", "12.01.2021");
-        apBaseCalcul.setNombreJoursSoldes(12);
-        APResultatCalculSituationProfessionnel apResultatCalculSituationProfessionnel = new APResultatCalculSituationProfessionnel();
-        apResultatCalculSituationProfessionnel.setSalaireJournalierNonArrondi(new FWCurrency(1));
-        prestationWrapper.getPrestationBase().addResultatCalculSitProfessionnelle(apResultatCalculSituationProfessionnel);
-        APResultatCalcul apResultatCalcul = APPrestationExtensionSplitter.copyResultatCalcul(prestationWrapper, apBaseCalcul);
-        assertThat(apResultatCalcul.getResultatsCalculsSitProfessionnelle().get(0).getMontant(BigDecimal.ZERO)).isEqualTo(new BigDecimal("12.00"));
-
-    }
-
     @Test
     public void periodeExensionSpliter_avecPeriodeEnPlus_ajoutUnePeriodePresationWrappers() throws JAException {
         List<APBaseCalcul> basesCalculList = new ArrayList<>();
 
         basesCalculList.add(createBaseCalcul("01.01.2021", "28.02.2021"));
-        basesCalculList.add(createBaseCalcul("01.03.2021", "31.03.2021")); // extension
+        basesCalculList.add(createBaseCalcul("01.03.2021", "31.03.2021").setExtension(true)); // extension
 
         SortedSet<APPrestationWrapper> pwSet = new TreeSet<>(new APPrestationWrapperComparator());
         pwSet.add(createApPrestationWrapper("01.01.2021", "31.03.2021"));
@@ -164,6 +104,98 @@ public class APPrestationExtensionSplitterTest {
         droit.setJoursSupplementaires("0");
     }
 
+
+    @Test
+    public void periodeExtensionSpliter_avecPeriodeEnPlus_ajoutUnePeriodePresationWdrapper() throws JAException {
+        List<APBaseCalcul> basesCalculList = new ArrayList<>();
+        basesCalculList.add(createBaseCalcul("01.01.2021", "28.02.2021"));
+        basesCalculList.add(createBaseCalcul("01.03.2021", "03.04.2021"));
+        basesCalculList.add(createBaseCalcul("04.04.2021", "25.04.2021").setExtension(true));
+        SortedSet<APPrestationWrapper> pwSet = new TreeSet<>(new APPrestationWrapperComparator());
+        pwSet.add(createApPrestationWrapper("01.01.2021", "31.01.2021"));
+        pwSet.add(createApPrestationWrapper("01.02.2021", "28.02.2021"));
+        pwSet.add(createApPrestationWrapper("01.03.2021", "31.03.2021"));
+        pwSet.add(createApPrestationWrapper("01.04.2021", "25.04.2021"));
+
+
+        APDroitLAPG droit = new APDroitLAPG();
+        droit.setJoursSupplementaires("2");
+        Collection<APPrestationWrapper> apPrestationWrappers = APPrestationExtensionSplitter.periodeExtentionSpliter(basesCalculList, pwSet, droit);
+        assertThat(apPrestationWrappers).hasSize(5);
+        assertThat(apPrestationWrappers).containsExactly(
+                createApPrestationWrapper("01.01.2021", "31.01.2021"),
+                createApPrestationWrapper("01.02.2021", "28.02.2021"),
+                createApPrestationWrapper("01.03.2021", "31.03.2021"),
+                createApPrestationWrapper("01.04.2021", "03.04.2021"),
+                createApPrestationWrapper("04.04.2021", "25.04.2021"));
+
+    }
+
+    @Test
+    public void periodeExtensionSpliter_avecPeriodeEnPlus_ajoutUnePeriodePresationWdrapper2() throws JAException {
+        List<APBaseCalcul> basesCalculList = new ArrayList<>();
+        basesCalculList.add(createBaseCalcul("01.01.2021", "28.02.2021"));
+        basesCalculList.add(createBaseCalcul("01.03.2021", "03.04.2021"));
+        basesCalculList.add(createBaseCalcul("04.04.2021", "25.05.2021").setExtension(true));
+        SortedSet<APPrestationWrapper> pwSet = new TreeSet<>(new APPrestationWrapperComparator());
+        pwSet.add(createApPrestationWrapper("01.01.2021", "31.01.2021"));
+        pwSet.add(createApPrestationWrapper("01.02.2021", "28.02.2021"));
+        pwSet.add(createApPrestationWrapper("01.03.2021", "31.03.2021"));
+        pwSet.add(createApPrestationWrapper("01.04.2021", "30.04.2021"));
+        pwSet.add(createApPrestationWrapper("01.05.2021", "25.05.2021"));
+
+
+        APDroitLAPG droit = new APDroitLAPG();
+        droit.setJoursSupplementaires("2");
+        Collection<APPrestationWrapper> apPrestationWrappers = APPrestationExtensionSplitter.periodeExtentionSpliter(basesCalculList, pwSet, droit);
+        assertThat(apPrestationWrappers).containsExactly(
+                createApPrestationWrapper("01.01.2021", "31.01.2021"),
+                createApPrestationWrapper("01.02.2021", "28.02.2021"),
+                createApPrestationWrapper("01.03.2021", "31.03.2021"),
+                createApPrestationWrapper("01.04.2021", "03.04.2021"),
+                createApPrestationWrapper("04.04.2021", "30.04.2021"),
+                createApPrestationWrapper("01.05.2021", "25.05.2021"));
+        List<APPrestationWrapper> wrapperList = new ArrayList<>(apPrestationWrappers);
+        assertThat(wrapperList.get(3).getPrestationBase().getNombreJoursSoldes()).isEqualTo(3);
+        assertThat(wrapperList.get(4).getPrestationBase().getNombreJoursSoldes()).isEqualTo(27);
+        assertThat(wrapperList.get(4).getPeriodeBaseCalcul().getDateDebut()).hasToString("04042021");
+        assertThat(wrapperList.get(4).getPeriodeBaseCalcul().getDateFin()).hasToString("30042021");
+
+        assertThat(wrapperList.get(5).getPrestationBase().getNombreJoursSoldes()).isEqualTo(25);
+    }
+
+    @Test
+    public void copyResultatCalcul_avecBonneValeur_ok() throws JAException {
+        APPrestationWrapper prestationWrapper = createApPrestationWrapper("01.01.2021", "12.01.2021");
+        APBaseCalcul apBaseCalcul = createBaseCalcul("01.01.2021", "12.01.2021");
+        apBaseCalcul.setNombreJoursSoldes(12);
+        APResultatCalculSituationProfessionnel apResultatCalculSituationProfessionnel = new APResultatCalculSituationProfessionnel();
+        apResultatCalculSituationProfessionnel.setSalaireJournalierNonArrondi(new FWCurrency(1));
+        prestationWrapper.getPrestationBase().addResultatCalculSitProfessionnelle(apResultatCalculSituationProfessionnel);
+        APResultatCalcul apResultatCalcul = APPrestationExtensionSplitter.copyResultatCalcul(prestationWrapper, apBaseCalcul
+                .getDateDebut(), apBaseCalcul.getDateFin(), apBaseCalcul.getNombreJoursSoldes());
+        assertThat(apResultatCalcul.getResultatsCalculsSitProfessionnelle().get(0).getMontant(BigDecimal.ZERO)).isEqualTo(new BigDecimal("12.00"));
+    }
+
+
+    @Test
+    public void periodeExtensionSpliter_avecMemeNombreDePeriode_ajoutUnePeriodePresationWdrapper() throws JAException {
+        List<APBaseCalcul> basesCalculList = new ArrayList<>();
+        basesCalculList.add(createBaseCalcul("01.01.2021", "15.02.2021"));
+        basesCalculList.add(createBaseCalcul("16.02.2021", "28.02.2021").setExtension(true));
+        SortedSet<APPrestationWrapper> pwSet = new TreeSet<>(new APPrestationWrapperComparator());
+        pwSet.add(createApPrestationWrapper("01.01.2021", "31.01.2021"));
+        pwSet.add(createApPrestationWrapper("01.02.2021", "28.02.2021"));
+
+        Collection<APPrestationWrapper> apPrestationWrappers = APPrestationExtensionSplitter
+                .periodeExtentionSpliter(basesCalculList, pwSet, new APDroitLAPG());
+        assertThat(apPrestationWrappers).containsExactly(
+                createApPrestationWrapper("01.01.2021", "31.01.2021"),
+                createApPrestationWrapper("01.02.2021", "15.02.2021"),
+                createApPrestationWrapper("16.02.2021", "28.02.2021")
+        );
+    }
+
     private APPrestationWrapper createApPrestationWrapper(final String dateDebut, final String dateFin) throws JAException {
         APPrestationWrapper prestationWrapper = new APPrestationWrapper();
         APPeriodeWrapper apPeriodeWrapper = new APPeriodeWrapper();
@@ -172,6 +204,9 @@ public class APPrestationExtensionSplitterTest {
         prestationWrapper.setPeriodeBaseCalcul(apPeriodeWrapper);
         APResultatCalcul apResultatCalcul = new APResultatCalcul();
         prestationWrapper.setPrestationBase(apResultatCalcul);
+
+        prestationWrapper.getPrestationBase()
+                         .setNombreJoursSoldes((int) Dates.daysBetween(dateDebut, dateFin));
         prestationWrapper.setFraisGarde(new FWCurrency(10));
         return prestationWrapper;
     }
@@ -180,6 +215,7 @@ public class APPrestationExtensionSplitterTest {
         APBaseCalcul apBaseCalcul = new APBaseCalcul();
         apBaseCalcul.setDateDebut(new JADate(dateDebut));
         apBaseCalcul.setDateFin(new JADate(dateFin));
+        apBaseCalcul.setNombreJoursSoldes((int) Dates.daysBetween(dateDebut, dateFin));
         APBaseCalculSituationProfessionnel apBaseCalculSituationProfessionnel = new APBaseCalculSituationProfessionnel();
         apBaseCalcul.addBaseCalculSituationProfessionnel(apBaseCalculSituationProfessionnel);
         return apBaseCalcul;
