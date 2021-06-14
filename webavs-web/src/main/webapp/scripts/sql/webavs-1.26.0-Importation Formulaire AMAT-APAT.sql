@@ -1,4 +1,4 @@
-// Creation table Historique importation APG
+-- Creation table Historique importation APG
 CREATE TABLE SCHEMA.HISTORIQUE_IMPORTATION_APG
 (
     ID          INTEGER     not null    primary key,
@@ -9,9 +9,9 @@ CREATE TABLE SCHEMA.HISTORIQUE_IMPORTATION_APG
     PSPY        VARCHAR(25)
 );
 
-// Copie des données de la table PAndémie vers la nouvelle table
+-- Copie des données de la table Pandémie vers la nouvelle table
 insert into SCHEMA.HISTORIQUE_IMPORTATION_APG (ID, NSS, FICHIER_XML, STATE, PSPY)
 select ID, NSS, FICHIER_XML, STATE, PSPY from HISTORIQUE_APG_PANDEMIE;
 
-// Set TYPE_APG des lignes ajoutées en type PANDEMIE
+-- Set TYPE_APG des lignes ajoutées en type PANDEMIE
 update SCHEMA.HISTORIQUE_IMPORTATION_APG set TYPE_APG = 'PANDEMIE';

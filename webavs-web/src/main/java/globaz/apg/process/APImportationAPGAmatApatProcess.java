@@ -160,7 +160,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
                     boolean isWomen = StringUtils.equals(AMAT_TYPE, content.getAmatApatType());
                     fileStatus = report.addFile(nameOriginalFile, nss, isWomen ? IPRDemande.CS_TYPE_MATERNITE : IPRDemande.CS_TYPE_PATERNITE);
 
-                    isTraitementSuccess = createDroitGlobal(content, nss, fileStatus, isWomen);
+                    isTraitementSuccess = TraiterMessage(content, nss, fileStatus, isWomen);
                     if (isTraitementSuccess) {
                         fileStatus.setSucceed(true);
                         savingFileInDb(nss, nomFichier, content.getAmatApatType(), fileStatus);
@@ -184,7 +184,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
         }
     }
 
-    private boolean createDroitGlobal(Content content, String nssTiers, APImportationStatusFile fileStatus, boolean isWomen) throws Exception {
+    private boolean TraiterMessage(Content content, String nssTiers, APImportationStatusFile fileStatus, boolean isWomen) throws Exception {
         BTransaction transaction = (BTransaction) bsession.newTransaction();
         if (!transaction.isOpened()) {
             transaction.openTransaction();
