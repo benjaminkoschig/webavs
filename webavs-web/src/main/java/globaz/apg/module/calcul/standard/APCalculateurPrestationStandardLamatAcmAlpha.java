@@ -2515,7 +2515,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         this.restituerPrestations(session, transaction, droit);
 
         if(droit instanceof APDroitMaternite && basesCalcul!=null) {
-            prestationsCourantes = APPrestationExtensionSplitter.periodeExtentionSpliter(basesCalcul, (SortedSet<APPrestationWrapper>)prestationsCourantes, droit);
+            prestationsCourantes = APPrestationExtensionSplitter.periodeExtentionSpliter(basesCalcul, (SortedSet<APPrestationWrapper>)prestationsCourantes);
         }
 
         // List des prestations à créer.

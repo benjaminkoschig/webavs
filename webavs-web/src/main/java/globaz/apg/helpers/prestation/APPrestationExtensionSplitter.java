@@ -2,7 +2,6 @@ package globaz.apg.helpers.prestation;
 
 import ch.globaz.common.util.Dates;
 import com.google.gson.Gson;
-import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.module.calcul.APBaseCalcul;
 import globaz.apg.module.calcul.APResultatCalcul;
 import globaz.apg.module.calcul.APResultatCalculSituationProfessionnel;
@@ -26,8 +25,7 @@ import java.util.stream.Collectors;
 public class APPrestationExtensionSplitter {
 
     public static SortedSet<APPrestationWrapper> periodeExtentionSpliter(final List<APBaseCalcul> basesCalculs,
-                                                                         final SortedSet<APPrestationWrapper> pwSet,
-                                                                         final APDroitLAPG droit) {
+                                                                         final SortedSet<APPrestationWrapper> pwSet) {
 
 
         List<APBaseCalcul> baseCalculsWithExtension = basesCalculs.stream().filter(APBaseCalcul::isExtension)
@@ -36,56 +34,43 @@ public class APPrestationExtensionSplitter {
 
         if (!baseCalculsWithExtension.isEmpty()) {
             SortedSet<APPrestationWrapper> pwNew = new TreeSet<>(pwSet);
-            if (basesCalculs.size() > pwSet.size()) {
-                Map<APPrestationWrapper, List<APBaseCalcul>> map = mapByPeriodeDate(pwSet, basesCalculs);
-                map.forEach((prestationWrapper, apBaseCalculs) -> {
-                    if (apBaseCalculs.size() > 1) {
+            baseCalculsWithExtension.forEach(baseCalcul -> {
+                LocalDate dateDebutExtension = Dates.toDate(baseCalcul.getDateDebut());
+                LocalDate dateFinExtension = Dates.toDate(baseCalcul.getDateFin());
+
+                pwSet.forEach(prestationWrapper -> {
+                    LocalDate dateDebutPrestation = Dates.toDate(prestationWrapper.getPeriodeBaseCalcul().getDateDebut());
+                    LocalDate dateFinPrestation = Dates.toDate(prestationWrapper.getPeriodeBaseCalcul().getDateFin());
+
+                    if (dateDebutExtension.getMonth().equals(dateDebutPrestation.getMonth()) && dateDebutExtension
+                            .getDayOfMonth() != dateDebutPrestation.getDayOfMonth()) {
                         pwNew.remove(prestationWrapper);
-                        apBaseCalculs.stream()
-                                     .sorted(Comparator.comparing(o -> Dates.toDate(o.getDateDebut())))
-                                     .forEach(apBaseCalcul -> pwNew
-                                             .add(copyPrestation(prestationWrapper, apBaseCalcul.getDateDebut(), apBaseCalcul
-                                                     .getDateFin(), apBaseCalcul.getNombreJoursSoldes())));
+
+                        int nbJourSoldeBase = baseCalcul.getNombreJoursSoldes();
+                        int nbJourSolde;
+
+                        LocalDate dateFin = dateDebutExtension.minusDays(1);
+                        JADate dateFin1 = baseCalcul.getDateFin();
+
+                        if (dateDebutExtension.getMonth() != dateFinExtension.getMonth()) {
+                            nbJourSolde = (int) Dates.daysBetween(Dates.toDate(prestationWrapper.getPeriodeBaseCalcul().getDateDebut()), dateFin);
+                            dateFin1 = Dates.toJADate(YearMonth.from(dateDebutExtension).atEndOfMonth());
+                            nbJourSoldeBase = prestationWrapper.getPrestationBase().getNombreJoursSoldes() - nbJourSolde;
+                        } else {
+                            nbJourSolde = prestationWrapper.getPrestationBase().getNombreJoursSoldes() - nbJourSoldeBase;
+                        }
+
+                        APPrestationWrapper prestationWrapper1 = copyPrestation(
+                                prestationWrapper,
+                                prestationWrapper.getPeriodeBaseCalcul().getDateDebut(),
+                                Dates.toJADate(dateFin), nbJourSolde);
+                        pwNew.add(prestationWrapper1);
+
+                        pwNew.add(copyPrestation(prestationWrapper, baseCalcul.getDateDebut(), dateFin1, nbJourSoldeBase));
                     }
                 });
-                return pwNew;
-            } else {
-                baseCalculsWithExtension.forEach(baseCalcul -> {
-                    LocalDate dateDebutExtension = Dates.toDate(baseCalcul.getDateDebut());
-                    LocalDate dateFinExtension = Dates.toDate(baseCalcul.getDateFin());
-
-                    pwSet.forEach(prestationWrapper -> {
-                        LocalDate dateDebutPrestation = Dates.toDate(prestationWrapper.getPeriodeBaseCalcul().getDateDebut());
-                        LocalDate dateFinPrestation = Dates.toDate(prestationWrapper.getPeriodeBaseCalcul().getDateFin());
-
-                        if (dateDebutExtension.getMonth().equals(dateDebutPrestation.getMonth()) && dateDebutExtension
-                                .getDayOfMonth() != dateDebutPrestation.getDayOfMonth()) {
-                            pwNew.remove(prestationWrapper);
-
-                            int nbJourSolde = baseCalcul.getNombreJoursSoldes();
-                            LocalDate dateFin = dateDebutExtension.minusDays(1);
-                            JADate dateFin1 = baseCalcul.getDateFin();
-
-                            if (dateDebutExtension.getMonth() != dateFinExtension.getMonth()) {
-                                nbJourSolde = (int) Dates.daysBetween(
-                                        Dates.toDate(prestationWrapper.getPeriodeBaseCalcul().getDateDebut()), dateFin);
-                                dateFin1 = Dates.toJADate(YearMonth.from(dateDebutExtension).atEndOfMonth());
-
-                            }
-
-                            APPrestationWrapper prestationWrapper1 = copyPrestation(
-                                    prestationWrapper,
-                                    prestationWrapper.getPeriodeBaseCalcul().getDateDebut(),
-                                    Dates.toJADate(dateFin), nbJourSolde);
-                            pwNew.add(prestationWrapper1);
-
-                            pwNew.add(copyPrestation(prestationWrapper, baseCalcul.getDateDebut(), dateFin1, prestationWrapper.getPrestationBase()
-                                                                                                                              .getNombreJoursSoldes() - nbJourSolde));
-                        }
-                    });
-                });
-                return pwNew;
-            }
+            });
+            return pwNew;
         }
 
         return pwSet;
