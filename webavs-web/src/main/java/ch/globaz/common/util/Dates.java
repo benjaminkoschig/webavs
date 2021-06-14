@@ -10,6 +10,9 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
 import java.util.Locale;
 
+/**
+ * Class utilitaire pour travailler avec les LocalDate.
+ */
 public class Dates {
     private static final DateTimeFormatter DATE_TIME_SWISS_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static final DateTimeFormatter DATE_TIME_DB_FORMATTER = DateTimeFormatter.ofPattern("yyyyddMM");
@@ -29,6 +32,9 @@ public class Dates {
         return DATE_TIME_SWISS_FORMATTER.format(localDate);
     }
 
+    /**
+     * @return Renvoi la date de maitenant au format suisse.
+     */
     public static String nowFormatSwiss() {
         return formatSwiss(LocalDate.now());
     }
@@ -47,6 +53,13 @@ public class Dates {
         return date.getMonth().getDisplayName(TextStyle.FULL, locale) + " " + date.getYear();
     }
 
+    /**
+     * Permet de convertir une date en string avec la format suivant: dd.MM.yyyy
+     *
+     * @param date La date à convertir(01.02.2021).
+     *
+     * @return Le nombre de jours.
+     */
     public static LocalDate toDate(String date) {
         if (date == null || date.trim().isEmpty()) {
             return null;
@@ -54,6 +67,14 @@ public class Dates {
         return LocalDate.parse(date, DATE_TIME_SWISS_FORMATTER);
     }
 
+    /**
+     * Permet de convertir une date en string avec la format suivant: yyyyMMdd.
+     * Ce format est surtout utilisé par la db.
+     *
+     * @param date La date à convertir(20210102).
+     *
+     * @return Le nombre de jours.
+     */
     public static LocalDate toDateFromDb(String date) {
         if (date == null || date.trim().isEmpty()) {
             return null;
@@ -61,6 +82,13 @@ public class Dates {
         return LocalDate.parse(date, DATE_TIME_DB_FORMATTER);
     }
 
+    /**
+     * Permet de convertir une date en string avec la format suivant: dd.MM.yyyy
+     *
+     * @param date La date à convertir(01.02.2021).
+     *
+     * @return Le nombre de jours.
+     */
     public static String toDbDate(String date) {
         if (date == null || date.trim().isEmpty()) {
             return "0";
@@ -68,8 +96,26 @@ public class Dates {
         return Exceptions.checkedToUnChecked(() -> new JADate(date).toAMJ().toString(), "Error with this date:" + date);
     }
 
+    /**
+     * Permet de convertir une JADate en LocalDate.
+     *
+     * @param date JADate.
+     *
+     * @return La date en LocalDate.
+     */
     public static LocalDate toDate(final JADate dateDebut) {
         return LocalDate.of(dateDebut.getYear(), dateDebut.getMonth(), dateDebut.getDay());
+    }
+
+    /**
+     * Convertie une LocalDate en JaDate.
+     *
+     * @param date La date à convertir.
+     *
+     * @return La date converti.
+     */
+    public static JADate toJADate(final LocalDate date) {
+        return new JADate(date.getDayOfMonth(), date.getMonthValue(), date.getYear());
     }
 
     public static boolean isEqual(LocalDate date1, LocalDate date2) {
@@ -89,12 +135,19 @@ public class Dates {
         return daysBetween(Dates.toDate(fromDate), Dates.toDate(toDate));
     }
 
+    /**
+     * Permet de calculer le nombre de jour entre deux dates.
+     * 01.02.2021 et 01.02.2021 => 1 jours.
+     *
+     * @param fromDate La date de début.
+     * @param toDate   La date de fin.
+     *
+     * @return Le nombre de jours.
+     */
     public static long daysBetween(LocalDate fromDate, LocalDate toDate) {
         long between = ChronoUnit.DAYS.between(fromDate, toDate);
         return between >= 0 ? between + 1 : between - 1;
     }
 
-    public static JADate toJADate(final LocalDate date) {
-        return new JADate(date.getDayOfMonth(), date.getMonthValue(), date.getYear());
-    }
+
 }
