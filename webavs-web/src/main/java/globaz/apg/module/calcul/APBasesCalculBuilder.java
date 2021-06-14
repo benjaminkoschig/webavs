@@ -288,7 +288,8 @@ public abstract class APBasesCalculBuilder {
      */
     protected void couperParMoisMaternite(Date debut, Calendar fin) {
         Calendar moisDernier = getCalendarInstance();
-        Calendar finMaternite = new GregorianCalendar();// instancié à la date du
+        Calendar finMaternite = new GregorianCalendar();
+        boolean isExtension = false;// instancié à la date du
         // jour
 
         moisDernier.set(Calendar.DAY_OF_MONTH, 5); // on prend une date neutre
@@ -309,14 +310,15 @@ public abstract class APBasesCalculBuilder {
         while (calendar.before(fin)) {
             // si on est avant la fin de la prestation
             if (finMaternite!= null && !JadeStringUtil.isBlankOrZero(droit.getJoursSupplementaires()) && calendar.after(finMaternite)) {
-                commands.add(new NouvelleBaseCommand(finMaternite.getTime(), false));
+                isExtension = true;
+                commands.add(new NouvelleBaseCommand(finMaternite.getTime(), false, isExtension));
                 calendar.setTime(finMaternite.getTime());
                 calendar.add(Calendar.DATE, 1);
                 finMaternite = null;
             } else if (calendar.after(moisDernier) || (calendar.get(Calendar.MONTH) == Calendar.DECEMBER)) {
                 // si ce n'est pas un paiement rétroactif ou si on est en fin
                 // d'année, ajouter la commande
-                commands.add(new NouvelleBaseCommand(calendar.getTime(), false));
+                commands.add(new NouvelleBaseCommand(calendar.getTime(), false, isExtension));
             }
 
             // passer au mois suivant et prendre le dernier jour de ce mois.
@@ -543,6 +545,8 @@ public abstract class APBasesCalculBuilder {
          */
         protected boolean debut;
 
+        protected boolean isExtension = false;
+
         // ~ Constructors
         // -----------------------------------------------------------------------------------------------
 
@@ -557,6 +561,20 @@ public abstract class APBasesCalculBuilder {
         protected Command(Date date, boolean debut) {
             this.date = date;
             this.debut = debut;
+        }
+
+        /**
+         * Crée une nouvelle instance de la classe Command avec extension Mat.
+         *
+         * @param date
+         *            DOCUMENT ME!
+         * @param debut
+         *            DOCUMENT ME!
+         */
+        protected Command(Date date, boolean debut, boolean isExtension) {
+            this.date = date;
+            this.debut = debut;
+            this.isExtension = isExtension;
         }
 
         /**
@@ -760,6 +778,8 @@ public abstract class APBasesCalculBuilder {
 
             if (date != null) {
                 baseCourante.setDateDebut(toJADate(delaiJours));
+                // Extension maternité - Ajout d'un tag pour séparation des périodes lors des calculs de compensation Lamat
+                baseCourante.setExtension(isExtension);
             }
         }
 
@@ -1033,6 +1053,16 @@ public abstract class APBasesCalculBuilder {
          */
         public NouvelleBaseCommand(Date date, boolean debut) {
             super(date, debut);
+        }
+
+        /**
+         * Crée une nouvelle instance de la classe NouvelleBaseCommand avec extension Mat.
+         *
+         * @param date
+         * @param debut
+         */
+        public NouvelleBaseCommand(Date date, boolean debut, boolean isExtension) {
+            super(date, debut, isExtension);
         }
 
         // ~ Methods
