@@ -155,11 +155,6 @@ public class APAbstractDroitPHelper extends PRAbstractHelper {
             }
         }
 
-        if((droitVB instanceof APDroitMatPViewBean || droitVB instanceof APDroitPatPViewBean) &&
-                StringUtils.equals(droitVB.getDroit().getEtat(), IAPDroitLAPG.CS_ETAT_DROIT_ENREGISTRE)) {
-            droitVB.getDroit().setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE);
-        }
-
         if (!FWViewBeanInterface.ERROR.equals(droitVB.getMsgType())) {
             droitVB.getDroit().update();
         }

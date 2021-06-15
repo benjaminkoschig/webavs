@@ -213,7 +213,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
             if (StringUtils.isEmpty(PRTiersHelper.getAdresseGeneriqueFormatee(bsession, idTiers, "", "", domaine))) {
                 handler.createAdresses(tiers, content.getInsuredAddress(), content.getPaymentContact(), npaFormat);
             } else {
-                fileStatus.getInformations().add("Une adresse a été trouvée pour le tiers dans WebAVS.");
+                fileStatus.getInformations().add("Une adresse a été trouvée pour le tiers dans WebAVS et l'adresse du fichier ne sera pas utilisée.");
             }
             handler.createRoleApgTiers(tiers.getIdTiers());
             handler.createContact(tiers, assure.getEmail());
