@@ -134,6 +134,7 @@ public class APPeriodeAPG extends BEntity implements IPRCloneable {
         clone.setDateDebutPeriode(getDateDebutPeriode());
         clone.setDateFinPeriode(getDateFinPeriode());
         clone.setNbrJours(getNbrJours());
+        clone.setNbJourSupplementaire(getNbJourSupplementaire());
         clone.setTypePeriode(getTypePeriode());
         clone.setTauxImposition(getTauxImposition());
         clone.setCantonImposition(getCantonImposition());

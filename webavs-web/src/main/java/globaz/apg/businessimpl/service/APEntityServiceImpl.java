@@ -3003,8 +3003,13 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                                                        " where WAITIE = ? " +
                                                        "   and ? between VCDDEB and VCDFIN" +
                                                        "   and 0 = (select count(*) from schema.APDROIP as droitEnfant " +
-                                                       "                           where droitEnfant.VAIPAR = schema.APDROIP.VAIDRO)",idTiers, date)
+                                                       "                           where droitEnfant.VAIPAR = schema.APDROIP.VAIDRO)"+
+                                                       "   and 0 = (select count(*) from schema.APDROIP as droitCorrige "+
+                                                       "                           where droitCorrige.VAIPAR = (select droitEncours.VAIPAR from schema.APDROIP as droitEncours where droitEncours.VAIDRO = ?) "+
+                                                       "   and droitCorrige.VAIDRO = schema.APDROIP.VAIDRO) "
+                                               ,idTiers, date, viewBean.getIdDroit())
                                        .append("and schema.APDROIP.VAIDRO != ? ",viewBean.getIdDroit());
+
 
 
         List<SamePeriode> samePeriodes = SCM.newInstance(SamePeriode.class)

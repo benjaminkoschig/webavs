@@ -39,6 +39,7 @@
 
 <script type="text/javascript">
     var JOUR_SUPPLEMENTAIRE = true;
+    var SOUMIS_COTISATION_PERIODE = false;
     var EDITION_MODE = false;
     <%if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.CREATION) || viewBean.getModeEditionDroit().equals(APModeEditionDroit.EDITION) ){%>
     EDITION_MODE = true;
@@ -766,10 +767,8 @@
                             <tr style="height: 0px;">
                                 <th width="25%"></th>
                                 <th width="25%"></th>
-                                <th width="10%"></th>
-                                <th width="10%"></th>
-                                <th width="10%"></th>
-                                <th width="10%"></th>
+                                <th width="20%"></th>
+                                <th width="20%"></th>
                                 <th width="10%"></th>
                             </tr>
                             </thead>

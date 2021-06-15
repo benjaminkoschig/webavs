@@ -44,7 +44,7 @@
 <ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 
 <script type="text/javascript">
-
+    var SOUMIS_COTISATION_PERIODE = true;
     var EDITION_MODE = false;
     <%if(viewBean.getModeEditionDroit().equals(APModeEditionDroit.CREATION) || viewBean.getModeEditionDroit().equals(APModeEditionDroit.EDITION) ){%>
     EDITION_MODE = true;

@@ -38,7 +38,7 @@ public class APBasesCalculProcheAidantBuilder extends APBasesCalculBuilder{
 
         PeriodeTauxCourant tauxCourant = PeriodeTauxCourant.of(listPeriode.stream().findFirst().orElse(null));
 
-        Long nbJourSoldes = listPeriode.stream().map(periode -> periode.nbJourPeriode() + 1 + Long.parseLong(periode.getNbJourSupplementaire())).reduce(0L, Long::sum);
+        Long nbJourSoldes = listPeriode.stream().map(periode -> periode.nbJourSoldes()).reduce(0L, Long::sum);
 
         String dateDebut = listPeriode.stream().findFirst().get().getDateDebutPeriode();
         String dateFin = listPeriode.stream().reduce((first, second) -> second).get().getDateFinPeriode();

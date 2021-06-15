@@ -6,6 +6,12 @@ try {
     JOUR_SUPPLEMENTAIRE = false;
 }
 
+try {
+    SOUMIS_COTISATION_PERIODE;
+} catch (e) {
+    SOUMIS_COTISATION_PERIODE = false;
+}
+
 Periode = function (dateDeDebut, dateDeFin, nbJour, tauxImposition, cantonImposition, cantonImpositionLibelle) {
     this.dateDeDebut = dateDeDebut;
     this.dateDeFin = dateDeFin;
@@ -156,12 +162,19 @@ function repaintTablePeriodes() {
         var ddf = '<td width="' + width + '" align="center">' + periode.getDateDeFin() + '</td>';
         var jsp = '';
 
-        var njg = '<td width="10%" align="center" class="nbJourPourUnePeriode">' + periode.getNbJour()  + '</td>';
-        if (JOUR_SUPPLEMENTAIRE) {
-            jsp = '<td width="10%" align="center">' + periode.jourSupplementaire + '</td>';
+        var widthJour = "10%";
+        if (!SOUMIS_COTISATION_PERIODE) {
+            widthJour = "20%";
         }
-        if (periode.getCantonImposition() == 0
-            || $('#isSoumisCotisationPeriode').val() != 'true') {
+
+        var njg = '<td width="' + widthJour + '" align="center" class="nbJourPourUnePeriode">' + periode.getNbJour()  + '</td>';
+        if (JOUR_SUPPLEMENTAIRE) {
+            jsp = '<td width="' + widthJour + '" align="center">' + periode.jourSupplementaire + '</td>';
+        }
+        if(!SOUMIS_COTISATION_PERIODE){
+            var tis = '';
+            var cis = '';
+        } else if (periode.getCantonImposition() == 0) {
             var tis = '<td width="10%" align="center"></td>';
             var cis = '<td width="10%" align="center"></td>';
         } else {
