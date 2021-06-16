@@ -286,7 +286,7 @@ public class APACORPrestationsParser {
         return retValue;
     }
 
-    private static APBaseCalcul findBaseCalcul(BSession session, List<APBaseCalcul> basesCalcul, JADate dateDebut, JADate dateFin)
+    private static APBaseCalcul findBaseCalcul(BSession session, List<APBaseCalcul> basesCalcul, JADate dateDebutPeriodeAcor, JADate dateFinPeriodeAcor)
             throws PRACORException {
         APBaseCalcul retValue = null;
 
@@ -295,9 +295,9 @@ public class APACORPrestationsParser {
 
             try {
                 if ((BSessionUtil.compareDateFirstLowerOrEqual(session, retValue.getDateDebut().toString(),
-                        dateDebut.toString()))
+                        dateDebutPeriodeAcor.toString()))
                         && (BSessionUtil.compareDateFirstGreaterOrEqual(session, retValue.getDateFin().toString(),
-                                dateFin.toString()))) {
+                                dateFinPeriodeAcor.toString()))) {
                     break; // sortir de la boucle
                 }
             } catch (Exception e) {
@@ -313,8 +313,8 @@ public class APACORPrestationsParser {
                 retValue = (APBaseCalcul) iter.next();
 
                 try {
-                    if(BSessionUtil.compareDateFirstLowerOrEqual(session, dateDebut.toString(), retValue.getDateDebut().toString())
-                            && (BSessionUtil.compareDateFirstGreaterOrEqual(session, dateFin.toString(),  retValue.getDateFin().toString()))){
+                    if(BSessionUtil.compareDateFirstLowerOrEqual(session, dateDebutPeriodeAcor.toString(), retValue.getDateDebut().toString())
+                            && (BSessionUtil.compareDateFirstGreaterOrEqual(session, dateFinPeriodeAcor.toString(),  retValue.getDateFin().toString()))){
                         break; // sortir de la boucle
                     }
                 } catch (Exception e) {
@@ -604,6 +604,7 @@ public class APACORPrestationsParser {
             fields = (HashMap) configs.get(APACORPrestationsParser.CODE_CARTE);
 
             String nssAssureImporte = "";
+            int nombreJoursSupplementaires = 0;
             while ((line = bufferedReader.readLine()) != null) {
                 if (line.startsWith(APACORPrestationsParser.CODE_CARTE)) {
                     wrapper.setFraisGarde(new FWCurrency(APACORPrestationsParser.getField(line, fields,
@@ -618,6 +619,7 @@ public class APACORPrestationsParser {
                     }
 
                     nssAssureImporte = APACORPrestationsParser.getField(line, fields, "NUMERO_AVS_ASSURE");
+                    nombreJoursSupplementaires = Integer.parseInt(APACORPrestationsParser.getField(line, fields, "NOMBRE_JOURS_SUPPLEMENTAIRES"));
                     break;
                 }
             }
@@ -752,6 +754,7 @@ public class APACORPrestationsParser {
                 wrapper.setPrestationBase(rc);
 
                 rc.setNombreJoursSoldes(Integer.parseInt(APACORPrestationsParser.getField(line, fields, "NOMBRE_JOURS")));
+                rc.setNombreJoursSupplementaires(nombreJoursSupplementaires);
                 rc.setRevenuDeterminantMoyen(new FWCurrency(APACORPrestationsParser.getField(line, fields,
                         "REVENU_JOURNALIER_MOYEN")));
 

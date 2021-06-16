@@ -65,7 +65,7 @@ public class APcalculateurACM2 implements IAPPrestationCalculateur<APPrestationC
 
         // Calcul de la période initiale des ACM 2
         String ddfACM1 = periodeACM1.getDateDeFin();
-        String dateDebutACM2 = JadeDateUtil.addDays(ddfACM1, 1);
+        String dateDebutACM2 = JadeDateUtil.addDays(ddfACM1, 1); // TODO ESVE MAT EXT ACM2 Pas limité par date de reprise
         String dateFinACM2 = JadeDateUtil.addDays(ddfACM1, nombreJoursACM2);
         PRPeriode periodeACM2 = new PRPeriode(dateDebutACM2, dateFinACM2);
 

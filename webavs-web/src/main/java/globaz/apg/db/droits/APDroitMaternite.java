@@ -22,6 +22,7 @@ import globaz.prestation.clone.factory.IPRCloneable;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRStringUtils;
+import globaz.prestation.utils.PRDateUtils;
 import globaz.pyxis.constantes.IConstantes;
 
 /**
@@ -54,6 +55,48 @@ public class APDroitMaternite extends APDroitLAPG implements IPRCloneable {
 
         try {
             return Integer.parseInt(app.getProperty(APApplication.PROPERTY_DROIT_MAT_DUREE_JOURS));
+        } catch (NumberFormatException e) {
+            throw new Exception(session.getLabel("DUREE_DROITMAT_INVALIDE"));
+        }
+    }
+
+    /**
+     * retourne le nombre de jours supplémentaires qui ont été pris en compte même s'il existe une date de reprise
+     *
+     * @param session
+     * @param dateDebutDroit
+     * @param  dateRepriseActiv
+     * @param  joursSupplementaires
+     * @return le nombre de jours supplémentaires pris en compte avec ou sans date de reprise
+     * @throws Exception Si les propriétéss nécessaires au calcul n'existe pas
+     */
+    public static int getJoursSupplementairesPrisEnCompte(BSession session, String dateDebutDroit, String dateRepriseActiv, String joursSupplementaires) throws Exception {
+        int joursSupplementairesPrisEnCompte = 0;
+        if (!JadeStringUtil.isEmpty(dateRepriseActiv) && !JadeStringUtil.isIntegerEmpty(joursSupplementaires)) {
+            int joursMaternitePrisEnCompte = PRDateUtils.getNbDayBetween(dateDebutDroit, dateRepriseActiv);
+            int joursMaterniteStandard = APDroitMaternite.getDureeDroitMat(session);
+            if (joursMaternitePrisEnCompte > joursMaterniteStandard) {
+                joursSupplementairesPrisEnCompte = joursMaternitePrisEnCompte - joursMaterniteStandard;
+            }
+        } else {
+            joursSupplementairesPrisEnCompte = !JadeStringUtil.isIntegerEmpty(joursSupplementaires) ? Integer.parseInt(joursSupplementaires) : 0;
+        }
+        return joursSupplementairesPrisEnCompte;
+    }
+
+    /**
+     * retourne la durée en jours d'un droit lamat.
+     *
+     * @param session
+     * @return la valeur courante de l'attribut duree droit lamat
+     * @throws Exception
+     *             Si la durée du droit maternité n'est pas configurée ou est invalide
+     */
+    public static final int getDureeDroitCantonale(BSession session) throws Exception {
+        APApplication app = (APApplication) GlobazSystem.getApplication(APApplication.DEFAULT_APPLICATION_APG);
+
+        try {
+            return Integer.parseInt(app.getProperty(APApplication.PROPERTY_DROIT_MAT_CANTONALE_DUREE_JOURS));
         } catch (NumberFormatException e) {
             throw new Exception(session.getLabel("DUREE_DROITMAT_INVALIDE"));
         }
@@ -329,18 +372,18 @@ public class APDroitMaternite extends APDroitLAPG implements IPRCloneable {
          * la création de cette classe, cette durée est de 98 jours. Comme cette valeur peut changer, elle est stockée
          * comme propriété de l'application.
          */
-        // Si date de fin renseigner, ne pas prendre en compte jours supplémentaires
         JADate fin = cal.addDays(debut, APDroitMaternite.getDureeDroitMat(getSession()) - 1);
-        if (!getDateRepriseActiv().isEmpty()) {
-            fin = new JADate(getDateRepriseActiv());
-        } else if (!JadeStringUtil.isIntegerEmpty(this.getJoursSupplementaires())) {
-            fin = ajouteJoursSupplementaires(cal, fin);
-        }
+
+        // Recherche le nombre de jours supplémentaires actuellement pris en compte en cas de date de reprise ou non
+        int joursSupplementairesPrisEnCompte = APDroitMaternite.getJoursSupplementairesPrisEnCompte(getSession(), getDateDebutDroit(), getDateRepriseActiv(), getJoursSupplementaires());
+
+        fin = ajouteJoursSupplementaires(cal, fin, joursSupplementairesPrisEnCompte);
+
         setDateFinDroit(fin.toStr("."));
     }
 
-    private JADate ajouteJoursSupplementaires(JACalendar cal, JADate fin) {
-        return cal.addDays(fin, Integer.parseInt(this.getJoursSupplementaires()));
+    private JADate ajouteJoursSupplementaires(JACalendar cal, JADate fin, int joursSupplementairesPrisEnCompte) {
+        return cal.addDays(fin, joursSupplementairesPrisEnCompte);
     }
 
     @Override

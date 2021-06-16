@@ -8,13 +8,11 @@ package globaz.apg.module.calcul;
 
 import ch.globaz.common.util.Instances;
 import globaz.apg.db.droits.*;
+import globaz.apg.helpers.prestation.APPrestationHelper;
 import globaz.apg.module.calcul.salaire.APMontantVerse;
 import globaz.apg.module.calcul.salaire.APSalaireAdapter;
 import globaz.apg.utils.APGUtils;
-import globaz.globall.db.BManager;
-import globaz.globall.db.BSession;
-import globaz.globall.db.FWFindParameter;
-import globaz.globall.db.FWFindParameterManager;
+import globaz.globall.db.*;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeDateUtil;
@@ -286,11 +284,11 @@ public abstract class APBasesCalculBuilder {
      * @param debut
      * @param fin
      */
-    protected void couperParMoisMaternite(Date debut, Calendar fin) {
-        Calendar moisDernier = getCalendarInstance();
-        Calendar finMaternite = new GregorianCalendar();
-        boolean isExtension = false;// instancié à la date du
-        // jour
+    protected void couperParMoisMaternite(Date debut, Calendar fin) throws Exception {
+        Calendar moisDernier = getCalendarInstance(); // instancié à la date du jour
+        Calendar finMaternite = null;
+        Calendar finMaterniteLamat = null;
+        boolean isExtension = false;
 
         moisDernier.set(Calendar.DAY_OF_MONTH, 5); // on prend une date neutre
         moisDernier.add(Calendar.MONTH, -1); // du mois précédent
@@ -300,21 +298,47 @@ public abstract class APBasesCalculBuilder {
         calendar.setTime(debut);
         calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
 
-        if (!JadeStringUtil.isBlankOrZero(droit.getJoursSupplementaires())) {
-            // Extension maternité, on calcul une date de fin sans l'extension
+        // Recherche le nombre de jours supplémentaires actuellement pris en compte en cas de date de reprise ou non
+        int joursSupplementairesPrisEnCompte = APDroitMaternite.getJoursSupplementairesPrisEnCompte(session, droit.getDateDebutDroit(), ((APDroitMaternite) droit).getDateRepriseActiv(), droit.getJoursSupplementaires());
+
+        int nombreDeJoursLamat = (APDroitMaternite.getDureeDroitCantonale(session)) - (APDroitMaternite.getDureeDroitMat(session));
+
+        // On calcul la date de fin de la maternité sans l'extension
+        if (joursSupplementairesPrisEnCompte != 0) {
+            finMaternite = getCalendarInstance();
             finMaternite.setTime(fin.getTime());
-            finMaternite.add(Calendar.DATE, -Integer.parseInt(droit.getJoursSupplementaires()));
+            finMaternite.add(Calendar.DATE, - joursSupplementairesPrisEnCompte);
         }
 
+        // On calcul une date de fin lamat si période Lamat est comprise dans l'extension
+        if (joursSupplementairesPrisEnCompte != 0 && APPrestationHelper.hasLAMatFalgInSitPro(session, droit) && joursSupplementairesPrisEnCompte > nombreDeJoursLamat) {
+            finMaterniteLamat = getCalendarInstance();
+            finMaterniteLamat.setTime(fin.getTime());
+            finMaterniteLamat.add(Calendar.DATE, - joursSupplementairesPrisEnCompte);
+            finMaterniteLamat.add(Calendar.DATE, nombreDeJoursLamat);
+        }
 
-        while (calendar.before(fin)) {
-            // si on est avant la fin de la prestation
-            if (finMaternite!= null && !JadeStringUtil.isBlankOrZero(droit.getJoursSupplementaires()) && calendar.after(finMaternite)) {
+        fin.set(Calendar.DAY_OF_MONTH, fin.getActualMaximum(Calendar.DAY_OF_MONTH));
+
+        while (BSessionUtil.compareDateFirstLowerOrEqual(session, JadeDateUtil.getGlobazFormattedDate(calendar.getTime()), JadeDateUtil.getGlobazFormattedDate(fin.getTime()))) {
+
+            // si on est avant la fin de la prestation et qu'il y a des jours supplémentaires, on split la prestations standard à la fin des 98 jours standards
+            if (finMaternite != null && calendar.after(finMaternite)) {
                 isExtension = true;
                 commands.add(new NouvelleBaseCommand(finMaternite.getTime(), false, isExtension));
-                calendar.setTime(finMaternite.getTime());
+
+                // si on est avant la fin de la prestation et qu'il y a des jours supplémentaires et que la période Lamat complémentaire de 14 jours est comprise dans l'extension on split à nouveau d'une durée de 14 jours
+                if (finMaterniteLamat != null && calendar.after(finMaterniteLamat)) {
+                    commands.add(new NouvelleBaseCommand(finMaterniteLamat.getTime(), false, isExtension));
+                    calendar.setTime(finMaterniteLamat.getTime());
+                } else {
+                    calendar.setTime(finMaternite.getTime());
+                }
+
                 calendar.add(Calendar.DATE, 1);
                 finMaternite = null;
+                finMaterniteLamat = null;
+
             } else if (calendar.after(moisDernier) || (calendar.get(Calendar.MONTH) == Calendar.DECEMBER)) {
                 // si ce n'est pas un paiement rétroactif ou si on est en fin
                 // d'année, ajouter la commande

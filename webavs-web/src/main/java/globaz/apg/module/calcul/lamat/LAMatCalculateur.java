@@ -10,6 +10,7 @@ import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.droits.APSituationProfessionnelleManager;
 import globaz.apg.helpers.droits.APSituationProfessionnelleHelper;
 import globaz.apg.module.calcul.APCalculParametresAMAT;
+import globaz.apg.properties.APProperties;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
@@ -55,7 +56,9 @@ public class LAMatCalculateur {
      *            DOCUMENT ME!
      * @param dateFinPrestation
      *            DOCUMENT ME!
-     * @param apCalculParametresAMAT
+     * @param isAllocationMax
+     *            DOCUMENT ME!
+     * @param joursSupplementairesPrisEnCompte
      * 
      * @return DOCUMENT ME!
      * 
@@ -64,7 +67,7 @@ public class LAMatCalculateur {
      */
     public BigDecimal calculerMontantLAMat(BSession session, BTransaction transaction, String genreService,
             String idDroit, String revenuMoyenDeterminant, String montantJournalier, String dateDebutPrestation,
-            String dateFinPrestation, boolean isAllocationMax) throws Exception {
+            String dateFinPrestation, boolean isAllocationMax, int joursSupplementairesPrisEnCompte) throws Exception {
 
         APCalculParametresAMAT parametresCalcul = new APCalculParametresAMAT().getParametres(transaction,
                 dateDebutPrestation);
@@ -177,6 +180,14 @@ public class LAMatCalculateur {
                 } else if ((rmd80.compareTo(montantMax) > 0) || isAllocationMax) {
 
                     montantLAMat = montantMax;
+
+                    // Adaptations des montants Lamat dans le cas d'une extension maternité
+                    if ((mj.compareTo(new BigDecimal("0.00")) == 0)) {
+                        if (joursSupplementairesPrisEnCompte >= Integer.parseInt(APProperties.DROIT_MAT_CANTONALE_DUREE_JOURS.getValue()) - Integer.parseInt(APProperties.DROIT_ACM_MAT_DUREE_JOURS.getValue())) {
+                            montantLAMat = montantLAMat.subtract(new BigDecimal("196"));
+                        }
+                    }
+
                 }
             }
 
@@ -313,6 +324,13 @@ public class LAMatCalculateur {
                 } else if ((rmd80.compareTo(montantMax) > 0) || isAllocationMax) {
 
                     montantLAMat = montantMax.subtract(new BigDecimal("196"));
+
+                    // Adaptations des montants Lamat dans le cas d'une extension maternité
+                    if (joursSupplementairesPrisEnCompte >= Integer.parseInt(APProperties.DROIT_MAT_CANTONALE_DUREE_JOURS.getValue()) - Integer.parseInt(APProperties.DROIT_ACM_MAT_DUREE_JOURS.getValue())) {
+                        if (montantLAMat.compareTo(new BigDecimal("133.6")) < 0) {
+                            montantLAMat = new BigDecimal(0);
+                        }
+                    }
                 }
             }
         }

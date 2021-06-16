@@ -105,6 +105,14 @@ public enum APProperties implements IProperties {
         }
     },
 
+    DROIT_MAT_CANTONALE_DUREE_JOURS("droits.maternite.cantonale.dureejours",
+            "Défini le nombre de jours de maternitée cantonale depuis le début du droit") {
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidIntegerPropertyValue(propertyValue);
+        }
+    },
+
     PRESTATION_ACM_2_ACTIF("prestation.maternite.acm2.actif",
             "Défini des prestions maternitée de type ACM 2 doivent être générées") {
         @Override

@@ -167,6 +167,11 @@ public class APResultatCalcul {
         return nombreJoursSoldes;
     }
 
+    /**
+     * getter pour l'attribut nombre jours supplementaires
+     *
+     * @return la valeur courante de l'attribut nombre jours supplementaires
+     */
     public int getNombreJoursSupplementaires() {
         return nombreJoursSupplementaires;
     }
@@ -351,6 +356,12 @@ public class APResultatCalcul {
         nombreJoursSoldes = i;
     }
 
+    /**
+     * setter pour l'attribut nombre jours supplementaires
+     *
+     * @param nombreJoursSupplementaires
+     *              une nouvelle valeur pour cet attribut
+     */
     public void setNombreJoursSupplementaires(int nombreJoursSupplementaires) {
         this.nombreJoursSupplementaires = nombreJoursSupplementaires;
     }

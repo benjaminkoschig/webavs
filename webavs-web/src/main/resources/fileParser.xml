@@ -130,6 +130,7 @@
 		<text-field id="NOMBRE_JOURS_INDEMNITE_EXPLOITATION" beginPos="58" endPos="61"/>
 		<text-field id="INDEMNITE_EXPLOITATION" beginPos="61" endPos="69"/>
 		<text-field id="GENRE_CARTE" beginPos="69" endPos="70"/>
+		<text-field id="NOMBRE_JOURS_SUPPLEMENTAIRES" beginPos="70" endPos="72"/>
 	</file>
 
 	<file id="ANNONCEPAY_EMPLOYEURS" type="TEXT" source="n/a">

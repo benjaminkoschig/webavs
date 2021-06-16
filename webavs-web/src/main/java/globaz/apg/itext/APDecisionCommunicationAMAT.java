@@ -701,6 +701,9 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                         buffer.append(PRStringUtils.formatMessage(new StringBuffer(texte.getDescription()), String.valueOf(totalDeJours)));
                     // si c'est le texte 4.3 ou 4.2 et qu'il s'agit de normal il faut remplacer l'argument par le totalDeJours
                     } else if (isPos3Standard || isPos2Standard || isPos2MATCIAB2) {
+                        if (hasMATCIAB2()) {
+                            totalDeJours += nombreDeJoursMATCIAB2();
+                        }
                         buffer.append(PRStringUtils.formatMessage(new StringBuffer(texte.getDescription()), String.valueOf(totalDeJours)));
                     } else {
                         buffer.append(texte.getDescription());
@@ -823,17 +826,30 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
     }
 
     private Boolean hasMATCIAB2() throws FWIException {
-        // Création champs de données document assurées pour tous les types sauf MATCIAB1
+        // Recherche de prestations MATCIAB2
         for (int idPrestation = 0; idPrestation < loadPrestations().size(); ++idPrestation) {
 
             final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
 
-            //<editor-fold defaultstate="collapsed" desc="ALLTYPE">
             if (APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) {
                 return true;
             }
         }
         return false;
+    }
+
+    private int nombreDeJoursMATCIAB2() throws FWIException {
+        // Recherche de la durée de la prestations MATCIAB2
+        for (int idPrestation = 0; idPrestation < loadPrestations().size(); ++idPrestation) {
+
+            final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
+
+            if (APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) {
+
+                return !JadeStringUtil.isIntegerEmpty(prestation.getNombreJoursSoldes()) ? Integer.parseInt(prestation.getNombreJoursSoldes()) : 0;
+            }
+        }
+        return 0;
     }
 
     /**
