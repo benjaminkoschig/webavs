@@ -1,0 +1,2 @@
+-- Ajout d'une jadePro pour activer ou désactiver traitillé sur QrFacture
+INSERT INTO SCHEMA.JADEPROP (PROPNAME, PROPVAL, CSPY, PSPY) VALUES ('common.qrFacture.traitille', 'true', '20210615150736ccjuglo   ', '20210615150736ccjuglo   ');

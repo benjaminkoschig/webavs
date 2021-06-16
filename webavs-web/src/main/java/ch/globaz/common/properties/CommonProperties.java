@@ -71,6 +71,7 @@ public enum CommonProperties implements IProperties {
     SEODOR_WEBSERVICE_SEDEX_SENDER_ID("seodor.webservice.sedex.sender.id","Id Sedex Seodor"),
 
     QR_FACTURE("qrFacture","Permet de changer le mode de facturation QR-Facture/BVR"),
+    ACTIVATION_TRAITILLE_QR_FACTURE("qrFacture.traitille","Permet d'activer/desactiver les traitillés sur QrFacture'"),
 
     TAUX_INTERET_PANDEMIE("tauxInteret.pandemie.isActivated","Propriete qui permet de changer le calcul des intérêts moratoires");
 

@@ -103,6 +103,8 @@ public class COParameter extends FWIImportParametre {
 
     // Ajout QR Facture
     public static final String P_QR_CODE_PATH = "P_QR_CODE_PATH";
+    public static final String P_CISEAU_HORIZ_PATH = "P_CISEAU_HORIZ_PATH";
+    public static final String P_CISEAU_VERTICAL_PATH = "P_CISEAU_VERTICAL_PATH";
     public static final String P_MONNAIE = "P_MONNAIE";
     public static final String P_INFO_ADD = "P_INFO_ADD";
 

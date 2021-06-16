@@ -32,6 +32,8 @@
 	<parameter name="P_PARAM_2" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_NOMBRE_PAGES" isForPrompting="false" class="java.lang.Integer"/>
 	<parameter name="P_PAGE_NUMBER" isForPrompting="false" class="java.lang.Integer"/>
+	<parameter name="P_CISEAU_HORIZ_PATH" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_CISEAU_VERTICAL_PATH" isForPrompting="false" class="java.lang.String"/>
 		<background>
 			<band height="0"  isSplitAllowed="true" >
 			</band>
@@ -721,6 +723,80 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_PARAM_1}]]></textFieldExpression>
 				</textField>
+				<image  scaleImage="FillFrame" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">					<reportElement
+						mode="Transparent"
+						x="32"
+						y="-5"
+						width="17"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="image-2"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="None" fill="Solid" />
+					<imageExpression class="java.lang.String"><![CDATA[$P{P_CISEAU_HORIZ_PATH}]]></imageExpression>				</image>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="2"
+						width="595"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-17"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[new Boolean($P{P_CISEAU_VERTICAL_PATH}!=null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch" pen="Dotted" fill="Solid" />
+				</line>
+				<image  scaleImage="FillFrame" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">					<reportElement
+						mode="Transparent"
+						x="169"
+						y="15"
+						width="13"
+						height="17"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="image-3"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="None" fill="Solid" />
+					<imageExpression class="java.lang.String"><![CDATA[$P{P_CISEAU_VERTICAL_PATH}]]></imageExpression>				</image>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="175"
+						y="2"
+						width="0"
+						height="295"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-18"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[new Boolean($P{P_CISEAU_VERTICAL_PATH}!=null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch" pen="Dotted" fill="Solid" />
+				</line>
 			</band>
 		</pageFooter>
 		<summary>

@@ -2,7 +2,11 @@ package ch.globaz.common.document.reference;
 
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.exceptions.CommonTechnicalException;
+import ch.globaz.common.properties.CommonProperties;
+import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.common.util.GenerationQRCode;
+import ch.globaz.exceptions.ExceptionMessage;
+import ch.globaz.exceptions.GlobazTechnicalException;
 import globaz.aquila.print.COParameter;
 import globaz.framework.printing.itext.FWIDocumentManager;
 import globaz.framework.printing.itext.fill.FWIImportParametre;
@@ -18,6 +22,9 @@ import globaz.osiris.api.APISection;
 import globaz.osiris.exceptions.CATechnicalException;
 import globaz.pyxis.db.adressecourrier.TIAbstractAdresseData;
 import globaz.pyxis.db.adressecourrier.TIAdresseDataManager;
+import jdk.nashorn.internal.runtime.logging.Logger;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
@@ -25,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-
+@Slf4j
 public class ReferenceQR extends AbstractReference {
 
     public static final String DEVISE_DEFAUT = "CHF";
@@ -96,7 +103,7 @@ public class ReferenceQR extends AbstractReference {
     private String pa2Param = StringUtils.EMPTY;
 
     // Boolean qui permet d'activer un QR Neutre
-    private Boolean qrNeutre = false;
+    private boolean qrNeutre = false;
 
     private Map<String, String> parameters = new HashMap<>();
 
@@ -162,6 +169,12 @@ public class ReferenceQR extends AbstractReference {
      */
     public void initParamQR()  {
         parameters.put(COParameter.P_QR_CODE_PATH, GenerationQRCode.generateSwissQrCode(generationPayLoad()));
+        // Activation ou non des traitillés et ciseaux sur Qr Facture
+        if (addTraitille()){
+            parameters.put(COParameter.P_CISEAU_VERTICAL_PATH, getDefaultModelPath() + "/ciseau_vertical.jpg");
+            parameters.put(COParameter.P_CISEAU_HORIZ_PATH, getDefaultModelPath() + "/ciseau_horiz.png");
+        }
+
         parameters.put(COParameter.P_MONNAIE, monnaie);
 
         // Si l'on est sur un QR Neutre, dans ce cas, il doit être sans montant ni adresse Debiteur.
@@ -192,6 +205,20 @@ public class ReferenceQR extends AbstractReference {
         }
 
 
+    }
+
+    /**
+     * Méthode qui va vérifier le paramètre d'activation des traitillés sur QrFacture
+     *
+     * @return boolean
+     */
+    private boolean addTraitille() {
+        try {
+            return CommonProperties.ACTIVATION_TRAITILLE_QR_FACTURE.getBooleanValue();
+        } catch (PropertiesException e) {
+            LOG.error("ReferenceQR#addTraitille() - Propertie common.qrFacture.traitille manquante.", e);
+            return false;
+        }
     }
 
     private String generationPayLoad() {
@@ -729,7 +756,6 @@ public class ReferenceQR extends AbstractReference {
     public void setDebfRueOuLigneAdresse1(String debfRueOuLigneAdresse1) {
         // Limitation du nombre de caractère à 70 ( doc officielle)
         if (debfRueOuLigneAdresse1.length() > 70) {
-//            this.debfRueOuLigneAdresse1 = debfRueOuLigneAdresse1.substring(70, debfRueOuLigneAdresse1.length());
             this.debfRueOuLigneAdresse1 = debfRueOuLigneAdresse1.substring(0, 70);
         } else this.debfRueOuLigneAdresse1 = debfRueOuLigneAdresse1;
     }
@@ -921,5 +947,13 @@ public class ReferenceQR extends AbstractReference {
 
     public void setCrefPays(String crefPays) {
         this.crefPays = crefPays;
+    }
+
+    public String getDefaultModelPath() {
+        try {
+            return getSession().getApplication().getExternalModelPath() + "defaultModel";
+        } catch (Exception e) {
+            throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE);
+        }
     }
 }
