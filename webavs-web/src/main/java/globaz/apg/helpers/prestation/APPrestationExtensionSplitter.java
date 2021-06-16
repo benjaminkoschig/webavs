@@ -15,9 +15,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -28,47 +26,62 @@ public class APPrestationExtensionSplitter {
                                                                          final SortedSet<APPrestationWrapper> pwSet) {
 
         List<APBaseCalcul> baseCalculsWithExtension = findBaseCalculeWithExtension(basesCalculs);
-
+        APBaseCalcul baseCalculLast = null;
         if (!baseCalculsWithExtension.isEmpty()) {
             SortedSet<APPrestationWrapper> pwNew = new TreeSet<>(pwSet);
-            baseCalculsWithExtension.forEach(baseCalcul -> {
+            List<APPrestationWrapper> pwRemoved = new ArrayList<>();
+            for (APBaseCalcul baseCalcul : baseCalculsWithExtension) {
                 LocalDate dateDebutExtension = Dates.toDate(baseCalcul.getDateDebut());
                 LocalDate dateFinExtension = Dates.toDate(baseCalcul.getDateFin());
 
-                pwSet.forEach(prestationWrapper -> {
+                for (APPrestationWrapper prestationWrapper : pwSet) {
                     LocalDate dateDebutPrestation = Dates.toDate(prestationWrapper.getPeriodeBaseCalcul().getDateDebut());
                     if (dateDebutExtension.getMonth().equals(dateDebutPrestation.getMonth()) && dateDebutExtension
                             .getDayOfMonth() != dateDebutPrestation.getDayOfMonth()) {
-                        pwNew.remove(prestationWrapper);
 
-                        int nbJourSoldeBase = baseCalcul.getNombreJoursSoldes();
-                        int nbJourSolde;
-
-                        LocalDate dateFin = dateDebutExtension.minusDays(1);
                         JADate dateFinBase = baseCalcul.getDateFin();
+                        int nbJourSoldeBase = baseCalcul.getNombreJoursSoldes();
 
-                        if (dateDebutExtension.getMonth() != dateFinExtension.getMonth()) {
-                            nbJourSolde = (int) Dates.daysBetween(Dates.toDate(prestationWrapper.getPeriodeBaseCalcul().getDateDebut()), dateFin);
-                            dateFinBase = Dates.toJADate(YearMonth.from(dateDebutExtension).atEndOfMonth());
-                            nbJourSoldeBase = prestationWrapper.getPrestationBase().getNombreJoursSoldes() - nbJourSolde;
-                        } else {
-                            nbJourSolde = prestationWrapper.getPrestationBase().getNombreJoursSoldes() - nbJourSoldeBase;
+                        if (!estSurLeMemeMois(baseCalculLast, baseCalcul)) {
+                            if (!pwRemoved.contains(prestationWrapper)) {
+                                // La comparaison ce fait que sur la date de début et pas aussi sur la date de fin
+                                // c'est pour cela que l'on s'assure que l'on n'a as déjà supprimé
+                                pwNew.remove(prestationWrapper);
+                            }
+                            pwRemoved.add(prestationWrapper);
+
+                            int nbJourSolde;
+
+                            LocalDate dateFin = dateDebutExtension.minusDays(1);
+
+                            if (dateDebutExtension.getMonth() != dateFinExtension.getMonth()) {
+                                nbJourSolde = (int) Dates.daysBetween(Dates.toDate(prestationWrapper.getPeriodeBaseCalcul().getDateDebut()), dateFin);
+                                dateFinBase = Dates.toJADate(YearMonth.from(dateDebutExtension).atEndOfMonth());
+                                nbJourSoldeBase = prestationWrapper.getPrestationBase().getNombreJoursSoldes() - nbJourSolde;
+                            } else {
+                                nbJourSolde =  (int) Dates.daysBetween(Dates.toDate(prestationWrapper.getPeriodeBaseCalcul().getDateDebut()), dateFin);
+                            }
+
+                            pwNew.add(copyPrestation(
+                                    prestationWrapper,
+                                    prestationWrapper.getPeriodeBaseCalcul().getDateDebut(),
+                                    Dates.toJADate(dateFin), nbJourSolde)
+                            );
                         }
 
-                        pwNew.add(copyPrestation(
-                                prestationWrapper,
-                                prestationWrapper.getPeriodeBaseCalcul().getDateDebut(),
-                                Dates.toJADate(dateFin), nbJourSolde)
-                        );
-
                         pwNew.add(copyPrestation(prestationWrapper, baseCalcul.getDateDebut(), dateFinBase, nbJourSoldeBase));
+                        baseCalculLast = baseCalcul;
                     }
-                });
-            });
+                }
+            }
             return pwNew;
         }
 
         return pwSet;
+    }
+
+    private static boolean estSurLeMemeMois(final APBaseCalcul baseCalculLast, final APBaseCalcul baseCalcul) {
+        return baseCalculLast != null && baseCalculLast.getDateDebut().getMonth() == baseCalcul.getDateDebut().getMonth();
     }
 
     private static List<APBaseCalcul> findBaseCalculeWithExtension(final List<APBaseCalcul> basesCalculs) {

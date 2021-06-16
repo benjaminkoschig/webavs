@@ -123,6 +123,43 @@ public class APPrestationExtensionSplitterTest {
         assertThat(wrapperList.get(5).getPrestationBase().getNombreJoursSoldes()).isEqualTo(25);
     }
 
+
+    @Test
+    public void periodeExtensionSpliter_avecDeuxExtention_ajoutUnePeriodePresationWdrapper2() throws JAException {
+        List<APBaseCalcul> basesCalculList = new ArrayList<>();
+        basesCalculList.add(createBaseCalcul("01.08.2021", "31.08.2021"));
+        basesCalculList.add(createBaseCalcul("01.09.2021", "30.09.2021"));
+        basesCalculList.add(createBaseCalcul("01.10.2021", "31.10.2021"));
+        basesCalculList.add(createBaseCalcul("01.11.2021", "06.11.2021"));
+        basesCalculList.add(createBaseCalcul("07.11.2021", "20.11.2021").setExtension(true));
+        basesCalculList.add(createBaseCalcul("21.11.2021", "24.11.2021").setExtension(true));
+
+        SortedSet<APPrestationWrapper> pwSet = new TreeSet<>(new APPrestationWrapperComparator());
+        pwSet.add(createApPrestationWrapper("01.08.2021", "31.08.2021"));
+        pwSet.add(createApPrestationWrapper("01.09.2021", "30.09.2021"));
+        pwSet.add(createApPrestationWrapper("01.10.2021", "31.10.2021"));
+        pwSet.add(createApPrestationWrapper("01.11.2021", "24.11.2021"));
+
+        Collection<APPrestationWrapper> apPrestationWrappers = APPrestationExtensionSplitter.periodeExtentionSpliter(basesCalculList, pwSet);
+        assertThat(apPrestationWrappers).containsExactly(
+                createApPrestationWrapper("01.08.2021", "31.08.2021"),
+                createApPrestationWrapper("01.09.2021", "28.09.2021"),
+                createApPrestationWrapper("01.10.2021", "31.10.2021"),
+                createApPrestationWrapper("01.11.2021", "06.11.2021"),
+                createApPrestationWrapper("07.11.2021", "20.11.2021"),
+                createApPrestationWrapper("21.11.2021", "24.11.2021"));
+        List<APPrestationWrapper> wrapperList = new ArrayList<>(apPrestationWrappers);
+
+        assertThat(wrapperList.get(3).getPeriodeBaseCalcul().getDateFin()).hasToString("06112021");
+        assertThat(wrapperList.get(3).getPrestationBase().getNombreJoursSoldes()).hasToString("6");
+
+        assertThat(wrapperList.get(4).getPeriodeBaseCalcul().getDateFin()).hasToString("20112021");
+        assertThat(wrapperList.get(4).getPrestationBase().getNombreJoursSoldes()).hasToString("14");
+
+        assertThat(wrapperList.get(5).getPeriodeBaseCalcul().getDateFin()).hasToString("24112021");
+        assertThat(wrapperList.get(5).getPrestationBase().getNombreJoursSoldes()).hasToString("4");
+    }
+
     @Test
     public void copyResultatCalcul_avecBonneValeur_ok() throws JAException {
         APPrestationWrapper prestationWrapper = createApPrestationWrapper("01.01.2021", "12.01.2021");
