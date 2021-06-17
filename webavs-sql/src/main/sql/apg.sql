@@ -1100,6 +1100,8 @@ INSERT INTO SCHEMA.JADEPROP (PROPNAME, PROPVAL, CSPY, PSPY)
 VALUES ('apg.email.amat.apat', '', '202001202120000Globaz    ', '202001202120000Globaz    ');
 
 -- eFormulaire (FERCIAM) : Remplacement de la table Historique Importation Pandémie en Historique Importation APG
+-- !!!! ATTENTION !!!! Le script est à exécuter sur tous les sites car la modification impact
+-- l'importation des eFormulaires du module Pandémie
 -- Creation table Historique importation APG
 CREATE TABLE SCHEMA.HISTORIQUE_IMPORTATION_APG
 (
@@ -1115,3 +1117,7 @@ insert into SCHEMA.HISTORIQUE_IMPORTATION_APG (ID, NSS, FICHIER_XML, STATE, PSPY
 select ID, NSS, FICHIER_XML, STATE, PSPY from HISTORIQUE_APG_PANDEMIE;
 -- Set TYPE_APG des lignes ajoutées en type PANDEMIE
 update SCHEMA.HISTORIQUE_IMPORTATION_APG set TYPE_APG = 'PANDEMIE';
+-- Set le prochaine ID de la table HISTORIQUE_IMPORTATION_APG à la prochaine valeur requise dans l'ancienne table
+-- HITORIQUE_APG_PANDEMIE + 1
+update SCHEMA.FWINCP set PINCVA = (SELECT SCHEMA.FWINCP.PINCVA from SCHEMA.FWINCP where PINCID = 'HISTORIQUE_APG_PANDEMIE') + 1
+where SCHEMA.FWINCP.PINCID = 'HISTORIQUE_IMPORTATION_APG';
