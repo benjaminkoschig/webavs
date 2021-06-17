@@ -6,6 +6,7 @@ import globaz.framework.controller.FWDefaultServletAction;
 import globaz.framework.controller.FWDispatcher;
 import globaz.framework.controller.FWViewBeanActionFactory;
 import globaz.framework.servlets.FWServlet;
+import globaz.globall.db.BSession;
 import globaz.globall.http.JSPUtils;
 import globaz.jade.log.JadeLogger;
 import globaz.osiris.db.ebill.CAInscriptionEBillViewBean;
@@ -103,8 +104,10 @@ public class CAInscriptionEBillAction extends CADefaultServletAction {
             JSPUtils.setBeanProperties(request, viewBean);
 
             viewBean.setStatut(CAStatutEBillEnum.NUMERO_STATUT_A_TRAITER);
-            viewBean = (CAInscriptionEBillViewBean) mainDispatcher.dispatch(viewBean, FWAction.newInstance("osiris.ebill.inscriptionEBill.modifier"));
+            viewBean.update();
+            viewBean.updateStatutFichier();
 
+            viewBean = (CAInscriptionEBillViewBean) mainDispatcher.dispatch(viewBean, FWAction.newInstance("osiris.ebill.inscriptionEBill.modifier"));
             if (viewBean.hasErrors()) {
                 viewBean.setMsgType(FWViewBeanInterface.ERROR);
             }
@@ -141,12 +144,16 @@ public class CAInscriptionEBillAction extends CADefaultServletAction {
             }
 
             String selectedId = request.getParameter("selectedId");
-            Class b = Class.forName("globaz.globall.db.BIPersistentObject");
-            Method mSetId = b.getDeclaredMethod("setId", String.class);
-            mSetId.invoke(viewBean, selectedId);
+
+            viewBean.setSession((BSession) mainDispatcher.getSession());
+            viewBean.setId(selectedId);
+            viewBean.retrieve();
+
             viewBean = (CAInscriptionEBillViewBean) mainDispatcher.dispatch(viewBean, FWAction.newInstance("osiris.ebill.inscriptionEBill.afficher"));
 
             viewBean.setStatut(CAStatutEBillEnum.NUMERO_STATUT_A_TRAITER);
+            viewBean.update();
+            viewBean.updateStatutFichier();
             viewBean = (CAInscriptionEBillViewBean) mainDispatcher.dispatch(viewBean, FWAction.newInstance("osiris.ebill.inscriptionEBill.modifier"));
 
             if (viewBean.hasErrors()) {
@@ -187,6 +194,9 @@ public class CAInscriptionEBillAction extends CADefaultServletAction {
             JSPUtils.setBeanProperties(request, viewBean);
 
             viewBean.setStatut(CAStatutEBillEnum.NUMERO_STATUT_TRAITE_MANUELLEMENT);
+            viewBean.update();
+            viewBean.updateStatutFichier();
+
             viewBean = (CAInscriptionEBillViewBean) mainDispatcher.dispatch(viewBean, FWAction.newInstance("osiris.ebill.inscriptionEBill.modifier"));
 
             if (viewBean.hasErrors()) {
@@ -227,12 +237,15 @@ public class CAInscriptionEBillAction extends CADefaultServletAction {
                 viewBean = new CAInscriptionEBillViewBean();
             }
             String selectedId = request.getParameter("selectedId");
-            Class b = Class.forName("globaz.globall.db.BIPersistentObject");
-            Method mSetId = b.getDeclaredMethod("setId", String.class);
-            mSetId.invoke(viewBean, selectedId);
+            viewBean.setSession((BSession) mainDispatcher.getSession());
+            viewBean.setId(selectedId);
+            viewBean.retrieve();
+
             viewBean = (CAInscriptionEBillViewBean) mainDispatcher.dispatch(viewBean, FWAction.newInstance("osiris.ebill.inscriptionEBill.afficher"));
 
             viewBean.setStatut(CAStatutEBillEnum.NUMERO_STATUT_TRAITE_MANUELLEMENT);
+            viewBean.update();
+            viewBean.updateStatutFichier();
             viewBean = (CAInscriptionEBillViewBean) mainDispatcher.dispatch(viewBean, FWAction.newInstance("osiris.ebill.inscriptionEBill.modifier"));
 
             if (viewBean.hasErrors()) {

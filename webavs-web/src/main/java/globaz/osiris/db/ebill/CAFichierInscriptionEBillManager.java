@@ -13,6 +13,7 @@ public class CAFichierInscriptionEBillManager extends BManager {
 
     private static final String FICHIER = "fichier.";
     private static final String INSCRIPTION = "inscription.";
+    private String forIdFichier;
     private String forDateLecture;
     private String forStatutFichier;
 
@@ -42,6 +43,13 @@ public class CAFichierInscriptionEBillManager extends BManager {
     @Override
     protected String _getWhere(BStatement statement) {
         StringBuilder sqlWhere = new StringBuilder();
+        // Id Fichier
+        if (!JadeStringUtil.isEmpty(getForIdFichier())) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere.append(" AND ");
+            }
+            sqlWhere.append(FICHIER).append(CAFichierInscriptionEBill.FIELD_ID_FICHIER).append("=").append(this._dbWriteNumeric(statement.getTransaction(), getForIdFichier()));
+        }
         // Date de lecture
         if (!JadeStringUtil.isIntegerEmpty(getForDateLecture())) {
             if (sqlWhere.length() != 0) {
@@ -86,6 +94,14 @@ public class CAFichierInscriptionEBillManager extends BManager {
         fields.append("COUNT(DISTINCT ").append(INSCRIPTION).append(CAInscriptionEBill.FIELD_ID_INSCRIPTION).append(") as ");
         fields.append(CAFichierInscriptionEBill.FIELD_NB_ELEMENTS);
         return fields.toString();
+    }
+
+    public String getForIdFichier() {
+        return forIdFichier;
+    }
+
+    public void setForIdFichier(String forIdFichier) {
+        this.forIdFichier = forIdFichier;
     }
 
     public String getForDateLecture() {
