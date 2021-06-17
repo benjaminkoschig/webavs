@@ -1,5 +1,8 @@
 package ch.globaz.pegasus.business.vo.pcaccordee;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +23,10 @@ public class PCAccordeePlanCalculAndMembreFamilleVO {
     private String montantPCMensuelle = null;
 
     private String montantPrimeMoyenAssMaladie = null;
+
+    @Getter
+    @Setter
+    private boolean isReforme;
 
     public PCAccordeePlanCalculAndMembreFamilleVO() {
         listMembreFamilleVO = new ArrayList<PCAMembreFamilleVO>();

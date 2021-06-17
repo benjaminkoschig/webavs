@@ -60,8 +60,10 @@ public class RFRetrieveInfoDroitPCService {
                     pcAccPlaCalAndMemFamVOCourant.getMontantPrimeMoyenAssMaladie(), mathContext);
             BigDecimal montantExcedentDeRecetteBigDec = new BigDecimal("0", mathContext);
 
-            montantExcedentDeRecetteBigDec = excedentPCAnnuelBigDec.abs(mathContext).subtract(
-                    montantPrimeMoyenAssMaladieBigDec.abs(mathContext), mathContext);
+            montantExcedentDeRecetteBigDec = excedentPCAnnuelBigDec.abs(mathContext);
+            if(!pcAccPlaCalAndMemFamVOCourant.isReforme()) {
+                montantExcedentDeRecetteBigDec = montantExcedentDeRecetteBigDec.subtract(montantPrimeMoyenAssMaladieBigDec.abs(mathContext), mathContext);
+            }
 
             if (montantExcedentDeRecetteBigDec.compareTo(new BigDecimal("0")) > 0) {
                 montantExcedendDeRecette = montantExcedentDeRecetteBigDec.toString();

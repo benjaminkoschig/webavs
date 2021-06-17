@@ -843,6 +843,7 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
                 pcaccordeePlanCalculAndMembreFamilleVO.setIdPcAccordee(pca.getSimplePCAccordee().getId());
                 pcaccordeePlanCalculAndMembreFamilleVO
                         .setIdVersionDroitPC(pca.getSimplePCAccordee().getIdVersionDroit());
+                pcaccordeePlanCalculAndMembreFamilleVO.setReforme(pca.getPlanDeCalculWitMembreFamille().getSimplePlanDeCalcul().getReformePc());
             }
 
             PCAMembreFamilleVO membreFamilleVO = new PCAMembreFamilleVO();
