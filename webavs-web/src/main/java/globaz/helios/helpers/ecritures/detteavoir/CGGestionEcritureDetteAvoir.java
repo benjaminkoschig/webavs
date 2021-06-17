@@ -20,9 +20,10 @@ public class CGGestionEcritureDetteAvoir {
     private static final String COMPTE_BEGIN_22 = "22";
     private static final String IDEXTERNE_1990_120 = "1990.120";
     private static final String IDEXTERNE_1990_220 = "1990.220";
+    private static final String IDEXTERNE_1990_125 = "1990.125";
+    private static final String IDEXTERNE_1990_225 = "1990.225";
 
     private static final String IDEXTERNE_END_1201_0000 = ".1201.0000";
-
     private static final String IDEXTERNE_END_2201_0000 = ".2201.0000";
     protected final static int LIBELLE_LENGTH = 50;
 
@@ -188,14 +189,24 @@ public class CGGestionEcritureDetteAvoir {
         CGEnteteEcritureViewBean entete = new CGEnteteEcritureViewBean();
         CGEcritureViewBean ecritureDebit = new CGEcritureViewBean();
         CGEcritureViewBean ecritureCredit = new CGEcritureViewBean();
+        String compteDebitType1="";
+        String compteCreditType1="";
+        String compteDebitType2="";
+        String compteCreditType2="";
+        compteDebitType1 = secteurBilan + IDEXTERNE_END_1201_0000;
+        compteCreditType2 = secteurBilan + IDEXTERNE_END_2201_0000;
+        if(secteurBilan.substring(0,2).equals("25")){
+             compteCreditType1 = IDEXTERNE_1990_225 + secteurBilan.charAt(0) + "." + secteurBilan.charAt(1)
+                    + secteurBilan.charAt(2) + secteurBilan.charAt(3) + "0";
+             compteDebitType2 = IDEXTERNE_1990_125 + secteurBilan.charAt(0) + "." + secteurBilan.charAt(1)
+                    + secteurBilan.charAt(2) + secteurBilan.charAt(3) + "0";
+        }else{
+             compteCreditType1 = IDEXTERNE_1990_220 + secteurBilan.charAt(0) + "." + secteurBilan.charAt(1)
+                    + secteurBilan.charAt(2) + secteurBilan.charAt(3) + "0";
+             compteDebitType2 = IDEXTERNE_1990_120 + secteurBilan.charAt(0) + "." + secteurBilan.charAt(1)
+                    + secteurBilan.charAt(2) + secteurBilan.charAt(3) + "0";
+        }
 
-        String compteDebitType1 = secteurBilan + IDEXTERNE_END_1201_0000;
-        String compteCreditType1 = IDEXTERNE_1990_220 + secteurBilan.charAt(0) + "." + secteurBilan.charAt(1)
-                + secteurBilan.charAt(2) + secteurBilan.charAt(3) + "0";
-
-        String compteDebitType2 = IDEXTERNE_1990_120 + secteurBilan.charAt(0) + "." + secteurBilan.charAt(1)
-                + secteurBilan.charAt(2) + secteurBilan.charAt(3) + "0";
-        String compteCreditType2 = secteurBilan + IDEXTERNE_END_2201_0000;
 
         CGEnteteEcritureListViewBean manager = new CGEnteteEcritureListViewBean();
         manager.setSession(session);
