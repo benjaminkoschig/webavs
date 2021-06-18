@@ -90,6 +90,10 @@ public class APDroitMatPHelper extends APAbstractDroitPHelper {
             APDroitAPGPViewBean actionAfficherViewBean = new APDroitAPGPViewBean();
 //            droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
 //            droit.update();
+            if(droit.getEtat().equals(IAPDroitLAPG.CS_ETAT_DROIT_ENREGISTRE)){
+                droit.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE);
+                droit.update();
+            }
             actionAfficherViewBean.setDroit(droit);
 
             if (!hasErrors(session, transaction)) {
