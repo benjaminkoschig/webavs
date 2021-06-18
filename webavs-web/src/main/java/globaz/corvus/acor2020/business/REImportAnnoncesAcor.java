@@ -3,6 +3,7 @@ package globaz.corvus.acor2020.business;
 import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
 import acor.ch.admin.zas.rc.annonces.rente.rc.*;
 import ch.globaz.pyxis.domaine.NumeroSecuriteSociale;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.acor.parser.rev09.REACORParser;
@@ -69,7 +70,8 @@ public class REImportAnnoncesAcor {
                         } else if (o instanceof LinkedHashMap) {
                             // TODO : a refactorer --> voir avec ACOR pour qu'ils fournissent un typage de l'objet dans le json.
                             try {
-                                RRMeldung10Type meldung10 = new ObjectMapper().convertValue(o, RRMeldung10Type.class);
+                                ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+                                RRMeldung10Type meldung10 = mapper.convertValue(o, RRMeldung10Type.class);
                                 addAnnoncesToList(annoncesOrdinaires10emeRev, annoncesExtraOrdinaires10emeRev, meldung10);
                             } catch (Exception e) {
                                 LOG.error("L'objet n'a pas pu être converti. Il ne s'agit pas d'une annonce de 10e révision.", e);

@@ -42,6 +42,7 @@ import globaz.jade.log.JadeLogger;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.PRACORException;
 import globaz.prestation.db.demandes.PRDemande;
+import globaz.prestation.db.infos.PRInfoCompl;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
@@ -238,7 +239,19 @@ public class REExportationCalculAcor2020 {
         }
         assure.setNationalite(getCodePays(membre.getCsNationalite()));
         assure.setDomicile(getDomicile(membre.getCsCantonDomicile(), membre.getPays(), tiersRequerant));
-        assure.setRefugie(false);
+
+        PRInfoCompl infoCompl = new PRInfoCompl();
+        try {
+            infoCompl.setSession(getSession());
+            infoCompl.setIdInfoCompl(demandeRente.getIdInfoComplementaire());
+            infoCompl.retrieve();
+        } catch (Exception e) {
+            getSession().addError(getSession().getLabel("ERREUR_INFOS_COMP"));
+        }
+        assure.setRefugie(infoCompl.getIsRefugie());
+        // TODO : gestion des données veto
+//        assure.setDonneesVeto(createDonnesVeto(infoCompl));
+
         assure.setSexe(PRACORConst.csSexeToAcor2020(membre.getCsSexe()));
         // RENTES
         addRentesAssures(assure, membre);
@@ -268,6 +281,15 @@ public class REExportationCalculAcor2020 {
         // PERIODES
         addPeriodesAssure(assure, membre);
         return assure;
+    }
+
+    private AssureType.DonneesVeto createDonnesVeto(PRInfoCompl infoCompl) {
+        AssureType.DonneesVeto donneesVeto = new AssureType.DonneesVeto();
+        // TODO : veto 1 = transfert , 2 = remboursement , 3 = autre raison
+        // Actuellement, autre raison = 2 dans WebAVS -> faut-il modifier le Code systèmes ? attention aux impacts sur l'ancien acor.
+        // De plus s'il y a un veto, il faut renseigner une date de veto --> quelle date doit être prise en compte.
+        donneesVeto.setVetoPrestation(ParserUtils.formatRequiredInteger(PRACORConst.csVetoToAcor(getSession(), infoCompl.getCsVetoPrestation())));
+        return donneesVeto;
     }
 
     /**
@@ -572,7 +594,7 @@ public class REExportationCalculAcor2020 {
         }
         // Numéro 7 - Numéro 27
         BigDecimal montant = durchschnittlichesJahreseinkommen.subtract(donneesBonification.getAngerechneteErziehungsgutschrift());
-        donneesBonification.setDJEohneErziehungsgutschrift(montant.setScale(0,BigDecimal.ROUND_DOWN));
+        donneesBonification.setDJEohneErziehungsgutschrift(montant.setScale(0, BigDecimal.ROUND_DOWN));
         return donneesBonification;
     }
 
@@ -1367,8 +1389,12 @@ public class REExportationCalculAcor2020 {
         }
 
         enfant.setNavs(getNssMembre(membre));
-        enfant.setNom(membre.getNom());
-        enfant.setPrenom(membre.getPrenom());
+        if (StringUtils.isNotEmpty(membre.getNom())) {
+            enfant.setNom(membre.getNom());
+        }
+        if (StringUtils.isNotEmpty(membre.getPrenom())) {
+            enfant.setPrenom(membre.getPrenom());
+        }
         enfant.setDateNaissance(ParserUtils.formatDate(membre.getDateNaissance(), DD_MM_YYYY_FORMAT));
         if (!JadeStringUtil.isBlankOrZero(membre.getDateDeces())) {
             enfant.setDateDeces(ParserUtils.formatDate(membre.getDateDeces(), DD_MM_YYYY_FORMAT));
@@ -1493,7 +1519,7 @@ public class REExportationCalculAcor2020 {
 
             REACORDemandeAdapter.ImplMembreFamilleRequerantWrapper exConjointDuConjoint = (REACORDemandeAdapter.ImplMembreFamilleRequerantWrapper) ligne
                     .getConjoint();
-        // TODO : cas d'un ex conjoint de conjoint qui n'a pas de NSS --> générer un NSS bidon ?
+            // TODO : cas d'un ex conjoint de conjoint qui n'a pas de NSS --> générer un NSS bidon ?
             famille.getNavs().add(ParserUtils.formatNssToLong(exConjointDuConjoint.getNssConjoint()));
             famille.getNavs().add(getNssMembre(exConjointDuConjoint));
         } else {
@@ -1666,7 +1692,7 @@ public class REExportationCalculAcor2020 {
     }
 
     private String getNumAvsFromDemandeSurvivant(PRTiersWrapper tiers, BSession session) {
-        String nssDemande =  tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+        String nssDemande = tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
         try {
             String idTiersRequerant = tiers.getIdTiers();
             // Gestion de cas spéciaux pour ACOR

@@ -47,6 +47,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class REAcor2020Parser {
 
@@ -222,7 +223,7 @@ public class REAcor2020Parser {
                             for (FCalcul.Evenement.BasesCalcul.Decision.Prestation eachPrestation : eachDecision.getPrestation()) {
                                 if (Objects.nonNull(eachPrestation.getRente())) {
                                     // importer les rentes accordées
-                                    ra = importRenteAccordee(session, (BTransaction) transaction, demandeSource, eachPrestation, eachBaseCalcul);
+                                    ra = importRenteAccordee(session, (BTransaction) transaction, demandeSource, eachPrestation, eachBaseCalcul, fCalcul);
                                     // si il y a une relation au requerant => la rente
                                     // accordee est pour un des membres de la famille
                                     isAnnoncePayForDemandeRente = (isAnnoncePayForDemandeRente || !JadeStringUtil.isIntegerEmpty(ra.getCsRelationAuRequerant()));
@@ -811,7 +812,7 @@ public class REAcor2020Parser {
      * @return
      */
     private static RERenteAccordee importRenteAccordee(final BSession session, final BTransaction transaction,
-                                                       final REDemandeRente demande, FCalcul.Evenement.BasesCalcul.Decision.Prestation prestation, FCalcul.Evenement.BasesCalcul baseCalcul) throws Exception {
+                                                       final REDemandeRente demande, FCalcul.Evenement.BasesCalcul.Decision.Prestation prestation, FCalcul.Evenement.BasesCalcul baseCalcul, FCalcul fCalcul) throws Exception {
 
         RERenteAccordee ra = new RERenteAccordee();
         ra.setSession(session);
@@ -949,14 +950,22 @@ public class REAcor2020Parser {
 
         // TODO : supplément de veuvage non trouvé dans le xml -> on set la valeur à 0
         // ra.setSupplementVeuvage(REACORAbstractFlatFileParser.getField(line, fields, "SUPPL_VEUVAGE")); $r29
-         ra.setSupplementVeuvage("0");
+        ra.setSupplementVeuvage("0");
 
-         ra.setPrescriptionAppliquee(getNombreAnneePrescriptionAppliquee(rente));
 //         ra.setPrescriptionAppliquee(REACORAbstractFlatFileParser.getField(line, fields, "PRESCRIPTION_APPLIQUEE")); $r30
+        ra.setPrescriptionAppliquee(getNombreAnneePrescriptionAppliquee(rente));
+
+        List<Integer> refugies = fCalcul.getAssure().stream().filter(assure -> StringUtils.equals(assure.getId().getValue(), prestation.getBeneficiaire())).map(assure -> assure.getRefugie()).collect(Collectors.toList());
+        if (refugies.stream().anyMatch(value -> Objects.nonNull(value))) {
+            ra.setCodeRefugie("1");
+        } else {
+            ra.setCodeRefugie("0");
+        }
+
+        // ra.setCodeRefugie(REACORAbstractFlatFileParser.getField(line, fields, "CODE_REFUGIE")); $r9 ou $r19 ??
 
         // TODO : champ à analyser -> tous égaux à 0 dans le fichier plat.
         // ra.setMontantRenteOrdiRemplacee(REACORAbstractFlatFileParser.getField(line, fields, "MONTANT_RENTE_ORDINAIRE_REMPL")); $r13
-        // ra.setCodeRefugie(REACORAbstractFlatFileParser.getField(line, fields, "CODE_REFUGIE")); $r9 ou $r19 ??
         // TODO : champ non mappé -> égale à 0 dans le fichier plat.
         // ra.setCodeAuxilliaire(REACORAbstractFlatFileParser.getField(line, fields, "CODE_AUXILIAIRE")); $r6
 
@@ -1324,7 +1333,7 @@ public class REAcor2020Parser {
                         for (FCalcul.Evenement.BasesCalcul.Decision eachDecision : eachBaseCalcul.getDecision()) {
                             for (FCalcul.Evenement.BasesCalcul.Decision.Prestation eachPrestation : eachDecision.getPrestation()) {
                                 if (Objects.nonNull(eachPrestation.getRente())) {
-                                    ra = REAcor2020Parser.importRenteAccordee(session, (BTransaction) transaction, demandeSource, eachPrestation, eachBaseCalcul);
+                                    ra = REAcor2020Parser.importRenteAccordee(session, (BTransaction) transaction, demandeSource, eachPrestation, eachBaseCalcul, fCalcul);
 
                                     elmFCVO = fcParBaseCalculVO.new ElementVO();
 
