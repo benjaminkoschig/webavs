@@ -170,8 +170,7 @@ public final class ParserUtils {
     /**
      * Format la date en MMAA
      *
-     * @param value
-     *            La date à formatter
+     * @param value La date à formatter
      * @return Une chaîne de caractère représentant la date sous la forme MMAA
      */
     public static String formatDateToMMAA(XMLGregorianCalendar value) {
@@ -217,6 +216,24 @@ public final class ParserUtils {
         LocalDate delay = now.plusMonths(mois);
         Period period = Period.between(now, delay);
         return String.format("%s.%s", formatIntToStringWithTwoChar(period.getYears()), formatIntToStringWithTwoChar(period.getMonths()));
+    }
+
+    /**
+     * Conversion et formatage d'un Integer correspondant à AAMM en String correspondant à AA.MM
+     *
+     * @param duree durée au format AAMM
+     * @return la durée au format AA.MM
+     */
+    public static String formatAAMMtoAAxMM(int duree) {
+        if (Objects.nonNull(duree)) {
+            String value = String.valueOf(duree);
+            if (value.length() == 4) {
+                return String.format("%s.%s",value.substring(0,2), value.substring(2,4));
+            } else {
+                return StringUtils.EMPTY;
+            }
+        }
+        return StringUtils.EMPTY;
     }
 
     /**
@@ -294,10 +311,8 @@ public final class ParserUtils {
      * Example : value = '218', indentValue = '5'
      * ==> 00218
      *
-     * @param value
-     *            La chaîne de caractère à formater
-     * @param indentValue
-     *            Le nombre de caractère de la chaîne final
+     * @param value       La chaîne de caractère à formater
+     * @param indentValue Le nombre de caractère de la chaîne final
      * @return Une chaîne de caractère indentée avec des zéros à gauche
      */
     public static String indentLeftWithZero(String value, int indentValue) {
@@ -339,8 +354,7 @@ public final class ParserUtils {
      * - 0.11 : 0011</br>
      * - 12.12 : 1212</br>
      *
-     * @param bd
-     *            Le BigDecimal à formatter
+     * @param bd Le BigDecimal à formatter
      * @return La valeur du BigDecimal formatter
      */
     public static String formatBigDecimal(BigDecimal bd) {

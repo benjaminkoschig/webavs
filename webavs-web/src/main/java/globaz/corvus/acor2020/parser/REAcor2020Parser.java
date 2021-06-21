@@ -502,7 +502,6 @@ public class REAcor2020Parser {
      * @return
      */
     private static REBasesCalcul importBaseCalcul(final BSession session, FCalcul.Evenement.BasesCalcul baseCalcul, FCalcul.Evenement.BasesCalcul.Decision.Prestation premierePrestation, FCalcul fCalcul) {
-        // TODO : affiner la récupération des champs --> il s'agit là d'un premier mapping.
 //        String droitApplique = REACORAbstractFlatFileParser.getField(line, fields, "DROIT_APPLIQUE");
         String droitApplique = Objects.toString(premierePrestation.getRente().getGenre(), StringUtils.EMPTY);
         REBasesCalcul bc;
@@ -548,6 +547,9 @@ public class REAcor2020Parser {
                 bc.setRevenuSplitte(BooleanUtils.toBoolean(baseCalcul.getBaseRam().getRevLucr().getCodeSplit()));
                 //        bc.setFacteurRevalorisation(REACORAbstractFlatFileParser.getField(line, fields, "FACTEUR_REVALORISATION")); $b50
                 bc.setFacteurRevalorisation(Objects.toString(baseCalcul.getBaseRam().getRevLucr().getFacRev(), StringUtils.EMPTY));
+
+                //        bc.setDureeRevenuAnnuelMoyen(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COTI_RAM")); $b8
+                bc.setDureeRevenuAnnuelMoyen(ParserUtils.formatAAMMtoAAxMM(baseCalcul.getBaseRam().getRevLucr().getDuree()));
             }
         }
         //        bc.setAnneeDeNiveau(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_NIVEAU")); $b10
@@ -581,12 +583,19 @@ public class REAcor2020Parser {
             bc.setAnneeDeNiveau(ParserUtils.formatAAAAtoAA(Objects.toString(baseCalcul.getBaseEchelle().getAnNiveau(), StringUtils.EMPTY)));
             for (BaseEchelle.DCot eachDCot : baseCalcul.getBaseEchelle().getDCot()) {
                 switch (eachDCot.getType()) {
+                    // mois d'appoint
                     case 6:
 //        bc.setMoisAppointsAvant73(REACORAbstractFlatFileParser.getField(line, fields, "MOIS_APPOINT_AV_73")); $b13
                         bc.setMoisAppointsAvant73(Objects.toString(eachDCot.getAv73().getMois(), StringUtils.EMPTY));
 //        bc.setMoisAppointsDes73(REACORAbstractFlatFileParser.getField(line, fields, "MOIS_APPOINT_DES_73")); $b14
                         bc.setMoisAppointsDes73(Objects.toString(eachDCot.getAp73().getMois(), StringUtils.EMPTY));
                         break;
+                    // année d'ouverture
+                    case 7:
+//        bc.setMoisCotiAnneeOuvertDroit(REACORAbstractFlatFileParser.getField(line, fields, "MOIS_COTI_ANNEE_OUVERTURE")); $b36
+                        bc.setMoisCotiAnneeOuvertDroit(Objects.toString(eachDCot.getTotal().getMois(), StringUtils.EMPTY));
+                        break;
+                    // assurance étrangère
                     case 8:
 //        bc.setPeriodeAssEtrangerAv73(REACORAbstractFlatFileParser.getField(line, fields, "PERIODE_ASS_ETR_AV_73")); $b35
                         StringBuilder periodeAssEtrAv73 = new StringBuilder(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getAv73().getAnnees()));
@@ -597,13 +606,9 @@ public class REAcor2020Parser {
                         periodeAssEtrAp73.append(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getAp73().getMois()));
                         bc.setPeriodeAssEtrangerDes73(periodeAssEtrAp73.toString());
                         break;
+                    // TODO : identifier s'il faut plutôt utiliser le type 9 ou le type 10
+                    // total
                     case 9:
-//        bc.setDureeRevenuAnnuelMoyen(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COTI_RAM")); $b8
-                        StringBuilder dureeRAM = new StringBuilder(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getTotal().getAnnees()));
-                        dureeRAM.append(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getTotal().getMois()));
-                        bc.setDureeRevenuAnnuelMoyen(dureeRAM.toString());
-                        break;
-                    case 10:
 //        bc.setDureeCotiAvant73(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COTI_AV_73")); $b6
                         StringBuilder dureeCotiAv37 = new StringBuilder(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getAv73().getAnnees()));
                         dureeCotiAv37.append(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getAv73().getMois()));
@@ -636,7 +641,6 @@ public class REAcor2020Parser {
         // TODO : champ non mappé : tous égaux à 0 dans l'exemple
 //        bc.setResultatComparatif(REACORAbstractFlatFileParser.getField(line, fields, "RESULTAT_COMPARAISON")); $b46
 //        bc.setTypeCalculComparatif(REACORAbstractFlatFileParser.getField(line, fields, "TYPE_CALCUL_COMPARATIF")); $b45
-//        bc.setMoisCotiAnneeOuvertDroit(REACORAbstractFlatFileParser.getField(line, fields, "MOIS_COTI_ANNEE_OUVERTURE")); $b36
 //        bc.setIsPartageRevenuActuel(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields, "PARTAGE_REVENU"))); $b44
 
         // TODO : $b4 - Revenu pris en compte non trouvé dans FCalcul --> en attente (égale à 0 dans l'exemple)
