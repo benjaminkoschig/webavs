@@ -372,8 +372,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 } else {
                     LOG.info("Le montant du salaire horaire (hourlyIncome) n'est pas correctement renseigné pour le nss : {}", this.nssImport);
                 }
-                String heureParSemaine = String.valueOf(hourlyIncome.getHoursOfWorkPerWeek());
-                situationProfessionnelle.setHeuresSemaine(heureParSemaine);
+                situationProfessionnelle.setHeuresSemaine(String.valueOf(hourlyIncome.getHoursOfWorkPerWeek()));
             }else {
                 LOG.info("Le montant du salaire horaire (hourlyIncome) n'est pas renseigné pour le nss : {}", this.nssImport);
             }
@@ -383,7 +382,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
             if(fourWeekIncome.getAmount() != null){
                 situationProfessionnelle.setAutreSalaire(String.valueOf(fourWeekIncome.getAmount()));
                 if(fourWeekIncome.getIncomeUnit() != null) {
-                    autreRemunerationPeriod = getPeriodicite(fourWeekIncome.getIncomeUnit());
+                    situationProfessionnelle.setPeriodiciteAutreSalaire(getPeriodicite(fourWeekIncome.getIncomeUnit()));
                 }else{
                     LOG.info("La périodicité du salaire autres formes de rémunération (fourWeekIncome) n'est pas renseigné pour le nss : {}", this.nssImport);
                 }
@@ -396,7 +395,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
             if(inKindOrGlobalIncome.getAmount() != null) {
                 situationProfessionnelle.setSalaireNature(String.valueOf(inKindOrGlobalIncome.getAmount()));
                 if(inKindOrGlobalIncome.getIncomeUnit() != null) {
-                    autreRemunerationPeriod = getPeriodicite(inKindOrGlobalIncome.getIncomeUnit());
+                    situationProfessionnelle.setPeriodiciteSalaireNature(getPeriodicite(inKindOrGlobalIncome.getIncomeUnit()));
                 }else{
                     LOG.info("La périodicité du salaire nature ou global (otherIncome) n'est pas renseigné pour le nss : {}", this.nssImport);
                 }
