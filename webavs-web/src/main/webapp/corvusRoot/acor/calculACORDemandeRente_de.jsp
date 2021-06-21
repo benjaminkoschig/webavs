@@ -209,7 +209,7 @@
         });
         $('#lienAcorWeb').one('click', function () {
             ajaxUtils.addOverlay($('html'));
-            window.location.href = "corvus?userAction=corvus.rentesaccordees.renteAccordeeJointDemandeRente.chercher&noDemandeRente=" + <%=viewBean.getIdDemandeRente()%>;
+            window.location.href = "corvus?userAction=corvus.rentesaccordees.renteAccordeeJointDemandeRente.chercher&noDemandeRente=" + <%=viewBean.loadDemandeRente(null).getIdDemandeRente()%> + "&idTierRequerant=" + <%=viewBean.getIdTiers()%>;
         });
     });
 </script>
