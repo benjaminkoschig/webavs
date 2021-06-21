@@ -346,58 +346,95 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
     private void setIncomes(Salary salaire, APSituationProfessionnelle situationProfessionnelle) {
         LastIncome lastInCome = salaire.getLastIncome();
         BigDecimal autreRemuneration = new BigDecimal(0);
+        String autreRemunerationPeriod = null;
         if(lastInCome != null) {
-            String salaireMensuel = String.valueOf(lastInCome.getAmount());
-            if (salaireMensuel != null) {
-                situationProfessionnelle.setSalaireMensuel(salaireMensuel);
-                // Vague 2 - Si le salarié est payé sur 13 mois
-                // On ajoute son 13eme mois sans une autre rémunération annuelle
-                if (lastInCome.isHasThirteenthMonth()) {
-                    autreRemuneration = autreRemuneration.add(lastInCome.getAmount());
-                    setPeriodiciteAutreRemuneration(situationProfessionnelle, "ANNEE");
+            if(lastInCome.getAmount() != null) {
+                String salaireMensuel = String.valueOf(lastInCome.getAmount());
+                if (salaireMensuel != null) {
+                    situationProfessionnelle.setSalaireMensuel(salaireMensuel);
+                    // Vague 2 - Si le salarié est payé sur 13 mois
+                    // On ajoute son 13eme mois sans une autre rémunération annuelle
+                    if (lastInCome.isHasThirteenthMonth()) {
+                        autreRemuneration = autreRemuneration.add(lastInCome.getAmount());
+                        autreRemunerationPeriod = getPeriodicite("ANNEE");
+                    }
                 }
+            }else {
+                LOG.info("Le montant du salaire mensuel (lastIncome) n'est pas renseigné pour le nss : {}", this.nssImport);
             }
         }
         HourlyIncome hourlyIncome = salaire.getHourlyIncome();
         if(hourlyIncome != null){
-            String salaireHoraire = String.valueOf(hourlyIncome.getAmount());
-            if(salaireHoraire != null){
-                situationProfessionnelle.setSalaireHoraire(salaireHoraire);
+            if(hourlyIncome.getAmount() != null) {
+                String salaireHoraire = String.valueOf(hourlyIncome.getAmount());
+                if (salaireHoraire != null) {
+                    situationProfessionnelle.setSalaireHoraire(salaireHoraire);
+                } else {
+                    LOG.info("Le montant du salaire horaire (hourlyIncome) n'est pas correctement renseigné pour le nss : {}", this.nssImport);
+                }
+                String heureParSemaine = String.valueOf(hourlyIncome.getHoursOfWorkPerWeek());
+                situationProfessionnelle.setHeuresSemaine(heureParSemaine);
+            }else {
+                LOG.info("Le montant du salaire horaire (hourlyIncome) n'est pas renseigné pour le nss : {}", this.nssImport);
             }
-            String heureParSemaine = String.valueOf(hourlyIncome.getHoursOfWorkPerWeek());
-            situationProfessionnelle.setHeuresSemaine(heureParSemaine);
+        }
+        FourWeekIncome fourWeekIncome = salaire.getFourWeekIncome();
+        if(fourWeekIncome != null){
+            if(fourWeekIncome.getAmount() != null){
+                situationProfessionnelle.setAutreSalaire(String.valueOf(fourWeekIncome.getAmount()));
+                if(fourWeekIncome.getIncomeUnit() != null) {
+                    autreRemunerationPeriod = getPeriodicite(fourWeekIncome.getIncomeUnit());
+                }else{
+                    LOG.info("La périodicité du salaire autres formes de rémunération (fourWeekIncome) n'est pas renseigné pour le nss : {}", this.nssImport);
+                }
+            }else{
+                LOG.info("Le montant du salaire autres formes de rémunération (fourWeekIncome) n'est pas renseigné pour le nss : {}", this.nssImport);
+            }
         }
         InKindOrGlobalIncome inKindOrGlobalIncome = salaire.getInKindOrGlobalIncome();
         if(inKindOrGlobalIncome != null){
-            autreRemuneration = autreRemuneration.add(inKindOrGlobalIncome.getAmount());
-            setPeriodiciteAutreRemuneration(situationProfessionnelle, inKindOrGlobalIncome.getIncomeUnit());
+            if(inKindOrGlobalIncome.getAmount() != null) {
+                situationProfessionnelle.setSalaireNature(String.valueOf(inKindOrGlobalIncome.getAmount()));
+                if(inKindOrGlobalIncome.getIncomeUnit() != null) {
+                    autreRemunerationPeriod = getPeriodicite(inKindOrGlobalIncome.getIncomeUnit());
+                }else{
+                    LOG.info("La périodicité du salaire nature ou global (otherIncome) n'est pas renseigné pour le nss : {}", this.nssImport);
+                }
+            }else{
+                LOG.info("Le montant du salaire en nature ou global (inKindOrGlobalIncome) n'est pas renseigné pour le nss : {}", this.nssImport);
+            }
         }
         OtherIncome otherIncome = salaire.getOtherIncome();
         if(otherIncome != null){
-            autreRemuneration = autreRemuneration.add(otherIncome.getAmount());
-            setPeriodiciteAutreRemuneration(situationProfessionnelle, otherIncome.getIncomeUnit());
+            if(otherIncome.getAmount() != null) {
+                autreRemuneration = autreRemuneration.add(otherIncome.getAmount());
+                if(otherIncome.getIncomeUnit() != null) {
+                    autreRemunerationPeriod = getPeriodicite(otherIncome.getIncomeUnit());
+                }else{
+                    LOG.info("La périodicité du salaire autre (otherIncome) n'est pas renseigné pour le nss : {}", this.nssImport);
+                }
+            }else {
+                LOG.info("Le montant du salaire autre (otherIncome) n'est pas renseigné pour le nss : {}", this.nssImport);
+            }
         }
         if(autreRemuneration.doubleValue() > 0){
             situationProfessionnelle.setAutreRemuneration(autreRemuneration.toPlainString());
+            if(autreRemunerationPeriod != null){
+                situationProfessionnelle.setPeriodiciteAutreRemun(autreRemunerationPeriod);
+            }
         }
     }
 
-    private void setPeriodiciteAutreRemuneration(APSituationProfessionnelle situationProfessionnelle, String periodicite) {
-        if(periodicite != null){
-            switch(periodicite){
-                case "HEURE":
-                    situationProfessionnelle.setPeriodiciteAutreRemun(IPRSituationProfessionnelle.CS_PERIODICITE_HEURE);
-                    break;
-                case "MOIS":
-                    situationProfessionnelle.setPeriodiciteAutreRemun(IPRSituationProfessionnelle.CS_PERIODICITE_MOIS);
-                    break;
-                case "QUATRE_SEMAINE":
-                    situationProfessionnelle.setPeriodiciteAutreRemun(IPRSituationProfessionnelle.CS_PERIODICITE_4_SEMAINES);
-                    break;
-                default:
-                    situationProfessionnelle.setPeriodiciteAutreRemun(IPRSituationProfessionnelle.CS_PERIODICITE_ANNEE);
-                    break;
-            }
+    private String getPeriodicite(String periodicite) {
+        switch (periodicite) {
+            case "HEURE":
+                return IPRSituationProfessionnelle.CS_PERIODICITE_HEURE;
+            case "MOIS":
+                return IPRSituationProfessionnelle.CS_PERIODICITE_MOIS;
+            case "QUATRE_SEMAINE":
+                return IPRSituationProfessionnelle.CS_PERIODICITE_4_SEMAINES;
+            default:
+                return IPRSituationProfessionnelle.CS_PERIODICITE_ANNEE;
         }
     }
 

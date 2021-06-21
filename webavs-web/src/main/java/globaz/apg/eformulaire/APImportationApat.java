@@ -18,7 +18,7 @@ import globaz.prestation.api.IPRDemande;
 import globaz.prestation.db.demandes.PRDemande;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -55,14 +55,16 @@ public class APImportationApat extends APAbstractImportationAmatApat {
             newDroit.add(transaction);
 
             // récupéreration période du droit
-            List<PaternityLeavePeriod> periods = content.getActivityCessation().getUnemploymentCessation().getParternityLeave().getPaternityLeavePeriods().getPaternityLeavePeriod();
+            List<PaternityLeavePeriod> periods = null;
+            periods = getPaternityLeavePeriods(content);
             long days = 0;
-            for (PaternityLeavePeriod period:periods) {
+
+            for (PaternityLeavePeriod period : periods) {
                 Date debutPeriod = period.getFrom().toGregorianCalendar().getTime();
                 Date finPeriod = period.getTo().toGregorianCalendar().getTime();
                 Date currentDate = new Date();
-                if(currentDate.after(debutPeriod)) {
-                    if(finPeriod.after(debutPeriod)) {
+                if (currentDate.after(debutPeriod)) {
+                    if (finPeriod.after(debutPeriod)) {
                         APPeriodeAPG periodeAPG = new APPeriodeAPG();
                         periodeAPG.setDateDebutPeriode(JadeDateUtil.getGlobazFormattedDate(debutPeriod));
                         periodeAPG.setDateFinPeriode(JadeDateUtil.getGlobazFormattedDate(finPeriod));
@@ -71,20 +73,34 @@ public class APImportationApat extends APAbstractImportationAmatApat {
                         periodeAPG.setNbrJours(String.format("%d", days));
                         periodeAPG.setSession(bSession);
                         periodeAPG.add(transaction);
-                    }
-                    else{
+                    } else {
                         fileStatus.getInformations().add("Incohérence dans les dates de la période et la période n'a pas été ajouté dans WebAVS.");
                     }
-                }else{
+                } else {
                     fileStatus.getInformations().add("La période est définie dans le futur et n'a pas été ajouté dans WebAVS.");
                 }
             }
-        } catch (Exception e){
-            fileStatus.getErrors().add("Une erreur s'est produite lors de la création du droit maternité " + e.getMessage());
+        } catch (Exception e) {
+            fileStatus.getErrors().add("Une erreur s'est produite lors de la création du droit paternité " + e.getMessage());
             LOG.error("Une erreur s'est produite lors de la création du droit : ", e);
         }
 
         return newDroit;
+    }
+
+    private List<PaternityLeavePeriod> getPaternityLeavePeriods(Content content) {
+        if(content.getFormType().equals(APAbstractImportationAmatApat.FORM_INDEPENDANT)) {
+            if(content.getActivityCessation() != null &&
+                    content.getActivityCessation().getUnemploymentCessation() != null &&
+                    content.getActivityCessation().getUnemploymentCessation().getParternityLeave() != null &&
+                    content.getActivityCessation().getUnemploymentCessation().getParternityLeave().getPaternityLeavePeriods() != null)
+                return content.getActivityCessation().getUnemploymentCessation().getParternityLeave().getPaternityLeavePeriods().getPaternityLeavePeriod();
+        }else if(content.getProvidedByEmployer() != null &&
+                    content.getProvidedByEmployer().getParternityLeave() != null &&
+                    content.getProvidedByEmployer().getParternityLeave().getPaternityLeavePeriods() != null) {
+                return content.getProvidedByEmployer().getParternityLeave().getPaternityLeavePeriods().getPaternityLeavePeriod();
+        }
+        return Collections.emptyList();
     }
 
     @Override
