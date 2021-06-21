@@ -920,7 +920,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         }
 
 
-        if (dacOO.getMapMontantVerserHome().size() == 0 || !dacOO.getPlanCalcul().getIsVersementDirect()) {
+        if (dacOO.getMapMontantVerserHome().size() == 0 ) {
             data.addData("B_MONTANT_HOME","");
             data.addData("MONTANT_HOME","");
         } else {

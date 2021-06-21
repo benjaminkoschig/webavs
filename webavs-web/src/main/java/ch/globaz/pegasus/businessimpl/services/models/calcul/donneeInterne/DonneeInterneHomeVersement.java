@@ -18,6 +18,8 @@ public class DonneeInterneHomeVersement {
     private String csRoleBeneficiaire= "";
     private String dateDebut ="";
     private String dateFin ="";
+    private String dateDebutPCA ="";
+    private String dateFinPCA ="";
 
     //CREANCIER
     private String idDemande ="";
@@ -156,5 +158,21 @@ public class DonneeInterneHomeVersement {
 
     public void setMontantDejaVerser(String montantDejaVerser) {
         this.montantDejaVerser = montantDejaVerser;
+    }
+
+    public String getDateDebutPCA() {
+        return dateDebutPCA;
+    }
+
+    public void setDateDebutPCA(String dateDebutPCA) {
+        this.dateDebutPCA = dateDebutPCA;
+    }
+
+    public String getDateFinPCA() {
+        return dateFinPCA;
+    }
+
+    public void setDateFinPCA(String dateFinPCA) {
+        this.dateFinPCA = dateFinPCA;
     }
 }

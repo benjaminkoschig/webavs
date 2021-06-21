@@ -4,6 +4,7 @@ import ch.globaz.common.domaine.Checkers;
 import ch.globaz.common.domaine.GroupePeriodes;
 import ch.globaz.common.domaine.Periode;
 import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.common.util.Dates;
 import ch.globaz.corvus.business.models.pcaccordee.SimpleRetenuePayement;
 import ch.globaz.pegasus.business.constantes.*;
 import ch.globaz.pegasus.business.domaine.membreFamille.RoleMembreFamille;
@@ -41,6 +42,8 @@ import ch.globaz.utils.periode.GroupePeriodesResolver;
 import ch.globaz.utils.periode.GroupePeriodesResolver.EachPeriode;
 import globaz.externe.IPRConstantesExternes;
 import globaz.globall.util.JACalendar;
+import globaz.globall.util.JADate;
+import globaz.globall.util.JAException;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
@@ -57,7 +60,10 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static globaz.externe.IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE;
 
@@ -105,10 +111,10 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             String version = droit.getSimpleVersionDroit().getNoVersion();
             // sur un calcul rétro : vérifie s'il n'y avait une période uniquement réforme
             boolean retroactifCalcul = retroactif;
-            if(retroactif && !JadeStringUtil.isBlankOrZero(version) && Integer.parseInt(version) > 1){
+            if (retroactif && !JadeStringUtil.isBlankOrZero(version) && Integer.parseInt(version) > 1) {
                 List<PCAccordeePlanCalculReforme> list = PcaPlanCalculReforme.getListPcaFromNoVersion(droit.getId(), version);
                 // Si la date de début est supérieure à la date de début de la dernière période, il faudra vérifier le statut réforme sur l'ancien droit
-                if(list.isEmpty() || JadeDateUtil.isDateAfter(dateDebutPlageCalcul, JadeDateUtil.getFirstDateOfMonth(list.get(list.size() - 1).getDateDebut()))) {
+                if (list.isEmpty() || JadeDateUtil.isDateAfter(dateDebutPlageCalcul, JadeDateUtil.getFirstDateOfMonth(list.get(list.size() - 1).getDateDebut()))) {
                     retroactifCalcul = false;
                 } else {
                     dateSplitReforme = PcaPlanCalculReforme.getSplitDateReformeFromVersion(list);
@@ -398,9 +404,9 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             PeriodePCAccordee pcAccordes = listePCAccordes.get(i);
             PeriodePCAccordee pcAccordesReforme = listePCAccordesReforme.get(i);
             Date dateDebut = pcAccordesReforme.getDateDebut();
-            if(isReforme && isRefusFortune(pcAccordesReforme)) {
+            if (isReforme && isRefusFortune(pcAccordesReforme)) {
                 throw new CalculException("pegasus.calcul.seuil.fortune.depasse", pcAccordesReforme.getCalculsComparatifs().get(0).getFortune());
-            } else if((isReforme || pcAccordes.isNePasCalculer()) && !isRefusFortune(pcAccordesReforme) ) {
+            } else if ((isReforme || pcAccordes.isNePasCalculer()) && !isRefusFortune(pcAccordesReforme)) {
                 // la période précédente a déterminée qu'un calcul réforme était plus favorable : tous les suivants sont uniquement réforme
                 // ou sur un calcul rétro : une ancienne version de droit était déjà un calcul uniquement réforme
                 keepReformeOnly(pcAccordes, pcAccordesReforme);
@@ -432,6 +438,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
 
     /**
      * remplace les calculs d'une pca par ceux de la pca réforme
+     *
      * @param pcAccordes
      * @param pcAccordesReforme
      * @throws CalculException
@@ -511,13 +518,13 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                     checkSejourMoisPartiel(droit, pcAccordee, cc, sejourVersementList);
                     String montantTotalHome = cc.getMontantPrixHome();
                     Float montantDepensePersonnel = cc.getMontants().getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_DEPPERSO_TOTAL);
-                    String fKey = pcAccordee.getIdSimplePcAccordee()+"-";
-                    mapMontantTotalHome.put(fKey+REQUERANT_MNT_SEJOUR, montantDepensePersonnel.toString());
+                    String fKey = pcAccordee.getIdSimplePcAccordee() + "-";
+                    mapMontantTotalHome.put(fKey + REQUERANT_MNT_SEJOUR, montantDepensePersonnel.toString());
                     for (PersonnePCAccordee personnePCAccordee : cc.getPersonnes()) {
                         if (personnePCAccordee.getIsHome()) {
                             if (!JadeStringUtil.isBlankOrZero(montantTotalHome)) {
-                                mapMontantTotalHome.put(fKey+REQUERANT_HOME, montantTotalHome);
-                                mapMontantTotalHome.put(fKey+REQUERANT_DEP_PERS, montantDepensePersonnel.toString());
+                                mapMontantTotalHome.put(fKey + REQUERANT_HOME, montantTotalHome);
+                                mapMontantTotalHome.put(fKey + REQUERANT_DEP_PERS, montantDepensePersonnel.toString());
                             }
                         }
                     }
@@ -531,9 +538,9 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                     for (PersonnePCAccordee personnePCAccordee : cc.getPersonnes()) {
                         if (personnePCAccordee.getIsHome()) {
                             if (!JadeStringUtil.isBlankOrZero(montantTotalHome)) {
-                                String fKey = pcAccordee.getIdSimplePcAccordeeConjoint()+"-";
-                                mapMontantTotalHome.put(fKey+CONJOINT_HOME, montantTotalHome);
-                                mapMontantTotalHome.put(fKey+CONJOINT_DEP_PERS, montantDepensePersonnel.toString());
+                                String fKey = pcAccordee.getIdSimplePcAccordeeConjoint() + "-";
+                                mapMontantTotalHome.put(fKey + CONJOINT_HOME, montantTotalHome);
+                                mapMontantTotalHome.put(fKey + CONJOINT_DEP_PERS, montantDepensePersonnel.toString());
                             }
                         }
                     }
@@ -561,6 +568,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
         if (homeReplaced != null) {
             mappingHomes(homeVersementList, homeReplaced, allNewPca, mapMontantTotalHome, droit);
         }
+
 
         for (SimplePCAccordee simplePCAccordee : allNewPca) {
             reporterLaRetenuSiExistant(pcaReplaced, simplePCAccordee, homeVersementList);
@@ -819,6 +827,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 BigDecimal montantHome = new BigDecimal(getMontantHome(calculDonneesHome.getMontantHomes(), 1));
                 Float montantPCMensuel = Float.parseFloat(calculDonneesHome.getMontantPCMensuel());
                 Float montantAverser;
+                nbreMois = JadeDateUtil.getNbMonthsBetween(JadeDateUtil.getFirstDateOfMonth(calculDonneesHome.getDateDebutPCA()), JadeDateUtil.getLastDateOfMonth(calculDonneesHome.getDateFinPCA()));
                 if (montantHome.floatValue() + Float.parseFloat(calculDonneesHome.getMontantDepenses()) / 12.0 > montantPCMensuel) {
                     montantAverser = montantPCMensuel - (Float.parseFloat(calculDonneesHome.getMontantDepenses()) / 12);
                     montantAverser = montantAverser * nbreMois;
@@ -864,7 +873,8 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
      */
     private Creancier getCreancier(Map<String, Creancier> mapCreancierDejaCreer, DonneeInterneHomeVersement calculDonneesHome, Float montantAVerser, boolean addMontant) throws CreancierException, JadePersistenceException, JadeApplicationServiceNotAvailableException {
         Creancier creancier;
-        if (!mapCreancierDejaCreer.containsKey(calculDonneesHome.getIdTiersHome())) {
+        String key = calculDonneesHome.getIdTiersHome();
+        if (!mapCreancierDejaCreer.containsKey(key)) {
             creancier = new Creancier();
             SimpleCreancier simpleCreancier = new SimpleCreancier();
             simpleCreancier.setCsEtat(IPCDroits.CS_ETAT_CREANCE_A_PAYE);
@@ -879,9 +889,9 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             simpleCreancier.setIsHome(true);
             creancier.setSimpleCreancier(simpleCreancier);
             creancier = PegasusServiceLocator.getCreancierService().create(creancier);
-            mapCreancierDejaCreer.put(calculDonneesHome.getIdTiersHome(), creancier);
+            mapCreancierDejaCreer.put(key, creancier);
         } else {
-            creancier = mapCreancierDejaCreer.get(calculDonneesHome.getIdTiersHome());
+            creancier = mapCreancierDejaCreer.get(key);
             if (addMontant) {
                 Float montant = Float.parseFloat(creancier.getSimpleCreancier().getMontant()) + montantAVerser;
                 creancier.getSimpleCreancier().setMontant(montant.toString());
@@ -936,11 +946,15 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
         }
     }
 
-    private void mappingHomes(List<DonneeInterneHomeVersement> homeVersementList, CalculDonneesHomeSearch listHomes, List<SimplePCAccordee> allNewPca, Map<String, String> mapMontantTotalHome, Droit droit) throws JadeApplicationServiceNotAvailableException, PmtMensuelException, CalculException {
+    private void mappingHomes(List<DonneeInterneHomeVersement> homeVersementList
+            , CalculDonneesHomeSearch listHomes, List<SimplePCAccordee> allNewPca, Map<String, String> mapMontantTotalHome, Droit droit) throws JadeApplicationServiceNotAvailableException, PmtMensuelException, CalculException {
 
         DonneeInterneHomeVersement donnee;
         Map<String, List<SimplePCAccordee>> mapToIDPCA = new HashMap<>();
         List<SimplePCAccordee> listPCA;
+        /**
+         * Regroupage par Bénificiaire
+         */
         for (SimplePCAccordee pca : allNewPca) {
             if (!JadeStringUtil.isBlankOrZero(pca.getMontantMensuel())) {
                 if (mapToIDPCA.containsKey(pca.getIdTiersBeneficiaire())) {
@@ -955,9 +969,23 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
 
             }
         }
-
+        /**
+         * Regroup les homes en suprimant les prix des chambres qui donnes des retenus en doubles.
+         */
+        Map<String,CalculDonneesHome> mapHomeFilter = new HashMap<>();
         for (JadeAbstractModel model : listHomes.getSearchResults()) {
             CalculDonneesHome home = (CalculDonneesHome) model;
+            String key = home.getIdHome()+home.getDateDebutDFH()+home.getDateFinDFH();
+            if(!mapHomeFilter.containsKey(key)){
+                mapHomeFilter.put(key,home);
+            }
+
+        }
+
+        for (CalculDonneesHome model : mapHomeFilter.values()) {
+            CalculDonneesHome home =  model;
+
+
             if (Boolean.TRUE.equals(home.getIsVersementDirect()) && mapToIDPCA.containsKey(home.getIdTiersRegroupement())) {
                 Map<Periode, String> mapPeriode = createPeriodeVersementHome(home.getDateDebutDFH(), home.getDateFinDFH());
                 listPCA = mapToIDPCA.get(home.getIdTiersRegroupement());
@@ -976,27 +1004,35 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                         donnee.setIdTiersAdressePaiement(home.getIdTiersHome());
                         donnee.setIdTiersRegroupement(home.getIdTiersRegroupement());
                         donnee.setCsRoleBeneficiaire(simplePCAccordeeBenef.getCsRoleBeneficiaire());
-                        String fKey = simplePCAccordeeBenef.getIdPCAccordee()+"-";
+                        String fKey = simplePCAccordeeBenef.getIdPCAccordee() + "-";
                         //Cas séperation où le conjoint est devenu requérant.
                         if (donnee.getCsRoleBeneficiaire().equals(RoleMembreFamille.REQUERANT.getValue())) {
-                            donnee.setMontantHomes(mapMontantTotalHome.get(fKey+REQUERANT_HOME));
-                            donnee.setMontantDepenses(mapMontantTotalHome.get(fKey+REQUERANT_DEP_PERS));
+                            donnee.setMontantHomes(mapMontantTotalHome.get(fKey + REQUERANT_HOME));
+                            donnee.setMontantDepenses(mapMontantTotalHome.get(fKey + REQUERANT_DEP_PERS));
                         } else {
-                            donnee.setMontantHomes(mapMontantTotalHome.get(fKey+CONJOINT_HOME));
-                            donnee.setMontantDepenses(mapMontantTotalHome.get(fKey+CONJOINT_DEP_PERS));
+                            donnee.setMontantHomes(mapMontantTotalHome.get(fKey + CONJOINT_HOME));
+                            donnee.setMontantDepenses(mapMontantTotalHome.get(fKey + CONJOINT_DEP_PERS));
                         }
                         String montantDejaVerser = searchMontantDejaVerser(periode, droit.getSimpleDroit().getIdDroit(), droit.getSimpleVersionDroit().getNoVersion());
                         donnee.setMontantDejaVerser(montantDejaVerser);
                         donnee.setCsTypeVersement(csTypeVersement);
                         donnee.setDateDebut(periode.getDateDebut());
                         donnee.setDateFin(periode.getDateFin());
-                        if (donnee.getCsTypeVersement().equals(DonneeInterneHomeVersement.TYPE_RETENUS) && JadeStringUtil.isBlankOrZero(simplePCAccordeeBenef.getDateFin())
-                                || (donnee.getCsTypeVersement().equals(DonneeInterneHomeVersement.TYPE_CREANCIER) && IsSamePeriode(simplePCAccordeeBenef.getDateDebut(), simplePCAccordeeBenef.getDateFin(), periode))) {
+                        donnee.setDateDebutPCA(simplePCAccordeeBenef.getDateDebut());
+                        donnee.setDateFinPCA(simplePCAccordeeBenef.getDateFin());
+                        if ((donnee.getCsTypeVersement().equals(DonneeInterneHomeVersement.TYPE_RETENUS) && JadeStringUtil.isBlankOrZero(simplePCAccordeeBenef.getDateFin()))
+                                || (donnee.getCsTypeVersement().equals(DonneeInterneHomeVersement.TYPE_CREANCIER)
+                                && IsSamePeriode(simplePCAccordeeBenef.getDateDebut(), simplePCAccordeeBenef.getDateFin(), periode)
+                                && ! JadeStringUtil.isBlankOrZero(simplePCAccordeeBenef.getDateFin())
+                                 )) {
                             homeVersementList.add(donnee);
                         }
                     }
                 }
             }
+
+
+
         }
     }
 
@@ -1021,14 +1057,26 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
 
     }
 
-    private boolean IsSamePeriode(String dateDebut, String dateFin, Periode periode) {
-        if(JadeStringUtil.isBlankOrZero(dateFin)){
-            if(isDateAfterOrEquals(periode.getDateDebut(),dateDebut)){
+    private boolean IsSamePeriode(String dateDebut, String dateFin, Periode periode) throws CalculException {
+        if (JadeStringUtil.isBlankOrZero(dateFin)) {
+            if (isDateAfterOrEquals("01."+periode.getDateDebut(), "01."+dateDebut)) {
                 return true;
             }
-        }else{
-            if(dateDebut.equals(periode.getDateDebut()) && dateFin.equals(periode.getDateFin())){
-                return true;
+        } else {
+            SimpleDateFormat reader = new SimpleDateFormat("MM.yyyy");
+            Date dateDebutPeriode = null;
+            try {
+                dateDebutPeriode = reader.parse(periode.getDateDebut());
+                Date dateFinPeriode = reader.parse(periode.getDateFin());
+                Date dateDebutPCA = reader.parse(dateDebut);
+                Date dateFinPCA = reader.parse(dateFin);
+                if(dateFinPCA.before(dateDebutPeriode) || dateDebutPCA.after(dateFinPeriode)  ){
+                    return false;
+                } else {
+                    return true;
+                }
+            } catch (ParseException e) {
+              throw new CalculException(e.getMessage());
             }
         }
         return false;
@@ -1254,11 +1302,11 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             // calcul uniquement calcul réforme
             listePCAccordes.clear();
         } else if (!droit.getDemande().getSimpleDemande().getForcerCalculTransitoire() &&
-                !noVersionPrecedante.isEmpty()){
-            if(!retroactif) {
+                !noVersionPrecedante.isEmpty()) {
+            if (!retroactif) {
                 // Si derniere periode de la version droit - 1 réforme : calcul uniquement calcul réforme
                 uniquementReformeDroitPrecedant(droit, listePCAccordes, noVersionPrecedante);
-            } else if(dateSplitReforme != null){
+            } else if (dateSplitReforme != null) {
                 periodesCompareSelonDroitPrecedant(droit, listePCAccordes, dateSplitReforme);
             }
         }
@@ -1267,12 +1315,13 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
 
     /**
      * Returne le numéro de version de droit précédent
+     *
      * @param droit
      * @return
      */
     private String versionPrecedante(Droit droit) {
         String version = droit.getSimpleVersionDroit().getNoVersion();
-        if(!JadeStringUtil.isBlankOrZero(version) && Integer.parseInt(version) > 1){
+        if (!JadeStringUtil.isBlankOrZero(version) && Integer.parseInt(version) > 1) {
             return Integer.toString(Integer.parseInt(version) - 1);
         }
         return "";
@@ -1280,6 +1329,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
 
     /**
      * Si la pca de la version de droit précédente est réforme alors toutes les pca de cette version sont réforme
+     *
      * @param droit
      * @param listePCAccordes
      * @param noVersionPrecedante
@@ -1287,14 +1337,15 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
      */
     private void uniquementReformeDroitPrecedant(Droit droit, List<PeriodePCAccordee> listePCAccordes, String noVersionPrecedante) throws JadePersistenceException {
         List<PCAccordeePlanCalculReforme> listPcaPrecedentes = PcaPlanCalculReforme.findPcaCourrante(droit.getId(), noVersionPrecedante);
-        PCAccordeePlanCalculReforme pca = listPcaPrecedentes.get(listPcaPrecedentes.size()-1);
-        if(pca.getReformePc() != null && pca.getReformePc()) {
+        PCAccordeePlanCalculReforme pca = listPcaPrecedentes.get(listPcaPrecedentes.size() - 1);
+        if (pca.getReformePc() != null && pca.getReformePc()) {
             listePCAccordes.clear();
         }
     }
 
     /**
      * Pour un calcul rétro : uniquement réforme à partir de la date passée en param
+     *
      * @param droit
      * @param listPca
      * @param dateSplitReforme
@@ -1302,8 +1353,8 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
      */
     private void periodesCompareSelonDroitPrecedant(Droit droit, List<PeriodePCAccordee> listPca, String dateSplitReforme) throws JadePersistenceException {
         String dateCompare = JadeDateUtil.getFirstDateOfMonth(dateSplitReforme);
-        for(PeriodePCAccordee pca : listPca) {
-            if(!JadeDateUtil.isDateBefore(pca.getStrDateDebut(), dateCompare)) {
+        for (PeriodePCAccordee pca : listPca) {
+            if (!JadeDateUtil.isDateBefore(pca.getStrDateDebut(), dateCompare)) {
                 pca.setNePasCalculer(true);
             }
         }
