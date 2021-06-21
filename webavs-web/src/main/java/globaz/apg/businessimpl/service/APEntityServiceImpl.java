@@ -3002,12 +3002,12 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                                                        " inner join schema.APPERIP ON schema.APPERIP.VCIDRO = schema.APDROIP.VAIDRO" +
                                                        " where WAITIE = ? " +
                                                        "   and ? between VCDDEB and VCDFIN" +
-                                                       "   and 0 = (select count(*) from schema.APDROIP as droitEnfant " +
-                                                       "                           where droitEnfant.VAIPAR = schema.APDROIP.VAIDRO)"+
-                                                       "   and 0 = (select count(*) from schema.APDROIP as droitCorrige "+
+                                               "   and 0 = (select count(*) from schema.APDROIP as droitEnfant " +
+                                               "                           where droitEnfant.VAIPAR = schema.APDROIP.VAIDRO)",idTiers, date)
+                                       .append("   and 0 = (select count(*) from schema.APDROIP as droitCorrige "+
                                                        "                           where droitCorrige.VAIPAR = (select droitEncours.VAIPAR from schema.APDROIP as droitEncours where droitEncours.VAIDRO = ?) "+
                                                        "   and droitCorrige.VAIDRO = schema.APDROIP.VAIDRO) "
-                                               ,idTiers, date, viewBean.getIdDroit())
+                                               ,viewBean.getIdDroit())
                                        .append("and schema.APDROIP.VAIDRO != ? ",viewBean.getIdDroit());
 
 
