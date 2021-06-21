@@ -50,6 +50,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.math.BigDecimal;
 import java.util.Hashtable;
 import java.util.Objects;
 
@@ -313,8 +314,6 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
 
     private void creationSituationProEmploye(Content content, APDroitLAPG droit, BTransaction transaction) {
         Salary salaire = content.getProvidedByEmployer().getSalary();
-
-        String salaireMensuel;
         MainEmployer mainEmployeur = content.getMainEmployer();
 
         try {
@@ -323,23 +322,12 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 APEmployeur emp = getEmployeur(affiliation, transaction);
                 APSituationProfessionnelle situationProfessionnelle = getApSituationProfessionnelle(droit.getIdDroit(), emp.getIdEmployeur(), content);
                 situationProfessionnelle.setIsIndependant(false);
-                LastIncome lastInCome = salaire.getLastIncome();
-                if(lastInCome != null) {
-                    salaireMensuel = String.valueOf(lastInCome.getAmount());
-                    if (salaireMensuel != null) {
-                        situationProfessionnelle.setSalaireMensuel(salaireMensuel);
-                        // Vague 2 - Si le salarié est payé sur 13 mois
-                        // On ajoute son 13eme mois sans une autre rémunération annuelle
-                        if (lastInCome.isHasThirteenthMonth()) {
-                            situationProfessionnelle.setAutreRemuneration(salaireMensuel);
-                            situationProfessionnelle.setPeriodiciteAutreRemun(IPRSituationProfessionnelle.CS_PERIODICITE_ANNEE);
-                        }
-                    }
-                }
+                setIncomes(salaire, situationProfessionnelle);
                 situationProfessionnelle.wantCallValidate(false);
                 situationProfessionnelle.add(transaction);
-                fileStatus.getInformations().add("La situation professionelle a été ajouté pour le tiers dans WebAVS.");
-                LOG.info("La situation professionelle a été ajouté pour le tiers dans WebAVS.");
+                String message = "La situation professionelle a été ajouté pour le tiers dans WebAVS.";
+                fileStatus.getInformations().add(message);
+                LOG.info(message);
             } else{
                 fileStatus.getInformations().add("Le N° d'affilié de l'assuré n'a pas été trouvé. La situation professionelle n'a pas été ajouté pour le tiers dans WebAVS.");
                 LOG.info("Le N° d'affilié dde l'assuré n'a pas été trouvé. La situation professionelle n'a pas été ajouté pour le tiers dans WebAVS.");
@@ -355,27 +343,97 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
         }
     }
 
-    private void creationSituationProIndependant(Content content, APDroitLAPG droit, BTransaction transaction) {
-        MainEmployer mainEmployeur = content.getMainEmployer();
-
-        try {
-            // TODO JJO 27.05.2021: Controler dans pandémie la gestion des indépendants
-            // TODO JJO 27.05.2021: Controler si l'affiliation est à récupérer via l'employeur ou le tiers.
-            AFAffiliation affiliation = findAffiliationByNumero(mainEmployeur.getAffiliateID(), droit, true, bSession);
-            if (affiliation != null) {
-                APEmployeur emp = getEmployeur(affiliation, transaction);
-
-                APSituationProfessionnelle situationProfessionnelle = getApSituationProfessionnelle(droit.getIdDroit(), emp.getIdEmployeur(), content);
-                situationProfessionnelle.setIsIndependant(true);
-                situationProfessionnelle.setRevenuIndependant(getMasseAnnuelle(affiliation));
-                situationProfessionnelle.wantCallValidate(false);
-                situationProfessionnelle.add(transaction);
-                fileStatus.getInformations().add("La situation professionelle a été ajouté pour le tiers dans WebAVS.");
-                LOG.info("La situation professionelle a été ajouté pour le tiers dans WebAVS.");
-            } else{
-                fileStatus.getInformations().add("Le N° d'affilié de l'employeur n'a pas été trouvé. La situation professionelle n'a pas été ajouté pour le tiers dans WebAVS.");
-                LOG.info("Le N° d'affilié de l'employeur n'a pas été trouvé. La situation professionelle n'a pas été ajouté pour le tiers dans WebAVS.");
+    private void setIncomes(Salary salaire, APSituationProfessionnelle situationProfessionnelle) {
+        LastIncome lastInCome = salaire.getLastIncome();
+        BigDecimal autreRemuneration = new BigDecimal(0);
+        if(lastInCome != null) {
+            String salaireMensuel = String.valueOf(lastInCome.getAmount());
+            if (salaireMensuel != null) {
+                situationProfessionnelle.setSalaireMensuel(salaireMensuel);
+                // Vague 2 - Si le salarié est payé sur 13 mois
+                // On ajoute son 13eme mois sans une autre rémunération annuelle
+                if (lastInCome.isHasThirteenthMonth()) {
+                    autreRemuneration = autreRemuneration.add(lastInCome.getAmount());
+                    setPeriodiciteAutreRemuneration(situationProfessionnelle, "ANNEE");
+                }
             }
+        }
+        HourlyIncome hourlyIncome = salaire.getHourlyIncome();
+        if(hourlyIncome != null){
+            String salaireHoraire = String.valueOf(hourlyIncome.getAmount());
+            if(salaireHoraire != null){
+                situationProfessionnelle.setSalaireHoraire(salaireHoraire);
+            }
+            String heureParSemaine = String.valueOf(hourlyIncome.getHoursOfWorkPerWeek());
+            situationProfessionnelle.setHeuresSemaine(heureParSemaine);
+        }
+        InKindOrGlobalIncome inKindOrGlobalIncome = salaire.getInKindOrGlobalIncome();
+        if(inKindOrGlobalIncome != null){
+            autreRemuneration = autreRemuneration.add(inKindOrGlobalIncome.getAmount());
+            setPeriodiciteAutreRemuneration(situationProfessionnelle, inKindOrGlobalIncome.getIncomeUnit());
+        }
+        OtherIncome otherIncome = salaire.getOtherIncome();
+        if(otherIncome != null){
+            autreRemuneration = autreRemuneration.add(otherIncome.getAmount());
+            setPeriodiciteAutreRemuneration(situationProfessionnelle, otherIncome.getIncomeUnit());
+        }
+        if(autreRemuneration.doubleValue() > 0){
+            situationProfessionnelle.setAutreRemuneration(autreRemuneration.toPlainString());
+        }
+    }
+
+    private void setPeriodiciteAutreRemuneration(APSituationProfessionnelle situationProfessionnelle, String periodicite) {
+        if(periodicite != null){
+            switch(periodicite){
+                case "HEURE":
+                    situationProfessionnelle.setPeriodiciteAutreRemun(IPRSituationProfessionnelle.CS_PERIODICITE_HEURE);
+                    break;
+                case "MOIS":
+                    situationProfessionnelle.setPeriodiciteAutreRemun(IPRSituationProfessionnelle.CS_PERIODICITE_MOIS);
+                    break;
+                case "QUATRE_SEMAINE":
+                    situationProfessionnelle.setPeriodiciteAutreRemun(IPRSituationProfessionnelle.CS_PERIODICITE_4_SEMAINES);
+                    break;
+                default:
+                    situationProfessionnelle.setPeriodiciteAutreRemun(IPRSituationProfessionnelle.CS_PERIODICITE_ANNEE);
+                    break;
+            }
+        }
+    }
+
+    private void creationSituationProIndependant(Content content, APDroitLAPG droit, BTransaction transaction) {
+        String message;
+        String affilieId = null;
+        try {
+            Activities activites = content.getActivities();
+            if(activites != null && !activites.getActivity().isEmpty() && activites.getActivity().get(0).getCompanies() != null &&
+                    !activites.getActivity().get(0).getCompanies().getCompany().isEmpty()){
+                affilieId = activites.getActivity().get(0).getCompanies().getCompany().get(0).getAffiliateID();
+            }
+            if(StringUtils.isEmpty(affilieId)) {
+                MainEmployer mainEmployeur = content.getMainEmployer();
+                affilieId = mainEmployeur.getAffiliateID();
+            }
+            if(StringUtils.isNotEmpty(affilieId)) {
+                AFAffiliation affiliation = findAffiliationByNumero(affilieId, droit, true, bSession);
+                if (affiliation != null) {
+                    APEmployeur emp = getEmployeur(affiliation, transaction);
+
+                    APSituationProfessionnelle situationProfessionnelle = getApSituationProfessionnelle(droit.getIdDroit(), emp.getIdEmployeur(), content);
+                    situationProfessionnelle.setIsIndependant(true);
+                    situationProfessionnelle.setRevenuIndependant(getMasseAnnuelle(affiliation));
+                    situationProfessionnelle.wantCallValidate(false);
+                    situationProfessionnelle.add(transaction);
+                    message = "La situation professionelle a été ajouté pour le tiers dans WebAVS.";
+                } else {
+                    message = "Le N° d'affilié de l'employeur n'a pas été trouvé. La situation professionelle n'a pas été ajouté pour le tiers dans WebAVS.";
+                }
+            }
+            else{
+                message = "Le N° d'affilié de l'employeur n'a pas été trouvé. La situation professionelle n'a pas été ajouté pour le tiers dans WebAVS.";
+            }
+            fileStatus.getInformations().add(message);
+            LOG.info(message);
         } catch (Exception e) {
             fileStatus.getInformations().add("Les données relatives à la situation professionnelle pour cet assuré ne sont pas valides. Aucune situation professionnelle ne sera créée pour ce droit.");
             LOG.error("APImportationAPGAmatApat#creerSituationProf : Erreur rencontré lors de la création de la situation professionnelle pour l'assuré ", e);
@@ -473,7 +531,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
         }
     }
 
-    private AdresseComplexModel createAdresseCourrier(PersonneEtendueComplexModel personneEtendueComplexModel, AddressType adresseAssure, String domainePandemie, String npa) throws JadeApplicationException, JadePersistenceException {
+    private AdresseComplexModel createAdresseCourrier(PersonneEtendueComplexModel personneEtendueComplexModel, AddressType adresseAssure, String domainePandemie, String npa) {
         try {
             personneEtendueComplexModel.getTiers();
             AdresseComplexModel adresseComplexModel = new AdresseComplexModel();
@@ -649,9 +707,14 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
         AFAffiliationManager manager = new AFAffiliationManager();
         manager.setSession(bsession);
         manager.setForAffilieNumero(numeroAffiliate);
-        manager.setForTypeAffiliation(new String[]{isIndependant ?  IAFAffiliation.TYPE_AFFILI_INDEP :
-                                                                    IAFAffiliation.TYPE_AFFILI_EMPLOY,
-                                                   IAFAffiliation.TYPE_AFFILI_INDEP_EMPLOY});
+        String[] typeAffiliations;
+        if(isIndependant){
+            typeAffiliations = new String[]{IAFAffiliation.TYPE_AFFILI_INDEP, IAFAffiliation.TYPE_AFFILI_INDEP_EMPLOY};
+        } else {
+             typeAffiliations = new String[] {IAFAffiliation.TYPE_AFFILI_EMPLOY};
+        }
+
+        manager.setForTypeAffiliation(typeAffiliations);
         manager.setForDateFin(StringUtils.EMPTY);
         manager.find(BManager.SIZE_NOLIMIT);
         if (manager.size() > 0) {
