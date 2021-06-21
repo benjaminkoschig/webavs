@@ -949,16 +949,12 @@ public class COImportMessageELP extends BProcess {
     private boolean validateXml(File xmlFile, COInfoFileELP infos) {
         try {
             loadXsdSchema();
-            if(Objects.nonNull(xsdSchema)) {
-                Validator validator = xsdSchema.newValidator();
-                validator.validate(new StreamSource(xmlFile));
-            }else{
-                LOG.info("Schema XSD introuvable, validation impossible.");
-            }
+            Validator validator = xsdSchema.newValidator();
+            validator.validate(new StreamSource(xmlFile));
             return true;
         } catch (SAXException | IOException e) {
             protocole.addMsgIncoherentInattendue(infos, "le fichier xml fourni n'est pas valide.");
-            LOG.info("e fichier xml fourni n'est pas valide: \n {}", e.getMessage());
+            LOG.error("e fichier xml fourni n'est pas valide.", e);
             return false;
         }
     }
