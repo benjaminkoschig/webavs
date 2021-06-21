@@ -50,10 +50,8 @@ public class StrategieRevenuActiviteDependante extends StrategieCalculRevenu imp
         this.getOrCreateChild(resultatExistant, cleRevenuActiviteFraisObtention,
                 donnee.getRevenuActiviteLucrativeDependanteMontantFraisEffectifs());
 
-        if(context.contains(CalculContext.Attribut.REFORME)){
             this.getOrCreateChild(resultatExistant, cleRevenuActiviteFraisObtention,
                     donnee.getRevenuActiviteLucrativeDependanteMontantFraisDeGarde());
-        }
 
         return resultatExistant;
     }

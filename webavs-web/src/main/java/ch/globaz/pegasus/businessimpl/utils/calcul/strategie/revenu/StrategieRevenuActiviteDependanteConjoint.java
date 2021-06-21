@@ -42,10 +42,10 @@ public class StrategieRevenuActiviteDependanteConjoint extends StrategieCalculRe
 
         this.getOrCreateChild(resultatExistant, cleRevenuActiviteFraisObtention,
                 donnee.getRevenuActiviteLucrativeDependanteMontantFraisEffectifs());
-        if(context.contains(CalculContext.Attribut.REFORME)){
+//        if(context.contains(CalculContext.Attribut.REFORME)){
             this.getOrCreateChild(resultatExistant, cleRevenuActiviteFraisObtention,
                     donnee.getRevenuActiviteLucrativeDependanteMontantFraisDeGarde());
-        }
+//        }
         return resultatExistant;
     }
 

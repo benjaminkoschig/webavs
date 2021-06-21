@@ -43,10 +43,8 @@ public class StrategieRevenuActiviteIndependante extends StrategieCalculRevenu i
             this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_INDEPENDANTE,
                     donnee.getRevenuActiviteLucrativeIndependanteMontant());
         }
-        if(context.contains(CalculContext.Attribut.REFORME)){
             this.getOrCreateChild(resultatExistant, cleRevenuActiviteFraisObtention,
                     donnee.getRevenuActiviteLucrativeIndependanteMontantFraisDeGarde());
-        }
         return resultatExistant;
     }
 
