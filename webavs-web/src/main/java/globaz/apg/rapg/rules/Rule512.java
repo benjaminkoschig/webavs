@@ -1,6 +1,8 @@
 package globaz.apg.rapg.rules;
 
 import globaz.apg.api.droits.IAPDroitLAPG;
+import globaz.apg.db.droits.APDroitLAPG;
+import globaz.apg.db.droits.APDroitLAPGManager;
 import globaz.apg.db.droits.APDroitMaterniteJointTiers;
 import globaz.apg.db.droits.APDroitMaterniteJointTiersManager;
 import globaz.apg.enums.APGenreServiceAPG;
@@ -81,19 +83,33 @@ public class Rule512 extends Rule {
             }
 
             try {
-                int matExtMax = Integer.parseInt(FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(), "1", APParameter.MATERNITE_EXT_JOUR_MAX.getParameterName(), champsAnnonce.getStartOfPeriod(), "", 0));
+                boolean actif = false;
+                int matExtMax = 0;
 
                 for (Object d : droitsSansParents) {
                     APDroitMaterniteJointTiers droit = (APDroitMaterniteJointTiers) d;
+
                     if (!JadeStringUtil.isBlankOrZero(droit.getUneDateDebutPeriode())
                             && droit.getIdDroit().equals(champsAnnonce.getIdDroit())) {
-                        String dateDebutMat = droit.getUneDateDebutPeriode();
-                        String dateFinMat = droit.getUneDateFinPeriode();
-                        totalDeJours += PRDateUtils.getNbDayBetween(dateDebutMat, dateFinMat) + 1;
+
+                        APDroitLAPGManager manager = new APDroitLAPGManager();
+                        manager.setSession(getSession());
+                        manager.setForIdDroit(champsAnnonce.getIdDroit());
+                        manager.find();
+                        if (manager.size() > 0) {
+                            // Seul les droits avec des jours supplémentaires doivent aller rechercher le nombre de jours supplémentaires maxiumum autorisé
+                            if (!JadeStringUtil.isIntegerEmpty(((APDroitLAPG) manager.getFirstEntity()).getJoursSupplementaires())) {
+                                matExtMax = Integer.parseInt(FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(), "1", APParameter.MATERNITE_EXT_JOUR_MAX.getParameterName(), champsAnnonce.getStartOfPeriod(), "", 0));
+                                String dateDebutMat = droit.getUneDateDebutPeriode();
+                                String dateFinMat = droit.getUneDateFinPeriode();
+                                totalDeJours += PRDateUtils.getNbDayBetween(dateDebutMat, dateFinMat) + 1;
+                                actif = true;
+                            }
+                        }
                     }
                 }
 
-                if (totalDeJours > matExtMax) {
+                if (actif && totalDeJours > matExtMax) {
                     return false;
                 }
             } catch (Exception e) {

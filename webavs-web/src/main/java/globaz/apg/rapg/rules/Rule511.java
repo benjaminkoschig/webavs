@@ -2,8 +2,7 @@ package globaz.apg.rapg.rules;
 
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.application.APApplication;
-import globaz.apg.db.droits.APDroitMaterniteJointTiers;
-import globaz.apg.db.droits.APDroitMaterniteJointTiersManager;
+import globaz.apg.db.droits.*;
 import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.exceptions.APRuleExecutionException;
 import globaz.apg.interfaces.APDroitAvecParent;
@@ -81,20 +80,35 @@ public class Rule511 extends Rule {
             }
 
             try {
-                int matExtMin = Integer.parseInt(FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(), "1", APParameter.MATERNITE_EXT_JOUR_MIN.getParameterName(), champsAnnonce.getStartOfPeriod(), "", 0));
+                boolean actif = false;
+                int matExtMin = 0;
+
                 int dureeMatFederale = Integer.parseInt(getSession().getApplication().getProperty(APApplication.PROPERTY_DROIT_MAT_DUREE_JOURS));
 
                 for (Object d : droitsSansParents) {
                     APDroitMaterniteJointTiers droit = (APDroitMaterniteJointTiers) d;
+
                     if (!JadeStringUtil.isBlankOrZero(droit.getUneDateDebutPeriode())
                             && droit.getIdDroit().equals(champsAnnonce.getIdDroit())) {
-                        String dateDebutMat = droit.getUneDateDebutPeriode();
-                        String dateFinMat = droit.getUneDateFinPeriode();
-                        totalDeJours += PRDateUtils.getNbDayBetween(dateDebutMat, dateFinMat) + 1;
+
+                        APDroitLAPGManager manager = new APDroitLAPGManager();
+                        manager.setSession(getSession());
+                        manager.setForIdDroit(champsAnnonce.getIdDroit());
+                        manager.find();
+                        if (manager.size() > 0) {
+                            // Seul les droits avec des jours supplémentaires doivent aller rechercher le nombre de jours supplémentaires minimum autorisé
+                            if (!JadeStringUtil.isIntegerEmpty(((APDroitLAPG) manager.getFirstEntity()).getJoursSupplementaires())) {
+                                matExtMin = Integer.parseInt(FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(), "1", APParameter.MATERNITE_EXT_JOUR_MIN.getParameterName(), champsAnnonce.getStartOfPeriod(), "", 0));
+                                String dateDebutMat = droit.getUneDateDebutPeriode();
+                                String dateFinMat = droit.getUneDateFinPeriode();
+                                totalDeJours += PRDateUtils.getNbDayBetween(dateDebutMat, dateFinMat) + 1;
+                                actif = true;
+                            }
+                        }
                     }
                 }
 
-                if (totalDeJours > dureeMatFederale && totalDeJours < matExtMin) {
+                if (actif && totalDeJours > dureeMatFederale && totalDeJours < matExtMin) {
                     return false;
                 }
             } catch (Exception e) {
