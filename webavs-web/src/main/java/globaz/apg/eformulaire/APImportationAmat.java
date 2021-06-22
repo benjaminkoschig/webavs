@@ -39,12 +39,12 @@ public class APImportationAmat extends APAbstractImportationAmatApat {
             java.util.Date dateDernierNee = getDateNaissanceDernierNee(content);
             if(dateDernierNee != null) {
                 newDroit.setDateDebutDroit(JadeDateUtil.getGlobazFormattedDate(dateDernierNee));
+                newDroit.calculerDateFinDroit();
             }
             Date date = new Date();
             newDroit.setDateDepot(date.getSwissValue());
             newDroit.setDateReception(date.getSwissValue());
             newDroit.setIsSoumisImpotSource(isSoumisImpotSource(content));
-            // TODO : set date fin de droit
 
             newDroit.setSession(bSession);
             newDroit.add(transaction);

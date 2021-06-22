@@ -160,7 +160,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
                     boolean isWomen = StringUtils.equals(AMAT_TYPE, content.getAmatApatType());
                     fileStatus = report.addFile(nameOriginalFile, nss, isWomen ? IPRDemande.CS_TYPE_MATERNITE : IPRDemande.CS_TYPE_PATERNITE);
 
-                    isTraitementSuccess = TraiterMessage(content, nss, fileStatus, isWomen);
+                    isTraitementSuccess = traiterMessage(content, nss, fileStatus, isWomen);
                     if (isTraitementSuccess) {
                         fileStatus.setSucceed(true);
                         savingFileInDb(nss, nomFichier, content.getAmatApatType(), fileStatus);
@@ -184,7 +184,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
         }
     }
 
-    private boolean TraiterMessage(Content content, String nssTiers, APImportationStatusFile fileStatus, boolean isWomen) throws Exception {
+    private boolean traiterMessage(Content content, String nssTiers, APImportationStatusFile fileStatus, boolean isWomen) throws Exception {
         BTransaction transaction = (BTransaction) bsession.newTransaction();
         if (!transaction.isOpened()) {
             transaction.openTransaction();
@@ -380,7 +380,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
      * @param session: la session en cours
      * @param transaction: la transaction en cours
      * @param fileStatus: Le status du traitement du fichier
-     * @return
+     * @return True si le traitement à une erreur.
      */
     private boolean hasError(BSession session, BTransaction transaction, APImportationStatusFile fileStatus) {
         return session.hasErrors() || (transaction == null) || transaction.hasErrors() || transaction.isRollbackOnly() || !fileStatus.getErrors().isEmpty();

@@ -5,6 +5,7 @@ import apg.amatapat.Content;
 import apg.amatapat.FamilyMembers;
 import apg.amatapat.PaternityLeavePeriod;
 import ch.globaz.common.util.CaisseInfoPropertiesWrapper;
+import ch.globaz.common.util.Dates;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.db.droits.APDroitLAPG;
@@ -68,7 +69,7 @@ public class APImportationApat extends APAbstractImportationAmatApat {
                         APPeriodeAPG periodeAPG = new APPeriodeAPG();
                         periodeAPG.setDateDebutPeriode(JadeDateUtil.getGlobazFormattedDate(debutPeriod));
                         periodeAPG.setDateFinPeriode(JadeDateUtil.getGlobazFormattedDate(finPeriod));
-                        days = JadeDateUtil.getNbDaysBetween(JadeDateUtil.getGlobazFormattedDate(debutPeriod), JadeDateUtil.getGlobazFormattedDate(finPeriod));
+                        days = Dates.daysBetween(JadeDateUtil.getGlobazFormattedDate(debutPeriod), JadeDateUtil.getGlobazFormattedDate(finPeriod));
                         periodeAPG.setIdDroit(newDroit.getIdDroit());
                         periodeAPG.setNbrJours(String.format("%d", days));
                         periodeAPG.setSession(bSession);
