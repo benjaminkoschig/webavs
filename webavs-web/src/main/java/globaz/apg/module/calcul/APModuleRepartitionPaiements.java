@@ -1696,6 +1696,7 @@ public class APModuleRepartitionPaiements {
                     repartitionBenefPaiement.setTauxRJM(JANumberFormatter.format(tauxRJM
                             .doubleValue() * 100d, 0.01, 2, JANumberFormatter.NEAR));
                     repartitionBenefPaiement.setNombreJoursSoldes(opMontantJour.get().getJours().toString());
+                    repartitionBenefPaiement.setMontantJournalierRepartition(opMontantJour.get().getMontant().toString());
                 } else {
                     repartitionBenefPaiement.setTauxRJM(JANumberFormatter.format(benefPotentiel.getTauxProRata()
                     .doubleValue() * 100d, 0.01, 2, JANumberFormatter.NEAR));
@@ -1857,6 +1858,16 @@ public class APModuleRepartitionPaiements {
                 repartitionBenefPaiement.update(transaction);
             }
 
+            else if (opMontantJour.isPresent()) {
+
+                if (isLastRecord && listBeneficiairePmtPotentielTmp.size() == listBeneficiairePmtPotentiel.size()) {
+                    montantBrutPrestation = montantBrutTotalPrestation.subtract(montantTotalVerse);
+                }
+                createRepartitionAssure(session, transaction, idAssure, prestationCalculee, idPrestation, tiersWrapper,
+                        casCotisations, new BigDecimal(0), montantBrutPrestation, opMontantJour.get().getJours(), opMontantJour.get().getMontant().toString());
+                montantTotalVerse = montantTotalVerse.add(new BigDecimal(JANumberFormatter
+                        .formatNoQuote(montantBrutPrestation)).setScale(2, BigDecimal.ROUND_DOWN));
+            }
             // On verse le tout à l'assuré
             else {
                 isVersementAssure = true;
@@ -1878,42 +1889,51 @@ public class APModuleRepartitionPaiements {
 
         // Il y a un montant à verser à l'assuré
         if (isVersementAssure) {
-            APRepartitionPaiements repartitionBenefPaiement = new APRepartitionPaiements();
-
-            repartitionBenefPaiement.wantCallValidate(false);
-            repartitionBenefPaiement.setSession(session);
-
-            repartitionBenefPaiement.setDateValeur(JACalendar.todayJJsMMsAAAA());
-            repartitionBenefPaiement.setIdPrestationApg(idPrestation);
-
-            if (tiersWrapper != null) {
-                repartitionBenefPaiement.setNom(tiersWrapper.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
-                        + tiersWrapper.getProperty(PRTiersWrapper.PROPERTY_PRENOM));
-            }
-
-            repartitionBenefPaiement.setIdTiers(idAssure);
-
-            if (prestationCalculee.getResultatCalcul().getVersementAssure() != null) {
-                repartitionBenefPaiement.setMontantBrut(JANumberFormatter.formatNoQuote(prestationCalculee
-                        .getResultatCalcul().getVersementAssure().getBigDecimalValue()));
-            } else {
-                repartitionBenefPaiement.setMontantBrut(JANumberFormatter.formatNoQuote(montantBrutTotalPrestation
-                        .subtract(montantTotalVerse)));
-            }
-
-            repartitionBenefPaiement.setTypePaiement(IAPRepartitionPaiements.CS_PAIEMENT_DIRECT);
-            repartitionBenefPaiement.setTypePrestation(IAPRepartitionPaiements.CS_NORMAL);
-            repartitionBenefPaiement.setNombreJoursSoldes(nbJoursAssure.toString());
-            repartitionBenefPaiement.add(transaction);
-
-            genererCotisationsAssure(session, prestationCalculee, repartitionBenefPaiement, casCotisations);
-
-            FWCurrency montantNet = new FWCurrency(repartitionBenefPaiement.getMontantBrut());
-
-            montantNet.add(getMontantTotalCotisation(session, transaction, repartitionBenefPaiement));
-            repartitionBenefPaiement.setMontantNet(montantNet.toString());
-            repartitionBenefPaiement.update(transaction);
+            createRepartitionAssure(session, transaction, idAssure, prestationCalculee, idPrestation, tiersWrapper, casCotisations, montantTotalVerse, montantBrutTotalPrestation, nbJoursAssure, null);
         }
+    }
+
+    private void createRepartitionAssure(BSession session, BTransaction transaction, String idAssure, APPrestationCalculee prestationCalculee,
+                                         String idPrestation, PRTiersWrapper tiersWrapper, CasCotisations casCotisations, BigDecimal montantTotalVerse,
+                                         BigDecimal montantBrutTotalPrestation, Integer nbJoursAssure, String montantJournalier) throws Exception {
+        APRepartitionPaiements repartitionBenefPaiement = new APRepartitionPaiements();
+
+        repartitionBenefPaiement.wantCallValidate(false);
+        repartitionBenefPaiement.setSession(session);
+
+        repartitionBenefPaiement.setDateValeur(JACalendar.todayJJsMMsAAAA());
+        repartitionBenefPaiement.setIdPrestationApg(idPrestation);
+
+        if (tiersWrapper != null) {
+            repartitionBenefPaiement.setNom(tiersWrapper.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
+                    + tiersWrapper.getProperty(PRTiersWrapper.PROPERTY_PRENOM));
+        }
+
+        repartitionBenefPaiement.setIdTiers(idAssure);
+
+        if (prestationCalculee.getResultatCalcul().getVersementAssure() != null) {
+            repartitionBenefPaiement.setMontantBrut(JANumberFormatter.formatNoQuote(prestationCalculee
+                    .getResultatCalcul().getVersementAssure().getBigDecimalValue()));
+        } else {
+            repartitionBenefPaiement.setMontantBrut(JANumberFormatter.formatNoQuote(montantBrutTotalPrestation
+                    .subtract(montantTotalVerse)));
+        }
+
+        repartitionBenefPaiement.setTypePaiement(IAPRepartitionPaiements.CS_PAIEMENT_DIRECT);
+        repartitionBenefPaiement.setTypePrestation(IAPRepartitionPaiements.CS_NORMAL);
+        repartitionBenefPaiement.setNombreJoursSoldes(nbJoursAssure.toString());
+        repartitionBenefPaiement.add(transaction);
+
+        genererCotisationsAssure(session, prestationCalculee, repartitionBenefPaiement, casCotisations);
+
+        FWCurrency montantNet = new FWCurrency(repartitionBenefPaiement.getMontantBrut());
+
+        montantNet.add(getMontantTotalCotisation(session, transaction, repartitionBenefPaiement));
+        repartitionBenefPaiement.setMontantNet(montantNet.toString());
+        if(montantJournalier != null) {
+            repartitionBenefPaiement.setMontantJournalierRepartition(montantJournalier);
+        }
+        repartitionBenefPaiement.update(transaction);
     }
 
     List<APResultatCalculSituationProfessionnel> getListForJoursIsolees (List<APResultatCalculSituationProfessionnel> list, APPrestationCalculee prestation, BSession session) throws Exception {

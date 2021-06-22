@@ -11,7 +11,7 @@ import globaz.apg.api.droits.IAPDroitAPG;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.db.droits.*;
 import globaz.apg.db.prestation.*;
-import globaz.apg.itext.decompte.utils.APEmployeurTiersUtil;
+import globaz.apg.itext.decompte.utils.*;
 import globaz.apg.module.calcul.APReferenceDataParser;
 import globaz.apg.module.calcul.rev2005.APReferenceDataAPG;
 import globaz.babel.api.ICTListeTextes;
@@ -28,6 +28,7 @@ import globaz.pyxis.db.tiers.TIAdministrationAdresseManager;
 import globaz.pyxis.db.tiers.TITiers;
 
 import ch.globaz.common.properties.PropertiesException;
+import lombok.Value;
 import org.apache.commons.lang.StringUtils;
 import org.safehaus.uuid.Logger;
 import globaz.apg.ApgServiceLocator;
@@ -36,9 +37,6 @@ import globaz.apg.db.lots.APFactureACompenser;
 import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.groupdoc.ccju.GroupdocPropagateUtil;
-import globaz.apg.itext.decompte.utils.APDecompte;
-import globaz.apg.itext.decompte.utils.APPrestationLibelleCodeSystem;
-import globaz.apg.itext.decompte.utils.APTypeDeDecompte;
 import globaz.apg.properties.APProperties;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.ICTTexte;
@@ -123,7 +121,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     private Boolean isMoreThanEnfant = false;
     private Boolean employeursMultiples = null;
     private Locale locale = null;
-    private APRepartitionJointPrestation repartitionForPaternite;
+    private APRepartitionJointPrestation derniereRepartition;
+    private BigDecimal montantJournalierTotalRepartition = BigDecimal.ZERO;
     private String tauxRJM = "";
     private String idCantonImpotSource = "";
     private boolean impotSource = false;
@@ -1472,7 +1471,14 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         sitProMan.setForIdDroit(droit.getIdDroit());
         sitProMan.find();
 
-        final BigDecimal revenuAnnuel = sitProMan.getRevenuAnnuelSituationsProfessionnelles();
+        APEmployeurRepartition employeursRepartition = APEmployeurRepartition.of(sitProMan.getContainerAsList(), getCSTypePrestationsLot());
+
+        if(employeursRepartition.isCalculProrataForAssure()) {
+            revenuMoyenDeterminant = employeursRepartition.calculRevenuJournalierTotalEmployeurAssure();
+            arguments[5] = montantJournalierTotalRepartition;
+        }
+
+        final BigDecimal revenuAnnuel = employeursRepartition.isCalculProrataForAssure() ? employeursRepartition.calculRevenuAnnuelTotalEmployeurAssure() : sitProMan.getRevenuAnnuelSituationsProfessionnelles();
 
         ref = (APReferenceDataAPG) APReferenceDataParser.loadReferenceData(getSession(), PRTypeDemande.toEnumByCs(getCSTypePrestationsLot()).getCalculreferenceData(), dateDebut,
                     dateFin, dateFin);
@@ -1481,7 +1487,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         final double montantAnnuelMax = montantJournalierMax * 360;
         boolean isMontantMax = false;
 
-        if (montantJournalierMax <= Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant())) {
+        if (montantJournalierMax <= revenuMoyenDeterminant && !employeursRepartition.isCalculProrataForAssure()) {
             arguments[7] = PRStringUtils.replaceString(textes.getTexte(10).getDescription(), "{montantAnnuelMax}",
                     JANumberFormatter.format(montantAnnuelMax));
             isMontantMax = true;
@@ -1560,7 +1566,12 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     private Object[] completeCorpsEmployeurs(final StringBuffer buffer, final ICTListeTextes textes) throws Exception {
 
         final Object[] arguments = new Object[11];
-        Double revenuMoyenDeterminant = Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant());
+
+        APEmployeurRepartition employeurRepartition = APEmployeurRepartition.of(derniereRepartition.getIdSituationProfessionnelle(), getCSTypePrestationsLot(), getSession());
+
+        Double revenuMoyenDeterminant = employeurRepartition.hasEmployeurRepartition() ?
+                employeurRepartition.getRevenuTotalEmployeur()
+            : Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant());
 
         // Si le revenu est égale à 0, alors on supprime le paragraphe de la décision.
         if (revenuMoyenDeterminant == 0 && (IPRDemande.CS_TYPE_PATERNITE.equals(getCSTypePrestationsLot()) || IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(getCSTypePrestationsLot()))) {
@@ -1571,7 +1582,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         }
 
         // ajouter le paragraphe sur la répartition de paiement si nécessaire
-        if (isEmployeursMultiples()) {
+        if (isEmployeursMultiples() && !employeurRepartition.hasEmployeurRepartition()) {
             buffer.append(" "); // ligne
             buffer.append(textes.getTexte(102).getDescription());
 
@@ -1612,7 +1623,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 + tiers().getProperty(PRTiersWrapper.PROPERTY_PRENOM);
         arguments[3] = JACalendar.format(droit.getDateDebutDroit());
         arguments[4] = JACalendar.format(droit.getDateFinDroit());
-        arguments[5] = JANumberFormatter.format(Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()),
+        arguments[5] = JANumberFormatter.format(revenuMoyenDeterminant,
                 1, 2, JANumberFormatter.SUP);
         arguments[6] = loadPrestationType().getMontantJournalier();
         arguments[7] = droit.getDroitAcquis();
@@ -1632,7 +1643,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         sitProMan.setForIdDroit(droit.getIdDroit());
         sitProMan.find();
 
-        final BigDecimal revenuAnnuel = sitProMan.getRevenuAnnuelSituationsProfessionnelles();
+        final BigDecimal revenuAnnuel = employeurRepartition.hasEmployeurRepartition() ? sitProMan.getRevenuAnnuelSituationsProfessionnelles(decompteCourant.getIdEmployeur()) :
+                sitProMan.getRevenuAnnuelSituationsProfessionnelles();
 
         ref = (APReferenceDataAPG) APReferenceDataParser.loadReferenceData(getSession(), PRTypeDemande.toEnumByCs(getCSTypePrestationsLot()).getCalculreferenceData(), dateDebut,
                 dateFin, dateFin);
@@ -1641,7 +1653,11 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         final double montantAnnuelMax = montantJournalierMax * 360;
         boolean isMontantMax = false;
 
-        if (montantJournalierMax <= Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant())) {
+        if(employeurRepartition.hasEmployeurRepartition()) {
+            arguments[6] = derniereRepartition.getMontantJournalierRepartition();
+        }
+
+        if (montantJournalierMax <= revenuMoyenDeterminant) {
             arguments[10] = PRStringUtils.replaceString(textes.getTexte(5).getDescription(), "{montantAnnuelMax}",
                     JANumberFormatter.format(montantAnnuelMax));
 
@@ -1657,7 +1673,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             arguments[5] = JANumberFormatter.format(montantJournalierMax);
         } else {
             arguments[5] = JANumberFormatter.format(
-                    Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 1, 2,
+                    revenuMoyenDeterminant, 1, 2,
                     JANumberFormatter.SUP);
         }
 
@@ -1671,7 +1687,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
         final APSituationProfessionnelle situationProfessionnelle = new APSituationProfessionnelle();
 
-        situationProfessionnelle.setIdSituationProf(repartitionForPaternite.getIdSituationProfessionnelle());
+        situationProfessionnelle.setIdSituationProf(derniereRepartition.getIdSituationProfessionnelle());
         situationProfessionnelle.setSession(getSession());
         situationProfessionnelle.retrieve();
 
@@ -1999,7 +2015,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
                     // Pour la paternité, récupération du taux RJM
                     tauxRJM = repartition.getTauxRJM();
-                    repartitionForPaternite = repartition;
+                    derniereRepartition = repartition;
+                    montantJournalierTotalRepartition = montantJournalierTotalRepartition.add(JadeStringUtil.isBlankOrZero(derniereRepartition.getMontantJournalierRepartition()) ?  BigDecimal.ZERO : new BigDecimal(derniereRepartition.getMontantJournalierRepartition()));
 
                     // 1. le n°AVS et le nom de l'assure
                     droit = ApgServiceLocator.getEntityService().getDroitLAPG(getSession(), getTransaction(),
@@ -3376,4 +3393,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     public void setFirstForCopy(Boolean firstForCopy) {
         isFirstForCopy = firstForCopy;
     }
+
+
 }

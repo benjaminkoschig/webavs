@@ -9,8 +9,8 @@ import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.api.IPRSituationProfessionnelle;
 import globaz.prestation.db.PRAbstractManager;
+
 import java.math.BigDecimal;
-import java.util.Iterator;
 
 /**
  * <H1>Description</H1>
@@ -193,11 +193,37 @@ public class APSituationProfessionnelleManager extends PRAbstractManager {
     }
 
     public BigDecimal getRevenuAnnuelSituationsProfessionnelles() throws Exception {
+        return getRevenuAnnuelSituationsProfessionnelles(null);
+    }
+
+    public BigDecimal getRevenuAnnuelSituationsProfessionnelles(String idEmployeur) throws Exception {
 
         if (this == null || size() == 0) {
             throw new Exception();
         }
 
+        BigDecimal revenuAnnuel = new BigDecimal(0);
+        revenuAnnuel.setScale(10);
+
+        BigDecimal revenuJournalier = new BigDecimal(0);
+        revenuJournalier.setScale(10);
+
+        BigDecimal revenuIntermediaire = new BigDecimal(0);
+        revenuIntermediaire.setScale(10);
+
+        for(APSituationProfessionnelle sitPro : this.<APSituationProfessionnelle>getContainerAsList()) {
+            if(idEmployeur == null || idEmployeur.equals(sitPro.getIdEmployeur())) {
+                revenuJournalier = revenuJournalier.add(getRevenuJournalier(sitPro));
+            }
+        }
+
+        // Transformation du revenuJournalier en revenuAnnuel
+        revenuAnnuel = revenuJournalier.multiply(new BigDecimal(360));
+
+        return revenuAnnuel;
+    }
+
+    public static BigDecimal getRevenuJournalier(APSituationProfessionnelle sitPro) {
         BigDecimal salaireHoraire = new BigDecimal(0);
         BigDecimal nbHeuresSemaine = new BigDecimal(0);
         BigDecimal salaireMensuel = new BigDecimal(0);
@@ -216,180 +242,172 @@ public class APSituationProfessionnelleManager extends PRAbstractManager {
         BigDecimal revenuIntermediaire = new BigDecimal(0);
         revenuIntermediaire.setScale(10);
 
-        for (Iterator iter = iterator(); iter.hasNext();) {
-            APSituationProfessionnelle sitPro = (APSituationProfessionnelle) iter.next();
+        // salaire horaire
+        if ((sitPro.getSalaireHoraire() != null) && !JadeStringUtil.isDecimalEmpty(sitPro.getSalaireHoraire())) {
 
-            // salaire horaire
-            if ((sitPro.getSalaireHoraire() != null) && !JadeStringUtil.isDecimalEmpty(sitPro.getSalaireHoraire())) {
+            salaireHoraire = new BigDecimal(sitPro.getSalaireHoraire());
+            nbHeuresSemaine = new BigDecimal(sitPro.getHeuresSemaine());
 
-                salaireHoraire = new BigDecimal(sitPro.getSalaireHoraire());
-                nbHeuresSemaine = new BigDecimal(sitPro.getHeuresSemaine());
+            revenuIntermediaire = salaireHoraire.multiply(nbHeuresSemaine);
+            revenuIntermediaire = revenuIntermediaire.divide(new BigDecimal(7), 10, BigDecimal.ROUND_DOWN);
 
-                revenuIntermediaire = salaireHoraire.multiply(nbHeuresSemaine);
-                revenuIntermediaire = revenuIntermediaire.divide(new BigDecimal(7), 10, BigDecimal.ROUND_DOWN);
+            revenuJournalier = revenuJournalier.add(revenuIntermediaire);
+            revenuIntermediaire = new BigDecimal(0);
+        }
 
-                revenuJournalier = revenuJournalier.add(revenuIntermediaire);
-                revenuIntermediaire = new BigDecimal(0);
-            }
+        // salaire mensuel
+        if ((sitPro.getSalaireMensuel() != null) && !JadeStringUtil.isDecimalEmpty(sitPro.getSalaireMensuel())) {
 
-            // salaire mensuel
-            if ((sitPro.getSalaireMensuel() != null) && !JadeStringUtil.isDecimalEmpty(sitPro.getSalaireMensuel())) {
+            salaireMensuel = new BigDecimal(sitPro.getSalaireMensuel());
+            revenuIntermediaire = salaireMensuel.divide(new BigDecimal(30), 10, BigDecimal.ROUND_DOWN);
 
-                salaireMensuel = new BigDecimal(sitPro.getSalaireMensuel());
-                revenuIntermediaire = salaireMensuel.divide(new BigDecimal(30), 10, BigDecimal.ROUND_DOWN);
-
-                revenuJournalier = revenuJournalier.add(revenuIntermediaire);
-                revenuIntermediaire = new BigDecimal(0);
-
-            }
-
-            // autre salaire
-            if ((sitPro.getAutreSalaire() != null) && !JadeStringUtil.isDecimalEmpty(sitPro.getAutreSalaire())) {
-
-                // si périodicité 4 semaines
-                if (sitPro.getPeriodiciteAutreSalaire().equals(IPRSituationProfessionnelle.CS_PERIODICITE_4_SEMAINES)) {
-                    autreSalaireSem = new BigDecimal(sitPro.getAutreSalaire());
-                    revenuIntermediaire = autreSalaireSem.divide(new BigDecimal(28), 10, BigDecimal.ROUND_DOWN);
-                }
-
-                // si périodicité Année
-                else if (sitPro.getPeriodiciteAutreSalaire().equals(IPRSituationProfessionnelle.CS_PERIODICITE_ANNEE)) {
-                    autreSalaireAnn = new BigDecimal(sitPro.getAutreSalaire());
-                    revenuIntermediaire = autreSalaireAnn.divide(new BigDecimal(360), 10, BigDecimal.ROUND_DOWN);
-                }
-
-                revenuJournalier = revenuJournalier.add(revenuIntermediaire);
-                revenuIntermediaire = new BigDecimal(0);
-            }
-
-            // autre rémunération
-            if ((sitPro.getAutreRemuneration() != null)
-                    && !JadeStringUtil.isDecimalEmpty(sitPro.getAutreRemuneration())) {
-
-                autreRemuneration = new BigDecimal(sitPro.getAutreRemuneration());
-
-                // si %
-                if (sitPro.getIsPourcentAutreRemun().booleanValue()) {
-
-                    // Le "BigDecimal" qui n'est pas à zéro représente le
-                    // montant sur lequel le % sera calculé
-                    if (!JadeStringUtil.isDecimalEmpty(salaireHoraire.toString())) {
-                        revenuIntermediaire = salaireHoraire.divide(new BigDecimal(100), 10, BigDecimal.ROUND_DOWN);
-                        revenuIntermediaire = revenuIntermediaire.multiply(new BigDecimal(sitPro
-                                .getPourcentAutreRemun()));
-
-                        revenuIntermediaire = revenuIntermediaire.multiply(nbHeuresSemaine);
-                        revenuIntermediaire = revenuIntermediaire.divide(new BigDecimal(7), 10, BigDecimal.ROUND_DOWN);
-
-                    }
-
-                    else if (!JadeStringUtil.isDecimalEmpty(salaireMensuel.toString())) {
-                        revenuIntermediaire = salaireMensuel.divide(new BigDecimal(100), 10, BigDecimal.ROUND_DOWN);
-                        revenuIntermediaire = revenuIntermediaire.multiply(new BigDecimal(sitPro
-                                .getPourcentAutreRemun()));
-
-                        revenuIntermediaire = revenuIntermediaire.divide(new BigDecimal(30), 10, BigDecimal.ROUND_DOWN);
-                    }
-
-                    else if (!JadeStringUtil.isDecimalEmpty(autreSalaireSem.toString())) {
-                        revenuIntermediaire = autreSalaireSem.divide(new BigDecimal(100), 10, BigDecimal.ROUND_DOWN);
-                        revenuIntermediaire = revenuIntermediaire.multiply(new BigDecimal(sitPro
-                                .getPourcentAutreRemun()));
-
-                        revenuIntermediaire = revenuIntermediaire.divide(new BigDecimal(28), 10, BigDecimal.ROUND_DOWN);
-                    }
-
-                    else if (!JadeStringUtil.isDecimalEmpty(autreSalaireAnn.toString())) {
-                        revenuIntermediaire = autreSalaireAnn.divide(new BigDecimal(100), 10, BigDecimal.ROUND_DOWN);
-                        revenuIntermediaire = revenuIntermediaire.multiply(new BigDecimal(sitPro
-                                .getPourcentAutreRemun()));
-
-                        revenuIntermediaire = revenuIntermediaire
-                                .divide(new BigDecimal(360), 10, BigDecimal.ROUND_DOWN);
-
-                    }
-
-                    revenuJournalier = revenuJournalier.add(revenuIntermediaire);
-                    revenuIntermediaire = new BigDecimal(0);
-                }
-
-                // si périodicité horaire
-                else if (sitPro.getPeriodiciteAutreRemun().equals(IPRSituationProfessionnelle.CS_PERIODICITE_HEURE)) {
-                    nbHeuresSemaine = new BigDecimal(sitPro.getHeuresSemaine());
-                    revenuIntermediaire = autreRemuneration.multiply(nbHeuresSemaine);
-                    revenuIntermediaire = revenuIntermediaire.divide(new BigDecimal(7), 10, BigDecimal.ROUND_DOWN);
-                }
-
-                // si périodicité mois
-                else if (sitPro.getPeriodiciteAutreRemun().equals(IPRSituationProfessionnelle.CS_PERIODICITE_MOIS)) {
-                    revenuIntermediaire = autreRemuneration.divide(new BigDecimal(30), 10, BigDecimal.ROUND_DOWN);
-                }
-
-                // si périodicité 4 semaines
-                else if (sitPro.getPeriodiciteAutreRemun()
-                        .equals(IPRSituationProfessionnelle.CS_PERIODICITE_4_SEMAINES)) {
-                    revenuIntermediaire = autreRemuneration.divide(new BigDecimal(28), 10, BigDecimal.ROUND_DOWN);
-                }
-
-                // si périodicité année
-                else if (sitPro.getPeriodiciteAutreRemun().equals(IPRSituationProfessionnelle.CS_PERIODICITE_ANNEE)) {
-                    revenuIntermediaire = autreRemuneration.divide(new BigDecimal(360), 10, BigDecimal.ROUND_DOWN);
-                }
-
-                revenuJournalier = revenuJournalier.add(revenuIntermediaire);
-                revenuIntermediaire = new BigDecimal(0);
-            }
-
-            // salaire nature
-            if ((sitPro.getSalaireNature() != null) && !JadeStringUtil.isDecimalEmpty(sitPro.getSalaireNature())) {
-
-                salaireNature = new BigDecimal(sitPro.getSalaireNature());
-
-                // si périodicité horaire
-                if (sitPro.getPeriodiciteSalaireNature().equals(IPRSituationProfessionnelle.CS_PERIODICITE_HEURE)) {
-                    nbHeuresSemaine = new BigDecimal(sitPro.getHeuresSemaine());
-                    revenuIntermediaire = salaireNature.multiply(nbHeuresSemaine);
-                    revenuIntermediaire = revenuIntermediaire.divide(new BigDecimal(7), 10, BigDecimal.ROUND_DOWN);
-                }
-
-                // si périodicité mois
-                else if (sitPro.getPeriodiciteSalaireNature().equals(IPRSituationProfessionnelle.CS_PERIODICITE_MOIS)) {
-                    revenuIntermediaire = salaireNature.divide(new BigDecimal(30), 10, BigDecimal.ROUND_DOWN);
-                }
-
-                // si périodicité 4 semaines
-                else if (sitPro.getPeriodiciteSalaireNature().equals(
-                        IPRSituationProfessionnelle.CS_PERIODICITE_4_SEMAINES)) {
-                    revenuIntermediaire = salaireNature.divide(new BigDecimal(28), 10, BigDecimal.ROUND_DOWN);
-                }
-
-                // si périodicité année
-                else if (sitPro.getPeriodiciteSalaireNature().equals(IPRSituationProfessionnelle.CS_PERIODICITE_ANNEE)) {
-                    revenuIntermediaire = salaireNature.divide(new BigDecimal(360), 10, BigDecimal.ROUND_DOWN);
-                }
-
-                revenuJournalier = revenuJournalier.add(revenuIntermediaire);
-                revenuIntermediaire = new BigDecimal(0);
-            }
-
-            // revenu indépendant
-            if ((sitPro.getRevenuIndependant() != null)
-                    && !JadeStringUtil.isDecimalEmpty(sitPro.getRevenuIndependant())) {
-
-                revenuIndependant = new BigDecimal(sitPro.getRevenuIndependant());
-
-                revenuIntermediaire = revenuIndependant.divide(new BigDecimal(360), 10, BigDecimal.ROUND_DOWN);
-
-                revenuJournalier = revenuJournalier.add(revenuIntermediaire);
-                revenuIntermediaire = new BigDecimal(0);
-            }
+            revenuJournalier = revenuJournalier.add(revenuIntermediaire);
+            revenuIntermediaire = new BigDecimal(0);
 
         }
 
-        // Transformation du revenuJournalier en revenuAnnuel
-        revenuAnnuel = revenuJournalier.multiply(new BigDecimal(360));
+        // autre salaire
+        if ((sitPro.getAutreSalaire() != null) && !JadeStringUtil.isDecimalEmpty(sitPro.getAutreSalaire())) {
 
-        return revenuAnnuel;
+            // si périodicité 4 semaines
+            if (sitPro.getPeriodiciteAutreSalaire().equals(IPRSituationProfessionnelle.CS_PERIODICITE_4_SEMAINES)) {
+                autreSalaireSem = new BigDecimal(sitPro.getAutreSalaire());
+                revenuIntermediaire = autreSalaireSem.divide(new BigDecimal(28), 10, BigDecimal.ROUND_DOWN);
+            }
+
+            // si périodicité Année
+            else if (sitPro.getPeriodiciteAutreSalaire().equals(IPRSituationProfessionnelle.CS_PERIODICITE_ANNEE)) {
+                autreSalaireAnn = new BigDecimal(sitPro.getAutreSalaire());
+                revenuIntermediaire = autreSalaireAnn.divide(new BigDecimal(360), 10, BigDecimal.ROUND_DOWN);
+            }
+
+            revenuJournalier = revenuJournalier.add(revenuIntermediaire);
+            revenuIntermediaire = new BigDecimal(0);
+        }
+
+        // autre rémunération
+        if ((sitPro.getAutreRemuneration() != null)
+                && !JadeStringUtil.isDecimalEmpty(sitPro.getAutreRemuneration())) {
+
+            autreRemuneration = new BigDecimal(sitPro.getAutreRemuneration());
+
+            // si %
+            if (sitPro.getIsPourcentAutreRemun().booleanValue()) {
+
+                // Le "BigDecimal" qui n'est pas à zéro représente le
+                // montant sur lequel le % sera calculé
+                if (!JadeStringUtil.isDecimalEmpty(salaireHoraire.toString())) {
+                    revenuIntermediaire = salaireHoraire.divide(new BigDecimal(100), 10, BigDecimal.ROUND_DOWN);
+                    revenuIntermediaire = revenuIntermediaire.multiply(new BigDecimal(sitPro
+                            .getPourcentAutreRemun()));
+
+                    revenuIntermediaire = revenuIntermediaire.multiply(nbHeuresSemaine);
+                    revenuIntermediaire = revenuIntermediaire.divide(new BigDecimal(7), 10, BigDecimal.ROUND_DOWN);
+
+                }
+
+                else if (!JadeStringUtil.isDecimalEmpty(salaireMensuel.toString())) {
+                    revenuIntermediaire = salaireMensuel.divide(new BigDecimal(100), 10, BigDecimal.ROUND_DOWN);
+                    revenuIntermediaire = revenuIntermediaire.multiply(new BigDecimal(sitPro
+                            .getPourcentAutreRemun()));
+
+                    revenuIntermediaire = revenuIntermediaire.divide(new BigDecimal(30), 10, BigDecimal.ROUND_DOWN);
+                }
+
+                else if (!JadeStringUtil.isDecimalEmpty(autreSalaireSem.toString())) {
+                    revenuIntermediaire = autreSalaireSem.divide(new BigDecimal(100), 10, BigDecimal.ROUND_DOWN);
+                    revenuIntermediaire = revenuIntermediaire.multiply(new BigDecimal(sitPro
+                            .getPourcentAutreRemun()));
+
+                    revenuIntermediaire = revenuIntermediaire.divide(new BigDecimal(28), 10, BigDecimal.ROUND_DOWN);
+                }
+
+                else if (!JadeStringUtil.isDecimalEmpty(autreSalaireAnn.toString())) {
+                    revenuIntermediaire = autreSalaireAnn.divide(new BigDecimal(100), 10, BigDecimal.ROUND_DOWN);
+                    revenuIntermediaire = revenuIntermediaire.multiply(new BigDecimal(sitPro
+                            .getPourcentAutreRemun()));
+
+                    revenuIntermediaire = revenuIntermediaire
+                            .divide(new BigDecimal(360), 10, BigDecimal.ROUND_DOWN);
+
+                }
+
+                revenuJournalier = revenuJournalier.add(revenuIntermediaire);
+                revenuIntermediaire = new BigDecimal(0);
+            }
+
+            // si périodicité horaire
+            else if (sitPro.getPeriodiciteAutreRemun().equals(IPRSituationProfessionnelle.CS_PERIODICITE_HEURE)) {
+                nbHeuresSemaine = new BigDecimal(sitPro.getHeuresSemaine());
+                revenuIntermediaire = autreRemuneration.multiply(nbHeuresSemaine);
+                revenuIntermediaire = revenuIntermediaire.divide(new BigDecimal(7), 10, BigDecimal.ROUND_DOWN);
+            }
+
+            // si périodicité mois
+            else if (sitPro.getPeriodiciteAutreRemun().equals(IPRSituationProfessionnelle.CS_PERIODICITE_MOIS)) {
+                revenuIntermediaire = autreRemuneration.divide(new BigDecimal(30), 10, BigDecimal.ROUND_DOWN);
+            }
+
+            // si périodicité 4 semaines
+            else if (sitPro.getPeriodiciteAutreRemun()
+                    .equals(IPRSituationProfessionnelle.CS_PERIODICITE_4_SEMAINES)) {
+                revenuIntermediaire = autreRemuneration.divide(new BigDecimal(28), 10, BigDecimal.ROUND_DOWN);
+            }
+
+            // si périodicité année
+            else if (sitPro.getPeriodiciteAutreRemun().equals(IPRSituationProfessionnelle.CS_PERIODICITE_ANNEE)) {
+                revenuIntermediaire = autreRemuneration.divide(new BigDecimal(360), 10, BigDecimal.ROUND_DOWN);
+            }
+
+            revenuJournalier = revenuJournalier.add(revenuIntermediaire);
+            revenuIntermediaire = new BigDecimal(0);
+        }
+
+        // salaire nature
+        if ((sitPro.getSalaireNature() != null) && !JadeStringUtil.isDecimalEmpty(sitPro.getSalaireNature())) {
+
+            salaireNature = new BigDecimal(sitPro.getSalaireNature());
+
+            // si périodicité horaire
+            if (sitPro.getPeriodiciteSalaireNature().equals(IPRSituationProfessionnelle.CS_PERIODICITE_HEURE)) {
+                nbHeuresSemaine = new BigDecimal(sitPro.getHeuresSemaine());
+                revenuIntermediaire = salaireNature.multiply(nbHeuresSemaine);
+                revenuIntermediaire = revenuIntermediaire.divide(new BigDecimal(7), 10, BigDecimal.ROUND_DOWN);
+            }
+
+            // si périodicité mois
+            else if (sitPro.getPeriodiciteSalaireNature().equals(IPRSituationProfessionnelle.CS_PERIODICITE_MOIS)) {
+                revenuIntermediaire = salaireNature.divide(new BigDecimal(30), 10, BigDecimal.ROUND_DOWN);
+            }
+
+            // si périodicité 4 semaines
+            else if (sitPro.getPeriodiciteSalaireNature().equals(
+                    IPRSituationProfessionnelle.CS_PERIODICITE_4_SEMAINES)) {
+                revenuIntermediaire = salaireNature.divide(new BigDecimal(28), 10, BigDecimal.ROUND_DOWN);
+            }
+
+            // si périodicité année
+            else if (sitPro.getPeriodiciteSalaireNature().equals(IPRSituationProfessionnelle.CS_PERIODICITE_ANNEE)) {
+                revenuIntermediaire = salaireNature.divide(new BigDecimal(360), 10, BigDecimal.ROUND_DOWN);
+            }
+
+            revenuJournalier = revenuJournalier.add(revenuIntermediaire);
+            revenuIntermediaire = new BigDecimal(0);
+        }
+
+        // revenu indépendant
+        if ((sitPro.getRevenuIndependant() != null)
+                && !JadeStringUtil.isDecimalEmpty(sitPro.getRevenuIndependant())) {
+
+            revenuIndependant = new BigDecimal(sitPro.getRevenuIndependant());
+
+            revenuIntermediaire = revenuIndependant.divide(new BigDecimal(360), 10, BigDecimal.ROUND_DOWN);
+
+            revenuJournalier = revenuJournalier.add(revenuIntermediaire);
+            revenuIntermediaire = new BigDecimal(0);
+        }
+
+        return revenuJournalier;
     }
 
     /**

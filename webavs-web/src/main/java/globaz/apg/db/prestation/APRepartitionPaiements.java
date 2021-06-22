@@ -63,6 +63,7 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
     public static final String FIELDNAME_TYPEPAIEMENT = "VITTPM";
     public static final String FIELDNAME_TYPEPRESTATION = "VITTPR";
     public static final String FIELDNAME_NOMBREJOURSSOLDES = "VINBJS";
+    public static final String FIELDNAME_MONTANTJOURNALIER = "VIMTJR";
 
     public static final String TABLE_NAME = "APREPAP";
 
@@ -92,6 +93,9 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
     @Getter
     @Setter
     private String nombreJoursSoldes = "";
+    @Getter
+    @Setter
+    private String montantJournalierRepartition = "";
 
     /**
      * (non-Javadoc).
@@ -195,6 +199,7 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
 
         typeAssociationAssurance = statement.dbReadNumeric(APRepartitionPaiements.FIELDNAME_TYPE_ASSOCIATION_ASSURANCE);
         nombreJoursSoldes = statement.dbReadNumeric(APRepartitionPaiements.FIELDNAME_NOMBREJOURSSOLDES);
+        montantJournalierRepartition = statement.dbReadNumeric(APRepartitionPaiements.FIELDNAME_MONTANTJOURNALIER);
     }
 
     /**
@@ -386,6 +391,8 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
                 this._dbWriteNumeric(statement.getTransaction(), typeAssociationAssurance, "typeAssociationAssurance"));
         statement.writeField(APRepartitionPaiements.FIELDNAME_NOMBREJOURSSOLDES,
                 this._dbWriteNumeric(statement.getTransaction(), nombreJoursSoldes, "nombreJoursSoldes"));
+        statement.writeField(APRepartitionPaiements.FIELDNAME_MONTANTJOURNALIER,
+                this._dbWriteNumeric(statement.getTransaction(), montantJournalierRepartition, "montantJournalier"));
     }
 
     public void chercherAdressePaiement(BTransaction transaction, String idSituationProf) throws Exception {

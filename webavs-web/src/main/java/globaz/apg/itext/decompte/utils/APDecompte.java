@@ -170,4 +170,8 @@ public class APDecompte {
     public final Boolean isIndependant(){
         return donneePourRegroupement.isIndependant();
     }
+
+    public final String getIdEmployeur() {
+        return donneePourRegroupement.getIdEmployeur();
+    }
 }

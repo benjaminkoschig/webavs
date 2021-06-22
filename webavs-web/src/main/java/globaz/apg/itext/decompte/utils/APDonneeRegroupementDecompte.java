@@ -13,6 +13,8 @@ import globaz.jade.log.JadeLogger;
 import globaz.prestation.db.employeurs.PRDepartement;
 import globaz.prestation.tools.PRBlankBNumberFormater;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Cette classe définit la clé de regroupement utilisée pour le regroupement des différentes prestationsJointRepartition
@@ -47,6 +49,9 @@ public class APDonneeRegroupementDecompte {
     private String idAdressePaiement;
     // Paternité
     private String idTiersSauv;
+    @Getter
+    @Setter
+    private String idEmployeur;
 
     /**
      * Mapping utilisé pour le regroupement des prestations Standard et ACM_NE
@@ -207,6 +212,7 @@ public class APDonneeRegroupementDecompte {
             situationPro.setSession(session);
             situationPro.retrieve(transaction);
             if (!situationPro.isNew()) {
+                idEmployeur = situationPro.getIdEmployeur();
                 return situationPro.getIsPorteEnCompte();
             }
         }
