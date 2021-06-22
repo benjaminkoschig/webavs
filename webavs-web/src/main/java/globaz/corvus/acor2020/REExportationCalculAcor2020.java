@@ -21,6 +21,7 @@ import globaz.corvus.db.demandes.REDemandeRenteVieillesse;
 import globaz.corvus.db.demandes.REPeriodeInvalidite;
 import globaz.corvus.db.historiques.REHistoriqueRentes;
 import globaz.corvus.db.historiques.REHistoriqueRentesJoinTiersManager;
+import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.vb.ci.REInscriptionCIListViewBean;
 import globaz.corvus.vb.ci.REInscriptionCIViewBean;
@@ -383,11 +384,22 @@ public class REExportationCalculAcor2020 {
         commonRente.setDebutDroit(ParserUtils.formatDate(rente.getDateDebutDroit(), "MM.yyyy"));
         // 5. date fin du droit
         commonRente.setFinDroit(ParserUtils.formatDate(rente.getDateFinDroit(), "MM.yyyy"));
+
         if (commonRente.getFinDroit() != null) {
+            RERenteAccordee renteAccordee = new RERenteAccordee();
+            try {
+                renteAccordee.setSession(getSession());
+                renteAccordee.setId(rente.getIdRenteAccordee());
+                renteAccordee.retrieve();
+            } catch (Exception e) {
+                getSession().addError("Erreur lors de la récupération de la rente accordée.");
+            }
             // Non utilisé
             // TODO : valeur 0 non valide (Enum Mutationscode_Type dans Prestations-types.xsd) ->
 //          // TODO : information contenu dans la rente accordée : RERenteAccordee --> YLLCMU
-//            commonRente.setCodeMutation(0);
+            if (StringUtils.isNotEmpty(renteAccordee.getCodeMutation())) {
+                commonRente.setCodeMutation(ParserUtils.formatRequiredInteger(renteAccordee.getCodeMutation()));
+            }
         }
         // 6. montant de la prestation
         commonRente.setMontant(ParserUtils.formatRequiredBigDecimalNoDecimal(rente.getMontantPrestation()));
@@ -1633,10 +1645,9 @@ public class REExportationCalculAcor2020 {
                 // TODO : la gestion des dates de fin de relation reste un mystère.
                 if (!ISFSituationFamiliale.CS_TYPE_LIEN_MARIE.equals(relation.getTypeLien())
                         && !ISFSituationFamiliale.CS_TYPE_LIEN_VEUF.equals(relation.getTypeLien())
-                        && !ISFSituationFamiliale.CS_TYPE_LIEN_LPART_ENREGISTRE.equals(relation
-                        .getTypeLien()) && !ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(relation
-                        .getTypeRelation())) {
-
+                        && !ISFSituationFamiliale.CS_TYPE_LIEN_LPART_ENREGISTRE.equals(relation.getTypeLien())
+                        && !ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(relation.getTypeRelation())
+                        && !ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT.equals(relation.getTypeRelation())) {
                     l.setDateFin(relation.getDateDebut());
                 } else {
                     l.setDateFin(relation.getDateFin());
