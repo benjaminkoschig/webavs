@@ -168,7 +168,7 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
    		document.all('blockWithoutAnneeTaxation').style.display = 'block';
 	  	document.all('blockAnneeTaxation').style.display = 'none';
    	}
-  	if(<%=viewBean.isPaternite()%>) {
+  	if(<%=viewBean.isPaternite() || viewBean.isProcheAidant()%>) {
 		document.forms[0].elements('isAllocationExploitation').checked = false;
 	}
    	showisAMATFExcluded();
@@ -459,7 +459,7 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
 	}
   function checkACM(){
 	  // Si c'est un droit Pandémie => Pas de ACM.
-	  <%if(viewBean.isPandemie() || viewBean.isPaternite()){%>
+	  <%if(viewBean.isPandemie() || viewBean.isPaternite() || viewBean.isProcheAidant()){%>
 		  $('input[type="checkbox"][name="hasAcmAlphaPrestations"]').prop('checked', false);
 	  <%}%>
   }
