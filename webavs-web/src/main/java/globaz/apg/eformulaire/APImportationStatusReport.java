@@ -18,8 +18,8 @@ public class APImportationStatusReport implements Serializable {
     @Getter
     private final List<APImportationStatusFile> fileStatuses = new ArrayList<>();
 
-    public APImportationStatusFile addFile(String fileName, String nss, String type){
-        APImportationStatusFile fileStatus = new APImportationStatusFile(type, fileName, nss);
+    public APImportationStatusFile addFile(String fileName, String nss, boolean isWomen){
+        APImportationStatusFile fileStatus = new APImportationStatusFile(fileName, nss, isWomen);
         fileStatuses.add(fileStatus);
         return fileStatus;
     }
@@ -59,13 +59,13 @@ public class APImportationStatusReport implements Serializable {
      * Méthode permettant de récupérer les adresses email à qui on souhaite envoyer l'email.
      * @return la liste des adresses email.
      */
-    private final List<String> getListEMailAddressTechnique() {
+    private List<String> getListEMailAddressTechnique() {
         List<String> listEmailAddress = new ArrayList<>();
         try {
             String[] addresses = APProperties.EMAIL_AMAT_APAT.getValue().split(";");
             listEmailAddress = Arrays.asList(addresses);
         } catch (PropertiesException e) {
-            LOG.error("ImportAPG-AMAT-APAT - Erreur à la récupération de la propriété Adresse E-mail !! ", e);
+            LOG.error("APImportationStatusReport#getListEMailAddressTechnique - Erreur à la récupération de la propriété Adresse E-mail !! ", e);
         }
         return listEmailAddress;
     }

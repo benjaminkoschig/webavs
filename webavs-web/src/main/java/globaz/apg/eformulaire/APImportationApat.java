@@ -17,8 +17,10 @@ import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.prestation.api.IPRDemande;
 import globaz.prestation.db.demandes.PRDemande;
+import globaz.prestation.utils.PRDateUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -50,47 +52,49 @@ public class APImportationApat extends APAbstractImportationAmatApat {
             newDroit.setDateDepot(date.getSwissValue());
             newDroit.setDateReception(date.getSwissValue());
             newDroit.setIsSoumisImpotSource(isSoumisImpotSource(content));
-            // TODO : set date fin de droit
-
             newDroit.setSession(bSession);
             newDroit.add(transaction);
-
-            // récupéreration période du droit
-            List<PaternityLeavePeriod> periods = null;
-            periods = getPaternityLeavePeriods(content);
-            long days = 0;
-
-            for (PaternityLeavePeriod period : periods) {
-                Date debutPeriod = period.getFrom().toGregorianCalendar().getTime();
-                Date finPeriod = period.getTo().toGregorianCalendar().getTime();
-                Date currentDate = new Date();
-                if (currentDate.after(debutPeriod)) {
-                    if (finPeriod.after(debutPeriod)) {
-                        APPeriodeAPG periodeAPG = new APPeriodeAPG();
-                        periodeAPG.setDateDebutPeriode(JadeDateUtil.getGlobazFormattedDate(debutPeriod));
-                        periodeAPG.setDateFinPeriode(JadeDateUtil.getGlobazFormattedDate(finPeriod));
-                        days = Dates.daysBetween(JadeDateUtil.getGlobazFormattedDate(debutPeriod), JadeDateUtil.getGlobazFormattedDate(finPeriod));
-                        periodeAPG.setIdDroit(newDroit.getIdDroit());
-                        periodeAPG.setNbrJours(String.format("%d", days));
-                        periodeAPG.setSession(bSession);
-                        periodeAPG.add(transaction);
-                    } else {
-                        fileStatus.getInformations().add("Incohérence dans les dates de la période et la période n'a pas été ajouté dans WebAVS.");
-                    }
-                } else {
-                    fileStatus.getInformations().add("La période est définie dans le futur et n'a pas été ajouté dans WebAVS.");
-                }
-            }
+            createPeriodes(content, transaction, newDroit);
         } catch (Exception e) {
-            fileStatus.getErrors().add("Une erreur s'est produite lors de la création du droit paternité " + e.getMessage());
-            LOG.error("Une erreur s'est produite lors de la création du droit : ", e);
+            fileStatus.addError("Une erreur s'est produite lors de la création du droit paternité " + e.getMessage());
+            LOG.error("APImportationAPGApat#createDroit - Une erreur s'est produite lors de la création du droit : ", e);
         }
 
         return newDroit;
     }
 
+    private void createPeriodes(Content content, BTransaction transaction, APDroitPaternite newDroit) throws Exception {
+        // récupéreration période du droit
+        List<PaternityLeavePeriod> periods = null;
+        periods = getPaternityLeavePeriods(content);
+        long days = 0;
+        List<String> datesDeFin = new ArrayList<String>();
+        for (PaternityLeavePeriod period : periods) {
+            Date debutPeriod = period.getFrom().toGregorianCalendar().getTime();
+            Date finPeriod = period.getTo().toGregorianCalendar().getTime();
+            Date currentDate = new Date();
+            if (currentDate.after(debutPeriod)) {
+                if (finPeriod.after(debutPeriod)) {
+                    APPeriodeAPG periodeAPG = new APPeriodeAPG();
+                    periodeAPG.setDateDebutPeriode(JadeDateUtil.getGlobazFormattedDate(debutPeriod));
+                    periodeAPG.setDateFinPeriode(JadeDateUtil.getGlobazFormattedDate(finPeriod));
+                    datesDeFin.add(JadeDateUtil.getGlobazFormattedDate(finPeriod));
+                    days = Dates.daysBetween(JadeDateUtil.getGlobazFormattedDate(debutPeriod), JadeDateUtil.getGlobazFormattedDate(finPeriod));
+                    periodeAPG.setIdDroit(newDroit.getIdDroit());
+                    periodeAPG.setNbrJours(String.format("%d", days));
+                    periodeAPG.setSession(bSession);
+                    periodeAPG.add(transaction);
+                } else {
+                    fileStatus.addInformation("Incohérence dans les dates de la période et la période n'a pas été ajouté dans WebAVS.");
+                }
+            } else {
+                fileStatus.addInformation("La période est définie dans le futur et n'a pas été ajouté dans WebAVS.");
+            }
+        }
+    }
+
     private List<PaternityLeavePeriod> getPaternityLeavePeriods(Content content) {
-        if(content.getFormType().equals(APAbstractImportationAmatApat.FORM_INDEPENDANT)) {
+        if(APAbstractImportationAmatApat.FORM_INDEPENDANT.equals(content.getFormType())) {
             if(content.getActivityCessation() != null &&
                     content.getActivityCessation().getUnemploymentCessation() != null &&
                     content.getActivityCessation().getUnemploymentCessation().getParternityLeave() != null &&
@@ -117,11 +121,10 @@ public class APImportationApat extends APAbstractImportationAmatApat {
                 enfant.setSession(bSession);
                 enfant.add(transaction);
             }
-            fileStatus.getInformations().add("La situation familiale du droit a été ajouté dans WebAVS.");
-            LOG.info("La situation familiale du droit a été ajouté dans WebAVS.");
+            fileStatus.addInformation("La situation familiale du droit a été ajouté dans WebAVS.");
         } catch (Exception e) {
-            fileStatus.getInformations().add("Impossible de créer la situation familiale ");
-            LOG.error("Erreur lors de la création de la situation familiale ", e);
+            fileStatus.addInformation("Impossible de créer la situation familiale ");
+            LOG.error("APImportationAPGApat#createSituation - Erreur lors de la création de la situation familiale ", e);
         }
     }
 }

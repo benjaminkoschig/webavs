@@ -21,7 +21,6 @@ import globaz.jade.service.exception.JadeServiceLocatorException;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.osiris.api.APIOperation;
-import globaz.prestation.api.IPRDemande;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
@@ -74,7 +73,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
             importFiles();
         } catch (Exception e) {
             setReturnCode(-1);
-            APImportationStatusFile statusFile = report.addFile(StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY);
+            APImportationStatusFile statusFile = report.addFile(StringUtils.EMPTY, StringUtils.EMPTY, true);
             statusFile.getErrors().add("erreur fatale : " + Throwables.getStackTraceAsString(e));
             throw new TechnicalException("Erreur dans le process d'import", e);
         } finally {
@@ -126,11 +125,11 @@ public class APImportationAPGAmatApatProcess extends BProcess {
                 LOG.info("Nombre de dossiers traités : {}",  report.getNbFichierTraites());
             } else {
                 LOG.warn("Les propriétés AMAT APAT ne sont pas définis.");
-                APImportationStatusFile statusFile = report.addFile(StringUtils.EMPTY,StringUtils.EMPTY,StringUtils.EMPTY);
+                APImportationStatusFile statusFile = report.addFile(StringUtils.EMPTY,StringUtils.EMPTY, true);
                 statusFile.getErrors().add("Import impossible : les propriétés AMAT-APAT ne sont pas définis.");
             }
         } catch (Exception e) {
-            APImportationStatusFile statusFile = report.addFile(StringUtils.EMPTY,StringUtils.EMPTY,StringUtils.EMPTY);
+            APImportationStatusFile statusFile = report.addFile(StringUtils.EMPTY,StringUtils.EMPTY, true);
             statusFile.getErrors().add("erreur fatale : " + Throwables.getStackTraceAsString(e));
             LOG.error("Erreur lors de l'importation des fichiers", e);
         }
@@ -157,8 +156,8 @@ public class APImportationAPGAmatApatProcess extends BProcess {
                     Content content = message.getContent();
                     nss = content.getInsuredPerson().getVn();
 
-                    boolean isWomen = StringUtils.equals(AMAT_TYPE, content.getAmatApatType());
-                    fileStatus = report.addFile(nameOriginalFile, nss, isWomen ? IPRDemande.CS_TYPE_MATERNITE : IPRDemande.CS_TYPE_PATERNITE);
+                    boolean isWomen = AMAT_TYPE.equals(content.getAmatApatType());
+                    fileStatus = report.addFile(nameOriginalFile, nss, isWomen);
 
                     isTraitementSuccess = traiterMessage(content, nss, fileStatus, isWomen);
                     if (isTraitementSuccess) {
@@ -168,8 +167,8 @@ public class APImportationAPGAmatApatProcess extends BProcess {
                         fileStatus.setSucceed(false);
                     }
                 } else {
-                    fileStatus = report.addFile(nameOriginalFile, StringUtils.EMPTY, StringUtils.EMPTY);
-                    fileStatus.getErrors().add("Le fichier XML ne peut pas être traité : " + nameOriginalFileWithoutExt);
+                    fileStatus = report.addFile(nameOriginalFile, StringUtils.EMPTY, true);
+                    fileStatus.addError("Le fichier XML ne peut pas être traité : " + nameOriginalFileWithoutExt);
                 }
 
                 // on déplace les fichiers traités.
@@ -177,8 +176,8 @@ public class APImportationAPGAmatApatProcess extends BProcess {
                 String fullPath = movingFile(nomFichier, nameOriginalFile, nss, isTraitementSuccess);
                 fileStatus.setFileFullPath(fullPath);
             } catch (Exception e) {
-                APImportationStatusFile fileStatus = report.addFile(nomFichier, StringUtils.EMPTY, StringUtils.EMPTY);
-                fileStatus.getErrors().add("Erreur lors du traitement du fichier : " + nomFichier);
+                APImportationStatusFile fileStatus = report.addFile(nomFichier, StringUtils.EMPTY, true);
+                fileStatus.addError("Erreur lors du traitement du fichier : " + nomFichier);
                 LOG.error("Erreur lors du traitement du fichier. ", e);
             }
         }
@@ -189,43 +188,31 @@ public class APImportationAPGAmatApatProcess extends BProcess {
         if (!transaction.isOpened()) {
             transaction.openTransaction();
         }
-        InsuredPerson assure = content.getInsuredPerson();
+
         AddressType adresseAssure = content.getInsuredAddress();
         String npaFormat = formatNPA(getZipCode(adresseAssure), fileStatus);
-        IAPImportationAmatApat handler = getHandler(content, fileStatus, nssTiers);
+        IAPImportationAmatApat importationAmatApat = provideImporter(content, fileStatus, nssTiers);
 
         PRTiersWrapper tiers = getTiersByNss(nssTiers, fileStatus);
         if (Objects.isNull(tiers)) {
-            tiers = handler.createTiers(assure, npaFormat, isWomen);
+            tiers = importationAmatApat.createTiers(content.getInsuredPerson(), npaFormat, isWomen);
         }
         fileStatus.setNom(tiers.getNom());
         fileStatus.setPrenom(tiers.getPrenom());
         fileStatus.setNumeroAffilie(getNumeroAffilie(tiers));
-        if (tiers.getSexe().equals(TITiersViewBean.CS_FEMME) && !isWomen) {
-            fileStatus.getErrors().add("Demande de droit paternité pour une personne de sexe féminin.");
+        if (TITiersViewBean.CS_FEMME.equals(tiers.getSexe()) && !isWomen) {
+            fileStatus.addError("Demande de droit paternité pour une personne de sexe féminin.");
             LOG.error("ImportAPGAmatApat#CreateDroitGlobal - Une erreur s'est produite dans la création du droit : demande de droit paternité pour une personne de sexe féminin");
-        } else if (tiers.getSexe().equals(TITiersViewBean.CS_HOMME) && isWomen) {
-            fileStatus.getErrors().add("Demande de droit maternité pour une personne de sexe masculin.");
+        } else if (TITiersViewBean.CS_HOMME.equals(tiers.getSexe()) && isWomen) {
+            fileStatus.addError("Demande de droit maternité pour une personne de sexe masculin.");
             LOG.error("ImportAPGAmatApat#CreateDroitGlobal - Une erreur s'est produite dans la création du droit : demande de droit maternité pour une personne de sexe masculin");
         } else {
-            String idTiers = tiers.getIdTiers();
-            String domaine = isWomen ? IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE : IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE;
-            if (StringUtils.isEmpty(PRTiersHelper.getAdresseGeneriqueFormatee(bsession, idTiers, "", "", domaine))) {
-                handler.createAdresses(tiers, content.getInsuredAddress(), content.getPaymentContact(), npaFormat);
-            } else {
-                fileStatus.getInformations().add("Une adresse a été trouvée pour le tiers dans WebAVS et l'adresse du fichier ne sera pas utilisée.");
-            }
-            handler.createRoleApgTiers(tiers.getIdTiers());
-            handler.createContact(tiers, assure.getEmail());
-            PRDemande demande = handler.createDemande(tiers.getIdTiers());
-            APDroitLAPG droit = handler.createDroit(content, npaFormat, demande, transaction);
-            handler.createSituationFamiliale(content.getFamilyMembers(), droit.getIdDroit(), transaction);
-            handler.createSituationProfessionnel(content, droit, transaction);
+            createDemandeDeDroit(content, fileStatus, transaction, npaFormat, importationAmatApat, tiers);
         }
 
         if (hasError(bsession, transaction, fileStatus)) {
             transaction.rollback();
-            fileStatus.getErrors().add("Un problème est survenu lors de la création du droit pour cet assuré .");
+            fileStatus.addError("Un problème est survenu lors de la création du droit pour cet assuré .");
             LOG.error("Erreur lors de la création du droit\nSession errors : {} \nTransactions errors {}: ", bsession.getErrors(), transaction.getErrors());
             transaction.closeTransaction();
             return false;
@@ -235,6 +222,23 @@ public class APImportationAPGAmatApatProcess extends BProcess {
             transaction.closeTransaction();
             return true;
         }
+    }
+
+    private void createDemandeDeDroit(Content content, APImportationStatusFile fileStatus, BTransaction transaction, String npaFormat, IAPImportationAmatApat importationAmatApat, PRTiersWrapper tiers) throws Exception {
+        InsuredPerson assure = content.getInsuredPerson();
+        String idTiers = tiers.getIdTiers();
+        String domaine = fileStatus.isWomen() ? IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE : IPRConstantesExternes.TIERS_CS_DOMAINE_PATERNITE;
+        if (StringUtils.isEmpty(PRTiersHelper.getAdresseGeneriqueFormatee(bsession, idTiers, "", "", domaine))) {
+            importationAmatApat.createAdresses(tiers, content.getInsuredAddress(), content.getPaymentContact(), npaFormat);
+        } else {
+            fileStatus.addInformation("Une adresse a été trouvée pour le tiers dans WebAVS et l'adresse du fichier ne sera pas utilisée.");
+        }
+        importationAmatApat.createRoleApgTiers(tiers.getIdTiers());
+        importationAmatApat.createContact(tiers, assure.getEmail());
+        PRDemande demande = importationAmatApat.createDemande(tiers.getIdTiers());
+        APDroitLAPG droit = importationAmatApat.createDroit(content, npaFormat, demande, transaction);
+        importationAmatApat.createSituationFamiliale(content.getFamilyMembers(), droit.getIdDroit(), transaction);
+        importationAmatApat.createSituationProfessionnel(content, droit, transaction);
     }
 
     private String getNumeroAffilie(PRTiersWrapper tiers) throws Exception {
@@ -249,8 +253,8 @@ public class APImportationAPGAmatApatProcess extends BProcess {
         return numeroAffilie;
     }
 
-    private IAPImportationAmatApat getHandler(Content content, APImportationStatusFile fileStatus, String nssTiers){
-        if (StringUtils.equals(AMAT_TYPE, content.getAmatApatType())) {
+    private IAPImportationAmatApat provideImporter(Content content, APImportationStatusFile fileStatus, String nssTiers){
+        if (AMAT_TYPE.equals(content.getAmatApatType())) {
             return new APImportationAmat(fileStatus, bsession, nssTiers);
         }
         return new APImportationApat(fileStatus, bsession, nssTiers);
@@ -283,7 +287,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
         } catch (FileNotFoundException e) {
             LOG.error("Fichier non trouvé : " + pathFile, e);
         } catch (Exception e) {
-            fileStatus.getErrors().add("Erreur lors de l'update Historique importation APG " + e.getMessage());
+            fileStatus.addError("Erreur lors de l'update Historique importation APG " + e.getMessage());
             LOG.error("Erreur lors de l'update Historique importation APG : ", e);
             if (transaction != null) {
                 transaction.rollback();
@@ -368,7 +372,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
                 return (Message) unmarshaller.unmarshal(fichier);
             }
         } catch (JadeServiceLocatorException | JadeClassCastException | JadeServiceActivatorException | JAXBException e) {
-            APImportationStatusFile statusFile = report.addFile(StringUtils.EMPTY,StringUtils.EMPTY,StringUtils.EMPTY);
+            APImportationStatusFile statusFile = report.addFile(StringUtils.EMPTY,StringUtils.EMPTY, true);
             statusFile.getErrors().add("Impossible de parser le fichier XML : " + destPath + "(" + e.getMessage() + ")");
             LOG.error("Erreur lors de l'importation du fichier " + destPath, e);
         }
@@ -397,7 +401,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
         try {
             return PRTiersHelper.getTiers(bsession, nss);
         } catch (Exception e) {
-            fileStatus.getInformations().add("Impossible de récupérer le tiers.");
+            fileStatus.addInformation("Impossible de récupérer le tiers.");
             LOG.error("Erreur lors de la récupération du tiers {}", nss, e);
             return null;
         }
@@ -410,7 +414,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
     private String getZipCode(AddressType adresseAssure) {
         String zipCodeTown = adresseAssure.getZipCodeTown();
 
-        String[] zipCodeTownSplitted = StringUtils.split(zipCodeTown, ",");
+        String[] zipCodeTownSplitted = zipCodeTown.split(",");
 
         return zipCodeTownSplitted[0].trim();
     }
@@ -423,11 +427,11 @@ public class APImportationAPGAmatApatProcess extends BProcess {
      */
     private String formatNPA(String npa, APImportationStatusFile fileStatus) {
         if(StringUtils.isNotEmpty(npa)){
-            String npaTrim = StringUtils.trim(npa);
+            String npaTrim = npa.trim();
             if(StringUtils.isNumeric(npaTrim)){
                 return npaTrim;
             }else{
-                fileStatus.getInformations().add("NPA incorrect ! Celui-ci doit être dans un format numérique uniquement ! Valeur: "+npa);
+                fileStatus.addInformation("NPA incorrect ! Celui-ci doit être dans un format numérique uniquement ! Valeur: "+npa);
             }
         }
         return "";

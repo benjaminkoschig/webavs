@@ -1,6 +1,5 @@
 package globaz.apg.eformulaire;
 
-import globaz.osiris.file.paiement.exception.LineNotFoundException;
 import globaz.prestation.api.IPRDemande;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +23,11 @@ public class APImportationStatusFile {
     @Getter
     private final List<String> errors = new ArrayList<>();
     @Getter
-    private final String type;
-    @Getter
     private final String fileName;
     @Getter
     private final String nss;
+    @Getter
+    private final boolean isWomen;
     @Setter @Getter
     private String fileFullPath;
     @Setter @Getter
@@ -40,21 +39,20 @@ public class APImportationStatusFile {
     @Setter @Getter
     private boolean succeed;
 
-
     public String buildStatusMessage(){
         StringBuilder builder = new StringBuilder();
-        if(!StringUtils.equals(fileName, StringUtils.EMPTY)) {
+        if(StringUtils.isNotEmpty(fileName)) {
             builder.append(String.format("- Nom du fichier traité: %s %s", fileName, LINE_SEP));
-            if(!StringUtils.equals(fileName, StringUtils.EMPTY)) {
+            if(StringUtils.isNotEmpty(nss)) {
                 builder.append(String.format("- Assuré concerné: %s - %s %s %s", nss, nom, prenom, LINE_SEP));
                 builder.append(String.format("- N° affilié: %s %s", numeroAffilie, LINE_SEP));
                 if (!informations.isEmpty()) {
                     builder.append(FORMAT_TITLE_INFO + LINE_SEP);
-                    informations.forEach(info -> builder.append(info + LINE_SEP));
+                    informations.forEach(info -> builder.append(info).append(LINE_SEP));
                 }
                 if (!errors.isEmpty()) {
                     builder.append(FORMAT_TITLE_ERROR + LINE_SEP);
-                    errors.forEach(error -> builder.append(error + LINE_SEP));
+                    errors.forEach(error -> builder.append(error).append(LINE_SEP));
                 }
             } else {
                 builder.append(String.format("- Aucun assuré n'a été traité. %s", LINE_SEP));
@@ -78,9 +76,9 @@ public class APImportationStatusFile {
 
     private String getFormattedType(){
         String apgNom = "APG ";
-        if(type.equals(IPRDemande.CS_TYPE_MATERNITE)){
+        if(IPRDemande.CS_TYPE_MATERNITE.equals(getType())){
             return apgNom + " Maternité";
-        } else if(type.equals(IPRDemande.CS_TYPE_PATERNITE)) {
+        } else if(IPRDemande.CS_TYPE_PATERNITE.equals(getType())) {
             return apgNom + " Paternité";
         }
         return apgNom;
@@ -91,13 +89,25 @@ public class APImportationStatusFile {
     }
 
     private String getObjectFichierNonTraite(){
-        if(!StringUtils.equals(fileName, StringUtils.EMPTY)){
-            if(!StringUtils.equals(nss, StringUtils.EMPTY)){
+        if(StringUtils.isNotEmpty(fileName)){
+            if(StringUtils.isNotEmpty(nss)){
                 return String.format(" - Demande non traité par la caisse pour l'assuré %s", nss);
             }
             return String.format(" - Demande non traité par la caisse pour le fichier %s", fileName);
         }
         return " - Aucune demande traité par la caisse.";
 
+    }
+
+    public String getType(){
+        return isWomen ? IPRDemande.CS_TYPE_MATERNITE : IPRDemande.CS_TYPE_PATERNITE;
+    }
+
+    public void addError(String error){
+        errors.add(error);
+    }
+
+    public void addInformation(String information){
+        informations.add(information);
     }
 }

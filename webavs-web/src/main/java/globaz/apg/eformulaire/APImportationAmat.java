@@ -50,8 +50,8 @@ public class APImportationAmat extends APAbstractImportationAmatApat {
             newDroit.add(transaction);
 
         } catch (Exception e) {
-            fileStatus.getErrors().add("Une erreur s'est produite lors de la création du droit maternité " + e.getMessage());
-            LOG.error("Une erreur s'est produite lors de la création du droit : ", e);
+            fileStatus.addError("Une erreur s'est produite lors de la création du droit maternité " + e.getMessage());
+            LOG.error("APImportationAPGAmat#createDroit - Une erreur s'est produite lors de la création du droit : ", e);
         }
 
         return newDroit;
@@ -70,11 +70,10 @@ public class APImportationAmat extends APAbstractImportationAmatApat {
                 enfant.setSession(bSession);
                 enfant.add(transaction);
             }
-            fileStatus.getInformations().add("La situation familiale du droit a été ajouté dans WebAVS.");
-            LOG.info("La situation familiale du droit a été ajouté dans WebAVS.");
+            fileStatus.addInformation("La situation familiale du droit a été ajouté dans WebAVS.");
         } catch (Exception e) {
-            fileStatus.getInformations().add("Impossible de créer la situation familiale.");
-            LOG.error("Erreur lors de la création de la situation familiale ", e);
+            fileStatus.addInformation("Impossible de créer la situation familiale.");
+            LOG.error("APImportationAPGAmat#createSituationFamiliale - Erreur lors de la création de la situation familiale ", e);
         }
     }
 }

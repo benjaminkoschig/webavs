@@ -109,8 +109,6 @@ public class APImportationAPGHistorique extends BEntity {
             pstmt.executeUpdate();
         } catch (SQLException e) {
             LOG.debug("Erreur à l'execution de la requête : " + sql, e);
-        } catch (IOException e) {
-            LOG.debug("Erreur lors de la lecture du XML", e);
         } catch (Exception e) {
             LOG.debug("Erreur lors de la lecture du XML", e);
         } finally {

@@ -2,6 +2,7 @@ package globaz.apg.eformulaire;
 
 import apg.amatapat.*;
 import ch.globaz.common.domaine.Date;
+import ch.globaz.common.util.JadeLogs;
 import ch.globaz.pegasus.business.vo.donneeFinanciere.IbanCheckResultVO;
 import ch.globaz.pegasus.businessimpl.services.process.allocationsNoel.AdressePaiementPrimeNoelService;
 import ch.globaz.pyxis.business.model.*;
@@ -12,14 +13,15 @@ import globaz.apg.db.droits.APEmployeur;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.properties.APProperties;
 import globaz.externe.IPRConstantesExternes;
-import globaz.globall.db.*;
+import globaz.globall.db.BManager;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.db.BTransaction;
 import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.log.business.JadeBusinessMessage;
 import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.naos.api.IAFAffiliation;
@@ -68,7 +70,6 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
     protected final APImportationStatusFile fileStatus;
     protected final BSession bSession;
     private final String typeDemande;
-
     protected final String nssImport;
 
     @Override
@@ -76,55 +77,34 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
         TIRoleManager roleManager = new TIRoleManager();
         roleManager.setSession(bSession);
         roleManager.setForIdTiers(idTiers);
-        BStatement statement = null;
         BTransaction trans = null;
         try {
             trans = (BTransaction) bSession.newTransaction();
             if(!trans.isOpened()){
                 trans.openTransaction();
             }
-            statement = roleManager.cursorOpen(bSession.getCurrentThreadTransaction());
-            TIRole role;
-            boolean isRolePresent = false;
-
-            while ((role = (TIRole) roleManager.cursorReadNext(statement)) != null) {
-                if (IntRole.ROLE_APG.equals(role.getRole())) {
-                    isRolePresent = true;
-                }
-            }
-
-            if (!isRolePresent) {
+            roleManager.setForRole(IntRole.ROLE_APG);
+            if (roleManager.getCount() == 0) {
                 // on ajoute le rôle APG au Tier si il ne l'a pas deja
                 ITIRole newRole = (ITIRole) bSession.getAPIFor(ITIRole.class);
                 newRole.setIdTiers(idTiers);
                 newRole.setISession(PRSession.connectSession(bSession, TIApplication.DEFAULT_APPLICATION_PYXIS));
                 newRole.setRole(IntRole.ROLE_APG);
                 newRole.add(trans);
+                trans.commit();
             }
-            trans.commit();
+
         } catch (Exception e) {
-            fileStatus.getErrors().add("Une erreur s'est produite dans la création du rôle du tiers.");
-            LOG.error("ImportAPGAmatApat#creationRoleApgTiers - Une erreur s'est produite dans la création du rôle du tiers : {}", idTiers);
+            fileStatus.addError("Une erreur s'est produite dans la création du rôle du tiers.");
+            LOG.error("APAbstractImportationAmatApat#creationRoleApgTiers - Une erreur s'est produite dans la création du rôle du tiers : {}", idTiers);
             if (trans != null) {
                 trans.rollback();
             }
-            if(isJadeThreadError()){
-                addJadeThreadErrorToListError("Rôle");
-                JadeThread.logClear();
-            }
+            JadeLogs.logAndClear("createRoleApgTiers", LOG);
         } finally {
-            try {
-                if (statement != null) {
-                    try {
-                        roleManager.cursorClose(statement);
-                    } finally {
-                        statement.closeStatement();
-                    }
-                }
-            } finally {
-                if (trans != null) {
-                    trans.closeTransaction();
-                }
+
+            if (trans != null) {
+                trans.closeTransaction();
             }
         }
     }
@@ -138,7 +118,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 trans.openTransaction();
             }
 
-            String dommaineApplicationId = typeDemande.equals(IPRDemande.CS_TYPE_PATERNITE)
+            String dommaineApplicationId = IPRDemande.CS_TYPE_PATERNITE.equals(typeDemande)
                     ? APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue()
                     : IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
             if (!hasEmail(email, tiers, dommaineApplicationId)) {
@@ -166,14 +146,15 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 avoirContact.add(trans);
                 trans.commit();
             } else {
-                fileStatus.getInformations().add("Une adresse mail a été trouvée pour le tiers dans WebAVS.");
+                fileStatus.addInformation("Une adresse mail a été trouvée pour le tiers dans WebAVS.");
             }
         } catch (Exception e) {
             if(trans != null) {
                 trans.rollback();
             }
-            fileStatus.getErrors().add("Une erreur est survenue lors de la création du contact pour ce tiers.");
-            LOG.error("APImportationAPGAmatApat#createContact : Une erreur est survenue lors de la création du contact pour l'id tiers {}", tiers.getNSS(), e);
+            fileStatus.addInformation("Une erreur est survenue lors de la création du contact pour ce tiers. Aucune adresse mail n'a été ajouté.");
+            LOG.info("APAbstractImportationAmatApat#createContact - Une erreur est survenue lors de la création du contact pour l'id tiers {}", tiers.getNSS(), e);
+            JadeLogs.logAndClear("createContact", LOG);
         }finally {
             if(trans != null) {
                 trans.closeTransaction();
@@ -221,9 +202,9 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 assure.getFirstName(), isWomen ? ITIPersonne.CS_FEMME : ITIPersonne.CS_HOMME, tranformGregDateToGlobDate(assure.getDateOfBirth()),
                 "",
                 avsUtils.isSuisse(assure.getVn()) ? PRTiersHelper.ID_PAYS_SUISSE : PRTiersHelper.ID_PAYS_BIDON, canton, "",
-                getSituationMarital(assure));
+                convertSituationMaritale(assure));
 
-        fileStatus.getInformations().add("Le tiers étant inexistant dans WebAVS, il a été ajouté.");
+        fileStatus.addInformation("Le tiers étant inexistant dans WebAVS, il a été ajouté.");
 
         return PRTiersHelper.getTiersParId(bSession, idTiers);
     }
@@ -249,31 +230,26 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 retValue = (PRDemande) mgr.get(0);
             }
         } catch (Exception e) {
-            fileStatus.getErrors().add("Erreur dans la création de la demande du droit de ce tiers.");
-            LOG.error("Erreur lors de la création de la demande du droit ", e.getStackTrace());
-            if (isJadeThreadError()) {
-                addJadeThreadErrorToListError("Demande");
-                JadeThread.logClear();
-            }
+            fileStatus.addError("Erreur dans la création de la demande du droit de ce tiers.");
+            LOG.error("APAbstractImportationAmatApat#createDemande - Erreur lors de la création de la demande du droit ", e);
+            JadeLogs.logAndClear("createDemande", LOG);
         }
         return retValue;
     }
 
     @Override
     public void createSituationProfessionnel(Content content, APDroitLAPG droit, BTransaction transaction) {
-        switch (content.getFormType()) {
-            case FORM_INDEPENDANT:
-                creationSituationProIndependant(content, droit, transaction);
-                break;
-            case FORM_SALARIE:
-                creationSituationProEmploye(content, droit, transaction);
-                break;
-            default:
-                break;
+        if(FORM_INDEPENDANT.equals(content.getFormType())){
+            creationSituationProIndependant(content, droit, transaction);
+        }else if(FORM_SALARIE.equals(content.getFormType())){
+            creationSituationProEmploye(content, droit, transaction);
+        }else{
+            fileStatus.addInformation("La situation professionnelle n'a pas été ajouté. Le type de situation professionnelle non défini.");
+            LOG.error("APAbstractImportationAmatApat#createSituationProfessionnelle - La situation professionnelle n'a pas été ajouté. Le type de situation professionnelle non défini.");
         }
     }
 
-    private String getSituationMarital(InsuredPerson assure){
+    private String convertSituationMaritale(InsuredPerson assure){
         switch(assure.getMaritalStatus())
         {
             case "MARRIED":
@@ -282,8 +258,10 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 return String.valueOf(EtatCivil.DIVORCE.getCodeSysteme());
             case "WIDOW":
                 return String.valueOf(EtatCivil.VEUF.getCodeSysteme());
-            default:
+            case "SINGLE":
                 return String.valueOf(EtatCivil.CELIBATAIRE.getCodeSysteme());
+            default:
+                return StringUtils.EMPTY;
         }
     }
 
@@ -301,9 +279,8 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                     moyenCommunicationManager.setForIdContact(avoirContact.getIdContact());
                     moyenCommunicationManager.setForTypeCommunication(TIMoyenCommunication.EMAIL);
                     moyenCommunicationManager.setForIdApplication(domaineApplicationId);
-                    moyenCommunicationManager.find(BManager.SIZE_NOLIMIT);
 
-                    if (!moyenCommunicationManager.getContainer().isEmpty()) {
+                    if (moyenCommunicationManager.getCount() > 0) {
                         return true;
                     }
                 }
@@ -319,27 +296,23 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
         try {
             AFAffiliation affiliation = findAffiliationByNumero(mainEmployeur.getAffiliateID(), droit,false, bSession);
             if (affiliation != null) {
-                APEmployeur emp = getEmployeur(affiliation, transaction);
-                APSituationProfessionnelle situationProfessionnelle = getApSituationProfessionnelle(droit.getIdDroit(), emp.getIdEmployeur(), content);
+                APEmployeur emp = createEmployeur(affiliation, transaction);
+                APSituationProfessionnelle situationProfessionnelle = createSituationProfessionnelle(droit.getIdDroit(), emp.getIdEmployeur(), content);
                 situationProfessionnelle.setIsIndependant(false);
                 setIncomes(salaire, situationProfessionnelle);
                 situationProfessionnelle.wantCallValidate(false);
                 situationProfessionnelle.add(transaction);
                 String message = "La situation professionelle a été ajouté pour le tiers dans WebAVS.";
-                fileStatus.getInformations().add(message);
+                fileStatus.addInformation(message);
                 LOG.info(message);
             } else{
-                fileStatus.getInformations().add("Le N° d'affilié de l'assuré n'a pas été trouvé. La situation professionelle n'a pas été ajouté pour le tiers dans WebAVS.");
+                fileStatus.addInformation("Le N° d'affilié de l'assuré n'a pas été trouvé. La situation professionelle n'a pas été ajouté pour le tiers dans WebAVS.");
                 LOG.info("Le N° d'affilié dde l'assuré n'a pas été trouvé. La situation professionelle n'a pas été ajouté pour le tiers dans WebAVS.");
             }
         } catch (Exception e) {
-            fileStatus.getInformations().add("Les données relatives à la situation professionnelle pour cette assuré ne sont pas valides. Aucune situation professionnelle ne sera créée pour ce droit.");
-            LOG.error("APImportationAPGPandemie#creerSituationProf : Erreur rencontré lors de la création de la situation professionnelle pour l'assuré ", e);
-            if (isJadeThreadError()) {
-                addJadeThreadErrorToListError("Situation Professionnelle Employé");
-                // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans l'ajout de la situation prof
-                JadeThread.logClear();
-            }
+            fileStatus.addInformation("Les données relatives à la situation professionnelle pour cette assuré ne sont pas valides. Aucune situation professionnelle ne sera créée pour ce droit.");
+            LOG.error("APAbstractImportationAmatApat#creerSituationProEmploye - Erreur rencontré lors de la création de la situation professionnelle pour l'assuré ", e);
+            JadeLogs.logAndClear("creationSituationProEmploye", LOG);
         }
     }
 
@@ -354,31 +327,18 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
         LastIncome lastInCome = salaire.getLastIncome();
         BigDecimal autreRemuneration = new BigDecimal(0);
         String autreRemunerationPeriod = null;
-        if(lastInCome != null) {
-            if(lastInCome.getAmount() != null) {
-                String salaireMensuel = String.valueOf(lastInCome.getAmount());
-                if (salaireMensuel != null) {
-                    situationProfessionnelle.setSalaireMensuel(salaireMensuel);
-                    if (lastInCome.isHasThirteenthMonth()) {
-                        autreRemuneration = autreRemuneration.add(lastInCome.getAmount());
-                        autreRemunerationPeriod = getPeriodicite("ANNEE");
-                    }
-                }
-            }else {
-                LOG.info("Le montant du salaire mensuel (lastIncome) n'est pas renseigné pour le nss : {}", this.nssImport);
+        if(lastInCome != null && lastInCome.getAmount() != null) {
+            situationProfessionnelle.setSalaireMensuel(String.valueOf(lastInCome.getAmount()));
+            if (lastInCome.isHasThirteenthMonth()) {
+                autreRemuneration = autreRemuneration.add(lastInCome.getAmount());
+                autreRemunerationPeriod = convertPeriodicite("ANNEE");
             }
         }
         OtherIncome otherIncome = salaire.getOtherIncome();
-        if(otherIncome != null){
-            if(otherIncome.getAmount() != null) {
-                autreRemuneration = autreRemuneration.add(otherIncome.getAmount());
-                if(otherIncome.getIncomeUnit() != null) {
-                    autreRemunerationPeriod = getPeriodicite(otherIncome.getIncomeUnit());
-                }else{
-                    LOG.info("La périodicité du salaire autre (otherIncome) n'est pas renseigné pour le nss : {}", this.nssImport);
-                }
-            }else {
-                LOG.info("Le montant du salaire autre (otherIncome) n'est pas renseigné pour le nss : {}", this.nssImport);
+        if(otherIncome != null && otherIncome.getAmount() != null) {
+            autreRemuneration = autreRemuneration.add(otherIncome.getAmount());
+            if (otherIncome.getIncomeUnit() != null) {
+                autreRemunerationPeriod = convertPeriodicite(otherIncome.getIncomeUnit());
             }
         }
         if(autreRemuneration.doubleValue() > 0){
@@ -391,54 +351,36 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
 
     private void setFourWeekIncome(Salary salaire, APSituationProfessionnelle situationProfessionnelle) {
         FourWeekIncome fourWeekIncome = salaire.getFourWeekIncome();
-        if(fourWeekIncome != null){
-            if(fourWeekIncome.getAmount() != null){
-                situationProfessionnelle.setAutreSalaire(String.valueOf(fourWeekIncome.getAmount()));
-                if(fourWeekIncome.getIncomeUnit() != null) {
-                    situationProfessionnelle.setPeriodiciteAutreSalaire(getPeriodicite(fourWeekIncome.getIncomeUnit()));
-                }else{
-                    LOG.info("La périodicité du salaire autres formes de rémunération (fourWeekIncome) n'est pas renseigné pour le nss : {}", this.nssImport);
-                }
-            }else{
-                LOG.info("Le montant du salaire autres formes de rémunération (fourWeekIncome) n'est pas renseigné pour le nss : {}", this.nssImport);
+        if(fourWeekIncome != null && fourWeekIncome.getAmount() != null) {
+            situationProfessionnelle.setAutreSalaire(String.valueOf(fourWeekIncome.getAmount()));
+            if (fourWeekIncome.getIncomeUnit() != null) {
+                situationProfessionnelle.setPeriodiciteAutreSalaire(convertPeriodicite(fourWeekIncome.getIncomeUnit()));
             }
         }
     }
 
     private void setInKindOrGlobalIncome(Salary salaire, APSituationProfessionnelle situationProfessionnelle) {
         InKindOrGlobalIncome inKindOrGlobalIncome = salaire.getInKindOrGlobalIncome();
-        if(inKindOrGlobalIncome != null){
-            if(inKindOrGlobalIncome.getAmount() != null) {
-                situationProfessionnelle.setSalaireNature(String.valueOf(inKindOrGlobalIncome.getAmount()));
-                if(inKindOrGlobalIncome.getIncomeUnit() != null) {
-                    situationProfessionnelle.setPeriodiciteSalaireNature(getPeriodicite(inKindOrGlobalIncome.getIncomeUnit()));
-                }else{
-                    LOG.info("La périodicité du salaire nature ou global (otherIncome) n'est pas renseigné pour le nss : {}", this.nssImport);
-                }
-            }else{
-                LOG.info("Le montant du salaire en nature ou global (inKindOrGlobalIncome) n'est pas renseigné pour le nss : {}", this.nssImport);
+        if(inKindOrGlobalIncome != null && inKindOrGlobalIncome.getAmount() != null) {
+            situationProfessionnelle.setSalaireNature(String.valueOf(inKindOrGlobalIncome.getAmount()));
+            if (inKindOrGlobalIncome.getIncomeUnit() != null) {
+                situationProfessionnelle.setPeriodiciteSalaireNature(convertPeriodicite(inKindOrGlobalIncome.getIncomeUnit()));
             }
         }
     }
 
     private void setHourlyIncome(Salary salaire, APSituationProfessionnelle situationProfessionnelle) {
         HourlyIncome hourlyIncome = salaire.getHourlyIncome();
-        if(hourlyIncome != null){
-            if(hourlyIncome.getAmount() != null) {
-                String salaireHoraire = String.valueOf(hourlyIncome.getAmount());
-                if (salaireHoraire != null) {
-                    situationProfessionnelle.setSalaireHoraire(salaireHoraire);
-                } else {
-                    LOG.info("Le montant du salaire horaire (hourlyIncome) n'est pas correctement renseigné pour le nss : {}", this.nssImport);
-                }
-                situationProfessionnelle.setHeuresSemaine(String.valueOf(hourlyIncome.getHoursOfWorkPerWeek()));
-            }else {
-                LOG.info("Le montant du salaire horaire (hourlyIncome) n'est pas renseigné pour le nss : {}", this.nssImport);
+        if(hourlyIncome != null && hourlyIncome.getAmount() != null) {
+            String salaireHoraire = String.valueOf(hourlyIncome.getAmount());
+            if (salaireHoraire != null) {
+                situationProfessionnelle.setSalaireHoraire(salaireHoraire);
             }
+            situationProfessionnelle.setHeuresSemaine(String.valueOf(hourlyIncome.getHoursOfWorkPerWeek()));
         }
     }
 
-    private String getPeriodicite(String periodicite) {
+    private String convertPeriodicite(String periodicite) {
         switch (periodicite) {
             case "HEURE":
                 return IPRSituationProfessionnelle.CS_PERIODICITE_HEURE;
@@ -446,8 +388,10 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                 return IPRSituationProfessionnelle.CS_PERIODICITE_MOIS;
             case "QUATRE_SEMAINE":
                 return IPRSituationProfessionnelle.CS_PERIODICITE_4_SEMAINES;
-            default:
+            case "ANNEE":
                 return IPRSituationProfessionnelle.CS_PERIODICITE_ANNEE;
+            default:
+                return StringUtils.EMPTY;
         }
     }
 
@@ -467,9 +411,8 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
             if(StringUtils.isNotEmpty(affilieId)) {
                 AFAffiliation affiliation = findAffiliationByNumero(affilieId, droit, true, bSession);
                 if (affiliation != null) {
-                    APEmployeur emp = getEmployeur(affiliation, transaction);
-
-                    APSituationProfessionnelle situationProfessionnelle = getApSituationProfessionnelle(droit.getIdDroit(), emp.getIdEmployeur(), content);
+                    APEmployeur emp = createEmployeur(affiliation, transaction);
+                    APSituationProfessionnelle situationProfessionnelle = createSituationProfessionnelle(droit.getIdDroit(), emp.getIdEmployeur(), content);
                     situationProfessionnelle.setIsIndependant(true);
                     situationProfessionnelle.setRevenuIndependant(getMasseAnnuelle(affiliation));
                     situationProfessionnelle.wantCallValidate(false);
@@ -482,20 +425,16 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
             else{
                 message = "Le N° d'affilié de l'employeur n'a pas été trouvé. La situation professionelle n'a pas été ajouté pour le tiers dans WebAVS.";
             }
-            fileStatus.getInformations().add(message);
+            fileStatus.addInformation(message);
             LOG.info(message);
         } catch (Exception e) {
-            fileStatus.getInformations().add("Les données relatives à la situation professionnelle pour cet assuré ne sont pas valides. Aucune situation professionnelle ne sera créée pour ce droit.");
-            LOG.error("APImportationAPGAmatApat#creerSituationProf : Erreur rencontré lors de la création de la situation professionnelle pour l'assuré ", e);
-            if (isJadeThreadError()) {
-                addJadeThreadErrorToListError("Situation Professionnelle Employé");
-                // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans l'ajout de la situation prof
-                JadeThread.logClear();
-            }
+            fileStatus.addInformation("Les données relatives à la situation professionnelle pour cet assuré ne sont pas valides. Aucune situation professionnelle ne sera créée pour ce droit.");
+            LOG.error("APAbstractImportationAmatApat#creerSituationProfIndependant - Erreur rencontré lors de la création de la situation professionnelle pour l'assuré ", e);
+            JadeLogs.logAndClear("creationSituationProIndependant", LOG);
         }
     }
 
-    private APSituationProfessionnelle getApSituationProfessionnelle(String idDroit, String idEmployeur, Content content){
+    private APSituationProfessionnelle createSituationProfessionnelle(String idDroit, String idEmployeur, Content content){
         APSituationProfessionnelle situationProfessionnelle = new APSituationProfessionnelle();
         situationProfessionnelle.setSession(bSession);
         situationProfessionnelle.setIdDroit(idDroit);
@@ -505,7 +444,14 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
         return situationProfessionnelle;
     }
 
-    private APEmployeur getEmployeur(AFAffiliation affiliation, BTransaction transaction) throws Exception{
+    /**
+     * Créer un employeur ayant une relation 1 à 1 avec la situation professionnelle
+     * @param affiliation Affilication lié à l'employeur
+     * @param transaction Transaction pour ajouter l'employeur
+     * @return L'employeur
+     * @throws Exception
+     */
+    private APEmployeur createEmployeur(AFAffiliation affiliation, BTransaction transaction) throws Exception{
         APEmployeur emp = new APEmployeur();
         emp.setSession(bSession);
         emp.setIdTiers(affiliation.getIdTiers());
@@ -552,7 +498,7 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
     @Override
     public void createAdresses(PRTiersWrapper tiers, AddressType adresseAssure, PaymentContact adressePaiement, String npa) {
         try {
-            String domaine = typeDemande.equals(IPRDemande.CS_TYPE_PATERNITE)
+            String domaine = IPRDemande.CS_TYPE_PATERNITE.equals(typeDemande)
                     ? APProperties.DOMAINE_ADRESSE_APG_PATERNITE.getValue()
                     : IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
 
@@ -570,14 +516,10 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                     createAdressePaiement(adresseDomicile, tiers.getIdTiers(), adressePaiement, domaine);
                 }
             }
-
         } catch (Exception e) {
-            fileStatus.getInformations().add("Un problème a été rencontré lors de la création des adresses pour cet assuré.");
-            LOG.error("APImportationAMAT-APAT#createAdresseAMAT-APAT : Erreur rencontré lors de la création adresses pour l'assuré", e);
-            if(isJadeThreadError()){
-                addJadeThreadErrorToListError("Rôle");
-                JadeThread.logClear();
-            }
+            fileStatus.addInformation("Un problème a été rencontré lors de la création des adresses pour cet assuré.");
+            LOG.error("APAbstractImportationAmatApat#createAdresses - Erreur rencontré lors de la création adresses pour l'assuré", e);
+            JadeLogs.logAndClear("createAdresses", LOG);
         }
     }
 
@@ -601,16 +543,12 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
             adresseComplexModel.getAdresse().setLigneAdresse4("");
             AdresseComplexModel adresse = TIBusinessServiceLocator.getAdresseService().addAdresse(adresseComplexModel, domainePandemie,
                     CS_TYPE_COURRIER, false);
-            fileStatus.getInformations().add("Une nouvelle adresse de courrier a été ajoutée pour ce tiers dans WebAVS.");
+            fileStatus.addInformation("Une nouvelle adresse de courrier a été ajoutée pour ce tiers dans WebAVS.");
             return adresse;
         } catch (Exception e) {
-            fileStatus.getInformations().add("Un problème a été rencontré lors de la création de l'adresse de courrier pour cet assuré.");
-            LOG.error("APImportationAMAT-APAT#createAdresseAMAT-APAT : Erreur rencontré lors de la création de l'adresse de courrier pour l'assuré", e);
-            if (isJadeThreadError()) {
-                addJadeThreadErrorToListError("Adresse Courrier");
-                // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans l'adresse
-                JadeThread.logClear();
-            }
+            fileStatus.addInformation("Un problème a été rencontré lors de la création de l'adresse de courrier pour cet assuré.");
+            LOG.error("APAbstractImportationAmatApat#createAdresseCourrier - Erreur rencontré lors de la création de l'adresse de courrier pour l'assuré", e);
+            JadeLogs.logAndClear("createAdresseCourrier", LOG);
             return null;
         }
     }
@@ -640,19 +578,15 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
                     avoirPaiement.setIdTiers(idTiers);
                     avoirPaiement.setSession(bSession);
                     avoirPaiement.add();
-                    fileStatus.getInformations().add("Une nouvelle adresse de paiement a été ajoutée pour ce tiers dans WebAVS.");
+                    fileStatus.addInformation("Une nouvelle adresse de paiement a été ajoutée pour ce tiers dans WebAVS.");
                 } else {
-                    fileStatus.getInformations().add("Paiement adresse non créée : IBAN non valide : " + iban);
+                    fileStatus.addInformation("Paiement adresse non créée : IBAN non valide : " + iban);
                 }
             }
         } catch (Exception e) {
-            fileStatus.getInformations().add("Un problème a été rencontré lors de la création de l'adresse de paiement pour cet assuré.");
-            LOG.error("APImportationAMAT-APAT#createAdresseAMAT-APAT : Erreur rencontré lors de la création de l'adresse de paiement pour l'assuré", e);
-            if (isJadeThreadError()) {
-                addJadeThreadErrorToListError("Adresse Paiement");
-                // Il faut qu'on puisse ajouter le droit même s'il y a eu un problème dans l'adresse
-                JadeThread.logClear();
-            }
+            fileStatus.addInformation("Un problème a été rencontré lors de la création de l'adresse de paiement pour cet assuré.");
+            LOG.error("APAbstractImportationAmatApat#createAdressePaiement - Erreur rencontré lors de la création de l'adresse de paiement pour l'assuré", e);
+            JadeLogs.logAndClear("createAdressePaiement", LOG);
         }
     }
 
@@ -723,27 +657,6 @@ public abstract class APAbstractImportationAmatApat implements IAPImportationAma
             return "";
         }
 
-    }
-
-    /**
-     * Ajout des erreurs blocantes
-     * @param methodeSource: method that calls it.
-     */
-    protected void addJadeThreadErrorToListError(String methodeSource) {
-        JadeBusinessMessage[] messages = JadeThread.logMessages();
-        LOG.error("{}: ", methodeSource);
-        fileStatus.getErrors().add("Concerne: "+methodeSource);
-        for (int i = 0; (messages != null) && (i < messages.length); i++) {
-            LOG.error("-->Erreur: {}", messages[i].getContents(null));
-            fileStatus.getInformations().add("-->Erreur: "+messages[i].getContents(null));
-        }
-    }
-
-    protected boolean isJadeThreadError(){
-        if(JadeThread.logMessages() != null) {
-            return JadeThread.logMessages().length > 0;
-        }
-        return false;
     }
 
     /**
