@@ -166,7 +166,13 @@ public interface APISection extends BIEntity {
     // Pour les rentes
     String ID_CATEGORIE_SECTION_PAIEMENT_AVANCE = "227080";
     String ID_CATEGORIE_SECTION_PAIEMENT_PRINCIPAL = "227070"; // Utilisé
-    
+    //PTRA
+    String ID_CATEGORIE_SECTION_PAIEMENT_PRINCIPAL_PTRA = "227065";
+    String ID_CATEGORIE_SECTION_DECISION_PTRA = "227066";
+    String ID_CATEGORIE_SECTION_DECISION_PTRA_RFM = "227067";
+    String ID_CATEGORIE_SECTION_AVANCE_PTRA = "227068";
+
+
     
     /**
      * Catégorie pour le BMS
@@ -206,6 +212,9 @@ public interface APISection extends BIEntity {
     String ID_TYPE_SECTION_RFM = "76";
     String ID_TYPE_SECTION_ASSOCIATION = "10";
     String ID_TYPE_SECTION_CPP = "11";
+    //PTRA
+    String ID_TYPE_SECTION_DECISION_PTRA= "65";
+    String ID_TYPE_SECTION_AVANCE_PTRA = "66";
 
     // Mode de compensation
     String MODE_BLOQUER_COMPENSATION = "244001";

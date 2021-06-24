@@ -1314,13 +1314,16 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         } else if ("NATURE_VERSEMENT_PANDEMIE".equals(nature)) {
             ordreVersement.setNatureOrdre(CAOrdreGroupe.NATURE_VERSEMENT_PANDEMIE);
             motif = FWMessageFormat.format(getSession().getLabel("MOTIF_PANDEMIE"), getDateSurDocument());
-        }else if ("NATURE_VERSEMENT_PATERNITE".equals(nature)) {
+        } else if ("NATURE_VERSEMENT_PATERNITE".equals(nature)) {
             ordreVersement.setNatureOrdre(CAOrdreGroupe.NATURE_VERSEMENT_PATERNITE);
             motif = FWMessageFormat.format(getSession().getLabel("MOTIF_PATERNITE"), getDateSurDocument());
-        }else if ("NATURE_VERSEMENT_PROCHEAIDANT".equals(nature)) {
+        } else if ("NATURE_VERSEMENT_PROCHEAIDANT".equals(nature)) {
             ordreVersement.setNatureOrdre(CAOrdreGroupe.NATURE_VERSEMENT_PROCHEAIDANT);
             motif = FWMessageFormat.format(getSession().getLabel("MOTIF_PROCHEAIDANT"), getDateSurDocument());
-        } else {
+        } else if ("NATURE_VERSEMENT_PRESTATION_TRANSITOIRE".equals(nature)){
+            ordreVersement.setNatureOrdre(CAOrdreGroupe.NATURE_VERSEMENT_PRESTATION_TRANSITOIRE);
+            motif = FWMessageFormat.format(getSession().getLabel("MOTIF_PRESTATION_TRANSITOIRE"), getDateSurDocument());
+        }else {
             throw new Exception("Nature du versement non reconnue, contrôler les properties !!! (" + nature + ")");
         }
 

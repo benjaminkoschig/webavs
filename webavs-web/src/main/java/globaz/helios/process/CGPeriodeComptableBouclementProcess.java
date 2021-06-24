@@ -85,7 +85,8 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
     private static final String SECTEUR_EXPLOITATION_2180 = "2180";
     private static final String SECTEUR_EXPLOITATION_2189 = "2189";
     private static final String SECTEUR_EXPLOITATION_UNTIL = "2199";
-
+    private static final String SECTEUR_EXPLOITATION_2510= "2510";
+    private static final String SECTEUR_EXPLOITATION_2599 = "2599";
     private CGBouclement bouclement = null;
     private CGExerciceComptable exercice = null;
     private CGExerciceComptable exerciceSuiv = null;
@@ -181,14 +182,14 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
              * À Décommenter en cas de création d'un journal pandémie.
              *
              */
-//            String isPandemie = JadePropertiesService.getInstance().getProperty("helios.pandemie.isSecteur_218X");
-//
-//            if (isPandemie == null) {
-//                throw new Exception(label("PROPERTY_PANDEMIE"));
-//            }
-//            if (isPandemie.equals("true")) {
-//                creationJournalPandemie();
-//            }
+            String isPandemie = JadePropertiesService.getInstance().getProperty("helios.pandemie.isSecteur_218X");
+
+            if (isPandemie == null) {
+                throw new Exception(label("PROPERTY_PANDEMIE"));
+            }
+            if (isPandemie.equals("true")) {
+                creationJournalPandemie();
+            }
             comptabiliserJournaux();
             incProgressCounter();
         } catch (Exception e) {
@@ -371,6 +372,29 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
             }
 
             this.info("CLOTURE_COMPTE_EXPLOITATION_AVS_AI_OK");
+        }
+        incProgressCounter();
+
+        // Gestion de l'abort
+        if (isAborted()) {
+            return false;
+        }
+        String isPTRA = JadePropertiesService.getInstance().getProperty("helios.prestation.transitoire");
+        if (mandat.isEstComptabiliteAVS().booleanValue() && bouclement.isBouclementMensuelAVS().booleanValue() && isPTRA.equals("true")) {
+            try {
+                clotureCompteExploitationAvsPTRA();
+            } catch (Exception e) {
+                this.error("CLOTURE_COMPTE_EXPLOITATION_PTRA_ERROR", e.getMessage());
+                this.info(CGPeriodeComptableBouclementProcess.INFO_FIN);
+                return false;
+            }
+
+            // Gestion de l'abort
+            if (isAborted()) {
+                return false;
+            }
+
+            this.info("CLOTURE_COMPTE_EXPLOITATION_PTRA_OK");
         }
         incProgressCounter();
 
@@ -1526,6 +1550,92 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
         } else {
             this.warn("CLOTURE_COMPTE_EXPLOITATION_AVS_AI_ECRITURE_CUMUL_AVOIR_AI_ERROR");
         }
+    }
+
+    /**
+     * Clôture compte d'exploitation AVS.
+     *
+     * @throws Exception
+     */
+    private void clotureCompteExploitationAvsPTRA() throws Exception {
+        CGSecteurAVSManager secteurManager = new CGSecteurAVSManager();
+        secteurManager.setSession(getSession());
+        secteurManager.setForIdMandat(exercice.getIdMandat());
+        secteurManager.setFromSecteur("2510");
+        secteurManager.setUntilSecteur("2599");
+        secteurManager.find(getTransaction(), BManager.SIZE_NOLIMIT);
+        for (int i = 0; i < secteurManager.size(); i++) {
+            CGSecteurAVS secteur = (CGSecteurAVS) secteurManager.getEntity(i);
+            if (!secteur.isClotureManuelle().booleanValue()
+                    && (secteur.isCompteExploitation().booleanValue() || secteur.isCompteAdministration()
+                    .booleanValue())) {
+
+                if (bouclement.isBouclementMensuelAVS().booleanValue()
+                        && secteur.isCompteExploitation().booleanValue()
+                        && (secteur.getIdTypeTache().equals(CGSecteurAVS.CS_CAF_AGENCE) || secteur.getIdTypeTache()
+                        .equals(CGSecteurAVS.CS_AUTRE_TACHE_AGENCE))) {
+                    String compteCloture = getIdExterneCompteCloture(secteur, CGCompte.CS_COMPTE_EXPLOITATION);
+                    String contreEcriture = getIdExterneContreEcriture(secteur,
+                            (secteur.getIdSecteurBilan().equals("0")) ? "0000" : secteur.getIdSecteurBilan()
+                                    + ".2141.0000");
+
+                    String libelleDoitLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_LABEL_ECRITURE_EXPLOITATION";
+                    String warnDoitLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_AUTRES_TACHES_ECRITURE_EXPLOITATION_ERROR";
+                    String libelleAvoirLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_ECRITURE_EXPLOITATION_ERROR";
+                    String warnAvoirLabel = "BOUCLEMENT_CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_CONTRE_ECRITURE_EXPLOITATION_ERROR";
+
+                    clotureCompteAutresTaches(secteur, compteCloture, contreEcriture, true,
+                            CGCompte.CS_COMPTE_EXPLOITATION, libelleDoitLabel, libelleAvoirLabel, warnDoitLabel,
+                            warnAvoirLabel);
+                }
+
+                if ((bouclement.isBouclementMensuelAVS().booleanValue() || bouclement.isBouclementAnnuelAVS()
+                        .booleanValue())
+                        && secteur.isCompteAdministration().booleanValue()
+                        && (secteur.getIdTypeTache().equals(CGSecteurAVS.CS_CAF_AGENCE) || secteur.getIdTypeTache()
+                        .equals(CGSecteurAVS.CS_AUTRE_TACHE_AGENCE))) {
+                    String compteCloture = getIdExterneCompteCloture(secteur, CGCompte.CS_COMPTE_ADMINISTRATION);
+                    String contreEcriture = getIdExterneContreEcriture(secteur,
+                            (secteur.getIdSecteurBilan().equals("0")) ? "0000" : secteur.getIdSecteurBilan()
+                                    + ".2140.0000");
+
+                    String libelleDoitLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_LABEL_ECRITURE_ADMINISTRATION_AGENCE";
+                    String warnDoitLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_AUTRES_TACHES_ECRITURE_ADMINISTRATION_AGENCE_ERROR";
+                    String libelleAvoirLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_ECRITURE_ADMINISTRATION_AGENCE_ERROR";
+                    String warnAvoirLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_CONTRE_ECRITURE_ADMINISTRATION_AGENCE_ERROR";
+
+                    clotureCompteAutresTaches(secteur, compteCloture, contreEcriture, true,
+                            CGCompte.CS_COMPTE_ADMINISTRATION, libelleDoitLabel, libelleAvoirLabel, warnDoitLabel,
+                            warnAvoirLabel);
+                }
+
+                if (bouclement.isBouclementAnnuelAVS().booleanValue()
+                        && secteur.isCompteExploitation().booleanValue()
+                        && (secteur.getIdSecteurAVS().charAt(0) != '9')
+                        && (secteur.getIdTypeTache().equals(CGSecteurAVS.CS_CAF_PROPRE) || secteur.getIdTypeTache()
+                        .equals(CGSecteurAVS.CS_AUTRE_TACHE_PROPRE))) {
+                    String compteCloture = getIdExterneCompteCloture(secteur, CGCompte.CS_COMPTE_EXPLOITATION);
+
+                    String contreEcriture;
+                        contreEcriture = getIdExterneContreEcriture(secteur,
+                                (secteur.getIdSecteurBilan().equals("0")) ? "0000" : secteur.getIdSecteurBilan()
+                                        + ".2140.0000");
+
+
+                    String libelleDoitLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_LABEL_ECRITURE_ADMINISTRATION";
+                    String libelleAvoirLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_LABEL_CONTRE_ECRITURE_ADMINISTRATION";
+
+                    clotureCompteAutresTaches(secteur, compteCloture, contreEcriture, false,
+                            CGCompte.CS_COMPTE_EXPLOITATION, libelleDoitLabel, libelleAvoirLabel, null, null);
+                }
+
+
+            }
+
+        }
+
+
+
     }
 
     /**
