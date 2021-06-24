@@ -24,17 +24,17 @@ public class JadeLogs {
      */
     public static void logAndClear(String methodeSource, Logger logger){
         if(JadeThread.logHasMessages()){
-            logJadeThreadMessages(methodeSource, logger);
+            logger.info(methodeSource);
+            logJadeThreadMessages(logger);
             JadeThread.logClear();
         }
     }
 
     /**
      * Logue les messages de la Jade Thread dans le Log applicatif.
-     * @param methodeSource : méthode appelante.
      */
-    private static void logJadeThreadMessages(String methodeSource, Logger logger) {
-        logger.info(methodeSource);
+    private static void logJadeThreadMessages(Logger logger) {
+
         JadeBusinessMessage[] messages = JadeThread.logMessages();
         if(messages != null){
             Arrays.stream(messages).forEach(message ->  logBusinessMessage(logger, message));
