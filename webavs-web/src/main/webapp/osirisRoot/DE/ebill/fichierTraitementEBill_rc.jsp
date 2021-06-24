@@ -37,7 +37,7 @@
 </SCRIPT>
 <%-- /tpl:put --%>
 <%@ include file="/theme/find/bodyStart.jspf" %>
-<%-- tpl:put name="zoneTitle" --%>Suivi des traitements eBill<%-- /tpl:put --%>
+<%-- tpl:put name="zoneTitle" --%>Überwachungskontrolle der eBill-Verarbeitung<%-- /tpl:put --%>
 <%@ include file="/theme/find/bodyStart2.jspf" %>
 <%-- tpl:put name="zoneMain" --%>
 <TR>

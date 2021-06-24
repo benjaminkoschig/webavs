@@ -95,8 +95,9 @@ public class CAProcessImportTraitementEBill extends BProcess {
             }
 
         } catch (Exception e) {
-            LOG.error("Erreur lors de l'execution du processus d'importation des traitements : ", e);
-            error.append("Impossible d'exécuter le processus d'importation des traitements : ").append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+            String erreurInterne = getSession().getLabel("TRAIT_EBILL_PROCESS_FAILED");
+            LOG.error(erreurInterne, e);
+            error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             sendResultMail(error.toString());
             throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, e);
         } finally {
@@ -175,8 +176,9 @@ public class CAProcessImportTraitementEBill extends BProcess {
             }
 
         } catch (Exception e) {
-            LOG.error("Erreur lors de l'importation des fichiers de traitement.", e);
-            error.append("Impossible de procéder à l'importation des fichiers de traitement : ").append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+            String erreurInterne = getSession().getLabel("TRAIT_EBILL_FICHIER_IMPORT_FAILED");
+            LOG.error(erreurInterne, e);
+            error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
         }
     }
 
@@ -214,18 +216,22 @@ public class CAProcessImportTraitementEBill extends BProcess {
                 }
 
             } catch (JAXBException e) {
-                LOG.error("Une erreur s'est produite lors du mapping du fichier à traiter : " + nomFichierDistant, e);
-                error.append("Impossible de procéder au mapping du fichier à traiter : ").append(nomFichierDistant).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+                String erreurInterne = String.format(getSession().getLabel("TRAIT_EBILL_FICHIER_MAPPING_FAILED"), nomFichierDistant);
+                LOG.error(erreurInterne, e);
+                error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
                 filesToSend.add(localFile.getAbsolutePath());
             } catch (FileNotFoundException e) {
-                LOG.error("Une erreur s'est produite lors de la récupération du fichier à traiter : " + nomFichierDistant, e);
-                error.append("Impossible de récupérer le fichier à traiter : ").append(nomFichierDistant).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+                String erreurInterne = String.format(getSession().getLabel("TRAIT_EBILL_FICHIER_RECUP_FAILED"), nomFichierDistant);
+                LOG.error(erreurInterne, e);
+                error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             } catch (IOException e) {
-                LOG.error("Une erreur s'est produite lors de la lecture du fichier à traiter : " + nomFichierDistant, e);
-                error.append("Impossible de lire le fichier à traiter : ").append(nomFichierDistant).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+                String erreurInterne = String.format(getSession().getLabel("TRAIT_EBILL_FICHIER_LECTURE_FAILED"), nomFichierDistant);
+                LOG.error(erreurInterne, e);
+                error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             } catch (SftpException e) {
-                LOG.error("Une erreur s'est produite lors du téléchargement du fichier à traiter : " + nomFichierDistant, e);
-                error.append("Impossible de télécharger le fichier à traiter : ").append(nomFichierDistant).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+                String erreurInterne = String.format(getSession().getLabel("TRAIT_EBILL_FICHIER_TELECHARGE_FAILED"), nomFichierDistant);
+                LOG.error(erreurInterne, e);
+                error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             }
         }
     }
@@ -251,8 +257,9 @@ public class CAProcessImportTraitementEBill extends BProcess {
         try {
             fichier.update(getTransaction());
         } catch (Exception e) {
-            LOG.error("Erreur lors de la mise à jour du fichier : " + nomFichier, e);
-            error.append("Impossible de mettre à jour le fichier : ").append(nomFichier).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+            String erreurInterne = String.format(getSession().getLabel("TRAIT_EBILL_FICHIER_MISEAJOUR_FAILED"), nomFichier);
+            LOG.error(erreurInterne, e);
+            error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
         }
     }
 
@@ -275,12 +282,9 @@ public class CAProcessImportTraitementEBill extends BProcess {
             }
             eachTraitement.add(getTransaction());
         } catch (Exception e) {
-            LOG.error("Erreur lors de la sauvegarde du traitement.", e);
-            error.append("Impossible d'enregistrer en base de données le traitement suivant :")
-                    .append(" ").append("numeroAffilie : ").append(eachTraitement.getNumeroAffilie())
-                    .append(" ").append("eBillAccountID : ").append(eachTraitement.geteBillAccountID())
-                    .append(" ").append("transactionID : ").append(eachTraitement.getTransactionID())
-                    .append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+            String erreurInterne = String.format(getSession().getLabel("TRAIT_EBILL_ENREGISTRE_FAILED"), eachTraitement.getNumeroAffilie(), eachTraitement.geteBillAccountID(), eachTraitement.getTransactionID());
+            LOG.error(erreurInterne, e);
+            error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             return false;
         }
         return true;
@@ -304,8 +308,9 @@ public class CAProcessImportTraitementEBill extends BProcess {
         try {
             fichier.add(getTransaction());
         } catch (Exception e) {
-            LOG.error("Erreur lors de la sauvegarder du fichier en base de données : " + nomFichierDistant, e);
-            error.append("Impossible de sauvegarder en base de données le fichier : ").append(nomFichierDistant).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+            String erreurInterne = String.format(getSession().getLabel("TRAIT_EBILL_FICHIER_ENREGISTRE_FAILED"), nomFichierDistant);
+            LOG.error(erreurInterne, e);
+            error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             return null;
         }
         return fichier;
@@ -406,9 +411,10 @@ public class CAProcessImportTraitementEBill extends BProcess {
                 }
 
             } else {
-                LOG.warn("L'id de transaction n'est pas renseigné.");
-                traitementEBill.setTexteErreurInterne("L'id de transaction n'est pas renseigné.");
-                error.append("Impossible de récupérer l'id de transaction.").append("\n");
+                String erreurInterne = getSession().getLabel("TRAIT_EBILL_TRANSACTION_ID_MISSING_FAILED");
+                LOG.warn(erreurInterne);
+                traitementEBill.setTexteErreurInterne(erreurInterne);
+                error.append(erreurInterne).append("\n");
                 tousLesTraitementsSucces = false;
             }
 
@@ -426,15 +432,17 @@ public class CAProcessImportTraitementEBill extends BProcess {
             if (manager.getSize() == 1) {
                 return (CACompteAnnexe) manager.get(0);
             } else {
-                LOG.warn("Un compte annexe unique n'a pas pu être trouvé avec l'id de compte annexe : " + idCompteAnnexe);
-                traitementEBill.setTexteErreurInterne("Un compte annexe unique n'a pas pu être trouvé avec l'id de compte annexe : " + idCompteAnnexe);
-                error.append("Impossible de récupérer un compte annexe unique avec l'id de compte annexe : ").append(idCompteAnnexe).append("\n");
+                String erreurInterne = String.format(getSession().getLabel("TRAIT_EBILL_COMPTE_ANNEXE_UNIQUE_FAILED"), idCompteAnnexe);
+                LOG.warn(erreurInterne);
+                traitementEBill.setTexteErreurInterne(erreurInterne);
+                error.append(erreurInterne).append("\n");
                 return null;
             }
         } catch (Exception e) {
-            LOG.error("Erreur lors de la récupération du compte annexe avec l'id : " + idCompteAnnexe, e);
-            traitementEBill.setTexteErreurInterne("Erreur lors de la récupération du compte annexe avec l'id : " + idCompteAnnexe);
-            error.append("Impossible de récupérer le compte annexe avec l'id : ").append(idCompteAnnexe).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+            String erreurInterne = String.format(getSession().getLabel("TRAIT_EBILL_COMPTE_ANNEXE_RETRIEVE_FAILED"), idCompteAnnexe);
+            LOG.error(erreurInterne, e);
+            traitementEBill.setTexteErreurInterne(erreurInterne);
+            error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             return null;
         }
     }
@@ -464,16 +472,18 @@ public class CAProcessImportTraitementEBill extends BProcess {
                 section.update();
                 return section;
             } else {
-                LOG.warn("Une section unique n'a pas pu être trouvé avec l'id de transaction: " + transactionId);
-                traitementEBill.setTexteErreurInterne("Une section unique n'a pas pu être trouvé avec l'id de transaction: " + transactionId);
-                error.append("Impossible de récupérer une section unique avec l'id de transaction : ").append(transactionId).append("\n");
+                String erreurInterne = String.format(getSession().getLabel("TRAIT_EBILL_SECTION_UNIQUE_ID_TRANSACTION_FAILED"), transactionId);
+                LOG.warn(erreurInterne);
+                traitementEBill.setTexteErreurInterne(erreurInterne);
+                error.append(erreurInterne).append("\n");
                 return null;
             }
 
         } catch (Exception e) {
-            LOG.error("Erreur lors de la récupération de la section avec l'id de transaction : " + transactionId, e);
-            traitementEBill.setTexteErreurInterne("Erreur lors de la récupération de la section avec l'id de transaction : " + transactionId);
-            error.append("Impossible de récupérer la section avec l'id de transaction : ").append(transactionId).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+            String erreurInterne = String.format(getSession().getLabel("TRAIT_EBILL_SECTION_RETRIEVE_ID_TRANSACTION_FAILED"), transactionId);
+            LOG.error(erreurInterne, e);
+            traitementEBill.setTexteErreurInterne(erreurInterne);
+            error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             return null;
         }
     }

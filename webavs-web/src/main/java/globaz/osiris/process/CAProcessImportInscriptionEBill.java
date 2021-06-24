@@ -88,7 +88,9 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             }
 
         } catch (Exception e) {
-            error.append("Impossible d'exécuter le processus d'importation des inscriptions : ").append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+            String erreurInterne = getSession().getLabel("INSCR_EBILL_PROCESS_FAILED");
+            LOG.error(erreurInterne, e);
+            error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             sendResultMail(error.toString());
             throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, e);
         } finally {
@@ -165,8 +167,9 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             }
 
         } catch (Exception e) {
-            LOG.error("Erreur lors de l'importation des fichiers d'inscription", e);
-            error.append("Impossible de procéder à l'importation des fichiers d'inscription : ").append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+            String erreurInterne = getSession().getLabel("INSCR_EBILL_FICHIER_IMPORT_FAILED");
+            LOG.error(erreurInterne, e);
+            error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
         }
     }
 
@@ -216,14 +219,17 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                 }
 
             } catch (FileNotFoundException e) {
-                LOG.error("Une erreur s'est produite lors de la récupération du fichier à traiter : " + nomFichierDistant, e);
-                error.append("Impossible de récupérer le fichier à traiter :").append(nomFichierDistant).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+                String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_FICHIER_RECUP_FAILED"), nomFichierDistant);
+                LOG.error(erreurInterne, e);
+                error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             } catch (IOException e) {
-                LOG.error("Une erreur s'est produite lors de la lecture du fichier à traiter : " + nomFichierDistant, e);
-                error.append("Impossible de lire le fichier à traiter : ").append(nomFichierDistant).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+                String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_FICHIER_LECTURE_FAILED"), nomFichierDistant);
+                LOG.error(erreurInterne, e);
+                error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             } catch (SftpException e) {
-                LOG.error("Une erreur s'est produite lors du téléchargement du fichier à traiter : " + nomFichierDistant, e);
-                error.append("Impossible de télécharger le fichier à traiter : ").append(nomFichierDistant).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+                String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_FICHIER_TELECHARGE_FAILED"), nomFichierDistant);
+                LOG.error(erreurInterne, e);
+                error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             }
         }
     }
@@ -248,8 +254,9 @@ public class CAProcessImportInscriptionEBill extends BProcess {
         try {
             fichier.update(getTransaction());
         } catch (Exception e) {
-            LOG.error("Erreur lors de la mise à jour du fichier : " + nomFichier, e);
-            error.append("Impossible de mettre à jour le fichier : ").append(nomFichier).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_MISEAJOUR_FAILED"), nomFichier);
+            LOG.error(erreurInterne, e);
+            error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
         }
     }
 
@@ -272,11 +279,9 @@ public class CAProcessImportInscriptionEBill extends BProcess {
         try {
             eachInscription.add(getTransaction());
         } catch (Exception e) {
-            LOG.error("Erreur lors de la sauvegarde d'une inscription.", e);
-            error.append("Impossible d'enregistrer en base de données l'inscription suivante : ")
-                    .append(" numeroAffilie : ").append(eachInscription.getNumeroAffilie())
-                    .append(" eBillAccountID : ").append(eachInscription.geteBillAccountID())
-                    .append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_ENREGISTRE_FAILED"), eachInscription.getNumeroAffilie(), eachInscription.geteBillAccountID());
+            LOG.error(erreurInterne, e);
+            error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             return false;
         }
         return true;
@@ -300,8 +305,9 @@ public class CAProcessImportInscriptionEBill extends BProcess {
         try {
             fichier.add(getTransaction());
         } catch (Exception e) {
-            LOG.error("Erreur lors de la sauvegarder du fichier en base de données : " + nomFichierDistant, e);
-            error.append("Impossible de sauvegarder en base de données le fichier : ").append(nomFichierDistant).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_FICHIER_ENREGISTRE_FAILED"), nomFichierDistant);
+            LOG.error(erreurInterne, e);
+            error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             return null;
         }
         return fichier;
@@ -437,8 +443,9 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                 }
 
             } else {
-                LOG.warn("Le numéro de compte e-bill n'est pas renseigné.");
-                error.append("Impossible de trouver le numéro de compte e-bill.").append("\n");
+                String erreurInterne = getSession().getLabel("INSCR_EBILL_NUMERO_COMPTE_FAILED");
+                LOG.warn(erreurInterne);
+                error.append(erreurInterne).append("\n");
                 toutesInscriptionsSucces = false;
             }
 
@@ -460,9 +467,10 @@ public class CAProcessImportInscriptionEBill extends BProcess {
         try {
             manager.find(BManager.SIZE_NOLIMIT);
         } catch (Exception e) {
-            LOG.error("Erreur lors de la récupération du compte annexe par le numéro d'adhérent : " + numeroAdherent , e);
-            eachInscription.setTexteErreurInterne("Erreur lors de la récupération du compte annexe par le numéro d'adhérent : " + numeroAdherent);
-            error.append("Impossible de récupérer le compte annexe par le numéro d'adhérent : ").append(numeroAdherent).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_RETRIEVE_NUMERO_ADHERENT_FAILED"), numeroAdherent);
+            LOG.error(erreurInterne, e);
+            eachInscription.setTexteErreurInterne(erreurInterne);
+            error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             return false;
         }
 
@@ -470,9 +478,10 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             CACompteAnnexe compteAnnexe = (CACompteAnnexe) manager.get(0);
             return majCompteAnnexe(eachInscription, StringUtils.EMPTY, StringUtils.EMPTY, compteAnnexe);
         } else {
-            LOG.warn("Erreur lors de la récupération d'un compte annexe unique pour le numéro d'adhérent : " + numeroAdherent);
-            eachInscription.setTexteErreurInterne("Erreur lors de la récupération d'un compte annexe unique pour le numéro d'adhérent : " + numeroAdherent);
-            error.append("Impossible de récupérer un compte annexe unique pour le numéro d'adhérent : ").append(numeroAdherent).append("\n");
+            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_UNIQUE_NUMERO_ADHERENT_FAILED"), numeroAdherent);
+            LOG.warn(erreurInterne);
+            eachInscription.setTexteErreurInterne(erreurInterne);
+            error.append(erreurInterne).append("\n");
             return false;
         }
 
@@ -500,9 +509,10 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                     manager.setForIdCompteAnnexeIn(idCompteAnnexe);
                     manager.find(BManager.SIZE_NOLIMIT);
                 } catch (Exception e) {
-                    LOG.error("Erreur lors de la récupération du compte annexe par l'id du compte annexe depuis la référence de BVR : " + inscriptionEBill.getNumRefBVR(), e);
-                    inscriptionEBill.setTexteErreurInterne("Erreur lors de la récupération du compte annexe par l'id du compte annexe depuis la référence de BVR : " + inscriptionEBill.getNumRefBVR());
-                    error.append("Impossible de récupérer un compte annexe par l'id du compte annexe depuis la référence du BVR : ").append(inscriptionEBill.getNumRefBVR()).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+                    String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_RETRIEVE_ID_COMPTE_FAILED"), inscriptionEBill.getNumRefBVR());
+                    LOG.error(erreurInterne, e);
+                    inscriptionEBill.setTexteErreurInterne(erreurInterne);
+                    error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
                     return false;
                 }
             } else {
@@ -515,9 +525,10 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                     IFormatData affilieFormater = application.getAffileFormater();
                     numeroAffilieFormate = affilieFormater.format(numeroAffilie);
                 } catch (Exception e) {
-                    LOG.error("Erreur lors du formattage du numéro d'affilié à partir du numéro de référence BVR : " + inscriptionEBill.getNumRefBVR());
-                    inscriptionEBill.setTexteErreurInterne("Erreur lors du formattage du numéro d'affilié à partir du numéro de référence BVR :  " + inscriptionEBill.getNumRefBVR());
-                    error.append("Impossible de formatter le numéro d'affilié à partir du numéro de référence BVR : ").append(inscriptionEBill.getNumRefBVR()).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+                    String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_FORMAT_ID_AFFILIE_FAILED"), inscriptionEBill.getNumRefBVR());
+                    LOG.error(erreurInterne, e);
+                    inscriptionEBill.setTexteErreurInterne(erreurInterne);
+                    error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
                     return false;
                 }
 
@@ -534,10 +545,10 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                 try {
                     manager.find(BManager.SIZE_NOLIMIT);
                 } catch (Exception e) {
-                    String erreurInterne = String.format("Erreur lors de la récupération du compte annexe par le numéro d'affilié : %s", numeroAffilieFormate);
+                    String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_RETRIEVE_ID_AFFILIE_FAILED"), numeroAffilieFormate);
                     LOG.error(erreurInterne, e);
                     inscriptionEBill.setTexteErreurInterne(erreurInterne);
-                    error.append("Impossible de récupérer le compte annexe par le numéro d'affilié : ").append(numeroAffilieFormate).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+                    error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
                     return false;
                 }
             }
@@ -545,12 +556,18 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             if (manager.getSize() == 1) {
                 CACompteAnnexe compteAnnexe = (CACompteAnnexe) manager.get(0);
                 return majCompteAnnexe(inscriptionEBill, numeroAdherent, inscriptionEBill.getEmail(), compteAnnexe);
+            } else {
+                String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_UNIQUE_REF_BVR_FAILED"), inscriptionEBill.getNumRefBVR());
+                LOG.warn(erreurInterne);
+                inscriptionEBill.setTexteErreurInterne(erreurInterne);
+                error.append(erreurInterne).append("\n");
+                return false;
             }
         }
-        String erreurInterne = String.format("Erreur lors de la récupération du compte annexe lié au numéro de référence BVR : %s", inscriptionEBill.getNumRefBVR());
+        String erreurInterne = getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_REF_BVR_MISSING_FAILED");
         LOG.warn(erreurInterne);
         inscriptionEBill.setTexteErreurInterne(erreurInterne);
-        error.append("Impossible de récupérer le compte annexe lié au numéro de référence BVR : " + inscriptionEBill.getNumRefBVR()).append("\n");
+        error.append(erreurInterne).append("\n");
         return false;
     }
 
@@ -567,7 +584,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
         try {
             numero = Long.toString(new Long(inscriptionEBill.getNumRefBVR().substring(3, 15)));
         } catch (Exception e) {
-            throw new CATechnicalException("Une erreur est intervenue lors de la récupération de l'id depuis la référence BVR.", e);
+            throw new CATechnicalException(getSession().getLabel("INSCR_EBILL_FORMAT_ID_AFFILIE_PARSE_FAILED"), e);
         }
         return numero;
     }
@@ -602,9 +619,10 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             try {
                 manager.find(BManager.SIZE_NOLIMIT);
             } catch (Exception e) {
-                LOG.error("Erreur lors de la récupération du compte annexe par le numéro d'affilié : " + numeroAffilie , e);
-                inscriptionEBill.setTexteErreurInterne("Erreur lors de la récupération du compte annexe par le numéro d'affilié : " + numeroAffilie);
-                error.append("Impossible de récupérer le compte annexe par le numéro d'affilié : ").append(numeroAffilie).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+                String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_RETRIEVE_ID_AFFILIE_FAILED"), numeroAffilie);
+                LOG.error(erreurInterne , e);
+                inscriptionEBill.setTexteErreurInterne(erreurInterne);
+                error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
                 return false;
             }
 
@@ -612,9 +630,10 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                 CACompteAnnexe compteAnnexe = (CACompteAnnexe) manager.get(0);
                 return majCompteAnnexe(inscriptionEBill, numeroAdherent, inscriptionEBill.getEmail(), compteAnnexe);
             } else {
-                LOG.warn("Erreur lors de la récupération d'un compte annexe unique par le numéro d'affilié : " + numeroAffilie);
-                inscriptionEBill.setTexteErreurInterne("Erreur lors de la récupération d'un compte annexe unique par le numéro d'affilié : " + numeroAffilie);
-                error.append("Impossible de récupérer un compte annexe unique par le numéro d'affilié : ").append(numeroAffilie).append("\n");
+                String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_UNIQUE_ID_AFFILIE_FAILED"), numeroAffilie);
+                LOG.warn(erreurInterne);
+                inscriptionEBill.setTexteErreurInterne(erreurInterne);
+                error.append(erreurInterne).append("\n");
                 return false;
             }
         }
@@ -638,10 +657,10 @@ public class CAProcessImportInscriptionEBill extends BProcess {
         try {
             compteAnnexe.update();
         } catch (Exception e) {
-            String erreurInterne = String.format("Erreur lors de la mise à jour du compte annexe d'id '%s' avec le numéro d'adhérent '%s'. ", compteAnnexe.getIdCompteAnnexe(), numeroAdherent);
+            String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_UPDATE_ID_COMPTE_ANNEXE_NUM_ADHERENT"), compteAnnexe.getIdCompteAnnexe(), numeroAdherent);
             LOG.error(erreurInterne, e);
             inscriptionEBill.setTexteErreurInterne(erreurInterne);
-            error.append("Impossible de mettre à jour le compte annexe avec l'id : ").append(compteAnnexe.getIdCompteAnnexe()).append(" avec le numéro d'adhérent : ").append(numeroAdherent).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
+            error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
             return false;
         }
         return true;

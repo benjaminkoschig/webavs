@@ -449,7 +449,7 @@ public class FAImpressionFactureEBillXml {
 
         if (eBillFacture.isBVR()) {
             BillHeaderType.PaymentInformation.ESR esr = of.createBillHeaderTypePaymentInformationESR();
-            esr.setESRCustomerNumber(eBillFacture.getNumeroCC());
+            esr.setESRCustomerNumber(eBillFacture.getNumeroCC().replaceAll("\\s", ""));
             esr.setESRReferenceNumber(reference);
             paymentInformation.setESR(esr);
         } else if (eBillFacture.isQR()) {

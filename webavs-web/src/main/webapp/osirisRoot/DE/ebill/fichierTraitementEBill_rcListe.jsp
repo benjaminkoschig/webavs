@@ -21,7 +21,7 @@
 <TH align="left">Gelesenes Datum</TH>
 <TH nowrap align="left">Anzahl der Positionen</TH>
 <TH nowrap align="left">Anzahl Verarbeitungen</TH>
-<TH nowrap align="left">Anzahl Verarbeitungen</TH>
+<TH nowrap align="left">Anzahl Fehler</TH>
 <TH nowrap align="left">Anzahl abgelehnt</TH>
 <TH align="left">Datei-Status</TH>
 <%	globaz.osiris.db.ebill.CAFichierTraitementEBill _fichierTraitementEBill = null ; %>
