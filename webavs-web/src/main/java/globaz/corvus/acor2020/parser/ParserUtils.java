@@ -35,7 +35,7 @@ public final class ParserUtils {
     private ParserUtils() {
     }
 
-    public static String formatIntToStringWithTwoChar(int value) {
+    public static String formatIntToStringWithTwoChar(Integer value) {
         if (Objects.nonNull(value)) {
             DecimalFormat df = new DecimalFormat("00");
             return df.format(value);
@@ -211,7 +211,7 @@ public final class ParserUtils {
      * @param mois les mois à convertir
      * @return le nb d'années et de mois au format AA.MM
      */
-    public static String formatMMtoAAxMM(int mois) {
+    public static String formatMMtoAAxMM(Integer mois) {
         LocalDate now = LocalDate.now();
         LocalDate delay = now.plusMonths(mois);
         Period period = Period.between(now, delay);
@@ -224,7 +224,7 @@ public final class ParserUtils {
      * @param duree durée au format AAMM
      * @return la durée au format AA.MM
      */
-    public static String formatAAMMtoAAxMM(int duree) {
+    public static String formatAAMMtoAAxMM(Integer duree) {
         if (Objects.nonNull(duree)) {
             String value = String.valueOf(duree);
             if (value.length() == 4) {
@@ -242,7 +242,7 @@ public final class ParserUtils {
      * @param mois les mois à convertir
      * @return le nb d'années et de mois au format A.MM
      */
-    public static String formatMMtoAxMM(int mois) {
+    public static String formatMMtoAxMM(Integer mois) {
         LocalDate now = LocalDate.now();
         LocalDate delay = now.plusMonths(mois);
         Period period = Period.between(now, delay);
@@ -255,7 +255,7 @@ public final class ParserUtils {
      * @param mois les mois à convertir
      * @return le nb d'années
      */
-    public static String convertMMtoA(int mois) {
+    public static String convertMMtoA(Integer mois) {
         LocalDate now = LocalDate.now();
         LocalDate delay = now.plusMonths(mois);
         Period period = Period.between(now, delay);
@@ -315,7 +315,7 @@ public final class ParserUtils {
      * @param indentValue Le nombre de caractère de la chaîne final
      * @return Une chaîne de caractère indentée avec des zéros à gauche
      */
-    public static String indentLeftWithZero(String value, int indentValue) {
+    public static String indentLeftWithZero(String value, Integer indentValue) {
         return PRStringFormatter.indentLeft(value, indentValue, "0");
     }
 

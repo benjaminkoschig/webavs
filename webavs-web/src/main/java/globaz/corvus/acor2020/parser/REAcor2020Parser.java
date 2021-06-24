@@ -830,7 +830,7 @@ public class REAcor2020Parser {
         // par des blancs
 //        String casSpeciaux = REACORAbstractFlatFileParser.getField(line, fields, "CODE_CAS_SPECIAUX"); $r14
         for (int i = 0; i < rente.getCodeCasSpecial().size(); i++) {
-            String codeCasSpecial = Objects.toString(rente.getCodeCasSpecial().get(i), StringUtils.EMPTY);
+            String codeCasSpecial = ParserUtils.formatIntToStringWithTwoChar(rente.getCodeCasSpecial().get(i));
             switch (i) {
                 case 0:
                     ra.setCodeCasSpeciaux1(codeCasSpecial);
@@ -853,7 +853,7 @@ public class REAcor2020Parser {
         }
 
 //        String codeMutation = REACORAbstractFlatFileParser.getField(line, fields, "CODE_MUTATION"); $r19
-        String codeMutation = Objects.toString(rente.getCodeMutation(), StringUtils.EMPTY);
+        String codeMutation = ParserUtils.formatIntToStringWithTwoChar(rente.getCodeMutation());
 
         if (!JadeStringUtil.isBlankOrZero(codeMutation)) {
             ra.setCodeMutation(codeMutation);
@@ -1280,38 +1280,9 @@ public class REAcor2020Parser {
 
                 PRTiersWrapper tiers = PRTiersHelper.getTiersParId(session, demande.getIdTiers());
 
-//                if (null != tiers) {
-//                    // si navs
-//                    if (JadeStringUtil.removeChar(tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), '.')
-//                            .length() == 11) {
-//                        REACORAbstractFlatFileParser.loadConfigurations_NAVS();
-//                        // si nnss
-//                    } else {
-//                        REACORAbstractFlatFileParser.loadConfigurations_NSS();
-//                    }
-//                } else {
-//                    throw new PRACORException("Tiers de la demande prestation non trouvé !!");
-//                }
-
             }
             REBasesCalcul bc;
             RERenteAccordee ra;
-//            String line = "be there or be square";
-
-//            int level = 0;
-
-//            while (line != null) {
-
-            /*
-             * Niveau 0..50
-             */
-
-//                if (level <= 50) {
-//                    line = REACORParser.readRelevantLine(bufferedReader);
-//                    if (line == null) {
-//                        break;
-//                    }
-//                }
 
             for (FCalcul.Evenement eachEvenement : fCalcul.getEvenement()) {
                 FCalcul.Evenement.BasesCalcul.Decision.Prestation premierePrestation = null;
@@ -1354,95 +1325,6 @@ public class REAcor2020Parser {
                     }
                 }
             }
-
-//                /*
-//                 * Niveau 51..100
-//                 */
-//                if (level <= 100) {
-//                    if (line.startsWith(REACORAbstractFlatFileParser.CODE_BASE_CALCUL)) {
-//                        fields = REACORAbstractFlatFileParser
-//                                .getConfiguration(REACORAbstractFlatFileParser.CODE_BASE_CALCUL);
-//                        bc = REACORParser.importBaseCalcul(session, line, fields);
-//
-//                        if (fcParBaseCalculVO != null) {
-//                            retValue.add(fcParBaseCalculVO);
-//                        }
-//                        fcParBaseCalculVO = new REFeuilleCalculVO();
-//                    }
-//                }
-//
-//
-//
-//                /**
-//                 * Niveau 101..150
-//                 */
-//
-//                if (level <= 150 && !line.startsWith(REACORAbstractFlatFileParser.CODE_BASE_FIN_CALCUL)) {
-//                    line = REACORParser.readRelevantLine(bufferedReader);
-//                }
-
-//                /**
-//                 * Niveau 151..200
-//                 */
-//
-//                if (level <= 200) {
-//                    if ((line != null) && (line.startsWith(REACORAbstractFlatFileParser.CODE_RENTE_ACCORDEE)
-//                            || line.startsWith(REACORAbstractFlatFileParser.CODE_AJOURNEMENT))) {
-//                        // importer les rentes accordées
-//
-//                        fields = REACORAbstractFlatFileParser
-//                                .getConfiguration(REACORAbstractFlatFileParser.CODE_RENTE_ACCORDEE);
-//                        ra = REACORParser.importRenteAccordee(session, (BTransaction) transaction, demandeSource, line,
-//                                fields);
-//
-//                        elmFCVO = fcParBaseCalculVO.new ElementVO();
-//
-//                        elmFCVO.setRAM(bc.getRevenuAnnuelMoyen());
-//                        elmFCVO.setIdTiers(ra.getIdTiersBeneficiaire());
-//                        elmFCVO.setMontantRente(ra.getMontantPrestation());
-//                        elmFCVO.setGenreRente(ra.getCodePrestation());
-//                        fcParBaseCalculVO.addElementVO(elmFCVO);
-//                    }
-//
-////                }
-//
-//                /**
-//                 * Level 201..300
-//                 */
-//
-//                if (level <= 300) {
-//                    while ((line != null) && !line.startsWith(REACORAbstractFlatFileParser.CODE_BASE_FIN_CALCUL)) {
-//                        line = REACORParser.readRelevantLine(bufferedReader);
-//                        if (line == null) {
-//                            break;
-//                        }
-//
-//                        if (!line.startsWith(REACORAbstractFlatFileParser.CODE_PRESTATION_DUE_RETROACTIF)
-//                                && !line.startsWith(REACORAbstractFlatFileParser.CODE_PRESTATION_DUE_MENSUEL)) {
-//
-//                            if (line.startsWith(REACORAbstractFlatFileParser.CODE_BASE_CALCUL)) {
-//                                level = 100;
-//                                break;
-//                            } else if (line.startsWith(REACORAbstractFlatFileParser.CODE_RENTE_ACCORDEE)) {
-//                                level = 200;
-//                                break;
-//                            } else if (line.startsWith(REACORAbstractFlatFileParser.CODE_BASE_FIN_CALCUL)) {
-//                                level = 0;
-//                                break;
-//                            } else {
-//                                throw new Exception("Parsing error, unknown start code : "); // +
-//                                // line.substring(0,5));
-//                            }
-//                        } else {
-//                            level = 0;
-//                        }
-//                    }
-//                }
-//            }
-//            // On ajoute les derniers éléments liés à la base de calcul dans la
-//            // liste
-//            retValue.add(fcParBaseCalculVO);
-//
         } catch (Exception e) {
             throw new PRACORException("impossible de parser : " + e.getMessage(), e);
         }
