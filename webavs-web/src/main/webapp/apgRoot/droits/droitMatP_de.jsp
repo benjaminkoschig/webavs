@@ -488,7 +488,7 @@ var EDITION_MODE = false;
 						<tr>
 							<td>
 								<label for="joursSupplementaires">
-									<ct:FWLabel key="JSP_JOURS_SUPPLEMENTAIRES" />
+									<ct:FWLabel key="JSP_JOURS_HOSPITALISATION" />
 								</label>
 							</td>
 							<td>
