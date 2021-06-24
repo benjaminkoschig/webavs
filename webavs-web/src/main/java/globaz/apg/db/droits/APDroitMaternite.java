@@ -64,23 +64,23 @@ public class APDroitMaternite extends APDroitLAPG implements IPRCloneable {
      * retourne le nombre de jours supplémentaires qui ont été pris en compte même s'il existe une date de reprise
      *
      * @param session
-     * @param dateDebutDroit
-     * @param  dateRepriseActiv
-     * @param  joursSupplementaires
+     * @param droit
      * @return le nombre de jours supplémentaires pris en compte avec ou sans date de reprise
      * @throws Exception Si les propriétéss nécessaires au calcul n'existe pas
      */
-    public static int getJoursSupplementairesPrisEnCompte(BSession session, String dateDebutDroit, String dateRepriseActiv, String joursSupplementaires) throws Exception {
+    public static int getJoursSupplementairesPrisEnCompte(BSession session, APDroitLAPG droit) throws Exception {
         int joursSupplementairesPrisEnCompte = 0;
-        if (!JadeStringUtil.isEmpty(dateRepriseActiv) && !JadeStringUtil.isIntegerEmpty(joursSupplementaires)) {
-            int joursMaternitePrisEnCompte = PRDateUtils.getNbDayBetween(dateDebutDroit, dateRepriseActiv);
-            int joursMaterniteStandard = APDroitMaternite.getDureeDroitMat(session);
-            if (joursMaternitePrisEnCompte > joursMaterniteStandard) {
-                joursSupplementairesPrisEnCompte = joursMaternitePrisEnCompte - joursMaterniteStandard;
-            }
+
+        if (droit instanceof APDroitMaternite && !JadeStringUtil.isEmpty(((APDroitMaternite) droit).getDateRepriseActiv()) && !JadeStringUtil.isIntegerEmpty(droit.getJoursSupplementaires())) {
+                int joursMaternitePrisEnCompte = PRDateUtils.getNbDayBetween(droit.getDateDebutDroit(), ((APDroitMaternite) droit).getDateRepriseActiv());
+                int joursMaterniteStandard = APDroitMaternite.getDureeDroitMat(session);
+                if (joursMaternitePrisEnCompte > joursMaterniteStandard) {
+                    joursSupplementairesPrisEnCompte = joursMaternitePrisEnCompte - joursMaterniteStandard;
+                }
         } else {
-            joursSupplementairesPrisEnCompte = !JadeStringUtil.isIntegerEmpty(joursSupplementaires) ? Integer.parseInt(joursSupplementaires) : 0;
+            joursSupplementairesPrisEnCompte = !JadeStringUtil.isIntegerEmpty(droit.getJoursSupplementaires()) ? Integer.parseInt(droit.getJoursSupplementaires()) : 0;
         }
+
         return joursSupplementairesPrisEnCompte;
     }
 
@@ -375,7 +375,7 @@ public class APDroitMaternite extends APDroitLAPG implements IPRCloneable {
         JADate fin = cal.addDays(debut, APDroitMaternite.getDureeDroitMat(getSession()) - 1);
 
         // Recherche le nombre de jours supplémentaires actuellement pris en compte en cas de date de reprise ou non
-        int joursSupplementairesPrisEnCompte = APDroitMaternite.getJoursSupplementairesPrisEnCompte(getSession(), getDateDebutDroit(), getDateRepriseActiv(), getJoursSupplementaires());
+        int joursSupplementairesPrisEnCompte = APDroitMaternite.getJoursSupplementairesPrisEnCompte(getSession(), this);
 
         fin = ajouteJoursSupplementaires(cal, fin, joursSupplementairesPrisEnCompte);
 

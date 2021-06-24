@@ -1061,7 +1061,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             final LAMatCalculateur lamatCalculateur = new LAMatCalculateur();
 
             // Recherche le nombre de jours supplémentaires actuellement pris en compte en cas de date de reprise ou non
-            int joursSupplementairesPrisEnCompte = APDroitMaternite.getJoursSupplementairesPrisEnCompte(session, droit.getDateDebutDroit(), ((APDroitMaternite) droit).getDateRepriseActiv(), droit.getJoursSupplementaires());
+            int joursSupplementairesPrisEnCompte = APDroitMaternite.getJoursSupplementairesPrisEnCompte(session, droit);
 
             final BigDecimal montantLAMat = lamatCalculateur.calculerMontantLAMat(session, transaction,
                     droit.getGenreService(), droit.getIdDroit(), revenuMoyenDeterminant.toString(),
@@ -2175,7 +2175,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         boolean lastCalculerACM = false;
 
         // Recherche le nombre de jours supplémentaires actuellement pris en compte en cas de date de reprise ou non
-        int joursSupplementairesPrisEnCompte = APDroitMaternite.getJoursSupplementairesPrisEnCompte(session, droit.getDateDebutDroit(), ((APDroitMaternite) droit).getDateRepriseActiv(), droit.getJoursSupplementaires());
+        int joursSupplementairesPrisEnCompte = APDroitMaternite.getJoursSupplementairesPrisEnCompte(session, droit);
 
         String dateDeFinACM = computeDateFinACMLamat((TreeSet<APPeriodeWrapper>) colPGPCParPrestation, joursSupplementairesPrisEnCompte);
         for (final Iterator iterator = colPGPCParPrestation.iterator(); iterator.hasNext();) {
@@ -2678,7 +2678,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             APPrestation lastPrestation = null;
 
             // Recherche le nombre de jours supplémentaires actuellement pris en compte en cas de date de reprise ou non
-            int joursSupplementairesPrisEnCompte = APDroitMaternite.getJoursSupplementairesPrisEnCompte(session, droit.getDateDebutDroit(), ((APDroitMaternite) droit).getDateRepriseActiv(), droit.getJoursSupplementaires());
+            int joursSupplementairesPrisEnCompte = APDroitMaternite.getJoursSupplementairesPrisEnCompte(session, droit);
 
             // Limite la Lamat au jours de maternité standard (98) sans l'extension
            String dateDeFinLamat = computeDateFinACMLamat((TreeSet<APPeriodeWrapper>) colPGPCParPrestation, joursSupplementairesPrisEnCompte);

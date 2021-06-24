@@ -299,7 +299,7 @@ public abstract class APBasesCalculBuilder {
         calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
 
         // Recherche le nombre de jours supplémentaires actuellement pris en compte en cas de date de reprise ou non
-        int joursSupplementairesPrisEnCompte = APDroitMaternite.getJoursSupplementairesPrisEnCompte(session, droit.getDateDebutDroit(), ((APDroitMaternite) droit).getDateRepriseActiv(), droit.getJoursSupplementaires());
+        int joursSupplementairesPrisEnCompte = APDroitMaternite.getJoursSupplementairesPrisEnCompte(session, droit);
 
         int nombreDeJoursLamat = (APDroitMaternite.getDureeDroitCantonale(session)) - (APDroitMaternite.getDureeDroitMat(session));
 
