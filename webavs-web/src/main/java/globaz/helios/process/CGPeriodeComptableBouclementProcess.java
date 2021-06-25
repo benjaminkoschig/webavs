@@ -182,14 +182,14 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
              * À Décommenter en cas de création d'un journal pandémie.
              *
              */
-            String isPandemie = JadePropertiesService.getInstance().getProperty("helios.pandemie.isSecteur_218X");
-
-            if (isPandemie == null) {
-                throw new Exception(label("PROPERTY_PANDEMIE"));
-            }
-            if (isPandemie.equals("true")) {
-                creationJournalPandemie();
-            }
+//            String isPandemie = JadePropertiesService.getInstance().getProperty("helios.pandemie.isSecteur_218X");
+//
+//            if (isPandemie == null) {
+//                throw new Exception(label("PROPERTY_PANDEMIE"));
+//            }
+//            if (isPandemie.equals("true")) {
+//                creationJournalPandemie();
+//            }
             comptabiliserJournaux();
             incProgressCounter();
         } catch (Exception e) {
