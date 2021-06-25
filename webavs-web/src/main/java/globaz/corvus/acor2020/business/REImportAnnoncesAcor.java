@@ -247,7 +247,7 @@ public class REImportAnnoncesAcor {
         String moisRapport = "";
 
         /* (String) : contient 6 positions : numeroCaisse (3pos) + numeroAgence (3pos) */
-        String noCaisseEtAgence = ParserUtils.formatIntegerToString(annonce10emeRev.getKasseZweigstelle());
+        String noCaisseEtAgence = ParserUtils.formatIntToStringWithSixChar(annonce10emeRev.getKasseZweigstelle());
         if (!JadeStringUtil.isEmpty(noCaisseEtAgence)) {
             if (noCaisseEtAgence.length() >= 3) {
                 /* ZAANOC : 3 positions */
@@ -817,7 +817,7 @@ public class REImportAnnoncesAcor {
         String moisRapportPourValidation = moisDeRapport.substring(4, 6);
         moisRapportPourValidation += moisDeRapport.substring(2, 4);
 
-        Map<String, String> idsArc44 = new HashMap<String, String>();
+        Map<String, String> idsArc44 = new HashMap<>();
         idsArc44.put(annonce44_01.getIdAnnonce(), moisRapportPourValidation);
         try {
             REACORParser.anakinValidation(session, transaction, null, idsArc44);
@@ -899,7 +899,7 @@ public class REImportAnnoncesAcor {
         String moisRapport = "";
 
         /* (String) : contient 6 positions : numeroCaisse (3pos) + numeroAgence (3pos) */
-        String noCaisseEtAgence = ParserUtils.formatIntegerToString(annonce10emeRev.getKasseZweigstelle());
+        String noCaisseEtAgence = ParserUtils.formatIntToStringWithSixChar(annonce10emeRev.getKasseZweigstelle());
         if (noCaisseEtAgence.length() >= 3) {
             /* ZAANOC : 3 positions */
             numeroCaisse = noCaisseEtAgence.substring(0, 3);

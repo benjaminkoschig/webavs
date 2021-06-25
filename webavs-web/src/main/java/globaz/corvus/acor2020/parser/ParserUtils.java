@@ -43,6 +43,14 @@ public final class ParserUtils {
         return StringUtils.EMPTY;
     }
 
+    public static String formatIntToStringWithSixChar(Integer value) {
+        if (Objects.nonNull(value)) {
+            DecimalFormat df = new DecimalFormat("000000");
+            return df.format(value);
+        }
+        return StringUtils.EMPTY;
+    }
+
     public static String formatFloatToStringWithTwoDecimal(Float value) {
         if (Objects.nonNull(value)) {
             DecimalFormat df = new DecimalFormat(VALUE_00_00);
