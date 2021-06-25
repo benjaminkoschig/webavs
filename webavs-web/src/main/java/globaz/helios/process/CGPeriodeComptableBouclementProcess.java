@@ -380,7 +380,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
             return false;
         }
         String isPTRA = JadePropertiesService.getInstance().getProperty("helios.prestation.transitoire");
-        if (mandat.isEstComptabiliteAVS().booleanValue() && bouclement.isBouclementMensuelAVS().booleanValue() && isPTRA.equals("true")) {
+        if (mandat.isEstComptabiliteAVS().booleanValue() && bouclement.isBouclementMensuelAVS().booleanValue() && isPTRA != null &&isPTRA.equals("true")) {
             try {
                 clotureCompteExploitationAvsPTRA();
             } catch (Exception e) {
