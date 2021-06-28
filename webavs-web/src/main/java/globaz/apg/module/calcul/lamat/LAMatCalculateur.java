@@ -166,6 +166,11 @@ public class LAMatCalculateur {
 
                     montantLAMat = new BigDecimal("62");
 
+                    // Adaptations des montants LAMat bas salaire dans le cas d'une extension maternité
+                    if (joursSupplementairesPrisEnCompte != 0) {
+                        montantLAMat = new BigDecimal("0.00");
+                    }
+
                     // si le 80% du revenu moyen determinant est compris entre
                     // 62 et 280 CHF, la
                     // LAMat vaut ce 80% du revenu moyen determinant
@@ -174,6 +179,11 @@ public class LAMatCalculateur {
 
                     montantLAMat = rmd80;
 
+                    // Adaptations des montants LAMat bas salaire dans le cas d'une extension maternité
+                    if (joursSupplementairesPrisEnCompte != 0) {
+                        montantLAMat = new BigDecimal("0.00");
+                    }
+
                     // si le 80% du revenu moyen determinant est superieur a 280
                     // CHF,
                     // on donne le maximum LAMat soit 280 CHF
@@ -181,7 +191,7 @@ public class LAMatCalculateur {
 
                     montantLAMat = montantMax;
 
-                    // Adaptations des montants Lamat dans le cas d'une extension maternité
+                    // Adaptations des montants LAMat complément 14 jours haut salaire dans le cas d'une extension maternité
                     if ((mj.compareTo(new BigDecimal("0.00")) == 0)) {
                         if (joursSupplementairesPrisEnCompte >= Integer.parseInt(APProperties.DROIT_MAT_CANTONALE_DUREE_JOURS.getValue()) - Integer.parseInt(APProperties.DROIT_ACM_MAT_DUREE_JOURS.getValue())) {
                             montantLAMat = montantLAMat.subtract(new BigDecimal("196"));
@@ -325,7 +335,7 @@ public class LAMatCalculateur {
 
                     montantLAMat = montantMax.subtract(new BigDecimal("196"));
 
-                    // Adaptations des montants Lamat dans le cas d'une extension maternité
+                    // Adaptations des montants LAMat haut salaire dans le cas d'une extension maternité
                     if (joursSupplementairesPrisEnCompte >= Integer.parseInt(APProperties.DROIT_MAT_CANTONALE_DUREE_JOURS.getValue()) - Integer.parseInt(APProperties.DROIT_ACM_MAT_DUREE_JOURS.getValue())) {
                         if (montantLAMat.compareTo(new BigDecimal("133.6")) < 0) {
                             montantLAMat = new BigDecimal(0);

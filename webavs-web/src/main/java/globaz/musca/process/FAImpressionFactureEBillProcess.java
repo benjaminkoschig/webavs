@@ -381,7 +381,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
      * @param entete                  : l'entête de la facture
      * @param enteteReference         : l'entête de référence pour les bulletin de soldes (vide dans le cas d'une facture bvr)
      * @param montantBulletinSoldes   : contient le montant total de la factures (seulement rempli dans le case d'un bulletin de soldes)
-     * @param lignesParPaireIdExterne : contient les lignes de bulletins de soldes (vide dans le cas d'une factures)
+     * @param lignesParPaireIdExterne : contient les lignes de factures et de bulletins de soldes
      * @param reference               : la référence BVR ou QR.
      * @param attachedDocument        : le fichier crée par l'impression classique à joindre en base64 dans le fichier eBill
      * @throws Exception
