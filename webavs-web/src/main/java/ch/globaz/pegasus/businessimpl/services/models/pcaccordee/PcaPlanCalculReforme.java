@@ -37,6 +37,27 @@ public class PcaPlanCalculReforme {
         return PersistenceUtil.search(search);
 
     }
+    /**
+     * retourne la liste des pca avec le type du plan de calcul retenu (réforme ou non)
+     * @param idDroit
+     * @param noVersionDroitCourant
+     * @return
+     * @throws JadePersistenceException
+     */
+    public static List<PCAccordeePlanCalculReforme> findPcaCourranteWithDateDebutDesc(String idDroit, String noVersionDroitCourant)
+            throws JadePersistenceException {
+
+        PCAccordeePlanCalculReformeSearch search = new PCAccordeePlanCalculReformeSearch();
+
+        search.setForIdDroit(idDroit);
+        search.setForNoVersion(noVersionDroitCourant);
+        search.setForIsPlanRetenu(true);
+        search.setOrderKey("dateDebutDesc");
+        search.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+
+        return PersistenceUtil.search(search);
+
+    }
 
     /**
      * retourne la liste des pca avec le type du plan de calcul associe (réforme ou non)

@@ -15,16 +15,17 @@ public class UtilFortune {
 
     /**
      * Méthode qui retourne si le seuil a été atteint pour le calcul en paramètre
-     * @param donnee du plan de calcul
+     *
+     * @param donnee  du plan de calcul
      * @param context
      * @return true si le seuil est atteint
      * @throws CalculException
      */
     public static boolean isRefusFortune(TupleDonneeRapport donnee, CalculContext context) throws CalculException {
         boolean refusForce = false;
-        if(isReformeApplicableDroit(context)) {
+        if (isReformeApplicableDroit(context)) {
             float totalFortune;
-            if(donnee.containsValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL_AVANT_FRACTION) && ! (Boolean) context.get(CalculContext.Attribut.IS_FRATRIE) ) {
+            if (donnee.containsValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL_AVANT_FRACTION) && !(Boolean) context.get(CalculContext.Attribut.IS_FRATRIE)) {
                 totalFortune = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL_AVANT_FRACTION);
             } else {
                 totalFortune = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL);
@@ -34,14 +35,14 @@ public class UtilFortune {
             if ((Boolean) context.get(CalculContext.Attribut.IS_FRATRIE)) {
                 seuil = Float.parseFloat(((ControlleurVariablesMetier) context
                         .get(CalculContext.Attribut.CS_REFORME_SEUIL_FORTUNE_ENFANT)).getValeurCourante());
-            } else if(nbParent == 2) {
+            } else if (nbParent == 2) {
                 seuil = Float.parseFloat(((ControlleurVariablesMetier) context
                         .get(CalculContext.Attribut.CS_REFORME_SEUIL_FORTUNE_COUPLE)).getValeurCourante());
             } else {
                 seuil = Float.parseFloat(((ControlleurVariablesMetier) context
                         .get(CalculContext.Attribut.CS_REFORME_SEUIL_FORTUNE_SEUL)).getValeurCourante());
             }
-            if(totalFortune >= seuil) {
+            if (totalFortune >= seuil) {
                 refusForce = true;
                 donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_REFUS_SEUIL_FORTUNE));
             }
@@ -50,15 +51,36 @@ public class UtilFortune {
     }
 
     /**
+     * Méthode qui retourne si le seuil a été atteint pour le calcul en paramètre
+     *
+     * @param donnee  du plan de calcul
+     * @param context
+     * @return true si le seuil est atteint
+     * @throws CalculException
+     */
+    public static boolean isRefusFortunePopUp(TupleDonneeRapport donnee) throws CalculException {
+
+        Float totalFortune = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL_AVANT_FRACTION);
+        float seuil;
+        int seuilInt = 40000;
+        seuil = Float.parseFloat(String.valueOf(seuilInt));
+        if (totalFortune > seuil) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Méthode qui détermine si le seuil de fortune a été atteint pour les données de l'enfant passées en paramètre
-     * @param donnee données de l'enfant uniquement
+     *
+     * @param donnee  données de l'enfant uniquement
      * @param context
      * @return true si le seuil est atteint
      * @throws CalculException
      */
     public static boolean isRefusChildFortune(TupleDonneeRapport donnee, CalculContext context) throws CalculException {
         boolean refusForce = false;
-        if(isReformeApplicableDroit(context)) {
+        if (isReformeApplicableDroit(context)) {
             TupleDonneeRapport clone = donnee.getClone();
             String dateValidite = (String) context.get(CalculContext.Attribut.DATE_DEBUT_PERIODE);
 
@@ -67,7 +89,7 @@ public class UtilFortune {
             }
 
             float totalFortune;
-            if(clone.containsValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL_AVANT_FRACTION)) {
+            if (clone.containsValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL_AVANT_FRACTION)) {
                 totalFortune = clone.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL_AVANT_FRACTION);
             } else {
                 totalFortune = clone.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_TOTALNET_TOTAL);
@@ -85,6 +107,7 @@ public class UtilFortune {
 
     /**
      * Méthode qui retourne si le calcul du seuil de fortune la réforme doit être appliqué ou non
+     *
      * @param context
      * @return booleen indiquant d'appliquer le calcul ou non
      * @throws CalculException

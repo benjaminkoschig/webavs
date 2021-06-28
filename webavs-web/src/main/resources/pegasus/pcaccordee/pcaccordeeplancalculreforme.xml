@@ -45,8 +45,12 @@
 			</search-group>
 		</search-definition>
 
-		<order-by>
-			<order-field field-ref="simplePCAccordee.dateDebut" order="DESC" />
+		<order-by >
+			<order-field  field-ref="simplePCAccordee.dateDebut" order="DESC" />
 		</order-by>
+		<order-by name="dateDebutDesc">
+			<order-field  field-ref="dateDebut" order="DESC" />
+		</order-by>
+
 	</complexe-model>
 </model-mapping>

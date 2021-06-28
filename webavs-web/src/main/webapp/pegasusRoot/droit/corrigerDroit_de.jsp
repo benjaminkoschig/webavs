@@ -39,7 +39,7 @@
 var showConfirmDialog = function () {
 	$( "#dialog-warningRFM-confirm" ).dialog({
         resizable: false,
-        height:300,
+        height:350,
         width:500,
         modal: true,
         
@@ -87,6 +87,10 @@ var showConfirmDialogForCreateLot = function () {
 }
 
 #dialog-warningRFM-confirm{
+	display:none;
+}
+
+#dialog-warningFortu-confirm{
 	display:none;
 }
 </style>
@@ -168,6 +172,10 @@ var showConfirmDialogForCreateLot = function () {
 			<!-- **************************** Warning sur l'existance de prestations dans RFM -->
 			<div id="dialog-warningRFM-confirm" title="<%= objSession.getLabel("JSP_PC_ATTENTION")%>">
 				<p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span><%= objSession.getLabel("JSP_PC_WARNING_PRESTATIONS_RFM")%></p>
+				<% if(viewBean.hasControleForturne()){%>
+				<p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span><%= objSession.getLabel("JSP_PC_WARNING_FORTUNE_RFM")%></p>
+				<%} %>
+
 			</div>
 			
 			<input type="hidden" name="isComptabilisationAuto" id="isComptabilisationAuto" value="<%=viewBean.isComptabilisationAuto()%>"/>

@@ -1,10 +1,27 @@
 /**
- * 
+ *
  */
 package globaz.pegasus.vb.droit;
 
 // globaz.pegasus.vb.droit.PCCorrigerDroitViewBean
 
+import ch.globaz.common.domaine.Montant;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.DonneeFinanciereType;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.DonneesFinancieresContainer;
+import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
+import ch.globaz.pegasus.business.models.droit.MembreFamilleEtendu;
+import ch.globaz.pegasus.business.models.droit.MembreFamilleEtenduSearch;
+import ch.globaz.pegasus.business.models.pcaccordee.*;
+import ch.globaz.pegasus.business.models.revisionquadriennale.DonneeFinanciereComplexModel;
+import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
+import ch.globaz.pegasus.businessimpl.services.donneeFinanciere.DonneeFinanciereLoader;
+import ch.globaz.pegasus.businessimpl.services.models.pcaccordee.PcaPlanCalculReforme;
+import ch.globaz.pegasus.businessimpl.utils.calcul.IPeriodePCAccordee;
+import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
+import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.DonneesHorsDroitsProvider;
+import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.fortune.strategiesFinalFortuneImmobiliere.UtilFortune;
+import ch.globaz.pegasus.businessimpl.utils.plancalcul.PCPlanCalculHandler;
+import com.google.common.collect.Sets;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
@@ -12,10 +29,15 @@ import globaz.jade.client.util.JadeStringUtil;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.models.droit.Droit;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+
+import java.util.*;
 
 /**
  * @author DMA
- * 
+ *
  */
 public class PCCorrigerDroitViewBean extends BJadePersistentObjectViewBean {
     private String dateSuppression = null;
@@ -185,6 +207,62 @@ public class PCCorrigerDroitViewBean extends BJadePersistentObjectViewBean {
 
     public void setMailProcessCompta(String mailProcessCompta) {
         this.mailProcessCompta = mailProcessCompta;
+    }
+
+    public boolean hasControleForturne() throws Exception {
+
+        MembreFamilleEtenduSearch search = new MembreFamilleEtenduSearch();
+        search.setForIdDroit(droit.getId());
+        MembreFamilleEtenduSearch membreSearch = new MembreFamilleEtenduSearch();
+        membreSearch.setForIdDroit(idDroit);
+        membreSearch.setOrderKey("orderByRole");
+        membreSearch = PegasusServiceLocator.getDroitService().searchMembreFamilleEtendu(membreSearch);
+        if (membreSearch.getSize() == 1) {
+            MembreFamilleEtendu membreFamilleEtendu = (MembreFamilleEtendu) membreSearch.getSearchResults()[0];
+            List<PCAccordeePlanCalculReforme> listPcaPrecedentes = PcaPlanCalculReforme.findPcaCourranteWithDateDebutDesc(droit.getId(), droit.getSimpleVersionDroit().getNoVersion());
+            PCAccordeePlanCalculReforme pcaCourrant = listPcaPrecedentes.get(0);
+            String idBeneficiaire = membreFamilleEtendu.getDroitMembreFamille().getMembreFamille().getPersonneEtendue().getId();
+            PCPlanCalculHandler planCalculHandler = PCPlanCalculHandler.getHandlerForIdPlanCalcul(getISession(), pcaCourrant.getIdPlanDeCalcul(), idBeneficiaire);
+            SimplePlanDeCalcul planDeCalcul = planCalculHandler.getPlanDeCalcul();
+            String byteArrayToString = null;
+            byteArrayToString = new String(planDeCalcul.getResultatCalcul());
+            TupleDonneeRapport tupleRoot = PegasusImplServiceLocator.getCalculPersistanceService().deserialiseDonneesCcXML(
+                    byteArrayToString);
+            return UtilFortune.isRefusFortunePopUp(tupleRoot);
+
+
+//            Map<String, DonneesFinancieresContainer> mapDonneesFinancieres = DonneeFinanciereLoader
+//                    .loadByIdsVersionDroitAndGroupByIdVersionDroit(Sets.newHashSet(droit.getSimpleVersionDroit().getIdVersionDroit())
+//                            , DonneeFinanciereType.COMPTE_BANCAIRE_POSTAL, DonneeFinanciereType.TITRE
+//                            , DonneeFinanciereType.ASSURANCE_VIE, DonneeFinanciereType.CAPITAL_LPP, DonneeFinanciereType.BIEN_IMMOBILIER_SERVANT_HABITATION_PRINCIPALE
+//                            , DonneeFinanciereType.BIEN_IMMOBILIER_HABITATION_NON_PRINCIPALE, DonneeFinanciereType.BIEN_IMMOBILIER_NON_HABITABLE,
+//                            DonneeFinanciereType.PRET_ENVERS_TIERS, DonneeFinanciereType.ASSURANCE_RENTE_VIAGERE, DonneeFinanciereType.NUMERAIRE,
+//                            DonneeFinanciereType.MARCHANDISE_STOCK, DonneeFinanciereType.BETAIL, DonneeFinanciereType.AUTRE_FORTUNE_MOBILIERE, DonneeFinanciereType.VEHICULE);
+//            Montant totalFortune = Montant.ZERO;
+//            for (DonneesFinancieresContainer donnee : mapDonneesFinancieres.values()) {
+//                totalFortune = totalFortune.add(donnee.getComptesBancairePostal().sumFortune());
+//                totalFortune = totalFortune.add(donnee.getTitres().sumFortune());
+//                totalFortune = totalFortune.add(donnee.getAssurancesVie().sumFortune());
+//                totalFortune = totalFortune.add(donnee.getCapitalsLpp().sumFortune());
+//                totalFortune = totalFortune.add(donnee.getBiensImmobiliersServantHbitationPrincipale().sumFortune());
+//                totalFortune = totalFortune.add(donnee.getBiensImmobiliersNonPrincipale().sumFortune());
+//                totalFortune = totalFortune.add(donnee.getBiensImmobiliersNonHabitable().sumFortune());
+//
+//                totalFortune = totalFortune.add(donnee.getPretsEnversTiers().sumFortune());
+//                totalFortune = totalFortune.add(donnee.getAssurancesRentesViageres().sumFortune());
+//                totalFortune = totalFortune.add(donnee.getNumeraires().sumFortune());
+//                totalFortune = totalFortune.add(donnee.getMarchandisesStocks().sumFortune());
+//                totalFortune = totalFortune.add(donnee.getVehicules().sumFortune());
+//                totalFortune = totalFortune.add(donnee.getBetails().sumFortune());
+//                totalFortune = totalFortune.add(donnee.getAutresFortunesMobilieres().sumFortune());
+//            }
+//            if(totalFortune.greater(new Montant(40000))){
+//                return true;
+//            }
+
+        }
+
+        return false;
     }
 
 }
