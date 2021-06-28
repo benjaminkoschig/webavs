@@ -13,7 +13,7 @@ idEcran="PAP0034";
 	//bButtonNew=true;
 	bButtonDelete=!viewBean.isDefinitif() && !viewBean.isAnnule() && viewBean.getSession().hasRight(IAPActions.ACTION_PRESTATION_JOINT_LOT_TIERS_DROIT, FWSecureConstants.UPDATE);
 	bButtonUpdate=!viewBean.isDefinitif() && !viewBean.isAnnule() && viewBean.getSession().hasRight(IAPActions.ACTION_PRESTATION_JOINT_LOT_TIERS_DROIT, FWSecureConstants.UPDATE);
-	
+
 	
 %>
 <%-- /tpl:put --%>
@@ -27,6 +27,7 @@ idEcran="PAP0034";
    		<%@page import="globaz.apg.application.APApplication"%>
 <%@page import="globaz.apg.servlet.IAPActions"%>
 <%@page import="globaz.framework.secure.FWSecureConstants"%>
+<%@ page import="globaz.apg.utils.APGUtils" %>
 <ct:menuChange displayId="menu" menuId="ap-menuprincipalapg"/>
 	<!--sinon, maternité -->
 	<%} else if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_MATERNITE) {%>	   	
@@ -172,7 +173,11 @@ idEcran="PAP0034";
 							<TD colspan="2">&nbsp;</TD>
 						</TR>
 						<TR>
+							<%if(APGUtils.isProcheAidant(session)) {%>
+							<TD colspan="2"><ct:FWLabel key="JSP_NB_JOURS_CUMULES"/></TD>
+							<%}else {%>
 							<TD colspan="2"><ct:FWLabel key="JSP_NB_JOURS_SOLDES"/></TD>
+							<%}%>
 							<td></td>
 							<TD colspan="5"><INPUT type="text" name="nombreJoursSoldes" value="<%=viewBean.getNombreJoursSoldes()%>" onchange="validateIntegerNumber(this);recalculer();" onkeypress="return filterCharForInteger(window.event);" <%=viewBean.isRestitution()?"class=\"numeroCourt disabled\" readonly":" class=\"numeroCourt\""%>></TD>
 						</TR>

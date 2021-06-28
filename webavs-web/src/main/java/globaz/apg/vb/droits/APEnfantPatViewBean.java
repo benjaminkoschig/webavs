@@ -6,7 +6,9 @@
  */
 package globaz.apg.vb.droits;
 
+import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.droits.IAPDroitMaternite;
+import globaz.apg.db.droits.APDroitPaternite;
 import globaz.apg.db.droits.APEnfantPat;
 import globaz.commons.nss.NSUtil;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -85,7 +87,8 @@ public class APEnfantPatViewBean extends APEnfantPat implements FWViewBeanInterf
     public String getDateNaissance() {
         String retValue = super.getDateNaissance();
 
-        if (JAUtil.isDateEmpty(retValue)) {
+        if (JAUtil.isDateEmpty(retValue) &&
+                !IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(droitDTO.getGenreService())) {
             retValue = getDateDebutDroitPat();
         }
 

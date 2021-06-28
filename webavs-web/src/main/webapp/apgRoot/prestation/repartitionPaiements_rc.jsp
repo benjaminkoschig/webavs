@@ -18,6 +18,7 @@ bButtonNew = false;
 <%if ((String)globaz.prestation.tools.PRSessionDataContainerHelper.getData(session,globaz.prestation.tools.PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION)==globaz.prestation.api.IPRDemande.CS_TYPE_APG) {%>
 	<%@page import="globaz.apg.servlet.IAPActions"%>
 <%@page import="globaz.framework.secure.FWSecureConstants"%>
+<%@ page import="globaz.apg.utils.APGUtils" %>
 <ct:menuChange displayId="menu" menuId="ap-menuprincipalapg" showTab="menu"/>
 	<ct:menuChange displayId="options" menuId="ap-optionsempty"/>
 <!--sinon, maternité -->
@@ -85,7 +86,11 @@ bButtonNew = false;
 								<TR>
 									<TD><ct:FWLabel key="JSP_TAUX_JOURNALIER_ALLOC_BASE"/></TD>
 									<TD><INPUT type="text" name="tauxJournalier" value="<%=viewBean.getTauxPrestation()%>" class="montantDisabled" readonly></TD>
+									<%if(APGUtils.isProcheAidant(session)) {%>
+									<TD><ct:FWLabel key="JSP_NB_JOURS_CUMULES"/></TD>
+									<%}else {%>
 									<TD><ct:FWLabel key="JSP_NB_JOURS_SOLDES"/></TD>
+									<%}%>
 									<TD><INPUT type="text" name="nombreJoursSoldes" value="<%=viewBean.getNbJoursPrestation()%>" class="numeroCourtDisabled" readonly></TD>
 									<TD colspan="2"></TD>
 								</TR>

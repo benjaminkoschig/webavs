@@ -15,7 +15,9 @@ import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.properties.JadePropertiesService;
 import globaz.prestation.api.IPRDemande;
+import globaz.prestation.tools.PRSessionDataContainerHelper;
 
+import javax.servlet.http.HttpSession;
 import java.util.Arrays;
 
 /**
@@ -231,5 +233,9 @@ public class APGUtils {
 }
         }
         return false;
+    }
+
+    public static boolean isProcheAidant(HttpSession session) {
+        return globaz.prestation.api.IPRDemande.CS_TYPE_PROCHE_AIDANT == (String) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION);
     }
 }
