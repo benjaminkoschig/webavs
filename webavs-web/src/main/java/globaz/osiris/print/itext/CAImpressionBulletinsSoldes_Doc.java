@@ -93,6 +93,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
     private String montantMinimePos = null;
     private String montantSansCentime;
     public Map<PaireIdExterneEBill, List<Map>> lignesParPaireIdExterneEBill = new LinkedHashMap();
+    public Map<PaireIdExterneEBill, String> referenceParPaireIdExterne = new LinkedHashMap();
 
     private FAPassage passage;
 
@@ -553,8 +554,10 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
                     // Génération du document QR
                     qrFacture.initQR(this);
+                    referenceParPaireIdExterne.put(new PaireIdExterneEBill(afact.getIdExterneRole(), afact.getIdExterneFactureCompensation(), _getMontantApresCompensation()), qrFacture.getReference());
                 } else {
                     fillBVR();
+                    referenceParPaireIdExterne.put(new PaireIdExterneEBill(afact.getIdExterneRole(), afact.getIdExterneFactureCompensation(), _getMontantApresCompensation()), getBvr().getRefNoSpace());
                 }
                 if (!computePageActive) {
                     addToHistory();
@@ -1384,7 +1387,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
         return lignesParPaireIdExterneEBill;
     }
 
-    public void setLignesParPaireIdExterneEBill(Map<PaireIdExterneEBill, List<Map>> lignesParPaireIdExterneEBill) {
-        this.lignesParPaireIdExterneEBill = lignesParPaireIdExterneEBill;
+    public Map<PaireIdExterneEBill, String> getReferenceParPaireIdExterne() {
+        return referenceParPaireIdExterne;
     }
 }

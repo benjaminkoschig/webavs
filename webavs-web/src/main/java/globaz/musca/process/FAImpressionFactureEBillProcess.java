@@ -10,7 +10,6 @@ import globaz.framework.printing.itext.api.FWIDocumentInterface;
 import globaz.framework.util.FWMessage;
 import globaz.globall.api.BIContainer;
 import globaz.globall.db.*;
-import globaz.globall.util.JACalendar;
 import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.admin.user.service.JadeUserService;
 import globaz.jade.client.util.JadeStringUtil;
@@ -61,6 +60,11 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
     private String typeFacture;
     private int facturePapier = 0;
     private int factureEBill = 0;
+
+    private Map<PaireIdExterneEBill, List<Map>> lignesFactureParPaireIdExterne = new LinkedHashMap();
+    private Map<PaireIdExterneEBill, String> referencesFactureParPaireIdExterne = new LinkedHashMap();
+    private Map<PaireIdExterneEBill, List<Map>> lignesSoldeParPaireIdExterne = new LinkedHashMap();
+    private Map<PaireIdExterneEBill, String> referencesSoldeParPaireIdExterne = new LinkedHashMap();
 
     /**
      * Lancement de l'impression en mode batch Date de création : (05.05.2003 15:53:19)
@@ -233,17 +237,8 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
             while (((myEntity = manager.cursorReadNext(statement)) != null) && (!myEntity.isNew())
                     && !super.isAborted()) {
                 cpt++;
-                // setProgressDescription(entete.getIdExterneRole()+" <br>"+cpt+"/"+manager.size()+"<br>");
                 setProgressCounter(++progressCounter);
                 if (isAborted()) {
-                    // setProgressDescription("Traitement interrompu<br> sur l'affilié : "
-                    // +
-                    // entete.getIdExterneRole()+" <br>"+cpt+"/"+manager.size()+"<br>");
-                    // if(getParent()!=null && getParent().isAborted()){
-                    // getParent().setProcessDescription("Traitement interrompu<br> sur l'affilié : "
-                    // +
-                    // entete.getIdExterneRole()+" <br>"+cpt+"/"+manager.size()+"<br>");
-                    // }
                     break;
                 } else {
                     // la prochaine facture à imprimer
@@ -257,13 +252,6 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
 
                         interface_moduleImpression.beginPrinting(passage, this);
                         interface_moduleImpression.add(myEntity);
-                        // success =
-                        // interface_moduleImpression.print(
-                        // (BIEntity) myEntity,
-                        // this);
-                        // success =
-                        // interface_moduleImpression.endPrinting(passage,
-                        // this);
 
                         // construit le document pour la prochaine facture avec
                         // l'entête suivante
@@ -540,6 +528,15 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
             while (doc.hasNext()) {
                 IntModuleImpression myMod = doc.next();
                 myMod.print();
+
+                if (myMod.get_document() instanceof FAImpressionFacture_BVR_Doc) {
+                    lignesFactureParPaireIdExterne.putAll(((FAImpressionFacture_BVR_Doc) myMod.get_document()).getLignesParPaireIdExterne());
+                    referencesFactureParPaireIdExterne.putAll(((FAImpressionFacture_BVR_Doc) myMod.get_document()).getReferenceParPaireIdExterne());
+                }
+                if (myMod.get_document() instanceof CAImpressionBulletinsSoldes_Doc) {
+                    lignesSoldeParPaireIdExterne.putAll(((CAImpressionBulletinsSoldes_Doc) myMod.get_document()).getLignesParPaireIdExterneEBill());
+                    referencesSoldeParPaireIdExterne.putAll(((CAImpressionBulletinsSoldes_Doc) myMod.get_document()).getReferenceParPaireIdExterne());
+                }
             }
             return true;
         } catch (Exception e) {
@@ -985,86 +982,72 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
      * en attente d'être envoyé dans le processus actuel.
      */
     private void traiterFacturesEBill() throws Exception {
-        Iterator<IntModuleImpression> doc = interfaceImpressionContainer.values().iterator();
 
-        while (doc.hasNext()) {
-            IntModuleImpression myMod = doc.next();
+        for (Map.Entry<PaireIdExterneEBill, List<Map>> lignesParPaireIdExterne : lignesFactureParPaireIdExterne.entrySet()) {
 
-            if (myMod.get_document() instanceof FAImpressionFacture_BVR_Doc) {
-                for (Map.Entry<PaireIdExterneEBill, List<Map>> lignesParPaireIdExterne : ((FAImpressionFacture_BVR_Doc) myMod.get_document()).getLignesParPaireIdExterne().entrySet()) {
+            Map.Entry<FAEnteteFacture, FAAfactManager> afactParEnteteFactureEBill = getAfactParEnteteFactureEBill(lignesParPaireIdExterne.getKey());
+            if (afactParEnteteFactureEBill != null) {
+                FAEnteteFacture entete = afactParEnteteFactureEBill.getKey();
 
-                    Map.Entry<FAEnteteFacture, FAAfactManager> afactParEnteteFactureEBill = getAfactParEnteteFactureEBill(lignesParPaireIdExterne.getKey());
-                    if (afactParEnteteFactureEBill != null) {
-                        FAEnteteFacture entete = afactParEnteteFactureEBill.getKey();
-
-                        String reference = getReference(myMod.get_document());
-                        CACompteAnnexe compteAnnexe = getCompteAnnexe(entete, getSession(), getTransaction());
-                        if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())) {
-                            JadePublishDocument attachedDocument = removeAndReturnAttachedDocument(entete);
-                            creerFichierEBill(compteAnnexe, entete, null, null, lignesParPaireIdExterne.getValue(), reference, attachedDocument);
-                            factureEBill++;
-                        }
-                    }
+                String reference = referencesFactureParPaireIdExterne.get(lignesParPaireIdExterne.getKey());
+                CACompteAnnexe compteAnnexe = getCompteAnnexe(entete, getSession(), getTransaction());
+                if (compteAnnexe != null && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())) {
+                    JadePublishDocument attachedDocument = removeAndReturnAttachedDocument(entete);
+                    creerFichierEBill(compteAnnexe, entete, null, null, lignesParPaireIdExterne.getValue(), reference, attachedDocument);
+                    factureEBill++;
                 }
             }
         }
     }
 
-    /**
-     * Récupération de la référence dans le document.
-     *
-     * @param document : le document d'impression
-     * @return le code référence.
-     */
-    private String getReference(FWIDocumentInterface document) {
-        String reference;
-        ReferenceQR qrFacture = null;
-        ReferenceBVR bvrFacture = new ReferenceBVR();
-        if (document instanceof CAImpressionBulletinsSoldes_Doc) {
-            qrFacture = ((CAImpressionBulletinsSoldes_Doc) document).getQrFacture();
-            bvrFacture = ((CAImpressionBulletinsSoldes_Doc) document).getBvr();
-        } else if (document instanceof FAImpressionFacture_BVR_Doc) {
-            qrFacture = ((FAImpressionFacture_BVR_Doc) document).getQrFacture();
-            bvrFacture = ((FAImpressionFacture_BVR_Doc) document).getBvr();
-        }
-        if (Objects.nonNull(qrFacture)) {
-            reference = qrFacture.getReferenceWithoutSpace();
-        } else {
-            reference = bvrFacture.getRefNoSpace();
-        }
-        return reference;
-    }
+//    /**
+//     * Récupération de la référence dans le document.
+//     *
+//     * @param document : le document d'impression
+//     * @return le code référence.
+//     */
+//    private String getReference(FWIDocumentInterface document) {
+//        String reference;
+//        ReferenceQR qrFacture = null;
+//        ReferenceBVR bvrFacture = new ReferenceBVR();
+//        if (document instanceof CAImpressionBulletinsSoldes_Doc) {
+//            qrFacture = ((CAImpressionBulletinsSoldes_Doc) document).getQrFacture();
+//            bvrFacture = ((CAImpressionBulletinsSoldes_Doc) document).getBvr();
+//        } else if (document instanceof FAImpressionFacture_BVR_Doc) {
+//            qrFacture = ((FAImpressionFacture_BVR_Doc) document).getQrFacture();
+//            bvrFacture = ((FAImpressionFacture_BVR_Doc) document).getBvr();
+//        }
+//        if (Objects.nonNull(qrFacture)) {
+//            reference = qrFacture.getReferenceWithoutSpace();
+//        } else {
+//            reference = bvrFacture.getRefNoSpace();
+//        }
+//        return reference;
+//    }
 
     /**
      * Méthode permettant de traiter les bulletins de soldes eBill
      * en attente d'être envoyé dans le processus actuel.
      */
     private void traiterBulletinDeSoldesEBill() throws Exception {
-        Iterator<IntModuleImpression> doc = interfaceImpressionContainer.values().iterator();
 
-        while (doc.hasNext()) {
-            IntModuleImpression myMod = doc.next();
+        for (Map.Entry<PaireIdExterneEBill, List<Map>> lignesParPaireIdExterneEBill : lignesSoldeParPaireIdExterne.entrySet()) {
 
-            if (myMod.get_document() instanceof CAImpressionBulletinsSoldes_Doc) {
-                for (Map.Entry<PaireIdExterneEBill, List<Map>> lignesParPaireIdExterneEBill : ((CAImpressionBulletinsSoldes_Doc) myMod.get_document()).getLignesParPaireIdExterneEBill().entrySet()) {
+            FAEnteteFacture entete = getAfactParEnteteFactureEBill(lignesParPaireIdExterneEBill.getKey(), getIdPassage());
+            FAEnteteFacture enteteReference = getEnteteFactureReference(lignesParPaireIdExterneEBill.getKey());
 
-                    FAEnteteFacture entete = getAfactParEnteteFactureEBill(lignesParPaireIdExterneEBill.getKey(), getIdPassage());
-                    FAEnteteFacture enteteReference = getEnteteFactureReference(lignesParPaireIdExterneEBill.getKey());
-
-                    CACompteAnnexe compteAnnexe = getCompteAnnexe(entete, getSession(), getTransaction());
-                    CACompteAnnexe compteAnnexeReference = getCompteAnnexe(enteteReference, getSession(), getTransaction());
-                    String reference = getReference(myMod.get_document());
-                    if (compteAnnexe != null && compteAnnexeReference != null
-                            && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())
-                            && !JadeStringUtil.isBlankOrZero(compteAnnexeReference.geteBillAccountID())
-                            && !JadeStringUtil.isBlankOrZero(enteteReference.geteBillTransactionID())) {
-                        JadePublishDocument attachedDocument = removeAndReturnAttachedDocument(enteteReference);
-                        creerFichierEBill(compteAnnexe, entete, enteteReference, lignesParPaireIdExterneEBill.getKey().getMontant(), lignesParPaireIdExterneEBill.getValue(), reference, attachedDocument);
-                        factureEBill++;
-                    }
-
-                }
+            CACompteAnnexe compteAnnexe = getCompteAnnexe(entete, getSession(), getTransaction());
+            CACompteAnnexe compteAnnexeReference = getCompteAnnexe(enteteReference, getSession(), getTransaction());
+            String reference = referencesSoldeParPaireIdExterne.get(lignesParPaireIdExterneEBill.getKey());
+            if (compteAnnexe != null && compteAnnexeReference != null
+                    && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())
+                    && !JadeStringUtil.isBlankOrZero(compteAnnexeReference.geteBillAccountID())
+                    && !JadeStringUtil.isBlankOrZero(enteteReference.geteBillTransactionID())) {
+                JadePublishDocument attachedDocument = removeAndReturnAttachedDocument(enteteReference);
+                creerFichierEBill(compteAnnexe, entete, enteteReference, lignesParPaireIdExterneEBill.getKey().getMontant(), lignesParPaireIdExterneEBill.getValue(), reference, attachedDocument);
+                factureEBill++;
             }
+
         }
     }
 

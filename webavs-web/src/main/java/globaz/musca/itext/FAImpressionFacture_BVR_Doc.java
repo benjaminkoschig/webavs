@@ -1,5 +1,6 @@
 package globaz.musca.itext;
 
+import ch.globaz.common.document.reference.ReferenceQR;
 import globaz.aquila.print.CODecisionFPV;
 import globaz.aquila.print.COParameter;
 import globaz.caisse.helper.CaisseHelperFactory;
@@ -47,15 +48,13 @@ import globaz.osiris.api.APISection;
 import globaz.osiris.api.APISectionDescriptor;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CASection;
-import ch.globaz.common.document.reference.ReferenceQR;
 import globaz.osiris.exceptions.CATechnicalException;
 import globaz.osiris.translation.CACodeSystem;
 import globaz.webavs.common.CommonProperties;
-
-import java.util.*;
-
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.design.JRDesignField;
+
+import java.util.*;
 
 /**
  * Le document imprime les zones de facture selon les paramètres suivants: _modeRecouvrement : aucun, bvr,
@@ -84,6 +83,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
     private static String TEMPLATE_NAME= "MUSCA_BVR_NEUTRE_QR"; // Par défaut
     private Boolean isEbusiness = false;
     public Map<PaireIdExterneEBill, List<Map>> lignesParPaireIdExterne = new LinkedHashMap();
+    public Map<PaireIdExterneEBill, String> referenceParPaireIdExterne = new LinkedHashMap();
 
     public static String getTemplateFilename(FAEnteteFacture entFacture) {
         if (FAImpressionFacture_BVR_Doc.CODEDECOMPTESALAIRE13.equalsIgnoreCase(entFacture.getIdExterneFacture()
@@ -703,7 +703,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
         //Extrait les lignes dans une liste
         List data = buildLignes();
         // Met les lignes trouvées dans une hashMap identifié de manière unique par une pair d'idExterne
-        lignesParPaireIdExterne.put(new PaireIdExterneEBill(currentDataSource.getEnteteFacture().getIdExterneRole(), currentDataSource.getEnteteFacture().getIdExterneFacture()), data);  // TODO ESVE A CONTROLLER
+        lignesParPaireIdExterne.put(new PaireIdExterneEBill(currentDataSource.getEnteteFacture().getIdExterneRole(), currentDataSource.getEnteteFacture().getIdExterneFacture()), data);
 
         super.setDataSource(currentDataSource.getImpressionFacture_DS());
         super.setParametres(FAImpressionFacture_Param.P_TOTAL_ROW, currentDataSource.getNbDeLigne());
@@ -743,9 +743,12 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
             initVariableQR();
             // Génération du document QR
             qrFacture.initQR(this);
+
+            referenceParPaireIdExterne.put(new PaireIdExterneEBill(currentDataSource.getEnteteFacture().getIdExterneRole(), currentDataSource.getEnteteFacture().getIdExterneFacture()), qrFacture.getReference());
         } else {
             // BVR
             _bvrText();
+            referenceParPaireIdExterne.put(new PaireIdExterneEBill(currentDataSource.getEnteteFacture().getIdExterneRole(), currentDataSource.getEnteteFacture().getIdExterneFacture()), getBvr().getRefNoSpace());
         }
 
         caisseReportHelper.addHeaderParameters(this, headerBean);
@@ -1235,7 +1238,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
         return lignesParPaireIdExterne;
     }
 
-    public void setLignesParPaireIdExterne(Map<PaireIdExterneEBill, List<Map>> lignesParPaireIdExterne) {
-        this.lignesParPaireIdExterne = lignesParPaireIdExterne;
+    public Map<PaireIdExterneEBill, String> getReferenceParPaireIdExterne() {
+        return referenceParPaireIdExterne;
     }
 }
