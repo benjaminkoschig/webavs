@@ -45,6 +45,7 @@ import globaz.helios.translation.CodeSystem;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.properties.JadePropertiesService;
 import globaz.lynx.db.journal.LXJournal;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -53,16 +54,17 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
 import ch.globaz.helios.business.exceptions.CGPeriodeComptableException;
 
 /**
  * Date de création : (20.03.2003 14:48:16)
- * 
+ *
  * @revision SCO 19 janv. 2010
  */
 public class CGPeriodeComptableBouclementProcess extends BProcess {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private static final String BOUCLEMENT_CHECK_LYNX_JOURNAUX = "bouclementCheckLynxJournaux";
@@ -85,7 +87,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
     private static final String SECTEUR_EXPLOITATION_2180 = "2180";
     private static final String SECTEUR_EXPLOITATION_2189 = "2189";
     private static final String SECTEUR_EXPLOITATION_UNTIL = "2199";
-    private static final String SECTEUR_EXPLOITATION_2510= "2510";
+    private static final String SECTEUR_EXPLOITATION_2510 = "2510";
     private static final String SECTEUR_EXPLOITATION_2599 = "2599";
     private CGBouclement bouclement = null;
     private CGExerciceComptable exercice = null;
@@ -109,6 +111,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
     private CGPeriodeComptable periodePrec = null;
 
     private Boolean quittancerWarning = new Boolean(false);
+    private String isPTRA;
 
     /**
      * Commentaire relatif au constructeur CGPeriodeComptableBouclementProcess.
@@ -119,9 +122,8 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Commentaire relatif au constructeur CGPeriodeComptableBouclementProcess.
-     * 
-     * @param parent
-     *            globaz.globall.db.BProcess
+     *
+     * @param parent globaz.globall.db.BProcess
      */
     public CGPeriodeComptableBouclementProcess(BProcess parent) {
         super(parent);
@@ -129,7 +131,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Commentaire relatif au constructeur CGPeriodeComptableBouclementProcess.
-     * 
+     *
      * @param session globaz.globall.db.BSession
      */
     public CGPeriodeComptableBouclementProcess(BSession session) {
@@ -379,8 +381,8 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
         if (isAborted()) {
             return false;
         }
-        String isPTRA = JadePropertiesService.getInstance().getProperty("helios.prestation.transitoire");
-        if (mandat.isEstComptabiliteAVS().booleanValue() && bouclement.isBouclementMensuelAVS().booleanValue() && isPTRA != null &&isPTRA.equals("true")) {
+        isPTRA = JadePropertiesService.getInstance().getProperty("helios.prestation.transitoire");
+        if (mandat.isEstComptabiliteAVS().booleanValue() && bouclement.isBouclementMensuelAVS().booleanValue() && isPTRA != null && isPTRA.equals("true")) {
             try {
                 clotureCompteExploitationAvsPTRA();
             } catch (Exception e) {
@@ -405,7 +407,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
         if (mandat.isEstComptabiliteAVS().booleanValue()
                 && (bouclement.isBouclementMensuelAVS().booleanValue() || bouclement.isBouclementAnnuelAVS()
-                        .booleanValue())) {
+                .booleanValue())) {
             try {
                 clotureCompteExploitationAdministrationAutresTaches();
             } catch (Exception e) {
@@ -425,9 +427,28 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
         if (mandat.isEstComptabiliteAVS().booleanValue()
                 && (bouclement.isBouclementMensuelAVS().booleanValue() || bouclement.isBouclementAnnuelAVS()
-                        .booleanValue())) {
+                .booleanValue())) {
             try {
                 lissageSecteur_1990();
+            } catch (Exception e) {
+                this.error("LISSAGE_SECTEUR_1990_ERROR", e.getMessage());
+                this.info(CGPeriodeComptableBouclementProcess.INFO_FIN);
+                return false;
+            }
+
+            this.info("LISSAGE_SECTEUR_1990_OK");
+        }
+        incProgressCounter();
+
+        // Gestion de l'abort
+        if (isAborted()) {
+            return false;
+        }
+        if ((mandat.isEstComptabiliteAVS().booleanValue()
+                && (bouclement.isBouclementMensuelAVS().booleanValue() || bouclement.isBouclementAnnuelAVS()
+                .booleanValue())) && isPTRA != null && isPTRA.equals("true")) {
+            try {
+//                lissageSecteur_1999_PTRA();
             } catch (Exception e) {
                 this.error("LISSAGE_SECTEUR_1990_ERROR", e.getMessage());
                 this.info(CGPeriodeComptableBouclementProcess.INFO_FIN);
@@ -703,7 +724,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Ajoute les écriture pour cloture annuelle AVS des autres tâches.
-     * 
+     *
      * @param secteur
      * @param idCompteResultatCharge
      * @param idCompteResultatProduit
@@ -711,7 +732,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
      * @throws Exception
      */
     private void addEcritureClotureAnnuelleAVSCompteAdministrationExploitation(CGSecteurAVS secteur,
-            String idCompteResultatCharge, String idCompteResultatProduit, String forDomaine) throws Exception {
+                                                                               String idCompteResultatCharge, String idCompteResultatProduit, String forDomaine) throws Exception {
         // Parcours des comptes de charge pour le secteur et cumul des soldes :
         CGCompteManager compteManager = new CGCompteManager();
         compteManager.setSession(getSession());
@@ -766,7 +787,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Ajout d'un écriture double sur le journal3.
-     * 
+     *
      * @param libelle
      * @param solde
      * @param idCompte1
@@ -774,14 +795,14 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
      * @throws Exception
      */
     private void addEcritureDoubleToJournal3(String libelle, FWCurrency solde, FWCurrency soldeMonnaieEtrangere,
-            String idCompte1, String idCompte2) throws Exception {
+                                             String idCompte1, String idCompte2) throws Exception {
         addEcritures(periode.getDateFin(), periode.getIdJournal3(), periode.getIdExerciceComptable(), libelle, solde,
                 soldeMonnaieEtrangere, idCompte1, idCompte2, true);
     }
 
     /**
      * Ajout d'un écriture double sur le journal clot.
-     * 
+     *
      * @param libelle
      * @param solde
      * @param idExterneCompteCredite
@@ -789,7 +810,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
      * @throws Exception
      */
     private void addEcritureDoubleToJournalClot(String libelle, FWCurrency solde, String idExterneCompteCredite,
-            String idExterneCompteDebite) throws Exception {
+                                                String idExterneCompteDebite) throws Exception {
         addEcrituresDebitCredit(periode.getDateFin(), journalClot.getIdJournal(), periode.getIdExerciceComptable(),
                 libelle, solde, idExterneCompteCredite, idExterneCompteDebite);
     }
@@ -802,7 +823,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Ajout d'une écriture en utilisant CGGestionEcritureAdd
-     * 
+     *
      * @param dateFin
      * @param libelle
      * @param solde
@@ -813,8 +834,8 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
      * @throws Exception
      */
     private void addEcritures(String dateFin, String journal, String idExerciceComptable, String libelle,
-            FWCurrency solde, FWCurrency soldeMonnaieEtrangere, String idCompte1, String idCompte2,
-            boolean generateDetteAvoir) throws Exception {
+                              FWCurrency solde, FWCurrency soldeMonnaieEtrangere, String idCompte1, String idCompte2,
+                              boolean generateDetteAvoir) throws Exception {
         CGGestionEcritureViewBean ecritures = new CGGestionEcritureViewBean();
         ecritures.setSession(getSession());
 
@@ -867,7 +888,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Ajoute une écriture pour les idexterne compte crédité et débité passées en paramètre.
-     * 
+     *
      * @param dateFin
      * @param journal
      * @param idExerciceComptable
@@ -878,7 +899,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
      * @throws Exception
      */
     private void addEcrituresDebitCredit(String dateFin, String journal, String idExerciceComptable, String libelle,
-            FWCurrency solde, String idExterneCredit, String idExterneDebit) throws Exception {
+                                         FWCurrency solde, String idExterneCredit, String idExterneDebit) throws Exception {
         CGGestionEcritureViewBean ecritures = new CGGestionEcritureViewBean();
         ecritures.setSession(getSession());
 
@@ -921,7 +942,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Annulation d'un journalCG.
-     * 
+     *
      * @param idJournal
      * @throws Exception
      */
@@ -969,10 +990,10 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
         // ***********************************************************************************
 
         journalManager.find(getTransaction(), BManager.SIZE_NOLIMIT);
-            if(journalManager.size()>1){
-                throw new Exception(label("ERROR_JOURNAL_DOUBLE_PANDEMIE"));
-            }else if(journalManager.size()==1){
-                CGJournal journal = (CGJournal) journalManager.getFirstEntity();
+        if (journalManager.size() > 1) {
+            throw new Exception(label("ERROR_JOURNAL_DOUBLE_PANDEMIE"));
+        } else if (journalManager.size() == 1) {
+            CGJournal journal = (CGJournal) journalManager.getFirstEntity();
             CGJournalAnnulerProcess process = new CGJournalAnnulerProcess(this);
             process.setSession(getSession());
             process.setTransaction(getTransaction());
@@ -981,18 +1002,18 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
             process.setMemoryLog(getMemoryLog());
             process.setIdJournal(journal.getIdJournal());
             process.executeProcess();
-                if (journal.getSession().hasErrors()) {
-                    throw new Exception(journal.getSession().getErrors().toString());
-                }
+            if (journal.getSession().hasErrors()) {
+                throw new Exception(journal.getSession().getErrors().toString());
             }
+        }
 
     }
 
     /**
      * 3. Annulation du journal de clôture précédent (commun)
-     * 
-     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
+     *
      * @throws Exception
+     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
      */
     private void annulationJournalPrecedent() throws Exception {
         if (!JadeStringUtil.isIntegerEmpty(periode.getIdJournal())) {
@@ -1017,9 +1038,9 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
     /**
      * 15. Clôture des comptes (bouclement de type annuel, comptabilité non AVS) <br/>
      * 17. Réouverture des soldes (bouclement de type annuel, comptabilité non AVS)
-     * 
-     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
+     *
      * @throws Exception
+     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
      */
     private void clotureAndReouvertureComptesBilanNonAvs() throws Exception {
         ouvertureJournalClot3();
@@ -1077,12 +1098,12 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * 12. Clôture du compte d'exploitation / administration (bouclement annuel AVS)
-     * 
+     * <p>
      * La clôture du compte d'exploitation et d'administration consiste à solder les comptes de charges et de produits
      * par l'intermédiaire du compte de résultat.
-     * 
-     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
+     *
      * @throws Exception
+     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
      */
     private void clotureAnnuelleAVSCompteAdministrationExploitation() throws Exception {
         CGSecteurAVSManager secteurManager = new CGSecteurAVSManager();
@@ -1142,7 +1163,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Clotue annuelle avs des comptes administration et exploitation non secteur 9
-     * 
+     *
      * @param secteur
      * @param forDomaine
      * @throws Exception
@@ -1218,8 +1239,8 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
      * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
      */
     private void clotureCompteAutresTaches(CGSecteurAVS secteur, String compteCloture, String contreEcriture,
-            boolean estPeriode, String requestDomaine, String libelleDoitLabel, String libelleAvoirLabel,
-            String warnDoitLabel, String warnAvoirLabel) throws Exception {
+                                           boolean estPeriode, String requestDomaine, String libelleDoitLabel, String libelleAvoirLabel,
+                                           String warnDoitLabel, String warnAvoirLabel) throws Exception {
         FWCurrency cumulDoit = new FWCurrency();
         FWCurrency cumulAvoir = new FWCurrency();
 
@@ -1285,9 +1306,74 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
         }
     }
 
+    private ComptePTRA retrieveDoitAvoirPTRA(CGSecteurAVS secteur, String compteCloture, String contreEcriture,
+                                             boolean estPeriode, String requestDomaine, String libelleDoitLabel, String libelleAvoirLabel,
+                                             String warnDoitLabel, String warnAvoirLabel, ComptePTRA comptePTRA) throws Exception {
+        FWCurrency cumulDoit = new FWCurrency();
+        FWCurrency cumulAvoir = new FWCurrency();
+
+        CGPlanComptableManager planManager = new CGPlanComptableManager();
+        planManager.setSession(getSession());
+        planManager.setForIdSecteurAVS(secteur.getIdSecteurAVS());
+        planManager.setForIdMandat(exercice.getIdMandat());
+
+        planManager.setForIdExerciceComptable(exercice.getIdExerciceComptable());
+
+        planManager.setForEstPeriode(new Boolean(estPeriode));
+        if (estPeriode) {
+            planManager.setForIdPeriodeComptable(periode.getIdPeriodeComptable());
+        }
+
+        planManager.setReqDomaine(requestDomaine);
+
+        planManager.find(getTransaction(), BManager.SIZE_NOLIMIT);
+        for (int j = 0; j < planManager.size(); j++) {
+            CGPlanComptableViewBean plan = (CGPlanComptableViewBean) planManager.getEntity(j);
+            if (plan.getIdGenre().equals(CGCompte.CS_GENRE_PRODUIT)
+                    || plan.getIdGenre().equals(CGCompte.CS_GENRE_CHARGE)) {
+                CGSoldeManager soldeManager = new CGSoldeManager();
+                soldeManager.setSession(getSession());
+                soldeManager.setForIdCompte(plan.getIdCompte());
+
+                soldeManager.setForEstPeriode(new Boolean(estPeriode));
+                if (estPeriode) {
+                    soldeManager.setForIdPeriodeComptable(periode.getIdPeriodeComptable());
+                }
+
+                soldeManager.setForIdMandat(exercice.getIdMandat());
+                soldeManager.setForIdExerComptable(exercice.getIdExerciceComptable());
+
+                soldeManager.find(getTransaction(), BManager.SIZE_NOLIMIT);
+                if (soldeManager.size() != 1) {
+                    warnNoPrefixe("GLOBAL_SOLDE_MANQUANT", plan.getIdExterne());
+                } else {
+                    cumulDoit.add(((CGSolde) soldeManager.getFirstEntity()).getDoitProvisoire());
+                    cumulAvoir.add(((CGSolde) soldeManager.getFirstEntity()).getAvoirProvisoire());
+                }
+            }
+        }
+
+        if (!cumulDoit.isZero()) {
+            comptePTRA.cumulDoit = cumulDoit;
+        } else {
+            if (!JadeStringUtil.isBlank(warnDoitLabel)) {
+                this.warn(warnDoitLabel, secteur.getIdSecteurAVS());
+            }
+        }
+
+        if (!cumulAvoir.isZero()) {
+            comptePTRA.cumulAvoir = cumulAvoir;
+        } else {
+            if (!JadeStringUtil.isBlank(warnAvoirLabel)) {
+                this.warn(warnAvoirLabel, secteur.getIdSecteurAVS());
+            }
+        }
+        return comptePTRA;
+    }
+
     /**
      * 9. Clôture du compte d'exploitation AVS / AI (bouclement mensuel AVS)
-     * 
+     *
      * @throws Exception
      * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
      */
@@ -1303,7 +1389,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * 10. Clôture du compte d'exploitation / administration des autres tâches (bouclement mensuel et annuel AVS)
-     * 
+     *
      * @throws Exception
      * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
      */
@@ -1318,12 +1404,12 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
             CGSecteurAVS secteur = (CGSecteurAVS) secteurManager.getEntity(i);
             if (!secteur.isClotureManuelle().booleanValue()
                     && (secteur.isCompteExploitation().booleanValue() || secteur.isCompteAdministration()
-                            .booleanValue())) {
+                    .booleanValue())) {
 
                 if (bouclement.isBouclementMensuelAVS().booleanValue()
                         && secteur.isCompteExploitation().booleanValue()
                         && (secteur.getIdTypeTache().equals(CGSecteurAVS.CS_CAF_AGENCE) || secteur.getIdTypeTache()
-                                .equals(CGSecteurAVS.CS_AUTRE_TACHE_AGENCE))) {
+                        .equals(CGSecteurAVS.CS_AUTRE_TACHE_AGENCE))) {
                     String compteCloture = getIdExterneCompteCloture(secteur, CGCompte.CS_COMPTE_EXPLOITATION);
                     String contreEcriture = getIdExterneContreEcriture(secteur,
                             (secteur.getIdSecteurBilan().equals("0")) ? "0000" : secteur.getIdSecteurBilan()
@@ -1343,7 +1429,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
                         .booleanValue())
                         && secteur.isCompteAdministration().booleanValue()
                         && (secteur.getIdTypeTache().equals(CGSecteurAVS.CS_CAF_AGENCE) || secteur.getIdTypeTache()
-                                .equals(CGSecteurAVS.CS_AUTRE_TACHE_AGENCE))) {
+                        .equals(CGSecteurAVS.CS_AUTRE_TACHE_AGENCE))) {
                     String compteCloture = getIdExterneCompteCloture(secteur, CGCompte.CS_COMPTE_ADMINISTRATION);
                     String contreEcriture = getIdExterneContreEcriture(secteur,
                             (secteur.getIdSecteurBilan().equals("0")) ? "0000" : secteur.getIdSecteurBilan()
@@ -1363,7 +1449,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
                         && secteur.isCompteExploitation().booleanValue()
                         && (secteur.getIdSecteurAVS().charAt(0) != '9')
                         && (secteur.getIdTypeTache().equals(CGSecteurAVS.CS_CAF_PROPRE) || secteur.getIdTypeTache()
-                                .equals(CGSecteurAVS.CS_AUTRE_TACHE_PROPRE))) {
+                        .equals(CGSecteurAVS.CS_AUTRE_TACHE_PROPRE))) {
                     String compteCloture = getIdExterneCompteCloture(secteur, CGCompte.CS_COMPTE_EXPLOITATION);
 
                     String contreEcriture;
@@ -1388,7 +1474,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
                         && secteur.isCompteAdministration().booleanValue()
                         && (secteur.getIdSecteurAVS().charAt(0) != '9')
                         && (secteur.getIdTypeTache().equals(CGSecteurAVS.CS_CAF_PROPRE) || secteur.getIdTypeTache()
-                                .equals(CGSecteurAVS.CS_AUTRE_TACHE_PROPRE))) {
+                        .equals(CGSecteurAVS.CS_AUTRE_TACHE_PROPRE))) {
                     String compteCloture = getIdExterneCompteCloture(secteur, CGCompte.CS_COMPTE_ADMINISTRATION);
 
                     String contreEcriture;
@@ -1447,7 +1533,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Clôture compte d'exploitation AI. Secteur 3800
-     * 
+     *
      * @throws Exception
      */
     private void clotureCompteExploitationAi() throws Exception {
@@ -1479,7 +1565,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Clôture compte d'exploitation AI par secteur.
-     * 
+     *
      * @param idExterneSecteur
      * @param idExterneCompteDebite
      * @param idExterneCompteCrediteCumul
@@ -1488,7 +1574,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
      * @throws Exception
      */
     private void clotureCompteExploitationAiForSecteur(String idExterneSecteur, String idExterneCompteDebite,
-            String idExterneCompteCrediteCumul, FWCurrency cumulDoit, FWCurrency cumulAvoir) throws Exception {
+                                                       String idExterneCompteCrediteCumul, FWCurrency cumulDoit, FWCurrency cumulAvoir) throws Exception {
         CGPlanComptableManager planManager = new CGPlanComptableManager();
         planManager.setSession(getSession());
 
@@ -1552,12 +1638,25 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
         }
     }
 
+    private class ComptePTRA {
+        public String idSecteur;
+        public String compteCloture;
+        public String contreEcriture;
+        public String libelleDoitLabel;
+        public String warnDoitLabel;
+        public String libelleAvoirLabel;
+        public String warnAvoirLabel;
+        public FWCurrency cumulDoit = new FWCurrency();
+        public FWCurrency cumulAvoir = new FWCurrency();
+    }
+
     /**
      * Clôture compte d'exploitation AVS.
      *
      * @throws Exception
      */
     private void clotureCompteExploitationAvsPTRA() throws Exception {
+        Map<String, ComptePTRA> mapCompte = new HashMap<>();
         CGSecteurAVSManager secteurManager = new CGSecteurAVSManager();
         secteurManager.setSession(getSession());
         secteurManager.setForIdMandat(exercice.getIdMandat());
@@ -1571,83 +1670,129 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
                     .booleanValue())) {
 
                 if (bouclement.isBouclementMensuelAVS().booleanValue()
-                        && secteur.isCompteExploitation().booleanValue()
-                        && (secteur.getIdTypeTache().equals(CGSecteurAVS.CS_CAF_AGENCE) || secteur.getIdTypeTache()
-                        .equals(CGSecteurAVS.CS_AUTRE_TACHE_AGENCE))) {
+                        && secteur.isCompteExploitation().booleanValue()) {
                     String compteCloture = getIdExterneCompteCloture(secteur, CGCompte.CS_COMPTE_EXPLOITATION);
                     String contreEcriture = getIdExterneContreEcriture(secteur,
                             (secteur.getIdSecteurBilan().equals("0")) ? "0000" : secteur.getIdSecteurBilan()
                                     + ".2141.0000");
 
-                    String libelleDoitLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_LABEL_ECRITURE_EXPLOITATION";
-                    String warnDoitLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_AUTRES_TACHES_ECRITURE_EXPLOITATION_ERROR";
-                    String libelleAvoirLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_ECRITURE_EXPLOITATION_ERROR";
-                    String warnAvoirLabel = "BOUCLEMENT_CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_CONTRE_ECRITURE_EXPLOITATION_ERROR";
+                    ComptePTRA comptePTRA = new ComptePTRA();
+                    comptePTRA.idSecteur = secteur.getIdSecteurAVS();
+                    comptePTRA.compteCloture = compteCloture;
+                    comptePTRA.contreEcriture = contreEcriture;
+                    comptePTRA.libelleDoitLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_LABEL_ECRITURE_EXPLOITATION";
+                    comptePTRA.warnDoitLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_AUTRES_TACHES_ECRITURE_EXPLOITATION_ERROR";
+                    comptePTRA.libelleAvoirLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_ECRITURE_EXPLOITATION_ERROR";
+                    comptePTRA.warnAvoirLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_CONTRE_ECRITURE_EXPLOITATION_ERROR";
+                    ComptePTRA comptePTRAOld;
+                    comptePTRA = retrieveDoitAvoirPTRA(secteur, compteCloture, contreEcriture, true,
+                            CGCompte.CS_COMPTE_EXPLOITATION, null, null, null,
+                            null, comptePTRA);
+                    if (mapCompte.containsKey(comptePTRA.compteCloture + comptePTRA.contreEcriture)) {
+                        comptePTRAOld = mapCompte.get(comptePTRA.compteCloture + comptePTRA.contreEcriture);
+                        comptePTRA.cumulDoit.add(comptePTRAOld.cumulDoit);
+                        comptePTRA.cumulAvoir.add(comptePTRAOld.cumulAvoir);
+                    }
+                    mapCompte.put(comptePTRA.compteCloture + comptePTRA.contreEcriture, comptePTRA);
 
-                    clotureCompteAutresTaches(secteur, compteCloture, contreEcriture, true,
-                            CGCompte.CS_COMPTE_EXPLOITATION, libelleDoitLabel, libelleAvoirLabel, warnDoitLabel,
-                            warnAvoirLabel);
                 }
 
                 if ((bouclement.isBouclementMensuelAVS().booleanValue() || bouclement.isBouclementAnnuelAVS()
                         .booleanValue())
-                        && secteur.isCompteAdministration().booleanValue()
-                        && (secteur.getIdTypeTache().equals(CGSecteurAVS.CS_CAF_AGENCE) || secteur.getIdTypeTache()
-                        .equals(CGSecteurAVS.CS_AUTRE_TACHE_AGENCE))) {
+                        && secteur.isCompteAdministration().booleanValue()) {
                     String compteCloture = getIdExterneCompteCloture(secteur, CGCompte.CS_COMPTE_ADMINISTRATION);
                     String contreEcriture = getIdExterneContreEcriture(secteur,
                             (secteur.getIdSecteurBilan().equals("0")) ? "0000" : secteur.getIdSecteurBilan()
                                     + ".2140.0000");
 
-                    String libelleDoitLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_LABEL_ECRITURE_ADMINISTRATION_AGENCE";
-                    String warnDoitLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_AUTRES_TACHES_ECRITURE_ADMINISTRATION_AGENCE_ERROR";
-                    String libelleAvoirLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_ECRITURE_ADMINISTRATION_AGENCE_ERROR";
-                    String warnAvoirLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_CONTRE_ECRITURE_ADMINISTRATION_AGENCE_ERROR";
 
-                    clotureCompteAutresTaches(secteur, compteCloture, contreEcriture, true,
-                            CGCompte.CS_COMPTE_ADMINISTRATION, libelleDoitLabel, libelleAvoirLabel, warnDoitLabel,
-                            warnAvoirLabel);
+                    ComptePTRA comptePTRA = new ComptePTRA();
+                    comptePTRA.idSecteur = secteur.getIdSecteurAVS();
+                    comptePTRA.compteCloture = compteCloture;
+                    comptePTRA.contreEcriture = contreEcriture;
+                    comptePTRA.libelleDoitLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_LABEL_ECRITURE_ADMINISTRATION_AGENCE";
+                    comptePTRA.warnDoitLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_AUTRES_TACHES_ECRITURE_ADMINISTRATION_AGENCE_ERROR";
+                    comptePTRA.libelleAvoirLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_ECRITURE_ADMINISTRATION_AGENCE_ERROR";
+                    comptePTRA.warnAvoirLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_CONTRE_ECRITURE_ADMINISTRATION_AGENCE_ERROR";
+                    ComptePTRA comptePTRAOld;
+                    comptePTRA = retrieveDoitAvoirPTRA(secteur, compteCloture, contreEcriture, true,
+                            CGCompte.CS_COMPTE_ADMINISTRATION, null, null, null,
+                            null, comptePTRA);
+                    if (mapCompte.containsKey(comptePTRA.compteCloture + comptePTRA.contreEcriture)) {
+                        comptePTRAOld = mapCompte.get(comptePTRA.compteCloture + comptePTRA.contreEcriture);
+                        comptePTRA.cumulDoit.add(comptePTRAOld.cumulDoit);
+                        comptePTRA.cumulDoit.add(comptePTRAOld.cumulAvoir);
+                    }
+                    mapCompte.put(comptePTRA.compteCloture + comptePTRA.contreEcriture, comptePTRA);
                 }
-
                 if (bouclement.isBouclementAnnuelAVS().booleanValue()
                         && secteur.isCompteExploitation().booleanValue()
-                        && (secteur.getIdSecteurAVS().charAt(0) != '9')
-                        && (secteur.getIdTypeTache().equals(CGSecteurAVS.CS_CAF_PROPRE) || secteur.getIdTypeTache()
-                        .equals(CGSecteurAVS.CS_AUTRE_TACHE_PROPRE))) {
+                        && (secteur.getIdSecteurAVS().charAt(0) != '9')) {
                     String compteCloture = getIdExterneCompteCloture(secteur, CGCompte.CS_COMPTE_EXPLOITATION);
 
                     String contreEcriture;
-                        contreEcriture = getIdExterneContreEcriture(secteur,
-                                (secteur.getIdSecteurBilan().equals("0")) ? "0000" : secteur.getIdSecteurBilan()
-                                        + ".2140.0000");
+                    contreEcriture = getIdExterneContreEcriture(secteur,
+                            (secteur.getIdSecteurBilan().equals("0")) ? "0000" : secteur.getIdSecteurBilan()
+                                    + ".2140.0000");
 
 
-                    String libelleDoitLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_LABEL_ECRITURE_ADMINISTRATION";
-                    String libelleAvoirLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_LABEL_CONTRE_ECRITURE_ADMINISTRATION";
+                    ComptePTRA comptePTRA = new ComptePTRA();
+                    comptePTRA.idSecteur = secteur.getIdSecteurAVS();
+                    comptePTRA.compteCloture = compteCloture;
+                    comptePTRA.contreEcriture = contreEcriture;
+                    comptePTRA.libelleDoitLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_LABEL_ECRITURE_ADMINISTRATION";
+                    comptePTRA.libelleAvoirLabel = "CLOTURE_COMPTE_EXPLOITATION_ADMINISTRATION_PTRA_LABEL_CONTRE_ECRITURE_ADMINISTRATION";
+                    ComptePTRA comptePTRAOld;
+                    comptePTRA = retrieveDoitAvoirPTRA(secteur, compteCloture, contreEcriture, false,
+                            CGCompte.CS_COMPTE_EXPLOITATION, null, null, null, null, comptePTRA);
 
-                    clotureCompteAutresTaches(secteur, compteCloture, contreEcriture, false,
-                            CGCompte.CS_COMPTE_EXPLOITATION, libelleDoitLabel, libelleAvoirLabel, null, null);
+                    if (mapCompte.containsKey(comptePTRA.compteCloture + comptePTRA.contreEcriture)) {
+                        comptePTRAOld = mapCompte.get(comptePTRA.compteCloture + comptePTRA.contreEcriture);
+                        comptePTRA.cumulAvoir.add(comptePTRAOld.cumulAvoir);
+                        comptePTRA.cumulDoit.add(comptePTRAOld.cumulAvoir);
+                    }
+                    mapCompte.put(comptePTRA.compteCloture + comptePTRA.contreEcriture, comptePTRA);
                 }
-
-
+            }
+        }
+        FWCurrency cumulDoit = new FWCurrency();
+        FWCurrency cumulAvoir = new FWCurrency();
+        for (ComptePTRA comptePTRA : mapCompte.values()) {
+            cumulDoit = comptePTRA.cumulDoit;
+            cumulAvoir = comptePTRA.cumulAvoir;
+            if (!cumulDoit.isZero()) {
+                String libelle = getLibelleToFit(50, label(comptePTRA.libelleDoitLabel) + comptePTRA.idSecteur);
+                addEcritureDoubleToJournalClot(libelle, cumulDoit, comptePTRA.compteCloture, comptePTRA.contreEcriture);
+            } else {
+                if (!JadeStringUtil.isBlank(comptePTRA.warnDoitLabel)) {
+                    this.warn(comptePTRA.warnDoitLabel, comptePTRA.idSecteur);
+                }
+            }
+            if (!cumulAvoir.isZero()) {
+                cumulAvoir.negate();
+                String libelle = getLibelleToFit(50, label(comptePTRA.libelleAvoirLabel) + comptePTRA.idSecteur);
+                addEcritureDoubleToJournalClot(libelle, cumulAvoir, comptePTRA.contreEcriture, comptePTRA.compteCloture);
+            } else {
+                if (!JadeStringUtil.isBlank(comptePTRA.warnAvoirLabel)) {
+                    this.warn(comptePTRA.warnAvoirLabel, comptePTRA.idSecteur);
+                }
             }
 
         }
-
 
 
     }
 
     /**
      * Clôture compte d'exploitation AVS.
-     * 
+     *
      * @throws Exception
      */
     private void clotureCompteExploitationAvs() throws Exception {
         FWCurrency cumulDoit = new FWCurrency();
         FWCurrency cumulAvoir = new FWCurrency();
-        Map<String,FWCurrency> cumulDoit218x = new HashMap<>();
-        Map<String,FWCurrency> cumulAvoir218x = new HashMap<>();
+        Map<String, FWCurrency> cumulDoit218x = new HashMap<>();
+        Map<String, FWCurrency> cumulAvoir218x = new HashMap<>();
 
         CGPlanComptableManager planManager = new CGPlanComptableManager();
         planManager.setSession(getSession());
@@ -1689,30 +1834,30 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
                 ecriManager.find(getTransaction(), BManager.SIZE_NOLIMIT);
                 for (int k = 0; k < ecriManager.size(); k++) {
                     String isPandemie = JadePropertiesService.getInstance().getProperty("helios.pandemie.isSecteur_218X");
-                    if(isPandemie== null){
+                    if (isPandemie == null) {
                         throw new Exception(label("PROPERTY_PANDEMIE"));
                     }
-                    if(isPandemie.equals("true")){
-                        if(plan.getIdSecteurAVS().substring(0,3).contains("218")){
+                    if (isPandemie.equals("true")) {
+                        if (plan.getIdSecteurAVS().substring(0, 3).contains("218")) {
                             //cumulDoit
-                            if(!cumulDoit218x.containsKey(plan.getIdSecteurAVS())){
-                                cumulDoit218x.put(plan.getIdSecteurAVS(),new FWCurrency());
+                            if (!cumulDoit218x.containsKey(plan.getIdSecteurAVS())) {
+                                cumulDoit218x.put(plan.getIdSecteurAVS(), new FWCurrency());
                             }
                             FWCurrency cumulCurrency = cumulDoit218x.get(plan.getIdSecteurAVS());
                             cumulCurrency.add(((CGEcritureViewBean) ecriManager.getEntity(k)).getDoit());
-                            cumulDoit218x.put(plan.getIdSecteurAVS(),cumulCurrency);
+                            cumulDoit218x.put(plan.getIdSecteurAVS(), cumulCurrency);
                             //cumulAvoir
-                            if(!cumulAvoir218x.containsKey(plan.getIdSecteurAVS())){
-                                cumulAvoir218x.put(plan.getIdSecteurAVS(),new FWCurrency());
+                            if (!cumulAvoir218x.containsKey(plan.getIdSecteurAVS())) {
+                                cumulAvoir218x.put(plan.getIdSecteurAVS(), new FWCurrency());
                             }
                             cumulCurrency = cumulAvoir218x.get(plan.getIdSecteurAVS());
                             cumulCurrency.add(((CGEcritureViewBean) ecriManager.getEntity(k)).getAvoir());
-                            cumulAvoir218x.put(plan.getIdSecteurAVS(),cumulCurrency);
-                        }else{
-                    cumulDoit.add(((CGEcritureViewBean) ecriManager.getEntity(k)).getDoit());
-                    cumulAvoir.add(((CGEcritureViewBean) ecriManager.getEntity(k)).getAvoir());
-                }
-                    }else{
+                            cumulAvoir218x.put(plan.getIdSecteurAVS(), cumulCurrency);
+                        } else {
+                            cumulDoit.add(((CGEcritureViewBean) ecriManager.getEntity(k)).getDoit());
+                            cumulAvoir.add(((CGEcritureViewBean) ecriManager.getEntity(k)).getAvoir());
+                        }
+                    } else {
                         cumulDoit.add(((CGEcritureViewBean) ecriManager.getEntity(k)).getDoit());
                         cumulAvoir.add(((CGEcritureViewBean) ecriManager.getEntity(k)).getAvoir());
                     }
@@ -1742,23 +1887,23 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
         } else {
             this.warn("CLOTURE_COMPTE_EXPLOITATION_AVS_AI_ECRITURE_CUMUL_AVOIR_AVS_ERROR");
         }
-        for(String key : cumulDoit218x.keySet()){
+        for (String key : cumulDoit218x.keySet()) {
             FWCurrency currencyDoit218x = cumulDoit218x.get(key);
             if (!currencyDoit218x.isZero()) {
                 String libelle = getLibelleToFit(50,
                         label("CLOTURE_COMPTE_EXPLOITATION_AVS_AI_LABEL_ECRITURE_CUMUL_DOIT_AVS_PANDEMIE"));
-                addEcritureDoubleToJournalClot(libelle, currencyDoit218x, key+".4900.0000", "2000.2101.0000");
+                addEcritureDoubleToJournalClot(libelle, currencyDoit218x, key + ".4900.0000", "2000.2101.0000");
                 this.info("CLOTURE_COMPTE_EXPLOITATION_AVS_AI_ECRITURE_CUMUL_DOIT_AVS_OK");
             } else {
                 this.warn("CLOTURE_COMPTE_EXPLOITATION_AVS_AI_ECRITURE_CUMUL_DOIT_AVS_ERROR");
             }
         }
-        for(String key : cumulAvoir218x.keySet()){
+        for (String key : cumulAvoir218x.keySet()) {
             FWCurrency currencyAvoir218x = cumulAvoir218x.get(key);
             if (!currencyAvoir218x.isZero()) {
                 String libelle = getLibelleToFit(50,
                         label("CLOTURE_COMPTE_EXPLOITATION_AVS_AI_LABEL_ECRITURE_CUMUL_AVOIR_AVS_PANDEMIE"));
-                addEcritureDoubleToJournalClot(libelle, currencyAvoir218x, "2000.2101.0000", key+".3900.0000");
+                addEcritureDoubleToJournalClot(libelle, currencyAvoir218x, "2000.2101.0000", key + ".3900.0000");
                 this.info("CLOTURE_COMPTE_EXPLOITATION_AVS_AI_ECRITURE_CUMUL_AVOIR_AVS_OK");
             } else {
                 this.warn("CLOTURE_COMPTE_EXPLOITATION_AVS_AI_ECRITURE_CUMUL_AVOIR_AVS_ERROR");
@@ -1768,9 +1913,9 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * 13. Clôture des comptes d'exploitation, d'administration, d'investissement (autres comptabilités)
-     * 
-     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
+     *
      * @throws Exception
+     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
      */
     private void clotureComptesNonBilanNonAvs() throws Exception {
         ouvertureJournalClot3();
@@ -1823,16 +1968,16 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Method clotureOuvertureAnnuelleAVSCompteBilan.
-     * 
+     * <p>
      * La clôture des comptes consiste à solder tous les comptes de bilan par l'intermédiaire d'un compte de clôture.
-     * 
+     * <p>
      * <br/>
      * <br/>
      * 14. Clôture des comptes (bouclement annuel AVS) <br/>
      * 16. Réouverture des solde (bouclement annuel AVS)
-     * 
-     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
+     *
      * @throws Exception
+     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
      */
     private void clotureOuvertureAnnuelleAVSCompteBilan() throws Exception {
 
@@ -1945,15 +2090,15 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Method comptabilisationJournauxCloture.
-     * 
+     * <p>
      * Comptabilisation des journaux de clôture. Les journaux dans l'état ANNULE ne sont pas comptabilisé.
-     * 
+     * <p>
      * <br/>
      * <br/>
      * 18. Comptabilisation définitive des journaux (commune)
-     * 
-     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
+     *
      * @throws Exception
+     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
      */
     private void comptabilisationJournauxCloture() throws Exception {
         if ((journalClot != null) && !journalClot.isNew() && !ICGJournal.CS_ETAT_ANNULE.equals(journalClot.getIdEtat())) {
@@ -1976,7 +2121,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Comptabiliser les journaux de l'exercice comptable encore ouvert sur la periode.
-     * 
+     *
      * @throws Exception
      */
     private void comptabiliserJournaux() throws Exception {
@@ -2015,10 +2160,9 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * 2. Contrôle du compte 1106 et 2740 (bouclement mensuel AVS)
-     * 
      *
-     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
      * @throws Exception
+     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
      */
     private void controleCompte_1106_2740() throws Exception {
         CGSecteurAVSManager AVSmanager = new CGSecteurAVSManager();
@@ -2085,7 +2229,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
      * -------------------------------------------------------- <br>
      * Test si il y a des comptes passif avec un solde au debit <br>
      * ou si il y a des comptes actifs avec un solde au credit <br>
-     * 
+     *
      * @throws Exception
      */
     private boolean controleCompteActifPassif() throws Exception {
@@ -2146,16 +2290,16 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Bug 5292
-     * 
+     * <p>
      * Crée les écrtures nécessaire pour annuler le montant négatif.
-     * 
+     *
      * @param plan
      * @param totalDebit
      * @param totalCredit
      * @throws Exception
      */
     private void createEcrituresCorrectionMvtNegatif(CGPlanComptableViewBean plan, FWCurrency totalDebit,
-            FWCurrency totalCredit) throws Exception {
+                                                     FWCurrency totalCredit) throws Exception {
         if ((journalClot != null) && !journalClot.isNew() && !ICGJournal.CS_ETAT_ANNULE.equals(journalClot.getIdEtat())) {
             // Bug 5292
             // - Utiliser le journal de cloture
@@ -2191,14 +2335,14 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Creation de l'exercice suivant si n'existe pas.
-     * 
+     *
      * @param transaction
      * @param dateDebutExerciceSuiv
      * @param dateFinExerciceSuiv
      * @throws Exception
      */
     private void createExerciceSuivant(BTransaction transaction, JADate dateDebutExerciceSuiv,
-            JADate dateFinExerciceSuiv) throws Exception {
+                                       JADate dateFinExerciceSuiv) throws Exception {
         this.info("OUVERTURE_PERIODE_SUIVANTE_CREATION_EXERCICE");
         exerciceSuiv = new CGExerciceComptable();
         exerciceSuiv.setSession(getSession());
@@ -2211,7 +2355,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Création de la période annuelle.
-     * 
+     *
      * @param transaction
      * @param periodeComptable
      * @return
@@ -2254,7 +2398,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Create periode suivant.
-     * 
+     *
      * @param transaction
      * @param dateDebutPeriodeSuiv
      * @param dateFinPeriodeSuiv
@@ -2262,7 +2406,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
      * @throws Exception
      */
     private void createPeriodeSuivante(globaz.globall.db.BTransaction transaction, JADate dateDebutPeriodeSuiv,
-            JADate dateFinPeriodeSuiv, String idExerciceComptable) throws Exception {
+                                       JADate dateFinPeriodeSuiv, String idExerciceComptable) throws Exception {
         CGPeriodeComptable perSuiv = new CGPeriodeComptable();
         perSuiv.setSession(getSession());
         perSuiv.setIdExerciceComptable(idExerciceComptable);
@@ -2277,18 +2421,15 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Method doEcritureLissage1990.
-     * 
+     * <p>
      * Effectue les ecritures pour le lissage du secteur 1990, avec no compte se termiant par '9'
-     * 
-     * @param beginWithIdExterne
-     *            8 premier numéro des comptes à lisser (ex. 1990.1207)
-     * @param compte1990_120s_xxx9
-     *            Comptes 120s à clôturer pour lissage
-     * @param compte1990_220s_xxx9
-     *            Comptes 220s à clôturer pour lisser
+     *
+     * @param beginWithIdExterne   8 premier numéro des comptes à lisser (ex. 1990.1207)
+     * @param compte1990_120s_xxx9 Comptes 120s à clôturer pour lissage
+     * @param compte1990_220s_xxx9 Comptes 220s à clôturer pour lisser
      */
     private void doEcritureLissage1990(String s, CGPlanComptableViewBean compte1990_120s_xxx9,
-            CGPlanComptableViewBean compte1990_220s_xxx9, CGPeriodeComptable periode) throws Exception {
+                                       CGPlanComptableViewBean compte1990_220s_xxx9, CGPeriodeComptable periode) throws Exception {
         // Calcul de la somme des soldes cumulé de tous les comptes 120s et 220s
         CGPlanComptableManager planMgr1990_120s = new CGPlanComptableManager();
         planMgr1990_120s.setSession(getSession());
@@ -2357,7 +2498,107 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
             // Le journal ou seront extourner les contres-écritures
             CGJournal journalExt = ouvertureJournalExtournePourLissage(periodeExtourne, idExerciceLissage);
 
-            for (Iterator<String> iter = keys.iterator(); iter.hasNext();) {
+            for (Iterator<String> iter = keys.iterator(); iter.hasNext(); ) {
+                String key = iter.next();
+
+                FWCurrency solde = mapComptesALisser.get(key);
+                // Bug 5689
+                FWCurrency soldeNegatif = new FWCurrency(solde.doubleValue());
+                soldeNegatif.negate();
+
+                addEcrituresDebitCredit(periode.getDateDebut(), journalClot.getIdJournal(),
+                        periode.getIdExerciceComptable(),
+                        getLibelleToFit(50, label("LISSAGE_SECTEUR_1990_LABEL_ECRITURE_REFLETE_CUMUL")), solde, key,
+                        idExterneCpt);
+
+                addEcrituresDebitCredit(periodeExtourne.getDateFin(), journalExt.getIdJournal(),
+                        periodeExtourne.getIdExerciceComptable(),
+                        getLibelleToFit(50, label("LISSAGE_SECTEUR_1990_LABEL_ECRITURE_REFLETE_CUMUL")), soldeNegatif,
+                        key, idExterneCpt);
+            }
+        }
+    }
+
+    /**
+     * Method doEcritureLissage1990PTRA.
+     * <p>
+     * Effectue les ecritures pour le lissage du secteur 1990, avec no compte se termiant par '9' version PTRA
+     *
+     * @param beginWithIdExterne   8 premier numéro des comptes à lisser (ex. 1990.1207)
+     * @param compte1990_120s_xxx9 Comptes 120s à clôturer pour lissage
+     * @param compte1990_220s_xxx9 Comptes 220s à clôturer pour lisser
+     */
+    private void doEcritureLissage1990PTRA(String s, CGPlanComptableViewBean compte1990_125s_xxx9,
+                                           CGPlanComptableViewBean compte1990_225s_xxx9, CGPeriodeComptable periode) throws Exception {
+        // Calcul de la somme des soldes cumulé de tous les comptes 120s et 220s
+        CGPlanComptableManager planMgr1990_125s = new CGPlanComptableManager();
+        planMgr1990_125s.setSession(getSession());
+        planMgr1990_125s.setForIdMandat(exercice.getIdMandat());
+        planMgr1990_125s.setForIdExerciceComptable(exercice.getIdExerciceComptable());
+        planMgr1990_125s.setBeginWithIdExterne("1990.125" + s);
+        planMgr1990_125s.setForIdPeriodeComptable(null);
+        planMgr1990_125s.setForEstPeriode(new Boolean(true));
+        planMgr1990_125s.find(getTransaction(), BManager.SIZE_NOLIMIT);
+
+        Map<String, FWCurrency> mapComptesALisser = new HashMap<String, FWCurrency>();
+
+        FWCurrency sommeSoldeCumul = new FWCurrency(0);
+        for (int k = 0; k < planMgr1990_125s.size(); k++) {
+            CGPlanComptableViewBean compte_1990_125s = (CGPlanComptableViewBean) planMgr1990_125s.getEntity(k);
+
+            FWCurrency soldeCumule = CGSolde.computeSoldeCumule(exercice.getIdExerciceComptable(),
+                    compte_1990_125s.getIdCompte(), periode.getIdPeriodeComptable(), "0", getSession(), true);
+            if (!soldeCumule.isZero()) {
+                mapComptesALisser.put(compte_1990_125s.getIdExterne(), soldeCumule);
+                sommeSoldeCumul.add(soldeCumule);
+            }
+        }
+
+        CGPlanComptableManager planMgr1990_220s = new CGPlanComptableManager();
+        planMgr1990_220s.setSession(getSession());
+        planMgr1990_220s.setForIdMandat(exercice.getIdMandat());
+        planMgr1990_220s.setForIdExerciceComptable(exercice.getIdExerciceComptable());
+        planMgr1990_220s.setBeginWithIdExterne("1990.225" + s);
+        planMgr1990_220s.setForIdPeriodeComptable(null);
+        planMgr1990_220s.setForEstPeriode(new Boolean(true));
+        planMgr1990_220s.find(getTransaction(), BManager.SIZE_NOLIMIT);
+
+        for (int k = 0; k < planMgr1990_220s.size(); k++) {
+            CGPlanComptableViewBean compte_1990_220s = (CGPlanComptableViewBean) planMgr1990_220s.getEntity(k);
+
+            FWCurrency soldeCumule = CGSolde.computeSoldeCumule(exercice.getIdExerciceComptable(),
+                    compte_1990_220s.getIdCompte(), periode.getIdPeriodeComptable(), "0", getSession(), true);
+            if (!soldeCumule.isZero()) {
+                mapComptesALisser.put(compte_1990_220s.getIdExterne(), soldeCumule);
+                sommeSoldeCumul.add(soldeCumule);
+            }
+        }
+
+        if (mapComptesALisser.size() > 0) {
+            Set<String> keys = mapComptesALisser.keySet();
+
+            String idExterneCpt = "";
+            if (sommeSoldeCumul.isPositive()) {
+                idExterneCpt = compte1990_125s_xxx9.getIdExterne();
+            } else {
+                idExterneCpt = compte1990_225s_xxx9.getIdExterne();
+            }
+
+            // ////////////////////////////////////////////////////////////////////////////////////////
+            // Récupération de la période pour extourne
+            // La période pour extourne est déjà créer par la méthode ouverturePeriodeSuiv().
+
+            // Si période actuelle est la période anuelle, récupérer la période de janvier.
+            // Si periode actuelle == décembre, récupéré la période anuelle
+            // Sinon, récupérer la période suivante
+            // La période ou seront extourner les contres-écritures
+            CGPeriodeComptable periodeExtourne = getPeriodeExtournePourLissage(periode);
+            // L'id de l'exercice ou seront extourner les contres-écritures
+            String idExerciceLissage = getIdExercExtournePourLissage(periode);
+            // Le journal ou seront extourner les contres-écritures
+            CGJournal journalExt = ouvertureJournalExtournePourLissage(periodeExtourne, idExerciceLissage);
+
+            for (Iterator<String> iter = keys.iterator(); iter.hasNext(); ) {
                 String key = iter.next();
 
                 FWCurrency solde = mapComptesALisser.get(key);
@@ -2384,7 +2625,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
      * Les comptes de résultat de charges et produits du secteur 2 (2990.3900.0000 & 2990.4900.0000) doivent avoir des
      * montants opposés pour la période de cloture. <br/>
      * Il faut mettre ces soldes à zéro en transferant le solde d'un compte dans l'autre.
-     * 
+     *
      * @throws Exception
      */
     private void equilibrageCompteChargeProduitSecteur2() throws Exception {
@@ -2410,7 +2651,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.04.2003 14:35:53)
-     * 
+     *
      * @param msg String
      */
     private void error(String msg) {
@@ -2419,7 +2660,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.04.2003 14:35:53)
-     * 
+     *
      * @param msg String
      */
     private void error(String codeLabel, String msg) {
@@ -2456,7 +2697,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Retrouve l'idcompte en fonction de l'idexterne et de l'exercice comptable.
-     * 
+     *
      * @param idExterne
      * @param idExerciceComptable
      * @return
@@ -2483,7 +2724,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
      * Method getIdExercExtournePourLissage.
      * <p>
      * Retourne l'id de l'exercice d'extourne pour les contre-écritures du lissage du secteur 1990
-     * 
+     *
      * @param periode ou seront extourner les contres-écritures de lissage
      * @return String l'id de l'exercice comptable ou seront extourner les contre-écritures
      */
@@ -2499,7 +2740,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Retourne l'id externe du compte de cloture du domaine spécifié.
-     * 
+     *
      * @param secteur
      * @param domaine
      * @return
@@ -2527,7 +2768,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Retourne l'id externe du compte de la contre écriture pour le masque id externe spécifié.
-     * 
+     *
      * @param secteur
      * @param forIdExterne
      * @return
@@ -2552,7 +2793,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (20.03.2003 14:53:42)
-     * 
+     *
      * @return String
      */
     public String getIdPeriodeComptable() {
@@ -2563,7 +2804,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
      * Method getLibelleToFit.
      * <p>
      * Retourne le libelle en le troncant à maxSize char si plus grand.
-     * 
+     *
      * @param maxSize
      * @param libelle
      * @return
@@ -2580,7 +2821,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (25.04.2003 14:37:25)
-     * 
+     *
      * @return CGPeriodeComptable
      */
     public CGPeriodeComptable getPeriode() {
@@ -2599,14 +2840,11 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Method getPeriodeExtournePourLissage.
-     * 
+     * <p>
      * Retourne la période d'extourne pour les contre-écritures du lissage du secteur 1990
-     * 
-     * @param periode
-     *            La période ou seront extourner les contres-écritures
-     * 
+     *
+     * @param periode La période ou seront extourner les contres-écritures
      * @return CGPeriodeComptable la période d'extourne
-     * 
      * @throws Exception
      */
     private CGPeriodeComptable getPeriodeExtournePourLissage(CGPeriodeComptable periode) throws Exception {
@@ -2641,29 +2879,24 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (29.04.2003 18:36:40)
-     * 
      *
+     * @param codeLabel String
      * @return String
-     * @param codeLabel
-     *            String
      */
     private String global(String codeLabel) {
         return getSession().getLabel("GLOBAL_" + codeLabel);
     }
 
     /**
-     * @param codeLabel
-     *            String
+     * @param codeLabel String
      */
     private void info(String codeLabel) {
         this.info(codeLabel, "");
     }
 
     /**
-     * @param codeLabel
-     *            label
-     * @param msg
-     *            message aditionnel au label
+     * @param codeLabel label
+     * @param msg       message aditionnel au label
      */
     private void info(String codeLabel, String msg) {
         getMemoryLog().logMessage(
@@ -2673,7 +2906,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Initialisation des objects pour le process
-     * 
+     *
      * @return
      * @throws Exception
      */
@@ -2776,11 +3009,9 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (29.04.2003 18:36:40)
-     * 
      *
+     * @param codeLabel String
      * @return String
-     * @param codeLabel
-     *            String
      */
     private String label(String codeLabel) {
         return getSession().getLabel(CGPeriodeComptableBouclementProcess.LABEL_PREFIX + codeLabel);
@@ -2791,9 +3022,9 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
      * <br/>
      * Le lissage du secteur 1990 permet de présenter dans les comptes un solde unique, <br/>
      * dette ou avoir, envers un secteur comptable.
-     * 
-     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
+     *
      * @throws Exception
+     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
      */
     private void lissageSecteur_1990() throws Exception {
         // Lissage des comptes 1990.120X.XXX0
@@ -2931,15 +3162,155 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
             }
         }
 
+        //PTRA
+        if (isPTRA.equals("true")) {
+            planManager = new CGPlanComptableManager();
+            planManager.setSession(getSession());
+            planManager.setForIdMandat(exercice.getIdMandat());
+            planManager.setForIdExerciceComptable(exercice.getIdExerciceComptable());
+            planManager.setBeginWithIdExterne("1990.125");
+            planManager.setEndWithIdExterne("0");
+            planManager.setForIdPeriodeComptable(null);
+            planManager.setForEstPeriode(new Boolean(true));
+            planManager.find(getTransaction(), BManager.SIZE_NOLIMIT);
+            if (planManager.size() == 0) {
+                this.warn("LISSAGE_SECTEUR_1990_AUCUN_COMPTE_1990_125X_XXX0");
+            } else {
+                for (int i = 0; i < planManager.size(); i++) {
+                    CGPlanComptableViewBean compte125X = (CGPlanComptableViewBean) planManager.getEntity(i);
+                    // CGSolde solde = new CGSolde();
+                    // solde.setSession(getSession());
+                    // solde.setIdSolde(compte120X.getIdSolde());
+                    // solde.retrieve(getTransaction());
+                    // if (solde.isNew()) {
+                    // solde.setIdExerComptable(exercice.getIdExerciceComptable());
+                    // solde.setIdCompte(compte120X.getIdCompte());
+                    // solde.setIdPeriodeComptable(getIdPeriodeComptable());
+                    // solde.setEstPeriode(new Boolean(true));
+                    // }
+                    //
+
+                    FWCurrency soldeCumul1 = CGSolde.computeSoldeCumule(exercice.getIdExerciceComptable(),
+                            compte125X.getIdCompte(), periode.getIdPeriodeComptable(), "0", getSession(), true);
+
+                    if (!soldeCumul1.isZero()) {
+                        String idExterne = "1990.225" + compte125X.getIdExterne().substring(8, 14);
+                        CGPlanComptableManager planManager2 = new CGPlanComptableManager();
+                        planManager2.setSession(getSession());
+                        planManager2.setForIdMandat(exercice.getIdMandat());
+                        planManager2.setForIdExerciceComptable(exercice.getIdExerciceComptable());
+                        planManager2.setForIdExterne(idExterne);
+                        planManager2.setForIdPeriodeComptable(null);
+                        planManager2.setForEstPeriode(new Boolean(true));
+                        planManager2.find(getTransaction(), BManager.SIZE_NOLIMIT);
+                        if (planManager2.size() == 0) {
+                            throw (new Exception(label("LISSAGE_SECTEUR_1990_COMPTE_1990_225X_INEXISTANT") + idExterne));
+                        }
+                        CGPlanComptableViewBean compte225X = (CGPlanComptableViewBean) planManager2.getFirstEntity();
+                        // CGSolde solde2 = new CGSolde();
+                        // solde2.setSession(getSession());
+                        // solde2.setIdSolde(compte220X.getIdSolde());
+                        // solde2.retrieve(getTransaction());
+                        //
+                        // if (solde2.isNew()) {
+                        // solde2.setIdExerComptable(exercice.getIdExerciceComptable());
+                        // solde2.setIdCompte(compte220X.getIdCompte());
+                        // solde2.setIdPeriodeComptable(getIdPeriodeComptable());
+                        // solde2.setEstPeriode(new Boolean(true));
+                        // }
+
+                        // FWCurrency soldeCumul2 = new FWCurrency(solde2.computeSoldeCumule(false));
+                        FWCurrency soldeCumul2 = CGSolde.computeSoldeCumule(exercice.getIdExerciceComptable(),
+                                compte225X.getIdCompte(), periode.getIdPeriodeComptable(), "0", getSession(), true);
+                        if (!soldeCumul2.isZero()) {
+                            FWCurrency cumul = new FWCurrency(soldeCumul1.toString());
+                            cumul.add(soldeCumul2);
+
+                            if (cumul.isPositive()) {
+                                FWCurrency montant = new FWCurrency(soldeCumul2.toString());
+                                montant.negate();
+
+                                String libelle = getLibelleToFit(50,
+                                        label("LISSAGE_SECTEUR_1990_LABEL_ECRITURE_REFLETE_CUMUL"));
+                                addEcritureDoubleToJournalClot(libelle, montant, compte125X.getIdExterne(), ""
+                                        + compte125X.getIdExterne().charAt(8) + compte125X.getIdExterne().charAt(10)
+                                        + compte125X.getIdExterne().charAt(11) + compte125X.getIdExterne().charAt(12)
+                                        + ".2201.0000");
+
+                                // Contre écriture
+                                libelle = getLibelleToFit(50, label("LISSAGE_SECTEUR_1990_LABEL_ECRITURE_COMPTE_A_ZERO"));
+                                addEcritureDoubleToJournalClot(libelle, montant, "" + compte125X.getIdExterne().charAt(8)
+                                        + compte125X.getIdExterne().charAt(10) + compte125X.getIdExterne().charAt(11)
+                                        + compte125X.getIdExterne().charAt(12) + ".1201.0000", compte125X.getIdExterne());
+                            } else {
+                                String libelle = getLibelleToFit(50,
+                                        label("LISSAGE_SECTEUR_1990_LABEL_ECRITURE_REFLETE_CUMUL"));
+                                addEcritureDoubleToJournalClot(
+                                        libelle,
+                                        soldeCumul1,
+                                        "" + compte125X.getIdExterne().charAt(8) + compte125X.getIdExterne().charAt(10)
+                                                + compte125X.getIdExterne().charAt(11)
+                                                + compte125X.getIdExterne().charAt(12) + ".1201.0000",
+                                        compte225X.getIdExterne());
+
+                                // Contre écriture
+                                libelle = getLibelleToFit(50, label("LISSAGE_SECTEUR_1990_LABEL_ECRITURE_COMPTE_A_ZERO"));
+                                addEcritureDoubleToJournalClot(libelle, soldeCumul1, compte125X.getIdExterne(), ""
+                                        + compte125X.getIdExterne().charAt(8) + compte125X.getIdExterne().charAt(10)
+                                        + compte125X.getIdExterne().charAt(11) + compte125X.getIdExterne().charAt(12)
+                                        + ".2201.0000");
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Lissage des comptes 1990.125s.xxx9
+
+            // Secteur no avs à traiter : 5,6,7,8
+            for (int i = 5; i <= 8; i++) {
+
+                String s = String.valueOf(i);
+                planManager = new CGPlanComptableManager();
+                planManager.setSession(getSession());
+                planManager.setForIdExterne("1990.125" + s + ".9999");
+                planManager.setSession(getSession());
+                planManager.setForIdMandat(exercice.getIdMandat());
+                planManager.setForIdExerciceComptable(exercice.getIdExerciceComptable());
+                planManager.setForEstPeriode(new Boolean(false));
+                planManager.find(getTransaction(), BManager.SIZE_NOLIMIT);
+
+                if (planManager.size() == 0) {
+                    this.warn("LISSAGE_SECTEUR_1990_AUCUN_COMPTE_1990_120X_XXX9", "1990.125" + s + ".9999");
+                } else {
+                    CGPlanComptableViewBean compte1990_125s_xxx9 = (CGPlanComptableViewBean) planManager.getFirstEntity();
+
+                    planManager.setForIdExterne("1990.225" + s + ".9999");
+                    planManager.find(getTransaction(), BManager.SIZE_NOLIMIT);
+
+                    if (planManager.size() == 0) {
+                        this.warn("LISSAGE_SECTEUR_1990_AUCUN_COMPTE_1990_120X_XXX9", "1990.220" + s + ".9999");
+                    } else {
+                        CGPlanComptableViewBean compte1990_225s_xxx9 = (CGPlanComptableViewBean) planManager
+                                .getFirstEntity();
+                        doEcritureLissage1990PTRA(s, compte1990_125s_xxx9, compte1990_225s_xxx9, periode);
+                    }
+                }
+            }
+
+        }
+
+
         if ((journalExtourne != null) && bouclement.isBouclementMensuelAVS().booleanValue()) {
             journalExtourne.comptabiliser(this);
         }
     }
 
+
     /**
      * Ouverture du journal de ouverture de la période de janvier (idJournal2). <br/>
      * Récupération de la période de janvier.
-     * 
+     *
      * @return
      * @throws Exception
      */
@@ -2956,10 +3327,9 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * 4. Ouverture d'un nouveau journal de clôture (commun)
-     * 
      *
-     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
      * @throws Exception
+     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
      */
     private void ouvertureJournalClot() throws Exception {
         journalClot = new CGJournal();
@@ -2985,9 +3355,8 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (29.04.2003 16:47:15)
-     * 
-     * @exception Exception
-     *                La description de l'exception.
+     *
+     * @throws Exception La description de l'exception.
      */
     private void ouvertureJournalClot2(CGPeriodeComptable periodeOuverture) throws Exception {
         if (JadeStringUtil.isIntegerEmpty(periode.getIdJournal2())) {
@@ -3013,9 +3382,8 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (29.04.2003 16:47:15)
-     * 
-     * @exception Exception
-     *                La description de l'exception.
+     *
+     * @throws Exception La description de l'exception.
      */
     private void ouvertureJournalClot3() throws Exception {
         if (JadeStringUtil.isIntegerEmpty(periode.getIdJournal3())) {
@@ -3127,10 +3495,10 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
      * 5. Ouverture de la période suivante (commun) <br/>
      * 6. Ouverture de l'exercice suivant (commun) <br/>
      * 5 & 6. Ouverture de la période suivante et de l'exercice suivant (commun)
-     * 
-     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
+     *
      * @param transaction
      * @throws Exception
+     * @see U:\05 - Projets\Redévelopp.AVS\Analyse\Helios\Analyse\Helios - les traitements.htm
      */
     private void ouverturePeriodeSuiv(globaz.globall.db.BTransaction transaction) throws Exception {
         if (periode.isCloture()) {
@@ -3313,9 +3681,8 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (20.03.2003 14:53:42)
-     * 
-     * @param newIdJournal
-     *            String
+     *
+     * @param newIdJournal String
      */
     public void setIdPeriodeComptable(String newidPeriodeComptable) {
         idPeriodeComptable = newidPeriodeComptable;
@@ -3327,7 +3694,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Contrôle l'état des journaux de comptabilité fournisseur.
-     * 
+     *
      * @throws Exception
      */
     private void testLynxJournaux() throws Exception {
@@ -3354,7 +3721,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Contrôle l'état des journaux de comptabilité auxiliaire.
-     * 
+     *
      * @throws Exception
      */
     private void testOsirisJournaux() throws Exception {
@@ -3380,7 +3747,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Le total débit (ou crédit) d'un compte ne peut pas être annoncé à la centrale avec un montant négatif.
-     * 
+     *
      * @throws Exception
      */
     private void testTotalDebitCreditCompteExploitation() throws Exception {
@@ -3431,7 +3798,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Transfert des comptes résultats (tous domaine) vers les comptes d'ouverture et clôture du Bilan.
-     * 
+     *
      * @param idCompteOuverture
      * @param periodeOuverture
      * @param totalTransfert
@@ -3439,7 +3806,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
      * @throws Exception
      */
     private void transfertSoldeComptaResultatNonAvs(String idCompteOuverture, CGPeriodeComptable periodeOuverture,
-            FWCurrency totalTransfert, CGPlanComptableViewBean planResultat) throws Exception {
+                                                    FWCurrency totalTransfert, CGPlanComptableViewBean planResultat) throws Exception {
         CGCompteManager compteManager = new CGCompteManager();
         compteManager.setSession(getSession());
         compteManager.setForIdMandat(mandat.getIdMandat());
@@ -3467,7 +3834,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Transfert des comptes actifs et passifs du Bilan vers les comptes d'ouverture et clôture du Bilan.
-     * 
+     *
      * @param idCompteOuverture
      * @param periodeOuverture
      * @param totalTransfert
@@ -3475,7 +3842,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
      * @throws Exception
      */
     private void transfertSoldeCompteActifPassifNonAvs(String idCompteOuverture, CGPeriodeComptable periodeOuverture,
-            FWCurrency totalTransfert, CGPlanComptableViewBean planResultat) throws Exception {
+                                                       FWCurrency totalTransfert, CGPlanComptableViewBean planResultat) throws Exception {
         CGCompteManager compteManager = new CGCompteManager();
         compteManager.setSession(getSession());
         compteManager.setForIdMandat(mandat.getIdMandat());
@@ -3508,7 +3875,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Transfert de solde sur le compte de clôture.
-     * 
+     *
      * @param idCompteCloture
      * @param compte
      * @param solde
@@ -3517,7 +3884,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
      * @throws Exception
      */
     private FWCurrency transfertSoldeToCompteCloture(String idCompteCloture, CGCompte compte, FWCurrency solde,
-            FWCurrency soldeMonnaieEtrangere, boolean generateDetteAvoir) throws Exception {
+                                                     FWCurrency soldeMonnaieEtrangere, boolean generateDetteAvoir) throws Exception {
         FWCurrency result = new FWCurrency(solde.toString());
         addEcritures(periode.getDateFin(), periode.getIdJournal3(), periode.getIdExerciceComptable(),
                 getLibelleToFit(50, label("CLOTURE_ANUNELLE_COMPTE_BILAN_LABEL_SOLDE_BALANCE")), solde,
@@ -3527,7 +3894,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Transfert de solde sur le compte d'ouverture.
-     * 
+     *
      * @param periodeOuverture
      * @param idCompteOuverture
      * @param compte
@@ -3536,7 +3903,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
      * @throws Exception
      */
     private void transfertSoldeToCompteOuverture(CGPeriodeComptable periodeOuverture, String idCompteOuverture,
-            CGCompte compte, FWCurrency solde, FWCurrency soldeMonnaieEtrangere, boolean generateDetteAvoir)
+                                                 CGCompte compte, FWCurrency solde, FWCurrency soldeMonnaieEtrangere, boolean generateDetteAvoir)
             throws Exception {
         addEcritures(periodeOuverture.getDateDebut(), periode.getIdJournal2(),
                 periodeOuverture.getIdExerciceComptable(),
@@ -3546,7 +3913,7 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * 8. Ventilation du compte 2000.1102.0000 (bouclement mensuel AVS)
-     * 
+     *
      * @throws Exception
      */
     private void ventilationCompte_2000_1102_000() throws Exception {
@@ -3634,9 +4001,8 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.04.2003 14:35:53)
-     * 
-     * @param msg
-     *            String
+     *
+     * @param msg String
      */
     private void warn(String msg) {
         this.warn(msg, "");
@@ -3648,9 +4014,8 @@ public class CGPeriodeComptableBouclementProcess extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.04.2003 14:35:53)
-     * 
-     * @param msg
-     *            String
+     *
+     * @param msg String
      */
     private void warn(String codeLabel, String msg) {
         getMemoryLog().logMessage(
