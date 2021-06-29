@@ -6,6 +6,7 @@
  */
 package globaz.apg.module.calcul.lamat;
 
+import globaz.apg.db.droits.APDroitMaternite;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.droits.APSituationProfessionnelleManager;
 import globaz.apg.helpers.droits.APSituationProfessionnelleHelper;
@@ -166,11 +167,6 @@ public class LAMatCalculateur {
 
                     montantLAMat = new BigDecimal("62");
 
-                    // Adaptations des montants LAMat bas salaire dans le cas d'une extension maternité
-                    if (joursSupplementairesPrisEnCompte != 0) {
-                        montantLAMat = new BigDecimal("0.00");
-                    }
-
                     // si le 80% du revenu moyen determinant est compris entre
                     // 62 et 280 CHF, la
                     // LAMat vaut ce 80% du revenu moyen determinant
@@ -193,7 +189,7 @@ public class LAMatCalculateur {
 
                     // Adaptations des montants LAMat complément 14 jours haut salaire dans le cas d'une extension maternité
                     if ((mj.compareTo(new BigDecimal("0.00")) == 0)) {
-                        if (joursSupplementairesPrisEnCompte >= Integer.parseInt(APProperties.DROIT_MAT_CANTONALE_DUREE_JOURS.getValue()) - Integer.parseInt(APProperties.DROIT_ACM_MAT_DUREE_JOURS.getValue())) {
+                        if (joursSupplementairesPrisEnCompte != 0 && joursSupplementairesPrisEnCompte >= (APDroitMaternite.getDureeDroitCantonale(session)) - (APDroitMaternite.getDureeDroitMat(session))) {
                             montantLAMat = montantLAMat.subtract(new BigDecimal("196"));
                         }
                     }
@@ -336,7 +332,7 @@ public class LAMatCalculateur {
                     montantLAMat = montantMax.subtract(new BigDecimal("196"));
 
                     // Adaptations des montants LAMat haut salaire dans le cas d'une extension maternité
-                    if (joursSupplementairesPrisEnCompte >= Integer.parseInt(APProperties.DROIT_MAT_CANTONALE_DUREE_JOURS.getValue()) - Integer.parseInt(APProperties.DROIT_ACM_MAT_DUREE_JOURS.getValue())) {
+                    if (joursSupplementairesPrisEnCompte != 0 && joursSupplementairesPrisEnCompte >= (APDroitMaternite.getDureeDroitCantonale(session)) - (APDroitMaternite.getDureeDroitMat(session))) {
                         if (montantLAMat.compareTo(new BigDecimal("133.6")) < 0) {
                             montantLAMat = new BigDecimal(0);
                         }

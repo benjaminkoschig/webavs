@@ -845,7 +845,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
 
             if (APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) {
-
                 return !JadeStringUtil.isIntegerEmpty(prestation.getNombreJoursSoldes()) ? Integer.parseInt(prestation.getNombreJoursSoldes()) : 0;
             }
         }
