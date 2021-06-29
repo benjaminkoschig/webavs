@@ -36,6 +36,7 @@ public class CACompteAnnexeManager extends BManager implements Serializable {
     private String forIdGenreCompte = new String();
     private String forIdJournal = new String();
     private String forIdRole = new String();
+    private String forIdRoleIn = new String();
     private String forIdTiers = new String();
     private Collection<String> forIdTiersIn = null;
     private String forMontantMinime = new String();
@@ -157,6 +158,14 @@ public class CACompteAnnexeManager extends BManager implements Serializable {
             }
             sqlWhere += CACompteAnnexe.FIELD_IDROLE + "="
                     + this._dbWriteNumeric(statement.getTransaction(), getForIdRole());
+        }
+
+        // Traitement du positionnement pour id rôle in
+        if (!JadeStringUtil.isBlank(getForIdRoleIn())) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+            sqlWhere += CACompteAnnexe.FIELD_IDROLE + " in (" + getForIdRoleIn() + ")" ;
         }
 
         if (!JadeStringUtil.isBlank(getForIdCompteAnnexeIn())) {
@@ -546,6 +555,13 @@ public class CACompteAnnexeManager extends BManager implements Serializable {
     }
 
     /**
+     * @return forIdRoleIn
+     */
+    public String getForIdRoleIn() {
+        return forIdRoleIn;
+    }
+
+    /**
      * Insérez la description de la méthode ici. Date de création : (20.12.2001 10:20:07)
      * 
      * @return String
@@ -788,8 +804,16 @@ public class CACompteAnnexeManager extends BManager implements Serializable {
     }
 
     /**
+     * @param newForIdRoleIn
+     *            String
+     */
+    public void setForIdRoleIn(String newForIdRoleIn) {
+        this.forIdRoleIn = newForIdRoleIn;
+    }
+
+    /**
      * Insérez la description de la méthode ici. Date de création : (20.12.2001 10:20:07)
-     * 
+     *
      * @param newForIdTiers
      *            String
      */

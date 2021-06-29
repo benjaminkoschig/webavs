@@ -4,6 +4,7 @@ import ch.globaz.common.document.reference.AbstractReference;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.exceptions.ExceptionMessage;
 import ch.globaz.exceptions.GlobazTechnicalException;
+import com.google.common.base.Joiner;
 import com.google.common.base.Throwables;
 import com.jcraft.jsch.SftpException;
 import globaz.caisse.helper.CaisseHelperFactory;
@@ -34,9 +35,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * CRON permettant le traitement des fichiers d'inscription eBill.
@@ -534,7 +533,12 @@ public class CAProcessImportInscriptionEBill extends BProcess {
 
                 manager.setForIdExterneRole(numeroAffilieFormate);
                 if (isPlusieursTypeAffilie) {
-                    if (inscriptionEBill.getRoleParitaire()) {
+                    if (inscriptionEBill.getRoleParitaire() && inscriptionEBill.getRolePersonnel()) {
+                        Set<String> idsRole = new HashSet();
+                        idsRole.add(IntRole.ROLE_AFFILIE_PARITAIRE);
+                        idsRole.add(IntRole.ROLE_AFFILIE_PERSONNEL);
+                        manager.setForIdRoleIn(Joiner.on(",").join(idsRole));
+                    } else if (inscriptionEBill.getRoleParitaire()) {
                         manager.setForIdRole(IntRole.ROLE_AFFILIE_PARITAIRE);
                     } else if (inscriptionEBill.getRolePersonnel()) {
                         manager.setForIdRole(IntRole.ROLE_AFFILIE_PERSONNEL);
@@ -553,7 +557,16 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                 }
             }
 
-            if (manager.getSize() == 1) {
+            if (inscriptionEBill.getRoleParitaire() && inscriptionEBill.getRolePersonnel() && manager.getSize() == 2) {
+                boolean inscriptionParitairePersonelSucces = true;
+                for (int i = 0; i < manager.getSize(); i++) {
+                    if (inscriptionParitairePersonelSucces) {
+                        CACompteAnnexe compteAnnexe = (CACompteAnnexe) manager.get(i);
+                        inscriptionParitairePersonelSucces = majCompteAnnexe(inscriptionEBill, numeroAdherent, inscriptionEBill.getEmail(), compteAnnexe);
+                    }
+                }
+                return inscriptionParitairePersonelSucces;
+            } else if (manager.getSize() == 1) {
                 CACompteAnnexe compteAnnexe = (CACompteAnnexe) manager.get(0);
                 return majCompteAnnexe(inscriptionEBill, numeroAdherent, inscriptionEBill.getEmail(), compteAnnexe);
             } else {
@@ -607,7 +620,12 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             manager.setSession(getSession());
             manager.setForIdExterneRole(numeroAffilie);
             if (isPlusieursTypeAffilie) {
-                if (inscriptionEBill.getRoleParitaire()) {
+                if (inscriptionEBill.getRoleParitaire() && inscriptionEBill.getRolePersonnel()) {
+                    Set<String> idsRole = new HashSet();
+                    idsRole.add(IntRole.ROLE_AFFILIE_PARITAIRE);
+                    idsRole.add(IntRole.ROLE_AFFILIE_PERSONNEL);
+                    manager.setForIdRoleIn(Joiner.on(",").join(idsRole));
+                } else if (inscriptionEBill.getRoleParitaire()) {
                     manager.setForIdRole(IntRole.ROLE_AFFILIE_PARITAIRE);
                 } else if (inscriptionEBill.getRolePersonnel()) {
                     manager.setForIdRole(IntRole.ROLE_AFFILIE_PERSONNEL);
@@ -620,13 +638,22 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                 manager.find(BManager.SIZE_NOLIMIT);
             } catch (Exception e) {
                 String erreurInterne = String.format(getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_RETRIEVE_ID_AFFILIE_FAILED"), numeroAffilie);
-                LOG.error(erreurInterne , e);
+                LOG.error(erreurInterne, e);
                 inscriptionEBill.setTexteErreurInterne(erreurInterne);
                 error.append(erreurInterne).append("\n").append(Throwables.getStackTraceAsString(e)).append("\n");
                 return false;
             }
 
-            if (manager.getSize() == 1) {
+            if (inscriptionEBill.getRoleParitaire() && inscriptionEBill.getRolePersonnel() && manager.getSize() == 2) {
+                boolean inscriptionParitairePersonelSucces = true;
+                for (int i = 0; i < manager.getSize(); i++) {
+                    if (inscriptionParitairePersonelSucces) {
+                        CACompteAnnexe compteAnnexe = (CACompteAnnexe) manager.get(i);
+                        inscriptionParitairePersonelSucces = majCompteAnnexe(inscriptionEBill, numeroAdherent, inscriptionEBill.getEmail(), compteAnnexe);
+                    }
+                }
+                return inscriptionParitairePersonelSucces;
+            } else if (manager.getSize() == 1) {
                 CACompteAnnexe compteAnnexe = (CACompteAnnexe) manager.get(0);
                 return majCompteAnnexe(inscriptionEBill, numeroAdherent, inscriptionEBill.getEmail(), compteAnnexe);
             } else {
