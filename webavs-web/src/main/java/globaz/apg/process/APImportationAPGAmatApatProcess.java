@@ -243,7 +243,7 @@ public class APImportationAPGAmatApatProcess extends BProcess {
 
     private String getNumeroAffilie(PRTiersWrapper tiers) throws Exception {
         AFAffiliationManager manager = new AFAffiliationManager();
-        String numeroAffilie = "N° d'affiliation non reconnu ou non défini";
+        String numeroAffilie = "";
         manager.setSession(bsession);
         manager.setForIdTiers(tiers.getIdTiers());
         manager.find(BManager.SIZE_NOLIMIT);
@@ -432,9 +432,10 @@ public class APImportationAPGAmatApatProcess extends BProcess {
                 return npaTrim;
             }else{
                 fileStatus.addInformation("NPA incorrect ! Celui-ci doit être dans un format numérique uniquement ! Valeur: "+npa);
+                fileStatus.addInformation("le numéro postal du droit sera à définir.");
             }
         }
-        return "";
+        return "1";
     }
 
     @Override
