@@ -8,7 +8,7 @@
 		   jaxb:version="2.1"
 		   xmlns:annox="http://annox.dev.java.net"
 		   jaxb:extensionBindingPrefixes="annox"
-		   version="1.0">
+		   version="1.1">
 	<xs:element name="configuration" type="clientconfig:clientConfigurationType">
 	<xs:annotation>
 		<xs:documentation>Configuration for the acor web client. Should be put (as a json file) in the client main
@@ -42,6 +42,10 @@
 			<xs:element name="demande" type="clientconfig:clientDemandeType" minOccurs="0" maxOccurs="1">
 					<xs:annotation><xs:documentation>Informations of the demande. These informations are used if they are not in the 'inhost in format'. For example with a new demand</xs:documentation></xs:annotation>
 			</xs:element>
+			<xs:element name="customMessage" type="clientconfig:customMessageType" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation><xs:documentation></xs:documentation></xs:annotation>
+			</xs:element>
+
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="clientDemandeType">
@@ -79,4 +83,32 @@
 			<xs:element name="nom" type="xs:string"/>
 		</xs:sequence>
 	</xs:complexType>
+
+	<xs:complexType name="customMessageType">
+		<xs:annotation>
+			<xs:documentation></xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="key" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Mmessage key, nead start with &amp;</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:pattern value="^[&amp;]"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="valueFr" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation><xs:documentation>French message</xs:documentation></xs:annotation>
+			</xs:element>
+			<xs:element name="valueDe" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation><xs:documentation>German message</xs:documentation></xs:annotation>
+			</xs:element>
+			<xs:element name="valueIt" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation><xs:documentation>Italian message</xs:documentation></xs:annotation>
+			</xs:element>
+         </xs:sequence>
+     </xs:complexType>        
+
 </xs:schema>

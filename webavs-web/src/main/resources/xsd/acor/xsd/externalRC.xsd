@@ -2,7 +2,7 @@
 <!-- Copyright : Centrale de Compensation AVS/AI, Genève (2009). -->
 <xs:schema xmlns="http://www.zas.admin.ch/RC" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.zas.admin.ch/RC" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.1">
 	<!-- Include de schémas -->
-	<xs:include schemaLocation="./annoncesRC/annoncesApgIj/annoncesApgIj-types.xsd"/>
+ 	<xs:include schemaLocation="./annoncesRC/annoncesApgIj/annoncesApgIj-types.xsd"/>
 	<xs:include schemaLocation="./annoncesRC/annoncesCompta/annoncesCompta-types.xsd"/>
 	<xs:include schemaLocation="./annoncesRC/annoncesPC/annoncesPC-types.xsd"/>
 	<xs:include schemaLocation="./annoncesRC/annoncesAI/annoncesAI-types.xsd"/>
