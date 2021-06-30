@@ -363,22 +363,22 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
             conditionDates.remove(null);
             listeDates.addAll(conditionDates);
         }
-        String date = "";
-        String dateMax = "";
-        for(String dateList : listeDates){
-            date = JadeDateUtil.getFirstDateOfMonth(dateList);
-            if(JadeStringUtil.isBlankOrZero(dateMax) || JadeDateUtil.isDateAfter(date,dateMax)){
-                dateMax = date;
-            }
-        }
-        try {
-            String dateDernierPaiement = JadeDateUtil.getFirstDateOfMonth(PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt());
-            if(!JadeDateUtil.areDatesEquals(dateMax,dateDernierPaiement)){
-                listeDates.add(dateDernierPaiement);
-            }
-        } catch (Exception e) {
-            throw new CalculException(e.getMessage());
-        }
+//        String date = "";
+//        String dateMax = "";
+//        for(String dateList : listeDates){
+//            date = JadeDateUtil.getFirstDateOfMonth(dateList);
+//            if(JadeStringUtil.isBlankOrZero(dateMax) || JadeDateUtil.isDateAfter(date,dateMax)){
+//                dateMax = date;
+//            }
+//        }
+//        try {
+//            String dateDernierPaiement = JadeDateUtil.getFirstDateOfMonth(PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt());
+//            if(!JadeDateUtil.areDatesEquals(dateMax,dateDernierPaiement)){
+//                listeDates.add(dateDernierPaiement);
+//            }
+//        } catch (Exception e) {
+//            throw new CalculException(e.getMessage());
+//        }
 
 
         return listeDates;

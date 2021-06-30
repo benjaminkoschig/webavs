@@ -827,7 +827,14 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 BigDecimal montantHome = new BigDecimal(getMontantHome(calculDonneesHome.getMontantHomes(), 1));
                 Float montantPCMensuel = Float.parseFloat(calculDonneesHome.getMontantPCMensuel());
                 Float montantAverser;
-                nbreMois = JadeDateUtil.getNbMonthsBetween(JadeDateUtil.getFirstDateOfMonth(calculDonneesHome.getDateDebutPCA()), JadeDateUtil.getLastDateOfMonth(calculDonneesHome.getDateFinPCA()));
+                String datefin;
+                if (calculDonneesHome.getDateFinPCA() == null) {
+                    datefin = calculDonneesHome.getDateFin();
+                } else {
+                    datefin = calculDonneesHome.getDateFinPCA();
+                }
+
+                nbreMois = JadeDateUtil.getNbMonthsBetween(JadeDateUtil.getFirstDateOfMonth(calculDonneesHome.getDateDebutPCA()), JadeDateUtil.getLastDateOfMonth(datefin));
                 if (montantHome.floatValue() + Float.parseFloat(calculDonneesHome.getMontantDepenses()) / 12.0 > montantPCMensuel) {
                     montantAverser = montantPCMensuel - (Float.parseFloat(calculDonneesHome.getMontantDepenses()) / 12);
                     montantAverser = montantAverser * nbreMois;
@@ -972,18 +979,18 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
         /**
          * Regroup les homes en suprimant les prix des chambres qui donnes des retenus en doubles.
          */
-        Map<String,CalculDonneesHome> mapHomeFilter = new HashMap<>();
+        Map<String, CalculDonneesHome> mapHomeFilter = new HashMap<>();
         for (JadeAbstractModel model : listHomes.getSearchResults()) {
             CalculDonneesHome home = (CalculDonneesHome) model;
-            String key = home.getIdHome()+home.getDateDebutDFH()+home.getDateFinDFH();
-            if(!mapHomeFilter.containsKey(key)){
-                mapHomeFilter.put(key,home);
+            String key = home.getIdHome() + home.getDateDebutDFH() + home.getDateFinDFH();
+            if (!mapHomeFilter.containsKey(key)) {
+                mapHomeFilter.put(key, home);
             }
 
         }
 
         for (CalculDonneesHome model : mapHomeFilter.values()) {
-            CalculDonneesHome home =  model;
+            CalculDonneesHome home = model;
 
 
             if (Boolean.TRUE.equals(home.getIsVersementDirect()) && mapToIDPCA.containsKey(home.getIdTiersRegroupement())) {
@@ -1023,15 +1030,12 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                         if ((donnee.getCsTypeVersement().equals(DonneeInterneHomeVersement.TYPE_RETENUS) && JadeStringUtil.isBlankOrZero(simplePCAccordeeBenef.getDateFin()))
                                 || (donnee.getCsTypeVersement().equals(DonneeInterneHomeVersement.TYPE_CREANCIER)
                                 && IsSamePeriode(simplePCAccordeeBenef.getDateDebut(), simplePCAccordeeBenef.getDateFin(), periode)
-                                && ! JadeStringUtil.isBlankOrZero(simplePCAccordeeBenef.getDateFin())
-                                 )) {
+                        )) {
                             homeVersementList.add(donnee);
                         }
                     }
                 }
             }
-
-
 
         }
     }
@@ -1059,7 +1063,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
 
     private boolean IsSamePeriode(String dateDebut, String dateFin, Periode periode) throws CalculException {
         if (JadeStringUtil.isBlankOrZero(dateFin)) {
-            if (isDateAfterOrEquals("01."+periode.getDateDebut(), "01."+dateDebut)) {
+            if (isDateAfterOrEquals("01." + periode.getDateDebut(), "01." + dateDebut)) {
                 return true;
             }
         } else {
@@ -1070,13 +1074,13 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                 Date dateFinPeriode = reader.parse(periode.getDateFin());
                 Date dateDebutPCA = reader.parse(dateDebut);
                 Date dateFinPCA = reader.parse(dateFin);
-                if(dateFinPCA.before(dateDebutPeriode) || dateDebutPCA.after(dateFinPeriode)  ){
+                if (dateFinPCA.before(dateDebutPeriode) || dateDebutPCA.after(dateFinPeriode)) {
                     return false;
                 } else {
                     return true;
                 }
             } catch (ParseException e) {
-              throw new CalculException(e.getMessage());
+                throw new CalculException(e.getMessage());
             }
         }
         return false;
