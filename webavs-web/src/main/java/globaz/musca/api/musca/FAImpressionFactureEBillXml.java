@@ -109,6 +109,10 @@ public class FAImpressionFactureEBillXml {
         if (enteteReference != null) {
             eBillFacture.setIsBulletinsDeSoldes(true);
         }
+        // Si facture originale a été généré sur papier et qu’entre-temps eBill a été activé, alors il faut générer un bulletin de soldes de type factures (sans FixedReference et DOCUMENT_TYPE_BILL au lien de DOCUMENT_TYPE_CREDITADVICE);
+        if (enteteReference != null && StringUtils.isNotEmpty(enteteReference.geteBillTransactionID())) {
+            eBillFacture.setBulletinsDeSoldesAvecFactureEBill(true);
+        }
         if(entete.getTotalFactureCurrency().getBigDecimalValue().compareTo(BigDecimal.valueOf(0)) < 0) {
             eBillFacture.setIsNotesCredit(true);
         }
@@ -297,8 +301,8 @@ public class FAImpressionFactureEBillXml {
         header.setCurrency(eBillFacture.getDevise());
         // header.setAccountAssignment(createAccountAssignment());
 
-        // Dans le cas d'un bulletin de soldes, ajoute le transactionID de l'entete de reference dans une balise de type FixedReference
-        if (eBillFacture.isBulletinsDeSoldes()) {
+        // Dans le cas d'un bulletin de soldes avec factures eBill, ajoute le transactionID de l'entete de reference dans une balise de type FixedReference
+        if (eBillFacture.isBulletinsDeSoldesAvecFactureEBill()) {
             header.getFixedReference().add(createFixedReference(of, enteteReference.geteBillTransactionID()));
         // Dans le cas d'une notes de crédit, ajoute le transactionID de l'entete dans une balise de type FixedReference
         } else if (eBillFacture.isNotesCredit()) {

@@ -3,13 +3,10 @@ package ch.globaz.common.document.reference;
 import ch.globaz.common.properties.PropertiesException;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.globall.db.BManager;
-import globaz.globall.db.BSession;
-import globaz.globall.util.JABVR;
 import globaz.globall.util.JACalendar;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.naos.util.AFIDEUtil;
-import globaz.osiris.db.comptes.CASection;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.api.ITIAdministration;
 import globaz.pyxis.constantes.IConstantes;
@@ -77,6 +74,7 @@ public class ReferenceEBill extends AbstractReference {
 
     private boolean isNotesCredit;
     private boolean isBulletinsDeSoldes;
+    private boolean isBulletinsDeSoldesAvecFactureEBill;
     private boolean isQR;
     private boolean isBVR;
     private boolean isBulletinNeutre;
@@ -121,7 +119,7 @@ public class ReferenceEBill extends AbstractReference {
     private void initTypeDocument() {
         if (isNotesCredit) {
             typeDocument = DOCUMENT_TYPE_CREDITADVICE;
-        } else if (isBulletinsDeSoldes) {
+        } else if (isBulletinsDeSoldesAvecFactureEBill) {
             typeDocument = DOCUMENT_TYPE_REMINDER;
         } else {
             typeDocument = DOCUMENT_TYPE_BILL;
@@ -336,6 +334,14 @@ public class ReferenceEBill extends AbstractReference {
 
     public void setIsBulletinsDeSoldes(boolean bulletinsDeSoldes) {
         isBulletinsDeSoldes = bulletinsDeSoldes;
+    }
+
+    public boolean isBulletinsDeSoldesAvecFactureEBill() {
+        return isBulletinsDeSoldesAvecFactureEBill;
+    }
+
+    public void setBulletinsDeSoldesAvecFactureEBill(boolean bulletinsDeSoldesAvecFactureEBill) {
+        isBulletinsDeSoldesAvecFactureEBill = bulletinsDeSoldesAvecFactureEBill;
     }
 
     public boolean isQR() {

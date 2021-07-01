@@ -4,6 +4,7 @@ import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWDefaultServletAction;
 import globaz.framework.controller.FWDispatcher;
 import globaz.framework.servlets.FWServlet;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
@@ -283,13 +284,25 @@ public class FAActionPassageFacturation extends FWDefaultServletAction {
             transaction = new BTransaction(viewBean.getSession());
             transaction.openTransaction();
 
+            // Contrôle si eBill est actif
             boolean isEBillActive = CAApplication.getApplicationOsiris().getCAParametres().isEbill(viewBean.getSession());
             if (isEBillActive) {
-                viewBean.setIdModuleFact(ServicesFacturation.getIdModFacturationByType(viewBean.getSession(), transaction,
-                        FAModuleFacturation.CS_MODULE_BULLETINS_SOLDES_EBILL)); //TODO ESVE FORCED?
+                FAModulePassageListViewBean vBean = new FAModulePassageListViewBean();
+                vBean.setSession((BSession) globaz.musca.translation.CodeSystem.getSession(session));
+                vBean.setForIdTypeModule(FAModuleFacturation.CS_MODULE_BULLETINS_SOLDES_EBILL);
+                vBean.setForIdPassage(viewBean.getIdPassage());
+                vBean.find(BManager.SIZE_NOLIMIT);
+                // Contrôle si le plan de facturation contient un module de type "Module_Bulletin_De_Soldes_EBill"
+                if (vBean.size() == 1) {
+                    viewBean.setIdModuleFact(ServicesFacturation.getIdModFacturationByType(viewBean.getSession(), transaction,
+                        FAModuleFacturation.CS_MODULE_BULLETINS_SOLDES_EBILL));
+                } else {
+                    viewBean.setIdModuleFact(ServicesFacturation.getIdModFacturationByType(viewBean.getSession(), transaction,
+                        FAModuleFacturation.CS_MODULE_BULLETINS_SOLDES));
+                }
             } else {
             viewBean.setIdModuleFact(ServicesFacturation.getIdModFacturationByType(viewBean.getSession(), transaction,
-                        FAModuleFacturation.CS_MODULE_BULLETINS_SOLDES)); //TODO ESVE FORCED?
+                        FAModuleFacturation.CS_MODULE_BULLETINS_SOLDES));
             }
             viewBean.setFromIdExterneRole(request.getParameter("fromIdExterneRole"));
             viewBean.setTillIdExterneRole(request.getParameter("tillIdExterneRole"));

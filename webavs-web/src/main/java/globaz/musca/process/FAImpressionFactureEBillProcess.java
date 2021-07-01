@@ -1036,18 +1036,18 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
             FAEnteteFacture entete = getAfactParEnteteFactureEBill(lignesParPaireIdExterneEBill.getKey(), getIdPassage());
             FAEnteteFacture enteteReference = getEnteteFactureReference(lignesParPaireIdExterneEBill.getKey());
 
-            CACompteAnnexe compteAnnexe = getCompteAnnexe(entete, getSession(), getTransaction());
-            CACompteAnnexe compteAnnexeReference = getCompteAnnexe(enteteReference, getSession(), getTransaction());
-            String reference = referencesSoldeParPaireIdExterne.get(lignesParPaireIdExterneEBill.getKey());
-            if (compteAnnexe != null && compteAnnexeReference != null
-                    && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())
-                    && !JadeStringUtil.isBlankOrZero(compteAnnexeReference.geteBillAccountID())
-                    && !JadeStringUtil.isBlankOrZero(enteteReference.geteBillTransactionID())) {
-                JadePublishDocument attachedDocument = removeAndReturnAttachedDocument(enteteReference);
-                creerFichierEBill(compteAnnexe, entete, enteteReference, lignesParPaireIdExterneEBill.getKey().getMontant(), lignesParPaireIdExterneEBill.getValue(), reference, attachedDocument);
-                factureEBill++;
+            if (entete != null && enteteReference != null) {
+                CACompteAnnexe compteAnnexe = getCompteAnnexe(entete, getSession(), getTransaction());
+                CACompteAnnexe compteAnnexeReference = getCompteAnnexe(enteteReference, getSession(), getTransaction());
+                String reference = referencesSoldeParPaireIdExterne.get(lignesParPaireIdExterneEBill.getKey());
+                if (compteAnnexe != null && compteAnnexeReference != null
+                        && !JadeStringUtil.isBlankOrZero(compteAnnexe.geteBillAccountID())
+                        && !JadeStringUtil.isBlankOrZero(compteAnnexeReference.geteBillAccountID())) {
+                    JadePublishDocument attachedDocument = removeAndReturnAttachedDocument(enteteReference);
+                    creerFichierEBill(compteAnnexe, entete, enteteReference, lignesParPaireIdExterneEBill.getKey().getMontant(), lignesParPaireIdExterneEBill.getValue(), reference, attachedDocument);
+                    factureEBill++;
+                }
             }
-
         }
     }
 
