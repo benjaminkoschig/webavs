@@ -382,9 +382,6 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
         entete.addEBillTransactionID(getTransaction());
         entete.update();
 
-        // met à jour le status eBill de la section
-        updateSectionEtatEtTransactionID(compteAnnexe, entete.getIdExterneFacture(), entete.geteBillTransactionID());
-
         // Initialisation de l'objet à marshaller dans la facture eBill
         FAImpressionFactureEBillXml factureEBill = new FAImpressionFactureEBillXml();
         factureEBill.setEntete(entete);
@@ -786,7 +783,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
                     traiterBulletinDeSoldesEBill();
                 } catch (Exception exception) {
                     LOGGER.error("Impossible de créer les fichiers eBill : " + exception.getMessage(), exception);
-                    getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getMessage(), FWMessage.ERREUR, this.getClass().getName());
+                    getMemoryLog().logMessage(getSession().getLabel("BODEMAIL_EBILL_FAILED") + exception.getCause().getMessage(), FWMessage.ERREUR, this.getClass().getName());
                 } finally {
                     closeServiceFtp();
                 }
@@ -999,31 +996,6 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
             }
         }
     }
-
-//    /**
-//     * Récupération de la référence dans le document.
-//     *
-//     * @param document : le document d'impression
-//     * @return le code référence.
-//     */
-//    private String getReference(FWIDocumentInterface document) {
-//        String reference;
-//        ReferenceQR qrFacture = null;
-//        ReferenceBVR bvrFacture = new ReferenceBVR();
-//        if (document instanceof CAImpressionBulletinsSoldes_Doc) {
-//            qrFacture = ((CAImpressionBulletinsSoldes_Doc) document).getQrFacture();
-//            bvrFacture = ((CAImpressionBulletinsSoldes_Doc) document).getBvr();
-//        } else if (document instanceof FAImpressionFacture_BVR_Doc) {
-//            qrFacture = ((FAImpressionFacture_BVR_Doc) document).getQrFacture();
-//            bvrFacture = ((FAImpressionFacture_BVR_Doc) document).getBvr();
-//        }
-//        if (Objects.nonNull(qrFacture)) {
-//            reference = qrFacture.getReferenceWithoutSpace();
-//        } else {
-//            reference = bvrFacture.getRefNoSpace();
-//        }
-//        return reference;
-//    }
 
     /**
      * Méthode permettant de traiter les bulletins de soldes eBill

@@ -68,6 +68,7 @@ public class ReferenceEBill extends AbstractReference {
     private String creCodePostal;
     private String creCasePostale;
     private String creLieu;
+    private String crePays;
     private String nomCaisse;
     private String creRueAdresse;
     private String creNumMaisonAdresse;
@@ -136,13 +137,15 @@ public class ReferenceEBill extends AbstractReference {
         creCasePostale = StringUtils.isNotBlank(addresseCre.getCasePostale()) ? addresseCre.getCasePostale() : null;
         creCodePostal = addresseCre.getNpa();
         creLieu = addresseCre.getLocalite();
+        crePays = addresseCre.getPaysIso();
     }
 
-    private TIAdresseDataSource chercheAdresseAvecCascade(String idTiers) throws Exception {
+    private TIAdresseDataSource chercheAdresseAvecCascade(String idTiers, String dateFacturation) throws Exception {
         AFAffiliationManager affiliationManager = new AFAffiliationManager();
         affiliationManager.setSession(getSession());
         affiliationManager.setForIdTiers(idTiers);
-        affiliationManager.find();
+        affiliationManager.setForEntreDate(dateFacturation);
+        affiliationManager.find(BManager.SIZE_NOLIMIT);
 
         if (affiliationManager.size() == 1) {
             AFAffiliation affiliation = (AFAffiliation) affiliationManager.getFirstEntity();
@@ -178,23 +181,23 @@ public class ReferenceEBill extends AbstractReference {
         if (listAdresses.size() == 1) {
             return listAdresses.get(0);
         } else {
-            throw new Exception("Impossible de retrouver une addresse unique.");
+            throw new Exception("Impossible de retrouver une adresse unique.");
         }
 
     }
 
     private void initAdresseDeb(String idTiers) throws Exception {
-        TIAdresseDataSource adresseDeb = chercheAdresseAvecCascade(idTiers);
+//        TIAdresseDataSource adresseDeb = chercheAdresse(idTiers, dateFacturation);
+//
+//        debNom = adresseDeb.fullLigne1;
+//        debRueAdresse = adresseDeb.rue;
+//        debNumMaisonAdresse = adresseDeb.numeroRue;
+//        debPays = adresseDeb.paysIso;
+//        debCodePostal = adresseDeb.localiteNpa;
+//        debCasePostale = StringUtils.isNotBlank(adresseDeb.casePostale) ? adresseDeb.casePostale : null;
+//        debLieu = adresseDeb.localiteNom;
 
-        debNom = adresseDeb.fullLigne1;
-        debRueAdresse = adresseDeb.rue;
-        debNumMaisonAdresse = adresseDeb.numeroRue;
-        debPays = adresseDeb.paysIso;
-        debCodePostal = adresseDeb.localiteNpa;
-        debCasePostale = StringUtils.isNotBlank(adresseDeb.casePostale) ? adresseDeb.casePostale : null;
-        debLieu = adresseDeb.localiteNom;
-
-        /*TIAbstractAdresseData adresseDeb = chercheAdresse(idTiers);
+        TIAbstractAdresseData adresseDeb = chercheAdresse(idTiers);
 
         debNom = adresseDeb.getNom();
         debRueAdresse = adresseDeb.getRue();
@@ -202,7 +205,7 @@ public class ReferenceEBill extends AbstractReference {
         debPays = adresseDeb.getPaysIso();
         debCodePostal = adresseDeb.getNpa();
         debCasePostale = adresseDeb.getCasePostale();
-        debLieu = adresseDeb.getLocalite();*/
+        debLieu = adresseDeb.getLocalite();
     }
 
     public void addIfNotEmpty(String value, StringBuffer stringBuffer, String separator) {
@@ -260,10 +263,9 @@ public class ReferenceEBill extends AbstractReference {
     }
 
     public String getCrePays() {
-        try {
-            return getCodePays();
-        } catch (Exception e) {
-            // Le code pays n'a pas été trouvé
+        if (StringUtils.isNotEmpty(crePays)) {
+            return crePays;
+        } else {
             return CODE_PAYS_DEFAUT;
         }
     }
