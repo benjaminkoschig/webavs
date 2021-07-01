@@ -56,7 +56,7 @@ public class APEnfantPatAction extends APAbstractDroitDTOAction {
     protected FWViewBeanInterface initViewBean(FWViewBeanInterface viewBean, APDroitDTO droitDTO, HttpSession session) {
         ((APEnfantPatViewBean) viewBean).setDroitDTO(droitDTO);
         ((APEnfantPatViewBean) viewBean).setTypeDemande(APTypePresationDemandeResolver.resolveEnumTypePrestation(session));
-
+        ((APEnfantPatViewBean) viewBean).setDateDebut(droitDTO.getDateDebutDroit());
         return viewBean;
     }
 }

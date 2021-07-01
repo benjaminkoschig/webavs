@@ -1,10 +1,12 @@
 package globaz.apg.module.calcul;
 
+import ch.globaz.common.domaine.Periode;
+import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.common.util.Dates;
-import globaz.apg.db.droits.APDroitLAPG;
-import globaz.apg.db.droits.APDroitProcheAidant;
-import globaz.apg.db.droits.APPeriodeComparable;
+import globaz.apg.db.droits.*;
 import globaz.apg.properties.APParameter;
+import globaz.apg.properties.APProperties;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -17,6 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public class APBasesCalculProcheAidantBuilder extends APBasesCalculBuilder{
 
@@ -51,30 +54,39 @@ public class APBasesCalculProcheAidantBuilder extends APBasesCalculBuilder{
      * ajouter les événements relatifs à l'enfant proche aidant à la
      * liste des commandes.
      */
-    private void ajouterEnfantPai(String dateDebut, String dateFin) throws ParseException {
-        // obtenir les date des débuts et de fin du droit
-        Date debut = DF.parse(dateDebut);
-        Calendar fin = getCalendarInstance();
+    private void ajouterEnfantPai(String dateDebut, String dateFin) throws Exception {
 
-        fin.setTime(DF.parse(dateFin));
+        // ajouter les enfants aux commandes
+        APEnfantMatManager mgr = new APEnfantMatManager();
 
-        // creer les commandes de début de droit et de find de droit à
-        // l'allocation proche aidant
-        EnfantMatCommand commandDebut = new EnfantMatCommand(debut, true);
-        EnfantMatCommand commandFin = new EnfantMatCommand(fin.getTime(), false);
+        mgr.setSession(session);
+        mgr.setForIdDroitMaternite(droit.getIdDroit());
+        mgr.find(session.getCurrentThreadTransaction(), BManager.SIZE_USEDEFAULT);
 
-        // 1 seul enfant par droit
-        commands.add(commandDebut);
-        commands.add(commandFin);
+        if(mgr.size() > 0) {
+            // controle l'age legale
+            Optional<Periode> periode = controleAgeLegal(mgr.<APEnfantMat>getContainerAsList().get(0), dateDebut, dateFin);
 
-        Calendar bCal = getCalendarInstance();
-        // couper par année si nécessaire
-        calendar.setTime(commandDebut.date);
-        bCal.setTime(commandFin.date);
+            if(periode != null) {
+                // creer les commandes de début de droit et de find de droit à
+                // l'allocation proche aidant
+                EnfantMatCommand commandDebut = new EnfantMatCommand(Dates.toJavaDate(Dates.toDate(periode.get().getDateDebut())), true);
+                EnfantMatCommand commandFin = new EnfantMatCommand(Dates.toJavaDate(Dates.toDate(periode.get().getDateFin())), false);
 
-        for (int year = calendar.get(Calendar.YEAR); year < bCal.get(Calendar.YEAR); ++year) {
-            calendar.set(year, Calendar.DECEMBER, 31);
-            commands.add(new NouvelleBaseCommand(calendar.getTime(), false));
+                // 1 seul enfant par droit
+                commands.add(commandDebut);
+                commands.add(commandFin);
+
+                Calendar bCal = getCalendarInstance();
+                // couper par année si nécessaire
+                calendar.setTime(commandDebut.date);
+                bCal.setTime(commandFin.date);
+
+                for (int year = calendar.get(Calendar.YEAR); year < bCal.get(Calendar.YEAR); ++year) {
+                    calendar.set(year, Calendar.DECEMBER, 31);
+                    commands.add(new NouvelleBaseCommand(calendar.getTime(), false));
+                }
+            }
         }
     }
 
@@ -83,7 +95,7 @@ public class APBasesCalculProcheAidantBuilder extends APBasesCalculBuilder{
         return Dates.formatSwiss(date);
     }
 
-    protected void calculNbJourSoldesMax(int nbJourSoldes) {
+    private void calculNbJourSoldesMax(int nbJourSoldes) {
         int jourMax = APParameter.PROCHE_AIDANT_JOUR_MAX.findValue(this.droit.getDateDebutDroit(), this.session);
 
         if(nbJourSoldes > jourMax) {
@@ -92,6 +104,20 @@ public class APBasesCalculProcheAidantBuilder extends APBasesCalculBuilder{
 
         ((APDroitProcheAidant) droit).setNbrJourSoldes(String.valueOf(nbJourSoldes));
         nbJoursSoldes = nbJourSoldes;
+    }
+
+    private Optional<Periode> controleAgeLegal(APEnfantMat enfant, String dateDebut, String dateFin) throws PropertiesException {
+        LocalDate dateNaissance = Dates.toDate(enfant.getDateNaissance());
+        LocalDate datelegale = dateNaissance.plusYears(Integer.parseInt(APProperties.PROCHE_AIDANT_AGE_LEGAL.getValue()));
+        LocalDate controleDate = Dates.toDate(dateDebut);
+        if(controleDate.isAfter(datelegale)) {
+            return Optional.empty();
+        }
+        controleDate = Dates.toDate(dateFin);
+        if(controleDate.isAfter(datelegale)) {
+            return Optional.of(new Periode(dateDebut, Dates.formatSwiss(datelegale)));
+        }
+        return Optional.of(new Periode(dateDebut, dateFin));
     }
 
 }

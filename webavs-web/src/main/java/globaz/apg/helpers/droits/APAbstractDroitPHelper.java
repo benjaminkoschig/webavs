@@ -303,7 +303,9 @@ public class APAbstractDroitPHelper extends PRAbstractHelper {
                                 // pas d'allocations d'exploitation si pour un droit
                                 // maternite
                                 if (!IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())
-                                        && !APGUtils.isTypeAllocationJourIsole(droit.getGenreService())) {
+                                        && !APGUtils.isTypeAllocationJourIsole(droit.getGenreService())
+                                        && !IAPDroitLAPG.CS_ALLOCATION_DE_PATERNITE.equals(droit.getGenreService())
+                                        && !IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(droit.getGenreService())) {
                                     sp.setIsAllocationExploitation(Boolean.TRUE);
                                 }
                             }

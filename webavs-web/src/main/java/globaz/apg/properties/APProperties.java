@@ -227,8 +227,14 @@ public enum APProperties implements IProperties {
         public boolean isValidValue(final String propertyValue) {
             return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
         }
-    }
+    },
 
+    PROCHE_AIDANT_AGE_LEGAL("proche.aidant.age.legal", "Age légal proche aidant") {
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidIntegerPropertyValue(propertyValue);
+        }
+    }
     ;
 
     private String description;

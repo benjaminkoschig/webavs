@@ -6,11 +6,16 @@
  */
 package globaz.apg.db.droits;
 
+import ch.globaz.common.util.Dates;
+import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.droits.IAPDroitMaternite;
+import globaz.apg.properties.APProperties;
 import globaz.globall.db.BStatement;
 import globaz.prestation.api.PRTypeDemande;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDate;
 
 /**
  * <H1>Description</H1>
@@ -32,11 +37,16 @@ public class APEnfantPat extends APSituationFamilialePat {
     private static final long serialVersionUID = 1L;
     private static final String NUMERO_AVS_OBLIGATOIRE = "NUMERO_AVS_OBLIGATOIRE";
     private static final String ERREUR_DATE_NAISSANCE_INCORRECTE = "DATE_NAISSANCE_INCORRECTE";
+    private static final String AGE_LEGALE_DEPASSE = "AGE_LEGALE_DEPASSE";
+
 
 
     @Setter
     @Getter
     private PRTypeDemande typeDemande = PRTypeDemande.PATERNITE;
+    @Setter
+    @Getter
+    private String dateDebut;
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -64,6 +74,10 @@ public class APEnfantPat extends APSituationFamilialePat {
 
         if(typeDemande.isProcheAidant()) {
             _propertyMandatory(statement.getTransaction(), this.noAVS, getSession().getLabel(NUMERO_AVS_OBLIGATOIRE));
+            LocalDate dateLegale = Dates.toDate(dateNaissance).plusYears(Integer.parseInt(APProperties.PROCHE_AIDANT_AGE_LEGAL.getValue()));
+            if(!hasErrors() && Dates.toDate(dateDebut).isAfter(dateLegale)) {
+                _addError(statement.getTransaction(), getSession().getLabel(AGE_LEGALE_DEPASSE));
+            }
         }
     }
 }
