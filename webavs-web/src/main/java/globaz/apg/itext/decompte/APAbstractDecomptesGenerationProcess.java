@@ -1653,7 +1653,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         final double montantAnnuelMax = montantJournalierMax * 360;
         boolean isMontantMax = false;
 
-        if(employeurRepartition.hasEmployeurRepartition()) {
+        if(employeurRepartition.hasEmployeurRepartition() && !JadeStringUtil.isBlankOrZero(derniereRepartition.getMontantJournalierRepartition())) {
             arguments[6] = derniereRepartition.getMontantJournalierRepartition();
         }
 
