@@ -116,23 +116,25 @@ public class APPrestationExtensionSplitter {
                                                final JADate dateFin,
                                                final int nombreJoursSoldes) {
         Gson gson = new Gson();
-        APResultatCalcul prestationBase = gson.fromJson(gson.toJson(prestationWrapper.getPrestationBase()), APResultatCalcul.class);
-        prestationBase.setResultatsCalculsSitProfessionnelle(new ArrayList<>());
+        APResultatCalcul copyPrestationBase = gson.fromJson(gson.toJson(prestationWrapper.getPrestationBase()), APResultatCalcul.class);
+        copyPrestationBase.setResultatsCalculsSitProfessionnelle(new ArrayList<>());
         prestationWrapper.getPrestationBase()
                          .getResultatsCalculsSitProfessionnelle().stream()
                          .map(o -> calculerMontantSituationProffessionnelleEtLeSet(o, nombreJoursSoldes))
-                         .forEach(prestationBase::addResultatCalculSitProfessionnelle);
-        prestationBase.setDateDebut(dateDebut);
-        prestationBase.setDateFin(dateFin);
-        prestationBase.setNombreJoursSoldes(nombreJoursSoldes);
-        return prestationBase;
+                         .forEach(copyPrestationBase::addResultatCalculSitProfessionnelle);
+        copyPrestationBase.setDateDebut(dateDebut);
+        copyPrestationBase.setDateFin(dateFin);
+        copyPrestationBase.setNombreJoursSoldes(nombreJoursSoldes);
+        return copyPrestationBase;
     }
 
     private static APResultatCalculSituationProfessionnel calculerMontantSituationProffessionnelleEtLeSet(final APResultatCalculSituationProfessionnel resultatCalculSituationProfessionnel,
                                                                                                           final int nombreJoursSoldes) {
+        Gson gson = new Gson();
+        APResultatCalculSituationProfessionnel copyResultatCalculSituationProfessionnel = gson.fromJson(gson.toJson(resultatCalculSituationProfessionnel), APResultatCalculSituationProfessionnel.class);
         FWCurrency montant = new FWCurrency(resultatCalculSituationProfessionnel.getSalaireJournalierNonArrondi().getBigDecimalValue()
                                                                                 .multiply(new BigDecimal(nombreJoursSoldes)).doubleValue());
-        resultatCalculSituationProfessionnel.setMontant(montant);
-        return resultatCalculSituationProfessionnel;
+        copyResultatCalculSituationProfessionnel.setMontant(montant);
+        return copyResultatCalculSituationProfessionnel;
     }
 }
