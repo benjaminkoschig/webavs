@@ -509,6 +509,8 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
         List<DonneeInterneHomeVersement> sejourVersementList = new ArrayList<>();
         Map<String, String> mapMontantTotalHome = new HashMap<>();
         // sauve les resultats en BD
+
+
         for (PeriodePCAccordee pcAccordee : listePCAccordes) {
             pcAccordee.setCalculRetro(retroactif);
             pcas.addAll(PegasusImplServiceLocator.getCalculPersistanceService().sauvePCAccordee(droit, pcAccordee,

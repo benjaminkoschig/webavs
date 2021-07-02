@@ -1,7 +1,11 @@
 package ch.globaz.pegasus.businessimpl.utils.topazbuilder.decisions;
 
 import ch.globaz.common.business.language.LanguageResolver;
+import ch.globaz.pegasus.business.exceptions.models.crancier.CreancierException;
 import ch.globaz.pegasus.business.exceptions.models.home.HomeException;
+import ch.globaz.pegasus.business.models.creancier.CreanceAccordee;
+import ch.globaz.pegasus.business.models.creancier.CreanceAccordeeSearch;
+import ch.globaz.pegasus.business.models.creancier.CreancierSearch;
 import ch.globaz.pegasus.business.models.home.SimpleHomeSearch;
 import ch.globaz.pegasus.business.models.pcaccordee.PcaRetenue;
 import ch.globaz.pegasus.business.models.pcaccordee.PcaRetenueSearch;
@@ -436,7 +440,7 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
             // liste dac
             DecisionApresCalculOO decisionApresCalculOO = PegasusServiceLocator.getDecisionApresCalculService()
                     .readForOO(decision);
-            decisionApresCalculOO = loadRetenuesAndCalcul(decisionApresCalculOO);
+            decisionApresCalculOO = loadCreancierRetenuesAndCalcul(decisionApresCalculOO);
             decisionApresCalculOO.getDecisionHeader().setListeCopies(CopiesDecisionHandler.getCopiesList(decisionApresCalculOO.getSimpleDecisionApresCalcul()));
             if(handlerGlobal.getFromAdaptation()){
                 decisionApresCalculOO.setDateAdaptation(handlerGlobal.getDateDoc());
@@ -461,26 +465,42 @@ public class DecisionApresCalculBuilder extends AbstractDecisionBuilder implemen
                 IPCCatalogueTextes.BABEL_DOC_NAME_APRES_CALCUL);
     }
 
-    private DecisionApresCalculOO loadRetenuesAndCalcul(DecisionApresCalculOO decision) throws JadeApplicationServiceNotAvailableException, JadePersistenceException, HomeException {
+    private DecisionApresCalculOO loadCreancierRetenuesAndCalcul(DecisionApresCalculOO decision) throws JadeApplicationServiceNotAvailableException, JadePersistenceException, HomeException, CreancierException {
 
         PcaRetenueSearch search = new PcaRetenueSearch();
         search.setForIdPca(decision.getPcAccordee().getSimplePCAccordee().getIdPCAccordee());
         search = PegasusServiceLocator.getRetenueService().search(search);
         Map<String,Float> mapMontantVersementDirectHome = new HashMap<>();
         Float montantHomeVerserDirect = 0.0f;
-        for (JadeAbstractModel model : search.getSearchResults()) {
-            PcaRetenue retenue = (PcaRetenue) model;
-            //Si c'est un home, on le map dans la liste des home.
-            if(isHome(retenue.getSimpleRetenue().getIdTiersAdressePmt())){
-                if(mapMontantVersementDirectHome.containsKey(retenue.getCsRoleFamillePC())){
-                    montantHomeVerserDirect = mapMontantVersementDirectHome.get(retenue.getCsRoleFamillePC());
-                }else{
-                    montantHomeVerserDirect = 0.0f;
+        if( search.getSearchResults().length > 0){
+            for (JadeAbstractModel model : search.getSearchResults()) {
+                PcaRetenue retenue = (PcaRetenue) model;
+                //Si c'est un home, on le map dans la liste des home.
+                if(isHome(retenue.getSimpleRetenue().getIdTiersAdressePmt())){
+                    if(mapMontantVersementDirectHome.containsKey(retenue.getCsRoleFamillePC())){
+                        montantHomeVerserDirect = mapMontantVersementDirectHome.get(retenue.getCsRoleFamillePC());
+                    }else{
+                        montantHomeVerserDirect = 0.0f;
+                    }
+                    montantHomeVerserDirect = montantHomeVerserDirect + new Float(retenue.getSimpleRetenue().getMontantRetenuMensuel());
+                    mapMontantVersementDirectHome.put(retenue.getCsRoleFamillePC(),montantHomeVerserDirect);
                 }
-                montantHomeVerserDirect = montantHomeVerserDirect + new Float(retenue.getSimpleRetenue().getMontantRetenuMensuel());
-                mapMontantVersementDirectHome.put(retenue.getCsRoleFamillePC(),montantHomeVerserDirect);
+            }
+        }else{
+            CreanceAccordeeSearch search1 = new CreanceAccordeeSearch();
+            search1.setForIdPCAccordee(decision.getPcAccordee().getSimplePCAccordee().getIdPCAccordee());
+            search1 = PegasusServiceLocator.getCreanceAccordeeService().search(search1);
+            for (JadeAbstractModel model : search1.getSearchResults()) {
+                CreanceAccordee creanceAccordee = (CreanceAccordee) model;
+                //Si c'est un home, on le map dans la liste des home.
+                if(creanceAccordee.getSimpleCreancier().getIsHome()){
+                    montantHomeVerserDirect = new Float(creanceAccordee.getSimpleCreanceAccordee().getMontant());
+                    mapMontantVersementDirectHome.put("CREANCIER",montantHomeVerserDirect);
+                }
             }
         }
+
+
         decision.setMapMontantVerserHome(mapMontantVersementDirectHome);
         return decision;
     }

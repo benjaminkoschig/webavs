@@ -898,25 +898,12 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
                     break;
                 case OCTROI:
                 default:
-                    data.addData("MONTANT_VERS_ASSURE", SingleDACBuilder.MONNAIE + " " + new FWCurrency(getMontantPc()).toStringFormat());
+                    data.addData("MONTANT_VERS_ASSURE", SingleDACBuilder.MONNAIE + " " + new FWCurrency(getMontantPCTotal()).toStringFormat());
             }
 
             data.addData("B_MONTANT_VERSEE_ASS", babelDoc.getTextes(3).getTexte(32).getDescription());
             data.addData("B_MONTANT_VERSEE_ASS2", babelDoc.getTextes(3).getTexte(35).getDescription());
             data.addData("MONTANT_VERSEE_ASS", SingleDACBuilder.MONNAIE + " " + new FWCurrency(dacOO.getPlanCalcul().getPrimeVerseeAssMaladie()).toStringFormat());
-            //        String montantHomeString = dacOO.getPlanCalcul().getMontantPrixHome();
-//        Float montantHome = 0.0f;
-//        if (!montantHomeString.isEmpty()) {
-//            montantHome = Float.valueOf(dacOO.getPlanCalcul().getMontantPrixHome())/12;
-//        }
-//        FWCurrency montantHomeCurrency = new FWCurrency(montantHome);
-//        if (montantHomeCurrency.isZero() || !dacOO.getPlanCalcul().getIsVersementDirect()) {
-//            data.addData("B_MONTANT_HOME","");
-//            data.addData("MONTANT_HOME","");
-//        } else {
-//            data.addData("B_MONTANT_HOME", babelDoc.getTextes(3).getTexte(33).getDescription());
-//            data.addData("MONTANT_HOME", SingleDACBuilder.MONNAIE + " " + new FWCurrency(montantHomeCurrency.toString()).toStringFormat());
-//        }
         }
 
 
@@ -943,7 +930,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
             case OCTROI:
                 data.addData("PRESTATION_MENS",
-                        SingleDACBuilder.MONNAIE + " " + new FWCurrency(isReformePC() ? getMontantPCTotal() : getMontantPc()).toStringFormat());
+                        SingleDACBuilder.MONNAIE + " " + new FWCurrency(getMontantPCTotal()).toStringFormat());
                 break;
 
             default:
