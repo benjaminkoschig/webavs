@@ -137,7 +137,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
      * @param valeurCourante
      */
     private void _addLine(List list, String dateValeur, String dateComptable, String libelleCourant,
-            Double valeurCourante) {
+                          Double valeurCourante) {
         if (valeurCourante.doubleValue() != 0) {
             Map m = new HashMap();
             m.put("COL_1", dateComptable);
@@ -162,7 +162,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
         mgr.setPrintLanguage(compteAnnexe.getTiers().getLangueISO());
         mgr.find();
         // System.out.println("Date Comptable | Date Valeur | Descrition | montant");
-        for (Iterator it = mgr.iterator(); it.hasNext();) {
+        for (Iterator it = mgr.iterator(); it.hasNext(); ) {
             CALigneExtraitCompte e = (CALigneExtraitCompte) it.next();
             // System.out.println(e.getDateJournal()+" | "+e.getDate()+" | "+e.getDescription()+" | "+e.getTotal()+" | "+e.getHorsCompteAnnexe());
 
@@ -261,7 +261,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Return l'historique des bulletins de soldes pour la section en cours.
-     * 
+     *
      * @return
      * @throws Exception
      */
@@ -278,7 +278,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Returns the sectionIdExterne
-     * 
+     *
      * @return String
      */
     public String _getSectionIdExterne() {
@@ -291,7 +291,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Returns the journalLibelle.
-     * 
+     *
      * @return String
      */
     public String _getSectionLibelle() {
@@ -304,7 +304,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Dans le cas de musca, il y a plusieurs bulletins de soldes à itérer.
-     * 
+     *
      * @return
      * @throws FWIException
      */
@@ -331,7 +331,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                             && !((CASection) sectionManager.getFirstEntity()).getSoldeToCurrency().isZero()) {
                         sectionCourante = new CAImpressionBulletinsSoldes_DS(
                                 (CASection) sectionManager.getFirstEntity(), getSessionOsiris(), compteAnnexe
-                                        .getTiers().getLangueISO());
+                                .getTiers().getLangueISO());
                         if (APISection.ID_CATEGORIE_SECTION_REPARATION_DOMMAGES.equals(sectionCourante.getSection()
                                 .getCategorieSection())) {
                             if (getEntityList().hasNext()) {
@@ -349,7 +349,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                             factureImpressionNo++;
                             sectionCourante = new CAImpressionBulletinsSoldes_DS(
                                     (CASection) sectionManager.getFirstEntity(), getSessionOsiris(), compteAnnexe
-                                            .getTiers().getLangueISO());
+                                    .getTiers().getLangueISO());
                             // sectionCourante.setMontantCompensation(Double.parseDouble(afact.getMontantFactureToCurrency().toString()));
                             super.setDocumentTitle(afact.getIdExterneDebiteurCompensation() + " - "
                                     + afact.getNomTiers());
@@ -377,7 +377,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Ajoute l'envois du bulletin de soldes à l'historique de la section.
-     * 
+     *
      * @throws Exception
      */
     private void addToHistory() throws Exception {
@@ -441,7 +441,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
     /**
      * La facture est-elle une facture avec montant minime ?<br/>
      * Sauvegarde l'information dans une variable de class.<br/>
-     * 
+     *
      */
     private void checkMontantMinime() {
         if (!getForcerBV()) {
@@ -511,15 +511,17 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
         if (((afact != null) && (compteAnnexe != null) && (sectionCourante.getSection() != null)) || !isMuscaSource) {
             try {
-                if (isMuscaSource && JadeStringUtil.isEmpty(getIdSection())) {
-                    setIdSection(sectionCourante.getSection().getIdSection());
-                    loadSection();
-                }
-
                 //Extrait les lignes dans une liste
                 List data = _buildLignes();
-                // Met les lignes trouvées dans une hashMap identifié de manière unique par une pair d'idExterne
-                lignesParPaireIdExterneEBill.put(new PaireIdExterneEBill(afact.getIdExterneRole(), afact.getIdExterneFactureCompensation(), _getMontantApresCompensation()), data);
+
+                if (isMuscaSource) {
+                    // Met les lignes trouvées dans une hashMap identifié de manière unique par une pair d'idExterne
+                    lignesParPaireIdExterneEBill.put(new PaireIdExterneEBill(afact.getIdExterneRole(), afact.getIdExterneFactureCompensation(), _getMontantApresCompensation()), data);
+                    if (JadeStringUtil.isEmpty(getIdSection())) {
+                        setIdSection(sectionCourante.getSection().getIdSection());
+                        loadSection();
+                    }
+                }
 
                 super.setParametres(FAImpressionFacture_Param.P_TOTAL_ROW, new Integer(data.size()));
                 super.setDataSource(data.toArray(new Object[data.size()]));
@@ -572,14 +574,14 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
     /**
      * Décale l'échéance du contentieux si l'étape de sommation n'est pas encore atteinte.<br/>
      * Si la section n'est pas au contentieux, cette dernière y sera préablement ajoutée.
-     * 
+     *
      * @throws Exception
      */
     private void decalerEcheanceContencieux() throws Exception {
         String idRole = sectionCourante.getSection().getCompteAnnexe().getIdRole();
         if (!idRole.equals(IntRole.ROLE_ADMINISTRATEUR)
                 && sectionCourante.getSection().getCategorieSection()
-                        .equals(APISection.ID_CATEGORIE_SECTION_REPARATION_DOMMAGES)) {
+                .equals(APISection.ID_CATEGORIE_SECTION_REPARATION_DOMMAGES)) {
             return;
         }
 
@@ -589,14 +591,14 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                     JACalendarGregorian calendar = new JACalendarGregorian();
                     if (!sectionCourante.getSection().isSectionAuContentieux()
                             && JadeStringUtil.isBlank(sectionCourante.getSection()
-                                    .getFirstIdEvContentieuxNonExecuteIgnore())
+                            .getFirstIdEvContentieuxNonExecuteIgnore())
                             && JadeStringUtil.isBlank(sectionCourante.getSection().getFirstIdEvContentieuxNonExecute())) {
                         CAContentieux.creerPremiereEtapeAncienContentieux(getSessionOsiris(), getTransaction(),
                                 sectionCourante.getSection(), calendar.addDays(sectionCourante.getSection()
                                         .getDateEcheance(), CAImpressionBulletinsSoldes_Doc.DAYS_ADDED));
                     } else if (isAncienContentieuxEtapeRappel()
                             && !JadeStringUtil.isBlank(sectionCourante.getSection().getLastEvenementContentieux()
-                                    .getDateExecution())
+                            .getDateExecution())
                             && JadeStringUtil.isBlank(sectionCourante.getSection().getFirstIdEvContentieuxNonExecute())) {
                         CAContentieux.insererSommationAncienContentieux(getSessionOsiris(), getTransaction(),
                                 sectionCourante.getSection(), calendar.addDays(sectionCourante.getSection()
@@ -667,7 +669,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Recherche le compte annexe pour le rôle et l'idexterne.
-     * 
+     *
      * @return
      */
     private CACompteAnnexeManager findCompteAnnexe() throws Exception {
@@ -696,7 +698,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Recherche la section correspondante du compte annexe (idexterne facture et type de facture).
-     * 
+     *
      * @return
      */
     private CASectionManager findSection() throws Exception {
@@ -713,7 +715,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Renvoie la référence BVR.
-     * 
+     *
      * @return la référence BVR.
      */
     public ReferenceBVR getBvr() {
@@ -738,9 +740,9 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Calcule le delai de paiement Base = max(dateFacturation + 12j, date d'échéance de la section) <br>
-     * 
-     * @author: sel Créé le : 10 nov. 06
+     *
      * @return Date de délai de paiement
+     * @author: sel Créé le : 10 nov. 06
      */
     private String getDelaiPaiement() {
         String result = null;
@@ -795,7 +797,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Returns the entityList.
-     * 
+     *
      * @return Iterator
      */
     protected Iterator getEntityList() {
@@ -808,7 +810,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Returns the factureImpressionNo.
-     * 
+     *
      * @return int
      */
     public int getFactureImpressionNo() {
@@ -824,7 +826,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Returns the journalId.
-     * 
+     *
      * @return String
      */
     public String getIdSection() {
@@ -840,7 +842,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Returns the montantMinimeNeg.
-     * 
+     *
      * @return String
      */
     public String getMontantMinimeNeg() {
@@ -849,7 +851,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Returns the montantMinimePos.
-     * 
+     *
      * @return String
      */
     public String getMontantMinimePos() {
@@ -858,7 +860,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Returns the passage.
-     * 
+     *
      * @return FAPassage
      */
     public FAPassage getPassage() {
@@ -984,7 +986,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * En mode ancien contentieux, est-on à l'étape rappel ?
-     * 
+     *
      * @return
      * @throws Exception
      */
@@ -1000,7 +1002,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Returns the factureAvecMontantMinime.
-     * 
+     *
      * @return boolean
      */
     public boolean isFactureAvecMontantMinime() {
@@ -1009,9 +1011,9 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * La facture est-elle échue ?<br/>
-     * 
+     *
      * @return True : Si la date du jour (osiris) ou la date de facturation du passage (musca) + 5 jours OUVRABLES est
-     *         plus grand que la date d'échéance de la section.
+     * plus grand que la date d'échéance de la section.
      * @throws Exception
      */
     private boolean isFactureEchue() throws Exception {
@@ -1044,7 +1046,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Returns the isMuscaSource.
-     * 
+     *
      * @return boolean
      */
     public boolean isMuscaSource() {
@@ -1053,7 +1055,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * La facture est-elle une facture étudiant ?
-     * 
+     *
      * @return
      */
     private boolean isTypeFactureEtudiant() {
@@ -1075,7 +1077,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Charge la section
-     * 
+     *
      * @return la section chargée
      */
     public CASection loadSection() {
@@ -1094,7 +1096,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Charge le compte annexe liée à la section.
-     * 
+     *
      * @throws Exception
      */
     public CACompteAnnexe loadSectionCompteAnnexe() throws Exception {
@@ -1124,7 +1126,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                         String idRole = sectionCourante.getSection().getCompteAnnexe().getIdRole();
                         if (!idRole.equals(IntRole.ROLE_ADMINISTRATEUR)
                                 && sectionCourante.getSection().getCategorieSection()
-                                        .equals(APISection.ID_CATEGORIE_SECTION_REPARATION_DOMMAGES)) {
+                                .equals(APISection.ID_CATEGORIE_SECTION_REPARATION_DOMMAGES)) {
                             return false;
                         }
 
@@ -1162,9 +1164,8 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Sets the factureAvecMontantMinime.
-     * 
-     * @param factureAvecMontantMinime
-     *            The factureAvecMontantMinime to set
+     *
+     * @param factureAvecMontantMinime The factureAvecMontantMinime to set
      */
     public void setFactureAvecMontantMinime(boolean factureAvecMontantMinime) {
         this.factureAvecMontantMinime = factureAvecMontantMinime;
@@ -1172,25 +1173,22 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Sets the factureImpressionNo.
-     * 
-     * @param factureImpressionNo
-     *            The factureImpressionNo to set
+     *
+     * @param factureImpressionNo The factureImpressionNo to set
      */
     public void setFactureImpressionNo(int factureImpressionNo) {
         this.factureImpressionNo = factureImpressionNo;
     }
 
     /**
-     * @param factureMontantReport
-     *            the factureMontantReport to set
+     * @param factureMontantReport the factureMontantReport to set
      */
     public void setFactureMontantReport(boolean factureMontantReport) {
         this.factureMontantReport = factureMontantReport;
     }
 
     /**
-     * @param forcerBV
-     *            the forcerBV to set
+     * @param forcerBV the forcerBV to set
      */
     public void setForcerBV(Boolean forcerBV) {
         this.forcerBV = forcerBV;
@@ -1202,17 +1200,15 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Sets the isMuscaSource.
-     * 
-     * @param isMuscaSource
-     *            The isMuscaSource to set
+     *
+     * @param isMuscaSource The isMuscaSource to set
      */
     public void setIsMuscaSource(boolean isMuscaSource) {
         this.isMuscaSource = isMuscaSource;
     }
 
     /**
-     * @param montantMinimeMax
-     *            the montantMinimeMax to set
+     * @param montantMinimeMax the montantMinimeMax to set
      */
     public void setMontantMinimeMax(String montantMinimeMax) {
         this.montantMinimeMax = montantMinimeMax;
@@ -1220,9 +1216,8 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Sets the montantMinimeNeg.
-     * 
-     * @param montantMinimeNeg
-     *            The montantMinimeNeg to set
+     *
+     * @param montantMinimeNeg The montantMinimeNeg to set
      */
     public void setMontantMinimeNeg(String montantMinimeNeg) {
         this.montantMinimeNeg = montantMinimeNeg;
@@ -1230,9 +1225,8 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Sets the montantMinimePos.
-     * 
-     * @param montantMinimePos
-     *            The montantMinimePos to set
+     *
+     * @param montantMinimePos The montantMinimePos to set
      */
     public void setMontantMinimePos(String montantMinimePos) {
         this.montantMinimePos = montantMinimePos;
@@ -1240,9 +1234,8 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Sets the passage.
-     * 
-     * @param passage
-     *            The passage to set
+     *
+     * @param passage The passage to set
      */
     public void setPassage(FAPassage passage) {
         this.passage = passage;
@@ -1250,9 +1243,8 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * Sets the journalLibelle.
-     * 
-     * @param sectionLibelle
-     *            The journalLibelle to set
+     *
+     * @param sectionLibelle The journalLibelle to set
      */
     public void setSectionLibelle(String sectionLibelle) {
         this.sectionLibelle = sectionLibelle;
@@ -1260,7 +1252,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
     /**
      * La sommation est-elle atteinte ?
-     * 
+     *
      * @return
      * @throws Exception
      */
@@ -1274,7 +1266,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                     .getEtape().getTypeEtape();
             return isAncienContentieuxEtapeRappel()
                     || (APIEtape.SOMMATION.equals(typeEtape) && JadeStringUtil.isBlank(sectionCourante.getSection()
-                            .getLastEvenementContentieux().getDateExecution()));
+                    .getLastEvenementContentieux().getDateExecution()));
         } else {
             return ICOEtape.CS_AUCUNE.equals(sectionCourante.getSection().getIdLastEtatAquila())
                     || ICOEtape.CS_PREMIER_RAPPEL_ENVOYE.equals(sectionCourante.getSection().getIdLastEtatAquila())
@@ -1314,7 +1306,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
                             compteAnnexe.getTiers().getLangueISO())
                             + "\n"
                             + getSession().getApplication().getLabel("CACTEXT_NCR2",
-                                    compteAnnexe.getTiers().getLangueISO());
+                            compteAnnexe.getTiers().getLangueISO());
                 }
             }
         } else {

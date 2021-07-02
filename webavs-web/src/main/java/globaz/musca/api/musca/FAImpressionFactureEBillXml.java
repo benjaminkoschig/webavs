@@ -521,7 +521,7 @@ public class FAImpressionFactureEBillXml {
         lineItem.setQuantityDescription("1I");
 
         Double masse = ((Double) lignes.get("COL_4"));
-        lineItem.setPriceUnit(new BigDecimal(masse == null ? 0.00 : masse));
+        lineItem.setPriceUnit(BigDecimal.valueOf(masse == null ? 0.00 : masse));
 
         // lineItem.setTax(createTaxLineItem());
 
@@ -551,9 +551,9 @@ public class FAImpressionFactureEBillXml {
 
         lineItem.setProductDescription((String) lignes.get("COL_3"));
 
-        lineItem.setQuantity(new BigDecimal(0));
+        lineItem.setQuantity(BigDecimal.valueOf(0.00));
         lineItem.setQuantityDescription("1I");
-        lineItem.setPriceUnit(new BigDecimal(1));
+        lineItem.setPriceUnit(BigDecimal.valueOf(1.00));
 
         // lineItem.setTax(createTaxLineItem());
 
@@ -578,7 +578,7 @@ public class FAImpressionFactureEBillXml {
         summaryType.setTax(createTaxType());
 
         // TODO : mettre en place montant déjà payé (bulletin de solde ??)
-        summaryType.setTotalAmountPaid(new BigDecimal(0.0));
+        summaryType.setTotalAmountPaid(BigDecimal.valueOf(0.00));
 
         if (eBillFacture.isBulletinsDeSoldes()) {
             summaryType.setTotalAmountExclusiveTax(new FWCurrency(montantBulletinSoldes).getBigDecimalValue());
@@ -603,7 +603,7 @@ public class FAImpressionFactureEBillXml {
 
         TaxType taxType = of.createTaxType();
         taxType.getTaxDetail().add(createTaxDetailType());
-        taxType.setTotalTax(new BigDecimal(0.0));
+        taxType.setTotalTax(BigDecimal.valueOf(0.00));
 
         return taxType;
     }
@@ -617,8 +617,8 @@ public class FAImpressionFactureEBillXml {
         ObjectFactory of = new ObjectFactory();
 
         TaxDetailType taxDetailType = of.createTaxDetailType();
-        taxDetailType.setRate(new BigDecimal(0.0));
-        taxDetailType.setAmount(new BigDecimal(0.0));
+        taxDetailType.setRate(BigDecimal.valueOf(0.00));
+        taxDetailType.setAmount(BigDecimal.valueOf(0.00));
 
         if (eBillFacture.isBulletinsDeSoldes()) {
             taxDetailType.setBaseAmountInclusiveTax(new FWCurrency(montantBulletinSoldes).getBigDecimalValue());

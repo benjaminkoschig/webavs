@@ -463,6 +463,21 @@ public class CAProcessImportInscriptionEBill extends BProcess {
         CACompteAnnexeManager manager = new CACompteAnnexeManager();
         manager.setSession(getSession());
         manager.setForEBillAccountID(numeroAdherent);
+        if (isPlusieursTypeAffilie) {
+            if (eachInscription.getRoleParitaire() && eachInscription.getRolePersonnel()) {
+                Set<String> idsRole = new HashSet();
+                idsRole.add(IntRole.ROLE_AFFILIE_PARITAIRE);
+                idsRole.add(IntRole.ROLE_AFFILIE_PERSONNEL);
+                manager.setForIdRoleIn(Joiner.on(",").join(idsRole));
+            } else if (eachInscription.getRoleParitaire()) {
+                manager.setForIdRole(IntRole.ROLE_AFFILIE_PARITAIRE);
+            } else if (eachInscription.getRolePersonnel()) {
+                manager.setForIdRole(IntRole.ROLE_AFFILIE_PERSONNEL);
+            }
+        } else {
+            manager.setForIdRole(IntRole.ROLE_AFFILIE);
+        }
+
         try {
             manager.find(BManager.SIZE_NOLIMIT);
         } catch (Exception e) {
@@ -473,7 +488,16 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             return false;
         }
 
-        if (manager.getSize() == 1) {
+        if (eachInscription.getRoleParitaire() && eachInscription.getRolePersonnel() && manager.getSize() == 2) {
+            boolean inscriptionParitairePersonelSucces = true;
+            for (int i = 0; i < manager.getSize(); i++) {
+                CACompteAnnexe compteAnnexe = (CACompteAnnexe) manager.get(i);
+                if (!majCompteAnnexe(eachInscription, StringUtils.EMPTY, StringUtils.EMPTY, compteAnnexe)) {
+                    inscriptionParitairePersonelSucces = false;
+                }
+            }
+            return inscriptionParitairePersonelSucces;
+        } else if (manager.getSize() == 1) {
             CACompteAnnexe compteAnnexe = (CACompteAnnexe) manager.get(0);
             return majCompteAnnexe(eachInscription, StringUtils.EMPTY, StringUtils.EMPTY, compteAnnexe);
         } else {
@@ -532,20 +556,9 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                 }
 
                 manager.setForIdExterneRole(numeroAffilieFormate);
-                if (isPlusieursTypeAffilie) {
-                    if (inscriptionEBill.getRoleParitaire() && inscriptionEBill.getRolePersonnel()) {
-                        Set<String> idsRole = new HashSet();
-                        idsRole.add(IntRole.ROLE_AFFILIE_PARITAIRE);
-                        idsRole.add(IntRole.ROLE_AFFILIE_PERSONNEL);
-                        manager.setForIdRoleIn(Joiner.on(",").join(idsRole));
-                    } else if (inscriptionEBill.getRoleParitaire()) {
-                        manager.setForIdRole(IntRole.ROLE_AFFILIE_PARITAIRE);
-                    } else if (inscriptionEBill.getRolePersonnel()) {
-                        manager.setForIdRole(IntRole.ROLE_AFFILIE_PERSONNEL);
-                    }
-                } else {
-                    manager.setForIdRole(IntRole.ROLE_AFFILIE);
-                }
+                // On récupère l'id rôle à partir du numéro BVR. Cas d'une inscription directe on s'appuie sur le numéro BVR pour récupérer le compte annexe.
+                StringBuilder idRoleComplet = new StringBuilder("5170").append(idRole);
+                manager.setForIdRole(idRoleComplet.toString());
                 try {
                     manager.find(BManager.SIZE_NOLIMIT);
                 } catch (Exception e) {
@@ -557,16 +570,7 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                 }
             }
 
-            if (inscriptionEBill.getRoleParitaire() && inscriptionEBill.getRolePersonnel() && manager.getSize() == 2) {
-                boolean inscriptionParitairePersonelSucces = true;
-                for (int i = 0; i < manager.getSize(); i++) {
-                    if (inscriptionParitairePersonelSucces) {
-                        CACompteAnnexe compteAnnexe = (CACompteAnnexe) manager.get(i);
-                        inscriptionParitairePersonelSucces = majCompteAnnexe(inscriptionEBill, numeroAdherent, inscriptionEBill.getEmail(), compteAnnexe);
-                    }
-                }
-                return inscriptionParitairePersonelSucces;
-            } else if (manager.getSize() == 1) {
+            if (manager.getSize() == 1) {
                 CACompteAnnexe compteAnnexe = (CACompteAnnexe) manager.get(0);
                 return majCompteAnnexe(inscriptionEBill, numeroAdherent, inscriptionEBill.getEmail(), compteAnnexe);
             } else {
@@ -577,10 +581,13 @@ public class CAProcessImportInscriptionEBill extends BProcess {
                 return false;
             }
         }
+
         String erreurInterne = getSession().getLabel("INSCR_EBILL_COMPTE_ANNEXE_REF_BVR_MISSING_FAILED");
         LOG.warn(erreurInterne);
         inscriptionEBill.setTexteErreurInterne(erreurInterne);
-        error.append(erreurInterne).append("\n");
+        error.append(erreurInterne).
+
+                append("\n");
         return false;
     }
 
@@ -647,9 +654,9 @@ public class CAProcessImportInscriptionEBill extends BProcess {
             if (inscriptionEBill.getRoleParitaire() && inscriptionEBill.getRolePersonnel() && manager.getSize() == 2) {
                 boolean inscriptionParitairePersonelSucces = true;
                 for (int i = 0; i < manager.getSize(); i++) {
-                    if (inscriptionParitairePersonelSucces) {
-                        CACompteAnnexe compteAnnexe = (CACompteAnnexe) manager.get(i);
-                        inscriptionParitairePersonelSucces = majCompteAnnexe(inscriptionEBill, numeroAdherent, inscriptionEBill.getEmail(), compteAnnexe);
+                    CACompteAnnexe compteAnnexe = (CACompteAnnexe) manager.get(i);
+                    if (!majCompteAnnexe(inscriptionEBill, numeroAdherent, inscriptionEBill.getEmail(), compteAnnexe)) {
+                        inscriptionParitairePersonelSucces = false;
                     }
                 }
                 return inscriptionParitairePersonelSucces;
@@ -697,7 +704,6 @@ public class CAProcessImportInscriptionEBill extends BProcess {
      * Envoi le résultat du traitement par mail.
      *
      * @param mailContent : le contenu du mail envoyé.
-     *
      */
     private void sendResultMail(String mailContent) {
         try {

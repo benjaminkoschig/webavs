@@ -57,7 +57,7 @@
         document.forms[0].submit();
     }
 
-    function init(){
+    function init() {
         document.getElementById('type').value = <%=viewBean.getType().getNumeroType()%>;
         document.getElementById('statutInterne').value = <%=viewBean.getStatut().getNumeroStatut()%>;
     }
@@ -72,10 +72,11 @@
     <TD width="110">eBillAccountID</TD>
     <TD nowrap width="200">
         <INPUT type="hidden" name="idFichier" value="<%=viewBean.getIdFichier()%>">
-        <input type="text" name="eBillAccountID" tabindex="1" class="libelleLong" value="<%=viewBean.geteBillAccountID()%>">
+        <input type="text" name="eBillAccountID" tabindex="1" class="libelleLong"
+               value="<%=viewBean.geteBillAccountID()%>">
     </TD>
     <TD width="110">Type</TD>
-    <TD nowrap  width="200">
+    <TD nowrap width="200">
         <select name="type" tabindex="2">
             <option value=""></option>
             <option value="1"><ct:FWLabel key="EBILL_ENUM_INSCRIPTION"/>
@@ -88,7 +89,8 @@
     </TD>
     <TD width="110">No d'affili&eacute;</TD>
     <TD nowrap width="200">
-        <input type="text" name="numeroAffilie" tabindex="1" class="libelleStandard" value="<%=viewBean.getNumeroAffilie()%>">
+        <input type="text" name="numeroAffilie" tabindex="1" class="libelleStandard"
+               value="<%=viewBean.getNumeroAffilie()%>">
     </TD>
 </TR>
 <TR>
@@ -102,7 +104,11 @@
     </TD>
     <TD width="110">R&ocirc;le paritaire</TD>
     <TD nowrap width="200">
-        <input type="checkbox" name="roleParitaire" tabindex="1" class="libelleStandard" value="<%=viewBean.getRoleParitaire()%>">
+        <% if (viewBean.getRoleParitaire()) { %>
+        <input type="checkbox" checked="true" name="roleParitaire" tabindex="1" class="libelleStandard">
+        <% } else { %>
+        <input type="checkbox" name="roleParitaire" tabindex="1" class="libelleStandard">
+        <% }%>
     </TD>
 </TR>
 <TR>
@@ -116,7 +122,13 @@
     </TD>
     <TD nowrap width="110">R&ocirc;le personnel</TD>
     <TD nowrap width="200">
-        <input type="checkbox" name="rolePersonnel" tabindex="1" class="libelleStandard" value="<%=viewBean.getRolePersonnel()%>">
+        <% if (viewBean.getRolePersonnel()) { %>
+        <input type="checkbox" checked="true" name="rolePersonnel" tabindex="1" class="libelleStandard"
+               value="<%=viewBean.getRolePersonnel()%>">
+        <% } else { %>
+        <input type="checkbox" name="rolePersonnel" tabindex="1" class="libelleStandard"
+               value="<%=viewBean.getRolePersonnel()%>">
+        <% }%>
     </TD>
 </TR>
 <TR>
@@ -152,7 +164,8 @@
     </TD>
     <TD width="110">Erreur Interne</TD>
     <TD nowrap width="200">
-        <TEXTAREA cols="40" rows="3" name="texteErreurInterne" class="libelleStandard"><%=viewBean.getTexteErreurInterne()%></TEXTAREA>
+        <TEXTAREA cols="40" rows="3" name="texteErreurInterne"
+                  class="libelleStandard"><%=viewBean.getTexteErreurInterne()%></TEXTAREA>
     </TD>
 </TR>
 <TR>
@@ -168,7 +181,8 @@
 <TR>
     <TD nowrap width="110">No adh&eacute;rent BVR</TD>
     <TD nowrap width="200">
-        <input type="text" name="numAdherentBVR" tabindex="1" class="libelleLong" value="<%=viewBean.getNumAdherentBVR()%>">
+        <input type="text" name="numAdherentBVR" tabindex="1" class="libelleLong"
+               value="<%=viewBean.getNumAdherentBVR()%>">
     </TD>
     <TD nowrap width="110">No r&eacute;f&eacute;rence BVR</TD>
     <TD nowrap width="200">
@@ -189,8 +203,8 @@
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyErrors.jspf" %>
 <%-- tpl:put name="zoneEndPage" --%>
-<%	if (request.getParameter("_back") != null && request.getParameter("_back").equals("sl")) { %>
-<%	} %>
+<% if (request.getParameter("_back") != null && request.getParameter("_back").equals("sl")) { %>
+<% } %>
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/footer.jspf" %>
 <%-- /tpl:insert --%>

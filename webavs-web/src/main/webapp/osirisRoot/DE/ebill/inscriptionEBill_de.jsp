@@ -102,7 +102,11 @@
     </TD>
     <TD width="110">Partnerrolle Parität</TD>
     <TD nowrap width="200">
-        <input type="checkbox" name="roleParitaire" tabindex="1" class="libelleStandard" value="<%=viewBean.getRoleParitaire()%>">
+        <% if (viewBean.getRoleParitaire()) { %>
+        <input type="checkbox" checked="true" name="roleParitaire" tabindex="1" class="libelleStandard">
+        <% } else { %>
+        <input type="checkbox" name="roleParitaire" tabindex="1" class="libelleStandard">
+        <% }%>
     </TD>
 </TR>
 <TR>
@@ -116,7 +120,13 @@
     </TD>
     <TD nowrap width="110">Partnerrolle Mitarbeiter</TD>
     <TD nowrap width="200">
-        <input type="checkbox" name="rolePersonnel" tabindex="1" class="libelleStandard" value="<%=viewBean.getRolePersonnel()%>">
+        <% if (viewBean.getRolePersonnel()) { %>
+        <input type="checkbox" checked="true" name="rolePersonnel" tabindex="1" class="libelleStandard"
+               value="<%=viewBean.getRolePersonnel()%>">
+        <% } else { %>
+        <input type="checkbox" name="rolePersonnel" tabindex="1" class="libelleStandard"
+               value="<%=viewBean.getRolePersonnel()%>">
+        <% }%>
     </TD>
 </TR>
 <TR>

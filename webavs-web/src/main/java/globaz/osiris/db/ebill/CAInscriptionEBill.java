@@ -221,7 +221,8 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
         if (!JadeStringUtil.isEmpty(entreprise)) {
             return entreprise;
         } else {
-            return (!JadeStringUtil.isEmpty(nom) ? nom : "") + (!JadeStringUtil.isEmpty(prenom) ? prenom : "");
+            StringBuilder builder = new StringBuilder(nom).append(" ").append(prenom);
+            return builder.toString();
         }
     }
 
