@@ -454,12 +454,12 @@ public class FAImpressionFactureEBillXml {
         if (eBillFacture.isBVR()) {
             BillHeaderType.PaymentInformation.ESR esr = of.createBillHeaderTypePaymentInformationESR();
             esr.setESRCustomerNumber(eBillFacture.getNumeroCC().replaceAll("\\s", ""));
-            esr.setESRReferenceNumber(reference);
+            esr.setESRReferenceNumber(reference.replaceAll("\\s", ""));
             paymentInformation.setESR(esr);
         } else if (eBillFacture.isQR()) {
             BillHeaderType.PaymentInformation.IBAN iban = of.createBillHeaderTypePaymentInformationIBAN();
             iban.setIBAN(eBillFacture.getNumeroCC().replaceAll("\\s", ""));
-            iban.setCreditorReference(reference);
+            iban.setCreditorReference(reference.replaceAll("\\s", ""));
             paymentInformation.setIBAN(iban);
         }
 
