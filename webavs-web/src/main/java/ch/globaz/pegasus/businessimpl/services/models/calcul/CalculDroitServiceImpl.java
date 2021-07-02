@@ -7,10 +7,12 @@ import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.common.util.Dates;
 import ch.globaz.corvus.business.models.pcaccordee.SimpleRetenuePayement;
 import ch.globaz.pegasus.business.constantes.*;
+import ch.globaz.pegasus.business.domaine.ListTotal;
 import ch.globaz.pegasus.business.domaine.membreFamille.RoleMembreFamille;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.business.exceptions.models.crancier.CreancierException;
+import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
 import ch.globaz.pegasus.business.exceptions.models.demande.DemandeException;
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
 import ch.globaz.pegasus.business.exceptions.models.habitat.LoyerException;
@@ -20,6 +22,7 @@ import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeExcepti
 import ch.globaz.pegasus.business.exceptions.models.pmtmensuel.PmtMensuelException;
 import ch.globaz.pegasus.business.models.calcul.*;
 import ch.globaz.pegasus.business.models.creancier.*;
+import ch.globaz.pegasus.business.models.dettecomptatcompense.SimpleDetteComptatCompense;
 import ch.globaz.pegasus.business.models.droit.Droit;
 import ch.globaz.pegasus.business.models.habitat.Loyer;
 import ch.globaz.pegasus.business.models.home.Home;
@@ -31,6 +34,7 @@ import ch.globaz.pegasus.business.services.models.calcul.CalculDroitService;
 import ch.globaz.pegasus.businessimpl.services.PegasusAbstractServiceImpl;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
 import ch.globaz.pegasus.businessimpl.services.models.calcul.donneeInterne.DonneeInterneHomeVersement;
+import ch.globaz.pegasus.businessimpl.services.models.pcaccordee.CalculPrestationsVerses;
 import ch.globaz.pegasus.businessimpl.services.models.pcaccordee.PcaPlanCalculReforme;
 import ch.globaz.pegasus.businessimpl.services.models.pcaccordee.PcaPrecedante;
 import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
@@ -509,7 +513,10 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
         List<DonneeInterneHomeVersement> sejourVersementList = new ArrayList<>();
         Map<String, String> mapMontantTotalHome = new HashMap<>();
         // sauve les resultats en BD
-
+/**
+ * Regrouper les montants et infos par assurés en cas de séparation de maladie.
+ *
+ */
 
         for (PeriodePCAccordee pcAccordee : listePCAccordes) {
             pcAccordee.setCalculRetro(retroactif);
@@ -811,8 +818,14 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
     private void createCreancierForVersementsHome(List<DonneeInterneHomeVersement> homeVersementList, Map<String, Creancier> mapCreancierDejaCreer) throws JadeApplicationServiceNotAvailableException, PmtMensuelException, CreancierException, JadePersistenceException {
         String dateDebut = "";
         String dateFin = "";
+        boolean isFirstPassage = true;
+        Float montantDeduit = 0.f;
         for (DonneeInterneHomeVersement calculDonneesHome : homeVersementList) {
             if (calculDonneesHome.getCsTypeVersement().equals(DonneeInterneHomeVersement.TYPE_CREANCIER)) {
+                if(isFirstPassage){
+                    montantDeduit = Float.parseFloat(calculDonneesHome.getMontantDette())+Float.parseFloat(calculDonneesHome.getMontantDejaVerser());
+                    isFirstPassage = false;
+                }
                 if (JadeStringUtil.isBlankOrZero(calculDonneesHome.getDateFin())) {
                     dateFin = JadeDateUtil.getLastDateOfMonth(PegasusServiceLocator.getPmtMensuelService().getDateDernierPmt());
                 } else {
@@ -847,6 +860,13 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                         montantAverser = montantAverser - 1;
                     }
                     montantAverser = montantAverser * nbreMois;
+                }
+                //Déduction des montant à verser en cas de dette et déjà payé
+                if(montantDeduit < montantAverser){
+                    montantAverser = montantAverser-montantDeduit;
+                }else{
+                    montantAverser = 0.f;
+                    montantDeduit = montantAverser-montantDeduit;
                 }
                 simpleCreanceAccordee.setMontant(montantAverser.toString());
                 creanceAccordee.setSimpleCreanceAccordee(simpleCreanceAccordee);
@@ -893,7 +913,8 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             simpleCreancier.setIdTiers(calculDonneesHome.getIdTiersHome());
             simpleCreancier.setIdTiersAdressePaiement(calculDonneesHome.getIdTiersHome());
             simpleCreancier.setIdTiersRegroupement(calculDonneesHome.getIdTiersRegroupement());
-            simpleCreancier.setMontant(montantAVerser.toString());
+            Float montantAverserArrondi  =new BigDecimal(montantAVerser).setScale(0, RoundingMode.UP).floatValue();
+            simpleCreancier.setMontant(montantAverserArrondi.toString());
             simpleCreancier.setIsCalcule(true);
             simpleCreancier.setIsHome(true);
             creancier.setSimpleCreancier(simpleCreancier);
@@ -956,7 +977,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
     }
 
     private void mappingHomes(List<DonneeInterneHomeVersement> homeVersementList
-            , CalculDonneesHomeSearch listHomes, List<SimplePCAccordee> allNewPca, Map<String, String> mapMontantTotalHome, Droit droit) throws JadeApplicationServiceNotAvailableException, PmtMensuelException, CalculException {
+            , CalculDonneesHomeSearch listHomes, List<SimplePCAccordee> allNewPca, Map<String, String> mapMontantTotalHome, Droit droit) throws JadeApplicationException, JadePersistenceException {
 
         DonneeInterneHomeVersement donnee;
         Map<String, List<SimplePCAccordee>> mapToIDPCA = new HashMap<>();
@@ -1022,8 +1043,13 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                             donnee.setMontantHomes(mapMontantTotalHome.get(fKey + CONJOINT_HOME));
                             donnee.setMontantDepenses(mapMontantTotalHome.get(fKey + CONJOINT_DEP_PERS));
                         }
-                        String montantDejaVerser = searchMontantDejaVerser(periode, droit.getSimpleDroit().getIdDroit(), droit.getSimpleVersionDroit().getNoVersion());
+                        CalculPrestationsVerses montantDV = new CalculPrestationsVerses(droit.getSimpleVersionDroit().getNoVersion(),droit.getDemande().getId());
+                        ListTotal<SimpleDetteComptatCompense> listTotal = PegasusServiceLocator.getDetteComptatCompenseService()
+                                .findListTotalCompense(droit.getSimpleVersionDroit().getId(), droit.getSimpleDroit().getId());
+                        String montantDejaVerser = montantDV.getMontantVerse().toPlainString();
                         donnee.setMontantDejaVerser(montantDejaVerser);
+                        String montantDette = listTotal.getTotal().toPlainString();
+                        donnee.setMontantDette(montantDette);
                         donnee.setCsTypeVersement(csTypeVersement);
                         donnee.setDateDebut(periode.getDateDebut());
                         donnee.setDateFin(periode.getDateFin());
@@ -1032,6 +1058,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                         if ((donnee.getCsTypeVersement().equals(DonneeInterneHomeVersement.TYPE_RETENUS) && JadeStringUtil.isBlankOrZero(simplePCAccordeeBenef.getDateFin()))
                                 || (donnee.getCsTypeVersement().equals(DonneeInterneHomeVersement.TYPE_CREANCIER)
                                 && IsSamePeriode(simplePCAccordeeBenef.getDateDebut(), simplePCAccordeeBenef.getDateFin(), periode)
+                                && ! JadeStringUtil.isBlankOrZero(simplePCAccordeeBenef.getDateFin())
                         )) {
                             homeVersementList.add(donnee);
                         }

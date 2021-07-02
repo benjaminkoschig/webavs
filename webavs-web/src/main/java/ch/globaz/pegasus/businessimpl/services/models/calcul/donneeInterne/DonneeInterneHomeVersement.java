@@ -31,6 +31,7 @@ public class DonneeInterneHomeVersement {
     private String montantHomes = "";
     private String montantDepenses = "";
     private String montantDejaVerser = "";
+    private String montantDette = "";
     List<Periode> periodeListCreanceAccorde = new ArrayList<>();
 
 
@@ -175,4 +176,13 @@ public class DonneeInterneHomeVersement {
     public void setDateFinPCA(String dateFinPCA) {
         this.dateFinPCA = dateFinPCA;
     }
+
+    public String getMontantDette() {
+        return montantDette;
+    }
+
+    public void setMontantDette(String montantDette) {
+        this.montantDette = montantDette;
+    }
+
 }

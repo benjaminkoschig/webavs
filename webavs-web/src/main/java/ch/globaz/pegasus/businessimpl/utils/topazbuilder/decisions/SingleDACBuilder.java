@@ -898,7 +898,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
                     break;
                 case OCTROI:
                 default:
-                    data.addData("MONTANT_VERS_ASSURE", SingleDACBuilder.MONNAIE + " " + new FWCurrency(getMontantPCTotal()).toStringFormat());
+                    data.addData("MONTANT_VERS_ASSURE", SingleDACBuilder.MONNAIE + " " + new FWCurrency(getMontantPc()).toStringFormat());
             }
 
             data.addData("B_MONTANT_VERSEE_ASS", babelDoc.getTextes(3).getTexte(32).getDescription());
@@ -930,7 +930,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
             case OCTROI:
                 data.addData("PRESTATION_MENS",
-                        SingleDACBuilder.MONNAIE + " " + new FWCurrency(getMontantPCTotal()).toStringFormat());
+                        SingleDACBuilder.MONNAIE + " " + new FWCurrency(getMontantPc()).toStringFormat());
                 break;
 
             default:
