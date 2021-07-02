@@ -4,10 +4,12 @@ import ch.globaz.common.exceptions.Exceptions;
 import globaz.globall.util.JADate;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
+import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -118,6 +120,17 @@ public class Dates {
         return new JADate(date.getDayOfMonth(), date.getMonthValue(), date.getYear());
     }
 
+    /**
+     * Convertie une LocalDate en Date.
+     *
+     * @param localDate La date à convertir.
+     *
+     * @return La date converti.
+     */
+    public static Date toJavaDate(final LocalDate localDate) {
+        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
+
     public static boolean isEqual(LocalDate date1, LocalDate date2) {
         return date1 != null && date2 != null ? date1.isEqual(date2) : false;
     }
@@ -148,6 +161,5 @@ public class Dates {
         long between = ChronoUnit.DAYS.between(fromDate, toDate);
         return between >= 0 ? between + 1 : between - 1;
     }
-
 
 }
