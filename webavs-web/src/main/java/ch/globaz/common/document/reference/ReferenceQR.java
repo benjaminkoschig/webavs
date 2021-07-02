@@ -288,7 +288,9 @@ public class ReferenceQR extends AbstractReference {
             builder.append(communicationNonStructuree).append(CHAR_FIN_LIGNE);
         }
         builder.append(trailer).append(CHAR_FIN_LIGNE);
-        builder.append(infoFacture).append(CHAR_FIN_LIGNE);
+        if(!StringUtils.isEmpty(infoFacture)) {
+            builder.append(infoFacture).append(CHAR_FIN_LIGNE);
+        }
         // Procédure alternative
         builder.append(pa1Param).append(CHAR_FIN_LIGNE);
         builder.append(pa2Param);
