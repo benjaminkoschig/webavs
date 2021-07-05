@@ -441,7 +441,6 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
     /**
      * La facture est-elle une facture avec montant minime ?<br/>
      * Sauvegarde l'information dans une variable de class.<br/>
-     *
      */
     private void checkMontantMinime() {
         if (!getForcerBV()) {
@@ -556,10 +555,14 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
                     // Génération du document QR
                     qrFacture.initQR(this);
-                    referenceParPaireIdExterne.put(new PaireIdExterneEBill(afact.getIdExterneRole(), afact.getIdExterneFactureCompensation(), _getMontantApresCompensation()), qrFacture.getReference());
+                    if (isMuscaSource) {
+                        referenceParPaireIdExterne.put(new PaireIdExterneEBill(afact.getIdExterneRole(), afact.getIdExterneFactureCompensation(), _getMontantApresCompensation()), qrFacture.getReference());
+                    }
                 } else {
                     fillBVR();
-                    referenceParPaireIdExterne.put(new PaireIdExterneEBill(afact.getIdExterneRole(), afact.getIdExterneFactureCompensation(), _getMontantApresCompensation()), getBvr().getRefNoSpace());
+                    if (isMuscaSource) {
+                        referenceParPaireIdExterne.put(new PaireIdExterneEBill(afact.getIdExterneRole(), afact.getIdExterneFactureCompensation(), _getMontantApresCompensation()), getBvr().getRefNoSpace());
+                    }
                 }
                 if (!computePageActive) {
                     addToHistory();
