@@ -132,7 +132,7 @@ public class PCRestiPCLegalComptaProcess extends BProcess {
 
 
             listVentilations.stream().forEach(paiement ->
-                    doEcriture(compta, SIGNE_RESTI+paiement.montant, paiement.rubrique, ca.getIdCompteAnnexe(), sectionNormale.getIdSection(), null)
+                    doEcriture(compta, SIGNE_RESTI + paiement.montant, paiement.rubrique, ca.getIdCompteAnnexe(), sectionNormale.getIdSection(), null)
             );
             FWMemoryLog beforeCloseComptaMemoryLog = new FWMemoryLog();
             // si pas d'erreurs avant le close, on sauvegarde les messages du
@@ -192,149 +192,143 @@ public class PCRestiPCLegalComptaProcess extends BProcess {
         APIReferenceRubrique referenceRubrique = (APIReferenceRubrique) sessionOsiris
                 .getAPIFor(APIReferenceRubrique.class);
         String idRubrique = "";
-
-        switch (simpleRestitution.getTypeRestPCAVSFed()) {
-            case IPCTypeRestiLegal.HOME_EMS:
-                REST_AVS_FED = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_FED_HOME_EMS);
-                idRubrique = APIReferenceRubrique.PC_REST_AVS_FED_HOME_EMS;
-                break;
-            case IPCTypeRestiLegal.HOME_ESE:
-                REST_AVS_FED = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_FED_HOME_ESE);
-                idRubrique = APIReferenceRubrique.PC_REST_AVS_FED_HOME_ESE;
-                break;
-            case IPCTypeRestiLegal.HOME_EPSM:
-                REST_AVS_FED = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_FED_HOME_EPSM);
-                idRubrique = APIReferenceRubrique.PC_REST_AVS_FED_HOME_EPSM;
-                break;
-            default:
-                REST_AVS_FED = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_FED_DOMICILE);
-                idRubrique = APIReferenceRubrique.PC_REST_AVS_FED_DOMICILE;
+        if (simpleRestitution.getTypeRestPCAVSFed() == null) {
+            REST_AVS_FED = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_FED_DOMICILE);
+            idRubrique = APIReferenceRubrique.PC_REST_AVS_FED_DOMICILE;
+        } else {
+            switch (simpleRestitution.getTypeRestPCAVSFed()) {
+                case IPCTypeRestiLegal.HOME_EMS:
+                    REST_AVS_FED = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_FED_HOME_EMS);
+                    idRubrique = APIReferenceRubrique.PC_REST_AVS_FED_HOME_EMS;
+                    break;
+                case IPCTypeRestiLegal.HOME_ESE:
+                    REST_AVS_FED = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_FED_HOME_ESE);
+                    idRubrique = APIReferenceRubrique.PC_REST_AVS_FED_HOME_ESE;
+                    break;
+                case IPCTypeRestiLegal.HOME_EPSM:
+                    REST_AVS_FED = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_FED_HOME_EPSM);
+                    idRubrique = APIReferenceRubrique.PC_REST_AVS_FED_HOME_EPSM;
+                    break;
+                default:
+                    REST_AVS_FED = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_FED_DOMICILE);
+                    idRubrique = APIReferenceRubrique.PC_REST_AVS_FED_DOMICILE;
+            }
         }
         mapRubriques.put("REST_AVS_FED", mapCsRubrique.get(idRubrique).getTraduction());
-        switch (simpleRestitution.getTypeRestPCAIFed()) {
-            case IPCTypeRestiLegal.HOME_EMS:
-                REST_AI_FED = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_FED_HOME_EMS);
-                idRubrique = APIReferenceRubrique.PC_REST_AI_FED_HOME_EMS;
-                break;
-            case IPCTypeRestiLegal.HOME_ESE:
-                REST_AI_FED = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_FED_HOME_ESE);
-                idRubrique = APIReferenceRubrique.PC_REST_AI_FED_HOME_ESE;
-                break;
-            case IPCTypeRestiLegal.HOME_EPSM:
-                REST_AI_FED = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_FED_HOME_EPSM);
-                idRubrique = APIReferenceRubrique.PC_REST_AI_FED_HOME_EPSM;
-                break;
-            default:
-                REST_AI_FED = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_FED_DOMICILE);
-                idRubrique = APIReferenceRubrique.PC_REST_AI_FED_DOMICILE;
+
+        if (simpleRestitution.getTypeRestPCAIFed() == null) {
+            REST_AI_FED = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_FED_DOMICILE);
+            idRubrique = APIReferenceRubrique.PC_REST_AI_FED_DOMICILE;
+        } else {
+            switch (simpleRestitution.getTypeRestPCAIFed()) {
+                case IPCTypeRestiLegal.HOME_EMS:
+                    REST_AI_FED = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_FED_HOME_EMS);
+                    idRubrique = APIReferenceRubrique.PC_REST_AI_FED_HOME_EMS;
+                    break;
+                case IPCTypeRestiLegal.HOME_ESE:
+                    REST_AI_FED = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_FED_HOME_ESE);
+                    idRubrique = APIReferenceRubrique.PC_REST_AI_FED_HOME_ESE;
+                    break;
+                case IPCTypeRestiLegal.HOME_EPSM:
+                    REST_AI_FED = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_FED_HOME_EPSM);
+                    idRubrique = APIReferenceRubrique.PC_REST_AI_FED_HOME_EPSM;
+                    break;
+                default:
+                    REST_AI_FED = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_FED_DOMICILE);
+                    idRubrique = APIReferenceRubrique.PC_REST_AI_FED_DOMICILE;
+            }
         }
         mapRubriques.put("REST_AI_FED", mapCsRubrique.get(idRubrique).getTraduction());
-        switch (simpleRestitution.getTypeRestPCAvsSubside()) {
-            case IPCTypeRestiLegal.HOME_EMS:
-                REST_AVS_SUB = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_SUB_HOME_EMS);
-                idRubrique = APIReferenceRubrique.PC_REST_AVS_SUB_HOME_EMS;
-                break;
-            case IPCTypeRestiLegal.HOME_ESE:
-                REST_AVS_SUB = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_SUB_HOME_ESE);
-                idRubrique = APIReferenceRubrique.PC_REST_AVS_SUB_HOME_ESE;
-                break;
-            case IPCTypeRestiLegal.HOME_EPSM:
-                REST_AVS_SUB = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_SUB_HOME_EPSM);
-                idRubrique = APIReferenceRubrique.PC_REST_AVS_SUB_HOME_EPSM;
-                break;
-            default:
-                REST_AVS_SUB = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_SUB_DOMICILE);
-                idRubrique = APIReferenceRubrique.PC_REST_AVS_SUB_DOMICILE;
+        if (simpleRestitution.getTypeRestPCAvsSubside() == null) {
+            REST_AVS_SUB = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_SUB_DOMICILE);
+            idRubrique = APIReferenceRubrique.PC_REST_AVS_SUB_DOMICILE;
+        } else {
+            switch (simpleRestitution.getTypeRestPCAvsSubside()) {
+                case IPCTypeRestiLegal.HOME_EMS:
+                    REST_AVS_SUB = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_SUB_HOME_EMS);
+                    idRubrique = APIReferenceRubrique.PC_REST_AVS_SUB_HOME_EMS;
+                    break;
+                default:
+                    REST_AVS_SUB = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_SUB_DOMICILE);
+                    idRubrique = APIReferenceRubrique.PC_REST_AVS_SUB_DOMICILE;
+            }
         }
         mapRubriques.put("REST_AVS_SUB", mapCsRubrique.get(idRubrique).getTraduction());
-        switch (simpleRestitution.getTypeRestPCAISubside()) {
-            case IPCTypeRestiLegal.HOME_EMS:
-                REST_AI_SUB = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_SUB_HOME_EMS);
-                idRubrique = APIReferenceRubrique.PC_REST_AI_SUB_HOME_EMS;
-                break;
-            case IPCTypeRestiLegal.HOME_ESE:
-                REST_AI_SUB = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_SUB_HOME_ESE);
-                idRubrique = APIReferenceRubrique.PC_REST_AI_SUB_HOME_ESE;
-                break;
-            case IPCTypeRestiLegal.HOME_EPSM:
-                REST_AI_SUB = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_SUB_HOME_EPSM);
-                idRubrique = APIReferenceRubrique.PC_REST_AI_SUB_HOME_EPSM;
-                break;
-            default:
-                REST_AI_SUB = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_SUB_DOMICILE);
-                idRubrique = APIReferenceRubrique.PC_REST_AI_SUB_DOMICILE;
+        if (simpleRestitution.getTypeRestPCAISubside() == null) {
+            REST_AI_SUB = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_SUB_DOMICILE);
+            idRubrique = APIReferenceRubrique.PC_REST_AI_SUB_DOMICILE;
+        } else {
+            switch (simpleRestitution.getTypeRestPCAISubside()) {
+                case IPCTypeRestiLegal.HOME_EMS:
+                    REST_AI_SUB = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_SUB_HOME_EMS);
+                    idRubrique = APIReferenceRubrique.PC_REST_AI_SUB_HOME_EMS;
+                    break;
+                default:
+                    REST_AI_SUB = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_SUB_DOMICILE);
+                    idRubrique = APIReferenceRubrique.PC_REST_AI_SUB_DOMICILE;
+            }
         }
         mapRubriques.put("REST_AI_SUB", mapCsRubrique.get(idRubrique).getTraduction());
-        switch (simpleRestitution.getTypeRestPCAvsCantonal()) {
-            case IPCTypeRestiLegal.HOME_EMS:
-                REST_AVS_CANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_CANT_HOME_EMS);
-                idRubrique = APIReferenceRubrique.PC_REST_AVS_CANT_HOME_EMS;
-                break;
-            case IPCTypeRestiLegal.HOME_ESE:
-                REST_AVS_CANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_CANT_HOME_ESE);
-                idRubrique = APIReferenceRubrique.PC_REST_AVS_CANT_HOME_ESE;
-                break;
-            case IPCTypeRestiLegal.HOME_EPSM:
-                REST_AVS_CANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_CANT_HOME_EPSM);
-                idRubrique = APIReferenceRubrique.PC_REST_AVS_CANT_HOME_EPSM;
-                break;
-            default:
-                REST_AVS_CANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_CANT_DOMICILE);
-                idRubrique = APIReferenceRubrique.PC_REST_AVS_CANT_DOMICILE;
+        if (simpleRestitution.getTypeRestPCAvsCantonal() == null) {
+            REST_AVS_CANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_CANT_DOMICILE);
+            idRubrique = APIReferenceRubrique.PC_REST_AVS_CANT_DOMICILE;
+        } else {
+            switch (simpleRestitution.getTypeRestPCAvsCantonal()) {
+                case IPCTypeRestiLegal.HOME_EMS:
+                    REST_AVS_CANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_CANT_HOME_EMS);
+                    idRubrique = APIReferenceRubrique.PC_REST_AVS_CANT_HOME_EMS;
+                    break;
+                default:
+                    REST_AVS_CANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_CANT_DOMICILE);
+                    idRubrique = APIReferenceRubrique.PC_REST_AVS_CANT_DOMICILE;
+            }
         }
         mapRubriques.put("REST_AVS_CANT", mapCsRubrique.get(idRubrique).getTraduction());
-        switch (simpleRestitution.getTypeRestPCAICantonal()) {
-            case IPCTypeRestiLegal.HOME_EMS:
-                REST_AI_CANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_CANT_HOME_EMS);
-                idRubrique = APIReferenceRubrique.PC_REST_AI_CANT_HOME_EMS;
-                break;
-            case IPCTypeRestiLegal.HOME_ESE:
-                REST_AI_CANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_CANT_HOME_ESE);
-                idRubrique = APIReferenceRubrique.PC_REST_AI_CANT_HOME_ESE;
-                break;
-            case IPCTypeRestiLegal.HOME_EPSM:
-                REST_AI_CANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_CANT_HOME_EPSM);
-                idRubrique = APIReferenceRubrique.PC_REST_AI_CANT_HOME_EPSM;
-                break;
-            default:
-                REST_AI_CANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_CANT_DOMICILE);
-                idRubrique = APIReferenceRubrique.PC_REST_AI_CANT_DOMICILE;
+        if (simpleRestitution.getTypeRestPCAICantonal() == null) {
+            REST_AI_CANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_CANT_DOMICILE);
+            idRubrique = APIReferenceRubrique.PC_REST_AI_CANT_DOMICILE;
+        } else {
+            switch (simpleRestitution.getTypeRestPCAICantonal()) {
+                case IPCTypeRestiLegal.HOME_EMS:
+                    REST_AI_CANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_CANT_HOME_EMS);
+                    idRubrique = APIReferenceRubrique.PC_REST_AI_CANT_HOME_EMS;
+                    break;
+                default:
+                    REST_AI_CANT = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_CANT_DOMICILE);
+                    idRubrique = APIReferenceRubrique.PC_REST_AI_CANT_DOMICILE;
+            }
         }
         mapRubriques.put("REST_AI_CANT", mapCsRubrique.get(idRubrique).getTraduction());
-        switch (simpleRestitution.getTypeRestPCRfmAvs()) {
-            case IPCTypeRestiLegal.HOME_EMS:
-                REST_AVS_RFM = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_RFM_HOME_EMS);
-                idRubrique = APIReferenceRubrique.PC_REST_AVS_RFM_HOME_EMS;
-                break;
-            case IPCTypeRestiLegal.HOME_ESE:
-                REST_AVS_RFM = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_RFM_HOME_ESE);
-                idRubrique = APIReferenceRubrique.PC_REST_AVS_RFM_HOME_ESE;
-                break;
-            case IPCTypeRestiLegal.HOME_EPSM:
-                REST_AVS_RFM = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_RFM_HOME_EPSM);
-                idRubrique = APIReferenceRubrique.PC_REST_AVS_RFM_HOME_EPSM;
-                break;
-            default:
-                REST_AVS_RFM = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_RFM_DOMICILE);
-                idRubrique = APIReferenceRubrique.PC_REST_AVS_RFM_DOMICILE;
+
+        if (simpleRestitution.getTypeRestPCRfmAvs() == null) {
+            REST_AVS_RFM = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_RFM_DOMICILE);
+            idRubrique = APIReferenceRubrique.PC_REST_AVS_RFM_DOMICILE;
+        } else {
+            switch (simpleRestitution.getTypeRestPCRfmAvs()) {
+                case IPCTypeRestiLegal.HOME_EMS:
+                    REST_AVS_RFM = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_RFM_HOME_EMS);
+                    idRubrique = APIReferenceRubrique.PC_REST_AVS_RFM_HOME_EMS;
+                    break;
+                default:
+                    REST_AVS_RFM = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AVS_RFM_DOMICILE);
+                    idRubrique = APIReferenceRubrique.PC_REST_AVS_RFM_DOMICILE;
+            }
         }
         mapRubriques.put("REST_AVS_RFM", mapCsRubrique.get(idRubrique).getTraduction());
-        switch (simpleRestitution.getTypeRestPCRfmAI()) {
-            case IPCTypeRestiLegal.HOME_EMS:
-                REST_AI_RFM = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_RFM_HOME_EMS);
-                idRubrique = APIReferenceRubrique.PC_REST_AI_RFM_HOME_EMS;
-                break;
-            case IPCTypeRestiLegal.HOME_ESE:
-                REST_AI_RFM = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_RFM_HOME_ESE);
-                idRubrique = APIReferenceRubrique.PC_REST_AI_RFM_HOME_ESE;
-                break;
-            case IPCTypeRestiLegal.HOME_EPSM:
-                REST_AI_RFM = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_RFM_HOME_EPSM);
-                idRubrique = APIReferenceRubrique.PC_REST_AI_RFM_HOME_EPSM;
-                break;
-            default:
-                REST_AI_RFM = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_RFM_DOMICILE);
-                idRubrique = APIReferenceRubrique.PC_REST_AI_RFM_DOMICILE;
+
+        if (simpleRestitution.getTypeRestPCRfmAI() == null) {
+            REST_AI_RFM = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_RFM_DOMICILE);
+            idRubrique = APIReferenceRubrique.PC_REST_AI_RFM_DOMICILE;
+        } else {
+            switch (simpleRestitution.getTypeRestPCRfmAI()) {
+                case IPCTypeRestiLegal.HOME_EMS:
+                    REST_AI_RFM = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_RFM_HOME_EMS);
+                    idRubrique = APIReferenceRubrique.PC_REST_AI_RFM_HOME_EMS;
+                    break;
+                default:
+                    REST_AI_RFM = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_REST_AI_RFM_DOMICILE);
+                    idRubrique = APIReferenceRubrique.PC_REST_AI_RFM_DOMICILE;
+            }
         }
         mapRubriques.put("REST_AI_RFM", mapCsRubrique.get(idRubrique).getTraduction());
 

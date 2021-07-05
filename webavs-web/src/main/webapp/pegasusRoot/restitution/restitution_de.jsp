@@ -69,7 +69,6 @@
     }
 </script>
 
-var idJournal = <%=viewBean.getJournalId()%>;
 <%-- /tpl:insert --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
 <span class="postItIcon" data-g-note="idExterne:<%=viewBean.getId()%>, tableSource:PC_RESTIT"></span>
@@ -131,7 +130,7 @@ var idJournal = <%=viewBean.getJournalId()%>;
         <% if(viewBean.getCaisse(objSession).equals(EPCLoiCantonaleProperty.VALAIS.getValue())){%>
         <td><ct:FWCodeSelectTag name="simpleRestitution.typeRestPCAVSFed" codeType="PCRESTITYP" defaut="64082001" except="<%=except%>"/></td>
         <%}else{ %>
-        <td><ct:FWCodeSelectTag name="simpleRestitution.typeRestPCAVSFed" codeType="PCRESTITYP" defaut="64082001" /></td>
+        <td><ct:FWCodeSelectTag  name="simpleRestitution.typeRestPCAVSFed" codeType="PCRESTITYP" defaut="64082001" /></td>
         <%}%>
     <%}else{%>
     <td>
