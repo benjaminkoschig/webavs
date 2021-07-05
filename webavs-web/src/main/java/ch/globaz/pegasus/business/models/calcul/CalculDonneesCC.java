@@ -1,6 +1,8 @@
 package ch.globaz.pegasus.business.models.calcul;
 
 import globaz.jade.persistence.model.JadeComplexModel;
+import lombok.Getter;
+import lombok.Setter;
 
 public class CalculDonneesCC extends JadeComplexModel {
 
@@ -312,13 +314,16 @@ public class CalculDonneesCC extends JadeComplexModel {
 
     private String sejourMoisPartielNombreJour = null;
 
-    private String sejourMoisPartielNombreJourRequerant = null;
-
-    private String sejourMoisPartielNombreJourConjoint = null;
-
     private Boolean sejourMoisPartielVersementDirect = Boolean.FALSE;
 
     private String sejourMoisPartielHome = null;
+
+    @Getter
+    @Setter
+    private boolean requerant = true;
+    @Getter
+    @Setter
+    private String idTierCourant = null;
 
     /**
      * @return the allocationFamilialeMontantMensuel
@@ -2413,21 +2418,5 @@ public class CalculDonneesCC extends JadeComplexModel {
 
     public void setTaxeJournalierePrixJournalier(String taxeJournalierePrixJournalier) {
         this.taxeJournalierePrixJournalier = taxeJournalierePrixJournalier;
-    }
-
-    public String getSejourMoisPartielNombreJourRequerant() {
-        return sejourMoisPartielNombreJourRequerant;
-    }
-
-    public void setSejourMoisPartielNombreJourRequerant(String sejourMoisPartielNombreJourRequerant) {
-        this.sejourMoisPartielNombreJourRequerant = sejourMoisPartielNombreJourRequerant;
-    }
-
-    public String getSejourMoisPartielNombreJourConjoint() {
-        return sejourMoisPartielNombreJourConjoint;
-    }
-
-    public void setSejourMoisPartielNombreJourConjoint(String sejourMoisPartielNombreJourConjoint) {
-        this.sejourMoisPartielNombreJourConjoint = sejourMoisPartielNombreJourConjoint;
     }
 }

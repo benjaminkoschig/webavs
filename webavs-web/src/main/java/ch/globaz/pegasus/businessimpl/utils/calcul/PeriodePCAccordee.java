@@ -3,16 +3,15 @@
  */
 package ch.globaz.pegasus.businessimpl.utils.calcul;
 
+import ch.globaz.hera.business.models.famille.MembreFamille;
+import ch.globaz.hera.business.models.famille.MembreFamilleSearch;
 import ch.globaz.pegasus.business.constantes.*;
 import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCRenteAvsAi;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.business.models.calcul.CalculDonneesCC;
 import ch.globaz.pegasus.business.models.calcul.CalculDonneesHome;
-import ch.globaz.pegasus.business.models.droit.DonneesPersonnelles;
-import ch.globaz.pegasus.business.models.droit.Droit;
-import ch.globaz.pegasus.business.models.droit.DroitMembreFamille;
-import ch.globaz.pegasus.business.models.droit.SimpleDroitMembreFamille;
+import ch.globaz.pegasus.business.models.droit.*;
 import ch.globaz.pegasus.business.models.parametre.SimpleForfaitPrimesAssuranceMaladie;
 import ch.globaz.pegasus.business.models.pcaccordee.SimpleJoursAppoint;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
@@ -24,8 +23,12 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.strategie.StrategieCalcul;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategie.StrategiesFactory;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.*;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.fortune.strategiesFinalFortuneImmobiliere.UtilFortune;
+import ch.globaz.perseus.business.models.situationfamille.MembreFamilleSearchModel;
+import ch.globaz.perseus.business.models.situationfamille.SimpleMembreFamilleSearchModel;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.JadePersistenceManager;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.Serializable;
@@ -834,11 +837,20 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
                 // Traitement Sejour partiel pour Conjoint
                 if (!donnee.getSejourMoisPartielNombreJour().isEmpty()) {
-                    if (personne.isConjoint()) {
-                        donnee.setSejourMoisPartielNombreJourConjoint(donnee.getSejourMoisPartielNombreJour());
-                    } else {
-                        donnee.setSejourMoisPartielNombreJourRequerant(donnee.getSejourMoisPartielNombreJour());
+                    MembreFamilleSearch simpleMembreFamilleSearchModel = new MembreFamilleSearch();
+                    simpleMembreFamilleSearchModel.setForIdMembreFamille(personne.getIdPersonne());
+                    try {
+                        simpleMembreFamilleSearchModel = (MembreFamilleSearch) JadePersistenceManager
+                                .search(simpleMembreFamilleSearchModel);
+                    } catch (JadePersistenceException e) {
+                        throw new CalculException(e.getMessage(), e);
                     }
+                    if(simpleMembreFamilleSearchModel.getSearchResults().length > 0) {
+                        String idTier = ((MembreFamille)simpleMembreFamilleSearchModel.getSearchResults()[0]).getPersonneEtendue().getTiers().getIdTiers();
+                        donnee.setIdTierCourant(idTier);
+                    }
+
+                    donnee.setRequerant(personne.isRequerant());
                 }
 
                 if (dealDonneeWithoutDessaisissementFotune) {

@@ -160,7 +160,7 @@ public class CopiesDecisionHandler {
      * @throws HomeException
      */
     private static Home getHomePartielForDecision(DecisionApresCalcul decision) throws JadeApplicationServiceNotAvailableException, JadePersistenceException, HomeException {
-        return HomeUtil.readHomePartielByPlanCacule(decision.getPcAccordee().getId());
+        return HomeUtil.readHomePartielByPlanCacule(decision.getPcAccordee().getId(), decision.getDecisionHeader().getSimpleDecisionHeader().getIdTiersBeneficiaire());
     }
 
     /**

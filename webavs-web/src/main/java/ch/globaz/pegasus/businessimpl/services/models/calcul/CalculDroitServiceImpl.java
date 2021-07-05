@@ -622,42 +622,67 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             return;
         }
 
-        Float montantSejour = cc.getMontants().getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_SEJOUR_MOIS_PARTIEL_TOTAL);
         TupleDonneeRapport tupleMoisPartiel = cc.getMontants().getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL);
         if (tupleMoisPartiel == null) {
             return;
         }
 
-        Float versementDirect = tupleMoisPartiel.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_VERSEMENT_DIRECT);
-        Float idHome = tupleMoisPartiel.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_HOME);
+        Float montantSejourRequerant = tupleMoisPartiel.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_MONTANT_REQUERANT);
+        Float idHomeRequerant = tupleMoisPartiel.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_HOME_REQUERANT);
+        Float versementDirectRequerant = tupleMoisPartiel.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_VERSEMENT_DIRECT_REQUERANT);
 
-        if (montantSejour != 0.0f && TupleDonneeRapport.readBoolean(versementDirect)) {
-            ListPCAccordee pca = PegasusImplServiceLocator.getPCAccordeeService().read(pcAccordee.getIdSimplePcAccordee());
-            Home complexeHome = PegasusImplServiceLocator.getHomeService().read(Float.toString(idHome));
-            SimpleHome home = complexeHome.getSimpleHome();
-            AdresseTiersDetail homeAdressePaiementFormatee = TIBusinessServiceLocator.getAdresseService().getAdressePaiementTiers(home.getIdTiersHome(), Boolean.TRUE, TIERS_CS_DOMAINE_APPLICATION_RENTE, JACalendar.todayJJsMMsAAAA(), "");
-            String idAdressePaiement = homeAdressePaiementFormatee.getFields().get(AdresseTiersDetail.ADRESSEP_ID_ADRESSE);
+        Float montantSejourConjoint = tupleMoisPartiel.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_MONTANT_CONJOINT);
+        Float idHomeConjoint = tupleMoisPartiel.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_HOME_CONJOINT);
+        Float versementDirectConjoint = tupleMoisPartiel.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_VERSEMENT_DIRECT_CONJOINT);
 
-            DonneeInterneHomeVersement donnee = new DonneeInterneHomeVersement();
-            donnee.setIdRenteAccordee(pca.getSimplePCAccordee().getIdPrestationAccordee());
-            donnee.setIdPca(pca.getSimplePCAccordee().getIdPCAccordee());
-            donnee.setIdAdressePaiement(idAdressePaiement);
-            donnee.setIdTiersHome(home.getIdTiersHome());
-            donnee.setMontantPCMensuel(pca.getSimplePlanDeCalcul().getMontantPCMensuelle());
-            donnee.setIdDemande(droit.getDemande().getSimpleDemande().getIdDemande());
-            donnee.setIdTiersHome(home.getIdTiersHome());
-            donnee.setIdTiersAdressePaiement(home.getIdTiersHome());
-            donnee.setIdTiersRegroupement(pca.getIdTiersBeneficiaire());
-            donnee.setCsRoleBeneficiaire(pca.getSimplePCAccordee().getCsRoleBeneficiaire());
-            donnee.setMontantHomes(Float.toString(montantSejour));
-            donnee.setMontantDepenses(Float.toString(cc.getMontants().getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_DEPPERSO_TOTAL)));
-            donnee.setCsTypeVersement(DonneeInterneHomeVersement.TYPE_CREANCIER);
-            donnee.setDateDebut(pcAccordee.getStrDateDebut());
-            donnee.setDateFin(pcAccordee.getStrDateFin());
-
-            sejourVersementList.add(donnee);
+        if(isMontantNotZeroAndVersement(montantSejourRequerant, versementDirectRequerant)
+                && isMontantNotZeroAndVersement(montantSejourConjoint, versementDirectConjoint)
+                && Float.compare(idHomeRequerant, idHomeConjoint) == 0){
+            // Deux séjours mois partiels pour requérant et conjoint et même id home
+            addSejourMontant(droit, pcAccordee, cc, sejourVersementList, montantSejourRequerant + montantSejourConjoint, tupleMoisPartiel, idHomeRequerant);
+        } else {
+            if (isMontantNotZeroAndVersement(montantSejourRequerant, versementDirectRequerant)) {
+                addSejourMontant(droit, pcAccordee, cc, sejourVersementList, montantSejourRequerant, tupleMoisPartiel, idHomeRequerant);
+            }
+            if (isMontantNotZeroAndVersement(montantSejourConjoint, versementDirectConjoint) ) {
+                addSejourMontant(droit, pcAccordee, cc, sejourVersementList, montantSejourRequerant, tupleMoisPartiel, idHomeConjoint);
+            }
         }
+    }
 
+    private boolean isMontantNotZeroAndVersement(Float value, Float versementDirectRequerant) {
+        return Float.compare(0.0f, value) != 0 && TupleDonneeRapport.readBoolean(versementDirectRequerant);
+    }
+
+    private void addSejourMontant(Droit droit, PeriodePCAccordee pcAccordee, CalculComparatif cc, List<DonneeInterneHomeVersement> sejourVersementList, Float montantSejour, TupleDonneeRapport tupleMoisPartiel, Float idHome) throws JadePersistenceException, JadeApplicationException {
+
+        ListPCAccordee pca = PegasusImplServiceLocator.getPCAccordeeService().read(pcAccordee.getIdSimplePcAccordee());
+        Home complexeHome = PegasusImplServiceLocator.getHomeService().read(Float.toString(idHome));
+        if(complexeHome.getSimpleHome().isNew()){
+            return;
+        }
+        SimpleHome home = complexeHome.getSimpleHome();
+        AdresseTiersDetail homeAdressePaiementFormatee = TIBusinessServiceLocator.getAdresseService().getAdressePaiementTiers(home.getIdTiersHome(), Boolean.TRUE, TIERS_CS_DOMAINE_APPLICATION_RENTE, JACalendar.todayJJsMMsAAAA(), "");
+        String idAdressePaiement = homeAdressePaiementFormatee.getFields().get(AdresseTiersDetail.ADRESSEP_ID_ADRESSE);
+
+        DonneeInterneHomeVersement donnee = new DonneeInterneHomeVersement();
+        donnee.setIdRenteAccordee(pca.getSimplePCAccordee().getIdPrestationAccordee());
+        donnee.setIdPca(pca.getSimplePCAccordee().getIdPCAccordee());
+        donnee.setIdAdressePaiement(idAdressePaiement);
+        donnee.setIdTiersHome(home.getIdTiersHome());
+        donnee.setMontantPCMensuel(pca.getSimplePlanDeCalcul().getMontantPCMensuelle());
+        donnee.setIdDemande(droit.getDemande().getSimpleDemande().getIdDemande());
+        donnee.setIdTiersHome(home.getIdTiersHome());
+        donnee.setIdTiersAdressePaiement(home.getIdTiersHome());
+        donnee.setIdTiersRegroupement(pca.getIdTiersBeneficiaire());
+        donnee.setCsRoleBeneficiaire(pca.getSimplePCAccordee().getCsRoleBeneficiaire());
+        donnee.setMontantHomes(Float.toString(montantSejour));
+        donnee.setMontantDepenses(Float.toString(cc.getMontants().getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_DEPPERSO_TOTAL)));
+        donnee.setCsTypeVersement(DonneeInterneHomeVersement.TYPE_CREANCIER);
+        donnee.setDateDebut(pcAccordee.getStrDateDebut());
+        donnee.setDateFin(pcAccordee.getStrDateFin());
+
+        sejourVersementList.add(donnee);
     }
 
     private void reporterLaRetenuSiExistant(CalculPcaReplaceSearch anciennesPCAccordees, SimplePCAccordee simplePCAccordee, List<DonneeInterneHomeVersement> donneeInterneHomeVersements) throws JadeApplicationException, JadePersistenceException {

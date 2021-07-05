@@ -280,4 +280,13 @@ public class SimpleCopiesDecision extends JadeSimpleModel {
         this.versementA = versementA;
     }
 
+    /**
+     * Copy l'objet avec les paramètres par défaut
+     */
+    @Override
+    public SimpleCopiesDecision clone() {
+        return new SimpleCopiesDecision(lettreBase, annexes, copies, moyensDeDroit,
+                pageDeGarde, plandeCalcul, recapitulatif, remarque, signature, versementA);
+    }
+
 }

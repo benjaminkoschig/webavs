@@ -35,6 +35,6 @@ public class AutoCopiesFactory {
     }
 
     public static SimpleCopiesDecision getAutoCopies(IPCAutoCopies.TYPE_COPIE type) {
-        return AutoCopiesFactory.autoCopies.get(type);
+        return AutoCopiesFactory.autoCopies.get(type).clone();
     };
 }

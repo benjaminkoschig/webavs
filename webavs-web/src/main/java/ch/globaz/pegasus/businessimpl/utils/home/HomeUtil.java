@@ -123,20 +123,37 @@ public class HomeUtil {
      * @throws JadePersistenceException
      * @throws HomeException
      */
-    public static Home readHomePartielByPlanCacule(String idPca)
+    public static Home readHomePartielByPlanCacule(String idPca, String idTier)
             throws JadeApplicationServiceNotAvailableException, JadePersistenceException, HomeException {
         TupleDonneeRapport tuple = readPlanCalculRetenu(idPca);
-        return readHomePartielByPlanCacule(tuple);
+        return readHomePartielByPlanCacule(tuple, idTier);
     }
 
-    private static Home readHomePartielByPlanCacule(TupleDonneeRapport tuple)
+    private static Home readHomePartielByPlanCacule(TupleDonneeRapport tuple, String idTier)
             throws JadeApplicationServiceNotAvailableException, JadePersistenceException, HomeException {
         // recup du tuple des idHome
         TupleDonneeRapport tupleIdHome = tuple.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL);
 
         Home home = null;
         if (tupleIdHome != null) {
-            String idHome = String.valueOf(tupleIdHome.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_HOME).getValeur());
+
+            String idHome = null;
+            TupleDonneeRapport tupleHome = tupleIdHome.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_HOME);
+
+            if(tupleHome != null) {
+                idHome = String.valueOf(tupleHome.getValeur());
+            } else {
+                TupleDonneeRapport tupleRequerant = tupleIdHome.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_IDTIER_REQUERANT);
+                TupleDonneeRapport tupleConjoint = tupleIdHome.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_IDTIER_CONJOINT);
+
+                if (tupleConjoint != null && Float.valueOf(idTier) == tupleConjoint.getValeur()) {
+                    TupleDonneeRapport tupleHomeConjoint = tupleIdHome.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_HOME_CONJOINT);
+                    idHome = String.valueOf(tupleHomeConjoint.getValeur());
+                } else {
+                    TupleDonneeRapport tupleHomeRequerant = tupleIdHome.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_SEJOUR_MOIS_PARTIEL_HOME_REQUERANT);
+                    idHome = String.valueOf(tupleHomeRequerant.getValeur());
+                }
+            }
             // recup du home
             if (idHome != null) {
                 home = PegasusServiceLocator.getHomeService().read(idHome);
