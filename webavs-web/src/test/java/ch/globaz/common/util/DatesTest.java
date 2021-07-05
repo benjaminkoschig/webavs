@@ -4,6 +4,7 @@ import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.springframework.lang.Nullable;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -53,7 +54,11 @@ public class DatesTest {
     }
 
     @Test
+    @Nullable
     public void daysBetween_fromBeforeTo_2(){
+
+
+        assertThat("").isEmpty();
         assertThat(Dates.daysBetween(LocalDate.now(), LocalDate.now().plusDays(1))).isEqualTo(2);
     }
 
