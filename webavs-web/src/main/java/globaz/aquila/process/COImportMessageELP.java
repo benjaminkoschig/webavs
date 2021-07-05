@@ -3,6 +3,7 @@ package globaz.aquila.process;
 import aquila.ch.eschkg.*;
 import ch.globaz.exceptions.ExceptionMessage;
 import ch.globaz.exceptions.GlobazTechnicalException;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 import globaz.af.gui.JJ14ActeurListeNumeroAvs;
 import globaz.aquila.api.ICOEtape;
@@ -56,6 +57,8 @@ import javax.xml.validation.Validator;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class COImportMessageELP extends BProcess {
@@ -948,29 +951,36 @@ public class COImportMessageELP extends BProcess {
 
     private boolean validateXml(File xmlFile, COInfoFileELP infos) {
         try {
-            loadXsdSchema();
-            Validator validator = xsdSchema.newValidator();
-            validator.validate(new StreamSource(xmlFile));
-            return true;
-        } catch (SAXException | IOException e) {
+            Optional<Schema> theSchema = loadXsdSchema();
+            if(theSchema.isPresent()){
+                xsdSchema = theSchema.get();
+                Validator validator = xsdSchema.newValidator();
+                validator.validate(new StreamSource(xmlFile));
+                return true;
+            } else {
+                LOG.error("Impossible de lire l'url du xsd: {}", XSD_FOLDER + XSD_FILE_NAME);
+                return false;
+            }
+        } catch (SAXException | IOException | NullPointerException e) {
             protocole.addMsgIncoherentInattendue(infos, "le fichier xml fourni n'est pas valide.");
             LOG.error("e fichier xml fourni n'est pas valide.", e);
             return false;
         }
     }
 
-    private void loadXsdSchema(){
-        if(Objects.isNull(xsdSchema)) {
+    @VisibleForTesting
+    Optional<Schema> loadXsdSchema() {
+        if (Objects.isNull(xsdSchema)) {
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             URL url = getClass().getResource(XSD_FOLDER + XSD_FILE_NAME);
             if (Objects.nonNull(url)) {
-                File xsdFile = new File(url.getFile());
                 try {
-                    xsdSchema = factory.newSchema(xsdFile);
+                    return Optional.of(factory.newSchema(url));
                 } catch (SAXException e) {
-                    LOG.info("Impossible de charger le schema xsd: {}", XSD_FILE_NAME);
+                    LOG.error("Impossible de charger le schema xsd: {}", url, e);
                 }
             }
         }
+        return Optional.ofNullable(xsdSchema);
     }
 }
