@@ -271,6 +271,9 @@ public class PCCreanceAccordeeViewBean extends BJadePersistentObjectViewBean {
     public String getMontantRetroBrutByIdPCA(String idPca) {
 
         String mntPca = mapMontantRetroBrut.get(idPca);
+        if(mntPca == null){
+            mntPca = "0";
+        }
 
         BigDecimal montant = new BigDecimal(mntPca);
 

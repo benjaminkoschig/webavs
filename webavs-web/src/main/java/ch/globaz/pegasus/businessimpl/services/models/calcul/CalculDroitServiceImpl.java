@@ -843,14 +843,8 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
     private void createCreancierForVersementsHome(List<DonneeInterneHomeVersement> homeVersementList, Map<String, Creancier> mapCreancierDejaCreer) throws JadeApplicationServiceNotAvailableException, PmtMensuelException, CreancierException, JadePersistenceException {
         String dateDebut = "";
         String dateFin = "";
-        boolean isFirstPassage = true;
-        Float montantDeduit = 0.f;
         for (DonneeInterneHomeVersement calculDonneesHome : homeVersementList) {
             if (calculDonneesHome.getCsTypeVersement().equals(DonneeInterneHomeVersement.TYPE_CREANCIER)) {
-                if(isFirstPassage){
-                    montantDeduit = Float.parseFloat(calculDonneesHome.getMontantDette())+Float.parseFloat(calculDonneesHome.getMontantDejaVerser());
-                    isFirstPassage = false;
-                }
                 if (JadeStringUtil.isBlankOrZero(calculDonneesHome.getDateFin())) {
                     dateFin = JadeDateUtil.getLastDateOfMonth(PegasusServiceLocator.getPmtMensuelService().getDateDernierPmt());
                 } else {
@@ -886,13 +880,6 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                     }
                     montantAverser = montantAverser * nbreMois;
                 }
-                //Déduction des montant à verser en cas de dette et déjà payé
-                if(montantDeduit < montantAverser){
-                    montantAverser = montantAverser-montantDeduit;
-                }else{
-                    montantAverser = 0.f;
-                    montantDeduit = montantAverser-montantDeduit;
-                }
                 simpleCreanceAccordee.setMontant(montantAverser.toString());
                 creanceAccordee.setSimpleCreanceAccordee(simpleCreanceAccordee);
                 PegasusServiceLocator.getCreanceAccordeeService().create(creanceAccordee);
@@ -914,7 +901,7 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             Float montantPCMensuel = Float.parseFloat(calculDonneesHome.getMontantPCMensuel());
             if (montantAVerserArrondi.floatValue() > montantPCMensuel) {
                 simpleCreanceAccordee.setMontant(montantPCMensuel.toString());
-            } else {
+            }else{
                 simpleCreanceAccordee.setMontant(montantAVerserArrondi.toString());
             }
             creanceAccordee.setSimpleCreanceAccordee(simpleCreanceAccordee);
@@ -1068,13 +1055,8 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
                             donnee.setMontantHomes(mapMontantTotalHome.get(fKey + CONJOINT_HOME));
                             donnee.setMontantDepenses(mapMontantTotalHome.get(fKey + CONJOINT_DEP_PERS));
                         }
-                        CalculPrestationsVerses montantDV = new CalculPrestationsVerses(droit.getSimpleVersionDroit().getNoVersion(),droit.getDemande().getId());
-                        ListTotal<SimpleDetteComptatCompense> listTotal = PegasusServiceLocator.getDetteComptatCompenseService()
-                                .findListTotalCompense(droit.getSimpleVersionDroit().getId(), droit.getSimpleDroit().getId());
-                        String montantDejaVerser = montantDV.getMontantVerse().toPlainString();
+                        String montantDejaVerser = searchMontantDejaVerser(periode, droit.getSimpleDroit().getIdDroit(), droit.getSimpleVersionDroit().getNoVersion());
                         donnee.setMontantDejaVerser(montantDejaVerser);
-                        String montantDette = listTotal.getTotal().toPlainString();
-                        donnee.setMontantDette(montantDette);
                         donnee.setCsTypeVersement(csTypeVersement);
                         donnee.setDateDebut(periode.getDateDebut());
                         donnee.setDateFin(periode.getDateFin());
