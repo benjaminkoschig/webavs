@@ -152,7 +152,7 @@ $(function () {
 			    rowStyle = "rowJaune";
 			}    
 			
-			pageContext.setAttribute("pucsFile",line.getPucsFile());
+			pageContext.setAttribute("pucsFile", ((EBPucsFileViewBean) viewBean.get(i)).getPucsFile());
 	%>
 			<tr id="<%=line.getId()%>" lock="<%=line.hasLock()%>" isVisible="<%=line.isVisible()%>" numeroAff="<%=line.getPucsFile().getNumeroAffilie()%>" idAff="<%=line.getIdAffiliation()%>" class="<%=rowStyle%>" onMouseOver="jscss('swap', this, '<%=rowStyle%>', 'rowHighligthed')" onMouseOut="jscss('swap', this, 'rowHighligthed', '<%=rowStyle%>')">
 			

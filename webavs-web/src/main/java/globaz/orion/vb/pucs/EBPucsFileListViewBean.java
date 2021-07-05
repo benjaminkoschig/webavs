@@ -1,13 +1,5 @@
 package globaz.orion.vb.pucs;
 
-import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
-import ch.globaz.orion.business.models.pucs.PucsFile;
-import ch.globaz.orion.db.EBPucsFileDefTable;
-import ch.globaz.orion.db.EBPucsFileEntity;
-import ch.globaz.orion.db.EBPucsFileManager;
-import ch.globaz.orion.service.EBPucsFileService;
-import ch.globaz.queryexec.bridge.jade.SCM;
-import ch.globaz.xmlns.eb.pucs.PucsEntrySummary;
 import globaz.globall.db.BIPersistentObject;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSessionUtil;
@@ -16,20 +8,20 @@ import globaz.naos.db.particulariteAffiliation.AFParticulariteAffiliation;
 import globaz.naos.services.AFAffiliationServices;
 import globaz.naos.translation.CodeSystem;
 import globaz.orion.vb.EBAbstractListViewBeanPagination;
-import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
+
+import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
+import ch.globaz.orion.business.models.pucs.PucsFile;
+import ch.globaz.orion.db.EBPucsFileDefTable;
+import ch.globaz.orion.db.EBPucsFileEntity;
+import ch.globaz.orion.db.EBPucsFileManager;
+import ch.globaz.orion.service.EBPucsFileService;
+import ch.globaz.xmlns.eb.pucs.PucsEntrySummary;
+import org.springframework.web.servlet.ModelAndView;
 
 public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
 
@@ -101,23 +93,21 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
 
     public void perpareList() {
         List<EBPucsFileEntity> list = manager.toList();
-        mapAffiliation = findAffiliations(list);
         pucsFilesFinal = EBPucsFileService.entitiesToPucsFile(list);
+
+
+
+        mapAffiliation = findAffiliations(list);
         mapNumAffiliationParticularite = resolveParticularites(mapAffiliation);
+
         if (orderBy == null || orderBy.isEmpty()) {
             sortByFusionable();
         }
-    }
-
-    public void loadAndSetUser() {
-        List<OneStringData> users = SCM.newInstance(OneStringData.class)
-                                       .query("SELECT HANDLING_USER as data FROM SCHEMA.EBPUCS_FILE " +
-                                                      "where HANDLING_USER is not null " +
-                                                      "group by HANDLING_USER order by HANDLING_USER")
-                                       .execute();
 
         // Liste des Users mise dans une List triée par ordre alphabétique
-        users.forEach(oneStringData -> manager.setUsers(oneStringData.getData().toUpperCase()));
+        for ( PucsFile pucsFile : pucsFilesFinal) {
+            manager.setUsers(pucsFile.getHandlingUser().toUpperCase());
+        }
     }
 
     private Map<String, AFAffiliation> findAffiliations(List<EBPucsFileEntity> list) {
@@ -298,10 +288,5 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
 
     public void setIsSelectionnerToHandle(Boolean isSelectionnerToHandle) {
         this.manager.setIsSelectionnerToHandle(isSelectionnerToHandle);
-    }
-
-    @Data
-    public static class OneStringData {
-        private String data;
     }
 }

@@ -27,9 +27,7 @@ import ch.globaz.common.process.byitem.ProcessItemsService;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.orion.business.constantes.EBProperties;
 import globaz.orion.vb.swissdec.EBPucsValidationDetailViewBean;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class EBPucsServletAction extends EBAbstractServletAction {
 
     public EBPucsServletAction(FWServlet aServlet) {
@@ -224,9 +222,9 @@ public class EBPucsServletAction extends EBAbstractServletAction {
             }
 
             vBean = (EBPucsFileListViewBean) mainDispatcher.dispatch(vBean, getAction());
-            vBean.loadAndSetUser();
+            vBean.getManager().find(BManager.SIZE_NOLIMIT);
+            vBean.perpareList();
         } catch (Exception e) {
-            LOG.error("Error for actionChercher ",e);
             vBean.setMsgType(FWViewBeanInterface.ERROR);
             vBean.setMessage(e.getMessage());
         }
