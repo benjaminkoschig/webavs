@@ -305,7 +305,7 @@ public class PCPlanCalculHandlerOO {
                     data.addData("CHF3L1", PCPlanCalculHandlerOO.MONNAIE);
                     data.addData("MONTANTL1_C3", new FWCurrency(ligne.getValCol3().getStrValeur()).toStringFormat());
                 } else {
-                    if ((cptLigne == 1) && (liste.size() < 3)) {
+                    if ((cptLigne == 1) && (liste.size() == 3)) {
                         // Cas ass maladie
                         data.addData("totalL2", ligne.getLibelle());
                         data.addData("CHF3L2", PCPlanCalculHandlerOO.MONNAIE);

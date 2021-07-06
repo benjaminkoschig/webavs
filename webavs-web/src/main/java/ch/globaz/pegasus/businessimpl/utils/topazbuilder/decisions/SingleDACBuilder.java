@@ -6,6 +6,7 @@ import globaz.externe.IPRConstantesExternes;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.util.JACalendar;
 import globaz.jade.admin.user.bean.JadeUser;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
@@ -1455,10 +1456,18 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
     }
 
     private String getMontantPCTotal() {
-        String primeVersee = dacOO.getPlanCalcul().getPrimeVerseeAssMaladie();
         String montantPrestation = dacOO.getSimplePrestation().getMontantPrestation();
-        Float montantPCTotal = Float.parseFloat(montantPrestation.isEmpty() ? "0" : montantPrestation)
-                + (Float.parseFloat(primeVersee.isEmpty()? "0" : primeVersee)/12)-(getMontantHome("ALL"));
+        String dateDebut  = JadeDateUtil.getFirstDateOfMonth(dacOO.getSimplePrestation().getDateDebutDroit());
+        String dateFin = JadeDateUtil.getLastDateOfMonth(dacOO.getSimplePrestation().getDateFinDroit());
+        int nbreMois = JadeDateUtil.getNbMonthsBetween(dateDebut, dateFin);
+        Float montantTotalHome;
+        if(montantPrestation.isEmpty()){
+            montantTotalHome =  Float.parseFloat("0");
+        }else{
+            montantTotalHome = Float.parseFloat(montantPrestation)* nbreMois;
+        }
+
+        Float montantPCTotal = montantTotalHome-(getMontantHome("ALL"));
         return new FWCurrency(montantPCTotal.toString()).toStringFormat();
     }
 
@@ -1476,7 +1485,9 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
             return 0.f;
         }
     }
-
+    private Float calculMontantParMois(String montantHome, int nbreMois) {
+        return Float.parseFloat(montantHome) / 12 * nbreMois;
+    }
     /**
      * Retourn le nom du mois en fonction du numéro passé en param
      *
