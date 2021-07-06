@@ -4,6 +4,7 @@ import ch.admin.zas.xmlns.acor_rentes_in_host._0.InHostType;
 import ch.admin.zas.xmlns.acor_standard_erreur._0.OriginType;
 import ch.admin.zas.xmlns.acor_standard_erreur._0.StandardError;
 import ch.globaz.common.exceptions.ValidationException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import globaz.corvus.acor2020.utils.Acor2020Token;
 import globaz.corvus.acor2020.utils.Acor2020TokenService;
@@ -15,6 +16,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.prestation.acor.PRACORException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
@@ -27,13 +29,12 @@ import java.util.Objects;
 @Slf4j
 public class WebAvsAcor2020Service {
 
-    public static final String ERROR_ACOR_EXTERN_IMPORT_TOKEN = "ERROR.ACOR_EXTERN.IMPORT.TOKEN";
+    public static final String ERROR_ACOR_EXTERN_TOKEN_INVALID = "ERROR.ACOR_EXTERN.TOKEN.INVALID";
     public static final String ERROR_ACOR_EXTERN_IMPORT_UNKOWN = "ERROR.ACOR_EXTERN.IMPORT.UNKOWN";
     public static final String ERROR_ACOR_EXTERN_IMPORT_IN_HOST = "ERROR.ACOR_EXTERN.IMPORT.IN_HOST";
     public static final String ERROR_ACOR_EXTERN_IMPORT_CONVERT = "ERROR.ACOR_EXTERN.IMPORT.CONVERT";
-    public static final String ERROR_ACOR_EXTERN_EXPORT_TOKEN = "ERROR.ACOR_EXTERN.EXPORT.TOKEN";
-    public static final String ERROR_ACOR_EXTERN_EXPORT_IN_HOST_REQUIRED = "ERROR.ACOR_EXTERN.EXPORT.IN_HOST_REQUIRED";
     public static final String ERROR_ACOR_EXTERN_EXPORT_UNKNOWN = "ERROR.ACOR_EXTERN.EXPORT.UNKNOWN";
+    public static final String ERROR_ACOR_EXTERN_EXPORT_SPE = "&ERROR.ACOR_EXTERN.EXPORT.SPE";
 
     /**
      * @return
@@ -61,21 +62,21 @@ public class WebAvsAcor2020Service {
             } catch (Exception e) {
                 if (e instanceof ValidationException) {
                     LOG.error("Les données n'ont pas pu être chargée correctement : " + ((ValidationException)e).getFormattedMessage(), e);
-                    return Response.status((Response.StatusType) Response.Status.BAD_REQUEST).build();
-//                    return Response.ok(getStandardError(ERROR_ACOR_EXTERN_IMPORT_IN_HOST, e, 0, OriginType.TECHNICAL_IMPORT)).build();
+                    Response.ResponseBuilder responseBuilder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+                    return responseBuilder.entity(getStandardError(ERROR_ACOR_EXTERN_IMPORT_CONVERT, e, 2, OriginType.TECHNICAL_IMPORT)).build();
                 } else if (e instanceof JAXBException) {
                     LOG.error("Les données n'ont pas pu être chargée correctement : " + ((JAXBException)e).getErrorCode(), e);
-                    return Response.status((Response.StatusType) Response.Status.BAD_REQUEST).build();
-//                    return Response.ok(getStandardError(ERROR_ACOR_EXTERN_IMPORT_IN_HOST, e, 0, OriginType.TECHNICAL_IMPORT)).build();
+                    Response.ResponseBuilder responseBuilder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+                    return responseBuilder.entity(getStandardError(ERROR_ACOR_EXTERN_IMPORT_IN_HOST, e, 2, OriginType.TECHNICAL_IMPORT)).build();
                 }
                 LOG.error("Une erreur inconnue est intervenue lors de l'importation.", e);
-                return Response.status((Response.StatusType) Response.Status.BAD_REQUEST).build();
-//                return Response.ok(getStandardError(ERROR_ACOR_EXTERN_IMPORT_UNKOWN, e, 0, OriginType.TECHNICAL_IMPORT)).build();
+                Response.ResponseBuilder responseBuilder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+                return responseBuilder.entity(getStandardError(ERROR_ACOR_EXTERN_IMPORT_UNKOWN, e, 1, OriginType.TECHNICAL_IMPORT)).build();
             }
         }
         LOG.error("Token invalide.");
-        return Response.status((Response.StatusType) Response.Status.BAD_REQUEST).build();
-//        return Response.ok(getStandardError(ERROR_ACOR_EXTERN_IMPORT_TOKEN, null, 0, OriginType.TECHNICAL_IMPORT)).build();
+        Response.ResponseBuilder responseBuilder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+        return responseBuilder.entity(getStandardError(ERROR_ACOR_EXTERN_TOKEN_INVALID, null, 2, OriginType.TECHNICAL_TOKEN)).build();
     }
 
     /**
@@ -103,14 +104,18 @@ public class WebAvsAcor2020Service {
             } catch (Exception e) {
                 if (e instanceof REBusinessException || e instanceof PRACORException) {
                     LOG.error("Les données n'ont pas pu être exportée correctement.", e);
-                    return Response.ok(getStandardError(ERROR_ACOR_EXTERN_EXPORT_IN_HOST_REQUIRED, e, 1, OriginType.TECHNICAL_EXPORT)).build();
+                    Response.ResponseBuilder responseBuilder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+                    // TODO ajuster ce message.
+                    return responseBuilder.entity(getStandardError(ERROR_ACOR_EXTERN_EXPORT_UNKNOWN, e, 2, OriginType.TECHNICAL_EXPORT)).build();
                 }
                 LOG.error("Une erreur inconnue est intervenue lors de l'exportation.", e);
-                return Response.ok(getStandardError(ERROR_ACOR_EXTERN_EXPORT_UNKNOWN, e, 1, OriginType.TECHNICAL_EXPORT)).build();
+                Response.ResponseBuilder responseBuilder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+                return responseBuilder.entity(getStandardError(ERROR_ACOR_EXTERN_EXPORT_UNKNOWN, e, 1, OriginType.TECHNICAL_EXPORT)).build();
             }
         }
         LOG.error("Token invalide.");
-        return Response.ok(getStandardError(ERROR_ACOR_EXTERN_EXPORT_TOKEN, null, 1, OriginType.TECHNICAL_EXPORT)).build();
+        Response.ResponseBuilder responseBuilder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+        return responseBuilder.entity(getStandardError(ERROR_ACOR_EXTERN_TOKEN_INVALID, null, 2, OriginType.TECHNICAL_TOKEN)).build();
     }
 
 
@@ -135,25 +140,35 @@ public class WebAvsAcor2020Service {
             } catch (Exception e) {
                 if (e instanceof REBusinessException || e instanceof PRACORException) {
                     LOG.error("Les données n'ont pas pu être exportée correctement.", e);
-                    return Response.ok(getStandardError(ERROR_ACOR_EXTERN_EXPORT_IN_HOST_REQUIRED, e, 1, OriginType.TECHNICAL_EXPORT)).build();
+                    Response.ResponseBuilder responseBuilder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+                    // TODO ajuster ce message.
+                    return responseBuilder.entity(getStandardError(ERROR_ACOR_EXTERN_EXPORT_UNKNOWN, e, 2, OriginType.TECHNICAL_EXPORT)).build();
                 }
                 LOG.error("Une erreur inconnue est intervenue lors de l'exportation.", e);
-                return Response.ok(getStandardError(ERROR_ACOR_EXTERN_EXPORT_UNKNOWN, e, 1, OriginType.TECHNICAL_EXPORT)).build();
+                Response.ResponseBuilder responseBuilder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+                return responseBuilder.entity(getStandardError(ERROR_ACOR_EXTERN_EXPORT_UNKNOWN, e, 1, OriginType.TECHNICAL_EXPORT)).build();
             }
         }
         LOG.error("Token invalide.");
-        return Response.ok(getStandardError(ERROR_ACOR_EXTERN_EXPORT_TOKEN, null, 1, OriginType.TECHNICAL_EXPORT)).build();
+        Response.ResponseBuilder responseBuilder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+        return responseBuilder.entity(getStandardError(ERROR_ACOR_EXTERN_TOKEN_INVALID, null, 2, OriginType.TECHNICAL_TOKEN)).build();
     }
 
-    private StandardError getStandardError(String label, Exception e, int level, OriginType type) {
+    private String getStandardError(String label, Exception e, int level, OriginType type) {
+        try {
         StandardError error = new StandardError();
+        ObjectMapper objMapper = new ObjectMapper();
         error.setLabelId(label);
         error.setOrigin(type);
         error.setLevel(level);
-        error.setType(1);
+        error.setType(0);
         if (e != null) {
             error.setDebug(e.getStackTrace().toString());
         }
-        return error;
+            return objMapper.writeValueAsString(error);
+        } catch (JsonProcessingException jsonProcessingException) {
+            LOG.error("Impossible de convertir l'erreur au format JSON. ", jsonProcessingException);
+            return StringUtils.EMPTY;
+        }
     }
 }
