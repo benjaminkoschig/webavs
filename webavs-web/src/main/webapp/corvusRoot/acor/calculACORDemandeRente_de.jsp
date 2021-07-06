@@ -15,6 +15,7 @@
 <%@ page import="globaz.prestation.interfaces.tiers.PRTiersHelper" %>
 <%@ page import="globaz.jade.client.util.JadeDateUtil" %>
 <%@ page import="java.util.Date" %>
+<%@ page import="globaz.corvus.properties.REProperties" %>
 
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib uri="/corvusRoot/corvustaglib.tld" prefix="re" %>
@@ -353,12 +354,8 @@
     </p>
 </td>
 </tr>
-<% } //TODO supprimer ce else
-else { %>
-<%--<%--%>
-<%--    // TODO Contrôle valeur Null--%>
-<%--} else if (REProperties.ACOR_UTILISER_VERSION_WEB.getBooleanValue()) {--%>
-<%--%>--%>
+<% }  else {
+ if (REProperties.ACOR_UTILISER_VERSION_WEB.getBooleanValue()) { %>
 <tr>
     <td colspan="4">
         <h6>
@@ -391,13 +388,14 @@ else { %>
         </p>
     </td>
 </tr>
-<%--<%--%>
-<%--    } else {--%>
-<%--%>--%>
+<tr><td>
+<p>---------------------------------------------------------------------------------------------</p>
+<p>ANCIEN ACOR</p>
+</td>
+</tr>
+<%    } %>
 <tr>
     <td colspan="4">
-        <p>---------------------------------------------------------------------------------------------</p>
-        <p>ANCIEN ACOR</p>
         <h6>
             <ct:FWLabel key="JSP_CADR_ETAPE_1"/>
         </h6>
@@ -424,10 +422,7 @@ else { %>
         </p>
     </td>
 </tr>
-<%
-    }
-%>
-
+<% } %>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
 <input type="button"
        value="<ct:FWLabel key="JSP_ARRET" /> (alt+<ct:FWLabel key="AK_PRO_ARRET" />)"
