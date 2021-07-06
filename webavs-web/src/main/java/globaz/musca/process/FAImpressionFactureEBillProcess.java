@@ -382,6 +382,9 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
         entete.addEBillTransactionID(getTransaction());
         entete.update();
 
+        // met à jour le status eBill de la section
+        updateSectionEtatEtTransactionID(compteAnnexe, entete.getIdExterneFacture(), entete.geteBillTransactionID());
+
         // Initialisation de l'objet à marshaller dans la facture eBill
         FAImpressionFactureEBillXml factureEBill = new FAImpressionFactureEBillXml();
         factureEBill.setEntete(entete);
@@ -442,7 +445,7 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
                 section.seteBillTransactionID(transactionId);
                 section.update();
             } else {
-                getMemoryLog().logMessage("Impossible de trouver une section unique avec l'id externe : " + idExterneFacture, FWViewBeanInterface.WARNING, this.getClass().getName());
+                LOGGER.warn("Impossible de récupérer une section unique. Ceci est normal dans le cadre d'une création de fichier.");
             }
 
         } catch (Exception e) {
