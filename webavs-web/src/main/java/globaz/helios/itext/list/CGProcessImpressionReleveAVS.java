@@ -32,6 +32,7 @@ import globaz.helios.tools.TimeHelper;
 import globaz.helios.translation.CodeSystem;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,7 +72,7 @@ public class CGProcessImpressionReleveAVS extends BProcess {
     private List listBeanDocument = new ArrayList();
     private Map parametres = new HashMap();
     private String typeImpression = CGImpressionUtils.TYPE_IMPRESSION_PDF;
-
+    private String isPTRA = "";
     /**
      * Constructor for CGProcessImpressionReleveAVS.
      */
@@ -119,6 +120,7 @@ public class CGProcessImpressionReleveAVS extends BProcess {
 
         BStatement statement = null;
         CGExtendedCompteOfasManager ds = null;
+        isPTRA = JadePropertiesService.getInstance().getProperty("helios.prestation.transitoire");
         try {
             // On prepare les parametres globaux
             prepareParameter();
@@ -300,6 +302,9 @@ public class CGProcessImpressionReleveAVS extends BProcess {
         CGExtendedCompteOfas entity = null;
         try {
             ds.setTypeRapport(CGExtendedCompteOfasManager.RAPPORT_BILAN);
+            if (isPTRA != null && isPTRA.equals("true")) {
+                ds.setPtra8Aor8B("8B");
+            }
             statement = ds.cursorOpen(getTransaction());
             while ((entity = (CGExtendedCompteOfas) ds.cursorReadNext(statement)) != null) {
                 createRow(CGReleveAVSBilan_Bean.class.getName(), entity, listBeanBilan);
@@ -385,6 +390,9 @@ public class CGProcessImpressionReleveAVS extends BProcess {
         CGExtendedCompteOfas entity = null;
         try {
             ds.setTypeRapport(CGExtendedCompteOfasManager.RAPPORT_EXPLOITATION);
+            if (isPTRA != null && isPTRA.equals("true")) {
+                ds.setPtra8Aor8B("8A");
+            }
             statement = ds.cursorOpen(getTransaction());
             while ((entity = (CGExtendedCompteOfas) ds.cursorReadNext(statement)) != null) {
                 createRow(CGReleveAVSCptExpl_Bean.class.getName(), entity, listBeanCptExpl);

@@ -2,15 +2,16 @@ package globaz.helios.db.avs;
 
 import globaz.globall.db.BConstants;
 import globaz.globall.db.BStatement;
+import globaz.jade.client.util.JadeStringUtil;
 
 /**
  * Insert the type's description here. Creation date: (30.06.2003 17:41:29)
- * 
+ *
  * @author: Administrator
  */
 public class CGExtendedCompteOfasManager extends CGCompteOfasManager {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -22,6 +23,8 @@ public class CGExtendedCompteOfasManager extends CGCompteOfasManager {
     public static final String RAPPORT_BILAN = "1";
     public static final String RAPPORT_EXPLOITATION = "2";
     private java.lang.String typeRapport;
+
+    private java.lang.String ptra8Aor8B;
 
     @Override
     protected String _getFrom(globaz.globall.db.BStatement statement) {
@@ -37,7 +40,7 @@ public class CGExtendedCompteOfasManager extends CGCompteOfasManager {
 
     /**
      * Renvoie la composante de tri de la requête SQL (sans le mot-clé ORDER BY)
-     * 
+     *
      * @return la composante ORDER BY
      */
     @Override
@@ -71,15 +74,26 @@ public class CGExtendedCompteOfasManager extends CGCompteOfasManager {
             }
 
             if (getTypeRapport().equals(RAPPORT_BILAN)) {
-                sqlWhere += /*
-                             * " AND " + mainTable + "IDNATURE<>"+_dbWriteNumeric (statement.getTransaction(),
-                             * CGCompteOfas.CS_NATURE_FICTIF) +
-                             */
-                " AND " + mainTable + "IDDOMAINE="
-                        + _dbWriteNumeric(statement.getTransaction(), CGCompteOfas.CS_DOMAINE_BILAN) + " AND ("
-                        + joinedTable + "IDTYPETACHE="
-                        + _dbWriteNumeric(statement.getTransaction(), CGSecteurAVS.CS_TACHE_FEDERAL) + " OR "
-                        + "(SUBSTR(" + mainTable + "IDEXTERNE,5,3) = '110'))";
+                /*
+                 * " AND " + mainTable + "IDNATURE<>"+_dbWriteNumeric (statement.getTransaction(),
+                 * CGCompteOfas.CS_NATURE_FICTIF) +
+                 */
+                        if(!JadeStringUtil.isBlankOrZero(ptra8Aor8B) && ptra8Aor8B.equals("8B")){
+                            sqlWhere +=   " AND (" + mainTable + "IDDOMAINE="
+                                    + _dbWriteNumeric(statement.getTransaction(), CGCompteOfas.CS_DOMAINE_BILAN)
+                                    +" OR ("+mainTable+"IDDOMAINE = 702003 AND (SUBSTR(" + mainTable + "IDEXTERNE,1,3) > '250'"
+                                    +" AND substr("+mainTable+"IDEXTERNE,1,3) < '260' )))"
+                                    + " AND ("
+                                    + joinedTable + "IDTYPETACHE="
+                                    + _dbWriteNumeric(statement.getTransaction(), CGSecteurAVS.CS_TACHE_FEDERAL) + " OR "
+                                    + "(SUBSTR(" + mainTable + "IDEXTERNE,5,3) = '110'))";
+                        }else{
+                            sqlWhere +=   " AND " + mainTable + "IDDOMAINE="
+                                    + _dbWriteNumeric(statement.getTransaction(), CGCompteOfas.CS_DOMAINE_BILAN) + " AND ("
+                                    + joinedTable + "IDTYPETACHE="
+                                    + _dbWriteNumeric(statement.getTransaction(), CGSecteurAVS.CS_TACHE_FEDERAL) + " OR "
+                                    + "(SUBSTR(" + mainTable + "IDEXTERNE,5,3) = '110'))";
+                        }
                 /*
                  * " AND (SUBSTR(" + mainTable + "IDEXTERNE,1,3) in ('100','199','200','300','900') OR " + mainTable +
                  * "IDNATURE="+_dbWriteNumeric(statement.getTransaction(), CGCompteOfas.CS_NATURE_CC_AFFILIES)+")";
@@ -109,9 +123,7 @@ public class CGExtendedCompteOfasManager extends CGCompteOfasManager {
                         + _dbWriteNumeric(statement.getTransaction(), CGCompteOfas.CS_DOMAINE_EXPLOITATION) + " AND "
                         + joinedTable + "IDTYPETACHE="
                         + _dbWriteNumeric(statement.getTransaction(), CGSecteurAVS.CS_TACHE_FEDERAL);
-            }
-
-            else if (getTypeRapport().equals(RAPPORT_AFFILIES)) {
+            } else if (getTypeRapport().equals(RAPPORT_AFFILIES)) {
                 sqlWhere += " AND " + mainTable + "IDNATURE="
                         + _dbWriteNumeric(statement.getTransaction(), CGCompteOfas.CS_NATURE_CC_AFFILIES);
             } else if (getTypeRapport().equals(RAPPORT_BALANCE_ANNUELLE)) {
@@ -125,7 +137,11 @@ public class CGExtendedCompteOfasManager extends CGCompteOfasManager {
                         + _dbWriteNumeric(statement.getTransaction(), CGCompteOfas.CS_DOMAINE_BILAN) + " OR "
                         + mainTable + "IDDOMAINE="
                         + _dbWriteNumeric(statement.getTransaction(), CGCompteOfas.CS_DOMAINE_ADMINISTRATION) + " ) ";
+            } else if (!JadeStringUtil.isBlankOrZero(ptra8Aor8B) && ptra8Aor8B.equals("8A")) {
+                sqlWhere += " AND (SUBSTR(" + mainTable + "IDEXTERNE,1,3) < '251' OR SUBSTR(" + mainTable + "IDEXTERNE,1,3)>'259'";
             }
+
+
         }
 
         return sqlWhere;
@@ -133,10 +149,9 @@ public class CGExtendedCompteOfasManager extends CGCompteOfasManager {
 
     /**
      * Crée une nouvelle entité
-     * 
+     *
      * @return la nouvelle entité
-     * @exception java.lang.Exception
-     *                si la création a échouée
+     * @throws java.lang.Exception si la création a échouée
      */
     @Override
     protected globaz.globall.db.BEntity _newEntity() throws java.lang.Exception {
@@ -145,7 +160,7 @@ public class CGExtendedCompteOfasManager extends CGCompteOfasManager {
 
     /**
      * Insert the method's description here. Creation date: (03.07.2003 16:25:48)
-     * 
+     *
      * @return java.lang.String
      */
     public java.lang.String getTypeRapport() {
@@ -154,11 +169,18 @@ public class CGExtendedCompteOfasManager extends CGCompteOfasManager {
 
     /**
      * Insert the method's description here. Creation date: (03.07.2003 16:25:48)
-     * 
-     * @param newTypeRapport
-     *            java.lang.String
+     *
+     * @param newTypeRapport java.lang.String
      */
     public void setTypeRapport(java.lang.String newTypeRapport) {
         typeRapport = newTypeRapport;
+    }
+
+    public String getPtra8Aor8B() {
+        return ptra8Aor8B;
+    }
+
+    public void setPtra8Aor8B(String ptra8Aor8B) {
+        this.ptra8Aor8B = ptra8Aor8B;
     }
 }

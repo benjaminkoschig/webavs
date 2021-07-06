@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import javax.xml.bind.JAXBException;
+
+import globaz.jade.properties.JadePropertiesService;
 import org.xml.sax.SAXException;
 import ch.admin.zas.pool.PoolMeldungZurZAS;
 import ch.globaz.common.properties.CommonProperties;
@@ -56,12 +58,12 @@ import globaz.jade.log.JadeLogger;
 
 /**
  * Insérez la description du type ici. Date de création : (20.03.2003 14:48:16)
- * 
+ *
  * @author: Administrator
  */
 public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private final static String labelPrefix = "ANNONCE_";
@@ -73,7 +75,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
     private String idComptabilite = "";
     private String idPeriodeComptable = "";
     private Boolean isComptaDefinitive = new Boolean(true);
-
+    private String isPTRA = null;
     private Boolean isEnvoyerAnnoncesOfas = new Boolean(false);
 
     private List<CGMetaAnnonceAttributs> listAnnonces = new ArrayList<CGMetaAnnonceAttributs>();
@@ -84,7 +86,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
     private BISession remoteSession = null;
     private BITransaction remoteTransaction = null;
     private CGHelperReleveAVS traitementReleveAvsHelper = new CGHelperReleveAVS();
-    
+
     private boolean isAnnonceXML;
     private CGPeriodeComptableEnvoiAnnoncesXMLService xmlService;
     PoolMeldungZurZAS.Lot lotAnnonces;
@@ -99,9 +101,8 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
 
     /**
      * Commentaire relatif au constructeur CGJournalComptabiliserProcess.
-     * 
-     * @param parent
-     *            BProcess
+     *
+     * @param parent BProcess
      */
     public CGPeriodeComptableEnvoiAnnonces(BProcess parent) {
         super(parent);
@@ -110,9 +111,8 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
 
     /**
      * Commentaire relatif au constructeur CGJournalComptabiliserProcess.
-     * 
-     * @param session
-     *            BSession
+     *
+     * @param session BSession
      */
     public CGPeriodeComptableEnvoiAnnonces(BSession session) {
         super(session);
@@ -139,6 +139,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
                 remoteSession = application.getSessionAnnonce(getSession());
                 remoteTransaction = ((BSession) remoteSession).newTransaction();
                 remoteTransaction.openTransaction();
+                isPTRA = JadePropertiesService.getInstance().getProperty("helios.prestation.transitoire");
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -183,7 +184,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
             // Envoi des annonces à la centrale
             else {
                 try {
-                    if(isAnnonceXML) {
+                    if (isAnnonceXML) {
                         lotAnnonces = CGPeriodeComptableXMLService.getInstance().initPoolMeldungZurZASLot(CGProperties.CENTRALE_TEST.getBooleanValue(), CommonProperties.KEY_NO_CAISSE.getValue());
                         xmlService = new CGPeriodeComptableEnvoiAnnoncesXMLService(getSession(), getTransaction(), periode, exercice, lotAnnonces.getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr(), application);
                         xmlService.preparerAnnoncesComptesExploitation(traitementReleveAvsHelper, isComptaDefinitive);
@@ -216,9 +217,9 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
                 if (nbErrors == 0) {
                     try {
                         if (bouclement.isBouclementMensuelAVS().booleanValue()) {
-                            if(isAnnonceXML) {
+                            if (isAnnonceXML) {
                                 xmlService.preparerAnnoncesComptesAffilie();
-                            }else {
+                            } else {
                                 preparerAnnoncesComptesAffilie();
                             }
                             this.info("COMPTE_AFFILIE_OK");
@@ -234,7 +235,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
                 if (nbErrors == 0) {
                     try {
                         if (bouclement.isBouclementAnnuelAVS().booleanValue()) {
-                            if(isAnnonceXML) {
+                            if (isAnnonceXML) {
                                 xmlService.preparerAnnoncesBalanceAnnuelleMvt(initAnnoncesBalanceAnnuelleManager(), traitementReleveAvsHelper, isComptaDefinitive);
                             } else {
                                 preparerAnnoncesBalanceAnnuelleMvt();
@@ -253,7 +254,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
                 // Envoi des annonces
                 if (nbErrors == 0) {
                     try {
-                        if(isAnnonceXML) {
+                        if (isAnnonceXML) {
                             nomFichier = annoncerXML();
                         } else {
                             idAnnonce = annoncer(remoteTransaction, remoteSession, listAnnonces, application);
@@ -275,7 +276,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
                     remoteTransaction = null;
 
                     if (!periode.isNew()) {
-                        if(isAnnonceXML) {
+                        if (isAnnonceXML) {
                             periode.setIdAnnonce("0");
                             periode.setNomFichier(nomFichier);
                             periode.update();
@@ -338,18 +339,17 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
             abort();
         }
     }
-    
+
     public String annoncerXML() throws PropertiesException, IOException, SAXException, JAXBException, JadeException {
         String fileName = CGPeriodeComptableXMLService.getInstance().genereFichier(lotAnnonces);
         CGPeriodeComptableXMLService.getInstance().envoiFichier(fileName);
         return new File(fileName).getName();
     }
-    
 
 
     /**
      * Ajouter les annonces en BD à l'aide du module Hermes.
-     * 
+     *
      * @param remoteTransaction
      * @param remoteSession
      * @param listMetaAttributs
@@ -358,7 +358,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
      * @throws Exception
      */
     public String annoncer(BITransaction remoteTransaction, BISession remoteSession,
-            List<CGMetaAnnonceAttributs> listMetaAttributs, CGApplication application) throws Exception {
+                           List<CGMetaAnnonceAttributs> listMetaAttributs, CGApplication application) throws Exception {
         boolean hasOpenedTransaction = false;
         try {
             String idAnnonce = null;
@@ -467,7 +467,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
     private void construireAnnonces8B(int count, int nbrComptes, ArrayList<CGMontantHelper> listResultAnnonces8B) {
         HashMap<String, String> attributs = null;
 
-        for (Iterator iterator = listResultAnnonces8B.iterator(); iterator.hasNext();) {
+        for (Iterator iterator = listResultAnnonces8B.iterator(); iterator.hasNext(); ) {
             CGMontantHelper result = (CGMontantHelper) iterator.next();
 
             nbrComptes++;
@@ -673,9 +673,8 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.04.2003 14:35:53)
-     * 
-     * @param msg
-     *            String
+     *
+     * @param msg String
      */
     protected void error(String msg) {
         this.error(msg, "");
@@ -683,9 +682,8 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.04.2003 14:35:53)
-     * 
-     * @param msg
-     *            String
+     *
+     * @param msg String
      */
     protected void error(String codeLabel, String msg) {
         getMemoryLog().logMessage(getSession().getLabel(CGPeriodeComptableEnvoiAnnonces.labelPrefix + codeLabel) + msg,
@@ -694,9 +692,8 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.04.2003 14:35:53)
-     * 
-     * @param msg
-     *            String
+     *
+     * @param msg String
      */
     protected void fatal(String codeLabel) {
         this.fatal(codeLabel, "");
@@ -704,9 +701,8 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.04.2003 14:35:53)
-     * 
-     * @param msg
-     *            String
+     *
+     * @param msg String
      */
     protected void fatal(String codeLabel, String msg) {
         getMemoryLog().logMessage(getSession().getLabel(CGPeriodeComptableEnvoiAnnonces.labelPrefix + codeLabel) + msg,
@@ -716,7 +712,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
     /**
      * Method getAnnoncesOFAS. Idem que les annonces de la balance des mvts annuelles, en ne prenant que les comptes de
      * bilan et administration du secteur 9. Les annonces à envoyer sont des 8B, mais générée comme des 8E.
-     * 
+     *
      * @param remoteTransaction
      * @param remoteSession
      * @param listMetaAttributs
@@ -724,7 +720,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
      * @throws Exception
      */
     public List getAnnoncesOFAS(BITransaction remoteTransaction, BISession remoteSession, List listMetaAttributs,
-            CGApplication application) throws Exception {
+                                CGApplication application) throws Exception {
         List result = new ArrayList();
         boolean hasOpenedTransaction = false;
         try {
@@ -864,7 +860,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
 
     /**
      * Returns the reqComptabilite.
-     * 
+     *
      * @return String
      */
     public String getIdComptabilite() {
@@ -873,7 +869,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (20.03.2003 14:53:42)
-     * 
+     *
      * @return String
      */
     public String getIdPeriodeComptable() {
@@ -882,7 +878,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
 
     /**
      * Returns the isEnvoyerAnnoncesOfas.
-     * 
+     *
      * @return Boolean
      */
     public Boolean getIsEnvoyerAnnoncesOfas() {
@@ -904,7 +900,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
             footer += JadeStringUtil
                     .rightJustify(getPeriode().getExerciceComptable().getMandat().getNoCaisse(), 3, '0')
                     + JadeStringUtil
-                            .rightJustify(getPeriode().getExerciceComptable().getMandat().getNoAgence(), 3, '0');
+                    .rightJustify(getPeriode().getExerciceComptable().getMandat().getNoAgence(), 3, '0');
         } else {
             footer += CaisseHelperFactory.getInstance().getNoCaisse(application)
                     + CaisseHelperFactory.getInstance().getNoAgence(application);
@@ -936,7 +932,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
             header += JadeStringUtil
                     .rightJustify(getPeriode().getExerciceComptable().getMandat().getNoCaisse(), 3, '0')
                     + JadeStringUtil
-                            .rightJustify(getPeriode().getExerciceComptable().getMandat().getNoAgence(), 3, '0');
+                    .rightJustify(getPeriode().getExerciceComptable().getMandat().getNoAgence(), 3, '0');
         } else {
             header += CaisseHelperFactory.getInstance().getNoCaisse(application)
                     + CaisseHelperFactory.getInstance().getNoAgence(application);
@@ -956,7 +952,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (25.04.2003 14:37:25)
-     * 
+     *
      * @return CGPeriodeComptable
      */
     public CGPeriodeComptable getPeriode() {
@@ -975,10 +971,9 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (29.04.2003 18:36:40)
-     * 
+     *
+     * @param codeLabel String
      * @return String
-     * @param codeLabel
-     *            String
      */
     private String global(String codeLabel) {
         return getSession().getLabel("GLOBAL_" + codeLabel);
@@ -986,9 +981,8 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.04.2003 14:35:53)
-     * 
-     * @param msg
-     *            String
+     *
+     * @param msg String
      */
     protected void info(String msg) {
         this.info(msg, "");
@@ -996,9 +990,8 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.04.2003 14:35:53)
-     * 
-     * @param msg
-     *            String
+     *
+     * @param msg String
      */
     protected void info(String codeLabel, String msg) {
         getMemoryLog().logMessage(getSession().getLabel(CGPeriodeComptableEnvoiAnnonces.labelPrefix + codeLabel) + msg,
@@ -1052,7 +1045,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
 
     /**
      * Initialise le manager des annonces de balance annuelle (8E).
-     * 
+     *
      * @return
      */
     private CGExtendedCompteOfasManager initAnnoncesBalanceAnnuelleManager() {
@@ -1066,7 +1059,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
 
     /**
      * Returns the isComptaDefinitive.
-     * 
+     *
      * @return Boolean
      */
     public Boolean isComptaDefinitive() {
@@ -1085,10 +1078,9 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (29.04.2003 18:36:40)
-     * 
+     *
+     * @param codeLabel String
      * @return String
-     * @param codeLabel
-     *            String
      */
     private String label(String codeLabel) {
         return getSession().getLabel(CGPeriodeComptableEnvoiAnnonces.labelPrefix + codeLabel);
@@ -1329,6 +1321,9 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
         ds.setSession(getSession());
         ds.setForIdMandat(exercice.getIdMandat());
         ds.setTypeRapport(CGExtendedCompteOfasManager.RAPPORT_EXPLOITATION);
+        if (isPTRA != null && isPTRA.equals("true")) {
+            ds.setPtra8Aor8B("8A");
+        }
 
         int count = 0;
         int nbrComptes = 0;
@@ -1414,7 +1409,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
 
     /**
      * Method preparerAnnonces8B. Prépare les annonces des comptes Bilan et comptes Administration
-     * 
+     *
      * @throws Exception
      */
     protected void preparerAnnoncesZAS8B() throws Exception {
@@ -1426,7 +1421,9 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
         ds.setSession(getSession());
         ds.setForIdMandat(exercice.getIdMandat());
         ds.setTypeRapport(CGExtendedCompteOfasManager.RAPPORT_BILAN);
-
+        if (isPTRA != null && isPTRA.equals("true")) {
+            ds.setPtra8Aor8B("8B");
+        }
         int count = 0;
         int nbrComptes = 0;
         ArrayList<CGMontantHelper> listResultAnnonces8B = new ArrayList<CGMontantHelper>();
@@ -1465,7 +1462,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
         }
         ds.cursorClose(statement);
 
-        if(isAnnonceXML) {
+        if (isAnnonceXML) {
             xmlService.construireAnnonces8B(listResultAnnonces8B);
         } else {
             construireAnnonces8B(count, nbrComptes, listResultAnnonces8B);
@@ -1476,7 +1473,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
      * Method preparerEnvoiAnnoncesOFAS. Idem que les annonces de la balance des mvts annuelles, en ne prenant que les
      * comptes de bilan et administration du secteur 9. Les annonces à envoyer sont des 8B, mais générée comme des 8E,
      * cf. CGApplication.getAnnonceOfas
-     * 
+     *
      * @return List
      * @throws Exception
      */
@@ -1575,7 +1572,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
     /**
      * Method registerAnnoncesOfasToMail. Ajoute un fichier attaché au mail, contenant les annonces OFAS à envoyer à la
      * centrale.
-     * 
+     *
      * @throws Exception
      */
     private void registerAnnoncesOfasToMail() throws Exception {
@@ -1639,9 +1636,8 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
 
     /**
      * Sets the reqComptabilite.
-     * 
-     * @param reqComptabilite
-     *            The reqComptabilite to set
+     *
+     * @param reqComptabilite The reqComptabilite to set
      */
     public void setIdComptabilite(String idComptabilite) {
         this.idComptabilite = idComptabilite;
@@ -1658,9 +1654,8 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
 
     /**
      * Sets the isComptaDefinitive.
-     * 
-     * @param isComptaDefinitive
-     *            The isComptaDefinitive to set
+     *
+     * @param isComptaDefinitive The isComptaDefinitive to set
      */
     public void setIsComptaDefinitive(Boolean isComptaDefinitive) {
         this.isComptaDefinitive = isComptaDefinitive;
@@ -1668,9 +1663,8 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
 
     /**
      * Sets the isEnvoyerAnnoncesOfas.
-     * 
-     * @param isEnvoyerAnnoncesOfas
-     *            The isEnvoyerAnnoncesOfas to set
+     *
+     * @param isEnvoyerAnnoncesOfas The isEnvoyerAnnoncesOfas to set
      */
     public void setIsEnvoyerAnnoncesOfas(Boolean isEnvoyerAnnoncesOfas) {
         this.isEnvoyerAnnoncesOfas = isEnvoyerAnnoncesOfas;
@@ -1678,7 +1672,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
 
     /**
      * Si les annonces annuelles contiennent des montants négatifs, l'envois ne pourra pas être effectué.
-     * 
+     *
      * @throws Exception
      */
     private boolean testAnnoncesBalanceAnnuelle() throws Exception {
@@ -1707,9 +1701,8 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.04.2003 14:35:53)
-     * 
-     * @param msg
-     *            String
+     *
+     * @param msg String
      */
     protected void warn(String msg) {
         this.warn(msg, "");
@@ -1717,9 +1710,8 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.04.2003 14:35:53)
-     * 
-     * @param msg
-     *            String
+     *
+     * @param msg String
      */
     protected void warn(String codeLabel, String msg) {
         getMemoryLog().logMessage(getSession().getLabel(CGPeriodeComptableEnvoiAnnonces.labelPrefix + codeLabel) + msg,
