@@ -1458,8 +1458,13 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
     private String getMontantPCTotal() {
         String montantPrestation = dacOO.getSimplePrestation().getMontantPrestation();
         String dateDebut  = JadeDateUtil.getFirstDateOfMonth(dacOO.getSimplePrestation().getDateDebutDroit());
-        String dateFin = JadeDateUtil.getLastDateOfMonth(dacOO.getSimplePrestation().getDateFinDroit());
-        int nbreMois = JadeDateUtil.getNbMonthsBetween(dateDebut, dateFin);
+        int nbreMois;
+        if(!JadeStringUtil.isBlankOrZero(dacOO.getSimplePrestation().getDateFinDroit())){
+            String dateFin = JadeDateUtil.getLastDateOfMonth(dacOO.getSimplePrestation().getDateFinDroit());
+             nbreMois = JadeDateUtil.getNbMonthsBetween(dateDebut, dateFin);
+        }else{
+            nbreMois =1;
+        }
         Float montantTotalHome;
         if(montantPrestation.isEmpty()){
             montantTotalHome =  Float.parseFloat("0");
