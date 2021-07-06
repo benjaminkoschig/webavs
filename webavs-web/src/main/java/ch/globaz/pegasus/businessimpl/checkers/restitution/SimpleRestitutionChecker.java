@@ -25,9 +25,6 @@ public class SimpleRestitutionChecker extends PegasusAbstractChecker {
     public static void checkForCreate(SimpleRestitution restitution) throws PCRestitutionException, JadePersistenceException,
             JadeNoBusinessLogSessionError, JadeApplicationServiceNotAvailableException, DossierException {
         SimpleRestitutionChecker.checkMandatory(restitution);
-        if (!PegasusAbstractChecker.threadOnError()) {
-            SimpleRestitutionChecker.checkIntegrity(restitution);
-        }
     }
 
     /**
