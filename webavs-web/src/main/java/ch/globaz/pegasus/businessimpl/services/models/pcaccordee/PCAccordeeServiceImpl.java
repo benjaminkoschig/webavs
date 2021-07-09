@@ -1,6 +1,7 @@
 package ch.globaz.pegasus.businessimpl.services.models.pcaccordee;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -29,6 +30,8 @@ import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeExcepti
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PersonneDansPlanCalculException;
 import ch.globaz.pegasus.business.exceptions.models.pmtmensuel.PmtMensuelException;
 import ch.globaz.pegasus.business.models.annonce.SimpleCommunicationOCCSearch;
+import ch.globaz.pegasus.business.models.calcul.CalculDonneesCC;
+import ch.globaz.pegasus.business.models.calcul.CalculDonneesHomeSearch;
 import ch.globaz.pegasus.business.models.creancier.*;
 import ch.globaz.pegasus.business.models.decision.DecisionSuppressionSearch;
 import ch.globaz.pegasus.business.models.decision.ForDeleteDecision;
@@ -48,9 +51,12 @@ import ch.globaz.pegasus.business.vo.pcaccordee.PlanDeCalculVO;
 import ch.globaz.pegasus.businessimpl.checkers.droit.DroitChecker;
 import ch.globaz.pegasus.businessimpl.services.PegasusAbstractServiceImpl;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
+import ch.globaz.pegasus.businessimpl.services.models.calcul.CalculComparatifServiceImpl;
 import ch.globaz.pegasus.businessimpl.services.models.decision.validation.suppression.GenerateOvsForSuppression;
 import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ComptabilisationUtil;
 import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
+import ch.globaz.pegasus.businessimpl.utils.calcul.CalculComparatif;
+import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BProcessLauncher;
@@ -70,6 +76,9 @@ import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+
+import static ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul.CLE_DEPEN_DEPPERSO_TOTAL;
+import static ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul.CLE_DEPEN_SEJOUR_MOIS_PARTIEL_TOTAL;
 
 public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements PCAccordeeService {
 
@@ -258,6 +267,17 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
             throws JadeApplicationServiceNotAvailableException, JadePersistenceException, PCAccordeeException {
         SimpleCreanceAccordeeSearch simpleCreanceAccordeeSearch = new SimpleCreanceAccordeeSearch();
         simpleCreanceAccordeeSearch.setForIdPcAccordee(idPcAccordee);
+        try {
+            PegasusServiceLocator.getCreanceAccordeeService().deleteWithSearchModele(simpleCreanceAccordeeSearch);
+        } catch (CreancierException e1) {
+            throw new PCAccordeeException("Unable to delete the creance accordee", e1);
+        }
+    }
+
+    private void deleteCreanceById(String idCreance)
+            throws JadeApplicationServiceNotAvailableException, JadePersistenceException, PCAccordeeException {
+        SimpleCreanceAccordeeSearch simpleCreanceAccordeeSearch = new SimpleCreanceAccordeeSearch();
+        simpleCreanceAccordeeSearch.setForIdCreaanceAccordee(idCreance);
         try {
             PegasusServiceLocator.getCreanceAccordeeService().deleteWithSearchModele(simpleCreanceAccordeeSearch);
         } catch (CreancierException e1) {
@@ -1014,7 +1034,6 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
             if (simplePlanDeCalculSearch.getSize() > 0) {
                 if (simplePlanDeCalculSearch.getSize() == 1) {
 
-                    // suppression des crances et des desions Aprés calcule
                     try {
                         if (DroitChecker.isDeletable(pcAccordee.getSimpleVersionDroit())) {
                             PCAccordeeSearch pcAccordeeSearch = new PCAccordeeSearch();
@@ -1023,7 +1042,29 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
                             if (pcAccordeeSearch.getSize() > 0) {
                                 for (JadeAbstractModel d : pcAccordeeSearch.getSearchResults()) {
                                     PCAccordee pcAccordee1 = (PCAccordee) d;
-                                    deleteCreanceByIdPcAccordee(pcAccordee1.getId());
+                                    /**
+                                     * Supprimer les répartitions des créances si c'est pas des versement homes
+                                     * Sinon recalculer la répartition selon les nouveaux montants.
+                                     */
+                                    try {
+                                        CreanceAccordeeSearch search = new CreanceAccordeeSearch();
+                                        search.setForIdPCAccordee(pcAccordee1.getId());
+                                        search = PegasusServiceLocator.getCreanceAccordeeService().search(search);
+                                        for (JadeAbstractModel abstractModel : search.getSearchResults()) {
+                                            CreanceAccordee creanceAccordee = (CreanceAccordee) abstractModel;
+                                            if (creanceAccordee.getSimpleCreancier().getIsHome()) {
+                                                if(simplePlanDeCalcul.getIdPCAccordee().equals(pcAccordee1.getSimplePCAccordee().getIdPCAccordee())){
+                                                    creanceAccordee = recalculMontant(creanceAccordee,pcAccordee,simplePlanDeCalcul);
+                                                    creanceAccordee.setSimplePCAccordee(pcAccordee.getSimplePCAccordee());
+                                                    PegasusServiceLocator.getCreanceAccordeeService().update(creanceAccordee);
+                                                }
+                                            }else{
+                                                deleteCreanceById(creanceAccordee.getId());
+                                            }
+                                        }
+                                    } catch (Exception e) {
+                                        throw new PCAccordeeException(e.getMessage());
+                                    }
                                 }
                             }
                             try {
@@ -1086,6 +1127,46 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
             throw new PCAccordeeException("Service not available - " + e.getMessage());
         }
         return simplePlanDeCalcul;
+    }
+
+    private CreanceAccordee recalculMontant(CreanceAccordee creanceAccordee, PCAccordee pcaNew, SimplePlanDeCalcul simplePlanDeCalcul) throws Exception{
+        Float montantMensuelHomeNew =  Float.parseFloat(simplePlanDeCalcul.getMontantPrixHome()) / 12.0f;
+
+        Float montantPCMensuel = Float.parseFloat(simplePlanDeCalcul.getMontantPCMensuelle());
+        String byteArrayToString = null;
+        byteArrayToString = new String(simplePlanDeCalcul.getResultatCalcul());
+        TupleDonneeRapport tupleRoot = PegasusImplServiceLocator.getCalculPersistanceService().deserialiseDonneesCcXML(
+                byteArrayToString);
+        Float montantDepensesPersonnel = tupleRoot.getValeurEnfant(CLE_DEPEN_DEPPERSO_TOTAL)/ 12.0f;
+        if(montantMensuelHomeNew == 0.f){
+            montantMensuelHomeNew = tupleRoot.getValeurEnfant(CLE_DEPEN_SEJOUR_MOIS_PARTIEL_TOTAL)/ 12.0f;
+        }
+        String dateDebut = "";
+        String dateFin = "";
+        if (JadeStringUtil.isBlankOrZero(pcaNew.getSimplePCAccordee().getDateFin())) {
+            dateFin = JadeDateUtil.getLastDateOfMonth(PegasusServiceLocator.getPmtMensuelService().getDateDernierPmt());
+        } else {
+            dateFin = JadeDateUtil.getLastDateOfMonth(pcaNew.getSimplePCAccordee().getDateFin());
+        }
+        dateDebut = JadeDateUtil.getFirstDateOfMonth(pcaNew.getSimplePCAccordee().getDateDebut());
+        int nbreMois = JadeDateUtil.getNbMonthsBetween(dateDebut, dateFin);
+        Float montantAverser = 0.f;
+        if (montantMensuelHomeNew + montantDepensesPersonnel > montantPCMensuel) {
+            montantAverser = montantPCMensuel - (montantDepensesPersonnel);
+            montantAverser = montantAverser * nbreMois;
+            montantAverser = new BigDecimal(montantAverser).setScale(0, RoundingMode.UP).floatValue();
+        } else {
+            montantAverser = new BigDecimal(montantAverser).setScale(0, RoundingMode.UP).floatValue();
+            if (montantAverser.floatValue() + montantDepensesPersonnel > montantPCMensuel) {
+                montantAverser = montantAverser - 1;
+            }
+            montantAverser = montantAverser * nbreMois;
+        }
+        SimpleCreanceAccordee simpleCreanceAccordee = creanceAccordee.getSimpleCreanceAccordee();
+        simpleCreanceAccordee.setMontant(montantAverser.toString());
+        creanceAccordee.setSimpleCreanceAccordee(simpleCreanceAccordee);
+        return creanceAccordee;
+
     }
 
     /**

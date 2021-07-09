@@ -913,7 +913,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
             data.addData("MONTANT_HOME","");
         } else {
             data.addData("B_MONTANT_HOME", babelDoc.getTextes(3).getTexte(33).getDescription());
-            data.addData("MONTANT_HOME", SingleDACBuilder.MONNAIE + " " + new FWCurrency(getMontantHome("ALL")).toStringFormat());
+            data.addData("MONTANT_HOME", SingleDACBuilder.MONNAIE + " " + new FWCurrency(mensualiser(getMontantHome("ALL"))).toStringFormat());
         }
         // gestion prestation
 
@@ -1473,8 +1473,10 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         }
 
         Float montantPCTotal = montantTotalHome-(getMontantHome("ALL"));
+        montantPCTotal = montantPCTotal / new Float(nbreMois);
         return new FWCurrency(montantPCTotal.toString()).toStringFormat();
     }
+
 
     private Float getMontantHome(String key){
         if(dacOO.getMapMontantVerserHome().size() > 0){
@@ -1490,8 +1492,17 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
             return 0.f;
         }
     }
-    private Float calculMontantParMois(String montantHome, int nbreMois) {
-        return Float.parseFloat(montantHome) / 12 * nbreMois;
+    private Float mensualiser(Float montantHome) {
+        String dateDebut  = JadeDateUtil.getFirstDateOfMonth(dacOO.getSimplePrestation().getDateDebutDroit());
+        int nbreMois;
+        if(!JadeStringUtil.isBlankOrZero(dacOO.getSimplePrestation().getDateFinDroit())){
+            String dateFin = JadeDateUtil.getLastDateOfMonth(dacOO.getSimplePrestation().getDateFinDroit());
+            nbreMois = JadeDateUtil.getNbMonthsBetween(dateDebut, dateFin);
+        }else{
+            nbreMois =1;
+        }
+
+        return montantHome / new Float(nbreMois);
     }
     /**
      * Retourn le nom du mois en fonction du numéro passé en param

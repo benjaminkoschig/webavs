@@ -22,7 +22,6 @@ public class SimplePlanDeCalcul extends JadeSimpleModel {
     private String montantPrixHome = null;
     private String montantPartCantonale = null;
 
-
     private byte[] resultatCalcul = null;
 
     private Boolean reformePc = false;

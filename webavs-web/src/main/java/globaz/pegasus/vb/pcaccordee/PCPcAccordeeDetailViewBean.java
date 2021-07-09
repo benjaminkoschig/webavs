@@ -931,6 +931,7 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
         if (!JadeStringUtil.isEmpty(idPlanCalcule)) {
             SimplePlanDeCalcul planDeCalulRetenu = PegasusServiceLocator.getPCAccordeeService().updatePlanDecalculeRetenu(idPlanCalcule);
 
+
             // Mise à jour de la ventilation des parts cantonales.
             majVentilationPartCantonale(planDeCalulRetenu);
 
@@ -954,6 +955,8 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
             }
         }
     }
+
+
 
     /**
      * Méthode permettant la mise à jour de la part cantonale.

@@ -18,7 +18,7 @@
 <c:set var="userActionDel" value="pegasus.pcaccordee.pcAccordeeDetail.supprimer" scope="page"/>
 <c:set var="key" value="none" scope="page"/>
 <c:set var="rootPath" value="${pageContext.request.contextPath}${requestScope.mainServletPath}Root"/>
-<c:set var="idEcran" value="PPC0100" scope="page"/> 
+<c:set var="idEcran" value="PPC0105" scope="page"/>
 <c:set var="idChildren" value="${empty param['idChild'] ? '' : param['idChild']}" scope="page"/>
 <c:set var="idParent" value="${empty param['idParent'] ? '' : param['idParent']}" scope="page"/>
 <c:set var="viewBeanHasErrors" value="${viewBean.hasViewBeanErrors}" scope="page"/>
