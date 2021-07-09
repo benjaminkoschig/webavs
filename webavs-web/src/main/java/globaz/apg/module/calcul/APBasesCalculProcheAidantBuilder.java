@@ -47,7 +47,9 @@ public class APBasesCalculProcheAidantBuilder extends APBasesCalculBuilder{
         String dateFin = listPeriode.stream().reduce((first, second) -> second).get().getDateFinPeriode();
         ajouterEnfantPai(dateDebut, dateFin);
 
-        calculNbJourSoldesMax(nbJourSoldes.intValue());
+        int nbJourDisponible = ((APDroitProcheAidant) droit).calculerNbJourDisponible();
+
+        calculNbJourSoldesMax(nbJourSoldes.intValue(), nbJourDisponible);
     }
 
     /**
@@ -95,11 +97,9 @@ public class APBasesCalculProcheAidantBuilder extends APBasesCalculBuilder{
         return Dates.formatSwiss(date);
     }
 
-    private void calculNbJourSoldesMax(int nbJourSoldes) {
-        int jourMax = APParameter.PROCHE_AIDANT_JOUR_MAX.findValue(this.droit.getDateDebutDroit(), this.session);
-
-        if(nbJourSoldes > jourMax) {
-            nbJourSoldes = jourMax;
+    private void calculNbJourSoldesMax(int nbJourSoldes, int nbJourDisponible) {
+        if(nbJourSoldes > nbJourDisponible) {
+            nbJourSoldes = nbJourDisponible;
         }
 
         ((APDroitProcheAidant) droit).setNbrJourSoldes(String.valueOf(nbJourSoldes));
