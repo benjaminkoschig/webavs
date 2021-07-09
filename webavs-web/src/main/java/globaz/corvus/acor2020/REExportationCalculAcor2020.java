@@ -739,6 +739,7 @@ public class REExportationCalculAcor2020 {
         DonneesEchelleType donnesEchelle = new DonneesEchelleType();
         // 10. echelle de rente
         donnesEchelle.setSkala(ParserUtils.formatRequiredShort(rente.getEchelle()));
+        // TODO : valider le résultat fonctionnel de la méthode de formattage
         // 11. durée cotisation avant 73
         donnesEchelle.setDureeEtrangereAvant73(ParserUtils.formatRequiredBigDecimalDuree(rente.getDureeCotiEtrangereAv73()));
         // 12. durée cotisation après 73
@@ -806,9 +807,13 @@ public class REExportationCalculAcor2020 {
         PeriodeBTEType periode = new PeriodeBTEType();
         periode.setDebut(ParserUtils.formatDate(isfPeriode.getDateDebut(), DD_MM_YYYY_FORMAT));
         periode.setFin(ParserUtils.formatDate(isfPeriode.getDateFin(), DD_MM_YYYY_FORMAT));
-        if (StringUtils.isNotEmpty(isfPeriode.getNoAvsDetenteurBTE())) {
-            periode.setEducateur(Long.valueOf(NSUtil.unFormatAVS(isfPeriode.getNoAvsDetenteurBTE())));
-        } else {
+        if (StringUtils.equals(TypeDeDetenteur.FAMILLE.getCodeSystemAsString(), isfPeriode.getCsTypeDeDetenteur())) {
+            if (StringUtils.isNotEmpty(isfPeriode.getNoAvsDetenteurBTE())) {
+                periode.setEducateur(Long.valueOf(NSUtil.unFormatAVS(isfPeriode.getNoAvsDetenteurBTE())));
+            } else {
+                periode.setTiers(false);
+            }
+        } else if (StringUtils.equals(TypeDeDetenteur.TIERS.getCodeSystemAsString(), isfPeriode.getCsTypeDeDetenteur())) {
             periode.setTiers(true);
         }
         return periode;
@@ -1236,8 +1241,8 @@ public class REExportationCalculAcor2020 {
 
     private DonneesPostalesType createDonneesPostales() {
         DonneesPostalesType donneesPostalesType = new DonneesPostalesType();
-        try {
 
+        try {
             TIAdresseDataSource adresse = getAdresseRequerant();
             if (adresse != null) {
                 AdresseType adresseType = new AdresseType();
@@ -1262,10 +1267,11 @@ public class REExportationCalculAcor2020 {
                 donneesPostalesType.setAdresse(adresseType);
             }
 
-            // Informations sur le domicile
             TIAdressePaiementData adressePaiement = PRTiersHelper.getAdressePaiementData(session, transaction, tiersRequerant.getIdTiers(),
                     IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, "", JACalendar.todayJJsMMsAAAA());
-            if (adressePaiement != null) {
+
+            if (adressePaiement != null && StringUtils.isNotEmpty(adressePaiement.getId())) {
+
                 BanqueAdresseType banqueAdresseType = new BanqueAdresseType();
                 // 6. Nom du tiers
                 banqueAdresseType.setNomTitulaire(adressePaiement.getNomTiers1() + adressePaiement.getNomTiers2());
@@ -1302,12 +1308,16 @@ public class REExportationCalculAcor2020 {
                 }
 
                 // 12. swift
-                banqueAdresseType.setBic(adressePaiement.getSwift());
+                if (StringUtils.isNotEmpty(adressePaiement.getSwift())) {
+                    banqueAdresseType.setBic(adressePaiement.getSwift());
+                }
                 // Apparemment pour récupérer l'IBAN il ne faut pas utiliser la méthode getIban() mais getCompte()... ->
                 // trop facile sinon
                 // 13. IBAN
                 // On doit supprimer les espaces pour respecter le xsd ACOR
-                banqueAdresseType.setIban(adressePaiement.getCompte().replace(" ", ""));
+                if (StringUtils.isNotEmpty(adressePaiement.getCompte())) {
+                    banqueAdresseType.setIban(adressePaiement.getCompte().replace(" ", ""));
+                }
                 donneesPostalesType.setBanque(banqueAdresseType);
             }
         } catch (Exception e) {
@@ -1434,10 +1444,10 @@ public class REExportationCalculAcor2020 {
         // RENTES
         addRentesEnfant(enfant, membre);
 
-//        // EURO_FORM
+        // EURO_FORM
         enfant.setDonneesPostales(createDonneesPostales());
 
-//        // PERIODES
+        // PERIODES
         addPeriodesEnfant(enfant, membre);
         return enfant;
     }
@@ -1540,12 +1550,17 @@ public class REExportationCalculAcor2020 {
         }
         famille.setDebut(ParserUtils.formatDate(ligne.getDateMariage(), DD_MM_YYYY_FORMAT));
         if (ParserUtils.formatDate(ligne.getDateFin(), DD_MM_YYYY_FORMAT) != null) {
-            FamilleType.DonneesFin donnesFin = new FamilleType.DonneesFin();
-            donnesFin.setFin(ParserUtils.formatDate(ligne.getDateFin(), DD_MM_YYYY_FORMAT));
-            donnesFin.setType(ParserUtils.formatRequiredShort(PRACORConst.csTypeLienToACOR(getSession(), ligne.getTypeLien())));
-            //TODO
-//        famille.getPeriodeSeparation().addAll()
-            famille.setDonneesFin(donnesFin);
+            short typeRelation = ParserUtils.formatRequiredShort(PRACORConst.csTypeLienToACOR(getSession(), ligne.getTypeLien()));
+            if (typeRelation == 5 || typeRelation == 9) {
+                PeriodeJour separation = new PeriodeJour();
+                separation.setDebut(ParserUtils.formatDate(ligne.getDateFin(), DD_MM_YYYY_FORMAT));
+                famille.getPeriodeSeparation().add(separation);
+            } else {
+                FamilleType.DonneesFin donnesFin = new FamilleType.DonneesFin();
+                donnesFin.setFin(ParserUtils.formatDate(ligne.getDateFin(), DD_MM_YYYY_FORMAT));
+                famille.setDonneesFin(donnesFin);
+                donnesFin.setType(ParserUtils.formatRequiredShort(PRACORConst.csTypeLienToACOR(getSession(), ligne.getTypeLien())));
+            }
         }
         famille.setLien(ParserUtils.formatRequiredShort(PRACORConst.csTypeLienFamilleToACOR(getSession(), ligne.getTypeLien())));
         famille.setPensionAlimentaire(false);
@@ -1646,8 +1661,7 @@ public class REExportationCalculAcor2020 {
                 if (!ISFSituationFamiliale.CS_TYPE_LIEN_MARIE.equals(relation.getTypeLien())
                         && !ISFSituationFamiliale.CS_TYPE_LIEN_VEUF.equals(relation.getTypeLien())
                         && !ISFSituationFamiliale.CS_TYPE_LIEN_LPART_ENREGISTRE.equals(relation.getTypeLien())
-                        && !ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(relation.getTypeRelation())
-                        && !ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT.equals(relation.getTypeRelation())) {
+                        && !ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(relation.getTypeRelation())) {
                     l.setDateFin(relation.getDateDebut());
                 } else {
                     l.setDateFin(relation.getDateFin());
@@ -2200,62 +2214,4 @@ public class REExportationCalculAcor2020 {
         return noUnique;
     }
 
-    private Marshaller initMarshaller(Object element) throws SAXException, JAXBException {
-        if (marshaller == null) {
-            SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            URL url = getClass().getResource(XSD_FOLDER + XSD_NAME);
-            Schema schema = sf.newSchema(url);
-
-            JAXBContext jc = JAXBContext.newInstance(element.getClass());
-
-            marshaller = jc.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-            marshaller.setSchema(schema);
-        }
-        return marshaller;
-    }
-
-    /**
-     * CAUTION, only element choice of a PoolMeldungZurZAS.Lot
-     * <p>
-     * possible object are element of Lot {@link PoolMeldungZurZAS.Lot }
-     *
-     * @param element : must be an element to put on a PoolMeldungZurZAS.Lot
-     * @throws ValidationException
-     * @throws SAXException
-     * @throws JAXBException
-     */
-    public void validateUnitMessage(InHostType element) throws ValidationException, JAXBException {
-        final List<String> validationErrors = new LinkedList<>();
-        ObjectFactory myRootFactory = new ObjectFactory();
-        try {
-            initMarshaller(element);
-            JAXBElement<InHostType> inHostElement = myRootFactory.createInHost(element);
-
-            marshaller.setEventHandler(new ValidationEventHandler() {
-
-                @Override
-                public boolean handleEvent(ValidationEvent event) {
-                    LOG.warn("JAXB validation error : " + event.getMessage(), this);
-                    validationErrors.add(event.getMessage());
-                    return true;
-                }
-
-            });
-
-            marshaller.marshal(inHostElement, System.out);
-
-        } catch (JAXBException exception) {
-            LOG.error("JAXB validation has thrown a JAXBException : " + exception.toString(), exception);
-            throw exception;
-        } catch (Exception e) {
-            LOG.error("impossible d'initialier un PoolMeldungZurZAS", e);
-        }
-
-        if (!validationErrors.isEmpty()) {
-            throw new ValidationException(validationErrors);
-        }
-
-    }
 }

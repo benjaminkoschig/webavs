@@ -1366,34 +1366,6 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
         return viewBean;
     }
 
-    /**
-     * Contrôle l'envoi au webservice ACOR
-     *
-     * @param viewBean
-     * @param action
-     * @param session
-     * @return
-     * @throws Exception
-     */
-    public FWViewBeanInterface actionCheckACORWeb(final FWViewBeanInterface viewBean, final FWAction action,
-                                                  final BSession session) throws Exception {
-
-        RECalculACORDemandeRenteViewBean caViewBean = (RECalculACORDemandeRenteViewBean) viewBean;
-
-        if (!viewBean.getMsgType().equals(FWViewBeanInterface.ERROR)) {
-            try {
-                REExportationCalculAcor2020 inHostService = new REExportationCalculAcor2020(session, caViewBean.getIdDemandeRente());
-                InHostType inHost = inHostService.createInHost();
-                inHost.setVersionSchema("5.0");
-                inHostService.validateUnitMessage(inHost);
-            } catch (ValidationException e) {
-                throw new Exception(e.getMessageACOR());
-            }
-        }
-
-        return viewBean;
-    }
-
     public FWViewBeanInterface actionImporterScriptACOR(final FWViewBeanInterface viewBean, final FWAction action,
                                                         final BSession session) throws Exception {
 

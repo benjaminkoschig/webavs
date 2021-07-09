@@ -31,6 +31,7 @@ public final class ParserUtils {
     private static final String MESSAGE_ERREUR_CAST_SHORT = "Impossible de parser la valeur : {} en Short. ";
     private static final String MESSAGE_ERREUR_CAST_INTEGER = "Impossible de parser la valeur : {} en Integer. ";
     private static final String MESSAGE_ERREUR_CAST_LONG = "Impossible de parser la valeur : {} en Long. ";
+    public static final String FORMAT_S_S = "%s.%s";
 
     private ParserUtils() {
     }
@@ -59,16 +60,16 @@ public final class ParserUtils {
         return StringUtils.EMPTY;
     }
 
-    public static Long formatRequiredLong(String fieldToParse) {
+    public static long formatRequiredLong(String fieldToParse) {
         try {
             if (JadeStringUtil.isBlankOrZero(fieldToParse)) {
-                return Long.valueOf(0);
+                return 0l;
             }
             return Long.valueOf(fieldToParse);
         } catch (Exception e) {
             LOG.error(MESSAGE_ERREUR_CAST_LONG, fieldToParse, e);
         }
-        return Long.valueOf(0);
+        return 0l;
     }
 
     public static Integer formatRequiredInteger(String fieldToParse) {
@@ -119,12 +120,12 @@ public final class ParserUtils {
         return BigDecimal.ZERO;
     }
 
-    public static Short formatRequiredShort(String fieldToParse) {
+    public static short formatRequiredShort(String fieldToParse) {
         try {
             if (JadeStringUtil.isBlankOrZero(fieldToParse)) {
                 return 0;
             }
-            return new Short(fieldToParse);
+            return Short.valueOf(fieldToParse);
         } catch (Exception e) {
             LOG.error(MESSAGE_ERREUR_CAST_SHORT, fieldToParse, e);
         }
@@ -136,7 +137,7 @@ public final class ParserUtils {
             if (JadeStringUtil.isBlankOrZero(fieldToParse)) {
                 return null;
             }
-            return new Short(fieldToParse);
+            return Short.valueOf(fieldToParse);
         } catch (Exception e) {
             LOG.error(MESSAGE_ERREUR_CAST_SHORT, fieldToParse, e);
         }
@@ -199,7 +200,7 @@ public final class ParserUtils {
     }
 
     public static long formatNssToLong(String strNss) {
-        Long nss = Long.valueOf(0);
+        long nss = 0l;
         if (!JadeStringUtil.isBlankOrZero(strNss)) {
             nss = Long.valueOf(NSUtil.unFormatAVS(strNss));
         }
@@ -220,10 +221,13 @@ public final class ParserUtils {
      * @return le nb d'années et de mois au format AA.MM
      */
     public static String formatMMtoAAxMM(Integer mois) {
-        LocalDate now = LocalDate.now();
-        LocalDate delay = now.plusMonths(mois);
-        Period period = Period.between(now, delay);
-        return String.format("%s.%s", formatIntToStringWithTwoChar(period.getYears()), formatIntToStringWithTwoChar(period.getMonths()));
+        if (Objects.nonNull(mois)) {
+            LocalDate now = LocalDate.now();
+            LocalDate delay = now.plusMonths(mois);
+            Period period = Period.between(now, delay);
+            return String.format(FORMAT_S_S, formatIntToStringWithTwoChar(period.getYears()), formatIntToStringWithTwoChar(period.getMonths()));
+        }
+        return StringUtils.EMPTY;
     }
 
     /**
@@ -236,7 +240,7 @@ public final class ParserUtils {
         if (Objects.nonNull(duree)) {
             String value = String.valueOf(duree);
             if (value.length() == 4) {
-                return String.format("%s.%s",value.substring(0,2), value.substring(2,4));
+                return String.format(FORMAT_S_S, value.substring(0, 2), value.substring(2, 4));
             } else {
                 return StringUtils.EMPTY;
             }
@@ -251,10 +255,13 @@ public final class ParserUtils {
      * @return le nb d'années et de mois au format A.MM
      */
     public static String formatMMtoAxMM(Integer mois) {
-        LocalDate now = LocalDate.now();
-        LocalDate delay = now.plusMonths(mois);
-        Period period = Period.between(now, delay);
-        return String.format("%s.%s", period.getYears(), formatIntToStringWithTwoChar(period.getMonths()));
+        if (Objects.nonNull(mois)) {
+            LocalDate now = LocalDate.now();
+            LocalDate delay = now.plusMonths(mois);
+            Period period = Period.between(now, delay);
+            return String.format(FORMAT_S_S, period.getYears(), formatIntToStringWithTwoChar(period.getMonths()));
+        }
+        return StringUtils.EMPTY;
     }
 
     /**
@@ -264,17 +271,20 @@ public final class ParserUtils {
      * @return le nb d'années
      */
     public static String convertMMtoA(Integer mois) {
-        LocalDate now = LocalDate.now();
-        LocalDate delay = now.plusMonths(mois);
-        Period period = Period.between(now, delay);
-        return String.valueOf(period.getYears());
+        if (Objects.nonNull(mois)) {
+            LocalDate now = LocalDate.now();
+            LocalDate delay = now.plusMonths(mois);
+            Period period = Period.between(now, delay);
+            return String.valueOf(period.getYears());
+        }
+        return StringUtils.EMPTY;
     }
 
     public static String formatBigDecimalToString(BigDecimal value) {
         if (value == null) {
             return StringUtils.EMPTY;
         } else {
-            return value.toString();
+            return String.valueOf(value);
         }
     }
 

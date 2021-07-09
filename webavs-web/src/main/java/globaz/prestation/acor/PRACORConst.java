@@ -965,7 +965,7 @@ public class PRACORConst {
             return PRACORConst.CA_CELIBATAIRE;
         }
 
-        if (Objects.equals(ISFSituationFamiliale.CS_TYPE_LIEN_VEUF, csTypeLien) || Objects.equals(ISFSituationFamiliale.CS_TYPE_LIEN_DIVORCE, csTypeLien)) {
+        if (Objects.equals(ISFSituationFamiliale.CS_TYPE_LIEN_VEUF, csTypeLien) || Objects.equals(ISFSituationFamiliale.CS_TYPE_LIEN_DIVORCE, csTypeLien) || Objects.equals(ISFSituationFamiliale.CS_TYPE_LIEN_SEPARE, csTypeLien) ||  Objects.equals(ISFSituationFamiliale.CS_TYPE_LIEN_SEPARE, csTypeLien)) {
             return session.getCode(ISFSituationFamiliale.CS_TYPE_LIEN_MARIE);
         } else if (Objects.equals(ISFSituationFamiliale.CS_TYPE_LIEN_LPART_DECES, csTypeLien) || Objects.equals(ISFSituationFamiliale.CS_TYPE_LIEN_LPART_DISSOUT, csTypeLien)) {
             return session.getCode(ISFSituationFamiliale.CS_TYPE_LIEN_LPART_ENREGISTRE);
