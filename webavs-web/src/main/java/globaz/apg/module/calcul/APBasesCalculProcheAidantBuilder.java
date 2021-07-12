@@ -67,7 +67,7 @@ public class APBasesCalculProcheAidantBuilder extends APBasesCalculBuilder{
 
         if(mgr.size() > 0) {
             // controle l'age legale
-            Optional<Periode> periode = controleAgeLegal(mgr.<APEnfantMat>getContainerAsList().get(0), dateDebut, dateFin);
+            Optional<Periode> periode = controleAgeLegal(mgr.<APEnfantMat>getContainerAsList().get(0), this.droit.getDateDebutDroit(), dateFin);
 
             if(periode != null) {
                 // creer les commandes de début de droit et de find de droit à
@@ -112,10 +112,6 @@ public class APBasesCalculProcheAidantBuilder extends APBasesCalculBuilder{
         LocalDate controleDate = Dates.toDate(dateDebut);
         if(controleDate.isAfter(datelegale)) {
             return Optional.empty();
-        }
-        controleDate = Dates.toDate(dateFin);
-        if(controleDate.isAfter(datelegale)) {
-            return Optional.of(new Periode(dateDebut, Dates.formatSwiss(datelegale)));
         }
         return Optional.of(new Periode(dateDebut, dateFin));
     }
