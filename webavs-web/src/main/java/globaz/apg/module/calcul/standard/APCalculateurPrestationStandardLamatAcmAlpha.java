@@ -9,6 +9,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import ch.globaz.common.properties.CommonPropertiesUtils;
+import ch.globaz.common.util.Dates;
 import globaz.apg.api.annonces.IAPAnnonce;
 import globaz.apg.api.droits.IAPDroitAPG;
 import globaz.apg.api.droits.IAPDroitLAPG;
@@ -2501,7 +2502,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         LocalDate dateDeFinACMDate = parseStringToDateTime(dateDeFinAcm, format);
         LocalDate dateDeDebutPrestDate = parseStringToDateTime(prestation.getDateDebut(), format);
         if (dateDeFinACMDate != null && dateDeDebutPrestDate != null) {
-            String nombreJourSoldes = String.valueOf(ChronoUnit.DAYS.between(dateDeDebutPrestDate, dateDeFinACMDate));
+            String nombreJourSoldes = String.valueOf(Dates.daysBetween(dateDeDebutPrestDate, dateDeFinACMDate));
             this.creerPrestationsACM(session, transaction, lastPrestation, droit, sommeMontantJournalier,
                     lastMJ, genrePrestation, prestation.getDateDebut(),
                     prestation.getDateFin(),
@@ -2529,7 +2530,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         LocalDate dateDeFinLamatDate = parseStringToDateTime(dateDeFinLamat, format);
         LocalDate dateDeDebutPrestDate = parseStringToDateTime(prestation.getDateDebut(), format);
         if (dateDeFinLamatDate != null && dateDeDebutPrestDate != null) {
-            String nombreJourSoldes = String.valueOf(ChronoUnit.DAYS.between(dateDeDebutPrestDate, dateDeFinLamatDate));
+            String nombreJourSoldes = String.valueOf(Dates.daysBetween(dateDeDebutPrestDate, dateDeFinLamatDate));
             this.creerPrestationsLAMat(session, transaction, lastPrestation, droit, sommeMontantJournalier,
                     new FWCurrency(prestation.getRevenuMoyenDeterminant()),
                     genrePrestation, prestation.getDateDebut(),
