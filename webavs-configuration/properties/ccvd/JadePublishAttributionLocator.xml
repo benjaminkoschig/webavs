@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- ================== -->
+<!-- == CCVDINT      == -->
+<!-- ================== -->
+<!--globaz.jade.publish.provider.JadePublishAttributionLocator: liste des attributions de ressources-->
+<globaz.jade.publish.provider.JadePublishAttributionLocator>
+	<!--attributions: liste des attributions-->
+	<attributions>
+		<!--attribution: declaration d'une attribution de ressources a un composant du systeme-->
+		<!--  name [REQUIRED]: nom du composant (selon convention de nom)-->
+		<attribution name="system">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!--  name [REQUIRED]: nom de la ressource -->
+				<resource name="DefRes"/>
+				<resource name="BarCode2"/>
+			</resources>
+		</attribution>
+		<attribution name="document.globaz.phenix.process.communications.CPProcessAsciiWritter">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!--  name [REQUIRED]: nom de la ressource -->
+				<resource name="MailWithoutUID"/>
+			</resources>
+		</attribution>
+		<attribution name="document.0239CCE">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!-- name [REQUIRED]: nom de la ressource -->
+				<resource name="BarCode1"/>
+			</resources>
+		</attribution>
+		<attribution name="document.0238CCE">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!-- name [REQUIRED]: nom de la ressource -->
+				<resource name="BarCode1"/>
+			</resources>
+		</attribution>
+		<attribution name="document.0088CDS">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!-- name [REQUIRED]: nom de la ressource -->
+				<resource name="BarCode2"/>
+			</resources>
+		</attribution>
+		<attribution name="document.0089CDS">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!-- name [REQUIRED]: nom de la ressource -->
+				<resource name="BarCode2"/>
+			</resources>
+		</attribution>
+		<attribution name="document.HEDocumentRemiseAttestCA">
+			<resources>
+				<resource name="AttestAss"/>
+			</resources>
+		</attribution>
+		<attribution name="document.5113PRE">
+			<resources>
+				<resource name="PdfSplitAttestationFiscale"/>
+				<resource name="DefRes"/>
+			</resources>
+		</attribution>
+
+		<!-- *************************************** DOCUMENTS PRESTATIONS COMPLEMENTAIRES - PC *************************************** -->
+		<!--  Décisions aprÃ¨s-calcul 6500PPC -->
+		<attribution name="document.6500PPC">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!--  name [REQUIRED]: nom de la ressource -->
+				<!-- <resource name="MailPageNumerotationsText"/>  -->
+				<!--  <resource name="SwitchWatermarkDecisionNonValidee"/> -->
+				<!-- <resource name="SwitchFtpAuto"/>  -->
+				<resource name="SwitchDAC"/>
+				<resource name="SwitchGed"/>
+			</resources>
+		</attribution>
+
+		<!--  Communication OVAM (ex OCC) 6501PPC -->
+		<attribution name="document.6501PPC">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<resource name="Mail"/>
+			</resources>
+		</attribution>
+
+		<!--  Transfert de dossier non octroyes 6502PPC-->
+		<attribution name="document.6502PPC">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!-- name [REQUIRED]: nom de la ressource -->
+				<resource name="Mail"/>
+			</resources>
+		</attribution>
+
+		<!--  Transfert de dossier octroyes 6504PPC -->
+		<attribution name="document.6504PPC">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!-- name [REQUIRED]: nom de la ressource -->
+				<resource name="Mail"/>
+			</resources>
+		</attribution>
+
+		<!--  Attestation Billag 6505PPC -->
+		<attribution name="document.6505PPC">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!-- name [REQUIRED]: nom de la ressource -->
+				<resource name="Mail"/>
+			</resources>
+		</attribution>
+
+		<!--  Transfert de dossier rente caisse acceptant 6506PPC-->
+		<attribution name="document.6506PPC">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!-- name [REQUIRED]: nom de la ressource -->
+				<resource name="Mail"/>
+			</resources>
+		</attribution>
+
+		<!--  Décisions d'adpatation 6508PPC -->
+		<attribution name="document.6508PPC">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!--  name [REQUIRED]: nom de la ressource -->
+				<resource name="FileDecisionAdaptation"/>
+			</resources>
+		</attribution>
+
+		<!--  laprams spas 6509PPC-->
+		<attribution name="document.6509PPC">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!-- name [REQUIRED]: nom de la ressource -->
+				<resource name="FtpSPAS"/>
+			</resources>
+		</attribution>
+		<!--  laprams sash 6510PPC-->
+		<attribution name="document.6510PPC">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!-- name [REQUIRED]: nom de la ressource -->
+				<resource name="FtpSASH"/>
+			</resources>
+		</attribution>
+		<!-- *************************************** FIN - PC *************************************** -->
+
+
+		<!-- *************************************** DOCUMENTS REMBOURSEMENT FRAIS MALADIE - RFM *************************************** -->
+		<attribution name="document.simulationRFM">
+			<!--resources: liste des ressources utilisees-->
+			<resources>
+				<!--resource: declaration d'une ressource a utiliser -->
+				<!--  name [REQUIRED]: nom de la ressource -->
+				<!-- <resource name="MailPageNumerotationsText"/>  -->
+				<!--  <resource name="SwitchWatermarkDecisionNonValidee"/> -->
+				<!-- <resource name="SwitchFtpAuto"/>  -->
+				<resource name="SwitchWatermarkDecisionNonValideeRFM"/>
+			</resources>
+		</attribution>
+
+		<!-- Décision ponctuelles RFM 7000PRF -->
+		<!--  encapsulation des décision RFM de tout type -->
+		<attribution name="document.validationRFM">
+			<resources>
+				<resource name="FtpValidation"/>
+				<!-- <resource name="Mail"/> -->
+			</resources>
+		</attribution>
+
+		<!-- Décision générée par l'import AVASAD --> <!-- encapsulation des décisions RFM de tout type -->
+		<attribution name="document.avasadRFM">
+			<resources> <!-- les ressources sont les mêmes que pour l'attribution document.validationRFM -->
+				<resource name="FtpValidation"/>
+			</resources>
+		</attribution>
+
+		<!-- Décision ponctuelles RFM 7000PRF-->
+		<attribution name="7000PRF">
+			<resources>
+				<resource name="FtpValidation"/>
+				<resource name="Mail"/>
+				<resource name="DefRes"/>
+			</resources>
+		</attribution>
+
+		<!-- Décision mensuelle régime RFM 7001PRF-->
+		<attribution name="7001PRF">
+			<resources>
+				<resource name="Mail"/>
+			</resources>
+		</attribution>
+
+		<!-- Décision de restitution RFM 7002PRF-->
+		<attribution name="7002PRF">
+			<resources>
+				<resource name="Mail"/>
+			</resources>
+		</attribution>
+
+		<!-- Décision de regime excedant refus 7042PRF-->
+		<attribution name="7042PRF">
+			<resources>
+				<resource name="Mail"/>
+			</resources>
+		</attribution>
+
+		<!-- Décision de regime excedant octroi 7043PRF-->
+		<attribution name="7043PRF">
+			<resources>
+				<resource name="Mail"/>
+			</resources>
+		</attribution>
+		<!-- *************************************** FIN - RFM *************************************** -->
+	</attributions>
+</globaz.jade.publish.provider.JadePublishAttributionLocator>

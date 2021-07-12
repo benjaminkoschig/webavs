@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--globaz.jade.service.provider.JadeClientServiceLocator: liste des adaptateurs clients-->
+<globaz.jade.service.provider.JadeClientServiceLocator>
+	<!--adapters: liste des adaptateurs-->
+	<adapters>
+		<!--adapter: declaration d'un adaptateur-->
+		<!--  name [REQUIRED]: nom de l'adaptateur-->
+		<!--  class [REQUIRED]: classe a utiliser pour l'adaptateur (doit implementer JadeTarget) -->
+<!--		<adapter name="globazSMTP" class="globaz.jade.service.provider.smtp.JadeExportClient">-->
+<!--			<host>postfix.ju.globaz.ch</host>-->
+<!--			<port>25</port>-->
+<!--		</adapter>-->
+		 		<adapter name="defaultSMTP" class="globaz.jade.service.provider.smtp.JadeExportClient">
+<!--		 			host [REQUIRED]: nom ou adresse du serveur SMTP-->
+<!--		 			port: port du serveur SMTP (25 par defaut)-->
+		 			<host>postfix.ju.globaz.ch</host>
+		 			<port>25</port>
+		 		</adapter>
+		<adapter name="JadeJobServerFacade" class="globaz.jade.service.provider.local.JadeExportClient" verbose="true">
+		</adapter>
+
+		<adapter name="JadeSchedulerServerFacade" class="globaz.jade.service.provider.local.JadeExportClient">
+		</adapter>
+
+		<adapter name="JadePublishServerFacade" class="globaz.jade.service.provider.local.JadeExportClient" verbose="true">
+		</adapter>
+
+		<adapter name="JadeVFSFacade" class="globaz.jade.service.provider.local.JadeExportClient">
+		</adapter>
+
+		<adapter name="JadeFsFacade" class="globaz.jade.service.provider.local.JadeExportClient">
+		</adapter>
+
+		<adapter name="JadePrintServerFacade" class="globaz.jade.service.provider.local.JadeExportClient" verbose="true">
+		</adapter>
+		<adapter name="JadeGedFacade" class="globaz.jade.ged.adapter.ccvd.JadeGedAdapter" import ="JadeGedConfig.xml" verbose="true" />
+	</adapters>
+</globaz.jade.service.provider.JadeClientServiceLocator>
