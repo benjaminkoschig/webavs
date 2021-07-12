@@ -639,7 +639,7 @@ public class APGenerateurAnnonceRAPG {
     private String getNombreEnfant(BSession session, APDroitLAPG droit, String dateDebutPrestation) throws Exception {
         if (droit instanceof APDroitMaternite) {
             return "0";
-        } else if(droit instanceof APDroitPaternite) {
+        } else if(droit instanceof APDroitPaternite || droit instanceof APDroitProcheAidant) {
 
             APEnfantPatManager enfantAPGManager = new APEnfantPatManager();
             enfantAPGManager.setSession(session);
