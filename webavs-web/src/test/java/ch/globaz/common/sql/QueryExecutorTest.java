@@ -20,7 +20,7 @@ public class QueryExecutorTest {
 
     // JDBC driver name and database URL
     static final String JDBC_DRIVER = "com.ibm.db2.jcc.DB2Driver";
-    static final String DB_URL = "jdbc:db2://sglobdev2.ju.globaz.ch:50005/dev2prod";
+    static final String DB_URL = "jdbc:db2://sccjuqa1.ju.globaz.ch:50005/ccjuqua";
     static final String SCHEMA = "CCJUWEB";
 
     // Database credentials
