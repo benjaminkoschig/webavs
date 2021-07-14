@@ -581,7 +581,7 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
                     if (noModelTemp != null) {
                         noModel = noModelTemp;
                     }
-                    if (noModel.equals(IAMCodeSysteme.AMDocumentModeles.DECMST1.getValue())
+                    if (((noModel.equals(IAMCodeSysteme.AMDocumentModeles.DECMST1.getValue())
                             || noModel.equals(IAMCodeSysteme.AMDocumentModeles.DECMST2.getValue())
                             || noModel.equals(IAMCodeSysteme.AMDocumentModeles.DECMST3.getValue())
                             || noModel.equals(IAMCodeSysteme.AMDocumentModeles.DECMST5.getValue())
@@ -589,7 +589,8 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
                             || noModel.equals(IAMCodeSysteme.AMDocumentModeles.DECMASB.getValue())
                             || noModel.equals(IAMCodeSysteme.AMDocumentModeles.DECMST10.getValue())
                             || noModel.equals(IAMCodeSysteme.AMDocumentModeles.DECMST11.getValue())
-                            || noModel.equals(IAMCodeSysteme.AMDocumentModeles.DECMPCE.getValue())
+                            || noModel.equals(IAMCodeSysteme.AMDocumentModeles.DECMPCE.getValue()))
+                            && !IAMCodeSysteme.AMCodeTraitementDossier.INCOMPLET.getValue().equals(subsideAnneePrecedente.getCodeTraitementDossier()))
                             || AMDocumentModeles.ATENF8.getValue().equals(noModel)
                             || AMDocumentModeles.ATENF1.getValue().equals(noModel)) {
                         subsidesByFamilyMember.put(idFamille, noModel);
@@ -890,6 +891,7 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
                             detailFamilleSearch.setForCodeActif(true);
                             ArrayList<String> listeCodeTraitementDossiers = new ArrayList<String>();
                             listeCodeTraitementDossiers.add(IAMCodeSysteme.AMCodeTraitementDossier.COMPLET.getValue());
+                            listeCodeTraitementDossiers.add(IAMCodeSysteme.AMCodeTraitementDossier.INCOMPLET.getValue());
                             listeCodeTraitementDossiers.add(IAMCodeSysteme.AMCodeTraitementDossier.TRAITE.getValue());
                             detailFamilleSearch.setInCodeTraitementDossier(listeCodeTraitementDossiers);
                             detailFamilleSearch.setOrderKey("orderByDroitDebut");
