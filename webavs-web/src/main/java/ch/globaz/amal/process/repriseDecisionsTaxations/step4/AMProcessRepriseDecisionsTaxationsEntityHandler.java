@@ -395,7 +395,9 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
                     || modele.equals(IAMCodeSysteme.AMDocumentModeles.DECMASB.getValue())
                     || modele.equals(IAMCodeSysteme.AMDocumentModeles.DECMST10.getValue())
                     || modele.equals(IAMCodeSysteme.AMDocumentModeles.DECMST11.getValue())
-                    || modele.equals(IAMCodeSysteme.AMDocumentModeles.DECMPCE.getValue())) {
+                    || modele.equals(IAMCodeSysteme.AMDocumentModeles.DECMPCE.getValue())
+                    || AMDocumentModeles.ATENF8.getValue().equals(modele)
+                    || AMDocumentModeles.ATENF1.getValue().equals(modele)) {
                 noModelTemp = modele;
             }
         }
@@ -587,7 +589,9 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
                             || noModel.equals(IAMCodeSysteme.AMDocumentModeles.DECMASB.getValue())
                             || noModel.equals(IAMCodeSysteme.AMDocumentModeles.DECMST10.getValue())
                             || noModel.equals(IAMCodeSysteme.AMDocumentModeles.DECMST11.getValue())
-                            || noModel.equals(IAMCodeSysteme.AMDocumentModeles.DECMPCE.getValue())) {
+                            || noModel.equals(IAMCodeSysteme.AMDocumentModeles.DECMPCE.getValue())
+                            || AMDocumentModeles.ATENF8.getValue().equals(noModel)
+                            || AMDocumentModeles.ATENF1.getValue().equals(noModel)) {
                         subsidesByFamilyMember.put(idFamille, noModel);
                         mapFamilyMember.put(idFamille, membreFamille);
                         if (!JadeStringUtil.isBlankOrZero(noCM)) {

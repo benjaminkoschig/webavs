@@ -188,7 +188,9 @@ public class AMProcessRepriseFinAnneePopulation implements JadeProcessPopulation
                 || subside.getNoModeles().equals(IAMCodeSysteme.AMDocumentModeles.DECMST5.getValue())
                 || subside.getNoModeles().equals(IAMCodeSysteme.AMDocumentModeles.DECMST8.getValue())
                 || subside.getNoModeles().equals(IAMCodeSysteme.AMDocumentModeles.DECMPCE.getValue())
-                || subside.getNoModeles().equals(IAMCodeSysteme.AMDocumentModeles.DECMASB.getValue())) {
+                || subside.getNoModeles().equals(IAMCodeSysteme.AMDocumentModeles.DECMASB.getValue())
+                || IAMCodeSysteme.AMDocumentModeles.ATENF8.getValue().equals(subside.getNoModeles())
+                || IAMCodeSysteme.AMDocumentModeles.ATENF1.getValue().equals(subside.getNoModeles())) {
             // contrôle si taxation 2010 stockée
             String anneeHistorique = data.get(AMProcessRepriseFinAnneeEnum.ANNEE);
             String anneeTaxation = "" + (Integer.parseInt(anneeHistorique) - 2);
