@@ -10,9 +10,9 @@ REORG table SCHEMA.APREPAP;
 
 -- Ajout plage valeur extension maternité
 INSERT INTO SCHEMA.FWPARP (PPARAP,PPACDI,PPARIA,PPADDE,PPARPD,PCOSID,PPARPF,PPARVA,PPRAVN,PPRADE,CSTYUN,PCOITC,PSPY)
-VALUES ('APG','MATEXTMIN',0,20210701,0.000000,1,0.000000,'',112,'Mat ext - Durée mininum',0,0,VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
+VALUES ('APG','MATEXTMIN',0,20210506,0.000000,1,0.000000,'',112,'Mat ext - Durée mininum',0,0,VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
 INSERT INTO SCHEMA.FWPARP (PPARAP,PPACDI,PPARIA,PPADDE,PPARPD,PCOSID,PPARPF,PPARVA,PPRAVN,PPRADE,CSTYUN,PCOITC,PSPY)
-VALUES ('APG','MATEXTMAX',0,20210701,0.000000,1,0.000000,'',154,'Mat ext - Durée maximum',0,0,VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
+VALUES ('APG','MATEXTMAX',0,20210506,0.000000,1,0.000000,'',154,'Mat ext - Durée maximum',0,0,VARCHAR_FORMAT((current date), 'yyyymmdd') concat replace(char(current time), '.', '') concat user);
 
 
 -- Création de la table droit proche aidant
