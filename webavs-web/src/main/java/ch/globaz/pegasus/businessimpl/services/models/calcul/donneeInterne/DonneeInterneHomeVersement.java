@@ -10,6 +10,10 @@ public class DonneeInterneHomeVersement {
     public final static String TYPE_CREANCIER = "TYPE_CREANCIER";
     public final static String TYPE_RETENUS = "TYPE_RETENUS";
     private String csTypeVersement = "";
+
+
+
+    private boolean isVersementDirect = false;
     //RETENUS
     private String idPca = "";
     private String idRenteAccordee ="";
@@ -184,5 +188,12 @@ public class DonneeInterneHomeVersement {
     public void setMontantDette(String montantDette) {
         this.montantDette = montantDette;
     }
+    public void setVersementDirect(boolean versementDirect) {
+        isVersementDirect = versementDirect;
+    }
+    public boolean isVersementDirect() {
+        return isVersementDirect;
+    }
+
 
 }
