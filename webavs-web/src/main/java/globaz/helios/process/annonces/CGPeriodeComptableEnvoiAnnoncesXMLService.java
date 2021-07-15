@@ -35,6 +35,7 @@ import globaz.helios.process.helper.CGHelperReleveAVS;
 import globaz.helios.process.helper.CGMontantHelper;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.JadeException;
+import globaz.jade.properties.JadePropertiesService;
 
 /**
  * @author ebko
@@ -243,7 +244,10 @@ public class CGPeriodeComptableEnvoiAnnoncesXMLService {
         ds.setSession(session);
         ds.setForIdMandat(exercice.getIdMandat());
         ds.setTypeRapport(CGExtendedCompteOfasManager.RAPPORT_EXPLOITATION);
-
+        String isPTRA = JadePropertiesService.getInstance().getProperty("helios.prestation.transitoire");
+        if (isPTRA != null && isPTRA.equals("true")) {
+            ds.setPtra8Aor8B("8A");
+        }
         int nbrComptes = 0;
 
         statement = ds.cursorOpen(transaction);

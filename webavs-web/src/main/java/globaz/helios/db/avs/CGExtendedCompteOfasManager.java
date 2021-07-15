@@ -123,6 +123,9 @@ public class CGExtendedCompteOfasManager extends CGCompteOfasManager {
                         + _dbWriteNumeric(statement.getTransaction(), CGCompteOfas.CS_DOMAINE_EXPLOITATION) + " AND "
                         + joinedTable + "IDTYPETACHE="
                         + _dbWriteNumeric(statement.getTransaction(), CGSecteurAVS.CS_TACHE_FEDERAL);
+                if (!JadeStringUtil.isBlankOrZero(ptra8Aor8B) && ptra8Aor8B.equals("8A")) {
+                    sqlWhere += " AND (SUBSTR(" + mainTable + "IDEXTERNE,1,3) < '251' OR SUBSTR(" + mainTable + "IDEXTERNE,1,3)>'259' )";
+                }
             } else if (getTypeRapport().equals(RAPPORT_AFFILIES)) {
                 sqlWhere += " AND " + mainTable + "IDNATURE="
                         + _dbWriteNumeric(statement.getTransaction(), CGCompteOfas.CS_NATURE_CC_AFFILIES);
@@ -137,8 +140,6 @@ public class CGExtendedCompteOfasManager extends CGCompteOfasManager {
                         + _dbWriteNumeric(statement.getTransaction(), CGCompteOfas.CS_DOMAINE_BILAN) + " OR "
                         + mainTable + "IDDOMAINE="
                         + _dbWriteNumeric(statement.getTransaction(), CGCompteOfas.CS_DOMAINE_ADMINISTRATION) + " ) ";
-            } else if (!JadeStringUtil.isBlankOrZero(ptra8Aor8B) && ptra8Aor8B.equals("8A")) {
-                sqlWhere += " AND (SUBSTR(" + mainTable + "IDEXTERNE,1,3) < '251' OR SUBSTR(" + mainTable + "IDEXTERNE,1,3)>'259'";
             }
 
 
