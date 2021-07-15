@@ -570,17 +570,16 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
         CalculDonneesHomeSearch homeReplaced = (CalculDonneesHomeSearch) cacheDonneesBD
                 .get(ConstantesCalcul.CONTAINER_DONNEES_HOMES);
 
-        /**
-         * Prendre que les données des homes venant de la dernière version créée.
-         */
-
-        homeReplaced = filterLastVersionDroit(homeReplaced, droit.getSimpleVersionDroit().getIdVersionDroit());
 
 
         /**
          * Gestion des versement en home (futur,retenus)
          */
+        /**
+         * Prendre que les données des homes venant de la dernière version créée.
+         */
         if (homeReplaced != null) {
+            homeReplaced = filterLastVersionDroit(homeReplaced, droit.getSimpleVersionDroit().getIdVersionDroit());
             mappingHomes(homeVersementList, homeReplaced, allNewPca, mapMontantTotalHome, droit);
         }
 
