@@ -37,6 +37,7 @@ public abstract class AbstractSepa implements Serializable {
     public static final String LEGACY_JADE_CONFIG_FILE = "/JadeFsServer.xml";
     public static final String PROTOCOL_NAME = "JadeFsServiceSftp";
     public static final String PRIVATEKEY_NODENAME_PREFIX = "private.key.";
+    public static final int MAX_TRY = 2;
 
     public static class SepaException extends RuntimeException {
         private static final long serialVersionUID = 1L;
@@ -59,6 +60,33 @@ public abstract class AbstractSepa implements Serializable {
     }
 
     private ChannelSftp client = null;
+
+     /**
+     * Essaye de se connecter au serveur SFTP spécifié 1 ou plusieurs fois si une exception est remonté.
+     *
+     * @param user Utilisateur
+     * @param password (optional)
+     *            Mot de passe, si authentification par mot de passe.
+     * @param keyFiles (optional)
+     *            Clé privée, si authentification par clé privée.
+     *
+     * @throws SepaException en cas d'erreur de connexion au FTP.
+     */
+    protected ChannelSftp connectWithRetry(String server, Integer port, String user, String password, HashMap<String, Boolean> keyFiles, String keyPassphrase, String knownHosts) {
+        // On essaye de se connecter jusqu'à que le nombre de retry maximum soit atteint
+        for (int i = 0; i < MAX_TRY; i++) {
+            try {
+                return connect(server, port, user, password, keyFiles, keyPassphrase, knownHosts);
+            } catch (SepaException e) {
+                // On remonte l'exception seulement si la limite de retry est atteinte.
+                if (i == MAX_TRY - 1) {
+                    throw e;
+                }
+            }
+        }
+
+        return null;
+    }
 
     /**
      * Connecte au serveur SFTP spécifié, et retourne la canal utilisé pour transmettre les informations. Il faut
@@ -253,7 +281,7 @@ public abstract class AbstractSepa implements Serializable {
     }
 
     /** Connecte sur le ftp cible, dans le folder adapté à l'envoi de messages SEPA. */
-    protected ChannelSftp getClient() {
+    protected ChannelSftp getClient(boolean isRetry) {
         if (client == null) {
             final HashMap<String, Boolean> privateKeyList = loadPrivateKeyPathFromJadeConfigFile();
 
@@ -282,7 +310,11 @@ public abstract class AbstractSepa implements Serializable {
             }
 
             // go connect
-            client = connect(host, port, login, password, privateKeyList, keyPassphrase, knownHosts);
+            if (isRetry) {
+                client = connectWithRetry(host, port, login, password, privateKeyList, keyPassphrase, knownHosts);
+            } else {
+                client = connect(host, port, login, password, privateKeyList, keyPassphrase, knownHosts);
+            }
 
         }
         // go connect

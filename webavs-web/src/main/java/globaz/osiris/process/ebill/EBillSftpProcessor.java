@@ -72,20 +72,20 @@ public class EBillSftpProcessor extends AbstractSepa {
     }
 
     public List<String> getListFiles(String extension) throws PropertiesException {
-        List<String> listOriginal = Arrays.asList(listFiles(getClient(), getInFolderNameFtp()));
+        List<String> listOriginal = Arrays.asList(listFiles(getClient(true), getInFolderNameFtp()));
         return listOriginal.stream().filter(e -> e.toLowerCase(Locale.ROOT).endsWith(extension.toLowerCase(Locale.ROOT))).collect(Collectors.toList());
     }
 
     public void sendFile(InputStream is, String filename) throws PropertiesException, SftpException {
-        getClient().put(is, getOutFolderNameFtp() + filename);
+        getClient(true).put(is, getOutFolderNameFtp() + filename);
     }
 
     public void retrieveFile(final String fileName, final OutputStream stream) throws PropertiesException, SftpException {
-        getClient().get(getInFolderNameFtp() + fileName, stream);
+        getClient(true).get(getInFolderNameFtp() + fileName, stream);
     }
 
     public void deleteFile(final String fileName) throws PropertiesException, SftpException {
-        getClient().rm(getInFolderNameFtp() + fileName);
+        getClient(true).rm(getInFolderNameFtp() + fileName);
     }
 
     @Override

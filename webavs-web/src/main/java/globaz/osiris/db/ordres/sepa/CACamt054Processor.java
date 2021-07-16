@@ -17,7 +17,7 @@ public class CACamt054Processor extends AbstractSepa {
 
     public List<String> getListFiles() throws PropertiesException {
 
-        List<String> listOriginal = Arrays.asList(listFiles(getClient(), getFolderName()));
+        List<String> listOriginal = Arrays.asList(listFiles(getClient(false), getFolderName()));
 
         // Ne prendre en compte que les fichiers ayant le mot-clé XML à la fin
         listOriginal = JadeListUtil.filter(listOriginal, new JadeListUtil.Each<String>() {
@@ -32,7 +32,7 @@ public class CACamt054Processor extends AbstractSepa {
 
     public void retrieveFile(final String fileName, final OutputStream stream) throws SftpException,
             PropertiesException {
-        getClient().get(getFolderName() + fileName, stream);
+        getClient(false).get(getFolderName() + fileName, stream);
     }
 
     public boolean isCamt054AndWantedType(final CACamt054DefinitionType type, final Document document) {

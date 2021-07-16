@@ -61,7 +61,7 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
 
     public void findAndProcessAllAcknowledgements(BSession session) throws Exception {
         setSession(session);
-        final ChannelSftp client = getClient();
+        final ChannelSftp client = getClient(false);
 
         final String propFolderPain002FromP001 = CAProperties.ISO_SEPA_FTP_002_FROM_PAIN001_FOLDER.getValue();
         final String propFolderPain002FromP008 = CAProperties.ISO_SEPA_FTP_002_FROM_PAIN008_FOLDER.getValue();

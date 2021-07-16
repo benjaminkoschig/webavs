@@ -12,7 +12,7 @@ public class SepaSendOrderProcessor extends AbstractSepa {
             throws PropertiesException {
         ChannelSftp client = null;
         try {
-            client = getClient();
+            client = getClient(false);
 
             sendData(is, client, propertiesFolder.getValue() + filename);
         } finally {
