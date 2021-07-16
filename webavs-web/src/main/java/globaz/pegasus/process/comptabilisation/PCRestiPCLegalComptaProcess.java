@@ -132,7 +132,7 @@ public class PCRestiPCLegalComptaProcess extends BProcess {
 
 
             listVentilations.stream().forEach(paiement ->
-                    doEcriture(compta, SIGNE_RESTI + paiement.montant, paiement.rubrique, ca.getIdCompteAnnexe(), sectionNormale.getIdSection(), null)
+                    doEcriture(compta,  paiement.montant, paiement.rubrique, ca.getIdCompteAnnexe(), sectionNormale.getIdSection(), null)
             );
             FWMemoryLog beforeCloseComptaMemoryLog = new FWMemoryLog();
             // si pas d'erreurs avant le close, on sauvegarde les messages du
@@ -152,6 +152,7 @@ public class PCRestiPCLegalComptaProcess extends BProcess {
             }
             String idJournal = journal.getIdJournal();
             simpleRestitution.setIdJournal(idJournal);
+            simpleRestitution.setId("");
             simpleRestitution = PegasusServiceLocator.getRestitutionService().create(simpleRestitution);
         } catch (Exception e) {
             // si l'exception survient durant le close -> noErrorBeforeClose ==
@@ -182,6 +183,8 @@ public class PCRestiPCLegalComptaProcess extends BProcess {
                         ":::::::::::: END LOG OSIRIS :::::::::::::::::::::::::::::");
 
             }
+            JadeThreadActivator.stopUsingContext(Thread.currentThread());
+            JadeThread.closeSession();
         }
 
         return true;
@@ -338,35 +341,35 @@ public class PCRestiPCLegalComptaProcess extends BProcess {
         List<Paiement> list = new ArrayList<>();
         Paiement paiement;
         StringBuilder emptyRubrique = new StringBuilder();
-        if (!JadeStringUtil.isDecimalEmpty(simpleRestitution.getMontantRestitutionPCAvsFederal())) {
+        if (!JadeStringUtil.isBlankOrZero(simpleRestitution.getMontantRestitutionPCAvsFederal())) {
             paiement = new Paiement(mapRubriques.get("REST_AVS_FED"), simpleRestitution.getMontantRestitutionPCAvsFederal(), REST_AVS_FED);
             list.add(paiement);
         }
-        if (!JadeStringUtil.isDecimalEmpty(simpleRestitution.getMontantRestitutionPCAIFederal())) {
+        if (!JadeStringUtil.isBlankOrZero(simpleRestitution.getMontantRestitutionPCAIFederal())) {
             paiement = new Paiement(mapRubriques.get("REST_AI_FED"), simpleRestitution.getMontantRestitutionPCAIFederal(), REST_AI_FED);
             list.add(paiement);
         }
-        if (!JadeStringUtil.isDecimalEmpty(simpleRestitution.getMontantRestitutionPCAvsSubside())) {
+        if (!JadeStringUtil.isBlankOrZero(simpleRestitution.getMontantRestitutionPCAvsSubside())) {
             paiement = new Paiement(mapRubriques.get("REST_AVS_SUB"), simpleRestitution.getMontantRestitutionPCAvsSubside(), REST_AVS_SUB);
             list.add(paiement);
         }
-        if (!JadeStringUtil.isDecimalEmpty(simpleRestitution.getMontantRestitutionPCAISubside())) {
+        if (!JadeStringUtil.isBlankOrZero(simpleRestitution.getMontantRestitutionPCAISubside())) {
             paiement = new Paiement(mapRubriques.get("REST_AI_SUB"), simpleRestitution.getMontantRestitutionPCAISubside(), REST_AI_SUB);
             list.add(paiement);
         }
-        if (!JadeStringUtil.isDecimalEmpty(simpleRestitution.getMontantRestitutionPCAvsCantonal())) {
+        if (!JadeStringUtil.isBlankOrZero(simpleRestitution.getMontantRestitutionPCAvsCantonal())) {
             paiement = new Paiement(mapRubriques.get("REST_AVS_CANT"), simpleRestitution.getMontantRestitutionPCAvsCantonal(), REST_AVS_CANT);
             list.add(paiement);
         }
-        if (!JadeStringUtil.isDecimalEmpty(simpleRestitution.getMontantRestitutionPCAICantonal())) {
+        if (!JadeStringUtil.isBlankOrZero(simpleRestitution.getMontantRestitutionPCAICantonal())) {
             paiement = new Paiement(mapRubriques.get("REST_AI_CANT"), simpleRestitution.getMontantRestitutionPCAICantonal(), REST_AI_CANT);
             list.add(paiement);
         }
-        if (!JadeStringUtil.isDecimalEmpty(simpleRestitution.getMontantRestitutionPCRfmAvs())) {
+        if (!JadeStringUtil.isBlankOrZero(simpleRestitution.getMontantRestitutionPCRfmAvs())) {
             paiement = new Paiement(mapRubriques.get("REST_AVS_RFM"), simpleRestitution.getMontantRestitutionPCRfmAvs(), REST_AVS_RFM);
             list.add(paiement);
         }
-        if (!JadeStringUtil.isDecimalEmpty(simpleRestitution.getMontantRestitutionPCRfmAI())) {
+        if (!JadeStringUtil.isBlankOrZero(simpleRestitution.getMontantRestitutionPCRfmAI())) {
             paiement = new Paiement(mapRubriques.get("REST_AI_RFM"), simpleRestitution.getMontantRestitutionPCRfmAI(), REST_AI_RFM);
             list.add(paiement);
         }
@@ -466,8 +469,8 @@ public class PCRestiPCLegalComptaProcess extends BProcess {
      */
     private void doEcriture(APIGestionComptabiliteExterne compta, String montantSigne, APIRubrique rubrique,
                             String idCompteAnnexe, String idSection, String anneeCotisation) {
-        if (!JadeStringUtil.isDecimalEmpty(montantSigne)) {
-            FWCurrency montant = new FWCurrency(montantSigne);
+        if (!JadeStringUtil.isBlankOrZero(montantSigne)) {
+            FWCurrency montant = new FWCurrency(SIGNE_RESTI+montantSigne);
             boolean positif = true;
 
             if (montant.isNegative()) {
