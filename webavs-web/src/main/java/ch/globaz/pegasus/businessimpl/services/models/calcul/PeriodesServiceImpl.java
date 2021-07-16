@@ -1,11 +1,13 @@
 /**
- * 
+ *
  */
 package ch.globaz.pegasus.businessimpl.services.models.calcul;
 
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.pegasus.business.constantes.*;
+import ch.globaz.pegasus.business.exceptions.models.calcul.HomeCalculBusinessException;
 import ch.globaz.pegasus.business.exceptions.models.pmtmensuel.PmtMensuelException;
+import ch.globaz.pegasus.business.models.calcul.*;
 import ch.globaz.pyxis.business.model.LocaliteSimpleModel;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -28,15 +30,6 @@ import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
 import ch.globaz.pegasus.business.exceptions.models.monnaieetrangere.MonnaieEtrangereException;
 import ch.globaz.pegasus.business.exceptions.models.parametre.ForfaitsPrimesAssuranceMaladieException;
 import ch.globaz.pegasus.business.exceptions.models.renteijapi.AutreRenteException;
-import ch.globaz.pegasus.business.models.calcul.AutreRenteCalculSearch;
-import ch.globaz.pegasus.business.models.calcul.CalculDernierePCA;
-import ch.globaz.pegasus.business.models.calcul.CalculDernierePCASearch;
-import ch.globaz.pegasus.business.models.calcul.CalculDonneesDroitSearch;
-import ch.globaz.pegasus.business.models.calcul.CalculMembreFamilleSearch;
-import ch.globaz.pegasus.business.models.calcul.CalculPlageInitial;
-import ch.globaz.pegasus.business.models.calcul.CalculPlageInitialSearch;
-import ch.globaz.pegasus.business.models.calcul.CalculPlagesExistantesWithIdDemande;
-import ch.globaz.pegasus.business.models.calcul.CalculPlagesExistantesWithIdDemandeSearch;
 import ch.globaz.pegasus.business.models.demande.Demande;
 import ch.globaz.pegasus.business.models.demande.DemandeSearch;
 import ch.globaz.pegasus.business.models.droit.DonneeFinanciereHeader;
@@ -65,7 +58,7 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
     /**
      * Comparateur pour le treeset des dates de partage. Les dates peuvent être en mois/année et seront considérés comme
      * le 1er du mois. Null non supporté.
-     * 
+     *
      * @author ECO
      */
     private final class DatesPartageComparator implements Comparator<String> {
@@ -87,7 +80,7 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
     /**
      * Calcule la date de début de la plage de calcul d'un droit pour une rente donnée, dans le cas d'un premier calcul
      * du droit.
-     * 
+     *
      * @param rente
      *            La rente servant de base pour calculer la période de la plage de calcul.
      * @param dateDepotPC
@@ -218,12 +211,12 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
             dateFinPlage = "01." + dateFinDemande;
         }
 
-        return new String[] { "01." + dateDebutPlage, dateFinPlage };
+        return new String[]{"01." + dateDebutPlage, dateFinPlage};
     }
 
     /**
      * Recherche la date de début de la plage de calcul en cas d'un premier calcul du droit.
-     * 
+     *
      * @param droit
      *            Le droit dont la plage de calcul doit être déterminé.
      * @return La date de début de plage, ou null si pas de rente.
@@ -287,7 +280,7 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
             dateDebutRentes = JadeDateUtil.addMonths("01." + dateFinDemandePrecedente, 1);
         }
 
-        return new String[] { dateDebutRentes, null };
+        return new String[]{dateDebutRentes, null};
     }
 
     @Override
@@ -311,7 +304,7 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
     /**
      * Retourne la date de décsision de la rente. Ce provider retourne le champ date spécifique au type de donnée
      * financière.
-     * 
+     *
      * @param rente
      *            Objet model de la rente
      * @return la date de décision, ou null
@@ -330,7 +323,7 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
     /**
      * Retourne la date de dépot de la rente. Ce provider retourne le champ date spécifique au type de donnée
      * financière.
-     * 
+     *
      * @param rente
      *            Objet model de la rente
      * @return la date de dépot, ou null
@@ -347,8 +340,8 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
     }
 
     private Set<String> getDatesPartagePeriodes(Droit droit,
-            Map<String, JadeAbstractSearchModel> cacheDonneesPersistence, String dateDebut,
-            DonneesHorsDroitsProvider containerGlobal) throws CalculException {
+                                                Map<String, JadeAbstractSearchModel> cacheDonneesPersistence, String dateDebut,
+                                                DonneesHorsDroitsProvider containerGlobal) throws CalculException {
 
         // crée liste de dates
         Set<String> listeDates = new TreeSet<String>(new DatesPartageComparator());
@@ -363,36 +356,50 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
             conditionDates.remove(null);
             listeDates.addAll(conditionDates);
         }
-        String date = "";
-        String dateMax = "";
-        for(String dateList : listeDates){
-            date = JadeDateUtil.getFirstDateOfMonth(dateList);
-            if(JadeStringUtil.isBlankOrZero(dateMax) || JadeDateUtil.isDateAfter(date,dateMax)){
-                dateMax = date;
-            }
-        }
-        try {
-            String dateDernierPaiement = JadeDateUtil.getFirstDateOfMonth(PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt());
-            if(!JadeDateUtil.areDatesEquals(dateMax,dateDernierPaiement)){
-                listeDates.add(dateDernierPaiement);
-            }
-        } catch (Exception e) {
-            throw new CalculException(e.getMessage());
-        }
+
+        JadeAbstractSearchModel listHome = cacheDonneesPersistence.get(ConstantesCalcul.CONTAINER_DONNEES_HOMES);
 
 
+        if (checkHomeVersementDirect(listHome)) {
+            String date = "";
+            String dateMax = "";
+            for (String dateList : listeDates) {
+                date = JadeDateUtil.getFirstDateOfMonth(dateList);
+                if (JadeStringUtil.isBlankOrZero(dateMax) || JadeDateUtil.isDateAfter(date, dateMax)) {
+                    dateMax = date;
+                }
+            }
+            try {
+                String dateDernierPaiement = JadeDateUtil.getFirstDateOfMonth(PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt());
+                if (!JadeDateUtil.areDatesEquals(dateMax, dateDernierPaiement)) {
+                    listeDates.add(dateDernierPaiement);
+                }
+            } catch (Exception e) {
+                throw new CalculException(e.getMessage());
+            }
+        }
         return listeDates;
+    }
+
+    private boolean checkHomeVersementDirect(JadeAbstractSearchModel listHome) {
+        for(JadeAbstractModel model : listHome.getSearchResults()){
+            CalculDonneesHome donneesHome = (CalculDonneesHome)model;
+            if(donneesHome.getIsVersementDirect()){
+                return true;
+            }
+        }
+        return false;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seech.globaz.pegasus.business.services.models.calcul.PeriodesService#
      * getDonneesCalculDroit(ch.globaz.pegasus.business.models.droit.Droit, java.lang.String)
      */
     @Override
     public Map<String, JadeAbstractSearchModel> getDonneesCalculDroit(Droit droit, String debutPlage,
-            String dateFinPlage) throws CalculException, JadePersistenceException, DroitException, PeriodeException,
+                                                                      String dateFinPlage) throws CalculException, JadePersistenceException, DroitException, PeriodeException,
             MonnaieEtrangereException, AutreRenteException, ForfaitsPrimesAssuranceMaladieException {
         Map<String, JadeAbstractSearchModel> result = new HashMap<String, JadeAbstractSearchModel>();
 
@@ -432,6 +439,14 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
             autreRenteCalculSearch = PegasusImplServiceLocator.getAutreRenteCalculService().search(
                     autreRenteCalculSearch);
             result.put(ConstantesCalcul.CONTAINER_AUTRES_RENTES, autreRenteCalculSearch);
+
+            CalculDonneesHomeSearch homeSearch = new CalculDonneesHomeSearch();
+            homeSearch.setForIdDroit(droit.getSimpleDroit().getIdDroit());
+            homeSearch.setForDateFin(JadeDateUtil.convertDateMonthYear(debutPlage));
+            homeSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+            homeSearch = PegasusImplServiceLocator.getCalculDonneesHomeService().search(homeSearch);
+
+            result.put(ConstantesCalcul.CONTAINER_DONNEES_HOMES, homeSearch);
 
         } catch (JadeApplicationServiceNotAvailableException e) {
             throw new CalculException("Service not available - " + e.getMessage());
@@ -495,14 +510,14 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seech.globaz.pegasus.business.services.models.calcul.PeriodesService#
      * recherchePeriodesCalcul(ch.globaz.pegasus.business.models.droit.Droit, java.lang.String)
      */
     @Override
     public List<PeriodePCAccordee> recherchePeriodesCalcul(Droit droit, String debutPlage, String finPlage,
-            Map<String, JadeAbstractSearchModel> cacheDonneesPersistence, DonneesHorsDroitsProvider containerGlobal,
-            boolean isDateFinForce, String dateSplitReforme) throws CalculException, JadePersistenceException {
+                                                           Map<String, JadeAbstractSearchModel> cacheDonneesPersistence, DonneesHorsDroitsProvider containerGlobal,
+                                                           boolean isDateFinForce, String dateSplitReforme) throws CalculException, JadePersistenceException {
 
         if (containerGlobal == null) {
             throw new CalculException("donneesHorsDroitProvider is null!");
@@ -512,7 +527,7 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
                 containerGlobal);
 
         // ajoute la date à partir de laquelle le calcul est uniquement réforme pour un calcul rétro
-        if(dateSplitReforme != null && !listeDatesPartage.contains(dateSplitReforme)){
+        if (dateSplitReforme != null && !listeDatesPartage.contains(dateSplitReforme)) {
             listeDatesPartage.add(dateSplitReforme);
         }
 
@@ -520,7 +535,7 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
         String dateFinPlage = JadeDateUtil.addDays(finPlage, 1);
 
         // supression des dates sortant de la plage
-        for (Iterator<String> itDates = listeDatesPartage.iterator(); itDates.hasNext();) {
+        for (Iterator<String> itDates = listeDatesPartage.iterator(); itDates.hasNext(); ) {
             String d = itDates.next();
 
             if (JadeDateUtil.isDateBefore(d, debutPlage) || JadeDateUtil.isDateAfter(d, dateFinPlage)) {
@@ -570,7 +585,7 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seech.globaz.pegasus.business.services.models.calcul.PeriodesService#
      * recherchePlageCalcul(ch.globaz.pegasus.business.models.droit.Droit)
      */
