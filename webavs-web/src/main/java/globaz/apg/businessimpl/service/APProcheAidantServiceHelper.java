@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +22,9 @@ public class APProcheAidantServiceHelper {
 
     @SuppressWarnings({"Convert2MethodRef", "java:S1612"})
     public void changementDateDebutDroitsPourLesDroitsQuiOnUneDateDebutPasEnAdequation(APDroitProcheAidant droitProcheAidant) {
-        droitProcheAidant.resolveDateDebutDelaiCadre().ifPresent(date -> {
+        droitProcheAidant.resolveDateDebutDelaiCadre().ifPresent(dateAutreDroit -> {
+            LocalDate dateDroitCourant = Dates.toDate(droitProcheAidant.getDateDebutDroit());
+            LocalDate date = dateAutreDroit.isBefore(dateDroitCourant) ? dateAutreDroit : dateDroitCourant;
             List<IdDroit> idDroits = chercherDroitQuiSonLieeAvecLeMemeEnfant(droitProcheAidant.getIdDroit(),droitProcheAidant.getCareLeaveEventID());
 
             idDroits.stream()
