@@ -81,11 +81,19 @@ public abstract class AAPModuleCalculSalaireJournalier {
 
             result.setTL(TL);
         } else {
-            for (Iterator<APSituationProfessionnelleHelper> iter = listSitProfHelper.iterator(); iter.hasNext();) {
-                APSituationProfessionnelleHelper element = iter.next();
+            if(listSitProfHelper.size() > 1) {
+                for (Iterator<APSituationProfessionnelleHelper> iter = listSitProfHelper.iterator(); iter.hasNext();) {
+                    APSituationProfessionnelleHelper element = iter.next();
+                    bTL = bTL.add(element.getRevenuMoyenDeterminantSansArrondi().getBigDecimalValue());
+                    TL.add(element.getRevenuMoyenDeterminantSansArrondi());
+                }
+                bTL = TL.getBigDecimalValue();
+            } else {
+                APSituationProfessionnelleHelper element = listSitProfHelper.get(0);
                 bTL = bTL.add(element.getTL().getBigDecimalValue());
                 TL.add(element.getTL());
             }
+
             // Arrondi au francs
             TL = new FWCurrency(JANumberFormatter.round(bTL, 1, 0, JANumberFormatter.INF).toString());
 
