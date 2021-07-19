@@ -69,7 +69,7 @@ public class APBasesCalculProcheAidantBuilder extends APBasesCalculBuilder{
             // controle l'age legale
             Optional<Periode> periode = controleAgeLegal(mgr.<APEnfantMat>getContainerAsList().get(0), this.droit.getDateDebutDroit(), dateFin);
 
-            if(periode != null) {
+            if(periode.isPresent()) {
                 // creer les commandes de début de droit et de find de droit à
                 // l'allocation proche aidant
                 EnfantMatCommand commandDebut = new EnfantMatCommand(Dates.toJavaDate(Dates.toDate(periode.get().getDateDebut())), true);
