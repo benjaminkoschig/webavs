@@ -417,6 +417,12 @@
             }
         });
 
+        $("#periodes .ndJourSup").each(function(index, element){
+            if($(element).text()) {
+                sum = sum + ($(element).text() * 1)
+            }
+        });
+
         var month = null;
         $("#periodes .dateDebut").each(function(index, element){
             month =  Date.toDate($(element).text()).getMonth()
@@ -449,12 +455,13 @@
         } else {
             nbJourSup = 0
         }
-        sum = sum+nbJourSup+nbJourSolde;
 
-        if(nbJourSolde>nbJourBetweenPeriode){
+        if(nbJourSup+nbJourSolde>nbJourBetweenPeriode){
             globazNotation.utils.consoleError("<ct:FWLabel key="JSP_NBJOUR_PERIODE_TROP_PETITE"/>");
             return;
         }
+
+        sum = sum+nbJourSup+nbJourSolde;
 
         if(sum > dateDebut.daysInMonth()) {
             globazNotation.utils.consoleError("<ct:FWLabel key="JSP_NBJOUR_SUP_MOIS"/>", "<ct:FWLabel key="JSP_NBJOUR_SUP_MOIS_TITRE"/>");

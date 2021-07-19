@@ -169,7 +169,7 @@ function repaintTablePeriodes() {
 
         var njg = '<td width="' + widthJour + '" align="center" class="nbJourPourUnePeriode">' + periode.getNbJour()  + '</td>';
         if (JOUR_SUPPLEMENTAIRE) {
-            jsp = '<td width="' + widthJour + '" align="center">' + periode.jourSupplementaire + '</td>';
+            jsp = '<td width="' + widthJour + '" align="center" class="ndJourSup">' + periode.jourSupplementaire + '</td>';
         }
         if(!SOUMIS_COTISATION_PERIODE){
             var tis = '';

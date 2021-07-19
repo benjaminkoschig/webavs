@@ -1843,8 +1843,9 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
             managerSitu.setSession(this.getSession());
             managerSitu.setForIdDroit(idDroit);
             managerSitu.find(BManager.SIZE_NOLIMIT);
-            return managerSitu.<APSituationProfessionnelle>getContainerAsList().stream()
-                    .anyMatch(s -> s.getIsJoursIdentiques());
+            List<APSituationProfessionnelle> sitProf = managerSitu.<APSituationProfessionnelle>getContainerAsList();
+            return sitProf.isEmpty()
+                    || sitProf.stream().anyMatch(s -> s.getIsJoursIdentiques());
         }
         return true;
     }
