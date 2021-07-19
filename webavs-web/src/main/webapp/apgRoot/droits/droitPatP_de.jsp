@@ -999,7 +999,7 @@
         </label>
     </td>
     <td colspan="4"><textarea id="remarque" name="remarque" cols="85" rows="3"
-                              onKeyDown="limiteur();"><%=viewBean.getRemarque()%></textarea>
+                              onkeydown="limiteur();"><%=viewBean.getRemarque()%></textarea>
         <br/>
         <ct:FWLabel key="JSP_REMARQUE_COMMENT_8000"/>
     </td>

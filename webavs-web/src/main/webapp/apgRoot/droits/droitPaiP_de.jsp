@@ -284,6 +284,14 @@
         document.forms[0].submit();
     }
 
+    function limiteur() {
+        // limite la saisie de la remarque à 8000 caractères
+        maximum = 7990;
+        if (document.forms[0].elements('remarque').value.length > maximum) {
+            document.forms[0].elements('remarque').value = document.forms[0].elements('remarque').value.substring(0, maximum);
+        }
+    }
+
 
     function postInit() {
         if (<%=viewBean.isTrouveDansTiers()%>) {
@@ -1051,10 +1059,8 @@
             <ct:FWLabel key="JSP_REMARQUE"/>
         </label>
     </td>
-    <td colspan="4">
-        <textarea data-g-string="sizeMax:8000,isPasteOverload:true" id="remarque" name="remarque" cols="85" rows="3">
-            <%=viewBean.getRemarque()%>
-        </textarea>
+    <td colspan="4"><textarea id="remarque" name="remarque" cols="85" rows="3"
+                              onkeydown="limiteur();"><%=viewBean.getRemarque()%></textarea>
         <br/>
         <ct:FWLabel key="JSP_REMARQUE_COMMENT_8000"/>
     </td>
