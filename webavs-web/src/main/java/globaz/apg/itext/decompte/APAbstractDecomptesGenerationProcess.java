@@ -1473,7 +1473,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
         APEmployeurRepartition employeursRepartition = APEmployeurRepartition.of(sitProMan.getContainerAsList(), getCSTypePrestationsLot());
 
-        if(employeursRepartition.isCalculProrataForAssure()) {
+        if(employeursRepartition.isCalculProrataForAssure()
+                && BigDecimal.ZERO != montantJournalierTotalRepartition) {
             revenuMoyenDeterminant = employeursRepartition.calculRevenuJournalierTotalEmployeurAssure();
             arguments[5] = montantJournalierTotalRepartition;
         }
