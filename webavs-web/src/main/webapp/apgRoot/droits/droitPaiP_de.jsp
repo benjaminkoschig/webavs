@@ -1045,7 +1045,7 @@
         </label>
     </td>
     <td colspan="4">
-        <textarea data-g-string="sizeMax:100,isPasteOverload:true" id="remarque" name="remarque" cols="85" rows="3">
+        <textarea data-g-string="sizeMax:8000,isPasteOverload:true" id="remarque" name="remarque" cols="85" rows="3">
             <%=viewBean.getRemarque()%>
         </textarea>
         <br/>

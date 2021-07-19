@@ -646,7 +646,7 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
 
     private void validerRemarque(BStatement statement) {
         String[] tab = PRStringUtils.split(getRemarque(), '\n');
-        int limiteRetLigne = 3;
+        int limiteRetLigne = 5;
         if (tab.length > limiteRetLigne) {
             _addError(statement.getTransaction(), getSession().getLabel("REMARQUE_INVALIDE") + " " + limiteRetLigne);
         }
@@ -791,5 +791,4 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
             return new CareLeaveEventId(delaiValidite, careLeaveEventId, true);
         }
     }
-
 }

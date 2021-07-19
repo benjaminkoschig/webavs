@@ -297,4 +297,8 @@ public class APDroitPanViewBean extends APAbstractDroitProxyViewBean {
                 IAPDroitLAPG.CS_PROTECTION_CIVILE_COMMANDANT, IAPDroitLAPG.CS_SERVICE_INTERRUPTION_AVANT_ECOLE_SOUS_OFF, IAPDroitLAPG.CS_SERVICE_INTERRUPTION_PENDANT_SERVICE_AVANCEMENT);
     }
 
+    public int getNombreRetourLigneRemarque(){
+        return 3;
+    }
+
 }

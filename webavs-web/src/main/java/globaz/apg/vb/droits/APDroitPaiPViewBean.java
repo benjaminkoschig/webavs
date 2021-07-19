@@ -355,4 +355,8 @@ public class APDroitPaiPViewBean extends APAbstractDroitProxyViewBean {
         LocalDate date = APParameter.PROCHE_AIDANT_DATE_DE_DEBUT.findDateDebutValidite(Date.now().getSwissValue(),this.getSession());
         return Dates.formatSwiss(date);
     }
+
+    public int getNombreRetourLigneRemarque(){
+        return 5;
+    }
 }

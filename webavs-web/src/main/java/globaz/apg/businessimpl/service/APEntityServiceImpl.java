@@ -442,7 +442,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             }
         }
         // Test de la longueur de la remarque
-        if (isRemarqueTropLongue(viewBean.getRemarque())) {
+        if (isRemarqueTropLongue(viewBean.getRemarque(), viewBean.getNombreRetourLigneRemarque())) {
             errors.add(APValidationDroitError.REMARQUE_TROP_LONGUE);
         }
 
@@ -1832,9 +1832,9 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
     }
 
-    private boolean isRemarqueTropLongue(final String remarque) {
+    private boolean isRemarqueTropLongue(final String remarque, int nombreRetourLigne) {
         final String[] tab = PRStringUtils.split(remarque, '\n');
-        if (tab.length > 3) {
+        if (tab.length > nombreRetourLigne) {
             return true;
         }
         return false;
@@ -2634,7 +2634,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             }
         }
         // Test de la longueur de la remarque
-        if (isRemarqueTropLongue(viewBean.getRemarque())) {
+        if (isRemarqueTropLongue(viewBean.getRemarque(), viewBean.getNombreRetourLigneRemarque())) {
             errors.add(APValidationDroitError.REMARQUE_TROP_LONGUE);
         }
 
@@ -2785,7 +2785,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             }
         }
         // Test de la longueur de la remarque
-        if (isRemarqueTropLongue(viewBean.getRemarque())) {
+        if (isRemarqueTropLongue(viewBean.getRemarque(), viewBean.getNombreRetourLigneRemarque())) {
             errors.add(APValidationDroitError.REMARQUE_TROP_LONGUE);
         }
 
@@ -2922,7 +2922,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             }
         }
         // Test de la longueur de la remarque
-        if (isRemarqueTropLongue(viewBean.getRemarque())) {
+        if (isRemarqueTropLongue(viewBean.getRemarque(), viewBean.getNombreRetourLigneRemarque())) {
             errors.add(APValidationDroitError.REMARQUE_TROP_LONGUE);
         }
 

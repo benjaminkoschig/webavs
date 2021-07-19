@@ -419,5 +419,7 @@ public class APDroitPatPViewBean extends APAbstractDroitProxyViewBean {
         }
     }
 
-
+    public int getNombreRetourLigneRemarque(){
+        return 5;
+    }
 }

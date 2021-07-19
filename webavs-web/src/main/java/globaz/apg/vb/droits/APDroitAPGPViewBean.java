@@ -336,4 +336,7 @@ public class APDroitAPGPViewBean extends APAbstractDroitProxyViewBean {
         this.messagesError = messagesError;
     }
 
+    public int getNombreRetourLigneRemarque(){
+        return 3;
+    }
 }
