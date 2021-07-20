@@ -1476,19 +1476,18 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         if(employeursRepartition.isCalculProrataForAssure()
                 && BigDecimal.ZERO != montantJournalierTotalRepartition) {
             revenuMoyenDeterminant = employeursRepartition.calculRevenuJournalierTotalEmployeurAssure();
-            arguments[5] = montantJournalierTotalRepartition;
+            arguments[5] = JANumberFormatter.format(montantJournalierTotalRepartition.doubleValue());
         }
 
         final BigDecimal revenuAnnuel = employeursRepartition.isCalculProrataForAssure() ? employeursRepartition.calculRevenuAnnuelTotalEmployeurAssure() : sitProMan.getRevenuAnnuelSituationsProfessionnelles();
 
         ref = (APReferenceDataAPG) APReferenceDataParser.loadReferenceData(getSession(), PRTypeDemande.toEnumByCs(getCSTypePrestationsLot()).getCalculreferenceData(), dateDebut,
-                    dateFin, dateFin);
-
+                dateFin, dateFin);
         final double montantJournalierMax = ref.getGE().intValue();
         final double montantAnnuelMax = montantJournalierMax * 360;
         boolean isMontantMax = false;
 
-        if (montantJournalierMax <= revenuMoyenDeterminant && !employeursRepartition.isCalculProrataForAssure()) {
+        if (montantJournalierMax <= revenuMoyenDeterminant) {
             arguments[7] = PRStringUtils.replaceString(textes.getTexte(10).getDescription(), "{montantAnnuelMax}",
                     JANumberFormatter.format(montantAnnuelMax));
             isMontantMax = true;
@@ -1987,6 +1986,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
             } else {
                 Boolean hasPrestationAPGFederale = false;
+                montantJournalierTotalRepartition = BigDecimal.ZERO;
                 for (final APRepartitionJointPrestation repartition : repartitionsTreeSet) {
 
                     // S'il s'agit d'un type pandémie, il faudra donc envoyer des copies aux employeurs
