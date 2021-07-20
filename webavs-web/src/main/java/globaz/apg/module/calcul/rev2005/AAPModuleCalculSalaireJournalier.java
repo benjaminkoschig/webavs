@@ -457,7 +457,7 @@ public abstract class AAPModuleCalculSalaireJournalier {
         }
 
         private BigDecimal calculTauxStandard(APSituationProfessionnelleHelper situationProfessionnelle) {
-            return calculTaux(situationProfessionnelle.getRevenuMoyenDeterminantSansArrondi().getBigDecimalValue(), this.getMontantJournalierTotal());
+            return calculTaux(situationProfessionnelle.getSalaireJournalier().getBigDecimalValue(), this.getMontantJournalierTotal());
         }
 
         private BigDecimal calculTaux(BigDecimal bigDecimalValue, Montant calculSalaireNbjourTotal) {
