@@ -21,6 +21,7 @@ public interface IPRCloneable {
 
     /** DOCUMENT ME! */
     int ACTION_CREER_NOUVEAU_DROIT_APG_PARENT = 1001;
+    int ACTION_CREER_NOUVEAU_DROIT_PROCHE_AIDANT = 1006;
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------

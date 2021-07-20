@@ -142,12 +142,13 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
                 IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
 
         SQLWriter sqlWriter = SQLWriter.writeWithSchema()
-                                       .append("select sum(VCNNBJ + VCNNBJOURSUP) as nb_jours, min(schema.APPERIP.VCDDEB) as date_debut_min")
+                                       .append("select sum(schema.APPRESP.VHNNJS) as nb_jours, min(schema.APPERIP.VCDDEB) as date_debut_min")
                                        .append(", schema.APDROITPROCHEAIDANT.CAREEVENTID as care_leave_event_id")
                                        .append("from schema." + APDroitLAPG.TABLE_NAME_LAPG)
                                        .join("schema.APDROITPROCHEAIDANT ON schema.APDROITPROCHEAIDANT.ID_DROIT = schema.APDROIP.VAIDRO")
                                        .join("schema.APPERIP ON schema.APPERIP.VCIDRO = schema.APDROIP.VAIDRO")
                                        .join("schema.APSIFMP ON schema.APSIFMP.VQIDRM = schema.APDROIP.VAIDRO")
+                                       .join("schema.APPRESP ON schema.APPRESP.VHIDRO = schema.APDROIP.VAIDRO") // prendre en compte les jours des prestations réellement versé et pas ceux des périodes
                                        .append("where schema.APSIFMP.VQLAVS = (")
                                        .append("select distinct schema.APSIFMP.VQLAVS as nss_enfant")
                                        .from(APDroitLAPG.TABLE_NAME_LAPG)
@@ -155,14 +156,14 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
                                        .join("schema.APSIFMP ON schema.APSIFMP.VQIDRM = schema.APDROIP.VAIDRO")
                                        .append(" where schema.APDROIP.VAIDRO = ?)", this.getIdDroit())
                                        .append(" and schema.APDROIP.VATETA in(?)", etatsDroit)
+                                       .append(" and schema.APPRESP.VHDMOB > 0")                                // ne pas prendre en compte les jours des restitutions
                                        .append(" and schema.APDROITPROCHEAIDANT.CAREEVENTID = ?", careLeaveEventID)
-
-                                       .append(" and ((schema.APDROIP.VAIPAR is null or schema.APDROIP.VAIPAR = 0")
+                                       .append(" and ((schema.APDROIP.VAIPAR is null or schema.APDROIP.VAIPAR = 0") // qui n'a pas de droit enfant ...
                                        .append(" and 0 = (select count(child.VAIDRO) as nb")
                                        .append(" from schema.APDROIP as child")
                                        .append(" where child.VAIPAR = schema.APDROIP.VAIDRO")
                                        .append(" and child.VATETA in (?)))", etatsDroit)
-                                       .append(" or ((schema.APDROIP.VAIPAR is not null and schema.APDROIP.VAIPAR != 0)")
+                                       .append(" or ((schema.APDROIP.VAIPAR is not null and schema.APDROIP.VAIPAR != 0)") // ... où qui est le dernier droit enfant
                                        .append(" and schema.APDROIP.VAIDRO = (select max(child.VAIDRO)")
                                        .append(" from schema.APDROIP as child")
                                        .append(" where child.VAIPAR = schema.APDROIP.VAIPAR")
@@ -525,7 +526,7 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
         // On ne veut pas de la validation pendant une duplication
         clone.wantCallValidate(false);
         // Etat par défaut : attente
-        if (actionType == ACTION_CREER_NOUVEAU_DROIT_PATERNITE_RESTI_FILS) {
+        if (actionType == ACTION_CREER_NOUVEAU_DROIT_PROCHE_AIDANT) {
             clone.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_VALIDE);
         } else {
             clone.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE);

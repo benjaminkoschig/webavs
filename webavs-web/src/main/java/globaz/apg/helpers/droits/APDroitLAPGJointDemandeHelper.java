@@ -586,7 +586,7 @@ public class APDroitLAPGJointDemandeHelper extends PRAbstractHelper {
                         session.getApplication().getProperty(APApplication.PROPERTY_CLONE_DEFINITION_FILENAME),
                         session, droit,
                         CLONE_COPIER_CORRIGER_DROIT_PROCHE_AIDANT,
-                        IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_PANDEMIE_FILS);
+                        IPRCloneable.ACTION_CREER_NOUVEAU_DROIT_PROCHE_AIDANT);
 
                 vbDroit.setDto(new APDroitAPGDTO(droit));
             } else if (APGUtils.isTypeAllocationPandemie(vbDroit.getGenreService())) {
