@@ -131,9 +131,9 @@ public interface ICEListeColumns {
     // ou de
     // couverture
     public static final String MASSE_AF = "masse_AF"; // la masse AF
-    public static final String MASSE_AVS = "masseAVS"; // la masse AVS reprise
+    public static final String MASSE_AVS = "masseAVS"; // la masse AVS reprise // TODO ESVE CONTROLE EMPLOYEUR CHAMPS QUI RESSORS SUR LE DOCUMENT CONTROLE EMPLOYEUR
     public static final String MASSE_AVS_NEG = "masseAVSNeg"; // la masse AVS
-    public static final String MASSE_SALARIALE = "masseSalariale";
+    public static final String MASSE_SALARIALE = "masseSalariale"; // TODO ESVE CONTROLE EMPLOYEUR CHAMPS UTILISE SUR UN AUTRE DOCUMENT
     public static final String MOTIF_RADIATION = "motifRadiation";
     public static final String NOM = "nom";
     public static final String NOM_GROUPE = "nomGroupe";

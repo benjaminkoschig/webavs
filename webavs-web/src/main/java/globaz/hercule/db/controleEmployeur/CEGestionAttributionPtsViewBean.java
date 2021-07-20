@@ -40,6 +40,7 @@ import java.util.Map;
 public class CEGestionAttributionPtsViewBean extends CEGestionAttributionPts implements FWViewBeanInterface {
 
     private static final long serialVersionUID = 2980132241632437081L;
+    public static final BigDecimal MIN_MASSE_AVS_POUR_AFFICHAGE = BigDecimal.valueOf(150000);
 
     private String idAffilie = "";
     private double masseSalariale;
@@ -48,6 +49,7 @@ public class CEGestionAttributionPtsViewBean extends CEGestionAttributionPts imp
     private String periodePrevueDebut = "";
     private String periodePrevueFin = "";
     private Map<Integer, BigDecimal> mapMasseSalariale = null;
+    private Map<Integer, BigDecimal> mapMasseSalarialeDepuisAnneeDateEffective = null;
     private Map<Integer, BigDecimal> mapNombreCI = null;
     private CEMassesReprisesByAnneeDTO infosReprise = null;
     private Map<String, String> mapFacturation = null;
@@ -95,13 +97,26 @@ public class CEGestionAttributionPtsViewBean extends CEGestionAttributionPts imp
         }
     }
 
-    private void retrieveMasseSalariale() {
+    private void retrieveMasseSalarialeDepuisAnneeCourante() {
         findAnneeCourante();
 
         if (mapMasseSalariale == null) {
             try {
                 mapMasseSalariale = CEComptabiliteService.getMasseSalariale5DernieresAnnees(getSession(), null,
                         getNumAffilie(), anneeCourante);
+            } catch (HerculeException e) {
+                JadeLogger.error("Unabled to retrieve masse salariale for affilie " + getNumAffilie(), e);
+            }
+        }
+    }
+
+    private void retrieveMasseSalarialeDepuisAnneeDateEffective(Integer anneeDateEffective) {
+        findAnneeCourante();
+
+        if (mapMasseSalarialeDepuisAnneeDateEffective == null) {
+            try {
+                mapMasseSalarialeDepuisAnneeDateEffective = CEComptabiliteService.getMasseSalariale5DernieresAnnees(getSession(), null,
+                        getNumAffilie(), anneeDateEffective);
             } catch (HerculeException e) {
                 JadeLogger.error("Unabled to retrieve masse salariale for affilie " + getNumAffilie(), e);
             }
@@ -280,7 +295,7 @@ public class CEGestionAttributionPtsViewBean extends CEGestionAttributionPts imp
     }
 
     public String _getMasseSalarialeN0() {
-        retrieveMasseSalariale();
+        retrieveMasseSalarialeDepuisAnneeCourante();
 
         if (mapMasseSalariale.containsKey(anneeCourante)) {
             return JANumberFormatter.format(mapMasseSalariale.get(anneeCourante));
@@ -297,7 +312,7 @@ public class CEGestionAttributionPtsViewBean extends CEGestionAttributionPts imp
     }
 
     public String _getMasseSalarialeN1() {
-        retrieveMasseSalariale();
+        retrieveMasseSalarialeDepuisAnneeCourante();
 
         if (mapMasseSalariale.containsKey((anneeCourante - 1))) {
             return JANumberFormatter.format(mapMasseSalariale.get((anneeCourante - 1)));
@@ -313,7 +328,7 @@ public class CEGestionAttributionPtsViewBean extends CEGestionAttributionPts imp
     }
 
     public String _getMasseSalarialeN2() {
-        retrieveMasseSalariale();
+        retrieveMasseSalarialeDepuisAnneeCourante();
 
         if (mapMasseSalariale.containsKey((anneeCourante - 2))) {
             return JANumberFormatter.format(mapMasseSalariale.get((anneeCourante - 2)));
@@ -329,7 +344,7 @@ public class CEGestionAttributionPtsViewBean extends CEGestionAttributionPts imp
     }
 
     public String _getMasseSalarialeN3() {
-        retrieveMasseSalariale();
+        retrieveMasseSalarialeDepuisAnneeCourante();
 
         if (mapMasseSalariale.containsKey((anneeCourante - 3))) {
             return JANumberFormatter.format(mapMasseSalariale.get((anneeCourante - 3)));
@@ -345,7 +360,7 @@ public class CEGestionAttributionPtsViewBean extends CEGestionAttributionPts imp
     }
 
     public String _getMasseSalarialeN4() {
-        retrieveMasseSalariale();
+        retrieveMasseSalarialeDepuisAnneeCourante();
 
         if (mapMasseSalariale.containsKey((anneeCourante - 4))) {
             return JANumberFormatter.format(mapMasseSalariale.get((anneeCourante - 4)));
@@ -397,7 +412,12 @@ public class CEGestionAttributionPtsViewBean extends CEGestionAttributionPts imp
 
     public String _getAnneeDeControle() {
 
-        int _annee = CEUtils.transformeStringToInt(getAnneeCouverture());
+        int _annee = 0;
+
+        // si la masse est supérieur au minimum on affiche la date
+        if (isMasseSalarialeSuperieurMin()) {
+            _annee = CEUtils.transformeStringToInt(getAnneeCouverture());
+        }
 
         if (_annee == 0) {
             return "";
@@ -520,11 +540,50 @@ public class CEGestionAttributionPtsViewBean extends CEGestionAttributionPts imp
         return oldIdAttributionPts;
     }
 
+
+    /**
+     * Définit si au moins une des masses salariale est supérieur au minimum requis pour l'affichage.
+     *
+     * @return boolean true si au moins une des masses salariale est supérieur au minimum requis pour l'affichage.
+     */
+    public boolean isMasseSalarialeSuperieurMin() {
+        boolean isMasseSalarialeSuperieurMin = false;
+        try {
+            BigDecimal masse0;
+            BigDecimal masse1;
+
+            Integer anneeDateEffective = JACalendar.getYear(getDateEffective());
+
+            retrieveMasseSalarialeDepuisAnneeDateEffective(anneeDateEffective);
+
+            if (mapMasseSalarialeDepuisAnneeDateEffective.containsKey(anneeDateEffective)) {
+                masse0 = mapMasseSalarialeDepuisAnneeDateEffective.get(anneeDateEffective);
+            } else {
+                masse0 = new BigDecimal("0.00");
+            }
+            if (mapMasseSalarialeDepuisAnneeDateEffective.containsKey((anneeDateEffective - 1))) {
+                masse1 = mapMasseSalarialeDepuisAnneeDateEffective.get((anneeDateEffective - 1));
+            } else {
+                masse1 = new BigDecimal("0.00");
+            }
+
+            if (masse0.compareTo(MIN_MASSE_AVS_POUR_AFFICHAGE) >= 0 || masse1.compareTo(MIN_MASSE_AVS_POUR_AFFICHAGE) >= 0) {
+                isMasseSalarialeSuperieurMin = true;
+            }
+
+        } catch (JAException e) {
+            JadeLogger.error("Impossible de parser la date effective", e);
+        }
+
+        return isMasseSalarialeSuperieurMin;
+    }
+
     public String getPeriodePrevueDebut() {
 
         periodePrevueDebut = "";
 
-        if (!JadeStringUtil.isBlankOrZero(getDateFinControle())) {
+        // si la masse est supérieur au minimum on affiche la date
+        if (isMasseSalarialeSuperieurMin()) {
             try {
                 periodePrevueDebut = "01.01." + (CEUtils.stringDateToAnnee(getDateFinControle()) + 1);
             } catch (JAException e) {
@@ -540,7 +599,10 @@ public class CEGestionAttributionPtsViewBean extends CEGestionAttributionPts imp
         periodePrevueFin = "";
 
         if (!JadeStringUtil.isBlankOrZero(getAnneeCouverture())) {
-            periodePrevueFin = "31.12." + getAnneeCouverture();
+            // si la masse est supérieur au minimum on affiche la date
+            if (isMasseSalarialeSuperieurMin()) {
+                periodePrevueFin = "31.12." + getAnneeCouverture();
+            }
         }
 
         return periodePrevueFin;

@@ -4,8 +4,7 @@ import globaz.framework.secure.FWSecureConstants;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JADate;
 import globaz.hercule.application.CEApplication;
-import globaz.hercule.db.controleEmployeur.CEControleEmployeur;
-import globaz.hercule.db.controleEmployeur.CEControleEmployeurManager;
+import globaz.hercule.db.controleEmployeur.*;
 import globaz.hercule.db.couverture.CECouverture;
 import globaz.hercule.db.couverture.CECouvertureManager;
 import globaz.hercule.service.CEAttributionPtsService;
@@ -58,7 +57,7 @@ public class CESummary implements ITISummarizable {
                 ceControleEmployeurManager.setOrderBy("MDDPRE DESC");
                 ceControleEmployeurManager.find();
 
-                String idControle = "";
+                String idAttributionPtsActif = null;
                 if (ceControleEmployeurManager.getSize() > 0) {
                     if (hasRightHercule) {
                         setUrlTitle("hercule?userAction=hercule.controleEmployeur.listeControleEmployeur.chercher");
@@ -68,35 +67,59 @@ public class CESummary implements ITISummarizable {
                     String dateProchainControle = "";
                     try {
 
-                        idControle = CEAttributionPtsService.findIdAttributionPtsActifForControle(userSession,
+                        // Rercherche de l'attribution active en fonction du numéro d'affilié
+                        idAttributionPtsActif = CEAttributionPtsService.findIdAttributionPtsActifForControle(userSession,
                                 pers.getNumAffilieActuel(), ce.getDateDebutControle(), ce.getDateFinControle());
 
-                        if (JadeStringUtil.isBlankOrZero(ce.getDateEffective())) {
-                            int anneeControle = new JADate(ce.getDatePrevue()).getYear();
-                            dateProchainControle = ce.getDateDebutControle() + " - " + ce.getDateFinControle() + " / "
-                                    + anneeControle;
-                        } else {
-                            int i_anneeDateDebut = new JADate(ce.getDateFinControle()).getYear() + 1;
-                            int i_anneeDateFin = 0;
-                            int i_anneeControle = 0;
+                        boolean isAfficheDateProchainControle = true;
 
-                            CECouvertureManager ceCouvertureManager = new CECouvertureManager();
-                            ceCouvertureManager.setSession(userSession);
-                            ceCouvertureManager.setIsActif(true);
-                            ceCouvertureManager.setForIdAffilie(ce.getAffiliationId());
-                            ceCouvertureManager.find();
+                        if (idAttributionPtsActif != null) {
+                            CEGestionAttributionPtsViewBean attributionPtsViewBean = new CEGestionAttributionPtsViewBean();
 
-                            if (ceCouvertureManager.size() > 0) {
-                                CECouverture couverture = (CECouverture) ceCouvertureManager.getEntity(0);
-                                i_anneeDateFin = Integer.parseInt(couverture.getAnnee());
-                                i_anneeControle = Integer.parseInt(couverture.getAnnee()) + 1;
+                            // initialisation nécessaire pour le retrieve
+                            attributionPtsViewBean.setSession(userSession);
+                            attributionPtsViewBean.setNumAffilie(ce.getNumAffilie());
+                            attributionPtsViewBean.setIdAffilie(ce.getAffiliationId());
+                            attributionPtsViewBean.setId(idAttributionPtsActif);
+                            attributionPtsViewBean.retrieve();
+
+                            // initialisation additionel avant récupération des masses
+                            attributionPtsViewBean._getAffilieForAttribution();
+
+                            // si la masse est supérieur au minimum on affiche la date
+                            if (attributionPtsViewBean.isMasseSalarialeSuperieurMin()) {
+                                isAfficheDateProchainControle = false;
                             }
+                        }
 
-                            if ((i_anneeDateFin != 0) && (i_anneeControle != 0)) {
-                                dateProchainControle = "01.01." + i_anneeDateDebut + " - 31.12." + i_anneeDateFin
-                                        + " / " + i_anneeControle;
+                        if (isAfficheDateProchainControle) {
+                            if (JadeStringUtil.isBlankOrZero(ce.getDateEffective())) {
+                                int anneeControle = new JADate(ce.getDatePrevue()).getYear();
+                                dateProchainControle = ce.getDateDebutControle() + " - " + ce.getDateFinControle() + " / "
+                                        + anneeControle;
                             } else {
-                                // dateProchainControle = "Erreur recherche prochain contrôle";
+                                int i_anneeDateDebut = new JADate(ce.getDateFinControle()).getYear() + 1;
+                                int i_anneeDateFin = 0;
+                                int i_anneeControle = 0;
+
+                                CECouvertureManager ceCouvertureManager = new CECouvertureManager();
+                                ceCouvertureManager.setSession(userSession);
+                                ceCouvertureManager.setIsActif(true);
+                                ceCouvertureManager.setForIdAffilie(ce.getAffiliationId());
+                                ceCouvertureManager.find();
+
+                                if (ceCouvertureManager.size() > 0) {
+                                    CECouverture couverture = (CECouverture) ceCouvertureManager.getEntity(0);
+                                    i_anneeDateFin = Integer.parseInt(couverture.getAnnee());
+                                    i_anneeControle = Integer.parseInt(couverture.getAnnee()) + 1;
+                                }
+
+                                if ((i_anneeDateFin != 0) && (i_anneeControle != 0)) {
+                                    dateProchainControle = "01.01." + i_anneeDateDebut + " - 31.12." + i_anneeDateFin
+                                            + " / " + i_anneeControle;
+                                } else {
+                                    // dateProchainControle = "Erreur recherche prochain contrôle";
+                                }
                             }
                         }
                     } catch (Exception e) {
@@ -112,9 +135,9 @@ public class CESummary implements ITISummarizable {
                     s.append("<td>");
                     if (!JadeStringUtil.isBlank(dateProchainControle)) {
                         String prochainLibelle = userSession.getLabel("VG_CE_TEXT_PROCHAIN");
-                        if (hasRightGestionAttribution && !JadeStringUtil.isBlankOrZero(idControle)) {
+                        if (hasRightGestionAttribution && !JadeStringUtil.isBlankOrZero(idAttributionPtsActif)) {
                             prochainLibelle = "<a href='#' onclick=\"callLocalUrl('/hercule?userAction=hercule.controleEmployeur.gestionAttributionPts.afficher&selectedId="
-                                    + idControle + "')\">" + userSession.getLabel("VG_CE_TEXT_PROCHAIN") + "</a>";
+                                    + idAttributionPtsActif + "')\">" + userSession.getLabel("VG_CE_TEXT_PROCHAIN") + "</a>";
                         }
                         s.append(prochainLibelle);
                         s.append(" : ");
