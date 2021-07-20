@@ -181,7 +181,7 @@ public class CAInscriptionEBill extends BEntity implements Serializable {
     public String getChampNumeroAffilie() {
         if (numeroAffilie.isEmpty()) {
             String numero = StringUtils.EMPTY;
-            if (Objects.nonNull(numRefBVR) && !StringUtils.equals(numRefBVR.substring(0, 2), AbstractReference.IDENTIFIANT_REF_IDCOMPTEANNEXE)) {
+            if (StringUtils.isNotEmpty(numRefBVR) && !StringUtils.equals(numRefBVR.substring(0, 2), AbstractReference.IDENTIFIANT_REF_IDCOMPTEANNEXE)) {
                 try {
                     CAApplication application = (CAApplication) GlobazServer.getCurrentSystem().getApplication(CAApplication.DEFAULT_APPLICATION_OSIRIS);
                     IFormatData affilieFormater = application.getAffileFormater();
