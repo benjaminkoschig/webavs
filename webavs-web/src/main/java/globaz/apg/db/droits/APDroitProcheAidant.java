@@ -156,7 +156,8 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
                                        .append(" where schema.APDROIP.VAIDRO = ?)", this.getIdDroit())
                                        .append(" and schema.APDROIP.VATETA in(?)", etatsDroit)
                                        .append(" and schema.APDROITPROCHEAIDANT.CAREEVENTID = ?", careLeaveEventID)
-                                       .append(" and (schema.APDROIP.VAIPAR is null or schema.APDROIP.VAIPAR = 0")
+
+                                       .append(" and ((schema.APDROIP.VAIPAR is null or schema.APDROIP.VAIPAR = 0")
                                        .append(" and 0 = (select count(child.VAIDRO) as nb")
                                        .append(" from schema.APDROIP as child")
                                        .append(" where child.VAIPAR = schema.APDROIP.VAIDRO")
@@ -165,7 +166,7 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
                                        .append(" and schema.APDROIP.VAIDRO = (select max(child.VAIDRO)")
                                        .append(" from schema.APDROIP as child")
                                        .append(" where child.VAIPAR = schema.APDROIP.VAIPAR")
-                                       .append(" and child.VATETA in (?)))", etatsDroit);
+                                       .append(" and child.VATETA in (?))))", etatsDroit);
         if (filtrerPeriodePlusAnciennne) {
             sqlWriter.append("and schema.APPERIP.VCDFIN <= (select max(periodeMax.VCDFIN)")
                      .append("                                 from schema.APDROIP as currentDroit")
