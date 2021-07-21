@@ -1,6 +1,5 @@
 package globaz.hercule.mappingXmlml;
 
-import globaz.draco.db.declaration.DSDeclarationViewBean;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JADate;
@@ -17,7 +16,6 @@ import globaz.hercule.db.reviseur.CEReviseur;
 import globaz.hercule.db.reviseur.CEReviseurManager;
 import globaz.hercule.exception.HerculeException;
 import globaz.hercule.process.CEListeControlesAEffectuerProcess;
-import globaz.hercule.service.CEAttributionPtsService;
 import globaz.hercule.service.CEControleEmployeurService;
 import globaz.hercule.utils.CEExcelmlUtils;
 import globaz.hercule.utils.CEUtils;
@@ -437,46 +435,29 @@ public class CEXmlmlMappingControlesAEffectuer {
                 container.put(ICEListeColumns.CORRECTION,
                         processParent.getSession().getLabel("LISTE_CONTROLE_EFFECTUER_NON"));
             }
-            // Rercherche de l'attribution active en fonction du numéro d'affilié
-            CEAttributionPts attributionPtsActif = CEUtils.rechercheAttributionPts(dernierControle.getNumAffilie(),
+            // On récupère l'attribution des points
+            CEAttributionPts attribution = CEUtils.rechercheAttributionPts(dernierControle.getNumAffilie(),
                     dernierControle.getDateDebutControle(), dernierControle.getDateFinControle(),
                     processParent.getSession());
-
-            if (attributionPtsActif != null) {
-
-                // Recherche la déclaration de salaires liée au contrôle
-                DSDeclarationViewBean declaration = CEAttributionPtsService.chercheDeclarationDeSalaireControleEmployeurAvecIdControle(dernierControle.getId(), processParent.getSession());
-
-                // Utilise la masse AVS trouvée sur la déclaration de salaires
-                if (declaration != null) {
-                    if (Float.valueOf(declaration.getMasseSalTotalWhitoutFormat()).floatValue() > 0.0) {
-                        container.put(ICEListeColumns.MASSE_AVS, declaration.getMasseSalTotalWhitoutFormat());
-                        container.put(ICEListeColumns.MASSE_AVS_NEG, "0.0");
-                    } else {
-                        container.put(ICEListeColumns.MASSE_AVS_NEG, declaration.getMasseSalTotalWhitoutFormat());
-                        container.put(ICEListeColumns.MASSE_AVS, "0.0");
-                    }
-                // Utilise la masse trouvée sur l'attribution /!\ pour l'instant tout le temps à 0.00
+            if (attribution != null) {
+                if (Float.valueOf(attribution.getMasseAvs()).floatValue() > 0.0) {
+                    container.put(ICEListeColumns.MASSE_AVS, attribution.getMasseAvs());
+                    container.put(ICEListeColumns.MASSE_AVS_NEG, "0.0");
                 } else {
-                    if (Float.valueOf(attributionPtsActif.getMasseAvs()).floatValue() > 0.0) {
-                        container.put(ICEListeColumns.MASSE_AVS, attributionPtsActif.getMasseAvs());
-                        container.put(ICEListeColumns.MASSE_AVS_NEG, "0.0");
-                    } else {
-                        container.put(ICEListeColumns.MASSE_AVS_NEG, attributionPtsActif.getMasseAvs());
-                        container.put(ICEListeColumns.MASSE_AVS, "0.0");
-                    }
+                    container.put(ICEListeColumns.MASSE_AVS_NEG, attribution.getMasseAvs());
+                    container.put(ICEListeColumns.MASSE_AVS, "0.0");
                 }
                 int note1 = Integer.valueOf(
-                        processParent.getSession().getCodeLibelle(attributionPtsActif.getDerniereRevision()).substring(0, 1))
+                        processParent.getSession().getCodeLibelle(attribution.getDerniereRevision()).substring(0, 1))
                         .intValue();
                 int note2 = Integer.valueOf(
-                        processParent.getSession().getCodeLibelle(attributionPtsActif.getQualiteRH()).substring(0, 1))
+                        processParent.getSession().getCodeLibelle(attribution.getQualiteRH()).substring(0, 1))
                         .intValue();
                 int note3 = Integer.valueOf(
-                        processParent.getSession().getCodeLibelle(attributionPtsActif.getCollaboration()).substring(0, 1))
+                        processParent.getSession().getCodeLibelle(attribution.getCollaboration()).substring(0, 1))
                         .intValue();
                 int note4 = Integer.valueOf(
-                        processParent.getSession().getCodeLibelle(attributionPtsActif.getCriteresEntreprise()).substring(0, 1))
+                        processParent.getSession().getCodeLibelle(attribution.getCriteresEntreprise()).substring(0, 1))
                         .intValue();
                 int total = note1 + note2 + note3 + note4;
 

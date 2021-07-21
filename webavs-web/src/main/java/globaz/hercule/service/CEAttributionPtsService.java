@@ -1,8 +1,5 @@
 package globaz.hercule.service;
 
-import globaz.draco.db.declaration.DSDeclarationListViewBean;
-import globaz.draco.db.declaration.DSDeclarationViewBean;
-import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.hercule.db.controleEmployeur.CEAttributionPts;
@@ -21,7 +18,7 @@ public class CEAttributionPtsService {
 
     /**
      * Permet de remplir les champs de l'entité avec ceux du viewBean
-     *
+     * 
      * @param attrPts
      * @param viewBean
      * @return
@@ -38,7 +35,6 @@ public class CEAttributionPtsService {
         attrPts.setCollaborationCom(viewBean.getCollaborationCom());
         attrPts.setCriteresEntreprise(viewBean.getCriteresEntreprise());
         attrPts.setCriteresEntrepriseCom(viewBean.getCriteresEntrepriseCom());
-        //attrPts.setMasseAvs(viewBean._getMasseSalariale()); // TODO ESVE CONTROLE EMPLOYEUR MASSE SALARIALE SETTER
         attrPts.setCommentaires(viewBean.getCommentaires());
         attrPts.setNbrePoints(viewBean.getNbrePoints());
         attrPts.setLastUser(viewBean.getLastUser());
@@ -52,41 +48,8 @@ public class CEAttributionPtsService {
     }
 
     /**
-     * Cherche la déclaration de salaire de type employeur liée au contrôle.
-     *
-     * @param idControle
-     * @param session
-     * @return la déclaration de salaire
-     */
-    public static DSDeclarationViewBean chercheDeclarationDeSalaireControleEmployeurAvecIdControle(String idControle, BSession session) throws HerculeException {
-        try {
-            DSDeclarationListViewBean declarationManager = new DSDeclarationListViewBean();
-            declarationManager.setSession(session);
-            declarationManager.setForTypeDeclaration(DSDeclarationViewBean.CS_CONTROLE_EMPLOYEUR);
-            declarationManager.setForIdControlEmployeur(idControle);
-            declarationManager.find(BManager.SIZE_NOLIMIT);
-
-            // Si on trouve plus qu'une déclaration de salaires liées au contrôle on retourne null
-            if (declarationManager.size() > 0) {
-                DSDeclarationViewBean firstDeclaration = (DSDeclarationViewBean) declarationManager.getFirstEntity();
-                DSDeclarationViewBean declaration = new DSDeclarationViewBean();
-                declaration.setSession(session);
-                declaration.setIdDeclaration(firstDeclaration.getIdDeclaration());
-                declaration.retrieve();
-                return declaration;
-            }
-
-        } catch (Exception exception) {
-            throw new HerculeException("Technical exception, unabled to retrieve declaration point (idControle="
-                    + idControle, exception);
-        }
-
-        return null;
-    }
-
-    /**
      * Permet de remplir les champs du viewBean avec ceux de l'entité
-     *
+     * 
      * @param attrPts
      * @param viewBean
      * @return
@@ -148,38 +111,14 @@ public class CEAttributionPtsService {
 
     /**
      * Permet de récupérer l'id de l'évaluation des points d'un controle
-     *
+     * 
      * @param session
-     * @param numAffilie
-     * @param dateDebut
-     * @param dateFin
+     * @param idControle
      * @return
      * @throws HerculeException
      */
     public static String findIdAttributionPtsActifForControle(final BSession session, final String numAffilie,
-                                                                      final String dateDebut, final String dateFin) throws HerculeException {
-
-        CEAttributionPts attributionPtsActif = findAttributionPtsActifForControle(session, numAffilie, dateDebut, dateFin);
-
-        if (attributionPtsActif != null) {
-            return attributionPtsActif.getIdAttributionPts();
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Permet de récupérer l'évaluation des points d'un controle
-     * 
-     * @param session
-     * @param numAffilie
-     * @param dateDebut
-     * @param dateFin
-     * @return
-     * @throws HerculeException
-     */
-    public static CEAttributionPts findAttributionPtsActifForControle(final BSession session, final String numAffilie,
-                                                                      final String dateDebut, final String dateFin) throws HerculeException {
+            final String dateDebut, final String dateFin) throws HerculeException {
 
         if (session == null) {
             throw new HerculeException("Unabled to find id attribution point. session is null");
@@ -197,7 +136,7 @@ public class CEAttributionPtsService {
             throw new HerculeException("Unabled to find id attribution point, numAffilie is null or empty ");
         }
 
-        CEAttributionPts attributionPts = null;
+        String idAttributionPts = null;
 
         CEAttributionPtsManager manager = new CEAttributionPtsManager();
         manager.setSession(session);
@@ -210,7 +149,8 @@ public class CEAttributionPtsService {
             manager.find();
 
             if (!manager.isEmpty()) {
-                attributionPts = (CEAttributionPts) manager.getFirstEntity();
+                CEAttributionPts attrpts = (CEAttributionPts) manager.getFirstEntity();
+                idAttributionPts = attrpts.getIdAttributionPts();
             }
 
         } catch (Exception e) {
@@ -218,7 +158,7 @@ public class CEAttributionPtsService {
                     + "/dateFin=" + dateFin + "/numAffilie=" + numAffilie + ")", e);
         }
 
-        return attributionPts;
+        return idAttributionPts;
     }
 
     /**

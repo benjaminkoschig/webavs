@@ -5,7 +5,10 @@ import globaz.framework.util.FWMemoryLog;
 import globaz.framework.util.FWMessage;
 import globaz.globall.api.BISession;
 import globaz.globall.api.GlobazSystem;
-import globaz.globall.db.*;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BStatement;
+import globaz.globall.db.BTransaction;
+import globaz.globall.db.GlobazServer;
 import globaz.globall.format.IFormatData;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.parameters.FWParametersSystemCodeManager;
@@ -13,9 +16,10 @@ import globaz.globall.util.JACalendar;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
 import globaz.hercule.application.CEApplication;
-import globaz.hercule.db.controleEmployeur.*;
+import globaz.hercule.db.controleEmployeur.CEAttributionPts;
+import globaz.hercule.db.controleEmployeur.CEControleEmployeur;
+import globaz.hercule.db.controleEmployeur.CEControleEmployeurManager;
 import globaz.hercule.service.CEAffiliationService;
-import globaz.hercule.service.CEAttributionPtsService;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.log.JadeLogger;
@@ -56,10 +60,8 @@ public class CEUtils {
 
     /**
      * Permet de créer une partie informations pour globaz afin de mieux debugger le process en cas de probleme
-     *
-     * @param log
-     * @param _message
-     * @param source
+     * 
+     * @param message
      */
     public static void addMailInformationsError(FWMemoryLog log, String _message, String source) {
 
@@ -221,7 +223,7 @@ public class CEUtils {
     /**
      * Method getFormatAffilie.
      * 
-     * @param bSession
+     * @param session
      * @return IFormatData
      */
     public static IFormatData getFormatAffilie(BSession bSession) {
@@ -326,7 +328,7 @@ public class CEUtils {
      * 5% ayant une masse pour l'année-1 entre 100'000 inclus et 150'000.-
      * 
      * @param transaction
-     * @param annee
+     * @param anneeCptr
      * @param session
      * @return le 5% des employeurs ayant une masse pour l'année-1 entre 100000 et 150000.-
      */
@@ -494,27 +496,18 @@ public class CEUtils {
     public static CEAttributionPts rechercheAttributionPts(String numAffilie, String periodeDebut, String periodeFin,
             BSession session) throws Exception {
 
-       // Rercherche de l'attribution active en fonction du numéro d'affilié
-       CEAttributionPts attributionPtsActif = CEAttributionPtsService.findAttributionPtsActifForControle(session,
-                                numAffilie, periodeDebut, periodeFin);
+        CEAttributionPts attribution = new CEAttributionPts();
+        attribution.setSession(session);
+        attribution.setNumAffilie(numAffilie);
+        attribution.setPeriodeDebut(periodeDebut);
+        attribution.setPeriodeFin(periodeFin);
+        attribution.setAlternateKey(CEAttributionPts.AK_NUMAFFILIE);
+        attribution.retrieve();
 
-        if (attributionPtsActif != null) {
-            return attributionPtsActif;
+        if (attribution.isNew()) {
+            return null;
         } else {
-            // Rercherche de l'attribution active ou non en fonction du numéro d'affilié
-            CEAttributionPts attribution = new CEAttributionPts();
-            attribution.setSession(session);
-            attribution.setNumAffilie(numAffilie);
-            attribution.setPeriodeDebut(periodeDebut);
-            attribution.setPeriodeFin(periodeFin);
-            attribution.setAlternateKey(CEAttributionPts.AK_NUMAFFILIE);
-            attribution.retrieve();
-
-            if (attribution.isNew()) {
-                return null;
-            } else {
-                return attribution;
-            }
+            return attribution;
         }
     }
 
