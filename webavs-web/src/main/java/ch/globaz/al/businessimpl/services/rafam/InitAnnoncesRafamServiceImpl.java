@@ -45,6 +45,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.pyxis.util.CommonNSSFormater;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -1189,9 +1190,16 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
            }
         }
 
-        String canton = droitTrouve != null && !JadeStringUtil.isEmpty((droitTrouve).getTarif())
-                ? JadeCodesSystemsUtil.getCode((droitTrouve).getTarif())
-                : getCantonBaseLegale(dossier, droit);
+        String canton;
+        if (droitTrouve != null && !JadeStringUtil.isEmpty((droitTrouve).getTarif())) {
+            canton = JadeCodesSystemsUtil.getCode((droitTrouve).getTarif());
+        } else if (StringUtils.isNotEmpty(dossier.getDossierModel().getTarifForce())
+                && !StringUtils.equals("0", dossier.getDossierModel().getTarifForce())
+                && StringUtils.isNotEmpty(dossier.getDossierModel().getCantonImposition())) {
+            canton = JadeCodesSystemsUtil.getCode(dossier.getDossierModel().getCantonImposition());
+        } else {
+            canton = getCantonBaseLegale(dossier, droit);
+        }
 
         return canton;
     }
