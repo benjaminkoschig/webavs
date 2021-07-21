@@ -801,13 +801,15 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     String delaiCadreDebut = ((APDroitProcheAidant) droit).resolveDateDebutDelaiCadre()
                             .map(Dates::formatSwiss)
                             .orElse("");
-                    String nbJourRestant = Integer.toString(((APDroitProcheAidant) droit).calculerNbJourDisponibleSansPeriodePlusRecente());
-                    String delaiCadre = document.getTextes(3).getTexte(50).getDescription();
+                    if(!JadeStringUtil.isEmpty(delaiCadreDebut)) {
+                        String nbJourRestant = Integer.toString(((APDroitProcheAidant) droit).calculerNbJourDisponibleSansPeriodePlusRecente());
+                        String delaiCadre = document.getTextes(3).getTexte(50).getDescription();
 
-                    delaiCadre = PRStringUtils.replaceString(delaiCadre, "{dateDebut}", delaiCadreDebut);
-                    delaiCadre = PRStringUtils.replaceString(delaiCadre, "{dateFin}", delaiCadreFin);
-                    delaiCadre = PRStringUtils.replaceString(delaiCadre, "{nbJourDispo}", nbJourRestant);
-                    buffer.append(delaiCadre).append("\n\n");;
+                        delaiCadre = PRStringUtils.replaceString(delaiCadre, "{dateDebut}", delaiCadreDebut);
+                        delaiCadre = PRStringUtils.replaceString(delaiCadre, "{dateFin}", delaiCadreFin);
+                        delaiCadre = PRStringUtils.replaceString(delaiCadre, "{nbJourDispo}", nbJourRestant);
+                        buffer.append(delaiCadre).append("\n\n");;
+                    }
                 }
                 // TODO ESVE PAT 4.5.
                 // Pour paternité et proche aidant, si Assuré indépendant, alors il faut ajouter ce texte sur les décisions.
