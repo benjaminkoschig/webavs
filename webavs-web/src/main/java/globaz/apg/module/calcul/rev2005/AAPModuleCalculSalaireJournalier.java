@@ -84,9 +84,9 @@ public abstract class AAPModuleCalculSalaireJournalier {
             if(listSitProfHelper.size() > 1) {
                 for (Iterator<APSituationProfessionnelleHelper> iter = listSitProfHelper.iterator(); iter.hasNext();) {
                     APSituationProfessionnelleHelper element = iter.next();
-                    bTL = bTL.add(element.getRevenuMoyenDeterminantSansArrondi().getBigDecimalValue());
-                    TL.add(element.getRevenuMoyenDeterminantSansArrondi());
+                    TL.add(element.getSalaireJournalier());
                 }
+                TL.add(new FWCurrency(0.99999, 5));
                 bTL = TL.getBigDecimalValue();
             } else {
                 APSituationProfessionnelleHelper element = listSitProfHelper.get(0);
