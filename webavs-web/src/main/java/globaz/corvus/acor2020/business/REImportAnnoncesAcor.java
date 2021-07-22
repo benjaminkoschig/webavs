@@ -623,10 +623,11 @@ public class REImportAnnoncesAcor {
 
                         /*
                          * YYNDUR (BigDecimal) : si null -> valeur vide sinon valeur a.b -> valeur entière de a + (si b
-                         * < 10 = 0+b else b) en résumé : 1.10 -> 110, 1.1 -> 101, 2.0 -> 200
+                         * < 10 = 0+b else b) en résumé : 1.1 -> 110, 1.01 -> 101, 2.0 -> 200
                          */
                         tmpVal1 = rentenaufschubType.getAufschubsdauer();
                         if (tmpVal1 != null) {
+                            tmpVal1 = tmpVal1.setScale(2);
                             String stringValue = tmpVal1.toString();
                             if (stringValue.contains(".")) {
                                 String[] values = stringValue.split("\\.");

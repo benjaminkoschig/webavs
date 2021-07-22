@@ -502,14 +502,8 @@ public class REAcor2020Parser {
      * @return
      */
     private static REBasesCalcul importBaseCalcul(final BSession session, FCalcul.Evenement.BasesCalcul baseCalcul, FCalcul.Evenement.BasesCalcul.Decision.Prestation premierePrestation, FCalcul fCalcul) {
-//        String droitApplique = REACORAbstractFlatFileParser.getField(line, fields, "DROIT_APPLIQUE");
-        String droitApplique = Objects.toString(premierePrestation.getRente().getGenre(), StringUtils.EMPTY);
-        REBasesCalcul bc;
-        if (session.getCode(IREDemandeRente.CS_REVISION_10EME_REVISION).equals(droitApplique)) {
-            bc = new REBasesCalculDixiemeRevision();
-        } else {
-            bc = new REBasesCalculNeuviemeRevision();
-        }
+
+        REBasesCalcul bc = new REBasesCalculDixiemeRevision();
         bc.setSession(session);
 
 //        String nssTiersBaseCalcul = REACORAbstractFlatFileParser.getField(line, fields, "NSS");
@@ -522,12 +516,11 @@ public class REAcor2020Parser {
             if (tiersBaseCalcul != null) {
                 bc.setIdTiersBaseCalcul(tiersBaseCalcul.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
             }
-
         } catch (Exception e) {
         }
 
 //        bc.setDroitApplique(REACORAbstractFlatFileParser.getField(line, fields, "DROIT_APPLIQUE"));  $b37
-        bc.setDroitApplique(droitApplique);
+        bc.setDroitApplique(IREDemandeRente.REVISION_10EME_REVISION);
 
         if (Objects.nonNull(baseCalcul.getBaseRam())) {
             if (Objects.nonNull(baseCalcul.getBaseRam().getBass())) {
@@ -541,6 +534,8 @@ public class REAcor2020Parser {
             if (Objects.nonNull(baseCalcul.getBaseRam().getBtrans())) {
                 //        bc.setAnneeBonifTransitoire(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_BONIF_TRANSITOIRE"));
                 bc.setAnneeBonifTransitoire(Objects.toString(baseCalcul.getBaseRam().getBtrans().getAnDecimal(), StringUtils.EMPTY));
+            } else {
+                bc.setAnneeBonifTransitoire("0.0");
             }
             if (Objects.nonNull(baseCalcul.getBaseRam().getRevLucr())) {
                 //        bc.setRevenuSplitte(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields, "REVENU_SPLITTE"))); $b38
@@ -557,6 +552,7 @@ public class REAcor2020Parser {
         //        bc.setAnneeTraitement(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_TRAITEMENT")); $b48
         bc.setAnneeTraitement(Objects.toString(baseCalcul.getAnRam(), StringUtils.EMPTY));
 
+        bc.setCodeOfficeAi("000");
         if (Objects.nonNull(baseCalcul.getInvalidite())) {
             //        bc.setCleInfirmiteAyantDroit(REACORAbstractFlatFileParser.getField(line, fields, "CLE_INFIRM_AYANT_DROIT")); $b22
             bc.setCleInfirmiteAyantDroit(Objects.toString(baseCalcul.getInvalidite().getGenreInvalidite(), StringUtils.EMPTY));
@@ -579,7 +575,7 @@ public class REAcor2020Parser {
         if (Objects.nonNull(baseCalcul.getBaseEchelle())) {
             //        bc.setAnneeCotiClasseAge(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_COTI_CLASSE_AGE")); $b9
             bc.setAnneeCotiClasseAge(Objects.toString(baseCalcul.getBaseEchelle().getAnCotClss(), StringUtils.EMPTY));
-// TODO : si on a une base échelle, on va chercher l'année de niveau dedans.
+
             bc.setAnneeDeNiveau(ParserUtils.formatAAAAtoAA(Objects.toString(baseCalcul.getBaseEchelle().getAnNiveau(), StringUtils.EMPTY)));
             for (BaseEchelle.DCot eachDCot : baseCalcul.getBaseEchelle().getDCot()) {
                 switch (eachDCot.getType()) {
@@ -606,17 +602,16 @@ public class REAcor2020Parser {
                         periodeAssEtrAp73.append(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getAp73().getMois()));
                         bc.setPeriodeAssEtrangerDes73(periodeAssEtrAp73.toString());
                         break;
-                    // TODO : identifier s'il faut plutôt utiliser le type 9 ou le type 10
                     // total
                     case 9:
 //        bc.setDureeCotiAvant73(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COTI_AV_73")); $b6
-                        StringBuilder dureeCotiAv37 = new StringBuilder(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getAv73().getAnnees()));
-                        dureeCotiAv37.append(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getAv73().getMois()));
-                        bc.setDureeCotiAvant73(dureeCotiAv37.toString());
+                        StringBuilder dureeCotiAv73 = new StringBuilder(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getAv73().getAnnees()));
+                        dureeCotiAv73.append(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getAv73().getMois()));
+                        bc.setDureeCotiAvant73(dureeCotiAv73.toString());
 //        bc.setDureeCotiDes73(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COTI_DES_73")); $b7
-                        StringBuilder dureeCotiAp37 = new StringBuilder(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getAp73().getAnnees()));
-                        dureeCotiAp37.append(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getAp73().getMois()));
-                        bc.setDureeCotiDes73(dureeCotiAp37.toString());
+                        StringBuilder dureeCotiAp73 = new StringBuilder(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getAp73().getAnnees()));
+                        dureeCotiAp73.append(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getAp73().getMois()));
+                        bc.setDureeCotiDes73(dureeCotiAp73.toString());
                         break;
                     default:
                         break;
@@ -633,52 +628,7 @@ public class REAcor2020Parser {
             bc.setPeriodeJeunesse(ParserUtils.formatMMtoAAxMM(fCalcul.getAnalysePeriodes().get(0).getJeunesseTot()));
         }
 
-        // TODO : valeur à 2390 dans le fichier plat --> valeur non retrouvée dans le json
-//        bc.setMontantMaxR10Ech44(REACORAbstractFlatFileParser.getField(line, fields, "MONTANT_MAX_R10_E44")); $b47
-        // TODO : valeur à 0009 dans le fichier plat
-//        bc.setPeriodeMariage(REACORAbstractFlatFileParser.getField(line, fields, "PERIODE_MARIAGE")); $b34
 
-        // TODO : champ non mappé : tous égaux à 0 dans l'exemple
-//        bc.setResultatComparatif(REACORAbstractFlatFileParser.getField(line, fields, "RESULTAT_COMPARAISON")); $b46
-//        bc.setTypeCalculComparatif(REACORAbstractFlatFileParser.getField(line, fields, "TYPE_CALCUL_COMPARATIF")); $b45
-//        bc.setIsPartageRevenuActuel(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields, "PARTAGE_REVENU"))); $b44
-
-        // TODO : $b4 - Revenu pris en compte non trouvé dans FCalcul --> en attente (égale à 0 dans l'exemple)
-//        bc.setRevenuPrisEnCompte(REACORAbstractFlatFileParser.getField(line, fields, "REVENU_PRIS_COMPTE")); $b4
-
-// TODO : aucun champ trouvé --> en attente nouvelle version pour gérer champs Neuvième Révision
-//
-//        bc.setLimiteRevenu(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields, "LIMITE_REVENU"))); $b16
-        // TODO : $b16 - Limite revenu non trouvé dans FCalcul --> cas de 9e révision : en attente
-//        bc.setLimiteRevenu(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields, "LIMITE_REVENU")));
-//        bc.setMinimuGaranti(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields, "MINIMUM_GARANTI"))); $b17
-        // TODO : $b17 - Minimum garanti non trouvé dans FCalcul --> cas de 9e révision : en attente
-//        bc.setMinimuGaranti(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields, "MINIMUM_GARANTI")));
-//
-//        if (bc instanceof REBasesCalculNeuviemeRevision) {
-//
-////            ((REBasesCalculNeuviemeRevision) bc).setBonificationTacheEducative(REACORAbstractFlatFileParser.getField(line, fields, "BONIF_TACHE_EDUCATIVE")); $b18
-//            ((REBasesCalculNeuviemeRevision) bc).setBonificationTacheEducative(REACORAbstractFlatFileParser.getField(line, fields, "BONIF_TACHE_EDUCATIVE"));
-//
-////            ((REBasesCalculNeuviemeRevision) bc).setNbrAnneeEducation(REACORAbstractFlatFileParser.getField(line, fields, "NOMBRE_ANNEE_EDUCATION")); $b19
-//            ((REBasesCalculNeuviemeRevision) bc).setNbrAnneeEducation(REACORAbstractFlatFileParser.getField(line, fields, "NOMBRE_ANNEE_EDUCATION"));
-//
-////            ((REBasesCalculNeuviemeRevision) bc).setCodeOfficeAiEpouse(REACORAbstractFlatFileParser.getField(line, fields, "OFFICE_AI_COMPETANT_EPOUSE")); $b27
-//            ((REBasesCalculNeuviemeRevision) bc).setCodeOfficeAiEpouse(REACORAbstractFlatFileParser.getField(line, fields, "OFFICE_AI_COMPETANT_EPOUSE"));
-//
-////            ((REBasesCalculNeuviemeRevision) bc).setDegreInvaliditeEpouse(REACORAbstractFlatFileParser.getField(line, fields, "DEGRE_INVALIDITE_EPOUSE")); $b28
-//            ((REBasesCalculNeuviemeRevision) bc).setDegreInvaliditeEpouse(REACORAbstractFlatFileParser.getField(line, fields, "DEGRE_INVALIDITE_EPOUSE"));
-//
-////            ((REBasesCalculNeuviemeRevision) bc).setCleInfirmiteEpouse(REACORAbstractFlatFileParser.getField(line, fields, "CLE_INFIRM_EPOUSE")); $b29
-//            ((REBasesCalculNeuviemeRevision) bc).setCleInfirmiteEpouse(REACORAbstractFlatFileParser.getField(line, fields, "CLE_INFIRM_EPOUSE"));
-//
-////            ((REBasesCalculNeuviemeRevision) bc).setSurvenanceEvenementAssureEpouse(PRDateFormater.convertDate_MMAA_to_AAAAMM(REACORAbstractFlatFileParser.getField(line, fields, "SURVENANCE_EVEN_ASSURE_EPOUSE"))); $b30
-//            ((REBasesCalculNeuviemeRevision) bc).setSurvenanceEvenementAssureEpouse(PRDateFormater.convertDate_MMAA_to_AAAAMM(REACORAbstractFlatFileParser.getField(line, fields, "SURVENANCE_EVEN_ASSURE_EPOUSE")));
-//
-////            ((REBasesCalculNeuviemeRevision) bc).setInvaliditePrecoceEpouse(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields, "INVALIDITE_PRECOCE_EPOUSE"))); $b31
-//            ((REBasesCalculNeuviemeRevision) bc).setInvaliditePrecoceEpouse(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields, "INVALIDITE_PRECOCE_EPOUSE")));
-//
-//    }
         return bc;
     }
 
@@ -968,8 +918,6 @@ public class REAcor2020Parser {
 
         // ra.setCodeRefugie(REACORAbstractFlatFileParser.getField(line, fields, "CODE_REFUGIE")); $r9 ou $r19 ??
 
-        // TODO : champ à analyser -> tous égaux à 0 dans le fichier plat.
-        // ra.setMontantRenteOrdiRemplacee(REACORAbstractFlatFileParser.getField(line, fields, "MONTANT_RENTE_ORDINAIRE_REMPL")); $r13
         // TODO : champ non mappé -> égale à 0 dans le fichier plat.
         // ra.setCodeAuxilliaire(REACORAbstractFlatFileParser.getField(line, fields, "CODE_AUXILIAIRE")); $r6
 

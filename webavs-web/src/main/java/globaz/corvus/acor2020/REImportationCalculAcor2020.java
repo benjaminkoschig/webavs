@@ -747,43 +747,10 @@ public class REImportationCalculAcor2020 {
      */
     private Set<DemandeRente> demandesNonValidees(final Set<DemandeRente> demandes) {
         return demandes.stream().filter(eachDemande -> Objects.equals(EtatDemandeRente.AU_CALCUL, eachDemande.getEtat()) || Objects.equals(EtatDemandeRente.CALCULE, eachDemande.getEtat()) || Objects.equals(EtatDemandeRente.ENREGISTRE, eachDemande.getEtat())).collect(Collectors.toSet());
-
-//        Set<DemandeRente> demandesNonValidees = new HashSet<DemandeRente>();
-//        if (demandes != null) {
-//            for (DemandeRente uneDemande : demandes) {
-//                switch (uneDemande.getEtat()) {
-//                    case AU_CALCUL:
-//                    case CALCULE:
-//                    case ENREGISTRE:
-//                        demandesNonValidees.add(uneDemande);
-//                        break;
-//
-//                    default:
-//                        break;
-//                }
-//            }
-//        }
-//        return demandesNonValidees;
     }
 
     private Set<DemandeRente> demandesStandardsOuTransitoires(final Set<DemandeRente> demandes) {
         return demandes.stream().filter(eachDemande -> Objects.equals(TypeCalculDemandeRente.STANDARD, eachDemande.getTypeCalcul()) || Objects.equals(TypeCalculDemandeRente.TRANSITOIRE, eachDemande.getTypeCalcul())).collect(Collectors.toSet());
-
-//        Set<DemandeRente> demandesSantardsOuTransitoires = new HashSet<DemandeRente>();
-//
-//        for (DemandeRente uneDemande : demandes) {
-//            switch (uneDemande.getTypeCalcul()) {
-//                case STANDARD:
-//                case TRANSITOIRE:
-//                    demandesSantardsOuTransitoires.add(uneDemande);
-//                    break;
-//
-//                default:
-//                    break;
-//            }
-//        }
-//
-//        return demandesSantardsOuTransitoires;
     }
 
     /**

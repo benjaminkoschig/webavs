@@ -123,8 +123,8 @@ public class REExportationCalculAcor2020 {
             List<ISFMembreFamilleRequerant> membresCatEnfants = filterListMembresEnfants(membresFamille);
 
             inHost.getAssure().addAll(createListAssures(membresCatAssures));
-            inHost.getEnfant().addAll(createListEnfants(membresCatEnfants));
             inHost.getFamille().addAll(createListFamilles(membresCatConjoints, membresCatExConjointsConjoints));
+            inHost.getEnfant().addAll(createListEnfants(membresCatEnfants));
         } catch (Exception e) {
             LOG.error("Erreur lors de la construction du inHost.", e);
         }
@@ -234,7 +234,7 @@ public class REExportationCalculAcor2020 {
         assure.setNavs(getNssMembre(membre));
         assure.setNom(membre.getNom());
         assure.setPrenom(membre.getPrenom());
-        assure.setDateNaissance(getDateNaissanceMembreAssure(membre));
+        assure.setDateNaissance(ParserUtils.formatDate(membre.getDateNaissance(), DD_MM_YYYY_FORMAT));
         if (!JadeStringUtil.isBlankOrZero(membre.getDateDeces())) {
             assure.setDateDeces(ParserUtils.formatDate(membre.getDateDeces(), DD_MM_YYYY_FORMAT));
         }
@@ -1426,13 +1426,16 @@ public class REExportationCalculAcor2020 {
         enfant.setDomicile(getDomicile(membre.getCsCantonDomicile(), membre.getPays(), tiersRequerant));
         enfant.setRefugie(false);
         enfant.setSexe(PRACORConst.csSexeEnfantToAcor2020(membre.getCsSexe()));
-        if (!JadeStringUtil.isBlankOrZero(detail.getNoAvsPere())) {
-            enfant.setNavsPere(ParserUtils.formatNssToLong(detail.getNoAvsPere()));
+
+        String noAvsPere = nssBidon(detail.getNoAvsPere(), PRACORConst.CS_HOMME, detail.getNomPere() + detail.getPrenomPere(), true);
+        if (!JadeStringUtil.isBlankOrZero(noAvsPere)) {
+            enfant.setNavsPere(ParserUtils.formatNssToLong(noAvsPere));
         } else {
             enfant.setPereInconnu(true);
         }
-        if (!JadeStringUtil.isBlankOrZero(detail.getNoAvsMere())) {
-            enfant.setNavsMere(ParserUtils.formatNssToLong(detail.getNoAvsMere()));
+        String noAvsMere = nssBidon(detail.getNoAvsMere(), PRACORConst.CS_FEMME, detail.getNomMere() + detail.getPrenomMere(), true);
+        if (!JadeStringUtil.isBlankOrZero(noAvsMere)) {
+            enfant.setNavsMere(ParserUtils.formatNssToLong(noAvsMere));
         } else {
             enfant.setMereInconnue(true);
         }
@@ -1496,16 +1499,6 @@ public class REExportationCalculAcor2020 {
                     .getRelationAuRequerant().equals(ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT));
         }
         return ParserUtils.formatNssToLong(nss);
-    }
-
-    private XMLGregorianCalendar getDateNaissanceMembreAssure(ISFMembreFamilleRequerant membre) {
-        String dn;
-        if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU.equals(membre.getIdMembreFamille())) {
-            dn = "01.01.1970";
-        } else {
-            dn = membre.getDateNaissance();
-        }
-        return ParserUtils.formatDate(dn, DD_MM_YYYY_FORMAT);
     }
 
     private List<FamilleType> createListFamilles(List<ISFMembreFamilleRequerant> membresCatConjoints, List<ISFMembreFamilleRequerant> membresCatExConjointsConjoints) {
