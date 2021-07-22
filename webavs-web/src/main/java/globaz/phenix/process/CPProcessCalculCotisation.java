@@ -1181,7 +1181,7 @@ public final class CPProcessCalculCotisation extends BProcess {
                 // Si une décision avait déjà était prise pour l'année de la
                 // bonification
                 // revenuCI = -(Montant CI de l'ancienne décision -
-                // ((montantAnnuelAncienneDecision - montant de bonif) * 9,9))
+                // ((montantAnnuelAncienneDecision - montant de bonif) / (9,9/100)))
                 // Ex: Ancienne décision : cotiAnnuelle=2828 Fr. et revenu CI =
                 // 28000
                 // Montant bonification = 1009.25

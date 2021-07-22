@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Si entre le premier et le dernier jour de congé de paternité ou de congé de proche-aidant :
@@ -59,9 +60,7 @@ public class Rule418 extends Rule {
 
         String serviceType = champsAnnonce.getServiceType();
         setRuleData(champsAnnonce.getStartOfPeriod(), champsAnnonce.getEndOfPeriod(), champsAnnonce.getIdDroit(), champsAnnonce.getNumberOfDays());
-        APPeriodeAPG periodeAPGCalculed = new APPeriodeAPG();
-        periodeAPGCalculed.setDateDebutPeriode(startOfPeriod);
-        periodeAPGCalculed.setDateFinPeriode(endOfPeriod);
+        APPeriodeAPG periodeAPGCalculed = createPeriodeAPGCalculed(startOfPeriod, endOfPeriod, idDroit);
         String nss = champsAnnonce.getInsurant();
         if(!(serviceType.equals(APGenreServiceAPG.Maternite.getCodePourAnnonce()) || APGenreServiceAPG.isValidGenreServicePandemie(serviceType))) {
 
@@ -71,11 +70,11 @@ public class Rule418 extends Rule {
             // Si le droit à contrôler est un droit APG,
             // on récupère le 1er droit Paternité ou Proche aidant dont la période chevauche la période du droit APG.
             if (!serviceType.equals(APGenreServiceAPG.Paternite.getCodePourAnnonce()) && !serviceType.equals(APGenreServiceAPG.ProcheAidant.getCodePourAnnonce())) {
-                List<APDroitLAPGJointTiers> droitsPaternite = rechercherDroitPatPai(idDroit, nss, periodeAPGCalculed, etatIndesirable, IPRDemande.CS_TYPE_PATERNITE);
+                List<APDroitAvecParent> droitsPaternite = rechercherDroitPatPai(idDroit, nss, periodeAPGCalculed, etatIndesirable, IPRDemande.CS_TYPE_PATERNITE);
                 APPeriodeAPG periode = getPeriodeQuiChevauche(periodeAPGCalculed, droitsPaternite);
                 serviceType = APGenreServiceAPG.Paternite.getCodePourAnnonce();
                 if (periode == null) {
-                    List<APDroitLAPGJointTiers> droitsProcheAidant = rechercherDroitPatPai(idDroit, nss, periodeAPGCalculed, etatIndesirable, IPRDemande.CS_TYPE_PROCHE_AIDANT);
+                    List<APDroitAvecParent> droitsProcheAidant = rechercherDroitPatPai(idDroit, nss, periodeAPGCalculed, etatIndesirable, IPRDemande.CS_TYPE_PROCHE_AIDANT);
                     periode = getPeriodeQuiChevauche(periodeAPGCalculed, droitsProcheAidant);
                     serviceType = APGenreServiceAPG.ProcheAidant.getCodePourAnnonce();
                 }
@@ -94,8 +93,7 @@ public class Rule418 extends Rule {
             int nombreJoursProcheAidant = serviceType.equals(APGenreServiceAPG.ProcheAidant.getCodePourAnnonce()) ? numberOfDays : 0;
             Date dateDebut = JadeDateUtil.getGlobazDate(startOfPeriod);
             Date dateFin = JadeDateUtil.getGlobazDate(endOfPeriod);
-            periodeAPGCalculed.setDateDebutPeriode(startOfPeriod);
-            periodeAPGCalculed.setDateFinPeriode(endOfPeriod);
+            periodeAPGCalculed = createPeriodeAPGCalculed(startOfPeriod,endOfPeriod,idDroit);
             validNotEmpty(nss, "NSS");
             testDateNotEmptyAndValid(startOfPeriod, "startOfPeriod");
             testDateNotEmptyAndValid(endOfPeriod, "endOfPeriod");
@@ -111,6 +109,14 @@ public class Rule418 extends Rule {
         }
 
         return true;
+    }
+
+    private APPeriodeAPG createPeriodeAPGCalculed(String start, String end, String idDroit) {
+        APPeriodeAPG periode = new APPeriodeAPG();
+        periode.setDateDebutPeriode(start);
+        periode.setDateFinPeriode(end);
+        periode.setIdDroit(idDroit);
+        return periode;
     }
 
     private void setRuleData(String start, String end, String id, String days) {
@@ -172,8 +178,8 @@ public class Rule418 extends Rule {
      *
      * @return La 1ère période qui chevauche la période fournie.
      */
-    private APPeriodeAPG getPeriodeQuiChevauche(APPeriodeAPG periodeAPG, List<APDroitLAPGJointTiers> droits) {
-        for (APDroitLAPGJointTiers droitTiers : droits) {
+    private APPeriodeAPG getPeriodeQuiChevauche(APPeriodeAPG periodeAPG, List<APDroitAvecParent> droits) {
+        for (APDroitAvecParent droitTiers : droits) {
             APPeriodeAPGManager periodeAPGManager = new APPeriodeAPGManager();
             periodeAPGManager.setSession(this.getSession());
             periodeAPGManager.setForIdDroit(droitTiers.getIdDroit());
@@ -212,7 +218,7 @@ public class Rule418 extends Rule {
         return getTotalNombreJoursAAjouter(rechercherDroitPatPai(idDroit, nss, periodeAPGCalculed, etatIndesirable, IPRDemande.CS_TYPE_PROCHE_AIDANT), periodeAPGCalculed);
     }
 
-    private List<APDroitLAPGJointTiers> rechercherDroitPatPai(String idDroit,
+    private List<APDroitAvecParent> rechercherDroitPatPai(String idDroit,
                                                               String nss,
                                                               APPeriodeAPG periodeAPGCalculed,
                                                               List<String> etatIndesirable,
@@ -223,16 +229,27 @@ public class Rule418 extends Rule {
         apDroitLAPGJointTiersManager.setForEtatDroitNotIn(etatIndesirable);
         apDroitLAPGJointTiersManager.setForDroitContenuDansDateDebut(periodeAPGCalculed.getDateDebutPeriode());
         apDroitLAPGJointTiersManager.setForDroitContenuDansDateFin(periodeAPGCalculed.getDateFinPeriode());
-        if(!StringUtils.EMPTY.equals(idDroit)) {
-            apDroitLAPGJointTiersManager.setForIdDroitNotIn(Collections.singletonList(idDroit));
-        }
+//        if(!StringUtils.EMPTY.equals(idDroit)) {
+//            apDroitLAPGJointTiersManager.setForIdDroitNotIn(Collections.singletonList(idDroit));
+//
+//        }
         apDroitLAPGJointTiersManager.setForCsTypeDemandeIn(Collections.singletonList(typeDroit));
         Exceptions.checkedToUnChecked(() -> apDroitLAPGJointTiersManager.find(BManager.SIZE_NOLIMIT));
-        return skipDroitParent(apDroitLAPGJointTiersManager.getContainerAsList());
+        List<APDroitAvecParent> droitsTries = null;
+        try {
+            apDroitLAPGJointTiersManager.find(BManager.SIZE_NOLIMIT);
+            List<APDroitAvecParent> tousLesDroits = apDroitLAPGJointTiersManager.toList();
+            droitsTries = skipDroitParent(tousLesDroits);
+        } catch (Exception e) {
+            throwRuleExecutionException(e);
+        }
+        return droitsTries;
     }
 
-    private Integer getTotalNombreJoursAAjouter(List<APDroitLAPGJointTiers> droits, APPeriodeAPG periodeAPGCalculed){
-        return droits.stream()
+    private Integer getTotalNombreJoursAAjouter(List<APDroitAvecParent> droits, APPeriodeAPG periodeAPGCalculed){
+
+        List<APDroitAvecParent> droitsFiltrer = droits.stream().filter(droit -> !droit.getIdDroit().equals(periodeAPGCalculed.getIdDroit())).collect(Collectors.toList());
+        return droitsFiltrer.stream()
                 .map(droit -> {
                     APPeriodeAPGManager periodeAPGManager = new APPeriodeAPGManager();
                     periodeAPGManager.setSession(this.getSession());
