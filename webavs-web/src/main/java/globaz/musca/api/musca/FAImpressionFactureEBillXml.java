@@ -124,7 +124,7 @@ public class FAImpressionFactureEBillXml {
         }
 
         // init de la référence eBill
-        eBillFacture.initReferenceEBill(entete.getIdTiers());
+        eBillFacture.initReferenceEBill(entete, passage.getDateFacturation());
     }
 
     /**

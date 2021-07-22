@@ -4,6 +4,8 @@ import ch.globaz.common.properties.PropertiesException;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.globall.db.BManager;
 import globaz.globall.util.JACalendar;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.naos.util.AFIDEUtil;
@@ -12,12 +14,14 @@ import globaz.pyxis.api.ITIAdministration;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.adressecourrier.TIAbstractAdresseData;
 import globaz.pyxis.db.adressecourrier.TIAdresseDataManager;
+import globaz.pyxis.db.tiers.TITiers;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
@@ -84,13 +88,14 @@ public class ReferenceEBill extends AbstractReference {
     /**
      * Initialisation de la référence eBill.
      *
-     * @param idTiers : id du tiers.
+     * @param enteteFacture   : en-tête de facture.
+     * @param dateFacturation : la date de facturation du passage.
      * @throws PropertiesException
      */
-    public void initReferenceEBill(String idTiers) throws Exception {
+    public void initReferenceEBill(FAEnteteFacture enteteFacture, String dateFacturation) throws Exception {
 
         // Récupération de l'adresse du débiteur.
-        initAdresseDeb(idTiers);
+        initAdresseDeb(enteteFacture, dateFacturation);
 
         // Récupération de l'adresse du créancier.
         initAdresseCre();
@@ -157,6 +162,7 @@ public class ReferenceEBill extends AbstractReference {
     }
 
     private TIAbstractAdresseData chercheAdresse(String idTiers) throws Exception {
+
         TIAdresseDataManager adresseDataManager = new TIAdresseDataManager();
         adresseDataManager.setSession(getSession());
         adresseDataManager.setForIdTiers(idTiers);
@@ -186,26 +192,68 @@ public class ReferenceEBill extends AbstractReference {
 
     }
 
-    private void initAdresseDeb(String idTiers) throws Exception {
-//        TIAdresseDataSource adresseDeb = chercheAdresse(idTiers, dateFacturation);
-//
-//        debNom = adresseDeb.fullLigne1;
-//        debRueAdresse = adresseDeb.rue;
-//        debNumMaisonAdresse = adresseDeb.numeroRue;
-//        debPays = adresseDeb.paysIso;
-//        debCodePostal = adresseDeb.localiteNpa;
-//        debCasePostale = StringUtils.isNotBlank(adresseDeb.casePostale) ? adresseDeb.casePostale : null;
-//        debLieu = adresseDeb.localiteNom;
+    private void initAdresseDeb(FAEnteteFacture enteteFacture, String dateFacturation) throws Exception {
+        TIAdresseDataSource adresseDeb = getAdressePrincipale(enteteFacture, dateFacturation);
+        if (Objects.nonNull(adresseDeb)) {
+            debNom = adresseDeb.ligne1;
+            debRueAdresse = adresseDeb.rue;
+            debNumMaisonAdresse = adresseDeb.numeroRue;
+            debPays = adresseDeb.paysIso;
+            debCodePostal = adresseDeb.localiteNpa;
+            debCasePostale = StringUtils.isNotBlank(adresseDeb.casePostale) ? adresseDeb.casePostale : null;
+            debLieu = adresseDeb.localiteNom;
+        } else {
+            LOG.warn("L'adresse du débiteur n'a pas pu être récupérée.");
+        }
+    }
 
-        TIAbstractAdresseData adresseDeb = chercheAdresse(idTiers);
+    private TIAdresseDataSource getAdressePrincipale(FAEnteteFacture enteteFacture, String dateFacturation) throws Exception {
+        // l'adresse de paiement est l'adresse de courrier
+        TITiers tiers = getTiers(enteteFacture);
+        if (Objects.isNull(tiers)) {
+            return null;
+        }
+        TIAdresseDataSource result = getAdresseCourrier(tiers, enteteFacture, dateFacturation);
+        if (Objects.nonNull(result)) {
+            return result;
+        } else {
+            return getAdresseDomicile(tiers, enteteFacture, dateFacturation);
+        }
+    }
 
-        debNom = adresseDeb.getNom();
-        debRueAdresse = adresseDeb.getRue();
-        debNumMaisonAdresse = adresseDeb.getNumero();
-        debPays = adresseDeb.getPaysIso();
-        debCodePostal = adresseDeb.getNpa();
-        debCasePostale = adresseDeb.getCasePostale();
-        debLieu = adresseDeb.getLocalite();
+    private TIAdresseDataSource getAdresseCourrier(TITiers tiers, FAEnteteFacture enteteFacture, String dateFacturation) throws Exception {
+        String courrier;
+        String domaineCourrier;
+        if (!JadeStringUtil.isIntegerEmpty(enteteFacture.getIdTypeCourrier())) {
+            courrier = enteteFacture.getIdTypeCourrier();
+        } else {
+            courrier = IConstantes.CS_AVOIR_ADRESSE_COURRIER;
+        }
+        if (!JadeStringUtil.isIntegerEmpty(enteteFacture.getIdDomaineCourrier())) {
+            domaineCourrier = enteteFacture.getIdDomaineCourrier();
+        } else {
+            domaineCourrier = IConstantes.CS_APPLICATION_FACTURATION;
+        }
+        return tiers.getAdresseAsDataSource(courrier, domaineCourrier, enteteFacture.getIdExterneRole(), dateFacturation, true, enteteFacture.getISOLangueTiers());
+
+    }
+
+    private TIAdresseDataSource getAdresseDomicile(TITiers tiers, FAEnteteFacture enteteFacture, String dateFacturation) throws Exception {
+        return tiers.getAdresseAsDataSource(IConstantes.CS_AVOIR_ADRESSE_DOMICILE, IConstantes.CS_APPLICATION_DEFAUT,
+                enteteFacture.getIdExterneRole(), dateFacturation, true, enteteFacture.getISOLangueTiers());
+    }
+
+    private TITiers getTiers(FAEnteteFacture enteteFacture) {
+        TITiers tiers = null;
+        try {
+            tiers = new TITiers();
+            tiers.setSession(getSession());
+            tiers.setIdTiers(enteteFacture.getIdTiers());
+            tiers.retrieve();
+        } catch (Exception exception) {
+            LOG.error("Impossible de récupérer le tiers avec l'idTiers : {}", enteteFacture.getIdTiers(), exception);
+        }
+        return tiers;
     }
 
     public void addIfNotEmpty(String value, StringBuffer stringBuffer, String separator) {

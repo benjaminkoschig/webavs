@@ -1,12 +1,9 @@
 package globaz.musca.process;
 
-import ch.globaz.common.document.reference.ReferenceBVR;
-import ch.globaz.common.document.reference.ReferenceQR;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.skirnir.client.SkirnirUtils;
 import globaz.docinfo.FADocumentInfoHelper;
 import globaz.framework.bean.FWViewBeanInterface;
-import globaz.framework.printing.itext.api.FWIDocumentInterface;
 import globaz.framework.util.FWMessage;
 import globaz.globall.api.BIContainer;
 import globaz.globall.db.*;
