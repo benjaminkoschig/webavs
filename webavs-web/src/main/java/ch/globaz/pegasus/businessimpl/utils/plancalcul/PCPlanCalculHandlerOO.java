@@ -2,6 +2,7 @@ package ch.globaz.pegasus.businessimpl.utils.plancalcul;
 
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.utils.PCApplicationUtil;
+import globaz.apg.application.APApplication;
 import globaz.babel.api.ICTDocument;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
@@ -10,6 +11,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import globaz.prestation.application.PRAbstractApplication;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.db.tiers.TITiers;
 
@@ -38,6 +40,7 @@ import ch.globaz.pegasus.businessimpl.utils.topazbuilder.decisions.PlanCalculTex
 import ch.globaz.topaz.datajuicer.Collection;
 import ch.globaz.topaz.datajuicer.DataList;
 import ch.globaz.topaz.datajuicer.DocumentData;
+import globaz.webavs.common.CommonProperties;
 
 public class PCPlanCalculHandlerOO {
 
@@ -112,7 +115,11 @@ public class PCPlanCalculHandlerOO {
         // Bloc final résumé
         createBlocResume(data, planCalcul.getBlocResume());
 
-        data.addData(IPCCatalogueTextes.STR_ID_PROCESS, IPCCatalogueTextes.PROCESS_PLAN_CALCUL);
+        if (isReformePC() && isCaisse(APApplication.NO_CAISSE_CCJU)) {
+            data.addData(IPCCatalogueTextes.STR_ID_PROCESS, IPCCatalogueTextes.PROCESS_PLAN_CALCUL_REFORME);
+        } else {
+            data.addData(IPCCatalogueTextes.STR_ID_PROCESS, IPCCatalogueTextes.PROCESS_PLAN_CALCUL);
+        }
         // Retourne le documentData mis à jour
         return data;
     }
@@ -547,5 +554,14 @@ public class PCPlanCalculHandlerOO {
         search.setOrderKey("orderByNaissance");
         // search.setForCsRoleFamille(IPCDroits.CS_ROLE_FAMILLE_ENFANT);
         plaCalMembreFamSearch = PegasusServiceLocator.getPCAccordeeService().search(search);
+    }
+
+    public boolean isReformePC() {
+        return dacOO.getPlanCalcul().getReformePc();
+    }
+
+    private boolean isCaisse(final String noCaisse) throws Exception {
+        return noCaisse.equals(PRAbstractApplication.getApplication(APApplication.DEFAULT_APPLICATION_APG)
+                .getProperty(CommonProperties.KEY_NO_CAISSE));
     }
 }

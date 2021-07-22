@@ -41,6 +41,7 @@ public interface IPCCatalogueTextes {
     String PROCESS_DEMANDE_RENSEIGNEMENT = "PCDemandeRenseignement";
     String PROCESS_FORMULAIRE_COMMUNICATION_OCC = "PCFormulaireCommunicationOCC";
     String PROCESS_PLAN_CALCUL = "PCPlanDeCalcul";
+    String PROCESS_PLAN_CALCUL_REFORME = "PCPlanDeCalculReforme";
     String PROCESS_TRANSFERT_DOSSIER_SANS_PC = "PCDemandeTransfertDossierSansPC";
     String PROCESS_TRANSFERT_DOSSIER_SUPPRESSION_ANNEXE_PC = "PCDemandeTransfertDossierSuppressionAnnexePC";
     String PROCESS_TRANSFERT_DOSSIER_SUPPRESSION_FICHE_VD_LAUSANNE = "PCDemandeTransfertDossierSuppressionFicheVdLsne";
