@@ -34,7 +34,7 @@ public class PCProcessAdaptationEntityHandler implements JadeProcessEntityInterf
     public void run() {
         try {
             List<SimpleDecisionHeader> decisions = PegasusServiceLocator.getDecisionAdaptationService()
-                    .preparerValiderDecision(id, properties.get(PCProcessAdapationEnum.DATE_ADAPTATION));
+                    .preparerValiderDecision(id, properties.get(PCProcessAdapationEnum.DATE_DOCUMENT_IMPRESSION));
             map.put(PCProcessAdapationEnum.ID_DECISION_HEADER, decisions.get(0).getIdDecisionHeader());
             map.put(PCProcessAdapationEnum.ID_TIERS_AYANT_DROIT, decisions.get(0).getIdTiersBeneficiaire());
             if (decisions.size() > 1) {

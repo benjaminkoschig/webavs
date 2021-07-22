@@ -204,7 +204,13 @@ public class DecisionAdaptationServiceImpl extends PegasusAbstractServiceImpl im
         simpleDecisionHeader.setDateFinDecision(pca.getSimplePCAccordee().getDateFin());
         // simpleDecisionHeader.setDateDecision(JadeDateUtil.addMonths( JACalendar.todayJJsMMsAAAA(), 1));
         // On fait moins un mois pour retrouvé les décision dans la recap.
-        simpleDecisionHeader.setDateDecision(JadeDateUtil.addMonths("01." + date, -1));
+//        simpleDecisionHeader.setDateDecision(JadeDateUtil.addMonths("01." + date, -1));
+        // PC Reforme - Correction sur date d'adaptation
+        if (isMonthOnDate(date)) {
+            simpleDecisionHeader.setDateDecision(date);
+        } else {
+            simpleDecisionHeader.setDateDecision(JadeDateUtil.addMonths("01." + date, -1));
+        }
         simpleDecisionHeader.setDatePreparation(JACalendar.todayJJsMMsAAAA());
         simpleDecisionHeader.setDateValidation(JACalendar.todayJJsMMsAAAA());
         // simpleDecisionHeader.setIdDecisionConjoint(pca.getSimpleInformationsComptabiliteConjoint().get)
@@ -253,6 +259,10 @@ public class DecisionAdaptationServiceImpl extends PegasusAbstractServiceImpl im
         // }
 
         return simpleDecisionHeader;
+    }
+
+    private boolean isMonthOnDate(String date) {
+        return date.length() > 7;
     }
 
     private void filleListPca(DemandePcaPrestationSearch search, List<DemandePcaPrestation> listeNewPca,
