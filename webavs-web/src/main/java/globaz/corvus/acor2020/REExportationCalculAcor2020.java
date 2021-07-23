@@ -144,6 +144,7 @@ public class REExportationCalculAcor2020 {
     private List<ISFMembreFamilleRequerant> filterListMembresConjoints(List<ISFMembreFamilleRequerant> membresFamille) {
         List<ISFMembreFamilleRequerant> conjoints = new ArrayList<>();
         for (ISFMembreFamilleRequerant membre : membresFamille) {
+
             if (StringUtils.equals(ISFSituationFamiliale.CS_TYPE_RELATION_CONJOINT, membre.getRelationAuRequerant())
                     && !StringUtils.equals(ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU, membre.getIdMembreFamille())) {
                 conjoints.add(membre);
@@ -1528,11 +1529,11 @@ public class REExportationCalculAcor2020 {
 
     private FamilleType createFamille(Ligne ligne) {
         FamilleType famille = new FamilleType();
-        if ((ligne.getConjoint() instanceof REACORDemandeAdapter.ImplMembreFamilleRequerantWrapper)
+        if ((ligne.getConjoint() instanceof ImplMembreFamilleRequerantWrapper)
                 && REACORDemandeAdapter.ImplMembreFamilleRequerantWrapper.NO_CS_RELATION_EX_CONJOINT_DU_CONJOINT
                 .equals(ligne.getConjoint().getRelationAuRequerant())) {
 
-            REACORDemandeAdapter.ImplMembreFamilleRequerantWrapper exConjointDuConjoint = (REACORDemandeAdapter.ImplMembreFamilleRequerantWrapper) ligne
+            ImplMembreFamilleRequerantWrapper exConjointDuConjoint = (ImplMembreFamilleRequerantWrapper) ligne
                     .getConjoint();
             // TODO : cas d'un ex conjoint de conjoint qui n'a pas de NSS --> générer un NSS bidon ?
             famille.getNavs().add(ParserUtils.formatNssToLong(exConjointDuConjoint.getNssConjoint()));
