@@ -121,6 +121,9 @@
 		<when attribute="idProcess" operator="eq" value="PCPlanDeCalcul">
 			<doc-id action="set">pegasus/plandecalcul/ccju/planDeCalcul</doc-id>
 		</when>
+		<when attribute="idProcess" operator="eq" value="PCPlanDeCalculReforme">
+			<doc-id action="set">pegasus/plandecalcul/ccju/planDeCalcul_Reforme</doc-id>
+		</when>
 		<!-- Recapitualtif -->
 		<when attribute="idProcess" operator="eq" value="PCRecapitulatif">
 			<doc-id action="set">pegasus/decision/ccju/recapitulatif</doc-id>
