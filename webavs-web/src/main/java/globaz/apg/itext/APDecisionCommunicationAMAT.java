@@ -1217,6 +1217,16 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                         Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 0.05, 2,
                         JANumberFormatter.NEAR);
 
+            // Evite l'erreur d'arrondi stocké dans APPrestation.revenuMoyenDeterminant
+            if (hasMATCIAB1()) {
+                APPrestation matciab1 = loadPrestationTypeMATCIAB1();
+                if (matciab1 != null) {
+                    revenuMoyenDeterminant = JANumberFormatter.format(
+                            Double.parseDouble(loadPrestationType().getBasicDailyAmount()) + Double.parseDouble(matciab1.getBasicDailyAmount()), 0.05, 2,
+                            JANumberFormatter.NEAR);
+                }
+            }
+
             boolean isMontantMax = false;
 
             if (montantJournalierMax <= Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant())) {
@@ -1250,9 +1260,15 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         } else if (state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
 
             arguments[7] = JANumberFormatter.format(revenuAnnuel);
-            revenuMoyenDeterminant = JANumberFormatter.format(
-                    Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 0.05, 2,
-                    JANumberFormatter.NEAR);
+
+            if (hasMATCIAB2()) {
+                APPrestation matciab2 = loadPrestationTypeMATCIAB2();
+                if (matciab2 != null) {
+                    revenuMoyenDeterminant = JANumberFormatter.format(
+                            Double.parseDouble(matciab2.getRevenuMoyenDeterminant()), 0.05, 2,
+                            JANumberFormatter.NEAR);
+                }
+            }
 
         }
 
@@ -1365,6 +1381,16 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                         Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 0.05, 2,
                         JANumberFormatter.NEAR);
 
+            // Evite l'erreur d'arrondi stocké dans APPrestation.revenuMoyenDeterminant
+            if (hasMATCIAB1()) {
+                APPrestation matciab1 = loadPrestationTypeMATCIAB1();
+                if (matciab1 != null) {
+                    revenuMoyenDeterminant = JANumberFormatter.format(
+                            Double.parseDouble(loadPrestationType().getBasicDailyAmount()) + Double.parseDouble(matciab1.getBasicDailyAmount()), 0.05, 2,
+                            JANumberFormatter.NEAR);
+                }
+            }
+
             boolean isMontantMax = false;
 
             if (montantJournalierMax <= Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant())) {
@@ -1398,9 +1424,15 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         } else if (state_dec == APDecisionCommunicationAMAT.STATE_MATCIAB2) {
 
             arguments[10] = JANumberFormatter.format(revenuAnnuel);
-            revenuMoyenDeterminant = JANumberFormatter.format(
-                    Double.parseDouble(loadPrestationType().getRevenuMoyenDeterminant()), 0.05, 2,
-                    JANumberFormatter.NEAR);
+
+            if (hasMATCIAB2()) {
+                APPrestation matciab2 = loadPrestationTypeMATCIAB2();
+                if (matciab2 != null) {
+                    revenuMoyenDeterminant = JANumberFormatter.format(
+                            Double.parseDouble(matciab2.getRevenuMoyenDeterminant()), 0.05, 2,
+                            JANumberFormatter.NEAR);
+                }
+            }
 
         }
 
@@ -2770,6 +2802,50 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         }
 
         return prestationType;
+    }
+
+    // Retourne la première prestation MATCIAB1 n'etant pas une prestation de
+    // restitution.
+    private APPrestation loadPrestationTypeMATCIAB1() throws FWIException {
+        if (!loadPrestations().isEmpty()) {
+
+            try {
+                for (int i = 0; i < loadPrestations().getCount(); i++) {
+                    APPrestation prestation = (APPrestation) loadPrestations().get(i);
+                    if (!IAPPrestation.CS_TYPE_ANNULATION.equals(prestation.getType()) && APTypeDePrestation.MATCIAB1.isCodeSystemEqual(prestation.getGenre())) {
+                        return prestation;
+                    }
+                }
+            } catch (final FWIException e) {
+                throw e;
+            } catch (final Exception e) {
+                throw new FWIException(e.getMessage());
+            }
+        }
+
+        return null;
+    }
+
+    // Retourne la première prestation MATCIAB2 n'etant pas une prestation de
+    // restitution.
+    private APPrestation loadPrestationTypeMATCIAB2() throws FWIException {
+        if (!loadPrestations().isEmpty()) {
+
+            try {
+                for (int i = 0; i < loadPrestations().getCount(); i++) {
+                    APPrestation prestation = (APPrestation) loadPrestations().get(i);
+                    if (!IAPPrestation.CS_TYPE_ANNULATION.equals(prestation.getType()) && APTypeDePrestation.MATCIAB2.isCodeSystemEqual(prestation.getGenre())) {
+                        return prestation;
+                    }
+                }
+            } catch (final FWIException e) {
+                throw e;
+            } catch (final Exception e) {
+                throw new FWIException(e.getMessage());
+            }
+        }
+
+        return null;
     }
 
     /**
