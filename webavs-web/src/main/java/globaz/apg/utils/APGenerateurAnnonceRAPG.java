@@ -3,6 +3,7 @@ package globaz.apg.utils;
 import ch.globaz.common.util.CaisseInfoPropertiesWrapper;
 import globaz.apg.ApgServiceLocator;
 import globaz.apg.api.annonces.IAPAnnonce;
+import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.business.service.APAnnoncesRapgService;
 import globaz.apg.db.annonces.APAnnonceAPG;
@@ -183,6 +184,10 @@ public class APGenerateurAnnonceRAPG {
         // total des APG
         if (!montantFraisGarde.isZero()) {
             montantTotalAPG = montantTotalAPG.add(new BigDecimal(montantFraisGarde.toString()));
+        }
+        if(IAPDroitLAPG.CS_ALLOCATION_PROCHE_AIDANT.equals(droit.getGenreService())
+            && montantTotalAPG.compareTo(new BigDecimal(prestation.getMontantBrut())) != 0) {
+            montantTotalAPG = new BigDecimal(prestation.getMontantBrut());
         }
         annonceACreer.setTotalAPG(montantTotalAPG.toString());
         annonceACreer.setEventDate(prestation.getDateDebut());
