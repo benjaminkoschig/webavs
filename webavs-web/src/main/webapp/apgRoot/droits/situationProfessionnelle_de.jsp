@@ -521,8 +521,9 @@ int nbJourDroit= viewBean.calculerNbjourDuDroit();
   function checkNombreJourIndemnise() {
       if (<%=viewBean.displayJourIndemnise()%>) {
           var $nbJourIndemnise = $("#nbJourIndemnise");
+		  var $isJoursIdentiques = $('#isJoursIdentiques')
           var nbJourJourSaisieTotal = ($nbJourIndemnise.val() * 1) +  <%=nbJourDejaIndemnise%>;
-          if (nbJourJourSaisieTotal > <%=nbJourDroit%>) {
+          if (nbJourJourSaisieTotal > <%=nbJourDroit%> && !$isJoursIdentiques.is(':checked')) {
               globazNotation.utils.consoleError(
                       "<%=viewBean.translate("JSP_NB_JOUR_INDEMNISE_EMPLOYEUR_TROP_GRAND",nbJourDroit -nbJourDejaIndemnise)%>",
                       "<%=viewBean.translate("JSP_NB_JOUR_INDEMNISE_EMPLOYEUR_TROP_GRAND_TITRE")%>")
