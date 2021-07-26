@@ -9,6 +9,7 @@ package globaz.apg.module.calcul.lamat;
 import globaz.apg.db.droits.APDroitMaternite;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.droits.APSituationProfessionnelleManager;
+import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.helpers.droits.APSituationProfessionnelleHelper;
 import globaz.apg.module.calcul.APCalculParametresAMAT;
 import globaz.apg.properties.APProperties;
@@ -67,8 +68,8 @@ public class LAMatCalculateur {
      *             DOCUMENT ME!
      */
     public BigDecimal calculerMontantLAMat(BSession session, BTransaction transaction, String genreService,
-            String idDroit, String revenuMoyenDeterminant, String montantJournalier, String dateDebutPrestation,
-            String dateFinPrestation, boolean isAllocationMax, int joursSupplementairesPrisEnCompte) throws Exception {
+                                           String idDroit, String revenuMoyenDeterminant, String montantJournalier, String dateDebutPrestation,
+                                           String dateFinPrestation, boolean isAllocationMax, int joursSupplementairesPrisEnCompte, APPrestation lastPrestation) throws Exception {
 
         APCalculParametresAMAT parametresCalcul = new APCalculParametresAMAT().getParametres(transaction,
                 dateDebutPrestation);
@@ -167,6 +168,14 @@ public class LAMatCalculateur {
 
                     montantLAMat = new BigDecimal("62");
 
+                    // Adaptations des montants LAMat complément 14 jours dans le cas d'une extension maternité
+                    // Les prestations fédérales devront être déduites entre le 99e et le 112e jour.
+                    if ((mj.compareTo(new BigDecimal("0.00")) == 0)) {
+                        if (joursSupplementairesPrisEnCompte != 0 && joursSupplementairesPrisEnCompte >= (APDroitMaternite.getDureeDroitCantonale(session)) - (APDroitMaternite.getDureeDroitMat(session)) && lastPrestation != null) {
+                            montantLAMat = montantLAMat.subtract(new BigDecimal(lastPrestation.getMontantJournalier()));
+                        }
+                    }
+
                     // si le 80% du revenu moyen determinant est compris entre
                     // 62 et 280 CHF, la
                     // LAMat vaut ce 80% du revenu moyen determinant
@@ -175,9 +184,12 @@ public class LAMatCalculateur {
 
                     montantLAMat = rmd80;
 
-                    // Adaptations des montants LAMat bas salaire dans le cas d'une extension maternité
-                    if (joursSupplementairesPrisEnCompte != 0) {
-                        montantLAMat = new BigDecimal("0.00");
+                    // Adaptations des montants LAMat complément 14 jours salaires dans le cas d'une extension maternité
+                    // Les prestations fédérales devront être déduites entre le 99e et le 112e jour.
+                    if ((mj.compareTo(new BigDecimal("0.00")) == 0)) {
+                        if (joursSupplementairesPrisEnCompte != 0 && joursSupplementairesPrisEnCompte >= (APDroitMaternite.getDureeDroitCantonale(session)) - (APDroitMaternite.getDureeDroitMat(session)) && lastPrestation != null) {
+                            montantLAMat = montantLAMat.subtract(new BigDecimal(lastPrestation.getMontantJournalier()));
+                        }
                     }
 
                     // si le 80% du revenu moyen determinant est superieur a 280
@@ -187,10 +199,11 @@ public class LAMatCalculateur {
 
                     montantLAMat = montantMax;
 
-                    // Adaptations des montants LAMat complément 14 jours haut salaire dans le cas d'une extension maternité
+                    // Adaptations des montants LAMat complément 14 jours dans le cas d'une extension maternité
+                    // Les prestations fédérales devront être déduites entre le 99e et le 112e jour.
                     if ((mj.compareTo(new BigDecimal("0.00")) == 0)) {
-                        if (joursSupplementairesPrisEnCompte != 0 && joursSupplementairesPrisEnCompte >= (APDroitMaternite.getDureeDroitCantonale(session)) - (APDroitMaternite.getDureeDroitMat(session))) {
-                            montantLAMat = montantLAMat.subtract(new BigDecimal("196"));
+                        if (joursSupplementairesPrisEnCompte != 0 && joursSupplementairesPrisEnCompte >= (APDroitMaternite.getDureeDroitCantonale(session)) - (APDroitMaternite.getDureeDroitMat(session)) && lastPrestation != null) {
+                            montantLAMat = montantLAMat.subtract(new BigDecimal(lastPrestation.getMontantJournalier()));
                         }
                     }
 
@@ -330,13 +343,6 @@ public class LAMatCalculateur {
                 } else if ((rmd80.compareTo(montantMax) > 0) || isAllocationMax) {
 
                     montantLAMat = montantMax.subtract(new BigDecimal("196"));
-
-                    // Adaptations des montants LAMat haut salaire dans le cas d'une extension maternité
-                    if (joursSupplementairesPrisEnCompte != 0 && joursSupplementairesPrisEnCompte >= (APDroitMaternite.getDureeDroitCantonale(session)) - (APDroitMaternite.getDureeDroitMat(session))) {
-                        if (montantLAMat.compareTo(new BigDecimal("133.6")) < 0) {
-                            montantLAMat = new BigDecimal(0);
-                        }
-                    }
                 }
             }
         }
