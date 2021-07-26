@@ -12,6 +12,7 @@ import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.exceptions.APRuleExecutionException;
 import globaz.apg.interfaces.APDroitAvecParent;
 import globaz.apg.pojo.APChampsAnnonce;
+import globaz.apg.utils.APGUtils;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeDateUtil;
@@ -160,10 +161,12 @@ public class Rule418 extends Rule {
         if(droitsTries != null) {
             for (APDroitAvecParent droitsTry : droitsTries) {
                 APDroitAPGJointTiers droit = (APDroitAPGJointTiers) droitsTry;
-                for (JadePeriodWrapper periodePat : droit.getPeriodes()) {
-                    int nbreJoursAAjouter = getNombreJoursAAjouter(periodeAPGCalculed, periodePat.getDateDebut(), periodePat.getDateFin());
-                    if (!droit.getIdDroit().equals(idDroit)) {
-                        nombreJoursEffectueNonPat += nbreJoursAAjouter;
+                if(!APGUtils.isTypeAllocationPandemie(droit.getCsGenreService())) {
+                    for (JadePeriodWrapper periodePat : droit.getPeriodes()) {
+                        int nbreJoursAAjouter = getNombreJoursAAjouter(periodeAPGCalculed, periodePat.getDateDebut(), periodePat.getDateFin());
+                        if (!droit.getIdDroit().equals(idDroit)) {
+                            nombreJoursEffectueNonPat += nbreJoursAAjouter;
+                        }
                     }
                 }
             }
