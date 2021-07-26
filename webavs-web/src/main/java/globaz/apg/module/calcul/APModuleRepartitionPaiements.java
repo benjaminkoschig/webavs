@@ -1623,8 +1623,6 @@ public class APModuleRepartitionPaiements {
         BigDecimal montantBrutTotalPrestation = null;
         BigDecimal montantJournalierPrestation = null;
 
-        Integer nbJoursAssure = 0;
-
         if (prestationCalculee.getMontantJournalier().getBigDecimalValue()
                 .compareTo(prestationCalculee.getDroitAcquis().getBigDecimalValue()) < 0) {
             montantBrutTotalPrestation = prestationCalculee.getDroitAcquis().getBigDecimalValue();
@@ -1714,8 +1712,14 @@ public class APModuleRepartitionPaiements {
                 if(opMontantJour.isPresent()) {
                     allocBrutPrestationCumulee = opMontantJour.get().calculMontantPrestation();
                 } else {
-                    allocBrutPrestationCumulee = allocBrutPrestationCumulee.multiply(nbJours);
-                    allocBrutPrestationCumulee = benefPotentiel.getMontant(allocBrutPrestationCumulee);
+                    if(repartitionBenefPaiement.getTauxRJM() != null && !"100.00".equals(repartitionBenefPaiement.getTauxRJM())) {
+                        allocBrutPrestationCumulee = JANumberFormatter.round(benefPotentiel.getMontant(allocBrutPrestationCumulee),0.05, 2, JANumberFormatter.NEAR);
+                        allocBrutPrestationCumulee = allocBrutPrestationCumulee.multiply(nbJours);
+                        montantBrutPrestation = allocBrutPrestationCumulee;
+                    } else {
+                        allocBrutPrestationCumulee = allocBrutPrestationCumulee.multiply(nbJours);
+                        allocBrutPrestationCumulee = benefPotentiel.getMontant(allocBrutPrestationCumulee);
+                    }
                 }
 
 
@@ -1871,9 +1875,6 @@ public class APModuleRepartitionPaiements {
             // On verse le tout à l'assuré
             else {
                 isVersementAssure = true;
-                if(opMontantJour.isPresent()) {
-                    nbJoursAssure+= opMontantJour.get().getJours();
-                }
             }
         }
 
@@ -1889,7 +1890,7 @@ public class APModuleRepartitionPaiements {
 
         // Il y a un montant à verser à l'assuré
         if (isVersementAssure) {
-            createRepartitionAssure(session, transaction, idAssure, prestationCalculee, idPrestation, tiersWrapper, casCotisations, montantTotalVerse, montantBrutTotalPrestation, nbJoursAssure, null);
+            createRepartitionAssure(session, transaction, idAssure, prestationCalculee, idPrestation, tiersWrapper, casCotisations, montantTotalVerse, montantBrutTotalPrestation, null, null);
         }
     }
 
@@ -1921,7 +1922,9 @@ public class APModuleRepartitionPaiements {
 
         repartitionBenefPaiement.setTypePaiement(IAPRepartitionPaiements.CS_PAIEMENT_DIRECT);
         repartitionBenefPaiement.setTypePrestation(IAPRepartitionPaiements.CS_NORMAL);
-        repartitionBenefPaiement.setNombreJoursSoldes(nbJoursAssure.toString());
+        if(nbJoursAssure != null) {
+            repartitionBenefPaiement.setNombreJoursSoldes(nbJoursAssure.toString());
+        }
         repartitionBenefPaiement.add(transaction);
 
         genererCotisationsAssure(session, prestationCalculee, repartitionBenefPaiement, casCotisations);
