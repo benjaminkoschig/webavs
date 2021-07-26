@@ -46,7 +46,8 @@ public final class APEmployeurRepartition {
     }
 
     public static boolean isCalculProrata(APSituationProfessionnelle sitProf, String typeLot) {
-        return sitProf.getNbJourIndemnise() > 0
+        return sitProf.getNbJourIndemnise() != null
+                && sitProf.getNbJourIndemnise() > 0
                 && !sitProf.getIsJoursIdentiques().booleanValue()
                 && IPRDemande.CS_TYPE_PROCHE_AIDANT.equals(typeLot);
     }

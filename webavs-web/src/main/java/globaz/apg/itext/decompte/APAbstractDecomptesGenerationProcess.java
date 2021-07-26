@@ -1,6 +1,8 @@
 package globaz.apg.itext.decompte;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.text.FieldPosition;
@@ -970,7 +972,13 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 throw new FWIException("Impossible de charger le pied de page", e);
             }
         } catch (final Exception e) {
-            getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, APDecompteGenerationProcess.class.getName());
+            String msg = e.getMessage();
+            if(msg == null) {
+                StringWriter errors = new StringWriter();
+                e.printStackTrace(new PrintWriter(errors));
+                msg = errors.toString();
+            }
+            getMemoryLog().logMessage(msg, FWMessage.ERREUR, APDecompteGenerationProcess.class.getName());
             setSendMailOnError(true);
             abort();
         }
