@@ -75,7 +75,7 @@ public class APEnfantPat extends APSituationFamilialePat {
         if(typeDemande.isProcheAidant()) {
             _propertyMandatory(statement.getTransaction(), this.noAVS, getSession().getLabel(NUMERO_AVS_OBLIGATOIRE));
             LocalDate dateLegale = Dates.toDate(dateNaissance).plusYears(Integer.parseInt(APProperties.PROCHE_AIDANT_AGE_LEGAL.getValue()));
-            if(!hasErrors() && Dates.toDate(dateDebut).isAfter(dateLegale)) {
+            if(!hasErrors() && (Dates.toDate(dateDebut).isAfter(dateLegale) || Dates.toDate(dateDebut).isEqual(dateLegale))) {
                 _addError(statement.getTransaction(), getSession().getLabel(AGE_LEGALE_DEPASSE));
                 this.setId(null);
             }

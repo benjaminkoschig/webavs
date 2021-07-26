@@ -110,7 +110,7 @@ public class APBasesCalculProcheAidantBuilder extends APBasesCalculBuilder{
         LocalDate dateNaissance = Dates.toDate(enfant.getDateNaissance());
         LocalDate datelegale = dateNaissance.plusYears(Integer.parseInt(APProperties.PROCHE_AIDANT_AGE_LEGAL.getValue()));
         LocalDate controleDate = Dates.toDate(dateDebut);
-        if(controleDate.isAfter(datelegale)) {
+        if(controleDate.isAfter(datelegale) || controleDate.isEqual(datelegale)) {
             return Optional.empty();
         }
         return Optional.of(new Periode(dateDebut, dateFin));
