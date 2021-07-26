@@ -522,7 +522,8 @@ public class RFValidationDemandeService {
 
             String montant = viewBean.getMontantsMotifsRefus().get(key)[0];
             if ((null != montant)) {
-                if (!RFUtils.isMontantArrondiCinqCts(montant)) {
+                if (RFUtils.isQdArrondi(viewBean.getCodeTypeDeSoinList(), viewBean.getCodeSousTypeDeSoinList())
+                        && !RFUtils.isMontantArrondiCinqCts(montant)) {
                     RFUtils.setMsgErreurViewBean(viewBean, "ERREUR_RF_DEM_S_MONTANT_MOTIF_REFUS_ARRONDI");
                 }
             }
