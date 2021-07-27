@@ -138,7 +138,7 @@
 
         // Si au moins un des 3 champs n'est pas vide
         if (dateDebut || dateFin) {
-            addPeriode();
+            addPeriodePai();
         }
         // Si aucune période n'est renseigné -> message d'erreurs
         if (periodes.lenght == 0) {
