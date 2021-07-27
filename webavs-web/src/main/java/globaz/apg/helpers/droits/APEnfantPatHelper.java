@@ -38,7 +38,7 @@ public class APEnfantPatHelper extends PRAbstractHelper {
     protected void _add(final FWViewBeanInterface viewBean, final FWAction action, final BISession session) throws Exception {
         if (viewBean instanceof APEnfantPatViewBean) {
             if(JadeStringUtil.isBlankOrZero(((APEnfantPatViewBean)viewBean).getIdSitFamPaternite()) ||
-                    ((APEnfantPatViewBean)viewBean).getSpy() == null){
+                    ((APEnfantPatViewBean)viewBean).isNew()){
                 super._add(viewBean, action, session);
             }else {
                 this._update(viewBean, action, session);
