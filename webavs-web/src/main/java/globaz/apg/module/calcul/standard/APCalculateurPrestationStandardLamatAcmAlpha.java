@@ -1063,10 +1063,10 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
             // Recherche le nombre de jours supplémentaires actuellement pris en compte en cas de date de reprise ou non
             int joursSupplementairesPrisEnCompte = APDroitMaternite.getJoursSupplementairesPrisEnCompte(session, droit);
-//TODO Modifier l'appel à la méthode pour mettre last prestation (j'ai mis null pour pas peter le build)
+
             final BigDecimal montantLAMat = lamatCalculateur.calculerMontantLAMat(session, transaction,
                     droit.getGenreService(), droit.getIdDroit(), revenuMoyenDeterminant.toString(),
-                    sommeMontantsJournalier.toString(), dateDebut, dateFin, isAllocationMax, joursSupplementairesPrisEnCompte, null);
+                    sommeMontantsJournalier.toString(), dateDebut, dateFin, isAllocationMax, joursSupplementairesPrisEnCompte, lastPrestation);
 
             // Aucune prestation LAMat à créer
             if (montantLAMat.compareTo(new BigDecimal(0)) == 0) {
