@@ -142,11 +142,10 @@ public class APDroitProcheAidant extends APDroitLAPG implements IPRCloneable {
                 IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
 
         SQLWriter sqlWriter = SQLWriter.writeWithSchema()
-                                       .append("select sum(schema.APPRESP.VHNNJS) as nb_jours, min(schema.APPERIP.VCDDEB) as date_debut_min")
+                                       .append("select sum(schema.APPRESP.VHNNJS) as nb_jours, min(schema.APPRESP.VHDDEB) as date_debut_min")
                                        .append(", schema.APDROITPROCHEAIDANT.CAREEVENTID as care_leave_event_id")
                                        .append("from schema." + APDroitLAPG.TABLE_NAME_LAPG)
                                        .join("schema.APDROITPROCHEAIDANT ON schema.APDROITPROCHEAIDANT.ID_DROIT = schema.APDROIP.VAIDRO")
-                                       .join("schema.APPERIP ON schema.APPERIP.VCIDRO = schema.APDROIP.VAIDRO")
                                        .join("schema.APSIFMP ON schema.APSIFMP.VQIDRM = schema.APDROIP.VAIDRO")
                                        .join("schema.APPRESP ON schema.APPRESP.VHIDRO = schema.APDROIP.VAIDRO") // prendre en compte les jours des prestations réellement versé et pas ceux des périodes
                                        .append("where schema.APSIFMP.VQLAVS = (")
