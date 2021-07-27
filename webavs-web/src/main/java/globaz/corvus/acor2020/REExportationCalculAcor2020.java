@@ -1,10 +1,7 @@
 package globaz.corvus.acor2020;
 
 import acor.ch.admin.zas.rc.annonces.rente.rc.*;
-import ch.admin.zas.pool.PoolMeldungZurZAS;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.ObjectFactory;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.*;
-import ch.globaz.common.exceptions.ValidationException;
 import ch.globaz.hera.business.constantes.ISFMembreFamille;
 import ch.globaz.hera.business.constantes.ISFRelationConjoint;
 import globaz.commons.nss.NSUtil;
@@ -60,17 +57,12 @@ import globaz.webavs.common.CommonProperties;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
-import javax.xml.XMLConstants;
-import javax.xml.bind.*;
+import javax.xml.bind.Marshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 import java.math.BigDecimal;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -1040,7 +1032,9 @@ public class REExportationCalculAcor2020 {
 
     private CiType createCi(REInscriptionCIViewBean inscription) {
         CiType ci = new CiType();
-        ci.setBrancheEconomique(ParserUtils.formatRequiredLong(getSession().getCode(inscription.getBrancheEconomique())));
+        if (StringUtils.isNotEmpty(inscription.getBrancheEconomique())) {
+            ci.setBrancheEconomique(ParserUtils.formatRequiredLong(getSession().getCode(inscription.getBrancheEconomique())));
+        }
 
         // 3. Code diminution
         ci.setCodeDiminution(ParserUtils.formatRequiredShort(inscription.getCodeExtourne()));
@@ -1074,7 +1068,7 @@ public class REExportationCalculAcor2020 {
         if (JadeStringUtil.isBlankOrZero(inscription.getNoAffilie())) {
             ci.setNumeroAffilie("0");
         } else {
-            ci.setNumeroAffilie(inscription.getNoAffilie());
+            ci.setNumeroAffilie(ParserUtils.formatStringWithoutDots(inscription.getNoAffilie()));
         }
 
         // 12. Code amortissement

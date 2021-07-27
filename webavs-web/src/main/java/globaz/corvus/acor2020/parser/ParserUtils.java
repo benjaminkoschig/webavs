@@ -120,6 +120,13 @@ public final class ParserUtils {
         return BigDecimal.ZERO;
     }
 
+    public static String formatStringWithoutDots(String numero) {
+        if (Objects.nonNull(numero)) {
+            return numero.replace(".","");
+        }
+        return  StringUtils.EMPTY;
+    }
+
     public static short formatRequiredShort(String fieldToParse) {
         try {
             if (JadeStringUtil.isBlankOrZero(fieldToParse)) {

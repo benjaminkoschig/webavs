@@ -132,7 +132,12 @@ public class REImportationCalculAcor2020 {
             if (!JadeStringUtil.isEmpty(json)) {
                 fCalcul = convertJsonToFCalcul(json);
             }
-            if (fCalcul != null && fCalcul.getEvenement() != null) {
+
+            if (Objects.isNull(fCalcul)) {
+                throw new PRACORException("FCalcul est null. Le json n'a pas pu être converti.");
+            }
+
+            if (fCalcul.getEvenement() != null) {
                 // On analyse filtre les évènements de la feuille de calcul pour ne garder que ceux qui possèdent une base de calcul dont la décision n'est pas vide.
                 filterEvents = fCalcul.getEvenement().stream().filter(evenement -> !evenement.getBasesCalcul().stream().filter(basesCalcul -> !basesCalcul.getDecision().isEmpty()).collect(Collectors.toList()).isEmpty()).collect(Collectors.toList());
             }
@@ -141,7 +146,7 @@ public class REImportationCalculAcor2020 {
             // Passage dans le IF si c'est une 10ème révision mais qu'il n'y a pas de décisions dans le f_calcul.xml
             // Si on se trouve dans une 10ème révision et qu'il y a des décisions, on fait le calcul normalement
             // Pour une 9ème révision, le f_calcul.xml sera vide donc on passe dans tous les cas dans le else et on fait le traitement normalement
-            if ((fCalcul != null) && (filterEvents.isEmpty())) {
+            if (filterEvents.isEmpty()) {
                 // Dans ce cas de figure, il n'y a rien à remonter.
                 // On contrôle l'arrivée d'un ci additionnel pour le requérant
                 // ainsi que ces conjoints et ex-conjoints !!!!
@@ -816,19 +821,18 @@ public class REImportationCalculAcor2020 {
      * @param json le fichier json reçu de ACOR
      * @return l'objet FCalcul associé
      */
-    private FCalcul convertJsonToFCalcul(String json) {
+    private FCalcul convertJsonToFCalcul(String json) throws PRACORException {
         // Le configure permet de caster des listes lorqu'il n'y a qu'un seul éléments dans le json.
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-        FCalcul value = null;
+        FCalcul value;
         try {
             value = mapper.readValue(json, FCalcul.class);
-
         } catch (JsonParseException e) {
-            LOG.error("Erreur de parsing du json fCalcul.", e);
+            throw new PRACORException("Erreur de parsing du json fCalcul.", e);
         } catch (JsonMappingException e) {
-            LOG.error("Erreur de mapping du json fCalcul.", e);
+            throw new PRACORException("Erreur de mapping du json fCalcul.", e);
         } catch (IOException e) {
-            LOG.error("Erreur de connexion lors de la conversion du json fCalcul.", e);
+            throw new PRACORException("Erreur de connexion lors de la conversion du json fCalcul.", e);
         }
         return value;
     }

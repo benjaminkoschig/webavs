@@ -17,7 +17,6 @@ import globaz.corvus.dao.REAddRenteAccordee;
 import globaz.corvus.db.basescalcul.REBasesCalcul;
 import globaz.corvus.db.basescalcul.REBasesCalculDixiemeRevision;
 import globaz.corvus.db.basescalcul.REBasesCalculManager;
-import globaz.corvus.db.basescalcul.REBasesCalculNeuviemeRevision;
 import globaz.corvus.db.demandes.REDemandeRente;
 import globaz.corvus.db.rentesaccordees.*;
 import globaz.corvus.regles.REDemandeRegles;
@@ -51,6 +50,8 @@ import java.util.stream.Collectors;
 
 public class REAcor2020Parser {
 
+
+    public static final int MONTHS_IN_YEAR = 12;
 
     public static ReturnedValue doMAJPrestations(BSession session, BITransaction transaction, REDemandeRente demandeSource, FCalcul fCalcul, int noCasATraiter) throws PRACORException {
         ReturnedValue returnedValue = new ReturnedValue();
@@ -582,14 +583,17 @@ public class REAcor2020Parser {
                     // mois d'appoint
                     case 6:
 //        bc.setMoisAppointsAvant73(REACORAbstractFlatFileParser.getField(line, fields, "MOIS_APPOINT_AV_73")); $b13
-                        bc.setMoisAppointsAvant73(Objects.toString(eachDCot.getAv73().getMois(), StringUtils.EMPTY));
+                        int moisAppointsAv73 = eachDCot.getAv73().getAnnees() * MONTHS_IN_YEAR + eachDCot.getAv73().getMois();
+                        bc.setMoisAppointsAvant73(Objects.toString(moisAppointsAv73, StringUtils.EMPTY));
 //        bc.setMoisAppointsDes73(REACORAbstractFlatFileParser.getField(line, fields, "MOIS_APPOINT_DES_73")); $b14
-                        bc.setMoisAppointsDes73(Objects.toString(eachDCot.getAp73().getMois(), StringUtils.EMPTY));
+                        int moisAppointsAp73 = eachDCot.getAp73().getAnnees() * MONTHS_IN_YEAR + eachDCot.getAp73().getMois();
+                        bc.setMoisAppointsDes73(Objects.toString(moisAppointsAp73, StringUtils.EMPTY));
                         break;
                     // année d'ouverture
                     case 7:
 //        bc.setMoisCotiAnneeOuvertDroit(REACORAbstractFlatFileParser.getField(line, fields, "MOIS_COTI_ANNEE_OUVERTURE")); $b36
-                        bc.setMoisCotiAnneeOuvertDroit(Objects.toString(eachDCot.getTotal().getMois(), StringUtils.EMPTY));
+                        int moisCotiAnneeOuvertDroit = eachDCot.getTotal().getAnnees() * MONTHS_IN_YEAR + eachDCot.getTotal().getMois();
+                        bc.setMoisCotiAnneeOuvertDroit(Objects.toString(moisCotiAnneeOuvertDroit, StringUtils.EMPTY));
                         break;
                     // assurance étrangère
                     case 8:
@@ -603,7 +607,7 @@ public class REAcor2020Parser {
                         bc.setPeriodeAssEtrangerDes73(periodeAssEtrAp73.toString());
                         break;
                     // total
-                    case 9:
+                    case 10:
 //        bc.setDureeCotiAvant73(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COTI_AV_73")); $b6
                         StringBuilder dureeCotiAv73 = new StringBuilder(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getAv73().getAnnees()));
                         dureeCotiAv73.append(ParserUtils.formatIntToStringWithTwoChar(eachDCot.getAv73().getMois()));
