@@ -1032,8 +1032,9 @@ public class REExportationCalculAcor2020 {
 
     private CiType createCi(REInscriptionCIViewBean inscription) {
         CiType ci = new CiType();
-        if (StringUtils.isNotEmpty(inscription.getBrancheEconomique())) {
-            ci.setBrancheEconomique(ParserUtils.formatRequiredLong(getSession().getCode(inscription.getBrancheEconomique())));
+        long brancheEco = ParserUtils.formatRequiredLong(getSession().getCode(inscription.getBrancheEconomique()));
+        if (brancheEco != 0) {
+            ci.setBrancheEconomique(brancheEco);
         }
 
         // 3. Code diminution

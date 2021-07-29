@@ -122,9 +122,9 @@ public final class ParserUtils {
 
     public static String formatStringWithoutDots(String numero) {
         if (Objects.nonNull(numero)) {
-            return numero.replace(".","");
+            return numero.replace(".", "");
         }
-        return  StringUtils.EMPTY;
+        return StringUtils.EMPTY;
     }
 
     public static short formatRequiredShort(String fieldToParse) {
@@ -238,9 +238,9 @@ public final class ParserUtils {
     }
 
     /**
-     * Conversion et formatage d'un Integer correspondant à AAMM en String correspondant à AA.MM
+     * Conversion et formatage d'un Integer correspondant à AAMM ou AMM en String correspondant à AA.MM
      *
-     * @param duree durée au format AAMM
+     * @param duree durée au format AAMM ou AMM
      * @return la durée au format AA.MM
      */
     public static String formatAAMMtoAAxMM(Integer duree) {
@@ -248,6 +248,8 @@ public final class ParserUtils {
             String value = String.valueOf(duree);
             if (value.length() == 4) {
                 return String.format(FORMAT_S_S, value.substring(0, 2), value.substring(2, 4));
+            } else if (value.length() == 3) {
+                return String.format(FORMAT_S_S, "0" + value.substring(0, 1), value.substring(1, 3));
             } else {
                 return StringUtils.EMPTY;
             }
