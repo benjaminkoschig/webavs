@@ -547,10 +547,20 @@ public class ParserUtilsTest {
     }
 
     @Test
-    public void formatAAMMtoAAxMM_avecIntXXX_renvoiStringEmpty() {
+    public void formatAAMMtoAAxMM_avecIntAMM_renvoiDateAAxMM() {
         // arrange
         // act
         String result = ParserUtils.formatAAMMtoAAxMM(406);
+
+        // assert
+        assertThat(result).isEqualTo("04.06");
+    }
+
+    @Test
+    public void formatAAMMtoAAxMM_avecIntXX_renvoiStringEmpty() {
+        // arrange
+        // act
+        String result = ParserUtils.formatAAMMtoAAxMM(11);
 
         // assert
         assertThat(result).isEqualTo(StringUtils.EMPTY);
@@ -744,6 +754,27 @@ public class ParserUtilsTest {
 
         // assert
         assertThat(result).isEqualTo("11");
+    }
+
+    @Test
+    public void formatStringWithoutDots_avecNumeroNull_renvoiStringEmtpy() {
+        // arrange
+        // act
+        String result = ParserUtils.formatStringWithoutDots(null);
+
+        // assert
+        assertThat(result).isEqualTo(StringUtils.EMPTY);
+    }
+
+    @Test
+    public void formatStringWithoutDots_avecNumeroAvecPoints_renvoiNumeroSansPoint() {
+        // arrange
+        // act
+        String result = ParserUtils.formatStringWithoutDots("756.000.000.00");
+
+        // assert
+        assertThat(result).isEqualTo("75600000000");
+
     }
 
 }
