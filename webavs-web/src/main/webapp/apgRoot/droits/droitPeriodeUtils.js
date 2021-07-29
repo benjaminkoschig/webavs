@@ -91,6 +91,9 @@ function addPeriode() {
         var dateEnd = new Date(dateFin.split('.')[2], dateFin.split('.')[1] - 1, dateFin.split('.')[0]);
 
         nbJour = Math.round(Math.abs((dateBegin - dateEnd) / (24 * 60 * 60 * 1000))) + 1;
+        if($jourSupplementaire.val()) {
+            nbJour -= $jourSupplementaire.val();
+        }
     }
 
     if (isAjoutdePeriodeAuthorise(dateDebut, dateFin, nbJour, true) && !isError) {
