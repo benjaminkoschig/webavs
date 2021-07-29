@@ -20,14 +20,21 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class APBasesCalculProcheAidantBuilder extends APBasesCalculBuilder{
+
+    private static final DateTimeFormatter format = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     public APBasesCalculProcheAidantBuilder(BSession session, APDroitLAPG droit) {
         super(session, droit);
     }
 
-    private static final DateTimeFormatter format = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    @Override
+    public List<APBaseCalcul> createBasesCalcul() throws Exception {
+        List<APBaseCalcul> bases = super.createBasesCalcul();
+        return bases.stream().filter(b -> !b.isSansActiviteLucrative()).collect(Collectors.toList());
+    }
 
     void ajoutDesCommandes() throws Exception {
         ajouterSituationProfessionnelle();
