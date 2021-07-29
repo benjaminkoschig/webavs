@@ -61,6 +61,10 @@ public class LAMatCalculateur {
      * @param isAllocationMax
      *            DOCUMENT ME!
      * @param joursSupplementairesPrisEnCompte
+     *            DOCUMENT ME!
+     * @param lastPrestation
+     *            DOCUMENT ME!
+     * @param deductionComplementLamatPossible
      * 
      * @return DOCUMENT ME!
      * 
@@ -69,7 +73,7 @@ public class LAMatCalculateur {
      */
     public BigDecimal calculerMontantLAMat(BSession session, BTransaction transaction, String genreService,
                                            String idDroit, String revenuMoyenDeterminant, String montantJournalier, String dateDebutPrestation,
-                                           String dateFinPrestation, boolean isAllocationMax, int joursSupplementairesPrisEnCompte, APPrestation lastPrestation) throws Exception {
+                                           String dateFinPrestation, boolean isAllocationMax, int joursSupplementairesPrisEnCompte, APPrestation lastPrestation, boolean deductionComplementLamatPossible) throws Exception {
 
         APCalculParametresAMAT parametresCalcul = new APCalculParametresAMAT().getParametres(transaction,
                 dateDebutPrestation);
@@ -171,7 +175,7 @@ public class LAMatCalculateur {
                     // Adaptations des montants LAMat complément 14 jours dans le cas d'une extension maternité
                     // Les prestations fédérales devront être déduites entre le 99e et le 112e jour.
                     if ((mj.compareTo(new BigDecimal("0.00")) == 0)) {
-                        if (joursSupplementairesPrisEnCompte != 0 && joursSupplementairesPrisEnCompte >= (APDroitMaternite.getDureeDroitCantonale(session)) - (APDroitMaternite.getDureeDroitMat(session)) && lastPrestation != null) {
+                        if (joursSupplementairesPrisEnCompte != 0 && deductionComplementLamatPossible && lastPrestation != null) {
                             montantLAMat = montantLAMat.subtract(new BigDecimal(lastPrestation.getMontantJournalier()));
                         }
                     }
@@ -187,7 +191,7 @@ public class LAMatCalculateur {
                     // Adaptations des montants LAMat complément 14 jours salaires dans le cas d'une extension maternité
                     // Les prestations fédérales devront être déduites entre le 99e et le 112e jour.
                     if ((mj.compareTo(new BigDecimal("0.00")) == 0)) {
-                        if (joursSupplementairesPrisEnCompte != 0 && joursSupplementairesPrisEnCompte >= (APDroitMaternite.getDureeDroitCantonale(session)) - (APDroitMaternite.getDureeDroitMat(session)) && lastPrestation != null) {
+                        if (joursSupplementairesPrisEnCompte != 0 && deductionComplementLamatPossible && lastPrestation != null) {
                             montantLAMat = montantLAMat.subtract(new BigDecimal(lastPrestation.getMontantJournalier()));
                         }
                     }
@@ -202,7 +206,7 @@ public class LAMatCalculateur {
                     // Adaptations des montants LAMat complément 14 jours dans le cas d'une extension maternité
                     // Les prestations fédérales devront être déduites entre le 99e et le 112e jour.
                     if ((mj.compareTo(new BigDecimal("0.00")) == 0)) {
-                        if (joursSupplementairesPrisEnCompte != 0 && joursSupplementairesPrisEnCompte >= (APDroitMaternite.getDureeDroitCantonale(session)) - (APDroitMaternite.getDureeDroitMat(session)) && lastPrestation != null) {
+                        if (joursSupplementairesPrisEnCompte != 0 && deductionComplementLamatPossible && lastPrestation != null) {
                             montantLAMat = montantLAMat.subtract(new BigDecimal(lastPrestation.getMontantJournalier()));
                         }
                     }
