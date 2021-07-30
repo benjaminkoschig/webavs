@@ -74,7 +74,7 @@ public class APBasesCalculProcheAidantBuilder extends APBasesCalculBuilder{
 
         if(mgr.size() > 0) {
             // controle l'age legale
-            Optional<Periode> periode = controleAgeLegal(mgr.<APEnfantMat>getContainerAsList().get(0), this.droit.getDateDebutDroit(), dateFin);
+            Optional<Periode> periode = controleAgeLegal(mgr.<APEnfantMat>getContainerAsList().get(0), dateDebut, dateFin);
 
             if(periode.isPresent()) {
                 // creer les commandes de début de droit et de find de droit à
