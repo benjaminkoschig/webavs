@@ -1069,10 +1069,9 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             // Split de la période LAMAT complémentaire de 14 jours lorsq'elle est en parallèle avec une extension maternité de moins de 14 jours
             if (sommeMontantsJournalier.compareTo(new FWCurrency(0)) == 0 // si c'est une période LAMAT complémentaire 14 jours
                     && joursSupplementairesPrisEnCompte != 0 // si c'est une extension maternité
-                    //&& joursSupplementairesPrisEnCompte < (APDroitMaternite.getDureeDroitCantonale(session)) - (APDroitMaternite.getDureeDroitMat(session)) // si c'est une extension maternité de moins de 14 jours
                     && BSessionUtil.compareDateFirstGreaterOrEqual(session, dateDebut, "01.07.2021") && BSessionUtil.compareDateFirstGreater(session, dateFin, "01.07.2021") // si c'est une période entièrement après le 01.07.2021
-                    && PRDateUtils.getNbDayBetween(dateDebut, dateFin) + 1 == 14 // si c'est une période de LAMAT complémentaire de 14 jours (bloque l'appel récursive et bloque les période déjà coupées par une date de reprise)
-                    && firstPrestationExtension != null) { // si il y au moins une période d'extension de maternité fédérale
+                    && ((PRDateUtils.getNbDayBetween(dateDebut, dateFin) + 1 == 14) || (((APDroitMaternite) droit).getDateRepriseActiv() != null && BSessionUtil.compareDateEqual(session, ((APDroitMaternite) droit).getDateRepriseActiv(), JadeDateUtil.addDays(dateFin, 1)))) // si c'est une période de LAMAT complémentaire de 14 jours normale ou plus courte et coupé par une date reprise + bloque l'appel récursif
+                    && firstPrestationExtension != null) { // si il y au moins une période d'extension de maternité fédérale + bloque l'appel récursif en cas de date reprise
 
                     int joursFirstPeriodLamatComplementaire = PRDateUtils.getNbDayBetween(firstPrestationExtension.getDateDebut(), firstPrestationExtension.getDateFin()) + 1;
 
