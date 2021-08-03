@@ -2,11 +2,11 @@ package globaz.corvus.acor2020.business;
 
 import org.apache.commons.lang.StringUtils;
 
-import java.util.Arrays;
+import java.util.Objects;
 
 public enum FractionRente {
 
-    FRACTION_1("1", 1f),
+    FRACTION_1("1", 1.0f),
     FRACTION_2("2", 0.5f),
     FRACTION_3("3", 0.75f),
     FRACTION_4("4", 0.25f);
@@ -42,7 +42,7 @@ public enum FractionRente {
      */
     public static String getConstFromValue(Float valueFraction) {
         for (FractionRente fraction : FractionRente.values()) {
-            if (valueFraction == fraction.getValueFraction()) {
+            if (Objects.equals(valueFraction, fraction.getValueFraction())) {
                 return fraction.getConstFraction();
             }
         }

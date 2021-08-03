@@ -365,10 +365,6 @@
             <a href="#" onclick="callACORWeb()">
                 <ct:FWLabel key="JSP_OUVRIR_ACOR_WEB"/>
             </a>
-            <a style="width: 50%"></a>
-            <a href="#" onclick="checkACORWeb()">
-                <ct:FWLabel key="JSP_CHECK_ACOR_WEB"/>
-            </a>
         </p>
         <h6>
             <ct:FWLabel key="JSP_CADR_ETAPE_2"/>
