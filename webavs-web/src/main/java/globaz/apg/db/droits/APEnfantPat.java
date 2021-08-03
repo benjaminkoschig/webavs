@@ -7,7 +7,6 @@
 package globaz.apg.db.droits;
 
 import ch.globaz.common.util.Dates;
-import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.properties.APProperties;
 import globaz.globall.db.BStatement;
@@ -47,7 +46,9 @@ public class APEnfantPat extends APSituationFamilialePat {
     @Setter
     @Getter
     private String dateDebut;
-
+    @Setter
+    @Getter
+    private String dateDebutDelaiCadre;
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
 
@@ -75,7 +76,7 @@ public class APEnfantPat extends APSituationFamilialePat {
         if(typeDemande.isProcheAidant()) {
             _propertyMandatory(statement.getTransaction(), this.noAVS, getSession().getLabel(NUMERO_AVS_OBLIGATOIRE));
             LocalDate dateLegale = Dates.toDate(dateNaissance).plusYears(Integer.parseInt(APProperties.PROCHE_AIDANT_AGE_LEGAL.getValue()));
-            if(!hasErrors() && (Dates.toDate(dateDebut).isAfter(dateLegale) || Dates.toDate(dateDebut).isEqual(dateLegale))) {
+            if(!hasErrors() && (Dates.toDate(dateDebutDelaiCadre).isAfter(dateLegale) || Dates.toDate(dateDebutDelaiCadre).isEqual(dateLegale))) {
                 _addError(statement.getTransaction(), getSession().getLabel(AGE_LEGALE_DEPASSE));
                 this.setId(null);
             }

@@ -36,6 +36,7 @@ public class APDroitAPGDTO extends APDroitDTO {
     public APDroitAPGDTO(APDroitDTO droitDTO, String idSituationFam) {
         setIdDroit(droitDTO.getIdDroit());
         setDateDebutDroit(droitDTO.getDateDebutDroit());
+        setDateDebutDroitDelaiCadre(droitDTO.getDateDebutDroitDelaiCadre());
         setModifiable(droitDTO.isModifiable());
         setNoAVS(droitDTO.getNoAVS());
         setNomPrenom(droitDTO.getNomPrenom());
