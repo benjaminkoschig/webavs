@@ -141,7 +141,10 @@ public class APControlerPrestationsProcess extends BProcess {
             mgr.setSession(session);
             mgr.setForEtatPrestation(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
             mgr.setForEtatDroitDifferentDe(IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF);
-            mgr.setNotForGenre(APTypeDePrestation.PANDEMIE.getCodesystemString());
+            ArrayList<String> notForGenre = new ArrayList<>();
+            notForGenre.add(APTypeDePrestation.PANDEMIE.getCodesystemString());
+            notForGenre.add(APTypeDePrestation.PROCHE_AIDANT.getCodesystemString());
+            mgr.setNotForGenre(notForGenre);
 
             // pour memoriser les tiers en erreur
             Map tiersWithError = new HashMap();

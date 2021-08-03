@@ -10,6 +10,9 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * <H1>Manager liant droit APG et prestation</H1>
  * 
@@ -73,7 +76,7 @@ public class APDroitAPGJointLAPGJointPrestationManager extends BManager {
 
     private String forEtatDroitDifferentDe = "";
     private String forEtatPrestation = "";
-    private String notForGenre = "";
+    private List<String> notForGenre = new ArrayList<>();
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -120,13 +123,17 @@ public class APDroitAPGJointLAPGJointPrestationManager extends BManager {
                     + _dbWriteNumeric(statement.getTransaction(), getForEtatDroitDifferentDe());
         }
 
-        if (!JadeStringUtil.isIntegerEmpty(notForGenre)) {
-            if (sqlWhere.length() != 0) {
-                sqlWhere += " AND ";
-            }
+        if(notForGenre.size() > 0) {
+            for (String genre:notForGenre) {
+                if (!JadeStringUtil.isIntegerEmpty(genre)) {
+                    if (sqlWhere.length() != 0) {
+                        sqlWhere += " AND ";
+                    }
 
-            sqlWhere += _getCollection() + APPrestation.TABLE_NAME + "." + APPrestation.FIELDNAME_GENRE_PRESTATION
-                    + "<>" + this._dbWriteNumeric(statement.getTransaction(), notForGenre);
+                    sqlWhere += _getCollection() + APPrestation.TABLE_NAME + "." + APPrestation.FIELDNAME_GENRE_PRESTATION
+                            + "<>" + this._dbWriteNumeric(statement.getTransaction(), genre);
+                }
+            }
         }
 
         return sqlWhere;
@@ -181,11 +188,11 @@ public class APDroitAPGJointLAPGJointPrestationManager extends BManager {
         forEtatPrestation = string;
     }
 
-    public String getNotForGenre() {
+    public List<String> getNotForGenre() {
         return notForGenre;
     }
 
-    public void setNotForGenre(String notForGenre) {
+    public void setNotForGenre(List<String> notForGenre) {
         this.notForGenre = notForGenre;
     }
 }
