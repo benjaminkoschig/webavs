@@ -11,6 +11,7 @@ import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.utils.PRDateUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -117,8 +118,8 @@ public class APBasesCalculProcheAidantBuilder extends APBasesCalculBuilder{
     private Optional<Periode> controleAgeLegal(APEnfantMat enfant, String dateDebut, String dateFin, String dateDebutDelaiCadre) throws PropertiesException {
         LocalDate dateNaissance = Dates.toDate(enfant.getDateNaissance());
         LocalDate datelegale = dateNaissance.plusYears(Integer.parseInt(APProperties.PROCHE_AIDANT_AGE_LEGAL.getValue()));
-        LocalDate controleDate = Dates.toDate(dateDebutDelaiCadre);
-        if(controleDate.isAfter(datelegale) || controleDate.isEqual(datelegale)) {
+        LocalDate controleDate = StringUtils.isEmpty(dateDebutDelaiCadre) ? Dates.toDate(dateDebut) : Dates.toDate(dateDebutDelaiCadre);
+        if(controleDate == null || controleDate.isAfter(datelegale) || controleDate.isEqual(datelegale)) {
             return Optional.empty();
         }
         return Optional.of(new Periode(dateDebut, dateFin));
