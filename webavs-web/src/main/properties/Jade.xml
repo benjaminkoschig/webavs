@@ -2,7 +2,7 @@
 <!--Jade: proprietes generales du systeme-->
 <Jade>
 	<!--homeDir: repertoire de base de l'application, necessaire pour trouver les fichiers de l'application-->
-	<homeDir>D:\workspaces\WebAvs 1.21 Java 1.7\webavs-parent\webavs-web\src\main\webapp</homeDir>
+	<homeDir>D:\Workspaces\WebAVS\trunk\webavs-parent\webavs-web\src\main\webapp</homeDir>
 	<!--persistenceDir: repertoire pour la persistance interne, si vide: homeDir + /persistence-->
 	<persistenceDir></persistenceDir>
 	<!--logDir: repertoire pour les fichiers LOG de l'application, si vide: homeDir + /logs-->
@@ -23,12 +23,15 @@
 	<!-- 	<defaultJdbcUrl>jdbc:jade:AMAL_DEV</defaultJdbcUrl> -->
 	<!-- 	<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->
 	
-	<!-- 	<defaultJdbcUrl>jdbc:jade:CCVD_DEV</defaultJdbcUrl> -->
-	<!-- 	<defaultJdbcSchema>CCVDDEV</defaultJdbcSchema> -->
+<!--	 	<defaultJdbcUrl>jdbc:jade:CCVD_DEV</defaultJdbcUrl> -->
+<!--	 	<defaultJdbcSchema>CCVDDEV</defaultJdbcSchema> -->
 	
-		<defaultJdbcUrl>jdbc:jade:CCJU_DEV</defaultJdbcUrl>
-		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema>
-	
+<!--		<defaultJdbcUrl>jdbc:jade:CCJU_DEV</defaultJdbcUrl>-->
+<!--		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema>-->
+
+<!--		<defaultJdbcUrl>jdbc:jade:FERCIAM_QUA</defaultJdbcUrl>-->
+<!--	    <defaultJdbcSchema>WEBAVSCIAM</defaultJdbcSchema>-->
+
 <!-- 		<defaultJdbcUrl>jdbc:jade:CICICAM_DEV</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>CICIWEB</defaultJdbcSchema> -->
 	
@@ -42,24 +45,24 @@
 <!--  	<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> 	  -->
 <!-- BASES DE QUALITE -->
 
-<!-- 	<defaultJdbcUrl>jdbc:jade:FVE_QUALITE</defaultJdbcUrl> -->
-<!-- 	<defaultJdbcSchema>FVEQUA</defaultJdbcSchema> -->
+<!-- 	<defaultJdbcUrl>jdbc:jade:FVE_QUALITE</defaultJdbcUrl>-->
+<!-- 	<defaultJdbcSchema>FVEQUA</defaultJdbcSchema>-->
 	
 <!-- 	<defaultJdbcUrl>jdbc:jade:CCB_QUALITE</defaultJdbcUrl> -->
 <!-- 	<defaultJdbcSchema>CCBQUA</defaultJdbcSchema> -->
 
 <!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_QA</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>AGLAQUA</defaultJdbcSchema> -->
-	
 <!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_TEST_CLIENTS</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>CCVDINT</defaultJdbcSchema> -->
-	
+
+
 <!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_TEST_CLIENTS</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>PC_CCVD</defaultJdbcSchema> -->
 	
-<!-- 		<defaultJdbcUrl>jdbc:jade:CCJU_QUALITE_1_6</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema>	 -->
-
+ 		<defaultJdbcUrl>jdbc:jade:CCJU_QUALITE_1_6</defaultJdbcUrl>
+ 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema>
+<!---->
 <!-- 		<defaultJdbcUrl>jdbc:jade:H51_X_QUALITE</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>H51XWEB</defaultJdbcSchema> -->
  
@@ -69,17 +72,17 @@
 <!-- 		<defaultJdbcUrl>jdbc:jade:CICICAM_QUALITE</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>CICIWEB</defaultJdbcSchema> -->
 		
-<!-- 		 	<defaultJdbcUrl>jdbc:jade:CCVS_QUALITE_2</defaultJdbcUrl> -->
-<!-- 			<defaultJdbcSchema>DB2COTT</defaultJdbcSchema> -->
+<!-- 		 	<defaultJdbcUrl>jdbc:jade:CCVS_QUALITE_2</defaultJdbcUrl>-->
+<!-- 			<defaultJdbcSchema>DB2COTT</defaultJdbcSchema>-->
 		
 	<!-- 	<defaultJdbcUrl>jdbc:jade:CVCI_QUALTIE</defaultJdbcUrl> -->
 	<!-- 	<defaultJdbcSchema>CVCIWEB</defaultJdbcSchema> -->
 	
-<!-- 		<defaultJdbcUrl>jdbc:jade:FERCIAM_QUA</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>WEBAVSCIAM</defaultJdbcSchema> -->
+<!-- 		<defaultJdbcUrl>jdbc:jade:FERCIAM_QUA</defaultJdbcUrl>-->
+<!-- 		<defaultJdbcSchema>WEBAVSCIAM</defaultJdbcSchema>-->
 	
-<!-- 		<defaultJdbcUrl>jdbc:jade:FPV_QUALITE</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>WEBAVSS</defaultJdbcSchema> -->
+<!-- 		<defaultJdbcUrl>jdbc:jade:FPV_QUALITE</defaultJdbcUrl>-->
+<!-- 		<defaultJdbcSchema>WEBAVSS</defaultJdbcSchema>-->
 		
 <!-- 		<defaultJdbcUrl>jdbc:jade:FVE_INT</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>WEBAVS</defaultJdbcSchema> -->
