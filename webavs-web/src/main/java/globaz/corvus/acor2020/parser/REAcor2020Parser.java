@@ -992,7 +992,9 @@ public class REAcor2020Parser {
 //                        ra.setDateDebutAnticipation(PRDateFormater.convertDate_AAAAMM_to_MMAAAA(PRDateFormater.convertDate_MMAA_to_AAAAMM(REACORAbstractFlatFileParser.getField(line, fields, "DATE_DEBUT_ANTICIPATION"))));
                     ra.setDateDebutAnticipation(PRDateFormater.convertDate_AAAAMM_to_MMAAAA(PRDateFormater.convertDate_AAAAMMJJ_to_AAAAMM(Objects.toString(eachTranche.getDateAnticipation(), StringUtils.EMPTY))));
 //                        ra.setMontantReducationAnticipation(REACORAbstractFlatFileParser.getField(line, fields, "MONTANT_REDUCT_ANTICIPATION"));
-                    ra.setMontantReducationAnticipation(Objects.toString(Math.round(eachRente.getMontantReduction()), StringUtils.EMPTY));
+                    if (Objects.nonNull(eachTranche.getMontantReduction())) {
+                        ra.setMontantReducationAnticipation(Objects.toString(Math.round(eachTranche.getMontantReduction()), StringUtils.EMPTY));
+                    }
                     return ra;
                 }
             }
