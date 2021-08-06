@@ -175,7 +175,7 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
         try {
             return PRACORConst.navigateurACOR(session);
         } catch (PRACORException e) {
-            e.printStackTrace();
+            LOG.info("Impossible de récupérer la properties acor.navigateur");
             // Ne devrait jamais arriver !!!
             return "C:\\Program Files\\" + PRACORConst.EXECUTABLE_FIREFOX_ACOR;
         }

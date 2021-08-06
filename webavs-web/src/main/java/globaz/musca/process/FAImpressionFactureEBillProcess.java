@@ -172,13 +172,13 @@ public class FAImpressionFactureEBillProcess extends FAImpressionFactureProcess 
             System.in.read();
             System.out.println("Arrêt du programme lancé !");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Erreur lors de l'impression des factures Ebill. "+e.getMessage());
         } finally {
             if ((process != null) && (process.getTransaction() != null)) {
                 try {
                     process.getTransaction().closeTransaction();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error("Erreur lors de la fermeture de la transaction dans l'impression des factures Ebill. "+e.getMessage());
                 }
             }
             System.exit(0);

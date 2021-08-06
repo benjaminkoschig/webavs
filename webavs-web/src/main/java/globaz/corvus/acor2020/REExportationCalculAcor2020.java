@@ -1484,7 +1484,7 @@ public class REExportationCalculAcor2020 {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Erreur lors de l'ajout des rentes enfants", e);
         }
     }
 
@@ -1516,7 +1516,7 @@ public class REExportationCalculAcor2020 {
             }
             return listfamillesType;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Erreur lors de la création de la famille.", e);
         }
         return listfamillesType;
     }

@@ -182,7 +182,7 @@ public class PRACORConst {
 
     public static String EXECUTABLE_ACOR = "aoappc\\aostart.exe";
 
-    public static String EXECUTABLE_FIREFOX_ACOR = "Mozilla Firefox\\firefox.exe";
+    public static final String EXECUTABLE_FIREFOX_ACOR = "Mozilla Firefox\\firefox.exe";
 
     public static final String NF_ANNONCE_PAY = "annonce.pay";
     public static final String NF_ANNONCE_RR = "annonce.rr";
