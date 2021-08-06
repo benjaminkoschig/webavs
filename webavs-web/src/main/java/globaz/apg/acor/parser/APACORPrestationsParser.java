@@ -995,7 +995,6 @@ public class APACORPrestationsParser {
         } catch (PRACORException e) {
             throw e;
         } catch (Exception e) {
-            e.printStackTrace();
             throw new PRACORException("impossible de parser", e);
         } finally {
             try {

@@ -6,6 +6,7 @@
  */
 package globaz.apg.vb.droits;
 
+import ch.globaz.al.businessimpl.services.compensation.CompensationFactureServiceImpl;
 import ch.globaz.common.util.Dates;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.droits.APDroitLAPG;
@@ -16,6 +17,8 @@ import globaz.jade.log.JadeLogger;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.pyxis.db.adressecourrier.TILocalite;
 import globaz.pyxis.db.adressecourrier.TILocaliteManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 
@@ -44,6 +47,8 @@ import java.io.Serializable;
  * @author vre
  */
 public class APDroitDTO implements Serializable {
+
+    private static final Logger LOG = LoggerFactory.getLogger(APDroitDTO.class);
 
     // ~ Instance fields
     // ------------------------------------------------------------------------------------------------
@@ -306,7 +311,7 @@ public class APDroitDTO implements Serializable {
                 }
 
             } catch (Exception e) {
-                e.printStackTrace();
+                LOG.error("Impossible de récupérer la localité pour le NPA ("+npa+") : " + e.getMessage());
             }
         }
 

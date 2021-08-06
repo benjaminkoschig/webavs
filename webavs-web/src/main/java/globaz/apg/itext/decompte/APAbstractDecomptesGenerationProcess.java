@@ -1386,7 +1386,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             try {
                 situationProfessionnelleMan.find();
             } catch (final Exception e) {
-                e.printStackTrace();
+                LOG.error("Impossible de récupérer la situation professionnelle du droit("+droit.getIdDroit()+") : " + e.getMessage());
             }
 
             for (int idSP = 0; idSP < situationProfessionnelleMan.size(); ++idSP) {
