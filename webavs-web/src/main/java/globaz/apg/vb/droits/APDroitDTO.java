@@ -158,7 +158,7 @@ public class APDroitDTO implements Serializable {
      * @return la valeur courante de l'attribut date debut droit
      */
     public String getDateDebutDroitDelaiCadre() {
-        return dateDebutDroit;
+        return dateDebutDroitDelaiCadre;
     }
 
     /**
