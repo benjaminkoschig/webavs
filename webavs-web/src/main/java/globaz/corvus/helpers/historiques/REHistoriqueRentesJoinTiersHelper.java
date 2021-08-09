@@ -148,6 +148,8 @@ public class REHistoriqueRentesJoinTiersHelper extends PRAbstractHelper {
                 hr.setCleInfirmiteAtteinteFct(bc.getCleInfirmiteAyantDroit());
                 hr.setCodePrestation(ra.getCodePrestation());
 
+                hr.setCodeMutation(ra.getCodeMutation());
+
                 hr.setCs1(ra.getCodeCasSpeciaux1());
                 hr.setCs2(ra.getCodeCasSpeciaux2());
                 hr.setCs3(ra.getCodeCasSpeciaux3());

@@ -71,6 +71,7 @@ public class REHistoriqueRentes extends REHistoriqueHeader {
     public static final String FIELDNAME_SUPP_CARR = "WIMSUC";
     public static final String FIELDNAME_SUPPL_AJOURN = "WIMSAJ";
     public static final String FIELDNAME_SURV_EV_ASSURE = "WIDSEA";
+    public static final String FIELDNAME_CODE_MUTATION = "WILCMU";
 
     public static final String TABLE_NAME_HISTORIQUE_RENTES = "REHISTR";
 
@@ -140,6 +141,7 @@ public class REHistoriqueRentes extends REHistoriqueHeader {
     private String supplementAjournement = "";
     private String supplementCarriere = "";
     private String survenanceEvenementAssure = "";
+    private String codeMutation = "";
 
     @Override
     protected void _beforeAdd(BTransaction transaction) throws Exception {
@@ -214,6 +216,7 @@ public class REHistoriqueRentes extends REHistoriqueHeader {
         supplementCarriere = statement.dbReadNumeric(REHistoriqueRentes.FIELDNAME_SUPP_CARR);
         survenanceEvenementAssure = PRDateFormater.convertDate_AAAAMM_to_MMxAAAA(statement
                 .dbReadNumeric(REHistoriqueRentes.FIELDNAME_SURV_EV_ASSURE));
+        codeMutation = statement.dbReadString(REHistoriqueRentes.FIELDNAME_CODE_MUTATION);
     }
 
     @Override
@@ -342,6 +345,8 @@ public class REHistoriqueRentes extends REHistoriqueHeader {
         statement.writeField(REHistoriqueRentes.FIELDNAME_SURV_EV_ASSURE, this._dbWriteNumeric(
                 statement.getTransaction(), PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(survenanceEvenementAssure),
                 "survenanceEvenementAssure"));
+        statement.writeField(REHistoriqueRentes.FIELDNAME_CODE_MUTATION,
+                this._dbWriteString(statement.getTransaction(), codeMutation, "codeMutation"));
     }
 
     public String getAnneeMontantRAM() {
@@ -736,5 +741,13 @@ public class REHistoriqueRentes extends REHistoriqueHeader {
 
     public void setSurvenanceEvenementAssure(String survenanceEvenementAssure) {
         this.survenanceEvenementAssure = survenanceEvenementAssure;
+    }
+
+    public String getCodeMutation() {
+        return codeMutation;
+    }
+
+    public void setCodeMutation(String codeMutation) {
+        this.codeMutation = codeMutation;
     }
 }
