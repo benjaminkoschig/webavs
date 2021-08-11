@@ -23,6 +23,7 @@ import globaz.musca.application.FAApplication;
 import globaz.musca.external.ServicesFacturation;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationManager;
+import globaz.naos.translation.CodeSystem;
 import globaz.osiris.api.APICompteAnnexe;
 import globaz.osiris.api.APIRubrique;
 import globaz.osiris.api.APISection;
@@ -41,6 +42,9 @@ import globaz.pyxis.db.tiers.TIAdministrationViewBean;
 import globaz.pyxis.db.tiers.TIHistoriqueAvs;
 import globaz.pyxis.db.tiers.TIHistoriqueContribuable;
 import globaz.pyxis.db.tiers.TIRole;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -200,6 +204,10 @@ public class FAAfact extends BEntity implements Serializable, IFAPrintDoc, Clone
     private String typeCalculInteretMoratoire = "0";
     private String typeModule = new String();
     private String user = new String();
+
+    @Getter
+    @Setter
+    private String typeCalcul = "";
 
     /**
      * Commentaire relatif au constructeur FAAfact
@@ -422,7 +430,9 @@ public class FAAfact extends BEntity implements Serializable, IFAPrintDoc, Clone
             masseDejaFact = new FWCurrency(masseDejaFacturee);
         }
         masseInit.sub(masseDejaFact);
-        setMasseFacture(masseInit.toString());
+        if(!CodeSystem.TYPE_CALCUL_MONTANT_FIXE.equals(typeCalcul)) {
+            setMasseFacture(masseInit.toString());
+        }
         // taux à facturer
         if (!globaz.jade.client.util.JadeStringUtil.isBlank(tauxInitial)) {
             setTauxFacture(tauxInitial);

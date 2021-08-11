@@ -382,8 +382,13 @@ $(function () {
 								</TD>
 					<% 			} else { %>
 								<TD nowrap>
+									<% if(globaz.naos.translation.CodeSystem.TYPE_CALCUL_MONTANT_FIXE.equals(cotisation.getTypeCalcul())) {%>
+									<INPUT type="text" name="montantFixe<%=i%>" size="20" value="<%=cotisation.getMontantFixeString(viewBean.isFirstCalculation())%>"
+										   style="text-align : right;" readonly="true" tabindex="-1" class="Disabled">
+									<% } else {%>
 									<INPUT type="text" name="masse<%=i%>" size="20" value="<%=cotisation.getMasseString(viewBean.isFirstCalculation())%>"
 										style="text-align : right;">
+									<% } %>
 								</TD>
 								<TD nowrap>
 									<INPUT type="text" name="taux<%=i%>" size="8" value="<%=cotisation.getTauxString()%>"

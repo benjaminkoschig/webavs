@@ -12,11 +12,13 @@ import globaz.framework.servlets.FWServlet;
 import globaz.globall.http.JSPUtils;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.db.cotisation.AFCotisationViewBean;
-import java.io.IOException;
+import globaz.naos.translation.CodeSystem;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 /**
  * Classe permettant la gestion des actions pour l'entité Cotisation.
@@ -42,9 +44,9 @@ public class AFActionCotisation extends AFDefaultActionChercher {
     /**
      * Destination après une suppression réussie dans la DB.
      * 
-     * @see globaz.framework.controller.FWDefaultServletAction#_getDestSupprimerSucces(javax.servlet.http.HttpSession,
-     *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
-     *      globaz.framework.bean.FWViewBeanInterface)
+     * @see globaz.framework.controller.FWDefaultServletAction#_getDestSupprimerSucces(HttpSession,
+     *      HttpServletRequest, HttpServletResponse,
+     *      FWViewBeanInterface)
      */
     @Override
     protected String _getDestSupprimerSucces(HttpSession session, HttpServletRequest request,
@@ -59,18 +61,18 @@ public class AFActionCotisation extends AFDefaultActionChercher {
     /**
      * Action utilisée pour la suppression d'une affiliation.
      * 
-     * @see globaz.naos.db.affiliation.AFAffiliation#_supression(java.lang.String idTiers, java.lang.String
+     * @see globaz.naos.db.affiliation.AFAffiliation#_supression(String idTiers, String
      *      affiliationId)
      * 
      * @param session
      * @param request
      * @param response
-     * @throws javax.servlet.ServletException
-     * @throws java.io.IOException
+     * @throws ServletException
+     * @throws IOException
      */
     protected void actionAfficherCreeException(HttpSession session, HttpServletRequest request,
-            HttpServletResponse response, FWDispatcher mainDispatcher) throws javax.servlet.ServletException,
-            java.io.IOException {
+            HttpServletResponse response, FWDispatcher mainDispatcher) throws ServletException,
+            IOException {
 
         String _destination = "";
 
@@ -111,12 +113,12 @@ public class AFActionCotisation extends AFDefaultActionChercher {
      * @param request
      * @param response
      * @param mainDispatcher
-     * @throws javax.servlet.ServletException
-     * @throws java.io.IOException
+     * @throws ServletException
+     * @throws IOException
      */
     protected void actionAfficherModifierException(HttpSession session, HttpServletRequest request,
-            HttpServletResponse response, FWDispatcher mainDispatcher) throws javax.servlet.ServletException,
-            java.io.IOException {
+            HttpServletResponse response, FWDispatcher mainDispatcher) throws ServletException,
+            IOException {
 
         String _destination = "";
 
@@ -153,9 +155,9 @@ public class AFActionCotisation extends AFDefaultActionChercher {
     /**
      * Action utilisée pour la recherche.
      * 
-     * @see globaz.framework.controller.FWDefaultServletAction#actionChercher(javax.servlet.http.HttpSession,
-     *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
-     *      globaz.framework.controller.FWDispatcher)
+     * @see globaz.framework.controller.FWDefaultServletAction#actionChercher(HttpSession,
+     *      HttpServletRequest, HttpServletResponse,
+     *      FWDispatcher)
      */
     @Override
     protected void actionChercher(HttpSession session, HttpServletRequest request, HttpServletResponse response,
@@ -217,41 +219,48 @@ public class AFActionCotisation extends AFDefaultActionChercher {
     /**
      * Action utilisée pour la suppression d'une affiliation.
      * 
-     * @see globaz.naos.db.affiliation.AFAffiliation#_supression(java.lang.String idTiers, java.lang.String
+     * @see globaz.naos.db.affiliation.AFAffiliation#_supression(String idTiers, String
      *      affiliationId)
      * 
      * @param session
      * @param request
      * @param response
-     * @throws javax.servlet.ServletException
-     * @throws java.io.IOException
+     * @throws ServletException
+     * @throws IOException
      */
     protected void actionCreeException(HttpSession session, HttpServletRequest request, HttpServletResponse response)
-            throws javax.servlet.ServletException, java.io.IOException {
+            throws ServletException, IOException {
 
         String _destination = "";
         String selectedId = request.getParameter("selectedId");
 
         AFCotisationViewBean viewBean = (AFCotisationViewBean) session.getAttribute("viewBean");
 
-        String periodiciteNouvelleMasse = request.getParameter("periodiciteNouvelleMasse");
-        String nouvelleMasse = request.getParameter("nouvelleMasse");
-
-        try {
-            globaz.globall.http.JSPUtils.setBeanProperties(request, viewBean);
-            viewBean.updateMasseAnnuelle(periodiciteNouvelleMasse, nouvelleMasse);
-            viewBean.add();
-            String errors = viewBean.getSession().getErrors().toString();
-            if (!JadeStringUtil.isEmpty(errors)) {
-                viewBean.setCotisationId(selectedId);
-                viewBean.setMsgType(FWViewBeanInterface.ERROR);
-                viewBean.setMessage(errors);
-            }
-        } catch (Exception e) {
+        if(CodeSystem.TYPE_ASS_CRP_BASIC.equals(viewBean.getAssurance().getTypeAssurance())) {
+            viewBean.setCotisationId(selectedId);
             viewBean.setMsgType(FWViewBeanInterface.ERROR);
-            viewBean.setMessage(e.getMessage());
+            viewBean.setMessage(viewBean.getSession().getLabel("PAS_EXCEPTION_ASSURANCE"));
         }
 
+        if (!viewBean.getMsgType().equals(FWViewBeanInterface.ERROR)) {
+            String periodiciteNouvelleMasse = request.getParameter("periodiciteNouvelleMasse");
+            String nouvelleMasse = request.getParameter("nouvelleMasse");
+
+            try {
+                JSPUtils.setBeanProperties(request, viewBean);
+                viewBean.updateMasseAnnuelle(periodiciteNouvelleMasse, nouvelleMasse);
+                viewBean.add();
+                String errors = viewBean.getSession().getErrors().toString();
+                if (!JadeStringUtil.isEmpty(errors)) {
+                    viewBean.setCotisationId(selectedId);
+                    viewBean.setMsgType(FWViewBeanInterface.ERROR);
+                    viewBean.setMessage(errors);
+                }
+            } catch (Exception e) {
+                viewBean.setMsgType(FWViewBeanInterface.ERROR);
+                viewBean.setMessage(e.getMessage());
+            }
+        }
         session.removeAttribute("viewBean");
         session.setAttribute("viewBean", viewBean);
 
@@ -267,9 +276,9 @@ public class AFActionCotisation extends AFDefaultActionChercher {
     /**
      * Traitement des actions non standard.
      * 
-     * @see globaz.framework.controller.FWDefaultServletAction#actionCustom(javax.servlet.http.HttpSession,
-     *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
-     *      globaz.framework.controller.FWDispatcher)
+     * @see globaz.framework.controller.FWDefaultServletAction#actionCustom(HttpSession,
+     *      HttpServletRequest, HttpServletResponse,
+     *      FWDispatcher)
      */
     @Override
     protected void actionCustom(HttpSession session, HttpServletRequest request, HttpServletResponse response,
@@ -303,9 +312,9 @@ public class AFActionCotisation extends AFDefaultActionChercher {
     /**
      * Effectue des traitements avant sélection.
      * 
-     * @see globaz.framework.controller.FWDefaultServletAction#actionSelectionner(javax.servlet.http.HttpSession,
-     *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
-     *      globaz.framework.controller.FWDispatcher)
+     * @see globaz.framework.controller.FWDefaultServletAction#actionSelectionner(HttpSession,
+     *      HttpServletRequest, HttpServletResponse,
+     *      FWDispatcher)
      */
     @Override
     protected void actionSelectionner(HttpSession session, HttpServletRequest request, HttpServletResponse response,
@@ -332,9 +341,9 @@ public class AFActionCotisation extends AFDefaultActionChercher {
     /**
      * Effectue des traitements avant l'ajout d'une nouvelle entité dans la DB.
      * 
-     * @see globaz.framework.controller.FWDefaultServletAction#beforeAjouter(javax.servlet.http.HttpSession,
-     *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
-     *      globaz.framework.bean.FWViewBeanInterface)
+     * @see globaz.framework.controller.FWDefaultServletAction#beforeAjouter(HttpSession,
+     *      HttpServletRequest, HttpServletResponse,
+     *      FWViewBeanInterface)
      */
     @Override
     protected FWViewBeanInterface beforeAjouter(HttpSession session, HttpServletRequest request,
@@ -362,9 +371,9 @@ public class AFActionCotisation extends AFDefaultActionChercher {
     /**
      * Effectue des traitements avant la modification d'une entité dans la DB.
      * 
-     * @see globaz.framework.controller.FWDefaultServletAction#beforeModifier(javax.servlet.http.HttpSession,
-     *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
-     *      globaz.framework.bean.FWViewBeanInterface)
+     * @see globaz.framework.controller.FWDefaultServletAction#beforeModifier(HttpSession,
+     *      HttpServletRequest, HttpServletResponse,
+     *      FWViewBeanInterface)
      */
     @Override
     protected FWViewBeanInterface beforeModifier(HttpSession session, HttpServletRequest request,
@@ -398,9 +407,9 @@ public class AFActionCotisation extends AFDefaultActionChercher {
     /**
      * Effectue des traitements avant la saisie d'une nouvelle entité.
      * 
-     * @see globaz.framework.controller.FWDefaultServletAction#beforeNouveau(javax.servlet.http.HttpSession,
-     *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
-     *      globaz.framework.bean.FWViewBeanInterface)
+     * @see globaz.framework.controller.FWDefaultServletAction#beforeNouveau(HttpSession,
+     *      HttpServletRequest, HttpServletResponse,
+     *      FWViewBeanInterface)
      */
     @Override
     protected FWViewBeanInterface beforeNouveau(HttpSession session, HttpServletRequest request,

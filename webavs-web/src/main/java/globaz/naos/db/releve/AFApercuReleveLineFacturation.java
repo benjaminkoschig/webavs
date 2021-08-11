@@ -7,6 +7,8 @@ import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Class utilisée pour enregistré les données d'une cotisation de l'entité Relevé.
@@ -56,6 +58,9 @@ public class AFApercuReleveLineFacturation implements Cloneable {
     private String typeCalcul = null;
     private String typeAssurance = null;
     private String periodiciteCoti = null;
+    @Getter
+    @Setter
+    private double montantFixe = 0.0;
 
     // *******************************************************
     // Getter
@@ -205,6 +210,10 @@ public class AFApercuReleveLineFacturation implements Cloneable {
 
     public String getMontantCalculerString() {
         return JANumberFormatter.fmt(Double.toString(montantCalculer), true, true, false, 2);
+    }
+
+    public String getMontantFixeString(boolean wantBlankIfZero) {
+        return JANumberFormatter.fmt(Double.toString(montantFixe), true, true, false, 2);
     }
 
     public String getNatureRubrique() {

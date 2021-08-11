@@ -1,11 +1,7 @@
 package globaz.naos.db.tauxAssurance;
 
 import globaz.framework.util.FWCurrency;
-import globaz.globall.db.BEntity;
-import globaz.globall.db.BManager;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.db.BStatement;
-import globaz.globall.db.BTransaction;
+import globaz.globall.db.*;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.globall.util.JAUtil;
@@ -20,6 +16,7 @@ import globaz.osiris.db.comptes.CATauxRubriques;
 import globaz.osiris.db.comptes.CATauxRubriquesManager;
 import globaz.pyxis.db.tiers.TIAdministrationManager;
 import globaz.pyxis.db.tiers.TIAdministrationViewBean;
+
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.Enumeration;
@@ -44,33 +41,33 @@ public class AFTauxAssurance extends BEntity {
     // variable pour l'affichage ou non du taux sur facture
     private boolean affichageTaux = true;
     // Foreign Key
-    private java.lang.String assuranceId = new String();
-    private java.lang.String categorieId = new String();
+    private String assuranceId = new String();
+    private String categorieId = new String();
     // Fields
-    private java.lang.String dateDebut = new String();
-    private java.lang.String dateFin = new String();
-    private java.lang.String fraction = new String();
-    private java.lang.String genreValeur = new String();
-    private java.lang.String periodiciteMontant = new String();
-    private java.lang.String rang = new String();
-    private java.lang.String saisieCanton = new String();
-    private java.lang.String saisieCategorie = new String();
-    private java.lang.String saisieCodeAdministration = new String();
+    private String dateDebut = new String();
+    private String dateFin = new String();
+    private String fraction = new String();
+    private String genreValeur = new String();
+    private String periodiciteMontant = new String();
+    private String rang = new String();
+    private String saisieCanton = new String();
+    private String saisieCategorie = new String();
+    private String saisieCodeAdministration = new String();
 
-    private java.lang.String saisieGenreValeur = new String();
+    private String saisieGenreValeur = new String();
 
-    private java.lang.String saisieSexe = new String();
+    private String saisieSexe = new String();
 
-    private java.lang.String sexe = new String();
+    private String sexe = new String();
     // DB
     // Primary Key
-    private java.lang.String tauxAssuranceId = new String();
-    private java.lang.String tranche = new String();
+    private String tauxAssuranceId = new String();
+    private String tranche = new String();
 
-    private java.lang.String typeId = CodeSystem.TYPE_TAUX_DEFAUT;
+    private String typeId = CodeSystem.TYPE_TAUX_DEFAUT;
 
-    private java.lang.String valeurEmploye = new String();
-    private java.lang.String valeurEmployeur = new String();
+    private String valeurEmploye = new String();
+    private String valeurEmployeur = new String();
 
     /**
      * Constructeur d'AFTauxAssurance.
@@ -81,7 +78,7 @@ public class AFTauxAssurance extends BEntity {
     }
 
     /**
-     * @see globaz.globall.db.BEntity#_afterRetrieve(globaz.globall.db.BTransaction)
+     * @see BEntity#_afterRetrieve(BTransaction)
      */
     @Override
     protected void _afterAdd(BTransaction transaction) throws Exception {
@@ -111,7 +108,7 @@ public class AFTauxAssurance extends BEntity {
     }
 
     /**
-     * @see globaz.globall.db.BEntity#_afterRetrieve(globaz.globall.db.BTransaction)
+     * @see BEntity#_afterRetrieve(BTransaction)
      */
     @Override
     protected void _afterRetrieve(BTransaction transaction) throws Exception {
@@ -192,7 +189,7 @@ public class AFTauxAssurance extends BEntity {
     /**
      * Effectue des traitements avant un ajout dans la BD.
      * 
-     * @see globaz.globall.db.BEntity#_beforeAdd(globaz.globall.db.BTransaction)
+     * @see BEntity#_beforeAdd(BTransaction)
      */
     @Override
     protected void _beforeAdd(BTransaction transaction) throws Exception {
@@ -203,7 +200,7 @@ public class AFTauxAssurance extends BEntity {
     /**
      * Retour le nom de la Table.
      * 
-     * @see globaz.globall.db.BEntity#_getTableName()
+     * @see BEntity#_getTableName()
      */
     @Override
     protected String _getTableName() {
@@ -213,7 +210,7 @@ public class AFTauxAssurance extends BEntity {
     /**
      * Lit dans la DB les valeurs des propriétés de l'entité.
      * 
-     * @see globaz.globall.db.BEntity#_readProperties(globaz.globall.db.BStatement)
+     * @see BEntity#_readProperties(BStatement)
      */
     @Override
     protected void _readProperties(BStatement statement) throws Exception {
@@ -236,7 +233,7 @@ public class AFTauxAssurance extends BEntity {
     /**
      * Valide le contenu de l'entité.
      * 
-     * @see globaz.globall.db.BEntity#_validate(globaz.globall.db.BStatement)
+     * @see BEntity#_validate(BStatement)
      */
     @Override
     protected void _validate(BStatement statement) throws Exception {
@@ -255,7 +252,10 @@ public class AFTauxAssurance extends BEntity {
             setRang("");
             setTranche("");
         }
-        if (CodeSystem.GEN_VALEUR_ASS_TAUX.equals(getGenreValeur())) {
+        if(CodeSystem.TYPE_ASS_CRP_BASIC.equals(getAssurance().getTypeAssurance())) {
+            _addError(statement.getTransaction(), getSession().getLabel("PAS_TAUX_ASSURANCE"));
+            validationOK = false;
+        } else if (CodeSystem.GEN_VALEUR_ASS_TAUX.equals(getGenreValeur())) {
             if (JadeStringUtil.isEmpty(valeurEmployeur) && JadeStringUtil.isEmpty(valeurEmploye)) {
 
                 _addError(statement.getTransaction(), getSession().getLabel("1380"));
@@ -525,7 +525,7 @@ public class AFTauxAssurance extends BEntity {
     /**
      * Sauvegarde les valeurs des propriétés composant la clé primaire de l'entité.
      * 
-     * @see globaz.globall.db.BEntity#_writePrimaryKey(globaz.globall.db.BStatement)
+     * @see BEntity#_writePrimaryKey(BStatement)
      */
     @Override
     protected void _writePrimaryKey(BStatement statement) throws Exception {
@@ -535,7 +535,7 @@ public class AFTauxAssurance extends BEntity {
     /**
      * Sauvegarde dans la DB les valeurs des propriétés de l'entité.
      * 
-     * @see globaz.globall.db.BEntity#_writeProperties(globaz.globall.db.BStatement)
+     * @see BEntity#_writeProperties(BStatement)
      */
     @Override
     protected void _writeProperties(BStatement statement) throws Exception {
@@ -640,11 +640,11 @@ public class AFTauxAssurance extends BEntity {
         return _assurance;
     }
 
-    public java.lang.String getAssuranceId() {
+    public String getAssuranceId() {
         return assuranceId;
     }
 
-    public java.lang.String getCategorieId() {
+    public String getCategorieId() {
         return categorieId;
     }
 
@@ -652,11 +652,11 @@ public class AFTauxAssurance extends BEntity {
     // Getter
     // *******************************************************
 
-    public java.lang.String getDateDebut() {
+    public String getDateDebut() {
         return dateDebut;
     }
 
-    public java.lang.String getDateFin() {
+    public String getDateFin() {
         return dateFin;
     }
 
@@ -674,12 +674,12 @@ public class AFTauxAssurance extends BEntity {
         return except;
     }
 
-    public java.lang.String getFraction() {
+    public String getFraction() {
         // return JANumberFormatter.fmt("100",true,false,true,5);
         return JANumberFormatter.fmt(fraction.toString(), true, false, true, 0);
     }
 
-    public java.lang.String getGenreValeur() {
+    public String getGenreValeur() {
         return genreValeur;
     }
 
@@ -692,39 +692,39 @@ public class AFTauxAssurance extends BEntity {
         return new AFTauxAssuranceManager();
     }
 
-    public java.lang.String getPeriodiciteMontant() {
+    public String getPeriodiciteMontant() {
         return periodiciteMontant;
     }
 
-    public java.lang.String getRang() {
+    public String getRang() {
         return JANumberFormatter.fmt(rang.toString(), false, false, true, 0);
     }
 
-    public java.lang.String getSaisieCanton() {
+    public String getSaisieCanton() {
         return saisieCanton;
     }
 
-    public java.lang.String getSaisieCategorie() {
+    public String getSaisieCategorie() {
         return saisieCategorie;
     }
 
-    public java.lang.String getSaisieCodeAdministration() {
+    public String getSaisieCodeAdministration() {
         return saisieCodeAdministration;
     }
 
-    public java.lang.String getSaisieGenreValeur() {
+    public String getSaisieGenreValeur() {
         return saisieGenreValeur;
     }
 
-    public java.lang.String getSaisieSexe() {
+    public String getSaisieSexe() {
         return saisieSexe;
     }
 
-    public java.lang.String getSexe() {
+    public String getSexe() {
         return sexe;
     }
 
-    public java.lang.String getTauxAssuranceId() {
+    public String getTauxAssuranceId() {
         return tauxAssuranceId;
     }
 
@@ -754,19 +754,19 @@ public class AFTauxAssurance extends BEntity {
 
     }
 
-    public java.lang.String getTranche() {
+    public String getTranche() {
         return JANumberFormatter.fmt(tranche.toString(), true, false, true, 2);
     }
 
-    public java.lang.String getTypeId() {
+    public String getTypeId() {
         return typeId;
     }
 
-    public java.lang.String getValeurEmploye() {
+    public String getValeurEmploye() {
         return JANumberFormatter.fmt(valeurEmploye.toString(), true, false, false, 5);
     }
 
-    public java.lang.String getValeurEmployeur() {
+    public String getValeurEmployeur() {
         return JANumberFormatter.fmt(valeurEmployeur.toString(), true, false, false, 5);
     }
 
@@ -774,7 +774,7 @@ public class AFTauxAssurance extends BEntity {
     // Setter
     // *******************************************************
 
-    public java.lang.String getValeurTotal() {
+    public String getValeurTotal() {
         String result = "";
 
         if (CodeSystem.GEN_VALEUR_ASS_MONTANT.equals(getGenreValeur())) {
@@ -837,79 +837,79 @@ public class AFTauxAssurance extends BEntity {
         this.affichageTaux = affichageTaux;
     }
 
-    public void setAssuranceId(java.lang.String newAssuranceId) {
+    public void setAssuranceId(String newAssuranceId) {
         assuranceId = newAssuranceId;
     }
 
-    public void setCategorieId(java.lang.String newCategorieId) {
+    public void setCategorieId(String newCategorieId) {
         categorieId = newCategorieId;
     }
 
-    public void setDateDebut(java.lang.String newDateDebut) {
+    public void setDateDebut(String newDateDebut) {
         dateDebut = newDateDebut;
     }
 
-    public void setDateFin(java.lang.String newDateFin) {
+    public void setDateFin(String newDateFin) {
         dateFin = newDateFin;
     }
 
-    public void setFraction(java.lang.String newFraction) {
+    public void setFraction(String newFraction) {
         fraction = JANumberFormatter.deQuote(newFraction);
     }
 
-    public void setGenreValeur(java.lang.String string) {
+    public void setGenreValeur(String string) {
         genreValeur = string;
     }
 
-    public void setPeriodiciteMontant(java.lang.String newPeriodiciteMontant) {
+    public void setPeriodiciteMontant(String newPeriodiciteMontant) {
         periodiciteMontant = newPeriodiciteMontant;
     }
 
-    public void setRang(java.lang.String string) {
+    public void setRang(String string) {
         rang = string;
     }
 
-    public void setSaisieCanton(java.lang.String string) {
+    public void setSaisieCanton(String string) {
         saisieCanton = string;
     }
 
-    public void setSaisieCategorie(java.lang.String string) {
+    public void setSaisieCategorie(String string) {
         saisieCategorie = string;
     }
 
-    public void setSaisieCodeAdministration(java.lang.String string) {
+    public void setSaisieCodeAdministration(String string) {
         saisieCodeAdministration = string;
     }
 
-    public void setSaisieGenreValeur(java.lang.String string) {
+    public void setSaisieGenreValeur(String string) {
         saisieGenreValeur = string;
     }
 
-    public void setSaisieSexe(java.lang.String string) {
+    public void setSaisieSexe(String string) {
         saisieSexe = string;
     }
 
-    public void setSexe(java.lang.String string) {
+    public void setSexe(String string) {
         sexe = string;
     }
 
-    public void setTauxAssuranceId(java.lang.String newTauxAssuranceId) {
+    public void setTauxAssuranceId(String newTauxAssuranceId) {
         tauxAssuranceId = newTauxAssuranceId;
     }
 
-    public void setTranche(java.lang.String string) {
+    public void setTranche(String string) {
         tranche = JANumberFormatter.deQuote(string);
     }
 
-    public void setTypeId(java.lang.String newTypeId) {
+    public void setTypeId(String newTypeId) {
         typeId = newTypeId;
     }
 
-    public void setValeurEmploye(java.lang.String string) {
+    public void setValeurEmploye(String string) {
         valeurEmploye = JANumberFormatter.deQuote(string);
     }
 
-    public void setValeurEmployeur(java.lang.String string) {
+    public void setValeurEmployeur(String string) {
         valeurEmployeur = JANumberFormatter.deQuote(string);
     }
 

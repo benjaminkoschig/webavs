@@ -10,7 +10,7 @@ import globaz.globall.parameters.FWParametersSystemCode;
 
 /**
  * Insérez la description du type ici. Date de création : (10.06.2002 10:42:09)
- * 
+ *
  * @author: Administrator
  */
 public class CodeSystem {
@@ -453,13 +453,16 @@ public class CodeSystem {
     public final static String TYPE_ASS_REDPFA_DSE_VARIABLE = "812039";
     public final static String TYPE_ASS_TAXE_AMENDE = "812017";
     public final static String TYPE_ASS_TAXE_CO2 = "812019";
+    public final static String TYPE_ASS_CRP_BASIC = "812044";
     // Type Association
     public static final String TYPE_ASSOCIATION_ASSOCIE = "834001";
     public static final String TYPE_ASSOCIATION_COMMENDIT = "834002";
+    // Type Calcul
     public static final String TYPE_CALCUL_COTISATION = "833003";
     public static final String TYPE_CALCUL_MASSE = "833002";
-    // Type Calcul
+    public static final String TYPE_CALCUL_MONTANT_FIXE = "833004";
     public static final String TYPE_CALCUL_STANDARD = "833001";
+
     public static final String TYPE_CAT_ANNONCE = "836001";
     public static final String TYPE_CAT_ANNONCE_LAA = "836014";
     public static final String TYPE_CAT_ANNONCE_LAA_TSE = "836022";
@@ -607,7 +610,7 @@ public class CodeSystem {
 
     /**
      * Retourne le libellé d'un code système.
-     * 
+     *
      * @param session
      * @param code
      * @return
@@ -629,7 +632,7 @@ public class CodeSystem {
 
     /**
      * Retourne le libellé d'un code système.
-     * 
+     *
      * @param session
      * @param code
      * @return
@@ -674,7 +677,7 @@ public class CodeSystem {
 
     /**
      * Extrait la Session de HttpSession.
-     * 
+     *
      * @param httpSession
      * @return la BISession
      * @throws Exception
@@ -705,13 +708,13 @@ public class CodeSystem {
 
     /*
      * Retourne une liste d'option sans valeur "vide", pour un Type de "Code System" donné.
-     * 
+     *
      * @param type le type de Code System
-     * 
+     *
      * @param selectedOption le code System a selectionner
-     * 
+     *
      * @param session la session HTTP actuelle
-     * 
+     *
      * @return la liste d'option
      */
     /*
@@ -721,24 +724,24 @@ public class CodeSystem {
 
     /*
      * Retourne une liste d'option sans valeur "vide", pour un Type de code System donné.
-     * 
+     *
      * @param type le type de Code System
-     * 
+     *
      * @param selectedOption le code System a selectionner
-     * 
+     *
      * @param bsession la session actuelle (provenant du viewBean de la page jsp)
-     * 
+     *
      * @return la liste d'option
      */
     /*
      * public static String getOption (BSession bsession, String code, String type) {
-     * 
+     *
      * StringBuffer options = new StringBuffer(); try { FWParametersSystemCodeManager scManager =
      * FWTranslation.getSystemCodeListSup(type, bsession, null);
-     * 
+     *
      * for (int i = 0 ; i < scManager.size(); i ++) { FWParametersSystemCode codeSystem =
      * (FWParametersSystemCode)scManager.getEntity(i);
-     * 
+     *
      * if (! JAUtil.isStringEmpty(codeSystem.getIdCode())) { options.append("<option "); if
      * (codeSystem.getIdCode().equals(code)) { options.append("selected "); } options.append("value=\"" +
      * codeSystem.getIdCode() + "\">"); options.append(CodeSystem.getLibelle(bsession, codeSystem.getIdCode()));

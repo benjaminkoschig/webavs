@@ -11,20 +11,9 @@ import globaz.globall.api.BIApplication;
 import globaz.globall.api.BISession;
 import globaz.globall.api.BITransaction;
 import globaz.globall.api.GlobazSystem;
-import globaz.globall.db.BEntity;
-import globaz.globall.db.BManager;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.db.BStatement;
-import globaz.globall.db.BTransaction;
-import globaz.globall.db.FWFindParameter;
-import globaz.globall.db.GlobazServer;
+import globaz.globall.db.*;
 import globaz.globall.format.IFormatData;
-import globaz.globall.util.JACalendar;
-import globaz.globall.util.JACalendarGregorian;
-import globaz.globall.util.JADate;
-import globaz.globall.util.JAException;
-import globaz.globall.util.JANumberFormatter;
+import globaz.globall.util.*;
 import globaz.hercule.db.controleEmployeur.CEControleEmployeur;
 import globaz.hercule.db.controleEmployeur.CEControleEmployeurManager;
 import globaz.jade.client.util.JadeDateUtil;
@@ -37,12 +26,7 @@ import globaz.lupus.db.data.LUProvenanceDataSource;
 import globaz.lupus.db.journalisation.LUJournalListViewBean;
 import globaz.lupus.db.journalisation.LUJournalViewBean;
 import globaz.musca.api.IFAPassage;
-import globaz.musca.db.facturation.FAAfact;
-import globaz.musca.db.facturation.FAEnteteFacture;
-import globaz.musca.db.facturation.FAEnteteFactureManager;
-import globaz.musca.db.facturation.FAModuleFacturation;
-import globaz.musca.db.facturation.FAPassage;
-import globaz.musca.db.facturation.FARemarque;
+import globaz.musca.db.facturation.*;
 import globaz.musca.external.ServicesFacturation;
 import globaz.musca.util.FAUtil;
 import globaz.naos.application.AFApplication;
@@ -72,6 +56,7 @@ import globaz.osiris.utils.CAUtil;
 import globaz.phenix.toolbox.CPToolBox;
 import globaz.pyxis.db.tiers.TIRole;
 import globaz.pyxis.db.tiers.TITiers;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -266,7 +251,7 @@ public class AFApercuReleve extends BEntity {
      * 
      * !! Cette methode est appellée AVANT _validate() <br>
      * 
-     * @see globaz.globall.db.BEntity#_beforeAdd(globaz.globall.db.BTransaction)
+     * @see BEntity#_beforeAdd(BTransaction)
      */
     @Override
     protected void _beforeAdd(BTransaction transaction) throws Exception {
@@ -286,7 +271,7 @@ public class AFApercuReleve extends BEntity {
     /**
      * Effectue des traitements avant une suppression dans la BD.
      * 
-     * @see globaz.globall.db.BEntity#_beforeDelete(globaz.globall.db.BTransaction)
+     * @see BEntity#_beforeDelete(BTransaction)
      */
     @Override
     protected void _beforeDelete(BTransaction transaction) throws Exception {
@@ -304,7 +289,7 @@ public class AFApercuReleve extends BEntity {
      * 
      * !! Cette methode est appellée APRÈS _validate()
      * 
-     * @see globaz.globall.db.BEntity#_beforeUpdate(globaz.globall.db.BTransaction)
+     * @see BEntity#_beforeUpdate(BTransaction)
      */
     @Override
     protected void _beforeUpdate(BTransaction transaction) throws Exception {
@@ -329,7 +314,7 @@ public class AFApercuReleve extends BEntity {
     /**
      * Retour le nom de la Table.
      * 
-     * @see globaz.globall.db.BEntity#_getTableName()
+     * @see BEntity#_getTableName()
      */
     @Override
     protected String _getTableName() {
@@ -339,7 +324,7 @@ public class AFApercuReleve extends BEntity {
     /**
      * Lit dans la DB les valeurs des propriétés de l'entité.
      * 
-     * @see globaz.globall.db.BEntity#_readProperties(globaz.globall.db.BStatement)
+     * @see BEntity#_readProperties(BStatement)
      */
     @Override
     protected void _readProperties(BStatement statement) throws Exception {
@@ -365,7 +350,7 @@ public class AFApercuReleve extends BEntity {
     /**
      * Valide le contenu de l'entité.
      * 
-     * @see globaz.globall.db.BEntity#_validate(globaz.globall.db.BStatement)
+     * @see BEntity#_validate(BStatement)
      */
     @Override
     protected void _validate(BStatement statement) throws Exception {
@@ -440,7 +425,7 @@ public class AFApercuReleve extends BEntity {
     /**
      * Sauvegarde les valeurs des propriétés composant la clé primaire de l'entité.
      * 
-     * @see globaz.globall.db.BEntity#_writePrimaryKey(globaz.globall.db.BStatement)
+     * @see BEntity#_writePrimaryKey(BStatement)
      */
     @Override
     protected void _writePrimaryKey(BStatement statement) throws Exception {
@@ -450,7 +435,7 @@ public class AFApercuReleve extends BEntity {
     /**
      * Sauvegarde dans la DB les valeurs des propriétés de l'entité.
      * 
-     * @see globaz.globall.db.BEntity#_writeProperties(globaz.globall.db.BStatement)
+     * @see BEntity#_writeProperties(BStatement)
      */
     @Override
     protected void _writeProperties(BStatement statement) throws Exception {
@@ -578,6 +563,7 @@ public class AFApercuReleve extends BEntity {
                 } else {
                     facturationLine.setAnneeCotisation("");
                 }
+                facturationLine.setTypeCalcul(releveLine.getTypeCalcul());
                 // libellé pas défaut si pas déjà renseigné
                 if (JadeStringUtil.isEmpty(releveLine.getLibelle())) {
                     String langue = releveLine.getLangue();
@@ -601,6 +587,7 @@ public class AFApercuReleve extends BEntity {
                     CACompteur cnt = getCompteur(releveLine.getAssuranceRubriqueId());
                     if (releveLine.getTaux() != 100) {
                         facturationLine.setMasseInitiale(Double.toString(releveLine.getMasse()));
+
                         facturationLine.setTauxInitial(Double.toString(releveLine.getTaux()));
                         if (cnt != null) {
                             facturationLine.setMasseDejaFacturee(cnt.getCumulMasse());
@@ -619,8 +606,11 @@ public class AFApercuReleve extends BEntity {
                     facturationLine.setControleDeuxFrancs(false);
                 } else {
                     facturationLine.setIdTypeAfact(FAAfact.CS_AFACT_STANDART);
-                    if (releveLine.getTaux() != 100) {
+                    if (releveLine.getTaux() != 100
+                        //&& !CodeSystem.TYPE_CALCUL_MONTANT_FIXE.equals(releveLine.getTypeCalcul())
+                        ) {
                         // ne pas renseigner de masse et de taux si taux à 100%
+                        // ou type MONTANT FIXE
                         facturationLine.setMasseFacture(Double.toString(releveLine.getMasse()));
                         facturationLine.setTauxFacture(Double.toString(releveLine.getTaux()));
                     }
@@ -641,7 +631,7 @@ public class AFApercuReleve extends BEntity {
                     caisseMetier = "";
                 }
                 facturationLine.setNumCaisse(caisseMetier);
-                facturationLine.setIdModuleFacturation(globaz.musca.external.ServicesFacturation
+                facturationLine.setIdModuleFacturation(ServicesFacturation
                         .getIdModFacturationByType(getSession(), transaction, FAModuleFacturation.CS_MODULE_RELEVE));
                 facturationLine.setTypeModule(FAModuleFacturation.CS_MODULE_RELEVE);
                 // renseigner si taux caché
@@ -703,7 +693,7 @@ public class AFApercuReleve extends BEntity {
 
                     facturationLine.setIdTypeAfact(FAAfact.CS_AFACT_STANDART);
                     facturationLine
-                            .setIdModuleFacturation(globaz.musca.external.ServicesFacturation
+                            .setIdModuleFacturation(ServicesFacturation
                                     .getIdModFacturationByType(getSession(), transaction,
                                             FAModuleFacturation.CS_MODULE_RELEVE));
 
@@ -925,7 +915,8 @@ public class AFApercuReleve extends BEntity {
                                 }
                             }
                         } else {
-                            if (newLine.getMasse() != 0.0) {
+                            if (newLine.getMasse() != 0.0
+                                && !CodeSystem.TYPE_CALCUL_MONTANT_FIXE.equals(line.getTypeCalcul())) {
                                 masseGeneral = newLine.getMasse();
                             }
                         }
@@ -947,11 +938,15 @@ public class AFApercuReleve extends BEntity {
                         // sans changer les masses on valide ou facture le relevé --> pas d'email d'erreurs et plancher
                         // non appliqué car le calcul n'est pas refait
                         if ((newLine.getMasse() == line.getMasse())
-                                && !CodeSystem.TYPE_ASS_FFPP_MASSE.equalsIgnoreCase(assu.getTypeAssurance())) {
+                                && !CodeSystem.TYPE_ASS_FFPP_MASSE.equalsIgnoreCase(assu.getTypeAssurance())
+                                && !CodeSystem.TYPE_CALCUL_MONTANT_FIXE.equalsIgnoreCase(assu.getTypeCalcul())) {
                             // *****************************************************************
                             // Si la masse n'a pas changé, on mets à jour le
                             // MontantCalculer
                             // *****************************************************************
+                            line.setMontantCalculer(newLine.getMontantCalculer());
+                        } else if(CodeSystem.TYPE_CALCUL_MONTANT_FIXE.equalsIgnoreCase(assu.getTypeCalcul())) {
+                            line.setMasse("");
                             line.setMontantCalculer(newLine.getMontantCalculer());
                         } else {
                             // *****************************************************************
@@ -1794,8 +1789,22 @@ public class AFApercuReleve extends BEntity {
                                 line.setFinPeriode(dateEffectiveFinPeriode);
                                 line.setIdModFacturation(idModuleFacturationreleve);
                                 this.addCotisation(line);
+                            } else if(CodeSystem.TYPE_CALCUL_MONTANT_FIXE.equals(donneesFacturation.getTypeCalcul())) {
+                                double montantMensuel = 0.0;
+                                montantMensuel = Double.parseDouble(JANumberFormatter.deQuote(cotisation.getMasseAnnuelle())) / 12;
+                                double montant = montantMensuel * nbMoisFacturer;
+                                line.setGenreAssurance(CodeSystem.GENRE_ASS_PARITAIRE);
+                                line.setTauxType("0");
+                                line.setTauxGenre("0");
+                                line.setMontantFixe(montant);
+                                line.setMasseVide(true);
+                                line.setMontantCalculer(Double.toString(montant), false);
+                                line.setTypeCalcul(donneesFacturation.getTypeCalcul());
+                                line.setDebutPeriode(dateEffectiveDebutPeriode);
+                                line.setFinPeriode(dateEffectiveFinPeriode);
+                                line.setIdModFacturation(idModuleFacturationreleve);
+                                this.addCotisation(line);
                             }
-
                         }
                     }
                 }
