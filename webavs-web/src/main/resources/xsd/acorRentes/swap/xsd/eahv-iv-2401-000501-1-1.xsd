@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:eahv-iv-2401-common="http://www.eahv-iv.ch/xmlns/eahv-iv-2401-common/1"
+	xmlns:eahv-iv-2401-000501="http://www.eahv-iv.ch/xmlns/eahv-iv-2401-000501/1" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.eahv-iv.ch/xmlns/eahv-iv-2401-000501/1"
+	elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+    
+    <xs:import namespace="http://www.eahv-iv.ch/xmlns/eahv-iv-2401-common/1" schemaLocation="eahv-iv-2401-common-1-1.xsd"/>
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0058/4" schemaLocation="eCH-0058-4-0.xsd"/>
+    
+    <xs:annotation>
+        <xs:documentation xml:lang="de">Datenimport SWAP</xs:documentation>
+        <xs:documentation xml:lang="fr">to_do_fr</xs:documentation>
+        <xs:documentation xml:lang="it">to_do_it</xs:documentation>
+    </xs:annotation>
+
+	<xs:import namespace="http://www.eahv-iv.ch/xmlns/eahv-iv-2401-common/1" />
+
+	<xs:element name="message">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Deklaration des Root-Elements für message.xml
+			</xs:documentation>
+			<xs:documentation xml:lang="fr">Déclaration de l'élément root pour message.xml
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="swapId" type="xs:token" minOccurs="0"/>
+				<xs:element name="deliveryOffice" type="eahv-iv-2401-common:deliveryOfficeType"/>
+				<xs:element name="importModus" type="eahv-iv-2401-common:enumImportModusType"/>
+				<xs:element name="pensionData" type="eahv-iv-2401-common:pensionDataType" nillable="false" minOccurs="1" maxOccurs="1"/>
+			</xs:sequence>
+			<xs:attribute name="minorVersion" type="xs:int" use="required"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
