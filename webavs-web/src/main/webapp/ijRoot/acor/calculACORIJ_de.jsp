@@ -24,6 +24,11 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
 <%@ include file="/theme/detail/javascripts.jspf" %>
 <%-- tpl:put name="zoneScripts" --%>
 <%@page import="globaz.prestation.acor.PRACORConst"%>
+<%@ page import="globaz.corvus.properties.REProperties" %>
+<%@ page import="globaz.jade.client.util.JadeDateUtil" %>
+<%@ page import="globaz.corvus.acor2020.ws.token.Acor2020TokenRentesServiceImpl" %>
+<%@ page import="java.time.LocalDate" %>
+<%@ page import="java.util.Date" %>
 <ct:menuChange displayId="menu" menuId="ij-menuprincipal" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="ij-optionsempty"/>
 
@@ -52,7 +57,12 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
 	    document.forms[0].elements('userAction').value="<%=globaz.ij.servlet.IIJActions.ACTION_CALCUL_IJ%>.actionExporterScriptACOR2";
 	    document.forms[0].submit();
 	}
-	
+
+    function callACORWeb() {
+        document.forms[0].elements('userAction').value = "<%=globaz.ij.servlet.IIJActions.ACTION_CALCUL_IJ%>.actionCallACORWeb";
+        document.forms[0].submit();
+    }
+
 </SCRIPT>
 <SCRIPT language="vbscript">
 	<!--
@@ -149,6 +159,21 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
 	Set objShell = CreateObject("WScript.shell")
 	objShell.Exec("<%=startAcorCmd%>")
 
+<% } else if (viewBean.isAcorV4Web()) { %>
+
+<%--    String startNavigateurAcorCmd = viewBean.getStartNavigateurAcor(controller.getSession());--%>
+<%--    Date actualDate = new Date();--%>
+<%--    String day = JadeDateUtil.getDMYDate(actualDate);--%>
+<%--    String token = Acor2020TokenService.createToken(viewBean, day, JadeDateUtil.getHMTime(actualDate), day, controller.getSession());--%>
+<%--    String adresseWebAcor = viewBean.getAdresseWebACOR(bSession, "import", token);--%>
+<%--%>--%>
+<%--        Set shell = CreateObject ("Shell.Application")--%>
+<%--<%if (startNavigateurAcorCmd == null || startNavigateurAcorCmd.isEmpty()) {%>--%>
+<%--        shell.Open "<%=adresseWebAcor%>"--%>
+<%--<% } else { %>--%>
+<%--        shell.ShellExecute "<%=startNavigateurAcorCmd%>", "<%=adresseWebAcor%>", "", "", 1--%>
+<%--<% } %>--%>
+
 <%}%>
 </script>
 
@@ -172,7 +197,33 @@ les labels de cette page sont prefixes avec 'LABEL_JSP_CAI_D'
 							</TD>
 							<TD colspan="3"><INPUT type="text" value="<%=viewBean.getDetailRequerantDetail()%>" size="100" class="disabled" readonly></TD>
 						</TR>
-						<TR><TD colspan="4"><HR></TD></TR>
+
+<TR>
+    <TD colspan="4">
+        <HR>
+    </TD>
+</TR>
+
+<%
+    if (REProperties.ACOR_UTILISER_VERSION_WEB.getBooleanValue()) {
+%>
+
+<TR>
+    <TD colspan="4">
+        <H6><A href="#" style="color:black;" onclick="callACORWeb()"><ct:FWLabel key="JSP_CAI_D_ETAPE_1"/></A></H6>
+        <P><A href="#" onclick="callACORWeb()"><ct:FWLabel key="JSP_OUVRIR_ACOR_WEB"/></A></P>
+        <H6><u><ct:FWLabel key="JSP_CAI_D_ETAPE_2"/></u></H6>
+        <P><ct:FWLabel key="JSP_CAI_D_CALCULER_ACOR"/></P>
+        <H6><u><ct:FWLabel key="JSP_CAI_D_ETAPE_3"/></u></H6>
+        <P><A href="#" id="lienAcorWeb"><ct:FWLabel key="JSP_AFFICHER_DONNEES_IMPORTEES_ACOR"/></A></P>
+        <p>---------------------------------------------------------------------------------------------</p>
+        <p>ANCIEN ACOR</p>
+        <p>---------------------------------------------------------------------------------------------</p>
+    </TD>
+</TR>
+
+<% } %>
+
 						<TR>
 							<% if (viewBean.isCalculable()) { %>
 							<TD colspan="4">

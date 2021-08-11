@@ -2,13 +2,12 @@ package globaz.prestation.acor;
 
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.EnfantSexType;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.SexType;
-import globaz.corvus.properties.REProperties;
+import ch.globaz.common.properties.CommonProperties;
 import globaz.globall.db.BSession;
 import globaz.hera.api.ISFSituationFamiliale;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.api.IPRSituationProfessionnelle;
 import globaz.pyxis.db.adressecourrier.TILocalite;
-import globaz.webavs.common.CommonProperties;
 
 import java.util.Objects;
 
@@ -996,7 +995,7 @@ public class PRACORConst {
     public static final String dossierACOR(BSession session) throws PRACORException {
 
         try {
-            return session.getApplication().getProperty(CommonProperties.KEY_DOSSIER_ACOR);
+            return session.getApplication().getProperty(globaz.webavs.common.CommonProperties.KEY_DOSSIER_ACOR);
         } catch (Exception e) {
             throw new PRACORException(session.getLabel("PROPRIETE_DOSSIER_ACOR_INTROUVABLE"), e);
         }
@@ -1016,7 +1015,7 @@ public class PRACORConst {
     public static final String navigateurACOR(BSession session) throws PRACORException {
 
         try {
-            return REProperties.NAVIGATEUR_ACOR.getValue();
+            return CommonProperties.NAVIGATEUR_ACOR.getValue();
         } catch (Exception e) {
             throw new PRACORException(session.getLabel("PROPRIETE_DOSSIER_NAVIGATEUR_ACOR_INTROUVABLE"), e);
 }

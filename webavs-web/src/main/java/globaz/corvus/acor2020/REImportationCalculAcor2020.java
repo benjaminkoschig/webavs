@@ -1,7 +1,7 @@
 package globaz.corvus.acor2020;
 
-import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
-import acor.xsd.fcalcul.FCalcul;
+import acor.rentes.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
+import acor.rentes.xsd.fcalcul.FCalcul;
 import ch.admin.zas.xmlns.acor_rentes9_out_resultat._0.Resultat9;
 import ch.globaz.corvus.business.services.CorvusCrudServiceLocator;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
@@ -43,7 +43,7 @@ import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.utils.acor.BaseCalculWrapper;
 import globaz.corvus.utils.acor.DemandeRenteWrapper;
 import globaz.corvus.vb.annonces.REAnnoncePonctuelleViewBean;
-import globaz.corvus.ws.Acor2020AnnoncesService;
+import globaz.corvus.acor2020.ws.Acor2020AnnoncesService;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;

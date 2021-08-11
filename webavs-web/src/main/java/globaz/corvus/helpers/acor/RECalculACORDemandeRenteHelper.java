@@ -1,20 +1,8 @@
 package globaz.corvus.helpers.acor;
 
-import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
-import acor.xsd.fcalcul.FCalcul;
-import ch.admin.zas.xmlns.acor_rentes_in_host._0.InHostType;
-
-import java.io.StringReader;
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
-import javax.servlet.ServletException;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
+import acor.rentes.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
+import acor.rentes.xsd.fcalcul.FCalcul;
 import ch.globaz.common.domaine.Checkers;
-import ch.globaz.common.exceptions.ValidationException;
 import ch.globaz.corvus.business.services.CorvusCrudServiceLocator;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.corvus.domaine.BaseCalcul;
@@ -33,7 +21,6 @@ import globaz.corvus.acor.parser.REFeuilleCalculVO;
 import globaz.corvus.acor.parser.rev09.REACORParser;
 import globaz.corvus.acor.parser.rev09.REACORParser.ReturnedValue;
 import globaz.corvus.acor.parser.xml.rev10.REACORAnnonceXmlReader;
-import globaz.corvus.acor2020.REExportationCalculAcor2020;
 import globaz.corvus.acor2020.business.REImportAnnoncesAcor;
 import globaz.corvus.api.annonces.IREAnnonces;
 import globaz.corvus.api.basescalcul.IREBasesCalcul;

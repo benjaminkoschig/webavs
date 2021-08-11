@@ -1,8 +1,8 @@
 package globaz.corvus.acor2020.parser;
 
-import acor.xsd.fcalcul.BaseEchelle;
-import acor.xsd.fcalcul.FCalcul;
-import acor.xsd.fcalcul.Rente;
+import acor.rentes.xsd.fcalcul.BaseEchelle;
+import acor.rentes.xsd.fcalcul.FCalcul;
+import acor.rentes.xsd.fcalcul.Rente;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.acor.parser.REFeuilleCalculVO;
 import globaz.corvus.acor.parser.rev09.REACORParser;

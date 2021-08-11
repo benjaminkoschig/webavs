@@ -293,4 +293,23 @@ public class IJCalculACORDecompteAction extends PRDefaultAction {
             }
         }
     }
+
+    public String actionCallACORWeb(HttpSession session, HttpServletRequest request,
+                                    HttpServletResponse response, FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) {
+
+        try {
+            // l'ecriture se fait depuis le helper
+            mainDispatcher.dispatch(viewBean, getAction());
+
+        } catch (Exception e) {
+            viewBean.setMsgType(FWViewBeanInterface.ERROR);
+            viewBean.setMessage(e.getMessage());
+        }
+        this.saveViewBean(viewBean, session);
+
+        FWAction action = FWAction.newInstance(IIJActions.ACTION_CALCUL_DECOMPTE + "." + FWAction.ACTION_REAFFICHER);
+        return this.getUserActionURL(request, action.toString());
+
+    }
+
 }

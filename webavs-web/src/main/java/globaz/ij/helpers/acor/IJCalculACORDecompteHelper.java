@@ -1,5 +1,6 @@
 package globaz.ij.helpers.acor;
 
+import globaz.corvus.vb.acor.RECalculACORDemandeRenteViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.framework.util.FWCurrency;
@@ -814,6 +815,31 @@ public class IJCalculACORDecompteHelper extends PRAbstractHelper {
                 entity.update();
             }
         }
+    }
+
+    /**
+     * Helper de l'appel au service Web ACOR
+     *
+     * @param viewBean
+     * @param action
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    public FWViewBeanInterface actionCallACORWeb(final FWViewBeanInterface viewBean, final FWAction action,
+                                                 final BSession session) throws Exception {
+
+        IJCalculACORDecompteViewBean ijViewBean = (IJCalculACORDecompteViewBean) viewBean;
+
+        if (!viewBean.getMsgType().equals(FWViewBeanInterface.ERROR)) {
+            ijViewBean.setAcorV4Web(true);
+        }
+
+        // TODO : vérifier s'il faut contrôler le calculable.
+        ijViewBean.setCalculable(IJBaseIndemnisationRegles.isCalculerPermis(ijViewBean.loadBaseIndemnisation(),
+                ijViewBean.loadPrononce()));
+
+        return viewBean;
     }
 
     /**

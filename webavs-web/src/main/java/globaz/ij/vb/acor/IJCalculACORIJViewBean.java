@@ -19,6 +19,7 @@ public class IJCalculACORIJViewBean extends IJAbstractCalculACORViewBean {
 
     private String csTypeIJ;
     private String idPrononce;
+    private boolean isAcorV4Web = false;
 
     private boolean isFileContent = false;
     private transient IJPrononce prononce;
@@ -123,4 +124,11 @@ public class IJCalculACORIJViewBean extends IJAbstractCalculACORViewBean {
         isFileContent = elm;
     }
 
+    public boolean isAcorV4Web() {
+        return isAcorV4Web;
+    }
+
+    public void setAcorV4Web(boolean acorV4Web) {
+        isAcorV4Web = acorV4Web;
+    }
 }

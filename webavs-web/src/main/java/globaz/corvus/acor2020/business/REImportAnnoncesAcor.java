@@ -1,7 +1,7 @@
 package globaz.corvus.acor2020.business;
 
-import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
-import acor.ch.admin.zas.rc.annonces.rente.rc.*;
+import acor.rentes.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
+import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.*;
 import ch.globaz.pyxis.domaine.NumeroSecuriteSociale;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

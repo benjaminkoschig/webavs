@@ -1,8 +1,8 @@
-package globaz.corvus.ws;
+package globaz.corvus.acor2020.ws;
 
-import acor.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
+import acor.rentes.ch.admin.zas.rc.annonces.rente.pool.PoolMeldungZurZAS;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import globaz.corvus.acor2020.utils.Acor2020TokenService;
+import globaz.corvus.acor2020.ws.token.Acor2020TokenRentesServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -40,7 +40,7 @@ public class Acor2020AnnoncesService {
     public PoolMeldungZurZAS getAnnonces(String fCalcul) {
         URL url;
         HttpURLConnection con;
-        String acorBaseUrl = Acor2020TokenService.getAcorBaseUrl();
+        String acorBaseUrl = Acor2020TokenRentesServiceImpl.getAcorBaseUrl();
         PoolMeldungZurZAS annonces = null;
 
         try {

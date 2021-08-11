@@ -25,6 +25,7 @@ Les labels de cette page sont prefixes avec 'LABEL_JSP_CAD_D'
 <%-- tpl:put name="zoneScripts" --%>
 <%@page import="globaz.ij.helpers.acor.IJRevision"%>
 <%@page import="globaz.prestation.acor.PRACORConst"%>
+<%@ page import="globaz.corvus.properties.REProperties" %>
 <ct:menuChange displayId="menu" menuId="ij-menuprincipal" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="ij-optionsempty"/>
 
@@ -55,7 +56,11 @@ Les labels de cette page sont prefixes avec 'LABEL_JSP_CAD_D'
 	    document.forms[0].submit();
 	}
 	
-	
+    function callACORWeb() {
+        document.forms[0].elements('userAction').value = "<%=globaz.ij.servlet.IIJActions.ACTION_CALCUL_DECOMPTE%>.actionCallACORWeb";
+        document.forms[0].submit();
+    }
+
 	function ijPrecedante() {
 	    document.forms[0].elements('userAction').value="<%=globaz.ij.servlet.IIJActions.ACTION_CALCUL_DECOMPTE%>.actionIJCalculeePrecedante";
 	    document.forms[0].submit();
@@ -220,11 +225,15 @@ Les labels de cette page sont prefixes avec 'LABEL_JSP_CAD_D'
 							<TD>
 								<LABEL for="dateFinIJCalculee"><ct:FWLabel key="JSP_AU"/></LABEL>&nbsp;
 								<INPUT type="text" name="dateFinIJCalculee" value="<%=viewBean.loadIJCalculee().getDateFinDroit()%>" class="date disabled" readonly>
+    </TD>
+</TR>
+
+<TR>
+    <TD colspan="4">
+        <HR>
 							</TD>
 						</TR>
 
-						<TR><TD colspan="4"><HR></TD></TR>
-																											
 							<% if (viewBean.isCalculable()) { %>
 							
 								<TR><TD colspan="4"><br/>
@@ -258,8 +267,29 @@ Les labels de cette page sont prefixes avec 'LABEL_JSP_CAD_D'
 								
 								<table border="1" width = "100%">
 											<th><ct:FWLabel key="JSP_CAD_PAR_ACOR"/></th>
+            <%
+                if (REProperties.ACOR_UTILISER_VERSION_WEB.getBooleanValue()) {
+            %>
 											<tr>
 											<td>
+                    <H6><A style="color:black;" href="#" onclick="callACORWeb()"><ct:FWLabel
+                            key="JSP_CAD_D_ETAPE_1"/></A></H6>
+                    <P><A href="#" onclick="callACORWeb()"><ct:FWLabel key="JSP_OUVRIR_ACOR_WEB"/></A>
+                    </P>
+                    <H6><u><ct:FWLabel key="JSP_CAD_D_ETAPE_2"/></u></H6>
+                    <P><ct:FWLabel key="JSP_CAD_D_CALCULER_ACOR"/></P>
+                    <H6><u><ct:FWLabel key="JSP_CAD_D_ETAPE_3"/></u></H6>
+                    <P><A href="#" id="lienAcorWeb"><ct:FWLabel key="JSP_AFFICHER_DONNEES_IMPORTEES_ACOR"/></A></P>
+                    <p>---------------------------------------------------------------------------------------------</p>
+                    <p>ANCIEN ACOR</p>
+                    <p>---------------------------------------------------------------------------------------------</p>
+                </td>
+            </tr>
+            <% } %>
+
+            <th><ct:FWLabel key="JSP_CAD_PAR_ACOR"/></th>
+            <tr>
+                <td>
 												<H6><A style="color:black;" href="#" onclick="exporterScriptACOR()"><ct:FWLabel key="JSP_CAD_D_ETAPE_1"/></A></H6>
 												<P><A href="#" onclick="exporterScriptACOR2()"><ct:FWLabel key="JSP_CAD_D_TELECHARGER_SCRIPT"/></A></P>
 												<H6><u><ct:FWLabel key="JSP_CAD_D_ETAPE_2"/></u></H6>

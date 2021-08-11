@@ -48,6 +48,7 @@ public class IJCalculACORDecompteViewBean extends IJAbstractCalculACORViewBean {
     private boolean isFileContent = false;
     // private boolean garantieR3;
     private String noRevisionGaranti = null;
+    private boolean isAcorV4Web = false;
 
     // divers
     private transient IJPrononce prononce;
@@ -437,5 +438,13 @@ public class IJCalculACORDecompteViewBean extends IJAbstractCalculACORViewBean {
 
     public void setNoRevisionGaranti(String noRevisionGaranti) {
         this.noRevisionGaranti = noRevisionGaranti;
+    }
+
+    public boolean isAcorV4Web() {
+        return isAcorV4Web;
+    }
+
+    public void setAcorV4Web(boolean acorV4Web) {
+        isAcorV4Web = acorV4Web;
     }
 }

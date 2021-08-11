@@ -1,5 +1,6 @@
 package globaz.ij.helpers.acor;
 
+import globaz.corvus.vb.acor.RECalculACORDemandeRenteViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.globall.api.BISession;
@@ -15,6 +16,7 @@ import globaz.ij.db.prestations.IJIJCalculee;
 import globaz.ij.db.prestations.IJIndemniteJournaliere;
 import globaz.ij.db.prononces.IJPrononce;
 import globaz.ij.db.prononces.IJPrononceAit;
+import globaz.ij.regles.IJBaseIndemnisationRegles;
 import globaz.ij.regles.IJPrononceRegles;
 import globaz.ij.vb.acor.IJCalculACORIJViewBean;
 import globaz.ij.vb.prononces.IJSituationProfessionnelleViewBean;
@@ -400,6 +402,23 @@ public class IJCalculACORIJHelper extends PRAbstractHelper {
 
         return spViewBean;
     }
+
+
+    public FWViewBeanInterface actionCallACORWeb(FWViewBeanInterface viewBean, FWAction action, BSession session) throws Exception {
+
+
+        IJCalculACORIJViewBean ijViewBean = (IJCalculACORIJViewBean) viewBean;
+
+        if (!viewBean.getMsgType().equals(FWViewBeanInterface.ERROR)) {
+            ijViewBean.setAcorV4Web(true);
+        }
+
+        // TODO : voir s'il faut contrôler le setCalculable
+        ijViewBean.setCalculable(IJPrononceRegles.isCalculerPermis(ijViewBean.loadPrononce(null)));
+
+        return viewBean;
+    }
+
 
     /**
      * trouver par introspection la methode de ced helper a utiliser si l'on arrive avec une action custom.

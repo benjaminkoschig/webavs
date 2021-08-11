@@ -73,8 +73,10 @@ public enum CommonProperties implements IProperties {
     QR_FACTURE("qrFacture","Permet de changer le mode de facturation QR-Facture/BVR"),
     ACTIVATION_TRAITILLE_QR_FACTURE("qrFacture.traitille","Permet d'activer/desactiver les traitillés sur QrFacture'"),
 
-    TAUX_INTERET_PANDEMIE("tauxInteret.pandemie.isActivated","Propriete qui permet de changer le calcul des intérêts moratoires");
+    TAUX_INTERET_PANDEMIE("tauxInteret.pandemie.isActivated","Propriete qui permet de changer le calcul des intérêts moratoires"),
 
+    ACOR_ADRESSE_WEB("acor.adresse.web","Adresse web à utiliser pour ACOR Web"),
+    NAVIGATEUR_ACOR("acor.navigateur", "chemin de l'éxécutable du navigateur à utiliser avec ACOR web");
 
     private String description;
     private String propertyName;

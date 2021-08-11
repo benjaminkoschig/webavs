@@ -1,6 +1,9 @@
 package globaz.corvus.acor2020;
 
-import acor.ch.admin.zas.rc.annonces.rente.rc.*;
+import acor.rentes.ch.admin.zas.rc.annonces.rente.rc.*;
+import acor.rentes.xsd.common.AdresseType;
+import acor.rentes.xsd.common.BanqueAdresseType;
+import acor.rentes.xsd.common.OrganisationAdresseType;
 import ch.admin.zas.xmlns.acor_rentes_in_host._0.*;
 import ch.globaz.hera.business.constantes.ISFMembreFamille;
 import ch.globaz.hera.business.constantes.ISFRelationConjoint;

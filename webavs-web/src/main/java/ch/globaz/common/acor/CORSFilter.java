@@ -1,4 +1,4 @@
-package globaz.corvus.ws;
+package ch.globaz.common.acor;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
