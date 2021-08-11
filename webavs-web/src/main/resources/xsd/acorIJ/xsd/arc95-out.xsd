@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2013 sp1 (x64) (http://www.altova.com) by Bundesamt für Informatik und Telekommunikation (Bundesamt für Informatik und Telekommunikation) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:arc95="http://www.zas.admin.ch/xmlns/arc95-out/0" targetNamespace="http://www.zas.admin.ch/xmlns/arc95-out/0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+	<xs:element name="dossier95" type="arc95:Dossier95"/>
+	<xs:complexType name="Periodesplitting">
+		<xs:attribute name="code" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:int">
+					<xs:enumeration value="0"/>
+					<xs:enumeration value="1"/>
+					<xs:enumeration value="2"/>
+					<xs:enumeration value="3"/>
+					<xs:enumeration value="4"/>
+					<xs:enumeration value="5"/>
+					<xs:enumeration value="6"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="debut" type="xs:gYear" use="required"/>
+		<xs:attribute name="fin" type="xs:gYear" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="Dossier95">
+		<xs:sequence>
+			<xs:element name="arc95" type="arc95:Arc95" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="mariage" type="xs:date" use="required"/>
+		<xs:attribute name="divorce" type="xs:date" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="Arc95">
+		<xs:sequence>
+			<xs:element name="periodesplitting" type="arc95:Periodesplitting" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="assure" type="xs:string" use="required"/>
+		<xs:attribute name="conjoint" type="xs:string" use="required"/>
+	</xs:complexType>
+</xs:schema>

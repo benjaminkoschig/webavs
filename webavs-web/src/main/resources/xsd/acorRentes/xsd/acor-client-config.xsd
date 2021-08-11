@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		   xmlns:clientconfig="http://www.zas.admin.ch/xmlns/acor-client-config/0"
+		   targetNamespace="http://www.zas.admin.ch/xmlns/acor-client-config/0"
+		   elementFormDefault="qualified"
+		   attributeFormDefault="unqualified"
+		   xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+		   jaxb:version="2.1"
+		   xmlns:annox="http://annox.dev.java.net"
+		   jaxb:extensionBindingPrefixes="annox"
+		   version="1.1">
+	<xs:element name="configuration" type="clientconfig:clientConfigurationType">
+	<xs:annotation>
+		<xs:documentation>Configuration for the acor web client. Should be put (as a json file) in the client main
+			folder or/and be indicated to the JVM property 'webclient.config' to the acor-ws-core-web backend (xml or json)
+		</xs:documentation>
+	</xs:annotation>
+	</xs:element>
+	<xs:complexType name="clientConfigurationType">
+		<xs:annotation>
+			<xs:appinfo>
+				<annox:annotate target="class">@javax.xml.bind.annotation.XmlRootElement</annox:annotate>
+			</xs:appinfo>
+			<xs:documentation>Configuration for the acor web client. Should be put (as a json file) in the client main
+				folder or/and be indicated to the JVM property 'webclient.config' to the acor-ws-core-web backend (xml or json)
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="acorBaseUrl" type="xs:anyURI" minOccurs="0" maxOccurs="1">
+			<xs:annotation>
+				<xs:documentation>the principal URL to the backend. If the file is a json file put in the client main folder, this information will
+					be used b the client to get the URL of the backend acor-ws-core-web (if there is no token or the token does not contains this information, for example with the creation of a new demand from acor client.
+					If the file is indicated to the JVM backend this inforation is useless.
+				</xs:documentation>
+			</xs:annotation>
+			</xs:element>
+			<xs:element name="acorDevToolUrl" type="xs:anyURI" minOccurs="0" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>RESERVED to Acor CdC do not use</xs:documentation>
+					</xs:annotation>
+			</xs:element>
+			<xs:element name="demande" type="clientconfig:clientDemandeType" minOccurs="0" maxOccurs="1">
+					<xs:annotation><xs:documentation>Informations of the demande. These informations are used if they are not in the 'inhost in format'. For example with a new demand</xs:documentation></xs:annotation>
+			</xs:element>
+			<xs:element name="customMessage" type="clientconfig:customMessageType" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation><xs:documentation></xs:documentation></xs:annotation>
+			</xs:element>
+
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="clientDemandeType">
+		<xs:annotation>
+			<xs:documentation>Informations of the demande. These informations are used if they are not in the 'inhost in format'. For example with a new demand</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="adresseCaisse" type="clientconfig:clientAdresseCaisse" minOccurs="1" maxOccurs="1">
+				<xs:annotation><xs:documentation>Adresse de la caisse</xs:documentation></xs:annotation>
+			</xs:element>
+			<xs:element name="moisRapport">
+				<xs:annotation>
+					<xs:documentation>
+						0 = mois de traitement, 1 = mois suivant le mois de traitement.
+						This information is set (as a Date) in the PoolMeldungZurZAS/lot/PoolKopf/rc:Erstellungsdatum.
+						the total of amount payed (f_calcul/evenement/bases_calcul/decision/prestation/rente/versement/montant) with one month more if "moisRapport = 1"
+						(idem for the coresponding field of annonce.pay : f_calcul/annexes/pay
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:int">
+						<xs:enumeration value="0"/>
+						<xs:enumeration value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="caisseAgence" type="xs:int"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="clientAdresseCaisse">
+		<xs:sequence>
+			<xs:element name="adresse" type="xs:string"/>
+			<xs:element name="localite" type="xs:string"/>
+			<xs:element name="codePostal" type="xs:string"/>
+			<xs:element name="nom" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="customMessageType">
+		<xs:annotation>
+			<xs:documentation></xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="key" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Mmessage key, nead start with &amp;</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:pattern value="^[&amp;]"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="valueFr" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation><xs:documentation>French message</xs:documentation></xs:annotation>
+			</xs:element>
+			<xs:element name="valueDe" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation><xs:documentation>German message</xs:documentation></xs:annotation>
+			</xs:element>
+			<xs:element name="valueIt" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation><xs:documentation>Italian message</xs:documentation></xs:annotation>
+			</xs:element>
+         </xs:sequence>
+     </xs:complexType>        
+
+</xs:schema>

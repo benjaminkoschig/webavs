@@ -1,0 +1,2133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2019 sp1 (http://www.altova.com) von ﻿Bundesamt für Informatik und (Bundesamt für Informatik und) bearbeitet -->
+<!-- Pour des raisons de compatibilité du xsl qui affiche la feuille ce schema ne peut être avec un targetNamespace (ni avec un namespace). Il faudra voir ci cela est viable-->
+<xs:schema xmlns:arf="http://www.zas.admin.ch/xmlns/arf-out/0"
+           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:annox="http://annox.dev.java.net"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           elementFormDefault="unqualified" attributeFormDefault="unqualified" version="1.0" jaxb:version="2.1"
+           jaxb:extensionBindingPrefixes="annox">
+    <xs:import namespace="http://www.zas.admin.ch/xmlns/arf-out/0" schemaLocation="arf-out.xsd"/>
+    <xs:complexType name="rente">
+        <xs:annotation>
+            <xs:documentation>rente en cours</xs:documentation>
+            <xs:appinfo>
+                <annox:annotate target="class">
+                    @io.swagger.v3.oas.annotations.media.Schema(name="RenteCouranteIJ",description = "rente en cours et
+                    en historique lors du calcul des IJ")
+                </annox:annotate>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="droit" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>législation de base de la rente</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:int">
+                        <xs:enumeration value="9"/>
+                        <xs:enumeration value="10"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="genre" type="GenrePrestation" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>* annonce CdC /
+                        Meldung ZAS
+                        genre de prestation
+                        Leistungsart
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="bases" type="id_acor" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>id des bases de calcul de la rente, propre à ACOR
+                        Berechnunggrundlagen
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="transfert" type="empty" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>issue du transfert dans la législation 10e révision AVS</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:choice minOccurs="0">
+                <xs:element name="fraction" type="xs:double">
+                    <xs:annotation>
+                        <xs:documentation>fraction de rente AI</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="quotite">
+                    <xs:annotation>
+                        <xs:documentation>quotité de rente AI</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                        <xs:restriction base="xs:double">
+                            <xs:minInclusive value="0.0"/>
+                            <xs:maxInclusive value="1.0"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+            </xs:choice>
+            <xs:element name="echelle">
+                <xs:annotation>
+                    <xs:documentation>* annonce CdC /
+                        Meldung ZAS
+                        échelle de rente
+                        Skala. Les rente extrordinaire n'ont pas d'échelle.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:int">
+                        <xs:minInclusive value="0"/>
+                        <xs:maxInclusive value="44"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="etat" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:annotation>
+                        <xs:documentation>etat d'une prestation rente dans les IJ</xs:documentation>
+                        <xs:appinfo>
+                            <annox:annotate target="class">
+                                @io.swagger.v3.oas.annotations.media.Schema(name="EtatRenteIJ",description = "etat d'une
+                                prestation rente dans les IJ")
+                            </annox:annotate>
+                        </xs:appinfo>
+                    </xs:annotation>
+                    <xs:sequence>
+                        <xs:element name="an" type="AAAA">
+                            <xs:annotation>
+                                <xs:documentation>année d'état du ram et du montant
+                                    Jahr des DJE und Betrags
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="ram" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>revenu annuel moyen
+                                    Durchschnittliches Jahreseinkommen. Les rentes extraordinaires n'ont pas de ram.
+                                </xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:int">
+                                    <xs:minInclusive value="0"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="montant">
+                            <xs:annotation>
+                                <xs:documentation>* annonce CdC /
+                                    Meldung ZAS
+                                    montant effectif de la rente
+                                    Betrag
+                                </xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:int">
+                                    <xs:minInclusive value="0"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="debut_droit" type="AAAAMMJJ">
+                <xs:annotation>
+                    <xs:documentation>* annonce CdC /
+                        Meldung ZAS
+                        Début de droit à la rente
+                        Anspruchsbeginn
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="fin_droit" type="AAAAMMJJ" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>* annonce CdC /
+                        Meldung ZAS
+                        fin de droit à la rente
+                        Ende des Anspruchs
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="JoursMaladie">
+        <xs:sequence>
+            <xs:element name="annee">
+                <xs:simpleType>
+                    <xs:restriction base="xs:int">
+                        <xs:enumeration value="1"/>
+                        <xs:enumeration value="2"/>
+                        <xs:enumeration value="3"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="debut" type="AAAAMMJJ"/>
+            <xs:element name="max_jour" type="xs:int"/>
+            <xs:element name="total" type="xs:int"/>
+            <xs:element name="decompte" type="DecompteMaladie" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="DecompteMaladie">
+        <xs:sequence>
+            <xs:element name="debut" type="AAAAMMJJ"/>
+            <xs:element name="fin" type="AAAAMMJJ"/>
+            <xs:element name="nbr_jours" type="xs:int"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="Decompte">
+        <xs:sequence>
+            <xs:element name="statut">
+                <xs:annotation>
+                    <xs:documentation>1=normal (nouveau décompte)
+                        2=rectificateur
+                        3=annulateur (négatif)
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:int">
+                        <xs:enumeration value="1"/>
+                        <xs:enumeration value="2"/>
+                        <xs:enumeration value="3"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="id_ij_cause" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Si statut =2 ou 3 et que la cause de la rectification est une rectification d'IJ
+                        l'identifiant de l'IJ cocernée, sinon vide
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="mois_comptable" type="AAAAMM"/>
+            <xs:element name="contenu_annonce">
+                <xs:annotation>
+                    <xs:documentation>0=inconnu
+                        1=normal (nouveau décompte)
+                        3=décompte complémentaire
+                        4=restitution (négatif)
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:int">
+                        <xs:enumeration value="1"/>
+                        <xs:enumeration value="3"/>
+                        <xs:enumeration value="4"/>
+                        <xs:enumeration value="0"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="date_debut" type="AAAAMMJJ"/>
+            <xs:element name="date_fin" type="AAAAMMJJ"/>
+            <xs:element name="njours_ext" type="xs:int"/>
+            <xs:element name="njours_int" type="xs:int"/>
+            <xs:element name="genre_beneficiaire">
+                <xs:annotation>
+                    <xs:documentation>genre du ou des bénéficiaire 1=assure, 2=employeur, 3=mixte (nécessaire pour
+                        l'annonce 8G)
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:int">
+                        <xs:enumeration value="1"/>
+                        <xs:enumeration value="2"/>
+                        <xs:enumeration value="3"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="njours_interruption" minOccurs="0">
+                <xs:simpleType>
+                    <xs:restriction base="xs:int">
+                        <xs:minInclusive value="0"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="motif_interruption" minOccurs="0">
+                <xs:simpleType>
+                    <xs:restriction base="xs:int">
+                        <xs:minInclusive value="0"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="montant_global" type="xs:double"/>
+            <xs:element name="type_cotisations">
+                <xs:annotation>
+                    <xs:documentation>1=AVS/AI/APG/AC 2=AVS/AI/APG</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:int">
+                        <xs:enumeration value="1"/>
+                        <xs:enumeration value="2"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="taux_cotisations" type="xs:double"/>
+            <xs:element name="montant_cotisations" type="xs:double"/>
+            <xs:sequence minOccurs="0">
+                <xs:element name="canton_impots">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:length value="2"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="taux_impots">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:double">
+                            <xs:minInclusive value="0"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="montant_impots" type="xs:double"/>
+            </xs:sequence>
+            <xs:element name="part_patronale" type="xs:double"/>
+            <xs:element name="deduction_AO" type="xs:double"/>
+            <xs:element name="montant_net" type="xs:double"/>
+            <xs:element name="montant_net2" type="xs:double">
+                <xs:annotation>
+                    <xs:documentation>Si le décompte rectifie un autre décompte alors différence entre les deux, sinon
+                        montant_net
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="decompte_categorie" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="categorie">
+                            <xs:annotation>
+                                <xs:documentation>0=non pertinent (enfants)
+                                    1=interne
+                                    2=externe
+                                </xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:int">
+                                    <xs:enumeration value="1"/>
+                                    <xs:enumeration value="2"/>
+                                    <xs:enumeration value="0"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="type">
+                            <xs:annotation>
+                                <xs:documentation>1=indemnite principale (adulte)
+                                    2=prestation reduite pour enfant
+                                    3=prestation pour enfant
+                                </xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:int">
+                                    <xs:enumeration value="1"/>
+                                    <xs:enumeration value="2"/>
+                                    <xs:enumeration value="3"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="n_jours" type="xs:int"/>
+                        <xs:element name="montant_categorie_j" type="xs:double"/>
+                        <xs:element name="montant_categorie_total" type="xs:double"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="repartition" minOccurs="0" maxOccurs="2">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="type">
+                            <xs:annotation>
+                                <xs:documentation>2=assure
+                                    3=enfants
+                                </xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:int">
+                                    <xs:enumeration value="2"/>
+                                    <xs:enumeration value="3"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="montant_versement" type="xs:double"/>
+                        <xs:sequence minOccurs="0">
+                            <xs:element name="montant_cotisations">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:double">
+                                        <xs:maxInclusive value="0"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="taux_cotisations">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:double">
+                                        <xs:minInclusive value="0"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:element name="deduction_AO" minOccurs="0">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:double">
+                                    <xs:minInclusive value="0"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="montant_impots" minOccurs="0">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:double">
+                                    <xs:maxInclusive value="0"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="montant_net" minOccurs="0">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:double">
+                                    <xs:minInclusive value="0"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="paiement" type="Paiement" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="refus_paiement" type="RefusPaiement" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="remarques" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:annotation>
+                        <xs:documentation>remarque dans un décompte d'IJ</xs:documentation>
+                        <xs:appinfo>
+                            <annox:annotate target="class">
+                                @io.swagger.v3.oas.annotations.media.Schema(name="RemarqueDecompteIJ",description =
+                                "remarque dans un décompte d'IJ")
+                            </annox:annotate>
+                        </xs:appinfo>
+                    </xs:annotation>
+                    <xs:sequence>
+                        <xs:element name="nom" type="xs:string"/>
+                        <xs:element name="label" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="historique" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation>true = le décompte est reprisd'un ancien système il ne doit pas faire l'objet
+                        d'une annonce ou d'une comptabilisation
+                        false = décompte normal
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="DecompteIJ">
+        <xs:complexContent>
+            <xs:extension base="Decompte">
+                <xs:sequence>
+                    <xs:element name="jours_maladie" type="JoursMaladie" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="origine">
+                        <xs:annotation>
+                            <xs:documentation>origine du décompte : GUI = saisie dans le GUI par le gestionnaire, CLIPS
+                                = créé dans l'analyse (par exemple pour les décomptes scindés en deux), DB = était déjà
+                                en entrée (cela n'arrive que pour un décompte déplacé sans modification d'une base de
+                                calcul à une autre)
+                            </xs:documentation>
+                        </xs:annotation>
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:enumeration value="GUI"/>
+                                <xs:enumeration value="CLIPS"/>
+                                <xs:enumeration value="DB"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="Paiement">
+        <xs:sequence>
+            <xs:element name="montant" type="xs:double"/>
+            <xs:element name="beneficiaire">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="denomination" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="RefusPaiement">
+        <xs:sequence>
+            <xs:element name="montant" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Soit "Solde" soit le montant</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="denomination" type="xs:string"/>
+            <xs:element name="raison" type="xs:string"/>
+            <xs:element name="label" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="empty">
+        <xs:sequence/>
+    </xs:complexType>
+    <xs:element name="f_calcul">
+        <xs:complexType mixed="0">
+            <xs:annotation>
+                <xs:documentation>
+                    La feuille de calcul (format de sortie) pour les IJ
+                </xs:documentation>
+                <xs:appinfo>
+                    <annox:annotate target="class">
+                        @io.swagger.v3.oas.annotations.media.Schema(name="FCalculIJ",description = "La feuille de calcul
+                        (format de sortie) pour les IJ")
+                    </annox:annotate>
+                </xs:appinfo>
+            </xs:annotation>
+            <xs:sequence>
+                <xs:element name="version_expert" type="xs:string"/>
+                <xs:element name="demande">
+                    <xs:complexType>
+                        <xs:annotation>
+                            <xs:documentation>
+                                La demande (out) pour les IJ
+                            </xs:documentation>
+                            <xs:appinfo>
+                                <annox:annotate target="class">
+                                    @io.swagger.v3.oas.annotations.media.Schema(name="DemandeIJ",description = "La
+                                    demande (out) pour les IJ ")
+                                </annox:annotate>
+                            </xs:appinfo>
+                        </xs:annotation>
+                        <xs:sequence>
+                            <xs:element name="id" type="xs:string">
+                                <xs:annotation>
+                                    <xs:documentation>id de la demande</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="type" type="xs:string" minOccurs="0"/>
+                            <xs:element name="langue" type="xs:string" minOccurs="0"/>
+                            <xs:element name="caisse" type="xs:int" minOccurs="0"/>
+                            <xs:element name="date_depot" type="AAAAMMJJ" minOccurs="0"/>
+                            <xs:element name="date_traitement" type="AAAAMMJJ"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="assure" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:annotation>
+                            <xs:documentation>Assuré: individu de la famille des assurés pris en compte dans le dossier
+                                IJ Versicherte(r)
+                            </xs:documentation>
+                            <xs:appinfo>
+                                <annox:annotate target="class">
+                                    @io.swagger.v3.oas.annotations.media.Schema(name="AssureIJ",description = "Assuré:
+                                    individu de la famille des assurés pris en compte dans le dossier IJ
+                                    Versicherte(r)")
+                                </annox:annotate>
+                            </xs:appinfo>
+                        </xs:annotation>
+                        <xs:sequence>
+                            <xs:element name="id">
+                                <xs:complexType>
+                                    <xs:annotation>
+                                        <xs:documentation>id de l'assure IJ VersicherterId</xs:documentation>
+                                        <xs:appinfo>
+                                            <annox:annotate target="class">
+                                                @io.swagger.v3.oas.annotations.media.Schema(name="AssureIdIJ",description
+                                                = "id de l'assure IJ VersicherterId")
+                                            </annox:annotate>
+                                        </xs:appinfo>
+                                    </xs:annotation>
+                                    <xs:simpleContent>
+                                        <xs:extension base="id_acor">
+                                            <xs:attribute name="type">
+                                                <xs:annotation>
+                                                    <xs:documentation>navs, nnss ou autre</xs:documentation>
+                                                </xs:annotation>
+                                                <xs:simpleType>
+                                                    <xs:restriction base="xs:string">
+                                                        <xs:enumeration value="navs"/>
+                                                        <xs:enumeration value="navs11"/>
+                                                        <xs:enumeration value="autre"/>
+                                                    </xs:restriction>
+                                                </xs:simpleType>
+                                            </xs:attribute>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="nom" type="xs:string" minOccurs="0">
+                                <xs:annotation>
+                                    <xs:documentation>nom de l'assure
+                                        Name der Versicherter
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="fonction" minOccurs="0">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:string">
+                                        <xs:enumeration value="req"/>
+                                        <xs:enumeration value="conj"/>
+                                        <xs:enumeration value="enf"/>
+                                        <xs:enumeration value="ex_epouse"/>
+                                        <xs:enumeration value="ex_epoux"/>
+                                        <xs:enumeration value="mere_nat"/>
+                                        <xs:enumeration value="pere_nat"/>
+                                        <xs:enumeration value="enf_nat"/>
+                                        <xs:enumeration value="enf_ex"/>
+                                        <xs:enumeration value="ex_conjoint"/>
+                                        <xs:enumeration value="parent"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="sexe" minOccurs="0">
+                                <xs:annotation>
+                                    <xs:documentation>f=femme / Frau
+                                        h=homme / Mann
+                                    </xs:documentation>
+                                </xs:annotation>
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:string">
+                                        <xs:enumeration value="h"/>
+                                        <xs:enumeration value="f"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="naissance" type="AAAAMMJJ" minOccurs="0">
+                                <xs:annotation>
+                                    <xs:documentation>date de naissance
+                                        Geburtsdatum
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="etat_civil" minOccurs="0">
+                                <xs:annotation>
+                                    <xs:documentation>1=celibataire ; 2=marie; 3=veuf; 4=divorce ; 5=separe;
+                                        6=Partenariat enregistré; 7=Partenariat dissout; 8=Survivant d'un partenariat;
+                                        9=Partenariat séparé
+                                    </xs:documentation>
+                                </xs:annotation>
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:int">
+                                        <xs:minInclusive value="1"/>
+                                        <xs:maxInclusive value="9"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="deces" type="AAAAMMJJ" minOccurs="0">
+                                <xs:annotation>
+                                    <xs:documentation>date de décès
+                                        Todesdatum
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="partenariat" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:annotation>
+                            <xs:documentation>lien de partenariat Partnerschaft</xs:documentation>
+                            <xs:appinfo>
+                                <annox:annotate target="class">
+                                    @io.swagger.v3.oas.annotations.media.Schema(name="PartenariatIJ",description = "lien
+                                    de partenariat Partnerschaft")
+                                </annox:annotate>
+                            </xs:appinfo>
+                        </xs:annotation>
+                        <xs:sequence>
+                            <xs:element name="conjoint" type="id_acor" maxOccurs="2">
+                                <xs:annotation>
+                                    <xs:documentation>conjoint
+                                        Partner
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="debut" type="AAAAMMJJ">
+                                <xs:annotation>
+                                    <xs:documentation>début du partenariat
+                                        Beginn des Partnerschafts
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="separation" type="periodeAMJ" minOccurs="0" maxOccurs="unbounded">
+                                <xs:annotation>
+                                    <xs:documentation>séparation
+                                        Trennung
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="fin" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:annotation>
+                                        <xs:documentation>fin du partenariat Ende des Partnerschafts</xs:documentation>
+                                        <xs:appinfo>
+                                            <annox:annotate target="class">
+                                                @io.swagger.v3.oas.annotations.media.Schema(name="PartenariatIJFin",description
+                                                = "fin du partenariat Ende des Partnerschafts")
+                                            </annox:annotate>
+                                        </xs:appinfo>
+                                    </xs:annotation>
+                                    <xs:simpleContent>
+                                        <xs:extension base="AAAAMMJJ">
+                                            <xs:attribute name="type">
+                                                <xs:annotation>
+                                                    <xs:documentation>divorce = Scheidung
+                                                        veuvage = Witwe(r)stand
+                                                    </xs:documentation>
+                                                </xs:annotation>
+                                                <xs:simpleType>
+                                                    <xs:restriction base="xs:string">
+                                                        <xs:enumeration value="divorce"/>
+                                                        <xs:enumeration value="veuvage"/>
+                                                    </xs:restriction>
+                                                </xs:simpleType>
+                                            </xs:attribute>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="type" default="m">
+                            <xs:annotation>
+                                <xs:documentation>m = Ehe
+                                    p = Partnerschaftgesetz
+                                </xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:enumeration value="m"/>
+                                    <xs:enumeration value="p"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="filiation" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:annotation>
+                            <xs:documentation>lien de filiation Abstammung</xs:documentation>
+                            <xs:appinfo>
+                                <annox:annotate target="class">
+                                    @io.swagger.v3.oas.annotations.media.Schema(name="FiliationIJ",description = "lien
+                                    de filiation Abstammung")
+                                </annox:annotate>
+                            </xs:appinfo>
+                        </xs:annotation>
+                        <xs:sequence>
+                            <xs:element name="enfant" type="id_acor">
+                                <xs:annotation>
+                                    <xs:documentation>enfant
+                                        Kind
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="parent" type="id_acor" minOccurs="0" maxOccurs="2">
+                                <xs:annotation>
+                                    <xs:documentation>parent
+                                        élément absent si parent
+                                        Eltern
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="prestation" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:annotation>
+                            <xs:documentation>prestation rente (in) pour les IJ Leistung</xs:documentation>
+                            <xs:appinfo>
+                                <annox:annotate target="class">
+                                    @io.swagger.v3.oas.annotations.media.Schema(name="PrestationIJ",description =
+                                    "prestation rente (in) pour les IJ Leistung")
+                                </annox:annotate>
+                            </xs:appinfo>
+                        </xs:annotation>
+                        <xs:sequence>
+                            <xs:element name="beneficiaire" type="id_acor">
+                                <xs:annotation>
+                                    <xs:documentation>bénéficiaire
+                                        Empfänger
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="rente">
+                                <xs:complexType>
+                                    <xs:annotation>
+                                        <xs:documentation>Rente (prestation (in) IJ)</xs:documentation>
+                                        <xs:appinfo>
+                                            <annox:annotate target="class">
+                                                @io.swagger.v3.oas.annotations.media.Schema(name="PrestationRenteIJ",description
+                                                = "rente en cours et en historique lors du calcul des IJ")
+                                            </annox:annotate>
+                                        </xs:appinfo>
+                                    </xs:annotation>
+                                    <xs:complexContent>
+                                        <xs:extension base="rente">
+                                            <xs:attribute name="type">
+                                                <xs:annotation>
+                                                    <xs:documentation>standard
+                                                        ajournee
+                                                    </xs:documentation>
+                                                </xs:annotation>
+                                                <xs:simpleType>
+                                                    <xs:restriction base="xs:string">
+                                                        <xs:enumeration value="standard"/>
+                                                        <xs:enumeration value="ajournee"/>
+                                                    </xs:restriction>
+                                                </xs:simpleType>
+                                            </xs:attribute>
+                                        </xs:extension>
+                                    </xs:complexContent>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="refus" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:annotation>
+                            <xs:documentation>refus général de demande</xs:documentation>
+                            <xs:appinfo>
+                                <annox:annotate target="class">
+                                    @io.swagger.v3.oas.annotations.media.Schema(name="RefusGeneralIJ",description =
+                                    "refus général de demande")
+                                </annox:annotate>
+                            </xs:appinfo>
+                        </xs:annotation>
+                        <xs:sequence>
+                            <xs:element name="raison" type="xs:string"/>
+                            <xs:element name="label" type="xs:string"/>
+                            <xs:element name="jours_maladie" type="JoursMaladie" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="remarque_rectif" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:annotation>
+                            <xs:documentation>remarque rectification</xs:documentation>
+                            <xs:appinfo>
+                                <annox:annotate target="class">
+                                    @io.swagger.v3.oas.annotations.media.Schema(name="RemarqueRectifIJ",description =
+                                    "remarque rectification")
+                                </annox:annotate>
+                            </xs:appinfo>
+                        </xs:annotation>
+                        <xs:sequence>
+                            <xs:element name="nom" type="xs:string"/>
+                            <xs:element name="label" type="xs:string"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:choice>
+                    <xs:sequence>
+                        <xs:element name="paiements_volants" minOccurs="0">
+                            <xs:complexType>
+                                <xs:annotation>
+                                    <xs:documentation>paiement effectué depuis le compte d'attente (décompte non payé
+                                        lors de sa création)
+                                    </xs:documentation>
+                                    <xs:appinfo>
+                                        <annox:annotate target="class">
+                                            @io.swagger.v3.oas.annotations.media.Schema(name="PaiementsVolants",description
+                                            = "paiement effectué depuis le compte d'attente (décompte non payé lors de
+                                            sa création)")
+                                        </annox:annotate>
+                                    </xs:appinfo>
+                                </xs:annotation>
+                                <xs:sequence>
+                                    <xs:element name="paiement" type="Paiement" minOccurs="0" maxOccurs="unbounded"/>
+                                    <xs:element name="refus_paiement" type="RefusPaiement" minOccurs="0"
+                                                maxOccurs="unbounded"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="compte_attente" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Compte d'attente et dettes du dossier</xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="solde_avant">
+                                        <xs:annotation>
+                                            <xs:documentation>Le solde avant le le calcul du cas</xs:documentation>
+                                        </xs:annotation>
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:double">
+                                                <xs:minInclusive value="0"/>
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:element>
+                                    <xs:element name="credit_traitement" type="xs:double">
+                                        <xs:annotation>
+                                            <xs:documentation>credit mis en compte d'attente durant le traitement
+                                            </xs:documentation>
+                                        </xs:annotation>
+                                    </xs:element>
+                                    <xs:element name="comp" minOccurs="0">
+                                        <xs:annotation>
+                                            <xs:documentation>compensation entre dette et créance</xs:documentation>
+                                        </xs:annotation>
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:double">
+                                                <xs:maxInclusive value="0"/>
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:element>
+                                    <xs:element name="transfc" minOccurs="0">
+                                        <xs:annotation>
+                                            <xs:documentation>transfert de compte d'attente vers auxiliaire (presto,
+                                                inar, osiris)
+                                            </xs:documentation>
+                                        </xs:annotation>
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:double">
+                                                <xs:maxInclusive value="0"/>
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:element>
+                                    <xs:element name="solde_final">
+                                        <xs:annotation>
+                                            <xs:documentation>Solde du compte d'attente après le traitement
+                                            </xs:documentation>
+                                        </xs:annotation>
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:double">
+                                                <xs:minInclusive value="0"/>
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:element>
+                                    <xs:element name="dettes" minOccurs="0">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element name="dette_avant">
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:double">
+                                                            <xs:minInclusive value="0"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="dette_traitement">
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:double">
+                                                            <xs:minInclusive value="0"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="comp" minOccurs="0">
+                                                    <xs:annotation>
+                                                        <xs:documentation>compensation entre dette et créance
+                                                        </xs:documentation>
+                                                    </xs:annotation>
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:double">
+                                                            <xs:maxInclusive value="0"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="dette_finale">
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:double">
+                                                            <xs:minInclusive value="0"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="refus_compensation" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="montant">
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:double">
+                                                <xs:minInclusive value="0"/>
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:element>
+                                    <xs:element name="raison" type="xs:string"/>
+                                    <xs:element name="label" type="xs:string"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="refus_transfert" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="montant">
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:double">
+                                                <xs:minInclusive value="0"/>
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:element>
+                                    <xs:element name="raison" type="xs:string"/>
+                                    <xs:element name="label" type="xs:string"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="cycle" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="date" type="AAAAMMJJ" minOccurs="0"/>
+                                    <xs:element name="evenement" minOccurs="0" maxOccurs="unbounded">
+                                        <xs:complexType>
+                                            <xs:annotation>
+                                                <xs:documentation>evenement justifiant le cycle de calcul
+                                                </xs:documentation>
+                                                <xs:appinfo>
+                                                    <annox:annotate target="class">
+                                                        @io.swagger.v3.oas.annotations.media.Schema(name="EvenementIJ",description
+                                                        = "evenement justifiant le cycle de calcul")
+                                                    </annox:annotate>
+                                                </xs:appinfo>
+                                            </xs:annotation>
+                                            <xs:sequence>
+                                                <xs:element name="type" type="xs:string"/>
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="apparait" type="xs:boolean"/>
+                                    <xs:element name="bases_calcul" minOccurs="0" maxOccurs="3">
+                                        <xs:complexType>
+                                            <xs:annotation>
+                                                <xs:documentation>Bases de calcul de l'IJ</xs:documentation>
+                                                <xs:appinfo>
+                                                    <annox:annotate target="class">
+                                                        @io.swagger.v3.oas.annotations.media.Schema(name="BasesCalculIJ",description
+                                                        = "Bases de calcul de l'IJ")
+                                                    </annox:annotate>
+                                                </xs:appinfo>
+                                            </xs:annotation>
+                                            <xs:sequence>
+                                                <xs:element name="genre">
+                                                    <xs:annotation>
+                                                        <xs:documentation>1 = grande 2 = petite</xs:documentation>
+                                                    </xs:annotation>
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:int">
+                                                            <xs:minInclusive value="1"/>
+                                                            <xs:maxInclusive value="2"/>
+                                                            <xs:enumeration value="1"/>
+                                                            <xs:enumeration value="2"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="mode">
+                                                    <xs:annotation>
+                                                        <xs:documentation>1=systeme expert
+                                                            2=manuel
+                                                        </xs:documentation>
+                                                    </xs:annotation>
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:int">
+                                                            <xs:minInclusive value="1"/>
+                                                            <xs:maxInclusive value="2"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="categorie" minOccurs="0">
+                                                    <xs:annotation>
+                                                        <xs:documentation>decision,comparaison,suspension
+                                                        </xs:documentation>
+                                                    </xs:annotation>
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:string">
+                                                            <xs:enumeration value="decision"/>
+                                                            <xs:enumeration value="comparaison"/>
+                                                            <xs:enumeration value="suspension"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="office_ai">
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:int">
+                                                            <xs:minInclusive value="301"/>
+                                                            <xs:maxInclusive value="399"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="decision" type="xs:long" minOccurs="0"/>
+                                                <xs:element name="genre_readaptation">
+                                                    <xs:annotation>
+                                                        <xs:documentation>1 = observation/instruction, 2 = attente de
+                                                            readaptation, 3 = readaptation medicale, 4 = placement à
+                                                            l'essaispeciales, 5 = formation profess. initiale,
+                                                            6 = reclassement,
+                                                            7 = attente d'emploi,
+                                                            8 = mise au courant
+                                                            9=mesures de réinsertion
+                                                        </xs:documentation>
+                                                    </xs:annotation>
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:int">
+                                                            <xs:minInclusive value="1"/>
+                                                            <xs:maxInclusive value="9"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="etablissement" type="xs:string" minOccurs="0"/>
+                                                <xs:element name="garantie_revision" minOccurs="0">
+                                                    <xs:annotation>
+                                                        <xs:documentation>3 = garantie 3e révision
+                                                            4 = garantie 4e révision
+                                                        </xs:documentation>
+                                                    </xs:annotation>
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:int">
+                                                            <xs:minInclusive value="3"/>
+                                                            <xs:maxInclusive value="4"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="formation" minOccurs="0">
+                                                    <xs:annotation>
+                                                        <xs:documentation>seulement pour une petite IJ.
+                                                            1=école spéciale
+                                                            2=sans (mesures médicales)
+                                                            3=formation prof. initiale
+                                                            4=formation initiale prolongée
+                                                            5=formation initiale changée
+                                                            6=formation initiale changée et prolongée
+                                                            7=activité aux. ou atelier protégé
+                                                            8=étudiant avec act. lucrative
+                                                        </xs:documentation>
+                                                    </xs:annotation>
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:int">
+                                                            <xs:minInclusive value="1"/>
+                                                            <xs:maxInclusive value="8"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="date_prononce" type="AAAAMMJJ"/>
+                                                <xs:element name="debut_droit" type="AAAAMMJJ">
+                                                    <xs:annotation>
+                                                        <xs:documentation>droit à l'IJ sur ces bases, pas droit aux
+                                                            mesures de réadaptation
+                                                        </xs:documentation>
+                                                    </xs:annotation>
+                                                </xs:element>
+                                                <xs:element name="fin_droit" type="AAAAMMJJ" minOccurs="0"/>
+                                                <xs:element name="statut">
+                                                    <xs:annotation>
+                                                        <xs:documentation>1 = salarié 2 = indépendant 3 = non actif 4 =
+                                                            agriculteur indépendant selon LFA
+                                                        </xs:documentation>
+                                                    </xs:annotation>
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:int">
+                                                            <xs:minInclusive value="1"/>
+                                                            <xs:maxInclusive value="4"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="complete" type="xs:boolean">
+                                                    <xs:annotation>
+                                                        <xs:documentation>true = bases complètes
+                                                            false = bases partielles, pour info
+                                                        </xs:documentation>
+                                                    </xs:annotation>
+                                                </xs:element>
+                                                <xs:element name="id_ij_rect" type="xs:string" minOccurs="0"/>
+                                                <xs:element name="revenu_determinant" minOccurs="0">
+                                                    <xs:annotation>
+                                                        <xs:documentation>absent dans certains cas de petites IJl
+                                                        </xs:documentation>
+                                                    </xs:annotation>
+                                                    <xs:complexType>
+                                                        <xs:sequence>
+                                                            <xs:element name="revenu" minOccurs="0"
+                                                                        maxOccurs="unbounded">
+                                                                <xs:complexType>
+                                                                    <xs:annotation>
+                                                                        <xs:documentation>donnees de revenu pour le
+                                                                            revenu determinant
+                                                                        </xs:documentation>
+                                                                        <xs:appinfo>
+                                                                            <annox:annotate target="class">
+                                                                                @io.swagger.v3.oas.annotations.media.Schema(name="RevenuIJ",description
+                                                                                = "donnees de revenu pour le revenu
+                                                                                determinant")
+                                                                            </annox:annotate>
+                                                                        </xs:appinfo>
+                                                                    </xs:annotation>
+                                                                    <xs:all>
+                                                                        <xs:element name="employeur" type="xs:string"
+                                                                                    minOccurs="0"/>
+                                                                        <xs:element name="revenu_brut"
+                                                                                    type="revenu_brut"/>
+                                                                        <xs:element name="type_revenu"
+                                                                                    type="type_revenu"/>
+                                                                        <xs:element name="an">
+                                                                            <xs:simpleType>
+                                                                                <xs:restriction base="an_revenu">
+                                                                                    <xs:maxInclusive value="2020"/>
+                                                                                </xs:restriction>
+                                                                            </xs:simpleType>
+                                                                        </xs:element>
+                                                                    </xs:all>
+                                                                </xs:complexType>
+                                                            </xs:element>
+                                                            <xs:element name="revenu_annuel" type="xs:double"
+                                                                        minOccurs="0">
+                                                                <xs:annotation>
+                                                                    <xs:documentation>présent si plusieurs revenus sont
+                                                                        présents
+                                                                    </xs:documentation>
+                                                                </xs:annotation>
+                                                            </xs:element>
+                                                            <xs:element name="revenu_journalier"
+                                                                        type="revenu_journalier"/>
+                                                            <xs:element name="date" type="AAAAMMJJ" minOccurs="0">
+                                                                <xs:annotation>
+                                                                    <xs:documentation>date déterminante pour la
+                                                                        revalorisation périodique
+                                                                    </xs:documentation>
+                                                                </xs:annotation>
+                                                            </xs:element>
+                                                        </xs:sequence>
+                                                    </xs:complexType>
+                                                </xs:element>
+                                                <xs:element name="mode_calcul" minOccurs="0">
+                                                    <xs:annotation>
+                                                        <xs:documentation>pour la petite IJ voir manuel utilisateur
+                                                        </xs:documentation>
+                                                    </xs:annotation>
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:int">
+                                                            <xs:enumeration value="1"/>
+                                                            <xs:enumeration value="2"/>
+                                                            <xs:enumeration value="3"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="montant_base" minOccurs="0">
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:double">
+                                                            <xs:minInclusive value="0"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="droit_prestation_enfant" minOccurs="0">
+                                                    <xs:annotation>
+                                                        <xs:documentation>5e révision AI, pour l'annonce 8G
+                                                            1=oui
+                                                            0=non
+                                                        </xs:documentation>
+                                                    </xs:annotation>
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:int">
+                                                            <xs:enumeration value="0"/>
+                                                            <xs:enumeration value="1"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="n_enfants" minOccurs="0">
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:int">
+                                                            <xs:minInclusive value="0"/>
+                                                            <xs:maxInclusive value="15"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="montant_enfants" minOccurs="0">
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:double">
+                                                            <xs:minInclusive value="0"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="montant_table" minOccurs="0">
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:double">
+                                                            <xs:minInclusive value="0"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="pas_reduction_rea_8a" minOccurs="0">
+                                                    <xs:complexType>
+                                                        <xs:sequence>
+                                                            <xs:element name="rente" maxOccurs="unbounded">
+                                                                <xs:complexType>
+                                                                    <xs:annotation>
+                                                                        <xs:documentation>
+                                                                            Rente concernee par la non reduction de l'IJ
+                                                                        </xs:documentation>
+                                                                        <xs:appinfo>
+                                                                            <annox:annotate target="class">
+                                                                                @io.swagger.v3.oas.annotations.media.Schema(name="RentePasReaIJ",description
+                                                                                = "Rente concernee par la non reduction
+                                                                                de l'IJ")
+                                                                            </annox:annotate>
+                                                                        </xs:appinfo>
+                                                                    </xs:annotation>
+                                                                    <xs:sequence>
+                                                                        <xs:element name="code_prest">
+                                                                            <xs:simpleType>
+                                                                                <xs:restriction base="xs:int">
+                                                                                    <xs:minInclusive value="0"/>
+                                                                                    <xs:maxInclusive value="99"/>
+                                                                                </xs:restriction>
+                                                                            </xs:simpleType>
+                                                                        </xs:element>
+                                                                        <xs:element name="debut" type="AAAAMMJJ"/>
+                                                                        <xs:element name="fin" type="AAAAMMJJ"/>
+                                                                    </xs:sequence>
+                                                                </xs:complexType>
+                                                            </xs:element>
+                                                        </xs:sequence>
+                                                    </xs:complexType>
+                                                </xs:element>
+                                                <xs:element name="montant_maximum" type="empty" minOccurs="0">
+                                                    <xs:annotation>
+                                                        <xs:documentation>présent si on plafonne le montant au maximum
+                                                            de l'IJ
+                                                        </xs:documentation>
+                                                    </xs:annotation>
+                                                </xs:element>
+                                                <xs:element name="plafonnement_prestation_enfants" type="empty"
+                                                            minOccurs="0">
+                                                    <xs:annotation>
+                                                        <xs:documentation>présent s'il y a plafonnement de la prestation
+                                                            pour enfant et donc de l'ij quand l'ij de base + la
+                                                            prestation pour enfant > revenu journalier determinant
+                                                        </xs:documentation>
+                                                    </xs:annotation>
+                                                </xs:element>
+                                                <xs:element name="plafonnement_prestation_enfants_maximum" type="empty"
+                                                            minOccurs="0">
+                                                    <xs:annotation>
+                                                        <xs:documentation>présent s'il y a plafonnement de la prestation
+                                                            pour enfant et donc de l'ij lorsque celle-ci atteint le
+                                                            montanat maximum
+                                                        </xs:documentation>
+                                                    </xs:annotation>
+                                                </xs:element>
+                                                <xs:element name="revenu_readaptation" minOccurs="0">
+                                                    <xs:complexType>
+                                                        <xs:all>
+                                                            <xs:element name="revenu_brut" type="revenu_brut"
+                                                                        minOccurs="0"/>
+                                                            <xs:element name="revenu_journalier"
+                                                                        type="revenu_journalier" minOccurs="0"/>
+                                                            <xs:element name="AC_demi_brut" type="xs:double"/>
+                                                            <xs:element name="AC_demi_net" type="xs:double"/>
+                                                            <xs:element name="revenu_tot_journalier"
+                                                                        type="revenu_journalier"/>
+                                                        </xs:all>
+                                                    </xs:complexType>
+                                                </xs:element>
+                                                <xs:element name="revenus_plus_indemnite" minOccurs="0">
+                                                    <xs:annotation>
+                                                        <xs:documentation>somme des revenus aquis durant la réadaptation
+                                                            et de l'indemnité selon tables pour le calcul de la
+                                                            réduction
+                                                        </xs:documentation>
+                                                    </xs:annotation>
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:double">
+                                                            <xs:minInclusive value="0"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="difference_revenu" type="xs:double" minOccurs="0"/>
+                                                <xs:element name="reduction_revenu" minOccurs="0">
+                                                    <xs:annotation>
+                                                        <xs:documentation></xs:documentation>
+                                                    </xs:annotation>
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:double">
+                                                            <xs:minInclusive value="0"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="revenu_j_determinant_pas_atteint" type="empty"
+                                                            minOccurs="0">
+                                                    <xs:annotation>
+                                                        <xs:documentation>présent lorsque revenu journalier determinant
+                                                            > ij + revenus en cours de readaptation. Il n'y a alors pas
+                                                            de reduction pour revenus en cours de readaptation
+                                                        </xs:documentation>
+                                                    </xs:annotation>
+                                                </xs:element>
+                                                <xs:element name="rentes_ai" minOccurs="0">
+                                                    <xs:annotation>
+                                                        <xs:documentation>liste des rentes AI cumulées avec l'IJ
+                                                        </xs:documentation>
+                                                    </xs:annotation>
+                                                    <xs:complexType>
+                                                        <xs:sequence>
+                                                            <xs:element name="tobestopped" type="AAAAMMJJ"
+                                                                        minOccurs="0">
+                                                                <xs:annotation>
+                                                                    <xs:documentation>date à laquelle on doit stopper
+                                                                        les rentes AI
+                                                                    </xs:documentation>
+                                                                </xs:annotation>
+                                                            </xs:element>
+                                                            <xs:element name="rente" minOccurs="0"
+                                                                        maxOccurs="unbounded">
+                                                                <xs:annotation>
+                                                                    <xs:documentation>0 possible car en saisie manuelle
+                                                                        on peut avoir un montant de rente sans les
+                                                                        rentes
+                                                                    </xs:documentation>
+                                                                </xs:annotation>
+                                                                <xs:complexType>
+                                                                    <xs:annotation>
+                                                                        <xs:documentation>Une rente ayant possiblement
+                                                                            une interaction avec une IJ
+                                                                        </xs:documentation>
+                                                                        <xs:appinfo>
+                                                                            <annox:annotate target="class">
+                                                                                @io.swagger.v3.oas.annotations.media.Schema(name="RenteBasesCalculIJ",description
+                                                                                = "Une rente ayant possiblement une
+                                                                                interaction avec une IJ")
+                                                                            </annox:annotate>
+                                                                        </xs:appinfo>
+                                                                    </xs:annotation>
+                                                                    <xs:all>
+                                                                        <xs:element name="code_prestation"
+                                                                                    type="GenrePrestation"/>
+                                                                        <xs:element name="beneficiaire"
+                                                                                    type="xs:string"/>
+                                                                        <xs:element name="montant_mensuel"
+                                                                                    type="xs:int"/>
+                                                                    </xs:all>
+                                                                </xs:complexType>
+                                                            </xs:element>
+                                                            <xs:element name="montant_mensuel_total" type="xs:int">
+                                                                <xs:annotation>
+                                                                    <xs:documentation>total mensuel des rentes de la
+                                                                        famille de bénéficiaires
+                                                                    </xs:documentation>
+                                                                </xs:annotation>
+                                                            </xs:element>
+                                                            <xs:element name="montant_journalier" type="xs:double">
+                                                                <xs:annotation>
+                                                                    <xs:documentation>total journalier des rentes de la
+                                                                        famille de beneficiaires
+                                                                    </xs:documentation>
+                                                                </xs:annotation>
+                                                            </xs:element>
+                                                        </xs:sequence>
+                                                    </xs:complexType>
+                                                </xs:element>
+                                                <xs:element name="montant_comparaison_ijAI_RAI" minOccurs="0">
+                                                    <xs:annotation>
+                                                        <xs:documentation>montant de l'IJ pour comparaison avec montant
+                                                            journalier des rentes AI, déjà réduit pour revenus en cours
+                                                            de readaptation
+                                                        </xs:documentation>
+                                                    </xs:annotation>
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:double">
+                                                            <xs:minInclusive value="0"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:choice>
+                                                    <xs:element name="IJ_inf_RAI" type="empty">
+                                                        <xs:annotation>
+                                                            <xs:documentation>présent si le montant journalier de la
+                                                                rente est superieur a l'IJ. Il n'y a alors pas d'IJ,
+                                                                mais la rente perdure (grande IJ)
+                                                            </xs:documentation>
+                                                        </xs:annotation>
+                                                    </xs:element>
+                                                    <xs:sequence>
+                                                        <xs:element name="reduction_AI" minOccurs="0">
+                                                            <xs:annotation>
+                                                                <xs:documentation>montant de la reduction a soustraire
+                                                                    de l'IJ en cas de cumul avec rentes AI
+                                                                </xs:documentation>
+                                                            </xs:annotation>
+                                                            <xs:simpleType>
+                                                                <xs:restriction base="xs:double">
+                                                                    <xs:minInclusive value="0"/>
+                                                                </xs:restriction>
+                                                            </xs:simpleType>
+                                                        </xs:element>
+                                                        <xs:element name="montant_garanti_RAI" type="xs:double"
+                                                                    minOccurs="0">
+                                                            <xs:annotation>
+                                                                <xs:documentation>montant journalier de rente(s) AI
+                                                                    garanti pour les petites IJ
+                                                                </xs:documentation>
+                                                            </xs:annotation>
+                                                        </xs:element>
+                                                        <xs:sequence minOccurs="0">
+                                                            <xs:choice>
+                                                                <xs:element name="IJ_AA_non_reduite">
+                                                                    <xs:annotation>
+                                                                        <xs:documentation>montant de l'IJ AA non reduit
+                                                                            ente par ll'utilisateur
+                                                                        </xs:documentation>
+                                                                    </xs:annotation>
+                                                                    <xs:simpleType>
+                                                                        <xs:restriction base="xs:double">
+                                                                            <xs:minInclusive value="0"/>
+                                                                        </xs:restriction>
+                                                                    </xs:simpleType>
+                                                                </xs:element>
+                                                                <xs:element name="IJ_AA_reduite">
+                                                                    <xs:annotation>
+                                                                        <xs:documentation>montant de l'IJ AA non reduit
+                                                                            ente par ll'utilisateur
+                                                                        </xs:documentation>
+                                                                    </xs:annotation>
+                                                                    <xs:simpleType>
+                                                                        <xs:restriction base="xs:double">
+                                                                            <xs:minInclusive value="0"/>
+                                                                        </xs:restriction>
+                                                                    </xs:simpleType>
+                                                                </xs:element>
+                                                            </xs:choice>
+                                                            <xs:choice>
+                                                                <xs:element name="garantie_AA_non_reduite">
+                                                                    <xs:annotation>
+                                                                        <xs:documentation>montant de l'IJ AA non reduit
+                                                                            utilise pour le calcul
+                                                                        </xs:documentation>
+                                                                    </xs:annotation>
+                                                                    <xs:simpleType>
+                                                                        <xs:restriction base="xs:double">
+                                                                            <xs:minInclusive value="0"/>
+                                                                        </xs:restriction>
+                                                                    </xs:simpleType>
+                                                                </xs:element>
+                                                                <xs:element name="garantie_AA_reduite">
+                                                                    <xs:annotation>
+                                                                        <xs:documentation>montant de l'IJ AA non reduit
+                                                                            utilise pour le calcul
+                                                                        </xs:documentation>
+                                                                    </xs:annotation>
+                                                                    <xs:simpleType>
+                                                                        <xs:restriction base="xs:double">
+                                                                            <xs:minInclusive value="0"/>
+                                                                        </xs:restriction>
+                                                                    </xs:simpleType>
+                                                                </xs:element>
+                                                            </xs:choice>
+                                                            <xs:element name="max_AA" type="empty" minOccurs="0">
+                                                                <xs:annotation>
+                                                                    <xs:documentation>présent si la garantie AA saisie
+                                                                        en entree (IJ_AA_non_reduite ou IJ_AA_reduite)
+                                                                        est supérieure au montant maximum de l'IJ de
+                                                                        l'AI. La garantie AA employee pour le calcul
+                                                                        (garantie_AA_non_reduite ou garantie_AA_reduite)
+                                                                        est alors limitee a ce montant
+                                                                    </xs:documentation>
+                                                                </xs:annotation>
+                                                            </xs:element>
+                                                            <xs:sequence minOccurs="0">
+                                                                <xs:element name="tot_mont_AA_rev">
+                                                                    <xs:annotation>
+                                                                        <xs:documentation>montant de l'IJ AA reduit
+                                                                            utilise pour le calcul
+                                                                        </xs:documentation>
+                                                                    </xs:annotation>
+                                                                    <xs:simpleType>
+                                                                        <xs:restriction base="xs:double">
+                                                                            <xs:minInclusive value="0"/>
+                                                                        </xs:restriction>
+                                                                    </xs:simpleType>
+                                                                </xs:element>
+                                                                <xs:element name="diff_rev_AA">
+                                                                    <xs:simpleType>
+                                                                        <xs:restriction base="xs:double"/>
+                                                                    </xs:simpleType>
+                                                                </xs:element>
+                                                            </xs:sequence>
+                                                            <xs:element name="reduction_revenu_AA" minOccurs="0">
+                                                                <xs:annotation>
+                                                                    <xs:documentation>reduction pour revenus en cours de
+                                                                        readaptation. Elle s'applique a l'IJ de l'AA non
+                                                                        reduite pour comparaison avec l'IJ de l'AI. Elle
+                                                                        comprend l'ensemble des revenus acquis en cours
+                                                                        de readaptation et se distingue donc de la
+                                                                        reduction pour revenus en cours de readaptation
+                                                                        s'appliquant a l'IJ de l'AI
+                                                                    </xs:documentation>
+                                                                </xs:annotation>
+                                                                <xs:simpleType>
+                                                                    <xs:restriction base="xs:double">
+                                                                        <xs:minInclusive value="0"/>
+                                                                    </xs:restriction>
+                                                                </xs:simpleType>
+                                                            </xs:element>
+                                                            <xs:element name="reduction_rAI_AA" minOccurs="0">
+                                                                <xs:annotation>
+                                                                    <xs:documentation>reduction de l'IJ de AA non
+                                                                        reduite pour cumul avec rente AI. Elle
+                                                                        s'applique a l'IJ de l'AA non reduite pour
+                                                                        comparaison avec l'IJ de l'AI. Elle correspond
+                                                                        au montant journalier de rente AI
+                                                                    </xs:documentation>
+                                                                </xs:annotation>
+                                                                <xs:simpleType>
+                                                                    <xs:restriction base="xs:double">
+                                                                        <xs:minInclusive value="0"/>
+                                                                    </xs:restriction>
+                                                                </xs:simpleType>
+                                                            </xs:element>
+                                                            <xs:element name="montant_ijAA_vs_ijAI" minOccurs="0">
+                                                                <xs:simpleType>
+                                                                    <xs:restriction base="xs:double">
+                                                                        <xs:minInclusive value="0"/>
+                                                                    </xs:restriction>
+                                                                </xs:simpleType>
+                                                            </xs:element>
+                                                            <xs:element name="montant_ijAI_vs_ijAA">
+                                                                <xs:annotation>
+                                                                    <xs:documentation>montant de l'IJ pour comparaison
+                                                                        avec montant AA en vue de la garantie de montant
+                                                                        AA
+                                                                    </xs:documentation>
+                                                                </xs:annotation>
+                                                                <xs:simpleType>
+                                                                    <xs:restriction base="xs:double">
+                                                                        <xs:minInclusive value="0"/>
+                                                                    </xs:restriction>
+                                                                </xs:simpleType>
+                                                            </xs:element>
+                                                            <xs:element name="montant_garanti_AA" minOccurs="0">
+                                                                <xs:annotation>
+                                                                    <xs:documentation>constitue le montant de l'IJ si la
+                                                                        garantie AA est appliquée
+                                                                    </xs:documentation>
+                                                                </xs:annotation>
+                                                                <xs:simpleType>
+                                                                    <xs:restriction base="xs:double">
+                                                                        <xs:minInclusive value="0"/>
+                                                                    </xs:restriction>
+                                                                </xs:simpleType>
+                                                            </xs:element>
+                                                        </xs:sequence>
+                                                        <xs:sequence minOccurs="0">
+                                                            <xs:element name="versement_separe" type="empty">
+                                                                <xs:annotation>
+                                                                    <xs:documentation>present encas de versement separe
+                                                                        de l'ij entre l'assure et ses enfants
+                                                                    </xs:documentation>
+                                                                </xs:annotation>
+                                                            </xs:element>
+                                                            <xs:element name="montant_base_AA" minOccurs="0">
+                                                                <xs:simpleType>
+                                                                    <xs:restriction base="xs:double">
+                                                                        <xs:minInclusive value="0"/>
+                                                                    </xs:restriction>
+                                                                </xs:simpleType>
+                                                            </xs:element>
+                                                            <xs:element name="pct_reduction" type="xs:double"/>
+                                                            <xs:element name="montant_base_red">
+                                                                <xs:simpleType>
+                                                                    <xs:restriction base="xs:double">
+                                                                        <xs:minInclusive value="0"/>
+                                                                    </xs:restriction>
+                                                                </xs:simpleType>
+                                                            </xs:element>
+                                                            <xs:element name="montant_enfants_red">
+                                                                <xs:simpleType>
+                                                                    <xs:restriction base="xs:double">
+                                                                        <xs:minInclusive value="0"/>
+                                                                    </xs:restriction>
+                                                                </xs:simpleType>
+                                                            </xs:element>
+                                                        </xs:sequence>
+                                                        <xs:element name="remarques" minOccurs="0"
+                                                                    maxOccurs="unbounded">
+                                                            <xs:annotation>
+                                                                <xs:documentation>remarques convernant cette bases de
+                                                                    calcul
+                                                                </xs:documentation>
+                                                            </xs:annotation>
+                                                            <xs:complexType>
+                                                                <xs:annotation>
+                                                                    <xs:documentation>Remarque sur bases de calcul
+                                                                        d'IJ
+                                                                    </xs:documentation>
+                                                                    <xs:appinfo>
+                                                                        <annox:annotate target="class">
+                                                                            @io.swagger.v3.oas.annotations.media.Schema(name="RemarqueBasesCalculIJ",description
+                                                                            = "Remarque sur bases de calcul d'IJ")
+                                                                        </annox:annotate>
+                                                                    </xs:appinfo>
+                                                                </xs:annotation>
+                                                                <xs:sequence>
+                                                                    <xs:element name="nom" type="xs:string"/>
+                                                                    <xs:element name="label" type="xs:string"/>
+                                                                </xs:sequence>
+                                                            </xs:complexType>
+                                                        </xs:element>
+                                                        <xs:element name="ij" maxOccurs="2">
+                                                            <xs:complexType>
+                                                                <xs:all>
+                                                                    <xs:element name="categorie">
+                                                                        <xs:annotation>
+                                                                            <xs:documentation>1 = interne 2 = externe
+                                                                            </xs:documentation>
+                                                                        </xs:annotation>
+                                                                        <xs:simpleType>
+                                                                            <xs:restriction base="xs:int">
+                                                                                <xs:minInclusive value="1"/>
+                                                                                <xs:maxInclusive value="2"/>
+                                                                            </xs:restriction>
+                                                                        </xs:simpleType>
+                                                                    </xs:element>
+                                                                    <xs:element name="deduction" type="xs:double"
+                                                                                minOccurs="0">
+                                                                        <xs:annotation>
+                                                                            <xs:documentation>si categorie = interne =>
+                                                                                deduction des frais de logement
+                                                                            </xs:documentation>
+                                                                        </xs:annotation>
+                                                                    </xs:element>
+                                                                    <xs:element name="deduction_annule_indemnite"
+                                                                                type="empty" minOccurs="0">
+                                                                        <xs:annotation>
+                                                                            <xs:documentation>présent si déduction >
+                                                                                montant indemnité
+                                                                            </xs:documentation>
+                                                                        </xs:annotation>
+                                                                    </xs:element>
+                                                                    <xs:element name="montant_indemnite_principale"
+                                                                                minOccurs="0">
+                                                                        <xs:annotation>
+                                                                            <xs:documentation>montant de l'IJ principale
+                                                                                en cas de versement separe
+                                                                            </xs:documentation>
+                                                                        </xs:annotation>
+                                                                        <xs:simpleType>
+                                                                            <xs:restriction base="xs:double">
+                                                                                <xs:minInclusive value="0"/>
+                                                                            </xs:restriction>
+                                                                        </xs:simpleType>
+                                                                    </xs:element>
+                                                                    <xs:element name="montant_indemnite">
+                                                                        <xs:annotation>
+                                                                            <xs:documentation>montant journalier de
+                                                                                l'IJ
+                                                                            </xs:documentation>
+                                                                        </xs:annotation>
+                                                                        <xs:simpleType>
+                                                                            <xs:restriction base="xs:double">
+                                                                                <xs:minInclusive value="0"/>
+                                                                            </xs:restriction>
+                                                                        </xs:simpleType>
+                                                                    </xs:element>
+                                                                </xs:all>
+                                                            </xs:complexType>
+                                                        </xs:element>
+                                                        <xs:element name="decompte" type="DecompteIJ" minOccurs="0"
+                                                                    maxOccurs="unbounded"/>
+                                                        <xs:element name="recap_decompte" minOccurs="0" maxOccurs="3">
+                                                            <xs:complexType>
+                                                                <xs:sequence>
+                                                                    <xs:element name="rect_id_ij" type="xs:string"/>
+                                                                    <xs:element name="date_debut" type="AAAAMMJJ"/>
+                                                                    <xs:element name="date_fin" type="AAAAMMJJ"/>
+                                                                    <xs:element name="type">
+                                                                        <xs:simpleType>
+                                                                            <xs:restriction base="xs:string">
+                                                                                <xs:enumeration value="annule"/>
+                                                                                <xs:enumeration value="rectif1"/>
+                                                                                <xs:enumeration value="rectif2"/>
+                                                                            </xs:restriction>
+                                                                        </xs:simpleType>
+                                                                    </xs:element>
+                                                                    <xs:element name="montant_dec_brut"
+                                                                                type="xs:double"/>
+                                                                    <xs:element name="montant_dec_net"
+                                                                                type="xs:double"/>
+                                                                    <xs:element name="cotisations" type="xs:double"/>
+                                                                    <xs:element name="part_patronale" type="xs:double"/>
+                                                                    <xs:element name="impots" type="xs:double"/>
+                                                                    <xs:element name="deduction_AO" type="xs:double"/>
+                                                                    <xs:element name="genre_taux" type="xs:int"
+                                                                                minOccurs="0"/>
+                                                                    <xs:element name="canton_impots" minOccurs="0">
+                                                                        <xs:simpleType>
+                                                                            <xs:restriction base="xs:string">
+                                                                                <xs:minLength value="1"/>
+                                                                                <xs:maxLength value="2"/>
+                                                                            </xs:restriction>
+                                                                        </xs:simpleType>
+                                                                    </xs:element>
+                                                                    <xs:element name="taux_impots" minOccurs="0">
+                                                                        <xs:simpleType>
+                                                                            <xs:restriction base="xs:double">
+                                                                                <xs:minInclusive value="0"/>
+                                                                            </xs:restriction>
+                                                                        </xs:simpleType>
+                                                                    </xs:element>
+                                                                    <xs:element name="extourne" type="xs:double"
+                                                                                minOccurs="0"/>
+                                                                    <xs:element name="vieux_decomptes" minOccurs="0">
+                                                                        <xs:simpleType>
+                                                                            <xs:restriction base="xs:double">
+                                                                                <xs:minInclusive value="0"/>
+                                                                            </xs:restriction>
+                                                                        </xs:simpleType>
+                                                                    </xs:element>
+                                                                    <xs:element name="montant_net_final"
+                                                                                type="xs:double" minOccurs="0"/>
+                                                                    <!--<xs:element name="decompte_conserve" type="DecompteIJ" minOccurs="0" maxOccurs="unbounded">Non il faut que ce soit un vrai décompte il faut corriger rectif_rectif pour qu'il fasse comme abele
+                                                                            <xs:annotation><xs:documentation>En cas de recap de type 'rectif1' donne le detail des decomptes conservé (refait, donc annoncés) sur la part conservée de l'IJ </xs:documentation></xs:annotation>
+                                                                    </xs:element>-->
+                                                                </xs:sequence>
+                                                                <xs:attribute name="identifiant"/>
+                                                            </xs:complexType>
+                                                        </xs:element>
+                                                    </xs:sequence>
+                                                </xs:choice>
+                                            </xs:sequence>
+                                            <xs:attribute name="revision">
+                                                <xs:annotation>
+                                                    <xs:documentation>4=4e revision
+                                                        5=5e revision
+                                                    </xs:documentation>
+                                                </xs:annotation>
+                                                <xs:simpleType>
+                                                    <xs:restriction base="xs:int">
+                                                        <xs:enumeration value="4"/>
+                                                        <xs:enumeration value="5"/>
+                                                    </xs:restriction>
+                                                </xs:simpleType>
+                                            </xs:attribute>
+                                            <xs:attribute name="statut">
+                                                <xs:annotation>
+                                                    <xs:documentation>1=normal
+                                                        2=rectificateur
+                                                        3=annulé
+                                                    </xs:documentation>
+                                                </xs:annotation>
+                                                <xs:simpleType>
+                                                    <xs:restriction base="xs:int">
+                                                        <xs:enumeration value="1"/>
+                                                        <xs:enumeration value="2"/>
+                                                        <xs:enumeration value="3"/>
+                                                    </xs:restriction>
+                                                </xs:simpleType>
+                                            </xs:attribute>
+                                            <xs:attribute name="identifiant" type="xs:string">
+                                                <xs:annotation>
+                                                    <xs:documentation>Identifiant de l'IJ dans IJ_OUT</xs:documentation>
+                                                </xs:annotation>
+                                            </xs:attribute>
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="refus" minOccurs="0" maxOccurs="unbounded">
+                                        <xs:annotation>
+                                            <xs:documentation>refus de prestation</xs:documentation>
+                                        </xs:annotation>
+                                        <xs:complexType>
+                                            <xs:annotation>
+                                                <xs:documentation>
+                                                    Refus pour un cycle de calcul
+                                                </xs:documentation>
+                                                <xs:appinfo>
+                                                    <annox:annotate target="class">
+                                                        @io.swagger.v3.oas.annotations.media.Schema(name="RefusCycleIJ",description
+                                                        = "Refus pour un cycle de calcul")
+                                                    </annox:annotate>
+                                                </xs:appinfo>
+                                            </xs:annotation>
+                                            <xs:sequence>
+                                                <xs:element name="raison" type="xs:string" minOccurs="0"/>
+                                                <xs:element name="label" type="xs:string" minOccurs="0"/>
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                    <xs:sequence>
+                        <xs:element name="recapitulatif">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="debut" type="AAAAMMJJ"/>
+                                    <xs:element name="fin" type="AAAAMMJJ"/>
+                                    <xs:element name="decompte" type="Decompte" minOccurs="0" maxOccurs="unbounded"/>
+                                    <xs:element name="resume">
+                                        <xs:complexType>
+                                            <xs:annotation>
+                                                <xs:documentation>
+                                                    Resume de recapitulatif de paiement d'IJ
+                                                </xs:documentation>
+                                                <xs:appinfo>
+                                                    <annox:annotate target="class">
+                                                        @io.swagger.v3.oas.annotations.media.Schema(name="ResumeRecapitulatifIJ",description
+                                                        = "Resume de recapitulatif de paiement d'IJ")
+                                                    </annox:annotate>
+                                                </xs:appinfo>
+                                            </xs:annotation>
+                                            <xs:sequence>
+                                                <xs:element name="montant_dec_brut" minOccurs="0">
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:double">
+                                                            <xs:minInclusive value="0"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="montant_dec_net" minOccurs="0">
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:double">
+                                                            <xs:minInclusive value="0"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="cotisations" minOccurs="0">
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:double"/>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="part_patronale" minOccurs="0">
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:double">
+                                                            <xs:minInclusive value="0"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="impots" minOccurs="0">
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:double">
+                                                            <xs:minInclusive value="0"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="deduction_AO" minOccurs="0">
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:double">
+                                                            <xs:minInclusive value="0"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="paiement" type="Paiement" minOccurs="0"
+                                                            maxOccurs="unbounded"/>
+                                                <xs:element name="paiement_vol" type="Paiement" minOccurs="0"
+                                                            maxOccurs="unbounded"/>
+                                                <xs:choice minOccurs="0">
+                                                    <xs:element name="compte_attente" minOccurs="0">
+                                                        <xs:simpleType>
+                                                            <xs:restriction base="xs:double">
+                                                                <xs:minInclusive value="0"/>
+                                                            </xs:restriction>
+                                                        </xs:simpleType>
+                                                    </xs:element>
+                                                    <xs:element name="dette" minOccurs="0">
+                                                        <xs:simpleType>
+                                                            <xs:restriction base="xs:double">
+                                                                <xs:minInclusive value="0"/>
+                                                            </xs:restriction>
+                                                        </xs:simpleType>
+                                                    </xs:element>
+                                                </xs:choice>
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:choice>
+                <xs:element name="annexes" type="Annexes" minOccurs="0"/>
+            </xs:sequence>
+            <xs:attribute name="langue" default="f">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="f"/>
+                        <xs:enumeration value="d"/>
+                        <xs:enumeration value="i"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="type_dem" type="xs:string" use="required"/>
+            <xs:attribute name="version_schema" type="xs:string" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:complexType name="Annexes">
+        <xs:annotation>
+            <xs:documentation>Annexes a la feuille de calcul (out ij) : divers formats plats et autres informations
+                complementaires
+            </xs:documentation>
+            <xs:appinfo>
+                <annox:annotate target="class">@io.swagger.v3.oas.annotations.media.Schema(name="AnnexesIJ",description
+                    = "Annexes a la feuille de calcul (out ij) : divers formats plats et autres informations
+                    complementaires")
+                </annox:annotate>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="ijout" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Le format plat de sortie (ancien fichier IJ_OUT)</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="codata" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Le format plat de sortie pour la corres (ancien fichier co_data.txt)
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="mailrafam" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Le format plat de sortie pour le mail ou rafam</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="arf" type="arf:Arf" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Contenu de l'arf</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="opgedo" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>info pour operation gedo</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="revenu_brut">
+        <xs:restriction base="xs:double">
+            <xs:minInclusive value="0"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="type_revenu">
+        <xs:restriction base="xs:int">
+            <xs:minInclusive value="1"/>
+            <xs:maxInclusive value="6"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="an_revenu">
+        <xs:restriction base="xs:gYear">
+            <xs:minInclusive value="1990"/>
+            <xs:maxInclusive value="2020"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="revenu_journalier">
+        <xs:restriction base="xs:double">
+            <xs:minInclusive value="0"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="AAAAMMJJ">
+        <xs:restriction base="xs:int"/>
+    </xs:simpleType>
+    <xs:simpleType name="AAAAMM">
+        <xs:restriction base="xs:int"/>
+    </xs:simpleType>
+    <xs:simpleType name="AAAA">
+        <xs:restriction base="xs:int"/>
+    </xs:simpleType>
+    <xs:complexType name="periodeAM">
+        <xs:annotation>
+            <xs:documentation>
+                Periode generale (au mois pres) pour le out des IJ
+            </xs:documentation>
+            <xs:appinfo>
+                <annox:annotate target="class">
+                    @io.swagger.v3.oas.annotations.media.Schema(name="PeriodeAMIJ",description = "Periode generale (au
+                    mois pres) pour le out des IJ")
+                </annox:annotate>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="debut" type="AAAAMM">
+                <xs:annotation>
+                    <xs:documentation>Beginn</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="fin" type="AAAAMM" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Ende</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="periodeAMJ">
+        <xs:annotation>
+            <xs:documentation>
+                Periode generale (au jours pres) pour le out des IJ
+            </xs:documentation>
+            <xs:appinfo>
+                <annox:annotate target="class">
+                    @io.swagger.v3.oas.annotations.media.Schema(name="PeriodeAMJIJ",description = "Periode generale (au
+                    mois pres) pour le out des IJ")
+                </annox:annotate>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="debut" type="AAAAMMJJ"/>
+            <xs:element name="fin" type="AAAAMMJJ" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="NAVS">
+        <xs:restriction base="xs:string"/>
+    </xs:simpleType>
+    <xs:simpleType name="id_acor">
+        <xs:restriction base="xs:string"/>
+    </xs:simpleType>
+    <xs:simpleType name="GenrePrestation">
+        <xs:restriction base="xs:int">
+            <xs:enumeration value="3"/>
+            <xs:enumeration value="4"/>
+            <xs:enumeration value="8"/>
+            <xs:enumeration value="9"/>
+            <xs:enumeration value="10"/>
+            <xs:enumeration value="11"/>
+            <xs:enumeration value="12"/>
+            <xs:enumeration value="13"/>
+            <xs:enumeration value="14"/>
+            <xs:enumeration value="15"/>
+            <xs:enumeration value="16"/>
+            <xs:enumeration value="20"/>
+            <xs:enumeration value="23"/>
+            <xs:enumeration value="24"/>
+            <xs:enumeration value="25"/>
+            <xs:enumeration value="26"/>
+            <xs:enumeration value="33"/>
+            <xs:enumeration value="34"/>
+            <xs:enumeration value="35"/>
+            <xs:enumeration value="36"/>
+            <xs:enumeration value="45"/>
+            <xs:enumeration value="50"/>
+            <xs:enumeration value="70"/>
+            <xs:enumeration value="51"/>
+            <xs:enumeration value="52"/>
+            <xs:enumeration value="53"/>
+            <xs:enumeration value="54"/>
+            <xs:enumeration value="55"/>
+            <xs:enumeration value="56"/>
+            <xs:enumeration value="60"/>
+            <xs:enumeration value="61"/>
+            <xs:enumeration value="62"/>
+            <xs:enumeration value="63"/>
+            <xs:enumeration value="64"/>
+            <xs:enumeration value="65"/>
+            <xs:enumeration value="66"/>
+            <xs:enumeration value="71"/>
+            <xs:enumeration value="72"/>
+            <xs:enumeration value="73"/>
+            <xs:enumeration value="74"/>
+            <xs:enumeration value="75"/>
+            <xs:enumeration value="80"/>
+            <xs:enumeration value="81"/>
+            <xs:enumeration value="82"/>
+            <xs:enumeration value="83"/>
+            <xs:enumeration value="84"/>
+            <xs:enumeration value="85"/>
+            <xs:enumeration value="86"/>
+            <xs:enumeration value="87"/>
+            <xs:enumeration value="88"/>
+            <xs:enumeration value="89"/>
+            <xs:enumeration value="91"/>
+            <xs:enumeration value="92"/>
+            <xs:enumeration value="93"/>
+            <xs:enumeration value="94"/>
+            <xs:enumeration value="95"/>
+            <xs:enumeration value="96"/>
+            <xs:enumeration value="97"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

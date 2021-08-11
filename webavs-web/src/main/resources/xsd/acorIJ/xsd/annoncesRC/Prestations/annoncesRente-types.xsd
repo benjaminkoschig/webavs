@@ -1,0 +1,1476 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by OFFICE FEDERAL DE L'INFORMATIQUE (OFFICE FEDERAL DE L'INFORMATIQUE) -->
+<!-- Copyright : Centrale de Compensation AVS/AI, Genève (2004). -->
+<!-- edited with XMLSPY v2004 rel. 2 U (http://www.xmlspy.com) by OFIT (private) -->
+<!-- edited with XML Spy v4.3 U (http://www.xmlspy.com) by andreas frutiger (private) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.zas.admin.ch/RC" targetNamespace="http://www.zas.admin.ch/RC" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.1">
+	<xs:include schemaLocation="../../Typebase/PersPhys/IdsAssure-types.xsd"/>
+	<xs:include schemaLocation="../annoncesCommon-types.xsd"/>
+	<xs:include schemaLocation="../../Typebase/ARC/NumeroAnnonce-types.xsd"/>
+	<xs:include schemaLocation="../../Typebase/PersPhys/NomPrenom-types.xsd"/>
+	<xs:include schemaLocation="../../Typebase/PersPhys/EtatCivil-types.xsd"/>
+	<xs:include schemaLocation="../../Typebase/General/Caisses-OAI-Agences-types.xsd"/>
+	<xs:include schemaLocation="../../Typebase/General/Lieux-types.xsd"/>
+	<xs:include schemaLocation="../../Typebase/General/Montants-types.xsd"/>
+	<xs:include schemaLocation="../../Typebase/General/DatesPeriodesDurees-types.xsd"/>
+	<xs:include schemaLocation="../../Typebase/Prestations/Prestations-types.xsd"/>
+	<xs:complexType name="SkalaBerechnung_Type" abstract="false">
+		<xs:annotation>
+			<xs:documentation>calcul d'échelle</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Skala" type="Rentenskala_Type"/>
+			<xs:element name="BeitragsdauerVor1973">
+				<xs:annotation>
+					<xs:documentation>AAMM</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="BeitragsdauerVor1973_Type">
+						<xs:maxInclusive value="25.00"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="BeitragsdauerAb1973" type="BeitragsdauerAb1973_Type">
+				<xs:annotation>
+					<xs:documentation>AAMM</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AnrechnungVor1973FehlenderBeitragsmonate" type="AnrechnungVor1973FehlenderBeitragsmonate_Type">
+				<xs:annotation>
+					<xs:documentation>mois de cotisations manquantes entre 1948 et 1972</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AnrechnungAb1973Bis1978FehlenderBeitragsmonate" type="AnrechnungAb1973Bis1978FehlenderBeitragsmonate_Type">
+				<xs:annotation>
+					<xs:documentation>mois de cotisations manquantes entre 1973 et 1978</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BeitragsjahreJahrgang" type="BeitragsjahreJahrgang_Type">
+				<xs:annotation>
+					<xs:documentation>nombre d'années</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SkalaBerechnung_WeakType" abstract="false">
+		<xs:annotation>
+			<xs:documentation>calcul d'échelle</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Skala" type="Rentenskala_Type" minOccurs="0"/>
+			<xs:element name="BeitragsdauerVor1973" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>AAMM</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="BeitragsdauerVor1973_Type">
+						<xs:maxInclusive value="25.00"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="BeitragsdauerAb1973" type="BeitragsdauerAb1973_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>AAMM</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AnrechnungVor1973FehlenderBeitragsmonate" type="AnrechnungVor1973FehlenderBeitragsmonate_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>mois de cotisations manquantes entre 1948 et 1972</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AnrechnungAb1973Bis1978FehlenderBeitragsmonate" type="AnrechnungAb1973Bis1978FehlenderBeitragsmonate_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>mois de cotisations manquantes entre 1973 et 1978</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BeitragsjahreJahrgang" type="BeitragsjahreJahrgang_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>nombre d'années</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DJE9Beschreibung_Type">
+		<xs:sequence>
+			<xs:element name="DurchschnittlichesJahreseinkommen" type="BetragFR_Type"/>
+			<xs:element name="BeitragsdauerDurchschnittlichesJahreseinkommen" type="BeitragsdauerDurchschnittlichesJahreseinkommen_Type">
+				<xs:annotation>
+					<xs:documentation>AAMM</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AngerechneteEinkommen" type="AngerechneteEinkommen_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DJE9Beschreibung_WeakType">
+		<xs:sequence>
+			<xs:element name="DurchschnittlichesJahreseinkommen" type="BetragFR_Type" minOccurs="0"/>
+			<xs:element name="BeitragsdauerDurchschnittlichesJahreseinkommen" type="BeitragsdauerDurchschnittlichesJahreseinkommen_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>AAMM</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AngerechneteEinkommen" type="AngerechneteEinkommen_Type" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DJE10Beschreibung_Type">
+		<xs:sequence>
+			<xs:element name="DurchschnittlichesJahreseinkommen" type="BetragFR_Type"/>
+			<xs:element name="BeitragsdauerDurchschnittlichesJahreseinkommen" type="BeitragsdauerDurchschnittlichesJahreseinkommen_Type">
+				<xs:annotation>
+					<xs:documentation>AAMM</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GesplitteteEinkommen" type="xs:boolean"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DJE10Beschreibung_WeakType">
+		<xs:sequence>
+			<xs:element name="DurchschnittlichesJahreseinkommen" type="BetragFR_Type" minOccurs="0"/>
+			<xs:element name="BeitragsdauerDurchschnittlichesJahreseinkommen" type="BeitragsdauerDurchschnittlichesJahreseinkommen_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>AAMM</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GesplitteteEinkommen" type="xs:boolean" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Gutschriften9_Type">
+		<xs:sequence minOccurs="0">
+			<xs:element name="DJEohneErziehungsgutschrift" type="BetragFR_Type">
+				<xs:annotation>
+					<xs:documentation>en francs</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AngerechneteErziehungsgutschrift" type="BetragFR_Type">
+				<xs:annotation>
+					<xs:documentation>en francs</xs:documentation>
+					<xs:documentation>en francs</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AnzahlErziehungsgutschrift" type="AnzahlErziehungsgutschrift9_Type">
+				<xs:annotation>
+					<xs:documentation>nombre d'années</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Gutschriften9_WeakType">
+		<xs:sequence>
+			<xs:element name="DJEohneErziehungsgutschrift" type="BetragFR_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>en francs</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AngerechneteErziehungsgutschrift" type="BetragFR_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>en francs</xs:documentation>
+					<xs:documentation>en francs</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AnzahlErziehungsgutschrift" type="AnzahlErziehungsgutschrift9_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>nombre d'années</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Gutschriften10_Type">
+		<xs:sequence>
+			<xs:annotation>
+				<xs:documentation xml:lang="fr">fractions d'années</xs:documentation>
+			</xs:annotation>
+			<xs:element name="AnzahlErziehungsgutschrift" type="AnzahlErziehungsgutschrift10_Type" minOccurs="0"/>
+			<xs:element name="AnzahlBetreuungsgutschrift" type="AnzahlBetreuungsgutschrift10_Type" minOccurs="0"/>
+			<xs:element name="AnzahlUebergangsgutschrift" type="AnzahlUebergangsgutschrift10_Type" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="IVDaten9_Type">
+		<xs:sequence>
+			<xs:element name="IVStelle" type="IVStelle9_weakType"/>
+			<xs:element name="Invaliditaetsgrad" type="Invaliditaetsgrad_numType"/>
+			<xs:element name="Gebrechensschluessel" type="Gebrechensschluessel_numWeakType"/>
+			<xs:element name="Funktionsausfallcode" type="IVFunktionsausfall_numWeakType" minOccurs="0"/>
+			<xs:element name="DatumVersicherungsfall" type="AHVDatumJM_Type"/>
+			<xs:element name="IstFruehInvalid" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation>
+                        survenance de l'invalidité justifiant la rente avant 25 ans révolus ?
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="IVDaten9_WeakType">
+		<xs:sequence>
+			<xs:element name="IVStelle" type="IVStelle9_weakType" minOccurs="0"/>
+			<xs:element name="Invaliditaetsgrad" type="Invaliditaetsgrad_numType" minOccurs="0"/>
+			<xs:element name="Gebrechensschluessel" type="Gebrechensschluessel_numWeakType" minOccurs="0"/>
+			<xs:element name="Funktionsausfallcode" type="IVFunktionsausfall_numWeakType" minOccurs="0"/>
+			<xs:element name="DatumVersicherungsfall" type="AHVDatumJM_Type" minOccurs="0"/>
+			<xs:element name="IstFruehInvalid" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+                        survenance de l'invalidité justifiant la rente avant 25 ans révolus ?
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="IVDaten10_Type">
+		<xs:sequence>
+			<xs:element name="IVStelle" type="IVStelle_weakType"/>
+			<xs:element name="Invaliditaetsgrad" type="Invaliditaetsgrad_numType"/>
+			<xs:element name="Gebrechensschluessel" type="Gebrechensschluessel_numWeakType"/>
+			<xs:element name="Funktionsausfallcode" type="IVFunktionsausfall_numWeakType" minOccurs="0"/>
+			<xs:element name="DatumVersicherungsfall" type="AHVDatumJM_Type"/>
+			<xs:element name="IstFruehInvalid" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation>
+                        survenance de l'invalidité justifiant la rente avant 25 ans révolus ?
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="IVDaten10_WeakType">
+		<xs:sequence>
+			<xs:element name="IVStelle" type="IVStelle_weakType" minOccurs="0"/>
+			<xs:element name="Invaliditaetsgrad" type="Invaliditaetsgrad_numType" minOccurs="0"/>
+			<xs:element name="Gebrechensschluessel" type="Gebrechensschluessel_numWeakType" minOccurs="0"/>
+			<xs:element name="Funktionsausfallcode" type="IVFunktionsausfall_numWeakType" minOccurs="0"/>
+			<xs:element name="DatumVersicherungsfall" type="AHVDatumJM_Type" minOccurs="0"/>
+			<xs:element name="IstFruehInvalid" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+                        survenance de l'invalidité justifiant la rente avant 25 ans révolus ?
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="IVDatenHE9_Type">
+		<xs:sequence>
+			<xs:element name="IVStelle" type="IVStelle9_weakType"/>
+			<xs:element name="Gebrechensschluessel" type="Gebrechensschluessel_numWeakType"/>
+			<xs:element name="Funktionsausfallcode" type="IVFunktionsausfall_numWeakType" minOccurs="0"/>
+			<xs:element name="DatumVersicherungsfall" type="AHVDatumJM_Type"/>
+			<xs:element name="ArtHEAnspruch">
+				<xs:simpleType>
+					<xs:restriction base="xs:unsignedByte">
+						<xs:minInclusive value="1"/>
+						<xs:maxInclusive value="4"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="IVDatenHE9_WeakType">
+		<xs:sequence>
+			<xs:element name="IVStelle" type="IVStelle9_weakType" minOccurs="0"/>
+			<xs:element name="Gebrechensschluessel" type="Gebrechensschluessel_numWeakType" minOccurs="0"/>
+			<xs:element name="Funktionsausfallcode" type="IVFunktionsausfall_numWeakType" minOccurs="0"/>
+			<xs:element name="DatumVersicherungsfall" type="AHVDatumJM_Type" minOccurs="0"/>
+			<xs:element name="ArtHEAnspruch" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:unsignedByte">
+						<xs:minInclusive value="1"/>
+						<xs:maxInclusive value="4"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="IVDatenHE_Type">
+		<xs:sequence>
+			<xs:element name="IVStelle" type="IVStelle_weakType"/>
+			<xs:element name="Gebrechensschluessel" type="Gebrechensschluessel_numWeakType"/>
+			<xs:element name="Funktionsausfallcode" type="IVFunktionsausfall_numWeakType" minOccurs="0"/>
+			<xs:element name="DatumVersicherungsfall" type="AHVDatumJM_Type"/>
+			<xs:element name="ArtHEAnspruch">
+				<xs:simpleType>
+					<xs:restriction base="xs:unsignedByte">
+						<xs:minInclusive value="1"/>
+						<xs:maxInclusive value="4"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="IVDatenHE_WeakType">
+		<xs:sequence>
+			<xs:element name="IVStelle" type="IVStelle_weakType" minOccurs="0"/>
+			<xs:element name="Gebrechensschluessel" type="Gebrechensschluessel_numWeakType" minOccurs="0"/>
+			<xs:element name="Funktionsausfallcode" type="IVFunktionsausfall_numWeakType" minOccurs="0"/>
+			<xs:element name="DatumVersicherungsfall" type="AHVDatumJM_Type" minOccurs="0"/>
+			<xs:element name="ArtHEAnspruch" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:unsignedByte">
+						<xs:minInclusive value="1"/>
+						<xs:maxInclusive value="4"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Rentenvorbezug_Type">
+		<xs:sequence>
+			<xs:element name="AnzahlVorbezugsjahre" type="AnzahlVorbezugsjahre_Type"/>
+			<xs:element name="Vorbezugsdatum" type="Vorbezugsdatum_Type"/>
+			<xs:element name="Vorbezugsreduktion" type="BetragFR_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Rentenvorbezug_WeakType">
+		<xs:sequence>
+			<xs:element name="AnzahlVorbezugsjahre" type="AnzahlVorbezugsjahre_Type" minOccurs="0"/>
+			<xs:element name="Vorbezugsdatum" type="Vorbezugsdatum_Type" minOccurs="0"/>
+			<xs:element name="Vorbezugsreduktion" type="BetragFR_Type" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Rentenaufschub_Type">
+		<xs:sequence>
+			<xs:element name="Aufschubsdauer" type="Aufschubsdauer_Type">
+				<xs:annotation>
+					<xs:documentation>AMM</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Abrufdatum" type="Abrufdatum_Type"/>
+			<xs:element name="Aufschubszuschlag" type="BetragFR_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Rentenaufschub_WeakType">
+		<xs:sequence>
+			<xs:element name="Aufschubsdauer" type="Aufschubsdauer_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>AMM</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Abrufdatum" type="Abrufdatum_Type" minOccurs="0"/>
+			<xs:element name="Aufschubszuschlag" type="BetragFR_Type" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FamilienAngehoerige_Type">
+		<xs:annotation>
+			<xs:documentation>Description des liens familiaux dans le cadre d'une rente</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="VNr1Ergaenzend" type="VersichertennummerErgaenzend_Type" minOccurs="0"/>
+			<xs:element name="VNr2Ergaenzend" type="VersichertennummerErgaenzend_Type" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Rentenmeldung_Type" abstract="true">
+		<xs:annotation>
+			<xs:documentation>basetype: Annonce générique d'une prestation</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" type="Meldungsnummer_Type"/>
+			<xs:element name="KasseneigenerHinweis" type="KasseneigenerHinweis_Type"/>
+			<xs:element name="Leistungsberechtigte">
+				<xs:annotation>
+					<xs:documentation>
+                        Données conernant l'ayant droit valables au début du mois de rapport ou du mois de fin de droit
+                        à la prestation
+                    </xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:any namespace="##any" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:any namespace="##any" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="AHVDatumJM_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Abgangsmeldung_Type">
+		<xs:annotation>
+			<xs:documentation>
+                Annonce générique d'une diminution de prestation (annonce est identique pour 9e
+				ordinaire/extraordinaire/API et 10e API)
+            </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" type="Meldungsnummer_Type"/>
+			<xs:element name="KasseneigenerHinweis" type="KasseneigenerHinweis_Type" minOccurs="0"/>
+			<xs:element name="LeistungsberechtigtePerson">
+				<xs:annotation>
+					<xs:documentation>
+                        Données conernant l'ayant droit valables au début du mois de rapport ou du mois de fin de droit
+                        à la prestation
+                    </xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Versichertennummer" type="Versichertennummer11oder13Stellen_Type">
+							<xs:annotation>
+								<xs:documentation xml:lang="fr">Numéro d'assuré de l'ayant droit</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Leistungsart" type="Leistungsart_alle_Revisionen_strongType"/>
+						<xs:element name="Anspruchsende" type="AHVDatumJM_Type"/>
+						<xs:element name="Mutationscode" type="Grundabgang_Type"/>
+						<xs:element name="Monatsbetrag" type="BetragFR_Type"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="AHVDatumJM_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AbgangsmeldungMitVNr1Ergaenzend_Type">
+		<xs:annotation>
+			<xs:documentation>
+				Annonce générique d'une diminution de prestation (annonce est identique pour 10e
+				ordinaire/extraordinaire)
+            </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" type="Meldungsnummer_Type"/>
+			<xs:element name="KasseneigenerHinweis" type="KasseneigenerHinweis_Type" minOccurs="0"/>
+			<xs:element name="LeistungsberechtigtePerson">
+				<xs:annotation>
+					<xs:documentation>
+                        Données conernant l'ayant droit valables au début du mois de rapport ou du mois de fin de droit
+                        à la prestation
+                    </xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Versichertennummer" type="Versichertennummer11oder13Stellen_Type">
+							<xs:annotation>
+								<xs:documentation xml:lang="fr">Numéro d'assuré de l'ayant droit</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="FamilienAngehoerige" minOccurs="0">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="VNr1Ergaenzend" type="VersichertennummerErgaenzend_Type" minOccurs="0"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Leistungsart" type="Leistungsart_alle_Revisionen_strongType"/>
+						<xs:element name="Anspruchsende" type="AHVDatumJM_Type"/>
+						<xs:element name="Mutationscode" type="Grundabgang_Type"/>
+						<xs:element name="Monatsbetrag" type="BetragFR_Type"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="AHVDatumJM_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ZuwachsmeldungO9_Type">
+		<xs:annotation>
+			<xs:documentation>Annonce d'une nouvelle rente ordinaire (9e révision)</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" type="Meldungsnummer_Type"/>
+			<xs:element name="KasseneigenerHinweis" type="KasseneigenerHinweis_Type" minOccurs="0"/>
+			<xs:element name="LeistungsberechtigtePerson" type="RRLeistungsberechtigtePersonAusl_Type"/>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Leistungsart" type="OrdentlicheRente9_strongType"/>
+						<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type"/>
+						<xs:element name="Anspruchsende" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="Grundabgang_Type" minOccurs="0"/>
+						<xs:element name="Monatsbetrag" type="BetragFR_Type"/>
+						<xs:element name="Berechnungsgrundlagen">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Niveaujahr" type="AHVDatumJ_Type"/>
+									<xs:element name="SkalaBerechnung" type="SkalaBerechnung_Type"/>
+									<xs:element name="DJEBeschreibung" type="DJE9Beschreibung_Type"/>
+									<xs:element name="Gutschriften" type="Gutschriften9_Type"/>
+									<xs:element name="IVDaten" type="IVDaten9_Type" minOccurs="0"/>
+									<xs:element name="IVDatenEhefrau" type="IVDaten9_Type" minOccurs="0"/>
+									<xs:element name="FlexiblesRentenAlter" minOccurs="0">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="Rentenaufschub" type="Rentenaufschub_Type"/>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="SonderfallcodeRente" type="SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+						<xs:element name="KuerzungSelbstverschulden" type="KuerzungSelbstverschulden_Type" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="AHVDatumJM_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AenderungsmeldungO9_Type">
+		<xs:annotation>
+			<xs:documentation>Annonce d'une nouvelle rente ordinaire (9e révision)</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" type="Meldungsnummer_Type"/>
+			<xs:element name="KasseneigenerHinweis" type="KasseneigenerHinweis_Type" minOccurs="0"/>
+			<xs:element name="LeistungsberechtigtePerson" type="RRLeistungsberechtigtePersonAusl_WeakType"/>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Leistungsart" type="OrdentlicheRente9_strongType"/>
+						<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Anspruchsende" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="Mutationscode_Type" minOccurs="0"/>
+						<xs:element name="Monatsbetrag" type="BetragFR_Type" minOccurs="0"/>
+						<xs:element name="Berechnungsgrundlagen" minOccurs="0">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Niveaujahr" type="AHVDatumJ_Type" minOccurs="0"/>
+									<xs:element name="SkalaBerechnung" type="SkalaBerechnung_WeakType" minOccurs="0"/>
+									<xs:element name="DJEBeschreibung" type="DJE9Beschreibung_WeakType" minOccurs="0"/>
+									<xs:element name="Gutschriften" type="Gutschriften9_WeakType" minOccurs="0"/>
+									<xs:element name="IVDaten" type="IVDaten9_WeakType" minOccurs="0"/>
+									<xs:element name="IVDatenEhefrau" type="IVDaten9_WeakType" minOccurs="0"/>
+									<xs:element name="FlexiblesRentenAlter" minOccurs="0">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="Rentenaufschub" type="Rentenaufschub_WeakType" minOccurs="0"/>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="SonderfallcodeRente" type="SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+						<xs:element name="KuerzungSelbstverschulden" type="KuerzungSelbstverschulden_Type" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="AHVDatumJM_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ZuwachsmeldungAO9_Type">
+		<xs:annotation>
+			<xs:documentation>Annonce d'une nouvelle rente extraordinaire 9e révision</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" type="Meldungsnummer_Type"/>
+			<xs:element name="KasseneigenerHinweis" type="KasseneigenerHinweis_Type" minOccurs="0"/>
+			<xs:element name="LeistungsberechtigtePerson" type="RRLeistungsberechtigtePersonAusl_Type"/>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Leistungsart" type="AusserordentlicheRente9_strongType"/>
+						<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type"/>
+						<xs:element name="Anspruchsende" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="Grundabgang_Type" minOccurs="0"/>
+						<xs:element name="Monatsbetrag" type="BetragFR_Type"/>
+						<xs:element name="MonatsbetragErsetzteOrdentlicheRente" type="BetragFR_Type" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>
+                                    mensualité de la RO remplacée en raison du minimum garanti;
+                                </xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Berechnungsgrundlagen">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Niveaujahr" type="AHVDatumJ_Type" minOccurs="0"/>
+									<xs:element name="EinkommensgrenzenCode" type="EinkommensgrenzenCode_Type">
+										<xs:annotation>
+											<xs:documentation>
+                                                REO soumise aux limites de revenu: oui/non ?
+                                            </xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="MinimalgarantieCode" type="MinimalgarantieCode_Type">
+										<xs:annotation>
+											<xs:documentation>
+                                                REO en tant que minimum garanti: oui/non ?
+                                            </xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="SkalaBerechnung" type="SkalaBerechnung_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>dans le cas de minimum garanti</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="DJEBeschreibung" type="DJE9Beschreibung_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>dans le cas de minimum garanti</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="Gutschriften" type="Gutschriften9_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>dans le cas de minimum garanti</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="IVDaten" type="IVDaten9_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>AI</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="IVDatenEhefrau" type="IVDaten9_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>le cas échéant</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="SonderfallcodeRente" type="SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+						<xs:element name="KuerzungSelbstverschulden" type="KuerzungSelbstverschulden_Type" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="AHVDatumJM_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AenderungsmeldungAO9_Type">
+		<xs:annotation>
+			<xs:documentation>Annonce d'une nouvelle rente extraordinaire 9e révision</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" type="Meldungsnummer_Type"/>
+			<xs:element name="KasseneigenerHinweis" type="KasseneigenerHinweis_Type" minOccurs="0"/>
+			<xs:element name="LeistungsberechtigtePerson" type="RRLeistungsberechtigtePersonAusl_WeakType"/>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Leistungsart" type="AusserordentlicheRente9_strongType"/>
+						<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Anspruchsende" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="Mutationscode_Type"/>
+						<xs:element name="Monatsbetrag" type="BetragFR_Type" minOccurs="0"/>
+						<xs:element name="MonatsbetragErsetzteOrdentlicheRente" type="BetragFR_Type" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>
+                                    mensualité de la RO remplacée en raison du minimum garanti;
+                                </xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Berechnungsgrundlagen" minOccurs="0">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Niveaujahr" type="AHVDatumJ_Type" minOccurs="0"/>
+									<xs:element name="EinkommensgrenzenCode" type="EinkommensgrenzenCode_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>
+                                                REO soumise aux limites de revenu: oui/non ?
+                                            </xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="MinimalgarantieCode" type="MinimalgarantieCode_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>
+                                                REO en tant que minimum garanti: oui/non ?
+                                            </xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="SkalaBerechnung" type="SkalaBerechnung_WeakType" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>dans le cas de minimum garanti</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="DJEBeschreibung" type="DJE9Beschreibung_WeakType" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>dans le cas de minimum garanti</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="Gutschriften" type="Gutschriften9_WeakType" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>dans le cas de minimum garanti</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="IVDaten" type="IVDaten9_WeakType" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>AI</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="IVDatenEhefrau" type="IVDaten9_WeakType" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>le cas échéant</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="SonderfallcodeRente" type="SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+						<xs:element name="KuerzungSelbstverschulden" type="KuerzungSelbstverschulden_Type" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="AHVDatumJM_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ZuwachsmeldungHE9_Type">
+		<xs:annotation>
+			<xs:documentation>Annonce d'une nouvelle prestation API (9e révision)</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" type="Meldungsnummer_Type"/>
+			<xs:element name="KasseneigenerHinweis" type="KasseneigenerHinweis_Type" minOccurs="0"/>
+			<xs:element name="LeistungsberechtigtePerson" type="RRLeistungsberechtigtePersonAusl_Type"/>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Leistungsart" type="Hilflosenentschaedigungen9_strongType"/>
+						<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type"/>
+						<xs:element name="Anspruchsende" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="Grundabgang_Type" minOccurs="0"/>
+						<xs:element name="Monatsbetrag" type="BetragFR_Type"/>
+						<xs:element name="Berechnungsgrundlagen">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="IVDaten" type="IVDatenHE9_Type">
+										<xs:annotation>
+											<xs:documentation>données AI en cas de API</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="SonderfallcodeRente" type="SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="AHVDatumJM_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AenderungsmeldungHE9_Type">
+		<xs:annotation>
+			<xs:documentation>Annonce d'une nouvelle prestation API (9e révision)</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" type="Meldungsnummer_Type"/>
+			<xs:element name="KasseneigenerHinweis" type="KasseneigenerHinweis_Type" minOccurs="0"/>
+			<xs:element name="LeistungsberechtigtePerson" type="RRLeistungsberechtigtePersonAusl_WeakType"/>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Leistungsart" type="Hilflosenentschaedigungen9_strongType"/>
+						<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Anspruchsende" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="Mutationscode_Type" minOccurs="0"/>
+						<xs:element name="Monatsbetrag" type="BetragFR_Type" minOccurs="0"/>
+						<xs:element name="Berechnungsgrundlagen" minOccurs="0">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="IVDaten" type="IVDatenHE9_WeakType" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>données AI en cas de API</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="SonderfallcodeRente" type="SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="AHVDatumJM_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ZuwachsmeldungO10_Type">
+		<xs:annotation>
+			<xs:documentation>Annonce d'une nouvelle rente ordinaire (10e révision)</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" type="Meldungsnummer_Type"/>
+			<xs:element name="KasseneigenerHinweis" type="KasseneigenerHinweis_Type" minOccurs="0"/>
+			<xs:element name="LeistungsberechtigtePerson" type="RRLeistungsberechtigtePersonAusl_Type"/>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Leistungsart" type="OrdentlicheRente10_strongType"/>
+						<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type"/>
+						<xs:element name="Anspruchsende" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="Grundabgang_Type" minOccurs="0"/>
+						<xs:element name="Monatsbetrag" type="BetragFR_Type"/>
+						<xs:element name="Berechnungsgrundlagen">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Niveaujahr" type="AHVDatumJ_Type"/>
+									<xs:element name="SkalaBerechnung" type="SkalaBerechnung_Type"/>
+									<xs:element name="DJEBeschreibung" type="DJE10Beschreibung_Type"/>
+									<xs:element name="Gutschriften" type="Gutschriften10_Type"/>
+									<xs:element name="IVDaten" type="IVDaten10_Type" minOccurs="0"/>
+									<xs:element name="FlexiblesRentenAlter" minOccurs="0">
+										<xs:complexType>
+											<xs:choice>
+												<xs:element name="Rentenvorbezug" type="Rentenvorbezug_Type"/>
+												<xs:element name="Rentenaufschub" type="Rentenaufschub_Type"/>
+											</xs:choice>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="SonderfallcodeRente" type="SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+						<xs:element name="KuerzungSelbstverschulden" type="KuerzungSelbstverschulden_Type" minOccurs="0"/>
+						<xs:element name="IstInvaliderHinterlassener" type="xs:boolean" minOccurs="0"/>
+						<xs:element name="AbfindungsBetrag" type="BetragFR6_Type" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation xml:lang="fr">CSC (27.2): montant de l'indemnité forfaitaire</xs:documentation>
+								<xs:documentation xml:lang="de">SAK (27.2): Betrag der Abfindung</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="AbfindungBarwert" type="BetragFR5_Type" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation xml:lang="fr">CSC (27.2): valeur actuelle de l'indemnité forfaitaire</xs:documentation>
+								<xs:documentation xml:lang="de">SAK (27.2): Barwert der Abfindung</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="AHVDatumJM_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AenderungsmeldungO10_Type">
+		<xs:annotation>
+			<xs:documentation>Annonce d'une nouvelle rente ordinaire (10e révision)</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" type="Meldungsnummer_Type"/>
+			<xs:element name="KasseneigenerHinweis" type="KasseneigenerHinweis_Type" minOccurs="0"/>
+			<xs:element name="LeistungsberechtigtePerson" type="RRLeistungsberechtigtePersonAusl_WeakType"/>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Leistungsart" type="OrdentlicheRente10_strongType"/>
+						<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Anspruchsende" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="Mutationscode_Type" minOccurs="0"/>
+						<xs:element name="Monatsbetrag" type="BetragFR_Type" minOccurs="0"/>
+						<xs:element name="Berechnungsgrundlagen" minOccurs="0">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Niveaujahr" type="AHVDatumJ_Type" minOccurs="0"/>
+									<xs:element name="SkalaBerechnung" type="SkalaBerechnung_WeakType" minOccurs="0"/>
+									<xs:element name="DJEBeschreibung" type="DJE10Beschreibung_WeakType" minOccurs="0"/>
+									<xs:element name="Gutschriften" type="Gutschriften10_Type" minOccurs="0"/>
+									<xs:element name="IVDaten" type="IVDaten10_WeakType" minOccurs="0"/>
+									<xs:element name="FlexiblesRentenAlter" minOccurs="0">
+										<xs:complexType>
+											<xs:choice>
+												<xs:element name="Rentenvorbezug" type="Rentenvorbezug_WeakType" minOccurs="0"/>
+												<xs:element name="Rentenaufschub" type="Rentenaufschub_WeakType" minOccurs="0"/>
+											</xs:choice>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="SonderfallcodeRente" type="SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+						<xs:element name="KuerzungSelbstverschulden" type="KuerzungSelbstverschulden_Type" minOccurs="0"/>
+						<xs:element name="IstInvaliderHinterlassener" type="xs:boolean" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="AHVDatumJM_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ZuwachsmeldungAO10_Type">
+		<xs:annotation>
+			<xs:documentation>Annonce d'une nouvelle rente extraordinaire (10e révision)</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" type="Meldungsnummer_Type"/>
+			<xs:element name="KasseneigenerHinweis" type="KasseneigenerHinweis_Type" minOccurs="0"/>
+			<xs:element name="LeistungsberechtigtePerson" type="RRLeistungsberechtigtePersonAusl_Type"/>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Leistungsart" type="AusserordentlicheRente10_strongType"/>
+						<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type"/>
+						<xs:element name="Anspruchsende" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="Grundabgang_Type" minOccurs="0"/>
+						<xs:element name="Monatsbetrag" type="BetragFR_Type"/>
+						<xs:element name="Berechnungsgrundlagen">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Niveaujahr" type="AHVDatumJ_Type" minOccurs="0"/>
+									<xs:element name="IVDaten" type="IVDaten10_Type" minOccurs="0"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="SonderfallcodeRente" type="SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+						<xs:element name="KuerzungSelbstverschulden" type="KuerzungSelbstverschulden_Type" minOccurs="0"/>
+						<xs:element name="IstInvaliderHinterlassener" type="xs:boolean" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="AHVDatumJM_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AenderungsmeldungAO10_Type">
+		<xs:annotation>
+			<xs:documentation>Annonce d'une nouvelle rente extraordinaire (10e révision)</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" type="Meldungsnummer_Type"/>
+			<xs:element name="KasseneigenerHinweis" type="KasseneigenerHinweis_Type" minOccurs="0"/>
+			<xs:element name="LeistungsberechtigtePerson" type="RRLeistungsberechtigtePersonAusl_WeakType"/>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Leistungsart" type="AusserordentlicheRente10_strongType"/>
+						<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Anspruchsende" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="Mutationscode_Type" minOccurs="0"/>
+						<xs:element name="Monatsbetrag" type="BetragFR_Type" minOccurs="0"/>
+						<xs:element name="Berechnungsgrundlagen" minOccurs="0">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Niveaujahr" type="AHVDatumJ_Type" minOccurs="0"/>
+									<xs:element name="IVDaten" type="IVDaten10_WeakType" minOccurs="0"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="SonderfallcodeRente" type="SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+						<xs:element name="KuerzungSelbstverschulden" type="KuerzungSelbstverschulden_Type" minOccurs="0"/>
+						<xs:element name="IstInvaliderHinterlassener" type="xs:boolean" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="AHVDatumJM_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ZuwachsmeldungHE10_Type">
+		<xs:annotation>
+			<xs:documentation>Annonce d'une nouvelle prestation API (10e révision)</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" type="Meldungsnummer_Type"/>
+			<xs:element name="KasseneigenerHinweis" type="KasseneigenerHinweis_Type" minOccurs="0"/>
+			<xs:element name="LeistungsberechtigtePerson" type="RRLeistungsberechtigtePersonAusl_Type"/>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Leistungsart" type="Hilflosenentschaedigung10_strongType"/>
+						<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type"/>
+						<xs:element name="Anspruchsende" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="Grundabgang_Type" minOccurs="0"/>
+						<xs:element name="Monatsbetrag" type="BetragFR_Type"/>
+						<xs:element name="Berechnungsgrundlagen">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="IVDaten" type="IVDatenHE_Type">
+										<xs:annotation>
+											<xs:documentation>données AI en cas d'API</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="SonderfallcodeRente" type="SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="AHVDatumJM_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AenderungsmeldungHE10_Type">
+		<xs:annotation>
+			<xs:documentation>Annonce d'une nouvelle prestation API (10e révision)</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" type="Meldungsnummer_Type"/>
+			<xs:element name="KasseneigenerHinweis" type="KasseneigenerHinweis_Type" minOccurs="0"/>
+			<xs:element name="LeistungsberechtigtePerson" type="RRLeistungsberechtigtePersonAusl_WeakType"/>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Leistungsart" type="Hilflosenentschaedigung10_strongType"/>
+						<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Anspruchsende" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="Mutationscode_Type" minOccurs="0"/>
+						<xs:element name="Monatsbetrag" type="BetragFR_Type" minOccurs="0"/>
+						<xs:element name="Berechnungsgrundlagen" minOccurs="0">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="IVDaten" type="IVDatenHE_WeakType" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>données AI en cas d'API</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="SonderfallcodeRente" type="SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="AHVDatumJM_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RRBestandesmeldungO9_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr">
+                Annonce de l'état des rentes:rente ordinaire (9e révision)
+            </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" type="Meldungsnummer_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>en cas de prestation en file d'attente</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="KasseneigenerHinweis" type="KasseneigenerHinweis_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>en cas de prestation en file d'attente</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LeistungsberechtigtePerson" type="RRLeistungsberechtigtePersonAusl_Type"/>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Leistungsart" type="OrdentlicheRente9_strongType"/>
+						<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type"/>
+						<xs:element name="Anspruchsende" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="Grundabgang_Type" minOccurs="0"/>
+						<xs:element name="Monatsbetrag" type="BetragFR_Type"/>
+						<xs:element name="Berechnungsgrundlagen">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Niveaujahr" type="AHVDatumJ_Type"/>
+									<xs:element name="SkalaBerechnung" type="SkalaBerechnung_Type"/>
+									<xs:element name="DJEBeschreibung" type="DJE9Beschreibung_Type"/>
+									<xs:element name="Gutschriften" type="Gutschriften9_Type"/>
+									<xs:element name="IVDaten" type="IVDaten9_Type" minOccurs="0"/>
+									<xs:element name="IVDatenEhefrau" type="IVDaten9_Type" minOccurs="0"/>
+									<xs:element name="FlexiblesRentenAlter" minOccurs="0">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="Rentenaufschub" type="Rentenaufschub_Type"/>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="SonderfallcodeRente" type="SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+						<xs:element name="KuerzungSelbstverschulden" type="KuerzungSelbstverschulden_Type" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="AHVDatumJM_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RRBestandesmeldungAO9_Type">
+		<xs:annotation>
+			<xs:documentation>Annonce de l'état des rentes</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" type="Meldungsnummer_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>en cas de prestation en file d'attente</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="KasseneigenerHinweis" type="KasseneigenerHinweis_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>en cas de prestation en file d'attente</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LeistungsberechtigtePerson" type="RRLeistungsberechtigtePersonAusl_Type"/>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Leistungsart" type="AusserordentlicheRente9_strongType"/>
+						<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type"/>
+						<xs:element name="Anspruchsende" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="Grundabgang_Type" minOccurs="0"/>
+						<xs:element name="Monatsbetrag" type="BetragFR_Type"/>
+						<xs:element name="MonatsbetragErsetzteOrdentlicheRente" type="BetragFR_Type" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>
+                                    mensualité de la RO remplacée en raison du minimum garanti;
+                                </xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Berechnungsgrundlagen">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Niveaujahr" type="AHVDatumJ_Type" minOccurs="0"/>
+									<xs:element name="EinkommensgrenzenCode" type="EinkommensgrenzenCode_Type">
+										<xs:annotation>
+											<xs:documentation>
+                                                REO soumise aux limites de revenu: oui/non ?
+                                            </xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="MinimalgarantieCode" type="MinimalgarantieCode_Type">
+										<xs:annotation>
+											<xs:documentation>
+                                                REO en tant que minimum garanti: oui/non ?
+                                            </xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="SkalaBerechnung" type="SkalaBerechnung_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>dans le cas de minimum garanti</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="DJEBeschreibung" type="DJE9Beschreibung_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>dans le cas de minimum garanti</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="Gutschriften" type="Gutschriften9_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>dans le cas de minimum garanti</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="IVDaten" type="IVDaten9_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>AI</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="IVDatenEhefrau" type="IVDaten9_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>le cas échéant</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="SonderfallcodeRente" type="SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+						<xs:element name="KuerzungSelbstverschulden" type="KuerzungSelbstverschulden_Type" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="AHVDatumJM_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RRBestandesmeldungHE9_Type">
+		<xs:annotation>
+			<xs:documentation>Annonce de l'état des rentes</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" type="Meldungsnummer_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>en cas de prestation en file d'attente</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="KasseneigenerHinweis" type="KasseneigenerHinweis_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>en cas de prestation en file d'attente</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LeistungsberechtigtePerson" type="RRLeistungsberechtigtePersonAusl_Type"/>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Leistungsart" type="Hilflosenentschaedigungen9_strongType"/>
+						<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type"/>
+						<xs:element name="Anspruchsende" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="Grundabgang_Type" minOccurs="0"/>
+						<xs:element name="Monatsbetrag" type="BetragFR_Type"/>
+						<xs:element name="Berechnungsgrundlagen">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="IVDaten" type="IVDatenHE9_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>données AI en cas de API</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="SonderfallcodeRente" type="SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="AHVDatumJM_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RRBestandesmeldungO10_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="fr">
+                Annonce de l'état des rentes: rente ordinaire (10e révision)
+            </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" type="Meldungsnummer_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>en cas de prestation en file d'attente</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="KasseneigenerHinweis" type="KasseneigenerHinweis_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>en cas de prestation en file d'attente</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LeistungsberechtigtePerson" type="RRLeistungsberechtigtePersonAusl_Type"/>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Leistungsart" type="OrdentlicheRente10_strongType"/>
+						<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type"/>
+						<xs:element name="Anspruchsende" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="Grundabgang_Type" minOccurs="0"/>
+						<xs:element name="Monatsbetrag" type="BetragFR_Type"/>
+						<xs:element name="Berechnungsgrundlagen">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Niveaujahr" type="AHVDatumJ_Type"/>
+									<xs:element name="SkalaBerechnung" type="SkalaBerechnung_Type"/>
+									<xs:element name="DJEBeschreibung" type="DJE10Beschreibung_Type"/>
+									<xs:element name="Gutschriften" type="Gutschriften10_Type"/>
+									<xs:element name="IVDaten" type="IVDaten10_Type" minOccurs="0"/>
+									<xs:element name="FlexiblesRentenAlter" minOccurs="0">
+										<xs:complexType>
+											<xs:choice>
+												<xs:element name="Rentenvorbezug" type="Rentenvorbezug_Type"/>
+												<xs:element name="Rentenaufschub" type="Rentenaufschub_Type"/>
+											</xs:choice>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="SonderfallcodeRente" type="SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+						<xs:element name="KuerzungSelbstverschulden" type="KuerzungSelbstverschulden_Type" minOccurs="0"/>
+						<xs:element name="IstInvaliderHinterlassener" type="xs:boolean" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="AHVDatumJM_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RRBestandesmeldungAO10_Type">
+		<xs:annotation>
+			<xs:documentation>Annonce de l'état des rentes</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" type="Meldungsnummer_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>en cas de prestation en file d'attente</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="KasseneigenerHinweis" type="KasseneigenerHinweis_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>en cas de prestation en file d'attente</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LeistungsberechtigtePerson" type="RRLeistungsberechtigtePersonAusl_Type">
+				<xs:annotation>
+					<xs:documentation>
+                        Données conernant l'ayant droit valables au début du mois de rapport ou du mois de fin de droit
+                        à la prestation
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Leistungsart" type="AusserordentlicheRente10_strongType"/>
+						<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type"/>
+						<xs:element name="Anspruchsende" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="Grundabgang_Type" minOccurs="0"/>
+						<xs:element name="Monatsbetrag" type="BetragFR_Type"/>
+						<xs:element name="Berechnungsgrundlagen">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Niveaujahr" type="AHVDatumJ_Type" minOccurs="0"/>
+									<xs:element name="IVDaten" type="IVDaten10_Type" minOccurs="0"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="SonderfallcodeRente" type="SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+						<xs:element name="KuerzungSelbstverschulden" type="KuerzungSelbstverschulden_Type" minOccurs="0"/>
+						<xs:element name="IstInvaliderHinterlassener" type="xs:boolean" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="AHVDatumJM_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RRBestandesmeldungHE10_Type">
+		<xs:annotation>
+			<xs:documentation>Annonce de l'état des rentes</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType"/>
+			<xs:element name="Meldungsnummer" type="Meldungsnummer_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>en cas de prestation en file d'attente</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="KasseneigenerHinweis" type="KasseneigenerHinweis_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>en cas de prestation en file d'attente</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LeistungsberechtigtePerson" type="RRLeistungsberechtigtePersonAusl_Type"/>
+			<xs:element name="Leistungsbeschreibung">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Leistungsart" type="Hilflosenentschaedigung10_strongType"/>
+						<xs:element name="Anspruchsbeginn" type="AHVDatumJM_Type"/>
+						<xs:element name="Anspruchsende" type="AHVDatumJM_Type" minOccurs="0"/>
+						<xs:element name="Mutationscode" type="Grundabgang_Type" minOccurs="0"/>
+						<xs:element name="Monatsbetrag" type="BetragFR_Type"/>
+						<xs:element name="Berechnungsgrundlagen">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="IVDaten" type="IVDatenHE_Type" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>données AI en cas d'API</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="SonderfallcodeRente" type="SonderfallcodeRente_Type" minOccurs="0" maxOccurs="5"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Berichtsmonat" type="AHVDatumJM_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- <xs:complexType name="RRLeistungsberechtigtePerson_BestandesMeldung_Type" abstract="true">
+        <xs:annotation>
+            <xs:documentation>Données concernant l'ayant droit de la prestation communiquée</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Versichertennummer" type="Versichertennummer11oder13Stellen_Type" />
+            <xs:element name="FamilienAngehoerige" type="FamilienAngehoerige_Type" />
+            <xs:element name="Zivilstand" type="ZivilstandNr_Type" />
+            <xs:element name="IstFluechtling" type="xs:boolean" />
+        </xs:sequence>
+    </xs:complexType> -->
+	<xs:complexType name="RRLeistungsberechtigtePerson_Type">
+		<xs:annotation>
+			<xs:documentation>
+                Données concernant l'ayant droit valables au début du mois de rapport ou du mois de fin de droit à la
+                prestation
+            </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Versichertennummer" type="Versichertennummer11oder13Stellen_Type">
+				<xs:annotation>
+					<xs:documentation xml:lang="fr">Numéro d'assuré de l'ayant droit</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="FamilienAngehoerige" type="FamilienAngehoerige_Type"/>
+			<xs:element name="Zivilstand" type="ZivilstandNr_Type"/>
+			<xs:element name="IstFluechtling" type="xs:boolean"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RRLeistungsberechtigtePersonAusl_Type">
+		<xs:annotation>
+			<xs:documentation>
+                Données concernant l'ayant droit valables au début du mois de rapport ou du mois de fin de droit à la
+                prestation. Personne habitant en suisse ou dans le monde.
+            </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="RRLeistungsberechtigtePerson_Type">
+				<xs:sequence>
+					<xs:element name="WohnkantonStaat" type="WohnkantonStaatBSV_weakType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="RRLeistungsberechtigtePersonCH_Type">
+		<xs:annotation>
+			<xs:documentation>
+                Données concernant l'ayant droit valables au début du mois de rapport ou du mois de fin de droit à la
+                prestation. Personne habitant en suisse ou dans le monde.
+            </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="RRLeistungsberechtigtePerson_Type">
+				<xs:sequence>
+					<xs:element name="WohnkantonStaat" type="KantonNrBSV_StrongType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="RRLeistungsberechtigtePerson_WeakType">
+		<xs:annotation>
+			<xs:documentation>
+                Données concernant l'ayant droit valables au début du mois de rapport ou du mois de fin de droit à la
+                prestation Seul le numéro d'assuré est obligatoire.
+            </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Versichertennummer" type="Versichertennummer11oder13Stellen_Type">
+				<xs:annotation>
+					<xs:documentation xml:lang="fr">Numéro d'assuré de l'ayant droit</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GeaenderteVersichertennummer" type="Versichertennummer11oder13Stellen_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="fr">Nouveau numéro d'assuré de l'ayant droit</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="FamilienAngehoerige" type="FamilienAngehoerige_Type" minOccurs="0"/>
+			<xs:element name="Zivilstand" type="ZivilstandNr_Type" minOccurs="0"/>
+			<xs:element name="IstFluechtling" type="xs:boolean" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RRLeistungsberechtigtePersonAusl_WeakType">
+		<xs:annotation>
+			<xs:documentation>
+                Données concernant l'ayant droit valables au début du mois de rapport ou du mois de fin de droit à la
+                prestation. Personne habitant en suisse ou dans le monde. Seul le numéro d'assuré est obligatoire.
+            </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="RRLeistungsberechtigtePerson_WeakType">
+				<xs:sequence>
+					<xs:element name="WohnkantonStaat" type="WohnkantonStaatBSV_weakType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="RRLeistungsberechtigtePersonCH_WeakType">
+		<xs:annotation>
+			<xs:documentation>
+                Données concernant l'ayant droit valables au début du mois de rapport ou du mois de fin de droit à la
+                prestation. Personne habitant en suisse ou dans le monde. Seul le numéro d'assuré est obligatoire.
+            </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="RRLeistungsberechtigtePerson_WeakType">
+				<xs:sequence>
+					<xs:element name="WohnkantonStaat" type="KantonNrBSV_StrongType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>
