@@ -5,10 +5,7 @@ import globaz.framework.util.FWMemoryLog;
 import globaz.framework.util.FWMessage;
 import globaz.globall.api.BISession;
 import globaz.globall.api.GlobazSystem;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BStatement;
-import globaz.globall.db.BTransaction;
-import globaz.globall.db.GlobazServer;
+import globaz.globall.db.*;
 import globaz.globall.format.IFormatData;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.parameters.FWParametersSystemCodeManager;
@@ -16,10 +13,9 @@ import globaz.globall.util.JACalendar;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
 import globaz.hercule.application.CEApplication;
-import globaz.hercule.db.controleEmployeur.CEAttributionPts;
-import globaz.hercule.db.controleEmployeur.CEControleEmployeur;
-import globaz.hercule.db.controleEmployeur.CEControleEmployeurManager;
+import globaz.hercule.db.controleEmployeur.*;
 import globaz.hercule.service.CEAffiliationService;
+import globaz.hercule.service.CEAttributionPtsService;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.log.JadeLogger;
@@ -47,7 +43,7 @@ public class CEUtils {
 
     /**
      * Permet d'ajouter une durée (en année) a une date passée en string
-     * 
+     *
      * @param _date
      * @param annee
      * @return
@@ -60,8 +56,10 @@ public class CEUtils {
 
     /**
      * Permet de créer une partie informations pour globaz afin de mieux debugger le process en cas de probleme
-     * 
-     * @param message
+     *
+     * @param log
+     * @param _message
+     * @param source
      */
     public static void addMailInformationsError(FWMemoryLog log, String _message, String source) {
 
@@ -77,7 +75,7 @@ public class CEUtils {
 
     /**
      * Permet de remplir un CommonExcelmlContainer à partir d'une CELine et de rajouter une erreur dans le container
-     * 
+     *
      * @param container
      * @param line
      * @param tabNoms
@@ -108,7 +106,7 @@ public class CEUtils {
 
     /**
      * Permet de formater le nom d'un tiers depuis sa designation1 et designation2
-     * 
+     *
      * @param designation1
      * @param designation2
      * @return
@@ -144,7 +142,7 @@ public class CEUtils {
 
     /**
      * Méthode qui formate le numéro d'affilié en fonction de properties
-     * 
+     *
      * @param session
      * @param numeroAffilie
      * @return
@@ -167,7 +165,7 @@ public class CEUtils {
 
     /**
      * permet de soustraire un certain nombre d'années à une année passée en String.
-     * 
+     *
      * @param nombreAnneesEnArriere
      * @param annee
      * @return
@@ -178,7 +176,7 @@ public class CEUtils {
 
     /**
      * Permet de retirer une année a l'année passé en parametre<br>
-     * 
+     *
      * @param _annee
      *            L'année de référence
      * @return l'année - 1 ou null si non renseigné.
@@ -197,7 +195,7 @@ public class CEUtils {
 
     /**
      * Retourne la valeur d'un code system d'après son libelle
-     * 
+     *
      * @param genre
      * @param session
      * @return
@@ -222,8 +220,8 @@ public class CEUtils {
 
     /**
      * Method getFormatAffilie.
-     * 
-     * @param session
+     *
+     * @param bSession
      * @return IFormatData
      */
     public static IFormatData getFormatAffilie(BSession bSession) {
@@ -242,7 +240,7 @@ public class CEUtils {
 
     /**
      * Permet la récupération de l'identifiant rubrique
-     * 
+     *
      * @param session
      * @return
      */
@@ -263,7 +261,7 @@ public class CEUtils {
 
     /**
      * Retourne le libellé d'un code système.
-     * 
+     *
      * @param session
      * @param code
      * @return
@@ -292,7 +290,7 @@ public class CEUtils {
 
     /**
      * Retourne le libellé d'un code système.
-     * 
+     *
      * @param session
      * @param code
      * @return
@@ -306,7 +304,7 @@ public class CEUtils {
 
     /**
      * Récupération du libelle ISO suivant la langue et le code
-     * 
+     *
      * @param session
      * @param code
      * @param isoLangue
@@ -326,9 +324,9 @@ public class CEUtils {
     /**
      * Return le 5% des employeurs à contrôler
      * 5% ayant une masse pour l'année-1 entre 100'000 inclus et 150'000.-
-     * 
+     *
      * @param transaction
-     * @param anneeCptr
+     * @param annee
      * @param session
      * @return le 5% des employeurs ayant une masse pour l'année-1 entre 100000 et 150000.-
      */
@@ -421,7 +419,7 @@ public class CEUtils {
 
     /**
      * Extrait la Session de HttpSession.
-     * 
+     *
      * @param httpSession
      * @return la BISession
      * @throws Exception
@@ -440,7 +438,7 @@ public class CEUtils {
 
     /**
      * Permet d'obtenir une session pavo depuis n'importe quelle Bsession
-     * 
+     *
      * @param local
      * @return une BIsesssion pavo
      * @throws Exception
@@ -462,7 +460,7 @@ public class CEUtils {
 
     /**
      * Retourne l'année courante
-     * 
+     *
      * @return
      */
     public static String giveAnneeCourante() {
@@ -476,7 +474,7 @@ public class CEUtils {
 
     /**
      * Retourne le jour courant
-     * 
+     *
      * @return
      */
     public static String giveToday() {
@@ -485,7 +483,7 @@ public class CEUtils {
 
     /**
      * Recherche d'une attribution de points pour un numéro affilié et une période donnée
-     * 
+     *
      * @param numAffilie
      * @param periodeDebut
      * @param periodeFin
@@ -496,18 +494,27 @@ public class CEUtils {
     public static CEAttributionPts rechercheAttributionPts(String numAffilie, String periodeDebut, String periodeFin,
             BSession session) throws Exception {
 
-        CEAttributionPts attribution = new CEAttributionPts();
-        attribution.setSession(session);
-        attribution.setNumAffilie(numAffilie);
-        attribution.setPeriodeDebut(periodeDebut);
-        attribution.setPeriodeFin(periodeFin);
-        attribution.setAlternateKey(CEAttributionPts.AK_NUMAFFILIE);
-        attribution.retrieve();
+       // Rercherche de l'attribution active en fonction du numéro d'affilié
+       CEAttributionPts attributionPtsActif = CEAttributionPtsService.findAttributionPtsActifForControle(session,
+                                numAffilie, periodeDebut, periodeFin);
 
-        if (attribution.isNew()) {
-            return null;
+        if (attributionPtsActif != null) {
+            return attributionPtsActif;
         } else {
-            return attribution;
+            // Rercherche de l'attribution active ou non en fonction du numéro d'affilié
+            CEAttributionPts attribution = new CEAttributionPts();
+            attribution.setSession(session);
+            attribution.setNumAffilie(numAffilie);
+            attribution.setPeriodeDebut(periodeDebut);
+            attribution.setPeriodeFin(periodeFin);
+            attribution.setAlternateKey(CEAttributionPts.AK_NUMAFFILIE);
+            attribution.retrieve();
+
+            if (attribution.isNew()) {
+                return null;
+            } else {
+                return attribution;
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 package globaz.hercule.mappingXmlml;
 
+import globaz.draco.db.declaration.DSDeclarationViewBean;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JADate;
@@ -16,6 +17,7 @@ import globaz.hercule.db.reviseur.CEReviseur;
 import globaz.hercule.db.reviseur.CEReviseurManager;
 import globaz.hercule.exception.HerculeException;
 import globaz.hercule.process.CEListeControlesAEffectuerProcess;
+import globaz.hercule.service.CEAttributionPtsService;
 import globaz.hercule.service.CEControleEmployeurService;
 import globaz.hercule.utils.CEExcelmlUtils;
 import globaz.hercule.utils.CEUtils;
@@ -30,7 +32,7 @@ import java.util.Map;
 /**
  * Classe permettant la construction d'un container <b>HerculeContainer</b>
  * qui est utilisé pour la génération de la liste de sortie des contrôles à effectuer
- * 
+ *
  * @author sco
  */
 public class CEXmlmlMappingControlesAEffectuer {
@@ -69,7 +71,7 @@ public class CEXmlmlMappingControlesAEffectuer {
 
     /**
      * Compile les données pour construire le container
-     * 
+     *
      * @return
      * @throws Exception
      */
@@ -234,7 +236,7 @@ public class CEXmlmlMappingControlesAEffectuer {
      * l'affilié est de catégorie supèrieur à 1
      * ou si il y a un contrôle prévu non effectué
      * ou si il fait partie d'un groupe
-     * 
+     *
      * @param categorieMasse
      * @param controleNonEffectuePrevu
      * @param entity
@@ -435,29 +437,46 @@ public class CEXmlmlMappingControlesAEffectuer {
                 container.put(ICEListeColumns.CORRECTION,
                         processParent.getSession().getLabel("LISTE_CONTROLE_EFFECTUER_NON"));
             }
-            // On récupère l'attribution des points
-            CEAttributionPts attribution = CEUtils.rechercheAttributionPts(dernierControle.getNumAffilie(),
+            // Rercherche de l'attribution active en fonction du numéro d'affilié
+            CEAttributionPts attributionPtsActif = CEUtils.rechercheAttributionPts(dernierControle.getNumAffilie(),
                     dernierControle.getDateDebutControle(), dernierControle.getDateFinControle(),
                     processParent.getSession());
-            if (attribution != null) {
-                if (Float.valueOf(attribution.getMasseAvs()).floatValue() > 0.0) {
-                    container.put(ICEListeColumns.MASSE_AVS, attribution.getMasseAvs());
-                    container.put(ICEListeColumns.MASSE_AVS_NEG, "0.0");
+
+            if (attributionPtsActif != null) {
+
+                // Recherche la déclaration de salaires liée au contrôle
+                DSDeclarationViewBean declaration = CEAttributionPtsService.chercheDeclarationDeSalaireControleEmployeurAvecIdControle(dernierControle.getId(), processParent.getSession());
+
+                // Utilise la masse AVS trouvée sur la déclaration de salaires
+                if (declaration != null) {
+                    if (Float.valueOf(declaration.getMasseSalTotalWhitoutFormat()).floatValue() > 0.0) {
+                        container.put(ICEListeColumns.MASSE_AVS, declaration.getMasseSalTotalWhitoutFormat());
+                        container.put(ICEListeColumns.MASSE_AVS_NEG, "0.0");
+                    } else {
+                        container.put(ICEListeColumns.MASSE_AVS_NEG, declaration.getMasseSalTotalWhitoutFormat());
+                        container.put(ICEListeColumns.MASSE_AVS, "0.0");
+                    }
+                // Utilise la masse trouvée sur l'attribution /!\ pour l'instant tout le temps à 0.00
                 } else {
-                    container.put(ICEListeColumns.MASSE_AVS_NEG, attribution.getMasseAvs());
-                    container.put(ICEListeColumns.MASSE_AVS, "0.0");
+                    if (Float.valueOf(attributionPtsActif.getMasseAvs()).floatValue() > 0.0) {
+                        container.put(ICEListeColumns.MASSE_AVS, attributionPtsActif.getMasseAvs());
+                        container.put(ICEListeColumns.MASSE_AVS_NEG, "0.0");
+                    } else {
+                        container.put(ICEListeColumns.MASSE_AVS_NEG, attributionPtsActif.getMasseAvs());
+                        container.put(ICEListeColumns.MASSE_AVS, "0.0");
+                    }
                 }
                 int note1 = Integer.valueOf(
-                        processParent.getSession().getCodeLibelle(attribution.getDerniereRevision()).substring(0, 1))
+                        processParent.getSession().getCodeLibelle(attributionPtsActif.getDerniereRevision()).substring(0, 1))
                         .intValue();
                 int note2 = Integer.valueOf(
-                        processParent.getSession().getCodeLibelle(attribution.getQualiteRH()).substring(0, 1))
+                        processParent.getSession().getCodeLibelle(attributionPtsActif.getQualiteRH()).substring(0, 1))
                         .intValue();
                 int note3 = Integer.valueOf(
-                        processParent.getSession().getCodeLibelle(attribution.getCollaboration()).substring(0, 1))
+                        processParent.getSession().getCodeLibelle(attributionPtsActif.getCollaboration()).substring(0, 1))
                         .intValue();
                 int note4 = Integer.valueOf(
-                        processParent.getSession().getCodeLibelle(attribution.getCriteresEntreprise()).substring(0, 1))
+                        processParent.getSession().getCodeLibelle(attributionPtsActif.getCriteresEntreprise()).substring(0, 1))
                         .intValue();
                 int total = note1 + note2 + note3 + note4;
 

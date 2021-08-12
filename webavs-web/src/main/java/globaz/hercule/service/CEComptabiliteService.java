@@ -31,11 +31,12 @@ public class CEComptabiliteService {
      * 
      * @param numeroAffilie
      * @param annee
+     * @param nombreAnnees
      * @return Map
      * @throws HerculeException
      */
-    public static Map<Integer, BigDecimal> getMasseSalariale5DernieresAnnees(BSession session,
-            BTransaction transaction, String numeroAffilie, int annee) throws HerculeException {
+    public static Map<Integer, BigDecimal> getMasseSalarialeDernieresAnnees(BSession session,
+                                                                            BTransaction transaction, String numeroAffilie, int annee, int nombreAnnees) throws HerculeException {
 
         if (numeroAffilie == null) {
             throw new NullPointerException("Unabled to retrive masse salariale. Numero Affilié is null");
@@ -46,7 +47,7 @@ public class CEComptabiliteService {
 
         // Recherche des bornes
         int anneeFin = annee;
-        int anneeDebut = annee - 4;
+        int anneeDebut = annee - nombreAnnees;
 
         // Recherche des masses
         CEMassesSalarialesManager manager = new CEMassesSalarialesManager();
