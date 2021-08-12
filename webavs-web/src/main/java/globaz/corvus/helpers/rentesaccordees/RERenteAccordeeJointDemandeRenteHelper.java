@@ -5,6 +5,7 @@
 package globaz.corvus.helpers.rentesaccordees;
 
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
+import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.dao.IREValidationLevel;
 import globaz.corvus.dao.REDeleteCascadeDemandeAPrestationsDues;
 import globaz.corvus.dao.REInfoCompta;
@@ -16,18 +17,13 @@ import globaz.corvus.db.annonces.REAnnoncesAugmentationModification10Eme;
 import globaz.corvus.db.annonces.REAnnoncesAugmentationModification9Eme;
 import globaz.corvus.db.basescalcul.REBasesCalcul;
 import globaz.corvus.db.demandes.REDemandeRente;
-import globaz.corvus.db.rentesaccordees.REEnteteBlocage;
-import globaz.corvus.db.rentesaccordees.REInformationsComptabilite;
-import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
-import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteManager;
-import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
-import globaz.corvus.db.rentesaccordees.RERenteAccordee;
-import globaz.corvus.db.rentesaccordees.RERenteCalculee;
+import globaz.corvus.db.rentesaccordees.*;
 import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.process.REDebloquerMontantRenteAccordeeProcess;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.utils.REPostItsFilteringUtils;
 import globaz.corvus.utils.beneficiaire.principal.REBeneficiairePrincipal;
+import globaz.corvus.vb.acor.RECalculACORDemandeRenteViewBean;
 import globaz.corvus.vb.process.REDebloquerMontantRAViewBean;
 import globaz.corvus.vb.rentesaccordees.RERenteAccordeeJointDemandeRenteListViewBean;
 import globaz.corvus.vb.rentesaccordees.RERenteAccordeeJointDemandeRenteViewBean;
@@ -71,6 +67,7 @@ import ch.globaz.common.domaine.Date;
 import ch.globaz.corvus.business.services.CorvusCrudServiceLocator;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.corvus.domaine.DemandeRente;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author HPE
@@ -677,6 +674,44 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
         process.start();
 
         return viewBean;
+    }
+
+    /**
+     * Méthode permettant de rechercher la demande de rente dont la rente accordée vient d'être calculée.
+     *
+     * @param viewBean
+     * @param action
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    public FWViewBeanInterface actionAfficherCalcul(final FWViewBeanInterface viewBean, final FWAction action,
+                                                    final BSession session) throws Exception {
+
+        RECalculACORDemandeRenteViewBean raViewBean = (RECalculACORDemandeRenteViewBean) viewBean;
+        RERenteAccordeeJointDemandeRenteViewBean rechercheViewBean = new RERenteAccordeeJointDemandeRenteViewBean();
+        rechercheViewBean.setNoDemandeRente(raViewBean.getIdDemandeRente());
+
+        REDemandeRente demandeRente = new REDemandeRente();
+        demandeRente.setSession(session);
+        demandeRente.setIdDemandeRente(raViewBean.getIdDemandeRente());
+        demandeRente.retrieve();
+        if (!StringUtils.equals(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_CALCULE,demandeRente.getCsEtat())) {
+            RERenteAccordeeManager managerRenteAccorde = new RERenteAccordeeManager();
+            managerRenteAccorde.setSession(session);
+            managerRenteAccorde.setForIdTiersBeneficiaire(raViewBean.getIdTiers());
+            managerRenteAccorde.setForCsEtat(IREPrestationAccordee.CS_ETAT_CALCULE);
+            managerRenteAccorde.find(BManager.SIZE_NOLIMIT);
+            if (managerRenteAccorde.size() > 0) {
+                RERenteAccordee ra = (RERenteAccordee) managerRenteAccorde.get(0);
+                RERenteAccJoinTblTiersJoinDemandeRente demandeRenteCalcule = new RERenteAccJoinTblTiersJoinDemandeRente();
+                demandeRenteCalcule.setIdPrestationAccordee(ra.getIdPrestationAccordee());
+                demandeRenteCalcule.retrieve();
+                rechercheViewBean.setNoDemandeRente(demandeRenteCalcule.getNoDemandeRente());
+            }
+        }
+
+        return rechercheViewBean;
     }
 
     private void chercherIdTiersFamille(final REDebloquerMontantRAViewBean viewBean, final FWAction action,

@@ -267,6 +267,44 @@ public class RERenteAccordeeJointDemandeRenteAction extends PRHybridAction {
     }
 
     /**
+     * Redirection sur l'ecran de recherche des rentes accordées au statut calculé
+     *
+     * @param session
+     * @param request
+     * @param response
+     * @param mainDispatcher
+     * @param viewBean
+     * @throws Exception
+     */
+    public String actionAfficherCalcul(final HttpSession session, final HttpServletRequest request,
+                                       final HttpServletResponse response, final FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) {
+        String destination;
+
+        try {
+
+            JSPUtils.setBeanProperties(request, viewBean);
+            viewBean = mainDispatcher.dispatch(viewBean, getAction());
+
+            session.setAttribute("viewBean", viewBean);
+            request.setAttribute(FWServlet.VIEWBEAN, viewBean);
+
+            boolean goesToSuccessDest = !viewBean.getMsgType().equals(FWViewBeanInterface.ERROR);
+            if (goesToSuccessDest) {
+                destination = getRelativeURLwithoutClassPart(request, session) + "renteAccordeeJointDemandeRente"
+                        + RERenteAccordeeJointDemandeRenteAction.VERS_ECRAN_RC;
+            } else {
+                destination = _getDestModifierEchec(session, request, response, viewBean);
+            }
+        } catch (Exception e) {
+            destination = FWDefaultServletAction.ERROR_PAGE;
+        }
+
+        return destination;
+
+    }
+
+
+    /**
      * Redirection sur l'ecran d'execution du process de deblocage
      * 
      * @param session

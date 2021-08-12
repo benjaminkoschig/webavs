@@ -218,6 +218,7 @@ public class REApplication extends PRAbstractApplication {
                 FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(IREActions.ACTION_RENTE_ACCORDEE_JOINT_DEMANDE_RENTE
                 + ".actionDebloquerMontantRA", FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom(IREActions.ACTION_RENTE_ACCORDEE_JOINT_DEMANDE_RENTE + ".actionAfficherCalcul", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(
                 IREActions.ACTION_RENTE_ACCORDEE_JOINT_DEMANDE_RENTE + ".actionExecuterDeblocage",
                 FWSecureConstants.UPDATE);
