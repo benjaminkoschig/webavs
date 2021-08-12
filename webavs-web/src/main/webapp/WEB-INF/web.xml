@@ -11,12 +11,12 @@
 		<filter-class>globaz.jade.servlet.filter.JadeRequestFilter</filter-class>
 	</filter>
 	<filter>
-		<filter-name>corvusServletFilter</filter-name>
-		<filter-class>globaz.corvus.ws.CORSFilter</filter-class>
+		<filter-name>acorServletFilter</filter-name>
+		<filter-class>ch.globaz.common.acor.CORSFilter</filter-class>
 	</filter>
 
 	<filter-mapping>
-		<filter-name>corvusServletFilter</filter-name>
+		<filter-name>acorServletFilter</filter-name>
 		<url-pattern>/rest/*</url-pattern>
 	</filter-mapping>
 	<!--
@@ -24,10 +24,10 @@
 		<filter-name>GZIPFilter</filter-name>
 		<filter-class>globaz.jade.servlet.filter.JadeGZipFilter</filter-class>
 	</filter>
- -->	
+ -->
 
 <!-- ResponseFilterMapping: uncomment to protect from HttpResponseSplitting attacks-->
-<!-- 
+<!--
 	<filter-mapping id="GlobazResponseFilterMapping">
 		<filter-name>ResponseFilter</filter-name>
 		<url-pattern>/*</url-pattern>
@@ -35,20 +35,20 @@
 -->
 
 <!-- RequestFilterMapping: uncomment to protect from XSS attacks-->
-<!-- 
+<!--
 	<filter-mapping id="GlobazRequestFilterMapping">
 		<filter-name>RequestFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 -->
 
-<!-- 
+<!--
 	<filter-mapping id="GlobazGZIPFilterMapping">
 		<filter-name>GZIPFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 	 -->
- 
+
 	<!--  Utilisation de la servlet de gestion de la persistence -->
 	<servlet>
 		<servlet-name>persistence</servlet-name>
@@ -60,7 +60,7 @@
 		<servlet-name>persistence</servlet-name>
 		<url-pattern>/persistence</url-pattern>
 	</servlet-mapping>
-	
+
 		<!-- Servlet pour la documentation est les testes des notations javascript -->
 	<servlet>
 		<servlet-name>notation</servlet-name>
@@ -71,7 +71,7 @@
 		<servlet-name>notation</servlet-name>
 		<url-pattern>/notation</url-pattern>
 	</servlet-mapping>
-	
+
 
 	<servlet id="GlobazDwrServlet">
 		<servlet-name>dwr-invoker</servlet-name>
@@ -111,7 +111,7 @@
 		<display-name>PEGASUS</display-name>
 		<servlet-class>ch.globaz.pegasus.web.servlet.PCMainServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
-	</servlet> 
+	</servlet>
 	<servlet id="GlobazPerseusServlet">
 		<servlet-name>perseus</servlet-name>
 		<display-name>PERSEUS</display-name>
@@ -129,7 +129,7 @@
 		<display-name>ARIES</display-name>
 		<servlet-class>ch.globaz.aries.web.servlet.ARMainServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
-	</servlet>  
+	</servlet>
 	<servlet id="GlobazCygnusServlet">
 		<servlet-name>cygnus</servlet-name>
 		<display-name>CYGNUS</display-name>
@@ -310,7 +310,7 @@
 		<servlet-class>com.ibm.websphere.jaxrs.server.IBMRestServlet</servlet-class>
 		<init-param>
 			<param-name>javax.ws.rs.Application</param-name>
-			<param-value>globaz.corvus.ws.WebAvsAcor2020Application</param-value>
+			<param-value>ch.globaz.common.acor.WebAvsAcor2020Application</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
@@ -455,11 +455,11 @@
 	<servlet-mapping id="GlobazPegasusServletMapping">
 		<servlet-name>pegasus</servlet-name>
 		<url-pattern>/pegasus</url-pattern>
-	</servlet-mapping> 
+	</servlet-mapping>
 	<servlet-mapping id="GlobazPerseusServletMapping">
 		<servlet-name>perseus</servlet-name>
 		<url-pattern>/perseus</url-pattern>
-	</servlet-mapping> 
+	</servlet-mapping>
 	<servlet-mapping id="GlobazAurigaServletMapping">
 		<servlet-name>auriga</servlet-name>
 		<url-pattern>/auriga</url-pattern>
